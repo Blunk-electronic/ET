@@ -2006,38 +2006,38 @@ package body et_kicad is
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_package.size);
 						end if;
 						
-						log ("partcode", level => log_threshold + 1);
-						if not field_partcode_found then
-							missing_field (field_partcode.meaning);
-						else
-							log_indentation_up;
-							
-							validate_component_partcode_in_library (
-								-- the content of the partcode field like R_PAC_S_0805_VAL_
-								partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
-
-								name => tmp_component_name, -- 74LS00
-								
-								-- the component prefix like LED
-								prefix => tmp_prefix,
-
-								-- The component package name like S_0805 must be extracted from the field text_package.
-								-- The field contains something like bel_ic:S_SO14 . 
-								-- The part after the colon is the package name. The part before the colon is the library
-								-- name which is not of interest here.
-								packge => type_component_package_name.to_bounded_string (et_string_processing.field (
-									line => read_line ( -- CS use function package_name
-										line	=> content (field_package), -- bel_ic:S_SO14
-										ifs		=> latin_1.colon),
-									position => 2)), -- the block after the colon
-
-								log_threshold => log_threshold + 1
-								);
-							
-							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_partcode.size);
-
-							log_indentation_down;
-						end if;
+-- 						log ("partcode", level => log_threshold + 1);
+-- 						if not field_partcode_found then
+-- 							missing_field (field_partcode.meaning);
+-- 						else
+-- 							log_indentation_up;
+-- 							
+-- 							validate_component_partcode_in_library (
+-- 								-- the content of the partcode field like R_PAC_S_0805_VAL_
+-- 								partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
+-- 
+-- 								name => tmp_component_name, -- 74LS00
+-- 								
+-- 								-- the component prefix like LED
+-- 								prefix => tmp_prefix,
+-- 
+-- 								-- The component package name like S_0805 must be extracted from the field text_package.
+-- 								-- The field contains something like bel_ic:S_SO14 . 
+-- 								-- The part after the colon is the package name. The part before the colon is the library
+-- 								-- name which is not of interest here.
+-- 								packge => type_component_package_name.to_bounded_string (et_string_processing.field (
+-- 									line => read_line ( -- CS use function package_name
+-- 										line	=> content (field_package), -- bel_ic:S_SO14
+-- 										ifs		=> latin_1.colon),
+-- 									position => 2)), -- the block after the colon
+-- 
+-- 								log_threshold => log_threshold + 1
+-- 								);
+-- 							
+-- 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_partcode.size);
+-- 
+-- 							log_indentation_down;
+-- 						end if;
 
 						log ("datasheet", level => log_threshold + 1);
 						if not field_datasheet_found then
@@ -7749,40 +7749,40 @@ package body et_kicad is
 								-- CS: check content of field_datasheet
 							end if;
 
-							-- partcode
-							log ("partcode", level => log_threshold + 1);
-							if not field_partcode_found then
-								missing_field (et_libraries.partcode);
-							else
-								log_indentation_up;
-							
-								validate_component_partcode_in_schematic (
-									-- the content of the partcode field like R_PAC_S_0805_VAL_100R
-									partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
-
-									-- the component reference like R45
-									reference => reference,
-
-									-- The component package name like S_0805 must be extracted from the field field_package.
-									-- The field contains something like bel_ic:S_SO14 . 
-									-- The part after the colon is the package name. The part before the colon is the library
-									-- name which is not of interest here.
-									packge => type_component_package_name.to_bounded_string (et_string_processing.field (
-										line => read_line ( -- CS use package_name (content (field_package)
-											line => content (field_package), -- bel_ic:S_SO14
-											ifs => latin_1.colon),
-										position => 2)), -- the block after the colon
-
-									-- the content of the value field like 200R or 10u
-									value => to_value (content (field_value)),
-
-									log_threshold => log_threshold + 1
-									);
-
-									check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_partcode.size);
-
-								log_indentation_down;
-							end if;
+-- 							-- partcode
+-- 							log ("partcode", level => log_threshold + 1);
+-- 							if not field_partcode_found then
+-- 								missing_field (et_libraries.partcode);
+-- 							else
+-- 								log_indentation_up;
+-- 							
+-- 								validate_component_partcode_in_schematic (
+-- 									-- the content of the partcode field like R_PAC_S_0805_VAL_100R
+-- 									partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
+-- 
+-- 									-- the component reference like R45
+-- 									reference => reference,
+-- 
+-- 									-- The component package name like S_0805 must be extracted from the field field_package.
+-- 									-- The field contains something like bel_ic:S_SO14 . 
+-- 									-- The part after the colon is the package name. The part before the colon is the library
+-- 									-- name which is not of interest here.
+-- 									packge => type_component_package_name.to_bounded_string (et_string_processing.field (
+-- 										line => read_line ( -- CS use package_name (content (field_package)
+-- 											line => content (field_package), -- bel_ic:S_SO14
+-- 											ifs => latin_1.colon),
+-- 										position => 2)), -- the block after the colon
+-- 
+-- 									-- the content of the value field like 200R or 10u
+-- 									value => to_value (content (field_value)),
+-- 
+-- 									log_threshold => log_threshold + 1
+-- 									);
+-- 
+-- 									check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_partcode.size);
+-- 
+-- 								log_indentation_down;
+-- 							end if;
 							
 							-- purpose
 							log ("purpose", level => log_threshold + 1);

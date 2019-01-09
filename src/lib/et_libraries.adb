@@ -1216,7 +1216,7 @@ package body et_libraries is
 	end validate_component_partcode_in_library;
 
 	
-	procedure validate_component_partcode_in_schematic (
+	procedure validate_component_partcode_in_schematic ( -- CS move to et_schematic
 	-- Tests if the given partcode of a schematic component is correct.
 	-- The given properties are assumed to be those of a real component.
 	--  - If partcode keywords are not specified in the 

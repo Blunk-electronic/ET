@@ -860,7 +860,7 @@ package et_libraries is
 		packge			: in type_component_package_name.bounded_string;	-- S_0805
 		log_threshold	: in et_string_processing.type_log_level);
 	
-	procedure validate_component_partcode_in_schematic (
+	procedure validate_component_partcode_in_schematic ( -- CS move to et_schematic
 	-- Tests if the given partcode of a schematic component is correct.
 	-- The given properties are assumed to be those of a real component.
 	--  - If partcode keywords are not specified in the 
