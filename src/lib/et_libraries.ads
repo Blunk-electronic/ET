@@ -162,8 +162,6 @@ package et_libraries is
 		DATASHEET,		-- for url to datasheet
 		PURPOSE,		-- for the purpose of the component in the design.
 		PARTCODE,		-- for the primary key into an external database (like "R_PAC_S_0805_VAL_200R")
-		NOTE,			-- for notes made by a person
---		BOM,			-- for assembly variants and assembly options
 		MISC); -- CS: others ?
 
 	function to_string (meaning : in type_text_meaning) return string;
