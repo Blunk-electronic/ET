@@ -246,11 +246,6 @@ package body et_kicad is
 						placeholder 	=> type_units_schematic.element (unit).partcode,
 						log_threshold 	=> log_threshold + 1);
 
-					-- bom
-					et_libraries.write_placeholder_properties (
-						placeholder 	=> type_units_schematic.element (unit).bom,
-						log_threshold 	=> log_threshold + 1);
-					
 				when others => null;
 			end case;
 
@@ -776,8 +771,7 @@ package body et_kicad is
 						when component_field_commissioned	=> meaning := et_libraries.commissioned;
 						when component_field_updated		=> meaning := et_libraries.updated;
 						when component_field_author			=> meaning := et_libraries.author;
-						when component_field_bom			=> meaning := et_libraries.bom;
-						when others => invalid_field (line);
+						when others => invalid_field (line); -- CS: better do nothing or issua a warning
 					end case;
 
 				else
@@ -801,8 +795,7 @@ package body et_kicad is
 						when component_field_commissioned	=> meaning := et_libraries.commissioned;
 						when component_field_updated		=> meaning := et_libraries.updated;
 						when component_field_author			=> meaning := et_libraries.author;
-						when component_field_bom			=> meaning := et_libraries.bom;
-						when others => invalid_field (line);
+						when others => invalid_field (line);  -- CS: better do nothing or issua a warning
 					end case;
 
 				else
@@ -1178,7 +1171,6 @@ package body et_kicad is
 			field_datasheet		: type_text (meaning => datasheet);
 			field_purpose		: type_text (meaning => purpose);
 			field_partcode		: type_text (meaning => partcode);
-			field_bom			: type_text (meaning => bom);
 
 			-- "field found flags" go true once the corresponding field was detected
 			-- Evaluated by procedure check_text_fields.
@@ -1191,7 +1183,6 @@ package body et_kicad is
 			field_datasheet_found		: boolean := false;
 			field_purpose_found			: boolean := false;
 			field_partcode_found		: boolean := false;
-			field_bom_found				: boolean := false;
 			
 			-- temporarily used variables to store draw elements (polylines, arcs, pins, ...) 
 			-- before they are added to a unit.
@@ -1224,7 +1215,6 @@ package body et_kicad is
 				field_datasheet_found		:= false;
 				field_purpose_found			:= false;
 				field_partcode_found		:= false;
-				field_bom_found				:= false;
 
 				-- clear terminal-port map for the new component
 				type_terminal_port_map.clear (tmp_terminal_port_map);
@@ -2028,14 +2018,6 @@ package body et_kicad is
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_datasheet.size);
 						end if;
 
-						log ("bom", level => log_threshold + 1);
-						if not field_bom_found then
-							missing_field (field_bom.meaning);
-						else
-							-- CS validate_bom_status
-							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_bom.size);
-						end if;
-						
 						log ("purpose", level => log_threshold + 1);
 						if not field_purpose_found then
 							missing_field (field_purpose.meaning);
@@ -2153,11 +2135,7 @@ package body et_kicad is
 								package_filter	=> type_package_filter.empty_set,
 								datasheet		=> type_component_datasheet.to_bounded_string (content (field_datasheet)),
 								purpose			=> type_component_purpose.to_bounded_string (content (field_purpose)),
-
 								partcode		=> type_component_partcode.to_bounded_string (content (field_partcode)),
-
-								bom				=> et_schematic.type_bom'value (content (field_bom)),
-
 								variants		=> type_component_variants.empty_map
 								)
 							);
@@ -2448,8 +2426,6 @@ package body et_kicad is
 														with meaning => purpose, position => field_purpose.position);
 							unit.symbol.partcode	:= (type_text_basic (field_partcode)	
 														with meaning => partcode, position => field_partcode.position);
-							unit.symbol.bom			:= (type_text_basic (field_bom)			
-														with meaning => bom, position => field_bom.position);
 						when others => null;
 					end case;
 				end set;
@@ -2907,23 +2883,6 @@ package body et_kicad is
 							invalid_field (line);
 						end if;
 
-					-- If we have a "bom" field like "F8 "" 0 -100 50 H V C CNN" "bom",
-					-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-					when bom =>
-					
-						if to_lower (strip_quotes (et_string_processing.field (line,10))) 
-							= to_lower (type_text_meaning'image (bom)) then
-							field_bom_found := true;
-							field_bom := to_field (line => line, meaning => bom);
-							-- for the log:
-							write_text_properies (type_text (field_bom), log_threshold + 1);
-							-- basic_text_check (bom); -- CS
-						else
-							invalid_field (line);
-						end if;
-
-						
 					when others => null;
 						-- CS: warning about illegal fields ?
 						-- CS: other text fields ?
@@ -8253,9 +8212,8 @@ package body et_kicad is
 									author			=> (type_text_basic (field_author)
 														with meaning => field_author.meaning, position => field_author.position),
 									commissioned	=> (type_text_basic (field_commissioned)
-														with meaning => field_commissioned.meaning, position => field_commissioned.position),
-									bom				=> (type_text_basic (field_bom)
-														with meaning => field_bom.meaning, position => field_bom.position)),
+														with meaning => field_commissioned.meaning, position => field_commissioned.position)
+									),
 								
 								log_threshold => log_threshold + 2);
 
@@ -8727,13 +8685,8 @@ package body et_kicad is
 								check_author_characters (
 									author => type_component_author.to_bounded_string (content (field_author)));
 								
-							when component_field_bom =>
-								field_bom_found := true;
-								field_bom := to_field;
-								-- NOTE: length check already included in check_bom_characters
-								check_bom_characters (content (field_bom));
-
 							when others => invalid_field (et_kicad.line); -- other fields are not accepted and cause an error
+									-- CS: better do nothing or issua a warning
 						end case;
 
 						--log ("unit field B: " & to_string (et_kicad.line));

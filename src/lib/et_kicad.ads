@@ -181,7 +181,6 @@ package et_kicad is
 				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.datasheet); -- might be useful for some special components
 				purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
 				partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
-				bom			: et_libraries.type_text_placeholder (meaning => et_libraries.bom);
 		end case;
 		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
 		-- basic coordinates (x/y). Via the unit position the sheet and module
@@ -301,7 +300,6 @@ package et_kicad is
 				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.DATASHEET);
 				purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.PURPOSE);
 				partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.PARTCODE);
-				bom 		: et_libraries.type_text_placeholder (meaning => et_libraries.BOM);
 			when others => null;
 		end case;
 	end record;
@@ -373,7 +371,6 @@ package et_kicad is
 				datasheet		: type_component_datasheet.bounded_string;
 				purpose			: et_libraries.type_component_purpose.bounded_string;
 				partcode		: et_libraries.type_component_partcode.bounded_string;
-				bom				: et_schematic.type_bom;
 				variants		: et_libraries.type_component_variants.map;
 				
 			when others => null; -- CS
@@ -808,7 +805,6 @@ package et_kicad is
 	component_field_updated			: constant type_component_field_id := 5;
 	component_field_author			: constant type_component_field_id := 6;
 	component_field_partcode		: constant type_component_field_id := 7;
-	component_field_bom				: constant type_component_field_id := 8;
 	component_field_purpose			: constant type_component_field_id := 9;
 
 
