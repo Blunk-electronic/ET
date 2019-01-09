@@ -455,7 +455,6 @@ package et_kicad is
 				partcode			: et_libraries.type_component_partcode.bounded_string;
 				purpose				: et_libraries.type_component_purpose.bounded_string;
 				datasheet			: type_component_datasheet.bounded_string;
-				bom					: et_schematic.type_bom;
 				variant				: et_libraries.type_component_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position
@@ -502,10 +501,6 @@ package et_kicad is
 	-- Writes the properties of the component indicated by the given cursor.
 		component 		: in type_components_schematic.cursor;
 		log_threshold	: in et_string_processing.type_log_level);
-
-	function bom (cursor : in type_components_schematic.cursor)
-	-- Returns the component bom status where cursor points at.
-		return et_schematic.type_bom;
 
 
 
@@ -1323,9 +1318,9 @@ package et_kicad is
 	-- Writes the statistics on components and nets of the modules.
 	-- Distinguishes between CAD and CAM related things.
 
-	procedure export_bom (log_threshold : in et_string_processing.type_log_level);  -- CS this is general and should be in et_schematic
-	-- Generates a bom file. This file is csv formatted and is to be processed by
-	-- other ERP tools (like stock_manager, see <https://github.com/Blunk-electronic/stock_manager>)
+-- 	procedure export_bom (log_threshold : in et_string_processing.type_log_level);  -- CS this is general and should be in et_schematic
+-- 	-- Generates a bom file. This file is csv formatted and is to be processed by
+-- 	-- other ERP tools (like stock_manager, see <https://github.com/Blunk-electronic/stock_manager>)
 
 	-- This is general board stuff:
 	type type_board is new et_pcb.type_board with record

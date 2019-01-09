@@ -2571,7 +2571,7 @@ package body et_kicad_to_native is
 
 								partcode			=> element (component_cursor_kicad).partcode,
 								purpose				=> element (component_cursor_kicad).purpose,
-								bom					=> element (component_cursor_kicad).bom,
+								bom					=> YES, -- in kicad there is no bom status -> assume part is mounted
 								variant				=> element (component_cursor_kicad).variant,
 
 								position			=> element (component_cursor_kicad).position,
