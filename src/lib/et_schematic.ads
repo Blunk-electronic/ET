@@ -114,8 +114,6 @@ package et_schematic is
 			when et_libraries.SCH => null; -- CS
 			when et_libraries.SCH_PCB =>
 				purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
-				--partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
-				--bom			: et_libraries.type_text_placeholder (meaning => et_libraries.bom);
 		end case;
 		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
 		-- basic coordinates (x/y). Via the unit position the sheet number can be obtained.
@@ -145,16 +143,13 @@ package et_schematic is
 	type type_device (appearance : type_appearance_schematic) is record
 		model			: et_libraries.type_device_library_name.bounded_string; -- ../libraries/transistor/pnp.dev
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
-		-- commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
-		-- updated			: et_string_processing.type_date; -- 2017-10-30T08:33:56
-		-- author			: et_libraries.type_person_name.bounded_string; -- Steve Miller
 		units			: type_units.map; -- PWR, A, B, ...
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
 			when et_libraries.sch_pcb => 
 				partcode			: et_libraries.type_component_partcode.bounded_string;
 				purpose				: et_libraries.type_component_purpose.bounded_string;
-				bom					: type_bom;
+				bom					: type_bom; -- whether mounted or not
 				variant				: et_libraries.type_component_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position

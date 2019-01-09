@@ -835,17 +835,6 @@ package et_libraries is
 		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3"
 		element_type	=> type_unit_external);
 
--- 	type type_bom is (YES, NO); -- if a component is to be mounted or not
-
--- 	function to_string (bom : in type_bom) return string;
--- 	function to_bom_status (bom : in string) return type_bom;
--- 
--- 	procedure check_bom_characters (bom : in string);
--- 	-- Checks if given string is a bom status. Case sensitive !
--- 	
--- 	procedure validate_bom_status (text : in string); -- CS: requires appearance and category
--- 	-- Validates BOM status. Case sensitive !	
-	
 	procedure validate_component_partcode_in_library (
 	-- Tests if the given partcode of a library component is correct.
 	-- The given properties are assumed to be those of a real component.
@@ -924,13 +913,6 @@ package et_libraries is
 	-- Tests if the given variant name contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
-
-		
--- 	function to_string (variant : in type_component_variant) return string;
-	-- Returns the given variant as string.
-	-- NOTE: This displays the type_component_variant (see et_libraries.ads).
-	-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
-	-- like in TL084D or TL084N.
 
 	type type_port_in_terminal_port_map is new type_port_named with record
 		unit	: type_unit_name.bounded_string;
