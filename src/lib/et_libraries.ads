@@ -559,39 +559,6 @@ package et_libraries is
 	-- Raises exception if invalid character found.
 
 
--- COMPONENT PURPOSE
-	-- Components that require operator interaction like connectors, LEDs or switches 
-	-- MUST have a purpose assigned.
-	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
-	component_initial_purpose_characters : character_set := 
-		component_initial_field_characters or to_set (' '); 
-	component_purpose_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_- "); 
-	component_purpose_length_max : constant positive := 100;
-	package type_component_purpose is new generic_bounded_length (component_purpose_length_max);
-	purpose_default : constant string (1..9) := "?PURPOSE?";
-
-	procedure validate_purpose (purpose : in string);
-	-- Raises alarm if purpose is empty, purpose_default or nonsense.
-	
-	function to_string (purpose : in type_component_purpose.bounded_string) return string;
-	-- Returns the given purpose as string.
-
-	function to_purpose (purpose : in string) return type_component_purpose.bounded_string;
-	-- Converts a string to type_component_purpose
-	
-	procedure check_purpose_length (purpose : in string);
-	-- Tests if the given purpose is longer than allowed.
-	
-	procedure check_purpose_characters (
-		purpose		: in type_component_purpose.bounded_string;
-		characters	: in character_set := component_purpose_characters);
-	-- Tests if the given purpose contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
-
-	
-
 -- COMPONENT COMMISSION AND UPDATE DATE
 	component_date_characters : character_set := to_set (span => ('0','9')) or to_set ("-:T");
 	component_date_length : constant positive := 19; -- "2017-08-17T14:17:25" -- CS: probably way to accurate

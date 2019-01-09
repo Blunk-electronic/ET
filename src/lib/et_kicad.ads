@@ -451,7 +451,7 @@ package et_kicad is
 				variant				: et_libraries.type_component_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position
-				-- and placeholders for reference, value, purpose.
+				-- and placeholders for reference and value.
 				position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
 				text_placeholders	: et_pcb.type_text_placeholders;
 				

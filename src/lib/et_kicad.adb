@@ -1807,9 +1807,9 @@ package body et_kicad is
 							characters => et_kicad.component_package_name_characters);
 
 					when PURPOSE =>
-						check_purpose_length (content (text));
-						check_purpose_characters (
-							purpose => type_component_purpose.to_bounded_string (content (text)),
+						et_schematic.check_purpose_length (content (text));
+						et_schematic.check_purpose_characters (
+							purpose => et_schematic.to_purpose (content (text)),
 							characters => component_initial_field_characters);
 
 					when PARTCODE =>

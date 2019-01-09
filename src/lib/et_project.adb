@@ -101,7 +101,7 @@ package body et_project is
 	function compare_connectors (left, right : in type_connector) return boolean is
 	-- Returns true if left connector comes before right connector.
 	-- Returns false if connectors are equal.
-		use et_libraries.type_component_purpose;
+		use et_schematic.type_component_purpose;
 		use type_module_instance_name;
 		r : boolean := false; -- to be returned
 	begin
@@ -1428,7 +1428,7 @@ package body et_project is
 					when et_libraries.SCH_PCB =>
 						write (keyword => keyword_variant , parameters => et_libraries.to_string (element (device_cursor).variant), space => true);
 						write (keyword => keyword_partcode, parameters => et_libraries.to_string (element (device_cursor).partcode), space => true);
-						write (keyword => keyword_purpose , parameters => et_libraries.to_string (element (device_cursor).purpose), space => true, wrap => true);
+						write (keyword => keyword_purpose , parameters => et_schematic.to_string (element (device_cursor).purpose), space => true, wrap => true);
 						write (keyword => keyword_bom     , parameters => et_schematic.to_string (element (device_cursor).bom));
 						
 						section_mark (section_package, HEADER);
@@ -2213,7 +2213,7 @@ package body et_project is
 		appearance : type_component_appearance;
 		prefix : type_component_prefix.bounded_string;
 		value : type_component_value.bounded_string;
-		purpose : type_component_purpose.bounded_string;
+		purpose : et_schematic.type_component_purpose.bounded_string;
 		partcode : type_component_partcode.bounded_string;
 		
 		procedure process_line is 
@@ -3682,7 +3682,7 @@ package body et_project is
 			device_units			: et_schematic.type_units.map; -- PWR, A, B, ...
 			
 			device_partcode			: et_libraries.type_component_partcode.bounded_string;
-			device_purpose			: et_libraries.type_component_purpose.bounded_string;
+			device_purpose			: et_schematic.type_component_purpose.bounded_string;
 			device_bom				: et_schematic.type_bom := et_schematic.type_bom'first;
 			device_variant			: et_libraries.type_component_variant_name.bounded_string; -- D, N
 			device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
@@ -7331,7 +7331,7 @@ package body et_project is
 
 										elsif kw = keyword_purpose then -- purpose power_out
 											expect_field_count (line, 2);
-											device_purpose := et_libraries.to_purpose (f (line, 2));
+											device_purpose := et_schematic.to_purpose (f (line, 2));
 
 										elsif kw = keyword_bom then -- bom yes/no
 											expect_field_count (line, 2);
@@ -7705,11 +7705,11 @@ package body et_project is
 				instance_name := to_bounded_string ("");
 			end clear_module_instance;
 			
-			purpose_A, purpose_B : et_libraries.type_component_purpose.bounded_string; -- power_in, power_out
+			purpose_A, purpose_B : et_schematic.type_component_purpose.bounded_string; -- power_in, power_out
 			instance_A, instance_B : type_module_instance_name.bounded_string; -- DRV_1, PWR
 
 			procedure clear_connector is begin
-				purpose_A := et_libraries.to_purpose ("");
+				purpose_A := et_schematic.to_purpose ("");
 				purpose_A := purpose_B;
 				instance_A := to_bounded_string ("");
 				instance_B := instance_A;
@@ -7914,11 +7914,11 @@ package body et_project is
 											
 										elsif kw = keyword_purpose_A then
 											expect_field_count (line, 2);
-											purpose_A := et_libraries.to_purpose (f (line,2));
+											purpose_A := et_schematic.to_purpose (f (line,2));
 											-- CS: test if a connector with this purpose exits in the instance
 										elsif kw = keyword_purpose_B then
 											expect_field_count (line, 2);
-											purpose_B := et_libraries.to_purpose (f (line,2));
+											purpose_B := et_schematic.to_purpose (f (line,2));
 											-- CS: test if a connector with this purpose exits in the instance
 											
 										-- CS: net comparator and warning on/off
