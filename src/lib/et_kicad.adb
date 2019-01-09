@@ -239,21 +239,6 @@ package body et_kicad is
 				when others => null;
 			end case;
 
-			-- commissioned
-			et_libraries.write_placeholder_properties (
-				placeholder 	=> type_units_schematic.element (unit).commissioned,
-				log_threshold	=> log_threshold + 1);
-
-			-- updated
-			et_libraries.write_placeholder_properties (
-				placeholder 	=> type_units_schematic.element (unit).updated,
-				log_threshold 	=> log_threshold + 1);
-
-			-- author
-			et_libraries.write_placeholder_properties (
-				placeholder 	=> type_units_schematic.element (unit).author,
-				log_threshold 	=> log_threshold + 1);
-
 		log_indentation_down;
 		log_indentation_down;
 		log_indentation_down;		
@@ -313,18 +298,6 @@ package body et_kicad is
 		log ("value "
 			& to_string (type_components_schematic.element (component).value), log_threshold);
 
-		-- commissioned
-		log ("commissioned "
-			& string (type_components_schematic.element (component).commissioned), log_threshold);
-
-		-- updated
-		log ("updated      "
-			& string (type_components_schematic.element(component).updated), log_threshold);
-
-		-- author
-		log ("author "
-			& to_string (type_components_schematic.element(component).author), log_threshold);
-		
 		-- appearance
 		log (to_string (type_components_schematic.element(component).appearance, verbose => true), log_threshold);
 
@@ -748,9 +721,6 @@ package body et_kicad is
 						when component_field_value			=> meaning := et_libraries.value;
 						when component_field_package		=> meaning := et_libraries.packge;
 						when component_field_datasheet		=> meaning := et_libraries.datasheet;
-						when component_field_commissioned	=> meaning := et_libraries.commissioned;
-						when component_field_updated		=> meaning := et_libraries.updated;
-						when component_field_author			=> meaning := et_libraries.author;
 						when others => null;
 					end case;
 
@@ -770,9 +740,6 @@ package body et_kicad is
 						when component_field_value			=> meaning := et_libraries.value;
 						when component_field_package		=> meaning := et_libraries.packge;
 						when component_field_datasheet		=> meaning := et_libraries.datasheet;
-						when component_field_commissioned	=> meaning := et_libraries.commissioned;
-						when component_field_updated		=> meaning := et_libraries.updated;
-						when component_field_author			=> meaning := et_libraries.author;
 						when others => null;
 					end case;
 
@@ -1142,9 +1109,6 @@ package body et_kicad is
 			
 			field_reference		: type_text (meaning => reference); -- CS: should be field_prefix as it contains just the prefix 
 			field_value			: type_text (meaning => value);
-			field_commissioned	: type_text (meaning => commissioned);
-			field_updated		: type_text (meaning => updated);
-			field_author		: type_text (meaning => author);
 			field_package		: type_text (meaning => packge);
 			field_datasheet		: type_text (meaning => datasheet);
 
@@ -1152,9 +1116,6 @@ package body et_kicad is
 			-- Evaluated by procedure check_text_fields.
 			field_prefix_found			: boolean := false;
 			field_value_found			: boolean := false;
-			field_commissioned_found	: boolean := false;
-			field_updated_found			: boolean := false;
-			field_author_found			: boolean := false;
 			field_package_found			: boolean := false;
 			field_datasheet_found		: boolean := false;
 			
@@ -1182,9 +1143,6 @@ package body et_kicad is
 
 				field_prefix_found			:= false;
 				field_value_found			:= false;
-				field_commissioned_found	:= false;
-				field_updated_found			:= false;
-				field_author_found			:= false;
 				field_package_found			:= false;
 				field_datasheet_found		:= false;
 
@@ -1788,16 +1746,6 @@ package body et_kicad is
 							packge => type_component_package_name.to_bounded_string (content (text)),
 							characters => et_kicad.component_package_name_characters);
 
-					when COMMISSIONED | UPDATED =>
-						check_date_length (content (text));
-						check_date_characters (
-							date => type_component_date (content (text)));
-
-					when AUTHOR =>
-						check_author_length (content (text));
-						check_author_characters (
-							author => type_component_author.to_bounded_string (content (text)));
-						
 					when others => null; -- CS
 
 				end case;
@@ -1864,37 +1812,6 @@ package body et_kicad is
 					end if;
 
 					check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_value.size);
-				end if;
-				
-				log ("author", level => log_threshold + 1);				
-				if not field_author_found then
-					missing_field (field_author.meaning);
-				else
-					check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_author.size);
-					null; -- CS validate_author
-				end if;
-
-				log ("commissioned", level => log_threshold + 1);
-				if not field_commissioned_found then
-					missing_field (field_commissioned.meaning);
-				else
-					check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_commissioned.size);
-					null; -- CS validate_commissioned
-				end if;
-
-				log ("updated", level => log_threshold + 1);
-				if not field_updated_found then
-					missing_field (field_updated.meaning);
-				else
-					-- The update must be later than the commission date:
-					if compare_date (
-						left => type_component_date (content (field_updated)),
-						right => type_component_date (content (field_commissioned))) then
-						log (message_warning & "commission date must be before update !");
-						-- CS: show reference, commission and update time
-					end if;
-
-					check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_updated.size);
 				end if;
 				
 				-- appearance specific fields:
@@ -2005,9 +1922,6 @@ package body et_kicad is
 
 								prefix			=> tmp_prefix,
 								value			=> to_value (content (field_value)),
-								commissioned	=> type_component_date (content (field_commissioned)),
-								updated			=> type_component_date (content (field_updated)),
-								author			=> type_person_name.to_bounded_string (content (field_author)),
 								units			=> type_units_library.empty_map
 								)
 							);
@@ -2024,9 +1938,6 @@ package body et_kicad is
 								appearance		=> sch_pcb,
 								prefix			=> tmp_prefix,
 								value			=> to_value (content (field_value)),
-								commissioned	=> type_component_date (content (field_commissioned)),
-								updated			=> type_component_date (content (field_updated)),
-								author			=> type_person_name.to_bounded_string (content (field_author)),
 								units			=> type_units_library.empty_map,
 
 								package_filter	=> type_package_filter.empty_set,
@@ -2304,12 +2215,6 @@ package body et_kicad is
 												with meaning => reference, position => field_reference.position);
 					unit.symbol.value		:= (type_text_basic (field_value)
 												with meaning => value, position => field_value.position);
-					unit.symbol.commissioned:= (type_text_basic (field_commissioned)	
-												with meaning => commissioned, position => field_commissioned.position);
-					unit.symbol.updated		:= (type_text_basic (field_updated)			
-												with meaning => updated, position => field_updated.position);
-					unit.symbol.author		:= (type_text_basic (field_author)			
-												with meaning => author, position => field_author.position);
 
 					case unit.symbol.appearance is
 						when sch_pcb =>
@@ -2636,9 +2541,6 @@ package body et_kicad is
 			-- F1 "GND" 0 -100 50 H V C CNN
 			-- F2 "" 0 0 50 H I C CNN
 			-- F3 "" 0 0 50 H I C CNN
-			-- F4 "1974-12-27T23:04:22" 650 100 60 H I C CNN "commissioned"
-			-- F5 "2017-01-23T23:04:22" 650 0 60 H I C CNN "updated"
-			-- F6 "MBL" 450 -100 60 H I C CNN "author"
 					
 				use et_string_processing;
 
@@ -2690,58 +2592,6 @@ package body et_kicad is
 						field_datasheet := to_field (line => line, meaning => datasheet);
 						-- for the log:
 						write_text_properies (type_text (field_datasheet), log_threshold + 1);
-
-					-- Other mandatory fields like function and partcode are detected by F4 and F5 
-					-- (not by subfield #10 !) So F4 enforces a function, F5 enforces a partcode.
-					
-
-					-- If we have a "commissioned" field like "F4 "" 0 -100 50 H V C CNN" "commissioned",
-					-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-					when commissioned =>
-					
-						if to_lower (strip_quotes (et_string_processing.field (line,10))) 
-							= to_lower (type_text_meaning'image (commissioned)) then
-							field_commissioned_found := true;
-							field_commissioned := to_field (line => line, meaning => commissioned);
-							-- for the log:
-							write_text_properies (type_text (field_commissioned), log_threshold + 1);
-							-- basic_text_check(commissioned); -- CS
-						else
-							invalid_field (line);
-						end if;
-
-					-- If we have an "updated" field like "F5 "" 0 -100 50 H V C CNN" "updated",
-					-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-					when updated =>
-					
-						if to_lower (strip_quotes (et_string_processing.field (line,10))) 
-							= to_lower (type_text_meaning'image (updated)) then
-							field_updated_found := true;
-							field_updated := to_field (line => line, meaning => updated);
-							-- for the log:
-							write_text_properies (type_text (field_updated), log_threshold + 1);
-							-- basic_text_check(updated); -- CS
-						else
-							invalid_field (line);
-						end if;
-
-					-- If we have an "author" field like "F6 "" 0 -100 50 H V C CNN" "author",
-					-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-					when author =>
-					
-						if to_lower (strip_quotes (et_string_processing.field (line,10))) 
-							= to_lower (type_text_meaning'image (author)) then
-							field_author_found := true;
-							field_author := to_field (line => line, meaning => author);
-							-- for the log:
-							write_text_properies (type_text (field_author), log_threshold + 1);
-							-- basic_text_check(author); -- CS
-						else
-							invalid_field (line);
-						end if;
 
 					when others => null;
 						-- CS: warning about illegal fields ?
@@ -2962,7 +2812,7 @@ package body et_kicad is
 							if et_string_processing.field (line,1) = et_kicad.enddef then
 								component_entered := false;
 
-								-- Set placeholders (reference, value, commissioned, ...) in internal units.
+								-- Set placeholders (reference, value, ...) in internal units.
 								-- The placeholder properties are known from the field-section.
 								-- The placeholder properties apply for all units.
 								set_text_placeholder_properties;
@@ -7276,9 +7126,6 @@ package body et_kicad is
 				-- They are evaluated once the given lines are read completely.
 				field_reference_found		: boolean := false;
 				field_value_found			: boolean := false;
-				field_commissioned_found	: boolean := false;
-				field_updated_found			: boolean := false;
-				field_author_found			: boolean := false;
 				field_package_found			: boolean := false;
 				field_datasheet_found		: boolean := false;
 
@@ -7286,9 +7133,6 @@ package body et_kicad is
 				-- They are contextual validated once the given lines are read completely.
 				field_reference		: et_libraries.type_text (meaning => et_libraries.reference); -- like IC5 (redundant information with referenc, see above)
 				field_value			: et_libraries.type_text (meaning => value);	-- like 74LS00
-				field_commissioned 	: et_libraries.type_text (meaning => commissioned); -- 2018-01-04T03:56:09
-				field_updated		: et_libraries.type_text (meaning => updated); -- 2018-02-04T03:56:09
-				field_author		: et_libraries.type_text (meaning => author); -- like Steve Miller
 				field_package		: et_libraries.type_text (meaning => packge); -- like "bel_primiteves:S_SOT23"
 				field_datasheet		: et_libraries.type_text (meaning => datasheet); -- might be useful for some special components
 			
@@ -7355,8 +7199,6 @@ package body et_kicad is
 						
 						raise constraint_error;
 					end missing_field;
-
-					commissioned, updated : et_string_processing.type_date;
 
 					procedure process_alternative_references is
 					-- Looks up alternative_references. The are provided in the schematic file in lines like:
@@ -7461,53 +7303,6 @@ package body et_kicad is
 							appearance => appearance);
 
 						check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_value.size);
-					end if;
-
-					-- commissioned
-					log ("commissioned", level => log_threshold + 1);
-					if not field_commissioned_found then
-						missing_field (et_libraries.commissioned);
-					else
-						-- The commissioned time must be checked for plausibility and syntax.
-						-- The string length is indirecty checked on converting the field content to derived type_date.
-						commissioned := et_string_processing.type_date (et_libraries.content (field_commissioned));
-						if not et_string_processing.date_valid (commissioned) 
-							then raise constraint_error;
-						end if;
-						
-						check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_commissioned.size);
-					end if;
-
-					-- updated
-					log ("updated", level => log_threshold + 1);
-					if not field_updated_found then
-						missing_field (et_libraries.updated);
-					else
-						-- The update time must be checked for plausibility and syntax.
-						-- The string length is indirecty checked on converting the field content to derived type_date.					
-						updated := et_string_processing.type_date (et_libraries.content (field_updated));
-						if not et_string_processing.date_valid (updated) 
-							then raise constraint_error;
-						end if;
-
-						-- The update must be later than the commission date:
-						if compare_date (
-							left => type_component_date (content (field_updated)),
-							right => type_component_date (content (field_commissioned))) then
-							log (message_warning & "commission date must be before update !");
-							-- CS: show reference, commission and update time
-						end if;
-
-						check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_updated.size);
-					end if;
-
-					-- author
-					log ("author", level => log_threshold + 1);
-					if not field_author_found then
-						missing_field (et_libraries.author);
-					else
-						check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_author.size);
-						-- CS: check content of text_author
 					end if;
 
 					-- If we are checking fields of a real component there are more 
@@ -7792,7 +7587,6 @@ package body et_kicad is
 						when sch => -- we have a line like "L P3V3 #PWR07"
 					
 							add_component (
-								--reference => reference,
 								reference	=> remove_leading_hash (reference), -- #PWR03 becomes PWR03
 								component	=> (
 									appearance		=> sch,
@@ -7805,9 +7599,6 @@ package body et_kicad is
 									alt_references	=> alternative_references,
 									
 									value 			=> to_value (content (field_value)),
-									commissioned 	=> type_date (et_libraries.content (field_commissioned)),
-									updated 		=> type_date (et_libraries.content (field_updated)),
-									author 			=> type_person_name.to_bounded_string (content (field_author)),
 
 									-- At this stage we do not know if and how many units there are. So the unit list is empty.
 									units 			=> type_units_schematic.empty_map),
@@ -7825,9 +7616,6 @@ package body et_kicad is
 									alt_references	=> alternative_references,
 									
 									value			=> to_value (content (field_value)),
-									commissioned	=> type_date (content (field_commissioned)),
-									updated			=> type_date (content (field_updated)),
-									author			=> type_person_name.to_bounded_string (content (field_author)),
 
 									-- properties of a real component (appears in schematic and layout);
 									datasheet		=> type_component_datasheet.to_bounded_string (content (field_datasheet)),
@@ -7911,13 +7699,7 @@ package body et_kicad is
 									reference		=> (type_text_basic (field_reference)
 														with meaning => field_reference.meaning, position => field_reference.position),
 									value			=> (type_text_basic (field_value)
-														with meaning => field_value.meaning, position => field_value.position),
-									updated			=> (type_text_basic (field_updated)
-														with meaning => field_updated.meaning, position => field_updated.position),
-									author			=> (type_text_basic (field_author)
-														with meaning => field_author.meaning, position => field_author.position),
-									commissioned	=> (type_text_basic (field_commissioned)
-														with meaning => field_commissioned.meaning, position => field_commissioned.position)),
+														with meaning => field_value.meaning, position => field_value.position)),
 								
 								log_threshold => log_threshold + 2);
 												
@@ -7944,14 +7726,7 @@ package body et_kicad is
 									packge			=> (type_text_basic (field_package)
 														with meaning => field_package.meaning, position => field_package.position),
 									datasheet		=> (type_text_basic (field_datasheet)
-														with meaning => field_datasheet.meaning, position => field_datasheet.position),
-									updated			=> (type_text_basic (field_updated)
-														with meaning => field_updated.meaning, position => field_updated.position),
-									author			=> (type_text_basic (field_author)
-														with meaning => field_author.meaning, position => field_author.position),
-									commissioned	=> (type_text_basic (field_commissioned)
-														with meaning => field_commissioned.meaning, position => field_commissioned.position)
-									),
+														with meaning => field_datasheet.meaning, position => field_datasheet.position)),
 								
 								log_threshold => log_threshold + 2);
 
@@ -8385,27 +8160,6 @@ package body et_kicad is
 								check_datasheet_length (content (field_datasheet));
 								check_datasheet_characters (
 									datasheet => type_component_datasheet.to_bounded_string (content (field_datasheet)));
-								
-							when component_field_commissioned =>
-								field_commissioned_found := true;
-								field_commissioned := to_field;
-								check_date_length (content (field_commissioned));
-								check_date_characters (
-									date => type_component_date (content (field_commissioned)));
-								
-							when component_field_updated =>
-								field_updated_found	:= true;
-								field_updated := to_field;
-								check_date_length (content (field_updated));
-								check_date_characters (
-									date => type_component_date (content (field_updated)));
-								
-							when component_field_author =>
-								field_author_found := true;
-								field_author := to_field;
-								check_author_length (content (field_author));
-								check_author_characters (
-									author => type_component_author.to_bounded_string (content (field_author)));
 								
 							when others => null; -- ignore other fields
 						end case;

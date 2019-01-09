@@ -166,10 +166,6 @@ package et_kicad is
 
 	-- A kicad unit inherits a lot from the base unit:
 	type type_unit_schematic (appearance : et_schematic.type_appearance_schematic) is new et_schematic.type_unit_base with record
-		commissioned	: et_libraries.type_text_placeholder (meaning => et_libraries.commissioned);		
-		updated			: et_libraries.type_text_placeholder (meaning => et_libraries.updated);		
-		author			: et_libraries.type_text_placeholder (meaning => et_libraries.author);
-		
 		timestamp		: et_kicad_general.type_timestamp;
 		alt_repres		: type_de_morgan_representation;
 
@@ -286,12 +282,7 @@ package et_kicad is
 	type type_symbol (appearance : et_libraries.type_component_appearance) is new et_libraries.type_symbol_base with record
 		ports : type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol
 
-		-- Placeholders for component wide texts. To be filled with content when 
-		-- a symbol is placed in the schematic:
-		commissioned	: et_libraries.type_text_placeholder (meaning => et_libraries.COMMISSIONED);
-		updated			: et_libraries.type_text_placeholder (meaning => et_libraries.UPDATED);
-		author			: et_libraries.type_text_placeholder (meaning => et_libraries.AUTHOR);
-		-- Symbols have further text placeholders according to the appearance of the component:		
+		-- Symbols have text placeholders according to the appearance of the component:		
 		case appearance is
 			when et_libraries.SCH_PCB =>
 				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.PACKGE);
@@ -345,9 +336,6 @@ package et_kicad is
 		prefix			: et_libraries.type_component_prefix.bounded_string; -- R, C, IC, ...
 		value			: et_libraries.type_component_value.bounded_string; -- 74LS00
 		units			: type_units_library.map := type_units_library.empty_map;
-		commissioned	: et_libraries.type_component_date;
-		updated			: et_libraries.type_component_date;
-		author			: et_libraries.type_person_name.bounded_string;
 
 		case appearance is
 
@@ -436,9 +424,6 @@ package et_kicad is
 		generic_name	: et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		alt_references	: type_alternative_references.list;
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
-		commissioned	: et_string_processing.type_date; -- 2017-08-17T14:17:25
-		updated			: et_string_processing.type_date; -- 2017-10-30T08:33:56
-		author			: et_libraries.type_person_name.bounded_string; -- Steve Miller
 		units			: type_units_schematic.map; -- PWR, A, B, ...
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
@@ -785,7 +770,7 @@ package et_kicad is
 	component_field_identifier : constant string (1..1) := "F";
 
 	-- We limit the number of fields in the component library to this constant.
-	library_component_field_count_max : constant positive := 6;
+	library_component_field_count_max : constant positive := 3;
 
 
 	type type_component_field_id is range 0..library_component_field_count_max;
@@ -793,9 +778,6 @@ package et_kicad is
 	component_field_value			: constant type_component_field_id := 1;
 	component_field_package			: constant type_component_field_id := 2;
 	component_field_datasheet		: constant type_component_field_id := 3;
-	component_field_commissioned	: constant type_component_field_id := 4;
-	component_field_updated			: constant type_component_field_id := 5;
-	component_field_author			: constant type_component_field_id := 6;
 
 
 -- GRID AND COORDINATES

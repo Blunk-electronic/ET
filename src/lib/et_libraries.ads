@@ -922,9 +922,6 @@ package et_libraries is
 		value			: type_component_value.bounded_string; -- 74LS00
 		units_internal	: type_units_internal.map := type_units_internal.empty_map;
 		units_external	: type_units_external.map := type_units_external.empty_map;
-		commissioned	: type_component_date;
-		updated			: type_component_date;
-		author			: type_person_name.bounded_string; -- CS should be type_component_author
 
 		case appearance is
 

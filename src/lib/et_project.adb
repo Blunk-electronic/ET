@@ -2088,13 +2088,10 @@ package body et_project is
 
 		reset_tab_depth;
 
-		-- prefix, value, ...
+		-- prefix, value, appearance ...
 		write (keyword => keyword_prefix, space => true, parameters => to_string (device.prefix));
 		write (keyword => keyword_value, space => true, parameters => to_string (device.value));
 		write (keyword => keyword_appearance, parameters => to_string (device.appearance));
-		write (keyword => keyword_commissioned, parameters => to_string (device.commissioned));
-		write (keyword => keyword_updated, parameters => to_string (device.updated));
-		write (keyword => keyword_author, parameters => to_string (device.author));
 
 		-- package variants
 		case device.appearance is

@@ -3128,9 +3128,6 @@ package body et_kicad_to_native is
 									appearance		=> et_libraries.SCH,
 									prefix 			=> element (component_cursor).prefix,
 									value			=> element (component_cursor).value,
-									commissioned	=> element (component_cursor).commissioned,
-									updated			=> element (component_cursor).updated,
-									author			=> element (component_cursor).author,
 									units_internal	=> <>, -- internal units will come later
 									units_external	=> <> -- kicad components do not have external symbols
 
@@ -3147,9 +3144,6 @@ package body et_kicad_to_native is
 									appearance		=> et_libraries.SCH_PCB,
 									prefix 			=> element (component_cursor).prefix,
 									value			=> element (component_cursor).value,
-									commissioned	=> element (component_cursor).commissioned,
-									updated			=> element (component_cursor).updated,
-									author			=> element (component_cursor).author,
 									units_internal	=> <>, -- internal units will come later
 									units_external	=> <>, -- kicad components do not have external symbols
 
