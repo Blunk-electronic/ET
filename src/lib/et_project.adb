@@ -2071,7 +2071,6 @@ package body et_project is
 		end query_external_unit;
 		
 	begin -- save_device
-		
 		log (name, log_threshold);
 
 		create (
@@ -2091,10 +2090,11 @@ package body et_project is
 
 		-- prefix, value, ...
 		write (keyword => keyword_prefix, space => true, parameters => to_string (device.prefix));
-		write (keyword => keyword_value , space => true, parameters => to_string (device.value));
+		write (keyword => keyword_value, space => true, parameters => to_string (device.value));
+		write (keyword => keyword_appearance, parameters => to_string (device.appearance));
 		write (keyword => keyword_commissioned, parameters => to_string (device.commissioned));
-		write (keyword => keyword_updated     , parameters => to_string (device.updated));
-		write (keyword => keyword_author      , parameters => to_string (device.author));
+		write (keyword => keyword_updated, parameters => to_string (device.updated));
+		write (keyword => keyword_author, parameters => to_string (device.author));
 
 		-- package variants
 		case device.appearance is
@@ -2605,51 +2605,58 @@ package body et_project is
 		end process_line;
 
 
-			
+		previous_input : ada.text_io.file_type renames current_input;
 		
 	begin -- read_device_file
 		log_indentation_up;
 		log ("reading device model " & to_string (file_name) & " ...", log_threshold);
 
+
+		-- CS: possible improvement: test if container et_libraries.devices already contains a model
+		-- named "file_name". If so, there would be no need to read the file_name again.
+		
 		-- open device model file
 		open (
 			file => file_handle,
 			mode => in_file, 
 			name => to_string (file_name));
 
--- 		set_input (file_handle);
+		set_input (file_handle);
 		
--- 		-- Init section stack.
--- 		stack.init;
--- 		stack.push (SEC_INIT);
--- 
--- 		-- read the file line by line
--- 		while not end_of_file loop
--- 			line := et_string_processing.read_line (
--- 				line 			=> get_line,
--- 				number			=> ada.text_io.line (current_input),
--- 				comment_mark 	=> comment_mark,
--- 				delimiter_wrap	=> true, -- strings are enclosed in quotations
--- 				ifs 			=> latin_1.space); -- fields are separated by space
--- 
--- 			-- we are interested in lines that contain something. emtpy lines are skipped:
--- 			if field_count (line) > 0 then
--- 				process_line;
--- 			end if;
--- 		end loop;
--- 
--- 		-- As a safety measure the top section must be reached finally.
--- 		if stack.depth > 1 then 
--- 			log (message_warning & write_section_stack_not_empty);
--- 		end if;
+		-- Init section stack.
+		stack.init;
+		stack.push (SEC_INIT);
 
--- 		log_indentation_down;
-		-- 		set_input (standard_input);
+		-- read the file line by line
+		while not end_of_file loop
+			line := et_string_processing.read_line (
+				line 			=> get_line,
+				number			=> ada.text_io.line,
+				comment_mark 	=> comment_mark,
+				delimiter_wrap	=> true, -- strings are enclosed in quotations
+				ifs 			=> latin_1.space); -- fields are separated by space
+
+			-- we are interested in lines that contain something. emtpy lines are skipped:
+			if field_count (line) > 0 then
+				process_line;
+			end if;
+		end loop;
+
+		-- As a safety measure the top section must be reached finally.
+		if stack.depth > 1 then 
+			log (message_warning & write_section_stack_not_empty);
+		end if;
+
+		log_indentation_down;
+		set_input (previous_input);
 
 		close (file_handle);
 
 		exception when event: others =>
-			if is_open (file_handle) then close (file_handle); end if;
+			if is_open (file_handle) then 
+				set_input (previous_input);
+				close (file_handle); 
+			end if;
 			raise;
 
 	end read_device_file;
