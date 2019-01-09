@@ -365,7 +365,7 @@ package body et_kicad is
 
 				-- bom
 				log ("bom "
-					& to_string (type_components_schematic.element (component).bom), log_threshold);
+					& et_schematic.to_string (type_components_schematic.element (component).bom), log_threshold);
 
 			when others => null; -- CS should never happen as virtual components do not have a package
 		end case;
@@ -376,14 +376,15 @@ package body et_kicad is
 
 	
 	function bom (cursor : in type_components_schematic.cursor)
-	-- Returns the component bom status where cursor points to.
-		return et_libraries.type_bom is
-		b : et_libraries.type_bom; -- the bom status
+	-- Returns the component bom status where cursor points at.
+		return et_schematic.type_bom is
+		b : et_schematic.type_bom; -- the bom status
+		use et_schematic;
 		use et_libraries;
 	begin
 		-- Only real components have a bom status.
 		--if component_appearance (cursor) = sch_pcb then
-		if type_components_schematic.element (cursor).appearance = sch_pcb then
+		if type_components_schematic.element (cursor).appearance = et_libraries.sch_pcb then
 			b := type_components_schematic.element (cursor).bom;
 		end if;
 		return b;
@@ -1835,7 +1836,7 @@ package body et_kicad is
 					
 					when BOM =>
 						-- NOTE: length check already included in check_bom_characters
-						check_bom_characters (content (text));
+						et_schematic.check_bom_characters (content (text));
 
 					when DATASHEET =>
 						check_datasheet_length (content (text));
@@ -2030,9 +2031,6 @@ package body et_kicad is
 										ifs		=> latin_1.colon),
 									position => 2)), -- the block after the colon
 
-								-- the BOM status
-								bom => type_bom'value (content (field_bom)),
-
 								log_threshold => log_threshold + 1
 								);
 							
@@ -2177,7 +2175,7 @@ package body et_kicad is
 
 								partcode		=> type_component_partcode.to_bounded_string (content (field_partcode)),
 
-								bom				=> type_bom'value (content (field_bom)),
+								bom				=> et_schematic.type_bom'value (content (field_bom)),
 
 								variants		=> type_component_variants.empty_map
 								)
@@ -7777,9 +7775,6 @@ package body et_kicad is
 
 									-- the content of the value field like 200R or 10u
 									value => to_value (content (field_value)),
-
-									-- the BOM status
-									bom => type_bom'value (content (field_bom)),
 
 									log_threshold => log_threshold + 1
 									);
@@ -13957,7 +13952,7 @@ package body et_kicad is
 				--if component_appearance (component) = sch_pcb then
 				if et_libraries."=" (element (component).appearance, et_libraries.sch_pcb) then
 
-					if et_libraries."=" (bom (component), et_libraries.YES) then
+					if et_schematic."=" (bom (component), et_schematic.YES) then
 						log (et_libraries.to_string (key (component)), log_threshold + 2);
 
 						-- CS: warning if netchanger/net-ties occur here. they should have the bom flag set to NO.
@@ -13971,7 +13966,7 @@ package body et_kicad is
 																generic_name => element (component).generic_name,
 																package_variant => element (component).variant)));
 						put_field (file => bom_handle, text => et_libraries.to_string (element (component).author));
-						put_field (file => bom_handle, text => et_libraries.to_string (element (component).bom));
+						put_field (file => bom_handle, text => et_schematic.to_string (element (component).bom));
 						put_field (file => bom_handle, text => to_string (element (component).commissioned));
 						put_field (file => bom_handle, text => et_libraries.to_string (element (component).purpose));
 						put_field (file => bom_handle, text => et_libraries.to_string (element (component).partcode));
@@ -14259,7 +14254,7 @@ package body et_kicad is
 						end case;
 
 						-- count mounted components
-						if et_libraries."=" (element (component).bom, et_libraries.YES) then
+						if et_schematic."=" (element (component).bom, et_schematic.YES) then
 							log_component;
 							et_schematic.statistics_set (et_schematic.COMPONENTS_MOUNTED);
 						else

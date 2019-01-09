@@ -950,55 +950,55 @@ package body et_libraries is
 		return latin_1.space & to_lower (type_unit_add_level'image (add_level));
 	end to_string;
 
-	function to_string (bom : in type_bom) return string is begin
-		return latin_1.space & to_lower (type_bom'image (bom));
-	end to_string;
-
-	function to_bom_status (bom : in string) return type_bom is begin
-		return type_bom'value (bom);
-	end to_bom_status;
-	
-	procedure check_bom_characters (bom : in string) is
-	-- Checks if given string is a bom status. Case sensitive ! 
-		use et_string_processing;
-	begin
-		if bom = type_bom'image (YES) then
-			null;
-		elsif bom = type_bom'image (NO) then
-			null;
-		else
-			log_indentation_reset;
-			log (message_error & "BOM status '"
-					& bom & "' invalid !" 
-					& " Must be either "
-					& to_string (YES) & " or "
-					& to_string (NO) & " !",
-				console => true);
-			raise constraint_error;
-		end if;
-
-		-- CS: warning if lower case used
-	end check_bom_characters;
-	
-	procedure validate_bom_status (text : in string) is -- CS: sse spec
-	-- Validates BOM status. Case sensitive !
-		use et_string_processing;
-	begin
-		if text = type_bom'image (YES) then
-			null;
-		elsif text = type_bom'image (NO) then
-			null;
-		else
-			log_indentation_reset;
-			log (message_error & "BOM status '"
-					& text & "' invalid !" 
-					& " Must be either "
-					& to_string (YES) & " or "
-					& to_string (NO) & " !",
-				console => true);
-			raise constraint_error;
-		end if;
-	end validate_bom_status;
+-- 	function to_string (bom : in type_bom) return string is begin
+-- 		return latin_1.space & to_lower (type_bom'image (bom));
+-- 	end to_string;
+-- 
+-- 	function to_bom_status (bom : in string) return type_bom is begin
+-- 		return type_bom'value (bom);
+-- 	end to_bom_status;
+-- 	
+-- 	procedure check_bom_characters (bom : in string) is
+-- 	-- Checks if given string is a bom status. Case sensitive ! 
+-- 		use et_string_processing;
+-- 	begin
+-- 		if bom = type_bom'image (YES) then
+-- 			null;
+-- 		elsif bom = type_bom'image (NO) then
+-- 			null;
+-- 		else
+-- 			log_indentation_reset;
+-- 			log (message_error & "BOM status '"
+-- 					& bom & "' invalid !" 
+-- 					& " Must be either "
+-- 					& to_string (YES) & " or "
+-- 					& to_string (NO) & " !",
+-- 				console => true);
+-- 			raise constraint_error;
+-- 		end if;
+-- 
+-- 		-- CS: warning if lower case used
+-- 	end check_bom_characters;
+-- 	
+-- 	procedure validate_bom_status (text : in string) is -- CS: sse spec
+-- 	-- Validates BOM status. Case sensitive !
+-- 		use et_string_processing;
+-- 	begin
+-- 		if text = type_bom'image (YES) then
+-- 			null;
+-- 		elsif text = type_bom'image (NO) then
+-- 			null;
+-- 		else
+-- 			log_indentation_reset;
+-- 			log (message_error & "BOM status '"
+-- 					& text & "' invalid !" 
+-- 					& " Must be either "
+-- 					& to_string (YES) & " or "
+-- 					& to_string (NO) & " !",
+-- 				console => true);
+-- 			raise constraint_error;
+-- 		end if;
+-- 	end validate_bom_status;
 	
 	function compose_partcode_root (
 	-- The root of a partcode in general is something like R_PAC_S_0805_VAL_ .
@@ -1155,8 +1155,6 @@ package body et_libraries is
 	procedure validate_component_partcode_in_library (
 	-- Tests if the given partcode of a library component is correct.
 	-- The given properties are assumed to be those of a real component.
-	-- If the component is not to be mounted, no validation takes place.
-	-- Otherwise:
 	--  - If partcode keywords are not specified in the 
 	--    configuration file, nothing is validated. It is the users responsibility 
 	--    to specify a correct partcode.
@@ -1166,7 +1164,6 @@ package body et_libraries is
 		name			: in type_component_generic_name.bounded_string;	-- 74LS00
 		prefix			: in type_component_prefix.bounded_string;			-- R
 		packge			: in type_component_package_name.bounded_string;	-- S_0805
-		bom				: in type_bom;										-- YES, NO
 		log_threshold	: in et_string_processing.type_log_level)
 		is
 
@@ -1191,31 +1188,28 @@ package body et_libraries is
 		log ("validating part code in library ...", log_threshold);
 		log_indentation_up;
 		
-		-- We validate only mounted components and if partcode keywords are specified.
-		if bom = YES then
-			if partcode_keywords_specified then
+		if partcode_keywords_specified then
 
-				log (to_string (partcode), log_threshold + 1);
-				
-				-- Compose the root of the partcode as it should be.
-				-- The root is usually something like R_PAC_S_0805_VAL_ which contains
-				-- the given prefix and package name.
-				partcode_expect := compose_partcode_root (
-					prefix => prefix,
-					packge => packge);
+			log (to_string (partcode), log_threshold + 1);
+			
+			-- Compose the root of the partcode as it should be.
+			-- The root is usually something like R_PAC_S_0805_VAL_ which contains
+			-- the given prefix and package name.
+			partcode_expect := compose_partcode_root (
+				prefix => prefix,
+				packge => packge);
 
-				-- the root of the partcode must be the very first part of the given partcode.
-				place := index (partcode, to_string (partcode_expect));
-				if place /= 1 then
-					partcode_invalid;
-				end if;
-
-				validate_other_partcode_keywords (
-					partcode => partcode, 				-- the partcode to be validated
-					from => length (partcode_expect), 	-- last character position of root part code
-					log_threshold => log_threshold + 1);
-				
+			-- the root of the partcode must be the very first part of the given partcode.
+			place := index (partcode, to_string (partcode_expect));
+			if place /= 1 then
+				partcode_invalid;
 			end if;
+
+			validate_other_partcode_keywords (
+				partcode => partcode, 				-- the partcode to be validated
+				from => length (partcode_expect), 	-- last character position of root part code
+				log_threshold => log_threshold + 1);
+			
 		end if;
 
 		log_indentation_down;
@@ -1225,8 +1219,6 @@ package body et_libraries is
 	procedure validate_component_partcode_in_schematic (
 	-- Tests if the given partcode of a schematic component is correct.
 	-- The given properties are assumed to be those of a real component.
-	-- If the component is not to be mounted, no validation takes place.
-	-- Otherwise:
 	--  - If partcode keywords are not specified in the 
 	--    configuration file, nothing is validated. It is the users responsibility 
 	--    to specify a correct partcode.
@@ -1236,7 +1228,6 @@ package body et_libraries is
 		reference		: in type_component_reference;						-- R45
 		packge			: in type_component_package_name.bounded_string;	-- S_0805
 		value 			: in type_component_value.bounded_string;			-- 100R
-		bom				: in type_bom;										-- YES, NO
 		log_threshold	: in et_string_processing.type_log_level)
 		is
 
@@ -1261,30 +1252,27 @@ package body et_libraries is
 		log ("validating part code in schematic ...", log_threshold);
 		log_indentation_up;
 		
-		-- We validate only mounted components and if partcode keywords are specified.
-		if bom = YES then
-			if partcode_keywords_specified then
+		if partcode_keywords_specified then
 
-				-- Compose the root of the partcode as it should be.
-				-- The root is usually something like R_PAC_S_0805_VAL_100R which contains
-				-- the given prefix, package name and - if provided - the value.
-				partcode_expect := compose_partcode_root (
-					prefix => reference.prefix,
-					packge => packge,
-					value => value);
+			-- Compose the root of the partcode as it should be.
+			-- The root is usually something like R_PAC_S_0805_VAL_100R which contains
+			-- the given prefix, package name and - if provided - the value.
+			partcode_expect := compose_partcode_root (
+				prefix => reference.prefix,
+				packge => packge,
+				value => value);
 
-				-- the root of the partcode must be the very first part of the given partcode.
-				place := index (partcode, to_string (partcode_expect));
-				if place /= 1 then
-					partcode_invalid;
-				end if;
-
-				validate_other_partcode_keywords (
-					partcode => partcode, -- the partcode to be validated
-					from => length (partcode_expect), -- last character position of root part code
-					log_threshold => log_threshold + 1);
-
+			-- the root of the partcode must be the very first part of the given partcode.
+			place := index (partcode, to_string (partcode_expect));
+			if place /= 1 then
+				partcode_invalid;
 			end if;
+
+			validate_other_partcode_keywords (
+				partcode => partcode, -- the partcode to be validated
+				from => length (partcode_expect), -- last character position of root part code
+				log_threshold => log_threshold + 1);
+
 		end if;
 
 		log_indentation_down;

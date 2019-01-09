@@ -1429,7 +1429,7 @@ package body et_project is
 						write (keyword => keyword_variant , parameters => et_libraries.to_string (element (device_cursor).variant), space => true);
 						write (keyword => keyword_partcode, parameters => et_libraries.to_string (element (device_cursor).partcode), space => true);
 						write (keyword => keyword_purpose , parameters => et_libraries.to_string (element (device_cursor).purpose), space => true, wrap => true);
-						write (keyword => keyword_bom     , parameters => et_libraries.to_string (element (device_cursor).bom));
+						write (keyword => keyword_bom     , parameters => et_schematic.to_string (element (device_cursor).bom));
 						
 						section_mark (section_package, HEADER);
 -- 						write (keyword => keyword_position, parameters => position (element (device_cursor).position)); -- position in board !
@@ -3684,7 +3684,7 @@ package body et_project is
 			
 			device_partcode			: et_libraries.type_component_partcode.bounded_string;
 			device_purpose			: et_libraries.type_component_purpose.bounded_string;
-			device_bom				: et_libraries.type_bom := et_libraries.type_bom'first;
+			device_bom				: et_schematic.type_bom := et_schematic.type_bom'first;
 			device_variant			: et_libraries.type_component_variant_name.bounded_string; -- D, N
 			device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
 
@@ -7336,7 +7336,7 @@ package body et_project is
 
 										elsif kw = keyword_bom then -- bom yes/no
 											expect_field_count (line, 2);
-											device_bom := et_libraries.to_bom_status (f (line, 2));
+											device_bom := et_schematic.to_bom_status (f (line, 2));
 											
 										else
 											invalid_keyword (kw);

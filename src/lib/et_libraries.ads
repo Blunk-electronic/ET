@@ -835,22 +835,20 @@ package et_libraries is
 		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3"
 		element_type	=> type_unit_external);
 
-	type type_bom is (YES, NO); -- if a component is to be mounted or not
+-- 	type type_bom is (YES, NO); -- if a component is to be mounted or not
 
-	function to_string (bom : in type_bom) return string;
-	function to_bom_status (bom : in string) return type_bom;
-
-	procedure check_bom_characters (bom : in string);
-	-- Checks if given string is a bom status. Case sensitive !
-	
-	procedure validate_bom_status (text : in string); -- CS: requires appearance and category
-	-- Validates BOM status. Case sensitive !	
+-- 	function to_string (bom : in type_bom) return string;
+-- 	function to_bom_status (bom : in string) return type_bom;
+-- 
+-- 	procedure check_bom_characters (bom : in string);
+-- 	-- Checks if given string is a bom status. Case sensitive !
+-- 	
+-- 	procedure validate_bom_status (text : in string); -- CS: requires appearance and category
+-- 	-- Validates BOM status. Case sensitive !	
 	
 	procedure validate_component_partcode_in_library (
 	-- Tests if the given partcode of a library component is correct.
 	-- The given properties are assumed to be those of a real component.
-	-- If the component is not to be mounted, no validation takes place.
-	-- Otherwise:
 	--  - If partcode keywords are not specified in the 
 	--    configuration file, nothing is validated. It is the users responsibility 
 	--    to specify a correct partcode.
@@ -860,14 +858,11 @@ package et_libraries is
 		name			: in type_component_generic_name.bounded_string;	-- 74LS00	
 		prefix			: in type_component_prefix.bounded_string;			-- R
 		packge			: in type_component_package_name.bounded_string;	-- S_0805
-		bom				: in type_bom; -- YES, NO
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure validate_component_partcode_in_schematic (
 	-- Tests if the given partcode of a schematic component is correct.
 	-- The given properties are assumed to be those of a real component.
-	-- If the component is not to be mounted, no validation takes place.
-	-- Otherwise:
 	--  - If partcode keywords are not specified in the 
 	--    configuration file, nothing is validated. It is the users responsibility 
 	--    to specify a correct partcode.
@@ -877,7 +872,6 @@ package et_libraries is
 		reference		: in type_component_reference;						-- R45
 		packge			: in type_component_package_name.bounded_string;	-- S_0805
 		value 			: in type_component_value.bounded_string; 			-- 100R
-		bom				: in type_bom;										-- YES, NO
 		log_threshold	: in et_string_processing.type_log_level);
 
 

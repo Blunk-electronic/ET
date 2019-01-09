@@ -129,6 +129,17 @@ package et_schematic is
 		"<" 			=> et_libraries.type_unit_name."<",
 		element_type 	=> type_unit);
 
+	-- BOM STATUS
+	type type_bom is (YES, NO); -- if a component is to be mounted or not
+	function to_string (bom : in type_bom) return string;
+	function to_bom_status (bom : in string) return type_bom;
+
+	procedure check_bom_characters (bom : in string);
+	-- Checks if given string is a bom status. Case sensitive !
+	
+	procedure validate_bom_status (text : in string); -- CS: requires appearance and category
+	-- Validates BOM status. Case sensitive !	
+	
 
 	-- This is a component as it appears in the schematic.
 	type type_device (appearance : type_appearance_schematic) is record
@@ -143,7 +154,7 @@ package et_schematic is
 			when et_libraries.sch_pcb => 
 				partcode			: et_libraries.type_component_partcode.bounded_string;
 				purpose				: et_libraries.type_component_purpose.bounded_string;
-				bom					: et_libraries.type_bom;
+				bom					: type_bom;
 				variant				: et_libraries.type_component_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position

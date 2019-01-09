@@ -373,7 +373,7 @@ package et_kicad is
 				datasheet		: type_component_datasheet.bounded_string;
 				purpose			: et_libraries.type_component_purpose.bounded_string;
 				partcode		: et_libraries.type_component_partcode.bounded_string;
-				bom				: et_libraries.type_bom;
+				bom				: et_schematic.type_bom;
 				variants		: et_libraries.type_component_variants.map;
 				
 			when others => null; -- CS
@@ -455,7 +455,7 @@ package et_kicad is
 				partcode			: et_libraries.type_component_partcode.bounded_string;
 				purpose				: et_libraries.type_component_purpose.bounded_string;
 				datasheet			: type_component_datasheet.bounded_string;
-				bom					: et_libraries.type_bom;
+				bom					: et_schematic.type_bom;
 				variant				: et_libraries.type_component_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position
@@ -504,8 +504,8 @@ package et_kicad is
 		log_threshold	: in et_string_processing.type_log_level);
 
 	function bom (cursor : in type_components_schematic.cursor)
-	-- Returns the component bom status where cursor points to.
-		return et_libraries.type_bom;
+	-- Returns the component bom status where cursor points at.
+		return et_schematic.type_bom;
 
 
 
