@@ -179,7 +179,6 @@ package et_kicad is
 			when et_libraries.sch_pcb =>
 				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.packge); -- like "SOT23"
 				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.datasheet); -- might be useful for some special components
-				purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
 				partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
 		end case;
 		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
@@ -298,7 +297,6 @@ package et_kicad is
 			when et_libraries.SCH_PCB =>
 				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.PACKGE);
 				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.DATASHEET);
-				purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.PURPOSE);
 				partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.PARTCODE);
 			when others => null;
 		end case;
@@ -369,7 +367,6 @@ package et_kicad is
 			when et_libraries.SCH_PCB => 
 				package_filter	: type_package_filter.set := type_package_filter.empty_set;
 				datasheet		: type_component_datasheet.bounded_string;
-				purpose			: et_libraries.type_component_purpose.bounded_string;
 				partcode		: et_libraries.type_component_partcode.bounded_string;
 				variants		: et_libraries.type_component_variants.map;
 				
@@ -450,12 +447,11 @@ package et_kicad is
 			-- If a component appears in both schematic and layout it has got:
 			when et_libraries.sch_pcb => 
 				partcode			: et_libraries.type_component_partcode.bounded_string;
-				purpose				: et_libraries.type_component_purpose.bounded_string;
 				datasheet			: type_component_datasheet.bounded_string;
 				variant				: et_libraries.type_component_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position
-				-- and placeholders reference, value, purpose.
+				-- and placeholders for reference, value, purpose.
 				position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
 				text_placeholders	: et_pcb.type_text_placeholders;
 				
@@ -790,10 +786,10 @@ package et_kicad is
 -- COMPONENT TEXT FIELDS
 
 	-- In compoenent libraries and schematic, a text field is indicated by letter "F":
-	component_field_identifier				: constant string (1..1) := "F";
+	component_field_identifier : constant string (1..1) := "F";
 
 	-- We limit the number of fields in the component library to this constant.
-	library_component_field_count_max 	: constant positive := 9;
+	library_component_field_count_max : constant positive := 7;
 
 
 	type type_component_field_id is range 0..library_component_field_count_max;
@@ -805,7 +801,6 @@ package et_kicad is
 	component_field_updated			: constant type_component_field_id := 5;
 	component_field_author			: constant type_component_field_id := 6;
 	component_field_partcode		: constant type_component_field_id := 7;
-	component_field_purpose			: constant type_component_field_id := 9;
 
 
 -- GRID AND COORDINATES
@@ -1156,13 +1151,13 @@ package et_kicad is
 	-- Returns the component power flag status.
 		return type_power_flag;
 	
-	function purpose (
-	-- Returns the purpose of the given component in the given module.
-	-- If no purpose specified for the component, an empty string is returned.						 
-		module_name		: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
-		reference		: in et_libraries.type_component_reference; -- X701
-		log_threshold	: in et_string_processing.type_log_level)
-		return et_libraries.type_component_purpose.bounded_string;
+-- 	function purpose ( -- CS move to et_schematic or et_project
+-- 	-- Returns the purpose of the given component in the given module.
+-- 	-- If no purpose specified for the component, an empty string is returned.						 
+-- 		module_name		: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
+-- 		reference		: in et_libraries.type_component_reference; -- X701
+-- 		log_threshold	: in et_string_processing.type_log_level)
+-- 		return et_libraries.type_component_purpose.bounded_string;
 
 	function first_strand return type_strands.cursor;
 	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
@@ -1323,19 +1318,19 @@ package et_kicad is
 		paper_size	: et_general.type_paper_size;
 	end record;
 
-	procedure multiple_purpose_warning (
-	-- Outputs an warning message on multiple usage of a purpose of a component category.
-		category		: in et_configuration.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
-		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
-		log_threshold	: in et_string_processing.type_log_level);
+-- 	procedure multiple_purpose_warning ( -- CS move to et_schematic or et_project
+-- 	-- Outputs an warning message on multiple usage of a purpose of a component category.
+-- 		category		: in et_configuration.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+-- 		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+-- 		log_threshold	: in et_string_processing.type_log_level);
 	
-	function multiple_purpose (
-	-- Returns the number of occurences of components with the given purpose and category.
-	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
-		category		: in et_configuration.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
-		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
-		log_threshold	: in et_string_processing.type_log_level)
-		return natural;
+-- 	function multiple_purpose ( -- CS move to et_schematic or et_project
+-- 	-- Returns the number of occurences of components with the given purpose and category.
+-- 	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
+-- 		category		: in et_configuration.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+-- 		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+-- 		log_threshold	: in et_string_processing.type_log_level)
+-- 		return natural;
 	
 -- MODULES
 	

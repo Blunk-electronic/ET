@@ -2494,10 +2494,10 @@ package body et_kicad_to_native is
 
 							unit_native_real := (et_schematic.type_unit_base (element (unit_cursor_kicad))
 											 with -- stuff that comes with a real device:
-												 appearance => et_libraries.SCH_PCB,
-												 purpose	=> element (unit_cursor_kicad).purpose
-												 --partcode	=> element (unit_cursor_kicad).partcode
-												 --bom		=> element (unit_cursor_kicad).bom
+												appearance => et_libraries.SCH_PCB,
+
+												-- create a placeholder for purpose because kicad does not know such a thing
+												purpose	=> (meaning => et_libraries.PURPOSE, others => <>)
 												);
 							
 							et_schematic.type_units.insert (
@@ -2544,9 +2544,6 @@ package body et_kicad_to_native is
 														device	=> element (component_cursor_kicad).generic_name),
 																								 
 								value				=> element (component_cursor_kicad).value,
-								--commissioned		=> element (component_cursor_kicad).commissioned,
-								--updated				=> element (component_cursor_kicad).updated,
-								--author				=> element (component_cursor_kicad).author,
 								others 				=> <>), -- unit list is empty at this time
 
 							inserted	=> component_inserted); -- should always be true
@@ -2565,12 +2562,8 @@ package body et_kicad_to_native is
 														device	=> element (component_cursor_kicad).generic_name),
 
 								value				=> element (component_cursor_kicad).value,
-								--commissioned		=> element (component_cursor_kicad).commissioned,
-								--updated				=> element (component_cursor_kicad).updated,
-								--author				=> element (component_cursor_kicad).author,
-
 								partcode			=> element (component_cursor_kicad).partcode,
-								purpose				=> element (component_cursor_kicad).purpose,
+								purpose				=> et_libraries.to_purpose (et_libraries.purpose_default),
 								bom					=> YES, -- in kicad there is no bom status -> assume part is mounted
 								variant				=> element (component_cursor_kicad).variant,
 
@@ -3040,7 +3033,9 @@ package body et_kicad_to_native is
 														with 
 															appearance	=> et_libraries.SCH_PCB,
 															ports		=> et_libraries.type_ports.empty_list, -- ports will come later
-															purpose		=> element (unit_cursor_kicad).symbol.purpose)
+															purpose		=> ( -- we must invent a placeholder for purpose since kicad does not know such a thing
+																	meaning	=> et_libraries.PURPOSE,
+																	others 	=> <>))
 															-- NOTE: Other placeholders discarded here.
 										));
 

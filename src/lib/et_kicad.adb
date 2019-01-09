@@ -236,11 +236,6 @@ package body et_kicad is
 						placeholder		=> type_units_schematic.element (unit).datasheet,
 						log_threshold	=> log_threshold + 1);
 
-					-- purpose
-					et_libraries.write_placeholder_properties (
-						placeholder		=> type_units_schematic.element (unit).purpose,
-						log_threshold	=> log_threshold + 1);
-					
 					-- partcode
 					et_libraries.write_placeholder_properties (
 						placeholder 	=> type_units_schematic.element (unit).partcode,
@@ -354,10 +349,6 @@ package body et_kicad is
 				log ("partcode "
 					& type_component_partcode.to_string (type_components_schematic.element (component).partcode), log_threshold);
 				
-				-- purpose
-				log ("purpose "
-					& type_component_purpose.to_string (type_components_schematic.element (component).purpose), log_threshold);
-
 			when others => null; -- CS should never happen as virtual components do not have a package
 		end case;
 
@@ -761,12 +752,11 @@ package body et_kicad is
 
 					-- Then we test the field id.
 					-- The field id must be mapped to the actual field meaning:
-					case type_component_field_id'value (et_string_processing.field (line,2)) is -- "0..9"
+					case type_component_field_id'value (et_string_processing.field (line,2)) is -- "0.."
 						when component_field_reference		=> meaning := et_libraries.reference;
 						when component_field_value			=> meaning := et_libraries.value;
 						when component_field_package		=> meaning := et_libraries.packge;
 						when component_field_datasheet		=> meaning := et_libraries.datasheet;
-						when component_field_purpose		=> meaning := et_libraries.purpose;
 						when component_field_partcode		=> meaning := et_libraries.partcode;
 						when component_field_commissioned	=> meaning := et_libraries.commissioned;
 						when component_field_updated		=> meaning := et_libraries.updated;
@@ -790,7 +780,6 @@ package body et_kicad is
 						when component_field_value			=> meaning := et_libraries.value;
 						when component_field_package		=> meaning := et_libraries.packge;
 						when component_field_datasheet		=> meaning := et_libraries.datasheet;
-						when component_field_purpose		=> meaning := et_libraries.purpose;
 						when component_field_partcode		=> meaning := et_libraries.partcode;
 						when component_field_commissioned	=> meaning := et_libraries.commissioned;
 						when component_field_updated		=> meaning := et_libraries.updated;
@@ -1169,7 +1158,6 @@ package body et_kicad is
 			field_author		: type_text (meaning => author);
 			field_package		: type_text (meaning => packge);
 			field_datasheet		: type_text (meaning => datasheet);
-			field_purpose		: type_text (meaning => purpose);
 			field_partcode		: type_text (meaning => partcode);
 
 			-- "field found flags" go true once the corresponding field was detected
@@ -1181,7 +1169,6 @@ package body et_kicad is
 			field_author_found			: boolean := false;
 			field_package_found			: boolean := false;
 			field_datasheet_found		: boolean := false;
-			field_purpose_found			: boolean := false;
 			field_partcode_found		: boolean := false;
 			
 			-- temporarily used variables to store draw elements (polylines, arcs, pins, ...) 
@@ -1213,7 +1200,6 @@ package body et_kicad is
 				field_author_found			:= false;
 				field_package_found			:= false;
 				field_datasheet_found		:= false;
-				field_purpose_found			:= false;
 				field_partcode_found		:= false;
 
 				-- clear terminal-port map for the new component
@@ -1977,39 +1963,6 @@ package body et_kicad is
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_package.size);
 						end if;
 						
--- 						log ("partcode", level => log_threshold + 1);
--- 						if not field_partcode_found then
--- 							missing_field (field_partcode.meaning);
--- 						else
--- 							log_indentation_up;
--- 							
--- 							validate_component_partcode_in_library (
--- 								-- the content of the partcode field like R_PAC_S_0805_VAL_
--- 								partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
--- 
--- 								name => tmp_component_name, -- 74LS00
--- 								
--- 								-- the component prefix like LED
--- 								prefix => tmp_prefix,
--- 
--- 								-- The component package name like S_0805 must be extracted from the field text_package.
--- 								-- The field contains something like bel_ic:S_SO14 . 
--- 								-- The part after the colon is the package name. The part before the colon is the library
--- 								-- name which is not of interest here.
--- 								packge => type_component_package_name.to_bounded_string (et_string_processing.field (
--- 									line => read_line ( -- CS use function package_name
--- 										line	=> content (field_package), -- bel_ic:S_SO14
--- 										ifs		=> latin_1.colon),
--- 									position => 2)), -- the block after the colon
--- 
--- 								log_threshold => log_threshold + 1
--- 								);
--- 							
--- 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_partcode.size);
--- 
--- 							log_indentation_down;
--- 						end if;
-
 						log ("datasheet", level => log_threshold + 1);
 						if not field_datasheet_found then
 							missing_field (field_datasheet.meaning);
@@ -2018,32 +1971,6 @@ package body et_kicad is
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_datasheet.size);
 						end if;
 
-						log ("purpose", level => log_threshold + 1);
-						if not field_purpose_found then
-							missing_field (field_purpose.meaning);
-						else
-							-- we do not expect a dedicated purpose here but only the purpose_default string
-							if content (field_purpose) /= purpose_default then
-								log (message_warning & "expected default " & purpose_default & " !");
-							end if;
-
-							-- If component requires user interaction,
-							-- make sure the purpose text is visible in the graphical representation:
-							--if requires_operator_interaction (tmp_prefix) = YES then
-							--	if field_purpose.visible = no then
-							--		log_indentation_reset;
-							--		log (message_error & "component "
-							--			& to_string (tmp_component_name)
-							--			& " purpose not visible !",
-							--			console => true);
-							--		raise constraint_error;
-							--	end if;
-							--end if;
-
-							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_purpose.size);
-						end if;
-
-						
 					when sch =>
 						-- Since this is a virtual component, we do the prefix character check
 						-- against the Kicad specific character set for prefixes. see et_kicad.ads.
@@ -2134,7 +2061,6 @@ package body et_kicad is
 
 								package_filter	=> type_package_filter.empty_set,
 								datasheet		=> type_component_datasheet.to_bounded_string (content (field_datasheet)),
-								purpose			=> type_component_purpose.to_bounded_string (content (field_purpose)),
 								partcode		=> type_component_partcode.to_bounded_string (content (field_partcode)),
 								variants		=> type_component_variants.empty_map
 								)
@@ -2422,8 +2348,6 @@ package body et_kicad is
 														with meaning => packge, position => field_package.position);
 							unit.symbol.datasheet	:= (type_text_basic (field_datasheet)	
 														with meaning => datasheet, position => field_datasheet.position);
-							unit.symbol.purpose		:= (type_text_basic (field_purpose)		
-														with meaning => purpose, position => field_purpose.position);
 							unit.symbol.partcode	:= (type_text_basic (field_partcode)	
 														with meaning => partcode, position => field_partcode.position);
 						when others => null;
@@ -2803,21 +2727,6 @@ package body et_kicad is
 					-- Other mandatory fields like function and partcode are detected by F4 and F5 
 					-- (not by subfield #10 !) So F4 enforces a function, F5 enforces a partcode.
 					
-					-- If we have a purpose field like "F9 "" 0 -100 50 H V C CNN" "purpose",
-					-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-					when purpose =>
-					
-						if to_lower (strip_quotes (et_string_processing.field (line,10))) 
-							= to_lower (type_text_meaning'image (purpose)) then
-							field_purpose_found := true;
-							field_purpose := to_field (line => line, meaning => purpose);
-							-- for the log:
-							write_text_properies (type_text (field_purpose), log_threshold + 1);
-							-- basic_text_check(fnction); -- CS
-						else
-							invalid_field (line);
-						end if;
 
 					-- If we have a partcode field like "F7 "" 0 -100 50 H V C CNN" "partcode",
 					-- we test subfield #10 against the prescribed meaning. If ok the field is read like
@@ -7423,7 +7332,6 @@ package body et_kicad is
 				field_author_found			: boolean := false;
 				field_package_found			: boolean := false;
 				field_datasheet_found		: boolean := false;
-				field_purpose_found			: boolean := false;
 				field_partcode_found		: boolean := false;
 
 				-- These are the actual fields that descibe the component more detailled.
@@ -7435,7 +7343,6 @@ package body et_kicad is
 				field_author		: et_libraries.type_text (meaning => author); -- like Steve Miller
 				field_package		: et_libraries.type_text (meaning => packge); -- like "bel_primiteves:S_SOT23"
 				field_datasheet		: et_libraries.type_text (meaning => datasheet); -- might be useful for some special components
-				field_purpose		: et_libraries.type_text (meaning => purpose); -- to be filled in schematic later by the user
 				field_partcode		: et_libraries.type_text (meaning => partcode); -- like "R_PAC_S_0805_VAL_"
 				field_bom			: et_libraries.type_text (meaning => bom); -- yes/no
 			
@@ -7688,97 +7595,6 @@ package body et_kicad is
 								-- CS: check content of field_datasheet
 							end if;
 
--- 							-- partcode
--- 							log ("partcode", level => log_threshold + 1);
--- 							if not field_partcode_found then
--- 								missing_field (et_libraries.partcode);
--- 							else
--- 								log_indentation_up;
--- 							
--- 								validate_component_partcode_in_schematic (
--- 									-- the content of the partcode field like R_PAC_S_0805_VAL_100R
--- 									partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
--- 
--- 									-- the component reference like R45
--- 									reference => reference,
--- 
--- 									-- The component package name like S_0805 must be extracted from the field field_package.
--- 									-- The field contains something like bel_ic:S_SO14 . 
--- 									-- The part after the colon is the package name. The part before the colon is the library
--- 									-- name which is not of interest here.
--- 									packge => type_component_package_name.to_bounded_string (et_string_processing.field (
--- 										line => read_line ( -- CS use package_name (content (field_package)
--- 											line => content (field_package), -- bel_ic:S_SO14
--- 											ifs => latin_1.colon),
--- 										position => 2)), -- the block after the colon
--- 
--- 									-- the content of the value field like 200R or 10u
--- 									value => to_value (content (field_value)),
--- 
--- 									log_threshold => log_threshold + 1
--- 									);
--- 
--- 									check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_partcode.size);
--- 
--- 								log_indentation_down;
--- 							end if;
-							
-							-- purpose
-							log ("purpose", level => log_threshold + 1);
-							if not field_purpose_found then
-								missing_field (et_libraries.purpose);
-							else
-								-- A more detailled test of the purpose can be performed if component prefixes
-								-- are specified in the configuration file:
-								if et_configuration.component_prefixes_specified then
-								
-									-- Depending on the status of operator interaction:
-									case et_configuration.requires_operator_interaction (reference.prefix) is
-
-										-- Even if NO INTERACTION is required, we expect at least 
-										-- the purpose_default string.
-										when et_configuration.NO =>
-											if content (field_purpose) /= purpose_default then
-												log (message_warning & "expected default " & purpose_default & " !");
-											end if;
-											
-										-- If operator INTERACTION IS REQUIRED, we expect something useful in 
-										-- the purpose field. 
-										-- Furhter-on there must be NO other component already of this category with 
-										-- the same purpose. Example: It is forbidden to have 
-										-- an X1 and an X2 both with purpose "PWR_IN"
-										when et_configuration.YES =>
-											validate_purpose (content (field_purpose)); -- must be something useful
-
-											-- test if purpose already used for this category 
-											if multiple_purpose (
-												category 		=> et_configuration.category (reference), -- derive cat from reference
-												purpose 		=> to_purpose (content (field_purpose)),
-												log_threshold 	=> log_threshold + 2) > 0 then
-
-													-- purpose already in use -> warning
-													multiple_purpose_warning (
-														category		=> et_configuration.category (reference),
-														purpose			=> to_purpose (content (field_purpose)),
-														log_threshold	=> log_threshold + 2);
-											end if;
-
-											-- make sure the purpose text is visible in the graphical representation:
-											--if field_purpose.visible = no then
-											--	log_indentation_reset;
-											--	log (message_error & "component " 
-											--		& et_libraries.to_string (reference)
-											--		& " purpose not visible !",
-											--		console => true);
-											--	raise constraint_error;
-											--end if;
-											
-									end case;
-
-								end if;
-									
-								check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_purpose.size);
-							end if;
 
 							-- put_line (indent(indentation + 1) & "crosschecks");
 							-- CS: test partcode, verify agsinst prefix, value and package
@@ -8077,7 +7893,6 @@ package body et_kicad is
 									-- properties of a real component (appears in schematic and layout);
 									datasheet		=> type_component_datasheet.to_bounded_string (content (field_datasheet)),
 									partcode		=> type_component_partcode.to_bounded_string (content (field_partcode)),
-									purpose			=> type_component_purpose.to_bounded_string (content (field_purpose)),
 
 									-- the package variant is determined by the package library and package name:
 									variant			=> to_package_variant (
@@ -8179,7 +7994,6 @@ package body et_kicad is
 									position		=> position,
 									rotation		=> orientation,
 									mirror			=> mirror,
-									--name			=> unit_name,
 									timestamp		=> timestamp,
 									alt_repres		=> alternative_representation,
 
@@ -8193,8 +8007,6 @@ package body et_kicad is
 														with meaning => field_package.meaning, position => field_package.position),
 									datasheet		=> (type_text_basic (field_datasheet)
 														with meaning => field_datasheet.meaning, position => field_datasheet.position),
-									purpose			=> (type_text_basic (field_purpose)
-														with meaning => field_purpose.meaning, position => field_purpose.position),
 									partcode		=> (type_text_basic (field_partcode)
 														with meaning => field_partcode.meaning, position => field_partcode.position),
 									updated			=> (type_text_basic (field_updated)
@@ -8637,14 +8449,6 @@ package body et_kicad is
 								check_datasheet_length (content (field_datasheet));
 								check_datasheet_characters (
 									datasheet => type_component_datasheet.to_bounded_string (content (field_datasheet)));
-								
-							when component_field_purpose =>
-								field_purpose_found	:= true;
-								field_purpose := to_field;
-								check_purpose_length (content (field_purpose));
-								check_purpose_characters (
-									purpose => type_component_purpose.to_bounded_string (content (field_purpose)),
-									characters => component_initial_purpose_characters);
 								
 							when component_field_partcode =>
 								field_partcode_found := true;
@@ -9414,73 +9218,73 @@ package body et_kicad is
 	end component_power_flag;
 
 	
-	function purpose (
-	-- Returns the purpose of the given component in the given module.
-	-- If no purpose specified for the component, an empty string is returned.
-		module_name		: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
-		reference		: in et_libraries.type_component_reference; -- X701
-		log_threshold	: in et_string_processing.type_log_level)
-		return et_libraries.type_component_purpose.bounded_string is
-
-		use et_string_processing;	
-		use et_libraries.type_component_purpose;
-		use type_modules;
-	
-		module_cursor : type_modules.cursor;
-		purpose : et_libraries.type_component_purpose.bounded_string; -- to be returned
-	
-		procedure query_components (
-		-- Searches the components of the module for the given reference.
-			module_name : in et_coordinates.type_submodule_name.bounded_string;
-			module		: in type_module) is
-			use type_components_schematic;
-			component_cursor : type_components_schematic.cursor := module.components.first;
-		begin
-			log ("querying components ...", log_threshold + 1);
-			log_indentation_up;
-
-			while component_cursor /= type_components_schematic.no_element loop
-				if et_libraries."=" (key (component_cursor), reference) then
-
-					-- component with given reference found.
-					purpose := element (component_cursor).purpose;
-					exit; -- no need for further searching
-					
-				end if;
-				next (component_cursor);
-			end loop;
-
-			log_indentation_down;
-		end query_components;
-			
-	begin -- purpose
-		log ("module " & et_coordinates.to_string (module_name) 
-			 & " looking up purpose of " 
-			 & et_libraries.to_string (reference) & " ...", log_threshold);
-		log_indentation_up;
-
-		-- set module cursor
-		module_cursor := find (et_kicad.modules, module_name);
-
-		-- if module exists, query its component list
-		if module_cursor /= type_modules.no_element then
-			query_element (
-				position	=> module_cursor,
-				process		=> query_components'access);
-		else
-			module_not_found (module_name); -- module does not exist -> error
-		end if;
-
-		-- Show purpose.
-		if length (purpose) = 0 then
-			log ("no purpose specified", log_threshold + 1);
-		else
-			log ("purpose " & et_libraries.to_string (purpose), log_threshold + 1);
-		end if;
-		
-		log_indentation_down;
-		return purpose;
-	end purpose;
+-- 	function purpose ( -- CS move to et_schematic or et_project
+-- 	-- Returns the purpose of the given component in the given module.
+-- 	-- If no purpose specified for the component, an empty string is returned.
+-- 		module_name		: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
+-- 		reference		: in et_libraries.type_component_reference; -- X701
+-- 		log_threshold	: in et_string_processing.type_log_level)
+-- 		return et_libraries.type_component_purpose.bounded_string is
+-- 
+-- 		use et_string_processing;	
+-- 		use et_libraries.type_component_purpose;
+-- 		use type_modules;
+-- 	
+-- 		module_cursor : type_modules.cursor;
+-- 		purpose : et_libraries.type_component_purpose.bounded_string; -- to be returned
+-- 	
+-- 		procedure query_components (
+-- 		-- Searches the components of the module for the given reference.
+-- 			module_name : in et_coordinates.type_submodule_name.bounded_string;
+-- 			module		: in type_module) is
+-- 			use type_components_schematic;
+-- 			component_cursor : type_components_schematic.cursor := module.components.first;
+-- 		begin
+-- 			log ("querying components ...", log_threshold + 1);
+-- 			log_indentation_up;
+-- 
+-- 			while component_cursor /= type_components_schematic.no_element loop
+-- 				if et_libraries."=" (key (component_cursor), reference) then
+-- 
+-- 					-- component with given reference found.
+-- 					purpose := element (component_cursor).purpose;
+-- 					exit; -- no need for further searching
+-- 					
+-- 				end if;
+-- 				next (component_cursor);
+-- 			end loop;
+-- 
+-- 			log_indentation_down;
+-- 		end query_components;
+-- 			
+-- 	begin -- purpose
+-- 		log ("module " & et_coordinates.to_string (module_name) 
+-- 			 & " looking up purpose of " 
+-- 			 & et_libraries.to_string (reference) & " ...", log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		-- set module cursor
+-- 		module_cursor := find (et_kicad.modules, module_name);
+-- 
+-- 		-- if module exists, query its component list
+-- 		if module_cursor /= type_modules.no_element then
+-- 			query_element (
+-- 				position	=> module_cursor,
+-- 				process		=> query_components'access);
+-- 		else
+-- 			module_not_found (module_name); -- module does not exist -> error
+-- 		end if;
+-- 
+-- 		-- Show purpose.
+-- 		if length (purpose) = 0 then
+-- 			log ("no purpose specified", log_threshold + 1);
+-- 		else
+-- 			log ("purpose " & et_libraries.to_string (purpose), log_threshold + 1);
+-- 		end if;
+-- 		
+-- 		log_indentation_down;
+-- 		return purpose;
+-- 	end purpose;
 
 	procedure add_strand (
 	-- Adds a strand into the the module (indicated by module_cursor).
@@ -13976,134 +13780,134 @@ package body et_kicad is
 -- 	end export_bom;
 
 
-	procedure multiple_purpose_warning (
-	-- Outputs a warning message on multiple usage of a purpose of a component category.
-		category		: in et_configuration.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
-		purpose 		: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
-		log_threshold 	: in et_string_processing.type_log_level) is
-		
-		use et_string_processing;
-		use et_coordinates;
-		use et_libraries;
-		use et_kicad.type_modules;
-		use et_configuration;
-		
-		procedure locate_component (
-		-- Searches the component list of the module for a connector with the given purpose.
-			module_name : in type_submodule_name.bounded_string;
-			module		: in et_kicad.type_module) is
-			use et_kicad.type_components_schematic;
-			use type_component_purpose;
-			component : et_kicad.type_components_schematic.cursor := module.components.first;
-		begin
-			--log ("purpose already used by component");
-			log_indentation_up;
-
-			while component /= et_kicad.type_components_schematic.no_element loop
-				if element (component).appearance = sch_pcb then -- it must be a real component
-					if et_configuration.category (key (component)) = category then -- category must match
-						if element (component).purpose = purpose then -- purpose must match
-							log ("purpose already used by component " &
-								 et_libraries.to_string (key (component)));
-						end if;
-					end if;
-				end if;
-				next (component);
-			end loop;
-
-			log_indentation_down;
-		end locate_component;
-			
-	begin -- multiple_purpose_warning
--- 		log_indentation_reset;
--- 		log (message_error & "There must be ONLY ONE" 
+-- 	procedure multiple_purpose_warning ( -- CS move to et_schematic or et_project
+-- 	-- Outputs a warning message on multiple usage of a purpose of a component category.
+-- 		category		: in et_configuration.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+-- 		purpose 		: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+-- 		log_threshold 	: in et_string_processing.type_log_level) is
+-- 		
+-- 		use et_string_processing;
+-- 		use et_coordinates;
+-- 		use et_libraries;
+-- 		use et_kicad.type_modules;
+-- 		use et_configuration;
+-- 		
+-- 		procedure locate_component (
+-- 		-- Searches the component list of the module for a connector with the given purpose.
+-- 			module_name : in type_submodule_name.bounded_string;
+-- 			module		: in et_kicad.type_module) is
+-- 			use et_kicad.type_components_schematic;
+-- 			use type_component_purpose;
+-- 			component : et_kicad.type_components_schematic.cursor := module.components.first;
+-- 		begin
+-- 			--log ("purpose already used by component");
+-- 			log_indentation_up;
+-- 
+-- 			while component /= et_kicad.type_components_schematic.no_element loop
+-- 				if element (component).appearance = sch_pcb then -- it must be a real component
+-- 					if et_configuration.category (key (component)) = category then -- category must match
+-- 						if element (component).purpose = purpose then -- purpose must match
+-- 							log ("purpose already used by component " &
+-- 								 et_libraries.to_string (key (component)));
+-- 						end if;
+-- 					end if;
+-- 				end if;
+-- 				next (component);
+-- 			end loop;
+-- 
+-- 			log_indentation_down;
+-- 		end locate_component;
+-- 			
+-- 	begin -- multiple_purpose_warning
+-- -- 		log_indentation_reset;
+-- -- 		log (message_error & "There must be ONLY ONE" 
+-- -- 			 & to_string (category) 
+-- -- 			 & " with purpose " 
+-- -- 			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !",
+-- -- 			 console => true);
+-- 
+-- 		log (message_warning & "There must be ONLY ONE" 
 -- 			 & to_string (category) 
 -- 			 & " with purpose " 
--- 			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !",
--- 			 console => true);
-
-		log (message_warning & "There must be ONLY ONE" 
-			 & to_string (category) 
-			 & " with purpose " 
-			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !");
-
-		query_element (
-			position	=> et_kicad.module_cursor,
-			process		=> locate_component'access);
-
-		--raise constraint_error;
-	end multiple_purpose_warning;
+-- 			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !");
+-- 
+-- 		query_element (
+-- 			position	=> et_kicad.module_cursor,
+-- 			process		=> locate_component'access);
+-- 
+-- 		--raise constraint_error;
+-- 	end multiple_purpose_warning;
 		
 	
-	function multiple_purpose (
-	-- Returns the number of occurences of components with the given purpose and category.
-	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
-		category 		: in et_configuration.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
-		purpose 		: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
-		log_threshold 	: in et_string_processing.type_log_level)
-		return natural is
-
-		occurences : natural := 0; -- to be returned
-
-		use et_coordinates;
-		use et_kicad.type_modules;
-		use et_libraries;
-		use et_configuration;
-		
-		procedure locate_component (
-		-- Searches the component list of the module for a connector with the given purpose.
-		-- Exits on the first matching connector. There should not be any others.
-			module_name : in type_submodule_name.bounded_string;
-			module 		: in et_kicad.type_module) is
-			use et_kicad.type_components_schematic;
-			use type_component_purpose;
-			component : et_kicad.type_components_schematic.cursor := module.components.first;
-		begin -- locate_component
-			log_indentation_up;		
-			log ("detecting multiple usage of purpose " 
-				 & enclose_in_quotes (et_libraries.to_string (purpose)) 
-				 & " in component category " & to_string (category) 
-				 & " ...", log_threshold);
-			log_indentation_up;
-
-			while component /= et_kicad.type_components_schematic.no_element loop
-				if element (component).appearance = sch_pcb then -- it must be a real component
-					if et_configuration.category (key (component)) = category then -- category must match
-						if element (component).purpose = purpose then -- purpose must match
-							log (et_libraries.to_string (key (component)), log_threshold + 1);
-							occurences := occurences + 1;
-						end if;
-					end if;
-				end if;
-				next (component);
-			end loop;
-
-			log_indentation_down;
-			log_indentation_down;
-		end locate_component;
-
-	begin -- multiple_purpose
-
-		query_element (
-			position	=> et_kicad.module_cursor,
-			process		=> locate_component'access);
-
-		-- Show the result of the search:
-		if occurences = 0 then
-			log_indentation_up;
-			log ("none found. very good.", log_threshold + 1);
-			log_indentation_down;
-		else
-			log (message_warning & "for component category" 
-				& to_string (category) 
-				& " the purpose " 
-				& enclose_in_quotes (et_libraries.to_string (purpose)) 
-				& " is used multiple times !");
-			-- CS: show the affected components by reference and coordinates
-		end if;
-		
-		return occurences;
-	end multiple_purpose;
+-- 	function multiple_purpose ( -- CS move to et_schematic or et_project
+-- 	-- Returns the number of occurences of components with the given purpose and category.
+-- 	-- Example: If there are two connectors with purpose "PWR_IN" the return is 2.
+-- 		category 		: in et_configuration.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...
+-- 		purpose 		: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
+-- 		log_threshold 	: in et_string_processing.type_log_level)
+-- 		return natural is
+-- 
+-- 		occurences : natural := 0; -- to be returned
+-- 
+-- 		use et_coordinates;
+-- 		use et_kicad.type_modules;
+-- 		use et_libraries;
+-- 		use et_configuration;
+-- 		
+-- 		procedure locate_component (
+-- 		-- Searches the component list of the module for a connector with the given purpose.
+-- 		-- Exits on the first matching connector. There should not be any others.
+-- 			module_name : in type_submodule_name.bounded_string;
+-- 			module 		: in et_kicad.type_module) is
+-- 			use et_kicad.type_components_schematic;
+-- 			use type_component_purpose;
+-- 			component : et_kicad.type_components_schematic.cursor := module.components.first;
+-- 		begin -- locate_component
+-- 			log_indentation_up;		
+-- 			log ("detecting multiple usage of purpose " 
+-- 				 & enclose_in_quotes (et_libraries.to_string (purpose)) 
+-- 				 & " in component category " & to_string (category) 
+-- 				 & " ...", log_threshold);
+-- 			log_indentation_up;
+-- 
+-- 			while component /= et_kicad.type_components_schematic.no_element loop
+-- 				if element (component).appearance = sch_pcb then -- it must be a real component
+-- 					if et_configuration.category (key (component)) = category then -- category must match
+-- 						if element (component).purpose = purpose then -- purpose must match
+-- 							log (et_libraries.to_string (key (component)), log_threshold + 1);
+-- 							occurences := occurences + 1;
+-- 						end if;
+-- 					end if;
+-- 				end if;
+-- 				next (component);
+-- 			end loop;
+-- 
+-- 			log_indentation_down;
+-- 			log_indentation_down;
+-- 		end locate_component;
+-- 
+-- 	begin -- multiple_purpose
+-- 
+-- 		query_element (
+-- 			position	=> et_kicad.module_cursor,
+-- 			process		=> locate_component'access);
+-- 
+-- 		-- Show the result of the search:
+-- 		if occurences = 0 then
+-- 			log_indentation_up;
+-- 			log ("none found. very good.", log_threshold + 1);
+-- 			log_indentation_down;
+-- 		else
+-- 			log (message_warning & "for component category" 
+-- 				& to_string (category) 
+-- 				& " the purpose " 
+-- 				& enclose_in_quotes (et_libraries.to_string (purpose)) 
+-- 				& " is used multiple times !");
+-- 			-- CS: show the affected components by reference and coordinates
+-- 		end if;
+-- 		
+-- 		return occurences;
+-- 	end multiple_purpose;
 
 	
 -- STATISTICS
