@@ -1111,19 +1111,14 @@ package body et_kicad is
 		et_libraries.type_component_generic_name.bounded_string is
 	-- Removes a possible heading tilde character from a generic component name.
 	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN	
-	-- This function is a kicad_v4 requirement. It has no meaning for other CAD formats and
-	-- returns generic_name as it is.
+	-- The leading tilde marks a component whose value is set to "invisible".
 		use et_import;
 		use et_libraries.type_component_generic_name;
 		length : et_libraries.type_component_generic_name.length_range;
 	begin
-		if et_import.cad_format = kicad_v4 then
-			if element (generic_name, 1) = '~' then
-				length := et_libraries.type_component_generic_name.length (generic_name);
-				return et_libraries.type_component_generic_name.bounded_slice (generic_name, 2, length);
-			else
-				return generic_name;
-			end if;
+		if element (generic_name, 1) = '~' then
+			length := et_libraries.type_component_generic_name.length (generic_name);
+			return et_libraries.type_component_generic_name.bounded_slice (generic_name, 2, length);
 		else
 			return generic_name;
 		end if;
@@ -1133,16 +1128,11 @@ package body et_kicad is
 		et_libraries.type_component_generic_name.bounded_string is
 	-- Prepends a heading tilde character to a generic component name.
 	-- example: TRANSISTOR_NPN becomes ~TRANSISTOR_NPN
-	-- This function is a kicad_v4 requirement. It has no meaning for other CAD formats and
-	-- returns generic_name as it is.
+	-- The leading tilde marks a component whose value is set to "invisible".
 		use et_import;
 		use et_libraries.type_component_generic_name;
 	begin
-		if et_import.cad_format = kicad_v4 then
-			return '~' & generic_name;
-		else
-			return generic_name;
-		end if;
+		return '~' & generic_name;
 	end prepend_tilde;
 	
 	procedure read_components_libraries (log_threshold : in type_log_level) is

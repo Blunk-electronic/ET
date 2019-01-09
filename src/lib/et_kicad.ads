@@ -386,7 +386,7 @@ package et_kicad is
 		et_libraries.type_component_generic_name.bounded_string;
 	-- Removes a possible heading tilde character from a generic component name.
 	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN	
-	
+	-- The leading tilde marks a component whose value is set to "invisible".	
 	
 	-- Library components are stored in a map.
 	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
