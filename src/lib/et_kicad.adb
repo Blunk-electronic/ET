@@ -236,11 +236,6 @@ package body et_kicad is
 						placeholder		=> type_units_schematic.element (unit).datasheet,
 						log_threshold	=> log_threshold + 1);
 
-					-- partcode
-					et_libraries.write_placeholder_properties (
-						placeholder 	=> type_units_schematic.element (unit).partcode,
-						log_threshold 	=> log_threshold + 1);
-
 				when others => null;
 			end case;
 
@@ -345,10 +340,6 @@ package body et_kicad is
 				log ("datasheet "
 					& type_component_datasheet.to_string (type_components_schematic.element (component).datasheet), log_threshold);
 
-				-- partcode
-				log ("partcode "
-					& type_component_partcode.to_string (type_components_schematic.element (component).partcode), log_threshold);
-				
 			when others => null; -- CS should never happen as virtual components do not have a package
 		end case;
 
@@ -757,7 +748,6 @@ package body et_kicad is
 						when component_field_value			=> meaning := et_libraries.value;
 						when component_field_package		=> meaning := et_libraries.packge;
 						when component_field_datasheet		=> meaning := et_libraries.datasheet;
-						when component_field_partcode		=> meaning := et_libraries.partcode;
 						when component_field_commissioned	=> meaning := et_libraries.commissioned;
 						when component_field_updated		=> meaning := et_libraries.updated;
 						when component_field_author			=> meaning := et_libraries.author;
@@ -780,7 +770,6 @@ package body et_kicad is
 						when component_field_value			=> meaning := et_libraries.value;
 						when component_field_package		=> meaning := et_libraries.packge;
 						when component_field_datasheet		=> meaning := et_libraries.datasheet;
-						when component_field_partcode		=> meaning := et_libraries.partcode;
 						when component_field_commissioned	=> meaning := et_libraries.commissioned;
 						when component_field_updated		=> meaning := et_libraries.updated;
 						when component_field_author			=> meaning := et_libraries.author;
@@ -1158,7 +1147,6 @@ package body et_kicad is
 			field_author		: type_text (meaning => author);
 			field_package		: type_text (meaning => packge);
 			field_datasheet		: type_text (meaning => datasheet);
-			field_partcode		: type_text (meaning => partcode);
 
 			-- "field found flags" go true once the corresponding field was detected
 			-- Evaluated by procedure check_text_fields.
@@ -1169,7 +1157,6 @@ package body et_kicad is
 			field_author_found			: boolean := false;
 			field_package_found			: boolean := false;
 			field_datasheet_found		: boolean := false;
-			field_partcode_found		: boolean := false;
 			
 			-- temporarily used variables to store draw elements (polylines, arcs, pins, ...) 
 			-- before they are added to a unit.
@@ -1200,7 +1187,6 @@ package body et_kicad is
 				field_author_found			:= false;
 				field_package_found			:= false;
 				field_datasheet_found		:= false;
-				field_partcode_found		:= false;
 
 				-- clear terminal-port map for the new component
 				type_terminal_port_map.clear (tmp_terminal_port_map);
@@ -1791,10 +1777,6 @@ package body et_kicad is
 						check_value_length (content (text));
 						check_value_characters (to_value (content (text)));
 					
-					when BOM =>
-						-- NOTE: length check already included in check_bom_characters
-						et_schematic.check_bom_characters (content (text));
-
 					when DATASHEET =>
 						check_datasheet_length (content (text));
 						check_datasheet_characters (
@@ -1805,18 +1787,6 @@ package body et_kicad is
 						check_package_name_characters (
 							packge => type_component_package_name.to_bounded_string (content (text)),
 							characters => et_kicad.component_package_name_characters);
-
-					when PURPOSE =>
-						et_schematic.check_purpose_length (content (text));
-						et_schematic.check_purpose_characters (
-							purpose => et_schematic.to_purpose (content (text)),
-							characters => component_initial_field_characters);
-
-					when PARTCODE =>
-						check_partcode_length (content (text));
-						check_partcode_characters (
-							partcode => type_component_partcode.to_bounded_string (content (text)),
-							characters => component_initial_field_characters);
 
 					when COMMISSIONED | UPDATED =>
 						check_date_length (content (text));
@@ -2061,7 +2031,6 @@ package body et_kicad is
 
 								package_filter	=> type_package_filter.empty_set,
 								datasheet		=> type_component_datasheet.to_bounded_string (content (field_datasheet)),
-								partcode		=> type_component_partcode.to_bounded_string (content (field_partcode)),
 								variants		=> type_component_variants.empty_map
 								)
 							);
@@ -2348,8 +2317,6 @@ package body et_kicad is
 														with meaning => packge, position => field_package.position);
 							unit.symbol.datasheet	:= (type_text_basic (field_datasheet)	
 														with meaning => datasheet, position => field_datasheet.position);
-							unit.symbol.partcode	:= (type_text_basic (field_partcode)	
-														with meaning => partcode, position => field_partcode.position);
 						when others => null;
 					end case;
 				end set;
@@ -2728,22 +2695,6 @@ package body et_kicad is
 					-- (not by subfield #10 !) So F4 enforces a function, F5 enforces a partcode.
 					
 
-					-- If we have a partcode field like "F7 "" 0 -100 50 H V C CNN" "partcode",
-					-- we test subfield #10 against the prescribed meaning. If ok the field is read like
-					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
-					when partcode =>
-					
-						if to_lower (strip_quotes (et_string_processing.field (line,10))) 
-							= to_lower (type_text_meaning'image (partcode)) then
-							field_partcode_found := true;
-							field_partcode := to_field (line => line, meaning => partcode);
-							-- for the log:
-							write_text_properies (type_text (field_partcode), log_threshold + 1);
-							-- basic_text_check(partcode); -- CS
-						else
-							invalid_field (line);
-						end if;
-
 					-- If we have a "commissioned" field like "F4 "" 0 -100 50 H V C CNN" "commissioned",
 					-- we test subfield #10 against the prescribed meaning. If ok the field is read like
 					-- any other mandatory field (see above). If invalid, we write a warning. (CS: should become an error later)
@@ -2796,9 +2747,7 @@ package body et_kicad is
 						-- CS: warning about illegal fields ?
 						-- CS: other text fields ?
 				end case;
-
 				
-				-- CS: check appearance vs. function vs. partcode -- see stock_manager	
 			end read_field;
 		
 
@@ -7332,7 +7281,6 @@ package body et_kicad is
 				field_author_found			: boolean := false;
 				field_package_found			: boolean := false;
 				field_datasheet_found		: boolean := false;
-				field_partcode_found		: boolean := false;
 
 				-- These are the actual fields that descibe the component more detailled.
 				-- They are contextual validated once the given lines are read completely.
@@ -7343,8 +7291,6 @@ package body et_kicad is
 				field_author		: et_libraries.type_text (meaning => author); -- like Steve Miller
 				field_package		: et_libraries.type_text (meaning => packge); -- like "bel_primiteves:S_SOT23"
 				field_datasheet		: et_libraries.type_text (meaning => datasheet); -- might be useful for some special components
-				field_partcode		: et_libraries.type_text (meaning => partcode); -- like "R_PAC_S_0805_VAL_"
-				field_bom			: et_libraries.type_text (meaning => bom); -- yes/no
 			
 				function to_field return et_libraries.type_text is
 				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
@@ -7594,19 +7540,12 @@ package body et_kicad is
 								check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_datasheet.size);
 								-- CS: check content of field_datasheet
 							end if;
-
-
-							-- put_line (indent(indentation + 1) & "crosschecks");
-							-- CS: test partcode, verify agsinst prefix, value and package
-							-- CS: test function against prefix of user interactive parts (X, SW, LED, ...)
-
 							
 						when others => null; -- CS ?
 					end case;
 
 					log_indentation_down;
 					log_indentation_down;
-		-- 			log_indentation_down;				
 					
 					exception
 						when event:
@@ -7892,7 +7831,6 @@ package body et_kicad is
 
 									-- properties of a real component (appears in schematic and layout);
 									datasheet		=> type_component_datasheet.to_bounded_string (content (field_datasheet)),
-									partcode		=> type_component_partcode.to_bounded_string (content (field_partcode)),
 
 									-- the package variant is determined by the package library and package name:
 									variant			=> to_package_variant (
@@ -8007,8 +7945,6 @@ package body et_kicad is
 														with meaning => field_package.meaning, position => field_package.position),
 									datasheet		=> (type_text_basic (field_datasheet)
 														with meaning => field_datasheet.meaning, position => field_datasheet.position),
-									partcode		=> (type_text_basic (field_partcode)
-														with meaning => field_partcode.meaning, position => field_partcode.position),
 									updated			=> (type_text_basic (field_updated)
 														with meaning => field_updated.meaning, position => field_updated.position),
 									author			=> (type_text_basic (field_author)
@@ -8312,7 +8248,7 @@ package body et_kicad is
 					--	- Read library name, component generic name and annotation from a line like "L bel_logic:7400 IC1". 
 					
 					-- From this entry we reason the component appearance. 
-					-- The appearance is important for contextual validation of the fields (like field_partcode, field_bom, ...).
+					-- The appearance is important for contextual validation of the fields.
 					-- It is also required for validation of the reference (like R12 or C4).
 					if et_string_processing.field (et_kicad.line,1) = schematic_component_identifier_name then -- "L"
 
@@ -8449,14 +8385,6 @@ package body et_kicad is
 								check_datasheet_length (content (field_datasheet));
 								check_datasheet_characters (
 									datasheet => type_component_datasheet.to_bounded_string (content (field_datasheet)));
-								
-							when component_field_partcode =>
-								field_partcode_found := true;
-								field_partcode := to_field;
-								check_partcode_length (content (field_partcode));
-								check_partcode_characters (
-									partcode => type_component_partcode.to_bounded_string (content (field_partcode)),
-									characters => component_initial_field_characters);
 								
 							when component_field_commissioned =>
 								field_commissioned_found := true;

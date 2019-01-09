@@ -2562,8 +2562,8 @@ package body et_kicad_to_native is
 														device	=> element (component_cursor_kicad).generic_name),
 
 								value				=> element (component_cursor_kicad).value,
-								partcode			=> element (component_cursor_kicad).partcode,
-								purpose				=> et_schematic.to_purpose (et_schematic.purpose_default),
+								partcode			=> et_libraries.to_partcode (et_libraries.partcode_default), -- not provided by kicad
+								purpose				=> et_schematic.to_purpose (et_schematic.purpose_default), -- not provided by kicad
 								bom					=> YES, -- in kicad there is no bom status -> assume part is mounted
 								variant				=> element (component_cursor_kicad).variant,
 
@@ -3152,7 +3152,9 @@ package body et_kicad_to_native is
 									author			=> element (component_cursor).author,
 									units_internal	=> <>, -- internal units will come later
 									units_external	=> <>, -- kicad components do not have external symbols
-									partcode		=> element (component_cursor).partcode,
+
+									-- kicad does not provide a partcode. so we assign an empty partcode:
+									partcode		=> et_libraries.to_partcode (""), 
 									variants		=> element (component_cursor).variants
 
 									-- NOTE: KiCad package_filter and datasheet are discarded.

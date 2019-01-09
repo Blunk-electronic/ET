@@ -103,7 +103,7 @@ package et_schematic is
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_- "); 
 	component_purpose_length_max : constant positive := 100;
 	package type_component_purpose is new generic_bounded_length (component_purpose_length_max);
-	purpose_default : constant string (1..9) := "?PURPOSE?";
+	purpose_default : constant string := "dummy";
 
 	procedure validate_purpose (purpose : in string);
 	-- Raises alarm if purpose is empty, purpose_default or nonsense.

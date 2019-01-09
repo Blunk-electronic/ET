@@ -544,6 +544,7 @@ package et_libraries is
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ('_'); 
 	component_partcode_length_max : constant positive := 100;
 	package type_component_partcode is new generic_bounded_length (component_partcode_length_max);
+	partcode_default : constant string := "dummy";
 	
 	function to_string (partcode : in type_component_partcode.bounded_string) return string;
 	function to_partcode (partcode : in string) return type_component_partcode.bounded_string;

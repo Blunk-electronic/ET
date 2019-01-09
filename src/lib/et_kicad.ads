@@ -179,7 +179,6 @@ package et_kicad is
 			when et_libraries.sch_pcb =>
 				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.packge); -- like "SOT23"
 				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.datasheet); -- might be useful for some special components
-				partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.partcode); -- like "R_PAC_S_0805_VAL_"
 		end case;
 		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
 		-- basic coordinates (x/y). Via the unit position the sheet and module
@@ -297,7 +296,6 @@ package et_kicad is
 			when et_libraries.SCH_PCB =>
 				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.PACKGE);
 				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.DATASHEET);
-				partcode	: et_libraries.type_text_placeholder (meaning => et_libraries.PARTCODE);
 			when others => null;
 		end case;
 	end record;
@@ -367,7 +365,6 @@ package et_kicad is
 			when et_libraries.SCH_PCB => 
 				package_filter	: type_package_filter.set := type_package_filter.empty_set;
 				datasheet		: type_component_datasheet.bounded_string;
-				partcode		: et_libraries.type_component_partcode.bounded_string;
 				variants		: et_libraries.type_component_variants.map;
 				
 			when others => null; -- CS
@@ -446,7 +443,6 @@ package et_kicad is
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
 			when et_libraries.sch_pcb => 
-				partcode			: et_libraries.type_component_partcode.bounded_string;
 				datasheet			: type_component_datasheet.bounded_string;
 				variant				: et_libraries.type_component_variant_name.bounded_string; -- D, N
 
@@ -789,7 +785,7 @@ package et_kicad is
 	component_field_identifier : constant string (1..1) := "F";
 
 	-- We limit the number of fields in the component library to this constant.
-	library_component_field_count_max : constant positive := 7;
+	library_component_field_count_max : constant positive := 6;
 
 
 	type type_component_field_id is range 0..library_component_field_count_max;
@@ -800,7 +796,6 @@ package et_kicad is
 	component_field_commissioned	: constant type_component_field_id := 4;
 	component_field_updated			: constant type_component_field_id := 5;
 	component_field_author			: constant type_component_field_id := 6;
-	component_field_partcode		: constant type_component_field_id := 7;
 
 
 -- GRID AND COORDINATES
