@@ -996,7 +996,6 @@ package et_libraries is
 			when sch_pcb => 
 				purpose			: type_component_purpose.bounded_string;
 				partcode		: type_component_partcode.bounded_string;
-				bom				: type_bom;
 				variants		: type_component_variants.map;
 				
 			when others => null; -- CS

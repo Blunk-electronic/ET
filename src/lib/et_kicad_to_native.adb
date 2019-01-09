@@ -3159,7 +3159,6 @@ package body et_kicad_to_native is
 									units_external	=> <>, -- kicad components do not have external symbols
 									purpose			=> element (component_cursor).purpose,
 									partcode		=> element (component_cursor).partcode,
-									bom				=> element (component_cursor).bom,
 									variants		=> element (component_cursor).variants
 
 									-- NOTE: KiCad package_filter and datasheet are discarded.

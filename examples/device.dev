@@ -10,7 +10,6 @@ updated 2011-01-21T23:04:22
 author MBL
 purpose ?PURPOSE?
 partcode IC_PAC_S_SO14_VAL_
-bom yes
 [VARIANTS BEGIN]
 	[VARIANT BEGIN]
 		name S_SO14

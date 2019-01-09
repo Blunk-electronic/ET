@@ -2101,7 +2101,6 @@ package body et_project is
 			when SCH_PCB =>
 				write (keyword => keyword_purpose , space => true, parameters => to_string (device.purpose));
 				write (keyword => keyword_partcode, space => true, parameters => to_string (device.partcode));
-				write (keyword => keyword_bom     , parameters => to_string (device.bom));
 
 				section_mark (section_variants, HEADER);
 
@@ -2211,6 +2210,12 @@ package body et_project is
 		begin
 			return to_lower (type_section_name_device'image (section) (5..len));
 		end to_string;
+
+		appearance : type_component_appearance;
+		prefix : type_component_prefix.bounded_string;
+		value : type_component_value.bounded_string;
+		purpose : type_component_purpose.bounded_string;
+		partcode : type_component_partcode.bounded_string;
 		
 		procedure process_line is 
 		-- CS: detect if section name is type_section_name_module
