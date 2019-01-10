@@ -174,16 +174,16 @@ package et_schematic is
 
 	-- This is a component as it appears in the schematic.
 	type type_device (appearance : type_appearance_schematic) is record
-		model			: et_libraries.type_device_library_name.bounded_string; -- ../libraries/transistor/pnp.dev
-		value			: et_libraries.type_component_value.bounded_string; -- 470R
-		units			: type_units.map; -- PWR, A, B, ...
+		model	: et_libraries.type_device_library_name.bounded_string; -- ../libraries/transistor/pnp.dev
+		units	: type_units.map; -- PWR, A, B, ...
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
 			when et_libraries.sch_pcb => 
-				partcode			: et_libraries.type_component_partcode.bounded_string;
-				purpose				: type_component_purpose.bounded_string;
-				bom					: type_bom; -- whether mounted or not
-				variant				: et_libraries.type_component_variant_name.bounded_string; -- D, N
+				value		: et_libraries.type_component_value.bounded_string; -- 470R
+				partcode	: et_libraries.type_component_partcode.bounded_string;
+				purpose		: type_component_purpose.bounded_string;
+				bom			: type_bom; -- whether mounted or not
+				variant		: et_libraries.type_component_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders reference, value, purpose.

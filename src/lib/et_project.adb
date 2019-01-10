@@ -1421,11 +1421,11 @@ package body et_project is
 				section_mark (section_device, HEADER);
 				write (keyword => keyword_name, parameters => et_libraries.to_string (key (device_cursor)), space => true);
 				write (keyword => keyword_appearance, parameters => et_libraries.to_string (element (device_cursor).appearance));
-				write (keyword => keyword_value, parameters => et_libraries.to_string (element (device_cursor).value), space => true);
 				write (keyword => keyword_model, parameters => et_libraries.to_string (element (device_cursor).model), space => true);
 
 				case element (device_cursor).appearance is
 					when et_libraries.SCH_PCB =>
+						write (keyword => keyword_value   , parameters => et_libraries.to_string (element (device_cursor).value), space => true);
 						write (keyword => keyword_variant , parameters => et_libraries.to_string (element (device_cursor).variant), space => true);
 						write (keyword => keyword_partcode, parameters => et_libraries.to_string (element (device_cursor).partcode), space => true);
 						write (keyword => keyword_purpose , parameters => et_schematic.to_string (element (device_cursor).purpose), space => true, wrap => true);

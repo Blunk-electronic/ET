@@ -2542,8 +2542,9 @@ package body et_kicad_to_native is
 								model				=> concatenate_lib_name_and_generic_name (
 														library	=> element (component_cursor_kicad).library_name,
 														device	=> element (component_cursor_kicad).generic_name),
-																								 
-								value				=> element (component_cursor_kicad).value,
+
+								-- NOTE: The value of virtual components (like power symbols) is discarded here.
+								
 								others 				=> <>), -- unit list is empty at this time
 
 							inserted	=> component_inserted); -- should always be true
