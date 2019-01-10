@@ -3985,16 +3985,16 @@ package body et_project is
 					begin
 						log ("device " & et_libraries.to_string (device_name), log_threshold + 2);
 
-						-- assign temporarily variables for model and value:
+						-- assign temporarily variable for model:
 						device.model := device_model;
-						device.value := device_value;
 
 						-- assign appearance specific temporarily variables
 						if device.appearance = et_libraries.SCH_PCB then
-							device.partcode := device_partcode;
-							device.purpose := device_purpose;
-							device.bom := device_bom;
-							device.variant := device_variant;
+							device.value	:= device_value;
+							device.partcode	:= device_partcode;
+							device.purpose	:= device_purpose;
+							device.bom		:= device_bom;
+							device.variant	:= device_variant;
 
 							-- CS: warn operator if provided but ignored due to the fact that device is virtual
 						end if;
