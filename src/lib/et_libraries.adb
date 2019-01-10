@@ -768,6 +768,10 @@ package body et_libraries is
 		return type_component_prefix.to_string (prefix); -- leading space not allowd !
 	end to_string;
 
+	function to_prefix (prefix : in string) return type_component_prefix.bounded_string is begin
+		return type_component_prefix.to_bounded_string (prefix);
+	end to_prefix;
+
 	procedure check_prefix_length (prefix : in string) is
 	-- Tests if the given prefix is longer than allowed.
 		use et_string_processing;

@@ -2008,6 +2008,35 @@ package body et_project is
 		section_mark (section_ports, FOOTER);
 	end write_symbol;
 
+
+	procedure expect_field_count (
+		line			: in et_string_processing.type_fields_of_line;	-- the list of fields of the line
+		count_expected	: in count_type;			-- the min. number of fields to expect
+		warn			: in boolean := true) 		-- warn if too many fields
+		is 
+		use et_string_processing;
+		count_found : count_type := field_count (line);
+
+		function f (line : in type_fields_of_line; position : in positive) return string 
+			renames et_string_processing.field;
+		
+		f1 : string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
+	begin
+		if count_found = count_expected then null; -- fine, field count as expected
+		
+		elsif count_found < count_expected then -- less fields than expected
+			log_indentation_reset;
+			log (message_error & "missing parameter for '" & f1 & "' !", console => true);
+			raise constraint_error;
+			
+		elsif count_found > count_expected then -- more fields than expeced
+			if warn then
+				log (message_warning & affected_line (line) & "excessive parameters after '" 
+						& f (line, positive (count_expected)) & "' ignored !");
+			end if;
+		end if;
+		
+	end expect_field_count;
 	
 	procedure save_device (
 	-- Saves the given device model in a file specified by name.
@@ -2158,7 +2187,13 @@ package body et_project is
 		
 	end save_device;
 
-
+	procedure invalid_keyword (word : in string) is 
+		use et_string_processing;
+	begin
+		log_indentation_reset;
+		log (message_error & "invalid keyword '" & word & "' !", console => true);
+		raise constraint_error;
+	end;
 	
 	function write_top_level_reached return string is begin return "top level reached"; end;
 
@@ -2208,11 +2243,10 @@ package body et_project is
 			return to_lower (type_section_name_device'image (section) (5..len));
 		end to_string;
 
-		appearance : type_component_appearance;
-		prefix : type_component_prefix.bounded_string;
-		value : type_component_value.bounded_string;
-		purpose : et_schematic.type_component_purpose.bounded_string;
-		partcode : type_component_partcode.bounded_string;
+		prefix		: type_component_prefix.bounded_string;
+		value		: type_component_value.bounded_string;
+		appearance	: type_component_appearance;
+		partcode	: type_component_partcode.bounded_string;
 		
 		procedure process_line is 
 		-- CS: detect if section name is type_section_name_module
@@ -2446,6 +2480,33 @@ package body et_project is
 		
 				case stack.current is
 
+					when SEC_INIT =>
+						declare
+							kw : string := f (line, 1);
+						begin
+							-- CS: In the following: set a corresponding parameter-found-flag
+							if kw = keyword_prefix then
+								expect_field_count (line, 2);
+								prefix := et_libraries.to_prefix (f (line,2));
+
+							elsif kw = keyword_value then
+								expect_field_count (line, 2);
+								value := et_libraries.to_value (f (line,2));
+
+							elsif kw = keyword_appearance then
+								expect_field_count (line, 2);
+								appearance := et_libraries.to_appearance (f (line,2));
+
+							elsif kw = keyword_partcode then
+								expect_field_count (line, 2);
+								partcode := et_libraries.to_partcode (f (line,2));
+
+							else
+								invalid_keyword (kw);
+							end if;
+						end;
+
+						
 					when SEC_VARIANTS | SEC_UNITS_INTERNAL | SEC_UNITS_EXTERNAL => 
 						case stack.parent is
 							when SEC_INIT => null;
@@ -2486,51 +2547,6 @@ package body et_project is
 					when SEC_LINE =>
 						case stack.parent is
 							when SEC_SHAPES => NULL;
--- 								declare
--- 									kw : string := f (line, 1);
--- 								begin
--- 									if kw = keyword_name then
--- 										expect_field_count (line, 2);
--- 										net_class_name := et_pcb.to_net_class_name (f (line,2));
--- 
--- 									-- CS: In the following: set a corresponding parameter-found-flag
--- 									elsif kw = keyword_description then
--- 										expect_field_count (line, 2);
--- 										net_class.description := et_pcb.to_net_class_description (f (line,2));
--- 										
--- 									elsif kw = keyword_clearance then
--- 										expect_field_count (line, 2);
--- 										net_class.clearance := et_pcb_coordinates.to_distance (f (line,2));
--- 										et_pcb.validate_track_clearance (net_class.clearance);
--- 										
--- 									elsif kw = keyword_track_width_min then
--- 										expect_field_count (line, 2);
--- 										net_class.track_width_min := et_pcb_coordinates.to_distance (f (line,2));
--- 										et_pcb.validate_track_width (net_class.track_width_min);
--- 										
--- 									elsif kw = keyword_via_drill_min then
--- 										expect_field_count (line, 2);
--- 										net_class.via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
--- 										et_pcb.validate_drill_size (net_class.via_drill_min);
--- 										
--- 									elsif kw = keyword_via_restring_min then
--- 										expect_field_count (line, 2);
--- 										net_class.via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
--- 										et_pcb.validate_restring_width (net_class.via_restring_min);
--- 										
--- 									elsif kw = keyword_micro_via_drill_min then
--- 										expect_field_count (line, 2);
--- 										net_class.micro_via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
--- 										et_pcb.validate_drill_size (net_class.micro_via_drill_min);
--- 										
--- 									elsif kw = keyword_micro_via_restring_min then
--- 										expect_field_count (line, 2);
--- 										net_class.micro_via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
--- 										et_pcb.validate_restring_width (net_class.micro_via_restring_min);
--- 									else
--- 										invalid_keyword (kw);
--- 									end if;
--- 								end;
 
 							when others => invalid_section;
 						end case;
@@ -2595,7 +2611,6 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 						
-					when SEC_INIT => null; -- CS: should never happen
 				end case;
 			end if;
 
@@ -3213,38 +3228,6 @@ package body et_project is
 		-- We need a backup of the current working directory. When this procedure finishes,
 		-- the working directory must restored.
 		current_working_directory : string := current_directory;
-
-		procedure invalid_keyword (word : in string) is begin
-			log_indentation_reset;
-			log (message_error & "invalid keyword '" & word & "' !", console => true);
-			raise constraint_error;
-		end;
-
-		procedure expect_field_count (
-			line			: in type_fields_of_line;	-- the list of fields of the line
-			count_expected	: in count_type;			-- the min. number of fields to expect
-			warn			: in boolean := true) 		-- warn if too many fields
-			is 
-			count_found : count_type := field_count (line);
-			f1 : string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
-		begin
-			if count_found = count_expected then null; -- fine, field count as expected
-			
-			elsif count_found < count_expected then -- less fields than expected
-				log_indentation_reset;
-				log (message_error & "missing parameter for '" & f1 & "' !", console => true);
-				raise constraint_error;
-				
-			elsif count_found > count_expected then -- more fields than expeced
-				if warn then
-					log (message_warning & affected_line (line) & "excessive parameters after '" 
-						 & f (line, positive (count_expected)) & "' ignored !");
-				end if;
-			end if;
-			
-		end expect_field_count;
-
-
 
 	-- MODULES
 		

@@ -398,7 +398,7 @@ package et_libraries is
 	use type_component_prefix;
 
 	function to_string (prefix : in type_component_prefix.bounded_string) return string;
-	-- returns the given prefix as string
+	function to_prefix (prefix : in string) return type_component_prefix.bounded_string;
 
 	procedure check_prefix_length (prefix : in string);
 	-- Tests if the given prefix is longer than allowed.
