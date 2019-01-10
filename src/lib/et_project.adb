@@ -2090,14 +2090,14 @@ package body et_project is
 
 		reset_tab_depth;
 
-		-- prefix, value, appearance ...
+		-- prefix, appearance ...
 		write (keyword => keyword_prefix, space => true, parameters => to_string (device.prefix));
-		write (keyword => keyword_value, space => true, parameters => to_string (device.value));
 		write (keyword => keyword_appearance, parameters => to_string (device.appearance));
 
 		-- package variants
 		case device.appearance is
 			when SCH_PCB =>
+				write (keyword => keyword_value, space => true, parameters => to_string (device.value));
 				write (keyword => keyword_partcode, space => true, parameters => to_string (device.partcode));
 
 				section_mark (section_variants, HEADER);

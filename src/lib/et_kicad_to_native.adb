@@ -3130,10 +3130,9 @@ package body et_kicad_to_native is
 								new_item	=> (
 									appearance		=> et_libraries.SCH,
 									prefix 			=> element (component_cursor).prefix,
-									value			=> element (component_cursor).value,
 									units_internal	=> <>, -- internal units will come later
 									units_external	=> <> -- kicad components do not have external symbols
-
+									-- NOTE: Kicad value of power symbols is discarded.
 									-- NOTE: KiCad power_flag is discarded.
 								));
 

@@ -912,7 +912,6 @@ package et_libraries is
 -- DEVICES
 	type type_device (appearance : type_component_appearance) is record
 		prefix			: type_component_prefix.bounded_string; -- R, C, IC, ...
-		value			: type_component_value.bounded_string; -- 74LS00
 		units_internal	: type_units_internal.map := type_units_internal.empty_map;
 		units_external	: type_units_external.map := type_units_external.empty_map;
 
@@ -928,8 +927,9 @@ package et_libraries is
 			-- If a component appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
 			when sch_pcb => 
-				partcode		: type_component_partcode.bounded_string;
-				variants		: type_component_variants.map;
+				value		: type_component_value.bounded_string; -- 74LS00
+				partcode	: type_component_partcode.bounded_string;
+				variants	: type_component_variants.map;
 				
 			when others => null; -- CS
 		end case;
