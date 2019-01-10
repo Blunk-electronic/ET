@@ -1357,18 +1357,17 @@ package body et_project is
 					write (keyword => keyword_rotation, parameters => rotation (element (unit_cursor).rotation)); -- rotation 180.0
 					write (keyword => keyword_mirrored, parameters => to_string (element (unit_cursor).mirror, verbose => false)); -- x_axis, y_axis, none
 
-					section_mark (section_placeholders, HEADER);
-
-					write_placeholder (element (unit_cursor).reference);
-					write_placeholder (element (unit_cursor).value);
-
 					if element (unit_cursor).appearance = et_libraries.SCH_PCB then
+						section_mark (section_placeholders, HEADER);
+						
+						write_placeholder (element (unit_cursor).reference);
+						write_placeholder (element (unit_cursor).value);
 						write_placeholder (element (unit_cursor).purpose);
 						--write_placeholder (element (unit_cursor).partcode);
 						--write_placeholder (element (unit_cursor).bom);
-					end if;
 
-					section_mark (section_placeholders, FOOTER);
+						section_mark (section_placeholders, FOOTER);
+					end if;
 					
 					section_mark (section_unit, FOOTER);
 					next (unit_cursor);
@@ -3911,11 +3910,6 @@ package body et_project is
 						--log ("unit " & to_string (device_unit_name), log_threshold + 2);
 						-- Depending on the appearance of the device, a virtual or real unit
 						-- is inserted in the unit list of the device.
-
-						-- The placeholders for reference and value have been built and can now
-						-- be assigned to the unit:
-						device_unit.reference := unit_placeholder_reference;
-						device_unit.value := unit_placeholder_value;
 						
 						case device_appearance is
 							when SCH =>
@@ -3931,9 +3925,11 @@ package body et_project is
 									key			=> device_unit_name,
 									new_item	=> (device_unit with
 										appearance	=> et_libraries.SCH_PCB,
-												
-										-- The placeholder for purpose has been built and can now
-										-- be assigned to the unit:
+
+										-- The placeholders for reference, value and purpose have
+										-- been built and can now be assigned to the unit:
+										reference	=> unit_placeholder_reference,
+										value 		=> unit_placeholder_value,
 										purpose		=> unit_placeholder_purpose));
 						end case;
 

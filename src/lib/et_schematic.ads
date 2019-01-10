@@ -132,13 +132,10 @@ package et_schematic is
 
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a device.
-	-- A unit has placeholders for text like reference (like IC303), value (like 7400), ...
 	type type_unit_base is tagged record
-		position		: et_coordinates.type_coordinates;
-		rotation		: et_coordinates.type_angle;
-		mirror			: type_mirror;
-		reference		: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
-		value			: et_libraries.type_text_placeholder (meaning => et_libraries.value);
+		position	: et_coordinates.type_coordinates;
+		rotation	: et_coordinates.type_angle;
+		mirror		: type_mirror;
 	end record;
 
 	-- Some placeholders of a unit are available when the component appears in both schematic and layout:	
@@ -146,7 +143,9 @@ package et_schematic is
 		case appearance is
 			when et_libraries.SCH => null; -- CS
 			when et_libraries.SCH_PCB =>
-				purpose : et_libraries.type_text_placeholder (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
+				reference	: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
+				value		: et_libraries.type_text_placeholder (meaning => et_libraries.value);
+				purpose		: et_libraries.type_text_placeholder (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
 		end case;
 		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
 		-- basic coordinates (x/y). Via the unit position the sheet number can be obtained.
@@ -176,6 +175,7 @@ package et_schematic is
 	type type_device (appearance : type_appearance_schematic) is record
 		model	: et_libraries.type_device_library_name.bounded_string; -- ../libraries/transistor/pnp.dev
 		units	: type_units.map; -- PWR, A, B, ...
+		
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
 			when et_libraries.sch_pcb => 
