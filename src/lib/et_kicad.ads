@@ -282,6 +282,10 @@ package et_kicad is
 	type type_symbol (appearance : et_libraries.type_component_appearance) is new et_libraries.type_symbol_base with record
 		ports : type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol
 
+		-- Placeholders for component wide texts. To be filled with content when a symbol is placed in the schematic:
+		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.REFERENCE);
+		value		: et_libraries.type_text_placeholder (meaning => et_libraries.VALUE);
+		
 		-- Symbols have text placeholders according to the appearance of the component:		
 		case appearance is
 			when et_libraries.SCH_PCB =>

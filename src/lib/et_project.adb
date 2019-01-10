@@ -1928,31 +1928,33 @@ package body et_project is
 
 		procedure write_placeholders is
 		begin
-			section_mark (section_placeholders, HEADER);
-
-			section_mark (section_placeholder, HEADER);
-			write (keyword => keyword_meaning , parameters => to_string (symbol.reference.meaning));
-			write (keyword => keyword_position, parameters => position (symbol.reference.position));
-			write_text_properties (symbol.reference);
-			section_mark (section_placeholder, FOOTER);
-
-			section_mark (section_placeholder, HEADER);
-			write (keyword => keyword_meaning , parameters => to_string (symbol.value.meaning));
-			write (keyword => keyword_position, parameters => position (symbol.value.position));
-			write_text_properties (symbol.value);
-			section_mark (section_placeholder, FOOTER);
-
 			case symbol.appearance is
 				when et_libraries.SCH_PCB =>
+
+					section_mark (section_placeholders, HEADER);
+					
+					section_mark (section_placeholder, HEADER);
+					write (keyword => keyword_meaning , parameters => to_string (symbol.reference.meaning));
+					write (keyword => keyword_position, parameters => position (symbol.reference.position));
+					write_text_properties (symbol.reference);
+					section_mark (section_placeholder, FOOTER);
+
+					section_mark (section_placeholder, HEADER);
+					write (keyword => keyword_meaning , parameters => to_string (symbol.value.meaning));
+					write (keyword => keyword_position, parameters => position (symbol.value.position));
+					write_text_properties (symbol.value);
+					section_mark (section_placeholder, FOOTER);
+
 					section_mark (section_placeholder, HEADER);
 					write (keyword => keyword_meaning , parameters => to_string (symbol.purpose.meaning));
 					write (keyword => keyword_position, parameters => position (symbol.purpose.position));
 					write_text_properties (symbol.purpose);
 					section_mark (section_placeholder, FOOTER);
+
+					section_mark (section_placeholders, FOOTER);
+					
 				when others => null;
 			end case;
-			
-			section_mark (section_placeholders, FOOTER);
 		end write_placeholders;
 
 		procedure write_port (cursor : in type_ports.cursor) is begin

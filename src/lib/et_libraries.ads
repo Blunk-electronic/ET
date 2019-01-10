@@ -723,18 +723,17 @@ package et_libraries is
 	type type_symbol_base is tagged record		
 		shapes		: type_shapes; -- the collection of shapes
 		texts		: type_symbol_texts.list; -- the collection of texts (meaning misc)
-		
-		-- Placeholders for component wide texts. To be filled with content when 
-		-- a symbol is placed in the schematic:
-		reference	: type_text_placeholder (meaning => et_libraries.REFERENCE);
-		value		: type_text_placeholder (meaning => et_libraries.VALUE);
 	end record;
 
 	type type_symbol (appearance : type_component_appearance) is new type_symbol_base with record
 		ports : type_ports.list;
 		case appearance is
 			when SCH_PCB =>
-				purpose : type_text_placeholder (meaning => et_libraries.PURPOSE);
+				-- Placeholders for component wide texts. To be filled with content when 
+				-- a symbol is placed in the schematic:
+				reference	: type_text_placeholder (meaning => et_libraries.REFERENCE);
+				value		: type_text_placeholder (meaning => et_libraries.VALUE);
+				purpose 	: type_text_placeholder (meaning => et_libraries.PURPOSE);
 			when SCH => null;				
 			when others => null; -- CS
 		end case;

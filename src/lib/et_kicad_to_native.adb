@@ -3033,10 +3033,12 @@ package body et_kicad_to_native is
 														with 
 															appearance	=> et_libraries.SCH_PCB,
 															ports		=> et_libraries.type_ports.empty_list, -- ports will come later
+															reference	=> element (unit_cursor_kicad).symbol.reference, -- placeholder
+															value		=> element (unit_cursor_kicad).symbol.value, -- placeholder
 															purpose		=> ( -- we must invent a placeholder for purpose since kicad does not know such a thing
 																	meaning	=> et_libraries.PURPOSE,
 																	others 	=> <>))
-															-- NOTE: Other placeholders discarded here.
+															-- NOTE: Other placeholders (fields in kicad) discarded here.
 										));
 
 							when et_libraries.SCH => -- virtual
