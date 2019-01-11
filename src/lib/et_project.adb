@@ -2214,6 +2214,43 @@ package body et_project is
 		log (message_error & "invalid section name !", console => true);
 		raise constraint_error;
 	end;
+
+	function to_position (
+		line : in et_string_processing.type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
+		from : in positive)
+		return et_coordinates.type_2d_point is
+		use et_string_processing;
+		use et_coordinates;
+
+		function f (line : in type_fields_of_line; position : in positive) return string 
+			renames et_string_processing.field;
+		
+		point : type_2d_point; -- to be returned
+
+		place : positive := from; -- the field being read from given line
+
+		-- CS: flags to detect missing x or y
+	begin
+		while place <= positive (field_count (line)) loop
+
+			-- We expect after the x the corresponding value for x
+			if f (line, place) = keyword_pos_x then
+				set_x (point, to_distance (f (line, place + 1)));
+
+			-- We expect after the y the corresponding value for y
+			elsif f (line, place) = keyword_pos_y then
+				set_y (point, to_distance (f (line, place + 1)));
+
+			else
+				invalid_keyword (f (line, place));
+			end if;
+				
+			place := place + 2;
+		end loop;
+		
+		return point;
+	end to_position;
+
 	
 	procedure read_device_file (
 	-- Opens the device and stores it in container et_libraries.devices.
@@ -2336,6 +2373,11 @@ package body et_project is
 			-- clean up for next variant
 			variant := (others => <>);
 		end insert_variant;
+
+		unit_name			: type_unit_name.bounded_string; -- IO_BANK_2
+		unit_position		: type_2d_point := zero; -- the position of the unit inside the device editor
+		unit_swap_level		: type_unit_swap_level := unit_swap_level_default;
+		unit_add_level		: type_unit_add_level := unit_add_level_default;
 		
 		procedure process_line is 
 		-- CS: detect if section name is type_section_name_module
@@ -2566,7 +2608,7 @@ package body et_project is
 
 					when SEC_VARIANT =>
 						case stack.parent is
-							when SEC_VARIANTS => null; -- nothing to do
+							when SEC_VARIANTS =>
 								declare
 									kw : string := f (line, 1);
 								begin
@@ -2600,7 +2642,35 @@ package body et_project is
 
 					when SEC_UNIT =>
 						case stack.parent is
-							when SEC_UNITS_INTERNAL => null; -- nothing to do
+							when SEC_UNITS_INTERNAL =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_name then
+										expect_field_count (line, 2);
+										unit_name := et_libraries.to_unit_name (f (line,2));
+
+									elsif kw = keyword_position then
+										expect_field_count (line, 2);
+
+										-- extract unit position starting at field 2
+										-- NOTE: this is the position of the unit inside the device editor !
+										unit_position := to_position (line, 2);
+
+									elsif kw = keyword_swap_level then
+										expect_field_count (line, 2);
+										unit_swap_level := to_swap_level (f (line, 2));
+
+									elsif kw = keyword_add_level then
+										expect_field_count (line, 2);
+										unit_add_level := to_add_level (f (line, 2));
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+								
 							when SEC_UNITS_EXTERNAL => null; -- nothing to do								
 							when others => invalid_section;
 						end case;
@@ -2741,6 +2811,9 @@ package body et_project is
 		set_input (previous_input);
 
 		close (file_handle);
+
+		-- CS insert device in container "devcies"
+		-- mind temporarily variables: prefix, value, appearance, partcode, variants, units internal/external
 
 		exception when event: others =>
 			if is_open (file_handle) then 
@@ -3323,38 +3396,6 @@ package body et_project is
 			package stack is new stack_lifo (
 				item	=> type_section_name_module,
 				max 	=> max_section_depth);
-
-			function to_position ( -- CS combine with next function to_position using the tag test ?
-				line : in type_fields_of_line; -- "start x 3 y 4" or "position x 44.5 y 53.5"
-				from : in positive)
-				return et_coordinates.type_2d_point is
-				use et_coordinates;
-				
-				point : type_2d_point; -- to be returned
-
-				place : positive := from; -- the field being read from given line
-
-				-- CS: flags to detect missing x or y
-			begin
-				while place <= positive (field_count (line)) loop
-
-					-- We expect after the x the corresponding value for x
-					if f (line, place) = keyword_pos_x then
-						set_x (point, to_distance (f (line, place + 1)));
-
-					-- We expect after the y the corresponding value for y
-					elsif f (line, place) = keyword_pos_y then
-						set_y (point, to_distance (f (line, place + 1)));
-
-					else
-						invalid_keyword (f (line, place));
-					end if;
-						
-					place := place + 2;
-				end loop;
-				
-				return point;
-			end to_position;
 
 			function to_position (
 				line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"

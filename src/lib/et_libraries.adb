@@ -853,17 +853,22 @@ package body et_libraries is
 		return type_unit_name.to_bounded_string (unit_name);
 	end to_unit_name;
 
-	function to_string (swap_level : in type_unit_swap_level) return string is
-	begin
+	function to_string (swap_level : in type_unit_swap_level) return string is begin
 		return type_unit_swap_level'image (swap_level);
 	end to_string;
+
+	function to_swap_level (swap_level : in string) return type_unit_swap_level is begin
+		return type_unit_swap_level'value (swap_level);
+	end to_swap_level;
 	
-	function to_string (add_level : in type_unit_add_level) return string is
-	-- Returns the given add level as string.
-	begin
+	function to_string (add_level : in type_unit_add_level) return string is begin
 		return latin_1.space & to_lower (type_unit_add_level'image (add_level));
 	end to_string;
 
+	function to_add_level (add_level : in string) return type_unit_add_level is begin
+		return type_unit_add_level'value (add_level);
+	end to_add_level;
+	
 	function compose_partcode_root (
 	-- The root of a partcode in general is something like R_PAC_S_0805_VAL_ .
 	-- If optionally the value is provided, it gets appended which would result

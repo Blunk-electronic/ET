@@ -758,6 +758,7 @@ package et_libraries is
 	unit_swap_level_default : constant := type_unit_swap_level'first;
 
 	function to_string (swap_level : in type_unit_swap_level) return string;
+	function to_swap_level (swap_level : in string) return type_unit_swap_level;	
 
 	type type_unit_add_level is (
 		NEXT, 		-- should be default. for things like logic gates, multi-OP-Amps, ...
@@ -766,14 +767,16 @@ package et_libraries is
 		ALWAYS,		-- 
 		MUST);		-- for things like relay coils
 
+	unit_add_level_default : constant type_unit_add_level := type_unit_add_level'first;
+	
 	function to_string (add_level : in type_unit_add_level) return string;
-	-- Returns the given add level as string.
+	function to_add_level (add_level : in string) return type_unit_add_level;
 	
 	-- An internal unit is a symbol with a swap level.
 	-- An internal unit is owned by the particular component exclusively.
 	type type_unit_internal (appearance : type_component_appearance) is record
 		symbol		: type_symbol (appearance);
-		coordinates	: type_2d_point; -- CS: rename to position
+		coordinates	: type_2d_point; -- CS: rename to position -- the position of the unit inside the device editor
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
 	end record;
