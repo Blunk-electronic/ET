@@ -352,6 +352,7 @@ package et_project is
 	keyword_updated					: constant string := "updated";
 	keyword_author					: constant string := "author";
 	keyword_file					: constant string := "file";
+	keyword_package_model			: constant string := "package_model";
 	keyword_terminal				: constant string := "terminal";
 	keyword_unit					: constant string := "unit";		
 	keyword_swap_level				: constant string := "swap_level";

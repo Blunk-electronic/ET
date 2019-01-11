@@ -11,20 +11,20 @@ partcode IC_PAC_S_SO14_VAL_
 		name S_SO14
 		file libraries/packages/__#__#lbr#bel_ic_pretty#S_SO14.pac
 		[TERMINAL_PORT_MAP BEGIN]
-			terminal 1 unit 1 I1A
-			terminal 10 unit 3 I3A
-			terminal 11 unit 4 O1
-			terminal 12 unit 4 I1A
-			terminal 13 unit 4 I4A
-			terminal 14 unit 5 VCC
-			terminal 2 unit 1 I1B
-			terminal 3 unit 1 O1
-			terminal 4 unit 2 I1A
-			terminal 5 unit 2 I2B
-			terminal 6 unit 2 O1
-			terminal 7 unit 5 GND
-			terminal 8 unit 3 O1
-			terminal 9 unit 3 I1A
+			terminal 1 unit 1 port I1A
+			terminal 10 unit 3 port I3A
+			terminal 11 unit 4 port O1
+			terminal 12 unit 4 port I1A
+			terminal 13 unit 4 port I4A
+			terminal 14 unit 5 port VCC
+			terminal 2 unit 1 port I1B
+			terminal 3 unit 1 port O1
+			terminal 4 unit 2 port I1A
+			terminal 5 unit 2 port I2B
+			terminal 6 unit 2 port O1
+			terminal 7 unit 5 port GND
+			terminal 8 unit 3 port O1
+			terminal 9 unit 3 port I1A
 		[TERMINAL_PORT_MAP END]
 	[VARIANT END]
 [VARIANTS END]

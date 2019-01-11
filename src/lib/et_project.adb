@@ -2059,12 +2059,12 @@ package body et_project is
 				write (keyword => keyword_terminal, parameters => 
 					to_string (key (terminal_cursor)) & space 		-- terminal name like G14 or 16
 					& keyword_unit & space & to_string (element (terminal_cursor).unit) -- unit name like A,B or GPIO_BANK_1
-					& space & to_string (element (terminal_cursor).name) 	-- port name like CE, WE, GND
+					& space & keyword_port & space & to_string (element (terminal_cursor).name) 	-- port name like CE, WE, GND
 					);
 			end write_terminal;
 
 		begin -- write_variant
-			write (keyword => keyword_file, space => true, parameters => to_string (variant.packge)); -- CS path correct ??
+			write (keyword => keyword_package_model, space => true, parameters => to_string (variant.packge)); -- CS path correct ??
 			section_mark (section_terminal_port_map, HEADER);
 			iterate (variant.terminal_port_map, write_terminal'access);
 			section_mark (section_terminal_port_map, FOOTER);						
@@ -2242,11 +2242,100 @@ package body et_project is
 		begin
 			return to_lower (type_section_name_device'image (section) (5..len));
 		end to_string;
+		
+		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
+		
+		prefix				: type_component_prefix.bounded_string; -- T, IC
+		value				: type_component_value.bounded_string; -- BC548
+		appearance			: type_component_appearance; -- sch, sch_pcb
+		partcode			: type_component_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
+		variant				: type_component_variant;
+		variant_name		: type_component_variant_name.bounded_string; -- N, D
+		variants			: type_component_variants.map;
+		terminal_port_map	: type_terminal_port_map.map;
 
-		prefix		: type_component_prefix.bounded_string;
-		value		: type_component_value.bounded_string;
-		appearance	: type_component_appearance;
-		partcode	: type_component_partcode.bounded_string;
+		procedure insert_terminal (line : in type_fields_of_line) is -- terminal 14 unit 5 VCC
+			use et_libraries;
+			use type_terminal_port_map;
+			inserted	: boolean;
+			position	: type_terminal_port_map.cursor;
+
+			terminal	: type_terminal_name.bounded_string; -- H5, 14
+			unit		: type_unit_name.bounded_string; -- PWR, IO_BANK_2
+			port		: type_port_name.bounded_string; -- VCC
+
+			place : positive := 1; -- the field being read from given line
+
+			-- CS: detect missing parameters
+			-- CS: warn about wrong misplaced keywords
+		begin
+			while place <= positive (field_count (line)) loop
+			
+				-- We expect the terminal name after the keyword "terminal"
+				if f (line, place) = keyword_terminal then
+					terminal := to_terminal_name (f (line, place + 1)); -- 14
+
+				-- After the keyowrd "unit" must come the unit name:
+				elsif f (line, place) = keyword_unit then 
+					unit := to_unit_name (f (line, place + 1)); -- 5
+
+				-- After the keyword "port" must come the port name
+				elsif f (line, place) = keyword_port then 
+					port := to_port_name (f (line, place + 1)); -- VCC
+					
+				else
+					invalid_keyword (f (line, place));
+				end if;
+					
+				place := place + 2;
+			end loop;
+
+			-- insert terminal to port assigment in temporarily terminal_port_map
+			insert (
+				container	=> terminal_port_map,
+				key			=> terminal, -- H5, 14
+				inserted	=> inserted,
+				position	=> position,
+				new_item	=> (
+								unit	=> unit, -- IO_BANK_2,
+								name	=> port -- VCC
+								));
+
+			-- an assigment must be unique !
+			if not inserted then
+				log_indentation_reset;
+				log (message_error & "terminal-to-port assigment already used !", console => true);
+				raise constraint_error;
+			end if;
+
+			-- clean up for next terminal to port assigment
+			terminal	:= to_terminal_name ("");
+			unit		:= to_unit_name ("");
+			port		:= to_port_name ("");
+		end insert_terminal;
+
+		procedure insert_variant is
+			use type_component_variants;
+			inserted : boolean;
+			position : type_component_variants.cursor;
+		begin
+			insert (
+				container	=> variants,
+				key			=> variant_name, -- N, D 
+				inserted	=> inserted,
+				position	=> position,
+				new_item	=> variant);
+
+			-- A particular variant must occur only once in the device model:
+			if not inserted then
+				log_indentation_reset;
+				log (message_error & "variant " & to_string (variant_name) & " already used !", console => true);
+				raise constraint_error;
+			end if;
+
+			-- clean up for next variant
+			variant := (others => <>);
+		end insert_variant;
 		
 		procedure process_line is 
 		-- CS: detect if section name is type_section_name_module
@@ -2266,13 +2355,21 @@ package body et_project is
 
 					when SEC_VARIANT =>
 						case stack.parent is
-							when SEC_VARIANTS => null; -- nothing to do
+							when SEC_VARIANTS =>
+								-- insert the temporarily variant in the collection of variants
+								insert_variant;
+
 							when others => invalid_section;
 						end case;
 
 					when SEC_TERMINAL_PORT_MAP =>
 						case stack.parent is
-							when SEC_VARIANT => null; -- nothing to do
+							when SEC_VARIANT =>
+								-- copy temporarily terminal_port_map to current variant
+								variant.terminal_port_map := terminal_port_map;
+
+								-- clean up temporarily terminal_port_map for next variant
+								et_libraries.type_terminal_port_map.clear (terminal_port_map);
 							when others => invalid_section;
 						end case;
 
@@ -2298,52 +2395,6 @@ package body et_project is
 					when SEC_LINE =>
 						case stack.parent is
 							when SEC_SHAPES => NULL;
--- 								declare
--- 									kw : string := f (line, 1);
--- 								begin
--- 									if kw = keyword_name then
--- 										expect_field_count (line, 2);
--- 										net_class_name := et_pcb.to_net_class_name (f (line,2));
--- 
--- 									-- CS: In the following: set a corresponding parameter-found-flag
--- 									elsif kw = keyword_description then
--- 										expect_field_count (line, 2);
--- 										net_class.description := et_pcb.to_net_class_description (f (line,2));
--- 										
--- 									elsif kw = keyword_clearance then
--- 										expect_field_count (line, 2);
--- 										net_class.clearance := et_pcb_coordinates.to_distance (f (line,2));
--- 										et_pcb.validate_track_clearance (net_class.clearance);
--- 										
--- 									elsif kw = keyword_track_width_min then
--- 										expect_field_count (line, 2);
--- 										net_class.track_width_min := et_pcb_coordinates.to_distance (f (line,2));
--- 										et_pcb.validate_track_width (net_class.track_width_min);
--- 										
--- 									elsif kw = keyword_via_drill_min then
--- 										expect_field_count (line, 2);
--- 										net_class.via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
--- 										et_pcb.validate_drill_size (net_class.via_drill_min);
--- 										
--- 									elsif kw = keyword_via_restring_min then
--- 										expect_field_count (line, 2);
--- 										net_class.via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
--- 										et_pcb.validate_restring_width (net_class.via_restring_min);
--- 										
--- 									elsif kw = keyword_micro_via_drill_min then
--- 										expect_field_count (line, 2);
--- 										net_class.micro_via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
--- 										et_pcb.validate_drill_size (net_class.micro_via_drill_min);
--- 										
--- 									elsif kw = keyword_micro_via_restring_min then
--- 										expect_field_count (line, 2);
--- 										net_class.micro_via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
--- 										et_pcb.validate_restring_width (net_class.micro_via_restring_min);
--- 									else
--- 										invalid_keyword (kw);
--- 									end if;
--- 								end;
-
 							when others => invalid_section;
 						end case;
 
@@ -2411,6 +2462,7 @@ package body et_project is
 				end case;
 
 			end execute_section;
+
 			
 			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
@@ -2506,7 +2558,6 @@ package body et_project is
 							end if;
 						end;
 
-						
 					when SEC_VARIANTS | SEC_UNITS_INTERNAL | SEC_UNITS_EXTERNAL => 
 						case stack.parent is
 							when SEC_INIT => null;
@@ -2516,12 +2567,34 @@ package body et_project is
 					when SEC_VARIANT =>
 						case stack.parent is
 							when SEC_VARIANTS => null; -- nothing to do
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_name then
+										expect_field_count (line, 2);
+										variant_name := et_libraries.to_component_variant_name (f (line,2));
+
+									elsif kw = keyword_package_model then
+										expect_field_count (line, 2);
+										variant.packge := et_libraries.to_package_library_name (f (line,2));
+
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
 							when others => invalid_section;
 						end case;
 
 					when SEC_TERMINAL_PORT_MAP =>
 						case stack.parent is
-							when SEC_VARIANT => null; -- nothing to do
+							when SEC_VARIANT =>
+								expect_field_count (line, 6); -- terminal 14 unit 5 port VCC
+
+								-- extract terminal to port assigment
+								insert_terminal (line);
+							
 							when others => invalid_section;
 						end case;
 
