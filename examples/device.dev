@@ -9,7 +9,7 @@ partcode IC_PAC_S_SO14_VAL_
 [VARIANTS BEGIN]
 	[VARIANT BEGIN]
 		name S_SO14
-		file libraries/packages/__#__#lbr#bel_ic_pretty#S_SO14.pac
+		package_model libraries/packages/__#__#lbr#bel_ic_pretty#S_SO14.pac
 		[TERMINAL_PORT_MAP BEGIN]
 			terminal 1 unit 1 port I1A
 			terminal 10 unit 3 port I3A
@@ -470,6 +470,13 @@ partcode IC_PAC_S_SO14_VAL_
 	[UNIT END]
 [UNITS_INTERNAL END]
 [UNITS_EXTERNAL BEGIN]
+	[UNIT BEGIN]
+		unit_model my_libraries/NAND.sym
+		name 6
+		position x 0.00 y 0.00
+		swap_level 0
+		add_level next
+	[UNIT END]
 [UNITS_EXTERNAL END]
 
 -- ======================================================================================================================================================

@@ -2378,6 +2378,62 @@ package body et_project is
 		unit_position		: type_2d_point := zero; -- the position of the unit inside the device editor
 		unit_swap_level		: type_unit_swap_level := unit_swap_level_default;
 		unit_add_level		: type_unit_add_level := unit_add_level_default;
+		unit_symbol			: access type_symbol;
+		units_internal		: type_units_internal.map;
+		units_external		: type_units_external.map;
+
+		procedure insert_unit_internal is
+		-- Insertes in the temporarily collection of internal units a new unit.
+			position : type_units_internal.cursor;
+			inserted : boolean;
+		begin
+			-- Depending on the appearance of the device, a unit with the same
+			-- appearance is inserted in units_internal.
+			case appearance is 
+				when SCH =>
+					type_units_internal.insert (
+						container	=> units_internal,
+						position	=> position,
+						inserted	=> inserted,
+						key			=> unit_name,
+						new_item	=> (
+								appearance	=> SCH,
+								symbol		=> unit_symbol.all,
+								coordinates	=> unit_position,
+								swap_level	=> unit_swap_level,
+								add_level	=> unit_add_level));
+
+				when SCH_PCB =>
+					type_units_internal.insert (
+						container	=> units_internal,
+						position	=> position,
+						inserted	=> inserted,
+						key			=> unit_name,
+						new_item	=> (
+								appearance	=> SCH_PCB,
+								symbol		=> unit_symbol.all,
+								coordinates	=> unit_position,
+								swap_level	=> unit_swap_level,
+								add_level	=> unit_add_level));
+
+				when others => null; -- CS
+			end case;
+			
+			-- A unit must occur only once:
+			if not inserted then
+				log_indentation_reset;
+				log (message_error & "unit " & to_string (unit_name) & " already used !", console => true);
+				raise constraint_error;
+			end if;
+
+			-- clean up for next unit
+			unit_name := to_unit_name ("");
+			unit_position := zero;
+			unit_swap_level := unit_swap_level_default;
+			unit_add_level := unit_add_level_default;
+			unit_symbol := null;
+			
+		end insert_unit_internal;
 		
 		procedure process_line is 
 		-- CS: detect if section name is type_section_name_module
@@ -2417,7 +2473,9 @@ package body et_project is
 
 					when SEC_UNIT =>
 						case stack.parent is
-							when SEC_UNITS_INTERNAL => null; -- nothing to do
+							when SEC_UNITS_INTERNAL =>
+								insert_unit_internal;
+									
 							when SEC_UNITS_EXTERNAL => null; -- nothing to do								
 							when others => invalid_section;
 						end case;
@@ -2651,8 +2709,28 @@ package body et_project is
 										expect_field_count (line, 2);
 										unit_name := et_libraries.to_unit_name (f (line,2));
 
-									elsif kw = keyword_position then
-										expect_field_count (line, 2);
+										-- Create a new symbol where unit_symbol is pointing at.
+										-- The symbol assumes the appearance of the device.
+										-- The symbol will be copied to the current unit later.
+										case appearance is
+											when et_libraries.SCH =>
+												unit_symbol := new et_libraries.type_symbol' (
+													appearance	=> et_libraries.SCH,
+													others		=> <>);
+
+											when et_libraries.SCH_PCB =>
+												unit_symbol := new et_libraries.type_symbol' (
+													appearance	=> et_libraries.SCH_PCB,
+													others		=> <>);
+
+											when others => 
+												raise constraint_error; -- CS
+
+										end case;
+
+										
+									elsif kw = keyword_position then -- position x 0.00 y 0.00
+										expect_field_count (line, 5);
 
 										-- extract unit position starting at field 2
 										-- NOTE: this is the position of the unit inside the device editor !
@@ -2677,7 +2755,15 @@ package body et_project is
 
 					when SEC_SYMBOL =>
 						case stack.parent is
-							when SEC_UNIT => null; -- nothing to do								
+							when SEC_UNIT =>
+								
+								case stack.parent (degree => 2) is
+									when SEC_UNITS_INTERNAL => NULL;
+
+
+									when others => invalid_section;
+								end case;
+								
 							when others => invalid_section;
 						end case;
 
