@@ -539,6 +539,14 @@ package body et_libraries is
 		end if;
 	end check_author_characters;
 
+	function to_string (filled : in type_circle_filled) return string is begin
+		return latin_1.space & to_lower (type_circle_filled'image (filled));
+	end to_string;
+
+	function to_circle_filled (filled : in string) return type_circle_filled is begin
+		return type_circle_filled'value (filled);
+	end to_circle_filled;
+
 	
 -- 	function to_string (variant : in type_component_variant) return string is
 -- 	-- Returns the given variant as string.

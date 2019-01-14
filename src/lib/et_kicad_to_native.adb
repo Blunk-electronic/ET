@@ -3013,9 +3013,70 @@ package body et_kicad_to_native is
 
 					function convert_shapes (shapes : in et_kicad.type_symbol_shapes) 
 						return et_libraries.type_shapes is
-						native_shapes : et_libraries.type_shapes;
-					begin
 
+						native_shapes : et_libraries.type_shapes;
+
+						procedure copy_line (cursor : in et_kicad.type_symbol_lines.cursor) is begin
+							et_libraries.type_lines.append (
+								container	=> native_shapes.lines,
+								new_item	=> et_kicad.type_symbol_lines.element (cursor));
+						end;
+
+						procedure copy_arc (cursor : in et_kicad.type_symbol_arcs.cursor) is begin
+							et_libraries.type_arcs.append (
+								container	=> native_shapes.arcs,
+								new_item	=> et_libraries.type_arc (et_kicad.type_symbol_arcs.element (cursor)));
+						end;
+
+						procedure copy_circle (cursor : in et_kicad.type_symbol_circles.cursor) is begin
+							et_libraries.type_circles.append (
+								container	=> native_shapes.circles,
+								new_item	=> (
+									et_libraries.type_circle_base (et_kicad.type_symbol_circles.element (cursor))
+									with filled => et_libraries.NO));
+						end;						
+
+						procedure copy_polyline (cursor : in et_kicad.type_symbol_polylines.cursor) is 
+						-- Converts a polyline to single lines and appends them to native.shapes.lines.
+							use et_kicad;
+							use type_symbol_points;
+
+							-- This is the given kicad polyline:
+							polyline : type_symbol_polyline := type_symbol_polylines.element (cursor);
+
+							-- This cursor points to a particular point of the polyline:
+							point_cursor : type_symbol_points.cursor := polyline.points.first;
+
+							-- This is the native line that will be appended to native.shapes.lines:
+							line : et_libraries.type_line;
+						begin
+							-- Advance through points of polyline and assign line start and and points.
+							-- Then append the line to native.shapes.lines.
+							-- CS: exception will arise if given polyline contains only one point.
+							while point_cursor /= type_symbol_points.no_element loop
+
+								log ("XXX POLYLINE YYY", console => true);								
+								line.start_point := element (point_cursor); -- start point
+
+								next (point_cursor);
+								line.end_point   := element (point_cursor); -- end point
+
+								-- append line to collection of native lines
+								et_libraries.type_lines.append (
+									container	=> native_shapes.lines,
+									new_item	=> line);
+								
+							end loop;
+						end copy_polyline;
+						
+						
+					begin -- convert_shapes
+						et_kicad.type_symbol_lines.iterate (shapes.lines, copy_line'access);
+						et_kicad.type_symbol_arcs.iterate (shapes.arcs, copy_arc'access);
+						et_kicad.type_symbol_circles.iterate (shapes.circles, copy_circle'access);
+
+						et_kicad.type_symbol_polylines.iterate (shapes.polylines, copy_polyline'access);						
+						
 						return native_shapes;
 					end convert_shapes;
 					

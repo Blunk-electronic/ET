@@ -630,6 +630,8 @@ package et_libraries is
 	package type_arcs is new doubly_linked_lists (type_arc);
 
 	type type_circle_filled is (NO, YES);
+	function to_string (filled : in type_circle_filled) return string;
+	function to_circle_filled (filled : in string) return type_circle_filled;
 	
 	-- Circles
 	type type_circle_base is tagged record
@@ -639,7 +641,7 @@ package et_libraries is
 	end record;
 
 	type type_circle is new type_circle_base with record
-		fill			: type_circle_filled := NO;
+		filled		: type_circle_filled := NO;
 	end record;
 	package type_circles is new doubly_linked_lists (type_circle);
 

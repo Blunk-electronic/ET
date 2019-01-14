@@ -1275,7 +1275,6 @@ package body et_kicad is
 			function to_polyline (line : in et_string_processing.type_fields_of_line) return type_symbol_polyline is
 			-- Returns from the given fields of a line a type_polyline.
 				polyline	: type_symbol_polyline;
-				points		: type_symbol_points.list;
 				total		: positive; -- for cross checking 
 
 				-- A polyline is defined by a string like "P 3 0 1 10 0 0 100 50 70 0 N"
@@ -1319,13 +1318,13 @@ package body et_kicad is
 					-- It is probably a bug. However, when importing objects we must invert y. 
 					mirror (point => point, axis => x);
 					
-					points.append (point); -- append this point to the list of points
+					polyline.points.append (point); -- append this point to the list of points
 					pos := pos + 2; -- advance field pointer to x coordinate of next point
 				end loop;
 
 				-- read fill style from last field
 				polyline.fill := to_fill (et_string_processing.field (line, pos));				
-
+				
 				-- CS: log properties
 				
 				return polyline;
