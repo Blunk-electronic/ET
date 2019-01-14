@@ -3096,19 +3096,25 @@ package body et_kicad_to_native is
 							-- This is the native line that will be appended to native_shapes.lines:
 							line : et_libraries.type_line := (width => rectangle.width, others => <>);
 							width, height : et_coordinates.type_distance;
+
+							procedure append_line is begin
+								et_libraries.type_lines.append (
+									container	=> native_shapes.lines,
+									new_item	=> line);
+							end;
+								
 						begin
-							null;
 							width  := distance (axis => X, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
 							height := distance (axis => Y, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
 
--- 							line.start_point := rectangle.corner_A;
--- 							line.end_point := rectangle.corner_A
--- 							
-							et_libraries.type_lines.append (
-								container	=> native_shapes.lines,
-								new_item	=> line
-								);
-							
+							--line.start_point := rectangle.corner_A;
+							--line.end_point := set_x ( rectangle.corner_A
+
+							append_line;
+							append_line;
+							append_line;
+							append_line;
+
 						end copy_rectangle;
 
 					begin -- convert_shapes
