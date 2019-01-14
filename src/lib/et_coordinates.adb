@@ -305,11 +305,10 @@ package body et_coordinates is
 	end rotate;
 
 	function distance (point_1, point_2 : in type_2d_point) return type_distance is
-	-- Returns the distance between the given points.
+	-- Returns the total distance between the given points.
 		dis : float;
 		package functions_distance is new ada.numerics.generic_elementary_functions (float);
 		use functions_distance;
-		use et_string_processing;
 	begin
 		-- To save computing time a few simple checks:
 		
@@ -331,11 +330,28 @@ package body et_coordinates is
 
 		end if;
 
-		--log (text => "distance " & float'image (dis), level => 4);
-
 		return type_distance (dis);
 	end distance;
 
+	function distance (
+	-- Returns the absolute distance on the given axis between the given points.
+		point_1	: in type_2d_point;
+		point_2	: in type_2d_point;
+		axis	: in type_axis) 
+		return type_distance is
+		dis : type_distance;
+	begin
+		case axis is
+			when X =>
+				dis := abs (point_2.x - point_1.x);
+
+			when Y =>
+				dis := abs (point_2.y - point_1.y);
+		end case;
+				
+		return type_distance (dis);
+	end distance;
+	
 	function to_string (schematic : in type_schematic_file_name.bounded_string) return string is
 	-- Returns the given schematic file name as string.
 	begin

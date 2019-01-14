@@ -151,8 +151,15 @@ package et_coordinates is
 		log_threshold : in et_string_processing.type_log_level);
 
 	function distance (point_1, point_2 : in type_2d_point) return type_distance;
-	-- Returns the distance between the given points.
+	-- Returns the total distance between the given points.
 
+	function distance (
+	-- Returns the absolute distance on the given axis between the given points.
+		point_1	: in type_2d_point;
+		point_2	: in type_2d_point;
+		axis	: in type_axis) 
+		return type_distance;
+	
 	schematic_file_name_length : constant positive := 100; -- includes extension
 	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); 
 

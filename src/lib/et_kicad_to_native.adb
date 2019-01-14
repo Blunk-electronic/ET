@@ -3037,7 +3037,7 @@ package body et_kicad_to_native is
 						end;						
 
 						procedure copy_polyline (cursor : in et_kicad.type_symbol_polylines.cursor) is 
-						-- Converts a polyline to single lines and appends them to native.shapes.lines.
+						-- Converts a polyline to single lines and appends them to native_shapes.lines.
 							use et_kicad;
 							use type_symbol_points;
 
@@ -3049,34 +3049,75 @@ package body et_kicad_to_native is
 
 							-- This is the native line that will be appended to native.shapes.lines:
 							line : et_libraries.type_line;
+
+							-- This flag indicates whether a start or an end point of a line is expected:
+							start : boolean := true; -- when start point -> true, when end point -> false
 						begin
 							-- Advance through points of polyline and assign line start and and points.
 							-- Then append the line to native.shapes.lines.
-							-- CS: exception will arise if given polyline contains only one point.
 							while point_cursor /= type_symbol_points.no_element loop
 
-								log ("XXX POLYLINE YYY", console => true);								
-								line.start_point := element (point_cursor); -- start point
+								case start is
+									when TRUE =>
+										-- The point is a start point if another point follows. Otherwise nothing happens.
+										if next (point_cursor) /= type_symbol_points.no_element then
+											line.start_point := element (point_cursor); -- start point
+											start := false; -- up next: end point
+										end if;
 
-								next (point_cursor);
-								line.end_point   := element (point_cursor); -- end point
+									when FALSE =>
+										line.end_point := element (point_cursor); -- end point
+										start := true; -- up next: start point
 
-								-- append line to collection of native lines
-								et_libraries.type_lines.append (
-									container	=> native_shapes.lines,
-									new_item	=> line);
-								
+										-- append line to collection of native lines
+										et_libraries.type_lines.append (
+											container	=> native_shapes.lines,
+											new_item	=> line);
+
+										-- Set cursor one point back so that this point serves as start point
+										-- for the next segment.
+										previous (point_cursor);
+
+								end case;
+
+								next (point_cursor); -- advance to next point
 							end loop;
 						end copy_polyline;
-						
-						
+
+						procedure copy_rectangle (cursor : in et_kicad.type_symbol_rectangles.cursor) is
+						-- Converts a rectangle to four lines and appends them to native_shapes.lines.
+							use et_kicad;
+							use type_symbol_rectangles;
+							use et_coordinates;
+
+							-- This is the given kicad rectangle:
+							rectangle : type_symbol_rectangle := type_symbol_rectangles.element (cursor);
+
+							-- This is the native line that will be appended to native_shapes.lines:
+							line : et_libraries.type_line := (width => rectangle.width, others => <>);
+							width, height : et_coordinates.type_distance;
+						begin
+							null;
+							width  := distance (axis => X, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
+							height := distance (axis => Y, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
+
+-- 							line.start_point := rectangle.corner_A;
+-- 							line.end_point := rectangle.corner_A
+-- 							
+							et_libraries.type_lines.append (
+								container	=> native_shapes.lines,
+								new_item	=> line
+								);
+							
+						end copy_rectangle;
+
 					begin -- convert_shapes
 						et_kicad.type_symbol_lines.iterate (shapes.lines, copy_line'access);
 						et_kicad.type_symbol_arcs.iterate (shapes.arcs, copy_arc'access);
 						et_kicad.type_symbol_circles.iterate (shapes.circles, copy_circle'access);
 
-						et_kicad.type_symbol_polylines.iterate (shapes.polylines, copy_polyline'access);						
-						
+						et_kicad.type_symbol_polylines.iterate (shapes.polylines, copy_polyline'access);
+						et_kicad.type_symbol_rectangles.iterate (shapes.rectangles, copy_rectangle'access);
 						return native_shapes;
 					end convert_shapes;
 					
