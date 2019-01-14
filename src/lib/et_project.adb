@@ -1855,8 +1855,6 @@ package body et_project is
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_libraries;
 		use type_lines;
-		use type_polylines;
-		use type_rectangles;
 		use type_arcs;
 		use type_circles;
 		use type_symbol_texts;
@@ -1877,7 +1875,6 @@ package body et_project is
 			write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
 			write (keyword => keyword_radius, parameters => et_coordinates.to_string (element (cursor).radius));			
 			write (keyword => keyword_width , parameters => et_coordinates.to_string (element (cursor).line_width));
-			write (keyword => keyword_fill  , parameters => to_string (element (cursor).fill));
 			section_mark (section_arc, FOOTER);
 		end write_arc;
 
@@ -1886,36 +1883,9 @@ package body et_project is
 			write (keyword => keyword_center, parameters => position (element (cursor).center));
 			write (keyword => keyword_radius, parameters => et_coordinates.to_string (element (cursor).radius));
 			write (keyword => keyword_width , parameters => et_coordinates.to_string (element (cursor).line_width));
-			write (keyword => keyword_fill  , parameters => to_string (element (cursor).fill));
+			-- CS write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
 			section_mark (section_arc, FOOTER);
 		end write_circle;
-
-		procedure write_rectangle (cursor : in type_rectangles.cursor) is begin
-			section_mark (section_rectangle, HEADER);
-			write (keyword => keyword_corner_a, parameters => position (element (cursor).start_point));
-			write (keyword => keyword_corner_b, parameters => position (element (cursor).end_point));
-			write (keyword => keyword_width , parameters => et_coordinates.to_string (element (cursor).line_width));
-			write (keyword => keyword_fill  , parameters => to_string (element (cursor).fill));
-			section_mark (section_rectangle, FOOTER);
-		end write_rectangle;
-		
-		procedure write_polyline (cursor : in type_polylines.cursor) is 
-			line : type_polyline := element (cursor);
-			use type_points;
-
-			procedure write_point (cursor : in type_points.cursor) is begin
-				write (keyword_position, parameters => position (element (cursor)));
-			end write_point;
-		
-		begin -- write_polyline
-			section_mark (section_polyline, HEADER);
-			write (keyword => keyword_width , parameters => et_coordinates.to_string (line.line_width));
-			write (keyword => keyword_fill  , parameters => to_string (line.fill));
-			section_mark (section_corners, HEADER);
-			iterate (line.points, write_point'access);
-			section_mark (section_corners, FOOTER);
-			section_mark (section_polyline, FOOTER);
-		end write_polyline;
 
 		procedure write_text (cursor : in type_symbol_texts.cursor) is begin
 			section_mark (section_text, HEADER);
@@ -1973,27 +1943,15 @@ package body et_project is
 		
 	begin -- write_symbol
 		
-		-- SHAPES BEGIN
-		section_mark (section_shapes, HEADER);
+		-- lines
+		iterate (symbol.shapes.lines, write_line'access);
+
+		-- arcs
+		iterate (symbol.shapes.arcs, write_arc'access);
 		
-			-- lines
-			iterate (symbol.shapes.lines, write_line'access);
+		-- circles
+		iterate (symbol.shapes.circles, write_circle'access);
 
-			-- arcs
-			iterate (symbol.shapes.arcs, write_arc'access);
-			
-			-- circles
-			iterate (symbol.shapes.circles, write_circle'access);
-
-			-- rectangles
-			iterate (symbol.shapes.rectangles, write_rectangle'access);
-			
-			-- polylines
-			iterate (symbol.shapes.polylines, write_polyline'access);
-
-		section_mark (section_shapes, FOOTER);
-		-- SHAPES END
-		
 		-- TEXTS
 		section_mark (section_texts, HEADER);
 		iterate (symbol.texts, write_text'access);
@@ -2486,39 +2444,21 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
-					when SEC_SHAPES =>
-						case stack.parent is
-							when SEC_SYMBOL => null; -- nothing to do								
-							when others => invalid_section;
-						end case;
-
 					when SEC_LINE =>
 						case stack.parent is
-							when SEC_SHAPES => NULL;
+							when SEC_SYMBOL => NULL;
 							when others => invalid_section;
 						end case;
 
 					when SEC_ARC =>
 						case stack.parent is
-							when SEC_SHAPES => null;
+							when SEC_SYMBOL => null;
 							when others => invalid_section;
 						end case;
 						
-					when SEC_POLYLINE =>
-						case stack.parent is
-							when SEC_SHAPES => null; -- nothing to do
-							when others => invalid_section;
-						end case;
-					
-					when SEC_RECTANGLE =>
-						case stack.parent is
-							when SEC_SHAPES => null; -- nothing to do
-							when others => invalid_section;
-						end case;
-					
 					when SEC_CIRCLE =>
 						case stack.parent is
-							when SEC_SHAPES => NULL;
+							when SEC_SYMBOL => NULL;
 							when others => invalid_section;
 						end case;
 						
@@ -2612,12 +2552,9 @@ package body et_project is
 			elsif set (section_units_external, SEC_UNITS_EXTERNAL) then null;			
 			elsif set (section_unit, SEC_UNIT) then null;
 			elsif set (section_symbol, SEC_SYMBOL) then null;
-			elsif set (section_shapes, SEC_SHAPES) then null;
 			elsif set (section_line, SEC_LINE) then null;								
 			elsif set (section_arc, SEC_ARC) then null;								
 			elsif set (section_circle, SEC_CIRCLE) then null;
-			elsif set (section_polyline, SEC_POLYLINE) then null;								
-			elsif set (section_rectangle, SEC_RECTANGLE) then null;								
 			elsif set (section_texts, SEC_TEXTS) then null;
 			elsif set (section_text, SEC_TEXT) then null;
 			elsif set (section_placeholders, SEC_PLACEHOLDERS) then null;
@@ -2767,40 +2704,22 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
-					when SEC_SHAPES =>
-						case stack.parent is
-							when SEC_SYMBOL => null; -- nothing to do								
-							when others => invalid_section;
-						end case;
-
 					when SEC_LINE =>
 						case stack.parent is
-							when SEC_SHAPES => NULL;
+							when SEC_SYMBOL => NULL;
 
 							when others => invalid_section;
 						end case;
 
 					when SEC_ARC =>
 						case stack.parent is
-							when SEC_SHAPES => null;
+							when SEC_SYMBOL => null;
 							when others => invalid_section;
 						end case;
 						
-					when SEC_POLYLINE =>
-						case stack.parent is
-							when SEC_SHAPES => null; -- nothing to do
-							when others => invalid_section;
-						end case;
-					
-					when SEC_RECTANGLE =>
-						case stack.parent is
-							when SEC_SHAPES => null; -- nothing to do
-							when others => invalid_section;
-						end case;
-					
 					when SEC_CIRCLE =>
 						case stack.parent is
-							when SEC_SHAPES => NULL;
+							when SEC_SYMBOL => NULL;
 							when others => invalid_section;
 						end case;
 						

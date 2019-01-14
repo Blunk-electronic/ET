@@ -607,24 +607,11 @@ package et_libraries is
 
 
 
-	
-	
--- SHAPES 
 
 	-- line width
 	subtype type_line_width is type_distance;
 
-	-- fill
-	type type_fill_border is (VISIBLE, INVISIBLE);
-	type type_fill_pattern is (NONE, SOLID); -- CS: hatched ? and its properties ?
-	type type_fill is record
-		border	: type_fill_border := VISIBLE;
-		pattern : type_fill_pattern := SOLID;
-	end record;
-
-	function to_string (fill : in type_fill) return string;
-	
-	-- straight lines
+	-- lines
 	type type_line is record
 		start_point 	: type_2d_point;
 		end_point   	: type_2d_point;
@@ -632,48 +619,27 @@ package et_libraries is
 	end record;
 	package type_lines is new doubly_linked_lists (type_line);
 
-	-- polylines 
-	-- A polyline is a list of points. Their interconnections have a width and a fill.
-	-- Filling can be done even if start and end point do not meet. In this case a virtual line
-	-- is "invented" that connects start and end point.
-	-- Finally the polylines are collected in a simple list.
-	package type_points is new doubly_linked_lists (type_2d_point);
-	type type_polyline is record
-		line_width		: type_line_width;  -- CS rename to width
-		fill			: type_fill;
-		points			: type_points.list;
-	end record;
-	package type_polylines is new doubly_linked_lists (type_polyline);
-
-	-- Rectangles
-	-- It is sufficient to specifiy the diagonal of the rectangle.
-	type type_rectangle is record
-		start_point		: type_2d_point; -- CS: rename to corner_A
-		end_point		: type_2d_point; -- CS: rename to corner_B
-		line_width		: type_line_width;  -- CS rename to width
-		fill			: type_fill;
-	end record;
-	package type_rectangles is new doubly_linked_lists (type_rectangle);	
-	
 	-- Arcs
-	type type_arc is record
+	type type_arc is tagged record
 		center			: type_2d_point;
 		radius  		: type_distance;
 		start_point		: type_2d_point;
 		end_point		: type_2d_point;
-		start_angle		: type_angle; -- CS: ?
-		end_angle		: type_angle; -- CS: ?
 		line_width		: type_line_width;  -- CS rename to width
- 		fill			: type_fill;
 	end record;
 	package type_arcs is new doubly_linked_lists (type_arc);
 
+	type type_circle_filled is (NO, YES);
+	
 	-- Circles
-	type type_circle is record
+	type type_circle_base is tagged record
 		center			: type_2d_point;
 		radius  		: type_distance;
 		line_width		: type_line_width;  -- CS rename to width
-		fill			: type_fill;
+	end record;
+
+	type type_circle is new type_circle_base with record
+		fill			: type_circle_filled := NO;
 	end record;
 	package type_circles is new doubly_linked_lists (type_circle);
 
@@ -682,8 +648,6 @@ package et_libraries is
 		lines		: type_lines.list 		:= type_lines.empty_list;
 		arcs 		: type_arcs.list		:= type_arcs.empty_list;
 		circles		: type_circles.list		:= type_circles.empty_list;
-		rectangles	: type_rectangles.list	:= type_rectangles.empty_list;
-		polylines	: type_polylines.list	:= type_polylines.empty_list;
 	end record;
 
 
@@ -707,11 +671,6 @@ package et_libraries is
 	symbol_name_length_max : constant natural := 50;
 	package type_symbol_name is new generic_bounded_length(symbol_name_length_max); use type_symbol_name;
 
-	type type_symbol_element is (
-		LINE, POLYLINE, RECTANGLE, ARC, CIRCLE, -- shapes
-		PORT, 
-		TEXT); -- text embedded in a symbol
-		--reference, value, commissioned, updated, author); -- text field placeholders
 
 	-- Texts may be embedded in a symbol like "counter" or "&". So far they have the meaning "misc".
 	-- CS: strings and texts within a unit symbol serve for documentation only. As long as
@@ -721,12 +680,12 @@ package et_libraries is
 	package type_symbol_texts is new doubly_linked_lists (type_symbol_text);
 
 	type type_symbol_base is tagged record		
-		shapes		: type_shapes; -- the collection of shapes
-		texts		: type_symbol_texts.list; -- the collection of texts (meaning misc)
+		texts : type_symbol_texts.list; -- the collection of texts (meaning misc)
 	end record;
 
 	type type_symbol (appearance : type_component_appearance) is new type_symbol_base with record
-		ports : type_ports.list;
+		shapes	: type_shapes; -- the collection of shapes
+		ports	: type_ports.list;
 		case appearance is
 			when SCH_PCB =>
 				-- Placeholders for component wide texts. To be filled with content when 

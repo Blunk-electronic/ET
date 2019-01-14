@@ -282,8 +282,78 @@ package et_kicad is
 	-- ports at FPGAs.
 	package type_ports_library is new doubly_linked_lists (type_port_library);
 
+	-- fill
+	type type_fill_border is (VISIBLE, INVISIBLE);
+	type type_fill_pattern is (NONE, SOLID); -- CS: hatched ? and its properties ?
+	type type_fill is record
+		border	: type_fill_border := VISIBLE;
+		pattern : type_fill_pattern := SOLID;
+	end record;
+
+	function to_string (fill : in type_fill) return string;
+	
+	-- lines of a symbol:
+	package type_symbol_lines is new doubly_linked_lists (
+		element_type	=> et_libraries.type_line,
+		"="				=> et_libraries."=");
+
+	-- polylines of a symbol:
+	-- A polyline is a list of points. Their interconnections have a width and a fill.
+	-- Filling can be done even if start and end point do not meet. In this case a virtual line
+	-- is "invented" that connects start and end point.
+	-- Finally the polylines are collected in a simple list.
+	package type_symbol_points is new doubly_linked_lists (
+		element_type	=> et_coordinates.type_2d_point,
+		"="				=> et_coordinates."=");
+
+	type type_symbol_polyline is record
+		line_width		: et_libraries.type_line_width;  -- CS rename to width
+		fill			: type_fill;
+		points			: type_symbol_points.list;
+	end record;
+	package type_symbol_polylines is new doubly_linked_lists (type_symbol_polyline);
+
+	-- rectangles of a symbol:
+	-- It is sufficient to specifiy the diagonal of the rectangle.
+	type type_symbol_rectangle is record
+		start_point		: et_coordinates.type_2d_point; -- CS: rename to corner_A
+		end_point		: et_coordinates.type_2d_point; -- CS: rename to corner_B
+		line_width		: et_libraries.type_line_width;  -- CS rename to width
+		fill			: type_fill;
+	end record;
+	package type_symbol_rectangles is new doubly_linked_lists (type_symbol_rectangle);	
+	
+	-- arcs of a symbol:
+	type type_symbol_arc is new et_libraries.type_arc with record
+		start_angle		: et_coordinates.type_angle;
+		end_angle		: et_coordinates.type_angle;
+ 		fill			: type_fill;
+	end record;
+	package type_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
+
+	-- circles of a symbol:
+	type type_symbol_circle is new et_libraries.type_circle_base with record
+		fill			: type_fill;
+	end record;
+	package type_symbol_circles is new doubly_linked_lists (type_symbol_circle);
+
+	-- Shapes are wrapped in a composite:
+	type type_symbol_shapes is record
+		lines		: type_symbol_lines.list 		:= type_symbol_lines.empty_list;
+		arcs 		: type_symbol_arcs.list			:= type_symbol_arcs.empty_list;
+		circles		: type_symbol_circles.list		:= type_symbol_circles.empty_list;
+		rectangles	: type_symbol_rectangles.list	:= type_symbol_rectangles.empty_list;
+		polylines	: type_symbol_polylines.list	:= type_symbol_polylines.empty_list;
+	end record;
+	
+	type type_symbol_element is (
+		LINE, POLYLINE, RECTANGLE, ARC, CIRCLE, -- shapes
+		PORT, 
+		TEXT); -- text embedded in a symbol
+	
 	type type_symbol (appearance : et_libraries.type_component_appearance) is new et_libraries.type_symbol_base with record
-		ports : type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol
+		shapes	: type_symbol_shapes; -- the collection of shapes		
+		ports	: type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol
 
 		-- Placeholders for component wide texts. To be filled with content when a symbol is placed in the schematic:
 		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.REFERENCE);

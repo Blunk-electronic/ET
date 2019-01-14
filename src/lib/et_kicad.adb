@@ -248,6 +248,12 @@ package body et_kicad is
 		return latin_1.space & to_lower (type_port_style'image (style));
 	end to_string;
 
+	function to_string (fill : in type_fill) return string is begin
+		return latin_1.space & to_lower (type_fill_border'image (fill.border))
+		& latin_1.space & "pattern" & latin_1.space 
+		& to_lower (type_fill_pattern'image (fill.pattern));
+	end to_string;
+	
 	function units_of_component (component_cursor : in type_components_schematic.cursor) return type_units_schematic.map is
 	-- Returns the units of the given component.
 		u : type_units_schematic.map;
@@ -1121,10 +1127,10 @@ package body et_kicad is
 			
 			-- temporarily used variables to store draw elements (polylines, arcs, pins, ...) 
 			-- before they are added to a unit.
-			tmp_draw_polyline	: type_polyline;
-			tmp_draw_rectangle	: type_rectangle;
-			tmp_draw_arc		: type_arc;
-			tmp_draw_circle 	: type_circle;
+			tmp_draw_polyline	: type_symbol_polyline;
+			tmp_draw_rectangle	: type_symbol_rectangle;
+			tmp_draw_arc		: type_symbol_arc;
+			tmp_draw_circle 	: type_symbol_circle;
 			tmp_draw_text		: type_symbol_text;
 			tmp_draw_port		: type_port_library;
 
@@ -1266,10 +1272,10 @@ package body et_kicad is
 				end if;
 			end to_fill;
 			
-			function to_polyline (line : in et_string_processing.type_fields_of_line) return type_polyline is
+			function to_polyline (line : in et_string_processing.type_fields_of_line) return type_symbol_polyline is
 			-- Returns from the given fields of a line a type_polyline.
-				polyline	: type_polyline;
-				points		: type_points.list;
+				polyline	: type_symbol_polyline;
+				points		: type_symbol_points.list;
 				total		: positive; -- for cross checking 
 
 				-- A polyline is defined by a string like "P 3 0 1 10 0 0 100 50 70 0 N"
@@ -1325,9 +1331,9 @@ package body et_kicad is
 				return polyline;
 			end to_polyline;
 
-			function to_rectangle (line : in et_string_processing.type_fields_of_line) return type_rectangle is
+			function to_rectangle (line : in et_string_processing.type_fields_of_line) return type_symbol_rectangle is
 			-- Returns from the given fields of a line a type_rectangle.
-				rectangle	: type_rectangle;
+				rectangle	: type_symbol_rectangle;
 
 				-- A rectangle is defined by a string like "S -40 -100 40 100 0 1 10 N"
 				-- field meaning;
@@ -1361,9 +1367,9 @@ package body et_kicad is
 				return rectangle;
 			end to_rectangle;
 
-			function to_circle (line : in et_string_processing.type_fields_of_line) return type_circle is
+			function to_circle (line : in et_string_processing.type_fields_of_line) return type_symbol_circle is
 			-- Returns from the given fields of a circle a type_circle.
-				circle	: type_circle;
+				circle	: type_symbol_circle;
 
 				-- A circle is defined by a string like "C 0 0 112 0 1 23 N"
 				-- field meaning:
@@ -1392,9 +1398,9 @@ package body et_kicad is
 				return circle;
 			end to_circle;
 
-			function to_arc (line : in et_string_processing.type_fields_of_line) return type_arc is
+			function to_arc (line : in et_string_processing.type_fields_of_line) return type_symbol_arc is
 			-- Returns from the given fields of an arc a type_arc.
-				arc		: type_arc;
+				arc		: type_symbol_arc;
 
 				-- An arc is defined by a string like "A 150 0 150 1800 900 0 1 33 N 0 0 150 150"
 				-- NOTE: kicad bug: multiply all y values by -1

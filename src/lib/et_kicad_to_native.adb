@@ -3010,6 +3010,14 @@ package body et_kicad_to_native is
 							next (port_cursor_kicad);
 						end loop;
 					end copy_ports;
+
+					function convert_shapes (shapes : in et_kicad.type_symbol_shapes) 
+						return et_libraries.type_shapes is
+						native_shapes : et_libraries.type_shapes;
+					begin
+
+						return native_shapes;
+					end convert_shapes;
 					
 				begin -- copy_units
 					while unit_cursor_kicad /= et_kicad.type_units_library.no_element loop
@@ -3031,9 +3039,10 @@ package body et_kicad_to_native is
 										swap_level	=> <>,
 										add_level	=> <>, -- CS depends on the "global" flag. When true add_level should be "request"
 
-										-- If the unit is real, then the symbol is real as well:
+										-- If the unit is real, then the symbol is real too:
 										symbol		=> (et_libraries.type_symbol_base (element (unit_cursor_kicad).symbol)
 														with 
+															shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes),
 															appearance	=> et_libraries.SCH_PCB,
 															ports		=> et_libraries.type_ports.empty_list, -- ports will come later
 															reference	=> element (unit_cursor_kicad).symbol.reference, -- placeholder
@@ -3056,9 +3065,10 @@ package body et_kicad_to_native is
 										swap_level	=> <>,
 										add_level	=> <>, -- CS depends on the "global" flag. When true add_level should be "request"
 
-										-- If the unit is virtual, then the symbol is virtual as well:
+										-- If the unit is virtual, then the symbol is virtual too:
 										symbol		=> (et_libraries.type_symbol_base (element (unit_cursor_kicad).symbol)
 														with 
+															shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes),
 															appearance	=> et_libraries.SCH,
 															ports		=> et_libraries.type_ports.empty_list) -- ports will come later
 															-- NOTE: Other placeholders discarded here.

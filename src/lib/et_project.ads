@@ -357,9 +357,6 @@ package et_project is
 	keyword_unit					: constant string := "unit";		
 	keyword_swap_level				: constant string := "swap_level";
 	keyword_add_level				: constant string := "add_level";
-	keyword_fill					: constant string := "fill";
-	keyword_corner_a				: constant string := "corner_a";
-	keyword_corner_b				: constant string := "corner_b";
 	keyword_length					: constant string := "length";	
 	keyword_port_name_visible		: constant string := "port_name_visible";
 	keyword_terminal_name_visible	: constant string := "terminal_name_visible";
@@ -462,9 +459,6 @@ package et_project is
 	section_units_external		: constant string	:= "[UNITS_EXTERNAL";
 	
 	section_symbol				: constant string	:= "[SYMBOL";
-	section_shapes				: constant string	:= "[SHAPES";
-	section_polyline			: constant string	:= "[POLYLINE";
-	section_rectangle			: constant string	:= "[RECTANGLE";
 
 	section_ports				: constant string	:= "[PORTS";
 	section_port_begin			: constant string	:= "[PORT";
@@ -543,12 +537,9 @@ package et_project is
 		SEC_UNITS_INTERNAL,
 		SEC_UNIT,
 		SEC_SYMBOL,
-		SEC_SHAPES,
 		SEC_LINE,
 		SEC_ARC,
 		SEC_CIRCLE,
-		SEC_POLYLINE,
-		SEC_RECTANGLE,
 		SEC_TEXTS,
 		SEC_TEXT,
 		SEC_PLACEHOLDER,		
