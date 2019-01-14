@@ -613,19 +613,19 @@ package et_libraries is
 
 	-- lines
 	type type_line is record
-		start_point 	: type_2d_point;
-		end_point   	: type_2d_point;
-		line_width		: type_line_width; -- CS rename to width
+		start_point : type_2d_point;
+		end_point   : type_2d_point;
+		width		: type_line_width;
 	end record;
 	package type_lines is new doubly_linked_lists (type_line);
 
 	-- Arcs
 	type type_arc is tagged record
-		center			: type_2d_point;
-		radius  		: type_distance;
-		start_point		: type_2d_point;
-		end_point		: type_2d_point;
-		line_width		: type_line_width;  -- CS rename to width
+		center		: type_2d_point;
+		radius  	: type_distance;
+		start_point	: type_2d_point;
+		end_point	: type_2d_point;
+		width		: type_line_width;
 	end record;
 	package type_arcs is new doubly_linked_lists (type_arc);
 
@@ -633,9 +633,9 @@ package et_libraries is
 	
 	-- Circles
 	type type_circle_base is tagged record
-		center			: type_2d_point;
-		radius  		: type_distance;
-		line_width		: type_line_width;  -- CS rename to width
+		center		: type_2d_point;
+		radius  	: type_distance;
+		width		: type_line_width;
 	end record;
 
 	type type_circle is new type_circle_base with record

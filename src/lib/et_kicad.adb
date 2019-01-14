@@ -1306,7 +1306,7 @@ package body et_kicad is
 				
 				-- read line width (field #5)
 				pos := 5;
-				polyline.line_width := type_line_width'value (et_string_processing.field (line, pos));
+				polyline.width := type_line_width'value (et_string_processing.field (line, pos));
 
 				-- From the next field (#6) on, we find the coordinates of the 
 				-- start point, the bend point(s) and the end point:
@@ -1345,22 +1345,22 @@ package body et_kicad is
 
 				use et_coordinates;
 			begin -- to_rectangle
-				set_x (rectangle.start_point, mil_to_distance (mil => et_string_processing.field (line,2), warn_on_negative => false));
-				set_y (rectangle.start_point, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
+				set_x (rectangle.corner_A, mil_to_distance (mil => et_string_processing.field (line,2), warn_on_negative => false));
+				set_y (rectangle.corner_A, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
-				mirror (point => rectangle.start_point, axis => x);
+				mirror (point => rectangle.corner_A, axis => x);
 				
-				set_x (rectangle.end_point, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
-				set_y (rectangle.end_point, mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false));
+				set_x (rectangle.corner_B, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
+				set_y (rectangle.corner_B, mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
-				mirror (point => rectangle.end_point, axis => x);
+				mirror (point => rectangle.corner_B, axis => x);
 				
-				rectangle.line_width	:= type_line_width'value (et_string_processing.field (line,8));
-				rectangle.fill			:= to_fill (et_string_processing.field (line,9));
+				rectangle.width	:= type_line_width'value (et_string_processing.field (line,8));
+				rectangle.fill := to_fill (et_string_processing.field (line,9));
 
 				-- CS: log properties
 				
@@ -1389,9 +1389,9 @@ package body et_kicad is
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => circle.center, axis => x);
 	
-				circle.radius		:= mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false);
-				circle.line_width	:= type_line_width'value (et_string_processing.field (line,7));
-				circle.fill			:= to_fill (et_string_processing.field (line,8));
+				circle.radius	:= mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false);
+				circle.width	:= type_line_width'value (et_string_processing.field (line,7));
+				circle.fill		:= to_fill (et_string_processing.field (line,8));
 
 				-- CS: log properties
 				
@@ -1425,13 +1425,13 @@ package body et_kicad is
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => arc.center, axis => x);
 
-				arc.radius			:= mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false);
+				arc.radius		:= mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false);
 
-				arc.start_angle		:= to_degrees (et_string_processing.field (line,5));
-				arc.end_angle		:= to_degrees (et_string_processing.field (line,6));
+				arc.start_angle	:= to_degrees (et_string_processing.field (line,5));
+				arc.end_angle	:= to_degrees (et_string_processing.field (line,6));
 				
-				arc.line_width		:= type_line_width'value (et_string_processing.field (line,9));
-				arc.fill			:= to_fill (et_string_processing.field (line,10));
+				arc.width		:= type_line_width'value (et_string_processing.field (line,9));
+				arc.fill		:= to_fill (et_string_processing.field (line,10));
 				
 				set_x (arc.start_point, mil_to_distance (mil => et_string_processing.field (line,11), warn_on_negative => false));
 				set_y (arc.start_point, mil_to_distance (mil => et_string_processing.field (line,12), warn_on_negative => false));

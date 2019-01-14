@@ -307,19 +307,19 @@ package et_kicad is
 		"="				=> et_coordinates."=");
 
 	type type_symbol_polyline is record
-		line_width		: et_libraries.type_line_width;  -- CS rename to width
-		fill			: type_fill;
-		points			: type_symbol_points.list;
+		width	: et_libraries.type_line_width;
+		fill	: type_fill;
+		points	: type_symbol_points.list;
 	end record;
 	package type_symbol_polylines is new doubly_linked_lists (type_symbol_polyline);
 
 	-- rectangles of a symbol:
 	-- It is sufficient to specifiy the diagonal of the rectangle.
 	type type_symbol_rectangle is record
-		start_point		: et_coordinates.type_2d_point; -- CS: rename to corner_A
-		end_point		: et_coordinates.type_2d_point; -- CS: rename to corner_B
-		line_width		: et_libraries.type_line_width;  -- CS rename to width
-		fill			: type_fill;
+		corner_A	: et_coordinates.type_2d_point;
+		corner_B	: et_coordinates.type_2d_point;
+		width		: et_libraries.type_line_width;
+		fill		: type_fill;
 	end record;
 	package type_symbol_rectangles is new doubly_linked_lists (type_symbol_rectangle);	
 	

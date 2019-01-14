@@ -1864,7 +1864,7 @@ package body et_project is
 			section_mark (section_line, HEADER);
 			write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 			write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-			write (keyword => keyword_width, parameters => et_coordinates.to_string (element (cursor).line_width));
+			write (keyword => keyword_width, parameters => et_coordinates.to_string (element (cursor).width));
 			section_mark (section_line, FOOTER);
 		end write_line;
 
@@ -1874,7 +1874,7 @@ package body et_project is
 			write (keyword => keyword_start , parameters => position (element (cursor).start_point));
 			write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
 			write (keyword => keyword_radius, parameters => et_coordinates.to_string (element (cursor).radius));			
-			write (keyword => keyword_width , parameters => et_coordinates.to_string (element (cursor).line_width));
+			write (keyword => keyword_width , parameters => et_coordinates.to_string (element (cursor).width));
 			section_mark (section_arc, FOOTER);
 		end write_arc;
 
@@ -1882,7 +1882,7 @@ package body et_project is
 			section_mark (section_circle, HEADER);
 			write (keyword => keyword_center, parameters => position (element (cursor).center));
 			write (keyword => keyword_radius, parameters => et_coordinates.to_string (element (cursor).radius));
-			write (keyword => keyword_width , parameters => et_coordinates.to_string (element (cursor).line_width));
+			write (keyword => keyword_width , parameters => et_coordinates.to_string (element (cursor).width));
 			-- CS write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
 			section_mark (section_arc, FOOTER);
 		end write_circle;
