@@ -122,9 +122,17 @@ package et_coordinates is
 
 	function distance_x (point : in type_2d_point) return type_distance_xy;
 	-- Returns the x distance of point from the drawing origin.
+	-- CS remove and use function distance instead.	
 	
 	function distance_y (point : in type_2d_point) return type_distance_xy;
 	-- Returns the y distance of point from the drawing origin.
+	-- CS remove and use function distance instead.	
+
+	function distance (
+	-- Returns the distance of the point in x or y from the origin.
+		axis	: in type_axis;
+		point	: in type_2d_point)
+		return type_distance_xy;
 	
 	procedure set_x (point : in out type_2d_point; x : in type_distance_xy);
 	-- Assigns a point the given x position.
@@ -135,6 +143,8 @@ package et_coordinates is
 	procedure set_xy (
 		point	 : in out type_2d_point'class;
 		position : in type_2d_point);
+
+	function set_point (x, y : in type_distance_xy) return type_2d_point'class;
 	
 	procedure mirror (
 		point	: in out type_2d_point;

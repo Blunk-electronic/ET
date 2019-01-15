@@ -155,6 +155,7 @@ package body et_coordinates is
 
 	function distance_x (point : in type_2d_point) return type_distance_xy is
 	-- Returns the x distance of point from the drawing origin.		
+	-- CS remove and use function distance instead.
 	begin
 		--return et_math.round (point.x, accuracy_schematic);
 		return point.x;
@@ -162,11 +163,24 @@ package body et_coordinates is
 
 	function distance_y (point : in type_2d_point) return type_distance_xy is
 	-- Returns the y distance of point from the drawing origin.
+	-- CS remove and use function distance instead.
 	begin
 		--return et_math.round (point.y, accuracy_schematic);
 		return point.y;
 	end distance_y;
 
+	function distance (
+	-- Returns the distance of the point in x or y from the origin.
+		axis	: in type_axis;
+		point	: in type_2d_point)
+		return type_distance_xy is
+	begin
+		case axis is
+			when X => return point.x;
+			when Y => return point.y;
+		end case;
+	end distance;
+	
 	procedure set_x (point : in out type_2d_point; x : in type_distance_xy) is
 	-- Assigns a point the given x position.
 		use et_string_processing;
@@ -187,6 +201,14 @@ package body et_coordinates is
 		point.x := position.x;
 		point.y := position.y;
 	end set_xy;
+
+	function set_point (x, y : in type_distance_xy) return type_2d_point'class is 
+		point : type_2d_point;
+	begin
+		point.x := x;
+		point.y := y;
+		return point;
+	end set_point;
 	
 	procedure mirror (
 		point	: in out type_2d_point;

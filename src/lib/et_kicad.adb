@@ -1336,7 +1336,7 @@ package body et_kicad is
 
 				-- A rectangle is defined by a string like "S -40 -100 40 100 0 1 10 N"
 				-- field meaning;
-				-- #2..5 : start point -40/-100   end point 40/100
+				-- #2..5 : diagonal with start point at -40/-100 and end point at 40/100
 				-- #6 : 0 -> common to all units, otherwise unit id it belongs to
 				-- #7 : 1 -> not common to all body styles (alternative representation or DeMorgan) -- CS: verify
 				-- #8 : line width

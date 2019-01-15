@@ -167,7 +167,7 @@ package et_pcb_coordinates is
 		point	: in out type_point_2d;
 		angle	: in type_angle);
 	
-	function get_axis ( -- CS find a better name
+	function get_axis ( -- CS rename to distance
 		axis	: in type_axis_2d;
 		point	: in type_point_2d)
 		return type_distance_total;

@@ -3048,7 +3048,7 @@ package body et_kicad_to_native is
 							point_cursor : type_symbol_points.cursor := polyline.points.first;
 
 							-- This is the native line that will be appended to native.shapes.lines:
-							line : et_libraries.type_line;
+							line : et_libraries.type_line := (width => polyline.width, others => <>);
 
 							-- This flag indicates whether a start or an end point of a line is expected:
 							start : boolean := true; -- when start point -> true, when end point -> false
@@ -3096,23 +3096,53 @@ package body et_kicad_to_native is
 							-- This is the native line that will be appended to native_shapes.lines:
 							line : et_libraries.type_line := (width => rectangle.width, others => <>);
 							width, height : et_coordinates.type_distance;
-
+							corner_C, corner_D : type_2d_point;
+							
 							procedure append_line is begin
 								et_libraries.type_lines.append (
 									container	=> native_shapes.lines,
 									new_item	=> line);
 							end;
 								
-						begin
+						begin -- copy_rectangle
+							-- compute width and height of the rectangle:
 							width  := distance (axis => X, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
 							height := distance (axis => Y, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
 
-							--line.start_point := rectangle.corner_A;
-							--line.end_point := set_x ( rectangle.corner_A
+							-- compute corner points of the rectangle:
+							-- corner_A is the lower left corner of the rectangle -> already known by the given rectangle
+							-- corner_B is the upper right corner of the rectangle -> already known by the given rectangle
 
+							-- corner_C is the lower right corner:
+							corner_C := type_2d_point (set_point (
+								x => distance (X, rectangle.corner_A) + width,
+								y => distance (Y, rectangle.corner_A)
+								));
+
+							-- corner_D is the upper left corner:
+							corner_D := type_2d_point (set_point (
+								x => distance (X, rectangle.corner_A),
+								y => distance (Y, rectangle.corner_A) + height
+								));
+							
+							-- lower horizontal line
+							line.start_point := rectangle.corner_A;
+							line.end_point := corner_C;
 							append_line;
+							
+							-- upper horizontal line
+							line.start_point := corner_D;
+							line.end_point := rectangle.corner_B;
 							append_line;
+
+							-- left vertical line
+							line.start_point := rectangle.corner_A;
+							line.end_point := corner_D;
 							append_line;
+
+							-- right vertical line
+							line.start_point := corner_C;
+							line.end_point := rectangle.corner_B;
 							append_line;
 
 						end copy_rectangle;
