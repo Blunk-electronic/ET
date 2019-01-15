@@ -459,7 +459,8 @@ package et_project is
 	section_units_external		: constant string	:= "[UNITS_EXTERNAL";
 	
 	section_symbol				: constant string	:= "[SYMBOL";
-
+	section_draw				: constant string	:= "[DRAW";
+	
 	section_ports				: constant string	:= "[PORTS";
 	section_port_begin			: constant string	:= "[PORT";
 
@@ -537,6 +538,7 @@ package et_project is
 		SEC_UNITS_INTERNAL,
 		SEC_UNIT,
 		SEC_SYMBOL,
+		SEC_DRAW,
 		SEC_LINE,
 		SEC_ARC,
 		SEC_CIRCLE,

@@ -1942,6 +1942,9 @@ package body et_project is
 		end write_port;
 		
 	begin -- write_symbol
+
+		-- draw section begin
+		section_mark (section_draw, HEADER);
 		
 		-- lines
 		iterate (symbol.shapes.lines, write_line'access);
@@ -1952,6 +1955,10 @@ package body et_project is
 		-- circles
 		iterate (symbol.shapes.circles, write_circle'access);
 
+		-- draw section end
+		section_mark (section_draw, FOOTER);
+		
+		
 		-- TEXTS
 		section_mark (section_texts, HEADER);
 		iterate (symbol.texts, write_text'access);
@@ -2342,6 +2349,7 @@ package body et_project is
 		symbol_line			: et_libraries.type_line;
 		symbol_arc			: et_libraries.type_arc;
 		symbol_circle		: et_libraries.type_circle;
+		symbol_text			: et_libraries.type_symbol_text;
 		
 		procedure insert_unit_internal is
 		-- Inserts in the temporarily collection of internal units a new unit.
@@ -2447,9 +2455,15 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
+					when SEC_DRAW =>
+						case stack.parent is
+							when SEC_SYMBOL => null;  -- nothing to do
+							when others => invalid_section;
+						end case;
+						
 					when SEC_LINE =>
 						case stack.parent is
-							when SEC_SYMBOL => 
+							when SEC_DRAW => 
 
 								-- append symbol_line to unit_symbol
 								et_libraries.type_lines.append (
@@ -2464,7 +2478,7 @@ package body et_project is
 
 					when SEC_ARC =>
 						case stack.parent is
-							when SEC_SYMBOL =>
+							when SEC_DRAW =>
 
 								-- append symbol_arc to unit_symbol
 								et_libraries.type_arcs.append (
@@ -2479,7 +2493,7 @@ package body et_project is
 						
 					when SEC_CIRCLE =>
 						case stack.parent is
-							when SEC_SYMBOL =>
+							when SEC_DRAW =>
 
 								-- append symbol_circle to unit_symbol
 								et_libraries.type_circles.append (
@@ -2582,6 +2596,7 @@ package body et_project is
 			elsif set (section_units_external, SEC_UNITS_EXTERNAL) then null;			
 			elsif set (section_unit, SEC_UNIT) then null;
 			elsif set (section_symbol, SEC_SYMBOL) then null;
+			elsif set (section_draw, SEC_DRAW) then null;			
 			elsif set (section_line, SEC_LINE) then null;								
 			elsif set (section_arc, SEC_ARC) then null;								
 			elsif set (section_circle, SEC_CIRCLE) then null;
@@ -2730,9 +2745,15 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
+					when SEC_DRAW =>
+						case stack.parent is
+							when SEC_SYMBOL => null;  -- nothing to do
+							when others => invalid_section;
+						end case;
+						
 					when SEC_LINE =>
 						case stack.parent is
-							when SEC_SYMBOL =>
+							when SEC_DRAW =>
 								declare
 									kw : string := f (line, 1);
 								begin
@@ -2763,7 +2784,7 @@ package body et_project is
 
 					when SEC_ARC =>
 						case stack.parent is
-							when SEC_SYMBOL =>
+							when SEC_DRAW =>
 								declare
 									kw : string := f (line, 1);
 								begin
@@ -2804,7 +2825,7 @@ package body et_project is
 						
 					when SEC_CIRCLE =>
 						case stack.parent is
-							when SEC_SYMBOL =>
+							when SEC_DRAW =>
 								declare
 									kw : string := f (line, 1);
 								begin
