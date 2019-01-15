@@ -1,11 +1,11 @@
 -- SYSTEM ET device
--- date 2019-01-08T15:39:56
+-- date 2019-01-15T10:49:53
 -- ======================================================================================================================================================
 
 prefix IC
-value 7400
 appearance sch_pcb
-partcode IC_PAC_S_SO14_VAL_
+value 7400
+partcode dummy
 [VARIANTS BEGIN]
 	[VARIANT BEGIN]
 		name S_SO14
@@ -35,22 +35,30 @@ partcode IC_PAC_S_SO14_VAL_
 		swap_level 0
 		add_level next
 		[SYMBOL BEGIN]
-			[SHAPES BEGIN]
+			[DRAW BEGIN]
+				[LINE BEGIN]
+					start x 2.54 y -5.08
+					end x -7.62 y -5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y -5.08
+					end x -7.62 y 5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y 5.08
+					end x 2.54 y 5.08
+					width 0.00
+				[LINE END]
 				[ARC BEGIN]
 					center x 2.54 y 0.00
 					start x 2.54 y 5.08
 					end x 2.54 y -5.08
 					radius 5.08
 					width 0.00
-					fill invisible pattern none
 				[ARC END]
-				[POLYLINE BEGIN]
-					width 0.00
-					fill invisible pattern none
-					[CORNERS BEGIN]
-					[CORNERS END]
-				[POLYLINE END]
-			[SHAPES END]
+			[DRAW END]
 			[TEXTS BEGIN]
 			[TEXTS END]
 			[PLACEHOLDERS BEGIN]
@@ -74,12 +82,12 @@ partcode IC_PAC_S_SO14_VAL_
 				[PLACEHOLDER END]
 				[PLACEHOLDER BEGIN]
 					meaning purpose
-					position x -3.17 y 6.35
+					position x 0.00 y 0.00
 					size 1.30
 					line_width 0.00
 					rotation 0.0
 					style normal
-					alignment horizontal left vertical bottom
+					alignment horizontal center vertical center
 				[PLACEHOLDER END]
 			[PLACEHOLDERS END]
 			[PORTS BEGIN]
@@ -128,22 +136,30 @@ partcode IC_PAC_S_SO14_VAL_
 		swap_level 0
 		add_level next
 		[SYMBOL BEGIN]
-			[SHAPES BEGIN]
+			[DRAW BEGIN]
+				[LINE BEGIN]
+					start x 2.54 y -5.08
+					end x -7.62 y -5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y -5.08
+					end x -7.62 y 5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y 5.08
+					end x 2.54 y 5.08
+					width 0.00
+				[LINE END]
 				[ARC BEGIN]
 					center x 2.54 y 0.00
 					start x 2.54 y 5.08
 					end x 2.54 y -5.08
 					radius 5.08
 					width 0.00
-					fill invisible pattern none
 				[ARC END]
-				[POLYLINE BEGIN]
-					width 0.00
-					fill invisible pattern none
-					[CORNERS BEGIN]
-					[CORNERS END]
-				[POLYLINE END]
-			[SHAPES END]
+			[DRAW END]
 			[TEXTS BEGIN]
 			[TEXTS END]
 			[PLACEHOLDERS BEGIN]
@@ -167,12 +183,12 @@ partcode IC_PAC_S_SO14_VAL_
 				[PLACEHOLDER END]
 				[PLACEHOLDER BEGIN]
 					meaning purpose
-					position x -3.17 y 6.35
+					position x 0.00 y 0.00
 					size 1.30
 					line_width 0.00
 					rotation 0.0
 					style normal
-					alignment horizontal left vertical bottom
+					alignment horizontal center vertical center
 				[PLACEHOLDER END]
 			[PLACEHOLDERS END]
 			[PORTS BEGIN]
@@ -221,22 +237,30 @@ partcode IC_PAC_S_SO14_VAL_
 		swap_level 0
 		add_level next
 		[SYMBOL BEGIN]
-			[SHAPES BEGIN]
+			[DRAW BEGIN]
+				[LINE BEGIN]
+					start x 2.54 y -5.08
+					end x -7.62 y -5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y -5.08
+					end x -7.62 y 5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y 5.08
+					end x 2.54 y 5.08
+					width 0.00
+				[LINE END]
 				[ARC BEGIN]
 					center x 2.54 y 0.00
 					start x 2.54 y 5.08
 					end x 2.54 y -5.08
 					radius 5.08
 					width 0.00
-					fill invisible pattern none
 				[ARC END]
-				[POLYLINE BEGIN]
-					width 0.00
-					fill invisible pattern none
-					[CORNERS BEGIN]
-					[CORNERS END]
-				[POLYLINE END]
-			[SHAPES END]
+			[DRAW END]
 			[TEXTS BEGIN]
 			[TEXTS END]
 			[PLACEHOLDERS BEGIN]
@@ -260,12 +284,12 @@ partcode IC_PAC_S_SO14_VAL_
 				[PLACEHOLDER END]
 				[PLACEHOLDER BEGIN]
 					meaning purpose
-					position x -3.17 y 6.35
+					position x 0.00 y 0.00
 					size 1.30
 					line_width 0.00
 					rotation 0.0
 					style normal
-					alignment horizontal left vertical bottom
+					alignment horizontal center vertical center
 				[PLACEHOLDER END]
 			[PLACEHOLDERS END]
 			[PORTS BEGIN]
@@ -314,24 +338,30 @@ partcode IC_PAC_S_SO14_VAL_
 		swap_level 0
 		add_level next
 		[SYMBOL BEGIN]
-			[LINE BEGIN]
-				start x 2.54 y 5.08
-				end x 2.54 y -5.08
-				width 0.00
-			[LINE END]
-			[ARC BEGIN]
-				center x 2.54 y 0.00
-				start x 2.54 y 5.08
-				end x 2.54 y -5.08
-				radius 5.08
-				width 0.00
-			[ARC END]
-			[CIRCLE BEGIN]
-				center x 2.54 y 0.00
-				radius 5.08
-				width 0.00
-			[CIRCLE END]
-		
+			[DRAW BEGIN]
+				[LINE BEGIN]
+					start x 2.54 y -5.08
+					end x -7.62 y -5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y -5.08
+					end x -7.62 y 5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y 5.08
+					end x 2.54 y 5.08
+					width 0.00
+				[LINE END]
+				[ARC BEGIN]
+					center x 2.54 y 0.00
+					start x 2.54 y 5.08
+					end x 2.54 y -5.08
+					radius 5.08
+					width 0.00
+				[ARC END]
+			[DRAW END]
 			[TEXTS BEGIN]
 			[TEXTS END]
 			[PLACEHOLDERS BEGIN]
@@ -355,12 +385,12 @@ partcode IC_PAC_S_SO14_VAL_
 				[PLACEHOLDER END]
 				[PLACEHOLDER BEGIN]
 					meaning purpose
-					position x -3.17 y 6.35
+					position x 0.00 y 0.00
 					size 1.30
 					line_width 0.00
 					rotation 0.0
 					style normal
-					alignment horizontal left vertical bottom
+					alignment horizontal center vertical center
 				[PLACEHOLDER END]
 			[PLACEHOLDERS END]
 			[PORTS BEGIN]
@@ -409,8 +439,8 @@ partcode IC_PAC_S_SO14_VAL_
 		swap_level 0
 		add_level next
 		[SYMBOL BEGIN]
-			[SHAPES BEGIN]
-			[SHAPES END]
+			[DRAW BEGIN]
+			[DRAW END]
 			[TEXTS BEGIN]
 			[TEXTS END]
 			[PLACEHOLDERS BEGIN]
@@ -434,12 +464,12 @@ partcode IC_PAC_S_SO14_VAL_
 				[PLACEHOLDER END]
 				[PLACEHOLDER BEGIN]
 					meaning purpose
-					position x -3.17 y 6.35
+					position x 0.00 y 0.00
 					size 1.30
 					line_width 0.00
 					rotation 0.0
 					style normal
-					alignment horizontal left vertical bottom
+					alignment horizontal center vertical center
 				[PLACEHOLDER END]
 			[PLACEHOLDERS END]
 			[PORTS BEGIN]
@@ -449,7 +479,7 @@ partcode IC_PAC_S_SO14_VAL_
 					direction power_in
 					characteristic none
 					length 0.00
-					rotation 587.2
+					rotation-364.8
 					port_name_visible off
 					port_name_size 1.30
 					terminal_name_visible on
@@ -461,7 +491,7 @@ partcode IC_PAC_S_SO14_VAL_
 					direction power_in
 					characteristic none
 					length 0.00
-					rotation 587.2
+					rotation-364.8
 					port_name_visible off
 					port_name_size 1.30
 					terminal_name_visible on
@@ -472,13 +502,6 @@ partcode IC_PAC_S_SO14_VAL_
 	[UNIT END]
 [UNITS_INTERNAL END]
 [UNITS_EXTERNAL BEGIN]
-	[UNIT BEGIN]
-		unit_model my_libraries/NAND.sym
-		name 6
-		position x 0.00 y 0.00
-		swap_level 0
-		add_level next
-	[UNIT END]
 [UNITS_EXTERNAL END]
 
 -- ======================================================================================================================================================
