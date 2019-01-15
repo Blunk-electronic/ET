@@ -1884,7 +1884,7 @@ package body et_project is
 			write (keyword => keyword_radius, parameters => et_coordinates.to_string (element (cursor).radius));
 			write (keyword => keyword_width , parameters => et_coordinates.to_string (element (cursor).width));
 			write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
-			section_mark (section_arc, FOOTER);
+			section_mark (section_circle, FOOTER);
 		end write_circle;
 
 		procedure write_text (cursor : in type_symbol_texts.cursor) is begin
@@ -2339,9 +2339,12 @@ package body et_project is
 		unit_symbol			: access type_symbol;
 		units_internal		: type_units_internal.map;
 		units_external		: type_units_external.map;
-
+		symbol_line			: et_libraries.type_line;
+		symbol_arc			: et_libraries.type_arc;
+		symbol_circle		: et_libraries.type_circle;
+		
 		procedure insert_unit_internal is
-		-- Insertes in the temporarily collection of internal units a new unit.
+		-- Inserts in the temporarily collection of internal units a new unit.
 			position : type_units_internal.cursor;
 			inserted : boolean;
 		begin
@@ -2440,25 +2443,52 @@ package body et_project is
 
 					when SEC_SYMBOL =>
 						case stack.parent is
-							when SEC_UNIT => null; -- nothing to do								
+							when SEC_UNIT => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
 					when SEC_LINE =>
 						case stack.parent is
-							when SEC_SYMBOL => NULL;
+							when SEC_SYMBOL => 
+
+								-- append symbol_line to unit_symbol
+								et_libraries.type_lines.append (
+									container	=> unit_symbol.shapes.lines,
+									new_item	=> symbol_line);
+
+								-- clean up for next line
+								symbol_line := (others => <>);
+								
 							when others => invalid_section;
 						end case;
 
 					when SEC_ARC =>
 						case stack.parent is
-							when SEC_SYMBOL => null;
+							when SEC_SYMBOL =>
+
+								-- append symbol_arc to unit_symbol
+								et_libraries.type_arcs.append (
+									container	=> unit_symbol.shapes.arcs,
+									new_item	=> symbol_arc);
+
+								-- clean up for next arc
+								symbol_arc := (others => <>);
+								
 							when others => invalid_section;
 						end case;
 						
 					when SEC_CIRCLE =>
 						case stack.parent is
-							when SEC_SYMBOL => NULL;
+							when SEC_SYMBOL =>
+
+								-- append symbol_circle to unit_symbol
+								et_libraries.type_circles.append (
+									container	=> unit_symbol.shapes.circles,
+									new_item	=> symbol_circle);
+
+								-- clean up for next circle
+								symbol_circle := (others => <>);
+								
 							when others => invalid_section;
 						end case;
 						
@@ -2664,7 +2694,6 @@ package body et_project is
 												raise constraint_error; -- CS
 
 										end case;
-
 										
 									elsif kw = keyword_position then -- position x 0.00 y 0.00
 										expect_field_count (line, 5);
@@ -2693,11 +2722,8 @@ package body et_project is
 					when SEC_SYMBOL =>
 						case stack.parent is
 							when SEC_UNIT =>
-								
 								case stack.parent (degree => 2) is
-									when SEC_UNITS_INTERNAL => NULL;
-
-
+									when SEC_UNITS_INTERNAL => null;
 									when others => invalid_section;
 								end case;
 								
@@ -2706,26 +2732,139 @@ package body et_project is
 
 					when SEC_LINE =>
 						case stack.parent is
-							when SEC_SYMBOL => NULL;
+							when SEC_SYMBOL =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_start then -- start x 1 y 2
+										expect_field_count (line, 5);
+
+										-- extract the start position starting at field 2
+										symbol_line.start_point := to_position (line,2);
+										
+									elsif kw = keyword_end then -- end x 0.00 y 0.00
+										expect_field_count (line, 5);
+
+										-- extract the end position starting at field 2
+										symbol_line.end_point := to_position (line,2);
+
+									elsif kw = keyword_width then
+										expect_field_count (line, 2);
+										symbol_line.width := et_coordinates.to_distance (f (line, 2));
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
 
 							when others => invalid_section;
 						end case;
 
 					when SEC_ARC =>
 						case stack.parent is
-							when SEC_SYMBOL => null;
+							when SEC_SYMBOL =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_center then -- center x 1 y 2
+										expect_field_count (line, 5);
+
+										-- extract the start position starting at field 2
+										symbol_arc.center := to_position (line,2);
+
+									elsif kw = keyword_start then -- start x 1 y 2
+										expect_field_count (line, 5);
+
+										-- extract the start position starting at field 2
+										symbol_arc.start_point := to_position (line,2);
+										
+									elsif kw = keyword_end then -- end x 0.00 y 0.00
+										expect_field_count (line, 5);
+
+										-- extract the end position starting at field 2
+										symbol_arc.end_point := to_position (line,2);
+
+									elsif kw = keyword_width then
+										expect_field_count (line, 2);
+										symbol_arc.width := et_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_radius then
+										expect_field_count (line, 2);
+										symbol_arc.radius := et_coordinates.to_distance (f (line, 2));
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
 							when others => invalid_section;
 						end case;
 						
 					when SEC_CIRCLE =>
 						case stack.parent is
-							when SEC_SYMBOL => NULL;
+							when SEC_SYMBOL =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_center then -- center x 1 y 2
+										expect_field_count (line, 5);
+
+										-- extract the start position starting at field 2
+										symbol_circle.center := to_position (line,2);
+
+									elsif kw = keyword_width then -- widht 0.2
+										expect_field_count (line, 2);
+										symbol_circle.width := et_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_radius then -- radius 5
+										expect_field_count (line, 2);
+										symbol_circle.radius := et_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_filled then -- filled yes/no
+										expect_field_count (line, 2);
+										symbol_circle.filled := et_libraries.to_circle_filled (f (line, 2));
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
 							when others => invalid_section;
 						end case;
 						
 					when SEC_TEXTS =>
 						case stack.parent is
-							when SEC_SYMBOL => NULL;
+							when SEC_SYMBOL => null;
+-- 								declare
+-- 									kw : string := f (line, 1);
+-- 								begin
+-- 									-- CS: In the following: set a corresponding parameter-found-flag
+-- 									if kw = keyword_center then -- center x 1 y 2
+-- 										expect_field_count (line, 5);
+-- 
+-- 										-- extract the start position starting at field 2
+-- 										symbol_circle.center := to_position (line,2);
+-- 
+-- 									elsif kw = keyword_width then -- widht 0.2
+-- 										expect_field_count (line, 2);
+-- 										symbol_circle.width := et_coordinates.to_distance (f (line, 2));
+-- 
+-- 									elsif kw = keyword_radius then -- radius 5
+-- 										expect_field_count (line, 2);
+-- 										symbol_circle.radius := et_coordinates.to_distance (f (line, 2));
+-- 
+-- 									elsif kw = keyword_filled then -- filled yes/no
+-- 										expect_field_count (line, 2);
+-- 										symbol_circle.filled := et_libraries.to_circle_filled (f (line, 2));
+-- 										
+-- 									else
+-- 										invalid_keyword (kw);
+-- 									end if;
+-- 								end;
+
 							when others => invalid_section;
 						end case;
 
