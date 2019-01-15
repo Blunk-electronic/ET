@@ -164,6 +164,8 @@ package et_libraries is
 		PARTCODE,		-- for the primary key into an external database (like "R_PAC_S_0805_VAL_200R")
 		MISC); -- CS: others ?
 
+	text_meaning_default : constant type_text_meaning := MISC;
+	
 	function to_string (meaning : in type_text_meaning) return string;
 	function to_text_meaning (meaning : in string) return type_text_meaning;
 

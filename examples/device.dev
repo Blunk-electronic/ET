@@ -363,6 +363,15 @@ partcode dummy
 				[ARC END]
 			[DRAW END]
 			[TEXTS BEGIN]
+				[TEXT BEGIN]
+					position x 180.34 y 39.82
+					content "Dummy NAND Gate"
+					size 1.70
+					line_width 0.33
+					rotation 180.0
+					style italic
+					alignment horizontal center vertical center
+				[TEXT END]
 			[TEXTS END]
 			[PLACEHOLDERS BEGIN]
 				[PLACEHOLDER BEGIN]

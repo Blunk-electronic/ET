@@ -2216,6 +2216,42 @@ package body et_project is
 		return point;
 	end to_position;
 
+	function to_alignment (
+		line : in et_string_processing.type_fields_of_line; -- "alignment horizontal center vertical center"
+		from : in positive)
+		return et_libraries.type_text_alignment is
+		use et_libraries;
+		use et_string_processing;
+
+		function f (line : in type_fields_of_line; position : in positive) return string 
+			renames et_string_processing.field;
+		
+		alignment : type_text_alignment; -- to be returned
+
+		place : positive := from; -- the field being read from given line
+
+		-- CS: flags to detect missing sheet, x or y
+	begin
+		while place <= positive (field_count (line)) loop
+
+			-- We expect after the "horizontal" the horizontal alignment
+			if f (line, place) = keyword_horizontal then
+				alignment.horizontal := to_alignment_horizontal (f (line, place + 1));
+
+			-- We expect after the "vertical" the vertical alignment
+			elsif f (line, place) = keyword_vertical then
+				alignment.vertical := to_alignment_vertical (f (line, place + 1));
+				
+			else
+				invalid_keyword (f (line, place));
+			end if;
+				
+			place := place + 2;
+		end loop;
+		
+		return alignment;
+	end to_alignment;
+
 	
 	procedure read_device_file (
 	-- Opens the device and stores it in container et_libraries.devices.
@@ -2349,7 +2385,10 @@ package body et_project is
 		symbol_line			: et_libraries.type_line;
 		symbol_arc			: et_libraries.type_arc;
 		symbol_circle		: et_libraries.type_circle;
-		symbol_text			: et_libraries.type_symbol_text;
+		symbol_text_base	: et_libraries.type_text_basic;
+		symbol_text_position: et_coordinates.type_2d_point;
+		symbol_text_content	: et_libraries.type_text_content.bounded_string;
+		symbol_placeholder_meaning : et_libraries.type_text_meaning := text_meaning_default;
 		
 		procedure insert_unit_internal is
 		-- Inserts in the temporarily collection of internal units a new unit.
@@ -2508,13 +2547,27 @@ package body et_project is
 						
 					when SEC_TEXTS =>
 						case stack.parent is
-							when SEC_SYMBOL => NULL;
+							when SEC_SYMBOL => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
 					when SEC_TEXT =>
 						case stack.parent is
-							when SEC_TEXTS => null; -- nothing to do
+							when SEC_TEXTS =>
+
+								-- append symbol text to symbol
+								type_symbol_texts.append (
+									container	=> unit_symbol.texts,
+									new_item	=> (symbol_text_base with
+											meaning		=> MISC,
+											content		=> symbol_text_content,
+											position	=> symbol_text_position));
+
+								-- clean up for next symbol text
+								symbol_text_base := (others => <>);
+								symbol_text_content := to_content ("");
+								symbol_text_position := zero;
+								
 							when others => invalid_section;
 						end case;
 						
@@ -2526,7 +2579,46 @@ package body et_project is
 						
 					when SEC_PLACEHOLDER =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => NULL;
+							when SEC_PLACEHOLDERS =>
+
+								-- Assign symbol text placeholder to symbol.
+								-- The meaning of the placeholder determines where
+								-- the placeholder is to be assigned. 
+								-- If meaning is not specified in section PLACEHOLDER,
+								-- the default meaning is assumed which raise an error.
+
+								-- CS: warn if placeholder exists multiple times. The latest
+								-- placeholder would overwrite the previous one.
+
+								case symbol_placeholder_meaning is
+									when REFERENCE =>
+										unit_symbol.reference := (symbol_text_base with 
+											position	=> symbol_text_position,
+											meaning		=> symbol_placeholder_meaning);
+
+									when et_libraries.VALUE =>
+										unit_symbol.value := (symbol_text_base with 
+											position	=> symbol_text_position,
+											meaning		=> symbol_placeholder_meaning);
+
+									when PURPOSE =>
+										unit_symbol.purpose := (symbol_text_base with 
+											position	=> symbol_text_position,
+											meaning		=> symbol_placeholder_meaning);
+
+									-- Default meaning causes an error:
+									when others => 
+										log_indentation_reset;
+										log (message_error & "meaning of placeholder not specified !",
+											 console => true);
+										raise constraint_error;
+								end case;
+
+								-- clean up for next symbol text placeholder
+								symbol_text_base := (others => <>);
+								symbol_text_position := zero;
+								symbol_placeholder_meaning := text_meaning_default;
+							
 							when others => invalid_section;
 						end case;
 
@@ -2539,6 +2631,8 @@ package body et_project is
 					when SEC_PORT =>
 						case stack.parent is
 							when SEC_PORTS => null; -- nothing to do
+
+							-- CS 
 							when others => invalid_section;
 						end case;
 						
@@ -2858,40 +2952,52 @@ package body et_project is
 						
 					when SEC_TEXTS =>
 						case stack.parent is
-							when SEC_SYMBOL => null;
--- 								declare
--- 									kw : string := f (line, 1);
--- 								begin
--- 									-- CS: In the following: set a corresponding parameter-found-flag
--- 									if kw = keyword_center then -- center x 1 y 2
--- 										expect_field_count (line, 5);
--- 
--- 										-- extract the start position starting at field 2
--- 										symbol_circle.center := to_position (line,2);
--- 
--- 									elsif kw = keyword_width then -- widht 0.2
--- 										expect_field_count (line, 2);
--- 										symbol_circle.width := et_coordinates.to_distance (f (line, 2));
--- 
--- 									elsif kw = keyword_radius then -- radius 5
--- 										expect_field_count (line, 2);
--- 										symbol_circle.radius := et_coordinates.to_distance (f (line, 2));
--- 
--- 									elsif kw = keyword_filled then -- filled yes/no
--- 										expect_field_count (line, 2);
--- 										symbol_circle.filled := et_libraries.to_circle_filled (f (line, 2));
--- 										
--- 									else
--- 										invalid_keyword (kw);
--- 									end if;
--- 								end;
-
+							when SEC_SYMBOL => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
 					when SEC_TEXT =>
 						case stack.parent is
-							when SEC_TEXTS => null; -- nothing to do
+							when SEC_TEXTS =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_position then -- position x 1 y 2
+										expect_field_count (line, 5);
+
+										-- extract the text position starting at field 2
+										symbol_text_position := to_position (line,2);
+
+									elsif kw = keyword_content then -- content "dummy NAND gate"
+										expect_field_count (line, 2);
+										symbol_text_content := et_libraries.to_content (f (line, 2));
+
+									elsif kw = keyword_size then -- size 5
+										expect_field_count (line, 2);
+										symbol_text_base.size := et_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_line_width then -- line_width 0.2
+										expect_field_count (line, 2);
+										symbol_text_base.line_width := et_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_rotation then -- rotation 90.0
+										expect_field_count (line, 2);
+										symbol_text_base.rotation := et_coordinates.to_angle (f (line, 2));
+										
+									elsif kw = keyword_style then -- style italic
+										expect_field_count (line, 2);
+										symbol_text_base.style := et_libraries.to_text_style (f (line, 2));
+
+									elsif kw = keyword_alignment then -- alignment horizontal center vertical center
+										expect_field_count (line, 5);
+										symbol_text_base.alignment := to_alignment (line, 2);
+
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
 							when others => invalid_section;
 						end case;
 						
@@ -2903,19 +3009,60 @@ package body et_project is
 						
 					when SEC_PLACEHOLDER =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => NULL;
+							when SEC_PLACEHOLDERS =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_position then -- position x 1 y 2
+										expect_field_count (line, 5);
+
+										-- extract the placeholder position starting at field 2
+										symbol_text_position := to_position (line,2);
+
+									elsif kw = keyword_meaning then -- meaning reference
+										expect_field_count (line, 2);
+										symbol_placeholder_meaning := et_libraries.to_text_meaning (f (line, 2));
+
+									elsif kw = keyword_size then -- size 5
+										expect_field_count (line, 2);
+										symbol_text_base.size := et_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_line_width then -- line_width 0.2
+										expect_field_count (line, 2);
+										symbol_text_base.line_width := et_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_rotation then -- rotation 90.0
+										expect_field_count (line, 2);
+										symbol_text_base.rotation := et_coordinates.to_angle (f (line, 2));
+										
+									elsif kw = keyword_style then -- style italic
+										expect_field_count (line, 2);
+										symbol_text_base.style := et_libraries.to_text_style (f (line, 2));
+
+									elsif kw = keyword_alignment then -- alignment horizontal center vertical center
+										expect_field_count (line, 5);
+										symbol_text_base.alignment := to_alignment (line, 2);
+
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
 							when others => invalid_section;
 						end case;
 
 					when SEC_PORTS =>
 						case stack.parent is 
-							when SEC_SYMBOL => NULL;
+							when SEC_SYMBOL => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
 					when SEC_PORT =>
 						case stack.parent is
 							when SEC_PORTS => null; -- nothing to do
+
+							-- CS
 							when others => invalid_section;
 						end case;
 						
@@ -3771,39 +3918,6 @@ package body et_project is
 				
 				return point;
 			end to_position;
-
-			
-			function to_alignment (
-				line : in type_fields_of_line; -- "alignment horizontal center vertical center"
-				from : in positive)
-				return et_libraries.type_text_alignment is
-				use et_libraries;
-				
-				alignment : type_text_alignment; -- to be returned
-
-				place : positive := from; -- the field being read from given line
-
-				-- CS: flags to detect missing sheet, x or y
-			begin
-				while place <= positive (field_count (line)) loop
-
-					-- We expect after the "horizontal" the horizontal alignment
-					if f (line, place) = keyword_horizontal then
-						alignment.horizontal := to_alignment_horizontal (f (line, place + 1));
-
-					-- We expect after the "vertical" the vertical alignment
-					elsif f (line, place) = keyword_vertical then
-						alignment.vertical := to_alignment_vertical (f (line, place + 1));
-						
-					else
-						invalid_keyword (f (line, place));
-					end if;
-						
-					place := place + 2;
-				end loop;
-				
-				return alignment;
-			end to_alignment;
 
 			function to_layers (
 			-- Converts a line like "layers 1 4 17" to a set of signal layers.
