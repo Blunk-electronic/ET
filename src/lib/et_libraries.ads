@@ -278,7 +278,7 @@ package et_libraries is
 		INVERTED,
 		POSITIVE_EDGE,
 		NEGATIVE_EDGE,		
-		EDGE
+		EDGE -- positive and negative edge sensitive
 		);
 
 	function to_string (characteristic : in type_port_characteristic) return string;
@@ -313,8 +313,7 @@ package et_libraries is
 		-- CS: port swap level ? -> would require a derived new type
 	end record;
 
-	type type_port is new type_port_base with record 
-		direction 			: type_port_direction;		
+	type type_port (direction : type_port_direction) is new type_port_base with record 
 		-- CS should be controlled by the direction. depending on that, we will have characteristics 
 		-- for passive, inputs and outputs separately.		
 		characteristic	: type_port_characteristic := NONE;
@@ -323,7 +322,7 @@ package et_libraries is
 	-- Ports of a component are collected in a simple list. A list, because multiple ports
 	-- with the same name (but differing terminal names) may exist. For example lots of GND
 	-- ports at FPGAs.
-	package type_ports is new doubly_linked_lists (type_port); 
+	package type_ports is new indefinite_doubly_linked_lists (type_port); 
 
 
 	
