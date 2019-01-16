@@ -313,10 +313,23 @@ package et_libraries is
 		-- CS: port swap level ? -> would require a derived new type
 	end record;
 
+	type type_sensitivity_edge is (NONE, RISING, FALLING, ANY);
+	type type_output_inverted is (NO, YES);
+	
 	type type_port (direction : type_port_direction) is new type_port_base with record 
-		-- CS should be controlled by the direction. depending on that, we will have characteristics 
-		-- for passive, inputs and outputs separately.		
-		characteristic	: type_port_characteristic := NONE;
+		case direction is
+			when INPUT =>
+				input_sensitivity		: type_sensitivity_edge;
+
+			when OUTPUT | TRISTATE | WEAK0 | WEAK1 =>
+				output_inverted			: type_output_inverted;
+
+			when BIDIR =>
+				input_bidir_sensitivity	: type_sensitivity_edge;
+				output_bidir_inverted	: type_output_inverted;
+				
+			when others => null;
+		end case;
 	end record;
 	
 	-- Ports of a component are collected in a simple list. A list, because multiple ports
