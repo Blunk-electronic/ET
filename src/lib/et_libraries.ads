@@ -161,9 +161,10 @@ package et_libraries is
 		PACKGE,			-- for component packages like SOT23
 		DATASHEET,		-- for url to datasheet
 		PURPOSE,		-- for the purpose of the component in the design.
-		PARTCODE,		-- for the primary key into an external database (like "R_PAC_S_0805_VAL_200R")
 		MISC); -- CS: others ?
-
+	-- CS: The type_text_meaning covers more than actually required by ET.
+	-- It also includes text meanings of kicad. Rework required !
+	
 	text_meaning_default : constant type_text_meaning := MISC;
 	
 	function to_string (meaning : in type_text_meaning) return string;
@@ -181,7 +182,6 @@ package et_libraries is
         style		: type_text_style := type_text_style'first;
         line_width	: type_text_line_width := type_text_line_width'first; -- CS: use a general type_line_width ?
         rotation	: type_angle := 0.0;
-		--visible		: type_text_visible := yes; -- unless assigned otherwise all texts are visible by default -- CS probaby a useless feature ?
 		alignment	: type_text_alignment;
 	end record;
 
@@ -195,14 +195,6 @@ package et_libraries is
 	procedure check_text_content_length (content : in string);
 	-- Tests if the content is not longer than allowed.
 	
--- 	-- This is a real text with its content:
--- 	type type_text (meaning : type_text_meaning) is new type_text_basic with record
---         content		: type_text_content.bounded_string;
--- 	end record;
--- 
--- 	-- This is a placeholder for a text. It does not have content yet, but a meaning:
--- 	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with null record;
-
 	-- This is a placeholder for a text. It does not have content yet, but a meaning:
 	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with record
 		position : type_2d_point;
