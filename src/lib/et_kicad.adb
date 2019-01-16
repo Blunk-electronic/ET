@@ -1658,9 +1658,9 @@ package body et_kicad is
 				tmp_terminal_name := type_terminal_name.to_bounded_string (et_string_processing.field (line,3)); -- H5, 14
 
 				-- compose position
-				set_x (port.coordinates, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
-				set_y (port.coordinates, mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false));
-				mirror (point => port.coordinates, axis => x);
+				set_x (port.position, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
+				set_y (port.position, mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false));
+				mirror (point => port.position, axis => x);
 
 				-- compose length
 				port.length := mil_to_distance (mil => et_string_processing.field (line,6), warn_on_negative => false);
@@ -1684,8 +1684,8 @@ package body et_kicad is
 				end if;
 
 				-- visibility port and pin names
-				port.port_name_visible	:= tmp_port_name_visible;
-				port.terminal_visible	:= tmp_terminal_name_visible;
+				port.port_name_visible		:= tmp_port_name_visible;
+				port.terminal_name_visible	:= tmp_terminal_name_visible;
 
 				-- port name offset
 				port.port_name_offset	:= tmp_port_name_offset;
@@ -9718,7 +9718,7 @@ package body et_kicad is
 					-- The port position is a type_2d_point and must be converted to type_coordinates.
 					et_coordinates.set_xy (
 						point		=> port_coordinates,
-						position	=> to_coordinates (element (port_cursor).coordinates)); -- with type conversion
+						position	=> to_coordinates (element (port_cursor).position)); -- with type conversion
 
 					-- rotate port coordinates
 					rotate (

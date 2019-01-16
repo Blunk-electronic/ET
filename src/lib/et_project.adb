@@ -1929,14 +1929,14 @@ package body et_project is
 		procedure write_port (cursor : in type_ports.cursor) is begin
 			section_mark (section_port, HEADER);
 			write (keyword => keyword_name, space => true, parameters => to_string (element (cursor).name));
-			write (keyword => keyword_position, parameters => position (element (cursor).coordinates));
+			write (keyword => keyword_position, parameters => position (element (cursor).position));
 			write (keyword => keyword_direction, parameters => to_string (element (cursor).direction, preamble => false));
 			write (keyword => keyword_characteristic, parameters => to_string (element (cursor).characteristic));
 			write (keyword => keyword_length, parameters => et_coordinates.to_string (element (cursor).length));
-			write (keyword => keyword_rotation, parameters => rotation (element (cursor).orientation));
+			write (keyword => keyword_rotation, parameters => rotation (element (cursor).rotation));
 			write (keyword => keyword_port_name_visible, parameters => to_string (element (cursor).port_name_visible));
 			write (keyword => keyword_port_name_size, parameters => et_coordinates.to_string (element (cursor).port_name_size));
-			write (keyword => keyword_terminal_name_visible, parameters => to_string (element (cursor).terminal_visible));
+			write (keyword => keyword_terminal_name_visible, parameters => to_string (element (cursor).terminal_name_visible));
 			write (keyword => keyword_terminal_name_size, parameters => et_coordinates.to_string (element (cursor).terminal_name_size));
 			section_mark (section_port, FOOTER);			
 		end write_port;
@@ -2389,6 +2389,7 @@ package body et_project is
 		symbol_text_position: et_coordinates.type_2d_point;
 		symbol_text_content	: et_libraries.type_text_content.bounded_string;
 		symbol_placeholder_meaning : et_libraries.type_text_meaning := text_meaning_default;
+		--symbol_port			: et_libraries.type_port;
 		
 		procedure insert_unit_internal is
 		-- Inserts in the temporarily collection of internal units a new unit.
@@ -2624,7 +2625,7 @@ package body et_project is
 
 					when SEC_PORTS =>
 						case stack.parent is 
-							when SEC_SYMBOL => NULL;
+							when SEC_SYMBOL => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 

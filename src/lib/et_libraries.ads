@@ -303,18 +303,18 @@ package et_libraries is
 	end record;
 	
 	type type_port_base is new type_port_named with record 	-- CS: set defaults
-		direction			: type_port_direction; -- example: "passive"
-		coordinates			: type_2d_point; -- CS: rename to position
+		position			: type_2d_point;
 		length				: type_port_length; 
-		orientation			: type_angle; -- CS: rename to rotation
+		rotation			: type_angle;
 		port_name_visible	: type_port_name_visible;
 		port_name_size		: type_port_name_text_size;
-		terminal_visible	: type_terminal_name_visible; -- CS: rename to terminal_name_visible
-		terminal_name_size	: type_terminal_name_text_size;
+		terminal_name_visible	: type_terminal_name_visible;
+		terminal_name_size		: type_terminal_name_text_size;
 		-- CS: port swap level ? -> would require a derived new type
 	end record;
 
 	type type_port is new type_port_base with record 
+		direction 			: type_port_direction;		
 		-- CS should be controlled by the direction. depending on that, we will have characteristics 
 		-- for passive, inputs and outputs separately.		
 		characteristic	: type_port_characteristic := NONE;
