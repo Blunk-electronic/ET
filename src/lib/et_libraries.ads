@@ -251,6 +251,7 @@ package et_libraries is
 		NOT_CONNECTED	-- advised by manufacturer to be left unconnected
 		);
 
+	function to_string (direction : in type_port_direction) return string;
 	function to_port_direction (direction : in string) return type_port_direction;
 	
 	type type_port_name_visible is (ON, OFF); -- CS change to yes/no

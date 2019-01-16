@@ -1930,8 +1930,8 @@ package body et_project is
 			section_mark (section_port, HEADER);
 			write (keyword => keyword_name, space => true, parameters => to_string (element (cursor).name));
 			write (keyword => keyword_position, parameters => position (element (cursor).position));
-			write (keyword => keyword_direction, parameters => to_string (element (cursor).direction, preamble => false));
-			-- cs write (keyword => keyword_characteristic, parameters => to_string (element (cursor).characteristic));
+			write (keyword => keyword_direction, parameters => to_string (element (cursor).direction));
+			-- CS write (keyword => keyword_characteristic, parameters => to_string (element (cursor).characteristic));
 			write (keyword => keyword_length, parameters => et_coordinates.to_string (element (cursor).length));
 			write (keyword => keyword_rotation, parameters => rotation (element (cursor).rotation));
 			write (keyword => keyword_port_name_visible, parameters => to_string (element (cursor).port_name_visible));

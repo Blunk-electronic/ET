@@ -187,10 +187,14 @@ package body et_libraries is
 			& to_string (alignment.vertical);
 	end to_string;
 
+	function to_string (direction : in type_port_direction) return string is begin
+		return latin_1.space & to_lower (type_port_direction'image (direction));
+	end to_string;
+	
 	function to_port_direction (direction : in string) return type_port_direction is begin
 		return type_port_direction'value (direction);
 	end to_port_direction;
-		
+	
 	function to_string (characteristic : in type_port_characteristic) return string is begin
 		return latin_1.space & to_lower (type_port_characteristic'image (characteristic));
 	end to_string;
