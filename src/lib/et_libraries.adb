@@ -191,18 +191,6 @@ package body et_libraries is
 		return type_port_direction'value (direction);
 	end to_port_direction;
 		
-	function to_string (
-		direction	: in type_port_direction;
-		preamble	: in boolean := true) return string is
-	-- Returns the given port direction as string.
-	begin
-		if preamble then
-			return " direction " & to_lower (type_port_direction'image (direction));
-		else
-			return latin_1.space & to_lower (type_port_direction'image (direction));
-		end if;
-	end to_string;
-
 	function to_string (characteristic : in type_port_characteristic) return string is begin
 		return latin_1.space & to_lower (type_port_characteristic'image (characteristic));
 	end to_string;

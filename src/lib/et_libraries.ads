@@ -246,22 +246,13 @@ package et_libraries is
 		INPUT,		-- signal inputs
 		OUTPUT,		-- signal outputs
 		BIDIR,		-- bidirectional ports
-		TRISTATE,	-- tristate ports
-		UNKNOWN,
 		POWER_OUT,	-- a power source like power symbol (VCC, GND, ..)
 		POWER_IN,	-- a power sink like power ports of ICs
-		WEAK1,		-- a port with internal pull-up resistor
-		WEAK0,		-- a port with internal pull-down resistor
 		NOT_CONNECTED	-- advised by manufacturer to be left unconnected
 		);
 
 	function to_port_direction (direction : in string) return type_port_direction;
 	
-	function to_string (
-		direction	: in type_port_direction;
-		preamble	: in boolean := true) return string;
-	-- Returns the given port direction as string.
-
 	type type_port_name_visible is (ON, OFF); -- CS change to yes/no
 	function to_string (port_visible : in type_port_name_visible) return string;
 
@@ -321,7 +312,7 @@ package et_libraries is
 			when INPUT =>
 				input_sensitivity		: type_sensitivity_edge;
 
-			when OUTPUT | TRISTATE | WEAK0 | WEAK1 =>
+			when OUTPUT =>
 				output_inverted			: type_output_inverted;
 
 			when BIDIR =>

@@ -248,6 +248,18 @@ package body et_kicad is
 		return latin_1.space & to_lower (type_port_style'image (style));
 	end to_string;
 
+	function to_string (
+		direction	: in type_port_direction;
+		preamble	: in boolean := true) return string is
+	-- Returns the given port direction as string.
+	begin
+		if preamble then
+			return " direction " & to_lower (type_port_direction'image (direction));
+		else
+			return latin_1.space & to_lower (type_port_direction'image (direction));
+		end if;
+	end to_string;
+	
 	function to_string (fill : in type_fill) return string is begin
 		return latin_1.space & to_lower (type_fill_border'image (fill.border))
 		& latin_1.space & "pattern" & latin_1.space 
@@ -9804,7 +9816,7 @@ package body et_kicad is
 
 					end case;
 							
-					log (et_libraries.to_string (type_ports.last_element (ports).direction), log_threshold + 3);
+					log (to_string (type_ports.last_element (ports).direction), log_threshold + 3);
 					log_indentation_up;
 					-- CS: other port properties
 					log (to_string (position => type_ports.last_element (ports).coordinates), log_threshold + 3);
@@ -10223,7 +10235,7 @@ package body et_kicad is
 							-- bearing the same name. If one of them is connected things are fine. Otherwise
 							-- the power supply port is indeed not connected -> raise alarm and abort.
 							-- For ports with other directions, issue a warning.
-							if et_libraries."=" (element (port_cursor).direction, et_libraries.power_in) then
+							if element (port_cursor).direction = POWER_IN then
 								if not connected_by_other_unit then
 									log (message_error & "power supply not connected at" 
 										& to_string (element (port_cursor).coordinates, et_coordinates.module)
@@ -11849,19 +11861,19 @@ package body et_kicad is
 					-- log reference, port and direction (all in one line)
 					log ("reference " & et_libraries.to_string (element (port_cursor).reference)
 						& " port " & et_libraries.to_string (element (port_cursor).name)
-						& et_libraries.to_string (element (port_cursor).direction, preamble => true),
+						& to_string (element (port_cursor).direction, preamble => true),
 						log_threshold + 3);
 
 					-- count ports by direction
 					case element (port_cursor).direction is
-						when et_libraries.input		=> input_count := input_count + 1; -- CS: use increment (see above)
-						when et_libraries.output	=> output_count := output_count + 1;
-						when et_libraries.bidir		=> bidir_count := bidir_count + 1;
-						when et_libraries.weak0		=> weak0_count := weak0_count + 1;
-						when et_libraries.weak1		=> weak1_count := weak1_count + 1;
-						when et_libraries.power_out	=> power_out_count := power_out_count + 1;
+						when INPUT		=> input_count := input_count + 1; -- CS: use increment (see above)
+						when OUTPUT		=> output_count := output_count + 1;
+						when BIDIR		=> bidir_count := bidir_count + 1;
+						when WEAK0		=> weak0_count := weak0_count + 1;
+						when WEAK1		=> weak1_count := weak1_count + 1;
+						when POWER_OUT	=> power_out_count := power_out_count + 1;
 						
-						when et_libraries.unknown	=> -- CS: verification required
+						when UNKNOWN	=> -- CS: verification required
 							log_indentation_reset;
 							log (message_error & show_net & " has a port with unknown direction at " 
 								& to_string (element (port_cursor).coordinates, scope => et_coordinates.module)
@@ -13011,7 +13023,7 @@ package body et_kicad is
 						log ("reference " & et_libraries.to_string (type_ports_with_reference.element (port_cursor).reference)
 							& " unit " & et_libraries.to_string (unit_name => terminal.unit)
 							& " port " & et_libraries.to_string (port => terminal.port)
-							& et_libraries.to_string (type_ports_with_reference.element (port_cursor).direction)
+							& to_string (type_ports_with_reference.element (port_cursor).direction)
 							& " terminal " & et_libraries.to_string (terminal => terminal.name),
 							log_threshold + 3);
 
@@ -13019,7 +13031,7 @@ package body et_kicad is
 						put_line (netlist_handle, 
 							et_libraries.to_string (type_ports_with_reference.element (port_cursor).reference) & latin_1.space
 							& et_libraries.to_string (port => terminal.port)
-							& et_libraries.to_string (type_ports_with_reference.element (port_cursor).direction, preamble => false) & latin_1.space
+							& to_string (type_ports_with_reference.element (port_cursor).direction, preamble => false) & latin_1.space
 							& et_libraries.to_string (terminal => terminal.name)); 
 
 					end if;

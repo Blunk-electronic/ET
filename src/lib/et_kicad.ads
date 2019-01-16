@@ -267,10 +267,31 @@ package et_kicad is
 		INVISIBLE_NON_LOGIC);
 
 	function to_string (style : in type_port_style) return string;
+
+	-- The port has an electrical direction:
+	type type_port_direction is (
+		PASSIVE,	-- almost all passive components like resistors, capacitors, .. have such ports
+		INPUT,		-- signal inputs
+		OUTPUT,		-- signal outputs
+		BIDIR,		-- bidirectional ports
+		TRISTATE,	-- tristate ports
+		UNKNOWN,
+		POWER_OUT,	-- a power source like power symbol (VCC, GND, ..)
+		POWER_IN,	-- a power sink like power ports of ICs
+		WEAK1,		-- a port with internal pull-up resistor
+		WEAK0,		-- a port with internal pull-down resistor
+		NOT_CONNECTED	-- advised by manufacturer to be left unconnected
+		);
+
+	function to_string (
+		direction	: in type_port_direction;
+		preamble	: in boolean := true) return string;
+	-- Returns the given port direction as string.
+
 	
 	type type_port_library is new et_libraries.type_port_base with record 	-- CS: set defaults
-		direction 			: et_libraries.type_port_direction;
-		style 				: type_port_style := NONE;
+		direction 	: type_port_direction;
+		style 		: type_port_style := NONE;
 
 		-- the clearance between symbol outline and port name 
 		-- CS: define a reasonable range
@@ -577,7 +598,7 @@ package et_kicad is
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
 		name			: et_libraries.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
 		coordinates 	: et_coordinates.type_coordinates;
-		direction		: et_libraries.type_port_direction; -- example: "passive"
+		direction		: type_port_direction; -- example: "passive"
 		style			: type_port_style;
 		appearance		: et_schematic.type_appearance_schematic;
 		intended_open	: type_port_open; -- set while portlist generation. true if port is to be left open intentionally (by a no_connection-flag)
@@ -1124,7 +1145,7 @@ package et_kicad is
 	-- On the box edges are ports. 
 	-- It serves as link between a hierachical net and the parent module.
 	type type_hierarchic_sheet_port is record
-		direction	: et_libraries.type_port_direction;
+		direction	: type_port_direction;
 		text_size	: et_libraries.type_text_size;
 		coordinates	: et_coordinates.type_2d_point;
         orientation	: et_coordinates.type_angle;
