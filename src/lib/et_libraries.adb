@@ -195,9 +195,9 @@ package body et_libraries is
 		return type_port_direction'value (direction);
 	end to_port_direction;
 	
-	function to_string (characteristic : in type_port_characteristic) return string is begin
-		return latin_1.space & to_lower (type_port_characteristic'image (characteristic));
-	end to_string;
+-- 	function to_string (characteristic : in type_port_characteristic) return string is begin
+-- 		return latin_1.space & to_lower (type_port_characteristic'image (characteristic));
+-- 	end to_string;
 
 	function to_string (port_visible : in type_port_name_visible) return string is begin
 		return latin_1.space & to_lower (type_port_name_visible'image (port_visible));

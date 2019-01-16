@@ -262,18 +262,18 @@ package et_libraries is
 	function to_string (terminal_visible : in type_terminal_name_visible) return string;	
 	
 	
-	type type_port_characteristic is ( 
-	-- CS: A type for characteristics of passive, input and output should be done.
-	-- see note in type_port.
-		
-		NONE, -- NOTE: Default must be here at first position !
-		INVERTED,
-		POSITIVE_EDGE,
-		NEGATIVE_EDGE,		
-		EDGE -- positive and negative edge sensitive
-		);
+-- 	type type_port_characteristic is ( 
+-- 	-- CS: A type for characteristics of passive, input and output should be done.
+-- 	-- see note in type_port.
+-- 		
+-- 		NONE, -- NOTE: Default must be here at first position !
+-- 		INVERTED,
+-- 		POSITIVE_EDGE,
+-- 		NEGATIVE_EDGE,		
+-- 		EDGE -- positive and negative edge sensitive
+-- 		);
 
-	function to_string (characteristic : in type_port_characteristic) return string;
+-- 	function to_string (characteristic : in type_port_characteristic) return string;
 	
  	port_name_length_max : constant natural := 100;
 	package type_port_name is new generic_bounded_length (port_name_length_max);
@@ -306,19 +306,30 @@ package et_libraries is
 	end record;
 
 	type type_sensitivity_edge is (NONE, RISING, FALLING, ANY);
+	type type_sensitivity_level is (NONE, LOW, HIGH);	
 	type type_output_inverted is (NO, YES);
+	type type_output_weak is (NO, WEAK0, WEAK1);
+	type type_output_pull is (NO, PULL0, PULL1);
+	type type_power is (PWR_POSITIVE, PWR_NEGATIVE, PWR_ZERO);
 	
 	type type_port (direction : type_port_direction) is new type_port_base with record 
 		case direction is
 			when INPUT =>
-				input_sensitivity		: type_sensitivity_edge;
+				sensitivity_edge	: type_sensitivity_edge;
+				sensitivity_level	: type_sensitivity_level;
 
 			when OUTPUT =>
-				output_inverted			: type_output_inverted;
-
+				inverted		: type_output_inverted;
+				weak			: type_output_weak;
+				pull			: type_output_pull;
+				
 			when BIDIR =>
-				input_bidir_sensitivity	: type_sensitivity_edge;
-				output_bidir_inverted	: type_output_inverted;
+				output_inverted	: type_output_inverted;
+				output_weak		: type_output_weak;
+				output_pull		: type_output_pull;
+
+				input_sensitivity_edge	: type_sensitivity_edge;
+				input_sensitivity_level	: type_sensitivity_level;
 				
 			when others => null;
 		end case;
