@@ -1939,11 +1939,14 @@ package body et_project is
 
 				when OUTPUT =>
 					write (keyword => keyword_inverted, parameters => to_string (element (cursor).inverted));
+					write (keyword => keyword_tristate, parameters => to_string (element (cursor).tristate));
 					write (keyword => keyword_weakness, parameters => to_string (element (cursor).weakness));
-
+					
 				when BIDIR =>
 					write (keyword => keyword_output_inverted, parameters => to_string (element (cursor).output_inverted));
+					write (keyword => keyword_output_tristate, parameters => to_string (element (cursor).output_tristate));
 					write (keyword => keyword_output_weakness, parameters => to_string (element (cursor).output_weakness));
+
 					write (keyword => keyword_input_sensitivity_edge, parameters => to_string (element (cursor).input_sensitivity_edge));
 					write (keyword => keyword_input_sensitivity_level, parameters => to_string (element (cursor).input_sensitivity_level));
 

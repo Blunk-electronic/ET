@@ -366,8 +366,10 @@ package et_project is
 	keyword_sensitivity_level		: constant string := "sensitivity_level";
 	keyword_inverted				: constant string := "inverted";
 	keyword_weakness				: constant string := "weakness";
+	keyword_tristate				: constant string := "tristate";	
 	keyword_output_inverted			: constant string := "output_inverted";
 	keyword_output_weakness			: constant string := "output_weakness";
+	keyword_output_tristate			: constant string := "output_tristate";
 	keyword_input_sensitivity_edge	: constant string := "input_sensitivity_edge";
 	keyword_input_sensitivity_level	: constant string := "input_sensitivity_level";
 	keyword_level					: constant string := "level";

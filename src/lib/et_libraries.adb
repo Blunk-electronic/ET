@@ -234,6 +234,14 @@ package body et_libraries is
 	function to_power_level (level : in string) return type_power_level is begin
 		return type_power_level'value (level);
 	end to_power_level;
+
+	function to_string (tristate : in type_tristate) return string is begin
+		return latin_1.space & to_lower (type_tristate'image (tristate));
+	end to_string;
+
+	function to_tristate (tristate : in string) return type_tristate is begin
+		return type_tristate'value (tristate);
+	end to_tristate;
 	
 	function to_string (port_visible : in type_port_name_visible) return string is begin
 		return latin_1.space & to_lower (type_port_name_visible'image (port_visible));

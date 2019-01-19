@@ -3046,14 +3046,25 @@ package body et_kicad_to_native is
 										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
 											direction			=> OUTPUT,
 											inverted			=> to_inverted (element (port_cursor_kicad).style),
+											tristate			=> NO,											
 											weakness			=> NONE));
 
+								when et_kicad.TRISTATE =>
+									et_libraries.type_ports.append (
+										container	=> unit.symbol.ports,
+										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+											direction			=> OUTPUT,
+											inverted			=> to_inverted (element (port_cursor_kicad).style),
+											tristate			=> YES,
+											weakness			=> NONE));
+									
 								when et_kicad.WEAK0 =>
 									et_libraries.type_ports.append (
 										container	=> unit.symbol.ports,
 										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
 											direction			=> OUTPUT,
 											inverted			=> to_inverted (element (port_cursor_kicad).style),
+											tristate			=> NO,
 											weakness			=> WEAK0));
 
 								when et_kicad.WEAK1 =>
@@ -3062,6 +3073,7 @@ package body et_kicad_to_native is
 										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
 											direction			=> OUTPUT,
 											inverted			=> to_inverted (element (port_cursor_kicad).style),
+											tristate			=> NO,
 											weakness			=> WEAK1));
 									
 								when et_kicad.BIDIR =>
@@ -3070,6 +3082,7 @@ package body et_kicad_to_native is
 										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
 											direction			=> BIDIR,
 											output_inverted		=> to_inverted (element (port_cursor_kicad).style),
+											output_tristate		=> NO,
 											output_weakness		=> NONE,
 											input_sensitivity_edge	=> to_edge (element (port_cursor_kicad).style),
 											input_sensitivity_level	=> to_level (element (port_cursor_kicad).style)));
@@ -3096,7 +3109,6 @@ package body et_kicad_to_native is
 										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
 											direction			=> NOT_CONNECTED));
 
-								when others => null;
 									-- NOTE: The kicad port_name_offset is discarded here.
 
 							end case;

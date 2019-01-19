@@ -262,20 +262,6 @@ package et_libraries is
 	type type_terminal_name_visible is (ON, OFF); -- CS change to yes/no
 	function to_string (terminal_visible : in type_terminal_name_visible) return string;	
 	
-	
--- 	type type_port_characteristic is ( 
--- 	-- CS: A type for characteristics of passive, input and output should be done.
--- 	-- see note in type_port.
--- 		
--- 		NONE, -- NOTE: Default must be here at first position !
--- 		INVERTED,
--- 		POSITIVE_EDGE,
--- 		NEGATIVE_EDGE,		
--- 		EDGE -- positive and negative edge sensitive
--- 		);
-
--- 	function to_string (characteristic : in type_port_characteristic) return string;
-	
  	port_name_length_max : constant natural := 100;
 	package type_port_name is new generic_bounded_length (port_name_length_max);
 	use type_port_name;
@@ -332,6 +318,10 @@ package et_libraries is
 
 	function to_string (weakness : in type_output_weakness) return string;
 	function to_output_weakness (weakness : in string) return type_output_weakness;
+
+	type type_tristate is (NO, YES);
+	function to_string (tristate : in type_tristate) return string;
+	function to_tristate (tristate : in string) return type_tristate;
 	
 	type type_power_level is (LEVEL_ZERO, LEVEL_POSITIVE, LEVEL_NEGATIVE);
 	function to_string (level : in type_power_level) return string;
@@ -345,10 +335,12 @@ package et_libraries is
 
 			when OUTPUT =>
 				inverted			: type_output_inverted;
+				tristate			: type_tristate;
 				weakness			: type_output_weakness;
 				
 			when BIDIR =>
 				output_inverted		: type_output_inverted;
+				output_tristate		: type_tristate;				
 				output_weakness		: type_output_weakness;
 				input_sensitivity_edge	: type_sensitivity_edge;
 				input_sensitivity_level	: type_sensitivity_level;
