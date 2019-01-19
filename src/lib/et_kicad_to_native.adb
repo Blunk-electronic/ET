@@ -2969,28 +2969,50 @@ package body et_kicad_to_native is
 						unit_name	: in et_libraries.type_unit_name.bounded_string;
 						unit		: in out et_libraries.type_unit_internal) is
 
--- 						function to_characteristic (style : in et_kicad.type_port_style) 
--- 						-- Maps from kicad port style to native port characteristic.
--- 							return et_libraries.type_port_characteristic is 
--- 							use et_kicad;
--- 							use et_libraries;
--- 						begin
--- 							case style is
--- 								when NONE | NON_LOGIC | INVISIBLE_NON_LOGIC => return NONE;
--- 								
--- 								when INVERTED | INVISIBLE_INVERTED | INVISIBLE_INPUT_LOW |
--- 									INPUT_LOW | OUTPUT_LOW | INVISIBLE_OUTPUT_LOW => return INVERTED;
--- 									
--- 								when CLOCK | INVISIBLE_CLOCK | RISING_EDGE_CLK |
--- 									INVISIBLE_RISING_EDGE_CLK => return POSITIVE_EDGE;
--- 								
--- 								when INVERTED_CLOCK | INVISIBLE_INVERTED_CLOCK | INVISIBLE_CLOCK_LOW |
--- 									FALLING_EDGE_CLK | INVISIBLE_FALLING_EDGE_CLK => return NEGATIVE_EDGE;
--- 								
--- 								when others => return NONE;
--- 
--- 							end case;
--- 						end to_characteristic;
+						function to_level (style : in et_kicad.type_port_style) 
+						-- Maps from kicad port style to native port characteristic.
+							return et_libraries.type_sensitivity_level is 
+							use et_kicad;
+							use et_libraries;
+						begin
+							case style is
+								when INVERTED | INVISIBLE_INVERTED | INVISIBLE_INPUT_LOW |
+									INPUT_LOW | OUTPUT_LOW | INVISIBLE_OUTPUT_LOW => return LOW;
+								
+								when others => return HIGH;
+							end case;
+						end to_level;
+
+						function to_edge (style : in et_kicad.type_port_style) 
+						-- Maps from kicad port style to native port characteristic.
+							return et_libraries.type_sensitivity_edge is 
+							use et_kicad;
+							use et_libraries;
+						begin
+							case style is
+								when CLOCK | INVISIBLE_CLOCK | RISING_EDGE_CLK |
+									INVISIBLE_RISING_EDGE_CLK => return RISING;
+								
+								when INVERTED_CLOCK | INVISIBLE_INVERTED_CLOCK | INVISIBLE_CLOCK_LOW |
+									FALLING_EDGE_CLK | INVISIBLE_FALLING_EDGE_CLK => return FALLING;
+								
+								when others => return NONE;
+							end case;
+						end to_edge;
+
+						function to_inverted (style : in et_kicad.type_port_style) 
+						-- Maps from kicad port style to native port characteristic.
+							return et_libraries.type_output_inverted is 
+							use et_kicad;
+							use et_libraries;
+						begin
+							case style is
+								when INVERTED | OUTPUT_LOW | INVISIBLE_INVERTED | 
+									INVISIBLE_OUTPUT_LOW => return YES;
+								
+								when others => return NO;
+							end case;
+						end to_inverted;
 						
 						-- This cursor points to a port of a kicad unit. We initialize it so that
 						-- it points to the first port of the current unit.
@@ -3024,8 +3046,7 @@ package body et_kicad_to_native is
 										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
 											direction			=> OUTPUT,
 											inverted			=> to_inverted (element (port_cursor_kicad).style),
-											weak				=> to_weak (element (port_cursor_kicad).style),
-											pull				=> to_pull (element (port_cursor_kicad).style)));
+											weakness			=> NONE));
 
 								when et_kicad.WEAK0 =>
 									et_libraries.type_ports.append (
@@ -3033,8 +3054,15 @@ package body et_kicad_to_native is
 										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
 											direction			=> OUTPUT,
 											inverted			=> to_inverted (element (port_cursor_kicad).style),
-											weak				=> NO,
-											pull				=> PULL0));
+											weakness			=> WEAK0));
+
+								when et_kicad.WEAK1 =>
+									et_libraries.type_ports.append (
+										container	=> unit.symbol.ports,
+										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+											direction			=> OUTPUT,
+											inverted			=> to_inverted (element (port_cursor_kicad).style),
+											weakness			=> WEAK1));
 									
 								when et_kicad.BIDIR =>
 									et_libraries.type_ports.append (
@@ -3042,8 +3070,7 @@ package body et_kicad_to_native is
 										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
 											direction			=> BIDIR,
 											output_inverted		=> to_inverted (element (port_cursor_kicad).style),
-											output_weak			=> to_weak (element (port_cursor_kicad).style),
-											output_pull			=> to_pull (element (port_cursor_kicad).style),
+											output_weakness		=> NONE,
 											input_sensitivity_edge	=> to_edge (element (port_cursor_kicad).style),
 											input_sensitivity_level	=> to_level (element (port_cursor_kicad).style)));
 
@@ -3051,22 +3078,23 @@ package body et_kicad_to_native is
 									et_libraries.type_ports.append (
 										container	=> unit.symbol.ports,
 										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
-											direction			=> POWER_OUT
-													));
+											direction			=> POWER_OUT,
+											level				=> LEVEL_ZERO)); 
+											-- CS: The level could be reasoned from the port name such as +12V or -5V.
 
 								when et_kicad.POWER_IN =>
 									et_libraries.type_ports.append (
 										container	=> unit.symbol.ports,
 										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
-											direction			=> POWER_IN
-													));
+											direction			=> POWER_IN,
+											level				=> LEVEL_ZERO)); 
+											-- CS: The level could be reasoned from the port name such as +12V or -5V.
 
 								when et_kicad.NOT_CONNECTED =>
 									et_libraries.type_ports.append (
 										container	=> unit.symbol.ports,
 										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
 											direction			=> NOT_CONNECTED));
-
 
 								when others => null;
 									-- NOTE: The kicad port_name_offset is discarded here.

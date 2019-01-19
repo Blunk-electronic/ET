@@ -1931,7 +1931,28 @@ package body et_project is
 			write (keyword => keyword_name, space => true, parameters => to_string (element (cursor).name));
 			write (keyword => keyword_position, parameters => position (element (cursor).position));
 			write (keyword => keyword_direction, parameters => to_string (element (cursor).direction));
-			-- CS write (keyword => keyword_characteristic, parameters => to_string (element (cursor).characteristic));
+			
+			case element (cursor).direction is
+				when INPUT =>
+					write (keyword => keyword_sensitivity_edge, parameters => to_string (element (cursor).sensitivity_edge));
+					write (keyword => keyword_sensitivity_level, parameters => to_string (element (cursor).sensitivity_level));
+
+				when OUTPUT =>
+					write (keyword => keyword_inverted, parameters => to_string (element (cursor).inverted));
+					write (keyword => keyword_weakness, parameters => to_string (element (cursor).weakness));
+
+				when BIDIR =>
+					write (keyword => keyword_output_inverted, parameters => to_string (element (cursor).output_inverted));
+					write (keyword => keyword_output_weakness, parameters => to_string (element (cursor).output_weakness));
+					write (keyword => keyword_input_sensitivity_edge, parameters => to_string (element (cursor).input_sensitivity_edge));
+					write (keyword => keyword_input_sensitivity_level, parameters => to_string (element (cursor).input_sensitivity_level));
+
+				when POWER_OUT | POWER_IN =>
+					write (keyword => keyword_level, parameters => to_string (element (cursor).level));
+					
+				when others => null;
+			end case;
+			
 			write (keyword => keyword_length, parameters => et_coordinates.to_string (element (cursor).length));
 			write (keyword => keyword_rotation, parameters => rotation (element (cursor).rotation));
 			write (keyword => keyword_port_name_visible, parameters => to_string (element (cursor).port_name_visible));

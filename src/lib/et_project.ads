@@ -362,7 +362,15 @@ package et_project is
 	keyword_terminal_name_visible	: constant string := "terminal_name_visible";
 	keyword_port_name_size			: constant string := "port_name_size";
 	keyword_terminal_name_size		: constant string := "terminal_name_size";
-	keyword_characteristic			: constant string := "characteristic";		
+	keyword_sensitivity_edge		: constant string := "sensitivity_edge";
+	keyword_sensitivity_level		: constant string := "sensitivity_level";
+	keyword_inverted				: constant string := "inverted";
+	keyword_weakness				: constant string := "weakness";
+	keyword_output_inverted			: constant string := "output_inverted";
+	keyword_output_weakness			: constant string := "output_weakness";
+	keyword_input_sensitivity_edge	: constant string := "input_sensitivity_edge";
+	keyword_input_sensitivity_level	: constant string := "input_sensitivity_level";
+	keyword_level					: constant string := "level";
 	keyword_assembly_technology		: constant string := "technology";				
 	keyword_pad_shape				: constant string := "pad_shape";
 	keyword_tht_hole				: constant string := "hole";

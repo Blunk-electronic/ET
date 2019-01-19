@@ -195,10 +195,46 @@ package body et_libraries is
 		return type_port_direction'value (direction);
 	end to_port_direction;
 	
--- 	function to_string (characteristic : in type_port_characteristic) return string is begin
--- 		return latin_1.space & to_lower (type_port_characteristic'image (characteristic));
--- 	end to_string;
+	function to_string (sensitivity : in type_sensitivity_edge) return string is begin
+		return latin_1.space & to_lower (type_sensitivity_edge'image (sensitivity));
+	end to_string;
 
+	function to_sensitivity_edge (sensitivity : in string) return type_sensitivity_edge is begin
+		return type_sensitivity_edge'value (sensitivity);
+	end to_sensitivity_edge;
+
+	function to_string (sensitivity : in type_sensitivity_level) return string is begin
+		return latin_1.space & to_lower (type_sensitivity_level'image (sensitivity));
+	end to_string;
+
+	function to_sensitivity_level (sensitivity : in string) return type_sensitivity_level is begin
+		return type_sensitivity_level'value (sensitivity);
+	end to_sensitivity_level;
+
+	function to_string (inverted : in type_output_inverted) return string is begin
+		return latin_1.space & to_lower (type_output_inverted'image (inverted));
+	end to_string;
+
+	function to_output_inverted (inverted : in string) return type_output_inverted is begin
+		return type_output_inverted'value (inverted);
+	end to_output_inverted;
+
+	function to_string (weakness : in type_output_weakness) return string is begin
+		return latin_1.space & to_lower (type_output_weakness'image (weakness));
+	end to_string;
+
+	function to_output_weakness (weakness : in string) return type_output_weakness is begin
+		return type_output_weakness'value (weakness);
+	end to_output_weakness;
+
+	function to_string (level : in type_power_level) return string is begin
+		return latin_1.space & to_lower (type_power_level'image (level));
+	end to_string;
+
+	function to_power_level (level : in string) return type_power_level is begin
+		return type_power_level'value (level);
+	end to_power_level;
+	
 	function to_string (port_visible : in type_port_name_visible) return string is begin
 		return latin_1.space & to_lower (type_port_name_visible'image (port_visible));
 	end to_string;

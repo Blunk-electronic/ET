@@ -244,6 +244,7 @@ package et_libraries is
 	type type_port_direction is (
 		PASSIVE,	-- almost all passive components like resistors, capacitors, .. have such ports
 		INPUT,		-- signal inputs
+--		INPUT_ANALOG,
 		OUTPUT,		-- signal outputs
 		BIDIR,		-- bidirectional ports
 		POWER_OUT,	-- a power source like power symbol (VCC, GND, ..)
@@ -305,12 +306,36 @@ package et_libraries is
 		-- CS: port swap level ? -> would require a derived new type
 	end record;
 
-	type type_sensitivity_edge is (NONE, RISING, FALLING, ANY);
+	-- Sensitity of inputs:
+	type type_sensitivity_edge is (
+		NONE, 		-- passive and analog
+		RISING,		-- digital
+		FALLING,	-- digital
+		ANY			-- digtial
+		);
+	function to_string (sensitivity : in type_sensitivity_edge) return string;
+	function to_sensitivity_edge (sensitivity : in string) return type_sensitivity_edge;
+
 	type type_sensitivity_level is (NONE, LOW, HIGH);	
+	function to_string (sensitivity : in type_sensitivity_level) return string;
+	function to_sensitivity_level (sensitivity : in string) return type_sensitivity_level;
+	
 	type type_output_inverted is (NO, YES);
-	type type_output_weak is (NO, WEAK0, WEAK1);
-	type type_output_pull is (NO, PULL0, PULL1);
-	type type_power is (PWR_POSITIVE, PWR_NEGATIVE, PWR_ZERO);
+	function to_string (inverted : in type_output_inverted) return string;
+	function to_output_inverted (inverted : in string) return type_output_inverted;
+
+	type type_output_weakness is (
+		NONE, -- push-pull
+		WEAK0, WEAK1, -- requires external pull-down/up resistor
+		PULL0, PULL1  -- internal pull-down/up resistor
+		);
+
+	function to_string (weakness : in type_output_weakness) return string;
+	function to_output_weakness (weakness : in string) return type_output_weakness;
+	
+	type type_power_level is (LEVEL_ZERO, LEVEL_POSITIVE, LEVEL_NEGATIVE);
+	function to_string (level : in type_power_level) return string;
+	function to_power_level (level : in string) return type_power_level;	
 	
 	type type_port (direction : type_port_direction) is new type_port_base with record 
 		case direction is
@@ -319,17 +344,17 @@ package et_libraries is
 				sensitivity_level	: type_sensitivity_level;
 
 			when OUTPUT =>
-				inverted		: type_output_inverted;
-				weak			: type_output_weak;
-				pull			: type_output_pull;
+				inverted			: type_output_inverted;
+				weakness			: type_output_weakness;
 				
 			when BIDIR =>
-				output_inverted	: type_output_inverted;
-				output_weak		: type_output_weak;
-				output_pull		: type_output_pull;
-
+				output_inverted		: type_output_inverted;
+				output_weakness		: type_output_weakness;
 				input_sensitivity_edge	: type_sensitivity_edge;
 				input_sensitivity_level	: type_sensitivity_level;
+
+			when POWER_OUT | POWER_IN =>
+				level	: type_power_level;
 				
 			when others => null;
 		end case;
