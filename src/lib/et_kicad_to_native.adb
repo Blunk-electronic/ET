@@ -3051,40 +3051,84 @@ package body et_kicad_to_native is
 									end case;
 
 								when et_kicad.OUTPUT =>
-									et_libraries.type_ports.append (
-										container	=> unit.symbol.ports,
-										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
-											direction				=> OUTPUT_DIGITAL,
-											output_digital_inverted => to_inverted (element (port_cursor_kicad).style),
-											output_digital_tristate => NO,											
-											output_digital_weakness => NONE));
+									case element (port_cursor_kicad).style is
+										when et_kicad.NON_LOGIC | et_kicad.INVISIBLE_NON_LOGIC =>
+											et_libraries.type_ports.append (
+												container	=> unit.symbol.ports,
+												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+													direction				=> OUTPUT_ANALOG,
+													output_analog_tristate	=> NO,
+													output_analog_weakness	=> NONE));
 
+										when others => -- all other styles indicate a digital output
+											et_libraries.type_ports.append (
+												container	=> unit.symbol.ports,
+												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+													direction				=> OUTPUT_DIGITAL,
+													output_digital_inverted => to_inverted (element (port_cursor_kicad).style),
+													output_digital_tristate => NO,											
+													output_digital_weakness => NONE));
+									end case;
+											
 								when et_kicad.TRISTATE =>
-									et_libraries.type_ports.append (
-										container	=> unit.symbol.ports,
-										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
-											direction				=> OUTPUT_DIGITAL,
-											output_digital_inverted => to_inverted (element (port_cursor_kicad).style),
-											output_digital_tristate => YES,
-											output_digital_weakness => NONE));
+									case element (port_cursor_kicad).style is
+										when et_kicad.NON_LOGIC | et_kicad.INVISIBLE_NON_LOGIC =>
+											et_libraries.type_ports.append (
+												container	=> unit.symbol.ports,
+												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+													direction				=> OUTPUT_ANALOG,
+													output_analog_tristate	=> YES,
+													output_analog_weakness	=> NONE));
+											
+										when others => -- all other styles indicate a digital output
+											et_libraries.type_ports.append (
+												container	=> unit.symbol.ports,
+												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+													direction				=> OUTPUT_DIGITAL,
+													output_digital_inverted => to_inverted (element (port_cursor_kicad).style),
+													output_digital_tristate => YES,
+													output_digital_weakness => NONE));
+									end case;
 									
 								when et_kicad.WEAK0 =>
-									et_libraries.type_ports.append (
-										container	=> unit.symbol.ports,
-										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
-											direction				=> OUTPUT_DIGITAL,
-											output_digital_inverted	=> to_inverted (element (port_cursor_kicad).style),
-											output_digital_tristate	=> NO,
-											output_digital_weakness	=> WEAK0));
-
+									case element (port_cursor_kicad).style is
+										when et_kicad.NON_LOGIC | et_kicad.INVISIBLE_NON_LOGIC =>
+											et_libraries.type_ports.append (
+												container	=> unit.symbol.ports,
+												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+													direction				=> OUTPUT_ANALOG,
+													output_analog_tristate	=> NO,
+													output_analog_weakness	=> WEAK0));
+											
+										when others => -- all other styles indicate a digital output
+											et_libraries.type_ports.append (
+												container	=> unit.symbol.ports,
+												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+													direction				=> OUTPUT_DIGITAL,
+													output_digital_inverted	=> to_inverted (element (port_cursor_kicad).style),
+													output_digital_tristate	=> NO,
+													output_digital_weakness	=> WEAK0));
+									end case;
+									
 								when et_kicad.WEAK1 =>
-									et_libraries.type_ports.append (
-										container	=> unit.symbol.ports,
-										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
-											direction				=> OUTPUT_DIGITAL,
-											output_digital_inverted	=> to_inverted (element (port_cursor_kicad).style),
-											output_digital_tristate	=> NO,
-											output_digital_weakness	=> WEAK1));
+									case element (port_cursor_kicad).style is
+										when et_kicad.NON_LOGIC | et_kicad.INVISIBLE_NON_LOGIC =>
+											et_libraries.type_ports.append (
+												container	=> unit.symbol.ports,
+												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+													direction				=> OUTPUT_ANALOG,
+													output_analog_tristate	=> NO,
+													output_analog_weakness	=> WEAK1));
+											
+										when others => -- all other styles indicate a digital output
+											et_libraries.type_ports.append (
+												container	=> unit.symbol.ports,
+												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+													direction				=> OUTPUT_DIGITAL,
+													output_digital_inverted	=> to_inverted (element (port_cursor_kicad).style),
+													output_digital_tristate	=> NO,
+													output_digital_weakness	=> WEAK1));
+									end case;
 									
 								when et_kicad.BIDIR =>
 									et_libraries.type_ports.append (
