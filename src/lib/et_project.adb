@@ -1933,16 +1933,20 @@ package body et_project is
 			write (keyword => keyword_direction, parameters => to_string (element (cursor).direction));
 			
 			case element (cursor).direction is
-				when INPUT =>
+				when INPUT_DIGITAL =>
 					write (keyword => keyword_sensitivity_edge, parameters => to_string (element (cursor).sensitivity_edge));
 					write (keyword => keyword_sensitivity_level, parameters => to_string (element (cursor).sensitivity_level));
 
-				when OUTPUT =>
-					write (keyword => keyword_inverted, parameters => to_string (element (cursor).inverted));
-					write (keyword => keyword_tristate, parameters => to_string (element (cursor).tristate));
-					write (keyword => keyword_weakness, parameters => to_string (element (cursor).weakness));
+				when OUTPUT_ANALOG =>
+					write (keyword => keyword_tristate, parameters => to_string (element (cursor).output_analog_tristate));
+					write (keyword => keyword_weakness, parameters => to_string (element (cursor).output_analog_weakness));
 					
-				when BIDIR =>
+				when OUTPUT_DIGITAL =>
+					write (keyword => keyword_inverted, parameters => to_string (element (cursor).output_digital_inverted));
+					write (keyword => keyword_tristate, parameters => to_string (element (cursor).output_digital_tristate));
+					write (keyword => keyword_weakness, parameters => to_string (element (cursor).output_digital_weakness));
+					
+				when BIDIR_DIGITAL =>
 					write (keyword => keyword_output_inverted, parameters => to_string (element (cursor).output_inverted));
 					write (keyword => keyword_output_tristate, parameters => to_string (element (cursor).output_tristate));
 					write (keyword => keyword_output_weakness, parameters => to_string (element (cursor).output_weakness));

@@ -242,13 +242,19 @@ package et_libraries is
 	
 	-- The port has an electrical direction:
 	type type_port_direction is (
-		PASSIVE,	-- almost all passive components like resistors, capacitors, .. have such ports
-		INPUT,		-- signal inputs
---		INPUT_ANALOG,
-		OUTPUT,		-- signal outputs
-		BIDIR,		-- bidirectional ports
-		POWER_OUT,	-- a power source like power symbol (VCC, GND, ..)
-		POWER_IN,	-- a power sink like power ports of ICs
+		PASSIVE,		-- almost all passive components like resistors, capacitors, .. have such ports
+
+		INPUT_ANALOG,	-- signal input analog
+		INPUT_DIGITAL,	-- signal input digital
+
+		OUTPUT_ANALOG,	-- signal output analog		
+		OUTPUT_DIGITAL,	-- signal outputs
+
+		BIDIR_DIGITAL,	-- bidirectional ports
+
+		POWER_OUT,		-- a power source like power symbol (VCC, GND, ..)
+		POWER_IN,		-- a power sink like power ports of ICs
+
 		NOT_CONNECTED	-- advised by manufacturer to be left unconnected
 		);
 
@@ -329,22 +335,26 @@ package et_libraries is
 	
 	type type_port (direction : type_port_direction) is new type_port_base with record 
 		case direction is
-			when INPUT =>
+			when INPUT_DIGITAL =>
 				sensitivity_edge	: type_sensitivity_edge;
 				sensitivity_level	: type_sensitivity_level;
 
-			when OUTPUT =>
-				inverted			: type_output_inverted;
-				tristate			: type_tristate;
-				weakness			: type_output_weakness;
+			when OUTPUT_ANALOG =>
+				output_analog_tristate	: type_tristate;
+				output_analog_weakness	: type_output_weakness;
 				
-			when BIDIR =>
+			when OUTPUT_DIGITAL =>
+				output_digital_inverted	: type_output_inverted;
+				output_digital_tristate	: type_tristate;
+				output_digital_weakness	: type_output_weakness;
+				
+			when BIDIR_DIGITAL =>
 				output_inverted		: type_output_inverted;
 				output_tristate		: type_tristate;				
 				output_weakness		: type_output_weakness;
 				input_sensitivity_edge	: type_sensitivity_edge;
 				input_sensitivity_level	: type_sensitivity_level;
-
+				
 			when POWER_OUT | POWER_IN =>
 				level	: type_power_level;
 				
