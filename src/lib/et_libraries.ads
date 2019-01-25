@@ -258,15 +258,20 @@ package et_libraries is
 		NOT_CONNECTED	-- advised by manufacturer to be left unconnected
 		);
 
+	port_direction_default : constant type_port_direction := OUTPUT_ANALOG; 
+	-- CS: should be the one with the most severe implications.
+	
 	function to_string (direction : in type_port_direction) return string;
 	function to_port_direction (direction : in string) return type_port_direction;
 	
-	type type_port_name_visible is (ON, OFF); -- CS change to yes/no
-	function to_string (port_visible : in type_port_name_visible) return string;
+	type type_port_name_visible is (YES, NO);
+	function to_string (visible : in type_port_name_visible) return string;
+	function to_port_name_visible (visible : in string) return type_port_name_visible;	
 
 	
-	type type_terminal_name_visible is (ON, OFF); -- CS change to yes/no
-	function to_string (terminal_visible : in type_terminal_name_visible) return string;	
+	type type_terminal_name_visible is (YES, NO);
+	function to_string (visible : in type_terminal_name_visible) return string;	
+	function to_terminal_name_visible (visible : in string) return type_terminal_name_visible;
 	
  	port_name_length_max : constant natural := 100;
 	package type_port_name is new generic_bounded_length (port_name_length_max);
@@ -291,8 +296,10 @@ package et_libraries is
 		position			: type_2d_point;
 		length				: type_port_length; 
 		rotation			: type_angle;
-		port_name_visible	: type_port_name_visible;
-		port_name_size		: type_port_name_text_size;
+		
+		port_name_visible		: type_port_name_visible;
+		port_name_size			: type_port_name_text_size;
+		
 		terminal_name_visible	: type_terminal_name_visible;
 		terminal_name_size		: type_terminal_name_text_size;
 		-- CS: port swap level ? -> would require a derived new type
@@ -305,14 +312,17 @@ package et_libraries is
 		FALLING,	-- digital
 		ANY			-- digtial
 		);
+	sensitivity_edge_default : constant type_sensitivity_edge := NONE;
 	function to_string (sensitivity : in type_sensitivity_edge) return string;
 	function to_sensitivity_edge (sensitivity : in string) return type_sensitivity_edge;
 
-	type type_sensitivity_level is (NONE, LOW, HIGH);	
+	type type_sensitivity_level is (NONE, LOW, HIGH); -- CS NONE required ?
+	sensitivity_level_default : constant type_sensitivity_level := HIGH; -- CS good idea ?
 	function to_string (sensitivity : in type_sensitivity_level) return string;
 	function to_sensitivity_level (sensitivity : in string) return type_sensitivity_level;
 	
 	type type_output_inverted is (NO, YES);
+	output_inverted_default : constant type_output_inverted := NO;
 	function to_string (inverted : in type_output_inverted) return string;
 	function to_output_inverted (inverted : in string) return type_output_inverted;
 
@@ -321,13 +331,14 @@ package et_libraries is
 		WEAK0, WEAK1, -- requires external pull-down/up resistor
 		PULL0, PULL1  -- internal pull-down/up resistor
 		);
-
+	output_weakness_default : constant type_output_weakness := NONE;
 	function to_string (weakness : in type_output_weakness) return string;
 	function to_output_weakness (weakness : in string) return type_output_weakness;
 
-	type type_tristate is (NO, YES);
-	function to_string (tristate : in type_tristate) return string;
-	function to_tristate (tristate : in string) return type_tristate;
+	type type_output_tristate is (NO, YES);
+	output_tristate_default : constant type_output_tristate := NO;
+	function to_string (tristate : in type_output_tristate) return string;
+	function to_tristate (tristate : in string) return type_output_tristate;
 	
 	type type_power_level is (LEVEL_ZERO, LEVEL_POSITIVE, LEVEL_NEGATIVE);
 	function to_string (level : in type_power_level) return string;
@@ -336,22 +347,22 @@ package et_libraries is
 	type type_port (direction : type_port_direction) is new type_port_base with record 
 		case direction is
 			when INPUT_DIGITAL =>
-				sensitivity_edge	: type_sensitivity_edge;
-				sensitivity_level	: type_sensitivity_level;
+				sensitivity_edge		: type_sensitivity_edge;
+				sensitivity_level		: type_sensitivity_level;
 
 			when OUTPUT_ANALOG =>
-				output_analog_tristate	: type_tristate;
+				output_analog_tristate	: type_output_tristate;
 				output_analog_weakness	: type_output_weakness;
 				
 			when OUTPUT_DIGITAL =>
 				output_digital_inverted	: type_output_inverted;
-				output_digital_tristate	: type_tristate;
+				output_digital_tristate	: type_output_tristate;
 				output_digital_weakness	: type_output_weakness;
 				
 			when BIDIR_DIGITAL =>
-				output_inverted		: type_output_inverted;
-				output_tristate		: type_tristate;				
-				output_weakness		: type_output_weakness;
+				output_inverted			: type_output_inverted;
+				output_tristate			: type_output_tristate;				
+				output_weakness			: type_output_weakness;
 				input_sensitivity_edge	: type_sensitivity_edge;
 				input_sensitivity_level	: type_sensitivity_level;
 				

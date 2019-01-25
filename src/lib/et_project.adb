@@ -2417,7 +2417,12 @@ package body et_project is
 		symbol_text_position: et_coordinates.type_2d_point;
 		symbol_text_content	: et_libraries.type_text_content.bounded_string;
 		symbol_placeholder_meaning : et_libraries.type_text_meaning := text_meaning_default;
-		--symbol_port			: et_libraries.type_port;
+		
+		port					: et_libraries.type_port_base;
+		port_direction			: et_libraries.type_port_direction := port_direction_default;
+		port_sensitivity_edge	: et_libraries.type_sensitivity_edge := sensitivity_edge_default;
+		port_sensitivity_level	: et_libraries.type_sensitivity_level := sensitivity_level_default;
+		port_output_inverted	: et_libraries.type_output_inverted := output_inverted_default;
 		
 		procedure insert_unit_internal is
 		-- Inserts in the temporarily collection of internal units a new unit.
@@ -3089,9 +3094,66 @@ package body et_project is
 
 					when SEC_PORT =>
 						case stack.parent is
-							when SEC_PORTS => null; -- nothing to do
+							when SEC_PORTS =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_position then -- position x 1 y 2
+										expect_field_count (line, 5);
 
-							-- CS
+										-- extract the port position starting at field 2
+										port.position := to_position (line,2);
+
+									elsif kw = keyword_name then -- name I1A
+										expect_field_count (line, 2);
+										port.name := et_libraries.to_port_name (f (line, 2));
+
+									elsif kw = keyword_length then -- length 5
+										expect_field_count (line, 2);
+										port.length := et_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_rotation then -- rotation 90.0
+										expect_field_count (line, 2);
+										port.rotation := et_coordinates.to_angle (f (line, 2));
+										
+									elsif kw = keyword_port_name_visible then -- port_name_visible yes/no
+										expect_field_count (line, 2);
+										port.port_name_visible := et_libraries.to_port_name_visible (f (line, 2));
+
+									elsif kw = keyword_port_name_size then -- port_name_size 2.0
+										expect_field_count (line, 5);
+										port.port_name_size := et_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_terminal_name_visible then -- terminal_name_visible yes/no
+										expect_field_count (line, 2);
+										port.terminal_name_visible := et_libraries.to_terminal_name_visible (f (line, 2));
+
+									elsif kw = keyword_terminal_name_size then -- terminal_name_size 2.0
+										expect_field_count (line, 5);
+										port.terminal_name_size := et_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_direction then -- direction BIDIR
+										expect_field_count (line, 2);
+										port_direction := et_libraries.to_port_direction (f (line, 2));
+
+									elsif kw = keyword_sensitivity_edge then -- sensitivity_edge rising/falling/any
+										expect_field_count (line, 5);
+										port_sensitivity_edge := et_libraries.to_sensitivity_edge (f (line, 2));
+
+									elsif kw = keyword_sensitivity_level then -- sensitivity_level high/low
+										expect_field_count (line, 5);
+										port_sensitivity_level := et_libraries.to_sensitivity_level (f (line, 2));
+
+									elsif kw = keyword_inverted then -- inverted yes/no
+										expect_field_count (line, 5);
+										port_output_inverted := et_libraries.to_output_inverted (f (line, 2));
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
 							when others => invalid_section;
 						end case;
 						

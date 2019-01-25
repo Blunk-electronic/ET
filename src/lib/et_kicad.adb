@@ -1218,11 +1218,11 @@ package body et_kicad is
 				case v_in is 
 					when Y => 
 						log ("visible", level => log_threshold + 2);
-						v_out := on;
+						v_out := YES;
 						
 					when N => 
 						log ("invisible", level => log_threshold + 2);
-						v_out := off;
+						v_out := NO;
 				end case;
 
 				log_indentation_down;
@@ -1249,10 +1249,10 @@ package body et_kicad is
 				case v_in is 
 					when Y => 
 						log ("visible", level => log_threshold + 2);
-						v_out := on;
+						v_out := YES;
 					when N => 
 						log ("invisible", level => log_threshold + 2);
-						v_out := off;
+						v_out := NO;
 				end case;
 
 				log_indentation_down;
@@ -1696,11 +1696,11 @@ package body et_kicad is
 				end if;
 
 				-- visibility port and pin names
-				port.port_name_visible		:= tmp_port_name_visible;
-				port.terminal_name_visible	:= tmp_terminal_name_visible;
+				port.port_name_visible := tmp_port_name_visible;
+				port.terminal_name_visible := tmp_terminal_name_visible;
 
 				-- port name offset
-				port.port_name_offset	:= tmp_port_name_offset;
+				port.port_name_offset := tmp_port_name_offset;
 
 				--log (text => et_coordinates.to_string (point => port.coordinates), level => 1);
 

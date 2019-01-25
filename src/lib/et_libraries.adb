@@ -235,21 +235,29 @@ package body et_libraries is
 		return type_power_level'value (level);
 	end to_power_level;
 
-	function to_string (tristate : in type_tristate) return string is begin
-		return latin_1.space & to_lower (type_tristate'image (tristate));
+	function to_string (tristate : in type_output_tristate) return string is begin
+		return latin_1.space & to_lower (type_output_tristate'image (tristate));
 	end to_string;
 
-	function to_tristate (tristate : in string) return type_tristate is begin
-		return type_tristate'value (tristate);
+	function to_tristate (tristate : in string) return type_output_tristate is begin
+		return type_output_tristate'value (tristate);
 	end to_tristate;
 	
-	function to_string (port_visible : in type_port_name_visible) return string is begin
-		return latin_1.space & to_lower (type_port_name_visible'image (port_visible));
+	function to_string (visible : in type_port_name_visible) return string is begin
+		return latin_1.space & to_lower (type_port_name_visible'image (visible));
 	end to_string;
 
-	function to_string (terminal_visible : in type_terminal_name_visible) return string is begin
-		return latin_1.space & to_lower (type_terminal_name_visible'image (terminal_visible));
+	function to_port_name_visible (visible : in string) return type_port_name_visible is begin
+		return type_port_name_visible'value (visible);
+	end to_port_name_visible;
+	
+	function to_string (visible : in type_terminal_name_visible) return string is begin
+		return latin_1.space & to_lower (type_terminal_name_visible'image (visible));
 	end to_string;
+
+	function to_terminal_name_visible (visible : in string) return type_terminal_name_visible is begin
+		return type_terminal_name_visible'value (visible);
+	end to_terminal_name_visible;
 	
 	function to_string (port : in type_port_name.bounded_string) return string is begin
 		return type_port_name.to_string (port);
