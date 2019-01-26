@@ -1007,11 +1007,13 @@ package body et_kicad is
 	-- Converts a given angle as string to type_angle.
 		
 		a_in  : type_angle; -- unit is tenth of degrees -3599 .. 3599
-		--a_out : et_libraries.type_angle; -- unit is degrees -359.9 .. 359.9
 		use et_libraries;
 
 		-- For the conversion we need an intermediate real type
 		type type_angle_real is digits 5 range -3599.0 .. 3599.0;
+		-- CS: better type_angle_real is delta 0.1 range -3599.0 .. 3599.0; ?
+		-- for type_angle_real'small use 0.1
+		
 		a_tmp : type_angle_real;
 	begin
 		-- Convert given string to et_kicad.type_angle. This implies a syntax and range check.
@@ -1021,9 +1023,6 @@ package body et_kicad is
 		a_tmp := type_angle_real (a_in); -- -3599.0 .. 3599.0
 
 		-- convert given angle to et_libraries.type_angle.
-		--a_out := et_libraries.type_angle (a_tmp / 10.0); -- -359.9 .. 359.9
-
-		-- return a_out;
 		return et_coordinates.type_angle (a_tmp / 10.0); -- -359.9 .. 359.9
 
 		-- CS: exception handler
@@ -1658,6 +1657,25 @@ package body et_kicad is
 					-- CS: exception handler
 				end to_style;
 
+				function to_rotation (orientation : in string) return et_coordinates.type_angle is
+				-- Translates orientation up/down/left/right (U/D/L/R) to angle.
+					use et_coordinates;
+					orient : constant character := orientation (orientation'first);
+					rot : et_coordinates.type_angle := zero_angle;
+				begin
+					case orient is
+						when 'D' => rot := 90.0; -- to be connected with a net from top
+						when 'U' => rot := 270.0; -- below
+						when 'R' => rot := 180.0; -- left
+						when 'L' => rot := 0.0; -- right
+						when others => 
+							log_indentation_reset;
+							log (message_error & "invalid port orientation !", console => true);
+							raise constraint_error;
+					end case;
+					return rot;
+				end to_rotation;
+				
 				use et_coordinates;
 				
 			begin -- to_port
@@ -1677,8 +1695,8 @@ package body et_kicad is
 				-- compose length
 				port.length := mil_to_distance (mil => et_string_processing.field (line,6), warn_on_negative => false);
 
-				-- compose orientation
-				-- CS: port.orientation	:= type_library_pin_orientation
+				-- compose rotation
+				port.rotation := to_rotation (et_string_processing.field (line,7));
 
 				-- port and termnal name text size
 				port.terminal_name_size := mil_to_distance (mil => et_string_processing.field (line,8), warn_on_negative => false);

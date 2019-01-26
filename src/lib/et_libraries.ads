@@ -295,7 +295,7 @@ package et_libraries is
 	type type_port_base is new type_port_named with record 	-- CS: set defaults
 		position			: type_2d_point;
 		length				: type_port_length; 
-		rotation			: type_angle;
+		rotation			: type_angle := zero_angle;
 		
 		port_name_visible		: type_port_name_visible;
 		port_name_size			: type_port_name_text_size;

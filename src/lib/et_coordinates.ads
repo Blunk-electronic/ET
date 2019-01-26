@@ -91,12 +91,13 @@ package et_coordinates is
 	-- Angles are to be interpreted as: 
 	-- positive angle -> counter clock wise
 	-- negative angle -> clock wise
-	type type_angle is delta 0.1 digits 4 range -359.9 .. 359.9; -- unit is degrees
+	type type_angle is delta 0.1 range -359.9 .. 359.9; -- unit is degrees
+	for type_angle'small use 0.1;
 	-- CS: a type that allows angles of multiples of 45 degrees ? 
 	-- or check angle via separate function when required ?
 
 	zero_angle : constant type_angle := 0.0;
-	
+
 	subtype type_angle_90 is type_angle range 0.0 .. 90.0;
 	-- CS: make use of this type by membership tests when required
 

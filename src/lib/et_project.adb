@@ -337,14 +337,14 @@ package body et_project is
 		end if;
 	end position;
 
-	function rotation (angle : in et_coordinates.type_angle) return string is begin
+	function rotation (angle : in et_coordinates.type_angle) return string is 
+	begin
 		if angle < zero_angle then
-			return latin_1.space & type_angle'image (angle);
+			return latin_1.space & et_coordinates.type_angle'image (angle);
 		else
-			return type_angle'image (angle);
+			return et_coordinates.type_angle'image (angle);
 		end if;
 	end rotation;
-
 
 	function position (point : et_pcb_coordinates.type_point_2d'class) return string is
 		use et_pcb_coordinates;
@@ -2428,8 +2428,9 @@ package body et_project is
 		port_sensitivity_level	: et_libraries.type_sensitivity_level := sensitivity_level_default;
 		port_output_inverted	: et_libraries.type_output_inverted := output_inverted_default;
 		port_output_tristate	: et_libraries.type_output_tristate := output_tristate_default;
+		port_output_weakness	: et_libraries.type_output_weakness := output_weakness_default;
 		port_power_level		: et_libraries.type_power_level := port_power_level_default;
-		
+
 		procedure insert_unit_internal is
 		-- Inserts in the temporarily collection of internal units a new unit.
 			position : type_units_internal.cursor;
@@ -3128,7 +3129,7 @@ package body et_project is
 										port.port_name_visible := et_libraries.to_port_name_visible (f (line, 2));
 
 									elsif kw = keyword_port_name_size then -- port_name_size 2.0
-										expect_field_count (line, 5);
+										expect_field_count (line, 2);
 										port.port_name_size := et_coordinates.to_distance (f (line, 2));
 
 									elsif kw = keyword_terminal_name_visible then -- terminal_name_visible yes/no
@@ -3136,7 +3137,7 @@ package body et_project is
 										port.terminal_name_visible := et_libraries.to_terminal_name_visible (f (line, 2));
 
 									elsif kw = keyword_terminal_name_size then -- terminal_name_size 2.0
-										expect_field_count (line, 5);
+										expect_field_count (line, 2);
 										port.terminal_name_size := et_coordinates.to_distance (f (line, 2));
 
 									elsif kw = keyword_direction then -- direction BIDIR
@@ -3144,24 +3145,28 @@ package body et_project is
 										port_direction := et_libraries.to_port_direction (f (line, 2));
 
 									elsif kw = keyword_sensitivity_edge then -- sensitivity_edge rising/falling/any
-										expect_field_count (line, 5);
+										expect_field_count (line, 2);
 										port_sensitivity_edge := et_libraries.to_sensitivity_edge (f (line, 2));
 
 									elsif kw = keyword_sensitivity_level then -- sensitivity_level high/low
-										expect_field_count (line, 5);
+										expect_field_count (line, 2);
 										port_sensitivity_level := et_libraries.to_sensitivity_level (f (line, 2));
 
 									elsif kw = keyword_inverted then -- inverted yes/no
-										expect_field_count (line, 5);
+										expect_field_count (line, 2);
 										port_output_inverted := et_libraries.to_output_inverted (f (line, 2));
 
 									elsif kw = keyword_tristate then -- tristate yes/no
-										expect_field_count (line, 5);
+										expect_field_count (line, 2);
 										port_output_tristate := et_libraries.to_output_tristate (f (line, 2));
 
 									elsif kw = keyword_level then -- level positive/negative/zero
-										expect_field_count (line, 5);
+										expect_field_count (line, 2);
 										port_power_level := et_libraries.to_power_level (f (line, 2));
+
+									elsif kw = keyword_weakness then -- weakness none/pull0/weak1 ...
+										expect_field_count (line, 2);
+										port_output_weakness := et_libraries.to_output_weakness (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
