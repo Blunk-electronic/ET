@@ -2483,6 +2483,82 @@ package body et_project is
 			unit_symbol := null;
 			
 		end insert_unit_internal;
+
+		procedure insert_port is begin
+			case port_direction is
+				when INPUT_DIGITAL =>
+					type_ports.append (
+						container	=> unit_symbol.ports,
+						new_item	=> (port with 
+							direction				=> INPUT_DIGITAL,
+							sensitivity_edge		=> port_sensitivity_edge,
+							sensitivity_level		=> port_sensitivity_level)
+						);
+
+				when OUTPUT_ANALOG =>
+					type_ports.append (
+						container	=> unit_symbol.ports,
+						new_item	=> (port with 
+							direction				=> OUTPUT_ANALOG,
+							output_analog_tristate	=> port_output_tristate,
+							output_analog_weakness	=> port_output_weakness)
+						);
+
+				when OUTPUT_DIGITAL =>
+					type_ports.append (
+						container	=> unit_symbol.ports,
+						new_item	=> (port with 
+							direction				=> OUTPUT_DIGITAL,
+							output_digital_inverted	=> port_output_inverted,
+							output_digital_tristate	=> port_output_tristate,
+							output_digital_weakness	=> port_output_weakness)
+						);
+
+				when BIDIR_DIGITAL =>
+					type_ports.append (
+						container	=> unit_symbol.ports,
+						new_item	=> (port with 
+							direction				=> BIDIR_DIGITAL,
+							output_inverted			=> port_output_inverted,
+							output_tristate			=> port_output_tristate,
+							output_weakness			=> port_output_weakness,
+							input_sensitivity_edge	=> port_sensitivity_edge,
+							input_sensitivity_level	=> port_sensitivity_level)
+						);
+
+				when POWER_IN =>
+					type_ports.append (
+						container	=> unit_symbol.ports,
+						new_item	=> (port with 
+							direction				=> POWER_IN,
+							level					=> port_power_level)
+						);
+
+				when POWER_OUT =>
+					type_ports.append (
+						container	=> unit_symbol.ports,
+						new_item	=> (port with 
+							direction				=> POWER_OUT,
+							level					=> port_power_level)
+						);
+
+				when PASSIVE =>
+					type_ports.append (
+						container	=> unit_symbol.ports,
+						new_item	=> (port with 
+							direction				=> PASSIVE)
+						);
+
+				when INPUT_ANALOG =>
+					type_ports.append (
+						container	=> unit_symbol.ports,
+						new_item	=> (port with 
+							direction				=> INPUT_ANALOG)
+						);
+					
+				when others => null;
+			end case;
+		end insert_port;
 		
 		procedure process_line is 
 		-- CS: detect if section name is type_section_name_module
@@ -2671,9 +2747,7 @@ package body et_project is
 
 					when SEC_PORT =>
 						case stack.parent is
-							when SEC_PORTS => null; -- nothing to do
-
-							-- CS 
+							when SEC_PORTS => insert_port;
 							when others => invalid_section;
 						end case;
 						
