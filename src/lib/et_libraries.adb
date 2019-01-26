@@ -227,21 +227,30 @@ package body et_libraries is
 		return type_output_weakness'value (weakness);
 	end to_output_weakness;
 
-	function to_string (level : in type_power_level) return string is begin
-		return latin_1.space & to_lower (type_power_level'image (level));
+	function to_string (level : in type_power_level) return string is
+	-- Converts the power level (like LEVEL_POSITIVE) to a string (like positive).
+	-- The prefix LEVEL_ is removed.
+		level_string : string := to_lower (type_power_level'image (level)); -- level_positive, level_negative
+		A : positive := index (level_string, "_") + 1; -- the position after the first underscore
+		B : positive := level_string'length;
+	begin
+		return latin_1.space & level_string (A .. B);
 	end to_string;
 
-	function to_power_level (level : in string) return type_power_level is begin
-		return type_power_level'value (level);
+	function to_power_level (level : in string) return type_power_level is 
+	-- Converts the power level (like positive) to power level (like LEVEL_POSITIVE).
+	-- The prefix LEVEL_ is prepended.
+	begin
+		return type_power_level'value ("LEVEL_" & level);
 	end to_power_level;
 
 	function to_string (tristate : in type_output_tristate) return string is begin
 		return latin_1.space & to_lower (type_output_tristate'image (tristate));
 	end to_string;
 
-	function to_tristate (tristate : in string) return type_output_tristate is begin
+	function to_output_tristate (tristate : in string) return type_output_tristate is begin
 		return type_output_tristate'value (tristate);
-	end to_tristate;
+	end to_output_tristate;
 	
 	function to_string (visible : in type_port_name_visible) return string is begin
 		return latin_1.space & to_lower (type_port_name_visible'image (visible));

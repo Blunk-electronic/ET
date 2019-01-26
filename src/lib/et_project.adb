@@ -2423,6 +2423,8 @@ package body et_project is
 		port_sensitivity_edge	: et_libraries.type_sensitivity_edge := sensitivity_edge_default;
 		port_sensitivity_level	: et_libraries.type_sensitivity_level := sensitivity_level_default;
 		port_output_inverted	: et_libraries.type_output_inverted := output_inverted_default;
+		port_output_tristate	: et_libraries.type_output_tristate := output_tristate_default;
+		port_power_level		: et_libraries.type_power_level := port_power_level_default;
 		
 		procedure insert_unit_internal is
 		-- Inserts in the temporarily collection of internal units a new unit.
@@ -3148,6 +3150,14 @@ package body et_project is
 									elsif kw = keyword_inverted then -- inverted yes/no
 										expect_field_count (line, 5);
 										port_output_inverted := et_libraries.to_output_inverted (f (line, 2));
+
+									elsif kw = keyword_tristate then -- tristate yes/no
+										expect_field_count (line, 5);
+										port_output_tristate := et_libraries.to_output_tristate (f (line, 2));
+
+									elsif kw = keyword_level then -- level positive/negative/zero
+										expect_field_count (line, 5);
+										port_power_level := et_libraries.to_power_level (f (line, 2));
 										
 									else
 										invalid_keyword (kw);

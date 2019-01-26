@@ -338,11 +338,24 @@ package et_libraries is
 	type type_output_tristate is (NO, YES);
 	output_tristate_default : constant type_output_tristate := NO;
 	function to_string (tristate : in type_output_tristate) return string;
-	function to_tristate (tristate : in string) return type_output_tristate;
+	function to_output_tristate (tristate : in string) return type_output_tristate;
+
 	
 	type type_power_level is (LEVEL_ZERO, LEVEL_POSITIVE, LEVEL_NEGATIVE);
+	-- The prefix "LEVEL_" is a workaround because GNAT regards "POSITIVE" as keyword.
+	-- CAUTION: Adapt functions to_string and to_power_level when changing anything here !
+	
+	port_power_level_default : constant type_power_level := LEVEL_ZERO;
+
 	function to_string (level : in type_power_level) return string;
+	-- Converts the power level (like LEVEL_POSITIVE) to a string (like positive).
+	-- The prefix LEVEL_ is removed.
+	
 	function to_power_level (level : in string) return type_power_level;	
+	-- Converts the power level (like positive) to power level (like LEVEL_POSITIVE).
+	-- The prefix LEVEL_ is prepended.
+
+
 	
 	type type_port (direction : type_port_direction) is new type_port_base with record 
 		case direction is
