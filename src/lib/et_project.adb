@@ -338,7 +338,11 @@ package body et_project is
 	end position;
 
 	function rotation (angle : in et_coordinates.type_angle) return string is begin
-		return type_angle'image (angle);
+		if angle < zero_angle then
+			return latin_1.space & type_angle'image (angle);
+		else
+			return type_angle'image (angle);
+		end if;
 	end rotation;
 
 
