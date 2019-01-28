@@ -1,0 +1,525 @@
+-- SYSTEM ET device
+-- date 2019-01-26T16:54:37
+-- ======================================================================================================================================================
+
+prefix IC
+appearance sch_pcb
+value 7400
+partcode dummy
+[VARIANTS BEGIN]
+	[VARIANT BEGIN]
+		name S_SO14
+		package_model libraries/packages/__#__#lbr#bel_ic_pretty#S_SO14.pac
+		[TERMINAL_PORT_MAP BEGIN]
+			terminal 1 unit 1 port I1A
+			terminal 10 unit 3 port I3A
+			terminal 11 unit 4 port O1
+			terminal 12 unit 4 port I1A
+			terminal 13 unit 4 port I4A
+			terminal 14 unit 5 port VCC
+			terminal 2 unit 1 port I1B
+			terminal 3 unit 1 port O1
+			terminal 4 unit 2 port I1A
+			terminal 5 unit 2 port I2B
+			terminal 6 unit 2 port O1
+			terminal 7 unit 5 port GND
+			terminal 8 unit 3 port O1
+			terminal 9 unit 3 port I1A
+		[TERMINAL_PORT_MAP END]
+	[VARIANT END]
+[VARIANTS END]
+[UNITS_INTERNAL BEGIN]
+	[UNIT BEGIN]
+		name 1
+		position x 0.00 y 0.00
+		swap_level 0
+		add_level next
+		[SYMBOL BEGIN]
+			[DRAW BEGIN]
+				[LINE BEGIN]
+					start x 2.54 y -5.08
+					end x -7.62 y -5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y -5.08
+					end x -7.62 y 5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y 5.08
+					end x 2.54 y 5.08
+					width 0.00
+				[LINE END]
+				[ARC BEGIN]
+					center x 2.54 y 0.00
+					start x 2.54 y 5.08
+					end x 2.54 y -5.08
+					radius 5.08
+					width 0.00
+				[ARC END]
+			[DRAW END]
+			[TEXTS BEGIN]
+			[TEXTS END]
+			[PLACEHOLDERS BEGIN]
+				[PLACEHOLDER BEGIN]
+					meaning reference
+					position x -3.17 y -6.98
+					size 1.30
+					line_width 0.00
+					rotation 0.0
+					style normal
+					alignment horizontal left vertical bottom
+				[PLACEHOLDER END]
+				[PLACEHOLDER BEGIN]
+					meaning value
+					position x -3.17 y -8.89
+					size 1.30
+					line_width 0.00
+					rotation 0.0
+					style normal
+					alignment horizontal left vertical bottom
+				[PLACEHOLDER END]
+				[PLACEHOLDER BEGIN]
+					meaning purpose
+					position x 0.00 y 0.00
+					size 1.30
+					line_width 0.00
+					rotation 0.0
+					style normal
+					alignment horizontal center vertical center
+				[PLACEHOLDER END]
+			[PLACEHOLDERS END]
+			[PORTS BEGIN]
+				[PORT BEGIN]
+					name I1A
+					position x -15.24 y -2.54
+					direction input_digital
+					sensitivity_edge none
+					sensitivity_level high
+					length 7.62
+					rotation 180.0
+					port_name_visible no
+					port_name_size 1.30
+					terminal_name_visible yes
+					terminal_name_size 1.30
+				[PORT END]
+				[PORT BEGIN]
+					name I1B
+					position x -15.24 y 2.54
+					direction input_digital
+					sensitivity_edge none
+					sensitivity_level high
+					length 7.62
+					rotation 180.0
+					port_name_visible no
+					port_name_size 1.30
+					terminal_name_visible yes
+					terminal_name_size 1.30
+				[PORT END]
+				[PORT BEGIN]
+					name O1
+					position x 15.24 y 0.00
+					direction output_digital
+					inverted yes
+					tristate no
+					weakness none
+					length 7.62
+					rotation 0.0
+					port_name_visible no
+					port_name_size 1.30
+					terminal_name_visible yes
+					terminal_name_size 1.30
+				[PORT END]
+			[PORTS END]
+		[SYMBOL END]
+	[UNIT END]
+	[UNIT BEGIN]
+		name 2
+		position x 0.00 y 0.00
+		swap_level 0
+		add_level next
+		[SYMBOL BEGIN]
+			[DRAW BEGIN]
+				[LINE BEGIN]
+					start x 2.54 y -5.08
+					end x -7.62 y -5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y -5.08
+					end x -7.62 y 5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y 5.08
+					end x 2.54 y 5.08
+					width 0.00
+				[LINE END]
+				[ARC BEGIN]
+					center x 2.54 y 0.00
+					start x 2.54 y 5.08
+					end x 2.54 y -5.08
+					radius 5.08
+					width 0.00
+				[ARC END]
+			[DRAW END]
+			[TEXTS BEGIN]
+			[TEXTS END]
+			[PLACEHOLDERS BEGIN]
+				[PLACEHOLDER BEGIN]
+					meaning reference
+					position x -3.17 y -6.98
+					size 1.30
+					line_width 0.00
+					rotation 0.0
+					style normal
+					alignment horizontal left vertical bottom
+				[PLACEHOLDER END]
+				[PLACEHOLDER BEGIN]
+					meaning value
+					position x -3.17 y -8.89
+					size 1.30
+					line_width 0.00
+					rotation 0.0
+					style normal
+					alignment horizontal left vertical bottom
+				[PLACEHOLDER END]
+				[PLACEHOLDER BEGIN]
+					meaning purpose
+					position x 0.00 y 0.00
+					size 1.30
+					line_width 0.00
+					rotation 0.0
+					style normal
+					alignment horizontal center vertical center
+				[PLACEHOLDER END]
+			[PLACEHOLDERS END]
+			[PORTS BEGIN]
+				[PORT BEGIN]
+					name I1A
+					position x -15.24 y -2.54
+					direction input_digital
+					sensitivity_edge none
+					sensitivity_level high
+					length 7.62
+					rotation 180.0
+					port_name_visible no
+					port_name_size 1.30
+					terminal_name_visible yes
+					terminal_name_size 1.30
+				[PORT END]
+				[PORT BEGIN]
+					name I2B
+					position x -15.24 y 2.54
+					direction input_digital
+					sensitivity_edge none
+					sensitivity_level high
+					length 7.62
+					rotation 180.0
+					port_name_visible no
+					port_name_size 1.30
+					terminal_name_visible yes
+					terminal_name_size 1.30
+				[PORT END]
+				[PORT BEGIN]
+					name O1
+					position x 15.24 y 0.00
+					direction output_digital
+					inverted yes
+					tristate no
+					weakness none
+					length 7.62
+					rotation 0.0
+					port_name_visible no
+					port_name_size 1.30
+					terminal_name_visible yes
+					terminal_name_size 1.30
+				[PORT END]
+			[PORTS END]
+		[SYMBOL END]
+	[UNIT END]
+	[UNIT BEGIN]
+		name 3
+		position x 0.00 y 0.00
+		swap_level 0
+		add_level next
+		[SYMBOL BEGIN]
+			[DRAW BEGIN]
+				[LINE BEGIN]
+					start x 2.54 y -5.08
+					end x -7.62 y -5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y -5.08
+					end x -7.62 y 5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y 5.08
+					end x 2.54 y 5.08
+					width 0.00
+				[LINE END]
+				[ARC BEGIN]
+					center x 2.54 y 0.00
+					start x 2.54 y 5.08
+					end x 2.54 y -5.08
+					radius 5.08
+					width 0.00
+				[ARC END]
+			[DRAW END]
+			[TEXTS BEGIN]
+			[TEXTS END]
+			[PLACEHOLDERS BEGIN]
+				[PLACEHOLDER BEGIN]
+					meaning reference
+					position x -3.17 y -6.98
+					size 1.30
+					line_width 0.00
+					rotation 0.0
+					style normal
+					alignment horizontal left vertical bottom
+				[PLACEHOLDER END]
+				[PLACEHOLDER BEGIN]
+					meaning value
+					position x -3.17 y -8.89
+					size 1.30
+					line_width 0.00
+					rotation 0.0
+					style normal
+					alignment horizontal left vertical bottom
+				[PLACEHOLDER END]
+				[PLACEHOLDER BEGIN]
+					meaning purpose
+					position x 0.00 y 0.00
+					size 1.30
+					line_width 0.00
+					rotation 0.0
+					style normal
+					alignment horizontal center vertical center
+				[PLACEHOLDER END]
+			[PLACEHOLDERS END]
+			[PORTS BEGIN]
+				[PORT BEGIN]
+					name O1
+					position x 15.24 y 0.00
+					direction output_digital
+					inverted yes
+					tristate no
+					weakness none
+					length 7.62
+					rotation 0.0
+					port_name_visible no
+					port_name_size 1.30
+					terminal_name_visible yes
+					terminal_name_size 1.30
+				[PORT END]
+				[PORT BEGIN]
+					name I1A
+					position x -15.24 y -2.54
+					direction input_digital
+					sensitivity_edge none
+					sensitivity_level high
+					length 7.62
+					rotation 180.0
+					port_name_visible no
+					port_name_size 1.30
+					terminal_name_visible yes
+					terminal_name_size 1.30
+				[PORT END]
+				[PORT BEGIN]
+					name I3A
+					position x -15.24 y 2.54
+					direction input_digital
+					sensitivity_edge none
+					sensitivity_level high
+					length 7.62
+					rotation 180.0
+					port_name_visible no
+					port_name_size 1.30
+					terminal_name_visible yes
+					terminal_name_size 1.30
+				[PORT END]
+			[PORTS END]
+		[SYMBOL END]
+	[UNIT END]
+	[UNIT BEGIN]
+		name 4
+		position x 0.00 y 0.00
+		swap_level 0
+		add_level next
+		[SYMBOL BEGIN]
+			[DRAW BEGIN]
+				[LINE BEGIN]
+					start x 2.54 y -5.08
+					end x -7.62 y -5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y -5.08
+					end x -7.62 y 5.08
+					width 0.00
+				[LINE END]
+				[LINE BEGIN]
+					start x -7.62 y 5.08
+					end x 2.54 y 5.08
+					width 0.00
+				[LINE END]
+				[ARC BEGIN]
+					center x 2.54 y 0.00
+					start x 2.54 y 5.08
+					end x 2.54 y -5.08
+					radius 5.08
+					width 0.00
+				[ARC END]
+			[DRAW END]
+			[TEXTS BEGIN]
+			[TEXTS END]
+			[PLACEHOLDERS BEGIN]
+				[PLACEHOLDER BEGIN]
+					meaning reference
+					position x -3.17 y -6.98
+					size 1.30
+					line_width 0.00
+					rotation 0.0
+					style normal
+					alignment horizontal left vertical bottom
+				[PLACEHOLDER END]
+				[PLACEHOLDER BEGIN]
+					meaning value
+					position x -3.17 y -8.89
+					size 1.30
+					line_width 0.00
+					rotation 0.0
+					style normal
+					alignment horizontal left vertical bottom
+				[PLACEHOLDER END]
+				[PLACEHOLDER BEGIN]
+					meaning purpose
+					position x 0.00 y 0.00
+					size 1.30
+					line_width 0.00
+					rotation 0.0
+					style normal
+					alignment horizontal center vertical center
+				[PLACEHOLDER END]
+			[PLACEHOLDERS END]
+			[PORTS BEGIN]
+				[PORT BEGIN]
+					name O1
+					position x 15.24 y 0.00
+					direction output_digital
+					inverted yes
+					tristate no
+					weakness none
+					length 7.62
+					rotation 0.0
+					port_name_visible no
+					port_name_size 1.30
+					terminal_name_visible yes
+					terminal_name_size 1.30
+				[PORT END]
+				[PORT BEGIN]
+					name I1A
+					position x -15.24 y -2.54
+					direction input_digital
+					sensitivity_edge none
+					sensitivity_level high
+					length 7.62
+					rotation 180.0
+					port_name_visible no
+					port_name_size 1.30
+					terminal_name_visible yes
+					terminal_name_size 1.30
+				[PORT END]
+				[PORT BEGIN]
+					name I4A
+					position x -15.24 y 2.54
+					direction input_digital
+					sensitivity_edge none
+					sensitivity_level high
+					length 7.62
+					rotation 180.0
+					port_name_visible no
+					port_name_size 1.30
+					terminal_name_visible yes
+					terminal_name_size 1.30
+				[PORT END]
+			[PORTS END]
+		[SYMBOL END]
+	[UNIT END]
+	[UNIT BEGIN]
+		name 5
+		position x 0.00 y 0.00
+		swap_level 0
+		add_level next
+		[SYMBOL BEGIN]
+			[DRAW BEGIN]
+			[DRAW END]
+			[TEXTS BEGIN]
+			[TEXTS END]
+			[PLACEHOLDERS BEGIN]
+				[PLACEHOLDER BEGIN]
+					meaning reference
+					position x -3.17 y -6.98
+					size 1.30
+					line_width 0.00
+					rotation 0.0
+					style normal
+					alignment horizontal left vertical bottom
+				[PLACEHOLDER END]
+				[PLACEHOLDER BEGIN]
+					meaning value
+					position x -3.17 y -8.89
+					size 1.30
+					line_width 0.00
+					rotation 0.0
+					style normal
+					alignment horizontal left vertical bottom
+				[PLACEHOLDER END]
+				[PLACEHOLDER BEGIN]
+					meaning purpose
+					position x 0.00 y 0.00
+					size 1.30
+					line_width 0.00
+					rotation 0.0
+					style normal
+					alignment horizontal center vertical center
+				[PLACEHOLDER END]
+			[PLACEHOLDERS END]
+			[PORTS BEGIN]
+				[PORT BEGIN]
+					name GND
+					position x -5.08 y 5.08
+					direction power_in
+					level zero
+					length 0.00
+					rotation 270.0
+					port_name_visible no
+					port_name_size 1.30
+					terminal_name_visible yes
+					terminal_name_size 1.30
+				[PORT END]
+				[PORT BEGIN]
+					name VCC
+					position x -5.08 y -5.08
+					direction power_in
+					level zero
+					length 0.00
+					rotation 90.0
+					port_name_visible no
+					port_name_size 1.30
+					terminal_name_visible yes
+					terminal_name_size 1.30
+				[PORT END]
+			[PORTS END]
+		[SYMBOL END]
+	[UNIT END]
+[UNITS_INTERNAL END]
+[UNITS_EXTERNAL BEGIN]
+[UNITS_EXTERNAL END]
+
+-- ======================================================================================================================================================
+-- device model file end
+

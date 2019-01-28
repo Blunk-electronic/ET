@@ -811,7 +811,7 @@ package et_libraries is
 	-- An external unit has a reference and a swap level.
 	type type_unit_external is record -- CS: parameter appearance ?
 		file		: type_symbol_library_name.bounded_string; -- like /my_libraries/NAND.sym
-		coordinates	: type_2d_point; -- CS: rename to position
+		coordinates	: type_2d_point; -- CS: rename to position -- the position within the device editor
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
 	end record;
