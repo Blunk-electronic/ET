@@ -2835,7 +2835,7 @@ package body et_project is
 				-- The line contains something else -> the payload data. 
 				-- Temporarily this data is stored in corresponding variables.
 
-				log ("line --> " & to_string (line), log_threshold + 3);
+				log ("devcie line --> " & to_string (line), log_threshold + 3);
 		
 				case stack.current is
 
@@ -4489,7 +4489,10 @@ package body et_project is
 					procedure insert_unit is 
 						use et_libraries;
 					begin
-						--log ("unit " & to_string (device_unit_name), log_threshold + 2);
+						log_indentation_up;
+						-- log ("unit " & to_string (device_unit_name), log_threshold + 2);
+						-- No good idea. Confuses operator because units are collected BEFORE the device is complete.
+						
 						-- Depending on the appearance of the device, a virtual or real unit
 						-- is inserted in the unit list of the device.
 						
@@ -4520,6 +4523,8 @@ package body et_project is
 						device_unit := (others => <>);
 
 						-- CS reset placeholders for name, value and purpose ?
+
+						log_indentation_down;
 					end insert_unit;
 
 					procedure build_unit_placeholder is
@@ -6521,7 +6526,7 @@ package body et_project is
 					-- The line contains something else -> the payload data. 
 					-- Temporarily this data is stored in corresponding variables.
 
-					log ("line --> " & to_string (line), log_threshold + 5);
+					log ("module line --> " & to_string (line), log_threshold + 5);
 			
 					case stack.current is
 
@@ -7582,7 +7587,6 @@ package body et_project is
 											invalid_keyword (kw);
 										end if;
 									end;
-
 									
 								when others => invalid_section;
 							end case;
