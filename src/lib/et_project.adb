@@ -2314,7 +2314,6 @@ package body et_project is
 		end to_string;
 		
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
-		
 		prefix				: type_component_prefix.bounded_string; -- T, IC
 		value				: type_component_value.bounded_string; -- BC548
 		appearance			: type_component_appearance; -- sch, sch_pcb
@@ -2845,21 +2844,25 @@ package body et_project is
 							kw : string := f (line, 1);
 						begin
 							-- CS: In the following: set a corresponding parameter-found-flag
-							if kw = keyword_prefix then
+							if kw = keyword_prefix then -- prefix IC
 								expect_field_count (line, 2);
 								prefix := et_libraries.to_prefix (f (line,2));
+								log ("prefix " & to_string (prefix), log_threshold + 1);
 
-							elsif kw = keyword_value then
+							elsif kw = keyword_value then -- value 7400
 								expect_field_count (line, 2);
 								value := et_libraries.to_value (f (line,2));
+								log ("value " & to_string (value), log_threshold + 1);
 
-							elsif kw = keyword_appearance then
+							elsif kw = keyword_appearance then -- appearance sch_pcb
 								expect_field_count (line, 2);
 								appearance := et_libraries.to_appearance (f (line,2));
+								log ("appearance" & to_string (appearance), log_threshold + 1);								
 
-							elsif kw = keyword_partcode then
+							elsif kw = keyword_partcode then -- partcode IC_PAC_S_SO14_VAL_
 								expect_field_count (line, 2);
 								partcode := et_libraries.to_partcode (f (line,2));
+								log ("partcode " & to_string (partcode), log_threshold + 1);
 
 							else
 								invalid_keyword (kw);
@@ -2882,11 +2885,13 @@ package body et_project is
 									if kw = keyword_name then
 										expect_field_count (line, 2);
 										variant_name := et_libraries.to_component_variant_name (f (line,2));
-
+										log ("variant " & to_string (variant_name), log_threshold + 1);
+										
 									elsif kw = keyword_package_model then
 										expect_field_count (line, 2);
 										variant.packge := et_libraries.to_package_library_name (f (line,2));
-
+										log ("package model " & to_string (variant.packge), log_threshold + 1);
+										
 									else
 										invalid_keyword (kw);
 									end if;
@@ -2900,7 +2905,7 @@ package body et_project is
 							when SEC_VARIANT =>
 								expect_field_count (line, 6); -- terminal 14 unit 5 port VCC
 
-								-- extract terminal to port assigment
+								-- extract terminal to port assignment
 								insert_terminal (line);
 							
 							when others => invalid_section;
@@ -3283,8 +3288,8 @@ package body et_project is
 	begin -- read_device_file
 		log_indentation_up;
 		log ("reading device model " & to_string (file_name) & " ...", log_threshold);
-
-
+		log_indentation_up;
+		
 		-- CS: possible improvement: test if container et_libraries.devices already contains a model
 		-- named "file_name". If so, there would be no need to read the file_name again.
 		
@@ -3321,6 +3326,7 @@ package body et_project is
 		end if;
 
 		log_indentation_down;
+		log_indentation_down;		
 		set_input (previous_input);
 
 		close (file_handle);
@@ -4224,7 +4230,6 @@ package body et_project is
 			-- CS frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
 			frame_template_board		: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frm
 
-
 			procedure reset_polygon_parameters is 
 				use et_pcb;
 			begin
@@ -4561,16 +4566,26 @@ package body et_project is
 						inserted : boolean;
 					begin
 						log ("device " & et_libraries.to_string (device_name), log_threshold + 2);
-
+						log_indentation_up;
+						
 						-- assign temporarily variable for model:
 						device.model := device_model;
 
-						-- assign appearance specific temporarily variables
+						-- assign appearance specific temporarily variables and write log information
 						if device.appearance = et_libraries.SCH_PCB then
+							log ("value " & et_libraries.to_string (device_value), log_threshold + 3);
 							device.value	:= device_value;
+
+							log ("partcode " & et_libraries.to_string (device_partcode), log_threshold + 3);
 							device.partcode	:= device_partcode;
+
+							log ("purpose " & et_schematic.to_string (device_purpose), log_threshold + 3);
 							device.purpose	:= device_purpose;
+
+							log ("bom" & et_schematic.to_string (device_bom), log_threshold + 3);
 							device.bom		:= device_bom;
+
+							log ("variant " & et_libraries.to_string (device_variant), log_threshold + 3);
 							device.variant	:= device_variant;
 
 							-- CS: warn operator if provided but ignored due to the fact that device is virtual
@@ -4603,6 +4618,8 @@ package body et_project is
 						device_partcode := to_partcode ("");
 						device_bom		:= type_bom'first;
 						device_variant	:= to_component_variant_name ("");
+
+						log_indentation_down;
 					end insert_device;						
 									
 					procedure insert_line (
@@ -6425,7 +6442,7 @@ package body et_project is
 					if f (line, 1) = section_keyword then -- section name detected in field 1
 						if f (line, 2) = section_begin then -- section header detected in field 2
 							stack.push (section);
-							log (write_enter_section & to_string (section), log_threshold + 3);
+							log (write_enter_section & to_string (section), log_threshold + 6);
 							return true;
 
 						elsif f (line, 2) = section_end then -- section footer detected in field 2
@@ -6436,9 +6453,9 @@ package body et_project is
 							
 							stack.pop;
 							if stack.empty then
-								log (write_top_level_reached, log_threshold + 3);
+								log (write_top_level_reached, log_threshold + 6);
 							else
-								log (write_return_to_section & to_string (stack.current), log_threshold + 3);
+								log (write_return_to_section & to_string (stack.current), log_threshold + 6);
 							end if;
 							return true;
 
@@ -6504,7 +6521,7 @@ package body et_project is
 					-- The line contains something else -> the payload data. 
 					-- Temporarily this data is stored in corresponding variables.
 
-					log ("line --> " & to_string (line), log_threshold + 3);
+					log ("line --> " & to_string (line), log_threshold + 5);
 			
 					case stack.current is
 
@@ -8395,7 +8412,7 @@ package body et_project is
 					if f (line, 1) = section_keyword then -- section name detected in field 1
 						if f (line, 2) = section_begin then -- section header detected in field 2
 							stack.push (section);
-							log (write_enter_section & to_string (section), log_threshold + 4);
+							log (write_enter_section & to_string (section), log_threshold + 7);
 							return true;
 							
 						elsif f (line, 2) = section_end then -- section footer detected in field 2
@@ -8406,9 +8423,9 @@ package body et_project is
 							
 							stack.pop;
 							if stack.empty then
-								log (write_top_level_reached, log_threshold + 4);
+								log (write_top_level_reached, log_threshold + 7);
 							else
-								log (write_return_to_section & to_string (stack.current), log_threshold + 4);
+								log (write_return_to_section & to_string (stack.current), log_threshold + 7);
 							end if;
 							return true;
 							
@@ -8432,7 +8449,7 @@ package body et_project is
 					-- The line contains something else -> the payload data. 
 					-- Temporarily this data is to be stored in corresponding variables.
 
-					log ("line --> " & to_string (line), log_threshold + 3);
+					log ("line --> " & to_string (line), log_threshold + 7);
 					
 					case stack.current is
 
@@ -8565,7 +8582,6 @@ package body et_project is
 				raise;
 			
 		end read_conf_file;
-	
 		
 	begin -- open_project
 		log ("opening project " & to_string (project_name) & " ...", log_threshold, console => true);
