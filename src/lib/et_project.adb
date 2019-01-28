@@ -1961,7 +1961,7 @@ package body et_project is
 				when POWER_OUT | POWER_IN =>
 					write (keyword => keyword_level, parameters => to_string (element (cursor).level));
 					
-				when others => null;
+				when others => null; -- PASSIVE, INPUT_ANALOG, NOT_CONNECTED
 			end case;
 			
 			write (keyword => keyword_length, parameters => et_coordinates.to_string (element (cursor).length));
@@ -2433,6 +2433,7 @@ package body et_project is
 
 		procedure insert_unit_internal is
 		-- Inserts in the temporarily collection of internal units a new unit.
+		-- The symbol of the unit is the one accessed by pointer unit_symbol.
 			position : type_units_internal.cursor;
 			inserted : boolean;
 		begin
@@ -2486,6 +2487,20 @@ package body et_project is
 
 		procedure insert_port is begin
 			case port_direction is
+				when PASSIVE =>
+					type_ports.append (
+						container	=> unit_symbol.ports,
+						new_item	=> (port with 
+							direction				=> PASSIVE)
+						);
+
+				when INPUT_ANALOG =>
+					type_ports.append (
+						container	=> unit_symbol.ports,
+						new_item	=> (port with 
+							direction				=> INPUT_ANALOG)
+						);
+
 				when INPUT_DIGITAL =>
 					type_ports.append (
 						container	=> unit_symbol.ports,
@@ -2526,14 +2541,6 @@ package body et_project is
 							input_sensitivity_level	=> port_sensitivity_level)
 						);
 
-				when POWER_IN =>
-					type_ports.append (
-						container	=> unit_symbol.ports,
-						new_item	=> (port with 
-							direction				=> POWER_IN,
-							level					=> port_power_level)
-						);
-
 				when POWER_OUT =>
 					type_ports.append (
 						container	=> unit_symbol.ports,
@@ -2542,22 +2549,32 @@ package body et_project is
 							level					=> port_power_level)
 						);
 
-				when PASSIVE =>
+				when POWER_IN =>
 					type_ports.append (
 						container	=> unit_symbol.ports,
 						new_item	=> (port with 
-							direction				=> PASSIVE)
+							direction				=> POWER_IN,
+							level					=> port_power_level)
 						);
 
-				when INPUT_ANALOG =>
+				when NOT_CONNECTED =>
 					type_ports.append (
 						container	=> unit_symbol.ports,
 						new_item	=> (port with 
-							direction				=> INPUT_ANALOG)
+							direction				=> NOT_CONNECTED)
 						);
-					
-				when others => null;
 			end case;
+
+			-- reset port parameters for next port
+			port					:= (others => <>);
+			port_direction			:= port_direction_default;
+			port_sensitivity_edge	:= sensitivity_edge_default;
+			port_sensitivity_level	:= sensitivity_level_default;
+			port_output_inverted	:= output_inverted_default;
+			port_output_tristate	:= output_tristate_default;
+			port_output_weakness	:= output_weakness_default;
+			port_power_level		:= port_power_level_default;
+
 		end insert_port;
 		
 		procedure process_line is 
@@ -3214,7 +3231,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										port.terminal_name_size := et_coordinates.to_distance (f (line, 2));
 
-									elsif kw = keyword_direction then -- direction BIDIR
+									elsif kw = keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
 										expect_field_count (line, 2);
 										port_direction := et_libraries.to_port_direction (f (line, 2));
 

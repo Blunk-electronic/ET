@@ -251,6 +251,7 @@ package et_libraries is
 		OUTPUT_DIGITAL,	-- signal outputs
 
 		BIDIR_DIGITAL,	-- bidirectional ports
+		-- CS BIDIR_ANALOG, ??
 
 		POWER_OUT,		-- a power source like power symbol (VCC, GND, ..)
 		POWER_IN,		-- a power sink like power ports of ICs
