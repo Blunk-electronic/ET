@@ -3333,7 +3333,7 @@ package body et_kicad_to_native is
 									inserted	=> inserted,
 									new_item	=> (
 										appearance	=> et_libraries.SCH_PCB, -- real !
-										coordinates	=> element (unit_cursor_kicad).coordinates,
+										position	=> element (unit_cursor_kicad).coordinates,
 										swap_level	=> <>,
 										add_level	=> <>, -- CS depends on the "global" flag. When true add_level should be "request"
 
@@ -3359,7 +3359,7 @@ package body et_kicad_to_native is
 									inserted	=> inserted,
 									new_item	=> (
 										appearance	=> et_libraries.SCH, -- virtual !
-										coordinates	=> element (unit_cursor_kicad).coordinates,
+										position	=> element (unit_cursor_kicad).coordinates,
 										swap_level	=> <>,
 										add_level	=> <>, -- CS depends on the "global" flag. When true add_level should be "request"
 

@@ -2078,7 +2078,7 @@ package body et_project is
 			unit	: in type_unit_internal) is
 		begin -- query_internal_unit
 			write (keyword => keyword_name, space => true, parameters => to_string (name));
-			write (keyword => keyword_position, parameters => position (unit.coordinates));
+			write (keyword => keyword_position, parameters => position (unit.position));
 			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
 			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
 			section_mark (section_symbol, HEADER);
@@ -2091,7 +2091,7 @@ package body et_project is
 			unit	: in type_unit_external) is
 		begin -- query_external_unit
 			write (keyword => keyword_name, space => true, parameters => to_string (name));
-			write (keyword => keyword_position, parameters => position (unit.coordinates));
+			write (keyword => keyword_position, parameters => position (unit.position));
 			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
 			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
 			write (keyword => keyword_file, space => true, parameters => to_string (unit.file));
@@ -2448,7 +2448,7 @@ package body et_project is
 						new_item	=> (
 								appearance	=> SCH,
 								symbol		=> unit_symbol.all,
-								coordinates	=> unit_position,
+								position	=> unit_position,
 								swap_level	=> unit_swap_level,
 								add_level	=> unit_add_level));
 
@@ -2461,7 +2461,7 @@ package body et_project is
 						new_item	=> (
 								appearance	=> SCH_PCB,
 								symbol		=> unit_symbol.all,
-								coordinates	=> unit_position,
+								position	=> unit_position,
 								swap_level	=> unit_swap_level,
 								add_level	=> unit_add_level));
 

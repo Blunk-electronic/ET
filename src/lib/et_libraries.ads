@@ -798,7 +798,7 @@ package et_libraries is
 	-- An internal unit is owned by the particular component exclusively.
 	type type_unit_internal (appearance : type_component_appearance) is record
 		symbol		: type_symbol (appearance);
-		coordinates	: type_2d_point; -- CS: rename to position -- the position of the unit inside the device editor
+		position	: type_2d_point; -- the position of the unit inside the device editor
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
 	end record;
@@ -811,7 +811,7 @@ package et_libraries is
 	-- An external unit has a reference and a swap level.
 	type type_unit_external is record -- CS: parameter appearance ?
 		file		: type_symbol_library_name.bounded_string; -- like /my_libraries/NAND.sym
-		coordinates	: type_2d_point; -- CS: rename to position -- the position within the device editor
+		position	: type_2d_point; -- the position within the device editor
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
 	end record;
