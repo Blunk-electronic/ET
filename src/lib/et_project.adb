@@ -2430,6 +2430,8 @@ package body et_project is
 		port_output_weakness	: et_libraries.type_output_weakness := output_weakness_default;
 		port_power_level		: et_libraries.type_power_level := port_power_level_default;
 
+		unit_external : type_unit_external;
+
 		procedure insert_unit_internal is
 		-- Inserts in the temporarily collection of internal units a new unit.
 		-- The symbol of the unit is the one accessed by pointer unit_symbol.
@@ -2467,14 +2469,26 @@ package body et_project is
 
 				when others => null; -- CS
 			end case;
+
+			-- A unit name must occur only once. 
+			-- Make sure the unit_name is not in use by any internal or external units:
 			
-			-- A unit must occur only once:
+			-- Test occurence in internal units:
 			if not inserted then
 				log_indentation_reset;
-				log (message_error & "unit " & to_string (unit_name) & " already used !", console => true);
+				log (message_error & "unit " & to_string (unit_name) 
+					& " already used by another internal unit !", console => true);
 				raise constraint_error;
 			end if;
 
+			-- Make sure the unit name is not in use by any external unit:
+			if type_units_external.contains (units_external, unit_name) then
+				log_indentation_reset;
+				log (message_error & "unit name " & to_string (unit_name) 
+					& " already used by an external unit !", console => true);
+				raise constraint_error;
+			end if;
+			
 			-- clean up for next unit
 			unit_name := to_unit_name ("");
 			unit_position := zero;
@@ -2484,6 +2498,42 @@ package body et_project is
 			
 		end insert_unit_internal;
 
+		procedure insert_unit_external is
+		-- Inserts in the temporarily collection of external units a new unit.
+			position : type_units_external.cursor;
+			inserted : boolean;
+		begin
+			type_units_external.insert (
+				container	=> units_external,
+				position	=> position,
+				inserted	=> inserted,
+				key			=> unit_name,
+				new_item	=> unit_external);
+
+			-- A unit name must occur only once. 
+			-- Make sure the unit_name is not in use by any internal or external units:
+
+			-- Test occurence in external units:
+			if not inserted then
+				log_indentation_reset;
+				log (message_error & "unit name " & to_string (unit_name) 
+					& " already used by another external unit !", console => true);
+				raise constraint_error;
+			end if;
+
+			-- Make sure the unit name is not in use by any internal unit:
+			if type_units_internal.contains (units_internal, unit_name) then
+				log_indentation_reset;
+				log (message_error & "unit name " & to_string (unit_name) 
+					& " already used by an internal unit !", console => true);
+				raise constraint_error;
+			end if;
+
+			-- clean up for next unit
+			unit_name := to_unit_name ("");
+			unit_external := (others => <>);
+		end insert_unit_external;
+		
 		procedure insert_port is begin
 			case port_direction is
 				when PASSIVE =>
@@ -2617,7 +2667,9 @@ package body et_project is
 							when SEC_UNITS_INTERNAL =>
 								insert_unit_internal;
 									
-							when SEC_UNITS_EXTERNAL => null; -- nothing to do								
+							when SEC_UNITS_EXTERNAL =>
+								insert_unit_external;
+								
 							when others => invalid_section;
 						end case;
 
@@ -2961,7 +3013,39 @@ package body et_project is
 									end if;
 								end;
 								
-							when SEC_UNITS_EXTERNAL => null; -- nothing to do								
+							when SEC_UNITS_EXTERNAL =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_name then -- name A, B, ...
+										expect_field_count (line, 2);
+										unit_name := et_libraries.to_unit_name (f (line,2));
+
+									elsif kw = keyword_position then -- position x 0.00 y 0.00
+										expect_field_count (line, 5);
+
+										-- extract unit position starting at field 2
+										-- NOTE: this is the position of the unit inside the device editor !
+										unit_external.position := to_position (line, 2);
+
+									elsif kw = keyword_swap_level then -- swap_level 1
+										expect_field_count (line, 2);
+										unit_external.swap_level := to_swap_level (f (line, 2));
+
+									elsif kw = keyword_add_level then -- add_level next
+										expect_field_count (line, 2);
+										unit_external.add_level := to_add_level (f (line, 2));
+
+									elsif kw = keyword_file then -- file libraries/symbols/nand.sym
+										expect_field_count (line, 2);
+										unit_external.file := to_symbol_library_name (f (line, 2));
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+								
 							when others => invalid_section;
 						end case;
 
@@ -3331,8 +3415,9 @@ package body et_project is
 
 		close (file_handle);
 
+		-- CS Check integrity of device: port terminal map, positions of units, ...
 		-- CS insert device in container "devcies"
-		-- mind temporarily variables: prefix, value, appearance, partcode, variants, units internal/external
+
 
 		exception when event: others =>
 			if is_open (file_handle) then 

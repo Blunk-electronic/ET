@@ -795,7 +795,7 @@ package et_libraries is
 	function to_add_level (add_level : in string) return type_unit_add_level;
 	
 	-- An internal unit is a symbol with a swap level.
-	-- An internal unit is owned by the particular component exclusively.
+	-- An internal unit is owned by the particular device exclusively.
 	type type_unit_internal (appearance : type_component_appearance) is record
 		symbol		: type_symbol (appearance);
 		position	: type_2d_point; -- the position of the unit inside the device editor
@@ -809,9 +809,9 @@ package et_libraries is
 		element_type	=> type_unit_internal);
 
 	-- An external unit has a reference and a swap level.
-	type type_unit_external is record -- CS: parameter appearance ?
+	type type_unit_external is record
 		file		: type_symbol_library_name.bounded_string; -- like /my_libraries/NAND.sym
-		position	: type_2d_point; -- the position within the device editor
+		position	: type_2d_point := zero; -- the position within the device editor
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
 	end record;
