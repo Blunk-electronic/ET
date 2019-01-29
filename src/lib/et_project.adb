@@ -2887,7 +2887,7 @@ package body et_project is
 				-- The line contains something else -> the payload data. 
 				-- Temporarily this data is stored in corresponding variables.
 
-				log ("devcie line --> " & to_string (line), log_threshold + 3);
+				log ("device line --> " & to_string (line), log_threshold + 3);
 		
 				case stack.current is
 
@@ -3374,50 +3374,81 @@ package body et_project is
 		log ("reading device model " & to_string (file_name) & " ...", log_threshold);
 		log_indentation_up;
 		
-		-- CS: possible improvement: test if container et_libraries.devices already contains a model
+		-- test if container et_libraries.devices already contains a model
 		-- named "file_name". If so, there would be no need to read the file_name again.
-		
-		-- open device model file
-		open (
-			file => file_handle,
-			mode => in_file, 
-			name => to_string (file_name));
+		if et_libraries.type_devices.contains (et_libraries.devices, file_name) then
+			log ("already read -> skipped", log_threshold + 1);
+		else
+			
+			-- open device model file
+			open (
+				file => file_handle,
+				mode => in_file, 
+				name => to_string (file_name));
 
-		set_input (file_handle);
-		
-		-- Init section stack.
-		stack.init;
-		stack.push (SEC_INIT);
+			set_input (file_handle);
+			
+			-- Init section stack.
+			stack.init;
+			stack.push (SEC_INIT);
 
-		-- read the file line by line
-		while not end_of_file loop
-			line := et_string_processing.read_line (
-				line 			=> get_line,
-				number			=> ada.text_io.line (current_input),
-				comment_mark 	=> comment_mark,
-				delimiter_wrap	=> true, -- strings are enclosed in quotations
-				ifs 			=> latin_1.space); -- fields are separated by space
+			-- read the file line by line
+			while not end_of_file loop
+				line := et_string_processing.read_line (
+					line 			=> get_line,
+					number			=> ada.text_io.line (current_input),
+					comment_mark 	=> comment_mark,
+					delimiter_wrap	=> true, -- strings are enclosed in quotations
+					ifs 			=> latin_1.space); -- fields are separated by space
 
-			-- we are interested in lines that contain something. emtpy lines are skipped:
-			if field_count (line) > 0 then
-				process_line;
+				-- we are interested in lines that contain something. emtpy lines are skipped:
+				if field_count (line) > 0 then
+					process_line;
+				end if;
+			end loop;
+
+			-- As a safety measure the top section must be reached finally.
+			if stack.depth > 1 then 
+				log (message_warning & write_section_stack_not_empty);
 			end if;
-		end loop;
 
-		-- As a safety measure the top section must be reached finally.
-		if stack.depth > 1 then 
-			log (message_warning & write_section_stack_not_empty);
+			set_input (previous_input);
+			close (file_handle);
+
+			-- Assemble final device and insert it in et_libraries.devices:
+			case appearance is
+				when SCH_PCB => -- a real device
+					et_libraries.type_devices.insert (
+						container	=> et_libraries.devices, 
+						key			=> file_name, -- libraries/devices/7400.dev
+						new_item	=> (
+								appearance		=> SCH_PCB,
+								prefix			=> prefix, -- IC
+								units_internal	=> units_internal,
+								units_external	=> units_external,
+								value			=> value,
+								partcode		=> partcode,
+								variants		=> variants));
+
+				when SCH => -- virtual device
+					et_libraries.type_devices.insert (
+						container	=> et_libraries.devices, 
+						key			=> file_name, -- libraries/devices/power_gnd.dev
+						new_item	=> (
+								appearance		=> SCH,
+								prefix			=> prefix, -- PWR
+								units_internal	=> units_internal,
+								units_external	=> units_external));
+
+				when others => null; -- CS
+			end case;
 		end if;
+
+		-- CS Check integrity of device: port terminal map, positions of units, ...
+		-- use function "last" to fetch latest device
 
 		log_indentation_down;
 		log_indentation_down;		
-		set_input (previous_input);
-
-		close (file_handle);
-
-		-- CS Check integrity of device: port terminal map, positions of units, ...
-		-- CS insert device in container "devcies"
-
 
 		exception when event: others =>
 			if is_open (file_handle) then 
@@ -4690,7 +4721,7 @@ package body et_project is
 
 						if not inserted then
 							log_indentation_reset;
-							log (message_error & "device " & et_libraries.to_string (device_name) & " already exists !",
+							log (message_error & "device name " & et_libraries.to_string (device_name) & " already used !",
 								 console => true);
 							raise constraint_error;
 						end if;
