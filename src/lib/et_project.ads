@@ -561,7 +561,21 @@ package et_project is
 		SEC_UNITS_EXTERNAL
 		);
 
+	type type_section_name_symbol is (
+		SEC_INIT,
+		SEC_DRAW,
+		SEC_LINE,
+		SEC_ARC,
+		SEC_CIRCLE,
+		SEC_TEXTS,
+		SEC_TEXT,
+		SEC_PLACEHOLDER,		
+		SEC_PLACEHOLDERS,
+		SEC_PORTS,
+		SEC_PORT
+		);
 
+	
 -- GENERICS
 	
 	generic

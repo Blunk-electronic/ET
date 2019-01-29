@@ -1,0 +1,88 @@
+-- SYSTEM ET symbol
+-- date 2019-01-26T16:54:37
+-- ======================================================================================================================================================
+
+appearance sch_pcb
+
+[DRAW BEGIN]
+	[LINE BEGIN]
+		start x 2.54 y -5.08
+		end x -7.62 y -5.08
+		width 0.00
+	[LINE END]
+	[LINE BEGIN]
+		start x -7.62 y -5.08
+		end x -7.62 y 5.08
+		width 0.00
+	[LINE END]
+	[LINE BEGIN]
+		start x -7.62 y 5.08
+		end x 2.54 y 5.08
+		width 0.00
+	[LINE END]
+[DRAW END]
+
+[TEXTS BEGIN]
+[TEXTS END]
+
+[PLACEHOLDERS BEGIN]
+	[PLACEHOLDER BEGIN]
+		meaning reference
+		position x -3.17 y -6.98
+		size 1.30
+		line_width 0.00
+		rotation 0.0
+		style normal
+		alignment horizontal left vertical bottom
+	[PLACEHOLDER END]
+	[PLACEHOLDER BEGIN]
+		meaning value
+		position x -3.17 y -8.89
+		size 1.30
+		line_width 0.00
+		rotation 0.0
+		style normal
+		alignment horizontal left vertical bottom
+	[PLACEHOLDER END]
+	[PLACEHOLDER BEGIN]
+		meaning purpose
+		position x 0.00 y 0.00
+		size 1.30
+		line_width 0.00
+		rotation 0.0
+		style normal
+		alignment horizontal center vertical center
+	[PLACEHOLDER END]
+[PLACEHOLDERS END]
+
+[PORTS BEGIN]
+	[PORT BEGIN]
+		name GND
+		position x -5.08 y 5.08
+		direction power_in
+		level zero
+		length 0.00
+		rotation 270.0
+		port_name_visible no
+		port_name_size 1.30
+		terminal_name_visible yes
+		terminal_name_size 1.30
+	[PORT END]
+	[PORT BEGIN]
+		name VCC
+		position x -5.08 y -5.08
+		direction power_in
+		level positive
+		length 0.00
+		rotation 90.0
+		port_name_visible no
+		port_name_size 1.30
+		terminal_name_visible yes
+		terminal_name_size 1.30
+	[PORT END]
+[PORTS END]
+
+
+-- ======================================================================================================================================================
+-- symbol file end
+
