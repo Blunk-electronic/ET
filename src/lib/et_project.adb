@@ -2337,104 +2337,103 @@ package body et_project is
 		port_output_weakness	: et_libraries.type_output_weakness := output_weakness_default;
 		port_power_level		: et_libraries.type_power_level := port_power_level_default;
 		
-		procedure insert_port is begin
-			case port_direction is
-				when PASSIVE =>
-					type_ports.append (
-						container	=> symbol.ports,
-						new_item	=> (port with 
-							direction				=> PASSIVE)
-						);
-
-				when INPUT_ANALOG =>
-					type_ports.append (
-						container	=> symbol.ports,
-						new_item	=> (port with 
-							direction				=> INPUT_ANALOG)
-						);
-
-				when INPUT_DIGITAL =>
-					type_ports.append (
-						container	=> symbol.ports,
-						new_item	=> (port with 
-							direction				=> INPUT_DIGITAL,
-							sensitivity_edge		=> port_sensitivity_edge,
-							sensitivity_level		=> port_sensitivity_level)
-						);
-
-				when OUTPUT_ANALOG =>
-					type_ports.append (
-						container	=> symbol.ports,
-						new_item	=> (port with 
-							direction				=> OUTPUT_ANALOG,
-							output_analog_tristate	=> port_output_tristate,
-							output_analog_weakness	=> port_output_weakness)
-						);
-
-				when OUTPUT_DIGITAL =>
-					type_ports.append (
-						container	=> symbol.ports,
-						new_item	=> (port with 
-							direction				=> OUTPUT_DIGITAL,
-							output_digital_inverted	=> port_output_inverted,
-							output_digital_tristate	=> port_output_tristate,
-							output_digital_weakness	=> port_output_weakness)
-						);
-
-				when BIDIR_DIGITAL =>
-					type_ports.append (
-						container	=> symbol.ports,
-						new_item	=> (port with 
-							direction				=> BIDIR_DIGITAL,
-							output_inverted			=> port_output_inverted,
-							output_tristate			=> port_output_tristate,
-							output_weakness			=> port_output_weakness,
-							input_sensitivity_edge	=> port_sensitivity_edge,
-							input_sensitivity_level	=> port_sensitivity_level)
-						);
-
-				when POWER_OUT =>
-					type_ports.append (
-						container	=> symbol.ports,
-						new_item	=> (port with 
-							direction				=> POWER_OUT,
-							level					=> port_power_level)
-						);
-
-				when POWER_IN =>
-					type_ports.append (
-						container	=> symbol.ports,
-						new_item	=> (port with 
-							direction				=> POWER_IN,
-							level					=> port_power_level)
-						);
-
-				when NOT_CONNECTED =>
-					type_ports.append (
-						container	=> symbol.ports,
-						new_item	=> (port with 
-							direction				=> NOT_CONNECTED)
-						);
-			end case;
-
-			-- reset port parameters for next port
-			port					:= (others => <>);
-			port_direction			:= port_direction_default;
-			port_sensitivity_edge	:= sensitivity_edge_default;
-			port_sensitivity_level	:= sensitivity_level_default;
-			port_output_inverted	:= output_inverted_default;
-			port_output_tristate	:= output_tristate_default;
-			port_output_weakness	:= output_weakness_default;
-			port_power_level		:= port_power_level_default;
-
-		end insert_port;
-		
 		procedure process_line is 
 		-- CS: detect if section name is type_section_name_module
 
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
 			-- and finally assembled to actual objects:
+		
+				procedure insert_port is begin
+					case port_direction is
+						when PASSIVE =>
+							type_ports.append (
+								container	=> symbol.ports,
+								new_item	=> (port with 
+									direction				=> PASSIVE)
+								);
+
+						when INPUT_ANALOG =>
+							type_ports.append (
+								container	=> symbol.ports,
+								new_item	=> (port with 
+									direction				=> INPUT_ANALOG)
+								);
+
+						when INPUT_DIGITAL =>
+							type_ports.append (
+								container	=> symbol.ports,
+								new_item	=> (port with 
+									direction				=> INPUT_DIGITAL,
+									sensitivity_edge		=> port_sensitivity_edge,
+									sensitivity_level		=> port_sensitivity_level)
+								);
+
+						when OUTPUT_ANALOG =>
+							type_ports.append (
+								container	=> symbol.ports,
+								new_item	=> (port with 
+									direction				=> OUTPUT_ANALOG,
+									output_analog_tristate	=> port_output_tristate,
+									output_analog_weakness	=> port_output_weakness)
+								);
+
+						when OUTPUT_DIGITAL =>
+							type_ports.append (
+								container	=> symbol.ports,
+								new_item	=> (port with 
+									direction				=> OUTPUT_DIGITAL,
+									output_digital_inverted	=> port_output_inverted,
+									output_digital_tristate	=> port_output_tristate,
+									output_digital_weakness	=> port_output_weakness)
+								);
+
+						when BIDIR_DIGITAL =>
+							type_ports.append (
+								container	=> symbol.ports,
+								new_item	=> (port with 
+									direction				=> BIDIR_DIGITAL,
+									output_inverted			=> port_output_inverted,
+									output_tristate			=> port_output_tristate,
+									output_weakness			=> port_output_weakness,
+									input_sensitivity_edge	=> port_sensitivity_edge,
+									input_sensitivity_level	=> port_sensitivity_level)
+								);
+
+						when POWER_OUT =>
+							type_ports.append (
+								container	=> symbol.ports,
+								new_item	=> (port with 
+									direction				=> POWER_OUT,
+									level					=> port_power_level)
+								);
+
+						when POWER_IN =>
+							type_ports.append (
+								container	=> symbol.ports,
+								new_item	=> (port with 
+									direction				=> POWER_IN,
+									level					=> port_power_level)
+								);
+
+						when NOT_CONNECTED =>
+							type_ports.append (
+								container	=> symbol.ports,
+								new_item	=> (port with 
+									direction				=> NOT_CONNECTED)
+								);
+					end case;
+
+					-- reset port parameters for next port
+					port					:= (others => <>);
+					port_direction			:= port_direction_default;
+					port_sensitivity_edge	:= sensitivity_edge_default;
+					port_sensitivity_level	:= sensitivity_level_default;
+					port_output_inverted	:= output_inverted_default;
+					port_output_tristate	:= output_tristate_default;
+					port_output_weakness	:= output_weakness_default;
+					port_power_level		:= port_power_level_default;
+				end insert_port;
 				
 			begin -- execute_section
 				case stack.current is
@@ -2994,34 +2993,12 @@ package body et_project is
 			set_input (previous_input);
 			close (file_handle);
 
-			-- Assemble final symbol and insert it in et_libraries.symbols:
--- 			case appearance is
--- 				when SCH_PCB => -- a real device
--- 					et_libraries.type_symbols.insert (
--- 						container	=> et_libraries.symbols, 
--- 						key			=> file_name, -- libraries/symbols/nand.sym
--- 						new_item	=> (
--- 								appearance		=> SCH_PCB,
--- 								prefix			=> prefix, -- IC
--- 								shapes			=> (others => <>),
--- 								ports			=> (others => <>),
--- 								units_external	=> units_external,
--- 								value			=> value,
--- 								partcode		=> partcode,
--- 								variants		=> variants));
--- 
--- 				when SCH => -- virtual device
--- 					et_libraries.type_devices.insert (
--- 						container	=> et_libraries.devices, 
--- 						key			=> file_name, -- libraries/devices/power_gnd.dev
--- 						new_item	=> (
--- 								appearance		=> SCH,
--- 								prefix			=> prefix, -- PWR
--- 								units_internal	=> units_internal,
--- 								units_external	=> units_external));
--- 
--- 				when others => null; -- CS
--- 			end case;
+			-- Insert the symbol (accessed by pointer symbol) in et_libraries.symbols:
+			et_libraries.type_symbols.insert (
+				container	=> et_libraries.symbols, 
+				key			=> file_name, -- libraries/symbols/nand.sym
+				new_item	=> symbol.all);
+
 		end if;
 
 		-- CS Check integrity of device: port terminal map, positions of units, ...
