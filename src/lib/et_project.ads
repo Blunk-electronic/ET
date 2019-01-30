@@ -454,8 +454,8 @@ package et_project is
 	section_route_restrict		: constant string	:= "[ROUTE_RESTRICT";
 	section_via_restrict		: constant string	:= "[VIA_RESTRICT";
 	section_copper				: constant string	:= "[COPPER";
-	section_pcb_contour			: constant string	:= "[PCB_CONTOUR_NON_PLATED";
-	section_pcb_contour_plated	: constant string	:= "[PCB_CONTOUR_PLATED";
+	section_pcb_contour			: constant string	:= "[PCB_CONTOUR_NON_PLATED"; -- CS plural
+	--section_pcb_contour_plated	: constant string	:= "[PCB_CONTOUR_PLATED"; 
 	section_pac_3d_contour		: constant string	:= "[PACKAGE_3D_CONTOUR";
 	
 	section_top					: constant string	:= "[TOP";
@@ -575,6 +575,31 @@ package et_project is
 		SEC_PORT
 		);
 
+	type type_section_name_package is (
+		SEC_INIT,
+		SEC_TOP,
+		SEC_BOTTOM,
+		SEC_LINE,
+		SEC_ARC,
+		SEC_CIRCLE,
+		SEC_SILK_SCREEN,
+		SEC_ASSEMBLY_DOCUMENTATION,
+		SEC_KEEPOUT,
+		SEC_COPPER,
+		SEC_STOP_MASK,
+		SEC_STENCIL,
+		SEC_ROUTE_RESTRICT,
+		SEC_VIA_RESTRICT,
+		SEC_PCB_CONTOUR_NON_PLATED,
+		SEC_TERMINALS,
+		SEC_TERMINAL,
+		SEC_PAD_CONTOUR,
+		SEC_MILLINGS,
+		SEC_TEXT,
+		SEC_PLACEHOLDER,
+		SEC_POLYGON,
+		SEC_CORNERS
+		);
 	
 -- GENERICS
 	
