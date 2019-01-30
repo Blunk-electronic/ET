@@ -37,10 +37,8 @@
 
 with ada.directories;
 
-
 package body et_general is
 
-	
 	function directory_entries (
 	-- Returns the entries of the given directory. Parameter category determines whether to
 	-- search for directories, ordinary files or special files.

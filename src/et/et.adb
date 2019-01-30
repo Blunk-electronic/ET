@@ -47,6 +47,8 @@ with ada.command_line;			use ada.command_line;
 with gnat.command_line;			use gnat.command_line;
 with ada.directories;			use ada.directories;
 
+--with gnat.source_info;
+
 with et_general;
 with et_string_processing;		use et_string_processing;
 with et_coordinates;
@@ -485,7 +487,8 @@ procedure et is
 
 		log_indentation_down;
 	end convert;
-		
+
+	
 begin -- main
 	create_work_directory;
 	create_report_directory;
@@ -552,12 +555,13 @@ begin -- main
 	close_report;
 
 	exception
-		when event:
-			others => 
-				log (ada.exceptions.exception_message (event), console => true);
-				close_report;
-				put_line ("Read log file " & log_file_name & " for details !");
-				set_exit_status (failure);
+		when event: others =>
+			log_indentation_reset;
+			log (ada.exceptions.exception_information (event), console => true);
+			close_report;
+			
+			put_line ("Read log file " & log_file_name & " for details !");
+			set_exit_status (failure);
 
 end et;
 

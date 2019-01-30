@@ -48,8 +48,6 @@ with ada.containers;            use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_vectors;
 
--- with ada.exceptions;
-
 with ada.calendar;				use ada.calendar;
 with ada.calendar.formatting;	use ada.calendar.formatting;
 with ada.calendar.time_zones;	use ada.calendar.time_zones;
@@ -296,6 +294,11 @@ package et_string_processing is
 	procedure close_report;
 	-- Writes the report footer and closes the report file.
 	-- Sets the output back to standard_output.
+
+	procedure show_line (
+	-- Output the line of code where the exception occured:
+		file : string; -- the file name like et_kicad.adb
+		line : natural);-- the line number
 	
 	private
 	

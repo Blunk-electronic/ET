@@ -288,12 +288,13 @@ package et_libraries is
 	-- Converts a string to type_port_name_text_size.
 	
 	
-	-- Initially, a port has at least a name.
-	type type_port_named is tagged record
-		name				: type_port_name.bounded_string; -- like CLOCK or CE
-	end record;
+-- 	-- Initially, a port has at least a name.
+-- 	type type_port_named is tagged record
+-- 		name				: type_port_name.bounded_string; -- like CLOCK or CE
+-- 	end record;
 	
-	type type_port_base is new type_port_named with record 	-- CS: set defaults
+	--type type_port_base is new type_port_named with record 	-- CS: set defaults
+	type type_port_base is tagged record 	-- CS: set defaults	
 		position			: type_2d_point;
 		length				: type_port_length; 
 		rotation			: type_angle := zero_angle;
@@ -390,7 +391,10 @@ package et_libraries is
 	-- Ports of a component are collected in a simple list. A list, because multiple ports
 	-- with the same name (but differing terminal names) may exist. For example lots of GND
 	-- ports at FPGAs.
-	package type_ports is new indefinite_doubly_linked_lists (type_port); 
+	--package type_ports is new indefinite_doubly_linked_lists (type_port); 
+	package type_ports is new indefinite_ordered_maps (
+		key_type		=> type_port_name.bounded_string, -- CLOCK, CE, VDD, GND
+		element_type	=> type_port);
 
 
 	
@@ -748,7 +752,7 @@ package et_libraries is
 
 	type type_symbol (appearance : type_component_appearance) is new type_symbol_base with record
 		shapes	: type_shapes; -- the collection of shapes
-		ports	: type_ports.list;
+		ports	: type_ports.map;
 		case appearance is
 			when SCH_PCB =>
 				-- Placeholders for component wide texts. To be filled with content when 
@@ -900,8 +904,10 @@ package et_libraries is
 	-- by given character set.
 	-- Raises exception if invalid character found.
 
-	type type_port_in_terminal_port_map is new type_port_named with record
-		unit	: type_unit_name.bounded_string;
+	--	type type_port_in_terminal_port_map is new type_port_named with record
+	type type_port_in_terminal_port_map is record
+		name	: type_port_name.bounded_string; -- CLK, CE, VSS
+		unit	: type_unit_name.bounded_string; -- GPIO_BANK_3
 	end record;
 	
 	package type_terminal_port_map is new ordered_maps (

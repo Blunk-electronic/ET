@@ -290,6 +290,7 @@ package et_kicad is
 
 	
 	type type_port_library is new et_libraries.type_port_base with record 	-- CS: set defaults
+		name		: et_libraries.type_port_name.bounded_string; -- like CLOCK or CE
 		direction 	: type_port_direction;
 		style 		: type_port_style := NONE;
 

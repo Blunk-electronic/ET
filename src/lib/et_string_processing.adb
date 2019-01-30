@@ -43,6 +43,9 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.text_io;				use ada.text_io;
 
+--with ada.exceptions;
+with gnat.source_info;
+
 package body et_string_processing is
 
 	function to_string (
@@ -911,6 +914,16 @@ package body et_string_processing is
 			
 		end if;
 	end close_report;
+
+
+	procedure show_line (
+	-- Output the line of code where the exception occured:
+		file : string; -- the file name like et_kicad.adb
+		line : natural) is -- the line number 
+	begin
+		log_indentation_reset;
+		log ("source file " & file & " line" & natural'image (line), console => true);
+	end;
 
 	
 end et_string_processing;

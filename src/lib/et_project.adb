@@ -1932,7 +1932,7 @@ package body et_project is
 
 		procedure write_port (cursor : in type_ports.cursor) is begin
 			section_mark (section_port, HEADER);
-			write (keyword => keyword_name, space => true, parameters => to_string (element (cursor).name));
+			write (keyword => keyword_name, space => true, parameters => to_string (key (cursor)));
 			write (keyword => keyword_position, parameters => position (element (cursor).position));
 			write (keyword => keyword_direction, parameters => to_string (element (cursor).direction));
 			
@@ -2329,6 +2329,7 @@ package body et_project is
 		symbol_placeholder_meaning : et_libraries.type_text_meaning := text_meaning_default;
 		
 		port					: et_libraries.type_port_base;
+		port_name				: et_libraries.type_port_name.bounded_string;
 		port_direction			: et_libraries.type_port_direction := port_direction_default;
 		port_sensitivity_edge	: et_libraries.type_sensitivity_edge := sensitivity_edge_default;
 		port_sensitivity_level	: et_libraries.type_sensitivity_level := sensitivity_level_default;
@@ -2347,22 +2348,25 @@ package body et_project is
 				procedure insert_port is begin
 					case port_direction is
 						when PASSIVE =>
-							type_ports.append (
+							type_ports.insert (
 								container	=> symbol.ports,
+								key			=> port_name,
 								new_item	=> (port with 
 									direction				=> PASSIVE)
 								);
 
 						when INPUT_ANALOG =>
-							type_ports.append (
+							type_ports.insert (
 								container	=> symbol.ports,
+								key			=> port_name,
 								new_item	=> (port with 
 									direction				=> INPUT_ANALOG)
 								);
 
 						when INPUT_DIGITAL =>
-							type_ports.append (
+							type_ports.insert (
 								container	=> symbol.ports,
+								key			=> port_name,
 								new_item	=> (port with 
 									direction				=> INPUT_DIGITAL,
 									sensitivity_edge		=> port_sensitivity_edge,
@@ -2370,8 +2374,9 @@ package body et_project is
 								);
 
 						when OUTPUT_ANALOG =>
-							type_ports.append (
+							type_ports.insert (
 								container	=> symbol.ports,
+								key			=> port_name,
 								new_item	=> (port with 
 									direction				=> OUTPUT_ANALOG,
 									output_analog_tristate	=> port_output_tristate,
@@ -2379,8 +2384,9 @@ package body et_project is
 								);
 
 						when OUTPUT_DIGITAL =>
-							type_ports.append (
+							type_ports.insert (
 								container	=> symbol.ports,
+								key			=> port_name,
 								new_item	=> (port with 
 									direction				=> OUTPUT_DIGITAL,
 									output_digital_inverted	=> port_output_inverted,
@@ -2389,8 +2395,9 @@ package body et_project is
 								);
 
 						when BIDIR_DIGITAL =>
-							type_ports.append (
+							type_ports.insert (
 								container	=> symbol.ports,
+								key			=> port_name,
 								new_item	=> (port with 
 									direction				=> BIDIR_DIGITAL,
 									output_inverted			=> port_output_inverted,
@@ -2401,24 +2408,27 @@ package body et_project is
 								);
 
 						when POWER_OUT =>
-							type_ports.append (
+							type_ports.insert (
 								container	=> symbol.ports,
+								key			=> port_name,
 								new_item	=> (port with 
 									direction				=> POWER_OUT,
 									level					=> port_power_level)
 								);
 
 						when POWER_IN =>
-							type_ports.append (
+							type_ports.insert (
 								container	=> symbol.ports,
+								key			=> port_name,
 								new_item	=> (port with 
 									direction				=> POWER_IN,
 									level					=> port_power_level)
 								);
 
 						when NOT_CONNECTED =>
-							type_ports.append (
+							type_ports.insert (
 								container	=> symbol.ports,
+								key			=> port_name,
 								new_item	=> (port with 
 									direction				=> NOT_CONNECTED)
 								);
@@ -2426,6 +2436,7 @@ package body et_project is
 
 					-- reset port parameters for next port
 					port					:= (others => <>);
+					port_name				:= to_port_name ("");
 					port_direction			:= port_direction_default;
 					port_sensitivity_edge	:= sensitivity_edge_default;
 					port_sensitivity_level	:= sensitivity_level_default;
@@ -2872,7 +2883,7 @@ package body et_project is
 
 									elsif kw = keyword_name then -- name I1A
 										expect_field_count (line, 2);
-										port.name := et_libraries.to_port_name (f (line, 2));
+										port_name := et_libraries.to_port_name (f (line, 2));
 
 									elsif kw = keyword_length then -- length 5
 										expect_field_count (line, 2);
@@ -3154,6 +3165,7 @@ package body et_project is
 		symbol_placeholder_meaning : et_libraries.type_text_meaning := text_meaning_default;
 		
 		port					: et_libraries.type_port_base;
+		port_name				: et_libraries.type_port_name.bounded_string;
 		port_direction			: et_libraries.type_port_direction := port_direction_default;
 		port_sensitivity_edge	: et_libraries.type_sensitivity_edge := sensitivity_edge_default;
 		port_sensitivity_level	: et_libraries.type_sensitivity_level := sensitivity_level_default;
@@ -3272,22 +3284,25 @@ package body et_project is
 		procedure insert_port is begin
 			case port_direction is
 				when PASSIVE =>
-					type_ports.append (
+					type_ports.insert (
 						container	=> unit_symbol.ports,
+						key			=> port_name,
 						new_item	=> (port with 
 							direction				=> PASSIVE)
 						);
 
 				when INPUT_ANALOG =>
-					type_ports.append (
+					type_ports.insert (
 						container	=> unit_symbol.ports,
+						key			=> port_name,
 						new_item	=> (port with 
 							direction				=> INPUT_ANALOG)
 						);
 
 				when INPUT_DIGITAL =>
-					type_ports.append (
+					type_ports.insert (
 						container	=> unit_symbol.ports,
+						key			=> port_name,
 						new_item	=> (port with 
 							direction				=> INPUT_DIGITAL,
 							sensitivity_edge		=> port_sensitivity_edge,
@@ -3295,8 +3310,9 @@ package body et_project is
 						);
 
 				when OUTPUT_ANALOG =>
-					type_ports.append (
+					type_ports.insert (
 						container	=> unit_symbol.ports,
+						key			=> port_name,
 						new_item	=> (port with 
 							direction				=> OUTPUT_ANALOG,
 							output_analog_tristate	=> port_output_tristate,
@@ -3304,8 +3320,9 @@ package body et_project is
 						);
 
 				when OUTPUT_DIGITAL =>
-					type_ports.append (
+					type_ports.insert (
 						container	=> unit_symbol.ports,
+						key			=> port_name,
 						new_item	=> (port with 
 							direction				=> OUTPUT_DIGITAL,
 							output_digital_inverted	=> port_output_inverted,
@@ -3314,8 +3331,9 @@ package body et_project is
 						);
 
 				when BIDIR_DIGITAL =>
-					type_ports.append (
+					type_ports.insert (
 						container	=> unit_symbol.ports,
+						key			=> port_name,
 						new_item	=> (port with 
 							direction				=> BIDIR_DIGITAL,
 							output_inverted			=> port_output_inverted,
@@ -3326,24 +3344,27 @@ package body et_project is
 						);
 
 				when POWER_OUT =>
-					type_ports.append (
+					type_ports.insert (
 						container	=> unit_symbol.ports,
+						key			=> port_name,
 						new_item	=> (port with 
 							direction				=> POWER_OUT,
 							level					=> port_power_level)
 						);
 
 				when POWER_IN =>
-					type_ports.append (
+					type_ports.insert (
 						container	=> unit_symbol.ports,
+						key			=> port_name,
 						new_item	=> (port with 
 							direction				=> POWER_IN,
 							level					=> port_power_level)
 						);
 
 				when NOT_CONNECTED =>
-					type_ports.append (
+					type_ports.insert (
 						container	=> unit_symbol.ports,
+						key			=> port_name,
 						new_item	=> (port with 
 							direction				=> NOT_CONNECTED)
 						);
@@ -3351,6 +3372,7 @@ package body et_project is
 
 			-- reset port parameters for next port
 			port					:= (others => <>);
+			port_name				:= to_port_name ("");
 			port_direction			:= port_direction_default;
 			port_sensitivity_edge	:= sensitivity_edge_default;
 			port_sensitivity_level	:= sensitivity_level_default;
@@ -4028,7 +4050,7 @@ package body et_project is
 
 									elsif kw = keyword_name then -- name I1A
 										expect_field_count (line, 2);
-										port.name := et_libraries.to_port_name (f (line, 2));
+										port_name := et_libraries.to_port_name (f (line, 2));
 
 									elsif kw = keyword_length then -- length 5
 										expect_field_count (line, 2);

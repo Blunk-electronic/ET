@@ -38,10 +38,15 @@
 with ada.directories;
 with ada.containers; 			use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
-
+-- with gnat.source_info;
 
 package et_general is
 
+-- 	procedure show_line (
+-- 	-- Output the line of code where the exception occured:
+-- 		file : string; -- the file name like et_kicad.adb
+-- 		line : natural);-- the line number
+	
 	version					: constant string (1..11) := "version 001";
 	system_name				: constant string (1..9) := "SYSTEM ET";
 
