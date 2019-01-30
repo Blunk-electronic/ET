@@ -1796,11 +1796,11 @@ package body et_project is
 			section_mark (section_copper, FOOTER);
 
 			-- BOARD CONTOUR
-			section_mark (section_pcb_contour, HEADER);
+			section_mark (section_pcb_contours, HEADER);
 				iterate (et_schematic.module.board.contour.lines, write_line'access);
 				iterate (et_schematic.module.board.contour.arcs, write_arc'access);
 				iterate (et_schematic.module.board.contour.circles, write_circle'access);
-			section_mark (section_pcb_contour, FOOTER);
+			section_mark (section_pcb_contours, FOOTER);
 			
 			---BOARD END-----
 			section_mark (section_board, FOOTER);
@@ -2384,8 +2384,8 @@ package body et_project is
 			elsif set (section_stencil, SEC_STENCIL) then null;			
 			elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;			
 			elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
-			elsif set (section_pcb_contour, SEC_PCB_CONTOUR_NON_PLATED) then null;
-			elsif set (section_pad_contour, SEC_PAD_CONTOUR) then null;
+			elsif set (section_pcb_contours, SEC_PCB_CONTOURS_NON_PLATED) then null;
+			elsif set (section_pad_contours, SEC_PAD_CONTOURS) then null;
 			elsif set (section_pad_millings, SEC_MILLINGS) then null;			
 			elsif set (section_text, SEC_TEXT) then null;
 			elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
@@ -5104,13 +5104,13 @@ package body et_project is
 		end write_via_restrict;
 
 		procedure write_contour is begin
-			section_mark (section_pcb_contour, HEADER);
+			section_mark (section_pcb_contours, HEADER);
 
 			iterate (packge.pcb_contour.lines, write_line'access);
 			iterate (packge.pcb_contour.arcs, write_arc'access);
 			iterate (packge.pcb_contour.circles, write_circle'access);
 
-			section_mark (section_pcb_contour, FOOTER);
+			section_mark (section_pcb_contours, FOOTER);
 		end write_contour;
 
 		-- CS currently no need for plated millings not terminal related
@@ -5125,9 +5125,9 @@ package body et_project is
 -- 		end write_contour_plated;
 
 		procedure write_package_contour is begin
-			section_mark (section_pac_3d_contour, HEADER);
+			section_mark (section_pac_3d_contours, HEADER);
 			-- CS
-			section_mark (section_pac_3d_contour, FOOTER);
+			section_mark (section_pac_3d_contours, FOOTER);
 		end write_package_contour;
 
 		procedure write_terminals is 
@@ -5202,7 +5202,7 @@ package body et_project is
 				case element (terminal_cursor).technology is
 					when THT =>
 						-- pad contour top
-						section_mark (section_pad_contour, HEADER);
+						section_mark (section_pad_contours, HEADER);
 						
 						section_mark (section_top, HEADER);
 						write_pad_shape (element (terminal_cursor).pad_shape_top);
@@ -5213,7 +5213,7 @@ package body et_project is
 						write_pad_shape (element (terminal_cursor).pad_shape_bottom);
 						section_mark (section_bottom, FOOTER);
 						
-						section_mark (section_pad_contour, FOOTER);
+						section_mark (section_pad_contours, FOOTER);
 
 						-- copper width in inner layers
 						write (keyword => keyword_width_inner_layers, 
@@ -5232,9 +5232,9 @@ package body et_project is
 						
 					when SMT =>
 						-- pad contour
-						section_mark (section_pad_contour, HEADER);
+						section_mark (section_pad_contours, HEADER);
 						write_pad_shape (element (terminal_cursor).pad_shape);
-						section_mark (section_pad_contour, FOOTER);
+						section_mark (section_pad_contours, FOOTER);
 						
 						write (keyword => keyword_face, parameters => et_pcb_coordinates.to_string (element (terminal_cursor).face));
 						write (keyword => keyword_stop_mask, parameters => et_pcb.to_string (element (terminal_cursor).stop_mask));
@@ -7261,7 +7261,7 @@ package body et_project is
 								when SEC_COPPER =>
 									insert_line_track;
 
-								when SEC_PCB_CONTOUR_NON_PLATED =>
+								when SEC_PCB_CONTOURS_NON_PLATED =>
 									insert_line_contour;
 									
 								when others => invalid_section;
@@ -7344,7 +7344,7 @@ package body et_project is
 								when SEC_COPPER =>
 									insert_arc_track;
 
-								when SEC_PCB_CONTOUR_NON_PLATED =>
+								when SEC_PCB_CONTOURS_NON_PLATED =>
 									insert_arc_contour;
 									
 								when others => invalid_section;
@@ -7421,7 +7421,7 @@ package body et_project is
 								when SEC_COPPER =>
 									insert_circle_track;
 
-								when SEC_PCB_CONTOUR_NON_PLATED =>
+								when SEC_PCB_CONTOURS_NON_PLATED =>
 									insert_circle_contour;
 									
 								when others => invalid_section;
@@ -7852,7 +7852,7 @@ package body et_project is
 
 						when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 							SEC_STOP_MASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
-							SEC_COPPER | SEC_PCB_CONTOUR_NON_PLATED =>
+							SEC_COPPER | SEC_PCB_CONTOURS_NON_PLATED =>
 							case stack.parent is
 								when SEC_BOARD => null;
 								when others => invalid_section;
@@ -7957,7 +7957,7 @@ package body et_project is
 				elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;
 				elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
 				elsif set (section_copper, SEC_COPPER) then null;				
-				elsif set (section_pcb_contour, SEC_PCB_CONTOUR_NON_PLATED) then null;
+				elsif set (section_pcb_contours, SEC_PCB_CONTOURS_NON_PLATED) then null;
 				else
 					-- The line contains something else -> the payload data. 
 					-- Temporarily this data is stored in corresponding variables.
@@ -8420,7 +8420,7 @@ package body et_project is
 										end if;
 									end;
 
-								when SEC_PCB_CONTOUR_NON_PLATED =>
+								when SEC_PCB_CONTOURS_NON_PLATED =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -8599,7 +8599,7 @@ package body et_project is
 										end if;
 									end;
 
-								when SEC_PCB_CONTOUR_NON_PLATED =>
+								when SEC_PCB_CONTOURS_NON_PLATED =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -8811,7 +8811,7 @@ package body et_project is
 										end if;
 									end;
 
-								when SEC_PCB_CONTOUR_NON_PLATED =>
+								when SEC_PCB_CONTOURS_NON_PLATED =>
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -9623,7 +9623,7 @@ package body et_project is
 
 						when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 							SEC_STOP_MASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
-							SEC_COPPER | SEC_PCB_CONTOUR_NON_PLATED =>
+							SEC_COPPER | SEC_PCB_CONTOURS_NON_PLATED =>
 							case stack.parent is
 								when SEC_BOARD => null;
 								when others => invalid_section;
