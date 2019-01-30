@@ -2337,6 +2337,135 @@ package body et_project is
 		port_output_tristate	: et_libraries.type_output_tristate := output_tristate_default;
 		port_output_weakness	: et_libraries.type_output_weakness := output_weakness_default;
 		port_power_level		: et_libraries.type_power_level := port_power_level_default;
+
+		procedure insert_port is 
+			inserted	: boolean;
+			cursor		: type_ports.cursor;
+		begin
+			case port_direction is
+				when PASSIVE =>
+					type_ports.insert (
+						container	=> symbol.ports,
+						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
+						new_item	=> (port with 
+							direction				=> PASSIVE)
+						);
+
+				when INPUT_ANALOG =>
+					type_ports.insert (
+						container	=> symbol.ports,
+						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
+						new_item	=> (port with 
+							direction				=> INPUT_ANALOG)
+						);
+
+				when INPUT_DIGITAL =>
+					type_ports.insert (
+						container	=> symbol.ports,
+						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
+						new_item	=> (port with 
+							direction				=> INPUT_DIGITAL,
+							sensitivity_edge		=> port_sensitivity_edge,
+							sensitivity_level		=> port_sensitivity_level)
+						);
+
+				when OUTPUT_ANALOG =>
+					type_ports.insert (
+						container	=> symbol.ports,
+						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
+						new_item	=> (port with 
+							direction				=> OUTPUT_ANALOG,
+							output_analog_tristate	=> port_output_tristate,
+							output_analog_weakness	=> port_output_weakness)
+						);
+
+				when OUTPUT_DIGITAL =>
+					type_ports.insert (
+						container	=> symbol.ports,
+						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
+						new_item	=> (port with 
+							direction				=> OUTPUT_DIGITAL,
+							output_digital_inverted	=> port_output_inverted,
+							output_digital_tristate	=> port_output_tristate,
+							output_digital_weakness	=> port_output_weakness)
+						);
+
+				when BIDIR_DIGITAL =>
+					type_ports.insert (
+						container	=> symbol.ports,
+						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
+						new_item	=> (port with 
+							direction				=> BIDIR_DIGITAL,
+							output_inverted			=> port_output_inverted,
+							output_tristate			=> port_output_tristate,
+							output_weakness			=> port_output_weakness,
+							input_sensitivity_edge	=> port_sensitivity_edge,
+							input_sensitivity_level	=> port_sensitivity_level)
+						);
+
+				when POWER_OUT =>
+					type_ports.insert (
+						container	=> symbol.ports,
+						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
+						new_item	=> (port with 
+							direction				=> POWER_OUT,
+							level					=> port_power_level)
+						);
+
+				when POWER_IN =>
+					type_ports.insert (
+						container	=> symbol.ports,
+						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
+						new_item	=> (port with 
+							direction				=> POWER_IN,
+							level					=> port_power_level)
+						);
+
+				when NOT_CONNECTED =>
+					type_ports.insert (
+						container	=> symbol.ports,
+						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
+						new_item	=> (port with 
+							direction				=> NOT_CONNECTED)
+						);
+			end case;
+
+			-- abort if port name already used:
+			if not inserted then
+				log_indentation_reset;
+				log (message_error & "port " & to_string (port_name) & " already in use !", console => true);
+				raise constraint_error;
+			end if;
+			
+			-- reset port parameters for next port
+			port					:= (others => <>);
+			port_name				:= to_port_name ("");
+			port_direction			:= port_direction_default;
+			port_sensitivity_edge	:= sensitivity_edge_default;
+			port_sensitivity_level	:= sensitivity_level_default;
+			port_output_inverted	:= output_inverted_default;
+			port_output_tristate	:= output_tristate_default;
+			port_output_weakness	:= output_weakness_default;
+			port_power_level		:= port_power_level_default;
+		end insert_port;
 		
 		procedure process_line is 
 		-- CS: detect if section name is type_section_name_module
@@ -2344,108 +2473,6 @@ package body et_project is
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
 			-- and finally assembled to actual objects:
-		
-				procedure insert_port is begin
-					case port_direction is
-						when PASSIVE =>
-							type_ports.insert (
-								container	=> symbol.ports,
-								key			=> port_name,
-								new_item	=> (port with 
-									direction				=> PASSIVE)
-								);
-
-						when INPUT_ANALOG =>
-							type_ports.insert (
-								container	=> symbol.ports,
-								key			=> port_name,
-								new_item	=> (port with 
-									direction				=> INPUT_ANALOG)
-								);
-
-						when INPUT_DIGITAL =>
-							type_ports.insert (
-								container	=> symbol.ports,
-								key			=> port_name,
-								new_item	=> (port with 
-									direction				=> INPUT_DIGITAL,
-									sensitivity_edge		=> port_sensitivity_edge,
-									sensitivity_level		=> port_sensitivity_level)
-								);
-
-						when OUTPUT_ANALOG =>
-							type_ports.insert (
-								container	=> symbol.ports,
-								key			=> port_name,
-								new_item	=> (port with 
-									direction				=> OUTPUT_ANALOG,
-									output_analog_tristate	=> port_output_tristate,
-									output_analog_weakness	=> port_output_weakness)
-								);
-
-						when OUTPUT_DIGITAL =>
-							type_ports.insert (
-								container	=> symbol.ports,
-								key			=> port_name,
-								new_item	=> (port with 
-									direction				=> OUTPUT_DIGITAL,
-									output_digital_inverted	=> port_output_inverted,
-									output_digital_tristate	=> port_output_tristate,
-									output_digital_weakness	=> port_output_weakness)
-								);
-
-						when BIDIR_DIGITAL =>
-							type_ports.insert (
-								container	=> symbol.ports,
-								key			=> port_name,
-								new_item	=> (port with 
-									direction				=> BIDIR_DIGITAL,
-									output_inverted			=> port_output_inverted,
-									output_tristate			=> port_output_tristate,
-									output_weakness			=> port_output_weakness,
-									input_sensitivity_edge	=> port_sensitivity_edge,
-									input_sensitivity_level	=> port_sensitivity_level)
-								);
-
-						when POWER_OUT =>
-							type_ports.insert (
-								container	=> symbol.ports,
-								key			=> port_name,
-								new_item	=> (port with 
-									direction				=> POWER_OUT,
-									level					=> port_power_level)
-								);
-
-						when POWER_IN =>
-							type_ports.insert (
-								container	=> symbol.ports,
-								key			=> port_name,
-								new_item	=> (port with 
-									direction				=> POWER_IN,
-									level					=> port_power_level)
-								);
-
-						when NOT_CONNECTED =>
-							type_ports.insert (
-								container	=> symbol.ports,
-								key			=> port_name,
-								new_item	=> (port with 
-									direction				=> NOT_CONNECTED)
-								);
-					end case;
-
-					-- reset port parameters for next port
-					port					:= (others => <>);
-					port_name				:= to_port_name ("");
-					port_direction			:= port_direction_default;
-					port_sensitivity_edge	:= sensitivity_edge_default;
-					port_sensitivity_level	:= sensitivity_level_default;
-					port_output_inverted	:= output_inverted_default;
-					port_output_tristate	:= output_tristate_default;
-					port_output_weakness	:= output_weakness_default;
-					port_power_level		:= port_power_level_default;
-				end insert_port;
-				
 			begin -- execute_section
 				case stack.current is
 
@@ -3012,8 +3039,8 @@ package body et_project is
 
 		end if;
 
-		-- CS Check integrity of device: port terminal map, positions of units, ...
-		-- use function "last" to fetch latest device
+		-- CS Check integrity of symbol (style guides, conventions ...)
+		-- use function "last" to fetch latest symbol
 
 		log_indentation_down;
 		log_indentation_down;		
@@ -3280,13 +3307,18 @@ package body et_project is
 			unit_name := to_unit_name ("");
 			unit_external := (others => <>);
 		end insert_unit_external;
-		
-		procedure insert_port is begin
+
+		procedure insert_port is 
+			inserted	: boolean;
+			cursor		: type_ports.cursor;
+		begin
 			case port_direction is
 				when PASSIVE =>
 					type_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
 						new_item	=> (port with 
 							direction				=> PASSIVE)
 						);
@@ -3295,6 +3327,8 @@ package body et_project is
 					type_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
 						new_item	=> (port with 
 							direction				=> INPUT_ANALOG)
 						);
@@ -3303,6 +3337,8 @@ package body et_project is
 					type_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
 						new_item	=> (port with 
 							direction				=> INPUT_DIGITAL,
 							sensitivity_edge		=> port_sensitivity_edge,
@@ -3313,6 +3349,8 @@ package body et_project is
 					type_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
 						new_item	=> (port with 
 							direction				=> OUTPUT_ANALOG,
 							output_analog_tristate	=> port_output_tristate,
@@ -3323,6 +3361,8 @@ package body et_project is
 					type_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
 						new_item	=> (port with 
 							direction				=> OUTPUT_DIGITAL,
 							output_digital_inverted	=> port_output_inverted,
@@ -3334,6 +3374,8 @@ package body et_project is
 					type_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
 						new_item	=> (port with 
 							direction				=> BIDIR_DIGITAL,
 							output_inverted			=> port_output_inverted,
@@ -3347,6 +3389,8 @@ package body et_project is
 					type_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
 						new_item	=> (port with 
 							direction				=> POWER_OUT,
 							level					=> port_power_level)
@@ -3356,6 +3400,8 @@ package body et_project is
 					type_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
 						new_item	=> (port with 
 							direction				=> POWER_IN,
 							level					=> port_power_level)
@@ -3365,11 +3411,20 @@ package body et_project is
 					type_ports.insert (
 						container	=> unit_symbol.ports,
 						key			=> port_name,
+						inserted	=> inserted,
+						position	=> cursor,
 						new_item	=> (port with 
 							direction				=> NOT_CONNECTED)
 						);
 			end case;
 
+			-- abort if port name already used:
+			if not inserted then
+				log_indentation_reset;
+				log (message_error & "port " & to_string (port_name) & " already in use !", console => true);
+				raise constraint_error;
+			end if;
+			
 			-- reset port parameters for next port
 			port					:= (others => <>);
 			port_name				:= to_port_name ("");
@@ -4201,6 +4256,7 @@ package body et_project is
 		end if;
 
 		-- CS Check integrity of device: port terminal map, positions of units, ...
+		-- (style guides, conventions ...)
 		-- use function "last" to fetch latest device
 
 		log_indentation_down;
