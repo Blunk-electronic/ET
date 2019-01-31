@@ -2288,6 +2288,127 @@ package body et_project is
 		return alignment;
 	end to_alignment;
 
+	function to_position ( -- CS combine with next function to_position using the tag test ?
+	-- Returns a type_point_2d in the the layout.
+		line : in et_string_processing.type_fields_of_line; -- "start x 44.5 y 53.5"
+		from : in positive)
+		return et_pcb_coordinates.type_point_2d is
+		use et_pcb_coordinates;
+		use et_string_processing;
+
+		function f (line : in type_fields_of_line; position : in positive) return string 
+			renames et_string_processing.field;
+		
+		point : type_point_2d; -- to be returned
+		place : positive := from; -- the field being read from given line
+
+		-- CS: flags to detect missing sheet, x or y
+	begin
+		while place <= positive (field_count (line)) loop
+
+			-- We expect after the x the corresponding value for x
+			if f (line, place) = keyword_pos_x then
+				set_point (point => point, axis => X, value => to_distance (f (line, place + 1)));
+
+			-- We expect after the y the corresponding value for y
+			elsif f (line, place) = keyword_pos_y then
+				set_point (point => point, axis => Y, value => to_distance (f (line, place + 1)));
+
+			else
+				invalid_keyword (f (line, place));
+			end if;
+				
+			place := place + 2;
+		end loop;
+		
+		return point;
+	end to_position;
+		
+	function to_position (
+	-- Returns a type_point_2d_with_angle in the layout.
+		line : in et_string_processing.type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
+		from : in positive)
+		return et_pcb_coordinates.type_point_2d_with_angle is
+		use et_pcb_coordinates;
+		use et_string_processing;
+		
+		function f (line : in type_fields_of_line; position : in positive) return string 
+			renames et_string_processing.field;
+		
+		point : type_point_2d_with_angle; -- to be returned
+		place : positive := from; -- the field being read from given line
+
+		-- CS: flags to detect missing sheet, x or y
+	begin
+		while place <= positive (field_count (line)) loop
+
+			-- We expect after the x the corresponding value for x
+			if f (line, place) = keyword_pos_x then
+				set_point (point => point, axis => X, value => to_distance (f (line, place + 1)));
+
+			-- We expect after the y the corresponding value for y
+			elsif f (line, place) = keyword_pos_y then
+				set_point (point => point, axis => Y, value => to_distance (f (line, place + 1)));
+
+			-- We expect after "rotation" the corresponding value for the rotation
+			elsif f (line, place) = keyword_rotation then
+				set_angle (point => point, value => to_angle (f (line, place + 1)));
+				
+			else
+				invalid_keyword (f (line, place));
+			end if;
+				
+			place := place + 2;
+		end loop;
+		
+		return point;
+	end to_position;
+
+	function to_layers (
+	-- Converts a line like "layers 1 4 17" to a set of signal layers.
+	-- Issues warning if a layer number occurs more than once.
+		line : in et_string_processing.type_fields_of_line) -- layers 1 3 17
+		return et_pcb.type_signal_layers.set is
+
+		use et_pcb;
+		use et_pcb.type_signal_layers;
+		use et_string_processing;
+
+		function f (line : in type_fields_of_line; position : in positive) return string 
+			renames et_string_processing.field;
+		
+		layers 		: et_pcb.type_signal_layers.set; -- to be returned
+		cursor 		: et_pcb.type_signal_layers.cursor;
+		inserted	: boolean;
+		layer 		: et_pcb.type_signal_layer;
+		place 		: positive := 2; -- we start reading the layer numbers with field 2
+	begin
+		while place <= positive (field_count (line)) loop
+
+			-- get the layer number from current place
+			layer := to_signal_layer (f (line, place));
+
+			-- insert the layer number in the container "layers"
+			insert (
+				container	=> layers,
+				new_item	=> layer,
+				inserted	=> inserted,
+				position	=> cursor);
+
+			-- warn if layer already in container
+			if not inserted then
+				log (message_warning & affected_line (line) & "signal layer" & to_string (layer) 
+					& " specified multiple times !");
+			end if;
+			
+			place := place + 1; -- advance to next place
+		end loop;
+		
+		return layers;
+	end to_layers;
+
+
+	
 	procedure read_package (
 	-- Opens the package file and stores the package in container et_libraries.packages.
 		file_name 		: in et_libraries.type_package_library_name.bounded_string; -- libraries/packages/S_SO14.pac
@@ -2319,6 +2440,26 @@ package body et_project is
 		end to_string;
 
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
+		pac_description			: type_package_description.bounded_string;
+		pac_appearance			: type_package_appearance;
+		pac_technology			: type_assembly_technology;
+		pac_line_width			: type_general_line_width;
+		pac_signal_layers		: type_signal_layers.set;
+		lock_status 			: et_pcb.type_locked := et_pcb.type_locked'first;
+		
+		type type_line_2d is new et_pcb.type_line_2d with null record;
+		pac_line				: type_line_2d;
+
+		type type_arc_2d is new et_pcb.type_arc_2d with null record;
+		pac_arc					: type_arc_2d;
+
+		type type_circle_2d is new et_pcb.type_circle_2d with null record;
+		pac_circle				: type_circle_2d;
+		pac_circle_fillable		: et_pcb.type_fillable_circle;
+		pac_circle_copper		: et_pcb.type_copper_circle;
+		
+		type type_polygon is new et_pcb.type_polygon with null record;
+		pac_polygon				: type_polygon;
 
 		procedure process_line is 
 		-- CS: detect if section name is type_section_name_module
@@ -2399,319 +2540,404 @@ package body et_project is
 
 				log ("package line --> " & to_string (line), log_threshold + 3);
 		
--- 				case stack.current is
--- 
--- 					when SEC_INIT =>
--- 						declare
--- 							kw : string := f (line, 1);
--- 						begin
--- 							-- CS: In the following: set a corresponding parameter-found-flag
--- 							if kw = keyword_appearance then -- appearance sch_pcb
--- 								expect_field_count (line, 2);
--- 								appearance := et_libraries.to_appearance (f (line,2));
--- -- 								log ("appearance" & to_string (appearance), log_threshold + 1);								
--- 
--- 								-- Create a new symbol where pointer "symbol" is pointing at.
--- 								case appearance is
--- 									when et_libraries.SCH =>
--- 										symbol := new et_libraries.type_symbol' (
--- 											appearance	=> et_libraries.SCH,
--- 											others		=> <>);
--- 
--- 									when et_libraries.SCH_PCB =>
--- 										symbol := new et_libraries.type_symbol' (
--- 											appearance	=> et_libraries.SCH_PCB,
--- 											others		=> <>);
--- 
--- 									when others => 
--- 										raise constraint_error; -- CS
--- 
--- 								end case;
--- 								
--- 							else
--- 								invalid_keyword (kw);
--- 							end if;
--- 						end;
+				case stack.current is
 
--- 					when SEC_DRAW | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_PORTS => 
--- 						case stack.parent is
--- 							when SEC_INIT => null;
--- 							when others => invalid_section;
--- 						end case;
+					when SEC_INIT =>
+						declare
+							kw : string := f (line, 1);
+						begin
+							-- CS: In the following: set a corresponding parameter-found-flag
+							if kw = keyword_appearance then -- appearance real/virtual
+								expect_field_count (line, 2);
+								pac_appearance := et_pcb.to_appearance (f (line,2));
 
--- 					when SEC_LINE =>
--- 						case stack.parent is
--- 							when SEC_DRAW =>
--- 								declare
--- 									kw : string := f (line, 1);
--- 								begin
--- 									-- CS: In the following: set a corresponding parameter-found-flag
--- 									if kw = keyword_start then -- start x 1 y 2
--- 										expect_field_count (line, 5);
--- 
--- 										-- extract the start position starting at field 2
--- 										symbol_line.start_point := to_position (line,2);
--- 										
--- 									elsif kw = keyword_end then -- end x 0.00 y 0.00
--- 										expect_field_count (line, 5);
--- 
--- 										-- extract the end position starting at field 2
--- 										symbol_line.end_point := to_position (line,2);
--- 
--- 									elsif kw = keyword_width then
--- 										expect_field_count (line, 2);
--- 										symbol_line.width := et_coordinates.to_distance (f (line, 2));
--- 										
--- 									else
--- 										invalid_keyword (kw);
--- 									end if;
--- 								end;
--- 
--- 							when others => invalid_section;
--- 						end case;
--- 
--- 					when SEC_ARC =>
--- 						case stack.parent is
--- 							when SEC_DRAW =>
--- 								declare
--- 									kw : string := f (line, 1);
--- 								begin
--- 									-- CS: In the following: set a corresponding parameter-found-flag
--- 									if kw = keyword_center then -- center x 1 y 2
--- 										expect_field_count (line, 5);
--- 
--- 										-- extract the start position starting at field 2
--- 										symbol_arc.center := to_position (line,2);
--- 
--- 									elsif kw = keyword_start then -- start x 1 y 2
--- 										expect_field_count (line, 5);
--- 
--- 										-- extract the start position starting at field 2
--- 										symbol_arc.start_point := to_position (line,2);
--- 										
--- 									elsif kw = keyword_end then -- end x 0.00 y 0.00
--- 										expect_field_count (line, 5);
--- 
--- 										-- extract the end position starting at field 2
--- 										symbol_arc.end_point := to_position (line,2);
--- 
--- 									elsif kw = keyword_width then
--- 										expect_field_count (line, 2);
--- 										symbol_arc.width := et_coordinates.to_distance (f (line, 2));
--- 
--- 									elsif kw = keyword_radius then
--- 										expect_field_count (line, 2);
--- 										symbol_arc.radius := et_coordinates.to_distance (f (line, 2));
--- 										
--- 									else
--- 										invalid_keyword (kw);
--- 									end if;
--- 								end;
--- 
--- 							when others => invalid_section;
--- 						end case;
--- 						
--- 					when SEC_CIRCLE =>
--- 						case stack.parent is
--- 							when SEC_DRAW =>
--- 								declare
--- 									kw : string := f (line, 1);
--- 								begin
--- 									-- CS: In the following: set a corresponding parameter-found-flag
--- 									if kw = keyword_center then -- center x 1 y 2
--- 										expect_field_count (line, 5);
--- 
--- 										-- extract the start position starting at field 2
--- 										symbol_circle.center := to_position (line,2);
--- 
--- 									elsif kw = keyword_width then -- widht 0.2
--- 										expect_field_count (line, 2);
--- 										symbol_circle.width := et_coordinates.to_distance (f (line, 2));
--- 
--- 									elsif kw = keyword_radius then -- radius 5
--- 										expect_field_count (line, 2);
--- 										symbol_circle.radius := et_coordinates.to_distance (f (line, 2));
--- 
--- 									elsif kw = keyword_filled then -- filled yes/no
--- 										expect_field_count (line, 2);
--- 										symbol_circle.filled := et_libraries.to_circle_filled (f (line, 2));
--- 										
--- 									else
--- 										invalid_keyword (kw);
--- 									end if;
--- 								end;
--- 
--- 							when others => invalid_section;
--- 						end case;
--- 						
--- 					when SEC_TEXT =>
--- 						case stack.parent is
--- 							when SEC_TEXTS =>
--- 								declare
--- 									kw : string := f (line, 1);
--- 								begin
--- 									-- CS: In the following: set a corresponding parameter-found-flag
--- 									if kw = keyword_position then -- position x 1 y 2
--- 										expect_field_count (line, 5);
--- 
--- 										-- extract the text position starting at field 2
--- 										symbol_text_position := to_position (line,2);
--- 
--- 									elsif kw = keyword_content then -- content "dummy NAND gate"
--- 										expect_field_count (line, 2);
--- 										symbol_text_content := et_libraries.to_content (f (line, 2));
--- 
--- 									elsif kw = keyword_size then -- size 5
--- 										expect_field_count (line, 2);
--- 										symbol_text_base.size := et_coordinates.to_distance (f (line, 2));
--- 
--- 									elsif kw = keyword_line_width then -- line_width 0.2
--- 										expect_field_count (line, 2);
--- 										symbol_text_base.line_width := et_coordinates.to_distance (f (line, 2));
--- 
--- 									elsif kw = keyword_rotation then -- rotation 90.0
--- 										expect_field_count (line, 2);
--- 										symbol_text_base.rotation := et_coordinates.to_angle (f (line, 2));
--- 										
--- 									elsif kw = keyword_style then -- style italic
--- 										expect_field_count (line, 2);
--- 										symbol_text_base.style := et_libraries.to_text_style (f (line, 2));
--- 
--- 									elsif kw = keyword_alignment then -- alignment horizontal center vertical center
--- 										expect_field_count (line, 5);
--- 										symbol_text_base.alignment := to_alignment (line, 2);
--- 
--- 									else
--- 										invalid_keyword (kw);
--- 									end if;
--- 								end;
--- 
--- 							when others => invalid_section;
--- 						end case;
--- 						
--- 					when SEC_PLACEHOLDER =>
--- 						case stack.parent is
--- 							when SEC_PLACEHOLDERS =>
--- 								declare
--- 									kw : string := f (line, 1);
--- 								begin
--- 									-- CS: In the following: set a corresponding parameter-found-flag
--- 									if kw = keyword_position then -- position x 1 y 2
--- 										expect_field_count (line, 5);
--- 
--- 										-- extract the placeholder position starting at field 2
--- 										symbol_text_position := to_position (line,2);
--- 
--- 									elsif kw = keyword_meaning then -- meaning reference
--- 										expect_field_count (line, 2);
--- 										symbol_placeholder_meaning := et_libraries.to_text_meaning (f (line, 2));
--- 
--- 									elsif kw = keyword_size then -- size 5
--- 										expect_field_count (line, 2);
--- 										symbol_text_base.size := et_coordinates.to_distance (f (line, 2));
--- 
--- 									elsif kw = keyword_line_width then -- line_width 0.2
--- 										expect_field_count (line, 2);
--- 										symbol_text_base.line_width := et_coordinates.to_distance (f (line, 2));
--- 
--- 									elsif kw = keyword_rotation then -- rotation 90.0
--- 										expect_field_count (line, 2);
--- 										symbol_text_base.rotation := et_coordinates.to_angle (f (line, 2));
--- 										
--- 									elsif kw = keyword_style then -- style italic
--- 										expect_field_count (line, 2);
--- 										symbol_text_base.style := et_libraries.to_text_style (f (line, 2));
--- 
--- 									elsif kw = keyword_alignment then -- alignment horizontal center vertical center
--- 										expect_field_count (line, 5);
--- 										symbol_text_base.alignment := to_alignment (line, 2);
--- 
--- 									else
--- 										invalid_keyword (kw);
--- 									end if;
--- 								end;
--- 
--- 							when others => invalid_section;
--- 						end case;
--- 
--- 					when SEC_PORT =>
--- 						case stack.parent is
--- 							when SEC_PORTS =>
--- 								declare
--- 									kw : string := f (line, 1);
--- 								begin
--- 									-- CS: In the following: set a corresponding parameter-found-flag
--- 									if kw = keyword_position then -- position x 1 y 2
--- 										expect_field_count (line, 5);
--- 
--- 										-- extract the port position starting at field 2
--- 										port.position := to_position (line,2);
--- 
--- 									elsif kw = keyword_name then -- name I1A
--- 										expect_field_count (line, 2);
--- 										port_name := et_libraries.to_port_name (f (line, 2));
--- 
--- 									elsif kw = keyword_length then -- length 5
--- 										expect_field_count (line, 2);
--- 										port.length := et_coordinates.to_distance (f (line, 2));
--- 
--- 									elsif kw = keyword_rotation then -- rotation 90.0
--- 										expect_field_count (line, 2);
--- 										port.rotation := et_coordinates.to_angle (f (line, 2));
--- 										
--- 									elsif kw = keyword_port_name_visible then -- port_name_visible yes/no
--- 										expect_field_count (line, 2);
--- 										port.port_name_visible := et_libraries.to_port_name_visible (f (line, 2));
--- 
--- 									elsif kw = keyword_port_name_size then -- port_name_size 2.0
--- 										expect_field_count (line, 2);
--- 										port.port_name_size := et_coordinates.to_distance (f (line, 2));
--- 
--- 									elsif kw = keyword_terminal_name_visible then -- terminal_name_visible yes/no
--- 										expect_field_count (line, 2);
--- 										port.terminal_name_visible := et_libraries.to_terminal_name_visible (f (line, 2));
--- 
--- 									elsif kw = keyword_terminal_name_size then -- terminal_name_size 2.0
--- 										expect_field_count (line, 2);
--- 										port.terminal_name_size := et_coordinates.to_distance (f (line, 2));
--- 
--- 									elsif kw = keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
--- 										expect_field_count (line, 2);
--- 										port_direction := et_libraries.to_port_direction (f (line, 2));
--- 
--- 									elsif kw = keyword_sensitivity_edge then -- sensitivity_edge rising/falling/any
--- 										expect_field_count (line, 2);
--- 										port_sensitivity_edge := et_libraries.to_sensitivity_edge (f (line, 2));
--- 
--- 									elsif kw = keyword_sensitivity_level then -- sensitivity_level high/low
--- 										expect_field_count (line, 2);
--- 										port_sensitivity_level := et_libraries.to_sensitivity_level (f (line, 2));
--- 
--- 									elsif kw = keyword_inverted then -- inverted yes/no
--- 										expect_field_count (line, 2);
--- 										port_output_inverted := et_libraries.to_output_inverted (f (line, 2));
--- 
--- 									elsif kw = keyword_tristate then -- tristate yes/no
--- 										expect_field_count (line, 2);
--- 										port_output_tristate := et_libraries.to_output_tristate (f (line, 2));
--- 
--- 									elsif kw = keyword_level then -- level positive/negative/zero
--- 										expect_field_count (line, 2);
--- 										port_power_level := et_libraries.to_power_level (f (line, 2));
--- 
--- 									elsif kw = keyword_weakness then -- weakness none/pull0/weak1 ...
--- 										expect_field_count (line, 2);
--- 										port_output_weakness := et_libraries.to_output_weakness (f (line, 2));
--- 										
--- 									else
--- 										invalid_keyword (kw);
--- 									end if;
--- 								end;
--- 
--- 							when others => invalid_section;
--- 						end case;
--- 						
--- 				end case;
+							elsif kw = keyword_description then -- description "blabla"
+								expect_field_count (line, 2);
+								pac_description := et_pcb.to_package_description (f (line,2));
+
+							elsif kw = keyword_assembly_technology then -- technology SMT/THT
+								expect_field_count (line, 2);
+								pac_technology := et_pcb.to_assembly_technology (f (line,2));
+								
+							else
+								invalid_keyword (kw);
+							end if;
+						end;
+
+					when SEC_LINE =>
+						case stack.parent is
+							when SEC_TOP | SEC_BOTTOM => 
+								case stack.parent (degree => 2) is
+									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_start then -- start x 22.3 y 23.3
+												expect_field_count (line, 5);
+
+												-- extract the start position starting at field 2 of line
+												pac_line.start_point := to_position (line, 2);
+												
+											elsif kw = keyword_end then -- end x 22.3 y 23.3
+												expect_field_count (line, 5);
+
+												-- extract the end position starting at field 2 of line
+												pac_line.end_point := to_position (line, 2);
+
+											elsif kw = keyword_width then -- width 0.5
+												expect_field_count (line, 2);
+												pac_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+
+									when others => invalid_section;
+								end case;
+
+							when SEC_PCB_CONTOURS_NON_PLATED =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_start then -- start x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the start position starting at field 2 of line
+										pac_line.start_point := to_position (line, 2);
+										
+									elsif kw = keyword_end then -- end x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the end position starting at field 2 of line
+										pac_line.end_point := to_position (line, 2);
+
+									elsif kw = keyword_locked then -- locked no/yes
+										expect_field_count (line, 2);
+										lock_status := et_pcb.to_lock_status (f (line, 2));
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
+							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_start then -- start x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the start position starting at field 2 of line
+										pac_line.start_point := to_position (line, 2);
+										
+									elsif kw = keyword_end then -- end x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the end position starting at field 2 of line
+										pac_line.end_point := to_position (line, 2);
+
+									elsif kw = keyword_width then -- width 0.3
+										expect_field_count (line, 2);
+										pac_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										
+									elsif kw = keyword_layers then -- layers 2..16
+										
+										-- there must be at least two fields:
+										expect_field_count (line => line, count_expected => 2, warn => false);
+										pac_signal_layers := to_layers (line);
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
+							when others => invalid_section;
+						end case;
+						
+					when SEC_ARC =>
+						case stack.parent is
+							when SEC_TOP | SEC_BOTTOM => 
+								case stack.parent (degree => 2) is
+									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_center then -- center x 150 y 45
+												expect_field_count (line, 5);
+
+												-- extract the center position starting at field 2 of line
+												pac_arc.center := to_position (line, 2);
+												
+											elsif kw = keyword_start then -- start x 22.3 y 23.3
+												expect_field_count (line, 5);
+
+												-- extract the start position starting at field 2 of line
+												pac_arc.start_point := to_position (line, 2);
+												
+											elsif kw = keyword_end then -- end x 22.3 y 23.3
+												expect_field_count (line, 5);
+
+												-- extract the end position starting at field 2 of line
+												pac_arc.end_point := to_position (line, 2);
+
+											elsif kw = keyword_width then -- width 0.5
+												expect_field_count (line, 2);
+												pac_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+
+									when others => invalid_section;
+								end case;
+
+							when SEC_PCB_CONTOURS_NON_PLATED =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_center then -- center x 150 y 45
+										expect_field_count (line, 5);
+
+										-- extract the center position starting at field 2 of line
+										pac_arc.center := to_position (line, 2);
+										
+									elsif kw = keyword_start then -- start x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the start position starting at field 2 of line
+										pac_arc.start_point := to_position (line, 2);
+										
+									elsif kw = keyword_end then -- end x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the end position starting at field 2 of line
+										pac_arc.end_point := to_position (line, 2);
+								
+									elsif kw = keyword_locked then -- locked no
+										expect_field_count (line, 2);
+										lock_status := et_pcb.to_lock_status (f (line, 2));
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
+							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_center then -- center x 150 y 45
+										expect_field_count (line, 5);
+
+										-- extract the center position starting at field 2 of line
+										pac_arc.center := to_position (line, 2);
+										
+									elsif kw = keyword_start then -- start x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the start position starting at field 2 of line
+										pac_arc.start_point := to_position (line, 2);
+										
+									elsif kw = keyword_end then -- end x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the end position starting at field 2 of line
+										pac_arc.end_point := to_position (line, 2);
+
+									elsif kw = keyword_width then -- width 0.5
+										expect_field_count (line, 2);
+										pac_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_layers then -- layers 1 14 3
+
+										-- there must be at least two fields:
+										expect_field_count (line => line, count_expected => 2, warn => false);
+
+										pac_signal_layers := to_layers (line);
+
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
+							when others => invalid_section;
+						end case;
+
+					when SEC_CIRCLE =>
+						case stack.parent is
+							when SEC_TOP | SEC_BOTTOM => 
+								case stack.parent (degree => 2) is
+									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_center then -- center x 150 y 45
+												expect_field_count (line, 5);
+
+												-- extract the center position starting at field 2 of line
+												pac_circle_fillable.center := to_position (line, 2);
+												
+											elsif kw = keyword_radius then -- radius 22
+												expect_field_count (line, 2);
+												pac_circle_fillable.radius := et_pcb_coordinates.to_distance (f (line, 2));
+												
+											elsif kw = keyword_width then -- width 0.5
+												expect_field_count (line, 2);
+												pac_circle_fillable.width := et_pcb_coordinates.to_distance (f (line, 2));
+
+											elsif kw = keyword_filled then -- filled yes/no
+												expect_field_count (line, 2);													
+												pac_circle_fillable.filled := et_pcb.to_filled (f (line, 2));
+
+											elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+												expect_field_count (line, 2);													
+												pac_circle_fillable.fill_style := et_pcb.to_fill_style (f (line, 2));
+
+											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+												expect_field_count (line, 2);													
+												pac_circle_fillable.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+												expect_field_count (line, 2);													
+												pac_circle_fillable.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+												
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+
+									when SEC_COPPER => -- NON-ELECTRIC !!
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_center then -- center x 22.3 y 23.3
+												expect_field_count (line, 5);
+
+												-- extract the start position starting at field 2 of line
+												pac_circle_copper.center := to_position (line, 2);
+											
+											elsif kw = keyword_radius then -- radius 213
+												expect_field_count (line, 2);
+												pac_circle_copper.radius := et_pcb_coordinates.to_distance (f (line, 2));
+
+											elsif kw = keyword_width then -- width 0.5
+												expect_field_count (line, 2);
+												pac_circle_copper.width := et_pcb_coordinates.to_distance (f (line, 2));
+
+											elsif kw = keyword_filled then -- filled yes/no
+												expect_field_count (line, 2);													
+												pac_circle_copper.filled := et_pcb.to_filled (f (line, 2));
+
+											elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+												expect_field_count (line, 2);													
+												pac_circle_copper.fill_style := et_pcb.to_fill_style (f (line, 2));
+
+											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+												expect_field_count (line, 2);													
+												pac_circle_copper.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+												expect_field_count (line, 2);													
+												pac_circle_copper.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+												
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+
+									when others => invalid_section;
+								end case;
+
+							when SEC_PCB_CONTOURS_NON_PLATED =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_center then -- center x 150 y 45
+										expect_field_count (line, 5);
+
+										-- extract the center position starting at field 2 of line
+										pac_circle.center := to_position (line, 2);
+										
+									elsif kw = keyword_radius then -- radius 22
+										expect_field_count (line, 2);
+										pac_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+								
+									elsif kw = keyword_locked then -- locked no
+										expect_field_count (line, 2);
+										lock_status := et_pcb.to_lock_status (f (line, 2));
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
+							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_center then -- center x 150 y 45
+										expect_field_count (line, 5);
+
+										-- extract the center position starting at field 2 of line
+										pac_circle_fillable.center := to_position (line, 2);
+										
+									elsif kw = keyword_radius then -- radius 22
+										expect_field_count (line, 2);
+										pac_circle_fillable.radius := et_pcb_coordinates.to_distance (f (line, 2));
+										
+									elsif kw = keyword_width then -- width 0.5
+										expect_field_count (line, 2);
+										pac_circle_fillable.width := et_pcb_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_filled then -- filled yes/no
+										expect_field_count (line, 2);													
+										pac_circle_fillable.filled := et_pcb.to_filled (f (line, 2));
+
+									elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+										expect_field_count (line, 2);													
+										pac_circle_fillable.fill_style := et_pcb.to_fill_style (f (line, 2));
+
+									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+										expect_field_count (line, 2);													
+										pac_circle_fillable.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+										expect_field_count (line, 2);													
+										pac_circle_fillable.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_layers then -- layers 1 14 3
+
+										-- there must be at least two fields:
+										expect_field_count (line => line, count_expected => 2, warn => false);
+
+										pac_signal_layers := to_layers (line);
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
+							when others => invalid_section;
+						end case;
+						
+					when others => null; -- CS
+						
+				end case;
 			end if;
 
 			exception when event: others =>
@@ -5452,76 +5678,6 @@ package body et_project is
 				return dim;
 			end to_dimensions;
 			
-			function to_position ( -- CS combine with next function to_position using the tag test ?
-			-- Returns a type_point_2d in the the layout.
-				line : in type_fields_of_line; -- "start x 44.5 y 53.5"
-				from : in positive)
-				return et_pcb_coordinates.type_point_2d is
-				use et_pcb_coordinates;
-				
-				point : type_point_2d; -- to be returned
-
-				place : positive := from; -- the field being read from given line
-
-				-- CS: flags to detect missing sheet, x or y
-			begin
-				while place <= positive (field_count (line)) loop
-
-					-- We expect after the x the corresponding value for x
-					if f (line, place) = keyword_pos_x then
-						set_point (point => point, axis => X, value => to_distance (f (line, place + 1)));
-
-					-- We expect after the y the corresponding value for y
-					elsif f (line, place) = keyword_pos_y then
-						set_point (point => point, axis => Y, value => to_distance (f (line, place + 1)));
-
-					else
-						invalid_keyword (f (line, place));
-					end if;
-						
-					place := place + 2;
-				end loop;
-				
-				return point;
-			end to_position;
-				
-			function to_position (
-			-- Returns a type_point_2d_with_angle in the layout.
-				line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
-				from : in positive)
-				return et_pcb_coordinates.type_point_2d_with_angle is
-				use et_pcb_coordinates;
-				
-				point : type_point_2d_with_angle; -- to be returned
-
-				place : positive := from; -- the field being read from given line
-
-				-- CS: flags to detect missing sheet, x or y
-			begin
-				while place <= positive (field_count (line)) loop
-
-					-- We expect after the x the corresponding value for x
-					if f (line, place) = keyword_pos_x then
-						set_point (point => point, axis => X, value => to_distance (f (line, place + 1)));
-
-					-- We expect after the y the corresponding value for y
-					elsif f (line, place) = keyword_pos_y then
-						set_point (point => point, axis => Y, value => to_distance (f (line, place + 1)));
-
-					-- We expect after "rotation" the corresponding value for the rotation
-					elsif f (line, place) = keyword_rotation then
-						set_angle (point => point, value => to_angle (f (line, place + 1)));
-						
-					else
-						invalid_keyword (f (line, place));
-					end if;
-						
-					place := place + 2;
-				end loop;
-				
-				return point;
-			end to_position;
-
 			function to_position (
 			-- Returns a type_package_position in the layout.
 				line : in type_fields_of_line; -- "position x 23 y 0.2 rotation 90.0 face top"
@@ -5562,46 +5718,6 @@ package body et_project is
 				return point;
 			end to_position;
 
-			function to_layers (
-			-- Converts a line like "layers 1 4 17" to a set of signal layers.
-			-- Issues warning if a layer number occurs more than once.
-				line : in type_fields_of_line) -- layers 1 3 17
-				return et_pcb.type_signal_layers.set is
-
-				use et_pcb;
-				use et_pcb.type_signal_layers;
-
-				layers 		: et_pcb.type_signal_layers.set; -- to be returned
-				cursor 		: et_pcb.type_signal_layers.cursor;
-				inserted	: boolean;
-				layer 		: et_pcb.type_signal_layer;
-				place 		: positive := 2; -- we start reading the layer numbers with field 2
-			begin
-				while place <= positive (field_count (line)) loop
-
-					-- get the layer number from current place
-					layer := to_signal_layer (f (line, place));
-
-					-- insert the layer number in the container "layers"
-					insert (
-						container	=> layers,
-						new_item	=> layer,
-						inserted	=> inserted,
-						position	=> cursor);
-
-					-- warn if layer already in container
-					if not inserted then
-						log (message_warning & affected_line (line) & "signal layer" & to_string (layer) 
-							& " specified multiple times !");
-					end if;
-					
-					place := place + 1; -- advance to next place
-				end loop;
-				
-				return layers;
-			end to_layers;
-
-			
 			-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 
 			-- net class
@@ -8680,44 +8796,44 @@ package body et_project is
 											end;
 
 										when others => invalid_section;
-											declare
-												kw : string := f (line, 1);
-											begin
-												-- CS: In the following: set a corresponding parameter-found-flag
-												if kw = keyword_center then -- center x 150 y 45
-													expect_field_count (line, 5);
-
-													-- extract the center position starting at field 2 of line
-													board_circle.center := to_position (line, 2);
-													
-												elsif kw = keyword_radius then -- radius 22
-													expect_field_count (line, 2);
-													board_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
-													
-												elsif kw = keyword_width then -- width 0.5
-													expect_field_count (line, 2);
-													board_circle.width := et_pcb_coordinates.to_distance (f (line, 2));
-
-												elsif kw = keyword_filled then -- filled yes/no
-													expect_field_count (line, 2);													
-													board_circle.filled := et_pcb.to_filled (f (line, 2));
-
-												elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
-													expect_field_count (line, 2);													
-													board_circle.fill_style := et_pcb.to_fill_style (f (line, 2));
-
-												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-													expect_field_count (line, 2);													
-													board_circle.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
-
-												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
-													expect_field_count (line, 2);													
-													board_circle.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
-													
-												else
-													invalid_keyword (kw);
-												end if;
-											end;
+-- 											declare
+-- 												kw : string := f (line, 1);
+-- 											begin
+-- 												-- CS: In the following: set a corresponding parameter-found-flag
+-- 												if kw = keyword_center then -- center x 150 y 45
+-- 													expect_field_count (line, 5);
+-- 
+-- 													-- extract the center position starting at field 2 of line
+-- 													board_circle.center := to_position (line, 2);
+-- 													
+-- 												elsif kw = keyword_radius then -- radius 22
+-- 													expect_field_count (line, 2);
+-- 													board_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+-- 													
+-- 												elsif kw = keyword_width then -- width 0.5
+-- 													expect_field_count (line, 2);
+-- 													board_circle.width := et_pcb_coordinates.to_distance (f (line, 2));
+-- 
+-- 												elsif kw = keyword_filled then -- filled yes/no
+-- 													expect_field_count (line, 2);													
+-- 													board_circle.filled := et_pcb.to_filled (f (line, 2));
+-- 
+-- 												elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+-- 													expect_field_count (line, 2);													
+-- 													board_circle.fill_style := et_pcb.to_fill_style (f (line, 2));
+-- 
+-- 												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+-- 													expect_field_count (line, 2);													
+-- 													board_circle.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+-- 
+-- 												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+-- 													expect_field_count (line, 2);													
+-- 													board_circle.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+-- 													
+-- 												else
+-- 													invalid_keyword (kw);
+-- 												end if;
+-- 											end;
 
 									end case;
 

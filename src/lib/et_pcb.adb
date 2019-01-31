@@ -298,16 +298,22 @@ package body et_pcb is
 	
 		
 	
-	function to_string (appearance : in type_package_appearance) return string is
-	begin
+	function to_string (appearance : in type_package_appearance) return string is begin
 		return latin_1.space & to_lower (type_package_appearance'image (appearance));
 	end to_string;
+
+	function to_appearance (appearance : in string) return type_package_appearance is begin
+		return type_package_appearance'value (appearance);
+	end;
 	
-	function to_string (technology : in type_assembly_technology) return string is
-	begin
+	function to_string (technology : in type_assembly_technology) return string is begin
 		return latin_1.space & to_lower (type_assembly_technology'image (technology));
 	end to_string;
 
+	function to_assembly_technology (technology : in string) return type_assembly_technology is begin
+		return type_assembly_technology'value (technology);
+	end;
+	
 	function to_string (solder_paste : in type_solder_paste_status) return string is
 	begin
 		return latin_1.space & to_lower (type_solder_paste_status'image (solder_paste));

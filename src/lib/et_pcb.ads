@@ -1049,10 +1049,11 @@ package et_pcb is
 
 	type type_package_appearance is (
 		REAL,	-- packages with x,y,z dimension
-		VIRTUAL -- for things that do not have a package (netchangers, testpoints, ISA-Board edge connectors, ...)
+		VIRTUAL -- for things that do not have a package (netchangers, testpoints, edge connectors, ...)
 		);	
 
 	function to_string (appearance : in type_package_appearance) return string;
+	function to_appearance (appearance : in string) return type_package_appearance;
 	
 	type type_assembly_technology is (
 		THT,	-- Through Hole Technology
@@ -1060,7 +1061,7 @@ package et_pcb is
 		);
 
 	function to_string (technology : in type_assembly_technology) return string;
-
+	function to_assembly_technology (technology : in string) return type_assembly_technology;
 	
 	type type_solder_paste_status is (NONE, APPLIED);
 	function to_string (solder_paste : in type_solder_paste_status) return string;
