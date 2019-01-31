@@ -113,7 +113,7 @@ technology SMT/THT
 		start x 22.3
 		end y 32.5
 		width 0.2
-		layer 2..15
+		layers 1 2 15
 	[LINE END]
 
 	[ARC BEGIN]
@@ -121,14 +121,14 @@ technology SMT/THT
 		start x 42 y 54
 		end x 45 y 65
 		width 0.5
-		layer 2..15		
+		layers 1 2 15		
 	[ARC END]
 
 	[CIRCLE BEGIN]
 		center x 45 y 4.2
 		radius 10
 		width 0.5
-		layer 2..15		
+		layers 1 2 15		
 		filled yes/no
 		fill_style solid/hatched/cutout
 		hatching_line_width 0.3
@@ -136,7 +136,7 @@ technology SMT/THT
 	[CIRCLE END]
 	
 	[POLYGON BEGIN]
-		layer 2..15	
+		layers 2 15	
 		corner_easing none/chamfer/fillet
 		easing_radius 0.3
 		fill_style solid,hatched,cutout
