@@ -2407,7 +2407,40 @@ package body et_project is
 		return layers;
 	end to_layers;
 
+	function to_dimensions (
+		line : in et_string_processing.type_fields_of_line; -- "size width 30 height 40"
+		from : in positive)
+		return et_pcb.type_text_dimensions is
+		use et_pcb_coordinates;
+		use et_string_processing;
 
+		function f (line : in type_fields_of_line; position : in positive) return string 
+			renames et_string_processing.field;
+		
+		dim : et_pcb.type_text_dimensions; -- to be returned
+		place : positive := from; -- the field being read from given line
+
+		-- CS: flags to detect missing x or y
+	begin
+		while place <= positive (field_count (line)) loop
+
+			-- We expect after the "width" the corresponding value for the text width
+			if f (line, place) = keyword_width then
+				dim.width := to_distance (f (line, place + 1));
+
+			-- We expect after the "height" the corresponding value for the text height
+			elsif f (line, place) = keyword_height then
+				dim.height := to_distance (f (line, place + 1));
+
+			else
+				invalid_keyword (f (line, place));
+			end if;
+				
+			place := place + 2;
+		end loop;
+		
+		return dim;
+	end to_dimensions;
 	
 	procedure read_package (
 	-- Opens the package file and stores the package in container et_libraries.packages.
@@ -2463,6 +2496,9 @@ package body et_project is
 		pac_polygon_copper		: type_copper_polygon;
 		polygon_corner_points	: type_polygon_points.set;
 		polygon_corner_point	: et_pcb_coordinates.type_point_2d;
+
+		pac_text				: et_pcb.type_text_with_content;
+		pac_text_placeholder	: et_pcb.type_text_placeholder_package;
 		
 		procedure process_line is 
 		-- CS: detect if section name is type_section_name_module
@@ -3087,7 +3123,99 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
+					when SEC_TEXT =>
+						case stack.parent is
+							when SEC_TOP | SEC_BOTTOM =>
+								case stack.parent (degree => 2) is
+									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK => -- CS SEC_KEEPOUT
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+												expect_field_count (line, 7);
 
+												-- extract position of note starting at field 2
+												pac_text.position := to_position (line, 2);
+
+											elsif kw = keyword_size then -- size width 1.000 height 1.000
+												expect_field_count (line, 5);
+
+												-- extract text dimensions starting at field 2
+												pac_text.dimensions := to_dimensions (line, 2);
+
+											elsif kw = keyword_line_width then -- line_width 0.1
+												expect_field_count (line, 2);
+												pac_text.line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+											elsif kw = keyword_alignment then -- alignment horizontal center vertical center
+												expect_field_count (line, 5);
+
+												-- extract alignment starting at field 2
+												pac_text.alignment := to_alignment (line, 2);
+												
+											elsif kw = keyword_content then -- content "blabla"
+												expect_field_count (line, 2); -- actual content in quotes !
+												pac_text.content := et_libraries.to_content (f (line, 2));
+												
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+										
+									when others => invalid_section;
+								end case;
+
+							when others => invalid_section;
+								
+						end case;
+
+					when SEC_PLACEHOLDER =>
+						case stack.parent is
+							when SEC_TOP | SEC_BOTTOM =>
+								case stack.parent (degree => 2) is
+									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION =>
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+												expect_field_count (line, 7);
+
+												-- extract position of note starting at field 2
+												pac_text_placeholder.position := to_position (line, 2);
+
+											elsif kw = keyword_size then -- size width 1.000 height 1.000
+												expect_field_count (line, 5);
+
+												-- extract text dimensions starting at field 2
+												pac_text_placeholder.dimensions := to_dimensions (line, 2);
+
+											elsif kw = keyword_line_width then -- line_width 0.1
+												expect_field_count (line, 2);
+												pac_text_placeholder.line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+											elsif kw = keyword_alignment then -- alignment horizontal center vertical center
+												expect_field_count (line, 5);
+
+												-- extract alignment starting at field 2
+												pac_text_placeholder.alignment := to_alignment (line, 2);
+												
+											elsif kw = keyword_meaning then -- meaning reference, value, purpose
+												expect_field_count (line, 2);
+												pac_text_placeholder.meaning := et_pcb.to_text_meaning (f (line, 2));
+												
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+
+									when others => invalid_section;
+								end case;
+
+							when others => invalid_section;
+						end case;
+						
 					when others => null; -- CS
 						
 				end case;
@@ -5799,38 +5927,6 @@ package body et_project is
 				return size;
 			end to_size;
 
-			function to_dimensions (
-				line : in type_fields_of_line; -- "size widht 30 height 40"
-				from : in positive)
-				return et_pcb.type_text_dimensions is
-				use et_pcb_coordinates;
-				
-				dim : et_pcb.type_text_dimensions; -- to be returned
-
-				place : positive := from; -- the field being read from given line
-
-				-- CS: flags to detect missing x or y
-			begin
-				while place <= positive (field_count (line)) loop
-
-					-- We expect after the "width" the corresponding value for the text width
-					if f (line, place) = keyword_width then
-						dim.width := to_distance (f (line, place + 1));
-
-					-- We expect after the "height" the corresponding value for the text height
-					elsif f (line, place) = keyword_height then
-						dim.height := to_distance (f (line, place + 1));
-
-					else
-						invalid_keyword (f (line, place));
-					end if;
-						
-					place := place + 2;
-				end loop;
-				
-				return dim;
-			end to_dimensions;
-			
 			function to_position (
 			-- Returns a type_package_position in the layout.
 				line : in type_fields_of_line; -- "position x 23 y 0.2 rotation 90.0 face top"
@@ -9456,7 +9552,7 @@ package body et_project is
 							
 						when SEC_TEXT =>
 							case stack.parent is
-								when SEC_TEXTS =>
+								when SEC_TEXTS => -- in schematic
 									declare
 										kw : string := f (line, 1);
 									begin
@@ -9511,7 +9607,7 @@ package body et_project is
 													-- extract position of note starting at field 2
 													board_text.position := to_position (line, 2);
 
-												elsif kw = keyword_size then -- size x 1.4 y 4
+												elsif kw = keyword_size then -- size width 1.000 height 1.000
 													expect_field_count (line, 5);
 
 													-- extract text dimensions starting at field 2
@@ -9550,7 +9646,7 @@ package body et_project is
 											-- extract position of note starting at field 2
 											board_text_copper.position := to_position (line, 2);
 
-										elsif kw = keyword_size then -- size x 1.4 y 4
+										elsif kw = keyword_size then -- size width 1.000 height 1.000
 											expect_field_count (line, 5);
 
 											-- extract text dimensions starting at field 2
@@ -9665,7 +9761,7 @@ package body et_project is
 
 						when SEC_PLACEHOLDER =>
 							case stack.parent is
-								when SEC_PLACEHOLDERS =>
+								when SEC_PLACEHOLDERS => -- in schematic
 									case stack.parent (degree => 2) is
 										when SEC_PACKAGE =>
 											declare
@@ -9771,7 +9867,7 @@ package body et_project is
 													-- extract position of note starting at field 2
 													board_text_placeholder.position := to_position (line, 2);
 
-												elsif kw = keyword_size then -- size x 1.4 y 4
+												elsif kw = keyword_size then -- size width 1.000 height 1.000
 													expect_field_count (line, 5);
 
 													-- extract text dimensions starting at field 2
@@ -9810,7 +9906,7 @@ package body et_project is
 											-- extract position of note starting at field 2
 											board_text_copper_placeholder.position := to_position (line, 2);
 
-										elsif kw = keyword_size then -- size x 1.4 y 4
+										elsif kw = keyword_size then -- size width 1.000 height 1.000
 											expect_field_count (line, 5);
 
 											-- extract text dimensions starting at field 2
