@@ -427,7 +427,8 @@ package body et_project is
 		use et_pcb.type_texts_with_content;
 	begin
 		text_begin;
-		write (keyword => keyword_content, parameters => et_libraries.to_string (element (cursor).content));
+		write (keyword => keyword_content, space => true, wrap => true,
+			   parameters => et_libraries.to_string (element (cursor).content));
 		write_text_properties (element (cursor));
 		text_end;
 	end write_text;
@@ -2603,6 +2604,16 @@ package body et_project is
 							end if;
 						end;
 
+					when SEC_COPPER | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
+						SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+						SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT | SEC_PCB_CONTOURS_NON_PLATED | 
+						SEC_TERMINALS | SEC_PACKAGE_3D_CONTOURS =>
+
+						case stack.parent is
+							when SEC_INIT => null;
+							when others => invalid_section;
+						end case;
+
 					when SEC_LINE =>
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
@@ -2629,6 +2640,28 @@ package body et_project is
 												expect_field_count (line, 2);
 												pac_line_width := et_pcb_coordinates.to_distance (f (line, 2));
 												
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+
+									when SEC_PAD_CONTOURS => -- THT pad
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_start then -- start x 22.3 y 23.3
+												expect_field_count (line, 5);
+
+												-- extract the start position starting at field 2 of line
+												pac_line.start_point := to_position (line, 2);
+												
+											elsif kw = keyword_end then -- end x 22.3 y 23.3
+												expect_field_count (line, 5);
+
+												-- extract the end position starting at field 2 of line
+												pac_line.end_point := to_position (line, 2);
+
 											else
 												invalid_keyword (kw);
 											end if;
@@ -2695,6 +2728,28 @@ package body et_project is
 									end if;
 								end;
 
+							when SEC_PAD_CONTOURS => -- SMD pad
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_start then -- start x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the start position starting at field 2 of line
+										pac_line.start_point := to_position (line, 2);
+										
+									elsif kw = keyword_end then -- end x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the end position starting at field 2 of line
+										pac_line.end_point := to_position (line, 2);
+
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
 							when others => invalid_section;
 						end case;
 						
@@ -2735,6 +2790,34 @@ package body et_project is
 											end if;
 										end;
 
+									when SEC_PAD_CONTOURS => -- THT pad
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_center then -- center x 150 y 45
+												expect_field_count (line, 5);
+
+												-- extract the center position starting at field 2 of line
+												pac_arc.center := to_position (line, 2);
+												
+											elsif kw = keyword_start then -- start x 22.3 y 23.3
+												expect_field_count (line, 5);
+
+												-- extract the start position starting at field 2 of line
+												pac_arc.start_point := to_position (line, 2);
+												
+											elsif kw = keyword_end then -- end x 22.3 y 23.3
+												expect_field_count (line, 5);
+
+												-- extract the end position starting at field 2 of line
+												pac_arc.end_point := to_position (line, 2);
+
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+										
 									when others => invalid_section;
 								end case;
 
@@ -2809,6 +2892,34 @@ package body et_project is
 									end if;
 								end;
 
+							when SEC_PAD_CONTOURS => -- SMD pad
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_center then -- center x 150 y 45
+										expect_field_count (line, 5);
+
+										-- extract the center position starting at field 2 of line
+										pac_arc.center := to_position (line, 2);
+										
+									elsif kw = keyword_start then -- start x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the start position starting at field 2 of line
+										pac_arc.start_point := to_position (line, 2);
+										
+									elsif kw = keyword_end then -- end x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the end position starting at field 2 of line
+										pac_arc.end_point := to_position (line, 2);
+
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+								
 							when others => invalid_section;
 						end case;
 
@@ -2897,6 +3008,26 @@ package body et_project is
 											end if;
 										end;
 
+									when SEC_PAD_CONTOURS => -- THT pad
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_center then -- center x 150 y 45
+												expect_field_count (line, 5);
+
+												-- extract the center position starting at field 2 of line
+												pac_circle.center := to_position (line, 2);
+												
+											elsif kw = keyword_radius then -- radius 22
+												expect_field_count (line, 2);
+												pac_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+												
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+										
 									when others => invalid_section;
 								end case;
 
@@ -2971,6 +3102,26 @@ package body et_project is
 									end if;
 								end;
 
+							when SEC_PAD_CONTOURS =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_center then -- center x 150 y 45
+										expect_field_count (line, 5);
+
+										-- extract the center position starting at field 2 of line
+										pac_circle.center := to_position (line, 2);
+										
+									elsif kw = keyword_radius then -- radius 22
+										expect_field_count (line, 2);
+										pac_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+								
 							when others => invalid_section;
 						end case;
 
@@ -3215,8 +3366,16 @@ package body et_project is
 
 							when others => invalid_section;
 						end case;
+
+					when SEC_TERMINAL =>
+						case stack.parent is
+							when SEC_TERMINALS =>
+								null; -- CS
+
+							when others => invalid_section;
+						end case;
 						
-					when others => null; -- CS
+					when others => invalid_section;
 						
 				end case;
 			end if;
