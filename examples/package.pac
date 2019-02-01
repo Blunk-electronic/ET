@@ -41,20 +41,18 @@ technology SMT/THT
 			hatching_line_spacing 1
 			min_width 0.3
 			[CORNERS BEGIN]
-				x 123.54 y 2.7
-				x 133.54 y 335.3
-				x 523.54 y 6.7
+				position x 123.54 y 2.7
+				position x 133.54 y 335.3
+				position x 523.54 y 6.7
 			[CORNERS END]
 		[POLYGON END]
 
 		[TEXT BEGIN]
-			position x 40 y 20
+			position x 40 y 20 rotation 0
 			size x 3.0 y 3.0
 			line_width 0.2
-			rotation 0
 			content "bla"
 			alignment center
-			hidden yes/no
 		[TEXT END]
 	
 	[TOP END]
@@ -92,9 +90,9 @@ technology SMT/THT
 			hatching_line_width 0.3
 			hatching_line_spacing 1
 			[CORNERS BEGIN]
-				x 123.54 y 2.7
-				x 133.54 y 335.3
-				x 523.54 y 6.7
+				position x 123.54 y 2.7
+				position x 133.54 y 335.3
+				position x 523.54 y 6.7
 			[CORNERS END]
 		[POLYGON END]
 	[TOP END]
@@ -143,9 +141,9 @@ technology SMT/THT
 		hatching_line_width 0.3
 		hatching_line_spacing 1
 		[CORNERS BEGIN]
-			x 123.54 y 2.7
-			x 133.54 y 335.3
-			x 523.54 y 6.7
+			position x 123.54 y 2.7
+			position x 133.54 y 335.3
+			position x 523.54 y 6.7
 		[CORNERS END]
 	[POLYGON END]
 [ROUTE_RESTRICT END]
@@ -214,30 +212,26 @@ technology SMT/THT
 			hatching_line_width 0.3
 			hatching_line_spacing 1
 			[CORNERS BEGIN]
-				x 123.54 y 2.7
-				x 133.54 y 335.3
-				x 523.54 y 6.7
+				position x 123.54 y 2.7
+				position x 133.54 y 335.3
+				position x 523.54 y 6.7
 			[CORNERS END]
 		[POLYGON END]
 		
 		[TEXT BEGIN]
-			position x 40 y 20
-			size x 3.0 y 3.0
+			position x 40 y 20 rotation 0
+			size width 1.000 height 1.000
 			line_width 0.2
-			rotation 0
 			content "bla"
 			alignment center
-			hidden yes/no
 		[TEXT END]
 
 		[PLACEHOLDER BEGIN]
-			position x 40 y 20
-			size x 3.0 y 3.0
+			position x 40 y 20 rotation 0
+			size width 1.000 height 1.000
 			line_width 0.2
-			rotation 0
 			meaning reference/value/purpose
 			alignment center
-			hidden yes/no
 		[PLACEHOLDER END]
 		
 	[TOP END]
@@ -347,6 +341,10 @@ technology SMT/THT
 				start x -1.000 y 0.700
 				end x 1.000 y 0.700
 			[ARC END]
+			[CIRCLE BEGIN]
+				center x 0.000 y 0.700
+				radius 1
+			[CIRCLE END]
 		[PAD_CONTOUR END]
 		face top
 		stop_mask open
