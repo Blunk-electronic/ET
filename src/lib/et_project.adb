@@ -2460,7 +2460,10 @@ package body et_project is
 		
 		type type_polygon is new et_pcb.type_polygon with null record;
 		pac_polygon				: type_polygon;
-
+		pac_polygon_copper		: type_copper_polygon;
+		polygon_corner_points	: type_polygon_points.set;
+		polygon_corner_point	: et_pcb_coordinates.type_point_2d;
+		
 		procedure process_line is 
 		-- CS: detect if section name is type_section_name_module
 
@@ -2934,7 +2937,157 @@ package body et_project is
 
 							when others => invalid_section;
 						end case;
+
+					when SEC_POLYGON =>
+						case stack.parent is
+							when SEC_TOP | SEC_BOTTOM => 
+								case stack.parent (degree => 2) is
+									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+												expect_field_count (line, 2);													
+												pac_polygon.fill_style := et_pcb.to_fill_style (f (line, 2));
+
+											elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+												expect_field_count (line, 2);													
+												pac_polygon.corner_easing := et_pcb.to_corner_easing (f (line, 2));
+
+											elsif kw = keyword_easing_radius then -- easing_radius 0.4
+												expect_field_count (line, 2);													
+												pac_polygon.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
+												
+											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+												expect_field_count (line, 2);													
+												pac_polygon.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+												expect_field_count (line, 2);													
+												pac_polygon.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+												
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+
+									when others => invalid_section;
+								end case;
+
+							when SEC_COPPER =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+										expect_field_count (line, 2);													
+										pac_polygon_copper.fill_style := et_pcb.to_fill_style (f (line, 2));
+
+									elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+										expect_field_count (line, 2);													
+										pac_polygon_copper.corner_easing := et_pcb.to_corner_easing (f (line, 2));
+
+									elsif kw = keyword_easing_radius then -- easing_radius 0.4
+										expect_field_count (line, 2);													
+										pac_polygon_copper.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
+										
+									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+										expect_field_count (line, 2);													
+										pac_polygon_copper.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+										expect_field_count (line, 2);													
+										pac_polygon_copper.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_priority then -- priority 2
+										expect_field_count (line, 2);
+										pac_polygon_copper.priority_level := et_pcb.to_polygon_priority (f (line, 2));
+
+									elsif kw = keyword_isolation then -- isolation 0.5
+										expect_field_count (line, 2);
+										pac_polygon_copper.isolation_gap := et_pcb_coordinates.to_distance (f (line, 2));
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
+							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+										expect_field_count (line, 2);													
+										pac_polygon.fill_style := et_pcb.to_fill_style (f (line, 2));
+
+									elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+										expect_field_count (line, 2);													
+										pac_polygon.corner_easing := et_pcb.to_corner_easing (f (line, 2));
+
+									elsif kw = keyword_easing_radius then -- easing_radius 0.4
+										expect_field_count (line, 2);													
+										pac_polygon.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
+										
+									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+										expect_field_count (line, 2);													
+										pac_polygon.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+										expect_field_count (line, 2);													
+										pac_polygon.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+										
+									elsif kw = keyword_width then -- width 0.5
+										expect_field_count (line, 2);
+										pac_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										
+									elsif kw = keyword_layers then -- layers 1 14 3
+
+										-- there must be at least two fields:
+										expect_field_count (line => line, count_expected => 2, warn => false);
+										pac_signal_layers := to_layers (line);
+
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
+							when others => invalid_section;
+						end case;
 						
+					when SEC_CORNERS =>
+						case stack.parent is
+							when SEC_POLYGON =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- read corner points
+									-- NOTE: A corner point is defined by a single line.
+									-- Upon reading the line like "position x 4 y 4" the point is
+									-- appended to the corner point collection immediately here. See procdure
+									-- execute_section.
+									-- There is no section for a single corner like [CORNER BEGIN].
+									
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_position then -- position x 123.54 y 2.7
+										expect_field_count (line, 5);
+
+										-- extract corner coordinates from line starting at field 2
+										polygon_corner_point := to_position (line, 2);
+
+										-- insert the corner point in collection of corner points
+										et_pcb.type_polygon_points.insert (polygon_corner_points, polygon_corner_point);
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+								
+							when others => invalid_section;
+						end case;
+
+
 					when others => null; -- CS
 						
 				end case;
@@ -9119,7 +9272,7 @@ package body et_project is
 											expect_field_count (line, 2);													
 											board_polygon_floating.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
 
-										elsif kw = keyword_width then -- width 0.5
+										elsif kw = keyword_min_width then -- min_width 0.5
 											expect_field_count (line, 2);
 											board_polygon_floating.width_min := et_pcb_coordinates.to_distance (f (line, 2));
 											
