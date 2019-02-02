@@ -348,10 +348,29 @@ package body et_project is
 
 	function position (point : et_pcb_coordinates.type_point_2d'class) return string is
 		use et_pcb_coordinates;
+		use ada.tags;
+		
+		xy : constant string := space & keyword_pos_x & to_string (get_axis (X, point)) 
+				& space & keyword_pos_y & to_string (get_axis (Y, point));
 	begin
-		-- CS test tag for proper return
-		return space & keyword_pos_x & to_string (get_axis (X, point)) 
-			& space & keyword_pos_y & to_string (get_axis (Y, point));
+		if point'tag = type_point_2d'tag then
+			return xy;
+			-- position x 162.560 y 98.240
+			
+		elsif point'tag = type_point_2d_with_angle'tag then
+			return xy 
+				& space & keyword_rotation & to_string (get_angle (type_point_2d_with_angle (point)));
+				-- position x 162.560 y 98.240 rotation 180.00
+			
+		elsif point'tag = type_package_position'tag then
+			return xy
+				& space & keyword_rotation & to_string (get_angle (type_point_2d_with_angle (point)))
+				& space & keyword_face & to_string (get_face (type_package_position (point)));
+				-- position x 162.560 y 98.240 rotation 180.00 face top
+		else
+			return xy;
+		end if;
+
 	end position;
 	
 	procedure write_text_properties (text : in et_libraries.type_text_basic'class) is
@@ -371,9 +390,12 @@ package body et_project is
 	procedure write_text_properties (text : in et_pcb.type_text'class) is
 		use et_pcb_coordinates;
 	begin
-		write (keyword => keyword_position, parameters => position (text.position) & 
-			space & keyword_rotation & to_string (get_angle (text.position))
-			  ); -- position x 0.000 y 5.555 rotation 0.00
+-- 		write (keyword => keyword_position, parameters => position (text.position) & 
+-- 			space & keyword_rotation & to_string (get_angle (text.position))
+-- 			  ); -- position x 0.000 y 5.555 rotation 0.00
+
+		write (keyword => keyword_position, parameters => position (text.position));
+			-- position x 0.000 y 5.555 rotation 0.00
 		
 		write (keyword => keyword_size, parameters => space & keyword_width & to_string (text.dimensions.width) 
 		   & space & keyword_height & to_string (text.dimensions.height)); -- size width 1.000 height 1.000
@@ -392,9 +414,13 @@ package body et_project is
 		is
 		use et_pcb_coordinates;
 	begin
-		write (keyword => keyword_position, parameters => position (text.position) &
-			space & keyword_rotation & to_string (get_angle (text.position)) &
+		write (keyword => keyword_position, parameters => position (text.position) & 
 			space & keyword_face & to_string (face)); -- position x 0.000 y 5.555 rotation 0.00 face top
+
+		-- CS this could be more elegant way. did not get it working
+		-- 		write (keyword => keyword_position, parameters => 
+		-- 			   position (type_point_2d_with_angle (text.position with face => face))
+		-- 			  );
 		
 		write (keyword => keyword_size, parameters => space & keyword_width & to_string (text.dimensions.width) 
 			   & space & keyword_height & to_string (text.dimensions.height)); -- size width 1.000 height 1.000
@@ -1393,7 +1419,6 @@ package body et_project is
 				begin
 					section_mark (section_placeholder, HEADER);
 					write (keyword => keyword_layer, parameters => to_string (layer));
-					--write (keyword => keyword_face, parameters => to_string (face));
 					write (keyword => keyword_meaning, parameters => to_string (element (placeholder_cursor).meaning));
 					write_text_properties_with_face (element (placeholder_cursor), face);
 					section_mark (section_placeholder, FOOTER);
@@ -1436,17 +1461,11 @@ package body et_project is
 						write (keyword => keyword_bom     , parameters => et_schematic.to_string (element (device_cursor).bom));
 						
 						section_mark (section_package, HEADER);
--- 						write (keyword => keyword_position, parameters => position (element (device_cursor).position)); -- position in board !
--- 						write (keyword => keyword_rotation, parameters => rotation (element (device_cursor).position)); -- rotation in board !
--- 						write (keyword => keyword_face    , parameters => face (element (device_cursor).position));
 
 						-- This is the position of the package in the layout, 
-						-- written in a like like "position x 34.5 y 60.1 rotation 180 face top"
-						write (keyword => keyword_position, parameters => -- position
-							position (element (device_cursor).position) & space & -- x 34.5 y 60.1
-							keyword_rotation & rotation (element (device_cursor).position) & space & -- rotation 180 
-							keyword_face & face (element (device_cursor).position)); -- face top/bottom
-						
+						write (keyword => keyword_position, parameters => -- position x 34.5 y 60.1 face top/bottom
+							position (element (device_cursor).position));
+					
 						query_element (device_cursor, query_placeholders'access);
 						section_mark (section_package, FOOTER);
 						
@@ -2475,31 +2494,35 @@ package body et_project is
 
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		pac_description			: type_package_description.bounded_string;
-		pac_appearance			: type_package_appearance;
-		pac_technology			: type_assembly_technology;
-		pac_line_width			: type_general_line_width;
+		pac_appearance			: type_package_appearance;  -- CS default
+		pac_technology			: type_assembly_technology;  -- CS default
+		pac_line_width			: type_general_line_width;  -- CS default
 		pac_signal_layers		: type_signal_layers.set;
 		lock_status 			: et_pcb.type_locked := et_pcb.type_locked'first;
 		
 		type type_line_2d is new et_pcb.type_line_2d with null record;
-		pac_line				: type_line_2d;
+		pac_line				: type_line_2d;  -- CS default
 
 		type type_arc_2d is new et_pcb.type_arc_2d with null record;
-		pac_arc					: type_arc_2d;
+		pac_arc					: type_arc_2d;  -- CS default
 
 		type type_circle_2d is new et_pcb.type_circle_2d with null record;
-		pac_circle				: type_circle_2d;
-		pac_circle_fillable		: et_pcb.type_fillable_circle;
-		pac_circle_copper		: et_pcb.type_copper_circle;
+		pac_circle				: type_circle_2d;  -- CS default
+		pac_circle_fillable		: et_pcb.type_fillable_circle;  -- CS default
+		pac_circle_copper		: et_pcb.type_copper_circle;  -- CS default
 		
 		type type_polygon is new et_pcb.type_polygon with null record;
-		pac_polygon				: type_polygon;
-		pac_polygon_copper		: type_copper_polygon;
+		pac_polygon				: type_polygon;  -- CS default
+		pac_polygon_copper		: type_copper_polygon;  -- CS default
 		polygon_corner_points	: type_polygon_points.set;
-		polygon_corner_point	: et_pcb_coordinates.type_point_2d;
+		polygon_corner_point	: et_pcb_coordinates.type_point_2d; -- CS default := et_pcb_coordinates.zero_2d;
 
-		pac_text				: et_pcb.type_text_with_content;
-		pac_text_placeholder	: et_pcb.type_text_placeholder_package;
+		pac_text				: et_pcb.type_text_with_content;  -- CS default
+		pac_text_placeholder	: et_pcb.type_text_placeholder_package; -- CS default
+
+		terminal_name			: et_libraries.type_terminal_name.bounded_string;
+		terminal_technology		: et_pcb.type_assembly_technology; -- CS default
+		terminal_position		: et_pcb_coordinates.type_point_2d_with_angle; -- CS default := et_pcb_coordinates.zero_2d;
 		
 		procedure process_line is 
 		-- CS: detect if section name is type_section_name_module
@@ -3370,7 +3393,26 @@ package body et_project is
 					when SEC_TERMINAL =>
 						case stack.parent is
 							when SEC_TERMINALS =>
-								null; -- CS
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_appearance then -- name 1,2,H7
+										expect_field_count (line, 2);
+										terminal_name := et_libraries.to_terminal_name (f (line,2));
+
+									elsif kw = keyword_assembly_technology then -- technology tht
+										expect_field_count (line, 2);
+										terminal_technology := et_pcb.to_assembly_technology (f (line,2));
+
+									elsif kw = keyword_position then -- position x 12.7 y 3.0
+										expect_field_count (line, 2);
+										terminal_position := to_position (line,2);
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
 
 							when others => invalid_section;
 						end case;

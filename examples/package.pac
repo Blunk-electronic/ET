@@ -249,7 +249,7 @@ technology SMT/THT
 	[TERMINAL BEGIN]
 		name 6
 		technology tht
-		position x 12.700 y 0.000
+		position x 12.700 y 0.000 rotation 0
 		[PAD_CONTOUR BEGIN]
 			[TOP BEGIN]
 				[LINE BEGIN]
@@ -321,7 +321,7 @@ technology SMT/THT
 	[TERMINAL BEGIN]
 		name 9
 		technology smt
-		position x 2.925 y 2.540
+		position x 2.925 y 2.540 rotation 0
 		[PAD_CONTOUR BEGIN]
 			[LINE BEGIN]
 				start x -1.000 y -0.700
