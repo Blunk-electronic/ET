@@ -314,20 +314,29 @@ package body et_pcb is
 		return type_assembly_technology'value (technology);
 	end;
 	
-	function to_string (solder_paste : in type_solder_paste_status) return string is
-	begin
+	function to_string (solder_paste : in type_solder_paste_status) return string is begin
 		return latin_1.space & to_lower (type_solder_paste_status'image (solder_paste));
 	end to_string;
 
-	function to_string (stop_mask : in type_stop_mask_status) return string is
-	begin
+	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status is begin
+		return type_solder_paste_status'value (solder_paste);
+	end;
+	
+	function to_string (stop_mask : in type_stop_mask_status) return string is begin
 		return latin_1.space & to_lower (type_stop_mask_status'image (stop_mask));
 	end to_string;
 
-	function to_string (tht_hole : in type_terminal_tht_hole) return string is
-	begin
+	function to_stop_mask_status (stop_mask : in string) return type_stop_mask_status is begin
+		return type_stop_mask_status'value (stop_mask);
+	end to_stop_mask_status;
+	
+	function to_string (tht_hole : in type_terminal_tht_hole) return string is begin
 		return latin_1.space & to_lower (type_terminal_tht_hole'image (tht_hole));
 	end to_string;
+
+	function to_tht_hole (tht_hole : in string) return type_terminal_tht_hole is begin
+		return type_terminal_tht_hole'value (tht_hole);
+	end to_tht_hole;
 	
 	function to_string (filled : in type_filled) return string is begin
 		return latin_1.space & to_lower (type_filled'image (filled));

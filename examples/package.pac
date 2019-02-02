@@ -250,7 +250,7 @@ technology SMT/THT
 		name 6
 		technology tht
 		position x 12.700 y 0.000 rotation 0
-		[PAD_CONTOUR BEGIN]
+		[PAD_CONTOURS BEGIN]
 			[TOP BEGIN]
 				[LINE BEGIN]
 					start x -0.900 y 1.200
@@ -291,9 +291,10 @@ technology SMT/THT
 					end x 1.100 y -0.800
 				[ARC END]
 			[BOTTOM END]
-		[PAD_CONTOUR END]
+		[PAD_CONTOURS END]
 		width_inner_layers 1.000
-		hole milled
+		hole milled/milled
+		#drill_size 1.000 #if hole drilled
 		[MILLINGS BEGIN]
 			[LINE BEGIN]
 				start x -0.400 y 1.200
@@ -322,7 +323,7 @@ technology SMT/THT
 		name 9
 		technology smt
 		position x 2.925 y 2.540 rotation 0
-		[PAD_CONTOUR BEGIN]
+		[PAD_CONTOURS BEGIN]
 			[LINE BEGIN]
 				start x -1.000 y -0.700
 				end x -1.000 y 0.700
@@ -345,7 +346,7 @@ technology SMT/THT
 				center x 0.000 y 0.700
 				radius 1
 			[CIRCLE END]
-		[PAD_CONTOUR END]
+		[PAD_CONTOURS END]
 		face top
 		stop_mask open
 		solder_paste applied

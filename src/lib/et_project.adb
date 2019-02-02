@@ -2523,6 +2523,12 @@ package body et_project is
 		terminal_name			: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology		: et_pcb.type_assembly_technology; -- CS default
 		terminal_position		: et_pcb_coordinates.type_point_2d_with_angle; -- CS default := et_pcb_coordinates.zero_2d;
+		tht_width_inner_layers	: et_pcb_coordinates.type_distance; -- CS default
+		tht_hole				: et_pcb.type_terminal_tht_hole; -- CS default
+		tht_drill_size			: et_pcb.type_drill_size; -- CS default
+		smt_pad_face			: et_pcb_coordinates.type_face; -- cs default
+		smt_stop_mask			: et_pcb.type_stop_mask_status; -- CS default
+		smt_solder_paste		: et_pcb.type_solder_paste_status; -- CS default
 		
 		procedure process_line is 
 		-- CS: detect if section name is type_section_name_module
@@ -2637,6 +2643,15 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
+					when SEC_TOP | SEC_BOTTOM =>
+						case stack.parent is
+							when SEC_COPPER | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
+								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+								SEC_PAD_CONTOURS => null;
+
+							when others => invalid_section;
+						end case;
+						
 					when SEC_LINE =>
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
@@ -2773,6 +2788,9 @@ package body et_project is
 									end if;
 								end;
 
+							when SEC_MILLINGS =>
+								null; -- CS
+								
 							when others => invalid_section;
 						end case;
 						
@@ -2942,6 +2960,9 @@ package body et_project is
 										invalid_keyword (kw);
 									end if;
 								end;
+
+							when SEC_MILLINGS =>
+								null; -- CS
 								
 							when others => invalid_section;
 						end case;
@@ -3144,6 +3165,9 @@ package body et_project is
 										invalid_keyword (kw);
 									end if;
 								end;
+
+							when SEC_MILLINGS =>
+								null; -- CS
 								
 							when others => invalid_section;
 						end case;
@@ -3397,7 +3421,7 @@ package body et_project is
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_appearance then -- name 1,2,H7
+									if kw = keyword_name then -- name 1,2,H7
 										expect_field_count (line, 2);
 										terminal_name := et_libraries.to_terminal_name (f (line,2));
 
@@ -3406,14 +3430,44 @@ package body et_project is
 										terminal_technology := et_pcb.to_assembly_technology (f (line,2));
 
 									elsif kw = keyword_position then -- position x 12.7 y 3.0
-										expect_field_count (line, 2);
+										expect_field_count (line, 5);
 										terminal_position := to_position (line,2);
+
+									elsif kw = keyword_width_inner_layers then -- width_inner_layers 0.2
+										expect_field_count (line, 2);
+										tht_width_inner_layers := et_pcb_coordinates.to_distance (f (line,2));
+
+									elsif kw = keyword_tht_hole then -- hole drilled/milled
+										expect_field_count (line, 2);
+										tht_hole := to_tht_hole (f (line,2));
+
+									elsif kw = keyword_drill_size then -- drill_size 0.8
+										expect_field_count (line, 2);
+										tht_drill_size := et_pcb_coordinates.to_distance (f (line,2));
+										
+									elsif kw = keyword_face then -- face top/bottom
+										expect_field_count (line, 2);
+										smt_pad_face := et_pcb_coordinates.to_face (f (line,2));
+
+									elsif kw = keyword_stop_mask then -- stop_mask open/closed
+										expect_field_count (line, 2);
+										smt_stop_mask := to_stop_mask_status (f (line,2));
+
+									elsif kw = keyword_solder_paste then -- solder_paste applied/none
+										expect_field_count (line, 2);
+										smt_solder_paste := to_solder_paste_status (f (line,2));
 										
 									else
 										invalid_keyword (kw);
 									end if;
 								end;
 
+							when others => invalid_section;
+						end case;
+
+					when SEC_PAD_CONTOURS | SEC_MILLINGS =>
+						case stack.parent is
+							when SEC_TERMINAL => null;
 							when others => invalid_section;
 						end case;
 						

@@ -1065,14 +1065,16 @@ package et_pcb is
 	
 	type type_solder_paste_status is (NONE, APPLIED);
 	function to_string (solder_paste : in type_solder_paste_status) return string;
+	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status;
 	
 	type type_stop_mask_status is (CLOSED, OPEN);  -- net-ties or netchangers have their pads covered
 	function to_string (stop_mask : in type_stop_mask_status) return string;
-
+	function to_stop_mask_status (stop_mask : in string) return type_stop_mask_status;
 	
 	-- A THT terminal may have a drilled or a milled hole (milled hole is also called "plated millings")
 	type type_terminal_tht_hole is (DRILLED, MILLED);
 	function to_string (tht_hole : in type_terminal_tht_hole) return string;
+	function to_tht_hole (tht_hole : in string) return type_terminal_tht_hole;
 
 	
 	-- A pad outline consists of lines, arcs, circles, polygons:
@@ -1110,6 +1112,8 @@ package et_pcb is
 
 				-- This is the width of the copper surrounding the hole in inner layers.
 				-- Since the hole can be of any shape we do not speak about restring.
+				-- The shape of the copper area around the hole is the same as the shape of the 
+				-- hole. No further contours possible.
 				width_inner_layers : type_distance; -- CS use subtype for reasonable range
 				
 				case tht_hole is
