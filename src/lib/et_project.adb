@@ -2537,7 +2537,190 @@ package body et_project is
 			-- Once a section concludes, the temporarily variables are read, evaluated
 			-- and finally assembled to actual objects:
 			begin -- execute_section
-				null;
+				case stack.current is
+
+					when SEC_COPPER | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
+						SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+						SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT | SEC_PCB_CONTOURS_NON_PLATED | 
+						SEC_TERMINALS | SEC_PACKAGE_3D_CONTOURS =>
+
+						case stack.parent is
+							when SEC_INIT => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_TOP | SEC_BOTTOM =>
+						case stack.parent is
+							when SEC_COPPER | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
+								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+								SEC_PAD_CONTOURS_THT => null;
+
+							when others => invalid_section;
+						end case;
+						
+					when SEC_LINE =>
+						case stack.parent is
+							when SEC_TOP | SEC_BOTTOM => 
+								case stack.parent (degree => 2) is
+									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										null;
+
+									when SEC_PAD_CONTOURS_THT =>
+										null;
+
+									when others => invalid_section;
+								end case;
+
+							when SEC_PCB_CONTOURS_NON_PLATED =>
+								null;
+								
+							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+								null;
+
+							when SEC_PAD_CONTOURS_SMT =>
+								null;
+
+							when SEC_MILLINGS =>
+								null;
+								
+							when others => invalid_section;
+						end case;
+						
+					when SEC_ARC =>
+						case stack.parent is
+							when SEC_TOP | SEC_BOTTOM => 
+								case stack.parent (degree => 2) is
+									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										null;
+
+									when SEC_PAD_CONTOURS_THT =>
+										null;
+										
+									when others => invalid_section;
+								end case;
+
+							when SEC_PCB_CONTOURS_NON_PLATED =>
+								null;
+
+							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+								null;
+
+							when SEC_PAD_CONTOURS_SMT =>
+								null;
+
+							when SEC_MILLINGS =>
+								null;
+
+							when others => invalid_section;
+						end case;
+
+					when SEC_CIRCLE =>
+						case stack.parent is
+							when SEC_TOP | SEC_BOTTOM => 
+								case stack.parent (degree => 2) is
+									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										null;
+
+									when SEC_COPPER => -- NON-ELECTRIC !!
+										null;
+
+									when SEC_PAD_CONTOURS_THT =>
+										null;
+										
+									when others => invalid_section;
+								end case;
+
+							when SEC_PCB_CONTOURS_NON_PLATED =>
+								null;
+								
+							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+								null;
+
+							when SEC_PAD_CONTOURS_SMT =>
+								null;
+
+							when SEC_MILLINGS =>
+								null;
+								
+							when others => invalid_section;
+						end case;
+
+					when SEC_POLYGON =>
+						case stack.parent is
+							when SEC_TOP | SEC_BOTTOM => 
+								case stack.parent (degree => 2) is
+									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										null;
+
+									when others => invalid_section;
+								end case;
+
+							when SEC_COPPER =>
+								null;
+								
+							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+								null;
+								
+							when others => invalid_section;
+						end case;
+						
+					when SEC_CORNERS =>
+						case stack.parent is
+							when SEC_POLYGON =>
+								null;
+								
+							when others => invalid_section;
+						end case;
+
+					when SEC_TEXT =>
+						case stack.parent is
+							when SEC_TOP | SEC_BOTTOM =>
+								case stack.parent (degree => 2) is
+									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK => -- CS SEC_KEEPOUT
+										null;										
+										
+									when others => invalid_section;
+								end case;
+
+							when others => invalid_section;
+								
+						end case;
+
+					when SEC_PLACEHOLDER =>
+						case stack.parent is
+							when SEC_TOP | SEC_BOTTOM =>
+								case stack.parent (degree => 2) is
+									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION =>
+										null;
+										
+									when others => invalid_section;
+								end case;
+
+							when others => invalid_section;
+						end case;
+
+					when SEC_TERMINAL =>
+						case stack.parent is
+							when SEC_TERMINALS =>
+								null;
+								
+							when others => invalid_section;
+						end case;
+
+					when SEC_PAD_CONTOURS_SMT | SEC_PAD_CONTOURS_THT | SEC_MILLINGS =>
+						case stack.parent is
+							when SEC_TERMINAL => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_INIT => null; -- CS: should never happen
+						
+				end case;
+
 			end execute_section;
 
 			function set (
@@ -2557,6 +2740,13 @@ package body et_project is
 
 					elsif f (line, 2) = section_end then -- section footer detected in field 2
 
+						-- The section name in the footer must match the name
+						-- of the current section. Otherwise abort.
+						if section /= stack.current then
+							log_indentation_reset;
+							invalid_section;
+						end if;
+						
 						-- Now that the section ends, the data collected in temporarily
 						-- variables is processed.
 						execute_section;
@@ -3230,8 +3420,8 @@ package body et_project is
 										-- extract the center position starting at field 2 of line
 										pac_circle.center := to_position (line, 2);
 										
-									elsif kw = keyword_start then -- radius 22.3
-										expect_field_count (line, 5);
+									elsif kw = keyword_radius then -- radius 22.3
+										expect_field_count (line, 2);
 
 										pac_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
 										
@@ -3557,8 +3747,6 @@ package body et_project is
 				raise;
 			
 		end process_line;
-
-
 		
 		previous_input : ada.text_io.file_type renames current_input;
 		
@@ -3962,6 +4150,13 @@ package body et_project is
 
 					elsif f (line, 2) = section_end then -- section footer detected in field 2
 
+						-- The section name in the footer must match the name
+						-- of the current section. Otherwise abort.
+						if section /= stack.current then
+							log_indentation_reset;
+							invalid_section;
+						end if;
+						
 						-- Now that the section ends, the data collected in temporarily
 						-- variables is processed.
 						execute_section;
@@ -4998,6 +5193,13 @@ package body et_project is
 
 					elsif f (line, 2) = section_end then -- section footer detected in field 2
 
+						-- The section name in the footer must match the name
+						-- of the current section. Otherwise abort.
+						if section /= stack.current then
+							log_indentation_reset;
+							invalid_section;
+						end if;
+						
 						-- Now that the section ends, the data collected in temporarily
 						-- variables is processed.
 						execute_section;
@@ -8583,6 +8785,13 @@ package body et_project is
 
 						elsif f (line, 2) = section_end then -- section footer detected in field 2
 
+							-- The section name in the footer must match the name
+							-- of the current section. Otherwise abort.
+							if section /= stack.current then
+								log_indentation_reset;
+								invalid_section;
+							end if;
+							
 							-- Now that the section ends, the data collected in temporarily
 							-- variables is processed.
 							execute_section;
@@ -10553,6 +10762,13 @@ package body et_project is
 							
 						elsif f (line, 2) = section_end then -- section footer detected in field 2
 
+							-- The section name in the footer must match the name
+							-- of the current section. Otherwise abort.
+							if section /= stack.current then
+								log_indentation_reset;
+								invalid_section;
+							end if;
+							
 							-- Now that the section ends, the data collected in temporarily
 							-- variables is processed.
 							execute_section;
