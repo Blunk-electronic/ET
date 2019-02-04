@@ -2493,23 +2493,38 @@ package body et_project is
 		end to_string;
 
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
-		pac_description			: type_package_description.bounded_string;
+
+		-- Once the appearance has been read, a new package will be created where this 
+		-- pointer is pointing at:
+		packge					: access et_pcb.type_package;
 		pac_appearance			: type_package_appearance := package_appearance_default;
+
+		-- The description and technology will be assigned once the complete
+		-- model has been read. See main of this procdure.
+		pac_description			: type_package_description.bounded_string; 
 		pac_technology			: type_assembly_technology := assembly_technology_default;
+		
 		pac_line_width			: type_general_line_width := type_general_line_width'first;
+		procedure reset_line_width is begin pac_line_width := type_general_line_width'first; end;
+		
 		pac_signal_layers		: type_signal_layers.set;
 		lock_status 			: et_pcb.type_locked := lock_status_default;
 		
 		type type_line_2d is new et_pcb.type_line_2d with null record;
 		pac_line				: type_line_2d;
-
+		procedure reset_line is begin pac_line := (others => <>); end;
+		
 		type type_arc_2d is new et_pcb.type_arc_2d with null record;
 		pac_arc					: type_arc_2d;
+		procedure reset_arc is begin pac_arc := (others => <>); end;
 
 		type type_circle_2d is new et_pcb.type_circle_2d with null record;
 		pac_circle				: type_circle_2d;
+		procedure reset_circle is begin pac_circle := (others => <>); end;
 		pac_circle_fillable		: et_pcb.type_fillable_circle;
+		procedure reset_circle_fillable is begin pac_circle_fillable := (others => <>); end;
 		pac_circle_copper		: et_pcb.type_copper_circle;
+		procedure reset_circle_copper is begin pac_circle_copper := (others => <>); end;		
 		
 		type type_polygon is new et_pcb.type_polygon with null record;
 		pac_polygon				: type_polygon;
@@ -2560,11 +2575,21 @@ package body et_project is
 						
 					when SEC_LINE =>
 						case stack.parent is
-							when SEC_TOP | SEC_BOTTOM => 
+							when SEC_TOP => 
 								case stack.parent (degree => 2) is
-									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
-										null;
+									when SEC_COPPER => -- NON-ELECTRIC !!
+
+										type_copper_lines.append (
+											container	=> packge.copper.top.lines, 
+											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+
+										-- clean up for next line
+										reset_line;
+										reset_line_width;
+
+									--	| SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+									--	SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+									--	null;
 
 									when SEC_PAD_CONTOURS_THT =>
 										null;
@@ -2572,6 +2597,30 @@ package body et_project is
 									when others => invalid_section;
 								end case;
 
+							when SEC_BOTTOM => 
+								case stack.parent (degree => 2) is
+									when SEC_COPPER => -- NON-ELECTRIC !!
+
+										type_copper_lines.append (
+											container	=> packge.copper.bottom.lines, 
+											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+
+										-- clean up for next line
+										reset_line;
+										reset_line_width;
+
+
+									--	| SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+									--	SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+									--	null;
+
+									when SEC_PAD_CONTOURS_THT =>
+										null;
+
+									when others => invalid_section;
+								end case;
+
+								
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								null;
 								
@@ -2811,6 +2860,20 @@ package body et_project is
 								expect_field_count (line, 2);
 								pac_appearance := et_pcb.to_appearance (f (line,2));
 
+								-- Depending on the appearance we create a virtual or real package
+								-- where pointer packge is pointing at:
+								case pac_appearance is
+									when REAL =>
+										packge := new et_pcb.type_package' (
+													appearance	=> et_pcb.REAL,
+													others		=> <>);
+
+									when VIRTUAL =>
+										packge := new et_pcb.type_package' (
+													appearance	=> et_pcb.VIRTUAL,
+													others		=> <>);
+								end case;
+										
 							elsif kw = keyword_description then -- description "blabla"
 								expect_field_count (line, 2);
 								pac_description := et_pcb.to_package_description (f (line,2));
@@ -3795,6 +3858,10 @@ package body et_project is
 
 			set_input (previous_input);
 			close (file_handle);
+
+			-- Assign description and technology as they have been read earlier.
+			packge.description := pac_description;
+			packge.technology := pac_technology;
 
 -- 			-- CS Insert the package (accessed by pointer symbol) in et_libraries.symbols:
 -- 			et_libraries.type_symbols.insert (
