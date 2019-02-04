@@ -87,8 +87,8 @@ package et_pcb is
 	subtype type_text_size is type_distance range text_size_min .. text_size_max;
 
 	type type_text_dimensions is record
-		width	: type_text_size;
-		height	: type_text_size;
+		width	: type_text_size := text_size_min;
+		height	: type_text_size := text_size_min;
 	end record;
 
 	procedure validate_text_size (size : in type_distance);
@@ -215,9 +215,8 @@ package et_pcb is
 	type type_text is abstract tagged record
 		position	: type_point_2d_with_angle;
 		dimensions	: type_text_dimensions;
-		line_width	: type_text_line_width;
+		line_width	: type_text_line_width := type_text_line_width'first;
 		alignment	: et_libraries.type_text_alignment;
-		--hidden		: boolean; -- CS currently no need 
 		-- CS locked : type_locked;		
 	end record;
 
@@ -232,7 +231,7 @@ package et_pcb is
 	function to_text_meaning (text_meaning : in string) return type_text_meaning_package;
 	
 	type type_text_placeholder_package is new type_text with record
-		meaning : type_text_meaning_package;
+		meaning : type_text_meaning_package := REFERENCE;
 	end record;
 
 	-- There can be lots of placeholders of this kind. So they are stored in a list:	
@@ -357,7 +356,6 @@ package et_pcb is
 		center			: type_point_2d;
 		start_point		: type_point_2d;
 		end_point		: type_point_2d;
-		-- 		angle			: type_angle;
 		-- CS locked : type_locked;		
 	end record;
 
@@ -372,7 +370,7 @@ package et_pcb is
 	-- CIRCLE
 	type type_circle_2d is abstract tagged record
 		center			: type_point_2d;
-		radius  		: type_distance;
+		radius  		: type_distance := zero_distance;
 		-- CS locked : type_locked;
 	end record;
 
@@ -414,6 +412,7 @@ package et_pcb is
 	-- LOCK STATUS OF AN OBJECT
 	type type_locked is (NO, YES);
 
+	lock_status_default : constant type_locked := NO;
 	function to_string (locked : in type_locked) return string;
 	function to_lock_status (locked : in string) return type_locked;
 	
@@ -506,7 +505,7 @@ package et_pcb is
 	function to_filled (filled : in string) return type_filled;
 
 	type type_copper_circle is new type_circle_2d with record
-		width				: type_track_width;
+		width				: type_track_width := type_track_width'first;
 		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_track_width := fill_style_hatching_line_width_default; -- the with of the lines
@@ -522,7 +521,7 @@ package et_pcb is
 
 	type type_copper_polygon is new type_polygon with record
 		priority_level		: type_polygon_priority := type_polygon_priority'first;
-		isolation_gap		: type_track_clearance; -- the space between foreign pads and the polygon
+		isolation_gap		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 	end record;
 
 	text_polygon_priority_level	: constant string (1..14) := "priority_level";
@@ -689,7 +688,7 @@ package et_pcb is
 	-- This circle type is used by silk screen, assembly doc, 
 	-- stop mask, stencil, keepout, route restrict, via restrict
 	type type_fillable_circle is new type_circle_2d with record
-		width				: type_general_line_width; -- the width of the circumfence		
+		width				: type_general_line_width := type_general_line_width'first; -- the width of the circumfence		
 		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
@@ -1052,6 +1051,7 @@ package et_pcb is
 		VIRTUAL -- for things that do not have a package (netchangers, testpoints, edge connectors, ...)
 		);	
 
+	package_appearance_default : constant type_package_appearance := REAL;
 	function to_string (appearance : in type_package_appearance) return string;
 	function to_appearance (appearance : in string) return type_package_appearance;
 	
@@ -1060,19 +1060,23 @@ package et_pcb is
 		SMT		-- Surface Mount Technology
 		);
 
+	assembly_technology_default : constant type_assembly_technology := SMT;
 	function to_string (technology : in type_assembly_technology) return string;
 	function to_assembly_technology (technology : in string) return type_assembly_technology;
 	
 	type type_solder_paste_status is (NONE, APPLIED);
+	solder_paste_status_default : constant type_solder_paste_status := APPLIED;
 	function to_string (solder_paste : in type_solder_paste_status) return string;
 	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status;
 	
 	type type_stop_mask_status is (CLOSED, OPEN);  -- net-ties or netchangers have their pads covered
+	stop_mask_status_default : constant type_stop_mask_status := OPEN;
 	function to_string (stop_mask : in type_stop_mask_status) return string;
 	function to_stop_mask_status (stop_mask : in string) return type_stop_mask_status;
 	
 	-- A THT terminal may have a drilled or a milled hole (milled hole is also called "plated millings")
 	type type_terminal_tht_hole is (DRILLED, MILLED);
+	terminal_tht_hole_default : constant type_terminal_tht_hole := DRILLED;
 	function to_string (tht_hole : in type_terminal_tht_hole) return string;
 	function to_tht_hole (tht_hole : in string) return type_terminal_tht_hole;
 

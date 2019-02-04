@@ -2494,41 +2494,41 @@ package body et_project is
 
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		pac_description			: type_package_description.bounded_string;
-		pac_appearance			: type_package_appearance;  -- CS default
-		pac_technology			: type_assembly_technology;  -- CS default
-		pac_line_width			: type_general_line_width;  -- CS default
+		pac_appearance			: type_package_appearance := package_appearance_default;
+		pac_technology			: type_assembly_technology := assembly_technology_default;
+		pac_line_width			: type_general_line_width := type_general_line_width'first;
 		pac_signal_layers		: type_signal_layers.set;
-		lock_status 			: et_pcb.type_locked := et_pcb.type_locked'first;
+		lock_status 			: et_pcb.type_locked := lock_status_default;
 		
 		type type_line_2d is new et_pcb.type_line_2d with null record;
-		pac_line				: type_line_2d;  -- CS default
+		pac_line				: type_line_2d;
 
 		type type_arc_2d is new et_pcb.type_arc_2d with null record;
-		pac_arc					: type_arc_2d;  -- CS default
+		pac_arc					: type_arc_2d;
 
 		type type_circle_2d is new et_pcb.type_circle_2d with null record;
-		pac_circle				: type_circle_2d;  -- CS default
-		pac_circle_fillable		: et_pcb.type_fillable_circle;  -- CS default
-		pac_circle_copper		: et_pcb.type_copper_circle;  -- CS default
+		pac_circle				: type_circle_2d;
+		pac_circle_fillable		: et_pcb.type_fillable_circle;
+		pac_circle_copper		: et_pcb.type_copper_circle;
 		
 		type type_polygon is new et_pcb.type_polygon with null record;
-		pac_polygon				: type_polygon;  -- CS default
-		pac_polygon_copper		: type_copper_polygon;  -- CS default
+		pac_polygon				: type_polygon;
+		pac_polygon_copper		: type_copper_polygon;
 		polygon_corner_points	: type_polygon_points.set;
-		polygon_corner_point	: et_pcb_coordinates.type_point_2d; -- CS default := et_pcb_coordinates.zero_2d;
+		polygon_corner_point	: et_pcb_coordinates.type_point_2d;
 
-		pac_text				: et_pcb.type_text_with_content;  -- CS default
-		pac_text_placeholder	: et_pcb.type_text_placeholder_package; -- CS default
+		pac_text				: et_pcb.type_text_with_content;
+		pac_text_placeholder	: et_pcb.type_text_placeholder_package;
 
 		terminal_name			: et_libraries.type_terminal_name.bounded_string;
-		terminal_technology		: et_pcb.type_assembly_technology; -- CS default
-		terminal_position		: et_pcb_coordinates.type_point_2d_with_angle; -- CS default := et_pcb_coordinates.zero_2d;
-		tht_width_inner_layers	: et_pcb_coordinates.type_distance; -- CS default
-		tht_hole				: et_pcb.type_terminal_tht_hole; -- CS default
-		tht_drill_size			: et_pcb.type_drill_size; -- CS default
-		smt_pad_face			: et_pcb_coordinates.type_face; -- cs default
-		smt_stop_mask			: et_pcb.type_stop_mask_status; -- CS default
-		smt_solder_paste		: et_pcb.type_solder_paste_status; -- CS default
+		terminal_technology		: et_pcb.type_assembly_technology := et_pcb.assembly_technology_default;
+		terminal_position		: et_pcb_coordinates.type_point_2d_with_angle;
+		tht_width_inner_layers	: et_pcb_coordinates.type_distance := et_pcb_coordinates.zero_distance;
+		tht_hole				: et_pcb.type_terminal_tht_hole := et_pcb.terminal_tht_hole_default;
+		tht_drill_size			: et_pcb.type_drill_size := et_pcb.type_drill_size'first;
+		smt_pad_face			: et_pcb_coordinates.type_face := et_pcb_coordinates.face_default;
+		smt_stop_mask			: et_pcb.type_stop_mask_status := et_pcb.stop_mask_status_default;
+		smt_solder_paste		: et_pcb.type_solder_paste_status := et_pcb.solder_paste_status_default;
 		
 		procedure process_line is 
 		-- CS: detect if section name is type_section_name_module

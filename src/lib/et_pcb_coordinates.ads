@@ -60,6 +60,7 @@ package et_pcb_coordinates is
 
 	type type_face is (TOP, BOTTOM);
 
+	face_default : constant type_face := TOP;
 	function to_string (face : in type_face) return string;
 	function to_face (face : in string) return type_face;
 	
