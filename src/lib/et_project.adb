@@ -2595,7 +2595,8 @@ package body et_project is
 			elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;			
 			elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
 			elsif set (section_pcb_contours, SEC_PCB_CONTOURS_NON_PLATED) then null;
-			elsif set (section_pad_contours, SEC_PAD_CONTOURS) then null;
+			elsif set (section_pad_contours_smt, SEC_PAD_CONTOURS_SMT) then null;
+			elsif set (section_pad_contours_tht, SEC_PAD_CONTOURS_THT) then null;
 			elsif set (section_pad_millings, SEC_MILLINGS) then null;			
 			elsif set (section_text, SEC_TEXT) then null;
 			elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
@@ -2647,7 +2648,7 @@ package body et_project is
 						case stack.parent is
 							when SEC_COPPER | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
 								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-								SEC_PAD_CONTOURS => null;
+								SEC_PAD_CONTOURS_THT => null;
 
 							when others => invalid_section;
 						end case;
@@ -2683,7 +2684,7 @@ package body et_project is
 											end if;
 										end;
 
-									when SEC_PAD_CONTOURS => -- THT pad
+									when SEC_PAD_CONTOURS_THT =>
 										declare
 											kw : string := f (line, 1);
 										begin
@@ -2766,7 +2767,7 @@ package body et_project is
 									end if;
 								end;
 
-							when SEC_PAD_CONTOURS => -- SMD pad
+							when SEC_PAD_CONTOURS_SMT =>
 								declare
 									kw : string := f (line, 1);
 								begin
@@ -2789,7 +2790,30 @@ package body et_project is
 								end;
 
 							when SEC_MILLINGS =>
-								null; -- CS
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_start then -- start x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the start position starting at field 2 of line
+										pac_line.start_point := to_position (line, 2);
+										
+									elsif kw = keyword_end then -- end x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the end position starting at field 2 of line
+										pac_line.end_point := to_position (line, 2);
+
+									elsif kw = keyword_locked then -- locked no/yes
+										expect_field_count (line, 2);
+										lock_status := et_pcb.to_lock_status (f (line, 2));
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
 								
 							when others => invalid_section;
 						end case;
@@ -2831,7 +2855,7 @@ package body et_project is
 											end if;
 										end;
 
-									when SEC_PAD_CONTOURS => -- THT pad
+									when SEC_PAD_CONTOURS_THT =>
 										declare
 											kw : string := f (line, 1);
 										begin
@@ -2933,7 +2957,7 @@ package body et_project is
 									end if;
 								end;
 
-							when SEC_PAD_CONTOURS => -- SMD pad
+							when SEC_PAD_CONTOURS_SMT =>
 								declare
 									kw : string := f (line, 1);
 								begin
@@ -2962,8 +2986,37 @@ package body et_project is
 								end;
 
 							when SEC_MILLINGS =>
-								null; -- CS
-								
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_center then -- center x 150 y 45
+										expect_field_count (line, 5);
+
+										-- extract the center position starting at field 2 of line
+										pac_arc.center := to_position (line, 2);
+										
+									elsif kw = keyword_start then -- start x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the start position starting at field 2 of line
+										pac_arc.start_point := to_position (line, 2);
+										
+									elsif kw = keyword_end then -- end x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the end position starting at field 2 of line
+										pac_arc.end_point := to_position (line, 2);
+
+									elsif kw = keyword_locked then -- locked no/yes
+										expect_field_count (line, 2);
+										lock_status := et_pcb.to_lock_status (f (line, 2));
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
 							when others => invalid_section;
 						end case;
 
@@ -3052,7 +3105,7 @@ package body et_project is
 											end if;
 										end;
 
-									when SEC_PAD_CONTOURS => -- THT pad
+									when SEC_PAD_CONTOURS_THT =>
 										declare
 											kw : string := f (line, 1);
 										begin
@@ -3146,7 +3199,7 @@ package body et_project is
 									end if;
 								end;
 
-							when SEC_PAD_CONTOURS =>
+							when SEC_PAD_CONTOURS_SMT =>
 								declare
 									kw : string := f (line, 1);
 								begin
@@ -3167,7 +3220,29 @@ package body et_project is
 								end;
 
 							when SEC_MILLINGS =>
-								null; -- CS
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_center then -- center x 150 y 45
+										expect_field_count (line, 5);
+
+										-- extract the center position starting at field 2 of line
+										pac_circle.center := to_position (line, 2);
+										
+									elsif kw = keyword_start then -- radius 22.3
+										expect_field_count (line, 5);
+
+										pac_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+										
+									elsif kw = keyword_locked then -- locked no/yes
+										expect_field_count (line, 2);
+										lock_status := et_pcb.to_lock_status (f (line, 2));
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
 								
 							when others => invalid_section;
 						end case;
@@ -3465,7 +3540,7 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
-					when SEC_PAD_CONTOURS | SEC_MILLINGS =>
+					when SEC_PAD_CONTOURS_SMT | SEC_PAD_CONTOURS_THT | SEC_MILLINGS =>
 						case stack.parent is
 							when SEC_TERMINAL => null;
 							when others => invalid_section;
@@ -5964,7 +6039,7 @@ package body et_project is
 				case element (terminal_cursor).technology is
 					when THT =>
 						-- pad contour top
-						section_mark (section_pad_contours, HEADER);
+						section_mark (section_pad_contours_tht, HEADER);
 						
 						section_mark (section_top, HEADER);
 						write_pad_shape (element (terminal_cursor).pad_shape_top);
@@ -5975,7 +6050,7 @@ package body et_project is
 						write_pad_shape (element (terminal_cursor).pad_shape_bottom);
 						section_mark (section_bottom, FOOTER);
 						
-						section_mark (section_pad_contours, FOOTER);
+						section_mark (section_pad_contours_tht, FOOTER);
 
 						-- copper width in inner layers
 						write (keyword => keyword_width_inner_layers, 
@@ -5994,9 +6069,9 @@ package body et_project is
 						
 					when SMT =>
 						-- pad contour
-						section_mark (section_pad_contours, HEADER);
+						section_mark (section_pad_contours_smt, HEADER);
 						write_pad_shape (element (terminal_cursor).pad_shape);
-						section_mark (section_pad_contours, FOOTER);
+						section_mark (section_pad_contours_smt, FOOTER);
 						
 						write (keyword => keyword_face, parameters => et_pcb_coordinates.to_string (element (terminal_cursor).face));
 						write (keyword => keyword_stop_mask, parameters => et_pcb.to_string (element (terminal_cursor).stop_mask));

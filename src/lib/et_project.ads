@@ -477,7 +477,8 @@ package et_project is
 	section_terminals			: constant string	:= "[TERMINALS";
 	section_terminal			: constant string	:= "[TERMINAL";
 	
-	section_pad_contours		: constant string	:= "[PAD_CONTOURS";
+	section_pad_contours_smt	: constant string	:= "[PAD_CONTOURS_SMT";
+	section_pad_contours_tht	: constant string	:= "[PAD_CONTOURS_THT";	
 	section_pad_millings		: constant string	:= "[MILLINGS";
 	
 	section_title_block			: constant string	:= "[TITLE_BLOCK";
@@ -593,7 +594,8 @@ package et_project is
 		SEC_PCB_CONTOURS_NON_PLATED,
 		SEC_TERMINALS,
 		SEC_TERMINAL,
-		SEC_PAD_CONTOURS,
+		SEC_PAD_CONTOURS_SMT,
+		SEC_PAD_CONTOURS_THT,		
 		SEC_MILLINGS,
 		SEC_TEXT,
 		SEC_PLACEHOLDER,
