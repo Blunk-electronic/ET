@@ -2528,7 +2528,9 @@ package body et_project is
 		
 		type type_polygon is new et_pcb.type_polygon with null record;
 		pac_polygon				: type_polygon;
+		procedure reset_polygon is begin pac_polygon := (others => <>); end;
 		pac_polygon_copper		: type_copper_polygon;
+		procedure reset_polygon_copper is begin pac_polygon_copper := (others => <>); end;
 		polygon_corner_points	: type_polygon_points.set;
 		polygon_corner_point	: et_pcb_coordinates.type_point_2d;
 
@@ -2700,7 +2702,6 @@ package body et_project is
 
 									when others => invalid_section;
 								end case;
-
 								
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								null;
@@ -2993,17 +2994,123 @@ package body et_project is
 
 					when SEC_POLYGON =>
 						case stack.parent is
-							when SEC_TOP | SEC_BOTTOM => 
+							when SEC_TOP => 
 								case stack.parent (degree => 2) is
-									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
-										null;
+									when SEC_SILK_SCREEN =>
+
+										type_silk_polygons.append (
+											container	=> packge.silk_screen.top.polygons, 
+											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+
+										-- clean up for next polygon
+										reset_polygon;
+										
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+
+										type_doc_polygons.append (
+											container	=> packge.assembly_documentation.top.polygons, 
+											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+
+										-- clean up for next polygon
+										reset_polygon;
+										
+									when SEC_STENCIL =>
+
+										type_stencil_polygons.append (
+											container	=> packge.stencil.top.polygons, 
+											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+
+										-- clean up for next polygon
+										reset_polygon;
+										
+									when SEC_STOP_MASK =>
+
+										type_stop_polygons.append (
+											container	=> packge.stop_mask.top.polygons, 
+											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+
+										-- clean up for next polygon
+										reset_polygon;
+										
+									when SEC_KEEPOUT =>
+
+										type_keepout_polygons.append (
+											container	=> packge.keepout.top.polygons, 
+											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+
+										-- clean up for next polygon
+										reset_polygon;
+
+									when SEC_COPPER =>
+
+										type_copper_polygons.append (
+											container	=> packge.copper.top.polygons, 
+											new_item	=> pac_polygon_copper);
+
+										-- clean up for next polygon
+										pac_polygon_copper := (others => <>);
 
 									when others => invalid_section;
 								end case;
 
-							when SEC_COPPER =>
-								null;
+							when SEC_BOTTOM => 
+								case stack.parent (degree => 2) is
+									when SEC_SILK_SCREEN =>
+
+										type_silk_polygons.append (
+											container	=> packge.silk_screen.bottom.polygons, 
+											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+
+										-- clean up for next polygon
+										reset_polygon;
+										
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+
+										type_doc_polygons.append (
+											container	=> packge.assembly_documentation.bottom.polygons, 
+											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+
+										-- clean up for next polygon
+										reset_polygon;
+										
+									when SEC_STENCIL =>
+
+										type_stencil_polygons.append (
+											container	=> packge.stencil.bottom.polygons, 
+											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+
+										-- clean up for next polygon
+										reset_polygon;
+										
+									when SEC_STOP_MASK =>
+
+										type_stop_polygons.append (
+											container	=> packge.stop_mask.bottom.polygons, 
+											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+
+										-- clean up for next polygon
+										reset_polygon;
+										
+									when SEC_KEEPOUT =>
+
+										type_keepout_polygons.append (
+											container	=> packge.keepout.bottom.polygons, 
+											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+
+										-- clean up for next polygon
+										reset_polygon;
+
+									when SEC_COPPER =>
+
+										type_copper_polygons.append (
+											container	=> packge.copper.bottom.polygons, 
+											new_item	=> pac_polygon_copper);
+
+										-- clean up for next polygon
+										pac_polygon_copper := (others => <>);
+
+									when others => invalid_section;
+								end case;
 								
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								null;
@@ -3798,7 +3905,7 @@ package body et_project is
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
 										declare
 											kw : string := f (line, 1);
@@ -3829,47 +3936,47 @@ package body et_project is
 											end if;
 										end;
 
+									when SEC_COPPER =>
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+												expect_field_count (line, 2);													
+												pac_polygon_copper.fill_style := et_pcb.to_fill_style (f (line, 2));
+
+											elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+												expect_field_count (line, 2);													
+												pac_polygon_copper.corner_easing := et_pcb.to_corner_easing (f (line, 2));
+
+											elsif kw = keyword_easing_radius then -- easing_radius 0.4
+												expect_field_count (line, 2);													
+												pac_polygon_copper.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
+												
+											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+												expect_field_count (line, 2);													
+												pac_polygon_copper.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+
+											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+												expect_field_count (line, 2);													
+												pac_polygon_copper.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+
+											elsif kw = keyword_priority then -- priority 2
+												expect_field_count (line, 2);
+												pac_polygon_copper.priority_level := et_pcb.to_polygon_priority (f (line, 2));
+
+											elsif kw = keyword_isolation then -- isolation 0.5
+												expect_field_count (line, 2);
+												pac_polygon_copper.isolation_gap := et_pcb_coordinates.to_distance (f (line, 2));
+												
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+
 									when others => invalid_section;
 								end case;
-
-							when SEC_COPPER =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
-										expect_field_count (line, 2);													
-										pac_polygon_copper.fill_style := et_pcb.to_fill_style (f (line, 2));
-
-									elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
-										expect_field_count (line, 2);													
-										pac_polygon_copper.corner_easing := et_pcb.to_corner_easing (f (line, 2));
-
-									elsif kw = keyword_easing_radius then -- easing_radius 0.4
-										expect_field_count (line, 2);													
-										pac_polygon_copper.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
 										
-									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-										expect_field_count (line, 2);													
-										pac_polygon_copper.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
-
-									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
-										expect_field_count (line, 2);													
-										pac_polygon_copper.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
-
-									elsif kw = keyword_priority then -- priority 2
-										expect_field_count (line, 2);
-										pac_polygon_copper.priority_level := et_pcb.to_polygon_priority (f (line, 2));
-
-									elsif kw = keyword_isolation then -- isolation 0.5
-										expect_field_count (line, 2);
-										pac_polygon_copper.isolation_gap := et_pcb_coordinates.to_distance (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								declare
 									kw : string := f (line, 1);
