@@ -3121,8 +3121,15 @@ package body et_project is
 					when SEC_CORNERS =>
 						case stack.parent is
 							when SEC_POLYGON =>
-								null;
-								
+								-- Assign the collected corner points to the temporarily polygons
+								-- pac_polygon and pac_polygon_copper. When the section POLYGON
+								-- closes one of them is taken.
+								pac_polygon.corners := polygon_corner_points;
+								pac_polygon_copper.corners := polygon_corner_points;
+
+								-- clean up for next collection of corner points
+								type_polygon_points.clear (polygon_corner_points);
+
 							when others => invalid_section;
 						end case;
 
