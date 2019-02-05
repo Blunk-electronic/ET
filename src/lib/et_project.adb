@@ -2704,11 +2704,41 @@ package body et_project is
 								end case;
 								
 							when SEC_PCB_CONTOURS_NON_PLATED =>
-								null;
 								
-							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								null;
+								type_pcb_contour_lines.append (
+									container	=> packge.pcb_contour.lines,
+									new_item	=> (et_pcb.type_line_2d (pac_line) with lock_status));
 
+								-- clean up for next line
+								reset_line;
+								lock_status := lock_status_default;
+								
+							when SEC_ROUTE_RESTRICT =>
+								
+								type_route_restrict_lines.append (
+									container	=> packge.route_restrict.lines,
+									new_item	=> (et_pcb.type_line_2d (pac_line) with
+													width	=> pac_line_width,
+													layers	=> pac_signal_layers));
+
+								-- clean up for next line
+								reset_line;
+								reset_line_width;
+								type_signal_layers.clear (pac_signal_layers);
+
+							when SEC_VIA_RESTRICT =>
+								
+								type_via_restrict_lines.append (
+									container	=> packge.via_restrict.lines,
+									new_item	=> (et_pcb.type_line_2d (pac_line) with
+													width	=> pac_line_width,
+													layers	=> pac_signal_layers));
+
+								-- clean up for next line
+								reset_line;
+								reset_line_width;
+								type_signal_layers.clear (pac_signal_layers);
+								
 							when SEC_PAD_CONTOURS_SMT =>
 								null;
 
@@ -2847,10 +2877,40 @@ package body et_project is
 								end case;
 
 							when SEC_PCB_CONTOURS_NON_PLATED =>
-								null;
+								
+								type_pcb_contour_arcs.append (
+									container	=> packge.pcb_contour.arcs,
+									new_item	=> (et_pcb.type_arc_2d (pac_arc) with lock_status));
 
-							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								null;
+								-- clean up for next arc
+								reset_arc;
+								lock_status := lock_status_default;
+								
+							when SEC_ROUTE_RESTRICT =>
+								
+								type_route_restrict_arcs.append (
+									container	=> packge.route_restrict.arcs,
+									new_item	=> (et_pcb.type_arc_2d (pac_arc) with
+													width	=> pac_line_width,
+													layers	=> pac_signal_layers));
+
+								-- clean up for next arc
+								reset_arc;
+								reset_line_width;
+								type_signal_layers.clear (pac_signal_layers);
+
+							when SEC_VIA_RESTRICT =>
+								
+								type_via_restrict_arcs.append (
+									container	=> packge.via_restrict.arcs,
+									new_item	=> (et_pcb.type_arc_2d (pac_arc) with
+													width	=> pac_line_width,
+													layers	=> pac_signal_layers));
+
+								-- clean up for next arc
+								reset_arc;
+								reset_line_width;
+								type_signal_layers.clear (pac_signal_layers);
 
 							when SEC_PAD_CONTOURS_SMT =>
 								null;
@@ -2978,10 +3038,36 @@ package body et_project is
 								end case;
 
 							when SEC_PCB_CONTOURS_NON_PLATED =>
-								null;
 								
-							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								null;
+								type_pcb_contour_circles.append (
+									container	=> packge.pcb_contour.circles,
+									new_item	=> (et_pcb.type_circle_2d (pac_circle) with lock_status));
+
+								-- clean up for next circle
+								reset_circle;
+								lock_status := lock_status_default;
+								
+							when SEC_ROUTE_RESTRICT =>
+								
+								type_route_restrict_circles.append (
+									container	=> packge.route_restrict.circles,
+									new_item	=> (pac_circle_fillable with pac_signal_layers));
+
+								-- clean up for next circle
+								reset_circle;
+								reset_line_width;
+								type_signal_layers.clear (pac_signal_layers);
+
+							when SEC_VIA_RESTRICT =>
+								
+								type_via_restrict_circles.append (
+									container	=> packge.via_restrict.circles,
+									new_item	=> (pac_circle_fillable with pac_signal_layers));
+
+								-- clean up for next circle
+								reset_circle;
+								reset_line_width;
+								type_signal_layers.clear (pac_signal_layers);
 
 							when SEC_PAD_CONTOURS_SMT =>
 								null;
