@@ -3112,8 +3112,31 @@ package body et_project is
 									when others => invalid_section;
 								end case;
 								
-							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								null;
+							when SEC_ROUTE_RESTRICT =>
+								
+								type_route_restrict_polygons.append (
+									container	=> packge.route_restrict.polygons, 
+									new_item	=> (et_pcb.type_polygon (pac_polygon) with 
+													width	=> pac_line_width,
+													layers	=> pac_signal_layers));
+
+								-- clean up for next polygon
+								reset_polygon;
+								reset_line_width;
+								type_signal_layers.clear (pac_signal_layers);
+
+							when SEC_VIA_RESTRICT =>
+								
+								type_via_restrict_polygons.append (
+									container	=> packge.via_restrict.polygons, 
+									new_item	=> (et_pcb.type_polygon (pac_polygon) with 
+													width	=> pac_line_width,
+													layers	=> pac_signal_layers));
+
+								-- clean up for next polygon
+								reset_polygon;
+								reset_line_width;
+								type_signal_layers.clear (pac_signal_layers);
 								
 							when others => invalid_section;
 						end case;
