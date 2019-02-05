@@ -2587,12 +2587,53 @@ package body et_project is
 										reset_line;
 										reset_line_width;
 
-									--	| SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-									--	SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
-									--	null;
+									when SEC_SILK_SCREEN => 
+										type_silk_lines.append (
+											container	=> packge.silk_screen.top.lines, 
+											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
 
+										-- clean up for next line
+										reset_line;
+										reset_line_width;
+
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										type_doc_lines.append (
+											container	=> packge.assembly_documentation.top.lines, 
+											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+
+										-- clean up for next line
+										reset_line;
+										reset_line_width;
+
+									when SEC_STENCIL =>
+										type_stencil_lines.append (
+											container	=> packge.stencil.top.lines, 
+											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+
+										-- clean up for next line
+										reset_line;
+										reset_line_width;
+
+									when SEC_STOP_MASK =>
+										type_stop_lines.append (
+											container	=> packge.stop_mask.top.lines, 
+											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+
+										-- clean up for next line
+										reset_line;
+										reset_line_width;
+
+									when SEC_KEEPOUT =>
+										type_keepout_lines.append (
+											container	=> packge.keepout.top.lines, 
+											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+
+										-- clean up for next line
+										reset_line;
+										reset_line_width;
+										
 									when SEC_PAD_CONTOURS_THT =>
-										null;
+										null; -- CS
 
 									when others => invalid_section;
 								end case;
@@ -2609,13 +2650,53 @@ package body et_project is
 										reset_line;
 										reset_line_width;
 
+									when SEC_SILK_SCREEN => 
+										type_silk_lines.append (
+											container	=> packge.silk_screen.bottom.lines, 
+											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
 
-									--	| SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-									--	SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
-									--	null;
+										-- clean up for next line
+										reset_line;
+										reset_line_width;
+										
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										type_doc_lines.append (
+											container	=> packge.assembly_documentation.bottom.lines, 
+											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+
+										-- clean up for next line
+										reset_line;
+										reset_line_width;
+
+									when SEC_STENCIL =>
+										type_stencil_lines.append (
+											container	=> packge.stencil.bottom.lines, 
+											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+
+										-- clean up for next line
+										reset_line;
+										reset_line_width;
+										
+									when SEC_STOP_MASK =>
+										type_stop_lines.append (
+											container	=> packge.stop_mask.bottom.lines, 
+											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+
+										-- clean up for next line
+										reset_line;
+										reset_line_width;
+
+									when SEC_KEEPOUT =>
+										type_keepout_lines.append (
+											container	=> packge.keepout.bottom.lines, 
+											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+
+										-- clean up for next line
+										reset_line;
+										reset_line_width;
 
 									when SEC_PAD_CONTOURS_THT =>
-										null;
+										null; -- CS
 
 									when others => invalid_section;
 								end case;
@@ -2638,14 +2719,128 @@ package body et_project is
 						
 					when SEC_ARC =>
 						case stack.parent is
-							when SEC_TOP | SEC_BOTTOM => 
+							when SEC_TOP => 
 								case stack.parent (degree => 2) is
-									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
-										null;
+									when SEC_COPPER => -- NON-ELECTRIC !!
+
+										type_copper_arcs.append (
+											container	=> packge.copper.top.arcs, 
+											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+
+										-- clean up for next arc
+										reset_arc;
+										reset_line_width;
+
+									when SEC_SILK_SCREEN => 
+										type_silk_arcs.append (
+											container	=> packge.silk_screen.top.arcs, 
+											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+
+										-- clean up for next arc
+										reset_arc;
+										reset_line_width;
+
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										type_doc_arcs.append (
+											container	=> packge.assembly_documentation.top.arcs, 
+											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+
+										-- clean up for next arc
+										reset_arc;
+										reset_line_width;
+
+									when SEC_STENCIL =>
+										type_stencil_arcs.append (
+											container	=> packge.stencil.top.arcs, 
+											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+
+										-- clean up for next arc
+										reset_arc;
+										reset_line_width;
+
+									when SEC_STOP_MASK =>
+										type_stop_arcs.append (
+											container	=> packge.stop_mask.top.arcs, 
+											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+
+										-- clean up for next arc
+										reset_arc;
+										reset_line_width;
+
+									when SEC_KEEPOUT =>
+										type_keepout_arcs.append (
+											container	=> packge.keepout.top.arcs,
+											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+
+										-- clean up for next arc
+										reset_arc;
+										reset_line_width;
 
 									when SEC_PAD_CONTOURS_THT =>
-										null;
+										null; -- CS
+										
+									when others => invalid_section;
+								end case;
+
+							when SEC_BOTTOM => 
+								case stack.parent (degree => 2) is
+									when SEC_COPPER => -- NON-ELECTRIC !!
+
+										type_copper_arcs.append (
+											container	=> packge.copper.bottom.arcs, 
+											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+
+										-- clean up for next arc
+										reset_arc;
+										reset_line_width;
+
+									when SEC_SILK_SCREEN => 
+										type_silk_arcs.append (
+											container	=> packge.silk_screen.bottom.arcs, 
+											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+
+										-- clean up for next arc
+										reset_arc;
+										reset_line_width;
+										
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										type_doc_arcs.append (
+											container	=> packge.assembly_documentation.bottom.arcs, 
+											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+
+										-- clean up for next arc
+										reset_arc;
+										reset_line_width;
+
+									when SEC_STENCIL =>
+										type_stencil_arcs.append (
+											container	=> packge.stencil.bottom.arcs, 
+											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+
+										-- clean up for next arc
+										reset_arc;
+										reset_line_width;
+										
+									when SEC_STOP_MASK =>
+										type_stop_arcs.append (
+											container	=> packge.stop_mask.bottom.arcs, 
+											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+
+										-- clean up for next arc
+										reset_arc;
+										reset_line_width;
+
+									when SEC_KEEPOUT =>
+										type_keepout_arcs.append (
+											container	=> packge.keepout.bottom.arcs, 
+											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+
+										-- clean up for next arc
+										reset_arc;
+										reset_line_width;
+
+									when SEC_PAD_CONTOURS_THT =>
+										null; -- CS
 										
 									when others => invalid_section;
 								end case;
@@ -2667,17 +2862,116 @@ package body et_project is
 
 					when SEC_CIRCLE =>
 						case stack.parent is
-							when SEC_TOP | SEC_BOTTOM => 
+							when SEC_TOP => 
 								case stack.parent (degree => 2) is
-									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
-										null;
-
 									when SEC_COPPER => -- NON-ELECTRIC !!
-										null;
+
+										type_copper_circles.append (
+											container	=> packge.copper.top.circles, 
+											new_item	=> pac_circle_copper);
+
+										-- clean up for next circle
+										pac_circle_copper := (others => <>);
+
+									when SEC_SILK_SCREEN => 
+										type_silk_circles.append (
+											container	=> packge.silk_screen.top.circles, 
+											new_item	=> (pac_circle_fillable with null record));
+
+										-- clean up for next circle
+										pac_circle_fillable := (others => <>);
+
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										type_doc_circles.append (
+											container	=> packge.assembly_documentation.top.circles, 
+											new_item	=> (pac_circle_fillable with null record));
+
+										-- clean up for next circle
+										pac_circle_fillable := (others => <>);
+
+									when SEC_STENCIL =>
+										type_stencil_circles.append (
+											container	=> packge.stencil.top.circles, 
+											new_item	=> (pac_circle_fillable with null record));
+
+										-- clean up for next circle
+										pac_circle_fillable := (others => <>);
+
+									when SEC_STOP_MASK =>
+										type_stop_circles.append (
+											container	=> packge.stop_mask.top.circles, 
+											new_item	=> (pac_circle_fillable with null record));
+
+										-- clean up for next circle
+										pac_circle_fillable := (others => <>);
+
+									when SEC_KEEPOUT =>
+										type_keepout_circles.append (
+											container	=> packge.keepout.top.circles,
+											new_item	=> (pac_circle_fillable with null record));
+
+										-- clean up for next circle
+										pac_circle_fillable := (others => <>);
 
 									when SEC_PAD_CONTOURS_THT =>
-										null;
+										null; -- CS
+										
+									when others => invalid_section;
+								end case;
+
+							when SEC_BOTTOM =>
+								case stack.parent (degree => 2) is
+									when SEC_COPPER => -- NON-ELECTRIC !!
+
+										type_copper_circles.append (
+											container	=> packge.copper.bottom.circles, 
+											new_item	=> pac_circle_copper);
+
+										-- clean up for next circle
+										pac_circle_copper := (others => <>);
+
+									when SEC_SILK_SCREEN => 
+										type_silk_circles.append (
+											container	=> packge.silk_screen.bottom.circles, 
+											new_item	=> (pac_circle_fillable with null record));
+
+										-- clean up for next circle
+										pac_circle_fillable := (others => <>);
+
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										type_doc_circles.append (
+											container	=> packge.assembly_documentation.bottom.circles, 
+											new_item	=> (pac_circle_fillable with null record));
+
+										-- clean up for next circle
+										pac_circle_fillable := (others => <>);
+
+									when SEC_STENCIL =>
+										type_stencil_circles.append (
+											container	=> packge.stencil.bottom.circles, 
+											new_item	=> (pac_circle_fillable with null record));
+
+										-- clean up for next circle
+										pac_circle_fillable := (others => <>);
+
+									when SEC_STOP_MASK =>
+										type_stop_circles.append (
+											container	=> packge.stop_mask.bottom.circles, 
+											new_item	=> (pac_circle_fillable with null record));
+
+										-- clean up for next circle
+										pac_circle_fillable := (others => <>);
+
+									when SEC_KEEPOUT =>
+										type_keepout_circles.append (
+											container	=> packge.keepout.bottom.circles,
+											new_item	=> (pac_circle_fillable with null record));
+
+										-- clean up for next circle
+										pac_circle_fillable := (others => <>);
+
+									when SEC_PAD_CONTOURS_THT =>
+										null; -- CS
 										
 									when others => invalid_section;
 								end case;
