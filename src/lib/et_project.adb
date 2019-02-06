@@ -2539,7 +2539,9 @@ package body et_project is
 
 		terminal_name			: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology		: et_pcb.type_assembly_technology := et_pcb.assembly_technology_default;
+		--terminal				: access et_pcb.type_terminal;
 		terminal_position		: et_pcb_coordinates.type_point_2d_with_angle;
+		tht_pad_shape			: et_pcb.type_pad_outline_tht;
 		tht_width_inner_layers	: et_pcb_coordinates.type_distance := et_pcb_coordinates.zero_distance;
 		tht_hole				: et_pcb.type_terminal_tht_hole := et_pcb.terminal_tht_hole_default;
 		tht_drill_size			: et_pcb.type_drill_size := et_pcb.type_drill_size'first;
@@ -3271,8 +3273,18 @@ package body et_project is
 
 					when SEC_TERMINAL =>
 						case stack.parent is
-							when SEC_TERMINALS =>
-								null;
+							when SEC_TERMINALS => null;
+
+-- 										case terminal_technology is
+-- 											when THT => 
+-- 												terminal := new et_pcb.type_terminal' (
+-- 													technology	=> THT,
+-- 													tht_hole	=> DRILLED,
+-- 													others		=> <>);
+-- 												
+-- 											when SMT => null;
+-- 										end case;
+
 								
 							when others => invalid_section;
 						end case;
@@ -6828,12 +6840,12 @@ package body et_project is
 						section_mark (section_pad_contours_tht, HEADER);
 						
 						section_mark (section_top, HEADER);
-						write_pad_shape (element (terminal_cursor).pad_shape_top);
+						write_pad_shape (element (terminal_cursor).pad_shape_tht.top);
 						section_mark (section_top, FOOTER);
 
 						-- pad contour bottom
 						section_mark (section_bottom, HEADER);
-						write_pad_shape (element (terminal_cursor).pad_shape_bottom);
+						write_pad_shape (element (terminal_cursor).pad_shape_tht.bottom);
 						section_mark (section_bottom, FOOTER);
 						
 						section_mark (section_pad_contours_tht, FOOTER);

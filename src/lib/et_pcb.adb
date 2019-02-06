@@ -1158,16 +1158,16 @@ package body et_pcb is
 				
 				-- log pad_shape_top/bottom
 				log ("pad contour top", log_threshold + 1);
-				iterate (terminal.pad_shape_top.lines, line'access);
-				iterate (terminal.pad_shape_top.arcs, arc'access);
-				iterate (terminal.pad_shape_top.circles, circle'access);
-				iterate (terminal.pad_shape_top.polygons, polygon'access);
+				iterate (terminal.pad_shape_tht.top.lines, line'access);
+				iterate (terminal.pad_shape_tht.top.arcs, arc'access);
+				iterate (terminal.pad_shape_tht.top.circles, circle'access);
+				iterate (terminal.pad_shape_tht.top.polygons, polygon'access);
 
 				log ("pad contour bottom", log_threshold + 1);
-				iterate (terminal.pad_shape_bottom.lines, line'access);
-				iterate (terminal.pad_shape_bottom.arcs, arc'access);
-				iterate (terminal.pad_shape_bottom.circles, circle'access);
-				iterate (terminal.pad_shape_bottom.polygons, polygon'access);
+				iterate (terminal.pad_shape_tht.bottom.lines, line'access);
+				iterate (terminal.pad_shape_tht.bottom.arcs, arc'access);
+				iterate (terminal.pad_shape_tht.bottom.circles, circle'access);
+				iterate (terminal.pad_shape_tht.bottom.polygons, polygon'access);
 				
 				log ("copper width of inner layers" & to_string (terminal.width_inner_layers), log_threshold_1);
 

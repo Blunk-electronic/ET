@@ -1098,6 +1098,11 @@ package et_pcb is
 		circles		: type_pad_circles.list;
 		polygons	: type_pad_polygons.list; 
 	end record;	
+
+	type type_pad_outline_tht is record
+		top			: type_pad_outline; -- The pad shape on the top side
+		bottom		: type_pad_outline; -- is not nessecarily the same as on the bottom side.
+	end record;
 	
 	type type_terminal (
 		technology	: type_assembly_technology; -- smt/tht
@@ -1111,8 +1116,7 @@ package et_pcb is
 			
 		case technology is
 			when THT =>
-				pad_shape_top		: type_pad_outline; -- The pad shape on the top side
-				pad_shape_bottom	: type_pad_outline; -- is not nessecariy the same as on the bottom side.
+				pad_shape_tht		: type_pad_outline_tht;
 
 				-- This is the width of the copper surrounding the hole in inner layers.
 				-- Since the hole can be of any shape we do not speak about restring.

@@ -2165,8 +2165,10 @@ package body et_kicad_pcb is
 									technology 			=> THT,
 									tht_hole			=> DRILLED,
 									position			=> terminal_position,
-									pad_shape_top		=> shape, -- The shape is the same on top
-									pad_shape_bottom	=> shape, -- and on bottom side.
+									
+									-- The shape is the same on top and on bottom side.									
+									pad_shape_tht		=> (top => shape, bottom => shape),
+
 									width_inner_layers 	=> terminal_copper_width_inner_layers,
 									drill_size			=> terminal_drill_size
 								));
@@ -2180,8 +2182,10 @@ package body et_kicad_pcb is
 									technology 			=> THT,
 									tht_hole			=> MILLED,
 									position			=> terminal_position,
-									pad_shape_top		=> shape, -- The shape is the same on top
-									pad_shape_bottom	=> shape, -- as on bottom side.
+
+									-- The shape is the same on top and on bottom side.									
+									pad_shape_tht		=> (top => shape, bottom => shape),
+
 									width_inner_layers	=> terminal_copper_width_inner_layers,
 
 									-- The plated millings of the hole is a list of lines.
@@ -2218,8 +2222,10 @@ package body et_kicad_pcb is
 										technology 			=> THT,
 										tht_hole			=> DRILLED,
 										position			=> terminal_position,
-										pad_shape_top		=> shape, -- The shape is the same on top
-										pad_shape_bottom	=> shape, -- and on bottom side.
+
+										-- The shape is the same on top and on bottom side.									
+										pad_shape_tht		=> (top => shape, bottom => shape),
+
 										width_inner_layers	=> terminal_copper_width_inner_layers,
 										drill_size			=> terminal_drill_size
 										));
@@ -6623,8 +6629,10 @@ package body et_kicad_pcb is
 									technology 			=> THT,
 									tht_hole			=> DRILLED,
 									position			=> terminal_position,
-									pad_shape_top		=> shape, -- The shape is the same on top
-									pad_shape_bottom	=> shape, -- and on bottom side.
+
+									-- The shape is the same on top and on bottom side.									
+									pad_shape_tht		=> (top => shape, bottom => shape),
+
 									width_inner_layers 	=> terminal_copper_width_inner_layers,
 									drill_size			=> terminal_drill_size,
 									
@@ -6641,8 +6649,10 @@ package body et_kicad_pcb is
 									technology 			=> THT,
 									tht_hole			=> MILLED,
 									position			=> terminal_position,
-									pad_shape_top		=> shape, -- The shape is the same on top
-									pad_shape_bottom	=> shape, -- as on bottom side.
+									
+									-- The shape is the same on top and on bottom side.									
+									pad_shape_tht		=> (top => shape, bottom => shape),
+									
 									width_inner_layers	=> terminal_copper_width_inner_layers,
 
 									-- The plated millings of the hole is a list of lines.
@@ -6683,8 +6693,10 @@ package body et_kicad_pcb is
 										technology 			=> THT,
 										tht_hole			=> DRILLED,
 										position			=> terminal_position,
-										pad_shape_top		=> shape, -- The shape is the same on top
-										pad_shape_bottom	=> shape, -- and on bottom side.
+
+										-- The shape is the same on top and on bottom side.									
+										pad_shape_tht		=> (top => shape, bottom => shape),
+
 										width_inner_layers	=> terminal_copper_width_inner_layers,
 										drill_size			=> terminal_drill_size,
 
