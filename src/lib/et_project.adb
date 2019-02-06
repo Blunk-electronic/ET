@@ -2480,7 +2480,7 @@ package body et_project is
 		-- This is the section stack of the package model. 
 		-- Here we track the sections. On entering a section, its name is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
-		max_section_depth : constant positive := 6; -- incl. section init
+		max_section_depth : constant positive := 7; -- incl. section init
 		package stack is new stack_lifo (
 			item	=> type_section_name_package,
 			max 	=> max_section_depth);
@@ -2540,6 +2540,7 @@ package body et_project is
 		terminal_name			: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology		: et_pcb.type_assembly_technology := et_pcb.assembly_technology_default;
 		--terminal				: access et_pcb.type_terminal;
+		pad_shape_polygon		: type_pad_polygon; -- for polygons that outline a pad
 		terminal_position		: et_pcb_coordinates.type_point_2d_with_angle;
 		tht_pad_shape			: et_pcb.type_pad_outline_tht;
 		tht_width_inner_layers	: et_pcb_coordinates.type_distance := et_pcb_coordinates.zero_distance;
@@ -3185,6 +3186,15 @@ package body et_project is
 										-- clean up for next polygon
 										pac_polygon_copper := (others => <>);
 
+									when SEC_PAD_CONTOURS_THT =>
+
+										type_pad_polygons.append (
+											container	=> tht_pad_shape.top.polygons,
+											new_item	=> pad_shape_polygon);
+
+										-- clean up for next polygon
+										pad_shape_polygon := (others => <>);
+										
 									when others => invalid_section;
 								end case;
 
@@ -3244,6 +3254,15 @@ package body et_project is
 										-- clean up for next polygon
 										pac_polygon_copper := (others => <>);
 
+									when SEC_PAD_CONTOURS_THT =>
+
+										type_pad_polygons.append (
+											container	=> tht_pad_shape.bottom.polygons,
+											new_item	=> pad_shape_polygon);
+
+										-- clean up for next polygon
+										pad_shape_polygon := (others => <>);
+										
 									when others => invalid_section;
 								end case;
 								
@@ -3272,6 +3291,15 @@ package body et_project is
 								reset_polygon;
 								reset_line_width;
 								type_signal_layers.clear (pac_signal_layers);
+
+							when SEC_PAD_CONTOURS_SMT =>
+
+								type_pad_polygons.append (
+									container	=> smt_pad_shape.polygons,
+									new_item	=> pad_shape_polygon);
+
+								-- clean up for next polygon
+								pad_shape_polygon := (others => <>);
 								
 							when others => invalid_section;
 						end case;
@@ -3280,10 +3308,13 @@ package body et_project is
 						case stack.parent is
 							when SEC_POLYGON =>
 								-- Assign the collected corner points to the temporarily polygons
-								-- pac_polygon and pac_polygon_copper. When the section POLYGON
-								-- closes one of them is taken.
+								-- pac_polygon, pac_polygon_copper and pad_shape_polygon. 
+								-- When the section POLYGON closes one of them is taken.
+								-- CS: A correct implementation should test the parent section of
+								-- SEC_POLYGON instead before copying the corner points.
 								pac_polygon.corners := polygon_corner_points;
 								pac_polygon_copper.corners := polygon_corner_points;
+								pad_shape_polygon.points := polygon_corner_points;
 
 								-- clean up for next collection of corner points
 								type_polygon_points.clear (polygon_corner_points);
@@ -4149,6 +4180,8 @@ package body et_project is
 											end if;
 										end;
 
+									when SEC_PAD_CONTOURS_THT => null;
+										
 									when others => invalid_section;
 								end case;
 										
@@ -4192,6 +4225,8 @@ package body et_project is
 									end if;
 								end;
 
+							when SEC_PAD_CONTOURS_SMT => null;
+							
 							when others => invalid_section;
 						end case;
 						

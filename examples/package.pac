@@ -270,6 +270,13 @@ technology SMT/THT
 					start x -0.900 y -0.800
 					end x 1.100 y -0.800
 				[ARC END]
+				[POLYGON BEGIN]
+					[CORNERS BEGIN]
+						position x 123.54 y 2.7
+						position x 133.54 y 335.3
+						position x 523.54 y 6.7
+					[CORNERS END]
+				[POLYGON END]
 			[TOP END]
 			[BOTTOM BEGIN]
 				[LINE BEGIN]
@@ -290,6 +297,13 @@ technology SMT/THT
 					start x -0.900 y -0.800
 					end x 1.100 y -0.800
 				[ARC END]
+				[POLYGON BEGIN]
+					[CORNERS BEGIN]
+						position x 123.54 y 2.7
+						position x 133.54 y 335.3
+						position x 523.54 y 6.7
+					[CORNERS END]
+				[POLYGON END]
 			[BOTTOM END]
 		[PAD_CONTOURS_THT END]
 		width_inner_layers 1.000
@@ -346,6 +360,13 @@ technology SMT/THT
 				center x 0.000 y 0.700
 				radius 1
 			[CIRCLE END]
+			[POLYGON BEGIN]
+				[CORNERS BEGIN]
+					position x 123.54 y 2.7
+					position x 133.54 y 335.3
+					position x 523.54 y 6.7
+				[CORNERS END]
+			[POLYGON END]
 		[PAD_CONTOURS_SMT END]
 		face top
 		stop_mask open
