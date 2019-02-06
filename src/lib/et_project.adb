@@ -2551,6 +2551,46 @@ package body et_project is
 		smt_pad_face			: et_pcb_coordinates.type_face := et_pcb_coordinates.face_default;
 		smt_stop_mask			: et_pcb.type_stop_mask_status := et_pcb.stop_mask_status_default;
 		smt_solder_paste		: et_pcb.type_solder_paste_status := et_pcb.solder_paste_status_default;
+
+		procedure build_terminal is 
+		-- Assembls the elements of a terminal and appends the final terminal to the
+		-- list of terminals of the package.
+			cursor : type_terminals.cursor;
+			inserted : boolean;
+		begin
+			case terminal_technology is
+				when THT => 
+					case tht_hole is
+						when DRILLED =>
+
+							type_terminals.insert (
+								container	=> packge.terminals,
+								key			=> terminal_name, -- H4, 16
+								position	=> cursor,
+								inserted	=> inserted,
+								new_item	=> (
+									technology			=> THT,
+									tht_hole			=> DRILLED,
+									drill_size			=> tht_drill_size,
+									position			=> terminal_position,
+									pad_shape_tht		=> tht_pad_shape,
+									width_inner_layers	=> tht_width_inner_layers));
+									
+
+						when MILLED => null;
+					end case;
+					
+-- 					terminal := new et_pcb.type_terminal' (
+-- 						technology	=> THT,
+-- 						tht_hole	=> DRILLED,
+-- 						others		=> <>);
+					
+				when SMT => null;
+			end case;
+
+			-- CS check inserted
+			
+		end build_terminal;
 		
 		procedure process_line is 
 		-- CS: detect if section name is type_section_name_module
@@ -3372,18 +3412,10 @@ package body et_project is
 
 					when SEC_TERMINAL =>
 						case stack.parent is
-							when SEC_TERMINALS => null;
-
--- 										case terminal_technology is
--- 											when THT => 
--- 												terminal := new et_pcb.type_terminal' (
--- 													technology	=> THT,
--- 													tht_hole	=> DRILLED,
--- 													others		=> <>);
--- 												
--- 											when SMT => null;
--- 										end case;
-
+							when SEC_TERMINALS => 
+								-- Now all elements of the terminal have been read
+								-- and can be assembled to the final terminal:
+								build_terminal;
 								
 							when others => invalid_section;
 						end case;
