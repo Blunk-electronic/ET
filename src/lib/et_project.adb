@@ -2546,6 +2546,7 @@ package body et_project is
 		tht_width_inner_layers	: et_pcb_coordinates.type_distance := et_pcb_coordinates.zero_distance;
 		tht_hole				: et_pcb.type_terminal_tht_hole := et_pcb.terminal_tht_hole_default;
 		tht_drill_size			: et_pcb.type_drill_size := et_pcb.type_drill_size'first;
+		tht_millings			: et_pcb.type_package_pcb_contour_plated;
 		smt_pad_shape			: et_pcb.type_pad_outline;
 		smt_pad_face			: et_pcb_coordinates.type_face := et_pcb_coordinates.face_default;
 		smt_stop_mask			: et_pcb.type_stop_mask_status := et_pcb.stop_mask_status_default;
@@ -2763,7 +2764,14 @@ package body et_project is
 								reset_line;
 
 							when SEC_MILLINGS =>
-								null;
+
+								type_pcb_contour_lines.append (
+									container	=> tht_millings.lines,
+									new_item	=> (et_pcb.type_line_2d (pac_line) with lock_status));
+								
+								-- clean up for next line
+								reset_line;
+								lock_status := lock_status_default;
 								
 							when others => invalid_section;
 						end case;
@@ -2951,7 +2959,14 @@ package body et_project is
 								reset_arc;
 
 							when SEC_MILLINGS =>
-								null;
+								
+								type_pcb_contour_arcs.append (
+									container	=> tht_millings.arcs,
+									new_item	=> (et_pcb.type_arc_2d (pac_arc) with lock_status));
+								
+								-- clean up for next arc
+								reset_arc;
+								lock_status := lock_status_default;
 
 							when others => invalid_section;
 						end case;
@@ -3123,7 +3138,13 @@ package body et_project is
 								reset_circle;
 
 							when SEC_MILLINGS =>
-								null;
+								type_pcb_contour_circles.append (
+									container	=> tht_millings.circles,
+									new_item	=> (et_pcb.type_circle_2d (pac_circle) with lock_status));
+								
+								-- clean up for next circle
+								reset_circle;
+								lock_status := lock_status_default;
 								
 							when others => invalid_section;
 						end case;

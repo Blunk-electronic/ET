@@ -325,11 +325,20 @@ technology SMT/THT
 				end x 0.600 y 1.200
 				locked no
 			[LINE END]
+			[CIRCLE BEGIN]
+				center x 45 y 4.2
+				radius 10
+			[CIRCLE END]
 			[LINE BEGIN]
 				start x -0.400 y -0.800
 				end x 0.600 y -0.800
 				locked no
 			[LINE END]
+			[ARC BEGIN]
+				center x 0.100 y 1.200
+				start x -0.900 y 1.200
+				end x 1.100 y 1.200
+			[ARC END]
 		[MILLINGS END]
 	[TERMINAL END]
 
