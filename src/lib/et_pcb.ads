@@ -1085,7 +1085,7 @@ package et_pcb is
 	type type_pad_line is new type_line_2d with null record;
 	type type_pad_arc is new type_arc_2d with null record;
 	type type_pad_circle is new type_circle_2d with null record;
-	type type_pad_polygon is record points : type_polygon_points.set; end record;
+	type type_pad_polygon is record corners : type_polygon_points.set; end record;
 
 	package type_pad_lines is new doubly_linked_lists (type_pad_line);
 	package type_pad_arcs is new doubly_linked_lists (type_pad_arc);

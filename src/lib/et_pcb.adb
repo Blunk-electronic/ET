@@ -1129,7 +1129,7 @@ package body et_pcb is
 
 		procedure polygon (cursor : in type_pad_polygons.cursor) is 
 			use type_polygon_points;
-			points : type_polygon_points.set := element (cursor).points;
+			points : type_polygon_points.set := element (cursor).corners;
 
 			procedure point (cursor : in type_polygon_points.cursor) is begin
 				log (et_pcb_coordinates.to_string (element (cursor)), log_threshold + 1);	

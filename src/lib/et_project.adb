@@ -3314,7 +3314,7 @@ package body et_project is
 								-- SEC_POLYGON instead before copying the corner points.
 								pac_polygon.corners := polygon_corner_points;
 								pac_polygon_copper.corners := polygon_corner_points;
-								pad_shape_polygon.points := polygon_corner_points;
+								pad_shape_polygon.corners := polygon_corner_points;
 
 								-- clean up for next collection of corner points
 								type_polygon_points.clear (polygon_corner_points);
@@ -6883,7 +6883,7 @@ package body et_project is
 					procedure query_points (polygon : in type_pad_polygon) is 
 						use et_pcb.type_polygon_points;
 					begin
-						iterate (polygon.points, write_polygon_corners'access);
+						iterate (polygon.corners, write_polygon_corners'access);
 					end query_points;
 				begin -- write_polygon
 					polygon_begin;
