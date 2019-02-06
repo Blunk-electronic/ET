@@ -2545,6 +2545,7 @@ package body et_project is
 		tht_width_inner_layers	: et_pcb_coordinates.type_distance := et_pcb_coordinates.zero_distance;
 		tht_hole				: et_pcb.type_terminal_tht_hole := et_pcb.terminal_tht_hole_default;
 		tht_drill_size			: et_pcb.type_drill_size := et_pcb.type_drill_size'first;
+		smt_pad_shape			: et_pcb.type_pad_outline;
 		smt_pad_face			: et_pcb_coordinates.type_face := et_pcb_coordinates.face_default;
 		smt_stop_mask			: et_pcb.type_stop_mask_status := et_pcb.stop_mask_status_default;
 		smt_solder_paste		: et_pcb.type_solder_paste_status := et_pcb.solder_paste_status_default;
@@ -2637,8 +2638,13 @@ package body et_project is
 										reset_line_width;
 										
 									when SEC_PAD_CONTOURS_THT =>
-										null; -- CS
+										type_pad_lines.append (
+											container	=> tht_pad_shape.top.lines,
+											new_item	=> (et_pcb.type_line_2d (pac_line) with null record));
 
+										-- clean up for next line
+										reset_line;
+										
 									when others => invalid_section;
 								end case;
 
@@ -2700,7 +2706,12 @@ package body et_project is
 										reset_line_width;
 
 									when SEC_PAD_CONTOURS_THT =>
-										null; -- CS
+										type_pad_lines.append (
+											container	=> tht_pad_shape.bottom.lines,
+											new_item	=> (et_pcb.type_line_2d (pac_line) with null record));
+
+										-- clean up for next line
+										reset_line;
 
 									when others => invalid_section;
 								end case;
@@ -2742,7 +2753,13 @@ package body et_project is
 								type_signal_layers.clear (pac_signal_layers);
 								
 							when SEC_PAD_CONTOURS_SMT =>
-								null;
+								
+								type_pad_lines.append (
+									container	=> smt_pad_shape.lines,
+									new_item	=> (et_pcb.type_line_2d (pac_line) with null record));
+
+								-- clean up for next line
+								reset_line;
 
 							when SEC_MILLINGS =>
 								null;
@@ -2810,7 +2827,12 @@ package body et_project is
 										reset_line_width;
 
 									when SEC_PAD_CONTOURS_THT =>
-										null; -- CS
+										type_pad_arcs.append (
+											container	=> tht_pad_shape.top.arcs,
+											new_item	=> (et_pcb.type_arc_2d (pac_arc) with null record));
+
+										-- clean up for next arc
+										reset_arc;
 										
 									when others => invalid_section;
 								end case;
@@ -2873,7 +2895,12 @@ package body et_project is
 										reset_line_width;
 
 									when SEC_PAD_CONTOURS_THT =>
-										null; -- CS
+										type_pad_arcs.append (
+											container	=> tht_pad_shape.bottom.arcs,
+											new_item	=> (et_pcb.type_arc_2d (pac_arc) with null record));
+
+										-- clean up for next arc
+										reset_arc;
 										
 									when others => invalid_section;
 								end case;
@@ -2915,7 +2942,12 @@ package body et_project is
 								type_signal_layers.clear (pac_signal_layers);
 
 							when SEC_PAD_CONTOURS_SMT =>
-								null;
+								type_pad_arcs.append (
+									container	=> smt_pad_shape.arcs,
+									new_item	=> (et_pcb.type_arc_2d (pac_arc) with null record));
+
+								-- clean up for next arc
+								reset_arc;
 
 							when SEC_MILLINGS =>
 								null;
@@ -2977,7 +3009,12 @@ package body et_project is
 										pac_circle_fillable := (others => <>);
 
 									when SEC_PAD_CONTOURS_THT =>
-										null; -- CS
+										type_pad_circles.append (
+											container	=> tht_pad_shape.top.circles,
+											new_item	=> (et_pcb.type_circle_2d (pac_circle) with null record));
+
+										-- clean up for next circle
+										reset_circle;
 										
 									when others => invalid_section;
 								end case;
@@ -3034,7 +3071,12 @@ package body et_project is
 										pac_circle_fillable := (others => <>);
 
 									when SEC_PAD_CONTOURS_THT =>
-										null; -- CS
+										type_pad_circles.append (
+											container	=> tht_pad_shape.bottom.circles,
+											new_item	=> (et_pcb.type_circle_2d (pac_circle) with null record));
+
+										-- clean up for next circle
+										reset_circle;
 										
 									when others => invalid_section;
 								end case;
@@ -3072,7 +3114,12 @@ package body et_project is
 								type_signal_layers.clear (pac_signal_layers);
 
 							when SEC_PAD_CONTOURS_SMT =>
-								null;
+								type_pad_circles.append (
+									container	=> smt_pad_shape.circles,
+									new_item	=> (et_pcb.type_circle_2d (pac_circle) with null record));
+
+								-- clean up for next circle
+								reset_circle;
 
 							when SEC_MILLINGS =>
 								null;
