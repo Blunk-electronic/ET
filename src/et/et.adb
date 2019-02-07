@@ -251,6 +251,7 @@ procedure et is
 		case et_import.cad_format is
 			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
 				et_kicad.import_design (project => module_name_import, log_threshold => 0);
+				
 			when others => -- CS
 				raise constraint_error;
 		end case;
@@ -264,90 +265,6 @@ procedure et is
 					raise;
 
 	end import_module;
-
-	procedure check_modules is
-	-- This can be regarded as a kind of extended electrical rule check (ERC).
-	-- Updates the netlist of ALL modules.	
-		use et_schematic;
-		use et_kicad.type_modules;
-		use et_configuration;
-	begin
-		case et_import.cad_format is
-			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
-		
-				-- If there are no modules, there is nothing to check:
-				if et_kicad.module_count > 0 then
-				
-					log ("checking modules ...", console => true);
-					log_indentation_up;
-					
-					-- detect missing or orphaned junctions
-					et_kicad.check_junctions (log_threshold => 0);
-					et_kicad.check_orphaned_junctions (log_threshold => 0);
-					et_kicad.check_misplaced_junctions (log_threshold => 0);	
-
-					-- detect misplaced no-connect-flags
-					et_kicad.check_misplaced_no_connection_flags (log_threshold => 0);
-
-					-- detect orphaned no-connect-flags
-					et_kicad.check_orphaned_no_connection_flags (log_threshold => 0);
-
-					-- make netlists
-					et_kicad.make_netlists (log_threshold => 0);
-
-					-- detect unintentionally left open ports (must happen AFTER make_netlists !)
-					et_kicad.check_open_ports (log_threshold => 0);
-
-					-- detect non-deployed units
-					et_kicad.check_non_deployed_units (log_threshold => 0);
-
-					-- test nets for inputs, outputs, bidirs, ...
-					et_kicad.net_test (log_threshold => 0);
-					
-					-- export netlists (requires that make_netlists has been called previously)
-					et_kicad.export_netlists (log_threshold => 0);
-					
-					-- export statistics
-					et_kicad.write_statistics (log_threshold => 0);
-
-					-- export bom
--- 					et_kicad.export_bom (log_threshold => 0);
-					
-
-
-					-- If there is more than one module, interconnections must be validated 
-					-- as specified in configuration file.
--- 					if et_kicad.module_count > 1 then
--- 						validate_module_interconnections (log_threshold => 0);
--- 					end if;
-
-					-- Create routing tables.
-					-- Even if there is just a single module, a routing table is useful.
--- 					make_routing_tables (log_threshold => 0);
-
---					export_routing_tables (log_threshold => 0);
-					
-					log_indentation_down;
-
-				else
-					log ("no modules -> nothing to check and nothing to export");
-
-					-- CS: remove stale directories and files from earlier imports
-					-- CS: remove all directories in folder ET (except reports)
-					-- CS: remove routing table in ET/reports
-				end if;
-
-			when others =>
-				raise constraint_error; -- CS
-		end case;
-		
-		exception
-			when event:
-				others => 
-					put_line (standard_output, message_error & "Read export report for warnings and error messages !"); -- CS: show path to report file
-					raise;
-				
-	end check_modules;
 
 	procedure read_boards is
 		--use et_schematic;
@@ -410,16 +327,10 @@ begin -- main
 		when et_general.MAKE_CONFIGURATION =>
 			et_configuration.make_default_configuration (conf_file_name, log_threshold => 0);
 
-
 		when et_general.IMPORT_MODULE =>
-			-- The targeted native ET project must be specified via cmd line parameter:
-			--test_if_native_project_specified;
-			
-			-- import a single module indicated by variable module_name_import
-			import_module; -- calls import_design (according to CAD format)
 
-			-- check the imported module
-			check_modules; -- updates the netlists of all modules. creates and opens export report
+			-- import a single module indicated by variable module_name_import
+			import_module; -- calls import_design (according to CAD format) -- CS rename to import_project ?
 
 			log_indentation_reset;
 			read_boards; -- writes in import report. closes import report

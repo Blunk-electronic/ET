@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -4007,7 +4007,6 @@ package body et_kicad is
 	
 	
 	procedure import_design (
---		first_instance 	: in boolean := false;
 		project			: in et_project.type_project_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
 	-- Imports the design libraries and the actual design as specified by parameter "project".
@@ -8678,21 +8677,8 @@ package body et_kicad is
 				--			Creates empty package libraries in et_kicad_pcb.package_libraries.
 				top_level_schematic	:= read_project_file (log_threshold + 1);
 				
--- 				-- The top level schematic file dictates the module name. 
--- 				-- If parameter first_instance is true, the name of the first
--- 				-- instance must be appended to the module_name.
--- 				if first_instance then 
--- 					-- Append instance to module name
--- 					module_name := et_coordinates.append_instance (
--- 										submodule =>
--- 											et_coordinates.to_submodule_name (
--- 												base_name (et_coordinates.to_string (top_level_schematic))),
--- 										instance => et_coordinates.type_submodule_instance'first);
--- 				else
-					-- default mode: regular design import. set module name as top_level_schematic
-					module_name := et_coordinates.to_submodule_name (
-											base_name (et_coordinates.to_string (top_level_schematic)));
--- 				end if;
+				module_name := et_coordinates.to_submodule_name (
+					base_name (et_coordinates.to_string (top_level_schematic)));
 
 				-- create the module:
 				type_modules.insert (
@@ -8857,9 +8843,18 @@ package body et_kicad is
 				-- write net report
 				write_nets (log_threshold + 1);
 
+				-- do some simple design checks
+				check_junctions (log_threshold + 1);
+				check_orphaned_junctions (log_threshold + 1);
+				check_misplaced_junctions (log_threshold + 1);	
+				check_misplaced_no_connection_flags (log_threshold + 1);
+				check_orphaned_no_connection_flags (log_threshold + 1);
+
+				-- make netlists
+				make_netlists (log_threshold + 1);
 				
 			when others =>
-				null; -- CS: add import of other CAD kicad formats (v5, v6, ..) here
+				null; -- CS: add import of other CAD kicad formats (v6, v7, ..) here
 
 				
 		end case;
@@ -12193,11 +12188,11 @@ package body et_kicad is
 
 	
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
-	-- Builds the netlists of all modules of the modules.
+	-- Builds the netlists of all modules. 
+	-- Currently there is only one module. kicad does not support multiple modules at the same time.
 	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
 	-- Virtual components are filtered out on exporting the netlist in a file.
 	-- Bases on the portlists and nets/strands information of the module.
-
 	-- Detects if a junction is missing where a port is connected with a net.
 	
 		use et_string_processing;

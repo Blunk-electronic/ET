@@ -1356,10 +1356,12 @@ package et_kicad is
 	
 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level);
 	-- Builds the netlists of all modules.
+	-- Currently there is only one module. kicad does not support multiple modules at the same time.	
 	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
 	-- Virtual components are filtered out on exporting the netlist in a file.
 	-- Bases on the portlists and nets/strands information of the module.
-
+	-- Detects if a junction is missing where a port is connected with a net.
+	
 	function terminal_count (
 		reference		: in et_libraries.type_component_reference;
 		log_threshold	: in et_string_processing.type_log_level)
