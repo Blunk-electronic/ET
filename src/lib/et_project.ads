@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -538,7 +538,10 @@ package et_project is
 	-- Converts a section like SEC_NET to a string "net".
 	
 	procedure open_project (log_threshold : in et_string_processing.type_log_level);
-	-- Opens and reads the schematic and layout data present in project file (project_file_handle).
+	-- Enters the project directory specified by project_name.
+	-- Searches for rig configuration files (*.conf) and reads them.
+	-- Searches for module files (*.mod) and reads them.
+
 
 	
 	type type_section_name_device is (

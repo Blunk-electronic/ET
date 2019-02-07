@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -265,99 +265,6 @@ procedure et is
 
 	end import_module;
 
-
--- 	procedure import_modules is
--- 	-- Imports modules as specified in configuration file and inserts them in the rig.
--- 		use et_schematic;
--- 		use et_project.type_project_name;
--- 		use et_configuration;
--- 		use type_import_modules;
--- 		use et_coordinates;
--- 
--- 		module_cursor_import : type_import_modules.cursor;
--- 		instances : type_submodule_instance;
--- 		module : et_project.type_project_name.bounded_string; -- when importing multiple projects, we regard them as modules
--- 	begin
--- 		log ("importing modules ...");
--- 		
--- 		-- Read configuration file if specified. otherwise issue warning 
--- 		-- CS: make a procedure as this is used by procedure import_desing too.
--- 		if et_configuration.type_configuration_file_name.length (conf_file_name) > 0 then
--- 			et_configuration.read_configuration (
--- 				file_name => conf_file_name,
--- 				single_module => false, -- we are dealing with more than one module
--- 				log_threshold => 0);
--- 		else
--- 			log (message_warning & "no configuration file specified !");
--- 		end if;
--- 		
--- 		-- Loop in et_configuration.import_module and import module per module.
--- 		module_cursor_import := et_configuration.import_modules.first;
--- 		while module_cursor_import /= type_import_modules.no_element loop
--- 			log (row_separator_single);
--- 			
--- 			-- The design import requires changing of directories. So we backup the current directory.
--- 			-- After the import, we restore the directory.
--- 			backup_projects_root_directory;
--- 
--- 			module := to_bounded_string (to_string (element (module_cursor_import).name));
--- 			et_import.cad_format := element (module_cursor_import).format;
--- 			instances := element (module_cursor_import).instances;
--- 
--- 			-- If the design is to be instantiated multiple times we import only the first instance.
--- 			-- All other instances are created by copying the latest instance.
--- 
--- 			if instances = type_submodule_instance'first then 
--- 				-- Only one instance requried -> do a regular single design import.
--- 				log ("importing module " & et_project.to_string (module) & " ...", console => true);
--- 				log ("CAD format " & et_import.to_string (et_import.cad_format));
--- 				
--- 				case et_import.cad_format is
--- 					when et_import.KICAD_V4 | et_import.KICAD_V5 =>
--- 						et_kicad.import_design (project => module, log_threshold => 0);
--- 					when others => -- CS
--- 						raise constraint_error;
--- 				end case;
--- 
--- 			else -- multi-instances
--- 				log ("importing and instantiating module " & et_project.to_string (module) & " ...", console => true);
--- 				log ("CAD format " & et_import.to_string (et_import.cad_format));
--- 				
--- 				-- Import the project only once.
--- 				for i in type_submodule_instance'first .. instances loop
--- 					log ("instance " & to_string (i) & " ...", console => true);
--- 
--- 					if i = type_submodule_instance'first then -- first instance
--- 						
--- 						case et_import.cad_format is
--- 							when et_import.KICAD_V4 | et_import.KICAD_V5 =>
--- 								et_kicad.import_design (first_instance => true, project => module, log_threshold => 0);
--- 							when others => -- CS
--- 								raise constraint_error;
--- 						end case;
--- 
--- 					else
--- 						-- Copy the last module.
--- 						-- The module instance is incremented by copy_module automatically.
--- 						et_kicad.copy_module (log_threshold => 0);
--- 					end if;
--- 				end loop;
--- 
--- 			end if;
--- 			
--- 			restore_projects_root_directory;
--- 			next (module_cursor_import);
--- 		end loop;
--- 		
--- 		exception
--- 			when event:
--- 				others =>
--- 					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
--- 					raise;
--- 
--- 	end import_modules;
-
-
 	procedure check_modules is
 	-- This can be regarded as a kind of extended electrical rule check (ERC).
 	-- Updates the netlist of ALL modules.	
@@ -441,7 +348,6 @@ procedure et is
 					raise;
 				
 	end check_modules;
-
 
 	procedure read_boards is
 		--use et_schematic;

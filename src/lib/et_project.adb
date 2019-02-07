@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -189,7 +189,6 @@ package body et_project is
 	-- Already existing projects in given project_path are overwritten.
 	-- Sets the global project file name so that subsequent write and read operations
 	-- know the right project file.
-	-- Leaves the project file (global project_file_handle) open (closes it on exception).
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -7110,7 +7109,9 @@ package body et_project is
 	end to_string;
 	
 	procedure open_project (log_threshold : in et_string_processing.type_log_level) is
-	-- Opens and reads the schematic and layout data present in project file (project_file_handle).
+	-- Enters the project directory specified by project_name.
+	-- Searches for rig configuration files (*.conf) and reads them.
+	-- Searches for module files (*.mod) and reads them.
 		use et_string_processing;
 		use ada.directories;
 
