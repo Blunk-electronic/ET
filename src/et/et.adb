@@ -266,32 +266,6 @@ procedure et is
 
 	end import_module;
 
-	procedure read_boards is
-		--use et_schematic;
-		use et_kicad.type_modules;
-		use et_configuration;
-	begin
-		case et_import.cad_format is
-			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
-		
-				-- If there are no modules, there is nothing to check:
-				if et_kicad.module_count > 0 then
-
-					log (row_separator_double);
-					log ("importing layouts/boards ...", console => true);
-					
-					log_indentation_up;
-
-					et_kicad_pcb.read_boards (log_threshold => 0);
-					
-					log_indentation_down;
-				end if;
-
-			when others =>
-				raise constraint_error; -- CS
-		end case;
-	end read_boards;
-
 
 	procedure convert is
 	begin
@@ -332,26 +306,7 @@ begin -- main
 			-- import a single module indicated by variable module_name_import
 			import_module; -- calls import_design (according to CAD format) -- CS rename to import_project ?
 
-			log_indentation_reset;
-			read_boards; -- writes in import report. closes import report
-
 			convert;
-			
-			
--- 		when et_general.IMPORT_MODULES =>
--- 			-- The targeted native ET project must be specified via cmd line parameter:
--- 			test_if_native_project_specified;
--- 
--- 			-- import many modules as specified in configuration file
--- 			import_modules; -- calls import_design (according to CAD format)
--- 
--- 			-- check modules
--- 			check_modules; -- updates the netlists of all modules. creates and opens export report
--- 
--- 			log_indentation_reset;
--- 			read_boards; -- writes in import report. closes import report
--- 
--- 			convert;
 
 
 		when et_general.OPEN_NATIVE_PROJECT =>

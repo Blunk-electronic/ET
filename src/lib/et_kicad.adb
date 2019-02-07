@@ -8852,6 +8852,15 @@ package body et_kicad is
 
 				-- make netlists
 				make_netlists (log_threshold + 1);
+
+				-- import layout(s)
+				log_indentation_reset;
+				log (row_separator_double);
+				log ("importing layouts/boards ...", console => true);
+				log_indentation_up;
+				et_kicad_pcb.read_boards (log_threshold);
+				log_indentation_down;
+
 				
 			when others =>
 				null; -- CS: add import of other CAD kicad formats (v6, v7, ..) here
