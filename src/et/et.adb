@@ -250,13 +250,21 @@ procedure et is
 				
 		case et_import.cad_format is
 			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
+
+				-- do the import
 				et_kicad.import_design (project => module_name_import, log_threshold => 0);
+				restore_projects_root_directory;
+
+				-- convert to native project
+				log (et_string_processing.row_separator_single);
+				log ("converting to " & et_general.system_name & " native project ...", console => true);
+				log_indentation_up;
+				et_kicad_to_native.to_native (log_threshold => 0);
+				log_indentation_down;
 				
 			when others => -- CS
 				raise constraint_error;
 		end case;
-		
-		restore_projects_root_directory;
 
 		exception
 			when event:
@@ -265,25 +273,6 @@ procedure et is
 					raise;
 
 	end import_module;
-
-
-	procedure convert is
-	begin
-		log (et_string_processing.row_separator_single);
-		log ("converting to " & et_general.system_name & " native project ...", console => true);
-		log_indentation_up;
-		
-		case et_import.cad_format is
-			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
-				et_kicad_to_native.to_native (log_threshold => 0);
-				--et_kicad_pcb.to_native (log_threshold => 0);
-				
-			when others =>
-				raise constraint_error; -- CS
-		end case;
-
-		log_indentation_down;
-	end convert;
 
 	
 begin -- main
@@ -303,10 +292,9 @@ begin -- main
 
 		when et_general.IMPORT_MODULE =>
 
-			-- import a single module indicated by variable module_name_import
-			import_module; -- calls import_design (according to CAD format) -- CS rename to import_project ?
-
-			convert;
+			-- Import the project indicated by variable module_name_import
+			-- and convert to native project.
+			import_module; -- CS rename to import_project ?
 
 
 		when et_general.OPEN_NATIVE_PROJECT =>

@@ -8861,7 +8861,6 @@ package body et_kicad is
 				et_kicad_pcb.read_boards (log_threshold);
 				log_indentation_down;
 
-				
 			when others =>
 				null; -- CS: add import of other CAD kicad formats (v6, v7, ..) here
 

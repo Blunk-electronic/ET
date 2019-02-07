@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -2342,6 +2342,8 @@ package body et_kicad_to_native is
 	-- Converts the packages (from package_libraries) to native packages.
 	-- NOTE: Packages of the board (incl. their deviations/modifications
 	-- from the package_libraries) are ignored !
+	-- Saves the content of et_schematic.module in project_path (see below) in a
+	-- module file (*.mod).
 
 		-- When the native project is created we need a project path and a project name:
 		project_path : et_project.type_et_project_path.bounded_string :=

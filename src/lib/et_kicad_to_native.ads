@@ -74,7 +74,8 @@ package et_kicad_to_native is
 	-- Converts the packages (from package_libraries) to native packages.
 	-- NOTE: Packages of the board (incl. their deviations/modifications
 	-- from the package_libraries) are ignored !
-
+	-- Saves the content of et_schematic.module in project_path (see below) in a
+	-- module file (*.mod).
 
 		
 end et_kicad_to_native;
