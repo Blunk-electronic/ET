@@ -2539,7 +2539,6 @@ package body et_project is
 
 		terminal_name			: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology		: et_pcb.type_assembly_technology := et_pcb.assembly_technology_default;
-		--terminal				: access et_pcb.type_terminal;
 		pad_shape_polygon		: type_pad_polygon; -- for polygons that outline a pad
 		terminal_position		: et_pcb_coordinates.type_point_2d_with_angle;
 		tht_pad_shape			: et_pcb.type_pad_outline_tht;
@@ -2565,7 +2564,7 @@ package body et_project is
 
 							type_terminals.insert (
 								container	=> packge.terminals,
-								key			=> terminal_name, -- H4, 16
+								key			=> terminal_name, -- 1,4,16
 								position	=> cursor,
 								inserted	=> inserted,
 								new_item	=> (
@@ -2575,20 +2574,45 @@ package body et_project is
 									position			=> terminal_position,
 									pad_shape_tht		=> tht_pad_shape,
 									width_inner_layers	=> tht_width_inner_layers));
-									
 
-						when MILLED => null;
+						when MILLED =>
+							type_terminals.insert (
+								container	=> packge.terminals,
+								key			=> terminal_name, -- 1,4,16
+								position	=> cursor,
+								inserted	=> inserted,
+								new_item	=> (
+									technology			=> THT,
+									tht_hole			=> MILLED,
+									millings			=> tht_millings,
+									position			=> terminal_position,
+									pad_shape_tht		=> tht_pad_shape,
+									width_inner_layers	=> tht_width_inner_layers));
 					end case;
 					
--- 					terminal := new et_pcb.type_terminal' (
--- 						technology	=> THT,
--- 						tht_hole	=> DRILLED,
--- 						others		=> <>);
-					
-				when SMT => null;
+				when SMT =>
+					type_terminals.insert (
+						container	=> packge.terminals,
+						key			=> terminal_name, -- 1,4,16,H9
+						position	=> cursor,
+						inserted	=> inserted,
+						new_item	=> (
+							technology		=> SMT,
+							tht_hole		=> terminal_tht_hole_default, -- not relevant here, see spec
+							face			=> smt_pad_face,
+							position		=> terminal_position,
+							pad_shape		=> smt_pad_shape,
+							stop_mask		=> smt_stop_mask,
+							solder_paste	=> smt_solder_paste));
+
 			end case;
 
-			-- CS check inserted
+			if not inserted then
+				log_indentation_reset;
+				log (message_error & "terminal" & to_string (terminal_name) 
+					 & " already used !", console => true);
+				raise constraint_error;
+			end if;
 			
 		end build_terminal;
 		
@@ -4421,8 +4445,8 @@ package body et_project is
 										expect_field_count (line, 2);
 										terminal_technology := et_pcb.to_assembly_technology (f (line,2));
 
-									elsif kw = keyword_position then -- position x 12.7 y 3.0
-										expect_field_count (line, 5);
+									elsif kw = keyword_position then -- position x 12.7 y 3.0 rotation 0.0
+										expect_field_count (line, 7);
 										terminal_position := to_position (line,2);
 
 									elsif kw = keyword_width_inner_layers then -- width_inner_layers 0.2

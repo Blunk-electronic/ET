@@ -1116,7 +1116,7 @@ package et_pcb is
 			
 		case technology is
 			when THT =>
-				pad_shape_tht		: type_pad_outline_tht;
+				pad_shape_tht : type_pad_outline_tht; -- top and bottom shape
 
 				-- This is the width of the copper surrounding the hole in inner layers.
 				-- Since the hole can be of any shape we do not speak about restring.
