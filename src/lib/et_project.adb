@@ -2552,7 +2552,7 @@ package body et_project is
 		smt_solder_paste		: et_pcb.type_solder_paste_status := et_pcb.solder_paste_status_default;
 
 		procedure build_terminal is 
-		-- Assembls the elements of a terminal and appends the final terminal to the
+		-- Assembles the elements of a terminal and appends the final terminal to the
 		-- list of terminals of the package.
 			cursor : type_terminals.cursor;
 			inserted : boolean;
@@ -2617,7 +2617,6 @@ package body et_project is
 		end build_terminal;
 		
 		procedure process_line is 
-		-- CS: detect if section name is type_section_name_module
 
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
@@ -3450,7 +3449,7 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
-					when SEC_INIT => null; -- CS: should never happen
+					when SEC_INIT => raise constraint_error;
 						
 				end case;
 
@@ -4551,16 +4550,16 @@ package body et_project is
 			packge.description := pac_description;
 			packge.technology := pac_technology;
 
--- 			-- CS Insert the package (accessed by pointer symbol) in et_libraries.symbols:
--- 			et_libraries.type_symbols.insert (
--- 				container	=> et_libraries.symbols, 
--- 				key			=> file_name, -- libraries/symbols/nand.sym
--- 				new_item	=> symbol.all);
+			-- Insert the package (accessed by pointer packge) in et_pcb.packages:
+			et_pcb.type_packages.insert (
+				container	=> et_pcb.packages, 
+				key			=> file_name, -- libraries/packages/S_SO14.pac
+				new_item	=> packge.all);
 
 		end if;
 
 		-- CS Check integrity of package (style guides, conventions ...)
-		-- use function "last" to fetch latest symbol
+		-- use function "last" to fetch latest package
 
 		log_indentation_down;
 		log_indentation_down;		
@@ -4753,7 +4752,6 @@ package body et_project is
 		end insert_port;
 		
 		procedure process_line is 
-		-- CS: detect if section name is type_section_name_module
 
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
@@ -5734,7 +5732,6 @@ package body et_project is
 		end insert_port;
 		
 		procedure process_line is 
-		-- CS: detect if section name is type_section_name_module
 
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
@@ -7404,7 +7401,6 @@ package body et_project is
 			lock_status : et_pcb.type_locked := et_pcb.type_locked'first;
 			
 			procedure process_line is 
-			-- CS: detect if section name is type_section_name_module
 
 				procedure execute_section is
 				-- Once a section concludes, the temporarily variables are read, evaluated
@@ -11405,7 +11401,6 @@ package body et_project is
 			end clear_connector;
 			
 			procedure process_line is
-			-- CS: detect if section name is type_section_name_rig_configuration
 
 				procedure execute_section is
 				-- Once a section concludes, the temporarily variables are read, evaluated
