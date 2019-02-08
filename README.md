@@ -1,4 +1,4 @@
-# ET - ECAD Electronic Tool
+# ET - ECAD Electronic Modeling Tool
 ## An approach to model and develop complex schematics and layouts
 
 ### The Idea behind
@@ -40,29 +40,66 @@
 
 ### Usage
 
-#### Importing a KiCad project
-
-- First change into the root directory of your KiCad projects and generate a configuration file where prefixes, units of measurement and other things are defined with this command:
+#### Creating a configuration file
+The configuration file is the place where file where prefixes, units of measurement and other things are defined. It is
+not mandatory. This step can be omitted. If so, lots of design checks wil not be performed.
+Change into the root directory of your projects and generate a configuration with this command:
 
 ```sh
 $ et --make_configuration my_configuration.txt
 ```
 
-- This file is now placed in the root directory of your KiCad projects. Edit it according to your customs.
+This file can now be found in the root directory of your projects. Edit it according to your customs.
 
-- To import a single KiCad V5 design into a native project 'my_et_project' run this command: 
+#### Importing a KiCad project
+To import a single KiCad V5 design into a native project 'my_et_project' run this command: 
 
 ```sh
-$ et --configuration_file my_configuration.txt --import_format kicad_v5 --import_module my_kicad_project/
+$ et --import_format kicad_v5 --import_project my_kicad_project/
 ```
- 
-optionally provide a log level for debugging:
+
+If a configuration file exits then it can be invoked for more detailled design checks:
+
+```sh
+$ et --configuration_file my_configuration.txt --import_format kicad_v5 --import_project my_kicad_project/
+```
+
+Optionally provide a log level for debugging:
 
 ```sh 
-$ et --configuration_file my_configuration.txt --import_format kicad_v5 --import_module my_kicad_project/ --log_level 2
+$ et --configuration_file my_configuration.txt --import_format kicad_v5 --import_project my_kicad_project/ --log_level 2
 ```
 
-- ET creates in the projects root directory a folder named "ET" where you find the imported projects, logfiles, netlists, statistics, BOMs, ...
+ET creates in the current working directory a folder named "ET/et_import" where you find the now native project.
+There is also an import report where log messages can be found. See "ET/reports". Depending on the log level this report
+contains more or less debug information.
+
+#### Opening an ET native project
+To open a native project like 'my_et_project' run this command: 
+
+```sh
+$ et --open my_et_project/
+```
+
+Or if the project lives somewhere else:
+
+```sh
+$ et --open /home/user/ecad/my_et_project/
+```
+
+A log level can also be passed:
+
+```sh
+$ et --open /home/user/ecad/my_et_project/ --log_level 2
+```
+
+If a configuration file is available run:
+
+```sh
+$ et --configuration_file my_configuration.txt --open /home/user/ecad/my_et_project/ --log_level 2
+```
+
+ET creates in the current working directory a folder named "ET/reports" for log messages.
 
 
 ### Installation

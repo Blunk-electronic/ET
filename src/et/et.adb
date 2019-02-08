@@ -67,7 +67,7 @@ procedure et is
 	operator_action : et_general.type_operator_action := et_general.request_help;
 	conf_file_name	: et_configuration.type_configuration_file_name.bounded_string;	
 
-	module_name_import	: et_project.type_project_name.bounded_string; -- used for single module import
+	project_name_import	: et_project.type_project_name.bounded_string;
 	
 	procedure get_commandline_arguments is
 		use et_schematic;
@@ -79,12 +79,9 @@ procedure et is
 						& latin_1.space & switch_help -- no parameter
 						& latin_1.space & switch_make_default_conf & latin_1.equals_sign
 						& latin_1.space & switch_log_level & latin_1.equals_sign
-						--& latin_1.space & switch_import_file & latin_1.equals_sign -- CS: see below
-						& latin_1.space & switch_import_module & latin_1.equals_sign
+						& latin_1.space & switch_import_project & latin_1.equals_sign
 						& latin_1.space & switch_import_format & latin_1.equals_sign
-						--& latin_1.space & switch_import_modules -- no parameter
 						& latin_1.space & switch_configuration_file & latin_1.equals_sign
-						--& latin_1.space & switch_native_project & latin_1.equals_sign
 						& latin_1.space & switch_native_project_open & latin_1.equals_sign						
 					) is
 
@@ -95,28 +92,17 @@ procedure et is
 					elsif full_switch = switch_help then
 						put_line ("help"); -- CS write helpful help
 
---					CS: currently we do not care about importing single files
---						needs distinction between schematic and board file
--- 					elsif full_switch = switch_import_file then
--- 						put_line("import file " & parameter); 
-
-					elsif full_switch = switch_import_module then
-						put_line ("import module " & strip_directory_separator (parameter));
-						module_name_import := et_project.type_project_name.to_bounded_string (parameter);
+					elsif full_switch = switch_import_project then
+						put_line ("import project " & strip_directory_separator (parameter));
+						project_name_import := et_project.type_project_name.to_bounded_string (parameter);
 
 						-- set operator action
-						operator_action := IMPORT_MODULE;
+						operator_action := IMPORT_PROJECT;
 
 					elsif full_switch = switch_import_format then
 						put_line ("import format " & parameter);
 						et_import.cad_format := et_import.type_cad_format'value (parameter);
 
--- 					elsif full_switch = switch_import_modules then
--- 						put_line ("import modules as specified by configuraton file");
--- 
--- 						-- set operator action
--- 						operator_action := IMPORT_MODULES;
-						
 					elsif full_switch = switch_make_default_conf then -- make configuration file
 						put_line ("configuration file " & parameter);
 
@@ -207,19 +193,18 @@ procedure et is
 -- 		end if;
 -- 	end test_if_native_project_specified;
 	
-	procedure import_module is
-	-- This imports a single module.
-	-- CAUTION: uses the global variable module_name_import !!!
+	procedure import_project is
+	-- CAUTION: uses the global variable project_name_import !!!
 		use et_schematic;
 		use et_project.type_project_name;
 		use et_import;
 	begin
 		-- Test if project name specified and if project base directory exists:
-		if length (module_name_import) > 0 then
+		if length (project_name_import) > 0 then
 
 			-- If project name was provided with a trailing directory separator it must be removed.
-			module_name_import := et_project.to_project_name (strip_directory_separator (et_project.to_string (module_name_import)));
-			validate_project (module_name_import, et_import.cad_format);
+			project_name_import := et_project.to_project_name (strip_directory_separator (et_project.to_string (project_name_import)));
+			validate_project (project_name_import, et_import.cad_format);
 		else
 			put_line (message_error & "project name not specified !");
 			raise constraint_error;
@@ -233,26 +218,23 @@ procedure et is
 
 		-- read configuration file if specified. otherwise issue warning
 		if et_configuration.type_configuration_file_name.length (conf_file_name) > 0 then
-			et_configuration.read_configuration (
-				file_name => conf_file_name,
-				--single_module => true, -- we are dealing a single project
-				log_threshold => 0);
+			et_configuration.read_configuration (conf_file_name, log_threshold => 0);
 		else
 			log (message_warning & "no configuration file specified !");
 		end if;
 		
-		-- The design import requires changing of directories. So we backup the current directory.
+		-- The import requires changing of directories. So we backup the current directory.
 		-- After the import, we restore the directory.
 		backup_projects_root_directory;
 
-		log ("importing module " & et_project.to_string (module_name_import) & " ...", console => true);
+		log ("importing project " & et_project.to_string (project_name_import) & " ...", console => true);
 		log ("CAD format " & to_string (et_import.cad_format));
 				
 		case et_import.cad_format is
 			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
 
 				-- do the import
-				et_kicad.import_design (project => module_name_import, log_threshold => 0);
+				et_kicad.import_design (project => project_name_import, log_threshold => 0);
 				restore_projects_root_directory;
 
 				-- convert to native project
@@ -272,7 +254,7 @@ procedure et is
 					put_line (standard_output, message_error & "Read import report for warnings and error messages !"); -- CS: show path to report file
 					raise;
 
-	end import_module;
+	end import_project;
 
 	
 begin -- main
@@ -290,11 +272,11 @@ begin -- main
 		when et_general.MAKE_CONFIGURATION =>
 			et_configuration.make_default_configuration (conf_file_name, log_threshold => 0);
 
-		when et_general.IMPORT_MODULE =>
+		when et_general.IMPORT_PROJECT =>
 
-			-- Import the project indicated by variable module_name_import
+			-- Import the project indicated by variable project_name_import
 			-- and convert to native project.
-			import_module; -- CS rename to import_project ?
+			import_project;
 
 
 		when et_general.OPEN_NATIVE_PROJECT =>

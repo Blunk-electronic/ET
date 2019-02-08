@@ -79,25 +79,21 @@ package et_general is
 	
 -- COMMAND LINE SWITCHES
 	--switch_about			: constant string (1..7) := "--about"; -- CS
-	switch_version				: constant string (1..8)	:= "-version"; -- long switch
-	switch_log_level			: constant string (1..10)	:= "-log_level";
-	switch_help					: constant string (1..5)	:= "-help"; -- long switch	
-	switch_make_default_conf	: constant string (1..19) 	:= "-make_configuration";
-	switch_import_module		: constant string (1..14)	:= "-import_module";	-- long switch
-	--switch_import_modules		: constant string (1..15)	:= "-import_modules";	-- long switch
-	switch_import_format		: constant string (1..14)	:= "-import_format";	-- long switch
-	switch_configuration_file	: constant string (1..19)	:= "-configuration_file";
-	--switch_native_project		: constant string (1..8)	:= "-project";
-	switch_native_project_open	: constant string (1..5)	:= "-open";	
+	switch_version				: constant string := "-version"; -- long switch
+	switch_log_level			: constant string := "-log_level";
+	switch_help					: constant string := "-help"; -- long switch	
+	switch_make_default_conf	: constant string := "-make_configuration";
+	switch_import_project		: constant string := "-import_project";	-- long switch
+	switch_import_format		: constant string := "-import_format";	-- long switch
+	switch_configuration_file	: constant string := "-configuration_file";
+	switch_native_project_open	: constant string := "-open";	
 
---	switch_import_file		: constant string (1..12)	:= "-import_file";	-- long switch -- currently we do not care about importing single files
 
 -- OPERATOR ACTIONS
 	type type_operator_action is (
 		REQUEST_HELP,
 		MAKE_CONFIGURATION,
-		IMPORT_MODULE, -- note SINGULAR
-		--IMPORT_MODULES, -- note PLURAL
+		IMPORT_PROJECT,
 		OPEN_NATIVE_PROJECT
 		-- CS: others ?
 		);
