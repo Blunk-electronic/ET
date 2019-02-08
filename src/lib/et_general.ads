@@ -77,26 +77,18 @@ package et_general is
 	report_extension		: constant string (1..3)	:= "log";
 
 	
--- COMMAND LINE SWITCHES
+-- COMMAND LINE SWITCHES (long switches)
 	--switch_about			: constant string (1..7) := "--about"; -- CS
-	switch_version				: constant string := "-version"; -- long switch
-	switch_log_level			: constant string := "-log_level";
-	switch_help					: constant string := "-help"; -- long switch	
-	switch_make_default_conf	: constant string := "-make_configuration";
-	switch_import_project		: constant string := "-import_project";	-- long switch
-	switch_import_format		: constant string := "-import_format";	-- long switch
-	switch_configuration_file	: constant string := "-configuration_file";
-	switch_native_project_open	: constant string := "-open";	
+	switch_version					: constant string := "-version";
+	switch_log_level				: constant string := "-log_level";
+	switch_help						: constant string := "-help";
+	switch_make_default_conf		: constant string := "-make_configuration";
+	switch_import_project			: constant string := "-import_project";
+	switch_import_format			: constant string := "-import_format";
+	switch_configuration_file		: constant string := "-configuration_file";
+	switch_native_project_open		: constant string := "-open";
+	switch_native_project_save_as	: constant string := "-save_as";		
 
-
--- OPERATOR ACTIONS
-	type type_operator_action is (
-		REQUEST_HELP,
-		MAKE_CONFIGURATION,
-		IMPORT_PROJECT,
-		OPEN_NATIVE_PROJECT
-		-- CS: others ?
-		);
 
 	
 -- PAPER SIZES

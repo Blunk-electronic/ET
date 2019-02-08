@@ -63,11 +63,11 @@ with et_project;
 
 procedure et is
 
-	-- Depending on the command line arguments this variable tells what the operator wants to do:
-	operator_action : et_general.type_operator_action := et_general.request_help;
-	conf_file_name	: et_configuration.type_configuration_file_name.bounded_string;	
+	conf_file_name_create	: et_configuration.type_configuration_file_name.bounded_string;
+	conf_file_name_use		: et_configuration.type_configuration_file_name.bounded_string;		
 
-	project_name_import	: et_project.type_project_name.bounded_string;
+	project_name_import	: et_project.type_project_name.bounded_string; -- the project to be imported
+	project_name_save_as : et_project.type_project_name.bounded_string; -- the "save as" name of the project	
 	
 	procedure get_commandline_arguments is
 		use et_schematic;
@@ -82,7 +82,8 @@ procedure et is
 						& latin_1.space & switch_import_project & latin_1.equals_sign
 						& latin_1.space & switch_import_format & latin_1.equals_sign
 						& latin_1.space & switch_configuration_file & latin_1.equals_sign
-						& latin_1.space & switch_native_project_open & latin_1.equals_sign						
+						& latin_1.space & switch_native_project_open & latin_1.equals_sign
+						& latin_1.space & switch_native_project_save_as & latin_1.equals_sign
 					) is
 
 				when latin_1.hyphen => -- which is a '-'
@@ -96,34 +97,25 @@ procedure et is
 						put_line ("import project " & strip_directory_separator (parameter));
 						project_name_import := et_project.type_project_name.to_bounded_string (parameter);
 
-						-- set operator action
-						operator_action := IMPORT_PROJECT;
-
 					elsif full_switch = switch_import_format then
 						put_line ("import format " & parameter);
 						et_import.cad_format := et_import.type_cad_format'value (parameter);
 
 					elsif full_switch = switch_make_default_conf then -- make configuration file
-						put_line ("configuration file " & parameter);
+						put_line ("make configuration file " & parameter);
+						conf_file_name_create := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
 
-						-- set operator action
-						operator_action := MAKE_CONFIGURATION;
-						conf_file_name := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
-
-					elsif full_switch = switch_configuration_file then -- define configuration file
-						put_line ("configuration file " & parameter);
-						conf_file_name := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
-
--- 					elsif full_switch = switch_native_project then
--- 						put_line ("native target project " & parameter);
--- 						project_name := et_project.to_project_name (parameter);
+					elsif full_switch = switch_configuration_file then -- use configuration file
+						put_line ("use configuration file " & parameter);
+						conf_file_name_use := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
 
 					elsif full_switch = switch_native_project_open then
-						put_line ("native project " & parameter);
+						put_line ("open native project " & parameter);
 						project_name := et_project.to_project_name (remove_trailing_directory_separator (parameter));
 
-						-- set operator action
-						operator_action := OPEN_NATIVE_PROJECT;
+					elsif full_switch = switch_native_project_save_as then
+						put_line ("save as " & parameter);
+						project_name_save_as := et_project.to_project_name (remove_trailing_directory_separator (parameter));
 						
 					elsif full_switch = switch_log_level then
 						put_line ("log level " & parameter);
@@ -181,18 +173,6 @@ procedure et is
 		end if;
 	end create_report_directory;
 
--- 	procedure test_if_native_project_specified is
--- 	-- Aborts program if no native target project name specified via cmd line parameter.
--- 		use et_project;
--- 		use et_project.type_project_name;
--- 	begin
--- 		if length (project_name) = 0 then
--- 			log_indentation_reset;
--- 			log (message_error & "Native target project name not specified !");
--- 			raise constraint_error;
--- 		end if;
--- 	end test_if_native_project_specified;
-	
 	procedure import_project is
 	-- CAUTION: uses the global variable project_name_import !!!
 		use et_schematic;
@@ -217,8 +197,8 @@ procedure et is
 		end if;		
 
 		-- read configuration file if specified. otherwise issue warning
-		if et_configuration.type_configuration_file_name.length (conf_file_name) > 0 then
-			et_configuration.read_configuration (conf_file_name, log_threshold => 0);
+		if et_configuration.type_configuration_file_name.length (conf_file_name_use) > 0 then
+			et_configuration.read_configuration (conf_file_name_use, log_threshold => 0);
 		else
 			log (message_warning & "no configuration file specified !");
 		end if;
@@ -256,43 +236,85 @@ procedure et is
 
 	end import_project;
 
+
+	procedure process_commandline_arguments is
+		use et_project.type_project_name;
+		use et_configuration.type_configuration_file_name;
+
+		procedure read_configuration_file is begin
+			if length (conf_file_name_use) > 0 then
+				et_configuration.read_configuration (
+					file_name		=> conf_file_name_use,
+					log_threshold	=> 0);
+			end if;
+		end read_configuration_file;
+	
+	begin -- process_commandline_arguments
+		-- The arguments are processed according to a certain priority.
+		-- 1. creating configuration file
+		-- 2. importing foreign project
+		-- 3. opening native project
+
+		-- If the operator wishes to create a configuration file it will be done.
+		-- Other command line parameters are ignored:
+		if length (conf_file_name_create) > 0 then
+			et_configuration.make_default_configuration (conf_file_name_create, log_threshold => 0);
+
+		else
+			-- If operator wants to import a project it will be done here.
+			if length (project_name_import) > 0 then
+				read_configuration_file;
+				import_project;
+
+			-- Otherwise a native project will be opened:				
+			elsif length (et_project.project_name) > 0 then
+				read_configuration_file;
+				et_project.open_project (log_threshold => 0);
+			end if;
+			
+		end if;
+		
+	end process_commandline_arguments;
+
 	
 begin -- main
 	create_work_directory;
 	create_report_directory;
 	create_report;
 	
-	-- process command line arguments
 	get_commandline_arguments;
 
-	case operator_action is
-		when et_general.REQUEST_HELP =>
-			null; -- CS
+	process_commandline_arguments;
+	
+-- 	case operator_action is
+-- 		when et_general.REQUEST_HELP =>
+-- 			null; -- CS
+-- 
+-- 		when et_general.MAKE_CONFIGURATION =>
+-- 			et_configuration.make_default_configuration (conf_file_name_create, log_threshold => 0);
+-- 
+-- 		when et_general.IMPORT_PROJECT =>
+-- 
+-- 			-- Import the project indicated by variable project_name_import
+-- 			-- and convert to native project.
+-- 			import_project;
+-- 
+-- 
+-- 		when et_general.OPEN_NATIVE_PROJECT =>
+-- 			
+-- 			-- read configuration file if specified. otherwise issue warning
+-- 			if et_configuration.type_configuration_file_name.length (conf_file_name_use) > 0 then
+-- 				et_configuration.read_configuration (
+-- 					file_name		=> conf_file_name_use,
+-- 					log_threshold	=> 0);
+-- 			else
+-- 				log (message_warning & "no configuration file specified !");
+-- 			end if;
+-- 
+-- 			-- open specified project
+-- 			et_project.open_project (log_threshold => 0);
+-- 	end case;
 
-		when et_general.MAKE_CONFIGURATION =>
-			et_configuration.make_default_configuration (conf_file_name, log_threshold => 0);
-
-		when et_general.IMPORT_PROJECT =>
-
-			-- Import the project indicated by variable project_name_import
-			-- and convert to native project.
-			import_project;
-
-
-		when et_general.OPEN_NATIVE_PROJECT =>
-			
-			-- read configuration file if specified. otherwise issue warning
-			if et_configuration.type_configuration_file_name.length (conf_file_name) > 0 then
-				et_configuration.read_configuration (
-					file_name		=> conf_file_name,
-					log_threshold	=> 0);
-			else
-				log (message_warning & "no configuration file specified !");
-			end if;
-
-			-- open specified project
-			et_project.open_project (log_threshold => 0);
-	end case;
 
 	close_report;
 
