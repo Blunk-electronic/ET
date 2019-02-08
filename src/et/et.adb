@@ -73,6 +73,9 @@ procedure et is
 		use et_schematic;
 		use et_general;
 		use et_project;
+
+		arg : constant string := ("argument: -");
+		space : character renames latin_1.space;
 	begin
 		loop 
 			case getopt (switch_version -- FIND THE SWITCH STRINGS IN ET_GENERAL !!!
@@ -94,31 +97,31 @@ procedure et is
 						put_line ("help"); -- CS write helpful help
 
 					elsif full_switch = switch_import_project then
-						put_line ("import project " & strip_directory_separator (parameter));
+						log (arg & full_switch & space & strip_directory_separator (parameter));
 						project_name_import := et_project.type_project_name.to_bounded_string (parameter);
 
 					elsif full_switch = switch_import_format then
-						put_line ("import format " & parameter);
+						log (arg & full_switch & space & parameter);
 						et_import.cad_format := et_import.type_cad_format'value (parameter);
 
 					elsif full_switch = switch_make_default_conf then -- make configuration file
-						put_line ("make configuration file " & parameter);
+						log (arg & full_switch & space & parameter);
 						conf_file_name_create := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
 
 					elsif full_switch = switch_configuration_file then -- use configuration file
-						put_line ("use configuration file " & parameter);
+						log (arg & full_switch & space & parameter);
 						conf_file_name_use := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
 
 					elsif full_switch = switch_native_project_open then
-						put_line ("open native project " & parameter);
+						log (arg & full_switch & space & parameter);
 						project_name := et_project.to_project_name (remove_trailing_directory_separator (parameter));
 
 					elsif full_switch = switch_native_project_save_as then
-						put_line ("save as " & parameter);
+						log (arg & full_switch & space & parameter);
 						project_name_save_as := et_project.to_project_name (remove_trailing_directory_separator (parameter));
 						
 					elsif full_switch = switch_log_level then
-						put_line ("log level " & parameter);
+						log (arg & full_switch & space & parameter);
 						log_level := type_log_level_cmd_line'value (parameter);
 					end if;
 
@@ -155,7 +158,7 @@ procedure et is
 		set_directory (to_string (projects_root_dir));
 	end restore_projects_root_directory;
 	
-	procedure create_work_directory is  -- CS move to et_string_processing
+	procedure create_work_directory is
 		use et_general;
 	begin
 		if not exists (work_directory) then
@@ -164,7 +167,7 @@ procedure et is
 		end if;
 	end create_work_directory;
 
-	procedure create_report_directory is -- CS move to et_string_processing
+	procedure create_report_directory is
 		use et_general;
 	begin	
 		if not exists (compose (work_directory, report_directory)) then
@@ -236,7 +239,6 @@ procedure et is
 
 	end import_project;
 
-
 	procedure process_commandline_arguments is
 		use et_project.type_project_name;
 		use et_configuration.type_configuration_file_name;
@@ -259,7 +261,6 @@ procedure et is
 		-- Other command line parameters are ignored:
 		if length (conf_file_name_create) > 0 then
 			et_configuration.make_default_configuration (conf_file_name_create, log_threshold => 0);
-
 		else
 			-- If operator wants to import a project it will be done here.
 			if length (project_name_import) > 0 then
@@ -270,6 +271,11 @@ procedure et is
 			elsif length (et_project.project_name) > 0 then
 				read_configuration_file;
 				et_project.open_project (log_threshold => 0);
+
+				-- optionally the project can be saved elsewhere
+				if length (project_name_save_as) > 0 then
+					et_project.save_project (project_name_save_as, log_threshold => 0);
+				end if;
 			end if;
 			
 		end if;
@@ -286,35 +292,6 @@ begin -- main
 
 	process_commandline_arguments;
 	
--- 	case operator_action is
--- 		when et_general.REQUEST_HELP =>
--- 			null; -- CS
--- 
--- 		when et_general.MAKE_CONFIGURATION =>
--- 			et_configuration.make_default_configuration (conf_file_name_create, log_threshold => 0);
--- 
--- 		when et_general.IMPORT_PROJECT =>
--- 
--- 			-- Import the project indicated by variable project_name_import
--- 			-- and convert to native project.
--- 			import_project;
--- 
--- 
--- 		when et_general.OPEN_NATIVE_PROJECT =>
--- 			
--- 			-- read configuration file if specified. otherwise issue warning
--- 			if et_configuration.type_configuration_file_name.length (conf_file_name_use) > 0 then
--- 				et_configuration.read_configuration (
--- 					file_name		=> conf_file_name_use,
--- 					log_threshold	=> 0);
--- 			else
--- 				log (message_warning & "no configuration file specified !");
--- 			end if;
--- 
--- 			-- open specified project
--- 			et_project.open_project (log_threshold => 0);
--- 	end case;
-
 
 	close_report;
 

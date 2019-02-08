@@ -11745,7 +11745,24 @@ package body et_project is
 	end open_project;
 
 
+	procedure save_project (
+		project_name	: in type_project_name.bounded_string; -- blood_sample_analyzer
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use et_string_processing;
+	begin
+		log ("saving project as " & to_string (project_name) & " ...", log_threshold, console => true);
+		log_indentation_up;
 
+-- 			-- For each kicad design we create a native project:
+-- 			et_project.create_project_directory (
+-- 				project_name	=> project_name, 		-- blood_sample_analyzer
+-- 				project_path	=> project_path, 		-- /home/user/et_projects/imported_from_kicad
+-- 				log_threshold 	=> log_threshold + 2);
+
+		
+		log_indentation_down;
+	end save_project;
+	
 	
 -- GENERICS
 	

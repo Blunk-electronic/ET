@@ -542,7 +542,9 @@ package et_project is
 	-- Searches for rig configuration files (*.conf) and reads them.
 	-- Searches for module files (*.mod) and reads them.
 
-
+	procedure save_project (
+		project_name	: in type_project_name.bounded_string; -- blood_sample_analyzer
+		log_threshold 	: in et_string_processing.type_log_level);
 	
 	type type_section_name_device is (
 		SEC_INIT,
