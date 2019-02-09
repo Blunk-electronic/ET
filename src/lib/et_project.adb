@@ -74,11 +74,14 @@ package body et_project is
 		return type_project_name.to_bounded_string (name);
 	end to_project_name;
 
-	function to_string (path : in type_et_project_path.bounded_string) return string is
-	begin
+	function to_string (path : in type_et_project_path.bounded_string) return string is begin
 		return type_et_project_path.to_string (path);
 	end to_string;
 
+	function to_project_path (path : in string) return type_et_project_path.bounded_string is begin
+		return type_et_project_path.to_bounded_string (path);
+	end to_project_path;
+	
 	function to_string (section : in type_section_name_rig_configuration) return string is
 	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
 		len : positive := type_section_name_rig_configuration'image (section)'length;
@@ -183,9 +186,38 @@ package body et_project is
 			end case;
 		end if;
 	end write;	
+
+	procedure create_supplementary_directories (
+		path			: in string;
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_string_processing;
+		use ada.directories;
+
+		procedure create_library_subdirs (path : in string) is
+		begin
+			create_directory (compose (path, directory_libraries_devices));
+			create_directory (compose (path, directory_libraries_symbols));
+			create_directory (compose (path, directory_libraries_packages));			
+			--log ("subdir " & compose (path, directory_libraries_devices));
+		end create_library_subdirs;
+
+	begin -- create_supplementary_directories
+		log ("creating subdirectories for supplementary stuff ...", log_threshold);
+		create_directory (compose (path, directory_libraries));
+		create_library_subdirs (compose (path, directory_libraries));
+		
+		create_directory (compose (path, directory_dru));
+		create_directory (compose (path, directory_cam));
+		--create_directory (compose (path, directory_net_classes));
+		create_directory (compose (path, directory_settings));
+		create_directory (compose (path, directory_reports));
+		create_directory (compose (path, directory_documentation));
+		create_directory (compose (path, directory_miscellaneous));
+	end create_supplementary_directories;
 	
 	procedure create_project_directory (
-	-- Creates given project directory in the given project_path.
+	-- Creates the given project directory in the given project_path.
+	-- Creates a default rig configuration file.
 	-- Already existing projects in given project_path are overwritten.
 	-- Sets the global project file name so that subsequent write and read operations
 	-- know the right project file.
@@ -201,14 +233,6 @@ package body et_project is
 		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
 		use type_path;
 		path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
-
-		procedure create_library_subdirs (path : in string) is
-		begin
-			create_directory (compose (path, directory_libraries_devices));
-			create_directory (compose (path, directory_libraries_symbols));
-			create_directory (compose (path, directory_libraries_packages));			
-			--log ("subdir " & compose (path, directory_libraries_devices));
-		end create_library_subdirs;
 
 		procedure create_rig_configuration is
 		-- create the rig configuration file
@@ -288,19 +312,8 @@ package body et_project is
 		-- create project root directory
 		create_path (to_string (path));
 		
-		-- create sub-directories for supplementary stuff:
-		log ("creating subdirectories for supplementary stuff ...", log_threshold + 1);
-		create_directory (compose (to_string (path), directory_libraries));
-		create_library_subdirs (compose (to_string (path), directory_libraries));
+		create_supplementary_directories (to_string (path), log_threshold + 1);
 		
-		create_directory (compose (to_string (path), directory_dru));
-		create_directory (compose (to_string (path), directory_cam));
-		create_directory (compose (to_string (path), directory_net_classes));
-		create_directory (compose (to_string (path), directory_settings));
-		create_directory (compose (to_string (path), directory_reports));
-		create_directory (compose (to_string (path), directory_documentation));
-		create_directory (compose (to_string (path), directory_miscellaneous));
-
 		create_rig_configuration;
 
 		log_indentation_down;
@@ -311,6 +324,55 @@ package body et_project is
 				raise;
 		
 	end create_project_directory;
+
+	procedure create_project_directory_bare (
+	-- Creates a bare project (without a rig configuration file).
+	-- Already existing projects in given path are overwritten.
+	-- Sets the global project file name so that subsequent write and read operations
+	-- know the right project file.
+		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_general;
+		use ada.directories;
+		use et_string_processing;
+		use type_project_name;
+		use type_et_project_path;
+
+		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
+		use type_path;
+		path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
+
+		procedure create_library_subdirs (path : in string) is
+		begin
+			create_directory (compose (path, directory_libraries_devices));
+			create_directory (compose (path, directory_libraries_symbols));
+			create_directory (compose (path, directory_libraries_packages));			
+		end create_library_subdirs;
+
+	begin -- create_project_directory_bare
+		log ("creating bare native project " & to_string (path) & " ...", log_threshold);
+		log_indentation_up;
+		
+		-- delete previous project directory
+		if exists (to_string (path)) then
+			delete_tree (to_string (path));
+		end if;
+		
+		-- create project root directory
+		create_path (to_string (path));
+
+		create_supplementary_directories (to_string (path), log_threshold + 1);
+		
+
+		log_indentation_down;
+		
+		exception when event:
+			others => 
+				log (ada.exceptions.exception_message (event), console => true);
+				raise;
+		
+	end create_project_directory_bare;
 
 
 
@@ -11746,18 +11808,25 @@ package body et_project is
 
 
 	procedure save_project (
-		project_name	: in type_project_name.bounded_string; -- blood_sample_analyzer
+		project_name	: in type_project_name.bounded_string; -- /home/user/ecad/blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use et_string_processing;
+		use ada.directories;
+
+		path : type_et_project_path.bounded_string := to_project_path (containing_directory (to_string (project_name)));
+		name : type_project_name.bounded_string := to_project_name (simple_name (to_string (project_name)));
 	begin
+		--log ("saving project as " & to_string (project_name) & " ...", log_threshold, console => true);
 		log ("saving project as " & to_string (project_name) & " ...", log_threshold, console => true);
 		log_indentation_up;
 
--- 			-- For each kicad design we create a native project:
--- 			et_project.create_project_directory (
--- 				project_name	=> project_name, 		-- blood_sample_analyzer
--- 				project_path	=> project_path, 		-- /home/user/et_projects/imported_from_kicad
--- 				log_threshold 	=> log_threshold + 2);
+		log ("path " & to_string (path));
+		log ("name " & to_string (name));
+		
+		create_project_directory_bare (
+			project_name	=> name, -- blood_sample_analyzer
+			project_path	=> path, -- /home/user/ecad
+			log_threshold 	=> log_threshold + 2);
 
 		
 		log_indentation_down;

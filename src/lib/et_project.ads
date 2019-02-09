@@ -98,13 +98,13 @@ package et_project is
 	project_name : type_project_name.bounded_string; -- the name of the current native project (or the rig)
 	
 	function to_string (project_name : in type_project_name.bounded_string) return string;
-
 	function to_project_name (name : in string) return type_project_name.bounded_string;
 	
 	project_path_max : constant natural := 200;
 	package type_et_project_path is new generic_bounded_length (project_path_max);
 
 	function to_string (path : in type_et_project_path.bounded_string) return string;
+	function to_project_path (path : in string) return type_et_project_path.bounded_string;
 	
 	-- The current project file name is stored here:
 	package type_project_file_name is new generic_bounded_length (project_path_max + project_name_max + 1); -- incl. directory separator
@@ -217,11 +217,20 @@ package et_project is
 	
 	procedure create_project_directory (
 	-- Creates given project directory in the given project_path.
+	-- Creates a default rig configuration file.										   
 	-- Already existing projects in given project_path are overwritten.
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		project_path	: in type_et_project_path.bounded_string;	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level);
 
+	procedure create_project_directory_bare (
+	-- Creates a bare project (without a rig configuration file).
+	-- Already existing projects in given path are overwritten.
+	-- Sets the global project file name so that subsequent write and read operations
+	-- know the right project file.
+		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
+		log_threshold	: in et_string_processing.type_log_level);
 
 	
 	subtype type_tab_depth is natural range natural'first .. 9;
