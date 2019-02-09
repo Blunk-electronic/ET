@@ -11373,10 +11373,10 @@ package body et_project is
 			stack.init;
 			stack.push (SEC_INIT);
 
-			-- Create an empty module named after the module file.
+			-- Create an empty module named after the module file (omitting extension *.mod).
 			type_modules.insert (
 				container	=> modules,
-				key			=> et_coordinates.to_submodule_name (simple_name (file_name)),
+				key			=> et_coordinates.to_submodule_name (base_name (file_name)),
 				position	=> module_cursor,
 				inserted	=> module_inserted);
 
@@ -11808,7 +11808,7 @@ package body et_project is
 		name : type_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
 
 		procedure query_modules (module_cursor : in type_modules.cursor) is
-			module_name : et_coordinates.type_submodule_name.bounded_string := key (module_cursor);
+			module_name : et_coordinates.type_submodule_name.bounded_string := key (module_cursor); -- motor_driver
 		begin
 			log_indentation_up;
 			log ("module " & to_string (module_name), log_threshold + 1);
@@ -11819,6 +11819,9 @@ package body et_project is
 				module_name		=> module_name,	-- motor_driver
 				project_path	=> path, -- /home/user/ecad
 				log_threshold 	=> log_threshold + 2);
+
+			-- CS save libraries related to the module ?
+			-- CS save all libraries ?
 			
 			log_indentation_down;
 		end query_modules;
@@ -11836,6 +11839,8 @@ package body et_project is
 			log_threshold 	=> log_threshold + 2);
 
 		iterate (modules, query_modules'access);
+
+		-- CS save rig configuration
 		
 		log_indentation_down;
 	end save_project;
