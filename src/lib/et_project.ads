@@ -246,7 +246,8 @@ package et_project is
 		module_name		: in type_submodule_name.bounded_string := type_submodule_name.to_bounded_string ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level);
-	-- Saves the schematic and layout data in the module file of the given project.
+	-- Saves the schematic and layout data (stored in et_schematic.module) in the module file
+	-- of the given project.
 	-- If module_name not provided, the module will be named after the given project_name.
 
 
@@ -549,7 +550,7 @@ package et_project is
 	-- Searches for module files (*.mod), reads them and stores modules in et_project.modules.
 
 	procedure save_project (
-		project_name	: in type_project_name.bounded_string; -- blood_sample_analyzer
+		destination		: in type_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 	type type_section_name_device is (

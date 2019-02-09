@@ -1040,7 +1040,8 @@ package body et_project is
 		module_name		: in type_submodule_name.bounded_string := type_submodule_name.to_bounded_string ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level) is
-	-- Saves the schematic and layout data (stored in et_schematic.module) in the module file of the given project.
+	-- Saves the schematic and layout data (stored in et_schematic.module) in the module file
+	-- of the given project.
 	-- If module_name not provided, the module will be named after the given project_name.
 	-- CS: improve log messages !!
 		
@@ -1729,7 +1730,6 @@ package body et_project is
 				placeholder_end;
 			end write_placeholder;
 			
-			
 		begin -- query_board
 			section_mark (section_board, HEADER);
 
@@ -1878,7 +1878,6 @@ package body et_project is
 			---BOARD END-----
 			section_mark (section_board, FOOTER);
 		end query_board;
-
 	
 	begin -- save_module
 		log ("saving module ...", log_threshold);
@@ -1925,7 +1924,6 @@ package body et_project is
 				raise;
 
 	end save_module;
-
 
 	procedure write_symbol (
 		symbol			: in et_libraries.type_symbol;
@@ -11800,25 +11798,33 @@ package body et_project is
 
 
 	procedure save_project (
-		project_name	: in type_project_name.bounded_string; -- /home/user/ecad/blood_sample_analyzer
+		destination		: in type_project_name.bounded_string; -- /home/user/ecad/blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use ada.directories;
 
-		path : type_et_project_path.bounded_string := to_project_path (containing_directory (to_string (project_name)));
-		name : type_project_name.bounded_string := to_project_name (simple_name (to_string (project_name)));
+		-- break down destination into path and project name:
+		path : type_et_project_path.bounded_string := to_project_path (containing_directory (to_string (destination)));
+		name : type_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
 
-		
-
-		procedure query_module (module_cursor : in type_modules.cursor) is
-			name : et_coordinates.type_submodule_name.bounded_string;
+		procedure query_modules (module_cursor : in type_modules.cursor) is
+			module_name : et_coordinates.type_submodule_name.bounded_string := key (module_cursor);
 		begin
-			name := key (module_cursor);
-			null;
-		end query_module;
+			log_indentation_up;
+			log ("module " & to_string (module_name), log_threshold + 1);
+			et_schematic.module := element (module_cursor);
+
+			save_module (
+				project_name	=> name, -- blood_sample_analyzer
+				module_name		=> module_name,	-- motor_driver
+				project_path	=> path, -- /home/user/ecad
+				log_threshold 	=> log_threshold + 2);
+			
+			log_indentation_down;
+		end query_modules;
 		
 	begin -- save_project
-		log ("saving project as " & to_string (project_name) & " ...", log_threshold, console => true);
+		log ("saving project as " & to_string (destination) & " ...", log_threshold, console => true);
 		log_indentation_up;
 
 		log ("path " & to_string (path));
@@ -11829,7 +11835,7 @@ package body et_project is
 			project_path	=> path, -- /home/user/ecad
 			log_threshold 	=> log_threshold + 2);
 
-		iterate (modules, query_module'access);
+		iterate (modules, query_modules'access);
 		
 		log_indentation_down;
 	end save_project;

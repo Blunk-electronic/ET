@@ -3770,7 +3770,7 @@ package body et_kicad_to_native is
 				log_threshold 	=> log_threshold + 2);
 
 			
-			-- clear scratch module
+			-- Clear scratch module because in the following everything goes there.
 			et_schematic.module := (others => <>);
 			
 			copy_general_stuff;
