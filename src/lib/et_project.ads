@@ -102,13 +102,10 @@ package et_project is
 	
 	project_path_max : constant natural := 200;
 	package type_et_project_path is new generic_bounded_length (project_path_max);
-
 	function to_string (path : in type_et_project_path.bounded_string) return string;
 	function to_project_path (path : in string) return type_et_project_path.bounded_string;
 	
-	-- The current project file name is stored here:
-	package type_project_file_name is new generic_bounded_length (project_path_max + project_name_max + 1); -- incl. directory separator
-	project_file_name : type_project_file_name.bounded_string; -- et_projects/led_matrix
+--	package type_project_file_name is new generic_bounded_length (project_path_max + project_name_max + 1); -- incl. directory separator
 
 	-- The module file name:
 	module_file_name_length_max : constant positive := 100;
@@ -548,8 +545,8 @@ package et_project is
 	
 	procedure open_project (log_threshold : in et_string_processing.type_log_level);
 	-- Enters the project directory specified by project_name.
-	-- Searches for rig configuration files (*.conf) and reads them.
-	-- Searches for module files (*.mod) and reads them.
+	-- Searches for rig configuration files (*.conf), reads them and stores configurations in et_project.rigs.
+	-- Searches for module files (*.mod), reads them and stores modules in et_project.modules.
 
 	procedure save_project (
 		project_name	: in type_project_name.bounded_string; -- blood_sample_analyzer

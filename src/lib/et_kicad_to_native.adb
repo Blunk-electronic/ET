@@ -3794,7 +3794,7 @@ package body et_kicad_to_native is
 				process		=> copy_libraries'access);
 
 			
-			-- save module (from et_schematic.module to module file)
+			-- save module (from et_schematic.module to module file *.mod)
 			et_project.save_module (
 				project_name	=> project_name, -- blood_sample_analyzer
 				project_path	=> project_path, -- /home/user/et_projects/imported_from_kicad

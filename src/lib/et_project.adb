@@ -219,8 +219,6 @@ package body et_project is
 	-- Creates the given project directory in the given project_path.
 	-- Creates a default rig configuration file.
 	-- Already existing projects in given project_path are overwritten.
-	-- Sets the global project file name so that subsequent write and read operations
-	-- know the right project file.
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -328,8 +326,6 @@ package body et_project is
 	procedure create_project_directory_bare (
 	-- Creates a bare project (without a rig configuration file).
 	-- Already existing projects in given path are overwritten.
-	-- Sets the global project file name so that subsequent write and read operations
-	-- know the right project file.
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -363,7 +359,6 @@ package body et_project is
 		create_path (to_string (path));
 
 		create_supplementary_directories (to_string (path), log_threshold + 1);
-		
 
 		log_indentation_down;
 		
@@ -373,9 +368,6 @@ package body et_project is
 				raise;
 		
 	end create_project_directory_bare;
-
-
-
 
 	function position (pos : in et_coordinates.type_2d_point'class) return string is
 	-- Returns something like "x 12.34 y 45.0" or "sheet 3 x 12.34 y 45.0".
@@ -7172,8 +7164,8 @@ package body et_project is
 	
 	procedure open_project (log_threshold : in et_string_processing.type_log_level) is
 	-- Enters the project directory specified by project_name.
-	-- Searches for rig configuration files (*.conf) and reads them.
-	-- Searches for module files (*.mod) and reads them.
+	-- Searches for rig configuration files (*.conf), reads them and stores configurations in et_project.rigs.
+	-- Searches for module files (*.mod), reads them and stores modules in et_project.modules.
 		use et_string_processing;
 		use ada.directories;
 
@@ -11815,8 +11807,17 @@ package body et_project is
 
 		path : type_et_project_path.bounded_string := to_project_path (containing_directory (to_string (project_name)));
 		name : type_project_name.bounded_string := to_project_name (simple_name (to_string (project_name)));
-	begin
-		--log ("saving project as " & to_string (project_name) & " ...", log_threshold, console => true);
+
+		
+
+		procedure query_module (module_cursor : in type_modules.cursor) is
+			name : et_coordinates.type_submodule_name.bounded_string;
+		begin
+			name := key (module_cursor);
+			null;
+		end query_module;
+		
+	begin -- save_project
 		log ("saving project as " & to_string (project_name) & " ...", log_threshold, console => true);
 		log_indentation_up;
 
@@ -11828,6 +11829,7 @@ package body et_project is
 			project_path	=> path, -- /home/user/ecad
 			log_threshold 	=> log_threshold + 2);
 
+		iterate (modules, query_module'access);
 		
 		log_indentation_down;
 	end save_project;
