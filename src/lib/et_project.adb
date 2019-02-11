@@ -2592,7 +2592,7 @@ package body et_project is
 		terminal_name			: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology		: et_pcb.type_assembly_technology := et_pcb.assembly_technology_default;
 		pad_shape_polygon		: type_pad_polygon; -- for polygons that outline a pad
-		terminal_position		: et_pcb_coordinates.type_point_2d_with_angle;
+		terminal_position		: et_pcb_coordinates.type_point_2d_with_angle := et_pcb_coordinates.terminal_position_default;
 		tht_pad_shape			: et_pcb.type_pad_outline_tht;
 		tht_width_inner_layers	: et_pcb_coordinates.type_distance := et_pcb_coordinates.zero_distance;
 		tht_hole				: et_pcb.type_terminal_tht_hole := et_pcb.terminal_tht_hole_default;
@@ -2667,7 +2667,7 @@ package body et_project is
 			end if;
 
 			-- clean up for next terminal
---			terminal_position := et_pcb_coordinates.terminal_position_default;
+			terminal_position := et_pcb_coordinates.terminal_position_default;
  			smt_pad_shape := (others => <>);
 			smt_stop_mask := et_pcb.stop_mask_status_default;
 			smt_solder_paste := et_pcb.solder_paste_status_default;

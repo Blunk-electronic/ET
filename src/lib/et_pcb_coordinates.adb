@@ -246,15 +246,6 @@ package body et_pcb_coordinates is
 			& to_string (point.angle);
 	end to_string;
 	
-	function terminal_position_default return type_point_2d_with_angle'class is
-		pos : type_point_2d_with_angle;
-	begin
--- 		pos.x := zero_distance;
--- 		pos.y := zero_distance;
--- 		pos.angle := zero_angle;
-		return pos;
-	end terminal_position_default;
-	
 	function package_position_default return type_package_position is
 	begin
 		return (zero_2d with face => TOP, angle => zero_angle);

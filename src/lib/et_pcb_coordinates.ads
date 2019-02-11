@@ -146,8 +146,8 @@ package et_pcb_coordinates is
 	function to_string (point : in type_point_2d) return string;
 	function to_string (point : in type_point_2d_with_angle) return string;	
 	
-	function terminal_position_default return type_point_2d_with_angle'class;
-
+	terminal_position_default : constant type_point_2d_with_angle;
+	
 	function package_position_default return type_package_position;
 
 	procedure reset_point (
@@ -211,6 +211,11 @@ package et_pcb_coordinates is
 			angle	: type_angle := zero_angle;
 		end record;
 
+		terminal_position_default : constant type_point_2d_with_angle := (
+			y		=> zero_distance,																			  
+			x		=> zero_distance,
+			angle	=> zero_angle);
+		
 		--type type_submodule_position is new type_point_2d_with_angle with null record;
 		
 		type type_package_position is new type_point_2d_with_angle with record
