@@ -147,8 +147,7 @@ package et_pcb_coordinates is
 	function to_string (point : in type_point_2d_with_angle) return string;	
 	
 	terminal_position_default : constant type_point_2d_with_angle;
-	
-	function package_position_default return type_package_position;
+	package_position_default : constant type_package_position;
 
 	procedure reset_point (
 	-- Moves the given point to the origin (0/0).
@@ -222,6 +221,8 @@ package et_pcb_coordinates is
 			face	: type_face := TOP;
 		end record;
 
+		package_position_default : constant type_package_position := (
+			terminal_position_default with face => TOP);
 		
 end et_pcb_coordinates;
 

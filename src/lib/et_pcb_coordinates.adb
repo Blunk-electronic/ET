@@ -246,11 +246,6 @@ package body et_pcb_coordinates is
 			& to_string (point.angle);
 	end to_string;
 	
-	function package_position_default return type_package_position is
-	begin
-		return (zero_2d with face => TOP, angle => zero_angle);
-	end package_position_default;
-
 	procedure reset_point (
 	-- Moves the given point to the origin (0/0).
 		point	: in out type_point_2d'class)
