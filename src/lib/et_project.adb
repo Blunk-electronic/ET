@@ -7511,7 +7511,7 @@ package body et_project is
 
 			-- These two variables assist when a particular placeholder is appended to the
 			-- list of placholders in silk screen, assy doc and their top or bottom face:
-			device_text_placeholder_position: et_pcb_coordinates.type_package_position; -- incl. rotation and face
+			device_text_placeholder_position: et_pcb_coordinates.type_package_position := et_pcb_coordinates.placeholder_position_default; -- incl. rotation and face
 			device_text_placeholder_layer	: et_pcb.type_placeholder_package_layer := et_pcb.type_placeholder_package_layer'first; -- silk_screen/assembly_documentation
 
 			-- a single temporarily placeholder of a package
@@ -7691,6 +7691,8 @@ package body et_project is
 						use et_pcb;
 						use et_pcb_coordinates;
 					begin
+						device_text_placeholder.position := type_point_2d_with_angle (device_text_placeholder_position);
+						
 						case device_text_placeholder_layer is
 							when SILK_SCREEN => 
 								case get_face (device_text_placeholder_position) is
@@ -7724,6 +7726,7 @@ package body et_project is
 
 						-- reset placeholder for next placeholder
 						device_text_placeholder := (others => <>);
+						device_text_placeholder_position := placeholder_position_default;
 
 					end insert_package_placeholder;
 
@@ -9259,7 +9262,7 @@ package body et_project is
 													width_min			=> route_polygon_width_min,
 													pad_connection		=> et_pcb.THERMAL,
 													thermal_technology	=> route_polygon_pad_technology,
-													thermal_width		=> route_polygon_width_min,
+													thermal_width		=> route_polygon_thermal_width,
 													thermal_gap			=> route_polygon_thermal_gap));
 
 										when et_pcb.SOLID =>
@@ -11208,9 +11211,9 @@ package body et_project is
 
 						when SEC_PLACEHOLDER =>
 							case stack.parent is
-								when SEC_PLACEHOLDERS => -- in schematic
+								when SEC_PLACEHOLDERS =>
 									case stack.parent (degree => 2) is
-										when SEC_PACKAGE =>
+										when SEC_PACKAGE => -- in layout
 											declare
 												kw : string := f (line, 1);
 											begin

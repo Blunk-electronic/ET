@@ -148,6 +148,7 @@ package et_pcb_coordinates is
 	
 	terminal_position_default : constant type_point_2d_with_angle;
 	package_position_default : constant type_package_position;
+	placeholder_position_default : constant type_package_position;	
 
 	procedure reset_point (
 	-- Moves the given point to the origin (0/0).
@@ -223,6 +224,10 @@ package et_pcb_coordinates is
 
 		package_position_default : constant type_package_position := (
 			terminal_position_default with face => TOP);
+
+		placeholder_position_default : constant type_package_position := (
+			terminal_position_default with face => TOP);
+
 		
 end et_pcb_coordinates;
 
