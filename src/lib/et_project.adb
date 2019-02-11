@@ -2641,7 +2641,7 @@ package body et_project is
 									pad_shape_tht		=> tht_pad_shape,
 									width_inner_layers	=> tht_width_inner_layers));
 					end case;
-					
+
 				when SMT =>
 					type_terminals.insert (
 						container	=> packge.terminals,
@@ -2665,6 +2665,16 @@ package body et_project is
 					 & " already used !", console => true);
 				raise constraint_error;
 			end if;
+
+			-- clean up for next terminal
+--			terminal_position := et_pcb_coordinates.terminal_position_default;
+ 			smt_pad_shape := (others => <>);
+			smt_stop_mask := et_pcb.stop_mask_status_default;
+			smt_solder_paste := et_pcb.solder_paste_status_default;
+			tht_pad_shape := (others => <>);
+			tht_hole := terminal_tht_hole_default;
+			tht_width_inner_layers := et_pcb_coordinates.zero_distance;
+			tht_drill_size := et_pcb.type_drill_size'first;
 			
 		end build_terminal;
 		
@@ -3460,28 +3470,121 @@ package body et_project is
 
 					when SEC_TEXT =>
 						case stack.parent is
-							when SEC_TOP | SEC_BOTTOM =>
+							when SEC_TOP =>
 								case stack.parent (degree => 2) is
-									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK => -- CS SEC_KEEPOUT
-										null;										
+									when SEC_COPPER =>
+										
+										type_texts_with_content.append (
+											container	=> packge.copper.top.texts,
+											new_item	=> pac_text);
+
+									when SEC_SILK_SCREEN =>
+
+										type_texts_with_content.append (
+											container	=> packge.silk_screen.top.texts,
+											new_item	=> pac_text);
+
+
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+
+										type_texts_with_content.append (
+											container	=> packge.assembly_documentation.top.texts,
+											new_item	=> pac_text);
+										
+									when SEC_STOP_MASK =>
+
+										type_texts_with_content.append (
+											container	=> packge.stop_mask.top.texts,
+											new_item	=> pac_text);
+										
+									-- CS SEC_KEEPOUT
 										
 									when others => invalid_section;
 								end case;
 
-							when others => invalid_section;
+								-- clean up for next text
+								pac_text := (others => <>);
 								
+							when SEC_BOTTOM =>
+								case stack.parent (degree => 2) is
+									when SEC_COPPER =>
+										
+										type_texts_with_content.append (
+											container	=> packge.copper.bottom.texts,
+											new_item	=> pac_text);
+
+									when SEC_SILK_SCREEN =>
+
+										type_texts_with_content.append (
+											container	=> packge.silk_screen.bottom.texts,
+											new_item	=> pac_text);
+
+
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+
+										type_texts_with_content.append (
+											container	=> packge.assembly_documentation.bottom.texts,
+											new_item	=> pac_text);
+										
+									when SEC_STOP_MASK =>
+
+										type_texts_with_content.append (
+											container	=> packge.stop_mask.bottom.texts,
+											new_item	=> pac_text);
+										
+									-- CS SEC_KEEPOUT
+										
+									when others => invalid_section;
+								end case;
+								
+								-- clean up for next text
+								pac_text := (others => <>);
+
+							when others => invalid_section;
 						end case;
 
 					when SEC_PLACEHOLDER =>
 						case stack.parent is
-							when SEC_TOP | SEC_BOTTOM =>
+							when SEC_TOP =>
 								case stack.parent (degree => 2) is
-									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION =>
-										null;
+									when SEC_SILK_SCREEN =>
+										
+										type_text_placeholders_package.append (
+											container	=> packge.silk_screen.top.placeholders,
+											new_item	=> pac_text_placeholder);
+
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										
+										type_text_placeholders_package.append (
+											container	=> packge.assembly_documentation.top.placeholders,
+											new_item	=> pac_text_placeholder);
 										
 									when others => invalid_section;
 								end case;
 
+								-- clean up for next placeholder
+								pac_text_placeholder := (others => <>);
+
+							when SEC_BOTTOM =>
+								case stack.parent (degree => 2) is
+									when SEC_SILK_SCREEN =>
+										
+										type_text_placeholders_package.append (
+											container	=> packge.silk_screen.bottom.placeholders,
+											new_item	=> pac_text_placeholder);
+
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										
+										type_text_placeholders_package.append (
+											container	=> packge.assembly_documentation.bottom.placeholders,
+											new_item	=> pac_text_placeholder);
+										
+									when others => invalid_section;
+								end case;
+
+								-- clean up for next placeholder
+								pac_text_placeholder := (others => <>);
+								
 							when others => invalid_section;
 						end case;
 

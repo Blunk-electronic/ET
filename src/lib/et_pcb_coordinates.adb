@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -245,14 +245,13 @@ package body et_pcb_coordinates is
 			& et_coordinates.axis_separator
 			& to_string (point.angle);
 	end to_string;
-
 	
 	function terminal_position_default return type_point_2d_with_angle'class is
 		pos : type_point_2d_with_angle;
 	begin
-		pos.x := zero_distance;
-		pos.y := zero_distance;
-		pos.angle := zero_angle;
+-- 		pos.x := zero_distance;
+-- 		pos.y := zero_distance;
+-- 		pos.angle := zero_angle;
 		return pos;
 	end terminal_position_default;
 	
