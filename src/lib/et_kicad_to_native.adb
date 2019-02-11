@@ -3675,7 +3675,7 @@ package body et_kicad_to_native is
 
 
 		procedure save_libraries (
-		-- Saves the project library containers (et_libraries.devices and et_pcb.packages) in
+		-- Saves the library containers (et_libraries.devices and et_pcb.packages) in
 		-- the directory specified by project_path and project_name.
 			project_name	: in et_project.type_project_name.bounded_string;		-- blood_sample_analyzer
 			project_path	: in et_project.type_et_project_path.bounded_string; 	-- /home/user/et_projects/imported_from_kicad

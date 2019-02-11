@@ -47,6 +47,7 @@ with ada.tags;
 
 with ada.exceptions;
 with ada.directories;
+with gnat.directory_operations;
 
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
@@ -11796,6 +11797,70 @@ package body et_project is
 
 	end open_project;
 
+	procedure save_libraries (
+	-- Saves the library containers (et_libraries.devices and et_pcb.packages) in
+	-- the directory specified by project_path and project_name.
+		project_name	: in et_project.type_project_name.bounded_string;		-- blood_sample_analyzer
+		project_path	: in et_project.type_et_project_path.bounded_string; 	-- /home/user/ecad
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_project;
+		use type_project_name;
+		use type_et_project_path;
+		use ada.directories;
+		use et_string_processing;
+
+		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
+		use type_path;
+		path : type_path.bounded_string := to_bounded_string (
+				compose (type_et_project_path.to_string (project_path), type_project_name.to_string (project_name)));
+		-- Path now contains something like /home/user/ecad/blood_sample_analyzer
+		
+		use et_libraries.type_devices;
+
+		procedure save_device (device_cursor : in et_libraries.type_devices.cursor) is
+			use et_libraries;
+		begin
+			save_device (
+				-- library name like: 
+				-- /home/user/ecad/blood_sample_analyzer/libraries/devices/bel_connector_and_jumper_FEMALE_01X06.dev
+				name	=> to_string (path) & gnat.directory_operations.dir_separator & to_string (key (device_cursor)),
+
+				-- the device model itself:
+				device	=> element (device_cursor),
+				log_threshold	=> log_threshold + 1); 
+		end save_device;
+
+		use et_pcb.type_packages;
+		
+		procedure save_package (package_cursor : in et_pcb.type_packages.cursor) is
+			use et_libraries.type_package_library_name;
+		begin
+			save_package (
+				-- package name like: 
+				-- /home/user/ecad/blood_sample_analyzer/libraries/packages/bel_connector_and_jumper_FEMALE_01X06.pac
+				name	=> to_string (path) & gnat.directory_operations.dir_separator & to_string (key (package_cursor)),
+
+				-- the package model itself:
+				packge	=> element (package_cursor),
+				log_threshold	=> log_threshold + 1); 
+		end save_package;
+		
+	begin -- save_libraries
+		log ("saving libraries ...", log_threshold);
+		log_indentation_up;
+
+		log ("devices ...", log_threshold + 1);
+		log_indentation_up;
+		iterate (et_libraries.devices, save_device'access);
+		log_indentation_down;
+		
+		log ("packages ...", log_threshold + 1);
+		log_indentation_up;
+		iterate (et_pcb.packages, save_package'access);
+		log_indentation_down;
+
+		log_indentation_down;			
+	end save_libraries;
 
 	procedure save_project (
 		destination		: in type_project_name.bounded_string; -- /home/user/ecad/blood_sample_analyzer
@@ -11820,8 +11885,12 @@ package body et_project is
 				project_path	=> path, -- /home/user/ecad
 				log_threshold 	=> log_threshold + 2);
 
-			-- CS save libraries related to the module ?
-			-- CS save all libraries ?
+			-- FOR TESTING ONLY
+			-- save libraries (et_libraries.devices and et_pcb.packages)
+			save_libraries (
+				project_name	=> name, -- blood_sample_analyzer
+				project_path	=> path, -- /home/user/ecad
+				log_threshold 	=> log_threshold + 1);
 			
 			log_indentation_down;
 		end query_modules;
