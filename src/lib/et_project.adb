@@ -64,6 +64,46 @@ with et_pcb_coordinates;
 
 package body et_project is
 
+	function expand (
+	-- Translates a file name like $HOME/libraries/devices/7400.dev to
+	-- /home/user/libraries/devices/7400.dev
+	-- CS: works on unix/linux only
+		name_in			: in string; -- $HOME/libraries/devices/7400.dev
+		log_threshold	: et_string_processing.type_log_level)
+		return string is
+
+		prefix : constant string := ("$"); -- CS: windows ? (like %home%)
+		separator : constant string := (1 * gnat.directory_operations.dir_separator); -- /\
+		
+		place_prefix, place_separator : natural := 0;
+		--use gnat.directory_operations;
+		use et_string_processing;
+		
+		function do_it (path : in string) return string is begin
+			log ("full path is " & path, log_threshold + 1);
+			return path;
+		end;
+		
+	begin -- expand
+		place_prefix := index (name_in, prefix);
+		place_separator := index (name_in, separator);
+
+		if place_prefix = 0 then -- no environment variable found
+			return name_in; -- return given name as it is
+		else
+			-- name contains an environment variable
+			log_indentation_up;
+			
+			log ("expanding " & name_in, log_threshold);
+			-- CS test_vars (name_in); -- test if environment variables exist
+			
+			log_indentation_down;
+			
+			return do_it (gnat.directory_operations.expand_path (name_in));
+		end if;
+
+	end expand;
+	
 	function to_string (project_name : in type_project_name.bounded_string) return string is
 	begin
 		return type_project_name.to_string (project_name);
@@ -4670,7 +4710,7 @@ package body et_project is
 			open (
 				file => file_handle,
 				mode => in_file, 
-				name => to_string (file_name));
+				name => expand (to_string (file_name), log_threshold + 1));
 
 			set_input (file_handle);
 			
@@ -5445,7 +5485,7 @@ package body et_project is
 			open (
 				file => file_handle,
 				mode => in_file, 
-				name => to_string (file_name));
+				name => expand (to_string (file_name), log_threshold + 1));
 
 			set_input (file_handle);
 			
@@ -6649,7 +6689,7 @@ package body et_project is
 			open (
 				file => file_handle,
 				mode => in_file, 
-				name => to_string (file_name));
+				name => expand (to_string (file_name), log_threshold + 1));
 
 			set_input (file_handle);
 			
@@ -11993,10 +12033,10 @@ package body et_project is
 
 			-- FOR TESTING ONLY
 			-- save libraries (et_libraries.devices and et_pcb.packages)
-			save_libraries (
-				project_name	=> name, -- blood_sample_analyzer
-				project_path	=> path, -- /home/user/ecad
-				log_threshold 	=> log_threshold + 1);
+-- 			save_libraries (
+-- 				project_name	=> name, -- blood_sample_analyzer
+-- 				project_path	=> path, -- /home/user/ecad
+-- 				log_threshold 	=> log_threshold + 1);
 			
 			log_indentation_down;
 		end query_modules;
