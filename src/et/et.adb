@@ -220,7 +220,7 @@ procedure et is
 				et_kicad.import_design (project => project_name_import, log_threshold => 0);
 				restore_projects_root_directory;
 
-				-- convert to native project
+				-- convert to native project (with a default rig configuration file)
 				log (et_string_processing.row_separator_single);
 				log ("converting to " & et_general.system_name & " native project ...", console => true);
 				log_indentation_up;

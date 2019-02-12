@@ -160,7 +160,8 @@ package et_project is
 		"<"				=> compare_connectors);
 	
 	-- A rig consists of a list of module instances
-	-- and a list of module-to-module connectors (or board-to-board connectors):
+	-- and a list of module-to-module connectors (or board-to-board connectors).
+	-- It is modelled in a rig configuration file:
 	type type_rig is record
 		module_instances	: type_module_instances.map;
 		connections			: type_module_connectors.set;
@@ -172,6 +173,7 @@ package et_project is
 		key_type		=> type_rig_configuration_file_name.bounded_string, -- CS dedicated type_rig_name ?
 		element_type	=> type_rig);
 
+	-- The collection of rig configurations:
 	rigs : type_rigs.map;
 
 	-- Generic modules (which contain schematic and layout stuff)

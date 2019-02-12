@@ -12040,6 +12040,8 @@ package body et_project is
 			
 			log_indentation_down;
 		end query_modules;
+
+		-- CS procedure query_rig_configuration
 		
 	begin -- save_project
 		log ("saving project as " & to_string (destination) & " ...", log_threshold, console => true);
@@ -12056,6 +12058,7 @@ package body et_project is
 		iterate (modules, query_modules'access);
 
 		-- CS save rig configuration
+		-- iterate (rig, query_rig_configuration'access);
 		
 		log_indentation_down;
 	end save_project;
