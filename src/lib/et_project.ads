@@ -241,7 +241,13 @@ package et_project is
 	
 	type type_section_mark is (HEADER, FOOTER);
 
-	
+	procedure save_rig_configuration (
+		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		rig_conf_name	: in type_rig_configuration_file_name.bounded_string; -- demo, low_cost, fully_equipped
+		rig				: in type_rig; -- the actual rig configuration		
+		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
+		log_threshold 	: in et_string_processing.type_log_level);
+	-- Saves the rig configuration in the file with the given name rig_conf_file.	
 	
 	procedure save_module (
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
@@ -250,6 +256,7 @@ package et_project is
 		log_threshold 	: in et_string_processing.type_log_level);
 	-- Saves the schematic and layout data (stored in et_schematic.module) in the module file
 	-- of the given project.
+	-- CS: It might be better to pass a module (et_schematic.type_module) directly instead. See save_symbol, save_package, save_device.	
 	-- If module_name not provided, the module will be named after the given project_name.
 
 

@@ -255,6 +255,28 @@ package body et_project is
 		create_directory (compose (path, directory_documentation));
 		create_directory (compose (path, directory_miscellaneous));
 	end create_supplementary_directories;
+
+	procedure write_rig_configuration_header is 
+		use et_general;
+		use et_string_processing;
+	begin
+		-- write a nice header
+		put_line (comment_mark & " " & system_name & " rig configuration file");
+		put_line (comment_mark & " " & date);
+		put_line (comment_mark & " " & row_separator_double);
+		new_line;
+	end;
+
+	procedure write_rig_configuration_footer is
+		use et_string_processing;
+	begin
+		-- write a nice footer
+		new_line;
+		put_line (comment_mark & " " & row_separator_double);
+		put_line (comment_mark & " " & date);
+		put_line (comment_mark & " rig configuration file end");
+		new_line;
+	end;
 	
 	procedure create_project_directory (
 	-- Creates the given project directory in the given project_path.
@@ -278,12 +300,15 @@ package body et_project is
 			file_handle : ada.text_io.file_type;
 			rig_conf_file : type_rig_configuration_file_name.bounded_string; -- led_matrix.conf
 		begin
-			log ("creating the rig configuration file ...", log_threshold + 1);
+			log ("creating the default rig configuration file ...", log_threshold + 1);
+
+			-- compose the full file name			
 			rig_conf_file := type_rig_configuration_file_name.to_bounded_string (compose (
 				containing_directory	=> to_string (path),
 				name 					=> to_string (project_name),
 				extension 				=> rig_configuration_file_extension));
 
+			-- create the file
 			create (
 				file => file_handle,
 				mode => out_file, 
@@ -291,12 +316,8 @@ package body et_project is
 
 			set_output (file_handle);
 
-			-- write a nice header
-			put_line (comment_mark & " " & system_name & " rig configuration file");
-			put_line (comment_mark & " " & date);
-			put_line (comment_mark & " " & row_separator_double);
-			new_line;
-
+			write_rig_configuration_header;
+			
 			-- section module instances
 			section_mark (section_module_instances, HEADER);
 
@@ -327,16 +348,11 @@ package body et_project is
 			-- CS In the future, write other things here that characterize the board to board connection
 			section_mark (section_module_connections, FOOTER);
 
-			
-			-- write a nice footer
-			new_line;
-			put_line (comment_mark & " " & row_separator_double);
-			put_line (comment_mark & " " & date);
-			put_line (comment_mark & " rig configuration file end");
-			new_line;
-			
+			-- close the file
+			write_rig_configuration_footer;
 			set_output (standard_output);
 			close (file_handle);
+			
 		end create_rig_configuration;
 
 	begin -- create_project_directory
@@ -1074,8 +1090,97 @@ package body et_project is
 		polygon_end;
 	end write_polygon;
 
-	
-	
+	procedure save_rig_configuration (
+		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		rig_conf_name	: in type_rig_configuration_file_name.bounded_string; -- demo, low_cost, fully_equipped
+		rig				: in type_rig; -- the actual rig configuration				
+		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
+		log_threshold 	: in et_string_processing.type_log_level) is
+	-- Saves the rig configuration in the file with the given name rig_conf_file.
+
+		use ada.directories;
+		use et_string_processing;
+		use type_module_instances;
+		use type_module_connectors;
+		
+		file_name : type_rig_configuration_file_name.bounded_string; -- the final full file name
+		file_handle : ada.text_io.file_type;
+
+		package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
+		use type_path;
+		path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
+
+		procedure query_instance (instance_cursor : in type_module_instances.cursor) is
+		begin
+			section_mark (section_module, HEADER);			
+			write (keyword => keyword_generic_name, space => true, parameters => to_string (element (instance_cursor).generic_name));
+			write (keyword => keyword_instance_name, space => true, parameters => to_string (key (instance_cursor)));
+			section_mark (section_module, FOOTER);
+		end;
+
+		procedure query_connections (connection_cursor : in type_module_connectors.cursor) is
+			con : type_connector := element (connection_cursor);
+		begin
+			section_mark (section_connector, HEADER);
+			write (keyword => keyword_instance_A, space => true, parameters => to_string (con.instance_A));
+			write (keyword => keyword_purpose_A, space => true, wrap => true, parameters => et_schematic.to_string (con.purpose_A));
+			new_line;
+			write (keyword => keyword_instance_B, space => true, parameters => to_string (con.instance_B));
+			write (keyword => keyword_purpose_B, space => true, wrap => true, parameters => et_schematic.to_string (con.purpose_B));
+
+			-- CS: net comparator, warnings
+			
+			section_mark (section_connector, FOOTER);
+		end;
+		
+	begin -- save_rig_configuration
+		log ("saving rig configuration ...", log_threshold);
+		reset_tab_depth;
+		log_indentation_up;
+
+		-- compose the full file name
+		file_name := type_rig_configuration_file_name.to_bounded_string (compose (
+			containing_directory	=> to_string (path),
+			name 					=> to_string (rig_conf_name),
+			extension 				=> rig_configuration_file_extension));
+
+		-- create the file
+		create (
+			file => file_handle,
+			mode => out_file, 
+			name => to_string (file_name));
+		
+		set_output (file_handle);
+		write_rig_configuration_header;		
+
+		-- section module instances
+		section_mark (section_module_instances, HEADER);
+		iterate (rig.module_instances, query_instance'access);
+		-- CS In the future, write other things here that characterize the instance.
+		section_mark (section_module_instances, FOOTER);
+
+		-- section connectors
+		new_line;
+		section_mark (section_module_connections, HEADER);
+		iterate (rig.connections, query_connections'access);
+		-- CS In the future, write other things here that characterize the board to board connection
+		section_mark (section_module_connections, FOOTER);
+
+		-- close the file
+		write_rig_configuration_footer;
+		set_output (standard_output);
+		close (file_handle);
+		
+		log_indentation_down;
+
+		exception when event:
+			others => 
+				log (ada.exceptions.exception_message (event), console => true);
+				close (file_handle);
+				raise;
+
+	end save_rig_configuration;
+		
 	procedure save_module (
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		module_name		: in type_submodule_name.bounded_string := type_submodule_name.to_bounded_string ("");	-- motor_driver
@@ -1083,6 +1188,7 @@ package body et_project is
 		log_threshold 	: in et_string_processing.type_log_level) is
 	-- Saves the schematic and layout data (stored in et_schematic.module) in the module file
 	-- of the given project.
+	-- CS: It might be better to pass a module (et_schematic.type_module) directly instead. 
 	-- If module_name not provided, the module will be named after the given project_name.
 	-- CS: improve log messages !!
 		
@@ -1922,14 +2028,10 @@ package body et_project is
 	
 	begin -- save_module
 		log ("saving module ...", log_threshold);
-
 		reset_tab_depth;
-		
 		log_indentation_up;
-
 		
 		write_module_header;
-
 		
 		-- net classes
 		query_net_classes;
@@ -11638,9 +11740,34 @@ package body et_project is
 						rig			: in out type_rig) is
 						connection_inserted : boolean;
 						connection_cursor : type_module_connectors.cursor;
-					begin
-						-- CS: test length of instance_A/B and purpose A/B. must be greater zero
 
+						use et_schematic.type_component_purpose;
+					begin
+						-- test length of instance_A/B and purpose A/B. must be greater zero
+						if length (instance_A) = 0 then
+							log_indentation_reset;
+							log (message_error & "instance A not specified !", console => true);
+							raise constraint_error;
+						end if;
+
+						if length (purpose_A) = 0 then
+							log_indentation_reset;
+							log (message_error & "purpose A not specified !", console => true);
+							raise constraint_error;
+						end if;						
+
+						if length (instance_B) = 0 then
+							log_indentation_reset;
+							log (message_error & "instance B not specified !", console => true);
+							raise constraint_error;
+						end if;
+
+						if length (purpose_B) = 0 then
+							log_indentation_reset;
+							log (message_error & "purpose B not specified !", console => true);
+							raise constraint_error;
+						end if;						
+						
 						-- create a module connector in the rig
 						rig.connections.insert (
 							new_item	=> (
@@ -11840,7 +11967,7 @@ package body et_project is
 			open (
 				file => file_handle,
 				mode => in_file, 
-				name => file_name);
+				name => file_name); -- demo.conf, low_cost.conf, fully_equipped.conf
 
 			set_input (file_handle);
 
@@ -11848,10 +11975,10 @@ package body et_project is
 			stack.init;
 			stack.push (SEC_INIT);
 
-			-- create an empty rig - named after the given configuration file
+			-- create an empty rig - named after the given configuration file but without extension
 			type_rigs.insert (
 				container	=> rigs,
-				key			=> to_bounded_string (simple_name (file_name)),
+				key			=> to_bounded_string (base_name (file_name)), -- demo, low_cost, fully_equipped
 				inserted	=> rig_inserted, -- should always be true
 				position	=> rig_cursor);
 			
@@ -11907,7 +12034,6 @@ package body et_project is
 			end if;
 			end_search (module_file_search);
 			log_indentation_down;
-
 			
 			log ("looking for rig configuration files ...", log_threshold + 1);
 			log_indentation_up;
@@ -12025,6 +12151,8 @@ package body et_project is
 			log ("module " & to_string (module_name), log_threshold + 1);
 			et_schematic.module := element (module_cursor);
 
+			log_indentation_up;
+			
 			save_module (
 				project_name	=> name, -- blood_sample_analyzer
 				module_name		=> module_name,	-- motor_driver
@@ -12039,9 +12167,27 @@ package body et_project is
 -- 				log_threshold 	=> log_threshold + 1);
 			
 			log_indentation_down;
+			log_indentation_down;			
 		end query_modules;
 
-		-- CS procedure query_rig_configuration
+		procedure query_rig_configuration (rig_cursor : in type_rigs.cursor) is
+			use type_rigs;
+			rig_name : type_rig_configuration_file_name.bounded_string := key (rig_cursor);
+		begin
+			log_indentation_up;
+			log ("rig configuration " & to_string (rig_name), log_threshold + 1);
+			log_indentation_up;
+			
+			save_rig_configuration (
+				project_name	=> name, -- blood_sample_analyzer
+				rig_conf_name	=> rig_name, -- demo, low_cost, fully_equipped
+				rig				=> element (rig_cursor), -- the actual rig configuration
+				project_path	=> path,	-- /home/user/ecad
+				log_threshold 	=> log_threshold + 1);
+			
+			log_indentation_down;
+			log_indentation_down;
+		end query_rig_configuration;
 		
 	begin -- save_project
 		log ("saving project as " & to_string (destination) & " ...", log_threshold, console => true);
@@ -12055,10 +12201,11 @@ package body et_project is
 			project_path	=> path, -- /home/user/ecad
 			log_threshold 	=> log_threshold + 2);
 
+		-- save modules
 		iterate (modules, query_modules'access);
 
-		-- CS save rig configuration
-		-- iterate (rig, query_rig_configuration'access);
+		-- save rig configuration files
+		type_rigs.iterate (rigs, query_rig_configuration'access);
 		
 		log_indentation_down;
 	end save_project;

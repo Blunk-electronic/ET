@@ -109,10 +109,7 @@ package et_schematic is
 	-- Raises alarm if purpose is empty, purpose_default or nonsense.
 	
 	function to_string (purpose : in type_component_purpose.bounded_string) return string;
-	-- Returns the given purpose as string.
-
 	function to_purpose (purpose : in string) return type_component_purpose.bounded_string;
-	-- Converts a string to type_component_purpose
 	
 	procedure check_purpose_length (purpose : in string);
 	-- Tests if the given purpose is longer than allowed.
