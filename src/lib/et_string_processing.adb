@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -368,8 +368,11 @@ package body et_string_processing is
 	function trim_space_in_string (text_in : in string) return string is
 	-- shrinks successive space characters to a single one in given string		
 		text_scratch : string (1..text_in'length) := text_in;
-		
+
+		universal_string_length_max	: constant natural := 1000;
+		package type_universal_string is new generic_bounded_length(universal_string_length_max);
 		use type_universal_string;
+		
 		s : type_universal_string.bounded_string; -- CS: might be not sufficient ! use type_long_string instead
 		
 		l : natural := text_scratch'length;
@@ -436,7 +439,11 @@ package body et_string_processing is
 		trailer 	: in boolean := false;
 		trailer_to 	: in character := latin_1.semicolon
 		) return string is
+
+		extended_string_length_max : constant natural := 1000; -- CS: increase if nessecary
+		package type_extended_string is new generic_bounded_length (extended_string_length_max);
 		use type_extended_string;
+		
 		field			: type_extended_string.bounded_string;	-- field content to return (NOTE: gets converted to string on return) 
 		character_count	: natural := text_in'length;	-- number of characters in given string
 		subtype type_character_pointer is natural range 0..character_count;

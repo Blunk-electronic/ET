@@ -163,20 +163,8 @@ package et_string_processing is
 	
 
 	function strip_directory_separator (text : in string) return string;
-	-- Removes the trailing directory separtor (if preset).
+	-- Removes a possible trailing directory separtor.
 	
-	short_string_length_max : constant natural := 10;
- 	package type_short_string is new generic_bounded_length(short_string_length_max);
-
-	universal_string_length_max	: constant natural := 1000;
-	package type_universal_string is new generic_bounded_length(universal_string_length_max);
-	
-	long_string_length_max	: constant natural := 10000;
-	package type_long_string is new generic_bounded_length(long_string_length_max);
-	
-	extended_string_length_max	: constant natural := 100000;
-	package type_extended_string is new generic_bounded_length(extended_string_length_max);
-
 	function ht_to_space (c : in character) return character;
 
 	function tilde_to_space (c : in character) return character;
