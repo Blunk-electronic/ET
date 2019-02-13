@@ -11740,52 +11740,68 @@ package body et_project is
 						rig			: in out type_rig) is
 						connection_inserted : boolean;
 						connection_cursor : type_module_connectors.cursor;
-
 						use et_schematic.type_component_purpose;
 					begin
-						-- test length of instance_A/B and purpose A/B. must be greater zero
-						if length (instance_A) = 0 then
-							log_indentation_reset;
-							log (message_error & "instance A not specified !", console => true);
-							raise constraint_error;
+						-- If NONE of the four elements that make a module connection is specified,
+						-- then do nothing. Otherwise ALL of them must be specified.
+						if length (instance_A) = 0 and length (instance_B) = 0
+							and length (purpose_A) = 0 and length (purpose_B) = 0 then
+								null;
+						else
+							-- If ALL four elements are
+							-- specified (means each of them contains something) then do further
+							-- checks and create the connection.
+							if length (instance_A) > 0 and length (instance_B) > 0
+								and length (purpose_A) > 0 and length (purpose_B) > 0 then
+								
+								-- create a module connector in the rig
+								rig.connections.insert (
+									new_item	=> (
+										instance_A	=> instance_A,
+										instance_B	=> instance_B,
+										purpose_A	=> purpose_A,
+										purpose_B	=> purpose_B),
+									inserted	=> connection_inserted,
+									position	=> connection_cursor);
+
+								-- A module connection may exist only once:
+								if not connection_inserted then
+									log_indentation_reset;
+									log (message_error & "module connection already exists !", console => true);
+									raise constraint_error;
+								end if;
+
+								clear_connector; -- clean up for next module connector
+
+							-- If one of the four elements is not specified, output error message:
+							else
+								-- test length of instance_A/B and purpose A/B. must be greater zero
+								if length (instance_A) = 0 then
+									log_indentation_reset;
+									log (message_error & "instance A not specified !", console => true);
+									raise constraint_error;
+								end if;
+
+								if length (purpose_A) = 0 then
+									log_indentation_reset;
+									log (message_error & "purpose A not specified !", console => true);
+									raise constraint_error;
+								end if;						
+
+								if length (instance_B) = 0 then
+									log_indentation_reset;
+									log (message_error & "instance B not specified !", console => true);
+									raise constraint_error;
+								end if;
+
+								if length (purpose_B) = 0 then
+									log_indentation_reset;
+									log (message_error & "purpose B not specified !", console => true);
+									raise constraint_error;
+								end if;						
+							end if;
+							
 						end if;
-
-						if length (purpose_A) = 0 then
-							log_indentation_reset;
-							log (message_error & "purpose A not specified !", console => true);
-							raise constraint_error;
-						end if;						
-
-						if length (instance_B) = 0 then
-							log_indentation_reset;
-							log (message_error & "instance B not specified !", console => true);
-							raise constraint_error;
-						end if;
-
-						if length (purpose_B) = 0 then
-							log_indentation_reset;
-							log (message_error & "purpose B not specified !", console => true);
-							raise constraint_error;
-						end if;						
-						
-						-- create a module connector in the rig
-						rig.connections.insert (
-							new_item	=> (
-								instance_A	=> instance_A,
-								instance_B	=> instance_B,
-								purpose_A	=> purpose_A,
-								purpose_B	=> purpose_B),
-							inserted	=> connection_inserted,
-							position	=> connection_cursor);
-
-						-- A module connection may exist only once:
-						if not connection_inserted then
-							log_indentation_reset;
-							log (message_error & "module connection already exists !", console => true);
-							raise constraint_error;
-						end if;
-
-						clear_connector; -- clean up for next module connector
 					end create_connection;
 					
 				begin -- execute_section
