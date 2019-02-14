@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -2991,50 +2991,44 @@ package body et_configuration is
 
 	end read_configuration;
 
-	procedure validate_prefix (prefix : in et_libraries.type_component_prefix.bounded_string) is
-	-- Tests if the given prefix is specified in the configuration file.
-	-- Raises exception if not. If no prefixes specified, nothing happens.
+	function prefix_valid (prefix : in et_libraries.type_component_prefix.bounded_string) return boolean is
+	-- Tests if the given reference has a valid prefix as specified in the configuration file.
+	-- Raises warning if not and returns false. 
+	-- Returns true if no prefixes specified or if prefix is valid.
 		use et_libraries.type_component_prefix;
 		use type_component_prefixes;
+		result : boolean := true;
 	begin
 		-- if there are prefixes specified, test if the given particular prefix is among them
 		if component_prefixes_specified then
-
-			-- if prefix not found, raise error
 			if component_prefixes.find (prefix) = type_component_prefixes.no_element then
-				log_indentation_reset;
-				log (message_error & "invalid prefix "
-					& to_string (prefix) & " !"
-					& " See configuration file for valid prefixes.",
-					console => true);
-				raise constraint_error;
+				log (message_warning & "invalid prefix " & to_string (prefix) & " !");
+				result := false;
 			end if;
-
 		end if;
-	end validate_prefix;
+
+		return result;
+	end prefix_valid;
 	
-	procedure validate_prefix (reference : in et_libraries.type_component_reference) is
+	function prefix_valid (reference : in et_libraries.type_component_reference) return boolean is
 	-- Tests if the given reference has a valid prefix as specified in the configuration file.
-	-- Raises exception if not. If no prefixes specified, nothing happens.
+	-- Raises warning if not and returns false. 
+	-- Returns true if no prefixes specified or if prefix is valid.
 		use et_libraries.type_component_prefix;
 		use type_component_prefixes;
+		result : boolean := true;
 	begin
 		-- if there are prefixes specified, test if the given particular prefix is among them
-		if not is_empty (component_prefixes) then
-
-			-- if prefix not found, raise error
+		if component_prefixes_specified then
 			if component_prefixes.find (reference.prefix) = type_component_prefixes.no_element then
-				log_indentation_reset;
-				log (message_error & "invalid prefix in component reference "
-					& et_libraries.to_string (reference) & " !"
-					& " See configuration file for valid prefixes.",
-					console => true);
-				-- CS: show coordinates of affected component
-				raise constraint_error;
+				log (message_warning & "invalid prefix in device name "
+					 & et_libraries.to_string (reference) & " !");
+				result := false;
 			end if;
-
 		end if;
-	end validate_prefix;
+
+		return result;
+	end prefix_valid;
 
 	
 end et_configuration;

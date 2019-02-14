@@ -1866,8 +1866,6 @@ package body et_kicad is
 								prefix => tmp_prefix,
 								characters => et_libraries.component_prefix_characters);
 							
-							et_configuration.validate_prefix (tmp_prefix);
-							
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_reference.size);
 						end if;
 
@@ -8112,8 +8110,6 @@ package body et_kicad is
 
 								log ("reference " & to_string (reference) & " (preliminary)", log_threshold);
 								
-								et_configuration.validate_prefix (reference);
-
 							when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
 								null;
 								raise constraint_error;

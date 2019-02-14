@@ -471,13 +471,15 @@ package et_configuration is
 		log_threshold	: in et_string_processing.type_log_level);
 	-- Reads the given configuration file.
 
-	procedure validate_prefix (prefix : in et_libraries.type_component_prefix.bounded_string); 
-	-- Tests if the given prefix is valid as specified in the configuration file.
-	-- Raises exception if not.
-	
-	procedure validate_prefix (reference : in et_libraries.type_component_reference);
+	function prefix_valid (prefix : in et_libraries.type_component_prefix.bounded_string) return boolean;
 	-- Tests if the given reference has a valid prefix as specified in the configuration file.
-	-- Raises exception if not.
+	-- Raises warning if not and returns false. 
+	-- Returns true if no prefixes specified or if prefix is valid.
+	
+	function prefix_valid (reference : in et_libraries.type_component_reference) return boolean;
+	-- Tests if the given reference has a valid prefix as specified in the configuration file.
+	-- Raises warning if not and returns false. 
+	-- Returns true if no prefixes specified or if prefix is valid.
 
 end et_configuration;
 

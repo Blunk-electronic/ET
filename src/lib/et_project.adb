@@ -61,6 +61,7 @@ with et_import;
 with et_schematic;
 with et_pcb;
 with et_pcb_coordinates;
+with et_configuration;
 
 package body et_project is
 
@@ -6308,6 +6309,10 @@ package body et_project is
 								prefix := et_libraries.to_prefix (f (line,2));
 								log ("prefix " & to_string (prefix), log_threshold + 1);
 
+								if not et_configuration.prefix_valid (prefix) then
+									null; -- CS output something helpful
+								end if;
+
 							elsif kw = keyword_value then -- value 7400
 								expect_field_count (line, 2);
 								value := et_libraries.to_value (f (line,2));
@@ -7958,6 +7963,10 @@ package body et_project is
 					begin
 						log ("device " & et_libraries.to_string (device_name), log_threshold + 2);
 						log_indentation_up;
+
+						if not et_configuration.prefix_valid (device_name) then 
+							null; -- CS show coordinates of units
+						end if;
 						
 						-- assign temporarily variable for model:
 						device.model := device_model;
