@@ -1182,13 +1182,13 @@ package body et_project is
 	end save_rig_configuration;
 		
 	procedure save_module (
+		module			: in et_schematic.type_module;				-- the module
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		module_name		: in type_submodule_name.bounded_string := type_submodule_name.to_bounded_string ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level) is
-	-- Saves the schematic and layout data (stored in et_schematic.module) in the module file
+	-- Saves the given module (incl. schematic and layout data) in the module file
 	-- of the given project.
-	-- CS: It might be better to pass a module (et_schematic.type_module) directly instead. 
 	-- If module_name not provided, the module will be named after the given project_name.
 	-- CS: improve log messages !!
 		
@@ -1273,7 +1273,7 @@ package body et_project is
 		procedure query_net_classes is
 			use et_pcb;
 			use et_pcb.type_net_classes;
-			class_cursor : et_pcb.type_net_classes.cursor := et_schematic.module.net_classes.first;
+			class_cursor : et_pcb.type_net_classes.cursor := module.net_classes.first;
 
 			use et_pcb_coordinates;
 		begin
@@ -1302,7 +1302,7 @@ package body et_project is
 		procedure query_nets is
 			use et_schematic;
 			use et_schematic.type_nets;
-			net_cursor : et_schematic.type_nets.cursor := et_schematic.module.nets.first;
+			net_cursor : et_schematic.type_nets.cursor := module.nets.first;
 
 			use et_pcb;
 
@@ -1563,7 +1563,7 @@ package body et_project is
 		procedure query_devices is		
 			use et_schematic;
 			use type_devices;
-			device_cursor : et_schematic.type_devices.cursor := et_schematic.module.devices.first;
+			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
 
 			procedure query_units (device_name : in et_libraries.type_component_reference; device : in et_schematic.type_device) is
 				use et_schematic.type_units;
@@ -1687,13 +1687,13 @@ package body et_project is
 		begin
 			section_mark (section_drawing_frames, HEADER);
 			section_mark (section_schematic, HEADER);			
-			write (keyword => keyword_template, space => true, parameters => et_libraries.to_string (et_schematic.module.frame_template_schematic));
+			write (keyword => keyword_template, space => true, parameters => et_libraries.to_string (module.frame_template_schematic));
 			-- CS frame count ?
 			-- CS description ?
 			section_mark (section_schematic, FOOTER);			
 
 			section_mark (section_board, HEADER);			
-			write (keyword => keyword_template, space => true, parameters => et_libraries.to_string (et_schematic.module.frame_template_board));
+			write (keyword => keyword_template, space => true, parameters => et_libraries.to_string (module.frame_template_board));
 			section_mark (section_board, FOOTER);			
 			section_mark (section_drawing_frames, FOOTER);
 		end query_frames;
@@ -1701,7 +1701,7 @@ package body et_project is
 		procedure query_submodules is		
 			use et_schematic;
 			use type_submodules;
-			submodule_cursor : type_submodules.cursor := et_schematic.module.submodules.first;
+			submodule_cursor : type_submodules.cursor := module.submodules.first;
 		begin
 			section_mark (section_submodules, HEADER);
 			while submodule_cursor /= type_submodules.no_element loop
@@ -1732,7 +1732,7 @@ package body et_project is
 		procedure query_texts is		
 			use et_schematic;
 			use type_texts;
-			text_cursor : type_texts.cursor := et_schematic.module.texts.first;
+			text_cursor : type_texts.cursor := module.texts.first;
 		begin
 			section_mark (section_texts, HEADER);
 			while text_cursor /= type_texts.no_element loop
@@ -1884,21 +1884,21 @@ package body et_project is
 			section_mark (section_silk_screen, HEADER);
 
 				section_mark (section_top, HEADER);
-				iterate (et_schematic.module.board.silk_screen.top.lines, write_line'access);
-				iterate (et_schematic.module.board.silk_screen.top.arcs, write_arc'access);
-				iterate (et_schematic.module.board.silk_screen.top.circles, write_circle'access);
-				iterate (et_schematic.module.board.silk_screen.top.polygons, write_polygon'access);
-				iterate (et_schematic.module.board.silk_screen.top.texts, write_text'access);
-				iterate (et_schematic.module.board.silk_screen.top.placeholders, write_placeholder'access);
+				iterate (module.board.silk_screen.top.lines, write_line'access);
+				iterate (module.board.silk_screen.top.arcs, write_arc'access);
+				iterate (module.board.silk_screen.top.circles, write_circle'access);
+				iterate (module.board.silk_screen.top.polygons, write_polygon'access);
+				iterate (module.board.silk_screen.top.texts, write_text'access);
+				iterate (module.board.silk_screen.top.placeholders, write_placeholder'access);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (et_schematic.module.board.silk_screen.bottom.lines, write_line'access);
-				iterate (et_schematic.module.board.silk_screen.bottom.arcs, write_arc'access);
-				iterate (et_schematic.module.board.silk_screen.bottom.circles, write_circle'access);
-				iterate (et_schematic.module.board.silk_screen.bottom.polygons, write_polygon'access);
-				iterate (et_schematic.module.board.silk_screen.bottom.texts, write_text'access);
-				iterate (et_schematic.module.board.silk_screen.bottom.placeholders, write_placeholder'access);
+				iterate (module.board.silk_screen.bottom.lines, write_line'access);
+				iterate (module.board.silk_screen.bottom.arcs, write_arc'access);
+				iterate (module.board.silk_screen.bottom.circles, write_circle'access);
+				iterate (module.board.silk_screen.bottom.polygons, write_polygon'access);
+				iterate (module.board.silk_screen.bottom.texts, write_text'access);
+				iterate (module.board.silk_screen.bottom.placeholders, write_placeholder'access);
 				section_mark (section_bottom, FOOTER);
 			
 			section_mark (section_silk_screen, FOOTER);
@@ -1907,21 +1907,21 @@ package body et_project is
 			section_mark (section_assembly_doc, HEADER);
 
 			section_mark (section_top, HEADER);
-				iterate (et_schematic.module.board.assy_doc.top.lines, write_line'access);
-				iterate (et_schematic.module.board.assy_doc.top.arcs, write_arc'access);
-				iterate (et_schematic.module.board.assy_doc.top.circles, write_circle'access);
-				iterate (et_schematic.module.board.assy_doc.top.polygons, write_polygon'access);
-				iterate (et_schematic.module.board.assy_doc.top.texts, write_text'access);
-				iterate (et_schematic.module.board.assy_doc.top.placeholders, write_placeholder'access);
+				iterate (module.board.assy_doc.top.lines, write_line'access);
+				iterate (module.board.assy_doc.top.arcs, write_arc'access);
+				iterate (module.board.assy_doc.top.circles, write_circle'access);
+				iterate (module.board.assy_doc.top.polygons, write_polygon'access);
+				iterate (module.board.assy_doc.top.texts, write_text'access);
+				iterate (module.board.assy_doc.top.placeholders, write_placeholder'access);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (et_schematic.module.board.assy_doc.bottom.lines, write_line'access);
-				iterate (et_schematic.module.board.assy_doc.bottom.arcs, write_arc'access);
-				iterate (et_schematic.module.board.assy_doc.bottom.circles, write_circle'access);
-				iterate (et_schematic.module.board.assy_doc.bottom.polygons, write_polygon'access);
-				iterate (et_schematic.module.board.assy_doc.bottom.texts, write_text'access);
-				iterate (et_schematic.module.board.assy_doc.bottom.placeholders, write_placeholder'access);
+				iterate (module.board.assy_doc.bottom.lines, write_line'access);
+				iterate (module.board.assy_doc.bottom.arcs, write_arc'access);
+				iterate (module.board.assy_doc.bottom.circles, write_circle'access);
+				iterate (module.board.assy_doc.bottom.polygons, write_polygon'access);
+				iterate (module.board.assy_doc.bottom.texts, write_text'access);
+				iterate (module.board.assy_doc.bottom.placeholders, write_placeholder'access);
 				section_mark (section_bottom, FOOTER);
 
 			section_mark (section_assembly_doc, FOOTER);
@@ -1930,17 +1930,17 @@ package body et_project is
 			section_mark (section_stencil, HEADER);
 
 			section_mark (section_top, HEADER);
-				iterate (et_schematic.module.board.stencil.top.lines, write_line'access);
-				iterate (et_schematic.module.board.stencil.top.arcs, write_arc'access);
-				iterate (et_schematic.module.board.stencil.top.circles, write_circle'access);
-				iterate (et_schematic.module.board.stencil.top.polygons, write_polygon'access);
+				iterate (module.board.stencil.top.lines, write_line'access);
+				iterate (module.board.stencil.top.arcs, write_arc'access);
+				iterate (module.board.stencil.top.circles, write_circle'access);
+				iterate (module.board.stencil.top.polygons, write_polygon'access);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (et_schematic.module.board.stencil.bottom.lines, write_line'access);
-				iterate (et_schematic.module.board.stencil.bottom.arcs, write_arc'access);
-				iterate (et_schematic.module.board.stencil.bottom.circles, write_circle'access);
-				iterate (et_schematic.module.board.stencil.bottom.polygons, write_polygon'access);
+				iterate (module.board.stencil.bottom.lines, write_line'access);
+				iterate (module.board.stencil.bottom.arcs, write_arc'access);
+				iterate (module.board.stencil.bottom.circles, write_circle'access);
+				iterate (module.board.stencil.bottom.polygons, write_polygon'access);
 				section_mark (section_bottom, FOOTER);
 
 			section_mark (section_stencil, FOOTER);
@@ -1949,19 +1949,19 @@ package body et_project is
 			section_mark (section_stop_mask, HEADER);
 
 			section_mark (section_top, HEADER);
-				iterate (et_schematic.module.board.stop_mask.top.lines, write_line'access);
-				iterate (et_schematic.module.board.stop_mask.top.arcs, write_arc'access);
-				iterate (et_schematic.module.board.stop_mask.top.circles, write_circle'access);
-				iterate (et_schematic.module.board.stop_mask.top.polygons, write_polygon'access);
-				iterate (et_schematic.module.board.stop_mask.top.texts, write_text'access);			
+				iterate (module.board.stop_mask.top.lines, write_line'access);
+				iterate (module.board.stop_mask.top.arcs, write_arc'access);
+				iterate (module.board.stop_mask.top.circles, write_circle'access);
+				iterate (module.board.stop_mask.top.polygons, write_polygon'access);
+				iterate (module.board.stop_mask.top.texts, write_text'access);			
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (et_schematic.module.board.stop_mask.bottom.lines, write_line'access);
-				iterate (et_schematic.module.board.stop_mask.bottom.arcs, write_arc'access);
-				iterate (et_schematic.module.board.stop_mask.bottom.circles, write_circle'access);
-				iterate (et_schematic.module.board.stop_mask.bottom.polygons, write_polygon'access);
-				iterate (et_schematic.module.board.stop_mask.bottom.texts, write_text'access);
+				iterate (module.board.stop_mask.bottom.lines, write_line'access);
+				iterate (module.board.stop_mask.bottom.arcs, write_arc'access);
+				iterate (module.board.stop_mask.bottom.circles, write_circle'access);
+				iterate (module.board.stop_mask.bottom.polygons, write_polygon'access);
+				iterate (module.board.stop_mask.bottom.texts, write_text'access);
 				section_mark (section_bottom, FOOTER);
 
 			section_mark (section_stop_mask, FOOTER);
@@ -1970,18 +1970,18 @@ package body et_project is
 			section_mark (section_keepout, HEADER);
 
 			section_mark (section_top, HEADER);
-				iterate (et_schematic.module.board.keepout.top.lines, write_line'access);
-				iterate (et_schematic.module.board.keepout.top.arcs, write_arc'access);
-				iterate (et_schematic.module.board.keepout.top.circles, write_circle'access);
-				iterate (et_schematic.module.board.keepout.top.polygons, write_polygon'access);
+				iterate (module.board.keepout.top.lines, write_line'access);
+				iterate (module.board.keepout.top.arcs, write_arc'access);
+				iterate (module.board.keepout.top.circles, write_circle'access);
+				iterate (module.board.keepout.top.polygons, write_polygon'access);
 				-- CS iterate (et_schematic.module.board.keepout.top.texts, write_text'access);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (et_schematic.module.board.keepout.bottom.lines, write_line'access);
-				iterate (et_schematic.module.board.keepout.bottom.arcs, write_arc'access);
-				iterate (et_schematic.module.board.keepout.bottom.circles, write_circle'access);
-				iterate (et_schematic.module.board.keepout.bottom.polygons, write_polygon'access);
+				iterate (module.board.keepout.bottom.lines, write_line'access);
+				iterate (module.board.keepout.bottom.arcs, write_arc'access);
+				iterate (module.board.keepout.bottom.circles, write_circle'access);
+				iterate (module.board.keepout.bottom.polygons, write_polygon'access);
 				-- CS iterate (et_schematic.module.board.keepout.bottom.texts, write_text'access);
 				section_mark (section_bottom, FOOTER);
 
@@ -1989,37 +1989,37 @@ package body et_project is
 
 			-- ROUTE RESTRICT
 			section_mark (section_route_restrict, HEADER);
-				iterate (et_schematic.module.board.route_restrict.lines, write_line'access);
-				iterate (et_schematic.module.board.route_restrict.arcs, write_arc'access);
-				iterate (et_schematic.module.board.route_restrict.circles, write_circle'access);
-				iterate (et_schematic.module.board.route_restrict.polygons, write_polygon'access);
+				iterate (module.board.route_restrict.lines, write_line'access);
+				iterate (module.board.route_restrict.arcs, write_arc'access);
+				iterate (module.board.route_restrict.circles, write_circle'access);
+				iterate (module.board.route_restrict.polygons, write_polygon'access);
 				-- CS iterate (et_schematic.module.board.route_restrict.texts, write_text'access);
 			section_mark (section_route_restrict, FOOTER);
 
 			-- VIA RESTRICT
 			section_mark (section_via_restrict, HEADER);
-				iterate (et_schematic.module.board.via_restrict.lines, write_line'access);
-				iterate (et_schematic.module.board.via_restrict.arcs, write_arc'access);
-				iterate (et_schematic.module.board.via_restrict.circles, write_circle'access);
-				iterate (et_schematic.module.board.via_restrict.polygons, write_polygon'access);
+				iterate (module.board.via_restrict.lines, write_line'access);
+				iterate (module.board.via_restrict.arcs, write_arc'access);
+				iterate (module.board.via_restrict.circles, write_circle'access);
+				iterate (module.board.via_restrict.polygons, write_polygon'access);
 				-- CS iterate (et_schematic.module.board.via_restrict.texts, write_text'access);
 			section_mark (section_via_restrict, FOOTER);
 
 			-- COPPER (NON-ELECTRIC)
 			section_mark (section_copper, HEADER);
-				iterate (et_schematic.module.board.copper.lines, write_line'access);
-				iterate (et_schematic.module.board.copper.arcs, write_arc'access);
-				iterate (et_schematic.module.board.copper.circles, write_circle'access);
-				iterate (et_schematic.module.board.copper.polygons, write_polygon'access);
-				iterate (et_schematic.module.board.copper.texts, write_text'access);
-				iterate (et_schematic.module.board.copper.placeholders, write_placeholder'access);
+				iterate (module.board.copper.lines, write_line'access);
+				iterate (module.board.copper.arcs, write_arc'access);
+				iterate (module.board.copper.circles, write_circle'access);
+				iterate (module.board.copper.polygons, write_polygon'access);
+				iterate (module.board.copper.texts, write_text'access);
+				iterate (module.board.copper.placeholders, write_placeholder'access);
 			section_mark (section_copper, FOOTER);
 
 			-- BOARD CONTOUR
 			section_mark (section_pcb_contours, HEADER);
-				iterate (et_schematic.module.board.contour.lines, write_line'access);
-				iterate (et_schematic.module.board.contour.arcs, write_arc'access);
-				iterate (et_schematic.module.board.contour.circles, write_circle'access);
+				iterate (module.board.contour.lines, write_line'access);
+				iterate (module.board.contour.arcs, write_arc'access);
+				iterate (module.board.contour.circles, write_circle'access);
 			section_mark (section_pcb_contours, FOOTER);
 			
 			---BOARD END-----
@@ -12165,11 +12165,12 @@ package body et_project is
 		begin
 			log_indentation_up;
 			log ("module " & to_string (module_name), log_threshold + 1);
-			et_schematic.module := element (module_cursor);
+-- 			et_schematic.module := element (module_cursor);
 
 			log_indentation_up;
 			
 			save_module (
+				module			=> element (module_cursor), -- the module it is about
 				project_name	=> name, -- blood_sample_analyzer
 				module_name		=> module_name,	-- motor_driver
 				project_path	=> path, -- /home/user/ecad

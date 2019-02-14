@@ -250,13 +250,13 @@ package et_project is
 	-- Saves the rig configuration in the file with the given name rig_conf_file.	
 	
 	procedure save_module (
+		module			: in et_schematic.type_module;				-- the module
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		module_name		: in type_submodule_name.bounded_string := type_submodule_name.to_bounded_string ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level);
-	-- Saves the schematic and layout data (stored in et_schematic.module) in the module file
+	-- Saves the given module (incl. schematic and layout data) in the module file
 	-- of the given project.
-	-- CS: It might be better to pass a module (et_schematic.type_module) directly instead. See save_symbol, save_package, save_device.	
 	-- If module_name not provided, the module will be named after the given project_name.
 
 

@@ -3792,10 +3792,10 @@ package body et_kicad_to_native is
 			query_element (
 				position	=> module_cursor_kicad,
 				process		=> copy_libraries'access);
-
 			
-			-- save module (from et_schematic.module to module file *.mod)
+			-- save module in file *.mod
 			et_project.save_module (
+				module			=> et_schematic.module, -- the module it is about
 				project_name	=> project_name, -- blood_sample_analyzer
 				project_path	=> project_path, -- /home/user/et_projects/imported_from_kicad
 				log_threshold	=> log_threshold);
