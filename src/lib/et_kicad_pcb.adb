@@ -4227,12 +4227,15 @@ package body et_kicad_pcb is
 											package_text.content := to_bounded_string (to_string (arg));
 											-- CS character check
 
-											if value_length_valid (to_string (arg)) then 
+											if not value_length_valid (to_string (arg)) then 
 												null; -- CS write something useful
 											end if;
 											
 											package_value := et_libraries.to_value (to_string (arg));
-											check_value_characters (package_value);
+											
+											if not value_characters_valid (package_value) then
+												null; -- CS write something useful
+											end if;
 											
 										when USER =>
 											-- CS length check

@@ -437,11 +437,12 @@ package et_libraries is
 
 	function truncate (value : in string) return type_component_value.bounded_string;
 	
-	procedure check_value_characters (
-		value : in type_component_value.bounded_string;
-		characters : in character_set := component_value_characters);
+	function value_characters_valid (
+		value		: in type_component_value.bounded_string;
+		characters	: in character_set := component_value_characters)
+		return boolean;
 	-- Tests if the given value contains only valid characters as specified
-	-- by given character set. Raises exception if invalid character found.
+	-- by given character set. Returns false if invalid character found.
 	
 
 

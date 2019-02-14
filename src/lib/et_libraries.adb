@@ -802,12 +802,12 @@ package body et_libraries is
 		return to_value (value_out);
 	end truncate;
 	
-	procedure check_value_characters (
-		value : in type_component_value.bounded_string;
-		characters : in character_set := component_value_characters) is
+	function value_characters_valid (
+		value		: in type_component_value.bounded_string;
+		characters	: in character_set := component_value_characters) 
+		return boolean is
 	-- Tests if the given value contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
+	-- by given character set. Returns false if invalid character found.
 		use et_string_processing;
 		use type_component_value;
 		invalid_character_position : natural := 0;
@@ -818,17 +818,15 @@ package body et_libraries is
 			test => outside);
 
 		if invalid_character_position > 0 then
-			log_indentation_reset;
-			log (message_error & "component value " & to_string (value) 
+			log (message_warning & "value " & to_string (value) 
 				 & " has invalid character at position"
-				 & natural'image (invalid_character_position),
-				 console => true
+				 & natural'image (invalid_character_position)
 				);
-			raise constraint_error;
+			return false;
+		else
+			return true;
 		end if;
-	end check_value_characters;
-
-
+	end value_characters_valid;
 	
 	function to_string (prefix : in type_component_prefix.bounded_string) return string is
 	-- returns the given prefix as string

@@ -1767,12 +1767,13 @@ package body et_kicad is
 							characters => et_kicad.component_prefix_characters);
 					
 					when VALUE =>
-						if value_length_valid (content (text)) then
+						if not value_length_valid (content (text)) then
 							null; -- CS write something helpful
 						end if;
 						
-						check_value_characters (to_value (content (text)));
-						
+						if not value_characters_valid (to_value (content (text))) then
+							null; -- CS write something helpful
+						end if;						
 					
 					when DATASHEET =>
 						check_datasheet_length (content (text));
@@ -8177,10 +8178,13 @@ package body et_kicad is
 							when component_field_value =>
 								field_value_found := true;
 								field_value := to_field;
-								if value_length_valid (content (field_value)) then
+								if not value_length_valid (content (field_value)) then
 									null; -- CS write something useful
 								end if;
-								check_value_characters (to_value (content (field_value)));
+
+								if not value_characters_valid (to_value (content (field_value))) then
+									null; -- CS write something useful
+								end if;
 								
 							when component_field_package =>
 								field_package_found := true;

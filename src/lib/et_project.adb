@@ -6322,6 +6322,10 @@ package body et_project is
 								else
 									value := et_libraries.truncate (f (line, 2));
 								end if;
+
+								if not et_libraries.value_characters_valid (value) then
+									null; -- CS output something helpful
+								end if;
 								
 								log ("value " & to_string (value), log_threshold + 1);
 
@@ -7980,6 +7984,11 @@ package body et_project is
 
 						-- assign appearance specific temporarily variables and write log information
 						if device.appearance = et_libraries.SCH_PCB then
+
+							if not et_libraries.value_characters_valid (device_value) then
+								null; -- CS output something helpful
+							end if;
+							
 							log ("value " & et_libraries.to_string (device_value), log_threshold + 3);
 							device.value	:= device_value;
 
