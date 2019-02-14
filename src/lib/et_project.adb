@@ -11304,6 +11304,7 @@ package body et_project is
 										-- CS: In the following: set a corresponding parameter-found-flag
 										if kw = keyword_name then -- name C12
 											expect_field_count (line, 2);
+
 											device_name := et_schematic.to_component_reference (f (line, 2));
 
 										-- As soon as the appearance becomes clear, a temporarily device is

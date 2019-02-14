@@ -52,7 +52,7 @@ with ada.exceptions; 			use ada.exceptions;
 with et_string_processing;
 with et_coordinates;
 with et_import;
-with et_configuration;
+--with et_configuration;
 
 package body et_libraries is
 
