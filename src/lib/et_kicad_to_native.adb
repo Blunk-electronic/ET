@@ -2338,12 +2338,10 @@ package body et_kicad_to_native is
 	
 	procedure to_native (log_threshold : in et_string_processing.type_log_level) is
 	-- Converts the kicad module (incl. component libraries) to a native module.
-	-- Stores the native module data in et_schematic.module.
 	-- Converts the packages (from package_libraries) to native packages.
 	-- NOTE: Packages of the board (incl. their deviations/modifications
 	-- from the package_libraries) are ignored !
-	-- Saves the content of et_schematic.module in project_path (see below) in a
-	-- module file (*.mod).
+	-- Saves the module in project_path (see below) in a module file (*.mod).
 
 		-- When the native project is created we need a project path and a project name:
 		project_path : et_project.type_et_project_path.bounded_string :=
@@ -2366,10 +2364,10 @@ package body et_kicad_to_native is
 		use et_kicad.type_modules;
 		module_cursor_kicad : et_kicad.type_modules.cursor := et_kicad.type_modules.first (et_kicad.modules);
 
-
-		procedure copy_general_stuff is
-			use et_schematic;
-		begin
+		-- This is a single native target module used as scratch.
+		module : et_schematic.type_module; 
+		
+		procedure copy_general_stuff is begin
 			module.board_available	:= element (module_cursor_kicad).board_available;
 			module.texts			:= element (module_cursor_kicad).notes; 
 			module.board			:= et_pcb.type_board (element (module_cursor_kicad).board);
@@ -2438,7 +2436,6 @@ package body et_kicad_to_native is
 
 			return model_return;
 		end rename_package_model;
-
 		
 		procedure copy_components is
 		-- Transfer components from kicad module to native module.
@@ -2913,8 +2910,8 @@ package body et_kicad_to_native is
 		-- CS: not completed yet.
 		-- For the time being the native module gets dummy templates assigned.
 		begin
-			et_schematic.module.frame_template_schematic := et_libraries.frame_template_name_dummy;
-			et_schematic.module.frame_template_board := et_libraries.frame_template_name_dummy;
+			module.frame_template_schematic := et_libraries.frame_template_name_dummy;
+			module.frame_template_board := et_libraries.frame_template_name_dummy;
 		end copy_frames;
 		
 		procedure copy_libraries (
@@ -3741,7 +3738,7 @@ package body et_kicad_to_native is
 
 		use et_project.type_project_name;
 		project_name : et_project.type_project_name.bounded_string; -- blood_sample_analyzer
-	
+
 	begin -- to_native
 	
 		-- First, the kicad designs (currently there is only one) must be flattened so that we get real flat designs.
@@ -3768,10 +3765,9 @@ package body et_kicad_to_native is
 				project_name	=> project_name, 		-- blood_sample_analyzer
 				project_path	=> project_path, 		-- /home/user/et_projects/imported_from_kicad
 				log_threshold 	=> log_threshold + 2);
-
 			
 			-- Clear scratch module because in the following everything goes there.
-			et_schematic.module := (others => <>);
+			module := (others => <>);
 			
 			copy_general_stuff;
 
@@ -3795,7 +3791,7 @@ package body et_kicad_to_native is
 			
 			-- save module in file *.mod
 			et_project.save_module (
-				module			=> et_schematic.module, -- the module it is about
+				module			=> module, -- the module it is about
 				project_name	=> project_name, -- blood_sample_analyzer
 				project_path	=> project_path, -- /home/user/et_projects/imported_from_kicad
 				log_threshold	=> log_threshold);

@@ -470,13 +470,8 @@ package et_schematic is
 		board			: et_pcb.type_board;
 	end record;
 
-	
-	-- This is a single native target module used as scratch.
-	-- Make sure it is cleared before use ! --> via statement: et_schematic.module := (others => <>); 
-	module : et_schematic.type_module; 
-	
 
-   
+	
 -- MISC
 	type type_danger is (
 		FLOATING_INPUT,
