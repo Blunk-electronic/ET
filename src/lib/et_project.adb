@@ -6315,7 +6315,14 @@ package body et_project is
 
 							elsif kw = keyword_value then -- value 7400
 								expect_field_count (line, 2);
-								value := et_libraries.to_value (f (line,2));
+
+								-- validate value length. truncate if too long.
+								if et_libraries.value_length_valid (f (line, 2)) then
+									value := et_libraries.to_value (f (line,2));
+								else
+									value := et_libraries.truncate (f (line, 2));
+								end if;
+								
 								log ("value " & to_string (value), log_threshold + 1);
 
 							elsif kw = keyword_appearance then -- appearance sch_pcb
@@ -11310,7 +11317,13 @@ package body et_project is
 													
 										elsif kw = keyword_value then -- value 100n
 											expect_field_count (line, 2);
-											device_value := et_libraries.to_value (f (line, 2));
+
+											-- validate value length. truncate if too long.
+											if et_libraries.value_length_valid (f (line, 2)) then
+												device_value := et_libraries.to_value (f (line, 2));
+											else
+												device_value := et_libraries.truncate (f (line, 2));
+											end if;
 
 										elsif kw = keyword_model then -- model /models/capacitor.dev
 											expect_field_count (line, 2);

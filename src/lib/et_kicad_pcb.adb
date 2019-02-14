@@ -4227,7 +4227,10 @@ package body et_kicad_pcb is
 											package_text.content := to_bounded_string (to_string (arg));
 											-- CS character check
 
-											check_value_length (to_string (arg));
+											if value_length_valid (to_string (arg)) then 
+												null; -- CS write something useful
+											end if;
+											
 											package_value := et_libraries.to_value (to_string (arg));
 											check_value_characters (package_value);
 											

@@ -777,18 +777,30 @@ package body et_libraries is
 		return type_component_value.to_bounded_string (value);
 	end to_value;
 	
-	procedure check_value_length (value : in string) is
-	-- Tests if the given value is longer than allowed.
+	function value_length_valid (value : in string) return boolean is
+	-- Tests if the given value is longer than allowed. Returns false if too long.
+	-- Returns true if length is in allowed range.		
 		use et_string_processing;
 	begin
 		if value'length > component_value_length_max then
-			log_indentation_reset;
-			log (message_error & "max. number of characters for value is" 
-				 & positive'image (component_value_length_max) & " !",
-				console => true);
-			raise constraint_error;
+			log (message_warning & "value " & value & " is longer than" 
+				 & positive'image (component_value_length_max) & " characters !");
+			return false;
+		else
+			return true;
 		end if;
-	end check_value_length;
+	end value_length_valid;
+
+	function truncate (value : in string) return type_component_value.bounded_string is
+		value_out : string (1 .. component_value_length_max);
+		use et_string_processing;
+	begin
+		value_out := value ((value'first) 
+							.. value'first - 1 + component_value_length_max);
+
+		log (message_warning & "value will be truncated to " & value_out);
+		return to_value (value_out);
+	end truncate;
 	
 	procedure check_value_characters (
 		value : in type_component_value.bounded_string;

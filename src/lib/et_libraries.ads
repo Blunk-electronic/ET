@@ -431,8 +431,11 @@ package et_libraries is
 
 	function to_value (value : in string) return type_component_value.bounded_string;
 	
-	procedure check_value_length (value : in string);
-	-- Tests if the given value is longer than allowed.
+	function value_length_valid (value : in string) return boolean;
+	-- Tests if the given value is longer than allowed. Returns false if too long.
+	-- Returns true if length is in allowed range.
+
+	function truncate (value : in string) return type_component_value.bounded_string;
 	
 	procedure check_value_characters (
 		value : in type_component_value.bounded_string;
