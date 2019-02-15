@@ -480,7 +480,7 @@ package et_libraries is
 
 	function to_string (ref_id : in type_component_reference_id) return string;
 	function to_reference_id (ref_id : in string) return type_component_reference_id;
-	
+
 	subtype type_component_reference_id_width is positive range positive'first .. 5; -- see number of digits of type_component_reference_id
 	
 	type type_component_reference is record -- CS: should be private
@@ -489,6 +489,13 @@ package et_libraries is
 		id_width	: type_component_reference_id_width; -- the number of digits of the id. 3 in case of an id of 303
 		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
 	end record;
+
+	function to_device_name (
+	-- Converts a string like "IC303" to a composite type_component_reference.
+	-- NOTE: Leading zeroes in the id are removed.
+	-- CS: text prefix characters against character set component_prefix_characters
+		text_in : in string)
+		return type_component_reference;
 	
 	function to_string (reference : in type_component_reference) return string;
 	-- Returns the given component reference as string.
@@ -496,18 +503,6 @@ package et_libraries is
 	
 	function prefix (reference : in type_component_reference) return type_component_prefix.bounded_string;
 	-- Returns the prefix of the given component reference.
-
-	-- These characters are allowed for a component reference. 
-	-- This character set is used for prechecking references (like IC904) if provided as string together
-	-- with procedure check_reference_characters.
-	component_reference_characters : character_set := component_prefix_characters or to_set (span => ('0','9'));
-	procedure check_reference_characters (
-	-- Tests if the given reference (as string) contains valid characters.
-	-- Unless a special character set is passed, it defaults to component_reference_characters.
-		reference : in string; -- IC904
-		characters : in character_set := component_reference_characters);
-
-
 
 	
 -- COMPONENT APPEARANCE	

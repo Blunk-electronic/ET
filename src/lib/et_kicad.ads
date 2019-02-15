@@ -571,6 +571,16 @@ package et_kicad is
 	function units_of_component (component_cursor : in type_components_schematic.cursor) return type_units_schematic.map;
 	-- Returns the units of the given component.
 
+	function to_component_reference (	
+	-- Converts a string like "IC303" to a composite type_component_reference.
+	-- If allow_special_character_in_prefix is given true, the first character
+	-- is allowed to be a special character (like in #FLG01).
+	-- NOTE: Leading zeroes in the id are removed.
+		text_in			: in string;
+		leading_hash	: in boolean := false)
+		return et_libraries.type_component_reference;
+
+	
 	procedure write_component_properties (
 	-- Writes the properties of the component indicated by the given cursor.
 		component 		: in type_components_schematic.cursor;

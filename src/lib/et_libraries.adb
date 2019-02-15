@@ -52,7 +52,7 @@ with ada.exceptions; 			use ada.exceptions;
 with et_string_processing;
 with et_coordinates;
 with et_import;
---with et_configuration;
+with et_configuration;
 
 package body et_libraries is
 
@@ -882,6 +882,92 @@ package body et_libraries is
 	function to_reference_id (ref_id : in string) return type_component_reference_id is begin
 		return type_component_reference_id'value (ref_id);
 	end to_reference_id;
+
+	function to_device_name (
+	-- Converts a string like "IC303" to a composite type_component_reference.
+	-- NOTE: Leading zeroes in the id are removed.
+		text_in : in string)
+		return type_component_reference is
+		use et_libraries;
+
+		-- justify given text_in on the left
+		text_in_justified : string (1 .. text_in'length) := text_in;
+	
+		r : type_component_reference := (
+				prefix		=> type_component_prefix.to_bounded_string(""),
+				id 			=> 0,
+				id_width	=> 1);
+	
+		c : character;
+		p : type_component_prefix.bounded_string;
+	
+		procedure invalid_reference is
+			use et_string_processing;
+		begin
+			log (text => latin_1.lf & message_error & "invalid device name '" 
+				 & text_in_justified & "'", console => true);
+			-- CS show position of affected character ?
+			raise constraint_error;
+		end invalid_reference;
+
+		d : positive;
+		digit : natural := 0;
+
+		use et_libraries.type_component_prefix;
+
+	begin -- to_device_name
+		-- assemble prefix
+		for i in text_in_justified'first .. text_in_justified'last loop
+			c := text_in_justified(i);
+			
+			case i is 
+				-- The first character MUST be a valid prefix character.
+				when 1 => 
+					if is_in (c, component_prefix_characters) then
+						r.prefix := r.prefix & c;
+					else 
+						invalid_reference;
+					end if;
+					
+				-- Further characters are appended to prefix if they are valid prefix characters.
+				-- If anything else is found, the prefix is assumed as complete.
+				when others =>
+					if is_in (c, component_prefix_characters) then
+						r.prefix := r.prefix & c;
+					else
+						-- CS: check if allowed prefix
+						d := i; -- d holds the position of the charcter after the prefix.
+							-- d is requried when reading the component id. see below.
+						exit;
+					end if;
+			end case;
+		end loop;
+
+		-- assemble id
+		-- Start with the last character in text_in_justified.
+		-- Finish at the position d (that is the first digit after the last letter, see above).
+		-- All the characters within this range must be digits.
+		-- The significance of the digit is increased after each pass.
+		for i in reverse d .. text_in_justified'last loop
+			c := text_in_justified(i);
+			
+			if is_digit(c) then
+				r.id := r.id + 10**digit * natural'value(1 * c);
+			else
+				invalid_reference;
+			end if;
+
+			digit := digit + 1; -- increase digit significance (10**0, 10**1, ...)
+		end loop;
+
+		-- Set the id width.
+		-- It is the number of digits processed when the id was assembled (see above).
+		-- Example: if the given string was IC002 then digit is 3.
+		r.id_width := digit;
+		
+		return r;
+	end to_device_name;
+
 	
 	function to_string (
 		appearance	: in type_component_appearance;
@@ -1588,31 +1674,6 @@ package body et_libraries is
 		return reference.prefix;
 	end prefix;
 
-	procedure check_reference_characters (
-	-- Tests if the given reference like IC702 (as string) contains valid characters.
-	-- Unless a special character set is passed, it defaults to component_reference_characters.
-		reference : in string; -- IC704
-		characters : in character_set := component_reference_characters) is
-
-		use et_string_processing;
-		invalid_character_position : natural := 0;
-	begin
-		invalid_character_position := index (
-			source => reference,
-			set => characters,
-			test => outside);
-
-		if invalid_character_position > 0 then
-			log_indentation_reset;
-			log (message_error & "component reference " & to_string (packge) 
-				 & " has invalid character at position"
-				 & natural'image (invalid_character_position),
-				console => true
-				);
-			raise constraint_error;
-		end if;
-	end check_reference_characters;
-	
 	
 end et_libraries;
 

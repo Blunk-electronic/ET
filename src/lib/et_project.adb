@@ -10175,7 +10175,7 @@ package body et_project is
 										if kw = keyword_device then
 											expect_field_count (line, 4);
 
-											net_port.reference := et_schematic.to_component_reference (f (line, 2)); -- IC3
+											net_port.reference := et_libraries.to_device_name (f (line, 2)); -- IC3
 
 											if f (line, 3) = keyword_port then -- port
 												net_port.name := et_libraries.to_port_name (f (line, 4)); -- CE
@@ -11304,8 +11304,7 @@ package body et_project is
 										-- CS: In the following: set a corresponding parameter-found-flag
 										if kw = keyword_name then -- name C12
 											expect_field_count (line, 2);
-
-											device_name := et_schematic.to_component_reference (f (line, 2));
+											device_name := et_libraries.to_device_name (f (line, 2));
 
 										-- As soon as the appearance becomes clear, a temporarily device is
 										-- created where pointer "device" is pointing at:

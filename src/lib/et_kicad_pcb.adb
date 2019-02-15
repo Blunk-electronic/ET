@@ -4218,7 +4218,7 @@ package body et_kicad_pcb is
 											package_text.content := to_bounded_string (to_string (arg));
 											-- CS character check
 
-											package_reference := et_schematic.to_component_reference (to_string (arg));
+											package_reference := et_kicad.to_component_reference (to_string (arg));
 											
 										when VALUE =>
 											-- The value (like 220R) is both the text content and the value itself.

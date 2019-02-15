@@ -285,6 +285,109 @@ package body et_kicad is
 		-- CS: do something if cursor invalid. via exception handler ?
 		return u;
 	end units_of_component;
+
+	function to_component_reference (	
+	-- Converts a string like "IC303" to a composite type_component_reference.
+	-- If allow_special_character_in_prefix is given true, the first character
+	-- is allowed to be a special character (like in #FLG01).
+	-- NOTE: Leading zeroes in the id are removed.
+		text_in			: in string;
+		leading_hash	: in boolean := false
+		) return et_libraries.type_component_reference is
+		use et_libraries;
+
+		-- justify given text_in on the left
+		text_in_justified : string (1 .. text_in'length) := text_in;
+	
+		r : type_component_reference := (
+				prefix 		=> type_component_prefix.to_bounded_string(""),
+				id 			=> 0,
+				id_width	=> 1);
+	
+		c : character;
+		p : type_component_prefix.bounded_string;
+	
+		procedure invalid_reference is
+			use et_string_processing;
+		begin
+			log (text => latin_1.lf & message_error & "invalid component reference '" & text_in_justified & "'",
+				console => true);
+			
+			raise constraint_error;
+		end invalid_reference;
+
+		d : positive;
+		digit : natural := 0;
+
+		use et_libraries.type_component_prefix;
+	begin -- to_component_reference
+		-- assemble prefix
+		for i in text_in_justified'first .. text_in_justified'last loop
+			c := text_in_justified (i);
+			
+			case i is 
+				-- The first character MUST be a valid prefix character.
+				-- If allow_special_charater_in_prefix then the first letter is
+				-- allowed to be a special character. (kicad uses '#' for power symbols)
+				when 1 => 
+					case leading_hash is
+						when false =>
+							if is_in (c, component_prefix_characters) then
+								r.prefix := r.prefix & c;
+							else 
+								invalid_reference;
+							end if;
+
+						when true =>
+							if is_in (c, component_prefix_characters) or is_special(c) then -- CS: test for et_kicad.schematic_component_power_symbol_prefix instead.
+								r.prefix := r.prefix & c;
+							else 
+								invalid_reference;
+							end if;
+					end case;
+					
+				-- Further characters are appended to prefix if they are valid prefix characters.
+				-- If anything else is found, the prefix is assumed as complete.
+				when others =>
+					if is_in (c, component_prefix_characters) then
+						r.prefix := r.prefix & c;
+					else
+						d := i; -- d holds the position of the charcter after the prefix.
+							-- d is requried when reading the component id. see below.
+						exit;
+					end if;
+			end case;
+		end loop;
+
+		-- assemble id
+		-- Start with the last character in text_in_justified.
+		-- Finish at the position d (that is the first digit after the last letter, see above).
+		-- All the characters within this range must be digits.
+		-- The significance of the digit is increased after each pass.
+		for i in reverse d .. text_in_justified'last loop
+			c := text_in_justified(i);
+			
+			if is_digit(c) then
+				r.id := r.id + 10**digit * natural'value(1 * c);
+			else
+				invalid_reference;
+			end if;
+
+			digit := digit + 1; -- increase digit significance (10**0, 10**1, ...)
+		end loop;
+
+		-- Set the id width.
+		-- It is the number of digits processed when the id was assembled (see above).
+		-- Example: if the given string was IC002 then digit is 3.
+		r.id_width := digit;
+		
+-- 		put_line(" id    " & natural'image(r.id));
+-- 		put_line(" digits" & natural'image(r.id_width));
+		
+		return r;
+	end to_component_reference;
+
+
 	
 	function component_reference (cursor : in type_components_schematic.cursor) 
 		return et_libraries.type_component_reference is
@@ -1954,9 +2057,9 @@ package body et_kicad is
 								-- At library level there is no indexed prefix. Power flags have just 
 								-- the prefix "#FLG". So we can provide an arbitrary index for the conversion
 								-- function "to_power_flag".
-								power_flag		=> to_power_flag (et_schematic.to_component_reference (
-														text_in => to_string (tmp_prefix) & "0", -- #FLG0
-														allow_special_character_in_prefix => true)), -- because of the '#'
+								power_flag		=> to_power_flag (to_component_reference (
+											text_in			=> to_string (tmp_prefix) & "0", -- #FLG0
+											leading_hash	=> true)),
 
 								prefix			=> tmp_prefix,
 								value			=> to_value (content (field_value)),
@@ -7993,9 +8096,9 @@ package body et_kicad is
 					
 					-- extract the reference from field 3: example: Ref="#PWR03
 					-- NOTE: the trailing double quote is already gone.
-					ref := et_schematic.to_component_reference (
-							text_in 							=> et_string_processing.field (line, 3) (6.. (et_string_processing.field (line, 3)'last)),  -- #PWR03
-							allow_special_character_in_prefix	=> true);
+					ref := to_component_reference (
+							text_in 		=> et_string_processing.field (line, 3) (6.. (et_string_processing.field (line, 3)'last)),  -- #PWR03
+							leading_hash	=> true);
 
 -- 					log ("test", log_threshold + 1);
 -- 					log ("new reference " & et_libraries.to_string (ref), log_threshold + 1);  -- #PWR03
@@ -8097,8 +8200,8 @@ package body et_kicad is
 								-- Afterward we validate the prefix of the reference. It must be
 								-- a power symbol or a power flag (#PWR or #FLG).
 								reference := to_component_reference (
-									text_in => et_string_processing.field (et_kicad.line,3),
-									allow_special_character_in_prefix => true); 
+									text_in			=> et_string_processing.field (et_kicad.line,3),
+									leading_hash	=> true); 
 
 								log ("reference " & to_string (reference) & " (preliminary)", log_threshold);
 								validate_prefix (reference);
@@ -8110,8 +8213,8 @@ package body et_kicad is
 								-- It is about a REAL component. Its prefix must be one 
 								-- of those defined in the configuration file (see et_configuration).
 								reference := to_component_reference ( -- character check included
-									text_in => et_string_processing.field (et_kicad.line,3),
-									allow_special_character_in_prefix => false);
+									text_in			=> et_string_processing.field (et_kicad.line,3),
+									leading_hash	=> false);
 
 								log ("reference " & to_string (reference) & " (preliminary)", log_threshold);
 								
@@ -8169,9 +8272,6 @@ package body et_kicad is
 							when component_field_reference =>
 								field_reference_found := true;
 								field_reference := to_field;
-								check_reference_characters (
-									reference => content (field_reference),
-									characters => et_kicad.component_reference_characters);
 								-- NOTE: This is a redundant field. Its content must match the reference (see above).
 								-- This test is performed in procedure check_text_fields.
 								

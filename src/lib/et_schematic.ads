@@ -370,15 +370,6 @@ package et_schematic is
 	
 
 	
-	function to_component_reference (
-	-- Converts a string like "IC303" to a composite type_component_reference.
-	-- If allow_special_charater_in_prefix is given true, the first character
-	-- is allowed to be a special character. Like "#PWR07" as it is used by kicad.
-	-- NOTE: Leading zeroes in the id are removed.	
-		text_in : in string;
-		allow_special_character_in_prefix : in boolean := false) -- CS: provide CAD system specific character set instead
-		return et_libraries.type_component_reference;
-
 	function default_component_reference return et_libraries.type_component_reference;
 	-- Returns a default component reference with an empty prefix and and id 0.
 	-- Used to initialize a component reference.
