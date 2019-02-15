@@ -3468,7 +3468,16 @@ package body et_kicad_to_native is
 						next (variant_cursor);
 					end loop;
 				end rename_package_model_in_variants;
-					
+
+				function remove_leading_hash (
+				-- Removes the leading hash character from the prefix of a virtual component like #FLG or #PWR.
+					prefix : in et_libraries.type_component_prefix.bounded_string) return
+					et_libraries.type_component_prefix.bounded_string is
+					use et_libraries.type_component_prefix;
+				begin
+					return et_libraries.to_prefix (slice (prefix, 2, length (prefix))); -- FLG, PWR
+				end;
+				
 			begin -- query_components
 				while component_cursor /= et_kicad.type_components_library.no_element loop
 					generic_name := et_kicad.strip_tilde (key (component_cursor));
@@ -3490,7 +3499,7 @@ package body et_kicad_to_native is
 								key			=> device_model,
 								new_item	=> (
 									appearance		=> et_libraries.SCH,
-									prefix 			=> element (component_cursor).prefix,
+									prefix 			=> remove_leading_hash (element (component_cursor).prefix),
 									units_internal	=> <>, -- internal units will come later
 									units_external	=> <> -- kicad components do not have external symbols
 									-- NOTE: Kicad value of power symbols is discarded.
