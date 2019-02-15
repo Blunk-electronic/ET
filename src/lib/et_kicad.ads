@@ -575,7 +575,9 @@ package et_kicad is
 	-- Converts a string like "IC303" to a composite type_component_reference.
 	-- If allow_special_character_in_prefix is given true, the first character
 	-- is allowed to be a special character (like in #FLG01).
-	-- NOTE: Leading zeroes in the id are removed.
+	-- Raises constraint error if prefix contains invalid characters.
+	-- Raises constraint error if id contains non-digit characters.
+	-- Leading zeroes in the id are removed. R002 becomes R2.
 		text_in			: in string;
 		leading_hash	: in boolean := false)
 		return et_libraries.type_component_reference;

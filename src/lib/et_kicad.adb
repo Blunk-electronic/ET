@@ -286,11 +286,38 @@ package body et_kicad is
 		return u;
 	end units_of_component;
 
+	procedure check_prefix_characters (
+		prefix 		: in et_libraries.type_component_prefix.bounded_string;
+		characters	: in character_set) is
+	-- Tests if the given prefix contains only valid characters as specified
+	-- by given character set. Raises exception if invalid character found.
+		use et_string_processing;
+		use et_libraries.type_component_prefix;
+		invalid_character_position : natural := 0;
+	begin
+		invalid_character_position := index (
+			source	=> prefix,
+			set		=> characters,
+			test	=> outside);
+
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "component prefix " & to_string (prefix) 
+				 & " has invalid character at position"
+				 & natural'image (invalid_character_position),
+				console => true
+				);
+			raise constraint_error;
+		end if;
+	end check_prefix_characters;
+	
 	function to_component_reference (	
 	-- Converts a string like "IC303" to a composite type_component_reference.
 	-- If allow_special_character_in_prefix is given true, the first character
 	-- is allowed to be a special character (like in #FLG01).
-	-- NOTE: Leading zeroes in the id are removed.
+	-- Raises constraint error if prefix contains invalid characters.
+	-- Raises constraint error if id contains non-digit characters.
+	-- Leading zeroes in the id are removed. R002 becomes R2.
 		text_in			: in string;
 		leading_hash	: in boolean := false
 		) return et_libraries.type_component_reference is

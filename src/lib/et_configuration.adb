@@ -2680,7 +2680,7 @@ package body et_configuration is
 						-- We test against the default character set as specified in et_libraries.
 						check_prefix_length (et_string_processing.field (element (line_cursor), 1));
 						prefix := type_component_prefix.to_bounded_string (et_string_processing.field (element (line_cursor), 1));
-						check_prefix_characters (prefix, component_prefix_characters);
+						check_prefix_characters (prefix);
 
 						-- build the component category from field #2:
 						cat := to_category (et_string_processing.field (element (line_cursor), 2));

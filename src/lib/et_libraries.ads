@@ -465,11 +465,8 @@ package et_libraries is
 	procedure check_prefix_length (prefix : in string);
 	-- Tests if the given prefix is longer than allowed.
 	
-	procedure check_prefix_characters (
-		prefix		: in type_component_prefix.bounded_string;
-		characters	: in character_set);
-	-- Tests if the given prefix contains only valid characters as specified
-	-- by given character set.
+	procedure check_prefix_characters (prefix : in type_component_prefix.bounded_string);
+	-- Tests if the given prefix contains only valid characters.
 	-- Raises exception if invalid character found.
 	
 	type type_component_reference_element is (PREFIX, ID);
@@ -492,8 +489,9 @@ package et_libraries is
 
 	function to_device_name (
 	-- Converts a string like "IC303" to a composite type_component_reference.
-	-- NOTE: Leading zeroes in the id are removed.
-	-- CS: text prefix characters against character set component_prefix_characters
+	-- Raises constraint error if prefix contains invalid characters.
+	-- Raises constraint error if id contains non-digit characters.
+	-- Leading zeroes in the id are removed. R002 becomes R2.
 		text_in : in string)
 		return type_component_reference;
 	

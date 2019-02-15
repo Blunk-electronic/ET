@@ -52,7 +52,7 @@ with ada.exceptions; 			use ada.exceptions;
 with et_string_processing;
 with et_coordinates;
 with et_import;
-with et_configuration;
+with et_configuration; -- CS move related stuff to et_configuration
 
 package body et_libraries is
 
@@ -844,29 +844,27 @@ package body et_libraries is
 	begin
 		if prefix'length > component_prefix_length_max then
 			log_indentation_reset;
-			log (message_error & "max. number of characters for component prefix is" 
+			log (message_error & "max. number of characters for device name prefix is" 
 				 & positive'image (component_prefix_length_max) & " !",
 				console => true);
 			raise constraint_error;
 		end if;
 	end check_prefix_length;
 	
-	procedure check_prefix_characters (
-		prefix : in type_component_prefix.bounded_string;
-		characters : in character_set) is
-	-- Tests if the given prefix contains only valid characters as specified
-	-- by given character set. Raises exception if invalid character found.
+	procedure check_prefix_characters (prefix : in type_component_prefix.bounded_string) is
+	-- Tests if the given prefix contains only valid characters.
+	-- Raises exception if invalid character found.
 		use et_string_processing;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
-			source => prefix,
-			set => characters,
-			test => outside);
+			source	=> prefix,
+			set		=> component_prefix_characters,
+			test	=> outside);
 
 		if invalid_character_position > 0 then
 			log_indentation_reset;
-			log (message_error & "component prefix " & to_string (prefix) 
+			log (message_error & "device prefix " & to_string (prefix) 
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position),
 				console => true
@@ -885,7 +883,9 @@ package body et_libraries is
 
 	function to_device_name (
 	-- Converts a string like "IC303" to a composite type_component_reference.
-	-- NOTE: Leading zeroes in the id are removed.
+	-- Raises constraint error if prefix contains invalid characters.
+	-- Raises constraint error if id contains non-digit characters.
+	-- Leading zeroes in the id are removed. R002 becomes R2.
 		text_in : in string)
 		return type_component_reference is
 		use et_libraries;
@@ -935,7 +935,6 @@ package body et_libraries is
 					if is_in (c, component_prefix_characters) then
 						r.prefix := r.prefix & c;
 					else
-						-- CS: check if allowed prefix
 						d := i; -- d holds the position of the charcter after the prefix.
 							-- d is requried when reading the component id. see below.
 						exit;

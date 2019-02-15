@@ -6306,9 +6306,11 @@ package body et_project is
 							-- CS: In the following: set a corresponding parameter-found-flag
 							if kw = keyword_prefix then -- prefix IC
 								expect_field_count (line, 2);
+								et_libraries.check_prefix_length (f (line,2));
 								prefix := et_libraries.to_prefix (f (line,2));
+								et_libraries.check_prefix_characters (prefix);
 								log ("prefix " & to_string (prefix), log_threshold + 1);
-
+								
 								if not et_configuration.prefix_valid (prefix) then
 									null; -- CS output something helpful
 								end if;
