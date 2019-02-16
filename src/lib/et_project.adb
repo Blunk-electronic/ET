@@ -6843,6 +6843,14 @@ package body et_project is
 			-- Assemble final device and insert it in et_libraries.devices:
 			case appearance is
 				when SCH_PCB => -- a real device
+
+					-- If a value was specified (via an entry like "value 100R),
+					-- check if it meets certain conventions regarding its prefix.
+					-- The prefix gives information about the category of the device:
+					if et_libraries.type_component_value.length (value) > 0 then
+						et_configuration.validate_value (value, prefix);
+					end if;
+					
 					et_libraries.type_devices.insert (
 						container	=> et_libraries.devices, 
 						key			=> file_name, -- libraries/devices/7400.dev
@@ -7993,7 +8001,7 @@ package body et_project is
 							
 							log ("value " & et_libraries.to_string (device_value), log_threshold + 3);
 							device.value	:= device_value;
-							et_configuration.validate_component_value (device_value, device_name, device.appearance);
+							et_configuration.validate_value (device_value, prefix (device_name));
 
 							log ("partcode " & et_libraries.to_string (device_partcode), log_threshold + 3);
 							device.partcode	:= device_partcode;

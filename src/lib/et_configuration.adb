@@ -2993,13 +2993,13 @@ package body et_configuration is
 
 	end read_configuration;
 
-	procedure validate_component_value (
-	-- Tests if the given component value meets certain conventions.
-	-- This test depends on the category of the component. If no prefixes specified
+	procedure validate_value (
+	-- Tests if the given device value meets certain conventions.
+	-- This test depends on the category of the device. If no prefixes specified
 	-- in the configuration file, this test does nothing.
-		value 		: in et_libraries.type_component_value.bounded_string;
-		reference	: in et_libraries.type_component_reference;
-		appearance	: in et_libraries.type_component_appearance)
+	-- CS: If value is 10,0R outputs the same warning multiple times. Rework required.
+		value 	: in et_libraries.type_component_value.bounded_string;
+		prefix	: in et_libraries.type_component_prefix.bounded_string)
 		is
 
 		use et_libraries;
@@ -3010,12 +3010,11 @@ package body et_configuration is
 		value_length : natural := type_component_value.length (value);
 
 		procedure value_invalid is begin
-			log (message_warning & "device " & to_string (reference) 
-				& " value " & to_string (value) & " invalid ! Check unit of measurement !");
+			log (message_warning & "value " & to_string (value) & " invalid ! Check unit of measurement !");
 		end;
 
 		procedure no_value is begin
-			log (message_warning & "device " & to_string (reference) & " has no value !");
+			log (message_warning & "no value found !");
 		end;
 		
 		procedure test_unit_of_measurement is
@@ -3153,7 +3152,6 @@ package body et_configuration is
 								end loop;
 								test_if_unit_ok;
 								
-								
 							when others => null;
 								
 						end case;
@@ -3162,7 +3160,6 @@ package body et_configuration is
 				else 
 					-- Unit has been found valid. 
 					-- Expect trailing digits exclusively after the unit of measurement.
-					-- Abort on non-digit charcters.
 					if not is_digit (char) then
 						value_invalid;
 					end if;
@@ -3177,7 +3174,7 @@ package body et_configuration is
 
 		end test_unit_of_measurement;
 
-	begin -- validate_component_value
+	begin -- validate_value
 		-- Do the test if component prefixes specified. Otherwise do nothing.
 		if component_prefixes_specified then
 	
@@ -3185,25 +3182,16 @@ package body et_configuration is
 			-- If no value provided, the category determines whether to abort or not.
 			if value_length > 0 then
 
-				-- Rule for real components only: 
 				-- Units of measurement must be in accordance with the component category
-				case appearance is
-					
-					when sch_pcb => 
+				component_category := category (prefix);
+				
+				-- For certain component categories the value must start 
+				-- with a digit (like 3n3, 1V8, ...):
+				case component_category is
+					when BATTERY | CAPACITOR | FUSE | INDUCTOR | RESISTOR | RESISTOR_NETWORK | QUARTZ => -- CS: others ?
+						test_unit_of_measurement;
 
-						component_category := category (reference);
-						
-						-- For certain component categories the value must start 
-						-- with a digit (like 3n3, 1V8, ...):
-						case component_category is
-							when BATTERY | CAPACITOR | FUSE | INDUCTOR | RESISTOR | RESISTOR_NETWORK | QUARTZ => -- CS: others ?
-								test_unit_of_measurement;
-
-							when others => null;
-						end case;
-
-						
-					when others => null; -- CS: value check for others ?
+					when others => null;
 				end case;
 				
 			else
@@ -3212,23 +3200,15 @@ package body et_configuration is
 				-- For certain component categories there is no need for a value. The properties of such parts
 				-- are available via the part code.
 				-- For other categories (R, L, C, ...) the value is essential for reading and understanding the schematic.
-				case appearance is
-					when sch_pcb =>
-						case category (reference) is
+				case category (prefix) is
 
-							-- no value required for:
-							when HEATSINK | JUMPER | MOTOR | MICROPHONE | NETCHANGER | SWITCH | TESTPOINT | CONNECTOR =>
-								null;
+					-- no value required for:
+					when HEATSINK | JUMPER | MOTOR | MICROPHONE | NETCHANGER | SWITCH | TESTPOINT | CONNECTOR =>
+						null;
 
-							-- value essential for all other categories:
-							when others => no_value;
-
-						end case;
-
+					-- value essential for all other categories:
 					when others => no_value;
-						-- CS: check value against generic name in libarary ?
 				end case;
-						
 			end if;
 
 		end if;
@@ -3238,7 +3218,7 @@ package body et_configuration is
 				-- CS: explain more detailled what is wrong
 				value_invalid;
 
-	end validate_component_value;
+	end validate_value;
 
 	
 	function prefix_valid (prefix : in et_libraries.type_component_prefix.bounded_string) return boolean is
