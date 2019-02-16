@@ -38,8 +38,10 @@
 with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 --with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.maps.constants;
 
 -- with ada.characters.handling;	use ada.characters.handling;
 with ada.strings.fixed; 		use ada.strings.fixed;
@@ -2991,6 +2993,254 @@ package body et_configuration is
 
 	end read_configuration;
 
+	procedure validate_component_value (
+	-- Tests if the given component value meets certain conventions.
+	-- This test depends on the category of the component. If no prefixes specified
+	-- in the configuration file, this test does nothing.
+		value 		: in et_libraries.type_component_value.bounded_string;
+		reference	: in et_libraries.type_component_reference;
+		appearance	: in et_libraries.type_component_appearance)
+		is
+
+		use et_libraries;
+		use et_string_processing;
+		use et_configuration;
+
+		component_category : type_component_category;
+		value_length : natural := type_component_value.length (value);
+
+		procedure value_invalid is begin
+			log (message_warning & "device " & to_string (reference) 
+				& " value " & to_string (value) & " invalid ! Check unit of measurement !");
+		end;
+
+		procedure no_value is begin
+			log (message_warning & "device " & to_string (reference) & " has no value !");
+		end;
+		
+		procedure test_unit_of_measurement is
+		-- Tests if the unit of measurement is valid and placed properly in something like 220k56 .
+		-- Tests if the first character is a digit.
+			use ada.strings.maps.constants;
+			place		: positive := 1; -- the pointer to the character being examined
+			char 		: character; -- the character being examined
+
+			unit_start	: natural; -- the position where the unit of measurement begins
+			unit_ok 	: boolean := false; -- goes true once the unit of measurement is considered as ok
+		
+			use type_unit_abbrevation;
+			use type_units_of_measurement;
+			use type_component_value;
+			
+			-- This cursor points to the unit of measurement being probed
+			unit_cursor : type_units_of_measurement.cursor := component_units.first;
+
+			procedure test_if_unit_ok is
+			-- Raises alarm if unit_ok if false.
+			begin
+				if not unit_ok then
+					value_invalid;
+				end if;
+			end test_if_unit_ok;
+
+			function unit_found return boolean is
+			-- Sets unit_ok flag and returns true if the unit (indicated by unit_cursor)
+			-- is placed at position "place".
+			-- Advances "place" to the position of the last character of the unit.
+			begin
+				unit_start := index (value, to_string (element (unit_cursor)), place);
+				if unit_start = place then
+					-- unit valid. advance place to end of unit and return true.
+					place := place + length (element (unit_cursor)) - 1;
+					unit_ok := true;
+					return true;
+				else
+					-- unit invalid. return false
+					unit_ok := false;
+					return false;
+				end if;
+			end unit_found;
+			
+		begin -- test_unit_of_measurement
+			-- We process one character after another in the given value.
+			while place <= value_length loop
+				char := element (value, place);
+
+				-- Test if first character is a digit.
+				if place = 1 and not is_digit (char) then
+					value_invalid;
+				end if;
+				
+				-- Initially we assume there has no unit of measurement been found.
+				-- So we advance until the first non-digit is found to check the unit.
+				-- Once a valid unit was found, we expect ONLY digits after the unit 
+				-- of measurement.
+				if not unit_ok then
+				
+					if not is_digit (char) then -- integer part complete
+						-- Now the unit of measurement begins.
+
+						-- Probe units of measurement according to component category.
+						-- For picking up the units we use the map key (KILOOHM, MIRCROFARAD, ...)
+						-- in order to get to the actual unit as defined in configuration file (k, u, ...).
+						-- Unit_start becomes greater zero if the unit of measurement has been found
+						-- at the current place.
+						case component_category is
+
+							when BATTERY =>
+								while unit_cursor /= type_units_of_measurement.no_element loop
+									case key (unit_cursor) is
+										when VOLT =>
+											if unit_found then exit; end if;
+										when others => null;
+									end case;
+									next (unit_cursor);
+								end loop;
+								test_if_unit_ok;
+							
+							when CAPACITOR =>
+								while unit_cursor /= type_units_of_measurement.no_element loop
+									case key (unit_cursor) is
+										when PICOFARAD | NANOFARAD | MICROFARAD | MILLIFARAD | FARAD =>
+											if unit_found then exit; end if;
+										when others => null;
+									end case;
+									next (unit_cursor);
+								end loop;
+								test_if_unit_ok;
+
+							when FUSE =>
+								while unit_cursor /= type_units_of_measurement.no_element loop
+									case key (unit_cursor) is
+										when MILLIAMPERE | AMPERE =>
+											if unit_found then exit; end if;
+										when others => null;
+									end case;
+									next (unit_cursor);
+								end loop;
+								test_if_unit_ok;
+								
+							when INDUCTOR =>
+								while unit_cursor /= type_units_of_measurement.no_element loop
+									case key (unit_cursor) is
+										when NANOHENRY | MICROHENRY | MILLIHENRY | HENRY =>
+											if unit_found then exit; end if;
+										when others => null;
+									end case;
+									next (unit_cursor);
+								end loop;
+								test_if_unit_ok;
+								
+							when RESISTOR | RESISTOR_NETWORK =>
+								while unit_cursor /= type_units_of_measurement.no_element loop
+									case key (unit_cursor) is
+										when MILLIOHM | OHM | KILOOHM | MEGAOHM | GIGAOHM =>
+											if unit_found then exit; end if;
+										when others => null;
+									end case;
+									next (unit_cursor);
+								end loop;
+								test_if_unit_ok;
+
+							when QUARTZ =>
+								while unit_cursor /= type_units_of_measurement.no_element loop
+									case key (unit_cursor) is
+										when KILOHERTZ | MEGAHERTZ | GIGAHERTZ =>
+											if unit_found then exit; end if;
+										when others => null;
+									end case;
+									next (unit_cursor);
+								end loop;
+								test_if_unit_ok;
+								
+								
+							when others => null;
+								
+						end case;
+					end if;
+
+				else 
+					-- Unit has been found valid. 
+					-- Expect trailing digits exclusively after the unit of measurement.
+					-- Abort on non-digit charcters.
+					if not is_digit (char) then
+						value_invalid;
+					end if;
+				end if;
+
+				-- advance to next character in given value
+				place := place + 1;
+			end loop;
+
+			-- After processing the given value, if no valid unit of measurement found, abort.
+			test_if_unit_ok;
+
+		end test_unit_of_measurement;
+
+	begin -- validate_component_value
+		-- Do the test if component prefixes specified. Otherwise do nothing.
+		if component_prefixes_specified then
+	
+			-- If a value is provided, means it has non-zero length we conduct some tests.
+			-- If no value provided, the category determines whether to abort or not.
+			if value_length > 0 then
+
+				-- Rule for real components only: 
+				-- Units of measurement must be in accordance with the component category
+				case appearance is
+					
+					when sch_pcb => 
+
+						component_category := category (reference);
+						
+						-- For certain component categories the value must start 
+						-- with a digit (like 3n3, 1V8, ...):
+						case component_category is
+							when BATTERY | CAPACITOR | FUSE | INDUCTOR | RESISTOR | RESISTOR_NETWORK | QUARTZ => -- CS: others ?
+								test_unit_of_measurement;
+
+							when others => null;
+						end case;
+
+						
+					when others => null; -- CS: value check for others ?
+				end case;
+				
+			else
+				-- no value provided
+				
+				-- For certain component categories there is no need for a value. The properties of such parts
+				-- are available via the part code.
+				-- For other categories (R, L, C, ...) the value is essential for reading and understanding the schematic.
+				case appearance is
+					when sch_pcb =>
+						case category (reference) is
+
+							-- no value required for:
+							when HEATSINK | JUMPER | MOTOR | MICROPHONE | NETCHANGER | SWITCH | TESTPOINT | CONNECTOR =>
+								null;
+
+							-- value essential for all other categories:
+							when others => no_value;
+
+						end case;
+
+					when others => no_value;
+						-- CS: check value against generic name in libarary ?
+				end case;
+						
+			end if;
+
+		end if;
+			
+		exception
+			when others => 
+				-- CS: explain more detailled what is wrong
+				value_invalid;
+
+	end validate_component_value;
+
+	
 	function prefix_valid (prefix : in et_libraries.type_component_prefix.bounded_string) return boolean is
 	-- Tests if the given reference has a valid prefix as specified in the configuration file.
 	-- Raises warning if not and returns false. 

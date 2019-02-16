@@ -471,6 +471,14 @@ package et_configuration is
 		log_threshold	: in et_string_processing.type_log_level);
 	-- Reads the given configuration file.
 
+	procedure validate_component_value (
+	-- Tests if the given component value meets certain conventions.
+	-- This test depends on the category of the component. If no prefixes specified
+	-- in the configuration file, this test does nothing.
+		value 		: in et_libraries.type_component_value.bounded_string;
+		reference	: in et_libraries.type_component_reference;
+		appearance	: in et_libraries.type_component_appearance);
+	
 	function prefix_valid (prefix : in et_libraries.type_component_prefix.bounded_string) return boolean;
 	-- Tests if the given reference has a valid prefix as specified in the configuration file.
 	-- Raises warning if not and returns false. 

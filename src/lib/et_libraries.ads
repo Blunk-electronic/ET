@@ -427,8 +427,6 @@ package et_libraries is
 	package type_component_value is new generic_bounded_length (component_value_length_max);
 
 	function to_string (value : in type_component_value.bounded_string) return string;
-	-- Returns the given value as string.
-
 	function to_value (value : in string) return type_component_value.bounded_string;
 	
 	function value_length_valid (value : in string) return boolean;
@@ -522,14 +520,6 @@ package et_libraries is
 
 	function to_appearance (appearance : in string) return type_component_appearance;
 	
--- COMPONENT VALUES
-	procedure validate_component_value (
-	-- Tests if the given component value meets certain conventions.
-	-- This test depends on the category of the component. If no prefixes specified
-	-- in the configuration file, this test does nothing.
-		value 		: in type_component_value.bounded_string;
-		reference	: in type_component_reference;
-		appearance	: in type_component_appearance);
 
 
 	

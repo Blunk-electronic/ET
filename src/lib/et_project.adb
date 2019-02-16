@@ -7993,6 +7993,7 @@ package body et_project is
 							
 							log ("value " & et_libraries.to_string (device_value), log_threshold + 3);
 							device.value	:= device_value;
+							et_configuration.validate_component_value (device_value, device_name, device.appearance);
 
 							log ("partcode " & et_libraries.to_string (device_partcode), log_threshold + 3);
 							device.partcode	:= device_partcode;

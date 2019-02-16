@@ -7458,17 +7458,6 @@ package body et_kicad is
 					if not field_value_found then
 						missing_field (et_libraries.value);
 					else
-						-- depending on the component reference (like R12 or C9) the value must meet certain conventions:
-						validate_component_value (
-														 
-							-- the content of the value field like 200R or 10u
-							value => to_value (content (field_value)), 
-								
-							-- the component reference such as R4 or IC34
-							reference => reference,
-
-							appearance => appearance);
-
 						check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_value.size);
 					end if;
 
