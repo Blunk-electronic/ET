@@ -6848,7 +6848,9 @@ package body et_project is
 					-- check if it meets certain conventions regarding its prefix.
 					-- The prefix gives information about the category of the device:
 					if et_libraries.type_component_value.length (value) > 0 then
-						et_configuration.validate_value (value, prefix);
+						if not et_configuration.value_valid (value, prefix) then
+							null; -- CS output something helpful
+						end if;
 					end if;
 					
 					et_libraries.type_devices.insert (
@@ -8001,7 +8003,9 @@ package body et_project is
 							
 							log ("value " & et_libraries.to_string (device_value), log_threshold + 3);
 							device.value	:= device_value;
-							et_configuration.validate_value (device_value, prefix (device_name));
+							if not et_configuration.value_valid (device_value, prefix (device_name)) then
+								null; -- CS output something helpful
+							end if;
 
 							log ("partcode " & et_libraries.to_string (device_partcode), log_threshold + 3);
 							device.partcode	:= device_partcode;

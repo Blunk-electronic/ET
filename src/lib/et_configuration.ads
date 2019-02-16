@@ -471,12 +471,14 @@ package et_configuration is
 		log_threshold	: in et_string_processing.type_log_level);
 	-- Reads the given configuration file.
 
-	procedure validate_value (
+	function value_valid (
 	-- Tests if the given device value meets certain conventions.
 	-- This test depends on the category of the device. If no prefixes specified
 	-- in the configuration file, this test does nothing.
+	-- Returns false if any violation has been detected.
 		value 	: in et_libraries.type_component_value.bounded_string;
-		prefix	: in et_libraries.type_component_prefix.bounded_string);
+		prefix	: in et_libraries.type_component_prefix.bounded_string)
+		return boolean;
 	
 	function prefix_valid (prefix : in et_libraries.type_component_prefix.bounded_string) return boolean;
 	-- Tests if the given reference has a valid prefix as specified in the configuration file.

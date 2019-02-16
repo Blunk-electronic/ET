@@ -2993,15 +2993,18 @@ package body et_configuration is
 
 	end read_configuration;
 
-	procedure validate_value (
+	function value_valid (
 	-- Tests if the given device value meets certain conventions.
 	-- This test depends on the category of the device. If no prefixes specified
 	-- in the configuration file, this test does nothing.
+	-- Returns false if any violation has been detected.							 
 	-- CS: If value is 10,0R outputs the same warning multiple times. Rework required.
 		value 	: in et_libraries.type_component_value.bounded_string;
 		prefix	: in et_libraries.type_component_prefix.bounded_string)
-		is
+		return boolean is
 
+-- 		result : boolean;
+		
 		use et_libraries;
 		use et_string_processing;
 		use et_configuration;
@@ -3017,9 +3020,10 @@ package body et_configuration is
 			log (message_warning & "no value found !");
 		end;
 		
-		procedure test_unit_of_measurement is
+		function unit_of_measurement_valid return boolean is
 		-- Tests if the unit of measurement is valid and placed properly in something like 220k56 .
 		-- Tests if the first character is a digit.
+		-- Returns false on first error.
 			use ada.strings.maps.constants;
 			place		: positive := 1; -- the pointer to the character being examined
 			char 		: character; -- the character being examined
@@ -3033,14 +3037,6 @@ package body et_configuration is
 			
 			-- This cursor points to the unit of measurement being probed
 			unit_cursor : type_units_of_measurement.cursor := component_units.first;
-
-			procedure test_if_unit_ok is
-			-- Raises alarm if unit_ok if false.
-			begin
-				if not unit_ok then
-					value_invalid;
-				end if;
-			end test_if_unit_ok;
 
 			function unit_found return boolean is
 			-- Sets unit_ok flag and returns true if the unit (indicated by unit_cursor)
@@ -3060,7 +3056,7 @@ package body et_configuration is
 				end if;
 			end unit_found;
 			
-		begin -- test_unit_of_measurement
+		begin -- unit_of_measurement_valid
 			-- We process one character after another in the given value.
 			while place <= value_length loop
 				char := element (value, place);
@@ -3068,6 +3064,7 @@ package body et_configuration is
 				-- Test if first character is a digit.
 				if place = 1 and not is_digit (char) then
 					value_invalid;
+					return false;
 				end if;
 				
 				-- Initially we assume there has no unit of measurement been found.
@@ -3095,7 +3092,11 @@ package body et_configuration is
 									end case;
 									next (unit_cursor);
 								end loop;
-								test_if_unit_ok;
+								
+								if not unit_ok then
+									value_invalid;
+									return false;
+								end if;
 							
 							when CAPACITOR =>
 								while unit_cursor /= type_units_of_measurement.no_element loop
@@ -3106,7 +3107,11 @@ package body et_configuration is
 									end case;
 									next (unit_cursor);
 								end loop;
-								test_if_unit_ok;
+
+								if not unit_ok then
+									value_invalid;
+									return false;
+								end if;
 
 							when FUSE =>
 								while unit_cursor /= type_units_of_measurement.no_element loop
@@ -3117,7 +3122,11 @@ package body et_configuration is
 									end case;
 									next (unit_cursor);
 								end loop;
-								test_if_unit_ok;
+
+								if not unit_ok then
+									value_invalid;
+									return false;
+								end if;
 								
 							when INDUCTOR =>
 								while unit_cursor /= type_units_of_measurement.no_element loop
@@ -3128,7 +3137,11 @@ package body et_configuration is
 									end case;
 									next (unit_cursor);
 								end loop;
-								test_if_unit_ok;
+
+								if not unit_ok then
+									value_invalid;
+									return false;
+								end if;
 								
 							when RESISTOR | RESISTOR_NETWORK =>
 								while unit_cursor /= type_units_of_measurement.no_element loop
@@ -3139,7 +3152,11 @@ package body et_configuration is
 									end case;
 									next (unit_cursor);
 								end loop;
-								test_if_unit_ok;
+
+								if not unit_ok then
+									value_invalid;
+									return false;
+								end if;
 
 							when QUARTZ =>
 								while unit_cursor /= type_units_of_measurement.no_element loop
@@ -3150,8 +3167,12 @@ package body et_configuration is
 									end case;
 									next (unit_cursor);
 								end loop;
-								test_if_unit_ok;
-								
+
+								if not unit_ok then
+									value_invalid;
+									return false;
+								end if;
+
 							when others => null;
 								
 						end case;
@@ -3170,9 +3191,14 @@ package body et_configuration is
 			end loop;
 
 			-- After processing the given value, if no valid unit of measurement found, abort.
-			test_if_unit_ok;
+			if unit_ok then
+				return true;
+			else
+				value_invalid;
+				return false;
+			end if;
 
-		end test_unit_of_measurement;
+		end unit_of_measurement_valid;
 
 	begin -- validate_value
 		-- Do the test if component prefixes specified. Otherwise do nothing.
@@ -3189,11 +3215,14 @@ package body et_configuration is
 				-- with a digit (like 3n3, 1V8, ...):
 				case component_category is
 					when BATTERY | CAPACITOR | FUSE | INDUCTOR | RESISTOR | RESISTOR_NETWORK | QUARTZ => -- CS: others ?
-						test_unit_of_measurement;
+						if not unit_of_measurement_valid then
+							return false;
+						end if;
 
 					when others => null;
 				end case;
-				
+
+				return true;
 			else
 				-- no value provided
 				
@@ -3207,18 +3236,26 @@ package body et_configuration is
 						null;
 
 					-- value essential for all other categories:
-					when others => no_value;
+					when others => 
+						no_value;
+						return false;
 				end case;
+
+				return true;
 			end if;
 
+		else
+			return true;
 		end if;
-			
+
+		
 		exception
 			when others => 
 				-- CS: explain more detailled what is wrong
 				value_invalid;
+				return false;
 
-	end validate_value;
+	end value_valid;
 
 	
 	function prefix_valid (prefix : in et_libraries.type_component_prefix.bounded_string) return boolean is
