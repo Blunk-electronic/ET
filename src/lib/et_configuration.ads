@@ -325,6 +325,11 @@ package et_configuration is
 	-- After reading the configuration, we store the units of measurement for the design here:
 	component_units : type_units_of_measurement.map;
 
+	function to_abbrevation (unit : in type_unit_of_measurement) 
+	-- Translates from given unit_of_measurement (like OHM or VOLT) to the
+	-- actual abbrevation like R or V.
+		return type_unit_abbrevation.bounded_string;
+	
 	-- Component categories that requires operator interaction are stored in a set.
 	package type_categories_with_operator_interacton is new ordered_sets (
 		element_type => type_component_category);

@@ -1876,6 +1876,15 @@ package body et_configuration is
 		end if;
 	end check_abbrevation_of_unit_characters;
 
+	function to_abbrevation (unit : in type_unit_of_measurement) 
+	-- Translates from given unit_of_measurement (like OHM or VOLT) to the
+	-- actual abbrevation like R or V.
+		return type_unit_abbrevation.bounded_string is
+		use type_units_of_measurement;
+	begin
+		return element (type_units_of_measurement.find (component_units, unit));
+	end;
+	
 	function requires_operator_interaction (
 		prefix : in et_libraries.type_component_prefix.bounded_string) 
 		return type_component_requires_operator_interaction is
@@ -3031,33 +3040,19 @@ package body et_configuration is
 			place		: positive := 1; -- the pointer to the character being examined
 			char 		: character; -- the character being examined
 
-			-- goes true once the unit of measurement is considered as valid
+			-- goes true once a valid abbrevation of a unit of measurement is found
 			unit_ok 	: boolean := false; 
 		
 			use type_unit_abbrevation;
 			use type_units_of_measurement;
 			use type_component_value;
-			
-			procedure test_abbrevation (abbrevation : in type_unit_abbrevation.bounded_string) is
-			-- Sets unit_ok flag true if the given abbrevation starts at position "place".
-			-- If so, sets "place" to the position of the last character of the unit.
-			-- If at "place" unit not found, set result to false.
-			begin
-				if index (value, to_string (abbrevation), place) = place then
-					-- abbrevation valid. advance place to end of abbrevation.
-					place := place + length (abbrevation) - 1;
-					unit_ok := true;
-				else
-					-- unit invalid.
-					result := false;
-				end if;
-			end;
-
-			function abbrevation_valid (abbrevation : in type_unit_abbrevation.bounded_string) 
+		
+			function valid (unit : in type_unit_of_measurement) 
 				return boolean is
 			-- Sets unit_ok flag true if the given abbrevation starts at position "place".
 			-- If so, sets "place" to the position of the last character of the unit.
 			-- If at "place" unit not found, set result to false.
+				abbrevation : type_unit_abbrevation.bounded_string := to_abbrevation (unit);
 			begin
 				if index (value, to_string (abbrevation), place) = place then
 					-- abbrevation valid. advance place to end of abbrevation.
@@ -3066,19 +3061,10 @@ package body et_configuration is
 					return true;
 				else
 					-- unit invalid.
-					result := false;
 					return false;
 				end if;
 			end;
-			
-			function to_abbrevation (unit : in type_unit_of_measurement) 
-			-- Translates from given unit_of_measurement (like OHM or VOLT) to the
-			-- actual abbrevation like R or V.
-				return type_unit_abbrevation.bounded_string is
-			begin
-				return element (type_units_of_measurement.find (component_units, unit));
-			end;
-			
+						
 		begin -- unit_of_measurement_valid
 			-- We process one character after another in the given value.
 			while place <= value_length and result = true loop
@@ -3104,58 +3090,48 @@ package body et_configuration is
 						case component_category is
 
 							when BATTERY =>
-								if not abbrevation_valid (to_abbrevation (VOLT))
+								if not valid (VOLT)
 									then result := false;
 								end if;
 								
 							when CAPACITOR =>
-								if not (abbrevation_valid (to_abbrevation (PICOFARAD))
-									or abbrevation_valid (to_abbrevation (NANOFARAD))
-									or abbrevation_valid (to_abbrevation (MICROFARAD))
-									or abbrevation_valid (to_abbrevation (MILLIFARAD))
-									or abbrevation_valid (to_abbrevation (FARAD))) then 
+								if not (valid (PICOFARAD)
+									or valid (NANOFARAD)
+									or valid (MICROFARAD)
+									or valid (MILLIFARAD)
+									or valid (FARAD)) then 
 										result := false;
 								end if;
 
--- 							when FUSE =>
--- 								while unit_cursor /= type_units_of_measurement.no_element loop
--- 									case key (unit_cursor) is
--- 										when MILLIAMPERE | AMPERE =>
--- 											test_unit; -- sets result false on error
--- 										when others => null;
--- 									end case;
--- 									next (unit_cursor);
--- 								end loop;
--- 
--- 							when INDUCTOR =>
--- 								while unit_cursor /= type_units_of_measurement.no_element loop
--- 									case key (unit_cursor) is
--- 										when NANOHENRY | MICROHENRY | MILLIHENRY | HENRY =>
--- 											test_unit; -- sets result false on error
--- 										when others => null;
--- 									end case;
--- 									next (unit_cursor);
--- 								end loop;
--- 
--- 							when RESISTOR | RESISTOR_NETWORK =>
--- 								while unit_cursor /= type_units_of_measurement.no_element loop
--- 									case key (unit_cursor) is
--- 										when MILLIOHM | OHM | KILOOHM | MEGAOHM | GIGAOHM =>
--- 											test_unit; -- sets result false on error
--- 										when others => null;
--- 									end case;
--- 									next (unit_cursor);
--- 								end loop;
--- 
--- 							when QUARTZ =>
--- 								while unit_cursor /= type_units_of_measurement.no_element loop
--- 									case key (unit_cursor) is
--- 										when KILOHERTZ | MEGAHERTZ | GIGAHERTZ =>
--- 											test_unit; -- sets result false on error
--- 										when others => null;
--- 									end case;
--- 									next (unit_cursor);
--- 								end loop;
+							when FUSE =>
+								if not (valid (MILLIAMPERE)
+									or valid (AMPERE)) then 
+										result := false;
+								end if;
+
+							when INDUCTOR =>
+								if not (valid (NANOHENRY)
+									or valid (MICROHENRY)
+									or valid (MILLIHENRY)
+									or valid (HENRY)) then 
+										result := false;
+								end if;
+
+							when RESISTOR | RESISTOR_NETWORK =>
+								if not (valid (MILLIOHM)
+									or valid (OHM)
+									or valid (KILOOHM)
+									or valid (MEGAOHM)
+									or valid (GIGAOHM)) then 
+										result := false;
+								end if;
+
+							when QUARTZ =>
+								if not (valid (KILOHERTZ)
+									or valid (MEGAHERTZ)
+									or valid (GIGAHERTZ)) then 
+										result := false;
+								end if;
 
 							when others => null;
 								
