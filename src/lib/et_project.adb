@@ -6312,7 +6312,8 @@ package body et_project is
 								log ("prefix " & to_string (prefix), log_threshold + 1);
 								
 								if not et_configuration.prefix_valid (prefix) then
-									null; -- CS output something helpful
+									log (message_warning & "prefix of device model " &
+										 to_string (file_name) & " not conformant with conventions !");
 								end if;
 
 							elsif kw = keyword_value then -- value 7400
@@ -6326,7 +6327,8 @@ package body et_project is
 								end if;
 
 								if not et_libraries.value_characters_valid (value) then
-									null; -- CS output something helpful
+									log (message_warning & "default value of device model " &
+										to_string (file_name) & " contains invaid characters !");
 								end if;
 								
 								log ("value " & to_string (value), log_threshold + 1);
@@ -6849,7 +6851,9 @@ package body et_project is
 					-- The prefix gives information about the category of the device:
 					if et_libraries.type_component_value.length (value) > 0 then
 						if not et_configuration.value_valid (value, prefix) then
-							null; -- CS output something helpful
+							log (message_warning & "default value of device model " &
+								to_string (file_name) & 
+								" not conformant with conventions !");
 						end if;
 					end if;
 					
@@ -7988,7 +7992,8 @@ package body et_project is
 						log_indentation_up;
 
 						if not et_configuration.prefix_valid (device_name) then 
-							null; -- CS show coordinates of units
+							log (message_warning & "prefix of device " & et_libraries.to_string (device_name) 
+								 & " not conformant with conventions !");
 						end if;
 						
 						-- assign temporarily variable for model:
@@ -7998,13 +8003,15 @@ package body et_project is
 						if device.appearance = et_libraries.SCH_PCB then
 
 							if not et_libraries.value_characters_valid (device_value) then
-								null; -- CS output something helpful
+								log (message_warning & "value of " & et_libraries.to_string (device_name) &
+									 " contains invalid characters !");
 							end if;
 							
 							log ("value " & et_libraries.to_string (device_value), log_threshold + 3);
 							device.value	:= device_value;
 							if not et_configuration.value_valid (device_value, prefix (device_name)) then
-								null; -- CS output something helpful
+								log (message_warning & "value of " & et_libraries.to_string (device_name) &
+									 " not conformant with conventions !");
 							end if;
 
 							log ("partcode " & et_libraries.to_string (device_partcode), log_threshold + 3);
