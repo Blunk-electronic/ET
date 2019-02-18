@@ -325,7 +325,6 @@ package et_configuration is
 	-- After reading the configuration, we store the units of measurement for the design here:
 	component_units : type_units_of_measurement.map;
 
-
 	-- Component categories that requires operator interaction are stored in a set.
 	package type_categories_with_operator_interacton is new ordered_sets (
 		element_type => type_component_category);

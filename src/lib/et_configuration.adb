@@ -2999,11 +2999,12 @@ package body et_configuration is
 	-- in the configuration file, this test does nothing.
 	-- Returns false if any violation has been detected.							 
 	-- CS: If value is 10,0R outputs the same warning multiple times. Rework required.
-		value 	: in et_libraries.type_component_value.bounded_string;
-		prefix	: in et_libraries.type_component_prefix.bounded_string)
+		value 	: in et_libraries.type_component_value.bounded_string; -- 100R, 1A5
+		prefix	: in et_libraries.type_component_prefix.bounded_string) -- R, F
 		return boolean is
 
--- 		result : boolean;
+		-- This flag goes false once an error has been detected.
+		result : boolean := true;
 		
 		use et_libraries;
 		use et_string_processing;
@@ -3014,164 +3015,147 @@ package body et_configuration is
 
 		procedure value_invalid is begin
 			log (message_warning & "value " & to_string (value) & " invalid ! Check unit of measurement !");
+			result := false;			
 		end;
 
 		procedure no_value is begin
 			log (message_warning & "no value found !");
+			result := false;
 		end;
 		
-		function unit_of_measurement_valid return boolean is
+		procedure unit_of_measurement_valid is
 		-- Tests if the unit of measurement is valid and placed properly in something like 220k56 .
 		-- Tests if the first character is a digit.
-		-- Returns false on first error.
+		-- Sets the result to false on first error and exits prematurely.
 			use ada.strings.maps.constants;
 			place		: positive := 1; -- the pointer to the character being examined
 			char 		: character; -- the character being examined
 
-			unit_start	: natural; -- the position where the unit of measurement begins
-			unit_ok 	: boolean := false; -- goes true once the unit of measurement is considered as ok
+			-- goes true once the unit of measurement is considered as valid
+			unit_ok 	: boolean := false; 
 		
 			use type_unit_abbrevation;
 			use type_units_of_measurement;
 			use type_component_value;
 			
-			-- This cursor points to the unit of measurement being probed
-			unit_cursor : type_units_of_measurement.cursor := component_units.first;
-
-			function unit_found return boolean is
-			-- Sets unit_ok flag and returns true if the unit (indicated by unit_cursor)
-			-- is placed at position "place".
-			-- Advances "place" to the position of the last character of the unit.
+			procedure test_abbrevation (abbrevation : in type_unit_abbrevation.bounded_string) is
+			-- Sets unit_ok flag true if the given abbrevation starts at position "place".
+			-- If so, sets "place" to the position of the last character of the unit.
+			-- If at "place" unit not found, set result to false.
 			begin
-				unit_start := index (value, to_string (element (unit_cursor)), place);
-				if unit_start = place then
-					-- unit valid. advance place to end of unit and return true.
-					place := place + length (element (unit_cursor)) - 1;
+				if index (value, to_string (abbrevation), place) = place then
+					-- abbrevation valid. advance place to end of abbrevation.
+					place := place + length (abbrevation) - 1;
+					unit_ok := true;
+				else
+					-- unit invalid.
+					result := false;
+				end if;
+			end;
+
+			function abbrevation_valid (abbrevation : in type_unit_abbrevation.bounded_string) 
+				return boolean is
+			-- Sets unit_ok flag true if the given abbrevation starts at position "place".
+			-- If so, sets "place" to the position of the last character of the unit.
+			-- If at "place" unit not found, set result to false.
+			begin
+				if index (value, to_string (abbrevation), place) = place then
+					-- abbrevation valid. advance place to end of abbrevation.
+					place := place + length (abbrevation) - 1;
 					unit_ok := true;
 					return true;
 				else
-					-- unit invalid. return false
-					unit_ok := false;
+					-- unit invalid.
+					result := false;
 					return false;
 				end if;
-			end unit_found;
+			end;
+			
+			function to_abbrevation (unit : in type_unit_of_measurement) 
+			-- Translates from given unit_of_measurement (like OHM or VOLT) to the
+			-- actual abbrevation like R or V.
+				return type_unit_abbrevation.bounded_string is
+			begin
+				return element (type_units_of_measurement.find (component_units, unit));
+			end;
 			
 		begin -- unit_of_measurement_valid
 			-- We process one character after another in the given value.
-			while place <= value_length loop
+			while place <= value_length and result = true loop
 				char := element (value, place);
 
 				-- Test if first character is a digit.
-				if place = 1 and not is_digit (char) then
-					value_invalid;
-					return false;
+				if place = 1 and not is_digit (char) then 
+					value_invalid; -- sets result to false
+					exit; -- no need to proceed. cancel immediately
 				end if;
 				
-				-- Initially we assume there has no unit of measurement been found.
-				-- So we advance until the first non-digit is found to check the unit.
-				-- Once a valid unit was found, we expect ONLY digits after the unit 
-				-- of measurement.
+				-- Initially we assume that there has no unit of measurement been found.
+				-- So we advance until the first non-digit character is found.
+				-- Once a valid abbrevation (like R,k or V) was found, we expect ONLY digits 
+				-- after the last character of the unit of measurement. 
+				-- Example: in 220k56 all characters after k must be digits.
 				if not unit_ok then
 				
-					if not is_digit (char) then -- integer part complete
-						-- Now the unit of measurement begins.
+					if not is_digit (char) then -- integer part like 220 complete
+						-- Now the abbrevation for the unit of measurement shall begin
+						-- at the position where "place" is pointing at.
 
-						-- Probe units of measurement according to component category.
-						-- For picking up the units we use the map key (KILOOHM, MIRCROFARAD, ...)
-						-- in order to get to the actual unit as defined in configuration file (k, u, ...).
-						-- Unit_start becomes greater zero if the unit of measurement has been found
-						-- at the current place.
 						case component_category is
 
 							when BATTERY =>
-								while unit_cursor /= type_units_of_measurement.no_element loop
-									case key (unit_cursor) is
-										when VOLT =>
-											if unit_found then exit; end if;
-										when others => null;
-									end case;
-									next (unit_cursor);
-								end loop;
-								
-								if not unit_ok then
-									value_invalid;
-									return false;
+								if not abbrevation_valid (to_abbrevation (VOLT))
+									then result := false;
 								end if;
-							
+								
 							when CAPACITOR =>
-								while unit_cursor /= type_units_of_measurement.no_element loop
-									case key (unit_cursor) is
-										when PICOFARAD | NANOFARAD | MICROFARAD | MILLIFARAD | FARAD =>
-											if unit_found then exit; end if;
-										when others => null;
-									end case;
-									next (unit_cursor);
-								end loop;
-
-								if not unit_ok then
-									value_invalid;
-									return false;
+								if not (abbrevation_valid (to_abbrevation (PICOFARAD))
+									or abbrevation_valid (to_abbrevation (NANOFARAD))
+									or abbrevation_valid (to_abbrevation (MICROFARAD))
+									or abbrevation_valid (to_abbrevation (MILLIFARAD))
+									or abbrevation_valid (to_abbrevation (FARAD))) then 
+										result := false;
 								end if;
 
-							when FUSE =>
-								while unit_cursor /= type_units_of_measurement.no_element loop
-									case key (unit_cursor) is
-										when MILLIAMPERE | AMPERE =>
-											if unit_found then exit; end if;
-										when others => null;
-									end case;
-									next (unit_cursor);
-								end loop;
-
-								if not unit_ok then
-									value_invalid;
-									return false;
-								end if;
-								
-							when INDUCTOR =>
-								while unit_cursor /= type_units_of_measurement.no_element loop
-									case key (unit_cursor) is
-										when NANOHENRY | MICROHENRY | MILLIHENRY | HENRY =>
-											if unit_found then exit; end if;
-										when others => null;
-									end case;
-									next (unit_cursor);
-								end loop;
-
-								if not unit_ok then
-									value_invalid;
-									return false;
-								end if;
-								
-							when RESISTOR | RESISTOR_NETWORK =>
-								while unit_cursor /= type_units_of_measurement.no_element loop
-									case key (unit_cursor) is
-										when MILLIOHM | OHM | KILOOHM | MEGAOHM | GIGAOHM =>
-											if unit_found then exit; end if;
-										when others => null;
-									end case;
-									next (unit_cursor);
-								end loop;
-
-								if not unit_ok then
-									value_invalid;
-									return false;
-								end if;
-
-							when QUARTZ =>
-								while unit_cursor /= type_units_of_measurement.no_element loop
-									case key (unit_cursor) is
-										when KILOHERTZ | MEGAHERTZ | GIGAHERTZ =>
-											if unit_found then exit; end if;
-										when others => null;
-									end case;
-									next (unit_cursor);
-								end loop;
-
-								if not unit_ok then
-									value_invalid;
-									return false;
-								end if;
+-- 							when FUSE =>
+-- 								while unit_cursor /= type_units_of_measurement.no_element loop
+-- 									case key (unit_cursor) is
+-- 										when MILLIAMPERE | AMPERE =>
+-- 											test_unit; -- sets result false on error
+-- 										when others => null;
+-- 									end case;
+-- 									next (unit_cursor);
+-- 								end loop;
+-- 
+-- 							when INDUCTOR =>
+-- 								while unit_cursor /= type_units_of_measurement.no_element loop
+-- 									case key (unit_cursor) is
+-- 										when NANOHENRY | MICROHENRY | MILLIHENRY | HENRY =>
+-- 											test_unit; -- sets result false on error
+-- 										when others => null;
+-- 									end case;
+-- 									next (unit_cursor);
+-- 								end loop;
+-- 
+-- 							when RESISTOR | RESISTOR_NETWORK =>
+-- 								while unit_cursor /= type_units_of_measurement.no_element loop
+-- 									case key (unit_cursor) is
+-- 										when MILLIOHM | OHM | KILOOHM | MEGAOHM | GIGAOHM =>
+-- 											test_unit; -- sets result false on error
+-- 										when others => null;
+-- 									end case;
+-- 									next (unit_cursor);
+-- 								end loop;
+-- 
+-- 							when QUARTZ =>
+-- 								while unit_cursor /= type_units_of_measurement.no_element loop
+-- 									case key (unit_cursor) is
+-- 										when KILOHERTZ | MEGAHERTZ | GIGAHERTZ =>
+-- 											test_unit; -- sets result false on error
+-- 										when others => null;
+-- 									end case;
+-- 									next (unit_cursor);
+-- 								end loop;
 
 							when others => null;
 								
@@ -3180,9 +3164,10 @@ package body et_configuration is
 
 				else 
 					-- Unit has been found valid. 
-					-- Expect trailing digits exclusively after the unit of measurement.
+					-- Expect ONLY trailing digits after the unit of measurement.
 					if not is_digit (char) then
-						value_invalid;
+						value_invalid; -- sets result false
+						exit; -- no need to proceed. cancel immediately
 					end if;
 				end if;
 
@@ -3190,12 +3175,12 @@ package body et_configuration is
 				place := place + 1;
 			end loop;
 
-			-- After processing the given value, if no valid unit of measurement found, abort.
+			-- Now all characters have been tested. 
+			-- If no valid unit of measurement found, set result false.
 			if unit_ok then
-				return true;
+				result := true;
 			else
-				value_invalid;
-				return false;
+				value_invalid; -- sets result false
 			end if;
 
 		end unit_of_measurement_valid;
@@ -3215,16 +3200,14 @@ package body et_configuration is
 				-- with a digit (like 3n3, 1V8, ...):
 				case component_category is
 					when BATTERY | CAPACITOR | FUSE | INDUCTOR | RESISTOR | RESISTOR_NETWORK | QUARTZ => -- CS: others ?
-						if not unit_of_measurement_valid then
-							return false;
-						end if;
+						unit_of_measurement_valid; -- sets result false on error
 
-					when others => null;
+					when others => 
+						result := true;
 				end case;
 
-				return true;
 			else
-				-- no value provided
+				-- no value provided (zero length)
 				
 				-- For certain component categories there is no need for a value. The properties of such parts
 				-- are available via the part code.
@@ -3233,21 +3216,20 @@ package body et_configuration is
 
 					-- no value required for:
 					when HEATSINK | JUMPER | MOTOR | MICROPHONE | NETCHANGER | SWITCH | TESTPOINT | CONNECTOR =>
-						null;
+						result := true;
 
 					-- value essential for all other categories:
 					when others => 
-						no_value;
-						return false;
+						no_value; -- sets return to false
+					
 				end case;
-
-				return true;
 			end if;
 
 		else
-			return true;
+			result := true;
 		end if;
 
+		return result;
 		
 		exception
 			when others => 
