@@ -609,7 +609,7 @@ package body et_kicad is
 		unit_cursor : type_units_library.cursor;
 
 		procedure locate (
-			name		: in et_libraries.type_component_generic_name.bounded_string;
+			name		: in type_component_generic_name.bounded_string;
 			component	: in type_component_library) is
 
 			use type_units_library;
@@ -622,7 +622,7 @@ package body et_kicad is
 			if unit_cursor = type_units_library.no_element then
 				log_indentation_reset;
 				log (message_error & "generic component " 
-						& et_libraries.to_string (generic_name => type_components_library.key (component_cursor)) 
+						& to_string (type_components_library.key (component_cursor)) 
 						& " has no units !",
 					console => true);
 				raise constraint_error;
@@ -1195,11 +1195,8 @@ package body et_kicad is
 				
 		-- Evaluate position of invalid character.
 		if invalid_character_position > 0 then
-			log_indentation_reset;
-			log (message_error & "invalid character in generic component name '" 
-				& to_string (name) & "' at position" & natural'image (invalid_character_position),
-				console => true);
-			raise constraint_error;
+			log (message_warning & "invalid character in generic component name '" 
+				& to_string (name) & "' at position" & natural'image (invalid_character_position));
 		end if;
 	end check_generic_name_characters;
 
@@ -2947,7 +2944,7 @@ package body et_kicad is
 								active_section := fields;
 
 								-- The commponent header provides the first component properties:
-								tmp_component_name := et_libraries.type_component_generic_name.to_bounded_string (
+								tmp_component_name := type_component_generic_name.to_bounded_string (
 														et_string_processing.field (line,2)); -- 74LS00
 
 								-- The generic component name must be checked for invalid characters.
@@ -3245,8 +3242,8 @@ package body et_kicad is
 	-- Input parameters: the full name of the component library, generic name therein,
 	-- name of package library and package name.
 		component_library 	: in et_libraries.type_device_library_name.bounded_string; 		-- ../lbr/bel_logic.lib
-		generic_name 		: in et_libraries.type_component_generic_name.bounded_string; 	-- 7400
-		package_library 	: in et_kicad_general.type_library_name.bounded_string; 			-- bel_ic
+		generic_name 		: in type_component_generic_name.bounded_string; 				-- 7400
+		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
 		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
 		log_threshold		: in et_string_processing.type_log_level)
 		return et_libraries.type_component_variant_name.bounded_string is 					-- D
@@ -7574,12 +7571,12 @@ package body et_kicad is
 						components 	: in type_components_library.map) is
 						use type_components_library;
 						component_cursor : type_components_library.cursor := components.first;
-						use et_libraries.type_component_generic_name;
+						use type_component_generic_name;
 					begin
 						log_indentation_up;
 						while component_cursor /= type_components_library.no_element loop
 							
-							log (et_libraries.to_string (key (component_cursor)), log_threshold + 2);
+							log (to_string (key (component_cursor)), log_threshold + 2);
 
 							-- Sometimes generic names in the library start with a tilde. it must
 							-- be removed before testing the name.
@@ -10501,7 +10498,7 @@ package body et_kicad is
 				component_lib : type_components_library.cursor := components.first;
 
 				procedure query_units_lib (
-					component_name	: in et_libraries.type_component_generic_name.bounded_string;
+					component_name	: in type_component_generic_name.bounded_string;
 					component 		: in type_component_library) is
 					use type_units_library;
 					unit : type_units_library.cursor := component.units.first;
@@ -10593,7 +10590,7 @@ package body et_kicad is
 					end loop;
 				end query_units_lib;
 
-				use et_libraries.type_component_generic_name;
+				use type_component_generic_name;
 				generic_model_found : boolean := false; -- goes true once the generic model was found
 				
 			begin -- query_library_components
@@ -12666,7 +12663,7 @@ package body et_kicad is
 			component_cursor: type_components_schematic.cursor;
 			
 			library_name	: et_libraries.type_device_library_name.bounded_string;
-			generic_name	: et_libraries.type_component_generic_name.bounded_string;
+			generic_name	: type_component_generic_name.bounded_string;
 			package_variant	: et_libraries.type_component_variant_name.bounded_string;
 
 			library_cursor	: type_libraries.cursor;
@@ -12680,7 +12677,7 @@ package body et_kicad is
 
 				procedure query_variants (
 				-- Looks up the list of variants of the component.
-					name 		: in et_libraries.type_component_generic_name.bounded_string;
+					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) is
 					use et_libraries.type_component_variants;
 					use et_import;
@@ -12724,7 +12721,7 @@ package body et_kicad is
 				end query_variants;
 				
 			begin -- locate_component_in_library
-				log ("locating generic component " & et_libraries.to_string (generic_name) 
+				log ("locating generic component " & to_string (generic_name) 
 						& " in library " & et_libraries.to_string (library_name) 
 						& " ...", log_threshold + 2);
 				log_indentation_up;
@@ -12818,7 +12815,7 @@ package body et_kicad is
 			component_cursor: type_components_schematic.cursor;
 			
 			library_name	: et_libraries.type_device_library_name.bounded_string;
-			generic_name	: et_libraries.type_component_generic_name.bounded_string;
+			generic_name	: type_component_generic_name.bounded_string;
 			package_variant	: et_libraries.type_component_variant_name.bounded_string;
 
 			--use type_libraries;
@@ -12833,7 +12830,7 @@ package body et_kicad is
 
 				procedure query_variants (
 				-- Looks up the list of variants of the component.
-					name 		: in et_libraries.type_component_generic_name.bounded_string;
+					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) is
 					use et_libraries.type_component_variants;
 
@@ -12882,7 +12879,7 @@ package body et_kicad is
 				end query_variants;
 				
 			begin -- locate_component_in_library
-				log ("locating generic component " & et_libraries.to_string (generic_name) 
+				log ("locating generic component " & to_string (generic_name) 
 						& " in library " & et_libraries.to_string (library_name) 
 						& " ...", log_threshold + 2);
 				log_indentation_up;
@@ -12986,7 +12983,7 @@ package body et_kicad is
 			--package_name : type_component_package_name.bounded_string;
 
 			library_name	: et_libraries.type_device_library_name.bounded_string;
-			generic_name	: et_libraries.type_component_generic_name.bounded_string;
+			generic_name	: type_component_generic_name.bounded_string;
 			package_variant	: et_libraries.type_component_variant_name.bounded_string;
 
 			library_cursor	: type_libraries.cursor;
@@ -13001,7 +12998,7 @@ package body et_kicad is
 
 				procedure query_variants (
 				-- Looks up the list of variants of the component.
-					name 		: in et_libraries.type_component_generic_name.bounded_string;
+					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) is
 				
 					use et_libraries.type_component_variants;
@@ -13057,7 +13054,7 @@ package body et_kicad is
 				end query_variants;
 				
 			begin -- locate_component_in_library
-				log ("locating generic component " & et_libraries.to_string (generic_name) 
+				log ("locating generic component " & to_string (generic_name) 
 						& " in library " & et_libraries.to_string (library_name) & " ...", log_threshold + 2);
 				log_indentation_up;
 

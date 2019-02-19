@@ -383,13 +383,36 @@ package et_configuration is
 
 
 	
-	-- PARTCODE KEYWORDS
+	-- PARTCODE
 
-	-- for introduction have a look at:
-	-- https://www.clearlyinventory.com/inventory-basics/how-to-design-good-item-numbers-for-products-in-inventory
+-- 	-- for introduction have a look at:
+-- 	-- https://www.clearlyinventory.com/inventory-basics/how-to-design-good-item-numbers-for-products-in-inventory
+-- 
+-- 	-- It is up to the user to define the syntax of the partcode. The keywords in the following
+-- 	-- refer the the recommended form like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5":
+-- 
+-- 	-- The component part code is THE key into the ERP system of the user. It can be a crytic SAP number
+-- 	-- or something human readable like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5".
+-- 	-- The keywords for the latter can be specified via the configuration file. See package et_configuration.
+-- 	component_partcode_characters : character_set := to_set
+-- 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ('_'); 
+-- 	component_partcode_length_max : constant positive := 100;
+-- 	package type_component_partcode is new generic_bounded_length (component_partcode_length_max);
+-- 	partcode_default : constant string := "dummy";
+-- 	
+-- 	function to_string (partcode : in type_component_partcode.bounded_string) return string;
+-- 	function to_partcode (partcode : in string) return type_component_partcode.bounded_string;
+-- 
+-- 	procedure check_partcode_length (partcode : in string);
+-- 	-- Tests if the given partcode is longer than allowed.
+-- 	
+-- 	procedure check_partcode_characters (
+-- 		partcode	: in type_component_partcode.bounded_string;
+-- 		characters	: in character_set := component_partcode_characters);
+-- 	-- Tests if the given partcode contains only valid characters as specified
+-- 	-- by given character set.
+-- 	-- Raises exception if invalid character found.
 
-	-- It is up to the user to define the syntax of the partcode. The keywords in the following
-	-- refer the the recommended form like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5":
 	
 	type type_partcode_section is (
 		COMPONENT_PACKAGE,
@@ -456,6 +479,36 @@ package et_configuration is
 	-- Returns for the given partcode section the corresponding keyword as specified
 	-- in the configuration file section [PART_CODE_KEYWORDS].
 	-- If no keyword specified (or no conf. file applied) returns an empty string.
+
+	procedure validate_component_partcode_in_library (
+	-- Tests if the given partcode of a library component is correct.
+	-- The given properties are assumed to be those of a real component.
+	--  - If partcode keywords are not specified in the 
+	--    configuration file, nothing is validated. It is the users responsibility 
+	--    to specify a correct partcode.
+	--  - If partcode keywords are specified in the configuration file,
+	--    the root part (like R_PAC_S_0805_VAL_) is validated.
+		partcode		: in et_libraries.type_component_partcode.bounded_string;	-- R_PAC_S_0805_VAL_
+		prefix			: in et_libraries.type_component_prefix.bounded_string;		-- R
+		packge			: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
+		log_threshold	: in et_string_processing.type_log_level);
+	
+	procedure validate_component_partcode_in_schematic ( -- CS move to et_schematic
+	-- Tests if the given partcode of a schematic component is correct.
+	-- The given properties are assumed to be those of a real component.
+	--  - If partcode keywords are not specified in the 
+	--    configuration file, nothing is validated. It is the users responsibility 
+	--    to specify a correct partcode.
+	--  - If partcode keywords are specified in the configuration file,
+	--    the root part (like R_PAC_S_0805_VAL_) is validated.
+		partcode		: in et_libraries.type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
+		reference		: in et_libraries.type_component_reference;						-- R45
+		packge			: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
+		value 			: in et_libraries.type_component_value.bounded_string; 			-- 100R
+		log_threshold	: in et_string_processing.type_log_level);
+
+	
+
 	
 	configuration_file_handle : ada.text_io.file_type;
 	

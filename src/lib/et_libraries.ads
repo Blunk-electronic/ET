@@ -574,7 +574,7 @@ package et_libraries is
 
 
 
--- COMPONENT PART CODES
+-- -- COMPONENT PART CODES
 	-- The component part code is THE key into the ERP system of the user. It can be a crytic SAP number
 	-- or something human readable like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5".
 	-- The keywords for the latter can be specified via the configuration file. See package et_configuration.
@@ -804,33 +804,33 @@ package et_libraries is
 		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3"
 		element_type	=> type_unit_external);
 
-	procedure validate_component_partcode_in_library (
-	-- Tests if the given partcode of a library component is correct.
-	-- The given properties are assumed to be those of a real component.
-	--  - If partcode keywords are not specified in the 
-	--    configuration file, nothing is validated. It is the users responsibility 
-	--    to specify a correct partcode.
-	--  - If partcode keywords are specified in the configuration file,
-	--    the root part (like R_PAC_S_0805_VAL_) is validated.
-		partcode		: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
-		name			: in type_component_generic_name.bounded_string;	-- 74LS00	
-		prefix			: in type_component_prefix.bounded_string;			-- R
-		packge			: in type_component_package_name.bounded_string;	-- S_0805
-		log_threshold	: in et_string_processing.type_log_level);
-	
-	procedure validate_component_partcode_in_schematic ( -- CS move to et_schematic
-	-- Tests if the given partcode of a schematic component is correct.
-	-- The given properties are assumed to be those of a real component.
-	--  - If partcode keywords are not specified in the 
-	--    configuration file, nothing is validated. It is the users responsibility 
-	--    to specify a correct partcode.
-	--  - If partcode keywords are specified in the configuration file,
-	--    the root part (like R_PAC_S_0805_VAL_) is validated.
-		partcode		: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
-		reference		: in type_component_reference;						-- R45
-		packge			: in type_component_package_name.bounded_string;	-- S_0805
-		value 			: in type_component_value.bounded_string; 			-- 100R
-		log_threshold	: in et_string_processing.type_log_level);
+-- 	procedure validate_component_partcode_in_library (
+-- 	-- Tests if the given partcode of a library component is correct.
+-- 	-- The given properties are assumed to be those of a real component.
+-- 	--  - If partcode keywords are not specified in the 
+-- 	--    configuration file, nothing is validated. It is the users responsibility 
+-- 	--    to specify a correct partcode.
+-- 	--  - If partcode keywords are specified in the configuration file,
+-- 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
+-- 		partcode		: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
+-- 		name			: in type_component_generic_name.bounded_string;	-- 74LS00	
+-- 		prefix			: in type_component_prefix.bounded_string;			-- R
+-- 		packge			: in type_component_package_name.bounded_string;	-- S_0805
+-- 		log_threshold	: in et_string_processing.type_log_level);
+-- 	
+-- 	procedure validate_component_partcode_in_schematic ( -- CS move to et_schematic
+-- 	-- Tests if the given partcode of a schematic component is correct.
+-- 	-- The given properties are assumed to be those of a real component.
+-- 	--  - If partcode keywords are not specified in the 
+-- 	--    configuration file, nothing is validated. It is the users responsibility 
+-- 	--    to specify a correct partcode.
+-- 	--  - If partcode keywords are specified in the configuration file,
+-- 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
+-- 		partcode		: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
+-- 		reference		: in type_component_reference;						-- R45
+-- 		packge			: in type_component_package_name.bounded_string;	-- S_0805
+-- 		value 			: in type_component_value.bounded_string; 			-- 100R
+-- 		log_threshold	: in et_string_processing.type_log_level);
 
 
 

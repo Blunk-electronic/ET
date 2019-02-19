@@ -1975,6 +1975,56 @@ package body et_configuration is
 		
 	end check_schematic_text_size;
 
+
+-- 	function to_string (partcode : in type_component_partcode.bounded_string) return string is begin
+-- 		return type_component_partcode.to_string (partcode);
+-- 	end to_string;
+-- 
+-- 	function to_partcode (partcode : in string) return type_component_partcode.bounded_string is begin
+-- 		return type_component_partcode.to_bounded_string (partcode);
+-- 	end to_partcode;
+-- 	
+-- 	procedure check_partcode_length (partcode : in string) is
+-- 	-- Tests if the given partcode is longer than allowed.
+-- 		use et_string_processing;
+-- 	begin
+-- 		if partcode'length > component_partcode_length_max then
+-- 			log_indentation_reset;
+-- 			log (message_error & "max. number of characters for part code is" 
+-- 				 & positive'image (component_partcode_length_max) & " !",
+-- 				 console => true);
+-- 			raise constraint_error;
+-- 		end if;
+-- 	end check_partcode_length;
+-- 	
+-- 	procedure check_partcode_characters (
+-- 		partcode	: in type_component_partcode.bounded_string;
+-- 		characters	: in character_set := component_partcode_characters) is
+-- 	-- Tests if the given partcode contains only valid characters as specified
+-- 	-- by given character set.
+-- 	-- Raises exception if invalid character found.
+-- 		use et_string_processing;
+-- 		use type_component_partcode;
+-- 		invalid_character_position : natural := 0;
+-- 	begin
+-- 		invalid_character_position := index (
+-- 			source => partcode,
+-- 			set => characters,
+-- 			test => outside);
+-- 
+-- 		if invalid_character_position > 0 then
+-- 			log_indentation_reset;
+-- 			log (message_error & "component part code " & to_string (partcode) 
+-- 				 & " has invalid character at position"
+-- 				 & natural'image (invalid_character_position),
+-- 				console => true
+-- 				);
+-- 			raise constraint_error;
+-- 		end if;
+-- 	end check_partcode_characters;
+
+	
+	
 	function to_partcode_keyword_argument (argument : in string) return type_partcode_keyword_argument.bounded_string is
 	-- Converts a string to a type_partcode_keyword_argument.
 	begin
@@ -2072,6 +2122,275 @@ package body et_configuration is
 	begin
 		return type_partcode_keyword.to_bounded_string (keyword);
 	end to_partcode_keyword;
+
+	function compose_partcode_root (
+	-- The root of a partcode in general is something like R_PAC_S_0805_VAL_ .
+	-- If optionally the value is provided, it gets appended which would result
+	-- in something like R_PAC_S_0805_VAL_100R.
+		prefix		: in et_libraries.type_component_prefix.bounded_string;			-- R
+		packge		: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
+		value 		: in et_libraries.type_component_value.bounded_string := et_libraries.type_component_value.to_bounded_string ("")) -- 100R
+		return et_libraries.type_component_partcode.bounded_string is
+
+		use et_libraries;
+		use type_component_prefix;
+		use type_component_package_name;
+		use type_component_value;
+		use type_component_partcode;
+		use et_configuration;
+	begin
+		return to_bounded_string (
+			et_libraries.to_string (prefix)	-- R
+			& partcode_keyword_separator	-- _
+			& to_partcode_keyword (COMPONENT_PACKAGE) -- PAC
+			& partcode_keyword_separator			-- _
+			& et_libraries.to_string (packge)		-- S_0805
+			& partcode_keyword_separator			-- _
+			& to_partcode_keyword (COMPONENT_VALUE) -- VAL
+			& partcode_keyword_separator			-- _
+			& et_libraries.to_string (value)		-- 100R
+			);
+	end compose_partcode_root;
+
+	procedure validate_other_partcode_keywords (
+	-- Validates optional keywords as specified in configuration file.
+	-- Starts the validation from the given character position.
+		partcode		: in et_libraries.type_component_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R_TOL_5_PMAX_0W125
+		from			: in positive; -- the character position to start from
+		log_threshold	: in et_string_processing.type_log_level) is
+
+		use type_partcode_keywords;
+		use et_libraries.type_component_partcode;
+		use type_partcode_keyword_argument;
+		use et_string_processing;
+		
+		len 		: positive := length (partcode); 	-- the length of the given partcode
+		place 		: positive := from; 				-- the position of the character being processed
+		keyword_end : positive;							-- the last character position of the current keyword
+
+		keyword_follows : boolean;	-- goes true if a keyword is expected next
+
+		keyword : type_partcode_keyword.bounded_string;	-- the keyword being processed
+
+		argument_start : positive;
+		argument : type_partcode_keyword_argument.bounded_string; -- the argument being processed
+
+		procedure validate_argument (
+			kw : in type_partcode_keyword.bounded_string;
+			arg : in type_partcode_keyword_argument.bounded_string) is
+		begin
+			log ("keyword " & to_string (kw) 
+				 & " argument " & to_string (argument => argument), log_threshold + 1);
+
+			-- CS: currently no validation ! Here the argument could be checked against the keyword
+			-- example: after PMAX must follow something like 15 (for 15W watts)
+			-- after VMAX must follow 6V3 ...
+			-- Instead of comma, use unit of measurement (same scheme as in component value).
+			-- The format of the argument should be specified in the configuration file.
+		end validate_argument;
+			
+	begin -- validate_other_partcode_keywords
+		log ("optional keywords ...", log_threshold);
+		log_indentation_up;
+
+		-- If the first character to start with, is a separator, then an argument follows.
+		-- Otherwise a keyword follows. Example:
+		-- _100R_TOL_5_PMAX_0W125 -> argument follows
+		-- x_TOL_5_PMAX_0W125 -> keyword follows
+		if element (partcode, place) = partcode_keyword_separator then
+			keyword_follows := false;
+		else
+			keyword_follows := true;
+		end if;
+
+		-- advance through the partcode characters
+		while place < len loop
+
+			if keyword_follows then
+				-- log ("reading keyword");				
+				if element (partcode, place) = partcode_keyword_separator then
+					place := place + 1;
+					keyword_end := index (partcode, (1 => partcode_keyword_separator), from => place) - 1;
+					
+					keyword := to_partcode_keyword (slice (partcode, place, keyword_end));
+					log ("keyword " & to_string (keyword), log_threshold + 2);
+					
+					place := keyword_end + 1; -- point to separator right after keyword
+					argument_start := place + 1; -- so the argument is expected after the separator
+					
+					keyword_follows := false;
+					validate_partcode_keyword (keyword);
+					
+					-- A keyword must occur only once. Otherwise raise error:
+					if et_libraries.type_component_partcode.count (partcode, to_string (keyword)) > 1 then
+						log_indentation_reset;
+						log (message_error & "keyword " & to_string (keyword) & " can be used only once !");
+						raise constraint_error;
+					end if;
+				else
+					place := place + 1;	-- next character of keyword
+				end if;
+
+			else -- argument follows
+				-- log ("reading argument");
+				place := place + 1;
+				-- If the argument starts, "place" points to the first character of the argument.
+
+				-- If a separator occurs, the argument ends.
+				if element (partcode, place) = partcode_keyword_separator then
+
+					-- detect missing argument
+					if place = argument_start then
+						log_indentation_reset;
+						log (message_error & "expect argument at position" & positive'image (place) & " !");
+						raise constraint_error;
+					end if;
+					
+					keyword_follows := true;
+
+					-- The argument can now be sliced from argument_start to the place before the separator:
+					argument := to_partcode_keyword_argument (slice (partcode, argument_start, place - 1));
+					validate_argument (keyword, argument);
+					
+				elsif place = len then -- last argument in partcode
+					
+					-- The argument can now be sliced from argument_start to the end of the partcode:
+					argument := to_partcode_keyword_argument (slice (partcode, argument_start, place));
+					validate_argument (keyword, argument);
+				end if;
+
+			end if;
+			
+		end loop;
+
+		log_indentation_down;
+
+		exception
+			when event:
+				others =>
+					log_indentation_reset;
+					log (message_error & "part code " & to_string (partcode) & " invalid !", console => true);
+					log (ada.exceptions.exception_message (event));
+					raise;
+		
+	end validate_other_partcode_keywords;
+
+	
+	procedure validate_component_partcode_in_library (
+	-- Tests if the given partcode of a library component is correct.
+	-- The given properties are assumed to be those of a real component.
+	--  - If partcode keywords are not specified in the 
+	--    configuration file, nothing is validated. It is the users responsibility 
+	--    to specify a correct partcode.
+	--  - If partcode keywords are specified in the configuration file,
+	--    the root part (like R_PAC_S_0805_VAL_) is validated.
+		partcode		: in et_libraries.type_component_partcode.bounded_string; -- R_PAC_S_0805_VAL_
+		prefix			: in et_libraries.type_component_prefix.bounded_string;			-- R
+		packge			: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
+		log_threshold	: in et_string_processing.type_log_level)
+		is
+
+		use et_configuration;
+		use et_string_processing;
+		use et_libraries.type_component_partcode;
+
+		partcode_expect : et_libraries.type_component_partcode.bounded_string;		
+		place : natural;
+		
+		procedure partcode_invalid is
+		begin
+			log (message_warning & "partcode invalid !" &
+				"found " & to_string (partcode) & " . Expected " & to_string (partcode_expect) & " !");
+		end partcode_invalid;
+	
+	begin -- validate_component_partcode_in_library
+		log ("validating partcode in library ...", log_threshold);
+		log_indentation_up;
+		
+		if partcode_keywords_specified then
+
+			log (to_string (partcode), log_threshold + 1);
+			
+			-- Compose the root of the partcode as it should be.
+			-- The root is usually something like R_PAC_S_0805_VAL_ which contains
+			-- the given prefix and package name.
+			partcode_expect := compose_partcode_root (
+				prefix => prefix,
+				packge => packge);
+
+			-- the root of the partcode must be the very first part of the given partcode.
+			place := index (partcode, to_string (partcode_expect));
+			if place /= 1 then
+				partcode_invalid;
+			end if;
+
+			validate_other_partcode_keywords (
+				partcode => partcode, 				-- the partcode to be validated
+				from => length (partcode_expect), 	-- last character position of root part code
+				log_threshold => log_threshold + 1);
+			
+		end if;
+
+		log_indentation_down;
+	end validate_component_partcode_in_library;
+	
+	procedure validate_component_partcode_in_schematic ( -- CS move to et_schematic
+	-- Tests if the given partcode of a schematic component is correct.
+	-- The given properties are assumed to be those of a real component.
+	--  - If partcode keywords are not specified in the 
+	--    configuration file, nothing is validated. It is the users responsibility 
+	--    to specify a correct partcode.
+	--  - If partcode keywords are specified in the configuration file,
+	--    the root part (like R_PAC_S_0805_VAL_) is validated.
+		partcode		: in et_libraries.type_component_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		reference		: in et_libraries.type_component_reference;						-- R45
+		packge			: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
+		value 			: in et_libraries.type_component_value.bounded_string;			-- 100R
+		log_threshold	: in et_string_processing.type_log_level)
+		is
+
+		use et_string_processing;
+		use et_libraries.type_component_partcode;
+
+		place : natural;
+		partcode_expect : et_libraries.type_component_partcode.bounded_string;
+		
+		procedure partcode_invalid is
+		begin
+			log (message_warning & "device " & et_libraries.to_string (reference)
+				 & " partcode invalid ! Found " & to_string (partcode) &
+				" . Expected " & to_string (partcode_expect) & " !");
+		end partcode_invalid;
+
+	begin -- validate_component_partcode_in_schematic
+		log ("validating partcode in schematic ...", log_threshold);
+		log_indentation_up;
+		
+		if partcode_keywords_specified then
+
+			-- Compose the root of the partcode as it should be.
+			-- The root is usually something like R_PAC_S_0805_VAL_100R which contains
+			-- the given prefix, package name and - if provided - the value.
+			partcode_expect := compose_partcode_root (
+				prefix => reference.prefix,
+				packge => packge,
+				value => value);
+
+			-- the root of the partcode must be the very first part of the given partcode.
+			place := index (partcode, to_string (partcode_expect));
+			if place /= 1 then
+				partcode_invalid;
+			end if;
+
+			validate_other_partcode_keywords (
+				partcode => partcode, -- the partcode to be validated
+				from => length (partcode_expect), -- last character position of root part code
+				log_threshold => log_threshold + 1);
+
+		end if;
+
+		log_indentation_down;
+	end validate_component_partcode_in_schematic;
 	
 	function to_partcode_section (text : in string) return type_partcode_section is
 	-- converts a string to a type_partcode_section.
