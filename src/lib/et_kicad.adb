@@ -471,7 +471,7 @@ package body et_kicad is
 	
 	function to_package_name (
 		library_name	: in et_libraries.type_device_library_name.bounded_string; -- ../libraries/transistors.lib
-		generic_name	: in et_libraries.type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
+		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in et_libraries.type_component_variant_name.bounded_string) -- N, D
 		return et_libraries.type_component_package_name.bounded_string is
 	-- Returns the package name for of the given component.
@@ -577,10 +577,11 @@ package body et_kicad is
 	end lowest_xy;
 
 
+
 	procedure no_generic_model_found (
 		reference		: in et_libraries.type_component_reference; -- IC303
 		library			: in et_libraries.type_device_library_name.bounded_string; -- ../lib/transistors.lib
-		generic_name	: in et_libraries.type_component_generic_name.bounded_string) -- TRANSISTOR_NPN
+		generic_name	: in type_component_generic_name.bounded_string) -- TRANSISTOR_NPN
 		is
 		use et_string_processing;
 		use et_libraries;
@@ -1174,30 +1175,66 @@ package body et_kicad is
 		end if;
 	end to_power_flag;
 
-	function strip_tilde (generic_name : in et_libraries.type_component_generic_name.bounded_string) return
-		et_libraries.type_component_generic_name.bounded_string is
+	procedure check_generic_name_characters (
+	-- Checks if the given generic component name meets certain conventions.
+		name		: in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
+		characters	: in character_set) is
+
+		use et_string_processing;
+		invalid_character_position : natural := 0;
+
+	begin
+		-- Test given generic name and get position of possible invalid characters.
+		invalid_character_position := index (
+			source	=> name,
+			set		=> characters,
+			test	=> outside);
+
+		-- CS: test if tilde is the first character of the generic name.
+		-- This requires a special test that allows a tilde at ONLY this position.
+				
+		-- Evaluate position of invalid character.
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_error & "invalid character in generic component name '" 
+				& to_string (name) & "' at position" & natural'image (invalid_character_position),
+				console => true);
+			raise constraint_error;
+		end if;
+	end check_generic_name_characters;
+
+	function to_string (generic_name : in type_component_generic_name.bounded_string) return string is
+	-- Returns the given generic name as as string.
+	-- CS: provide a parameter that turns the pretext like "generic name" on/off
+	begin
+		--return ("generic name " & type_component_generic_name.to_string (name_in_library));
+		return type_component_generic_name.to_string (generic_name);
+	end to_string;
+	
+	function strip_tilde (generic_name : in type_component_generic_name.bounded_string) return
+		type_component_generic_name.bounded_string is
 	-- Removes a possible heading tilde character from a generic component name.
 	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN	
 	-- The leading tilde marks a component whose value is set to "invisible".
 		use et_import;
-		use et_libraries.type_component_generic_name;
-		length : et_libraries.type_component_generic_name.length_range;
+		use type_component_generic_name;
+		length : type_component_generic_name.length_range;
 	begin
 		if element (generic_name, 1) = '~' then
-			length := et_libraries.type_component_generic_name.length (generic_name);
-			return et_libraries.type_component_generic_name.bounded_slice (generic_name, 2, length);
+			length := type_component_generic_name.length (generic_name);
+			return type_component_generic_name.bounded_slice (generic_name, 2, length);
 		else
 			return generic_name;
 		end if;
 	end strip_tilde;
 
-	function prepend_tilde (generic_name : in et_libraries.type_component_generic_name.bounded_string) return
-		et_libraries.type_component_generic_name.bounded_string is
+	function prepend_tilde (generic_name : in type_component_generic_name.bounded_string) return
+		type_component_generic_name.bounded_string is
 	-- Prepends a heading tilde character to a generic component name.
 	-- example: TRANSISTOR_NPN becomes ~TRANSISTOR_NPN
 	-- The leading tilde marks a component whose value is set to "invisible".
 		use et_import;
-		use et_libraries.type_component_generic_name;
+		use type_component_generic_name;
 	begin
 		return '~' & generic_name;
 	end prepend_tilde;
@@ -2917,7 +2954,7 @@ package body et_kicad is
 								-- NOTE: we test against the kicad specific character set that allows a tilde.
 								check_generic_name_characters (
 									name		=> tmp_component_name,
-									characters	=> component_generic_name_characters);
+									characters	=> component_generic_name_characters_lib);
 								
 								-- for the log:
 								--log (field (line,2), log_threshold + 1); -- 74LS00
@@ -8200,7 +8237,7 @@ package body et_kicad is
 						check_generic_name_characters (
 							name => generic_name_in_lbr, -- "SN74LS00"
 							-- NOTE: We do not allow tilde characters here. they occur ONLY in the library:
-							characters => et_libraries.component_generic_name_characters); 
+							characters => component_generic_name_characters); 
 
 						appearance := to_appearance (line => et_kicad.line, schematic => true);
 						log (to_string (appearance, verbose => true), log_threshold + 3);
@@ -9674,7 +9711,7 @@ package body et_kicad is
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
 		library		: in et_libraries.type_device_library_name.bounded_string;
-		component	: in et_libraries.type_component_generic_name.bounded_string) 
+		component	: in type_component_generic_name.bounded_string) 
 		return type_components_library.cursor is
 
 		lib_cursor	: type_libraries.cursor;

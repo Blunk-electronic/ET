@@ -400,41 +400,41 @@ package body et_libraries is
 		return type_frame_template_name.to_bounded_string (name);
 	end to_template_name;
 	
-	procedure check_generic_name_characters (
-	-- Checks if the given generic component name meets certain conventions.
-		name : in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
-		characters : in character_set := component_generic_name_characters) is
-
-		use et_string_processing;
-		invalid_character_position : natural := 0;
-
-	begin
-		-- Test given generic name and get position of possible invalid characters.
-		invalid_character_position := index (
-			source => name,
-			set => characters,
-			test => outside);
-
-		-- CS: test if tilde is the first character of the generic name.
-		-- This requires a special test that allows a tilde at ONLY this position.
-				
-		-- Evaluate position of invalid character.
-		if invalid_character_position > 0 then
-			log_indentation_reset;
-			log (message_error & "invalid character in generic component name '" 
-				& to_string (name) & "' at position" & natural'image (invalid_character_position),
-				console => true);
-			raise constraint_error;
-		end if;
-	end check_generic_name_characters;
-
-	function to_string (generic_name : in type_component_generic_name.bounded_string) return string is
-	-- Returns the given generic name as as string.
-	-- CS: provide a parameter that turns the pretext like "generic name" on/off
-	begin
-		--return ("generic name " & type_component_generic_name.to_string (name_in_library));
-		return (type_component_generic_name.to_string (generic_name));
-	end to_string;
+-- 	procedure check_generic_name_characters (
+-- 	-- Checks if the given generic component name meets certain conventions.
+-- 		name : in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
+-- 		characters : in character_set := component_generic_name_characters) is
+-- 
+-- 		use et_string_processing;
+-- 		invalid_character_position : natural := 0;
+-- 
+-- 	begin
+-- 		-- Test given generic name and get position of possible invalid characters.
+-- 		invalid_character_position := index (
+-- 			source => name,
+-- 			set => characters,
+-- 			test => outside);
+-- 
+-- 		-- CS: test if tilde is the first character of the generic name.
+-- 		-- This requires a special test that allows a tilde at ONLY this position.
+-- 				
+-- 		-- Evaluate position of invalid character.
+-- 		if invalid_character_position > 0 then
+-- 			log_indentation_reset;
+-- 			log (message_error & "invalid character in generic component name '" 
+-- 				& to_string (name) & "' at position" & natural'image (invalid_character_position),
+-- 				console => true);
+-- 			raise constraint_error;
+-- 		end if;
+-- 	end check_generic_name_characters;
+-- 
+-- 	function to_string (generic_name : in type_component_generic_name.bounded_string) return string is
+-- 	-- Returns the given generic name as as string.
+-- 	-- CS: provide a parameter that turns the pretext like "generic name" on/off
+-- 	begin
+-- 		--return ("generic name " & type_component_generic_name.to_string (name_in_library));
+-- 		return (type_component_generic_name.to_string (generic_name));
+-- 	end to_string;
 
 	function to_string (partcode : in type_component_partcode.bounded_string) return string is begin
 		return type_component_partcode.to_string (partcode);

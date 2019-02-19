@@ -460,9 +460,27 @@ package et_kicad is
 
 	end record;
 
+	-- The generic name of a component in the library is something like TRANSISTOR_NPN or RESISTOR
+ 	component_generic_name_length_max : constant natural := 100;
+	package type_component_generic_name is new generic_bounded_length (component_generic_name_length_max);
+	use type_component_generic_name;
+	-- Only those characters are allowed for the generic component name.
+	-- See et_import.check_component_name for customization depending on CAD format.
+	component_generic_name_characters : character_set := to_set 
+		(ranges => (('A','Z'),('0','9'))) 
+		or to_set('-') 
+		or to_set('_'); 
 
-	function strip_tilde (generic_name : in et_libraries.type_component_generic_name.bounded_string) return
-		et_libraries.type_component_generic_name.bounded_string;
+	procedure check_generic_name_characters (
+	-- Checks if the the given generic component name meets certain conventions.
+		name		: in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
+		characters	: in character_set);
+
+	function to_string (generic_name : in type_component_generic_name.bounded_string) return string;
+	
+
+	function strip_tilde (generic_name : in type_component_generic_name.bounded_string) return
+		type_component_generic_name.bounded_string;
 	-- Removes a possible heading tilde character from a generic component name.
 	-- example: ~TRANSISTOR_NPN becomes TRANSISTOR_NPN	
 	-- The leading tilde marks a component whose value is set to "invisible".	
@@ -470,8 +488,8 @@ package et_kicad is
 	-- Library components are stored in a map.
 	-- Within the map they are accessed by a key type_component_name (something like "CAPACITOR").
 	package type_components_library is new indefinite_ordered_maps (
-		key_type		=> et_libraries.type_component_generic_name.bounded_string, -- example: "TRANSISTOR_PNP"
-		"<"				=> et_libraries.type_component_generic_name."<",
+		key_type		=> type_component_generic_name.bounded_string, -- example: "TRANSISTOR_PNP"
+		"<"				=> type_component_generic_name."<",
 		element_type	=> type_component_library);
 
 	function first_unit (
@@ -484,10 +502,12 @@ package et_kicad is
 		unit_cursor : in type_units_library.cursor)
 		return type_ports_library.cursor;
 
+
+	
 	procedure no_generic_model_found (
 		reference		: in et_libraries.type_component_reference; -- IC303
 		library			: in et_libraries.type_device_library_name.bounded_string; -- ../lib/xilinx/xc345.dev
-		generic_name	: in et_libraries.type_component_generic_name.bounded_string);
+		generic_name	: in type_component_generic_name.bounded_string);
 	
 	
 	function component_appearance (cursor : in type_components_library.cursor)
@@ -496,7 +516,7 @@ package et_kicad is
 
 	function to_package_name (
 		library_name	: in et_libraries.type_device_library_name.bounded_string; -- ../libraries/transistors.lib
-		generic_name	: in et_libraries.type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
+		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in et_libraries.type_component_variant_name.bounded_string) -- N, D
 		return et_libraries.type_component_package_name.bounded_string;
 	-- Returns the package name of the given component. 
@@ -521,7 +541,7 @@ package et_kicad is
 	-- This is a component as it appears in the schematic.
 	type type_component_schematic (appearance : et_schematic.type_appearance_schematic) is record
 		library_name	: et_libraries.type_device_library_name.bounded_string; -- lib name like ../libraries/transistors.lib
-		generic_name	: et_libraries.type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
+		generic_name	: type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		alt_references	: type_alternative_references.list;
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
 		units			: type_units_schematic.map; -- PWR, A, B, ...
@@ -1097,7 +1117,7 @@ package et_kicad is
 	component_package_name_characters : character_set := et_libraries.component_package_name_characters or to_set (':');
 
 	-- In the library a component name may have a tilde. Therefore we extend the standard character set by a tilde.
-	component_generic_name_characters : character_set := et_libraries.component_generic_name_characters or to_set ('~');
+	component_generic_name_characters_lib : character_set := component_generic_name_characters or to_set ('~');
 	
 	type type_symbol_interchangeable is (L, F); -- L means swapping not allowed, F means swapping allowed 
 	type type_show_pin_number is (Y, N); -- show pin/pad number yes/no
@@ -1280,7 +1300,7 @@ package et_kicad is
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
 		library		: in et_libraries.type_device_library_name.bounded_string; -- incl. path and file name
-		component	: in et_libraries.type_component_generic_name.bounded_string) 
+		component	: in type_component_generic_name.bounded_string) 
 		return type_components_library.cursor;
 
 	procedure reset_component_cursor (cursor : in out type_components_schematic.cursor);

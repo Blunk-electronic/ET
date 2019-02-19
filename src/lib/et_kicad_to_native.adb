@@ -2376,7 +2376,7 @@ package body et_kicad_to_native is
 
 		function concatenate_lib_name_and_generic_name (
 			library	: in et_libraries.type_device_library_name.bounded_string; -- ../../lbr/bel_logic.lib
-			device	: in et_libraries.type_component_generic_name.bounded_string) -- 7400
+			device	: in et_kicad.type_component_generic_name.bounded_string) -- 7400
 
 			-- The return is a composition of prefix_devices_dir, library containing directory,
 			-- generic component name and device model extension 
@@ -2400,7 +2400,7 @@ package body et_kicad_to_native is
 			name := dir & name;
 			--log ("name " & et_libraries.to_string (name));
 
-			name := name & '_' & et_libraries.to_device_library_name (et_libraries.to_string (device));
+			name := name & '_' & et_libraries.to_device_library_name (et_kicad.to_string (device));
 			--log ("name " & et_libraries.to_string (name));
 
 			name := et_libraries.to_device_library_name (compose (
@@ -2939,8 +2939,8 @@ package body et_kicad_to_native is
 				use et_kicad.type_components_library;
 				component_cursor : et_kicad.type_components_library.cursor := library.first;
 
-				use et_libraries.type_component_generic_name;
-				generic_name : et_libraries.type_component_generic_name.bounded_string;
+				use et_kicad.type_component_generic_name;
+				generic_name : et_kicad.type_component_generic_name.bounded_string;
 				device_model : et_libraries.type_device_library_name.bounded_string;
 
 				device_cursor : et_libraries.type_devices.cursor;

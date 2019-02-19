@@ -391,24 +391,24 @@ package et_libraries is
 
 
 	
--- COMPONENT GENERIC NAMES
-	-- The generic name of a component in the library is something like TRANSISTOR_NPN or RESISTOR
- 	component_generic_name_length_max : constant natural := 100;
-	package type_component_generic_name is new generic_bounded_length (component_generic_name_length_max);
-	use type_component_generic_name;
-	-- Only those characters are allowed for the generic component name.
-	-- See et_import.check_component_name for customization depending on CAD format.
-	component_generic_name_characters : character_set := to_set 
-		(ranges => (('A','Z'),('0','9'))) 
-		or to_set('-') 
-		or to_set('_'); 
-
-	procedure check_generic_name_characters (
-	-- Checks if the the given generic component name meets certain conventions.
-		name : in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
-		characters : in character_set := component_generic_name_characters);
-
-	function to_string (generic_name : in type_component_generic_name.bounded_string) return string;
+-- -- COMPONENT GENERIC NAMES
+-- 	-- The generic name of a component in the library is something like TRANSISTOR_NPN or RESISTOR
+--  	component_generic_name_length_max : constant natural := 100;
+-- 	package type_component_generic_name is new generic_bounded_length (component_generic_name_length_max);
+-- 	use type_component_generic_name;
+-- 	-- Only those characters are allowed for the generic component name.
+-- 	-- See et_import.check_component_name for customization depending on CAD format.
+-- 	component_generic_name_characters : character_set := to_set 
+-- 		(ranges => (('A','Z'),('0','9'))) 
+-- 		or to_set('-') 
+-- 		or to_set('_'); 
+-- 
+-- 	procedure check_generic_name_characters (
+-- 	-- Checks if the the given generic component name meets certain conventions.
+-- 		name : in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
+-- 		characters : in character_set := component_generic_name_characters);
+-- 
+-- 	function to_string (generic_name : in type_component_generic_name.bounded_string) return string;
 
 
 
