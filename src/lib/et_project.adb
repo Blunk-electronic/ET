@@ -6369,6 +6369,12 @@ package body et_project is
 										
 									elsif kw = keyword_package_model then -- package_model libraries/packages/S_SO14.pac
 										expect_field_count (line, 2);
+
+										-- The given path is something like libraries/packages/S_SO14.pac.
+										-- Check if the package name like S_SO14 is too long or contains invalid characters.
+										check_package_name_length (ada.directories.base_name (f (line, 2)));
+										check_package_name_characters (to_package_name (ada.directories.base_name (f (line, 2))));
+
 										variant.packge := et_libraries.to_package_library_name (f (line,2));
 										log ("package model " & to_string (variant.packge), log_threshold + 1);
 										

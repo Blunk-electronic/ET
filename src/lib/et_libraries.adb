@@ -89,7 +89,6 @@ package body et_libraries is
 	end to_string;
 
 	function to_package_library_name (package_library_name : in string) return type_package_library_name.bounded_string is
-	-- converts a string to a device library name.
 	begin
 		return type_package_library_name.to_bounded_string (package_library_name);
 	end to_package_library_name;

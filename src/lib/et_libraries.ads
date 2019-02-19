@@ -83,15 +83,6 @@ package et_libraries is
 	-- converts a string to a symbol library name.
 
 	
--- PACKAGES
-	-- If a library is fully specified with path, name and extension we store them in bounded strings:
-	package type_package_library_name is new generic_bounded_length (path_length_max);
-	
-	function to_string (package_library_name : in type_package_library_name.bounded_string) return string;
-	-- Returns the given package library name as string;
-
-	function to_package_library_name (package_library_name : in string) return type_package_library_name.bounded_string;
-	-- converts a string to a package library name.
 
 	
 	
@@ -507,7 +498,6 @@ package et_libraries is
 
 	component_package_name_length_max : constant positive := 100;
 	package type_component_package_name is new generic_bounded_length (component_package_name_length_max);
-	--use type_component_package_name;
 
 	function to_string (packge : in type_component_package_name.bounded_string) return string;
 	-- Returns the given package name as as string.
@@ -833,6 +823,13 @@ package et_libraries is
 		key_type 		=> type_terminal_name.bounded_string, -- H7, 14
 		element_type 	=> type_port_in_terminal_port_map); -- unit A, OE1
 
+	
+	package type_package_library_name is new generic_bounded_length (path_length_max);
+	
+	function to_string (package_library_name : in type_package_library_name.bounded_string) return string;
+	
+	function to_package_library_name (package_library_name : in string) return type_package_library_name.bounded_string;
+	
 	type type_component_variant is record -- CS rename to type_package_variant
 		packge				: type_package_library_name.bounded_string; -- libraries/packages/smd/SOT23.pac
 		terminal_port_map	: type_terminal_port_map.map; -- which port is connected with with terminal
