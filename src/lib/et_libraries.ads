@@ -409,7 +409,6 @@ package et_libraries is
 		characters : in character_set := component_generic_name_characters);
 
 	function to_string (generic_name : in type_component_generic_name.bounded_string) return string;
-	-- Returns the given generic name as as string.
 
 
 

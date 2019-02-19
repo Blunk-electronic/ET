@@ -6312,8 +6312,9 @@ package body et_project is
 								log ("prefix " & to_string (prefix), log_threshold + 1);
 								
 								if not et_configuration.prefix_valid (prefix) then
-									log (message_warning & "prefix of device model " &
-										 to_string (file_name) & " not conformant with conventions !");
+									--log (message_warning & "prefix of device model " &
+									--	 to_string (file_name) & " not conformant with conventions !");
+									null; -- CS output something helpful
 								end if;
 
 							elsif kw = keyword_value then -- value 7400
@@ -7992,8 +7993,9 @@ package body et_project is
 						log_indentation_up;
 
 						if not et_configuration.prefix_valid (device_name) then 
-							log (message_warning & "prefix of device " & et_libraries.to_string (device_name) 
-								 & " not conformant with conventions !");
+							--log (message_warning & "prefix of device " & et_libraries.to_string (device_name) 
+							--	 & " not conformant with conventions !");
+							null; -- CS output something helpful
 						end if;
 						
 						-- assign temporarily variable for model:
