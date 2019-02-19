@@ -73,7 +73,7 @@ package body et_kicad_pcb is
 		library_name	: in type_library_name.bounded_string; -- bel_logic
 		package_name 	: in et_libraries.type_component_package_name.bounded_string; -- S_SO14
 		log_threshold	: in et_string_processing.type_log_level)
-		return et_libraries.type_package_library_name.bounded_string is
+		return type_package_library_name.bounded_string is
 	-- Returns the full library name of the library that
 	-- contains the given package library with the given package.
 		
@@ -87,7 +87,7 @@ package body et_kicad_pcb is
 	--	- Looks up the fp-lib-table for the first occurence of the given library name.
 	--	- The entry in the fp-lib-table in turn provides the full library name (incl. path).
 		
-		lib : et_libraries.type_package_library_name.bounded_string; -- to be returned
+		lib : type_package_library_name.bounded_string; -- to be returned
 
 		use et_kicad;
 		use et_import;
@@ -111,7 +111,7 @@ package body et_kicad_pcb is
 		procedure search_package (
 		-- Searches the library (indicated by lib_cursor) for the given package.
 		-- Sets the flag package_found if the library contains the given package.
-			lib_name	: in et_libraries.type_package_library_name.bounded_string;
+			lib_name	: in type_package_library_name.bounded_string;
 			library		: in type_packages_library.map) is
 		begin
 			if type_packages_library.contains (
@@ -137,10 +137,10 @@ package body et_kicad_pcb is
 					-- Test if library exists. package_libraries hosts libraries by their full name.
 					-- So the library to test is formed by the current directory name, the given library name
 					-- and the package_library_directory_extension (*.pretty)
-					full_library_name := to_package_library_name (ada.directories.compose (
-											containing_directory	=> to_string (element (dir_cursor)),
-											name					=> et_kicad_general.to_string (library_name),
-											extension				=> package_library_directory_extension (2..package_library_directory_extension'last))); 
+					full_library_name := to_file_name (ada.directories.compose (
+						containing_directory	=> to_string (element (dir_cursor)),
+						name					=> et_kicad_general.to_string (library_name),
+						extension				=> package_library_directory_extension (2..package_library_directory_extension'last))); 
 
 					log ("searching in " & et_libraries.to_string (full_library_name) & " ...", log_threshold + 1);
 					
@@ -176,7 +176,7 @@ package body et_kicad_pcb is
 					-- On match, open the library (by its uri).
 					if element (fp_lib_table_cursor).lib_name = library_name then
 
-						full_library_name := to_package_library_name (to_string (element (fp_lib_table_cursor).lib_uri));
+						full_library_name := to_file_name (to_string (element (fp_lib_table_cursor).lib_uri));
 
 						log ("searching in " & et_libraries.to_string (full_library_name) & " ...", log_threshold + 1);
 						
@@ -2881,9 +2881,9 @@ package body et_kicad_pcb is
 							-- create the (empty) library in container package_libraries
 							type_libraries.insert (
 								container	=> package_libraries,
-								key			=> to_package_library_name (compose ( -- ../lbr/tht_packages/plcc.pretty 
-												containing_directory	=> et_kicad.to_string (element (lib_dir_cursor)),
-												name					=> element (library_name_cursor))),
+								key			=> to_file_name (compose ( -- ../lbr/tht_packages/plcc.pretty 
+										containing_directory	=> et_kicad.to_string (element (lib_dir_cursor)),
+										name					=> element (library_name_cursor))),
 								inserted	=> library_inserted,
 								position	=> library_cursor,
 								new_item	=> type_packages_library.empty_map);
@@ -8161,7 +8161,7 @@ package body et_kicad_pcb is
 	-- Used when terminal_port_maps are to be used for packages.
 	-- The given package is specified by the library name and package name.
 	-- Returns true if the terminal_port_map fits on the given package.
-		library_name		: in et_libraries.type_package_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
+		library_name		: in type_package_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
 		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
 		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
 		return boolean is
@@ -8202,7 +8202,7 @@ package body et_kicad_pcb is
 	
 		procedure locate_package (
 		-- Locates the package by package_name in the given package library.
-			library_name	: in et_libraries.type_package_library_name.bounded_string;
+			library_name	: in type_package_library_name.bounded_string;
 			packages		: in type_packages_library.map) is
 			package_cursor : type_packages_library.cursor;
 
@@ -8283,10 +8283,10 @@ package body et_kicad_pcb is
 
 	function terminal_count (
 	-- Returns the number of terminals of the given package in the given library.
-		packge : in et_libraries.type_package_library_name.bounded_string) -- ../lbr/bel_ic.pretty/S_SO14
+		packge : in type_package_library_name.bounded_string) -- ../lbr/bel_ic.pretty/S_SO14
 		return et_libraries.type_terminal_count is
 
-		library_name : et_libraries.type_package_library_name.bounded_string;
+		library_name : type_package_library_name.bounded_string;
 		package_name : et_libraries.type_component_package_name.bounded_string;
 		
 		use type_libraries;
@@ -8295,7 +8295,7 @@ package body et_kicad_pcb is
 		library_cursor : type_libraries.cursor; -- points to the library
 
 		procedure locate_package (
-			library_name	: in et_libraries.type_package_library_name.bounded_string;
+			library_name	: in type_package_library_name.bounded_string;
 			packages		: in type_packages_library.map) is
 			use et_pcb.type_terminals;
 			use type_packages_library;
@@ -8312,7 +8312,7 @@ package body et_kicad_pcb is
 
 		-- extract the library and package name from the given package
 		package_name := et_libraries.to_package_name (ada.directories.simple_name (et_libraries.to_string (packge))); -- S_SO14
-		library_name := et_libraries.to_package_library_name (ada.directories.containing_directory (et_libraries.to_string (packge))); -- ../lbr/bel_ic.pretty
+		library_name := et_libraries.to_file_name (ada.directories.containing_directory (et_libraries.to_string (packge))); -- ../lbr/bel_ic.pretty
 		
 		-- locate the library
 		library_cursor := type_libraries.find (package_libraries, library_name);

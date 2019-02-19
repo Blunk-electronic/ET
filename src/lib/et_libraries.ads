@@ -823,15 +823,15 @@ package et_libraries is
 		key_type 		=> type_terminal_name.bounded_string, -- H7, 14
 		element_type 	=> type_port_in_terminal_port_map); -- unit A, OE1
 
+
+	-- To handle names of package models like libraries/packages/smd/SOT23.pac use this:
+	package type_package_model_file is new generic_bounded_length (path_length_max);
 	
-	package type_package_library_name is new generic_bounded_length (path_length_max);
-	
-	function to_string (package_library_name : in type_package_library_name.bounded_string) return string;
-	
-	function to_package_library_name (package_library_name : in string) return type_package_library_name.bounded_string;
+	function to_string (name : in type_package_model_file.bounded_string) return string;
+	function to_file_name (name : in string) return type_package_model_file.bounded_string;
 	
 	type type_component_variant is record -- CS rename to type_package_variant
-		packge				: type_package_library_name.bounded_string; -- libraries/packages/smd/SOT23.pac
+		packge				: type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		terminal_port_map	: type_terminal_port_map.map; -- which port is connected with with terminal
 	end record;
 

@@ -109,7 +109,8 @@ package et_kicad is
 	-- Returns the base name of the given schematic file name as submodule name.
 
 
-
+	-- To handle library paths we (mis)use the type_package_model_file under a different name:
+	package type_package_library_name renames et_libraries.type_package_model_file;
 	
 	-- Bare library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters 

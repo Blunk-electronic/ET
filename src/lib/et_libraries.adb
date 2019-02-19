@@ -82,16 +82,16 @@ package body et_libraries is
 	end to_symbol_library_name;
 
 -- PACKAGES
-	function to_string (package_library_name : in type_package_library_name.bounded_string) return string is
+	function to_string (name : in type_package_model_file.bounded_string) return string is
 	-- Returns the given package library name as string;
 	begin
-		return type_package_library_name.to_string (package_library_name);
-	end to_string;
+		return type_package_model_file.to_string (name);
+	end;
 
-	function to_package_library_name (package_library_name : in string) return type_package_library_name.bounded_string is
+	function to_file_name (name : in string) return type_package_model_file.bounded_string is
 	begin
-		return type_package_library_name.to_bounded_string (package_library_name);
-	end to_package_library_name;
+		return type_package_model_file.to_bounded_string (name);
+	end;
 
 	
 	

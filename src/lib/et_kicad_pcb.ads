@@ -87,13 +87,15 @@ package et_kicad_pcb is
 	-- These constants are required for directory entry searches:
 	package_library_pattern	: constant string (1..8)	:= "*" & package_library_directory_extension;
 	package_pattern 		: constant string (1..11)	:= "*." & package_file_extension;
-	
 
+	-- To handle library paths we (mis)use the type_package_model_file under a different name:
+	package type_package_library_name renames et_libraries.type_package_model_file;
+	
 	function full_library_name (
 		library_name	: in type_library_name.bounded_string; -- bel_logic
 		package_name 	: in et_libraries.type_component_package_name.bounded_string; -- S_SO14
 		log_threshold	: in et_string_processing.type_log_level)
-		return et_libraries.type_package_library_name.bounded_string;
+		return type_package_library_name.bounded_string;
 	-- Returns the first library directory (in search_list_project_lib_dirs) that
 	-- contains the given package library with the given package.
 
@@ -551,6 +553,7 @@ package et_kicad_pcb is
 
 	
 -- LIBRARIES
+	
 	-- This is the base type of a package:
 	type type_package is new et_pcb.type_package_base with record
 		time_stamp : type_timestamp;
@@ -570,10 +573,10 @@ package et_kicad_pcb is
 		element_type 	=> type_package_library);
 	
 	package type_libraries is new ordered_maps (
-		key_type		=> et_libraries.type_package_library_name.bounded_string, -- projects/lbr/smd_packages.pretty
+		key_type		=> type_package_library_name.bounded_string, -- projects/lbr/smd_packages.pretty
 		element_type	=> type_packages_library.map,
 		"="				=> type_packages_library."=",
-		"<"				=> et_libraries.type_package_library_name."<");
+		"<"				=> type_package_library_name."<");
 	-- CS the element could be a record consisting of type_packages_library.map, lib_type, options and desrciption
 	-- lib_type, options and description are provided in V5 and should be stored here in the future.
 	
@@ -790,14 +793,14 @@ package et_kicad_pcb is
 	-- The schematic modules are indicated by module_cursor.
 
 	function terminal_count (
-		packge : in et_libraries.type_package_library_name.bounded_string) -- ../lbr/bel_ic/S_SO14
+		packge : in type_package_library_name.bounded_string) -- ../lbr/bel_ic/S_SO14
 		return et_libraries.type_terminal_count;
 	
 	function terminal_port_map_fits (
 	-- Used when terminal_port_maps are to be used for packages.
 	-- The given package is specified by the library name and package name.
 	-- Returns true if the terminal_port_map fits on the given package.
-		library_name		: in et_libraries.type_package_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
+		library_name		: in type_package_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
 		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
 		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
 		return boolean;

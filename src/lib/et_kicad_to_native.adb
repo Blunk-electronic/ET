@@ -2352,8 +2352,8 @@ package body et_kicad_to_native is
 			et_libraries.to_device_library_name (compose (
 				et_project.directory_libraries, et_project.directory_libraries_devices));
 	
-		prefix_packages_dir : et_libraries.type_package_library_name.bounded_string := -- libraries/packages
-			et_libraries.to_package_library_name (compose (
+		prefix_packages_dir : et_kicad_pcb.type_package_library_name.bounded_string := -- libraries/packages
+			et_libraries.to_file_name (compose (
 				et_project.directory_libraries, et_project.directory_libraries_packages));
 
 		-- Since V4 package libraries are stored in et_kicad_pcb.package_libraries
@@ -2414,22 +2414,22 @@ package body et_kicad_to_native is
 		end concatenate_lib_name_and_generic_name;
 
 		function rename_package_model (
-			model_in : in et_libraries.type_package_library_name.bounded_string) -- ../../lbr/transistors.pretty/S_0805
-			return et_libraries.type_package_library_name.bounded_string is
+			model_in : in et_kicad_pcb.type_package_library_name.bounded_string) -- ../../lbr/transistors.pretty/S_0805
+			return et_libraries.type_package_model_file.bounded_string is
 			-- The return is something like: libraries/packages/__#__#lbr#transistors.pretty_S_0805.pac .
 
 			use et_libraries;
-			use et_libraries.type_package_library_name;
+			use et_kicad_pcb.type_package_library_name;
 
 			-- In the containing directory . and / must be replaced by _ and #:
 			characters : character_mapping := to_mapping ("./","_#");
 
-			model_copy : et_libraries.type_package_library_name.bounded_string := model_in; -- ../../lbr/transistors.pretty/S_0805
-			model_return : et_libraries.type_package_library_name.bounded_string;
+			model_copy : et_kicad_pcb.type_package_library_name.bounded_string := model_in; -- ../../lbr/transistors.pretty/S_0805
+			model_return : et_libraries.type_package_model_file.bounded_string;
 		begin -- rename_package_model
 			translate (model_copy, characters);
 
-			model_return := et_libraries.to_package_library_name (compose (
+			model_return := et_libraries.to_file_name (compose (
 					containing_directory	=> et_libraries.to_string (prefix_packages_dir),
 					name					=> et_libraries.to_string (model_copy),
 					extension				=> et_pcb.library_file_extension));
@@ -2929,8 +2929,7 @@ package body et_kicad_to_native is
 			use et_kicad_pcb.type_libraries;
 			package_library_cursor : et_kicad_pcb.type_libraries.cursor := module.footprints.first;
 
-			use et_libraries.type_package_library_name;
-			--footprint_library_name : et_libraries.type_package_library_name.bounded_string;
+			use et_libraries.type_package_model_file;
 			
 			procedure query_components (
 				library_name	: in et_libraries.type_device_library_name.bounded_string;
@@ -3564,13 +3563,13 @@ package body et_kicad_to_native is
 
 			procedure query_packages (
 			-- Creates with the library name and package name new native package models.
-				library_name	: in et_libraries.type_package_library_name.bounded_string; -- projects/lbr/smd_packages.pretty
+				library_name	: in et_kicad_pcb.type_package_library_name.bounded_string; -- projects/lbr/smd_packages.pretty
 				library			: in et_kicad_pcb.type_packages_library.map) is
 
 				use et_kicad_pcb.type_packages_library;
 				package_cursor_kicad	: et_kicad_pcb.type_packages_library.cursor := library.first;
 				package_name			: et_libraries.type_component_package_name.bounded_string;
-				package_model			: et_libraries.type_package_library_name.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
+				package_model			: et_libraries.type_package_model_file.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
 
 				use et_pcb.type_packages;
 				package_cursor			: et_pcb.type_packages.cursor;
@@ -3582,7 +3581,7 @@ package body et_kicad_to_native is
 					--log ("package name " & et_libraries.to_string (package_name), log_threshold + 2);
 
 					-- build the new native package model name
-					package_model := et_libraries.to_package_library_name (compose (
+					package_model := et_libraries.to_file_name (compose (
 										containing_directory	=> et_libraries.to_string (library_name), -- projects/lbr/smd_packages.pretty
 										name					=> et_libraries.to_string (package_name))); -- S_0805
 
@@ -3716,7 +3715,7 @@ package body et_kicad_to_native is
 			use et_pcb.type_packages;
 			
 			procedure save_package (package_cursor : in et_pcb.type_packages.cursor) is
-				use et_libraries.type_package_library_name;
+				use et_libraries.type_package_model_file;
 			begin
 				et_project.save_package (
 					-- package name like: 

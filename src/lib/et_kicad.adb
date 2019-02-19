@@ -2877,7 +2877,7 @@ package body et_kicad is
 												-- It provides the library name and the package name.
 
 												-- create package variant
-												packge => to_package_library_name (compose (
+												packge => to_file_name (compose (
 													containing_directory	=> to_string (full_package_library_name),
 													name					=> to_string (package_name (content (field_package))))),
 
@@ -3320,7 +3320,7 @@ package body et_kicad is
 					--if element (variant_cursor).packge.library = full_package_library_name and
 					--	element (variant_cursor).packge.name = package_name then 
 
-					if element (variant_cursor).packge = to_package_library_name (compose (
+					if element (variant_cursor).packge = to_file_name (compose (
 							containing_directory	=> et_libraries.to_string (full_package_library_name),
 							name					=> et_libraries.to_string (package_name))) then
 						
@@ -3365,9 +3365,9 @@ package body et_kicad is
 -- 							packge 				=> (library		=> full_package_library_name,
 -- 													name 		=> package_name),
 
-							packge => (to_package_library_name (compose (
+							packge => to_file_name (compose (
 								containing_directory	=> et_libraries.to_string (full_package_library_name),
-								name					=> et_libraries.to_string (package_name)))),
+								name					=> et_libraries.to_string (package_name))),
 							
 							terminal_port_map	=> element (variant_cursor).terminal_port_map
 							);
@@ -4597,7 +4597,7 @@ package body et_kicad is
 							-- create empty package/footprint library
 							et_kicad_pcb.type_libraries.insert (
 								container	=> et_kicad_pcb.package_libraries,
-								key 		=> to_package_library_name (to_string (uri)),
+								key 		=> to_file_name (to_string (uri)),
 								new_item	=> et_kicad_pcb.type_packages_library.empty_map
 								); 
 

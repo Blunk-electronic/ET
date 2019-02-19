@@ -2659,7 +2659,7 @@ package body et_project is
 	
 	procedure read_package (
 	-- Opens the package file and stores the package in container et_libraries.packages.
-		file_name 		: in et_libraries.type_package_library_name.bounded_string; -- libraries/packages/S_SO14.pac
+		file_name 		: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_pcb;
@@ -6375,7 +6375,7 @@ package body et_project is
 										check_package_name_length (ada.directories.base_name (f (line, 2)));
 										check_package_name_characters (to_package_name (ada.directories.base_name (f (line, 2))));
 
-										variant.packge := et_libraries.to_package_library_name (f (line,2));
+										variant.packge := et_libraries.to_file_name (f (line,2));
 										log ("package model " & to_string (variant.packge), log_threshold + 1);
 										
 									else
@@ -12182,7 +12182,7 @@ package body et_project is
 		use et_pcb.type_packages;
 		
 		procedure save_package (package_cursor : in et_pcb.type_packages.cursor) is
-			use et_libraries.type_package_library_name;
+			use et_libraries.type_package_model_file;
 		begin
 			save_package (
 				-- package name like: 
