@@ -384,35 +384,6 @@ package et_configuration is
 
 	
 	-- PARTCODE
-
--- 	-- for introduction have a look at:
--- 	-- https://www.clearlyinventory.com/inventory-basics/how-to-design-good-item-numbers-for-products-in-inventory
--- 
--- 	-- It is up to the user to define the syntax of the partcode. The keywords in the following
--- 	-- refer the the recommended form like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5":
--- 
--- 	-- The component part code is THE key into the ERP system of the user. It can be a crytic SAP number
--- 	-- or something human readable like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5".
--- 	-- The keywords for the latter can be specified via the configuration file. See package et_configuration.
--- 	component_partcode_characters : character_set := to_set
--- 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ('_'); 
--- 	component_partcode_length_max : constant positive := 100;
--- 	package type_component_partcode is new generic_bounded_length (component_partcode_length_max);
--- 	partcode_default : constant string := "dummy";
--- 	
--- 	function to_string (partcode : in type_component_partcode.bounded_string) return string;
--- 	function to_partcode (partcode : in string) return type_component_partcode.bounded_string;
--- 
--- 	procedure check_partcode_length (partcode : in string);
--- 	-- Tests if the given partcode is longer than allowed.
--- 	
--- 	procedure check_partcode_characters (
--- 		partcode	: in type_component_partcode.bounded_string;
--- 		characters	: in character_set := component_partcode_characters);
--- 	-- Tests if the given partcode contains only valid characters as specified
--- 	-- by given character set.
--- 	-- Raises exception if invalid character found.
-
 	
 	type type_partcode_section is (
 		COMPONENT_PACKAGE,

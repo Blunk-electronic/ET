@@ -391,28 +391,6 @@ package et_libraries is
 
 
 	
--- -- COMPONENT GENERIC NAMES
--- 	-- The generic name of a component in the library is something like TRANSISTOR_NPN or RESISTOR
---  	component_generic_name_length_max : constant natural := 100;
--- 	package type_component_generic_name is new generic_bounded_length (component_generic_name_length_max);
--- 	use type_component_generic_name;
--- 	-- Only those characters are allowed for the generic component name.
--- 	-- See et_import.check_component_name for customization depending on CAD format.
--- 	component_generic_name_characters : character_set := to_set 
--- 		(ranges => (('A','Z'),('0','9'))) 
--- 		or to_set('-') 
--- 		or to_set('_'); 
--- 
--- 	procedure check_generic_name_characters (
--- 	-- Checks if the the given generic component name meets certain conventions.
--- 		name : in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
--- 		characters : in character_set := component_generic_name_characters);
--- 
--- 	function to_string (generic_name : in type_component_generic_name.bounded_string) return string;
-
-
-
-	
 -- COMPONENT VALUES
 	-- The component value is something like 330R or 100n or 74LS00
 	component_value_length_max : constant positive := 50;
@@ -803,35 +781,6 @@ package et_libraries is
 	package type_units_external is new ordered_maps (
 		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3"
 		element_type	=> type_unit_external);
-
--- 	procedure validate_component_partcode_in_library (
--- 	-- Tests if the given partcode of a library component is correct.
--- 	-- The given properties are assumed to be those of a real component.
--- 	--  - If partcode keywords are not specified in the 
--- 	--    configuration file, nothing is validated. It is the users responsibility 
--- 	--    to specify a correct partcode.
--- 	--  - If partcode keywords are specified in the configuration file,
--- 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
--- 		partcode		: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_
--- 		name			: in type_component_generic_name.bounded_string;	-- 74LS00	
--- 		prefix			: in type_component_prefix.bounded_string;			-- R
--- 		packge			: in type_component_package_name.bounded_string;	-- S_0805
--- 		log_threshold	: in et_string_processing.type_log_level);
--- 	
--- 	procedure validate_component_partcode_in_schematic ( -- CS move to et_schematic
--- 	-- Tests if the given partcode of a schematic component is correct.
--- 	-- The given properties are assumed to be those of a real component.
--- 	--  - If partcode keywords are not specified in the 
--- 	--    configuration file, nothing is validated. It is the users responsibility 
--- 	--    to specify a correct partcode.
--- 	--  - If partcode keywords are specified in the configuration file,
--- 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
--- 		partcode		: in type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
--- 		reference		: in type_component_reference;						-- R45
--- 		packge			: in type_component_package_name.bounded_string;	-- S_0805
--- 		value 			: in type_component_value.bounded_string; 			-- 100R
--- 		log_threshold	: in et_string_processing.type_log_level);
-
 
 
 	
