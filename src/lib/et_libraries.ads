@@ -56,16 +56,14 @@ with et_general;
 
 package et_libraries is
 
--- LIBRARY NAMES AND DIRECTORIES
 
-	library_name_length_max : constant natural := 100; -- CS: increase if necessary
+	path_length_max : constant natural := 500; -- CS: increase if necessary
 
 
 
 -- DEVICES
 	-- If a library is fully specified with path, name and extension we store them in bounded strings:
-	device_library_name_max : constant positive := 300 + library_name_length_max + 4;
-	package type_device_library_name is new generic_bounded_length (device_library_name_max);
+	package type_device_library_name is new generic_bounded_length (path_length_max);
 	
 	function to_string (device_library_name : in type_device_library_name.bounded_string) return string;
 	-- Returns the given device library name as string;
@@ -76,8 +74,7 @@ package et_libraries is
 
 -- SYMBOLS
 	-- If a library is fully specified with path, name and extension we store them in bounded strings:
-	symbol_library_name_max : constant positive := 300 + library_name_length_max + 4;
-	package type_symbol_library_name is new generic_bounded_length (symbol_library_name_max);
+	package type_symbol_library_name is new generic_bounded_length (path_length_max);
 	
 	function to_string (symbol_library_name : in type_symbol_library_name.bounded_string) return string;
 	-- Returns the given symbol library name as string;
@@ -88,8 +85,7 @@ package et_libraries is
 	
 -- PACKAGES
 	-- If a library is fully specified with path, name and extension we store them in bounded strings:
-	package_library_name_max : constant positive := 300 + library_name_length_max + 4;
-	package type_package_library_name is new generic_bounded_length (package_library_name_max);
+	package type_package_library_name is new generic_bounded_length (path_length_max);
 	
 	function to_string (package_library_name : in type_package_library_name.bounded_string) return string;
 	-- Returns the given package library name as string;
@@ -99,8 +95,6 @@ package et_libraries is
 
 	
 	
-	-- When accessing library files we need this:
-	library_handle : ada.text_io.file_type;
 	
 	
 	-- The name of the person who has drawn, checked or approved something may have 100 characters which seems sufficient for now.
@@ -532,8 +526,6 @@ package et_libraries is
 	-- by given character set.
 	-- Raises exception if invalid character found.
 	
-	procedure validate_component_package_name (name : in type_component_package_name.bounded_string);
-	-- Tests if the given component package name meets certain conventions.
 
 -- TERMINALS
 	type type_terminal_count is new count_type; -- CS: limit to a reasonable range ?

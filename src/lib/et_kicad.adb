@@ -1235,6 +1235,28 @@ package body et_kicad is
 	begin
 		return '~' & generic_name;
 	end prepend_tilde;
+
+	procedure validate_component_package_name 
+		(name : in et_libraries.type_component_package_name.bounded_string) is
+	-- Tests if the given component package name meets certain conventions.
+		use et_libraries.type_component_package_name;
+		use et_string_processing;
+		
+		procedure no_package is
+		begin
+			log_indentation_reset;
+			log (message_error & "no package associated !", 
+				console => true);
+			raise constraint_error;
+		end no_package;
+			
+	begin -- validate_component_package_name
+		if length (name) > 0 then
+			et_libraries.check_package_name_characters (name, component_package_name_characters);
+		else
+			no_package;
+		end if;
+	end validate_component_package_name;
 	
 	procedure read_components_libraries (log_threshold : in type_log_level) is
 	-- Reads component libraries.
@@ -3154,6 +3176,9 @@ package body et_kicad is
 						raise;
 		end read_library;
 
+		-- When accessing library files we need this:
+		library_handle : ada.text_io.file_type;
+		
 	begin -- read_components_libraries
 		log ("reading component libraries ...", log_threshold);
 		log_indentation_up;

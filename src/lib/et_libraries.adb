@@ -980,11 +980,8 @@ package body et_libraries is
 		use et_string_processing;
 	begin
 		if packge'length > component_package_name_length_max then
-			log_indentation_reset;
-			log (message_error & "max. number of characters for package/footprint is" 
-				 & positive'image (component_package_name_length_max) & " !",
-				console => true);
-			raise constraint_error;
+			log (message_warning & "package name too long. Max. length is" 
+				 & positive'image (component_package_name_length_max) & " !");
 		end if;
 	end check_package_name_length;
 
@@ -1005,37 +1002,12 @@ package body et_libraries is
 			test => outside);
 
 		if invalid_character_position > 0 then
-			log_indentation_reset;
-			log (message_error & "component package name " & to_string (packge) 
+			log (message_warning & "package name " & to_string (packge) 
 				 & " has invalid character at position"
-				 & natural'image (invalid_character_position),
-				console => true
-				);
-			raise constraint_error;
+				 & natural'image (invalid_character_position));
 		end if;
 	end check_package_name_characters;
 	
-	procedure validate_component_package_name (name : in type_component_package_name.bounded_string) is
-	-- Tests if the given component package name meets certain conventions.
-		use type_component_package_name;
-		use et_string_processing;
-		
-		procedure no_package is
-		begin
-			log_indentation_reset;
-			log (message_error & "no package associated !", 
-				console => true);
-			raise constraint_error;
-		end no_package;
-			
-	begin -- validate_component_package_name
-		if length (name) > 0 then
-			check_package_name_characters (name, component_package_name_characters);
-		else
-			no_package;
-		end if;
-	end validate_component_package_name;
-
 	function to_string (terminals : in type_terminal_count) return string is
 	-- Returns the given number of terminals as string.
 	begin
