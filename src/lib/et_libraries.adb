@@ -303,11 +303,8 @@ package body et_libraries is
 		use et_string_processing;
 	begin
 		if variant_name'length > component_variant_name_length_max then
-			log_indentation_reset;
-			log (message_error & "max. number of characters for package variant name is" 
-				 & positive'image (component_variant_name_length_max) & " !",
-				 console => true);
-			raise constraint_error;
+			log (message_warning & "variant name too long. Max. length is" 
+				 & positive'image (component_variant_name_length_max) & " !");
 		end if;
 	end check_variant_name_length;
 	
@@ -316,7 +313,6 @@ package body et_libraries is
 		characters	: in character_set := component_variant_name_characters) is
 	-- Tests if the given variant name contains only valid characters as specified
 	-- by given character set.
-	-- Raises exception if invalid character found.
 		use et_string_processing;
 		invalid_character_position : natural := 0;
 	begin
@@ -328,11 +324,8 @@ package body et_libraries is
 
 		-- Evaluate position of invalid character.
 		if invalid_character_position > 0 then
-			log_indentation_reset;
-			log (message_error & "invalid character in variant name '" 
-				& to_string (variant) & "' at position" & natural'image (invalid_character_position),
-				console => true);
-			raise constraint_error;
+			log (message_error & "invalid character in variant name " 
+				& to_string (variant) & " at position" & natural'image (invalid_character_position));
 		end if;
 	end check_variant_name_characters;
 
@@ -413,9 +406,9 @@ package body et_libraries is
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
-			source => partcode,
-			set => characters,
-			test => outside);
+			source	=> partcode,
+			set		=> characters,
+			test	=> outside);
 
 		if invalid_character_position > 0 then
 			log (message_warning & "partcode " & to_string (partcode) 

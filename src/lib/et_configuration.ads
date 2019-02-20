@@ -451,7 +451,7 @@ package et_configuration is
 	-- in the configuration file section [PART_CODE_KEYWORDS].
 	-- If no keyword specified (or no conf. file applied) returns an empty string.
 
-	procedure validate_component_partcode_in_schematic ( -- CS move to et_schematic
+	procedure validate_partcode (
 	-- Tests if the given partcode of a schematic component is correct.
 	-- The given properties are assumed to be those of a real component.
 	--  - If partcode keywords are not specified in the 

@@ -55,9 +55,7 @@ with et_string_processing;
 with et_geometry;
 with et_export;
 with et_import;
-with et_configuration;
 with et_csv;
-with et_kicad;
 
 package body et_schematic is
 

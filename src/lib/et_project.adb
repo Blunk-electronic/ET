@@ -5746,6 +5746,8 @@ package body et_project is
 			inserted : boolean;
 			position : type_component_variants.cursor;
 		begin
+			et_libraries.check_variant_name_characters (variant_name);
+
 			insert (
 				container	=> variants,
 				key			=> variant_name, -- N, D 
@@ -6364,6 +6366,7 @@ package body et_project is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then -- name D
 										expect_field_count (line, 2);
+										et_libraries.check_variant_name_length (f (line, 2));
 										variant_name := et_libraries.to_component_variant_name (f (line,2));
 										log ("variant " & to_string (variant_name), log_threshold + 1);
 										
@@ -8023,6 +8026,7 @@ package body et_project is
 							end if;
 
 							log ("partcode " & et_libraries.to_string (device_partcode), log_threshold + 3);
+							et_libraries.check_partcode_characters (device_partcode);
 							device.partcode	:= device_partcode;
 
 							log ("purpose " & et_schematic.to_string (device_purpose), log_threshold + 3);
@@ -8032,6 +8036,7 @@ package body et_project is
 							device.bom		:= device_bom;
 
 							log ("variant " & et_libraries.to_string (device_variant), log_threshold + 3);
+							et_libraries.check_variant_name_characters (device_variant);
 							device.variant	:= device_variant;
 
 							-- CS: warn operator if provided but ignored due to the fact that device is virtual
@@ -11370,10 +11375,12 @@ package body et_project is
 											
 										elsif kw = keyword_variant then -- variant S_0805, N, D
 											expect_field_count (line, 2);
+											et_libraries.check_variant_name_length (f (line, 2));
 											device_variant := et_libraries.to_component_variant_name (f (line, 2));
 
 										elsif kw = keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
 											expect_field_count (line, 2);
+											et_libraries.check_partcode_length (f (line, 2));
 											device_partcode := et_libraries.to_partcode (f (line, 2));
 
 										elsif kw = keyword_purpose then -- purpose power_out

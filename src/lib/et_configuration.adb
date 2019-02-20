@@ -2275,7 +2275,7 @@ package body et_configuration is
 		
 	end validate_other_partcode_keywords;
 
-	procedure validate_component_partcode_in_schematic ( -- CS move to et_schematic
+	procedure validate_partcode (
 	-- Tests if the given partcode of a schematic component is correct.
 	-- The given properties are assumed to be those of a real component.
 	--  - If partcode keywords are not specified in the 
@@ -2303,19 +2303,19 @@ package body et_configuration is
 				" . Expected " & to_string (partcode_expect) & " !");
 		end partcode_invalid;
 
-	begin -- validate_component_partcode_in_schematic
-		log ("validating partcode in schematic ...", log_threshold);
-		log_indentation_up;
-		
+	begin -- validate_partcode
 		if partcode_keywords_specified then
+			
+			log ("validating partcode ...", log_threshold);
+			log_indentation_up;
 
 			-- Compose the root of the partcode as it should be.
 			-- The root is usually something like R_PAC_S_0805_VAL_100R which contains
 			-- the given prefix, package name and - if provided - the value.
 			partcode_expect := compose_partcode_root (
-				prefix => reference.prefix,
-				packge => packge,
-				value => value);
+				prefix	=> reference.prefix,
+				packge	=> packge,
+				value	=> value);
 
 			-- the root of the partcode must be the very first part of the given partcode.
 			place := index (partcode, to_string (partcode_expect));
@@ -2324,14 +2324,13 @@ package body et_configuration is
 			end if;
 
 			validate_other_partcode_keywords (
-				partcode => partcode, -- the partcode to be validated
-				from => length (partcode_expect), -- last character position of root part code
-				log_threshold => log_threshold + 1);
+				partcode		=> partcode, -- the partcode to be validated
+				from			=> length (partcode_expect), -- last character position of root part code
+				log_threshold	=> log_threshold + 1);
 
+			log_indentation_down;
 		end if;
-
-		log_indentation_down;
-	end validate_component_partcode_in_schematic;
+	end validate_partcode;
 	
 	function to_partcode_section (text : in string) return type_partcode_section is
 	-- converts a string to a type_partcode_section.
