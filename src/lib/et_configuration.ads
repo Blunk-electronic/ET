@@ -451,19 +451,6 @@ package et_configuration is
 	-- in the configuration file section [PART_CODE_KEYWORDS].
 	-- If no keyword specified (or no conf. file applied) returns an empty string.
 
-	procedure validate_component_partcode_in_library (
-	-- Tests if the given partcode of a library component is correct.
-	-- The given properties are assumed to be those of a real component.
-	--  - If partcode keywords are not specified in the 
-	--    configuration file, nothing is validated. It is the users responsibility 
-	--    to specify a correct partcode.
-	--  - If partcode keywords are specified in the configuration file,
-	--    the root part (like R_PAC_S_0805_VAL_) is validated.
-		partcode		: in et_libraries.type_component_partcode.bounded_string;	-- R_PAC_S_0805_VAL_
-		prefix			: in et_libraries.type_component_prefix.bounded_string;		-- R
-		packge			: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
-		log_threshold	: in et_string_processing.type_log_level);
-	
 	procedure validate_component_partcode_in_schematic ( -- CS move to et_schematic
 	-- Tests if the given partcode of a schematic component is correct.
 	-- The given properties are assumed to be those of a real component.

@@ -3519,7 +3519,7 @@ package body et_kicad_to_native is
 									units_external	=> <>, -- kicad components do not have external symbols
 
 									-- kicad does not provide a partcode. so we assign the default partcode
-									partcode		=> et_libraries.to_partcode (et_libraries.partcode_default), 
+									--partcode		=> et_libraries.to_partcode (et_libraries.partcode_default), 
 									variants		=> element (component_cursor).variants
 
 									-- NOTE: KiCad package_filter and datasheet are discarded.

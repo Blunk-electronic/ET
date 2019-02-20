@@ -2342,7 +2342,7 @@ package body et_project is
 		case device.appearance is
 			when SCH_PCB =>
 				write (keyword => keyword_value, space => true, parameters => to_string (device.value));
-				write (keyword => keyword_partcode, space => true, parameters => to_string (device.partcode));
+				--write (keyword => keyword_partcode, space => true, parameters => to_string (device.partcode));
 
 				section_mark (section_variants, HEADER);
 
@@ -6863,7 +6863,7 @@ package body et_project is
 								" not conformant with conventions !");
 						end if;
 					end if;
-					
+
 					et_libraries.type_devices.insert (
 						container	=> et_libraries.devices, 
 						key			=> file_name, -- libraries/devices/7400.dev
@@ -6873,7 +6873,7 @@ package body et_project is
 								units_internal	=> units_internal,
 								units_external	=> units_external,
 								value			=> value,
-								partcode		=> partcode,
+								--partcode		=> partcode,
 								variants		=> variants));
 
 				when SCH => -- virtual device

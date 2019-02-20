@@ -875,7 +875,7 @@ package et_libraries is
 			-- with at least one package/footprint variant. We store variants in a map.
 			when sch_pcb => 
 				value		: type_component_value.bounded_string; -- 74LS00
-				partcode	: type_component_partcode.bounded_string;
+				--partcode	: type_component_partcode.bounded_string;
 				variants	: type_component_variants.map;
 				
 			when others => null; -- CS
