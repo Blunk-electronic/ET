@@ -324,7 +324,7 @@ package body et_libraries is
 
 		-- Evaluate position of invalid character.
 		if invalid_character_position > 0 then
-			log (message_error & "invalid character in variant name " 
+			log (message_warning & "invalid character in variant name " 
 				& to_string (variant) & " at position" & natural'image (invalid_character_position));
 		end if;
 	end check_variant_name_characters;

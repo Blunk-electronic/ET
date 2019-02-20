@@ -2877,7 +2877,7 @@ package body et_kicad is
 												-- It provides the library name and the package name.
 
 												-- create package variant
-												packge => to_file_name (compose (
+												package_model => to_file_name (compose (
 													containing_directory	=> to_string (full_package_library_name),
 													name					=> to_string (package_name (content (field_package))))),
 
@@ -3320,7 +3320,7 @@ package body et_kicad is
 					--if element (variant_cursor).packge.library = full_package_library_name and
 					--	element (variant_cursor).packge.name = package_name then 
 
-					if element (variant_cursor).packge = to_file_name (compose (
+					if element (variant_cursor).package_model = to_file_name (compose (
 							containing_directory	=> et_libraries.to_string (full_package_library_name),
 							name					=> et_libraries.to_string (package_name))) then
 						
@@ -3365,7 +3365,7 @@ package body et_kicad is
 -- 							packge 				=> (library		=> full_package_library_name,
 -- 													name 		=> package_name),
 
-							packge => to_file_name (compose (
+							package_model => to_file_name (compose (
 								containing_directory	=> et_libraries.to_string (full_package_library_name),
 								name					=> et_libraries.to_string (package_name))),
 							
@@ -12731,7 +12731,7 @@ package body et_kicad is
 						terminals := et_kicad_pcb.terminal_count (
 -- 									library_name	=> element (variant_cursor).packge.library,	-- ../lbr/bel_ic
 -- 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
-									element (variant_cursor).packge);
+									element (variant_cursor).package_model);
 -- 					end if;
 						
 					log_indentation_down;	

@@ -2207,7 +2207,8 @@ package body et_configuration is
 		while place < len loop
 
 			if keyword_follows then
-				-- log ("reading keyword");				
+				log ("reading keyword", log_threshold + 1);
+				
 				if element (partcode, place) = partcode_keyword_separator then
 					place := place + 1;
 					keyword_end := index (partcode, (1 => partcode_keyword_separator), from => place) - 1;
@@ -2221,18 +2222,17 @@ package body et_configuration is
 					keyword_follows := false;
 					validate_partcode_keyword (keyword);
 					
-					-- A keyword must occur only once. Otherwise raise error:
+					-- A keyword must occur only once:
 					if et_libraries.type_component_partcode.count (partcode, to_string (keyword)) > 1 then
-						log_indentation_reset;
-						log (message_error & "keyword " & to_string (keyword) & " can be used only once !");
-						raise constraint_error;
+						log (message_warning & "keyword " & to_string (keyword) & " can be used only once !");
 					end if;
 				else
 					place := place + 1;	-- next character of keyword
 				end if;
 
 			else -- argument follows
-				-- log ("reading argument");
+				log ("reading argument", log_threshold + 1);
+				
 				place := place + 1;
 				-- If the argument starts, "place" points to the first character of the argument.
 
@@ -2241,9 +2241,7 @@ package body et_configuration is
 
 					-- detect missing argument
 					if place = argument_start then
-						log_indentation_reset;
-						log (message_error & "expect argument at position" & positive'image (place) & " !");
-						raise constraint_error;
+						log (message_warning & "expect argument after keyword at position" & positive'image (place) & " !");
 					end if;
 					
 					keyword_follows := true;
@@ -2268,10 +2266,8 @@ package body et_configuration is
 		exception
 			when event:
 				others =>
-					log_indentation_reset;
-					log (message_error & "part code " & to_string (partcode) & " invalid !", console => true);
+					log (message_warning & "partcode " & to_string (partcode) & " invalid !");
 					log (ada.exceptions.exception_message (event));
-					raise;
 		
 	end validate_other_partcode_keywords;
 
@@ -2323,10 +2319,10 @@ package body et_configuration is
 				partcode_invalid;
 			end if;
 
-			validate_other_partcode_keywords (
-				partcode		=> partcode, -- the partcode to be validated
-				from			=> length (partcode_expect), -- last character position of root part code
-				log_threshold	=> log_threshold + 1);
+-- 			validate_other_partcode_keywords (
+-- 				partcode		=> partcode, -- the partcode to be validated
+-- 				from			=> length (partcode_expect), -- last character position of root part code
+-- 				log_threshold	=> log_threshold + 1);
 
 			log_indentation_down;
 		end if;

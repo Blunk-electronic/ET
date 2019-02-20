@@ -822,7 +822,7 @@ package et_libraries is
 	function to_file_name (name : in string) return type_package_model_file.bounded_string;
 	
 	type type_component_variant is record -- CS rename to type_package_variant
-		packge				: type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+		package_model		: type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		terminal_port_map	: type_terminal_port_map.map; -- which port is connected with with terminal
 	end record;
 

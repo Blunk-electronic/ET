@@ -3448,11 +3448,11 @@ package body et_kicad_to_native is
 						variant_name	: in et_libraries.type_component_variant_name.bounded_string; -- N, D, ...
 						variant			: in out et_libraries.type_component_variant) is
 					begin -- rename
-						variant.packge := (rename_package_model (variant.packge)); -- ../../lbr/transistors.pretty/S_0805
+						variant.package_model := (rename_package_model (variant.package_model)); -- ../../lbr/transistors.pretty/S_0805
 
 						log ("package variant " & et_libraries.to_string (variant_name) 
 							 & " now uses package " 
-							 & et_libraries.to_string (variant.packge), log_threshold + 4);
+							 & et_libraries.to_string (variant.package_model), log_threshold + 4);
 					end rename;
 					
 				begin -- rename_package_model_in_variants

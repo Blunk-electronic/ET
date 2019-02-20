@@ -2280,7 +2280,7 @@ package body et_project is
 			end write_terminal;
 
 		begin -- write_variant
-			write (keyword => keyword_package_model, space => true, parameters => to_string (variant.packge)); -- CS path correct ??
+			write (keyword => keyword_package_model, space => true, parameters => to_string (variant.package_model)); -- CS path correct ??
 			section_mark (section_terminal_port_map, HEADER);
 			iterate (variant.terminal_port_map, write_terminal'access);
 			section_mark (section_terminal_port_map, FOOTER);						
@@ -5763,7 +5763,7 @@ package body et_project is
 			end if;
 
 			-- read package model (like libraries/packages/__#__#lbr#bel_ic_pretty#S_SO14.pac)
-			read_package (variant.packge, log_threshold + 1);
+			read_package (variant.package_model, log_threshold + 1);
 
 			-- clean up for next variant
 			variant := (others => <>);
@@ -6378,8 +6378,8 @@ package body et_project is
 										check_package_name_length (ada.directories.base_name (f (line, 2)));
 										check_package_name_characters (to_package_name (ada.directories.base_name (f (line, 2))));
 
-										variant.packge := et_libraries.to_file_name (f (line,2));
-										log ("package model " & to_string (variant.packge), log_threshold + 1);
+										variant.package_model := et_libraries.to_file_name (f (line,2));
+										log ("package model " & to_string (variant.package_model), log_threshold + 1);
 										
 									else
 										invalid_keyword (kw);
@@ -7997,7 +7997,57 @@ package body et_project is
 						use et_libraries;
 						device_cursor : et_schematic.type_devices.cursor;
 						inserted : boolean;
-					begin
+
+						function get_package_name return type_component_package_name.bounded_string is
+						-- Derives package name from device.model and device.variant.
+						-- Checks if variant exits in device.model.
+							name : type_component_package_name.bounded_string; -- S_SO14 -- to be returned
+							device_cursor : et_libraries.type_devices.cursor;
+
+							procedure query_variants (
+								model	: in type_device_library_name.bounded_string; -- libraries/devices/7400.dev
+								dev_lib	: in et_libraries.type_device) -- a device in the library 
+								is
+								use type_component_variants;
+								variant_cursor : type_component_variants.cursor;
+							begin -- query_variants
+								-- Locate the variant (specified by the device in the module) in
+								-- the device model.
+								variant_cursor := type_component_variants.find (
+									container	=> dev_lib.variants,
+									key			=> device.variant); -- the variant name from the module !
+
+								-- The variant should be there. Otherwise abort.
+								if variant_cursor = type_component_variants.no_element then
+									log_indentation_reset;
+									log (message_error & "variant " & to_string (device.variant) &
+										 " not available in device model " & to_string (model) & " !", console => true);
+									raise constraint_error;
+								else
+									name := to_package_name (base_name (to_string (element (variant_cursor).package_model)));
+								end if;
+							end;
+							
+						begin -- get_package_name
+							log_indentation_up;
+							log ("verifying package variant " & to_string (device.variant) &
+								 " in device model " & to_string (device.model) & " ... ", log_threshold + 3);
+
+							-- Locate the device in the library. CS: It should be there, otherwise exception arises here:
+							device_cursor := et_libraries.type_devices.find (
+								container	=> et_libraries.devices,
+								key			=> device.model); -- libraries/devices/7400.dev
+
+							-- Query package variants
+							et_libraries.type_devices.query_element (
+								position	=> device_cursor,
+								process		=> query_variants'access);
+							
+							log_indentation_down;
+							return name;
+						end get_package_name;
+						
+					begin -- insert_device
 						log ("device " & et_libraries.to_string (device_name), log_threshold + 2);
 						log_indentation_up;
 
@@ -8058,6 +8108,19 @@ package body et_project is
 
 						-- read the device model (like ../libraries/transistor/pnp.dev)
 						read_device_file (device.model, log_threshold + 3);
+
+						if device.appearance = et_libraries.SCH_PCB then
+							et_configuration.validate_partcode (
+								partcode		=> device.partcode,
+								reference		=> device_name,
+
+								-- Derive package name from device.model and device.variant.
+								-- Check if variant specified in device.model.
+								packge			=> get_package_name, 
+								
+								value			=> device.value,
+								log_threshold	=> log_threshold + 3);
+						end if;
 						
 						-- reset pointer "device" so that the old device gets destroyed
 						device := null;
