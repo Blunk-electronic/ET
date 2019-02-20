@@ -524,15 +524,6 @@ package et_libraries is
 	-- Returns the given number of terminals as string.
 
 
-	
--- MISCELLANEOUS
-	-- Newly created fields may contain things like "?PARTCODE?" or "?PURPOSE?". 
-	-- For checking their content we need this character set:
-	component_initial_field_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set('_') or to_set('?'); 
-
-
-
 
 -- -- COMPONENT PART CODES
 	-- The component part code is THE key into the ERP system of the user. It can be a crytic SAP number

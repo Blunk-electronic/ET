@@ -97,8 +97,6 @@ package et_schematic is
 	-- Components that require operator interaction like connectors, LEDs or switches 
 	-- MUST have a purpose assigned.
 	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
-	component_initial_purpose_characters : character_set := 
-		et_libraries.component_initial_field_characters or to_set (' '); 
 	component_purpose_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_- "); 
 	component_purpose_length_max : constant positive := 100;
