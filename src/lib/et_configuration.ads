@@ -54,7 +54,7 @@ with et_string_processing;
 
 package et_configuration is
 
-	-- configuration file section headers
+	-- conventions file section headers
 	section_component_prefixes						: constant string (1..20)	:= "[COMPONENT_PREFIXES]";
 	section_component_units							: constant string (1..22)	:= "[UNITS_OF_MEASUREMENT]";
 	section_components_with_operator_interaction 	: constant string (1..31)	:= "[OPERATOR_INTERACTION_REQUIRED]";
@@ -189,11 +189,11 @@ package et_configuration is
 		element_type => type_component_category, -- INTEGRATED_CIRCUIT
 		"<" => et_libraries.type_component_prefix."<");
 
-	-- After reading the configuration, we store the component prefixes for the design here:
+	-- After reading the conventions, we store the device prefixes for the design here:
 	component_prefixes : type_component_prefixes.map;
 
 	function component_prefixes_specified return boolean;
-	-- Returns true if any component prefixes are specified via configuration file.
+	-- Returns true if any component prefixes are specified via conventions file.
 	
 	function category (prefix : in et_libraries.type_component_prefix.bounded_string) return
 		type_component_category;
@@ -322,7 +322,7 @@ package et_configuration is
 		element_type => type_unit_abbrevation.bounded_string, -- R, m, k, ...
 		"=" => type_unit_abbrevation."=");
 
-	-- After reading the configuration, we store the units of measurement for the design here:
+	-- After reading the conventions, we store the units of measurement for the design here:
 	component_units : type_units_of_measurement.map;
 
 	function to_abbrevation (unit : in type_unit_of_measurement) 
@@ -333,7 +333,7 @@ package et_configuration is
 	-- Component categories that requires operator interaction are stored in a set.
 	package type_categories_with_operator_interacton is new ordered_sets (
 		element_type => type_component_category);
-	-- After reading the configuration, we store them here:
+	-- After reading the conventions, we store them here:
 	component_categories_with_operator_interaction : type_categories_with_operator_interacton.set;
 
 	type type_component_requires_operator_interaction is (YES, NO);
@@ -343,7 +343,7 @@ package et_configuration is
 		return type_component_requires_operator_interaction;
 	-- Returns YES is given prefix requires operator interaction.
 	-- Returns NO if prefixs does not require interaction or if no prefixes
-	-- specified at all (in configuration file section COMPONENT_PREFIXES).
+	-- specified at all (in conventions file section COMPONENT_PREFIXES).
 
 	
 -- 	function requires_operator_interaction (
@@ -369,7 +369,7 @@ package et_configuration is
 		element_type => et_coordinates.type_distance,
 		"=" => et_coordinates."=");
 
-	-- After reading the configuration file, text sizes are collected here:
+	-- After reading the conventions file, text sizes are collected here:
 	text_sizes_schematic : type_text_sizes_schematic.map;
 
 	function to_string (text : in type_text_schematic) return string;
@@ -422,7 +422,7 @@ package et_configuration is
 
 	procedure validate_partcode_keyword (keyword : in type_partcode_keyword.bounded_string);
 	-- Checks whehter given keyword is specified in 
-	-- in the configuration file section [PART_CODE_KEYWORDS].
+	-- in the conventions file section [PART_CODE_KEYWORDS].
 	-- NOTE: Assumes there are keywords specified at all.
 	
 	function to_partcode_keyword (keyword : in string) return type_partcode_keyword.bounded_string;
@@ -444,20 +444,20 @@ package et_configuration is
 	partcode_keywords : type_partcode_keywords.map;
 
 	function partcode_keywords_specified return boolean;
-	-- Returns true if any part code keywords are specified via configuration file.
+	-- Returns true if any part code keywords are specified via conventions file.
 	
 	function to_partcode_keyword (section : in type_partcode_section) return string;
 	-- Returns for the given partcode section the corresponding keyword as specified
-	-- in the configuration file section [PART_CODE_KEYWORDS].
+	-- in the conventions file section [PART_CODE_KEYWORDS].
 	-- If no keyword specified (or no conf. file applied) returns an empty string.
 
 	procedure validate_partcode (
 	-- Tests if the given partcode of a schematic component is correct.
 	-- The given properties are assumed to be those of a real component.
 	--  - If partcode keywords are not specified in the 
-	--    configuration file, nothing is validated. It is the users responsibility 
+	--    conventions file, nothing is validated. It is the users responsibility 
 	--    to specify a correct partcode.
-	--  - If partcode keywords are specified in the configuration file,
+	--  - If partcode keywords are specified in the conventions file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
 		partcode		: in et_libraries.type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
 		reference		: in et_libraries.type_component_reference;						-- R45
@@ -468,40 +468,37 @@ package et_configuration is
 	
 
 	
-	configuration_file_handle : ada.text_io.file_type;
+	-- The name of the conventions file may have 100 characters which seems sufficient for now.
+ 	conventions_file_name_length_max : constant natural := 100;
+	package type_conventions_file_name is new generic_bounded_length (conventions_file_name_length_max); 
+	use type_conventions_file_name;
 	
-	-- The name of the configuration file may have 100 characters which seems sufficient for now.
- 	configuraton_file_name_length : constant natural := 100;
-	package type_configuration_file_name is new generic_bounded_length (configuraton_file_name_length); 
-	use type_configuration_file_name;
-	
-	procedure make_default_configuration (
-		file_name		: in type_configuration_file_name.bounded_string;
+	procedure make_default_conventions (
+		file_name		: in type_conventions_file_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level);
-	-- Creates a default configuration file.
+	-- Creates a default conventions file.
 
-	procedure read_configuration (
-		file_name		: in type_configuration_file_name.bounded_string; -- configuration file name
-		--single_module	: in boolean; -- if true, sections addressing multi-board support are ignored
+	procedure read_conventions (
+		file_name		: in type_conventions_file_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level);
-	-- Reads the given configuration file.
+	-- Reads the given conventions file.
 
 	function value_valid (
 	-- Tests if the given device value meets certain conventions.
 	-- This test depends on the category of the device. If no prefixes specified
-	-- in the configuration file, this test does nothing.
+	-- in the conventions file, this test does nothing.
 	-- Returns false if any violation has been detected.
 		value 	: in et_libraries.type_component_value.bounded_string;
 		prefix	: in et_libraries.type_component_prefix.bounded_string)
 		return boolean;
 	
 	function prefix_valid (prefix : in et_libraries.type_component_prefix.bounded_string) return boolean;
-	-- Tests if the given reference has a valid prefix as specified in the configuration file.
+	-- Tests if the given reference has a valid prefix as specified in the conventions file.
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
 	
 	function prefix_valid (reference : in et_libraries.type_component_reference) return boolean;
-	-- Tests if the given reference has a valid prefix as specified in the configuration file.
+	-- Tests if the given reference has a valid prefix as specified in the conventions file.
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
 
