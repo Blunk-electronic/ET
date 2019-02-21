@@ -63,8 +63,8 @@ with et_project;
 
 procedure et is
 
-	conf_file_name_create	: et_configuration.type_configuration_file_name.bounded_string;
-	conf_file_name_use		: et_configuration.type_configuration_file_name.bounded_string;		
+	conv_file_name_create	: et_configuration.type_configuration_file_name.bounded_string;
+	conv_file_name_use		: et_configuration.type_configuration_file_name.bounded_string;		
 
 	project_name_import	: et_project.type_project_name.bounded_string; -- the project to be imported
 	project_name_save_as : et_project.type_project_name.bounded_string; -- the "save as" name of the project	
@@ -80,11 +80,11 @@ procedure et is
 		loop 
 			case getopt (switch_version -- FIND THE SWITCH STRINGS IN ET_GENERAL !!!
 						& latin_1.space & switch_help -- no parameter
-						& latin_1.space & switch_make_default_conf & latin_1.equals_sign
+						& latin_1.space & switch_make_default_conv & latin_1.equals_sign
 						& latin_1.space & switch_log_level & latin_1.equals_sign
 						& latin_1.space & switch_import_project & latin_1.equals_sign
 						& latin_1.space & switch_import_format & latin_1.equals_sign
-						& latin_1.space & switch_configuration_file & latin_1.equals_sign
+						& latin_1.space & switch_conventions & latin_1.equals_sign
 						& latin_1.space & switch_native_project_open & latin_1.equals_sign
 						& latin_1.space & switch_native_project_save_as & latin_1.equals_sign
 					) is
@@ -104,13 +104,13 @@ procedure et is
 						log (arg & full_switch & space & parameter);
 						et_import.cad_format := et_import.type_cad_format'value (parameter);
 
-					elsif full_switch = switch_make_default_conf then -- make configuration file
+					elsif full_switch = switch_make_default_conv then -- make conventions file
 						log (arg & full_switch & space & parameter);
-						conf_file_name_create := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
+						conv_file_name_create := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
 
-					elsif full_switch = switch_configuration_file then -- use configuration file
+					elsif full_switch = switch_conventions then -- use conventions file
 						log (arg & full_switch & space & parameter);
-						conf_file_name_use := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
+						conv_file_name_use := et_configuration.type_configuration_file_name.to_bounded_string (parameter);
 
 					elsif full_switch = switch_native_project_open then
 						log (arg & full_switch & space & parameter);
@@ -199,11 +199,11 @@ procedure et is
 			raise constraint_error;
 		end if;		
 
-		-- read configuration file if specified. otherwise issue warning
-		if et_configuration.type_configuration_file_name.length (conf_file_name_use) > 0 then
-			et_configuration.read_configuration (conf_file_name_use, log_threshold => 0);
+		-- read conventions file if specified. otherwise issue warning
+		if et_configuration.type_configuration_file_name.length (conv_file_name_use) > 0 then
+			et_configuration.read_configuration (conv_file_name_use, log_threshold => 0);
 		else
-			log (message_warning & "no configuration file specified !");
+			log (message_warning & "no conventions file specified !");
 		end if;
 		
 		-- The import requires changing of directories. So we backup the current directory.
@@ -244,23 +244,23 @@ procedure et is
 		use et_configuration.type_configuration_file_name;
 
 		procedure read_configuration_file is begin
-			if length (conf_file_name_use) > 0 then
+			if length (conv_file_name_use) > 0 then
 				et_configuration.read_configuration (
-					file_name		=> conf_file_name_use,
+					file_name		=> conv_file_name_use,
 					log_threshold	=> 0);
 			end if;
 		end read_configuration_file;
 	
 	begin -- process_commandline_arguments
 		-- The arguments are processed according to a certain priority.
-		-- 1. creating configuration file
+		-- 1. creating conventions file
 		-- 2. importing foreign project
 		-- 3. opening native project
 
-		-- If the operator wishes to create a configuration file it will be done.
+		-- If the operator wishes to create a conventions file it will be done.
 		-- Other command line parameters are ignored:
-		if length (conf_file_name_create) > 0 then
-			et_configuration.make_default_configuration (conf_file_name_create, log_threshold => 0);
+		if length (conv_file_name_create) > 0 then
+			et_configuration.make_default_configuration (conv_file_name_create, log_threshold => 0);
 		else
 			-- If operator wants to import a project it will be done here.
 			if length (project_name_import) > 0 then

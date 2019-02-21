@@ -40,13 +40,13 @@
 
 ### Usage
 
-#### Creating a configuration file
-The configuration file is the place where file where prefixes, units of measurement and other things are defined. It is
+#### Creating a conventions file
+The conventions file is the place where file where prefixes, units of measurement and other things are defined. It is
 not mandatory. This step can be omitted. If so, lots of design checks wil not be performed.
-Change into the root directory of your projects and generate a configuration with this command:
+Change into the root directory of your projects and generate a conventions with this command:
 
 ```sh
-$ et --make_configuration my_configuration.txt
+$ et --make_conventions conventions.txt
 ```
 
 This file can now be found in the root directory of your projects. Edit it according to your customs.
@@ -58,16 +58,16 @@ To import a single KiCad V5 design into a native project 'my_et_project' run thi
 $ et --import_format kicad_v5 --import_project my_kicad_project/
 ```
 
-If a configuration file exits then it can be invoked for more detailled design checks:
+If a conventions file exits then it can be invoked for more detailled design checks:
 
 ```sh
-$ et --configuration_file my_configuration.txt --import_format kicad_v5 --import_project my_kicad_project/
+$ et --conventions conventions.txt --import_format kicad_v5 --import_project my_kicad_project/
 ```
 
 Optionally provide a log level for debugging:
 
 ```sh 
-$ et --configuration_file my_configuration.txt --import_format kicad_v5 --import_project my_kicad_project/ --log_level 2
+$ et --conventions conventions.txt --import_format kicad_v5 --import_project my_kicad_project/ --log_level 2
 ```
 
 ET creates in the current working directory a folder named "ET/et_import" where you find the now native project.
@@ -75,7 +75,7 @@ There is also an import report where log messages can be found. See "ET/reports"
 contains more or less debug information.
 
 #### Opening an ET native project
-To open a native project like 'my_et_project' run this command: 
+To open a newly imported KiCad project or a native project like 'my_et_project' run this command: 
 
 ```sh
 $ et --open my_et_project/
@@ -93,10 +93,16 @@ A log level can also be passed:
 $ et --open /home/user/ecad/my_et_project/ --log_level 2
 ```
 
-If a configuration file is available run:
+If a conventions file is available run:
 
 ```sh
-$ et --configuration_file my_configuration.txt --open /home/user/ecad/my_et_project/ --log_level 2
+$ et --conventions conventions.txt --open /home/user/ecad/my_et_project/ --log_level 2
+```
+
+The project can also be saved under a different name at a different place:
+
+```sh
+$ et --conventions conventions.txt --open /home/user/ecad/my_et_project/ --save_as /home/user/tmp/eval --log_level 2
 ```
 
 ET creates in the current working directory a folder named "ET/reports" for log messages.

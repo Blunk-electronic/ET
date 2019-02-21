@@ -82,10 +82,10 @@ package et_general is
 	switch_version					: constant string := "-version";
 	switch_log_level				: constant string := "-log_level";
 	switch_help						: constant string := "-help";
-	switch_make_default_conf		: constant string := "-make_configuration";
+	switch_make_default_conv		: constant string := "-make_conventions";
 	switch_import_project			: constant string := "-import_project";
 	switch_import_format			: constant string := "-import_format";
-	switch_configuration_file		: constant string := "-configuration_file";
+	switch_conventions				: constant string := "-conventions";
 	switch_native_project_open		: constant string := "-open";
 	switch_native_project_save_as	: constant string := "-save_as";		
 
