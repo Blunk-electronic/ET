@@ -2176,8 +2176,8 @@ package body et_configuration is
 		argument : type_partcode_keyword_argument.bounded_string; -- the argument being processed
 
 		procedure validate_argument (
-			kw : in type_partcode_keyword.bounded_string;
-			arg : in type_partcode_keyword_argument.bounded_string) is
+			kw	: in type_partcode_keyword.bounded_string;
+			arg	: in type_partcode_keyword_argument.bounded_string) is
 		begin
 			log ("keyword " & to_string (kw) 
 				 & " argument " & to_string (argument => argument), log_threshold + 1);
@@ -2207,7 +2207,7 @@ package body et_configuration is
 		while place < len loop
 
 			if keyword_follows then
-				log ("reading keyword", log_threshold + 1);
+				--log ("reading keyword", log_threshold + 1);
 				
 				if element (partcode, place) = partcode_keyword_separator then
 					place := place + 1;
@@ -2231,7 +2231,7 @@ package body et_configuration is
 				end if;
 
 			else -- argument follows
-				log ("reading argument", log_threshold + 1);
+				--log ("reading argument", log_threshold + 1);
 				
 				place := place + 1;
 				-- If the argument starts, "place" points to the first character of the argument.
@@ -2290,13 +2290,12 @@ package body et_configuration is
 		use et_libraries.type_component_partcode;
 
 		place : natural;
-		partcode_expect : et_libraries.type_component_partcode.bounded_string;
+		partcode_root : et_libraries.type_component_partcode.bounded_string;
 		
-		procedure partcode_invalid is
-		begin
+		procedure partcode_invalid is begin
 			log (message_warning & "device " & et_libraries.to_string (reference)
 				 & " partcode invalid ! Found " & to_string (partcode) &
-				" . Expected " & to_string (partcode_expect) & " !");
+				" . Expected " & to_string (partcode_root) & " !");
 		end partcode_invalid;
 
 	begin -- validate_partcode
@@ -2308,21 +2307,27 @@ package body et_configuration is
 			-- Compose the root of the partcode as it should be.
 			-- The root is usually something like R_PAC_S_0805_VAL_100R which contains
 			-- the given prefix, package name and - if provided - the value.
-			partcode_expect := compose_partcode_root (
+			partcode_root := compose_partcode_root (
 				prefix	=> reference.prefix,
 				packge	=> packge,
 				value	=> value);
 
-			-- the root of the partcode must be the very first part of the given partcode.
-			place := index (partcode, to_string (partcode_expect));
-			if place /= 1 then
+			-- The root of the partcode must be the very first part of the given partcode.
+			-- In that case other keywords can be checked.
+			-- If the root partcode is somewhere else, issue warning.
+			place := index (partcode, to_string (partcode_root));
+			if place = 1 then
+
+				-- After the root partcode (like R_PAC_S_0805_VAL_100R) other
+				-- keywords may follow:
+				validate_other_partcode_keywords (
+					partcode		=> partcode, -- the partcode to be validated
+					from			=> length (partcode_root), -- last character position of root part code
+					log_threshold	=> log_threshold + 1);
+				
+			else
 				partcode_invalid;
 			end if;
-
--- 			validate_other_partcode_keywords (
--- 				partcode		=> partcode, -- the partcode to be validated
--- 				from			=> length (partcode_expect), -- last character position of root part code
--- 				log_threshold	=> log_threshold + 1);
 
 			log_indentation_down;
 		end if;

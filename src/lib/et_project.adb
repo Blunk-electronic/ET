@@ -6330,7 +6330,7 @@ package body et_project is
 								end if;
 
 								if not et_libraries.value_characters_valid (value) then
-									log (message_warning & "default value of device model " &
+									log (message_warning & "default value in device model " &
 										to_string (file_name) & " contains invaid characters !");
 								end if;
 								
