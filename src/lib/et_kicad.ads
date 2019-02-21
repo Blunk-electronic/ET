@@ -56,7 +56,6 @@ with et_coordinates;
 with et_pcb_coordinates;
 with et_libraries;
 with et_string_processing;
-with conventions;
 
 package et_kicad is
 	

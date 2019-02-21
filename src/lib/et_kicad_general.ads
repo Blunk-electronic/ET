@@ -45,16 +45,6 @@ with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.vectors;
 
--- with et_project;
--- with et_schematic;
--- with et_pcb;
--- --with et_kicad_pcb;
--- with et_import;
--- with et_coordinates;
--- with et_pcb_coordinates;
--- with et_libraries;
--- with et_string_processing;
-
 package et_kicad_general is
 
 	system_name	: constant string (1..5) := "KiCad";
