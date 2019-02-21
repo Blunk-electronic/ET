@@ -418,45 +418,6 @@ package body et_libraries is
 	end check_partcode_characters;
 
 
-	procedure check_author_length (author : in string) is
-	-- Tests if the given author is longer than allowed.
-		use et_string_processing;
-	begin
-		if author'length > component_author_length_max then
-			log_indentation_reset;
-			log (message_error & "max. number of characters for author name is" 
-				 & positive'image (component_author_length_max) & " !",
-				 console => true);
-			raise constraint_error;
-		end if;
-	end check_author_length;
-	
-	procedure check_author_characters (
-		author		: in type_component_author.bounded_string;
-		characters	: in character_set := component_author_characters) is
-	-- Tests if the given author contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
-		use et_string_processing;
-		use type_component_author;
-		invalid_character_position : natural := 0;
-	begin
-		invalid_character_position := index (
-			source => author,
-			set => characters,
-			test => outside);
-
-		if invalid_character_position > 0 then
-			log_indentation_reset;
-			log (message_error & "component author " & to_string (author)
-				 & " has invalid character at position"
-				 & natural'image (invalid_character_position),
-				console => true
-				);
-			raise constraint_error;
-		end if;
-	end check_author_characters;
-
 	function to_string (filled : in type_circle_filled) return string is begin
 		return latin_1.space & to_lower (type_circle_filled'image (filled));
 	end to_string;

@@ -549,25 +549,6 @@ package et_libraries is
 	-- Raises exception if invalid character found.
 
 
--- COMPONENT AUTHOR
-	component_author_characters : character_set := to_set (span => ('A','Z')) or to_set (" -");
-	component_author_length_max : constant positive := 20;
-	package type_component_author is new generic_bounded_length (component_author_length_max);
-	component_author_format  : constant string (1..16) := ("FORENAME SURNAME");
-	component_author_example : constant string (1..12) := ("STEVE MILLER");
-
-	procedure check_author_length (author : in string);
-	-- Tests if the given author is longer than allowed.
-	
-	procedure check_author_characters (
-		author		: in type_component_author.bounded_string;
-		characters	: in character_set := component_author_characters);
-	-- Tests if the given author contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
-
-
-
 
 
 	-- line width
