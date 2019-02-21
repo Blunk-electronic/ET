@@ -45,6 +45,8 @@ with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.vectors;
 
+with et_libraries;
+
 package et_kicad_general is
 
 	system_name	: constant string (1..5) := "KiCad";
@@ -57,6 +59,10 @@ package et_kicad_general is
 	-- Checks the given timestamp for valid characters and plausible time.
 
 -- LIBRARIES
+	-- To handle library paths we (mis)use the type_package_model_file under a different name:
+	package type_package_library_name renames et_libraries.type_package_model_file;
+
+
 	library_name_length_max : constant natural := 100; -- CS: increase if necessary
 	
 	-- For storing bare library names like "bel_primitives" we use this bounded string:

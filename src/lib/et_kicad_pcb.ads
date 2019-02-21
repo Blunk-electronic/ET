@@ -88,9 +88,6 @@ package et_kicad_pcb is
 	package_library_pattern	: constant string (1..8)	:= "*" & package_library_directory_extension;
 	package_pattern 		: constant string (1..11)	:= "*." & package_file_extension;
 
-	-- To handle library paths we (mis)use the type_package_model_file under a different name:
-	package type_package_library_name renames et_libraries.type_package_model_file;
-	
 	function full_library_name (
 		library_name	: in type_library_name.bounded_string; -- bel_logic
 		package_name 	: in et_libraries.type_component_package_name.bounded_string; -- S_SO14

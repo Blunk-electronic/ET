@@ -66,6 +66,7 @@ with et_string_processing;		use et_string_processing;
 with et_project;
 with et_pcb;
 with et_pcb_coordinates;
+with et_kicad_general;
 with et_kicad;
 with et_kicad_pcb;
 with et_import;
@@ -2351,7 +2352,7 @@ package body et_kicad_to_native is
 			et_libraries.to_device_library_name (compose (
 				et_project.directory_libraries, et_project.directory_libraries_devices));
 	
-		prefix_packages_dir : et_kicad_pcb.type_package_library_name.bounded_string := -- libraries/packages
+		prefix_packages_dir : et_kicad_general.type_package_library_name.bounded_string := -- libraries/packages
 			et_libraries.to_file_name (compose (
 				et_project.directory_libraries, et_project.directory_libraries_packages));
 
@@ -2413,17 +2414,17 @@ package body et_kicad_to_native is
 		end concatenate_lib_name_and_generic_name;
 
 		function rename_package_model (
-			model_in : in et_kicad_pcb.type_package_library_name.bounded_string) -- ../../lbr/transistors.pretty/S_0805
+			model_in : in et_kicad_general.type_package_library_name.bounded_string) -- ../../lbr/transistors.pretty/S_0805
 			return et_libraries.type_package_model_file.bounded_string is
 			-- The return is something like: libraries/packages/__#__#lbr#transistors.pretty_S_0805.pac .
 
 			use et_libraries;
-			use et_kicad_pcb.type_package_library_name;
+			use et_kicad_general.type_package_library_name;
 
 			-- In the containing directory . and / must be replaced by _ and #:
 			characters : character_mapping := to_mapping ("./","_#");
 
-			model_copy : et_kicad_pcb.type_package_library_name.bounded_string := model_in; -- ../../lbr/transistors.pretty/S_0805
+			model_copy : et_kicad_general.type_package_library_name.bounded_string := model_in; -- ../../lbr/transistors.pretty/S_0805
 			model_return : et_libraries.type_package_model_file.bounded_string;
 		begin -- rename_package_model
 			translate (model_copy, characters);
@@ -3562,7 +3563,7 @@ package body et_kicad_to_native is
 
 			procedure query_packages (
 			-- Creates with the library name and package name new native package models.
-				library_name	: in et_kicad_pcb.type_package_library_name.bounded_string; -- projects/lbr/smd_packages.pretty
+				library_name	: in et_kicad_general.type_package_library_name.bounded_string; -- projects/lbr/smd_packages.pretty
 				library			: in et_kicad_pcb.type_packages_library.map) is
 
 				use et_kicad_pcb.type_packages_library;
