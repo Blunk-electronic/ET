@@ -525,7 +525,7 @@ package et_libraries is
 
 
 
--- -- COMPONENT PART CODES
+-- PARTCODES
 	-- The component part code is THE key into the ERP system of the user. It can be a crytic SAP number
 	-- or something human readable like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5".
 	-- The keywords for the latter can be specified via the configuration file. See package et_configuration.
@@ -547,39 +547,6 @@ package et_libraries is
 	-- Tests if the given partcode contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
-
-
--- COMPONENT COMMISSION AND UPDATE DATE
-	component_date_characters : character_set := to_set (span => ('0','9')) or to_set ("-:T");
-	component_date_length : constant positive := 19; -- "2017-08-17T14:17:25" -- CS: probably way to accurate
-	type type_component_date is new string (1..component_date_length); 
-	component_date_format  : string (1..component_date_length) := "YYYY-MM-DDTHH:MM:SS";
-	component_date_example : type_component_date := "2017-12-31T23:55:04";
-	component_date_default : type_component_date := "1970-01-01T00:00:00";
-
-	function compare_date (left, right : in type_component_date) return boolean;
-	-- Returns true if left comes before right.
-	-- If left equals right, the return is false.
-	
-	function to_string (
-	-- Returns the given date as string.
-		date	: in type_component_date;
-		verbose	: in boolean := false)
-		return string;
-	
-	procedure date_format_error (date : in string);
-	
-	procedure check_date_length (date : in string);
-	-- Tests if the given date is longer than allowed.
-	
-	procedure check_date_characters (
-		date		: in type_component_date;
-		characters	: in character_set := component_date_characters);
-	-- Tests if the given date contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
-
-
 
 
 -- COMPONENT AUTHOR
