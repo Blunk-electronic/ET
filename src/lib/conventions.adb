@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                        SYSTEM ET CONFIGURATION                           --
+--                        SYSTEM ET CONVENTIONS                             --
 --                                                                          --
 --                                 ET                                       --
 --                                                                          --
@@ -65,7 +65,7 @@ with et_import;
 with et_csv;
 
 
-package body et_configuration is
+package body conventions is
 
 -- 	function to_string (net_comparator_on_off : in type_net_comparator_on_off) return string is
 -- 	-- Returns the given net comparator status as string.
@@ -2137,7 +2137,7 @@ package body et_configuration is
 		use type_component_package_name;
 		use type_component_value;
 		use type_component_partcode;
-		use et_configuration;
+
 	begin
 		return to_bounded_string (
 			et_libraries.to_string (prefix)	-- R
@@ -2550,7 +2550,7 @@ package body et_configuration is
 		put_line (to_string (TERMINAL_NAME) & et_libraries.to_string (et_libraries.terminal_name_text_size_default, preamble => false));
 		put_line (to_string (COMPONENT_ATTRIBUTE) & et_libraries.to_string (et_libraries.placeholder_text_size_default, preamble => false));
 		put_line (to_string (SHEET_NAME) & et_libraries.to_string (et_project.sheet_name_text_size_default, preamble => false));
-		put_line (to_string (et_configuration.FILE_NAME) & et_libraries.to_string (et_project.file_name_text_size_default, preamble => false));
+		put_line (to_string (conventions.FILE_NAME) & et_libraries.to_string (et_project.file_name_text_size_default, preamble => false));
 		
 		new_line;
 		new_line;
@@ -2687,10 +2687,10 @@ package body et_configuration is
 						
 						-- insert the prefix assignment in container component_prefixes
 						type_component_prefixes.insert (
-							container => et_configuration.component_prefixes,
-							position => component_prefix_cursor,
-							key => prefix,
-							new_item => cat,
+							container	=> conventions.component_prefixes,
+							position	=> component_prefix_cursor,
+							key 		=> prefix,
+							new_item 	=> cat,
 							
 							-- If entry already in map, this flag goes true. Warning issued later. see below.
 							inserted => inserted);
@@ -2700,7 +2700,7 @@ package body et_configuration is
 					end loop;
 
 					-- Notify operator if no prefixes specified:
-					if type_component_prefixes.is_empty (et_configuration.component_prefixes) then
+					if type_component_prefixes.is_empty (conventions.component_prefixes) then
 						log (message_warning & "no component prefixes specified !" & reduced_check_coverage);
 					end if;
 					
@@ -2725,8 +2725,8 @@ package body et_configuration is
 						
 						-- insert the abbrevation to unit of measurement assignment in container component_units
 						type_units_of_measurement.insert (
-							container => et_configuration.component_units,
-							position => unit_cursor,
+							container	=> conventions.component_units,
+							position	=> unit_cursor,
 
 							-- If entry already in map, this flag goes true. Warning issued later. see below.
 							inserted => inserted,
@@ -2743,7 +2743,7 @@ package body et_configuration is
 					end loop;
 
 					-- Notify operator if no units of measurement specified:
-					if type_units_of_measurement.is_empty (et_configuration.component_units) then
+					if type_units_of_measurement.is_empty (conventions.component_units) then
 						log (message_warning & "no units of measurement specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
@@ -2773,7 +2773,7 @@ package body et_configuration is
 					end loop;
 
 					-- Notify operator if no components specified:
-					if type_categories_with_operator_interacton.is_empty (et_configuration.component_categories_with_operator_interaction) then
+					if type_categories_with_operator_interacton.is_empty (conventions.component_categories_with_operator_interaction) then
 						log (message_warning & "no categories specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
@@ -2808,22 +2808,22 @@ package body et_configuration is
 							when SHEET_NAME =>
 								size := et_project.to_sheet_name_text_size (et_string_processing.field (element (line_cursor), 2));
 
-							when et_configuration.FILE_NAME =>
+							when conventions.FILE_NAME =>
 								size := et_project.to_file_name_text_size (et_string_processing.field (element (line_cursor), 2));
 								
 						end case;
 						
 						-- insert the text category and size in container text_sizes_schematic
 						type_text_sizes_schematic.insert (
-							container => et_configuration.text_sizes_schematic,
-							key => text,
-							new_item => size);
+							container	=> conventions.text_sizes_schematic,
+							key 		=> text,
+							new_item 	=> size);
 						
 						next (line_cursor);
 					end loop;
 
 					-- Notify operator if no sizes specified:
-					if type_text_sizes_schematic.is_empty (et_configuration.text_sizes_schematic) then
+					if type_text_sizes_schematic.is_empty (conventions.text_sizes_schematic) then
 						log (message_warning & "no text sizes specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
@@ -2846,15 +2846,15 @@ package body et_configuration is
 						
 						-- insert the text category and size in container text_sizes_schematic
 						type_partcode_keywords.insert (
-							container => et_configuration.partcode_keywords,
-							key => partcode_keyword,
-							new_item => partcode_section);
+							container	=> conventions.partcode_keywords,
+							key 		=> partcode_keyword,
+							new_item 	=> partcode_section);
 						
 						next (line_cursor);
 					end loop;
 
 					-- Notify operator if no keywrds specified:
-					if type_partcode_keywords.is_empty (et_configuration.partcode_keywords) then
+					if type_partcode_keywords.is_empty (conventions.partcode_keywords) then
 						log (message_warning & "no part code keywords specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
@@ -2885,7 +2885,7 @@ package body et_configuration is
 
 		if exists (to_string (file_name)) then
 
-			et_configuration.component_prefixes := type_component_prefixes.empty_map;
+			conventions.component_prefixes := type_component_prefixes.empty_map;
 
 			open (file => conventions_file_handle, mode => in_file, name => to_string (file_name));
 			set_input (conventions_file_handle);
@@ -2984,7 +2984,6 @@ package body et_configuration is
 		
 		use et_libraries;
 		use et_string_processing;
-		use et_configuration;
 
 		component_category : type_component_category;
 		value_length : natural := type_component_value.length (value);
@@ -3223,6 +3222,6 @@ package body et_configuration is
 	end prefix_valid;
 
 	
-end et_configuration;
+end conventions;
 
 -- Soli Deo Gloria

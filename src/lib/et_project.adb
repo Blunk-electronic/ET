@@ -61,7 +61,7 @@ with et_import;
 with et_schematic;
 with et_pcb;
 with et_pcb_coordinates;
-with et_configuration;
+with conventions;
 
 package body et_project is
 
@@ -6313,7 +6313,7 @@ package body et_project is
 								et_libraries.check_prefix_characters (prefix);
 								log ("prefix " & to_string (prefix), log_threshold + 1);
 								
-								if not et_configuration.prefix_valid (prefix) then
+								if not conventions.prefix_valid (prefix) then
 									--log (message_warning & "prefix of device model " &
 									--	 to_string (file_name) & " not conformant with conventions !");
 									null; -- CS output something helpful
@@ -6860,7 +6860,7 @@ package body et_project is
 					-- check if it meets certain conventions regarding its prefix.
 					-- The prefix gives information about the category of the device:
 					if et_libraries.type_component_value.length (value) > 0 then
-						if not et_configuration.value_valid (value, prefix) then
+						if not conventions.value_valid (value, prefix) then
 							log (message_warning & "default value of device model " &
 								to_string (file_name) & 
 								" not conformant with conventions !");
@@ -8051,7 +8051,7 @@ package body et_project is
 						log ("device " & et_libraries.to_string (device_name), log_threshold + 2);
 						log_indentation_up;
 
-						if not et_configuration.prefix_valid (device_name) then 
+						if not conventions.prefix_valid (device_name) then 
 							--log (message_warning & "prefix of device " & et_libraries.to_string (device_name) 
 							--	 & " not conformant with conventions !");
 							null; -- CS output something helpful
@@ -8070,7 +8070,7 @@ package body et_project is
 							
 							log ("value " & et_libraries.to_string (device_value), log_threshold + 3);
 							device.value	:= device_value;
-							if not et_configuration.value_valid (device_value, prefix (device_name)) then
+							if not conventions.value_valid (device_value, prefix (device_name)) then
 								log (message_warning & "value of " & et_libraries.to_string (device_name) &
 									 " not conformant with conventions !");
 							end if;
@@ -8110,7 +8110,7 @@ package body et_project is
 						read_device_file (device.model, log_threshold + 3);
 
 						if device.appearance = et_libraries.SCH_PCB then
-							et_configuration.validate_partcode (
+							conventions.validate_partcode (
 								partcode		=> device.partcode,
 								reference		=> device_name,
 

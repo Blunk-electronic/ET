@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -58,7 +58,7 @@ with ada.environment_variables;
 with et_coordinates;
 with et_libraries;
 with et_schematic;
-with et_configuration;
+with conventions;
 with et_geometry;
 
 with et_general;

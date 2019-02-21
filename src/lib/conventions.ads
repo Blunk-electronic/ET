@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                        SYSTEM ET CONFIGURATION                           --
+--                        SYSTEM ET CONVENTIONS                             --
 --                                                                          --
 --                                 ET                                       --
 --                                                                          --
@@ -52,7 +52,7 @@ with et_schematic;
 with et_import;
 with et_string_processing;
 
-package et_configuration is
+package conventions is
 
 	-- conventions file section headers
 	section_component_prefixes						: constant string (1..20)	:= "[COMPONENT_PREFIXES]";
@@ -502,6 +502,6 @@ package et_configuration is
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
 
-end et_configuration;
+end conventions;
 
 -- Soli Deo Gloria

@@ -59,7 +59,7 @@ with gnat.source_info;
 with et_coordinates;
 with et_libraries;
 with et_schematic;
-with et_configuration;
+--with conventions;
 with et_geometry;
 
 with et_general;

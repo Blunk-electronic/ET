@@ -55,7 +55,7 @@ with et_coordinates;
 with et_schematic;
 with et_import;
 with et_export;
-with et_configuration;
+with conventions;
 with et_kicad;
 with et_kicad_pcb;
 with et_kicad_to_native;
@@ -63,8 +63,8 @@ with et_project;
 
 procedure et is
 
-	conv_file_name_create	: et_configuration.type_conventions_file_name.bounded_string;
-	conv_file_name_use		: et_configuration.type_conventions_file_name.bounded_string;
+	conv_file_name_create	: conventions.type_conventions_file_name.bounded_string;
+	conv_file_name_use		: conventions.type_conventions_file_name.bounded_string;
 
 	project_name_import		: et_project.type_project_name.bounded_string; -- the project to be imported
 	project_name_save_as	: et_project.type_project_name.bounded_string; -- the "save as" name of the project	
@@ -106,11 +106,11 @@ procedure et is
 
 					elsif full_switch = switch_make_default_conv then -- make conventions file
 						log (arg & full_switch & space & parameter);
-						conv_file_name_create := et_configuration.type_conventions_file_name.to_bounded_string (parameter);
+						conv_file_name_create := conventions.type_conventions_file_name.to_bounded_string (parameter);
 
 					elsif full_switch = switch_conventions then -- use conventions file
 						log (arg & full_switch & space & parameter);
-						conv_file_name_use := et_configuration.type_conventions_file_name.to_bounded_string (parameter);
+						conv_file_name_use := conventions.type_conventions_file_name.to_bounded_string (parameter);
 
 					elsif full_switch = switch_native_project_open then
 						log (arg & full_switch & space & parameter);
@@ -200,8 +200,8 @@ procedure et is
 		end if;		
 
 		-- read conventions file if specified. otherwise issue warning
-		if et_configuration.type_conventions_file_name.length (conv_file_name_use) > 0 then
-			et_configuration.read_conventions (conv_file_name_use, log_threshold => 0);
+		if conventions.type_conventions_file_name.length (conv_file_name_use) > 0 then
+			conventions.read_conventions (conv_file_name_use, log_threshold => 0);
 		else
 			log (message_warning & "no conventions file specified !");
 		end if;
@@ -241,11 +241,11 @@ procedure et is
 
 	procedure process_commandline_arguments is
 		use et_project.type_project_name;
-		use et_configuration.type_conventions_file_name;
+		use conventions.type_conventions_file_name;
 
 		procedure read_configuration_file is begin
 			if length (conv_file_name_use) > 0 then
-				et_configuration.read_conventions (
+				conventions.read_conventions (
 					file_name		=> conv_file_name_use,
 					log_threshold	=> 0);
 			end if;
@@ -260,7 +260,7 @@ procedure et is
 		-- If the operator wishes to create a conventions file it will be done.
 		-- Other command line parameters are ignored:
 		if length (conv_file_name_create) > 0 then
-			et_configuration.make_default_conventions (conv_file_name_create, log_threshold => 0);
+			conventions.make_default_conventions (conv_file_name_create, log_threshold => 0);
 		else
 			-- If operator wants to import a project it will be done here.
 			if length (project_name_import) > 0 then
