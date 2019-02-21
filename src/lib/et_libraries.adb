@@ -426,31 +426,6 @@ package body et_libraries is
 		return type_circle_filled'value (filled);
 	end to_circle_filled;
 
-	
--- 	function to_string (variant : in type_component_variant) return string is
--- 	-- Returns the given variant as string.
--- 	-- NOTE: This displays the type_component_variant (see et_libraries.ads).
--- 	-- Do not confuse with type_variant (see et_schematic.ads) which also contains the variant name
--- 	-- like in TL084D or TL084N.
--- 	-- CS: provide a parameter that turns the pretext on/off ? Useful ?
--- 
--- 	-- If the library name or package name of given variant is empty, assume item_not_specified.
--- 	-- This produces a still readable output like "library item_not_specified package item_not_specified".
--- 		v : type_component_variant := variant;
--- 		use et_string_processing;
--- 	begin
--- 		if type_full_library_name.length (v.library) = 0 then
--- 			v.library := type_full_library_name.to_bounded_string (item_not_specified);
--- 		end if;
--- 
--- 		if type_component_package_name.length(v.packge) = 0 then
--- 			v.packge := type_component_package_name.to_bounded_string (item_not_specified);
--- 		end if;
--- 		
--- 		return ("library " & type_full_library_name.to_string (v.library)
--- 			& " package " & type_component_package_name.to_string (v.packge));
--- 	end to_string;
-
 
 	function to_string (meaning : in type_text_meaning) return string is begin
 		return latin_1.space & to_lower (type_text_meaning'image (meaning));
