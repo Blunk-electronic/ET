@@ -2231,7 +2231,7 @@ package body et_project is
 		warn			: in boolean := true) 		-- warn if too many fields
 		is 
 		use et_string_processing;
-		count_found : count_type := field_count (line);
+		count_found : constant count_type := field_count (line);
 
 		function f (line : in type_fields_of_line; position : in positive) return string 
 			renames et_string_processing.field;
