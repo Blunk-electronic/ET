@@ -168,7 +168,7 @@ package et_schematic is
 
 	-- This is a component as it appears in the schematic.
 	type type_device (appearance : type_appearance_schematic) is record
-		model	: et_libraries.type_device_library_name.bounded_string; -- ../libraries/transistor/pnp.dev
+		model	: et_libraries.type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
 		units	: type_units.map; -- PWR, A, B, ...
 		
 		case appearance is

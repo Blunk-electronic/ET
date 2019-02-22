@@ -59,13 +59,14 @@ package et_kicad_general is
 	-- Checks the given timestamp for valid characters and plausible time.
 
 -- LIBRARIES
-	-- To handle library paths we (mis)use the type_package_model_file under a different name:
+	-- To handle library paths we (mis)use type_device_model_file 
+	-- and type_package_model_file under different names:
 	package type_package_library_name renames et_libraries.type_package_model_file;
-
+	package type_device_library_name renames et_libraries.type_device_model_file;
 
 	library_name_length_max : constant natural := 100; -- CS: increase if necessary
 	
-	-- For storing bare library names like "bel_primitives" we use this bounded string:
+	-- For storing BARE library names like "bel_primitives" we use this bounded string:
 	package type_library_name is new generic_bounded_length (library_name_length_max); 
 	use type_library_name;
 

@@ -61,26 +61,8 @@ package et_libraries is
 
 
 
--- DEVICES
-	-- If a library is fully specified with path, name and extension we store them in bounded strings:
-	package type_device_library_name is new generic_bounded_length (path_length_max);
-	
-	function to_string (device_library_name : in type_device_library_name.bounded_string) return string;
-	-- Returns the given device library name as string;
-
-	function to_device_library_name (device_library_name : in string) return type_device_library_name.bounded_string;
-	-- converts a string to a device library name.
 	
 
--- SYMBOLS
-	-- If a library is fully specified with path, name and extension we store them in bounded strings:
-	package type_symbol_library_name is new generic_bounded_length (path_length_max);
-	
-	function to_string (symbol_library_name : in type_symbol_library_name.bounded_string) return string;
-	-- Returns the given symbol library name as string;
-
-	function to_symbol_library_name (symbol_library_name : in string) return type_symbol_library_name.bounded_string;
-	-- converts a string to a symbol library name.
 
 	
 
@@ -611,12 +593,6 @@ package et_libraries is
 	-- like swap level.	
 	-- The unit name is something like "I/O Bank 3", "PWR" or "Switch 1" "Switch 2"
 
-	-- SYMBOLS
-	
-	symbol_name_length_max : constant natural := 50;
-	package type_symbol_name is new generic_bounded_length(symbol_name_length_max); use type_symbol_name;
-
-
 	-- Texts may be embedded in a symbol like "counter" or "&". So far they have the meaning "misc".
 	-- CS: strings and texts within a unit symbol serve for documentation only. As long as
 	-- there is no dedicated enumeration value available we choose "misc".
@@ -652,10 +628,7 @@ package et_libraries is
 	unit_name_default : constant type_unit_name.bounded_string := type_unit_name.to_bounded_string ("");
 	
 	function to_string (unit_name : in type_unit_name.bounded_string) return string;
-	-- Returns the given unit name as string.
-
 	function to_unit_name (unit_name : in string) return type_unit_name.bounded_string;
-	-- Returns the given unit name as type_unit_name.
 	
 	unit_swap_level_max : constant natural := 10;
 	type type_unit_swap_level is new natural range 0..unit_swap_level_max;
@@ -690,9 +663,14 @@ package et_libraries is
 		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
 		element_type	=> type_unit_internal);
 
+	-- SYMBOLS
+	package type_symbol_model_file is new generic_bounded_length (path_length_max);
+	function to_string (name : in type_symbol_model_file.bounded_string) return string;
+	function to_file_name (name : in string) return type_symbol_model_file.bounded_string;
+	
 	-- An external unit has a reference and a swap level.
 	type type_unit_external is record
-		file		: type_symbol_library_name.bounded_string; -- like /my_libraries/NAND.sym
+		file		: type_symbol_model_file.bounded_string; -- like /my_libraries/NAND.sym
 		position	: type_2d_point := zero; -- the position within the device editor
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
@@ -765,7 +743,6 @@ package et_libraries is
 
 	-- To handle names of package models like libraries/packages/smd/SOT23.pac use this:
 	package type_package_model_file is new generic_bounded_length (path_length_max);
-	
 	function to_string (name : in type_package_model_file.bounded_string) return string;
 	function to_file_name (name : in string) return type_package_model_file.bounded_string;
 	
@@ -826,18 +803,23 @@ package et_libraries is
 -- STORAGE
 	
 	package type_symbols is new indefinite_ordered_maps (
-		key_type		=> type_symbol_library_name.bounded_string, -- ../lbr/logic/NAND.sym
-		"<"				=> type_symbol_library_name."<",
+		key_type		=> type_symbol_model_file.bounded_string, -- ../lbr/logic/NAND.sym
+		"<"				=> type_symbol_model_file."<",
 		element_type	=> type_symbol);
 
 	symbol_library_file_extension : constant string (1..3) := "sym";
 
 	-- HERE RIG WIDE SYMBOLS ARE KEPT:	
 	symbols : type_symbols.map;
+
+-- DEVICES
+	package type_device_model_file is new generic_bounded_length (path_length_max); -- ../lbr/logic_ttl/7400.dev
+	function to_string (name : in type_device_model_file.bounded_string) return string;
+	function to_file_name (name : in string) return type_device_model_file.bounded_string;
 	
 	package type_devices is new indefinite_ordered_maps (
-		key_type 		=> type_device_library_name.bounded_string, -- ../lbr/logic_ttl/7400.dev
-		"<"				=> type_device_library_name."<",
+		key_type 		=> type_device_model_file.bounded_string, -- ../lbr/logic_ttl/7400.dev
+		"<"				=> type_device_model_file."<",
 		element_type	=> type_device);
 
 	device_library_file_extension : constant string (1..3) := "dev";

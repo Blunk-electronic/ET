@@ -2348,8 +2348,8 @@ package body et_kicad_to_native is
 						et_project.type_et_project_path.to_bounded_string (
 							compose (et_general.work_directory, et_project.directory_import));
 
-		prefix_devices_dir : et_libraries.type_device_library_name.bounded_string := -- libraries/devices
-			et_libraries.to_device_library_name (compose (
+		prefix_devices_dir : et_kicad_general.type_device_library_name.bounded_string := -- libraries/devices
+			et_libraries.to_file_name (compose (
 				et_project.directory_libraries, et_project.directory_libraries_devices));
 	
 		prefix_packages_dir : et_kicad_general.type_package_library_name.bounded_string := -- libraries/packages
@@ -2375,35 +2375,35 @@ package body et_kicad_to_native is
 		end copy_general_stuff;
 
 		function concatenate_lib_name_and_generic_name (
-			library	: in et_libraries.type_device_library_name.bounded_string; -- ../../lbr/bel_logic.lib
+			library	: in et_kicad_general.type_device_library_name.bounded_string; -- ../../lbr/bel_logic.lib
 			device	: in et_kicad.type_component_generic_name.bounded_string) -- 7400
 
 			-- The return is a composition of prefix_devices_dir, library containing directory,
 			-- generic component name and device model extension 
 			-- like: libraries/devices/__#__#lbr#bel_logic_7400.dev
-			return et_libraries.type_device_library_name.bounded_string is
+			return et_libraries.type_device_model_file.bounded_string is
 
 			use et_libraries;
-			use et_libraries.type_device_library_name;
-			dir : type_device_library_name.bounded_string; -- ../../lbr
-			name : type_device_library_name.bounded_string; -- to be returned
+			use et_kicad_general.type_device_library_name;
+			dir : et_kicad_general.type_device_library_name.bounded_string; -- ../../lbr
+			name : et_libraries.type_device_model_file.bounded_string; -- to be returned -- libraries/devices/__#__#lbr#bel_logic_7400.dev
 
 			-- In the containing directory . and / must be replaced by _ and #:
 			characters : character_mapping := to_mapping ("./","_#");
 			
 		begin -- concatenate_lib_name_and_generic_name
-			dir := to_device_library_name (containing_directory (et_libraries.to_string (library)) & '#'); -- ../../lbr
+			dir := to_file_name (containing_directory (et_libraries.to_string (library)) & '#'); -- ../../lbr
 			translate (dir, characters); -- __#__#lbr
 			--log ("dir " & et_libraries.to_string (dir));
 			
-			name := to_device_library_name (base_name (et_libraries.to_string (library))); -- bel_logic
+			name := to_file_name (base_name (et_libraries.to_string (library))); -- bel_logic
 			name := dir & name;
 			--log ("name " & et_libraries.to_string (name));
 
-			name := name & '_' & et_libraries.to_device_library_name (et_kicad.to_string (device));
+			name := name & '_' & et_libraries.to_file_name (et_kicad.to_string (device));
 			--log ("name " & et_libraries.to_string (name));
 
-			name := et_libraries.to_device_library_name (compose (
+			name := et_libraries.to_file_name (compose (
 					containing_directory	=> et_libraries.to_string (prefix_devices_dir),
 					name					=> et_libraries.to_string (name),
 					extension				=> et_libraries.device_library_file_extension));
@@ -2922,8 +2922,8 @@ package body et_kicad_to_native is
 			use et_kicad.type_libraries;
 			component_library_cursor : et_kicad.type_libraries.cursor := module.component_libraries.first;
 
-			use et_libraries.type_device_library_name;
-			component_library_name : et_libraries.type_device_library_name.bounded_string;
+			use et_kicad_general.type_device_library_name;
+			component_library_name : et_kicad_general.type_device_library_name.bounded_string; -- lbr/logic.lib
 
 			-- This cursor points to the kicad footprint library being converted:			
 			use et_kicad_pcb.type_libraries;
@@ -2932,22 +2932,22 @@ package body et_kicad_to_native is
 			use et_libraries.type_package_model_file;
 			
 			procedure query_components (
-				library_name	: in et_libraries.type_device_library_name.bounded_string;
+				library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- lbr/logig.lib
 				library			: in et_kicad.type_components_library.map) is
 
 				use et_kicad.type_components_library;
 				component_cursor : et_kicad.type_components_library.cursor := library.first;
 
 				use et_kicad.type_component_generic_name;
-				generic_name : et_kicad.type_component_generic_name.bounded_string;
-				device_model : et_libraries.type_device_library_name.bounded_string;
+				generic_name : et_kicad.type_component_generic_name.bounded_string; -- 7400
+				device_model : et_libraries.type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 
 				device_cursor : et_libraries.type_devices.cursor;
 				inserted : boolean;
 
 				procedure copy_units (
 				-- Transfers the kicad units to native units in the current native ET device.
-					device_name	: in et_libraries.type_device_library_name.bounded_string; -- libraries/devices/transistors/pnp.dev
+					device_name	: in et_libraries.type_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
 					device		: in out et_libraries.type_device) is
 
 					-- Make a copy of the kicad units of the current kicad component:
@@ -3438,7 +3438,7 @@ package body et_kicad_to_native is
 				procedure rename_package_model_in_variants (
 				-- The package associated with a variant must be changed so that it becomes 
 				-- something like libraries/packages/__#__#lbr#transistors.pretty_S_0805.pac
-					device_name	: in et_libraries.type_device_library_name.bounded_string; -- libraries/devices/transistors/pnp.dev
+					device_name	: in et_libraries.type_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
 					device		: in out et_libraries.type_device) is
 
 					use et_libraries.type_component_variants;
@@ -3483,7 +3483,7 @@ package body et_kicad_to_native is
 					--log ("device " & to_string (generic_name), log_threshold + 2);
 
 					-- Build the name of the device model from the component library name and generic name:
-					device_model := concatenate_lib_name_and_generic_name (component_library_name, generic_name);
+					device_model := concatenate_lib_name_and_generic_name (component_library_name, generic_name); -- ../lbr/logic_ttl/7400.dev
 
 					-- Create a new device model in container et_libraries.devices:
 					log ("device model " & to_string (device_model), log_threshold + 3);

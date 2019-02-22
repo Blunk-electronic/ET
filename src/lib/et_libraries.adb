@@ -56,39 +56,40 @@ with et_import;
 package body et_libraries is
 
 -- DEVICES
-	function to_string (device_library_name : in type_device_library_name.bounded_string) return string is
-	-- Returns the given device library name as string;
+	function to_string (name : in type_device_model_file.bounded_string) 
+		return string is
 	begin
-		return type_device_library_name.to_string (device_library_name);
-	end to_string;
+		return type_device_model_file.to_string (name);
+	end;
 
-	function to_device_library_name (device_library_name : in string) return type_device_library_name.bounded_string is
-	-- converts a string to a device library name.
+	function to_file_name (name : in string) 
+		return type_device_model_file.bounded_string is
 	begin
-		return type_device_library_name.to_bounded_string (device_library_name);
-	end to_device_library_name;
+		return type_device_model_file.to_bounded_string (name);
+	end;
 	
 -- SYMBOLS
-	function to_string (symbol_library_name : in type_symbol_library_name.bounded_string) return string is
-	-- Returns the given symbol library name as string;
+	function to_string (name : in type_symbol_model_file.bounded_string) 
+		return string is
 	begin
-		return type_symbol_library_name.to_string (symbol_library_name);
+		return type_symbol_model_file.to_string (name);
 	end to_string;
 
-	function to_symbol_library_name (symbol_library_name : in string) return type_symbol_library_name.bounded_string is
-	-- converts a string to a device library name.
+	function to_file_name (name : in string)
+		return type_symbol_model_file.bounded_string is
 	begin
-		return type_symbol_library_name.to_bounded_string (symbol_library_name);
-	end to_symbol_library_name;
+		return type_symbol_model_file.to_bounded_string (name);
+	end;
 
 -- PACKAGES
-	function to_string (name : in type_package_model_file.bounded_string) return string is
-	-- Returns the given package library name as string;
+	function to_string (name : in type_package_model_file.bounded_string) 
+		return string is
 	begin
 		return type_package_model_file.to_string (name);
 	end;
 
-	function to_file_name (name : in string) return type_package_model_file.bounded_string is
+	function to_file_name (name : in string) 
+		return type_package_model_file.bounded_string is
 	begin
 		return type_package_model_file.to_bounded_string (name);
 	end;

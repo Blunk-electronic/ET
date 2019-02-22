@@ -4873,7 +4873,7 @@ package body et_project is
 	
 	procedure read_symbol (
 	-- Opens the symbol file and stores the symbol in container et_libraries.symbols.
-		file_name 		: in et_libraries.type_symbol_library_name.bounded_string; -- libraries/symbols/nand.sym
+		file_name 		: in et_libraries.type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_libraries;
@@ -5645,7 +5645,7 @@ package body et_project is
 	
 	procedure read_device_file (
 	-- Opens the device and stores it in container et_libraries.devices.
-		file_name 		: in et_libraries.type_device_library_name.bounded_string; -- ../lbr/logic_ttl/7400.dev
+		file_name 		: in et_libraries.type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_libraries;
@@ -6476,7 +6476,7 @@ package body et_project is
 
 									elsif kw = keyword_file then -- file libraries/symbols/nand.sym
 										expect_field_count (line, 2);
-										unit_external.file := to_symbol_library_name (f (line, 2));
+										unit_external.file := to_file_name (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -7678,7 +7678,7 @@ package body et_project is
 			device					: access et_schematic.type_device;
 			
 			device_name				: et_libraries.type_component_reference; -- C12
-			device_model			: et_libraries.type_device_library_name.bounded_string; -- ../libraries/transistor/pnp.dev
+			device_model			: et_libraries.type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
 			device_value			: et_libraries.type_component_value.bounded_string; -- 470R
 			device_appearance		: et_schematic.type_appearance_schematic;
 			device_unit				: et_schematic.type_unit_base;
@@ -8005,7 +8005,7 @@ package body et_project is
 							device_cursor : et_libraries.type_devices.cursor;
 
 							procedure query_variants (
-								model	: in type_device_library_name.bounded_string; -- libraries/devices/7400.dev
+								model	: in type_device_model_file.bounded_string; -- libraries/devices/7400.dev
 								dev_lib	: in et_libraries.type_device) -- a device in the library 
 								is
 								use type_component_variants;
@@ -8126,7 +8126,7 @@ package body et_project is
 						device := null;
 
 						-- clean up temporarily variables for next device
-						device_model	:= to_device_library_name ("");
+						device_model	:= to_file_name ("");
 						device_value	:= to_value ("");
 						device_purpose	:= to_purpose ("");
 						device_partcode := to_partcode ("");
@@ -11434,7 +11434,7 @@ package body et_project is
 
 										elsif kw = keyword_model then -- model /models/capacitor.dev
 											expect_field_count (line, 2);
-											device_model := et_libraries.to_device_library_name (f (line, 2));
+											device_model := et_libraries.to_file_name (f (line, 2));
 											
 										elsif kw = keyword_variant then -- variant S_0805, N, D
 											expect_field_count (line, 2);

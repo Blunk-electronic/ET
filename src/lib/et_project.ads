@@ -267,7 +267,7 @@ package et_project is
 
 	procedure read_device_file (
 	-- Opens the device and stores it in container et_libraries.devices.
-		file_name 		: in et_libraries.type_device_library_name.bounded_string; -- ../lbr/logic_ttl/7400.dev
+		file_name 		: in et_libraries.type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure save_symbol (

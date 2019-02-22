@@ -388,13 +388,6 @@ package et_kicad is
 		end case;
 	end record;
 
-	package type_symbols is new indefinite_ordered_maps (
-		element_type	=> type_symbol,
-		key_type		=> et_libraries.type_symbol_name.bounded_string,
-		"<"				=> et_libraries.type_symbol_name."<"
-		);
-
-	
 	-- a component unit in the library
 	type type_unit_library (appearance : et_libraries.type_component_appearance) is record
 		symbol		: type_symbol (appearance);
@@ -503,7 +496,7 @@ package et_kicad is
 	
 	procedure no_generic_model_found (
 		reference		: in et_libraries.type_component_reference; -- IC303
-		library			: in et_libraries.type_device_library_name.bounded_string; -- ../lib/xilinx/xc345.dev
+		library			: in type_device_library_name.bounded_string; -- ../lib/xilinx/spartan.lib
 		generic_name	: in type_component_generic_name.bounded_string);
 	
 	
@@ -512,7 +505,7 @@ package et_kicad is
 		return et_libraries.type_component_appearance;
 
 	function to_package_name (
-		library_name	: in et_libraries.type_device_library_name.bounded_string; -- ../libraries/transistors.lib
+		library_name	: in type_device_library_name.bounded_string; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in et_libraries.type_component_variant_name.bounded_string) -- N, D
 		return et_libraries.type_component_package_name.bounded_string;
@@ -537,7 +530,7 @@ package et_kicad is
 	
 	-- This is a component as it appears in the schematic.
 	type type_component_schematic (appearance : et_schematic.type_appearance_schematic) is record
-		library_name	: et_libraries.type_device_library_name.bounded_string; -- lib name like ../libraries/transistors.lib
+		library_name	: type_device_library_name.bounded_string; -- lib name like ../libraries/transistors.lib
 		generic_name	: type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		alt_references	: type_alternative_references.list;
 		value			: et_libraries.type_component_value.bounded_string; -- 470R
@@ -820,12 +813,12 @@ package et_kicad is
 	-- Full library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters and must be kept.
     package type_full_library_names is new doubly_linked_lists ( -- CS remove
-		element_type 	=> et_libraries.type_device_library_name.bounded_string,
-		"="				=> et_libraries.type_device_library_name."=");
+		element_type 	=> type_device_library_name.bounded_string,
+		"="				=> type_device_library_name."=");
 
 	package type_libraries is new ordered_maps (
-		key_type 		=> et_libraries.type_device_library_name.bounded_string, -- ../../lbr/passive/capacitors
-		"<"				=> et_libraries.type_device_library_name."<",
+		key_type 		=> type_device_library_name.bounded_string, -- ../../lbr/passive/capacitors.lib
+		"<"				=> type_device_library_name."<",
 		element_type 	=> type_components_library.map,
 		"=" 			=> type_components_library."=");
 	-- CS the element could be a record consisting of type_components_library.map, lib_type, options and desrciption
@@ -875,12 +868,12 @@ package et_kicad is
 	type type_lib_table_entry is record
 		lib_name	: type_library_name.bounded_string;
 		lib_type	: type_lib_type;
-		lib_uri		: et_libraries.type_device_library_name.bounded_string;
+		lib_uri		: type_device_library_name.bounded_string;
 		-- CS to be exact: there should be a distinct type_lib_table_entry for components and packages each.
 		-- Currently lib_uri is used for both component and package libraries.
 		
 		-- CS options
-		-- CS desrciption
+		-- CS description
 	end record;
 
 	package type_lib_table is new doubly_linked_lists (type_lib_table_entry);
@@ -1296,7 +1289,7 @@ package et_kicad is
 	
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
-		library		: in et_libraries.type_device_library_name.bounded_string; -- incl. path and file name
+		library		: in type_device_library_name.bounded_string; -- incl. path and file name
 		component	: in type_component_generic_name.bounded_string) 
 		return type_components_library.cursor;
 
