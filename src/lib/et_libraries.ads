@@ -58,16 +58,6 @@ package et_libraries is
 
 
 	path_length_max : constant natural := 500; -- CS: increase if necessary
-
-
-
-	
-
-
-	
-
-	
-	
 	
 	
 	-- The name of the person who has drawn, checked or approved something may have 100 characters which seems sufficient for now.
@@ -253,10 +243,16 @@ package et_libraries is
 
 	function to_port_name_text_size (text : in string) return type_port_name_text_size;
 	-- Converts a string to type_port_name_text_size.
+
+	-- line width
+	subtype type_line_width is type_distance; -- CS reasonable range
+	
+	line_width_port_default : constant type_line_width := 0.2;
 	
 	type type_port_base is tagged record 	-- CS: set defaults	
 		position			: type_2d_point;
 		length				: type_port_length; 
+		-- CS line_width	: type_line_width := line_width_port_default;
 		rotation			: type_angle := zero_angle;
 		
 		port_name_visible		: type_port_name_visible;
@@ -533,8 +529,6 @@ package et_libraries is
 
 
 
-	-- line width
-	subtype type_line_width is type_distance;
 
 	-- lines
 	type type_line is record
@@ -799,6 +793,7 @@ package et_libraries is
 
 	end record;
 
+	
 	
 -- STORAGE
 	

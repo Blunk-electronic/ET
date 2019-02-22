@@ -194,6 +194,7 @@ package et_schematic is
 
 		
 	
+	
 -- LABELS AND NETS
 
 	-- The name of a net may have 100 characters which seems sufficient for now.
