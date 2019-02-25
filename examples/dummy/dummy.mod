@@ -50,10 +50,8 @@
 						
 						[SUBMODULE_PORTS BEGIN]
 							[PORT BEGIN]
-								module motor_driver
-								name MASTER_RESET_N
-								position x 3 y 4
-								direction input
+								module DRV_1
+								name clock_generator_out
 							[PORT END]
 						[SUBMODULE_PORTS END]
 						
@@ -113,13 +111,21 @@
 
 [SUBMODULES BEGIN]
 	[SUBMODULE BEGIN]
-		name stepper_driver_1
+		name DRV_1
 		file $ET_TEMPLATES/motor_driver.mod
 		position sheet 3 x 130 y 210
 		size x 50 y 60
 		position_in_board x 23 y 0.2 rotation 90.0
 		view_mode origin/instance
 		reference_offset 100, 1000 -> CS
+		[PORTS BEGIN]
+			[PORT BEGIN]
+				name clock_generator_out
+				position x 10 y 20
+				rotation 90.0
+				length 5.0
+			[PORT END]
+		[PORTS END]
 	[SUBMODULE END]
 [SUBMODULES END]
 
