@@ -35,6 +35,8 @@
 --   history of changes:
 --
 
+with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.bounded;       use ada.strings.bounded;
 with ada.directories;
 with ada.containers; 			use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
@@ -101,6 +103,32 @@ package et_general is
 	function to_string (paper_size : in type_paper_size) return string;
 
 	type type_paper_orientation is (PORTRAIT, LANDSCAPE);
+
+
+-- NET NAMES
+    -- If the name of a strand can not be identified, we default to the well proved "N$" notation:
+	anonymous_net_name_prefix : constant string (1..2) := "N$";
+
+	-- The name of a net may have 100 characters which seems sufficient for now.
+	net_name_characters : character_set := to_set (ranges => (('A','Z'),('0','9'))) or to_set ("_-#");
+	net_inversion_mark : constant string (1..1) := "#";
+ 	net_name_length_max : constant natural := 100;
+	package type_net_name is new generic_bounded_length (net_name_length_max); use type_net_name;
+
+	procedure check_net_name_length (net : in string);
+	-- Tests if the given net name is longer than allowed.
+	
+	procedure check_net_name_characters (
+		net			: in type_net_name.bounded_string;
+		characters	: in character_set := net_name_characters);
+	-- Tests if the given net name contains only valid characters as specified
+	-- by given character set.
+
+	function to_net_name (net_name : in string) return type_net_name.bounded_string;
+	function to_string (net_name : in type_net_name.bounded_string) return string;
+
+	function anonymous (net_name : in type_net_name.bounded_string) return boolean;
+	-- Returns true if the given net name is anonymous.
 
 	
 -- GENERICS

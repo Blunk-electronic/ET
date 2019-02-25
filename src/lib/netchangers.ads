@@ -40,14 +40,15 @@
 -- with ada.text_io;				use ada.text_io;
 -- with ada.strings.maps;			use ada.strings.maps;
 -- with ada.strings.bounded;       use ada.strings.bounded;
--- with ada.containers;            use ada.containers;
+with ada.containers;            use ada.containers;
 -- with ada.containers.vectors;
--- with ada.containers.doubly_linked_lists;
+with ada.containers.doubly_linked_lists;
 -- with ada.containers.indefinite_doubly_linked_lists;
 -- with ada.containers.ordered_maps;
 -- with ada.containers.indefinite_ordered_maps;
 -- with ada.containers.ordered_sets;
 
+with et_general;
 with et_coordinates;		use et_coordinates;
 with et_libraries;			use et_libraries;
 with et_pcb;
@@ -126,21 +127,21 @@ package netchangers is
 -- 						width		=> line_width_port_default);
 -- 	end record;
 	
--- 	type type_module_connector is record
--- 		position : type_port := (
--- 						
--- 			-- The position relative to the module center of the parent module:
--- 			position	=> type_2d_point (set_point (x => 0.0, y => 0.0)),
--- 			length		=> 5.0,
--- 			rotation	=> 0.0);
--- 
--- 		-- The net of the submodule:
--- 		net	: type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
--- 
--- 		-- CS symbol : type_module_connector_symbol;
--- 	end record;
--- 
--- 	package type_module_connectors is new doubly_linked_lists (type_module_connector);
+	type type_submodule_port is record
+		position : type_port := (
+						
+			-- The position relative to the module center of the parent module:
+			position	=> et_coordinates.type_2d_point (et_coordinates.set_point (x => 0.0, y => 0.0)),
+			length		=> 5.0,
+			rotation	=> 0.0);
+
+		-- The net of the submodule is here the port name:
+		name : et_general.type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+
+		-- CS symbol : type_module_connector_symbol;
+	end record;
+
+	package type_submodule_ports is new doubly_linked_lists (type_submodule_port);
 	
 end netchangers;
 

@@ -52,7 +52,7 @@ with gnat.directory_operations;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
-with et_general;
+with et_general;				use et_general;
 with et_coordinates;
 with et_string_processing;
 with et_libraries;
@@ -65,6 +65,8 @@ with conventions;
 
 package body et_project is
 
+	use et_general.type_net_name;
+	
 	function expand (
 	-- Translates a file name like $HOME/libraries/devices/7400.dev to
 	-- /home/user/libraries/devices/7400.dev
@@ -1388,7 +1390,7 @@ package body et_project is
 
 							-- port name (in the submodule it is a net name)
 							write (keyword => keyword_name, parameters => 
-								space & et_schematic.to_string (element (port_cursor).port));
+								space & et_general.to_string (element (port_cursor).port));
 
 							-- port position
 							--write (keyword => keyword_position, parameters => position (element (port_cursor).position));
@@ -1543,10 +1545,10 @@ package body et_project is
 			log_indentation_up;
 			section_mark (section_nets, HEADER);
 			while net_cursor /= type_nets.no_element loop
-				log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+				log ("net " & et_general.to_string (key (net_cursor)), log_threshold + 1);
 				section_mark (section_net, HEADER);
 
-				write (keyword => keyword_name, parameters => to_string (key (net_cursor)), space => true);
+				write (keyword => keyword_name, parameters => et_general.to_string (key (net_cursor)), space => true);
 				write (keyword => keyword_class, parameters => to_string (element (net_cursor).class), space => true);
 				write (keyword => keyword_scope, parameters => to_string (element (net_cursor).scope));
 
@@ -7608,7 +7610,7 @@ package body et_project is
 			end reset_net_class;
 
 			-- nets
-			net_name	: et_schematic.type_net_name.bounded_string; -- motor_on_off
+			net_name	: type_net_name.bounded_string; -- motor_on_off
 			net			: et_schematic.type_net;
 
 			strands : et_schematic.type_strands.list;
@@ -7787,7 +7789,7 @@ package body et_project is
 						inserted : boolean;
 						cursor : type_nets.cursor;
 					begin -- insert_net
-						log ("net " & to_string (net_name), log_threshold + 2);
+						log ("net " & et_general.to_string (net_name), log_threshold + 2);
 
 						-- CS: notify about missing parameters (by reading the parameter-found-flags)
 						-- If a parameter is missing, the default is assumed. See type_net spec.
@@ -7801,7 +7803,7 @@ package body et_project is
 
 						if not inserted then
 							log_indentation_reset;
-							log (message_error & "net '" & to_string (net_name) 
+							log (message_error & "net '" & et_general.to_string (net_name) 
 								 & "' already exists !", console => true);
 							raise constraint_error;
 						end if;
@@ -10155,7 +10157,7 @@ package body et_project is
 										-- CS: In the following: set a corresponding parameter-found-flag
 										if kw = keyword_name then
 											expect_field_count (line, 2);
-											net_name := et_schematic.to_net_name (f (line,2));
+											net_name := to_net_name (f (line,2));
 											
 										elsif kw = keyword_class then
 											-- CS: imported kicad projects lack the class name sometimes.
@@ -10355,7 +10357,7 @@ package body et_project is
 											
 										elsif kw = keyword_name then -- name CLOCK_GENERATOR_OUT
 											expect_field_count (line, 2);
-											net_submodule_port.port := et_schematic.to_net_name (f (line, 2));
+											net_submodule_port.port := to_net_name (f (line, 2));
 
 -- 										elsif kw = keyword_position then -- position x 3 y 4
 -- 											expect_field_count (line, 5);

@@ -59,38 +59,12 @@ with et_csv;
 
 package body et_schematic is
 
-	function to_net_name (net_name : in string) return type_net_name.bounded_string is
-	-- Converts a string to a type_net_name.
-	begin
-		return type_net_name.to_bounded_string (net_name);
-	end to_net_name;
-	
-	function to_string (net_name : in type_net_name.bounded_string) return string is
-	-- Returns the given net name as string.
-	begin
-		return type_net_name.to_string (net_name);
-	end to_string;
-
-	function anonymous (net_name : in type_net_name.bounded_string) return boolean is
-	-- Returns true if the given net name is anonymous.
-	begin
-		-- CS: this is just a test if anonymous_net_name_prefix is somewhere
-		-- in the net name. Should be improved.
-		if type_net_name.count (net_name, anonymous_net_name_prefix) > 0 then
-			return true;
-		else 
-			return false;
-		end if;
-	end anonymous;
-
 	function to_net_label_text_size (text : in string) return type_net_label_text_size is
 	-- Converts a string to type_net_label_text_size.
 	begin
 		return type_net_label_text_size'value (text);
 	end to_net_label_text_size;
 
-	
-	
 
 	procedure write_note_properties (
 		note 			: in et_schematic.type_text;
@@ -138,66 +112,6 @@ package body et_schematic is
 		
 		log_indentation_down;
 	end write_note_properties;
-
-	
-
-	
-
-	
-
-	procedure check_net_name_length (net : in string) is
-	-- Tests if the given net name is longer than allowed.	
-		use et_string_processing;
-	begin
-		if net'length > net_name_length_max then
-			log_indentation_reset;
-			log (message_error & "max. number of characters for net name is" 
-				 & positive'image (net_name_length_max) & " !",
-				 console => true);
-			raise constraint_error;
-		end if;
-	end check_net_name_length;
-
-	procedure check_net_name_characters (
-		net			: in type_net_name.bounded_string;
-		characters	: in character_set := net_name_characters) is
-	-- Tests if the given net name contains only valid characters as specified
-	-- by given character set.
-		use et_string_processing;
-		invalid_character_position : natural := 0;
-		inversion_mark_position : natural := 0;
-	begin
-		-- Test given net name and get position of possible invalid characters.
-		invalid_character_position := index (
-			source => net,
-			set => characters,
-			test => outside);
-
-		-- Evaluate position of invalid character.
-		if invalid_character_position > 0 then
-			log_indentation_reset;
-			log (message_error & "invalid character in net name '" 
-				 & to_string (net) & "' at position" 
-				 & natural'image (invalid_character_position) & " !",
-				 console => true);
-
-			-- CS: show allowed characters
-			raise constraint_error;
-		end if;
-
-		-- If there is an inversion mark, it must be at the very end of the net name.
-		inversion_mark_position := type_net_name.index (net, net_inversion_mark);
-		if inversion_mark_position > 0 then
-			if inversion_mark_position /= type_net_name.length (net) then
-				log_indentation_reset;
-				log (message_error & "net " & to_string (net) 
-					& " inversion mark must be at the end of the net name !",
-					console => true);
-				raise constraint_error;
-			end if;
-		end if;
-		
-	end check_net_name_characters;
 
 	function to_string (appearance : in type_net_label_appearance) return string is begin
 		return latin_1.space & to_lower (type_net_label_appearance'image (appearance));

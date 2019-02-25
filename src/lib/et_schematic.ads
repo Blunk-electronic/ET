@@ -53,7 +53,8 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_general;
+with et_general;				use et_general;
+
 with et_coordinates;
 with et_libraries;
 with et_string_processing;
@@ -62,7 +63,7 @@ with et_pcb_coordinates;
 with netchangers;
 
 package et_schematic is
-
+	use et_general.type_net_name;
 	
 -- TEXT FIELD
 
@@ -196,32 +197,8 @@ package et_schematic is
 		
 	
 	
--- LABELS AND NETS
+-- NET LABELS
 
-	-- The name of a net may have 100 characters which seems sufficient for now.
-	net_name_characters : character_set := to_set (ranges => (('A','Z'),('0','9'))) or to_set ("_-#");
-	net_inversion_mark : constant string (1..1) := "#";
- 	net_name_length_max : constant natural := 100;
-	package type_net_name is new generic_bounded_length (net_name_length_max); use type_net_name;
-
-	procedure check_net_name_length (net : in string);
-	-- Tests if the given net name is longer than allowed.
-	
-	procedure check_net_name_characters (
-		net			: in type_net_name.bounded_string;
-		characters	: in character_set := net_name_characters);
-	-- Tests if the given net name contains only valid characters as specified
-	-- by given character set.
-
-	function to_net_name (net_name : in string) return type_net_name.bounded_string;
-	-- Converts a string to a type_net_name.
-	
-	function to_string (net_name : in type_net_name.bounded_string) return string;
-	-- Returns the given net name as string;
-
-	function anonymous (net_name : in type_net_name.bounded_string) return boolean;
-	-- Returns true if the given net name is anonymous.
-	
 	subtype type_net_label_text_size is et_coordinates.type_distance range 1.0 .. 5.0; -- unit is mm
 	net_label_text_size_default : constant type_net_label_text_size := 1.3;
 
@@ -312,9 +289,6 @@ package et_schematic is
 	end record;
 
 
-    -- If the name of a strand can not be identified, we default to the well proved "N$" notation:
-	anonymous_net_name_prefix : constant string (1..2) := "N$";
-
 	-- This is a net:
 	type type_net_base is tagged record
 		route	: et_pcb.type_route; -- routing information -> pcb related
@@ -393,22 +367,6 @@ package et_schematic is
 	function to_string (view : in type_submodule_view_mode) return string;
 	function to_view_mode (mode : in string) return type_submodule_view_mode;
 
-	type type_submodule_port is record
-		position : netchangers.type_port := (
-						
-			-- The position relative to the module center of the parent module:
-			position	=> et_coordinates.type_2d_point (et_coordinates.set_point (x => 0.0, y => 0.0)),
-			length		=> 5.0,
-			rotation	=> 0.0);
-
-		-- The net of the submodule is here the port name:
-		name : type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
-
-		-- CS symbol : type_module_connector_symbol;
-	end record;
-
-	package type_submodule_ports is new doubly_linked_lists (type_submodule_port);
-	
 	type type_submodule is record
 		file				: type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
 		position		    : et_coordinates.type_coordinates;
@@ -416,7 +374,7 @@ package et_schematic is
 		position_in_board	: et_pcb_coordinates.type_point_2d_with_angle;
 		view_mode			: type_submodule_view_mode;
 		reference_offset	: et_libraries.type_component_reference_id;	-- R88 turns to R2088 or R788
-		ports				: type_submodule_ports.list;
+		ports				: netchangers.type_submodule_ports.list;
 	end record;
 
 	package type_submodules is new ordered_maps (
