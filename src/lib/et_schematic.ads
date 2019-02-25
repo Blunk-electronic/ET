@@ -59,6 +59,7 @@ with et_libraries;
 with et_string_processing;
 with et_pcb;
 with et_pcb_coordinates;
+with netchangers;
 
 package et_schematic is
 
@@ -244,22 +245,13 @@ package et_schematic is
 
 	package type_ports_component is new doubly_linked_lists (type_port_component);
 
-	-- This is the port of a submodule. It is the interface between the parent and 
-	-- submodule:
+	-- This is the port of a submodule:
 	type type_port_submodule is record
-		-- The port belongs to a certain submodule:
+		-- The instance of a certain submodule:
 		module		: et_coordinates.type_submodule_name.bounded_string; -- MOT_DRV_3
 
-		-- The port addresses a certain net inside the submodule: CS ?
-		--net			: type_net_name.bounded_string; CS ?
-
-		-- The port addresses a certain port of the net inside the submodule.
-		-- The actual net name is not visible to the parent module.
-		-- Inside a submodule a net can have multiple ports to the outside world.
-		port		: et_libraries.type_port_name.bounded_string;
-
-		position	: et_coordinates.type_coordinates; -- the position of the port in the parent module
-		direction	: et_libraries.type_port_direction; -- CS default
+		-- The net of the submodule is here the port name:
+		port	: type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
 	end record;
 
 	package type_ports_submodule is new doubly_linked_lists (type_port_submodule);
@@ -384,6 +376,7 @@ package et_schematic is
 
 -- SUBMODULES
 	submodule_path_length_max : constant positive := 300;
+	-- The full name of a submodule like $ET_TEMPLATES/motor_driver.mod
 	package type_submodule_path is new generic_bounded_length (submodule_path_length_max);
 
 	function to_submodule_path (path : in string) return type_submodule_path.bounded_string;
@@ -399,27 +392,36 @@ package et_schematic is
 
 	function to_string (view : in type_submodule_view_mode) return string;
 	function to_view_mode (mode : in string) return type_submodule_view_mode;
+
+	type type_submodule_port is record
+		position : netchangers.type_port := (
+						
+			-- The position relative to the module center of the parent module:
+			position	=> et_coordinates.type_2d_point (et_coordinates.set_point (x => 0.0, y => 0.0)),
+			length		=> 5.0,
+			rotation	=> 0.0);
+
+		-- The net of the submodule is here the port name:
+		name : type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+
+		-- CS symbol : type_module_connector_symbol;
+	end record;
+
+	package type_submodule_ports is new doubly_linked_lists (type_submodule_port);
 	
 	type type_submodule is record
-		-- name  				: et_coordinates.type_submodule_name.bounded_string;	-- MOT_DRV_3 (will be the net prefix later on)
-		file				: type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod		
-        --text_size_path		: et_libraries.type_text_size; -- CS no need, should be sized automatically by the GUI
-        --text_size_instance	: et_libraries.type_text_size; -- CS no need, should be sized automatically by the GUI
+		file				: type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
 		position		    : et_coordinates.type_coordinates;
 		size				: type_submodule_size;
 		position_in_board	: et_pcb_coordinates.type_point_2d_with_angle;
 		view_mode			: type_submodule_view_mode;
 		reference_offset	: et_libraries.type_component_reference_id;	-- R88 turns to R2088 or R788
+		ports				: type_submodule_ports.list;
 	end record;
 
--- 	package type_submodules is new ordered_maps (
--- 		key_type		=> et_coordinates.type_submodule_name.bounded_string,
--- 		"<" 			=> et_coordinates.type_submodule_name."<",
--- 		element_type	=> type_submodule);
-
 	package type_submodules is new ordered_maps (
-		--key_type		=> type_submodule_path.bounded_string, -- $ET_TEMPLATES/motor_driver.mod
-		key_type		=> et_coordinates.type_submodule_name.bounded_string, -- MOT_DRV_3 (will be the net prefix later on)													
+		-- The instance name like MOT_DRV_3 (will be the net prefix later on):
+		key_type		=> et_coordinates.type_submodule_name.bounded_string, 
 		"<" 			=> et_coordinates.type_submodule_name."<",
 		element_type	=> type_submodule);
 
@@ -454,7 +456,7 @@ package et_schematic is
 		-- CS: images
 
 		-- the nets of the module (incl. routing information from the board):
-		nets 	    	: type_nets.map;				
+		nets 	    	: type_nets.map;
 		
 		-- General non-component related board stuff (silk screen, documentation, ...):
 		board			: et_pcb.type_board;

@@ -1386,15 +1386,15 @@ package body et_project is
 							write (keyword => keyword_module, parameters => 
 								space & to_string (element (port_cursor).module));
 
-							-- port name
+							-- port name (in the submodule it is a net name)
 							write (keyword => keyword_name, parameters => 
-								space & et_libraries.to_string (element (port_cursor).port));
+								space & et_schematic.to_string (element (port_cursor).port));
 
 							-- port position
-							write (keyword => keyword_position, parameters => position (element (port_cursor).position));
+							--write (keyword => keyword_position, parameters => position (element (port_cursor).position));
 
 							-- port direction
-							write (keyword => keyword_direction, parameters => et_libraries.to_string (element (port_cursor).direction));
+							--write (keyword => keyword_direction, parameters => et_libraries.to_string (element (port_cursor).direction));
 							
 							section_mark (section_port, FOOTER);
 							next (port_cursor);
@@ -10353,19 +10353,19 @@ package body et_project is
 											expect_field_count (line, 2);
 											net_submodule_port.module := et_coordinates.to_submodule_name (f (line, 2));
 											
-										elsif kw = keyword_name then -- name MASTER_RESET_N
+										elsif kw = keyword_name then -- name CLOCK_GENERATOR_OUT
 											expect_field_count (line, 2);
-											net_submodule_port.port := et_libraries.to_port_name (f (line, 2));
+											net_submodule_port.port := et_schematic.to_net_name (f (line, 2));
 
-										elsif kw = keyword_position then -- position x 3 y 4
-											expect_field_count (line, 5);
-
-											-- extract port position starting at field 2
-											net_submodule_port.position := to_position (line, 2); 
-
-										elsif kw = keyword_direction then -- direction input
-											expect_field_count (line, 2);
-											net_submodule_port.direction := et_libraries.to_port_direction (f (line, 2));
+-- 										elsif kw = keyword_position then -- position x 3 y 4
+-- 											expect_field_count (line, 5);
+-- 
+-- 											-- extract port position starting at field 2
+-- 											net_submodule_port.position := to_position (line, 2); 
+-- 
+-- 										elsif kw = keyword_direction then -- direction input
+-- 											expect_field_count (line, 2);
+-- 											net_submodule_port.direction := et_libraries.to_port_direction (f (line, 2));
 
 										else
 											invalid_keyword (kw);

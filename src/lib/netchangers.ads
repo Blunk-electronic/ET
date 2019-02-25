@@ -93,8 +93,55 @@ package netchangers is
 		signal_layer	: et_pcb.type_signal_layer := et_pcb.type_signal_layer'first;
 	end record;
 
-		
-		
+	-- A module connector connects the parent module with the submodule.
+	-- The connector consists of an external port and and internal port.
+	-- The external port connects with the parent module. The internal port connects
+	-- with the submodule.
+-- 	type type_module_connector is record
+-- 		external	: type_port := (
+-- 						
+-- 						-- the position is relative to the module center:
+-- 						position	=> type_2d_point (set_point (x => 0.0, y => 0.0)),
+-- 						length		=> 5.0,
+-- 						rotation	=> 0.0);
+-- 
+-- 		internal	: type_port := (
+-- 						
+-- 						-- the position is somewhere in the submodule:
+-- 						position	=> et_coordinates.type_coordinates, -- x,y,sheet
+-- 						length		=> 5.0,
+-- 						rotation	=> 0.0);
+-- 		
+-- 		-- CS symbol			: type_netchanger_symbol;
+-- 		
+-- 		position_brd	: et_pcb_coordinates.type_point_2d; -- x,y
+-- 		signal_layer	: et_pcb.type_signal_layer := et_pcb.type_signal_layer'first;
+-- 	end record;
+
+-- CS
+-- 	type type_module_connector_symbol is record
+-- 		circle	: et_libraries.type_circle := (
+-- 						center		=> type_2d_point (set_point (x => 0.0, y => 0.0)),
+-- 						radius		=> 2.0,
+-- 						width		=> line_width_port_default);
+-- 	end record;
+	
+-- 	type type_module_connector is record
+-- 		position : type_port := (
+-- 						
+-- 			-- The position relative to the module center of the parent module:
+-- 			position	=> type_2d_point (set_point (x => 0.0, y => 0.0)),
+-- 			length		=> 5.0,
+-- 			rotation	=> 0.0);
+-- 
+-- 		-- The net of the submodule:
+-- 		net	: type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+-- 
+-- 		-- CS symbol : type_module_connector_symbol;
+-- 	end record;
+-- 
+-- 	package type_module_connectors is new doubly_linked_lists (type_module_connector);
+	
 end netchangers;
 
 -- Soli Deo Gloria
