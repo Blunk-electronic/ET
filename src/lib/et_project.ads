@@ -317,7 +317,7 @@ package et_project is
 	keyword_pos_y					: constant string := "y";		
 	keyword_device					: constant string := "device";
 	keyword_port					: constant string := "port";
-	keyword_module					: constant string := "module";
+	keyword_submodule				: constant string := "submodule";	
 	keyword_layer					: constant string := "layer";
 	keyword_width					: constant string := "width";
 	keyword_height					: constant string := "height";	
@@ -423,7 +423,6 @@ package et_project is
 	section_labels				: constant string := "[LABELS";
 	section_label				: constant string := "[LABEL";
 
-	section_submodule_ports		: constant string := "[SUBMODULE_PORTS";
 	section_port				: constant string := "[PORT";
 	
 	section_route				: constant string := "[ROUTE";
@@ -513,7 +512,6 @@ package et_project is
 		SEC_LABEL,
 		SEC_JUNCTIONS,
 		SEC_PORTS,
-		SEC_SUBMODULE_PORTS,
 		SEC_PORT,
 		SEC_ROUTE,
 		SEC_LINE,

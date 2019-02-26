@@ -1364,48 +1364,35 @@ package body et_project is
 						use type_ports_component;
 						port_cursor : type_ports_component.cursor := segment.component_ports.first;
 					begin -- query_device_ports
-						section_mark (section_ports, HEADER);
 						while port_cursor /= type_ports_component.no_element loop
+							
 							write (keyword => keyword_device, parameters => 
 								space & et_libraries.to_string (element (port_cursor).reference)
 								& space & keyword_port & space
 								& et_libraries.to_string (element (port_cursor).name)
-								);
+								); -- device IC1 port A
+							
 							next (port_cursor);
 						end loop;
-						section_mark (section_ports, FOOTER);
 					end query_device_ports;
 
 					procedure query_submodule_ports (segment : in type_net_segment) is
 						use type_ports_submodule;
 						port_cursor : type_ports_submodule.cursor := segment.submodule_ports.first;
 					begin -- query_submodule_ports
-						section_mark (section_submodule_ports, HEADER);
 						while port_cursor /= type_ports_submodule.no_element loop
-							section_mark (section_port, HEADER);
 
-							-- module name
-							write (keyword => keyword_module, parameters => 
-								space & to_string (element (port_cursor).module));
+							write (keyword => keyword_submodule, parameters => 
+								space & to_string (element (port_cursor).module)
+								& space & keyword_port & space
+								& et_general.to_string (element (port_cursor).port)
+								); -- submodule CLK_GENERATOR port out
 
-							-- port name (in the submodule it is a net name)
-							write (keyword => keyword_name, parameters => 
-								space & et_general.to_string (element (port_cursor).port));
-
-							-- port position
-							--write (keyword => keyword_position, parameters => position (element (port_cursor).position));
-
-							-- port direction
-							--write (keyword => keyword_direction, parameters => et_libraries.to_string (element (port_cursor).direction));
-							
-							section_mark (section_port, FOOTER);
 							next (port_cursor);
 						end loop;
-						section_mark (section_submodule_ports, FOOTER);
 					end query_submodule_ports;
-
 					
-				begin -- query_strands
+				begin -- query_segments
 					section_mark (section_segments, HEADER);
 					while segment_cursor /= type_net_segments.no_element loop
 						section_mark (section_segment, HEADER);
@@ -1415,8 +1402,12 @@ package body et_project is
 
 						query_element (segment_cursor, query_labels'access);
 						query_element (segment_cursor, query_junctions'access);
+
+						section_mark (section_ports, HEADER);
 						query_element (segment_cursor, query_device_ports'access);
 						query_element (segment_cursor, query_submodule_ports'access);
+						-- CS netchanger ports
+						section_mark (section_ports, FOOTER);
 						
 						section_mark (section_segment, FOOTER);
 						next (segment_cursor);
@@ -1424,7 +1415,7 @@ package body et_project is
 					section_mark (section_segments, FOOTER);
 				end query_segments;
 				
-			begin -- query_segments
+			begin -- query_strands
 				section_mark (section_strands, HEADER);
 				while strand_cursor /= type_strands.no_element loop
 					section_mark (section_strand, HEADER);
@@ -9184,31 +9175,29 @@ package body et_project is
 							case stack.parent is
 								when SEC_SEGMENT =>
 
-									-- NOTE: A device port is defined by a single line.
-									-- Upon reading the line like "device R3 port 1" the port is
-									-- appended to the port collection immediately when the line 
-									-- is read. See main code of process_line.
-									-- There is no section for a single device port like [PORT BEGIN].
+									-- NOTE: A device, submodule or netchanger port is defined by a
+									-- single line.
+									-- Upon reading the line like "device/submodule/netchanger x port 1" 
+									-- the port is appended to the corresponding port collection 
+									-- immediately when the line is read. See main code of process_line.
+									-- There is no section for a single port like [PORT BEGIN].
 
 									-- insert port collection in segment
 									net_segment.component_ports := net_ports;
 
-									-- clean up for next port collection (of another net segment)
-									et_schematic.type_ports_component.clear (net_ports);
-
-								when others => invalid_section;
-							end case;
-									
-						when SEC_SUBMODULE_PORTS =>
-							case stack.parent is
-								when SEC_SEGMENT =>
-							
 									-- insert submodule ports in segment
 									net_segment.submodule_ports := net_submodule_ports;
 									
+									-- clean up for next port collections (of another net segment)
+									et_schematic.type_ports_component.clear (net_ports);
+									et_schematic.type_ports_submodule.clear (net_submodule_ports);
+
+								when SEC_SUBMODULE =>
+									null; -- CS
+									
 								when others => invalid_section;
 							end case;
-
+									
 						when SEC_LABEL =>
 							case stack.parent is
 								when SEC_LABELS =>
@@ -9242,19 +9231,6 @@ package body et_project is
 									net_label := (others => <>);
 									net_label_appearance := et_schematic.type_net_label_appearance'first;
 									net_label_direction := et_schematic.type_net_label_direction'first;
-
-								when others => invalid_section;
-							end case;
-
-						when SEC_PORT =>
-							case stack.parent is
-								when SEC_SUBMODULE_PORTS =>
-
-									-- insert submodule port in collection of submodule ports
-									et_schematic.type_ports_submodule.append (net_submodule_ports, net_submodule_port);
-
-									-- clean up for next submodule port
-									net_submodule_port := (others => <>);
 
 								when others => invalid_section;
 							end case;
@@ -9674,6 +9650,19 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
+						when SEC_PORT =>
+							case stack.parent is
+								when SEC_PORTS =>
+									case stack.parent (degree => 2) is
+										when SEC_SUBMODULE =>
+											NULL; -- cs
+
+										when others => invalid_section;
+									end case;
+
+								when others => invalid_section;
+							end case;
+							
 						when SEC_SUBMODULES =>
 							case stack.parent is
 								when SEC_INIT => null;
@@ -10006,7 +9995,6 @@ package body et_project is
 				elsif set (section_label, SEC_LABEL) then null;
 				elsif set (section_junctions, SEC_JUNCTIONS) then null;
 				elsif set (section_ports, SEC_PORTS) then null;
-				elsif set (section_submodule_ports, SEC_SUBMODULE_PORTS) then null;								
 				elsif set (section_ports, SEC_PORT) then null;				
 				elsif set (section_route, SEC_ROUTE) then null;								
 				elsif set (section_line, SEC_LINE) then null;								
@@ -10263,16 +10251,16 @@ package body et_project is
 						when SEC_PORTS =>
 							case stack.parent is 
 								when SEC_SEGMENT =>
-									-- read device port parameters
-									-- NOTE: A device port is defined by a single line.
-									-- Upon reading the line like "device IC3 port CE" the port is
-									-- appended to the port collection immediately here. See procdure
-									-- execute_section.									
-									-- There is no section for a single device port like [PORT BEGIN].
+									-- read port parameters
+									-- NOTE: A device, submodule or netchanger port is defined by a
+									-- single line.
+									-- Upon reading the line like "device/submodule/netchanger x port 1" 
+									-- the port is appended to the corresponding port collection 
+									-- immediately when the line is read. See main code of process_line.
 									declare
 										kw : string := f (line, 1);
 									begin
-										if kw = keyword_device then
+										if kw = keyword_device then -- device R1 port 1
 											expect_field_count (line, 4);
 
 											net_port.reference := et_libraries.to_device_name (f (line, 2)); -- IC3
@@ -10280,25 +10268,41 @@ package body et_project is
 											if f (line, 3) = keyword_port then -- port
 												net_port.name := et_libraries.to_port_name (f (line, 4)); -- CE
 
-												-- append port to port collection
+												-- append port to port collection of device ports
 												et_schematic.type_ports_component.append (net_ports, net_port); 
 											else
 												invalid_keyword (f (line, 3));
 											end if;
+
+										elsif kw = keyword_submodule then -- submodule motor_driver port A
+											expect_field_count (line, 4);
+											
+											net_submodule_port.module := et_coordinates.to_submodule_name (f (line, 2)); -- motor_driver
+
+											if f (line, 3) = keyword_port then -- port
+												net_submodule_port.port := to_net_name (f (line, 4)); -- A
+
+												-- append submodule port to collection of submodule ports
+												et_schematic.type_ports_submodule.append (net_submodule_ports, net_submodule_port);
+
+												-- clean up for next submodule port
+												net_submodule_port := (others => <>);
+
+											else
+												invalid_keyword (f (line, 3));
+											end if;
+											
 										else
 											invalid_keyword (kw);
 										end if;
 									end;
 
+								when SEC_SUBMODULE =>
+									null; -- CS
+									
 								when others => invalid_section;
 							end case;
 
-						when SEC_SUBMODULE_PORTS =>
-							case stack.parent is
-								when SEC_SEGMENT => null; -- nothing to do
-								when others => invalid_section;
-							end case;
-						
 						when SEC_LABEL =>
 							case stack.parent is
 								when SEC_LABELS =>
@@ -10336,39 +10340,6 @@ package body et_project is
 											expect_field_count (line, 2);
 											net_label_direction := et_schematic.to_direction (f (line, 2));
 											
-										else
-											invalid_keyword (kw);
-										end if;
-									end;
-
-								when others => invalid_section;
-							end case;
-						
-						when SEC_PORT =>
-							case stack.parent is
-								when SEC_SUBMODULE_PORTS =>
-									declare
-										kw : string := f (line, 1);
-									begin
-										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_module then -- module motor_driver
-											expect_field_count (line, 2);
-											net_submodule_port.module := et_coordinates.to_submodule_name (f (line, 2));
-											
-										elsif kw = keyword_name then -- name CLOCK_GENERATOR_OUT
-											expect_field_count (line, 2);
-											net_submodule_port.port := to_net_name (f (line, 2));
-
--- 										elsif kw = keyword_position then -- position x 3 y 4
--- 											expect_field_count (line, 5);
--- 
--- 											-- extract port position starting at field 2
--- 											net_submodule_port.position := to_position (line, 2); 
--- 
--- 										elsif kw = keyword_direction then -- direction input
--- 											expect_field_count (line, 2);
--- 											net_submodule_port.direction := et_libraries.to_port_direction (f (line, 2));
-
 										else
 											invalid_keyword (kw);
 										end if;
@@ -11228,7 +11199,20 @@ package body et_project is
 									
 								when others => invalid_section;
 							end case;
-						
+
+						when SEC_PORT =>
+							case stack.parent is
+								when SEC_PORTS =>
+									case stack.parent (degree => 2) is
+										when SEC_SUBMODULE =>
+											NULL; -- cs
+
+										when others => invalid_section;
+									end case;
+
+								when others => invalid_section;
+							end case;
+							
 						when SEC_SCHEMATIC =>
 							case stack.parent is
 								when SEC_DRAWING_FRAMES =>
