@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                          SYSTEM ET NETCHANGERS                           --
+--                          SYSTEM ET SUBMODULES                            --
 --                                                                          --
 --                                 ET                                       --
 --                                                                          --
@@ -54,7 +54,7 @@ with et_libraries;			use et_libraries;
 with et_pcb;
 with et_pcb_coordinates;
 
-package netchangers is
+package submodules is
 
 	procedure dummy;
 
@@ -145,6 +145,6 @@ package netchangers is
 
 	package type_submodule_ports is new doubly_linked_lists (type_submodule_port);
 	
-end netchangers;
+end submodules;
 
 -- Soli Deo Gloria

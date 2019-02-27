@@ -40,7 +40,6 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
-
 with ada.text_io;				use ada.text_io;
 
 with ada.tags;
@@ -62,7 +61,7 @@ with et_schematic;
 with et_pcb;
 with et_pcb_coordinates;
 with conventions;
-with netchangers;
+with submodules;
 
 package body et_project is
 
@@ -1696,11 +1695,11 @@ package body et_project is
 		procedure query_submodules is		
 			use et_schematic;
 			use type_submodules;
-			use netchangers;
+			use submodules;
 			
 			submodule_cursor : type_submodules.cursor := module.submodules.first;
 
-			procedure query_ports (port_cursor : in netchangers.type_submodule_ports.cursor) is
+			procedure query_ports (port_cursor : in submodules.type_submodule_ports.cursor) is
 				use type_submodule_ports;
 			begin
 				section_mark (section_port, HEADER);
@@ -7679,8 +7678,8 @@ package body et_project is
 			end reset_polygon_parameters;
 
 			-- submodules
-			submodule_port	: netchangers.type_submodule_port;
-			submodule_ports	: netchangers.type_submodule_ports.list;
+			submodule_port	: submodules.type_submodule_port;
+			submodule_ports	: submodules.type_submodule_ports.list;
 			submodule_name 	: et_coordinates.type_submodule_name.bounded_string; -- MOT_DRV_3
 			submodule		: et_schematic.type_submodule;
 
@@ -9218,7 +9217,7 @@ package body et_project is
 									submodule.ports := submodule_ports;
 
 									-- clean up for next collection of ports
-									netchangers.type_submodule_ports.clear (submodule_ports);
+									submodules.type_submodule_ports.clear (submodule_ports);
 									
 								when others => invalid_section;
 							end case;
@@ -9681,7 +9680,7 @@ package body et_project is
 									case stack.parent (degree => 2) is
 										when SEC_SUBMODULE =>
 											-- append port to collection of submodule ports
-											netchangers.type_submodule_ports.append (submodule_ports, submodule_port);
+											submodules.type_submodule_ports.append (submodule_ports, submodule_port);
 
 											-- clean up for next ports
 											submodule_port := (others => <>);

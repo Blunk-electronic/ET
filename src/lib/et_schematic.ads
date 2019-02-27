@@ -60,7 +60,7 @@ with et_libraries;
 with et_string_processing;
 with et_pcb;
 with et_pcb_coordinates;
-with netchangers;
+with submodules;
 
 package et_schematic is
 	use et_general.type_net_name;
@@ -374,7 +374,7 @@ package et_schematic is
 		position_in_board	: et_pcb_coordinates.type_point_2d_with_angle;
 		view_mode			: type_submodule_view_mode;
 		reference_offset	: et_libraries.type_component_reference_id;	-- R88 turns to R2088 or R788
-		ports				: netchangers.type_submodule_ports.list;
+		ports				: submodules.type_submodule_ports.list;
 	end record;
 
 	package type_submodules is new ordered_maps (

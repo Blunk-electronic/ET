@@ -3,7 +3,7 @@ TARGET = et
 VPATH = include
 
 OBJS = $(TARGET).o \
-	netchangers.o \
+	submodules.o \
 	et_schematic.o \
 	et_libraries.o \
 	et_project.o \
