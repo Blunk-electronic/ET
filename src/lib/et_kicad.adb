@@ -13859,7 +13859,7 @@ package body et_kicad is
 							when JUMPER 							=> et_schematic.statistics_set (et_schematic.JUMPERS);
 							when LIGHT_EMMITTING_DIODE | LIGHT_EMMITTING_DIODE_ARRAY 
 																	=> et_schematic.statistics_set (et_schematic.LEDS);
-							when NETCHANGER 						=> et_schematic.statistics_set (et_schematic.NETCHANGERS);
+-- 							when NETCHANGER 						=> et_schematic.statistics_set (et_schematic.NETCHANGERS);
 							when RELAY 								=> et_schematic.statistics_set (et_schematic.RELAYS);
 							when RESISTOR | RESISTOR_ADJUSTABLE | RESISTOR_NETWORK | RESISTOR_PHOTO | POTENTIOMETER 
 																	=> et_schematic.statistics_set (et_schematic.RESISTORS);
@@ -14018,7 +14018,7 @@ package body et_kicad is
 			put_line (statistics_handle_cad, "ICs         " & et_schematic.statistics_query (et_schematic.INTEGRATED_CIRCUITS));
 			put_line (statistics_handle_cad, "jumpers     " & et_schematic.statistics_query (et_schematic.JUMPERS));
 			put_line (statistics_handle_cad, "LEDs        " & et_schematic.statistics_query (et_schematic.LEDS));
-			put_line (statistics_handle_cad, "netchangers " & et_schematic.statistics_query (et_schematic.NETCHANGERS));
+-- 			put_line (statistics_handle_cad, "netchangers " & et_schematic.statistics_query (et_schematic.NETCHANGERS));
 			put_line (statistics_handle_cad, "relays      " & et_schematic.statistics_query (et_schematic.RELAYS));
 			put_line (statistics_handle_cad, "resistors   " & et_schematic.statistics_query (et_schematic.RESISTORS));
 			put_line (statistics_handle_cad, "testpoints  " & et_schematic.statistics_query (et_schematic.TESTPOINTS));

@@ -437,7 +437,7 @@ package body et_schematic is
 				when INTEGRATED_CIRCUITS	=> statistics.integrated_circuits	:= statistics.integrated_circuits + 1;
 				when JUMPERS				=> statistics.jumpers				:= statistics.jumpers + 1;
 				when LEDS					=> statistics.leds					:= statistics.leds + 1;
-				when NETCHANGERS			=> statistics.netchangers			:= statistics.netchangers + 1;
+-- 				when NETCHANGERS			=> statistics.netchangers			:= statistics.netchangers + 1;
 				when RELAYS					=> statistics.relays				:= statistics.relays + 1;
 				when RESISTORS				=> statistics.resistors				:= statistics.resistors + 1;
 				when TESTPOINTS				=> statistics.testpoints			:= statistics.testpoints + 1;				
@@ -473,7 +473,7 @@ package body et_schematic is
 			when INTEGRATED_CIRCUITS	=> return statistics.integrated_circuits;
 			when JUMPERS				=> return statistics.jumpers;
 			when LEDS					=> return statistics.leds;
-			when NETCHANGERS			=> return statistics.netchangers;
+-- 			when NETCHANGERS			=> return statistics.netchangers;
 			when RELAYS					=> return statistics.relays;
 			when RESISTORS				=> return statistics.resistors;
 			when TESTPOINTS				=> return statistics.testpoints;				

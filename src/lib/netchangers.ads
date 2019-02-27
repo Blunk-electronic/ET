@@ -128,13 +128,15 @@ package netchangers is
 -- 	end record;
 	
 	type type_submodule_port is record
-		position : type_port := (
+-- 		position : type_port := (
 						
-			-- The position relative to the module center of the parent module:
-			position	=> et_coordinates.type_2d_point (et_coordinates.set_point (x => 0.0, y => 0.0)),
-			length		=> 5.0,
-			rotation	=> 0.0);
+		-- The position relative to the module center of the parent module:
+-- 			position	=> et_coordinates.type_2d_point (et_coordinates.set_point (x => 0.0, y => 0.0)),
+-- 			length		=> 5.0,
+-- 			rotation	=> 0.0);
 
+		position : et_coordinates.type_2d_point;
+		
 		-- The net of the submodule is here the port name:
 		name : et_general.type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
 

@@ -62,6 +62,7 @@ with et_schematic;
 with et_pcb;
 with et_pcb_coordinates;
 with conventions;
+with netchangers;
 
 package body et_project is
 
@@ -1695,8 +1696,20 @@ package body et_project is
 		procedure query_submodules is		
 			use et_schematic;
 			use type_submodules;
+			use netchangers;
+			
 			submodule_cursor : type_submodules.cursor := module.submodules.first;
-		begin
+
+			procedure query_ports (port_cursor : in netchangers.type_submodule_ports.cursor) is
+				use type_submodule_ports;
+			begin
+				section_mark (section_port, HEADER);
+				write (keyword => keyword_name, space => true, parameters => et_general.to_string (element (port_cursor).name)); -- name clk_out
+				write (keyword => keyword_position, parameters => position (element (port_cursor).position)); -- position x 0 y 10
+				section_mark (section_port, FOOTER);
+			end;
+			
+		begin -- query_submodules
 			section_mark (section_submodules, HEADER);
 			while submodule_cursor /= type_submodules.no_element loop
 				section_mark (section_submodule, HEADER);
@@ -1717,6 +1730,11 @@ package body et_project is
 
 				write (keyword => keyword_view_mode, parameters => to_string (element (submodule_cursor).view_mode));
 				write (keyword => keyword_reference_offset, parameters => et_libraries.to_string (element (submodule_cursor).reference_offset));
+
+				section_mark (section_ports, HEADER);
+				type_submodule_ports.iterate (element (submodule_cursor).ports, query_ports'access);
+				section_mark (section_ports, FOOTER);
+				
 				section_mark (section_submodule, FOOTER);				
 				next (submodule_cursor);
 			end loop;
@@ -5563,7 +5581,6 @@ package body et_project is
 			
 		end process_line;
 
-
 		previous_input : ada.text_io.file_type renames current_input;
 		
 	begin -- read_symbol
@@ -6796,7 +6813,6 @@ package body et_project is
 			
 		end process_line;
 
-
 		previous_input : ada.text_io.file_type renames current_input;
 		
 	begin -- read_device_file
@@ -7662,6 +7678,9 @@ package body et_project is
 				route_polygon_solid_technology	:= type_polygon_pad_technology'first;
 			end reset_polygon_parameters;
 
+			-- submodules
+			submodule_port	: netchangers.type_submodule_port;
+			submodule_ports	: netchangers.type_submodule_ports.list;
 			submodule_name 	: et_coordinates.type_submodule_name.bounded_string; -- MOT_DRV_3
 			submodule		: et_schematic.type_submodule;
 
@@ -7819,7 +7838,7 @@ package body et_project is
 						
 						type_submodules.insert (
 							container	=> module.submodules,
-							key			=> submodule_name,
+							key			=> submodule_name,	-- the instance name like MOT_DRV_3
 							new_item	=> submodule,
 							inserted	=> inserted,
 							position	=> cursor);
@@ -7831,6 +7850,8 @@ package body et_project is
 							raise constraint_error;
 						end if;
 
+						-- CS open and read submodule.file
+						
 						-- clean up for next submodule
 						submodule_name := to_submodule_name ("");
 						submodule := (others => <>);
@@ -9193,7 +9214,11 @@ package body et_project is
 									et_schematic.type_ports_submodule.clear (net_submodule_ports);
 
 								when SEC_SUBMODULE =>
-									null; -- CS
+									-- copy collection of ports to submodule
+									submodule.ports := submodule_ports;
+
+									-- clean up for next collection of ports
+									netchangers.type_submodule_ports.clear (submodule_ports);
 									
 								when others => invalid_section;
 							end case;
@@ -9655,7 +9680,11 @@ package body et_project is
 								when SEC_PORTS =>
 									case stack.parent (degree => 2) is
 										when SEC_SUBMODULE =>
-											NULL; -- cs
+											-- append port to collection of submodule ports
+											netchangers.type_submodule_ports.append (submodule_ports, submodule_port);
+
+											-- clean up for next ports
+											submodule_port := (others => <>);
 
 										when others => invalid_section;
 									end case;
@@ -9995,7 +10024,7 @@ package body et_project is
 				elsif set (section_label, SEC_LABEL) then null;
 				elsif set (section_junctions, SEC_JUNCTIONS) then null;
 				elsif set (section_ports, SEC_PORTS) then null;
-				elsif set (section_ports, SEC_PORT) then null;				
+				elsif set (section_port, SEC_PORT) then null;				
 				elsif set (section_route, SEC_ROUTE) then null;								
 				elsif set (section_line, SEC_LINE) then null;								
 				elsif set (section_arc, SEC_ARC) then null;								
@@ -10297,8 +10326,7 @@ package body et_project is
 										end if;
 									end;
 
-								when SEC_SUBMODULE =>
-									null; -- CS
+								when SEC_SUBMODULE => null; -- nothing to do
 									
 								when others => invalid_section;
 							end case;
@@ -11205,7 +11233,23 @@ package body et_project is
 								when SEC_PORTS =>
 									case stack.parent (degree => 2) is
 										when SEC_SUBMODULE =>
-											NULL; -- cs
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_name then -- name clk_out
+													expect_field_count (line, 2);
+													submodule_port.name := to_net_name (f (line, 2));
+
+												elsif kw = keyword_position then -- position x 0 y 10
+													expect_field_count (line, 5);
+
+													-- extract port position starting at field 2
+													submodule_port.position := to_position (line, 2);
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
 
 										when others => invalid_section;
 									end case;
