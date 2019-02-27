@@ -44,7 +44,7 @@ with ada.containers;            use ada.containers;
 -- with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
 -- with ada.containers.indefinite_doubly_linked_lists;
--- with ada.containers.ordered_maps;
+with ada.containers.ordered_maps;
 -- with ada.containers.indefinite_ordered_maps;
 -- with ada.containers.ordered_sets;
 
@@ -58,7 +58,7 @@ package submodules is
 
 	procedure dummy;
 
-	type type_port is record
+	type type_netchanger_port is record
 		position	: type_2d_point;
 		length		: type_port_length; 
 		rotation	: et_coordinates.type_angle;
@@ -66,13 +66,13 @@ package submodules is
 	
 	type type_netchanger_symbol is record
 		-- the port on the right
-		master_port	: type_port := (
+		master_port	: type_netchanger_port := (
 						position	=> type_2d_point (set_point (x => 10.0, y => 0.0)),
 						length		=> 5.0,
 						rotation	=> 0.0);
 
 		-- the port on the left
-		slave_port	: type_port := (
+		slave_port	: type_netchanger_port := (
 						position	=> type_2d_point (set_point (x => -10.0, y => 0.0)),
 						length		=> 5.0,
 						rotation	=> 180.0);
@@ -94,6 +94,10 @@ package submodules is
 		signal_layer	: et_pcb.type_signal_layer := et_pcb.type_signal_layer'first;
 	end record;
 
+	package type_netchangers is new ordered_maps (
+		key_type		=> positive, -- CS dedicated type required
+		element_type	=> type_netchanger);
+	
 	-- A module connector connects the parent module with the submodule.
 	-- The connector consists of an external port and and internal port.
 	-- The external port connects with the parent module. The internal port connects
@@ -128,16 +132,10 @@ package submodules is
 -- 	end record;
 	
 	type type_submodule_port is record
--- 		position : type_port := (
-						
-		-- The position relative to the module center of the parent module:
--- 			position	=> et_coordinates.type_2d_point (et_coordinates.set_point (x => 0.0, y => 0.0)),
--- 			length		=> 5.0,
--- 			rotation	=> 0.0);
-
+		-- the position somewhere at the edge of the box
 		position : et_coordinates.type_2d_point;
 		
-		-- The net of the submodule is here the port name:
+		-- The net inside the submodule is here the port name:
 		name : et_general.type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
 
 		-- CS symbol : type_module_connector_symbol;
