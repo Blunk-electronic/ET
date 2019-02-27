@@ -39,7 +39,7 @@
 
 -- with ada.text_io;				use ada.text_io;
 -- with ada.strings.maps;			use ada.strings.maps;
--- with ada.strings.bounded;       use ada.strings.bounded;
+with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
 -- with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
@@ -56,8 +56,60 @@ with et_pcb_coordinates;
 
 package submodules is
 
-	procedure dummy;
+	type type_submodule_size is record
+		x, y : et_coordinates.type_distance; -- size x/y of the box
+	end record;
 
+	type type_submodule_view_mode is (
+		ORIGIN,		-- references and net names displayed as drawn in the generic submodule
+		INSTANCE	-- references and net names displayed after renumbering and prefixing
+		);
+
+	function to_string (view : in type_submodule_view_mode) return string;
+	function to_view_mode (mode : in string) return type_submodule_view_mode;
+	
+	submodule_path_length_max : constant positive := 300;
+
+	-- The full name of a submodule like $ET_TEMPLATES/motor_driver.mod
+	package type_submodule_path is new generic_bounded_length (submodule_path_length_max);
+	function to_submodule_path (path : in string) return type_submodule_path.bounded_string;
+	function to_string (path : in submodules.type_submodule_path.bounded_string) return string;
+	
+	type type_submodule_port is record
+		-- the position somewhere at the edge of the box
+		position : et_coordinates.type_2d_point;
+		
+		-- The net inside the submodule is here the port name:
+		name : et_general.type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+
+		-- CS symbol : type_module_connector_symbol;
+	end record;
+
+	package type_submodule_ports is new doubly_linked_lists (type_submodule_port);
+	
+	type type_submodule is record
+		file				: type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
+		position		    : et_coordinates.type_coordinates;
+		size				: type_submodule_size;
+		position_in_board	: et_pcb_coordinates.type_point_2d_with_angle;
+		view_mode			: type_submodule_view_mode;
+		reference_offset	: et_libraries.type_component_reference_id;	-- R88 turns to R2088 or R788
+		ports				: type_submodule_ports.list;
+	end record;
+
+	package type_submodules is new ordered_maps (
+		-- The instance name like MOT_DRV_3 (will be the net prefix later on):
+		key_type		=> et_coordinates.type_submodule_name.bounded_string, 
+		"<" 			=> et_coordinates.type_submodule_name."<",
+		element_type	=> type_submodule);
+
+
+
+
+
+	
+
+	
 	type type_netchanger_port is record
 		position	: type_2d_point;
 		length		: type_port_length; 
@@ -131,17 +183,6 @@ package submodules is
 -- 						width		=> line_width_port_default);
 -- 	end record;
 	
-	type type_submodule_port is record
-		-- the position somewhere at the edge of the box
-		position : et_coordinates.type_2d_point;
-		
-		-- The net inside the submodule is here the port name:
-		name : et_general.type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
-
-		-- CS symbol : type_module_connector_symbol;
-	end record;
-
-	package type_submodule_ports is new doubly_linked_lists (type_submodule_port);
 	
 end submodules;
 

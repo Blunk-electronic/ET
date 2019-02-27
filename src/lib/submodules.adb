@@ -36,10 +36,12 @@
 --
 --   ToDo: 
 
-
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
 -- with ada.text_io;				use ada.text_io;
 -- with ada.strings.maps;			use ada.strings.maps;
--- with ada.strings.bounded;       use ada.strings.bounded;
+with ada.strings.bounded;       use ada.strings.bounded;
 -- with ada.containers;            use ada.containers;
 -- with ada.containers.vectors;
 -- with ada.containers.doubly_linked_lists;
@@ -55,9 +57,23 @@ with et_pcb_coordinates;
 
 package body submodules is
 	
-	procedure dummy is begin null; end;
-		
-		
+	function to_submodule_path (path : in string) return type_submodule_path.bounded_string is begin
+		return type_submodule_path.to_bounded_string (path);
+	end;
+
+	function to_string (path : in submodules.type_submodule_path.bounded_string) return string is begin
+		return type_submodule_path.to_string (path);
+	end;
+	
+	function to_string (view : in type_submodule_view_mode) return string is begin
+		return latin_1.space & to_lower (type_submodule_view_mode'image (view));
+	end;
+
+	function to_view_mode (mode : in string) return type_submodule_view_mode is begin
+		return type_submodule_view_mode'value (mode);
+	end;
+
+	
 end submodules;
 
 -- Soli Deo Gloria

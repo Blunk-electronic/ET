@@ -1694,10 +1694,10 @@ package body et_project is
 
 		procedure query_submodules is		
 			use et_schematic;
-			use type_submodules;
 			use submodules;
+			use type_submodules;
 			
-			submodule_cursor : type_submodules.cursor := module.submodules.first;
+			submodule_cursor : type_submodules.cursor := module.submods.first;
 
 			procedure query_ports (port_cursor : in submodules.type_submodule_ports.cursor) is
 				use type_submodule_ports;
@@ -7499,7 +7499,6 @@ package body et_project is
 				use et_coordinates;
 				
 				point : type_coordinates; -- to be returned
-
 				place : positive := from; -- the field being read from given line
 
 				-- CS: flags to detect missing sheet, x or y
@@ -7531,11 +7530,10 @@ package body et_project is
 			function to_size (
 				line : in type_fields_of_line; -- "size x 30 y 40"
 				from : in positive)
-				return et_schematic.type_submodule_size is
+				return submodules.type_submodule_size is
 				use et_coordinates;
 				
-				size : et_schematic.type_submodule_size; -- to be returned
-
+				size : submodules.type_submodule_size; -- to be returned
 				place : positive := from; -- the field being read from given line
 
 				-- CS: flags to detect missing x or y
@@ -7568,7 +7566,6 @@ package body et_project is
 				use et_pcb_coordinates;
 				
 				point : type_package_position; -- to be returned
-
 				place : positive := from; -- the field being read from given line
 
 				-- CS: flags to detect missing sheet, x or y
@@ -7681,7 +7678,7 @@ package body et_project is
 			submodule_port	: submodules.type_submodule_port;
 			submodule_ports	: submodules.type_submodule_ports.list;
 			submodule_name 	: et_coordinates.type_submodule_name.bounded_string; -- MOT_DRV_3
-			submodule		: et_schematic.type_submodule;
+			submodule		: submodules.type_submodule;
 
 			note : et_schematic.type_text;
 
@@ -7828,7 +7825,9 @@ package body et_project is
 						module		: in out et_schematic.type_module) is
 						use et_schematic;
 						inserted : boolean;
-						cursor : type_submodules.cursor;
+						use submodules;
+						use submodules.type_submodules;
+						cursor : submodules.type_submodules.cursor;
 					begin -- insert_submodule
 						log ("submodule " & to_string (submodule_name), log_threshold + 2);
 
@@ -7836,7 +7835,7 @@ package body et_project is
 						-- If a parameter is missing, the default is assumed. See type_submodule spec.
 						
 						type_submodules.insert (
-							container	=> module.submodules,
+							container	=> module.submods,
 							key			=> submodule_name,	-- the instance name like MOT_DRV_3
 							new_item	=> submodule,
 							inserted	=> inserted,
@@ -11187,7 +11186,7 @@ package body et_project is
 										-- CS: In the following: set a corresponding parameter-found-flag
 										if kw = keyword_file then -- file $ET_TEMPLATES/motor_driver.mod
 											expect_field_count (line, 2);
-											submodule.file := et_schematic.to_submodule_path (f (line, 2));
+											submodule.file := submodules.to_submodule_path (f (line, 2));
 
 										elsif kw = keyword_name then -- name stepper_driver
 											expect_field_count (line, 2);
@@ -11213,7 +11212,7 @@ package body et_project is
 
 										elsif kw = keyword_view_mode then -- view_mode origin/instance
 											expect_field_count (line, 2);
-											submodule.view_mode := et_schematic.to_view_mode (f (line, 2));
+											submodule.view_mode := submodules.to_view_mode (f (line, 2));
 
 										elsif kw = keyword_reference_offset then -- reference_offset 1000
 											expect_field_count (line, 2);

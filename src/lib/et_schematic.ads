@@ -348,41 +348,6 @@ package et_schematic is
 
 
 
--- SUBMODULES
-	submodule_path_length_max : constant positive := 300;
-	-- The full name of a submodule like $ET_TEMPLATES/motor_driver.mod
-	package type_submodule_path is new generic_bounded_length (submodule_path_length_max);
-
-	function to_submodule_path (path : in string) return type_submodule_path.bounded_string;
-	
-	type type_submodule_size is record
-		x, y : et_coordinates.type_distance; -- size x/y of the box
-	end record;
-
-	type type_submodule_view_mode is (
-		ORIGIN,		-- references and net names displayed as drawn in the generic submodule
-		INSTANCE	-- references and net names displayed after renumbering and prefixing
-		);
-
-	function to_string (view : in type_submodule_view_mode) return string;
-	function to_view_mode (mode : in string) return type_submodule_view_mode;
-
-	type type_submodule is record
-		file				: type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
-		position		    : et_coordinates.type_coordinates;
-		size				: type_submodule_size;
-		position_in_board	: et_pcb_coordinates.type_point_2d_with_angle;
-		view_mode			: type_submodule_view_mode;
-		reference_offset	: et_libraries.type_component_reference_id;	-- R88 turns to R2088 or R788
-		ports				: submodules.type_submodule_ports.list;
-	end record;
-
-	package type_submodules is new ordered_maps (
-		-- The instance name like MOT_DRV_3 (will be the net prefix later on):
-		key_type		=> et_coordinates.type_submodule_name.bounded_string, 
-		"<" 			=> et_coordinates.type_submodule_name."<",
-		element_type	=> type_submodule);
-
 -- MODULE
 
 	-- The devices of a module are collected in a map.
@@ -400,7 +365,7 @@ package et_schematic is
 		
 		devices			: type_devices.map;						-- the devices of the module
 		net_classes		: et_pcb.type_net_classes.map;			-- the net classes
-		submodules  	: type_submodules.map;					-- graphical representations of submodules
+		submods			: submodules.type_submodules.map;		-- submodules
 		
 		frame_template_schematic	: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frm
 		
