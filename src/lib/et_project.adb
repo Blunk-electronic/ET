@@ -7631,8 +7631,8 @@ package body et_project is
 			net_junction : et_schematic.type_net_junction;
 			net_junctions : et_schematic.type_junctions.list;
 
-			net_port : et_schematic.type_port_component;
-			net_ports : et_schematic.type_ports_component.list;
+			net_device_port : et_schematic.type_port_component;
+			net_device_ports : et_schematic.type_ports_component.list;
 
 			net_submodule_port : et_schematic.type_port_submodule;
 			net_submodule_ports : et_schematic.type_ports_submodule.list;
@@ -9202,13 +9202,13 @@ package body et_project is
 									-- There is no section for a single port like [PORT BEGIN].
 
 									-- insert port collection in segment
-									net_segment.component_ports := net_ports;
+									net_segment.component_ports := net_device_ports;
 
 									-- insert submodule ports in segment
 									net_segment.submodule_ports := net_submodule_ports;
 									
 									-- clean up for next port collections (of another net segment)
-									et_schematic.type_ports_component.clear (net_ports);
+									et_schematic.type_ports_component.clear (net_device_ports);
 									et_schematic.type_ports_submodule.clear (net_submodule_ports);
 
 								when SEC_SUBMODULE =>
@@ -10290,13 +10290,13 @@ package body et_project is
 										if kw = keyword_device then -- device R1 port 1
 											expect_field_count (line, 4);
 
-											net_port.reference := et_libraries.to_device_name (f (line, 2)); -- IC3
+											net_device_port.reference := et_libraries.to_device_name (f (line, 2)); -- IC3
 
 											if f (line, 3) = keyword_port then -- port
-												net_port.name := et_libraries.to_port_name (f (line, 4)); -- CE
+												net_device_port.name := et_libraries.to_port_name (f (line, 4)); -- CE
 
 												-- append port to port collection of device ports
-												et_schematic.type_ports_component.append (net_ports, net_port); 
+												et_schematic.type_ports_component.append (net_device_ports, net_device_port); 
 											else
 												invalid_keyword (f (line, 3));
 											end if;
@@ -10304,7 +10304,7 @@ package body et_project is
 										elsif kw = keyword_submodule then -- submodule motor_driver port A
 											expect_field_count (line, 4);
 											
-											net_submodule_port.module := et_coordinates.to_submodule_name (f (line, 2)); -- motor_driver
+											net_submodule_port.module := et_general.to_instance_name (f (line, 2)); -- motor_driver
 
 											if f (line, 3) = keyword_port then -- port
 												net_submodule_port.port := to_net_name (f (line, 4)); -- A
