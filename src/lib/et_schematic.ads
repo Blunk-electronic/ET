@@ -73,10 +73,10 @@ package et_schematic is
 		content			: et_libraries.type_text_content.bounded_string;
 	end record;
 
-	procedure write_note_properties (
-		note			: in et_schematic.type_text;
-		log_threshold	: in et_string_processing.type_log_level := 0);
-	-- Writes the properties of the given note
+-- 	procedure write_note_properties (
+-- 		note			: in et_schematic.type_text;
+-- 		log_threshold	: in et_string_processing.type_log_level := 0);
+-- 	-- Writes the properties of the given note
 
 	package type_texts is new doubly_linked_lists (type_text);
 
@@ -265,18 +265,18 @@ package et_schematic is
 	package type_net_labels is new indefinite_doubly_linked_lists (type_net_label);
 	
 	-- This is the definition of a net segment with start/end point and junctions
-	type type_net_segment_base is tagged record
-		coordinates_start 	: et_coordinates.type_coordinates;
-		coordinates_end   	: et_coordinates.type_coordinates; -- CS et_coordinates.type_2d_point ?
-	end record;
+-- 	type type_net_segment_base is tagged record
+-- 		coordinates_start 	: et_coordinates.type_coordinates;
+-- 		coordinates_end   	: et_coordinates.type_coordinates; -- CS et_coordinates.type_2d_point ?
+-- 	end record;
 
-	function length (segment : in type_net_segment_base) return et_coordinates.type_distance;
+-- 	function length (segment : in type_net_segment_base) return et_coordinates.type_distance;
 	-- Returns the length of the given net segment.
 	
-	function to_string (
-		segment	: in type_net_segment_base'class;
-		scope	: in et_coordinates.type_scope := et_coordinates.SHEET) return string;
-	-- Returns the start and end coordinates of the given net segment.
+-- 	function to_string (
+-- 		segment	: in type_net_segment_base'class;
+-- 		scope	: in et_coordinates.type_scope := et_coordinates.SHEET) return string;
+-- 	-- Returns the start and end coordinates of the given net segment.
 
 
 
@@ -284,9 +284,9 @@ package et_schematic is
 	-- Segments belong to each other because their start/end points meet.
 	-- A strand has coordinates. 
 	-- x/y position are the lowest values within the strand.
-	type type_strand_base is tagged record
-		coordinates : et_coordinates.type_coordinates; -- lowest x/y -- CS rename to position
-	end record;
+-- 	type type_strand_base is tagged record
+-- 		coordinates : et_coordinates.type_coordinates; -- lowest x/y -- CS rename to position
+-- 	end record;
 
 
 	-- This is a net:
@@ -299,7 +299,9 @@ package et_schematic is
 
 	
 	
-	type type_net_segment is new type_net_segment_base with record
+	type type_net_segment is record
+		coordinates_start 	: et_coordinates.type_coordinates;
+		coordinates_end   	: et_coordinates.type_coordinates; -- CS et_coordinates.type_2d_point ?
 		labels			: type_net_labels.list;
 		junctions		: type_junctions.list;
 		component_ports	: type_ports_component.list; -- CS rename to device ports
@@ -309,9 +311,14 @@ package et_schematic is
 
 	package type_net_segments is new doubly_linked_lists (type_net_segment);
 	
-	type type_strand is new type_strand_base with record
+	-- A strand is a collection of net segments which belong to each other. 
+	-- Segments belong to each other because their start/end points meet.
+	-- A strand has coordinates. 
+	-- x/y position are the lowest values within the strand.
+	type type_strand is record
 	-- NOTE: ET does not provide a name for a strand.
 	-- As a strand is part of a net, there is no need for individual strand names.
+		coordinates : et_coordinates.type_coordinates; -- lowest x/y -- CS rename to position
 		segments	: type_net_segments.list;
 	end record;
 

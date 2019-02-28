@@ -175,8 +175,7 @@ package body et_kicad_to_native is
 			sheet_height		:= paper_dimension (axis => Y, paper_size => sheet_paper_size);
 
 			-- calculate the new y position
-			--new_y				:= sheet_height - distance_y (point);
-			new_y				:= sheet_height - distance (axis => Y, point => type_2d_point (point));
+			new_y				:= sheet_height - distance (axis => Y, point => point);
 
 			-- assign the new y position to the given point
 			set_y (point, new_y);
@@ -184,7 +183,7 @@ package body et_kicad_to_native is
 
 		procedure move (
 			point_actual	: in out et_coordinates.type_2d_point;	-- the point it is about
-			point_help		: in et_coordinates.type_coordinates	-- supportive point that proviedes the sheet number
+			point_help		: in kicad_coordinates.type_coordinates	-- supportive point that proviedes the sheet number
 			) is
 		-- Transposes the schematic point_actual from the kicad frame to the ET native frame.
 		-- point_help has supporting purpose: it provides the sheet number where point_actual sits.
@@ -197,7 +196,7 @@ package body et_kicad_to_native is
 			new_y				: et_coordinates.type_distance_xy;
 		begin -- move
 			-- get the sheet number where the given point resides
-			sheet_number		:= sheet (point_help); 
+			sheet_number		:= kicad_coordinates.sheet (point_help); 
 
 			-- get the paper size of the sheet
 			sheet_paper_size	:= paper_size_of_schematic_sheet (sheet_number);
@@ -206,7 +205,8 @@ package body et_kicad_to_native is
 			sheet_height		:= paper_dimension (axis => Y, paper_size => sheet_paper_size);
 
 			-- calculate the new y position
-			new_y				:= sheet_height - distance_y (point_actual);
+			--new_y				:= sheet_height - distance_y (point_actual);
+			new_y				:= sheet_height - distance (axis => Y, point => point_actual);			
 
 			-- assign the new y position to the given point
 			set_y (point_actual, new_y);
@@ -243,22 +243,22 @@ package body et_kicad_to_native is
 			module		: in out et_kicad.type_module) is
 		-- Changes the path and y position of text notes (in schematic).
 
-			use et_schematic.type_texts;
-			note_cursor : et_schematic.type_texts.cursor := module.notes.first;
+			use et_kicad.type_texts;
+			note_cursor : et_kicad.type_texts.cursor := module.notes.first;
 
-			procedure change_path (note : in out et_schematic.type_text) is
+			procedure change_path (note : in out et_kicad.type_text) is
 				use et_coordinates;
 				use kicad_coordinates;
 			begin
 				log ("note '" & et_libraries.to_string (note.content) & "'", log_threshold + 3);
 				log_indentation_up;
 				
-				log (before & to_string (note.coordinates), log_threshold + 4);
+				log (before & et_coordinates.to_string (note.coordinates), log_threshold + 4);
 
 				-- Move position from negative to positive y.
 				move (note.coordinates);
 
-				log (now & to_string (note.coordinates), log_threshold + 4);
+				log (now & et_coordinates.to_string (note.coordinates), log_threshold + 4);
 
 				log_indentation_down;
 			end change_path;
@@ -267,8 +267,8 @@ package body et_kicad_to_native is
 			log ("text notes ...", log_threshold + 2);
 			log_indentation_up;
 			
-			while note_cursor /= et_schematic.type_texts.no_element loop
-				et_schematic.type_texts.update_element (
+			while note_cursor /= et_kicad.type_texts.no_element loop
+				et_kicad.type_texts.update_element (
 					container	=> module.notes,
 					position	=> note_cursor,
 					process		=> change_path'access);
@@ -417,7 +417,7 @@ package body et_kicad_to_native is
 		end flatten_components;
 
 		procedure flatten_nets (
-			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module_name	: in kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
 		-- Changes the path and y position of net segments, junctions and labels (in schematic) to root path.
 		-- MOves the y position of copper objects (in layout).
@@ -474,14 +474,17 @@ package body et_kicad_to_native is
 
 						procedure change_path_of_junction (junction : in out et_kicad.type_net_junction) is
 						-- Moves the given net junction from kicad frame to native frame.
+							use kicad_coordinates;
 						begin
-							log ("junction " & before & to_string (position => junction.coordinates, scope => et_coordinates.MODULE),
+							log ("junction " & before & kicad_coordinates.to_string (
+								position => junction.coordinates, scope => kicad_coordinates.MODULE),
 								log_threshold + 3);
 
-							et_coordinates.set_path (junction.coordinates, root);
+							set_path (junction.coordinates, root);
 							move (junction.coordinates);
 
-							log ("junction " & now & to_string (position => junction.coordinates, scope => et_coordinates.MODULE),
+							log ("junction " & now & to_string (
+								position => junction.coordinates, scope => kicad_coordinates.MODULE),
 								log_threshold + 3);
 								 
 						end change_path_of_junction;
@@ -491,25 +494,29 @@ package body et_kicad_to_native is
 						log_indentation_up;
 
 						-- start point of net segment
-						log ("start " & before & to_string (position => segment.coordinates_start, scope => et_coordinates.MODULE),
+						log ("start " & before & kicad_coordinates.to_string (
+							position => segment.coordinates_start, scope => kicad_coordinates.MODULE),
 							log_threshold + 3);
 
-						et_coordinates.set_path (segment.coordinates_start, root);
+						kicad_coordinates.set_path (segment.coordinates_start, root);
 
 						move (segment.coordinates_start); -- Move position from negative to positive y.
 						
-						log ("start " & now & to_string (position => segment.coordinates_start, scope => et_coordinates.MODULE),
+						log ("start " & now & kicad_coordinates.to_string (
+							position => segment.coordinates_start, scope => kicad_coordinates.MODULE),
 							log_threshold + 3);
 
 						-- end point of net segment
-						log ("end   " & before & to_string (position => segment.coordinates_end, scope => et_coordinates.MODULE),
+						log ("end   " & before & kicad_coordinates.to_string (
+							position => segment.coordinates_end, scope => kicad_coordinates.MODULE),
 							log_threshold + 3);
 
-						et_coordinates.set_path (segment.coordinates_end, root);
+						kicad_coordinates.set_path (segment.coordinates_end, root);
 
 						move (segment.coordinates_end); -- Move position from negative to positive y.
 						
-						log ("end   " & now & to_string (position => segment.coordinates_end, scope => et_coordinates.MODULE),
+						log ("end   " & now & kicad_coordinates.to_string (
+							position => segment.coordinates_end, scope => kicad_coordinates.MODULE),
 							log_threshold + 3);
 
 						-- Move y of simple net labels.
@@ -757,7 +764,7 @@ package body et_kicad_to_native is
 
 		procedure move_general_board_stuff (
 		-- Moves y positon of general (non-component related) layout objects from kicad frame to native frame.
-			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module_name	: in kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
 
 			log_threshold_add : type_log_level := 2;
@@ -2200,7 +2207,7 @@ package body et_kicad_to_native is
 		procedure flatten_netlist (
 		-- Changes the path and y position of ports.
 		-- NOTE: The netlist contains nets with their connected ports.
-			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module_name	: in kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
 
 			use et_kicad.type_netlist;
@@ -2229,17 +2236,19 @@ package body et_kicad_to_native is
 					log_indentation_up;
 
 					-- show old position
-					log (before & to_string (position => port.coordinates, scope => et_coordinates.MODULE),
+					log (before & kicad_coordinates.to_string (
+						position => port.coordinates, scope => kicad_coordinates.MODULE),
 						log_threshold + 5);
 
 					-- change path
-					et_coordinates.set_path (port.coordinates, root);
+					kicad_coordinates.set_path (port.coordinates, root);
 
 					-- Move position from negative to positive y.
 					move (port.coordinates);
 
 					-- show new position
-					log (now & to_string (position => port.coordinates, scope => et_coordinates.MODULE),
+					log (now & kicad_coordinates.to_string (
+						position => port.coordinates, scope => kicad_coordinates.MODULE),
 						log_threshold + 5);
 
 					-- replace old port by new port
@@ -2277,7 +2286,7 @@ package body et_kicad_to_native is
 		log_indentation_up;
 		
 		while module_cursor /= et_kicad.type_modules.no_element loop
-			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold + 1);
+			log ("module " & kicad_coordinates.to_string (key (module_cursor)), log_threshold + 1);
 			log_indentation_up;
 
 			-- log ("schematic ...", log_threshold + 1);
@@ -2367,10 +2376,33 @@ package body et_kicad_to_native is
 
 		-- This is a single native target module used as scratch.
 		module : et_schematic.type_module; 
+
+		function to_texts (texts_in : et_kicad.type_texts.list) return et_schematic.type_texts.list is
+		-- Converts kicad texts to native texts.
+			texts_out : et_schematic.type_texts.list;
+
+			procedure query_texts (cursor : in et_kicad.type_texts.cursor) is
+				text_kicad : et_kicad.type_text := et_kicad.type_texts.element (cursor);
+				text_native : et_schematic.type_text;
+			begin
+				text_native.coordinates := et_coordinates.type_2d_point (text_kicad.coordinates);
+				
+-- 				et_schematic.type_texts.append (
+-- 					container	=> texts_out,
+-- 					new_item	=> (
+-- 						coordinates	=>
+
+				null;
+			end query_texts;
+			
+		begin -- to_texts
+			et_kicad.type_texts.iterate (texts_in, query_texts'access);
+			return texts_out;
+		end;
 		
 		procedure copy_general_stuff is begin
 			module.board_available	:= element (module_cursor_kicad).board_available;
-			module.texts			:= element (module_cursor_kicad).notes; 
+			module.texts			:= to_texts (element (module_cursor_kicad).notes); 
 			module.board			:= et_pcb.type_board (element (module_cursor_kicad).board);
 			module.net_classes		:= element (module_cursor_kicad).net_classes;
 		end copy_general_stuff;

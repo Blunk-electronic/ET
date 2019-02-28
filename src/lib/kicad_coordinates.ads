@@ -105,13 +105,10 @@ package kicad_coordinates is
 -- 		name : in type_submodule_name.bounded_string;
 -- 		characters : in character_set := submodule_name_characters);
 -- 	-- Checks for forbiddedn characters in submodule name.
--- 	
--- 	function to_string (submodule : in type_submodule_name.bounded_string) return string;
--- 	-- Returns the given submodule name as string.
--- 
--- 	function to_submodule_name (submodule : in string) return type_submodule_name.bounded_string;
--- 	-- Converts a string to type_submodule_name.
--- 	
+	
+	function to_string (submodule : in type_submodule_name.bounded_string) return string;
+	function to_submodule_name (submodule : in string) return type_submodule_name.bounded_string;
+	
 -- 	-- Instead of full submodule names, abbrevations like "MCU" or "MOT" are used:
 -- 	submodule_abbrevation_characters : character_set := to_set (span => ('A','Z')); 
 -- 	submodule_abbrevation_length_max : constant positive := 5;

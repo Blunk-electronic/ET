@@ -66,52 +66,52 @@ package body et_schematic is
 	end to_net_label_text_size;
 
 
-	procedure write_note_properties (
-		note 			: in et_schematic.type_text;
-		log_threshold	: in et_string_processing.type_log_level := 0) is
-	-- Writes the properties of the given note
-		use et_string_processing;
-		use et_coordinates;
-		use et_libraries;
-	begin
-		log ("text note" & to_string (position => note.coordinates, scope => xy), log_threshold);
-
-		log_indentation_up;
-
-		-- content
-		if et_libraries.type_text_content.length (note.content) > 0 then
-			log (text => "content '" & type_text_content.to_string (note.content) & "'", level => log_threshold);
-		else
-			log (text => et_string_processing.message_warning & "no content !", level => log_threshold); 
-		end if;
-	
-		if log_level >= log_threshold + 1 then
-			
-			-- size
-			log ("size" & et_libraries.type_text_size'image (note.size));
-
-			-- style
-			log ("style " & to_lower(et_libraries.type_text_style'image (note.style)));
-
-			-- line width
-			log ("line width" & et_libraries.type_text_line_width'image (note.line_width));
-
-			-- rotation
-			log (to_string (note.rotation));
-
-			-- visible
-			--log ("visible " & to_lower (et_libraries.type_text_visible'image (note.visible)));
-
-			-- alignment
-			log ("alignment (hor/vert) "
-				& to_lower (et_libraries.type_text_alignment_horizontal'image (note.alignment.horizontal))
-				& "/"
-				& to_lower (et_libraries.type_text_alignment_vertical'image (note.alignment.vertical)));
-
-		end if;
-		
-		log_indentation_down;
-	end write_note_properties;
+-- 	procedure write_note_properties (
+-- 		note 			: in et_schematic.type_text;
+-- 		log_threshold	: in et_string_processing.type_log_level := 0) is
+-- 	-- Writes the properties of the given note
+-- 		use et_string_processing;
+-- 		use et_coordinates;
+-- 		use et_libraries;
+-- 	begin
+-- 		log ("text note" & to_string (position => note.coordinates, scope => xy), log_threshold);
+-- 
+-- 		log_indentation_up;
+-- 
+-- 		-- content
+-- 		if et_libraries.type_text_content.length (note.content) > 0 then
+-- 			log (text => "content '" & type_text_content.to_string (note.content) & "'", level => log_threshold);
+-- 		else
+-- 			log (text => et_string_processing.message_warning & "no content !", level => log_threshold); 
+-- 		end if;
+-- 	
+-- 		if log_level >= log_threshold + 1 then
+-- 			
+-- 			-- size
+-- 			log ("size" & et_libraries.type_text_size'image (note.size));
+-- 
+-- 			-- style
+-- 			log ("style " & to_lower(et_libraries.type_text_style'image (note.style)));
+-- 
+-- 			-- line width
+-- 			log ("line width" & et_libraries.type_text_line_width'image (note.line_width));
+-- 
+-- 			-- rotation
+-- 			log (to_string (note.rotation));
+-- 
+-- 			-- visible
+-- 			--log ("visible " & to_lower (et_libraries.type_text_visible'image (note.visible)));
+-- 
+-- 			-- alignment
+-- 			log ("alignment (hor/vert) "
+-- 				& to_lower (et_libraries.type_text_alignment_horizontal'image (note.alignment.horizontal))
+-- 				& "/"
+-- 				& to_lower (et_libraries.type_text_alignment_vertical'image (note.alignment.vertical)));
+-- 
+-- 		end if;
+-- 		
+-- 		log_indentation_down;
+-- 	end write_note_properties;
 
 	function to_string (appearance : in type_net_label_appearance) return string is begin
 		return latin_1.space & to_lower (type_net_label_appearance'image (appearance));
@@ -129,29 +129,29 @@ package body et_schematic is
 		return type_net_label_direction'value (direction);
 	end to_direction;
 	
-	function length (segment : in type_net_segment_base) return et_coordinates.type_distance is
-	-- Returns the length of the given net segment.
-		use et_coordinates;
-		len : type_distance;
-		use et_string_processing;
-	begin
-		len := distance (segment.coordinates_start, segment.coordinates_end);
-		--log (text => "segment length " & et_coordinates.to_string (len) & "mm", level => 3);
-		return len;
-	end length;
+-- 	function length (segment : in type_net_segment_base) return et_coordinates.type_distance is
+-- 	-- Returns the length of the given net segment.
+-- 		use et_coordinates;
+-- 		len : type_distance;
+-- 		use et_string_processing;
+-- 	begin
+-- 		len := distance (segment.coordinates_start, segment.coordinates_end);
+-- 		--log (text => "segment length " & et_coordinates.to_string (len) & "mm", level => 3);
+-- 		return len;
+-- 	end length;
 	
-	function to_string (
-		segment	: in type_net_segment_base'class;
-		scope 	: in et_coordinates.type_scope := et_coordinates.sheet)
-		return string is
-	-- Returns the start and end coordinates of the given net segment.
-		use et_coordinates;
-	begin
-		return (" start"
-			& to_string (position => segment.coordinates_start, scope => scope)
-			& " end" 
-			& to_string (position => segment.coordinates_end, scope => xy));
-	end to_string;
+-- 	function to_string (
+-- 		segment	: in type_net_segment_base'class;
+-- 		scope 	: in et_coordinates.type_scope := et_coordinates.sheet)
+-- 		return string is
+-- 	-- Returns the start and end coordinates of the given net segment.
+-- 		use et_coordinates;
+-- 	begin
+-- 		return (" start"
+-- 			& to_string (position => segment.coordinates_start, scope => scope)
+-- 			& " end" 
+-- 			& to_string (position => segment.coordinates_end, scope => xy));
+-- 	end to_string;
 
 	function to_string (net_scope : in type_net_scope) return string is
 	begin

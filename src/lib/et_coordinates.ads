@@ -107,7 +107,7 @@ package et_coordinates is
 	position_preamble	: constant string (1..11) := " pos (x" & axis_separator & "y) ";
 	--position_preamble	: constant string (1..6) := "(x" & axis_separator & "y) ";
 	
-	function to_string (point : in type_2d_point) return string;
+	function to_string (point : in type_2d_point'class) return string;
 	-- Returns the given point coordinates to a string.
 
 	function distance_x (point : in type_2d_point) return type_distance_xy;
@@ -121,13 +121,13 @@ package et_coordinates is
 	function distance (
 	-- Returns the distance of the point in x or y from the origin.
 		axis	: in type_axis;
-		point	: in type_2d_point)
+		point	: in type_2d_point'class)
 		return type_distance_xy;
 	
 	procedure set_x (point : in out type_2d_point; x : in type_distance_xy);
 	-- Assigns a point the given x position.
 	
-	procedure set_y (point : in out type_2d_point; y : in type_distance_xy);
+	procedure set_y (point : in out type_2d_point'class; y : in type_distance_xy);
 	
 	procedure set_xy (
 		point	 : in out type_2d_point'class;

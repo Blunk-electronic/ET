@@ -79,7 +79,7 @@ package body et_coordinates is
 	end to_angle;
 
 	
-	function to_string (point : in type_2d_point) return string is
+	function to_string (point : in type_2d_point'class) return string is
 	-- Returns the given point coordinates to a string.
 		use et_string_processing;
 	begin
@@ -111,7 +111,7 @@ package body et_coordinates is
 	function distance (
 	-- Returns the distance of the point in x or y from the origin.
 		axis	: in type_axis;
-		point	: in type_2d_point)
+		point	: in type_2d_point'class)
 		return type_distance_xy is
 	begin
 		case axis is
@@ -127,7 +127,7 @@ package body et_coordinates is
 		point.x := x;
 	end set_x;
 	
-	procedure set_y (point : in out type_2d_point; y : in type_distance_xy) is
+	procedure set_y (point : in out type_2d_point'class; y : in type_distance_xy) is
 	-- Assigns a point the given y position.
 	begin
 		point.y := y;

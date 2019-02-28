@@ -202,19 +202,19 @@ package body kicad_coordinates is
 -- 			raise constraint_error;
 -- 		end if;
 -- 	end check_submodule_name_characters;
--- 	
--- 	function to_string (submodule : in type_submodule_name.bounded_string) return string is
--- 	-- Returns the given submodule name as string.
--- 	begin
--- 		return type_submodule_name.to_string (submodule);
--- 	end to_string;
--- 
--- 	function to_submodule_name (submodule : in string) return type_submodule_name.bounded_string is
--- 	-- Converts a string to type_submodule_name.
--- 	begin
--- 		return type_submodule_name.to_bounded_string (submodule);
--- 	end to_submodule_name;
--- 	
+	
+	function to_string (submodule : in type_submodule_name.bounded_string) return string is 
+	-- Returns the given submodule name as string.
+	begin
+		return type_submodule_name.to_string (submodule);
+	end;
+
+	function to_submodule_name (submodule : in string) return type_submodule_name.bounded_string is
+	-- Converts a string to type_submodule_name.
+	begin
+		return type_submodule_name.to_bounded_string (submodule);
+	end;
+	
 -- 	procedure check_submodule_abbrevation_length (abbrevation : in string) is
 -- 	-- Checks if the given submodule abbrevation is not longer than allowed.
 -- 		use et_string_processing;

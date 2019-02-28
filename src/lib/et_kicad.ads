@@ -53,6 +53,7 @@ with et_kicad_general;			use et_kicad_general;
 with kicad_coordinates;			use kicad_coordinates;
 with et_kicad_pcb;
 with et_import;
+with et_coordinates;
 with et_pcb_coordinates;
 with et_libraries;
 with et_string_processing;
@@ -612,7 +613,7 @@ package et_kicad is
 
 	function to_string (
 		no_connection_flag	: in type_no_connection_flag;
-		scope				: in et_coordinates.type_scope) return string;
+		scope				: in kicad_coordinates.type_scope) return string;
 	-- Returns the position of the given no-connection-flag as string.
 
 	type type_port_open is new boolean;
@@ -726,14 +727,19 @@ package et_kicad is
 
 	function to_string (
 		junction	: in type_net_junction;
-		scope 		: in et_coordinates.type_scope) 
+		scope 		: in kicad_coordinates.type_scope) 
 		return string;
 	-- Returns the position of the given junction as string.
 	
 	-- Junctions are to be collected in a list.
 	package type_junctions is new doubly_linked_lists (type_net_junction);
+
+	type type_net_segment_base is tagged record
+		coordinates_start 	: kicad_coordinates.type_coordinates;
+		coordinates_end   	: kicad_coordinates.type_coordinates; -- CS et_coordinates.type_2d_point ?
+	end record;
 	
-	type type_net_segment is new et_schematic.type_net_segment_base with record
+	type type_net_segment is new type_net_segment_base with record
 		label_list_simple 	: type_simple_labels.list;
 		label_list_tag    	: type_tag_labels.list;
 		junctions			: type_junctions.list;
@@ -758,7 +764,8 @@ package et_kicad is
 	-- x/y position are the lowest values within the strand. see function lowest_xy.
 	-- As long as strands are independed of each other they must 
 	-- have a name and their own scope.
-	type type_strand is new et_schematic.type_strand_base with record
+	type type_strand is record
+		coordinates : kicad_coordinates.type_coordinates; -- lowest x/y -- CS rename to position
 		name		: et_general.type_net_name.bounded_string; -- example "CPU_CLOCK"		
 		scope 		: type_strand_scope := type_strand_scope'first; -- example "local"
 		segments	: type_net_segments.list;
@@ -1244,7 +1251,7 @@ package et_kicad is
 	function junction_sits_on_segment (
 	-- Returns true if the given junction sits on the given net segment.
 		junction	: in type_net_junction;
-		segment		: in et_schematic.type_net_segment_base'class) 
+		segment		: in type_net_segment_base'class) 
 		return boolean;
 	
 	function component_power_flag (cursor : in type_components_library.cursor)
@@ -1433,6 +1440,17 @@ package et_kicad is
 -- 		purpose			: in et_libraries.type_component_purpose.bounded_string; -- PWR_IN, SYS_FAIL, ...
 -- 		log_threshold	: in et_string_processing.type_log_level)
 -- 		return natural;
+
+	
+	-- A text/note in the schematic:
+	type type_text is new et_libraries.type_text_basic with record
+		coordinates		: kicad_coordinates.type_coordinates; -- CS rename to position
+		content			: et_libraries.type_text_content.bounded_string;
+	end record;
+
+	package type_texts is new doubly_linked_lists (type_text);
+
+
 	
 -- MODULES
 	
@@ -1468,7 +1486,7 @@ package et_kicad is
 		-- So the name of the templates for schematic and layout should suffice.
 		frames      		: type_frames.list;					-- schematic frames (of both schematic and layout)
 		
-		notes       		: et_schematic.type_texts.list;		-- notes
+		notes       		: type_texts.list;					-- notes
 	
 		sheet_headers		: type_sheet_headers.map;			-- the list of sheet headers
 		-- CS: images

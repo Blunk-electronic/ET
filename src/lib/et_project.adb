@@ -7699,6 +7699,7 @@ package body et_project is
 			device_appearance		: et_schematic.type_appearance_schematic;
 			device_unit				: et_schematic.type_unit_base;
 			device_unit_name		: et_libraries.type_unit_name.bounded_string; -- GPIO_BANK_1
+			device_unit_position	: et_coordinates.type_coordinates; -- x,y,sheet
 
 			-- temporarily collection of units:
 			device_units			: et_schematic.type_units.map; -- PWR, A, B, ...
@@ -7949,7 +7950,9 @@ package body et_project is
 								et_schematic.type_units.insert (
 									container	=> device_units,
 									key			=> device_unit_name,
-									new_item	=> (device_unit with appearance	=> et_libraries.SCH));
+									new_item	=> (device_unit with 
+													position	=> device_unit_position,
+													appearance	=> et_libraries.SCH));
 
 							when SCH_PCB =>
 								-- A unit of a real device has placeholders:
@@ -7957,6 +7960,7 @@ package body et_project is
 									container	=> device_units,
 									key			=> device_unit_name,
 									new_item	=> (device_unit with
+										position	=> device_unit_position,
 										appearance	=> et_libraries.SCH_PCB,
 
 										-- The placeholders for reference, value and purpose have
@@ -7967,6 +7971,7 @@ package body et_project is
 						end case;
 
 						-- clean up for next unit
+						device_unit_position := zero_position;
 						device_unit_name := unit_name_default;
 						device_unit := (others => <>);
 
@@ -11718,13 +11723,11 @@ package body et_project is
 										elsif kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
 											expect_field_count (line, 7);
 
-											-- extract position of placeholder starting at field 2
-											device_unit.position := to_position (line, 2);
+											-- extract position of unit starting at field 2
+											device_unit_position := to_position (line, 2);
 
 										elsif kw = keyword_rotation then -- rotation 180.0
 											expect_field_count (line, 2);
-
-											-- extract dimensions of placeholder text starting at field 2
 											device_unit.rotation := et_coordinates.to_angle (f (line, 2));
 
 										elsif kw = keyword_mirrored then -- mirrored no/x_axis/y_axis
