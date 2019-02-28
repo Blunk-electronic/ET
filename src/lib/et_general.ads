@@ -130,6 +130,16 @@ package et_general is
 	function anonymous (net_name : in type_net_name.bounded_string) return boolean;
 	-- Returns true if the given net name is anonymous.
 
+
+-- MODULE INSTANCE NAMES
+
+	-- The module instance name is something like LMX_1 or DRV_1. 
+	-- We use this type for names of rig modules and submodules (or templates):
+	module_instance_name_length_max : constant positive := 20;
+	package type_module_instance_name is new generic_bounded_length (module_instance_name_length_max);
+
+	function to_string (name : in type_module_instance_name.bounded_string) return string;
+	function to_instance_name (name : in string) return type_module_instance_name.bounded_string;
 	
 -- GENERICS
 	

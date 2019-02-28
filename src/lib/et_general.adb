@@ -169,6 +169,15 @@ package body et_general is
 		end if;
 	end anonymous;
 
+
+	function to_string (name : in type_module_instance_name.bounded_string) return string is begin
+		return type_module_instance_name.to_string (name);
+	end;
+
+	function to_instance_name (name : in string) return type_module_instance_name.bounded_string is begin
+		return type_module_instance_name.to_bounded_string (name);
+	end;
+	
 	
 -- GENERICS
 	

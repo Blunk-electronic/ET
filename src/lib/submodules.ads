@@ -99,8 +99,8 @@ package submodules is
 
 	package type_submodules is new ordered_maps (
 		-- The instance name like MOT_DRV_3 (will be the net prefix later on):
-		key_type		=> et_coordinates.type_submodule_name.bounded_string, 
-		"<" 			=> et_coordinates.type_submodule_name."<",
+		key_type		=> et_general.type_module_instance_name.bounded_string, 
+		"<" 			=> et_general.type_module_instance_name."<",
 		element_type	=> type_submodule);
 
 

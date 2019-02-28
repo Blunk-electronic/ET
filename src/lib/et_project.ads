@@ -124,11 +124,7 @@ package et_project is
 	rig_configuration_file_extension : constant string := "conf";
 	rig_configuration_file_extension_asterisk : constant string := "*." & rig_configuration_file_extension;
 
-	-- The module instance name is something like LMX_1 or DRV_1:
-	module_instance_name_length_max : constant positive := 20;
-	package type_module_instance_name is new generic_bounded_length (module_instance_name_length_max);
-	use type_module_instance_name;
-	
+
 	type type_module_instance is record
 		generic_name	: et_coordinates.type_submodule_name.bounded_string; -- motor_driver
 		-- CS other properties ?
@@ -136,14 +132,15 @@ package et_project is
 
 	-- Lots of module instances are a map from the instance name to the type_module_instance.
 	package type_module_instances is new ordered_maps (
-		key_type		=> type_module_instance_name.bounded_string, -- LMX_1
+		key_type		=> et_general.type_module_instance_name.bounded_string, -- LMX_1
+		"<"				=> et_general.type_module_instance_name."<",
 		element_type	=> type_module_instance);
 
 	-- module connection (or board-to-board connector). NOTE: This could be a cable as well.
 	type type_connector is record
-		instance_A	: type_module_instance_name.bounded_string; -- LMX_2
+		instance_A	: et_general.type_module_instance_name.bounded_string; -- LMX_2
 		purpose_A	: et_schematic.type_component_purpose.bounded_string; -- pwr_in
-		instance_B	: type_module_instance_name.bounded_string; -- PWR
+		instance_B	: et_general.type_module_instance_name.bounded_string; -- PWR
 		purpose_B	: et_schematic.type_component_purpose.bounded_string; -- pwr_out
 
 		-- CS

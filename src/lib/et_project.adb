@@ -1117,7 +1117,7 @@ package body et_project is
 		begin
 			section_mark (section_module, HEADER);			
 			write (keyword => keyword_generic_name, space => true, parameters => to_string (element (instance_cursor).generic_name));
-			write (keyword => keyword_instance_name, space => true, parameters => to_string (key (instance_cursor)));
+			write (keyword => keyword_instance_name, space => true, parameters => et_general.to_string (key (instance_cursor)));
 			section_mark (section_module, FOOTER);
 		end;
 
@@ -1712,7 +1712,7 @@ package body et_project is
 			section_mark (section_submodules, HEADER);
 			while submodule_cursor /= type_submodules.no_element loop
 				section_mark (section_submodule, HEADER);
-				write (keyword => keyword_name, space => true, parameters => type_submodule_name.to_string (key (submodule_cursor))); -- name stepper_driver_1
+				write (keyword => keyword_name, space => true, parameters => et_general.to_string (key (submodule_cursor))); -- name stepper_driver_1
 				write (keyword => keyword_file, space => true, parameters => type_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
 
 				write (keyword => keyword_position, parameters => position (element (submodule_cursor).position));
@@ -7677,7 +7677,7 @@ package body et_project is
 			-- submodules
 			submodule_port	: submodules.type_submodule_port;
 			submodule_ports	: submodules.type_submodule_ports.list;
-			submodule_name 	: et_coordinates.type_submodule_name.bounded_string; -- MOT_DRV_3
+			submodule_name 	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 			submodule		: submodules.type_submodule;
 
 			note : et_schematic.type_text;
@@ -7829,7 +7829,7 @@ package body et_project is
 						use submodules.type_submodules;
 						cursor : submodules.type_submodules.cursor;
 					begin -- insert_submodule
-						log ("submodule " & to_string (submodule_name), log_threshold + 2);
+						log ("submodule " & et_general.to_string (submodule_name), log_threshold + 2);
 
 						-- CS: notify about missing parameters (by reading the parameter-found-flags)
 						-- If a parameter is missing, the default is assumed. See type_submodule spec.
@@ -7843,7 +7843,7 @@ package body et_project is
 
 						if not inserted then
 							log_indentation_reset;
-							log (message_error & "submodule '" & to_string (submodule_name) 
+							log (message_error & "submodule '" & et_general.to_string (submodule_name) 
 								 & "' already exists !", console => true);
 							raise constraint_error;
 						end if;
@@ -7851,7 +7851,7 @@ package body et_project is
 						-- CS open and read submodule.file
 						
 						-- clean up for next submodule
-						submodule_name := to_submodule_name ("");
+						submodule_name := to_instance_name ("");
 						submodule := (others => <>);
 						
 					end insert_submodule;
@@ -11190,7 +11190,7 @@ package body et_project is
 
 										elsif kw = keyword_name then -- name stepper_driver
 											expect_field_count (line, 2);
-											submodule_name := et_coordinates.to_submodule_name (f (line, 2));
+											submodule_name := to_instance_name (f (line, 2));
 
 										elsif kw = keyword_position then -- position sheet 3 x 130 y 210
 											expect_field_count (line, 7);
@@ -11848,7 +11848,7 @@ package body et_project is
 
 			procedure clear_module_instance is begin
 				generic_name := et_coordinates.type_submodule_name.to_bounded_string ("");
-				instance_name := to_bounded_string ("");
+				instance_name := to_instance_name ("");
 			end clear_module_instance;
 			
 			purpose_A, purpose_B : et_schematic.type_component_purpose.bounded_string; -- power_in, power_out
@@ -11857,7 +11857,7 @@ package body et_project is
 			procedure clear_connector is begin
 				purpose_A := et_schematic.to_purpose ("");
 				purpose_A := purpose_B;
-				instance_A := to_bounded_string ("");
+				instance_A := to_instance_name ("");
 				instance_B := instance_A;
 			end clear_connector;
 			
@@ -11900,6 +11900,7 @@ package body et_project is
 						connection_inserted : boolean;
 						connection_cursor : type_module_connectors.cursor;
 						use et_schematic.type_component_purpose;
+						use et_general.type_module_instance_name;
 					begin
 						-- If NONE of the four elements that make a module connection is specified,
 						-- then do nothing. Otherwise ALL of them must be specified.
@@ -12081,7 +12082,7 @@ package body et_project is
 											-- CS: test if module with this generic name exists
 										elsif kw = keyword_instance_name then
 											expect_field_count (line, 2);
-											instance_name := to_bounded_string (f (line,2));
+											instance_name := to_instance_name (f (line,2));
 										else
 											invalid_keyword (kw);
 										end if;
@@ -12098,11 +12099,11 @@ package body et_project is
 									begin
 										if kw = keyword_instance_A then
 											expect_field_count (line, 2);
-											instance_A := to_bounded_string (f (line,2));
+											instance_A := to_instance_name (f (line,2));
 											-- CS: test if instance exists
 										elsif kw = keyword_instance_B then
 											expect_field_count (line, 2);
-											instance_B := to_bounded_string (f (line,2));
+											instance_B := to_instance_name (f (line,2));
 											-- CS: test if instance exists
 											
 										elsif kw = keyword_purpose_A then
