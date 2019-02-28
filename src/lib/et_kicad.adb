@@ -65,6 +65,7 @@ with et_string_processing;		use et_string_processing;
 with et_project;
 with et_pcb;
 with et_pcb_coordinates;
+with kicad_coordinates;			use kicad_coordinates;
 with et_kicad_general;			use et_kicad_general;
 with et_kicad_pcb;
 with et_import;
@@ -76,7 +77,7 @@ package body et_kicad is
 
 	use et_general.type_net_name;
 	
-	function to_submodule_name (file_name : in et_coordinates.type_schematic_file_name.bounded_string)
+	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
 		return et_coordinates.type_submodule_name.bounded_string is
 	-- Returns the base name of the given schematic file name as submodule name.
 		use ada.directories;
@@ -84,7 +85,7 @@ package body et_kicad is
 		-- CS: test if given submodule has an extension. if not return
 		-- submodule as it is.
 		--return to_bounded_string (base_name (et_coordinates.to_string (submodule)));
-		return et_coordinates.type_submodule_name.to_bounded_string (base_name (et_coordinates.to_string (file_name)));
+		return et_coordinates.type_submodule_name.to_bounded_string (base_name (kicad_coordinates.to_string (file_name)));
 	end to_submodule_name;
 
 	-- Here we append a sheet name to the path_to_sheet.
@@ -4221,7 +4222,7 @@ package body et_kicad is
         use stack_of_sheet_lists;
 		
 		function read_project_file (log_threshold : in et_string_processing.type_log_level)
-			return et_coordinates.type_schematic_file_name.bounded_string is
+			return type_schematic_file_name.bounded_string is
 		-- V4:
 		--	- Reads the project file (component libraries, library directories, ...) 
 		--	- Returns the name of the top level schematic file.
@@ -5336,7 +5337,7 @@ package body et_kicad is
 			
 			-- Derive the top level schematic file name from the project name.
 			-- It is just a matter of file extension.
-			return et_coordinates.type_schematic_file_name.to_bounded_string (
+			return to_schematic_file_name (
 				compose (
 					name		=> et_project.type_project_name.to_string (project), 
 					extension	=> file_extension_schematic)
@@ -6847,7 +6848,7 @@ package body et_kicad is
 				-- Read sheet file name from a line like "F1 "mcu_stm32f030.sch" 60".
 				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_sheet_file then
 					-- CS test field count					
-					sheet_name.file := et_coordinates.to_schematic_file_name (et_string_processing.field (et_kicad.line,2));
+					sheet_name.file := to_schematic_file_name (et_string_processing.field (et_kicad.line,2));
 					
 					-- set text size of file name and test for excessive text size
 					sheet.text_size_of_file := to_text_size (mil_to_distance (et_string_processing.field (et_kicad.line,3)));
@@ -8856,7 +8857,7 @@ package body et_kicad is
 				top_level_schematic	:= read_project_file (log_threshold + 1);
 				
 				module_name := et_coordinates.to_submodule_name (
-					base_name (et_coordinates.to_string (top_level_schematic)));
+					base_name (kicad_coordinates.to_string (top_level_schematic)));
 
 				-- create the module:
 				type_modules.insert (
@@ -10850,7 +10851,7 @@ package body et_kicad is
 
 	function compare_hierarchic_sheets (left, right : in type_hierarchic_sheet_name) return boolean is
 	-- Returns true if left comes before right. If left equals right, the return is false.
-		use et_coordinates.type_schematic_file_name;
+		use type_schematic_file_name;
 		use et_coordinates.type_submodule_name;
 	begin
 		-- first compare file names
@@ -10916,7 +10917,7 @@ package body et_kicad is
 	procedure add_sheet_header (
 	-- Inserts a sheet header in the module (indicated by module_cursor).
 		header	: in type_sheet_header;
-		sheet	: in et_coordinates.type_schematic_file_name.bounded_string) is
+		sheet	: in type_schematic_file_name.bounded_string) is
 
 		procedure add (
 			mod_name	: in et_coordinates.type_submodule_name.bounded_string;

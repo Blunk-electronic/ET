@@ -72,16 +72,6 @@ package et_coordinates is
 
 	function to_distance (distance : in string) return type_distance_xy;	
 
-	mil_min : constant float := -390_000_000.0; -- equals approx. type_distance_xy'first
-	mil_max : constant float :=  390_000_000.0; -- equals approx. type_distance_xy'last
-	
-	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) 
-		return type_distance_xy;
-	-- Returns the given mils to type_distance_xy.
-
-	function to_mil_string (distance : in type_distance_xy) return string;
-	-- Returns the given distance as string in mil.
-	
 	function to_string (distance : in type_distance) return string;
 	-- Returns the given distance as a string.
 
@@ -104,7 +94,6 @@ package et_coordinates is
 	function to_string (angle : in type_angle) return string;
 	function to_angle (angle : in string) return type_angle;
 	
-	procedure warning_angle_greater_90_degrees;
 
 
 	
@@ -171,68 +160,44 @@ package et_coordinates is
 		axis	: in type_axis) 
 		return type_distance;
 	
-	schematic_file_name_length : constant positive := 100; -- includes extension
-	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); 
-
-	function to_string (schematic : in type_schematic_file_name.bounded_string) return string;
-	function to_schematic_file_name (file : in string) return type_schematic_file_name.bounded_string;
+-- 	-- The name of a submodule may have 100 characters which seems sufficient for now.
+--  	submodule_name_length_max : constant positive := 100;
+-- 	package type_submodule_name is new generic_bounded_length (submodule_name_length_max); use type_submodule_name;
+-- 	submodule_name_characters : character_set := to_set 
+-- 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set("-_"); 
+-- 
+-- 	procedure check_submodule_name_length (name : in string);
+-- 	-- Checks if the given submodule name is not longer than allowed.
+-- 
+-- 	procedure check_submodule_name_characters (
+-- 		name : in type_submodule_name.bounded_string;
+-- 		characters : in character_set := submodule_name_characters);
+-- 	-- Checks for forbiddedn characters in submodule name.
+-- 	
+-- 	function to_string (submodule : in type_submodule_name.bounded_string) return string;
+-- 	-- Returns the given submodule name as string.
+-- 
+-- 	function to_submodule_name (submodule : in string) return type_submodule_name.bounded_string;
+-- 	-- Converts a string to type_submodule_name.
+-- 	
+-- 	-- Instead of full submodule names, abbrevations like "MCU" or "MOT" are used:
+-- 	submodule_abbrevation_characters : character_set := to_set (span => ('A','Z')); 
+-- 	submodule_abbrevation_length_max : constant positive := 5;
+-- 	package type_submodule_abbrevation is new generic_bounded_length (submodule_abbrevation_length_max);
+-- 	procedure check_submodule_abbrevation_length (abbrevation : in string);
+-- 	-- Checks if the given submodule abbrevation is not longer than allowed.
+-- 
+-- 	procedure check_submodule_abbrevation_characters (
+-- 	abbrevation : in type_submodule_abbrevation.bounded_string;
+-- 	characters : in character_set := submodule_abbrevation_characters);
+-- 	-- Checks for forbidden characters in submodule abbrevation.
+-- 	
+-- 	function to_string (abbrevation : in type_submodule_abbrevation.bounded_string) return string;
+-- 	-- Returns the given submodule abbrevation as string.
+-- 
+-- 	function to_abbrevation (abbrevation : in string) return type_submodule_abbrevation.bounded_string;
+-- 	-- Converts a string to type_submodule_abbrevation.
 	
-	-- The name of a submodule may have 100 characters which seems sufficient for now.
- 	submodule_name_length_max : constant positive := 100;
-	package type_submodule_name is new generic_bounded_length (submodule_name_length_max); use type_submodule_name;
-	submodule_name_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set("-_"); 
-
-	procedure check_submodule_name_length (name : in string);
-	-- Checks if the given submodule name is not longer than allowed.
-
-	procedure check_submodule_name_characters (
-		name : in type_submodule_name.bounded_string;
-		characters : in character_set := submodule_name_characters);
-	-- Checks for forbiddedn characters in submodule name.
-	
-	function to_string (submodule : in type_submodule_name.bounded_string) return string;
-	-- Returns the given submodule name as string.
-
-	function to_submodule_name (submodule : in string) return type_submodule_name.bounded_string;
-	-- Converts a string to type_submodule_name.
-	
-	-- Instead of full submodule names, abbrevations like "MCU" or "MOT" are used:
-	submodule_abbrevation_characters : character_set := to_set (span => ('A','Z')); 
-	submodule_abbrevation_length_max : constant positive := 5;
-	package type_submodule_abbrevation is new generic_bounded_length (submodule_abbrevation_length_max);
-	procedure check_submodule_abbrevation_length (abbrevation : in string);
-	-- Checks if the given submodule abbrevation is not longer than allowed.
-
-	procedure check_submodule_abbrevation_characters (
-	abbrevation : in type_submodule_abbrevation.bounded_string;
-	characters : in character_set := submodule_abbrevation_characters);
-	-- Checks for forbidden characters in submodule abbrevation.
-	
-	function to_string (abbrevation : in type_submodule_abbrevation.bounded_string) return string;
-	-- Returns the given submodule abbrevation as string.
-
-	function to_abbrevation (abbrevation : in string) return type_submodule_abbrevation.bounded_string;
-	-- Converts a string to type_submodule_abbrevation.
-	
--- 	-- A submodule can be instantiated multiples times.
--- 	-- CS: currently we limit the number of instances to this value. increase if neccessary.
--- 	submodule_instances_max : constant positive := 10; 
--- 	subtype type_submodule_instance is positive range 1..submodule_instances_max;
-
--- 	procedure check_number_of_instances (instances : in string);
-	-- Checks if given instances is a digit and if it is within allowed range.
-
--- 	function to_number_of_instances (instances : in string) return type_submodule_instance;
-	
--- 	function to_string (instance : in type_submodule_instance) return string;
--- 	-- Converts a submodule instance index to a string.
-
--- 	function append_instance (
--- 		submodule	: in type_submodule_name.bounded_string; -- nucleo_core
--- 		separator	: in string := "_";
--- 		instance	: in type_submodule_instance) -- 4
--- 		return type_submodule_name.bounded_string; -- nucleo_core_4
 
 	
     -- The location of a submodule within the design hierarchy is reflected by

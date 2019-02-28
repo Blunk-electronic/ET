@@ -140,6 +140,9 @@ package et_general is
 
 	function to_string (name : in type_module_instance_name.bounded_string) return string;
 	function to_instance_name (name : in string) return type_module_instance_name.bounded_string;
+
+
+
 	
 -- GENERICS
 	

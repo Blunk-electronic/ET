@@ -50,6 +50,7 @@ with et_project;
 with et_schematic;
 with et_pcb;
 with et_kicad_general;			use et_kicad_general;
+with kicad_coordinates;			use kicad_coordinates;
 with et_kicad_pcb;
 with et_import;
 with et_coordinates;
@@ -81,7 +82,7 @@ package et_kicad is
 	schematic_version_v4	: constant positive := 2; -- CS use dedicated type for schematic version
     schematic_version_v5	: constant positive := 4;
 
-	top_level_schematic	: et_coordinates.type_schematic_file_name.bounded_string; 
+	top_level_schematic	: type_schematic_file_name.bounded_string; 
 
 	schematic_handle : ada.text_io.file_type;
 
@@ -101,9 +102,9 @@ package et_kicad is
 
 	
 	-- Sheet names may have the same length as schematic files.
-	package type_sheet_name is new generic_bounded_length (et_coordinates.schematic_file_name_length);
+	package type_sheet_name is new generic_bounded_length (schematic_file_name_length);
 
-	function to_submodule_name (file_name : in et_coordinates.type_schematic_file_name.bounded_string)
+	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
 		return et_coordinates.type_submodule_name.bounded_string;
 	-- Returns the base name of the given schematic file name as submodule name.
 
@@ -127,9 +128,9 @@ package et_kicad is
 
 	-- Since there are usually many sheets, we need a map from schematic file name to schematic header.
     package type_sheet_headers is new ordered_maps (
-        key_type		=> et_coordinates.type_schematic_file_name.bounded_string,
+        key_type		=> type_schematic_file_name.bounded_string,
 		element_type	=> type_sheet_header,
-		"<"				=> et_coordinates.type_schematic_file_name."<"
+		"<"				=> type_schematic_file_name."<"
 		);
 	
     sheet_comment_length : constant natural := 100;
@@ -1182,7 +1183,7 @@ package et_kicad is
 
 	-- A hierachic sheet is identified by the file name and the sheet name itself.
 	type type_hierarchic_sheet_name is record 
-		file	: et_coordinates.type_schematic_file_name.bounded_string; -- sensor.sch
+		file	: type_schematic_file_name.bounded_string; -- sensor.sch
 		name	: et_coordinates.type_submodule_name.bounded_string := et_coordinates.type_submodule_name.to_bounded_string ("n/a"); -- sensor_outside
 		-- "n/a" because the top level schematic never has a sheet name
 	end record;
@@ -1327,7 +1328,7 @@ package et_kicad is
 	procedure add_sheet_header ( -- CS really requried ?
 	-- Inserts a sheet header in the module (indicated by module_cursor).
 		header	: in type_sheet_header;
-		sheet	: in et_coordinates.type_schematic_file_name.bounded_string);
+		sheet	: in type_schematic_file_name.bounded_string);
 
 	
 	type type_frame is new et_libraries.type_frame with record

@@ -1967,7 +1967,7 @@ package body conventions is
 					log (message_warning & "Text size " & to_string (size) 
 						& " invalid for category " & to_string (category) 
 						& " ! " & "Expected size " & to_string (element (cursor)) 
-						& " ! (equals " & to_mil_string (element (cursor)) & " mil)");
+						& " ! "); --(equals " & to_mil_string (element (cursor)) & " mil)");
 				end if;
 
 			end if;

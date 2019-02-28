@@ -178,6 +178,8 @@ package body et_general is
 		return type_module_instance_name.to_bounded_string (name);
 	end;
 	
+
+
 	
 -- GENERICS
 	
