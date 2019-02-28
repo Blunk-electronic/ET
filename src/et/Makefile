@@ -19,6 +19,7 @@ OBJS = $(TARGET).o \
 	et_import.o et_export.o \
 	et_kicad_general.o \
 	et_kicad_to_native.o \
+	kicad_coordinates.o \
 	et_kicad.o \
 	et_kicad_pcb.o \
 	et_string_processing.o
