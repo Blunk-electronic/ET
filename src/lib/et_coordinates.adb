@@ -469,41 +469,41 @@ package body et_coordinates is
 		return type_submodule_sheet_number'value (sheet_number);
 	end to_sheet_number;
 	
-	function to_string (
-		path : in type_path_to_submodule.list;
-		top_module : in boolean := true) return string is
-	-- Returns the given path as string with hierarchy_separator.
-	-- If top_module = false, the name of the top module is omitted.
-	
-		use type_path_to_submodule;
-		use ada.strings.unbounded;
-	
-		submodule : type_path_to_submodule.cursor := path.first;
-		result : unbounded_string;
-	begin
-		-- If top_module is false, advance cursor right to next module.
-		if not top_module then
-			next (submodule);
-		end if;
-
-		if is_empty (path) then
-			result := to_unbounded_string (hierarchy_separator);
-		else
-			-- Loop through list of submodules and collect their names in "result".
-			while submodule /= type_path_to_submodule.no_element loop
-				result := result & hierarchy_separator 
-					& to_unbounded_string (to_string (element (submodule)));
--- 					& hierarchy_separator;
-				next (submodule);
-			end loop;
-		end if;
--- 		if result = hierarchy_separator then
--- 			result := result & " (top module)";
+-- 	function to_string (
+-- 		path : in type_path_to_submodule.list;
+-- 		top_module : in boolean := true) return string is
+-- 	-- Returns the given path as string with hierarchy_separator.
+-- 	-- If top_module = false, the name of the top module is omitted.
+-- 	
+-- 		use type_path_to_submodule;
+-- 		use ada.strings.unbounded;
+-- 	
+-- 		submodule : type_path_to_submodule.cursor := path.first;
+-- 		result : unbounded_string;
+-- 	begin
+-- 		-- If top_module is false, advance cursor right to next module.
+-- 		if not top_module then
+-- 			next (submodule);
 -- 		end if;
-		
-		--return to_string ("location " & result);
-		return to_string (result);
-	end to_string;
+-- 
+-- 		if is_empty (path) then
+-- 			result := to_unbounded_string (hierarchy_separator);
+-- 		else
+-- 			-- Loop through list of submodules and collect their names in "result".
+-- 			while submodule /= type_path_to_submodule.no_element loop
+-- 				result := result & hierarchy_separator 
+-- 					& to_unbounded_string (to_string (element (submodule)));
+-- -- 					& hierarchy_separator;
+-- 				next (submodule);
+-- 			end loop;
+-- 		end if;
+-- -- 		if result = hierarchy_separator then
+-- -- 			result := result & " (top module)";
+-- -- 		end if;
+-- 		
+-- 		--return to_string ("location " & result);
+-- 		return to_string (result);
+-- 	end to_string;
 	
 	function to_coordinates (point : in type_2d_point'class)
 	-- Converts a type_2d_point to type_coordinates.
@@ -512,77 +512,51 @@ package body et_coordinates is
 		return (
 			x		=> point.x,
 			y		=> point.y,
-			path	=> type_path_to_submodule.empty_list,
 			sheet_number	=> 1
 			);
 	end to_coordinates;
 	
-	function to_string (
-	-- Returns the given position as string. Scope specifies how much position is to
-	-- be displayed. See specification of type_scope.
-		position	: in type_coordinates;
-		scope		: in type_scope := SHEET)
-		return string is
-
+	function to_string (position : in type_coordinates) return string is
 		use et_string_processing;
 	begin
-		case scope is
-			when MODULE =>
-				return coordinates_preamble_module
-					& to_string (position.path) & latin_1.space & hierarchy_separator & latin_1.space
-					& to_string (position.sheet_number) 
-					& latin_1.space & axis_separator & latin_1.space
-					& to_string (distance_x (position))
-					& latin_1.space & axis_separator & latin_1.space
-					& to_string (distance_y (position));
-				
-			when SHEET =>
-				return coordinates_preamble_sheet
-					& to_string (position.sheet_number) 
-					& latin_1.space & axis_separator & latin_1.space
-					& to_string (distance_x (position))
-					& latin_1.space & axis_separator & latin_1.space
-					& to_string (distance_y (position));
-
-			when XY =>
-				return coordinates_preamble_xy
-					& to_string (distance_x (position))
-					& latin_1.space & axis_separator & latin_1.space
-					& to_string (distance_y (position));
-
-		end case;
+		return coordinates_preamble_sheet
+				& to_string (position.sheet_number) 
+				& latin_1.space & axis_separator & latin_1.space
+				& to_string (distance_x (position))
+				& latin_1.space & axis_separator & latin_1.space
+				& to_string (distance_y (position));
 	end to_string;
 
-	function path (position : in type_coordinates) return type_path_to_submodule.list is
-	begin
-		return position.path;
-	end path;
+-- 	function path (position : in type_coordinates) return type_path_to_submodule.list is
+-- 	begin
+-- 		return position.path;
+-- 	end path;
 	
 	function sheet (position : in type_coordinates) return type_submodule_sheet_number is
 	begin
 		return position.sheet_number;
 	end sheet;
 
-	function same_path_and_sheet (left, right : in type_coordinates) return boolean is
-	-- Returns true if the given coordinates have same path and sheet.
-		same : boolean := false;
-		use type_path_to_submodule;
-	begin 
-		-- We compare path and sheet. x/y are ignored
-		if path (left) = path (right) then
-			if sheet (left) = sheet (right) then
-				same := true;
-			end if;
-		end if;
-
-		return same;
-	end same_path_and_sheet;
+-- 	function same_path_and_sheet (left, right : in type_coordinates) return boolean is
+-- 	-- Returns true if the given coordinates have same path and sheet.
+-- 		same : boolean := false;
+-- 		use type_path_to_submodule;
+-- 	begin 
+-- 		-- We compare path and sheet. x/y are ignored
+-- 		if path (left) = path (right) then
+-- 			if sheet (left) = sheet (right) then
+-- 				same := true;
+-- 			end if;
+-- 		end if;
+-- 
+-- 		return same;
+-- 	end same_path_and_sheet;
 	
-	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list) is
-	-- Sets the path in given position.
-	begin
-		position.path := path;
-	end set_path;
+-- 	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list) is
+-- 	-- Sets the path in given position.
+-- 	begin
+-- 		position.path := path;
+-- 	end set_path;
 
 	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number) is
 	-- Sets the sheet number in given position.

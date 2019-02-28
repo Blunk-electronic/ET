@@ -130,13 +130,13 @@ package et_schematic is
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a device.
 	type type_unit_base is tagged record
-		position	: et_coordinates.type_coordinates;
 		rotation	: et_coordinates.type_angle;
 		mirror		: type_mirror;
 	end record;
 
 	-- Some placeholders of a unit are available when the component appears in both schematic and layout:	
 	type type_unit (appearance : type_appearance_schematic) is new type_unit_base with record
+		position	: et_coordinates.type_coordinates;
 		case appearance is
 			when et_libraries.SCH => null; -- CS
 			when et_libraries.SCH_PCB =>

@@ -53,7 +53,6 @@ with et_kicad_general;			use et_kicad_general;
 with kicad_coordinates;			use kicad_coordinates;
 with et_kicad_pcb;
 with et_import;
-with et_coordinates;
 with et_pcb_coordinates;
 with et_libraries;
 with et_string_processing;
@@ -105,7 +104,7 @@ package et_kicad is
 	package type_sheet_name is new generic_bounded_length (schematic_file_name_length);
 
 	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
-		return et_coordinates.type_submodule_name.bounded_string;
+		return type_submodule_name.bounded_string;
 	-- Returns the base name of the given schematic file name as submodule name.
 
 
@@ -148,15 +147,15 @@ package et_kicad is
 	-- to an object, the path_to_sheet is read. 
 	-- So this list (from first to last) provides a full path that tells us
 	-- the exact location of the sheet within the design hierarchy.
-	path_to_sheet : et_coordinates.type_path_to_submodule.list;
+	path_to_sheet : type_path_to_submodule.list;
 	
 	-- Here we append a sheet name to the path_to_sheet.
-	procedure append_sheet_name_to_path (sheet : in et_coordinates.type_submodule_name.bounded_string);
+	procedure append_sheet_name_to_path (sheet : in type_submodule_name.bounded_string);
 
 	-- Here we remove the last submodule name form the path_to_sheet.
 	procedure delete_last_module_name_from_path; -- CS: unify with append_name_of_parent_module_to_path
 
-	procedure module_not_found (module : in et_coordinates.type_submodule_name.bounded_string);
+	procedure module_not_found (module : in type_submodule_name.bounded_string);
 	-- Returns a message stating that the given module does not exist.
 
 	-- Units may have alternative representations such as de_Morgan
@@ -164,11 +163,12 @@ package et_kicad is
 
 	-- A kicad unit inherits a lot from the base unit:
 	type type_unit_schematic (appearance : et_schematic.type_appearance_schematic) is new et_schematic.type_unit_base with record
-		reference		: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
-		value			: et_libraries.type_text_placeholder (meaning => et_libraries.value);
+		position	: kicad_coordinates.type_coordinates;		
+		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
+		value		: et_libraries.type_text_placeholder (meaning => et_libraries.value);
 		
-		timestamp		: et_kicad_general.type_timestamp;
-		alt_repres		: type_de_morgan_representation;
+		timestamp	: et_kicad_general.type_timestamp;
+		alt_repres	: type_de_morgan_representation;
 
 		-- Some placeholders of a unit are available when the component appears in both schematic and layout:
 		case appearance is
@@ -209,7 +209,7 @@ package et_kicad is
 	-- The unit is an element in the given list of units.
 		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
-		return et_coordinates.type_coordinates;
+		return type_coordinates;
 	
 	function mirror_style_of_unit (
 	-- Returns the mirror style of the given unit.
@@ -603,7 +603,7 @@ package et_kicad is
 
 	-- No-connection-flags indicate that a component port is intentionally left unconnected.
 	type type_no_connection_flag is record
-		coordinates : et_coordinates.type_coordinates;
+		coordinates : type_coordinates;
 		-- CS: processed flag
 	end record;
 
@@ -621,7 +621,7 @@ package et_kicad is
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
 		name			: et_libraries.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
-		coordinates 	: et_coordinates.type_coordinates;
+		coordinates 	: type_coordinates;
 		direction		: type_port_direction; -- example: "passive"
 		style			: type_port_style;
 		appearance		: et_schematic.type_appearance_schematic;
@@ -652,7 +652,7 @@ package et_kicad is
 
 	function to_terminal (
 		port 			: in type_port_with_reference;
-		module			: in et_coordinates.type_submodule_name.bounded_string; -- the name of the module							 
+		module			: in type_submodule_name.bounded_string; -- the name of the module 
 		log_threshold 	: in et_string_processing.type_log_level)
 		return et_libraries.type_terminal;
 	-- Returns the terminal and unit name of the given port in a composite type.
@@ -665,9 +665,9 @@ package et_kicad is
 	
 	-- When inquiring the net connected with certain component we use this composite:
 	type type_port_of_module is record
-		module		: et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core_3
-		reference	: et_libraries.type_component_reference;				-- N409
-		name		: et_libraries.type_port_name.bounded_string;			-- 2
+		module		: type_submodule_name.bounded_string;			-- nucleo_core_3
+		reference	: et_libraries.type_component_reference;		-- N409
+		name		: et_libraries.type_port_name.bounded_string;	-- 2
 	end record;
 	
 	-- This is a set of ports as we need in the netlist.
@@ -721,7 +721,7 @@ package et_kicad is
 
 	-- A net junction is where segments can be connected with each other.
 	type type_net_junction is record -- CS rename to type_junction
-		coordinates : et_coordinates.type_coordinates;
+		coordinates : type_coordinates;
 	end record;
 
 	function to_string (
@@ -1184,14 +1184,14 @@ package et_kicad is
 	-- A hierachic sheet is identified by the file name and the sheet name itself.
 	type type_hierarchic_sheet_name is record 
 		file	: type_schematic_file_name.bounded_string; -- sensor.sch
-		name	: et_coordinates.type_submodule_name.bounded_string := et_coordinates.type_submodule_name.to_bounded_string ("n/a"); -- sensor_outside
+		name	: type_submodule_name.bounded_string := type_submodule_name.to_bounded_string ("n/a"); -- sensor_outside
 		-- "n/a" because the top level schematic never has a sheet name
 	end record;
 	
 	type type_hierarchic_sheet is record
         text_size_of_name   : et_libraries.type_text_size;
         text_size_of_file   : et_libraries.type_text_size;
-		coordinates		    : et_coordinates.type_coordinates;
+		coordinates		    : type_coordinates;
         size_x, size_y      : et_coordinates.type_distance; -- size x/y of the box
 		timestamp           : type_timestamp;
 		ports				: type_hierarchic_sheet_ports.map;
@@ -1223,7 +1223,7 @@ package et_kicad is
 		element_type	=> type_hierarchic_sheet_file_name_and_timestamp);
 
 	type type_hierarchic_sheet_file_names_extended is record
-		parent_sheet	: et_coordinates.type_submodule_name.bounded_string;
+		parent_sheet	: type_submodule_name.bounded_string;
 		sheets			: type_hierarchic_sheet_file_names.vector;
 		id				: positive; -- id of a sheet in the list
 	end record;
@@ -1274,14 +1274,14 @@ package et_kicad is
 	-- Writes a nice overview of all nets, strands, segments and labels.
 	
 	function components_in_net (
-		module 			: in et_coordinates.type_submodule_name.bounded_string; -- nucleo_core
+		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in et_general.type_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_ports_with_reference.set;
 	-- Returns a list of component ports that are connected with the given net.
 	
 	function real_components_in_net (
-		module 			: in et_coordinates.type_submodule_name.bounded_string; -- nucleo_core
+		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in et_general.type_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_ports_with_reference.set;
@@ -1322,7 +1322,7 @@ package et_kicad is
 -- 		log_threshold	: in et_string_processing.type_log_level);
 
 	procedure validate_module (
-		module_name : in et_coordinates.type_submodule_name.bounded_string);
+		module_name : in type_submodule_name.bounded_string);
 	-- Tests if the given module exists in container "modules". Raises error if not existent.
 
 	procedure add_sheet_header ( -- CS really requried ?
@@ -1332,7 +1332,7 @@ package et_kicad is
 
 	
 	type type_frame is new et_libraries.type_frame with record
-		coordinates : et_coordinates.type_coordinates; -- the position of the frame -- CS rename to position
+		coordinates : type_coordinates; -- the position of the frame -- CS rename to position
 	end record;
 
 	procedure add_frame (
@@ -1394,7 +1394,7 @@ package et_kicad is
 	
 	function connected_net (
 	-- Returns the name of the net connected with the given component and terminal.
-		module			: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core
+		module			: in type_submodule_name.bounded_string;	-- nucleo_core
 		reference		: in et_libraries.type_component_reference;	-- IC45
 		terminal		: in et_libraries.type_terminal_name.bounded_string; -- E14
 		log_threshold	: in et_string_processing.type_log_level)		
@@ -1489,8 +1489,8 @@ package et_kicad is
 	-- Therefore the collection contains only one module.
 	package type_modules is new ordered_maps (
 		-- This is the module name like "MY_MOTOR_DRIVER" or "BLOOD_SAMPLE_ANALYZER"
-		key_type 		=> et_coordinates.type_submodule_name.bounded_string,
-		"<" 			=> et_coordinates.type_submodule_name."<",											 
+		key_type 		=> type_submodule_name.bounded_string,
+		"<" 			=> type_submodule_name."<",											 
 		element_type 	=> type_module);
 
 	modules : type_modules.map;

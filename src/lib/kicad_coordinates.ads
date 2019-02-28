@@ -77,6 +77,27 @@ package kicad_coordinates is
 	submodule_name_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set("-_"); 
 
+    -- The location of a submodule within the design hierarchy is reflected by
+    -- a list of submodule names like motor_driver/counter/supply
+    -- The first item in this list is the name of the top level module.
+    package type_path_to_submodule is new doubly_linked_lists (
+        element_type => type_submodule_name.bounded_string);
+
+	function to_string (
+		path 		: in type_path_to_submodule.list;
+		top_module	: in boolean := true) return string;
+	-- Returns the given path as string with hierarchy_separator.
+	-- If top_module = false, the name of the top module is omitted.
+
+	
+	type type_coordinates is new et_coordinates.type_2d_point with private;
+
+	
+	function path (position : in type_coordinates) return type_path_to_submodule.list;
+
+	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list);
+	-- Sets the path in given position.
+	
 -- 	procedure check_submodule_name_length (name : in string);
 -- 	-- Checks if the given submodule name is not longer than allowed.
 -- 
@@ -169,31 +190,26 @@ package kicad_coordinates is
 -- 		& "x"
 -- 		& axis_separator
 -- 		& "y) ";
--- 
--- 	
--- 	type type_scope is (
--- 		XY, -- only x an y pos.
--- 		SHEET, 	-- coordinates sheet related
--- 		MODULE); -- coordinates with the module in scope
--- 		-- CS: rig ? -- with the whole rig is scope
--- 
--- 	function to_string (
--- 	-- Returns the given position as string. Scope specifies how much position is to
--- 	-- be displayed. See type_scope comments.
--- 		position	: in type_coordinates;
--- 		scope		: in type_scope := SHEET)
--- 		return string;
--- 
--- 	function path (position : in type_coordinates) return type_path_to_submodule.list;
--- 	
--- 	function sheet (position : in type_coordinates) return type_submodule_sheet_number;
--- 
--- 	function same_path_and_sheet (left, right : in type_coordinates) return boolean;
--- 	-- Returns true if the given coordinates have same path and sheet.
--- 	
--- 	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list);
--- 	-- Sets the path in given position.
--- 
+
+	
+	type type_scope is (
+		XY, -- only x an y pos.
+		SHEET, 	-- coordinates sheet related
+		MODULE); -- coordinates with the module in scope
+
+	function to_string (
+	-- Returns the given position as string. Scope specifies how much position is to
+	-- be displayed. See type_scope comments.
+		position	: in type_coordinates;
+		scope		: in type_scope := SHEET)
+		return string;
+
+
+	function sheet (position : in type_coordinates) return type_submodule_sheet_number;
+
+	function same_path_and_sheet (left, right : in type_coordinates) return boolean;
+	-- Returns true if the given coordinates have same path and sheet.
+	
 -- 	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number);
 -- 	-- Sets the sheet number in given position.
 -- 
@@ -211,31 +227,21 @@ package kicad_coordinates is
 -- 		orientation	: in et_general.type_paper_orientation := et_general.LANDSCAPE;
 -- 		axis		: in type_axis)
 -- 		return type_distance_xy;
--- 
--- 	
--- 	private 
--- 		-- In general every object has at least x,y coordinates.
--- 		type type_2d_point is tagged record -- CS: rename to type_point
--- 			x, y : type_distance_xy := zero_distance;
--- 		end record;
--- 		
--- 		zero : constant type_2d_point := (x => zero_distance, y => zero_distance);
--- 
--- 	
--- 		type type_coordinates is new type_2d_point with record
--- 			path            : type_path_to_submodule.list; 
--- 			-- CS: in native project currently not required. Might be useful in connection with submodules.
--- 			-- CS: A dedicated type_coordinates for kicad could make sense.
--- 			
--- 			sheet_number	: type_submodule_sheet_number := type_submodule_sheet_number'first;
--- 		end record;
--- 
+
+	
+	private 
+	
+		type type_coordinates is new et_coordinates.type_2d_point with record
+			path            : type_path_to_submodule.list; 
+			sheet_number	: type_submodule_sheet_number := type_submodule_sheet_number'first;			
+		end record;
+
 -- 		zero_position : constant type_coordinates := (
 -- 			path			=> type_path_to_submodule.empty_list,
 -- 			sheet_number	=> type_submodule_sheet_number'first,
 -- 			x				=> 0.0,
 -- 			y				=> 0.0 );
--- 		
+		
 end kicad_coordinates;
 
 -- Soli Deo Gloria

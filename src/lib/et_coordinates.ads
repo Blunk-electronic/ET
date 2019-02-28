@@ -128,7 +128,6 @@ package et_coordinates is
 	-- Assigns a point the given x position.
 	
 	procedure set_y (point : in out type_2d_point; y : in type_distance_xy);
-	-- Assigns a point the given y position. 
 	
 	procedure set_xy (
 		point	 : in out type_2d_point'class;
@@ -200,11 +199,11 @@ package et_coordinates is
 	
 
 	
-    -- The location of a submodule within the design hierarchy is reflected by
-    -- a list of submodule names like motor_driver/counter/supply
-    -- The first item in this list is the name of the top level module.
-    package type_path_to_submodule is new doubly_linked_lists (
-        element_type => type_submodule_name.bounded_string);
+--     -- The location of a submodule within the design hierarchy is reflected by
+--     -- a list of submodule names like motor_driver/counter/supply
+--     -- The first item in this list is the name of the top level module.
+--     package type_path_to_submodule is new doubly_linked_lists (
+--         element_type => type_submodule_name.bounded_string);
 
 	-- When handling hierachic structures we use a separator.
 	-- Example: net name "HEATER_CONTROL/DRIVER/CLK"
@@ -225,11 +224,11 @@ package et_coordinates is
 	schematic_page_count_max : constant positive := 100;
 	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
 	
-	function to_string (
-		path : in type_path_to_submodule.list;
-		top_module : in boolean := true) return string;
-	-- Returns the given path as string with hierarchy_separator.
-	-- If top_module = false, the name of the top module is omitted.
+-- 	function to_string (
+-- 		path 		: in type_path_to_submodule.list;
+-- 		top_module	: in boolean := true) return string;
+-- 	-- Returns the given path as string with hierarchy_separator.
+-- 	-- If top_module = false, the name of the top module is omitted.
 	
 	type type_coordinates is new type_2d_point with private;
 
@@ -261,28 +260,23 @@ package et_coordinates is
 		& "y) ";
 
 	
-	type type_scope is (
-		XY, -- only x an y pos.
-		SHEET, 	-- coordinates sheet related
-		MODULE); -- coordinates with the module in scope
-		-- CS: rig ? -- with the whole rig is scope
+-- 	type type_scope is (
+-- 		XY, -- only x an y pos.
+-- 		SHEET, 	-- coordinates sheet related
+-- 		MODULE); -- coordinates with the module in scope
+-- 		-- CS: rig ? -- with the whole rig is scope
 
-	function to_string (
-	-- Returns the given position as string. Scope specifies how much position is to
-	-- be displayed. See type_scope comments.
-		position	: in type_coordinates;
-		scope		: in type_scope := SHEET)
-		return string;
+	function to_string (position : in type_coordinates) return string;
 
-	function path (position : in type_coordinates) return type_path_to_submodule.list;
+-- 	function path (position : in type_coordinates) return type_path_to_submodule.list;
 	
 	function sheet (position : in type_coordinates) return type_submodule_sheet_number;
 
-	function same_path_and_sheet (left, right : in type_coordinates) return boolean;
-	-- Returns true if the given coordinates have same path and sheet.
+-- 	function same_path_and_sheet (left, right : in type_coordinates) return boolean;
+-- 	-- Returns true if the given coordinates have same path and sheet.
 	
-	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list);
-	-- Sets the path in given position.
+-- 	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list);
+-- 	-- Sets the path in given position.
 
 	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number);
 	-- Sets the sheet number in given position.
@@ -313,15 +307,10 @@ package et_coordinates is
 
 	
 		type type_coordinates is new type_2d_point with record
-			path            : type_path_to_submodule.list; 
-			-- CS: in native project currently not required. Might be useful in connection with submodules.
-			-- CS: A dedicated type_coordinates for kicad could make sense.
-			
 			sheet_number	: type_submodule_sheet_number := type_submodule_sheet_number'first;
 		end record;
 
 		zero_position : constant type_coordinates := (
-			path			=> type_path_to_submodule.empty_list,
 			sheet_number	=> type_submodule_sheet_number'first,
 			x				=> 0.0,
 			y				=> 0.0 );

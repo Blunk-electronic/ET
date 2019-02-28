@@ -125,6 +125,14 @@ package body et_project is
 	function to_project_path (path : in string) return type_et_project_path.bounded_string is begin
 		return type_et_project_path.to_bounded_string (path);
 	end to_project_path;
+
+	function to_string (name : in type_module_name.bounded_string) return string is begin
+		return type_module_name.to_string (name);
+	end;
+
+	function to_module_name (name : in string) return type_module_name.bounded_string is begin
+		return type_module_name.to_bounded_string (name);
+	end;
 	
 	function to_string (section : in type_section_name_rig_configuration) return string is
 	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
@@ -1187,7 +1195,7 @@ package body et_project is
 	procedure save_module (
 		module			: in et_schematic.type_module;				-- the module
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
-		module_name		: in type_submodule_name.bounded_string := type_submodule_name.to_bounded_string ("");	-- motor_driver
+		module_name		: in type_module_name.bounded_string := to_module_name ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level) is
 	-- Saves the given module (incl. schematic and layout data) in the module file
@@ -1218,7 +1226,7 @@ package body et_project is
 
 			-- If given module_name is empty (means it has not been passed), the module is named after the project.
 			-- Otherwise the module name is as given by module_name.
-			if type_submodule_name.length (module_name) = 0 then
+			if type_module_name.length (module_name) = 0 then
 				module_file_name := type_module_file_name.to_bounded_string (compose (
 					containing_directory	=> to_string (path),
 					name 					=> to_string (project_name),
@@ -7759,7 +7767,7 @@ package body et_project is
 					type type_layer is (SILK_SCREEN, ASSEMBLY_DOCUMENTATION, STENCIL, STOP_MASK, KEEPOUT);
 					
 					procedure insert_net_class (
-						module_name	: in et_coordinates.type_submodule_name.bounded_string;
+						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 						use et_pcb;
 						inserted : boolean;
@@ -7789,7 +7797,7 @@ package body et_project is
 					end insert_net_class;
 
 					procedure insert_net (
-						module_name	: in et_coordinates.type_submodule_name.bounded_string;
+						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 						use et_schematic;
 						inserted : boolean;
@@ -7821,7 +7829,7 @@ package body et_project is
 					end insert_net;
 					
 					procedure insert_submodule (
-						module_name	: in et_coordinates.type_submodule_name.bounded_string;
+						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 						use et_schematic;
 						inserted : boolean;
@@ -7857,7 +7865,7 @@ package body et_project is
 					end insert_submodule;
 					
 					procedure set_frame_schematic (
-						module_name	: in et_coordinates.type_submodule_name.bounded_string;
+						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 					begin
 						log ("drawing frame schematic " & et_libraries.to_string (frame_template_schematic), log_threshold + 2);
@@ -7865,7 +7873,7 @@ package body et_project is
 					end set_frame_schematic;
 					
 					procedure set_frame_board (
-						module_name	: in et_coordinates.type_submodule_name.bounded_string;
+						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 					begin
 						log ("drawing frame board " & et_libraries.to_string (frame_template_board), log_threshold + 2);
@@ -7873,7 +7881,7 @@ package body et_project is
 					end set_frame_board;
 
 					procedure insert_note (
-						module_name	: in et_coordinates.type_submodule_name.bounded_string;
+						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 					begin
 						-- append note to collection of notes
@@ -8003,8 +8011,8 @@ package body et_project is
 					end build_unit_placeholder;
 
 					procedure insert_device (
-						module_name		: in type_submodule_name.bounded_string;
-						module			: in out et_schematic.type_module) is
+						module_name	: in type_module_name.bounded_string;
+						module		: in out et_schematic.type_module) is
 						use et_schematic;
 						use et_libraries;
 						device_cursor : et_schematic.type_devices.cursor;
@@ -8156,7 +8164,7 @@ package body et_project is
 					-- is now assigned to the board where it belongs to.
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 							use et_pcb_coordinates;
 							use et_pcb;
@@ -8242,7 +8250,7 @@ package body et_project is
 					-- is now assigned to the board where it belongs to.
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 							use et_pcb_coordinates;
 							use et_pcb;
@@ -8326,7 +8334,7 @@ package body et_project is
 					-- is now assigned to the board where it belongs to.
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 							use et_pcb_coordinates;
 							use et_pcb;
@@ -8409,7 +8417,7 @@ package body et_project is
 					-- is now assigned to the board where it belongs to.
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 							use et_pcb_coordinates;
 							use et_pcb;
@@ -8492,7 +8500,7 @@ package body et_project is
 					-- is now assigned to the board where it belongs to.
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 							use et_pcb_coordinates;
 							use et_pcb;
@@ -8571,7 +8579,7 @@ package body et_project is
 					-- is now assigned to the board where it belongs to.
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 							use et_pcb_coordinates;
 							use et_pcb;
@@ -8647,7 +8655,7 @@ package body et_project is
 						use type_signal_layers;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_route_restrict_lines.append (
@@ -8674,7 +8682,7 @@ package body et_project is
 						use type_signal_layers;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_route_restrict_arcs.append (
@@ -8701,7 +8709,7 @@ package body et_project is
 						use type_signal_layers;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_route_restrict_circles.append (
@@ -8725,7 +8733,7 @@ package body et_project is
 						use type_signal_layers;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_route_restrict_polygons.append (
@@ -8752,7 +8760,7 @@ package body et_project is
 						use type_signal_layers;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_via_restrict_lines.append (
@@ -8779,7 +8787,7 @@ package body et_project is
 						use type_signal_layers;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_via_restrict_arcs.append (
@@ -8806,7 +8814,7 @@ package body et_project is
 						use type_signal_layers;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_via_restrict_circles.append (
@@ -8830,7 +8838,7 @@ package body et_project is
 						use type_signal_layers;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_via_restrict_polygons.append (
@@ -8856,7 +8864,7 @@ package body et_project is
 						use et_pcb;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_copper_polygons_floating.append (
@@ -8878,7 +8886,7 @@ package body et_project is
 						use et_pcb;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_copper_lines_pcb.append (
@@ -8900,7 +8908,7 @@ package body et_project is
 						use et_pcb;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_copper_arcs_pcb.append (
@@ -8922,7 +8930,7 @@ package body et_project is
 						use et_pcb;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_copper_circles_pcb.append (
@@ -8944,7 +8952,7 @@ package body et_project is
 						use et_pcb;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_texts_with_content_pcb.append (
@@ -8966,7 +8974,7 @@ package body et_project is
 						use et_pcb;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_text_placeholders_copper.append (
@@ -8988,7 +8996,7 @@ package body et_project is
 						use et_pcb;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_pcb_contour_lines.append (
@@ -9011,7 +9019,7 @@ package body et_project is
 						use et_pcb;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_pcb_contour_arcs.append (
@@ -9034,7 +9042,7 @@ package body et_project is
 						use et_pcb;
 						
 						procedure do_it (
-							module_name	: in type_submodule_name.bounded_string;
+							module_name	: in type_module_name.bounded_string;
 							module		: in out et_schematic.type_module) is
 						begin
 							type_pcb_contour_circles.append (
@@ -11784,7 +11792,7 @@ package body et_project is
 			-- Create an empty module named after the module file (omitting extension *.mod).
 			type_modules.insert (
 				container	=> modules,
-				key			=> et_coordinates.to_submodule_name (base_name (file_name)),
+				key			=> to_module_name (base_name (file_name)),
 				position	=> module_cursor,
 				inserted	=> module_inserted);
 
@@ -11843,11 +11851,11 @@ package body et_project is
 				max 	=> max_section_depth);
 
 			-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
-			generic_name : et_coordinates.type_submodule_name.bounded_string; -- motor_driver
+			generic_name : type_module_name.bounded_string; -- motor_driver
 			instance_name : type_module_instance_name.bounded_string; -- DRV_1
 
 			procedure clear_module_instance is begin
-				generic_name := et_coordinates.type_submodule_name.to_bounded_string ("");
+				generic_name := to_module_name ("");
 				instance_name := to_instance_name ("");
 			end clear_module_instance;
 			
@@ -12078,8 +12086,11 @@ package body et_project is
 									begin
 										if kw = keyword_generic_name then
 											expect_field_count (line, 2);
-											generic_name := to_submodule_name (f (line,2));
+
+											-- The generic name does not use the *.mod extension.
+											generic_name := type_module_name.to_bounded_string (f (line,2));
 											-- CS: test if module with this generic name exists
+											
 										elsif kw = keyword_instance_name then
 											expect_field_count (line, 2);
 											instance_name := to_instance_name (f (line,2));
@@ -12321,7 +12332,7 @@ package body et_project is
 		name : type_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
 
 		procedure query_modules (module_cursor : in type_modules.cursor) is
-			module_name : et_coordinates.type_submodule_name.bounded_string := key (module_cursor); -- motor_driver
+			module_name : type_module_name.bounded_string := key (module_cursor); -- motor_driver
 		begin
 			log_indentation_up;
 			log ("module " & to_string (module_name), log_threshold + 1);

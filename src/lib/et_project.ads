@@ -124,9 +124,15 @@ package et_project is
 	rig_configuration_file_extension : constant string := "conf";
 	rig_configuration_file_extension_asterisk : constant string := "*." & rig_configuration_file_extension;
 
+	-- In the rig configuration file modules are refered to by their base name (without extension):
+	module_name_length_max : constant := 100;
+	package type_module_name is new generic_bounded_length (module_name_length_max);
 
+	function to_string (name : in type_module_name.bounded_string) return string;
+	function to_module_name (name : in string) return type_module_name.bounded_string;
+	
 	type type_module_instance is record
-		generic_name	: et_coordinates.type_submodule_name.bounded_string; -- motor_driver
+		generic_name : type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		-- CS other properties ?
 	end record;
 
@@ -176,8 +182,8 @@ package et_project is
 	-- Generic modules (which contain schematic and layout stuff)
 	-- are collected here:
 	package type_modules is new ordered_maps (
-		key_type		=> et_coordinates.type_submodule_name.bounded_string,
-		"<"				=> et_coordinates.type_submodule_name."<",
+		key_type		=> type_module_name.bounded_string,
+		"<"				=> type_module_name."<",
 		element_type	=> et_schematic.type_module,
 		"="				=> et_schematic."=");
 
@@ -249,7 +255,7 @@ package et_project is
 	procedure save_module (
 		module			: in et_schematic.type_module;				-- the module
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
-		module_name		: in type_submodule_name.bounded_string := type_submodule_name.to_bounded_string ("");	-- motor_driver
+		module_name		: in type_module_name.bounded_string := to_module_name ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level);
 	-- Saves the given module (incl. schematic and layout data) in the module file

@@ -68,6 +68,7 @@ with et_pcb;
 with et_pcb_coordinates;
 with et_kicad_general;
 with et_kicad;
+with kicad_coordinates;
 with et_kicad_pcb;
 with et_import;
 with et_export;
@@ -86,7 +87,7 @@ package body et_kicad_to_native is
 		use et_kicad.type_modules;
 		module_cursor : et_kicad.type_modules.cursor := et_kicad.type_modules.first (et_kicad.modules);
 
-		root : et_coordinates.type_path_to_submodule.list := et_coordinates.type_path_to_submodule.empty_list;
+		root : kicad_coordinates.type_path_to_submodule.list := kicad_coordinates.type_path_to_submodule.empty_list;
 -- 		before	: constant string (1..15) := "position before";
 -- 		now		: constant string (1..15) := "position now   ";
 		before	: constant string (1..6) := "before";
@@ -121,7 +122,7 @@ package body et_kicad_to_native is
 			procedure query_sheet_number (frame : in et_kicad.type_frame) is
 				use et_coordinates;
 			begin
-				if et_coordinates.sheet (frame.coordinates) = sheet_number then
+				if kicad_coordinates.sheet (frame.coordinates) = sheet_number then
 					size := frame.paper_size;
 					sheet_found := true;
 				end if;
@@ -154,7 +155,7 @@ package body et_kicad_to_native is
 			return size;
 		end paper_size_of_schematic_sheet;
 
-		procedure move (point : in out et_coordinates.type_coordinates) is
+		procedure move (point : in out kicad_coordinates.type_coordinates) is
 		-- Transposes a schematic point from the kicad frame to the ET native frame.
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
@@ -165,7 +166,7 @@ package body et_kicad_to_native is
 			new_y				: et_coordinates.type_distance_xy;
 		begin -- move
 			-- get the sheet number where the given point resides
-			sheet_number		:= sheet (point); 
+			sheet_number		:= kicad_coordinates.sheet (point); 
 
 			-- get the paper size of the sheet
 			sheet_paper_size	:= paper_size_of_schematic_sheet (sheet_number);
@@ -174,7 +175,8 @@ package body et_kicad_to_native is
 			sheet_height		:= paper_dimension (axis => Y, paper_size => sheet_paper_size);
 
 			-- calculate the new y position
-			new_y				:= sheet_height - distance_y (point);
+			--new_y				:= sheet_height - distance_y (point);
+			new_y				:= sheet_height - distance (axis => Y, point => type_2d_point (point));
 
 			-- assign the new y position to the given point
 			set_y (point, new_y);
@@ -237,7 +239,7 @@ package body et_kicad_to_native is
 		end move;
 		
 		procedure flatten_notes (
-			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module_name	: in kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
 		-- Changes the path and y position of text notes (in schematic).
 
@@ -246,20 +248,17 @@ package body et_kicad_to_native is
 
 			procedure change_path (note : in out et_schematic.type_text) is
 				use et_coordinates;
+				use kicad_coordinates;
 			begin
 				log ("note '" & et_libraries.to_string (note.content) & "'", log_threshold + 3);
 				log_indentation_up;
 				
-				log (before & to_string (position => note.coordinates, scope => et_coordinates.MODULE),
-					 log_threshold + 4);
-
-				et_coordinates.set_path (note.coordinates, root);
+				log (before & to_string (note.coordinates), log_threshold + 4);
 
 				-- Move position from negative to positive y.
 				move (note.coordinates);
 
-				log (now & to_string (position => note.coordinates, scope => et_coordinates.MODULE),
-					 log_threshold + 4);
+				log (now & to_string (note.coordinates), log_threshold + 4);
 
 				log_indentation_down;
 			end change_path;
@@ -281,7 +280,7 @@ package body et_kicad_to_native is
 		end flatten_notes;
 
 		procedure flatten_frames (
-			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module_name	: in kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
 		-- Changes the path of drawing frames (in schematic) to root path.
 			
@@ -294,12 +293,12 @@ package body et_kicad_to_native is
 				-- CS what should be logged here ?
 				log_indentation_up;
 				
-				log (before & to_string (position => frame.coordinates, scope => et_coordinates.MODULE),
+				log (before & kicad_coordinates.to_string (position => frame.coordinates, scope => kicad_coordinates.MODULE),
 					 log_threshold + 4);
 
-				et_coordinates.set_path (frame.coordinates, root);
+				kicad_coordinates.set_path (frame.coordinates, root);
 
-				log (now & to_string (position => frame.coordinates, scope => et_coordinates.MODULE),
+				log (now & kicad_coordinates.to_string (position => frame.coordinates, scope => kicad_coordinates.MODULE),
 					 log_threshold + 4);
 
 				log_indentation_down;
@@ -322,7 +321,7 @@ package body et_kicad_to_native is
 		end flatten_frames;
 
 		procedure flatten_components (
-			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module_name	: in kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
 		-- Changes the path and y position of units of components (in schematic) to root path.
 		-- Moves the y position of components (in layout).
@@ -333,7 +332,7 @@ package body et_kicad_to_native is
 			procedure query_units (
 				reference	: in et_libraries.type_component_reference;
 				component	: in out et_kicad.type_component_schematic) is
-				-- use et_coordinates;
+				use et_coordinates;
 				use et_kicad.type_units_schematic;
 				unit_cursor : et_kicad.type_units_schematic.cursor := component.units.first;
 
@@ -345,14 +344,14 @@ package body et_kicad_to_native is
 					log ("unit " & et_libraries.to_string (unit_name), log_threshold + 4);
 					log_indentation_up;
 					
-					log (before & to_string (position => unit.position, scope => et_coordinates.MODULE),
+					log (before & kicad_coordinates.to_string (position => unit.position, scope => kicad_coordinates.MODULE),
 						log_threshold + 4);
 
-					et_coordinates.set_path (unit.position, root);
+					kicad_coordinates.set_path (unit.position, root);
 
 					move (unit.position); -- Move position from negative to positive y.
 
-					log (now & to_string (position => unit.position, scope => et_coordinates.MODULE),
+					log (now & kicad_coordinates.to_string (position => unit.position, scope => kicad_coordinates.MODULE),
 						log_threshold + 4);
 
 					log_indentation_down;
