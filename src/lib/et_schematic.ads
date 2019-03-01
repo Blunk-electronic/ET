@@ -73,11 +73,6 @@ package et_schematic is
 		content			: et_libraries.type_text_content.bounded_string;
 	end record;
 
--- 	procedure write_note_properties (
--- 		note			: in et_schematic.type_text;
--- 		log_threshold	: in et_string_processing.type_log_level := 0);
--- 	-- Writes the properties of the given note
-
 	package type_texts is new doubly_linked_lists (type_text);
 
 
@@ -270,8 +265,6 @@ package et_schematic is
 -- 		coordinates_end   	: et_coordinates.type_coordinates; -- CS et_coordinates.type_2d_point ?
 -- 	end record;
 
--- 	function length (segment : in type_net_segment_base) return et_coordinates.type_distance;
-	-- Returns the length of the given net segment.
 	
 
 

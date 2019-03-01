@@ -79,6 +79,12 @@ package kicad_coordinates is
 	submodule_name_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set("-_"); 
 
+	procedure check_submodule_name_characters (
+		name		: in type_submodule_name.bounded_string;
+		characters	: in character_set := submodule_name_characters);
+	-- Checks for forbidden characters in submodule name.
+
+	
     -- The location of a submodule within the design hierarchy is reflected by
     -- a list of submodule names like motor_driver/counter/supply
     -- The first item in this list is the name of the top level module.
@@ -94,6 +100,9 @@ package kicad_coordinates is
 	
 	type type_coordinates is new et_coordinates.type_2d_point with private;
 
+	function to_coordinates (point : in type_2d_point'class)
+	-- Converts a type_2d_point to type_coordinates.
+		return type_coordinates;
 	
 	function path (position : in type_coordinates) return type_path_to_submodule.list;
 
@@ -209,9 +218,9 @@ package kicad_coordinates is
 	function same_path_and_sheet (left, right : in type_coordinates) return boolean;
 	-- Returns true if the given coordinates have same path and sheet.
 	
--- 	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number);
--- 	-- Sets the sheet number in given position.
--- 
+	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number);
+	-- Sets the sheet number in given position.
+
 -- 	-- PAPER SIZES
 -- 	-- As default we assume landscape format for all sheets.
 -- 	paper_size_A3_x : constant et_coordinates.type_distance := 420.0; -- CS use a common anchestor type and default value with sizes defined in et_pcb_coordinates.ads.

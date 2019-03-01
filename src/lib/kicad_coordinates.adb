@@ -121,6 +121,28 @@ package body kicad_coordinates is
 		return type_schematic_file_name.to_bounded_string (file);
 	end;
 
+	procedure check_submodule_name_characters (
+	-- Checks for forbidden characters in submodule name.
+		name		: in type_submodule_name.bounded_string;
+		characters	: in character_set := submodule_name_characters) is
+		use et_string_processing;
+		invalid_character_position : natural := 0;
+	begin
+		-- Test given submodule name and get position of possible invalid characters.
+		invalid_character_position := index (
+			source	=> name,
+			set		=> characters,
+			test	=> outside);
+
+		-- Evaluate position of invalid character.
+		if invalid_character_position > 0 then
+			log_indentation_reset;
+			log (message_warning & "invalid character in submodule name '" 
+				& to_string (name) & "' at position" & natural'image (invalid_character_position) & " !");
+		end if;
+	end check_submodule_name_characters;
+
+	
 	function to_string (
 		path 		: in type_path_to_submodule.list;
 		top_module 	: in boolean := true) return string is
@@ -157,6 +179,17 @@ package body kicad_coordinates is
 		return to_string (result);
 	end to_string;
 
+	function to_coordinates (point : in type_2d_point'class)
+	-- Converts a type_2d_point to type_coordinates.
+		return type_coordinates is
+	begin
+		return (
+			x				=> point.x,
+			y				=> point.y,
+			sheet_number	=> 1
+			);
+	end;
+	
 	function path (position : in type_coordinates) return type_path_to_submodule.list is begin
 		return position.path;
 	end;
@@ -431,13 +464,13 @@ package body kicad_coordinates is
 -- 	begin
 -- 		position.path := path;
 -- 	end set_path;
--- 
--- 	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number) is
--- 	-- Sets the sheet number in given position.
--- 	begin
--- 		position.sheet_number := sheet;
--- 	end set_sheet;
--- 
+
+	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number) is
+	-- Sets the sheet number in given position.
+	begin
+		position.sheet_number := sheet;
+	end set_sheet;
+
 -- 	function paper_dimension (
 -- 	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
 -- 		paper_size	: in et_general.type_paper_size;

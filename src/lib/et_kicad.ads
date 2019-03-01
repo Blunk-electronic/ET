@@ -738,6 +738,10 @@ package et_kicad is
 		coordinates_start 	: kicad_coordinates.type_coordinates;
 		coordinates_end   	: kicad_coordinates.type_coordinates; -- CS et_coordinates.type_2d_point ?
 	end record;
+
+	function length (segment : in type_net_segment_base) 
+		return et_coordinates.type_distance;
+	-- Returns the length of the given net segment.
 	
 	type type_net_segment is new type_net_segment_base with record
 		label_list_simple 	: type_simple_labels.list;
@@ -746,7 +750,7 @@ package et_kicad is
 	end record;
 
 	function to_string (
-		segment	: in type_net_segment;
+		segment	: in type_net_segment_base'class;
 		scope	: in kicad_coordinates.type_scope := kicad_coordinates.SHEET) return string;
 	-- Returns the start and end coordinates of the given net segment.
 	
@@ -1356,10 +1360,6 @@ package et_kicad is
 	
 
 	
-	procedure add_note (note : in et_schematic.type_text);
-	-- Inserts a note in the the module (indicated by module_cursor).
-
-
 	procedure check_junctions (log_threshold : in et_string_processing.type_log_level);
 	-- Verifies that junctions are placed where net segments are connected with each other.
 	-- NOTE: make_netlist detects if a junction is missing where a port is connected with a net.
@@ -1453,6 +1453,14 @@ package et_kicad is
 		content			: et_libraries.type_text_content.bounded_string;
 	end record;
 
+	procedure write_note_properties (
+		note			: in type_text;
+		log_threshold	: in et_string_processing.type_log_level := 0);
+	-- Writes the properties of the given note
+
+	procedure add_note (note : in type_text);
+	-- Inserts a note in the the module (indicated by module_cursor).
+	
 	package type_texts is new doubly_linked_lists (type_text);
 
 

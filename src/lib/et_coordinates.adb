@@ -325,29 +325,6 @@ package body et_coordinates is
 -- 			raise constraint_error;
 -- 		end if;
 -- 	end check_submodule_name_length;
--- 
--- 	procedure check_submodule_name_characters (
--- 	-- Checks for forbidden characters in submodule name.
--- 		name : in type_submodule_name.bounded_string;
--- 		characters : in character_set := submodule_name_characters) is
--- 		use et_string_processing;
--- 		invalid_character_position : natural := 0;
--- 	begin
--- 		-- Test given submodule name and get position of possible invalid characters.
--- 		invalid_character_position := index (
--- 			source => name,
--- 			set => characters,
--- 			test => outside);
--- 
--- 		-- Evaluate position of invalid character.
--- 		if invalid_character_position > 0 then
--- 			log_indentation_reset;
--- 			log (message_error & "invalid character in submodule name '" 
--- 				& to_string (name) & "' at position" & natural'image (invalid_character_position),
--- 				console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end check_submodule_name_characters;
 -- 	
 -- 	function to_string (submodule : in type_submodule_name.bounded_string) return string is
 -- 	-- Returns the given submodule name as string.
@@ -505,16 +482,16 @@ package body et_coordinates is
 -- 		return to_string (result);
 -- 	end to_string;
 	
-	function to_coordinates (point : in type_2d_point'class)
-	-- Converts a type_2d_point to type_coordinates.
-		return type_coordinates is
-	begin
-		return (
-			x				=> point.x,
-			y				=> point.y,
-			sheet_number	=> 1
-			);
-	end;
+-- 	function to_coordinates (point : in type_2d_point'class)
+-- 	-- Converts a type_2d_point to type_coordinates.
+-- 		return type_coordinates is
+-- 	begin
+-- 		return (
+-- 			x				=> point.x,
+-- 			y				=> point.y,
+-- 			sheet_number	=> 1
+-- 			);
+-- 	end;
 
 	function to_coordinates (
 		point 	: in type_2d_point'class;

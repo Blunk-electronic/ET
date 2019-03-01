@@ -159,19 +159,9 @@ package et_coordinates is
 		axis	: in type_axis) 
 		return type_distance;
 	
--- 	-- The name of a submodule may have 100 characters which seems sufficient for now.
---  	submodule_name_length_max : constant positive := 100;
--- 	package type_submodule_name is new generic_bounded_length (submodule_name_length_max); use type_submodule_name;
--- 	submodule_name_characters : character_set := to_set 
--- 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set("-_"); 
--- 
 -- 	procedure check_submodule_name_length (name : in string);
 -- 	-- Checks if the given submodule name is not longer than allowed.
 -- 
--- 	procedure check_submodule_name_characters (
--- 		name : in type_submodule_name.bounded_string;
--- 		characters : in character_set := submodule_name_characters);
--- 	-- Checks for forbiddedn characters in submodule name.
 -- 	
 -- 	function to_string (submodule : in type_submodule_name.bounded_string) return string;
 -- 	-- Returns the given submodule name as string.
@@ -232,9 +222,9 @@ package et_coordinates is
 	
 	type type_coordinates is new type_2d_point with private;
 
-	function to_coordinates (point : in type_2d_point'class)
-	-- Converts a type_2d_point to type_coordinates.
-		return type_coordinates;
+-- 	function to_coordinates (point : in type_2d_point'class)
+-- 	-- Converts a type_2d_point to type_coordinates.
+-- 		return type_coordinates;
 
 	function to_coordinates (
 		point 	: in type_2d_point'class;
