@@ -486,6 +486,7 @@ package body kicad_coordinates is
 -- 	end paper_dimension;
 
 	
+	
 end kicad_coordinates;
 
 -- Soli Deo Gloria

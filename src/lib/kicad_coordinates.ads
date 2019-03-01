@@ -73,7 +73,9 @@ package kicad_coordinates is
 	
 	-- The name of a submodule may have 100 characters which seems sufficient for now.
  	submodule_name_length_max : constant positive := 100;
-	package type_submodule_name is new generic_bounded_length (submodule_name_length_max); use type_submodule_name;
+	package type_submodule_name is new generic_bounded_length (submodule_name_length_max); 
+	use type_submodule_name;
+	
 	submodule_name_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set("-_"); 
 
@@ -91,7 +93,6 @@ package kicad_coordinates is
 
 	
 	type type_coordinates is new et_coordinates.type_2d_point with private;
-	--type type_coordinates is new et_coordinates.type_coordinates with private;
 
 	
 	function path (position : in type_coordinates) return type_path_to_submodule.list;
@@ -226,12 +227,22 @@ package kicad_coordinates is
 -- 		axis		: in type_axis)
 -- 		return type_distance_xy;
 
+-- 	overriding function to_coordinates (point : in type_2d_point'class)
+-- 	-- Converts a type_2d_point to type_coordinates.
+-- 		return type_coordinates;
+
+-- 	function to_coordinates (
+-- 		point 	: in type_2d_point'class;
+-- 		sheet	: in type_submodule_sheet_number;
+-- 		path	: in type_path_to_submodule.list)
+-- 		return type_coordinates;
+
 	
 	private 
 	
 		type type_coordinates is new et_coordinates.type_2d_point with record
-		--type type_coordinates is new et_coordinates.type_coordinates with record
 			path            : type_path_to_submodule.list; 
+			sheet_number	: type_submodule_sheet_number := type_submodule_sheet_number'first;
 		end record;
 
 -- 		zero_position : constant type_coordinates := (

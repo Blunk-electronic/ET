@@ -2348,12 +2348,13 @@ package body et_kicad_to_native is
 
 	
 	function to_native_coordinates (point : in kicad_coordinates.type_coordinates)
+	-- Converts kicad schematic coordinates to native schematic coordinates.
 		return et_coordinates.type_coordinates is
 		point_out : et_coordinates.type_coordinates;
 	begin
 		point_out := et_coordinates.to_coordinates (
-				point => point,
-				sheet => kicad_coordinates.sheet (point)
+				point => point, -- x,y
+				sheet => kicad_coordinates.sheet (point) -- sheet
 				);
 
 		return point_out;
@@ -2399,11 +2400,8 @@ package body et_kicad_to_native is
 				text_native : et_schematic.type_text;
 			begin
 				-- copy the coordinates x,y,sheet from kicad text to native text
-				text_native.coordinates := et_coordinates.to_coordinates (																			 
-					point => et_coordinates.type_2d_point (text_kicad.coordinates), -- x,y
-					sheet => kicad_coordinates.sheet (text_kicad.coordinates) -- sheet
-					);
-
+				text_native.coordinates := to_native_coordinates (text_kicad.coordinates);
+				
 				-- copy the content
 				text_native.content := text_kicad.content;
 
@@ -2532,10 +2530,9 @@ package body et_kicad_to_native is
 					case element (component_cursor_kicad).appearance is
 						when et_libraries.SCH => -- virtual device
 
-							unit_native_virtual := (et_schematic.type_unit_base (element (unit_cursor_kicad))
-													with 
-													--position	=> et_coordinates.to_coordinates ( element (unit_cursor_kicad)
-													appearance => et_libraries.SCH);
+							unit_native_virtual := (et_schematic.type_unit_base (element (unit_cursor_kicad)) with 
+											position	=> to_native_coordinates (element (unit_cursor_kicad).position),
+											appearance	=> et_libraries.SCH);
 
 							et_schematic.type_units.insert (
 								container	=> component.units,
@@ -2546,9 +2543,12 @@ package body et_kicad_to_native is
 
 						when et_libraries.SCH_PCB => -- real device
 
-							unit_native_real := (et_schematic.type_unit_base (element (unit_cursor_kicad))
-											 with -- stuff that comes with a real device:
-												appearance	=> et_libraries.SCH_PCB,
+							unit_native_real := (et_schematic.type_unit_base (element (unit_cursor_kicad)) with 
+											position	=> to_native_coordinates (element (unit_cursor_kicad).position),
+											appearance	=> et_libraries.SCH_PCB,
+											
+											-- and stuff that comes with a real device:
+											
 												reference	=> element (unit_cursor_kicad).reference,
 												value		=> element (unit_cursor_kicad).value,
 												
@@ -2671,20 +2671,15 @@ package body et_kicad_to_native is
 
 				use et_schematic.type_strands;
 				strands_native : et_schematic.type_strands.list;
-				strand_base : et_schematic.type_strand_base;
+				strand_native : et_schematic.type_strand;
 			
 				use et_schematic.type_net_segments;
 				net_segments_native : et_schematic.type_net_segments.list;
-				net_segment_base : et_schematic.type_net_segment_base;
+				net_segment_native : et_schematic.type_net_segment;
 
 				use et_schematic.type_net_labels;
-				net_labels_native : et_schematic.type_net_labels.list;
-
 				use et_schematic.type_junctions;
-				net_junctions_native : et_schematic.type_junctions.list;
-
 				use et_schematic.type_ports_component;
-				ports_native : et_schematic.type_ports_component.list;
 				
 				function tag_and_simple_labels (segment : in et_kicad.type_net_segment) 
 				-- Copies from the given kicad net segment all simple and tag labels and returns
@@ -2766,7 +2761,9 @@ package body et_kicad_to_native is
 							log_threshold + 5);
 						
 						-- copy the x/y position of kicad junction to native junction
-						et_coordinates.set_xy (junction_native.coordinates, element (junction_cursor).coordinates);
+						et_coordinates.set_xy (
+							point		=> junction_native.coordinates,
+							position	=> et_coordinates.type_2d_point (element (junction_cursor).coordinates));
 						
 						et_schematic.type_junctions.append (
 							container	=> junctions,
@@ -2807,8 +2804,8 @@ package body et_kicad_to_native is
 					while port_cursor_kicad /= et_kicad.type_ports_with_reference.no_element loop
 
 						-- compare sheet numbers
-						if 	sheet (element (port_cursor_kicad).coordinates) = 
-							sheet (element (kicad_strand_cursor).coordinates) then
+						if 	kicad_coordinates.sheet (element (port_cursor_kicad).coordinates) = 
+							kicad_coordinates.sheet (element (kicad_strand_cursor).coordinates) then
 
 							-- calculate distance of port from segment
 							distance := distance_of_point_from_line (
@@ -2822,7 +2819,9 @@ package body et_kicad_to_native is
 								log (et_libraries.to_string (element (port_cursor_kicad).reference) 
 									 & " port "
 									 & et_libraries.to_string (element (port_cursor_kicad).name)
-									 & to_string (position => element (port_cursor_kicad).coordinates, scope => XY),
+									 & kicad_coordinates.to_string (
+											position	=> element (port_cursor_kicad).coordinates,
+											scope		=> kicad_coordinates.XY),
 									 log_threshold + 5);
 
 								et_schematic.type_ports_component.append (
@@ -2839,15 +2838,36 @@ package body et_kicad_to_native is
 					log_indentation_down;
 					return ports_of_segment;
 				end read_ports;
+
+-- 				function to_junctions (junctions : in et_kicad.type_junctions.list) 
+-- 					return et_schematic.type_junctions.list is
+-- 				-- Copies the kicad junctions to a list of native junctions.
+-- 					junctions_out : et_schematic.type_junctions.list;
+-- 
+-- 					procedure query_junction (cursor : et_kicad.type_junctions.cursor) is
+-- 						junction_kicad	: et_kicad.type_net_junction := et_kicad.type_junctions.element (cursor);
+-- 						junction_native	: et_schematic.type_net_junction;
+-- 					begin
+-- 						-- A native junction contains x and y only.
+-- 						junction_native.coordinates := et_coordinates.type_2d_point (junction_kicad.coordinates);
+-- 
+-- 						-- Append native junction to native list of junctions:
+-- 						et_schematic.type_junctions.append (junctions_out, junction_native);
+-- 					end query_junction;
+-- 					
+-- 				begin -- to_junctions
+-- 					et_kicad.type_junctions.iterate (junctions, query_junction'access);
+-- 					return junctions_out;
+-- 				end to_junctions;
 				
 			begin -- insert_strands
 				log_indentation_up;
 				
 				-- loop in strands of current kicad net
 				while kicad_strand_cursor /= et_kicad.type_strands.no_element loop
-					log ("strand" & et_coordinates.to_string (
+					log ("strand" & kicad_coordinates.to_string (
 						 position	=> element (kicad_strand_cursor).coordinates,
-						 scope		=> et_coordinates.SHEET),
+						 scope		=> kicad_coordinates.SHEET),
 						 log_threshold + 3);
 					
 					-- load segments of current strand
@@ -2859,49 +2879,49 @@ package body et_kicad_to_native is
 					log_indentation_up;
 					while kicad_segment_cursor /= et_kicad.type_net_segments.no_element loop
 
-						log ("segment" & et_schematic.to_string (
+						log ("segment" & et_kicad.to_string (
 							segment		=> element (kicad_segment_cursor),
-							scope		=> et_coordinates.XY),
+							scope		=> kicad_coordinates.XY),
 							log_threshold + 4);
 						
-						-- get coordinates and junctions from the current kicad net segment:
-						net_segment_base := et_schematic.type_net_segment_base (element (kicad_segment_cursor));
+						-- get coordinates from current kicad net segment:
+						net_segment_native.coordinates_start := to_native_coordinates (element (kicad_segment_cursor).coordinates_start);
+						net_segment_native.coordinates_end   := to_native_coordinates (element (kicad_segment_cursor).coordinates_end);
 
 						-- get labels from current kicad net segment
-						net_labels_native := tag_and_simple_labels (element (kicad_segment_cursor));
+						net_segment_native.labels := tag_and_simple_labels (element (kicad_segment_cursor));
 
 						-- read net junctions of the current segment in temp. collection net_junctions_native
-						net_junctions_native := read_net_junctions (element (kicad_segment_cursor));
+						net_segment_native.junctions := read_net_junctions (element (kicad_segment_cursor));
 
 						-- read ports connected with the segment
-						ports_native := read_ports (element (kicad_segment_cursor)); -- provide ports connected with the current segment
+						net_segment_native.component_ports := read_ports (element (kicad_segment_cursor));
+
+						-- there are no ports of submodules
+						net_segment_native.submodule_ports := type_ports_submodule.empty_list; 
 						
 						-- Collect native net segment in list net_segments_native.
-						-- Native net segments have labels and junctions.
 						et_schematic.type_net_segments.append (
 							container	=> net_segments_native,
-							new_item	=> (net_segment_base with 
-											labels		=> net_labels_native,
-											junctions	=> net_junctions_native,
-											component_ports	=> ports_native,
-											submodule_ports	=> <> -- there are no ports of submodules
-										   )
-							);
+							new_item	=> net_segment_native);
 
 						next (kicad_segment_cursor);
 					end loop;
 					log_indentation_down;
 
 					-- get lowest x/y coordinates of current kicad strand:
-					strand_base := et_schematic.type_strand_base (element (kicad_strand_cursor));
+					strand_native.coordinates := to_native_coordinates (element (kicad_strand_cursor).coordinates);
 
-					-- collect native strand (incl. segments) in list strands_native
-					et_schematic.type_strands.append (
-						container	=> strands_native,
-						new_item	=> (strand_base with net_segments_native));
+					-- copy net segments to native strand
+					strand_native.segments := net_segments_native;
 
 					-- clear collection of net segments (for the next strand)
 					clear (net_segments_native);
+					
+					-- collect native strand (incl. segments) in list strands_native
+					et_schematic.type_strands.append (
+						container	=> strands_native,
+						new_item	=> strand_native);
 					
 					next (kicad_strand_cursor);
 				end loop;
@@ -2969,7 +2989,7 @@ package body et_kicad_to_native is
 		end copy_frames;
 		
 		procedure copy_libraries (
-			module_name : in et_coordinates.type_submodule_name.bounded_string;
+			module_name : in kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in et_kicad.type_module) is
 			
 			-- This cursor points to the kicad component library being converted:
@@ -3817,7 +3837,7 @@ package body et_kicad_to_native is
 
 			-- Copy the kicad module name to the native project name.
 			-- The native project name and the module contained will have the same name.
-			project_name := to_bounded_string (et_coordinates.to_string (key (module_cursor_kicad)));
+			project_name := et_project.to_project_name (kicad_coordinates.to_string (key (module_cursor_kicad)));
 			
 			log ("module " & to_string (project_name), log_threshold + 1);
 			log_indentation_up;

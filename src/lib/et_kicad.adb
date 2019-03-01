@@ -78,24 +78,23 @@ package body et_kicad is
 	use et_general.type_net_name;
 	
 	function to_submodule_name (file_name : in type_schematic_file_name.bounded_string)
-		return et_coordinates.type_submodule_name.bounded_string is
+		return type_submodule_name.bounded_string is
 	-- Returns the base name of the given schematic file name as submodule name.
 		use ada.directories;
 	begin
 		-- CS: test if given submodule has an extension. if not return
 		-- submodule as it is.
 		--return to_bounded_string (base_name (et_coordinates.to_string (submodule)));
-		return et_coordinates.type_submodule_name.to_bounded_string (base_name (kicad_coordinates.to_string (file_name)));
+		return to_submodule_name (base_name (kicad_coordinates.to_string (file_name)));
 	end to_submodule_name;
 
 	-- Here we append a sheet name to the path_to_sheet.
 	-- CS: unify with procedure delete_last_module_name_from_path
 	--procedure append_name_of_parent_module_to_path (submodule : in et_coordinates.type_submodule_name.bounded_string) is
-	procedure append_sheet_name_to_path (sheet : in et_coordinates.type_submodule_name.bounded_string) is
+	procedure append_sheet_name_to_path (sheet : in type_submodule_name.bounded_string) is
 		use et_string_processing;
 		use ada.directories;
-		use et_coordinates;
-		use et_coordinates.type_submodule_name;
+		--use type_submodule_name;
 	begin
 		-- CS: limit path length !
 -- 		log ("append path_to_submodule " 
@@ -107,18 +106,16 @@ package body et_kicad is
 	end append_sheet_name_to_path;
 	
 	-- Here we remove the last submodule name form the path_to_sheet.
-	procedure delete_last_module_name_from_path is
-		use et_coordinates;
-	begin
+	procedure delete_last_module_name_from_path is begin
 		type_path_to_submodule.delete_last (path_to_sheet);
 	end delete_last_module_name_from_path;
 
-	procedure module_not_found (module : in et_coordinates.type_submodule_name.bounded_string) is
+	procedure module_not_found (module : in type_submodule_name.bounded_string) is
 	-- Returns a message stating that the given module does not exist.
 		use et_string_processing;
 	begin
 		log_indentation_reset;
-		log (message_error & " module " & et_coordinates.to_string (module) & " not found !");
+		log (message_error & " module " & to_string (module) & " not found !");
 		raise constraint_error;
 	end module_not_found;
 
@@ -142,7 +139,7 @@ package body et_kicad is
 	-- The unit is an element in the given list of units.
 		name 	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
-		return et_coordinates.type_coordinates is
+		return kicad_coordinates.type_coordinates is
 		unit_cursor : type_units_schematic.cursor;
 	begin
 		unit_cursor := type_units_schematic.find (container => units, key => name);
@@ -485,7 +482,7 @@ package body et_kicad is
 
 	function to_string (
 		no_connection_flag	: in type_no_connection_flag;
-		scope				: in et_coordinates.type_scope) return string is
+		scope				: in kicad_coordinates.type_scope) return string is
 	-- Returns the position of the given no-connection-flag as string.
 		use et_coordinates;
 	begin	
@@ -1312,10 +1309,10 @@ package body et_kicad is
 			tmp_unit_add_level	: type_unit_add_level := type_unit_add_level'first; -- CS: rename to unit_add_level
 			tmp_unit_global		: boolean := false; -- specifies if a unit harbors component wide pins (such as power supply) -- CS: rename to unit_global
 			
-			field_reference		: type_text (meaning => reference); -- CS: should be field_prefix as it contains just the prefix 
-			field_value			: type_text (meaning => value);
-			field_package		: type_text (meaning => packge);
-			field_datasheet		: type_text (meaning => datasheet);
+			field_reference		: et_libraries.type_text (meaning => reference); -- CS: should be field_prefix as it contains just the prefix 
+			field_value			: et_libraries.type_text (meaning => value);
+			field_package		: et_libraries.type_text (meaning => packge);
+			field_datasheet		: et_libraries.type_text (meaning => datasheet);
 
 			-- "field found flags" go true once the corresponding field was detected
 			-- Evaluated by procedure check_text_fields.
@@ -1922,7 +1919,7 @@ package body et_kicad is
 			function to_field (
 				line 	: in type_fields_of_line;
 				meaning	: in type_text_meaning) 
-				return type_text is
+				return et_libraries.type_text is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
 			-- the meaning as given in parameter "meaning".
 			-- Checks basic properties of text fields (allowed charactes, text size, aligment, ...)
@@ -1931,7 +1928,7 @@ package body et_kicad is
 				use et_libraries.type_text_content;
 
 				-- instantiate a text field as speficied by given parameter meaning
-				text : type_text (meaning);
+				text : et_libraries.type_text (meaning);
 
 			begin -- to_field
 				-- field #:
@@ -2791,7 +2788,7 @@ package body et_kicad is
 						field_prefix_found := true;
 						field_reference := to_field (line => line, meaning => reference);
 						-- for the log:
-						write_text_properies (type_text (field_reference), log_threshold + 1);
+						write_text_properies (et_libraries.type_text (field_reference), log_threshold + 1);
 
 					-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
 					when value =>
@@ -2799,7 +2796,7 @@ package body et_kicad is
 						field_value := to_field (line => line, meaning => value);
 						
 						-- for the log:
-						write_text_properies (type_text (field_value), log_threshold + 1);
+						write_text_properies (et_libraries.type_text (field_value), log_threshold + 1);
 
 					-- If we have a footprint field like "F2 "bel_resistors:S_0805" 0 -100 50 H V C CNN"
 					-- NOTE: the part before the colon is the containing library. The part after the colon 
@@ -2809,7 +2806,7 @@ package body et_kicad is
 						field_package_found := true;
 						field_package := to_field (line => line, meaning => packge);
 						-- for the log:
-						write_text_properies (type_text (field_package), log_threshold + 1);
+						write_text_properies (et_libraries.type_text (field_package), log_threshold + 1);
 
 					-- If we have a datasheet field like "F3 "" 0 -100 50 H V C CNN"
 					when datasheet =>
@@ -2817,7 +2814,7 @@ package body et_kicad is
 						field_datasheet_found := true;
 						field_datasheet := to_field (line => line, meaning => datasheet);
 						-- for the log:
-						write_text_properies (type_text (field_datasheet), log_threshold + 1);
+						write_text_properies (et_libraries.type_text (field_datasheet), log_threshold + 1);
 
 					when others => null;
 						-- CS: warning about illegal fields ?
@@ -3478,7 +3475,7 @@ package body et_kicad is
 		-- Creates a net with the name and the scope (local, global) of the current strand. 
 		-- If strand is local, the net name is rendered to a full hierarchic name.
 		-- If the net existed already, then strand is appended to the strands of the net.
-			mod_name : in et_coordinates.type_submodule_name.bounded_string;
+			mod_name : in type_submodule_name.bounded_string;
 			module   : in out type_module) is
 
 			use type_nets;
@@ -3498,8 +3495,8 @@ package body et_kicad is
 
 				if log_level >= log_threshold + 2 then
 					log_indentation_up;
-					log ("strand at " & et_coordinates.to_string (
-						position => element (strand).coordinates, scope => et_coordinates.module));
+					log ("strand at " & to_string (
+						position => element (strand).coordinates, scope => kicad_coordinates.MODULE));
 					log_indentation_down;
 				end if;
 				
@@ -3535,8 +3532,8 @@ package body et_kicad is
 					-- Output a warning if strand has no name.
 					if anonymous (element (strand).name) then
 						log (message_warning & "net " & et_general.to_string (element (strand).name) 
-							& " at" & et_coordinates.to_string (
-								position => element (strand).coordinates, scope => et_coordinates.module)
+							& " at" & to_string (
+								position => element (strand).coordinates, scope => kicad_coordinates.MODULE)
 							& " has no dedicated name !");
 					end if;
 
@@ -3560,14 +3557,14 @@ package body et_kicad is
 -- 					end if;
 
 					-- if strand is in top module form a net name like "/MASTER_RESET"
-					if et_coordinates.type_path_to_submodule.is_empty (et_coordinates.path (element (strand).coordinates)) then
+					if type_path_to_submodule.is_empty (path (element (strand).coordinates)) then
 						net_name := to_net_name (
 							et_coordinates.hierarchy_separator
 							& et_general.to_string (element (strand).name));
 
 					else -- strand is in any submodule. form a net name like "/SENSOR/RESET"
 						net_name := to_net_name (
-							et_coordinates.to_string (et_coordinates.path (element (strand).coordinates))
+							to_string (path (element (strand).coordinates))
 							& et_coordinates.hierarchy_separator 
 							& et_general.to_string (element (strand).name));
 					end if;
@@ -3624,7 +3621,7 @@ package body et_kicad is
 		cursor : type_nets.cursor;	
 
 		procedure set_cursor (
-			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+			mod_name	: in type_submodule_name.bounded_string;
 			module		: in type_module) is
  		begin
 			cursor := module.nets.first;
@@ -3657,7 +3654,7 @@ package body et_kicad is
 		-- This construct returned after examining a gui_submodule for a suitable hierarchic net at a deeper level:
         type type_hierachic_net is record
 			available	: boolean := false; -- when false, path and port are without meaning
-			path        : et_coordinates.type_path_to_submodule.list := et_coordinates.type_path_to_submodule.empty_list;	-- the path of the submodule
+			path        : type_path_to_submodule.list := type_path_to_submodule.empty_list;	-- the path of the submodule
 			name		: type_net_name.bounded_string := to_net_name (""); -- the name of the hierarchic net -- CS: rename to name
         end record;
 
@@ -11981,6 +11978,20 @@ package body et_kicad is
 	begin	
 		return (to_string (position => junction.coordinates, scope => scope));
 	end to_string;
+
+	function to_string (
+		segment	: in type_net_segment;
+		scope 	: in kicad_coordinates.type_scope := kicad_coordinates.SHEET)
+		return string is
+	-- Returns the start and end coordinates of the given net segment.
+		use kicad_coordinates;
+	begin
+		return (" start"
+			& to_string (position => segment.coordinates_start, scope => scope)
+			& " end" 
+			& to_string (position => segment.coordinates_end, scope => XY));
+	end to_string;
+
 	
 	function to_string (scope : in type_strand_scope) return string is
 	-- Retruns the given scope as string.

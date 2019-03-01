@@ -744,6 +744,11 @@ package et_kicad is
 		label_list_tag    	: type_tag_labels.list;
 		junctions			: type_junctions.list;
 	end record;
+
+	function to_string (
+		segment	: in type_net_segment;
+		scope	: in kicad_coordinates.type_scope := kicad_coordinates.SHEET) return string;
+	-- Returns the start and end coordinates of the given net segment.
 	
 	package type_net_segments is new doubly_linked_lists (type_net_segment);
 	
@@ -757,7 +762,7 @@ package et_kicad is
 	
 	function to_string (scope : in type_strand_scope) return string;
 	-- Returns the given scope as string.
-
+	
 	-- A strand is a collection of net segments which belong to each other. 
 	-- Segments belong to each other because their start/end points meet.
 	-- A strand has coordinates. 
