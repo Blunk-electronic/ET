@@ -91,6 +91,7 @@ package kicad_coordinates is
 
 	
 	type type_coordinates is new et_coordinates.type_2d_point with private;
+	--type type_coordinates is new et_coordinates.type_coordinates with private;
 
 	
 	function path (position : in type_coordinates) return type_path_to_submodule.list;
@@ -229,8 +230,8 @@ package kicad_coordinates is
 	private 
 	
 		type type_coordinates is new et_coordinates.type_2d_point with record
+		--type type_coordinates is new et_coordinates.type_coordinates with record
 			path            : type_path_to_submodule.list; 
-			sheet_number	: type_submodule_sheet_number := type_submodule_sheet_number'first;			
 		end record;
 
 -- 		zero_position : constant type_coordinates := (

@@ -510,11 +510,25 @@ package body et_coordinates is
 		return type_coordinates is
 	begin
 		return (
-			x		=> point.x,
-			y		=> point.y,
+			x				=> point.x,
+			y				=> point.y,
 			sheet_number	=> 1
 			);
-	end to_coordinates;
+	end;
+
+	function to_coordinates (
+		point 	: in type_2d_point'class;
+		sheet	: in type_submodule_sheet_number)
+		return type_coordinates is
+	begin
+		return (
+			x				=> point.x,
+			y				=> point.y,
+			sheet_number	=> sheet
+			);
+	end;
+			
+
 	
 	function to_string (position : in type_coordinates) return string is
 		use et_string_processing;

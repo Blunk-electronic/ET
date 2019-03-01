@@ -2345,6 +2345,19 @@ package body et_kicad_to_native is
 		
 		log_indentation_down;
 	end transpose;
+
+	
+	function to_native_coordinates (point : in kicad_coordinates.type_coordinates)
+		return et_coordinates.type_coordinates is
+		point_out : et_coordinates.type_coordinates;
+	begin
+		point_out := et_coordinates.to_coordinates (
+				point => point,
+				sheet => kicad_coordinates.sheet (point)
+				);
+
+		return point_out;
+	end;
 	
 	procedure to_native (log_threshold : in et_string_processing.type_log_level) is
 	-- Converts the kicad module (incl. component libraries) to a native module.
@@ -2385,14 +2398,20 @@ package body et_kicad_to_native is
 				text_kicad : et_kicad.type_text := et_kicad.type_texts.element (cursor);
 				text_native : et_schematic.type_text;
 			begin
-				text_native.coordinates := et_coordinates.type_2d_point (text_kicad.coordinates);
-				
--- 				et_schematic.type_texts.append (
--- 					container	=> texts_out,
--- 					new_item	=> (
--- 						coordinates	=>
+				-- copy the coordinates x,y,sheet from kicad text to native text
+				text_native.coordinates := et_coordinates.to_coordinates (																			 
+					point => et_coordinates.type_2d_point (text_kicad.coordinates), -- x,y
+					sheet => kicad_coordinates.sheet (text_kicad.coordinates) -- sheet
+					);
 
-				null;
+				-- copy the content
+				text_native.content := text_kicad.content;
+
+				-- append native text to list of native texts
+				et_schematic.type_texts.append (
+					container	=> texts_out,
+					new_item	=> text_native);
+
 			end query_texts;
 			
 		begin -- to_texts
@@ -2514,7 +2533,9 @@ package body et_kicad_to_native is
 						when et_libraries.SCH => -- virtual device
 
 							unit_native_virtual := (et_schematic.type_unit_base (element (unit_cursor_kicad))
-													with appearance => et_libraries.SCH);
+													with 
+													--position	=> et_coordinates.to_coordinates ( element (unit_cursor_kicad)
+													appearance => et_libraries.SCH);
 
 							et_schematic.type_units.insert (
 								container	=> component.units,

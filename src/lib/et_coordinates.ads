@@ -236,6 +236,12 @@ package et_coordinates is
 	-- Converts a type_2d_point to type_coordinates.
 		return type_coordinates;
 
+	function to_coordinates (
+		point 	: in type_2d_point'class;
+		sheet	: in type_submodule_sheet_number)
+		return type_coordinates;
+
+	
 	zero_position : constant type_coordinates;
 
 	coordinates_preamble_xy : constant string (1..11) := " pos "
