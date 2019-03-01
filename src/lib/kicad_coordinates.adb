@@ -179,22 +179,24 @@ package body kicad_coordinates is
 		return to_string (result);
 	end to_string;
 
-	function to_coordinates (point : in type_2d_point'class)
-	-- Converts a type_2d_point to type_coordinates.
-		return type_coordinates is
-	begin
-		return (
-			x				=> point.x,
-			y				=> point.y,
-			sheet_number	=> 1
-			);
-	end;
+-- 	function to_coordinates (point : in type_2d_point'class)
+-- 	-- Converts a type_2d_point to type_coordinates.
+-- 		return type_coordinates is
+-- 	begin
+-- 		return (
+-- 			x				=> point.x,
+-- 			y				=> point.y,
+-- 			sheet_number	=> 1
+-- 			);
+-- 	end;
 	
 	function path (position : in type_coordinates) return type_path_to_submodule.list is begin
 		return position.path;
 	end;
 
-	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list) is begin
+	procedure set_path (
+		position	: in out type_coordinates;
+		path		: in type_path_to_submodule.list) is begin
 	-- Sets the path in given position.
 		position.path := path;
 	end;

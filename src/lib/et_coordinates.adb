@@ -134,7 +134,7 @@ package body et_coordinates is
 	end set_y;
 
 	procedure set_xy (
-		point 		: in out type_2d_point'class;
+		point 		: in out type_2d_point;
 		position	: in type_2d_point) is
 	begin
 		point.x := position.x;
@@ -150,7 +150,7 @@ package body et_coordinates is
 	end set_point;
 	
 	procedure mirror (
-		point	: in out type_2d_point;
+		point	: in out type_2d_point'class;
 		axis	: in type_axis)
 		is
 	begin
@@ -163,7 +163,7 @@ package body et_coordinates is
 	end mirror;
 
 	procedure move (
-		point	: in out type_2d_point;
+		point	: in out type_2d_point'class;
 		offset	: in type_2d_point)
 		is
 	begin
@@ -482,16 +482,16 @@ package body et_coordinates is
 -- 		return to_string (result);
 -- 	end to_string;
 	
--- 	function to_coordinates (point : in type_2d_point'class)
--- 	-- Converts a type_2d_point to type_coordinates.
--- 		return type_coordinates is
--- 	begin
--- 		return (
--- 			x				=> point.x,
--- 			y				=> point.y,
--- 			sheet_number	=> 1
--- 			);
--- 	end;
+	function to_coordinates (point : in type_2d_point'class)
+	-- Converts a type_2d_point to type_coordinates.
+		return type_coordinates is
+	begin
+		return (
+			x				=> point.x,
+			y				=> point.y,
+			sheet_number	=> 1
+			);
+	end;
 
 	function to_coordinates (
 		point 	: in type_2d_point'class;

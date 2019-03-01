@@ -9844,7 +9844,7 @@ package body et_kicad is
 			port_cursor : type_ports_library.cursor; 
 
 			unit_name_lib : type_unit_name.bounded_string; -- the unit name in the library. like "A", "B" or "PWR"
-			unit_position : et_coordinates.type_coordinates; -- the coordinates of the current unit
+			unit_position : kicad_coordinates.type_coordinates; -- the coordinates of the current unit
 			-- CS: external units
 
 			procedure add_port is
@@ -9864,7 +9864,7 @@ package body et_kicad is
 					ports		: in out type_ports.list) is
 					use type_modules;
 					
-					port_coordinates : type_coordinates;
+					port_coordinates : kicad_coordinates.type_coordinates;
 
 					function left_open return type_port_open is
 					-- Returns true if a no-connect-flag sits at the port_coordinates.
@@ -9917,7 +9917,8 @@ package body et_kicad is
 					-- The port position is a type_2d_point and must be converted to type_coordinates.
 					et_coordinates.set_xy (
 						point		=> port_coordinates,
-						position	=> to_coordinates (element (port_cursor).position)); -- with type conversion
+						--position	=> to_coordinates (element (port_cursor).position)); -- with type conversion
+						position	=> element (port_cursor).position);
 
 					-- rotate port coordinates
 					rotate (
@@ -9928,15 +9929,17 @@ package body et_kicad is
 					-- Mirror port coordinates if required.
 					case mirror_style_of_unit (unit_name_lib, units_sch) is
 						when NO => null; -- unit not mirrored in schematic
-						when X_AXIS => mirror (point => port_coordinates, axis => x);
-						when Y_AXIS => mirror (point => port_coordinates, axis => y);
+						when X_AXIS => et_coordinates.mirror (point => port_coordinates, axis => et_coordinates.X);
+						when Y_AXIS => et_coordinates.mirror (point => port_coordinates, axis => et_coordinates.Y);
 					end case;
 
 					-- offset port coordinates by the coordinates of the unit found in the schematic
-					move (point => port_coordinates, offset => unit_position);
+					et_coordinates.move (point => port_coordinates, offset => et_coordinates.type_2d_point (unit_position));
 
 					-- path remains unchanged because the port is still where the unit is
-					set_path (port_coordinates, path (unit_position));
+					kicad_coordinates.set_path (
+						position	=> port_coordinates,
+						path		=> path (unit_position));
 
 					-- sheet name remains unchanged because the sheet is still the same
 					set_sheet (port_coordinates, sheet (unit_position));

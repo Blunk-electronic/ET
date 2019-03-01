@@ -100,9 +100,9 @@ package kicad_coordinates is
 	
 	type type_coordinates is new et_coordinates.type_2d_point with private;
 
-	function to_coordinates (point : in type_2d_point'class)
-	-- Converts a type_2d_point to type_coordinates.
-		return type_coordinates;
+-- 	function to_coordinates (point : in type_2d_point'class)
+-- 	-- Converts a type_2d_point to type_coordinates.
+-- 		return type_coordinates;
 	
 	function path (position : in type_coordinates) return type_path_to_submodule.list;
 

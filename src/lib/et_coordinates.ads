@@ -130,17 +130,17 @@ package et_coordinates is
 	procedure set_y (point : in out type_2d_point'class; y : in type_distance_xy);
 	
 	procedure set_xy (
-		point	 : in out type_2d_point'class;
+		point	 : in out type_2d_point;
 		position : in type_2d_point);
 
 	function set_point (x, y : in type_distance_xy) return type_2d_point'class;
 	
 	procedure mirror (
-		point	: in out type_2d_point;
+		point	: in out type_2d_point'class;
 		axis	: in type_axis);	
 
 	procedure move (
-		point	: in out type_2d_point;
+		point	: in out type_2d_point'class;
 		offset	: in type_2d_point);
 
 	procedure rotate (
@@ -222,9 +222,9 @@ package et_coordinates is
 	
 	type type_coordinates is new type_2d_point with private;
 
--- 	function to_coordinates (point : in type_2d_point'class)
--- 	-- Converts a type_2d_point to type_coordinates.
--- 		return type_coordinates;
+	function to_coordinates (point : in type_2d_point'class)
+	-- Converts a type_2d_point to type_coordinates.
+		return type_coordinates;
 
 	function to_coordinates (
 		point 	: in type_2d_point'class;
