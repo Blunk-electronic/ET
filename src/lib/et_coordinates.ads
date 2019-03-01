@@ -131,17 +131,17 @@ package et_coordinates is
 	
 	procedure set_xy (
 		point	 : in out type_2d_point;
-		position : in type_2d_point);
+		position : in type_2d_point'class);
 
 	function set_point (x, y : in type_distance_xy) return type_2d_point'class;
 	
 	procedure mirror (
-		point	: in out type_2d_point'class;
+		point	: in out type_2d_point;
 		axis	: in type_axis);	
 
 	procedure move (
-		point	: in out type_2d_point'class;
-		offset	: in type_2d_point);
+		point	: in out type_2d_point;
+		offset	: in type_2d_point'class);
 
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
@@ -255,24 +255,9 @@ package et_coordinates is
 		& axis_separator
 		& "y) ";
 
-	
--- 	type type_scope is (
--- 		XY, -- only x an y pos.
--- 		SHEET, 	-- coordinates sheet related
--- 		MODULE); -- coordinates with the module in scope
--- 		-- CS: rig ? -- with the whole rig is scope
-
 	function to_string (position : in type_coordinates) return string;
-
--- 	function path (position : in type_coordinates) return type_path_to_submodule.list;
 	
 	function sheet (position : in type_coordinates) return type_submodule_sheet_number;
-
--- 	function same_path_and_sheet (left, right : in type_coordinates) return boolean;
--- 	-- Returns true if the given coordinates have same path and sheet.
-	
--- 	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list);
--- 	-- Sets the path in given position.
 
 	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number);
 	-- Sets the sheet number in given position.

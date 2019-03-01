@@ -135,7 +135,7 @@ package body et_coordinates is
 
 	procedure set_xy (
 		point 		: in out type_2d_point;
-		position	: in type_2d_point) is
+		position	: in type_2d_point'class) is
 	begin
 		point.x := position.x;
 		point.y := position.y;
@@ -150,7 +150,7 @@ package body et_coordinates is
 	end set_point;
 	
 	procedure mirror (
-		point	: in out type_2d_point'class;
+		point	: in out type_2d_point;
 		axis	: in type_axis)
 		is
 	begin
@@ -163,8 +163,8 @@ package body et_coordinates is
 	end mirror;
 
 	procedure move (
-		point	: in out type_2d_point'class;
-		offset	: in type_2d_point)
+		point	: in out type_2d_point;
+		offset	: in type_2d_point'class)
 		is
 	begin
 		point.x := point.x + offset.x;

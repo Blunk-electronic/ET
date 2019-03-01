@@ -6041,7 +6041,8 @@ package body et_kicad is
 							set_sheet (strand.coordinates, sheet_number);
 
 							-- set x,y coordinates (lowest available on the sheet)
-							set_xy (strand.coordinates, to_coordinates (lowest_xy (strand, log_threshold + 3)));
+							--set_xy (strand.coordinates, to_coordinates (lowest_xy (strand, log_threshold + 3)));
+							set_xy (strand.coordinates, lowest_xy (strand, log_threshold + 3));
                             
 							-- insert strand in module, then purge strand.segments for next spin
 							log ("inserting strand in module ...", log_threshold + 2);
@@ -9915,9 +9916,8 @@ package body et_kicad is
 				begin -- add
 					-- Init port coordinates with the coordinates of the port found in the library.
 					-- The port position is a type_2d_point and must be converted to type_coordinates.
-					et_coordinates.set_xy (
+					set_xy (
 						point		=> port_coordinates,
-						--position	=> to_coordinates (element (port_cursor).position)); -- with type conversion
 						position	=> element (port_cursor).position);
 
 					-- rotate port coordinates
@@ -9929,15 +9929,15 @@ package body et_kicad is
 					-- Mirror port coordinates if required.
 					case mirror_style_of_unit (unit_name_lib, units_sch) is
 						when NO => null; -- unit not mirrored in schematic
-						when X_AXIS => et_coordinates.mirror (point => port_coordinates, axis => et_coordinates.X);
-						when Y_AXIS => et_coordinates.mirror (point => port_coordinates, axis => et_coordinates.Y);
+						when X_AXIS => mirror (point => port_coordinates, axis => et_coordinates.X);
+						when Y_AXIS => mirror (point => port_coordinates, axis => et_coordinates.Y);
 					end case;
 
 					-- offset port coordinates by the coordinates of the unit found in the schematic
-					et_coordinates.move (point => port_coordinates, offset => et_coordinates.type_2d_point (unit_position));
+					move (point => port_coordinates, offset => unit_position);
 
 					-- path remains unchanged because the port is still where the unit is
-					kicad_coordinates.set_path (
+					set_path (
 						position	=> port_coordinates,
 						path		=> path (unit_position));
 
@@ -10162,11 +10162,12 @@ package body et_kicad is
 			use type_modules;
 		
 			procedure save (
-				module_name	: in et_coordinates.type_submodule_name.bounded_string;
+				module_name	: in type_submodule_name.bounded_string;
 				module 		: in out type_module) is
 			begin
 				module.portlists := portlists;
 			end save;
+			
 		begin -- save_portlists
 			log ("saving portlists ...", log_threshold + 1);
 			update_element (
@@ -10275,7 +10276,7 @@ package body et_kicad is
 		use et_string_processing;
 
 		procedure query_portlists (
-			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module_name	: in type_submodule_name.bounded_string;
 			module 		: in type_module) is
 			use type_portlists;
 			portlist_cursor : type_portlists.cursor := module.portlists.first;
@@ -10428,18 +10429,18 @@ package body et_kicad is
 							if element (port_cursor).direction = POWER_IN then
 								if not connected_by_other_unit then
 									log (message_error & "power supply not connected at" 
-										& to_string (element (port_cursor).coordinates, et_coordinates.module)
+										& to_string (element (port_cursor).coordinates, kicad_coordinates.MODULE)
 										& " nor via other units of this component !");
 									raise constraint_error;
 								end if;
 							else
 								log (message_warning & "port not connected at" 
-									& to_string (element (port_cursor).coordinates, et_coordinates.module));
+									& to_string (element (port_cursor).coordinates, kicad_coordinates.MODULE));
 							end if;
 
 						else
 							log (message_warning & "port not connected at" 
-								& to_string (element (port_cursor).coordinates, et_coordinates.module));
+								& to_string (element (port_cursor).coordinates, kicad_coordinates.MODULE));
 						end if;
 					end if;
 				
@@ -10468,7 +10469,7 @@ package body et_kicad is
 		-- Process one module after another.
 		-- module_cursor points to the module in the modules.
 		while module_cursor /= type_modules.no_element loop
-			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
+			log ("module " & to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 			
 			-- query no_connection_flags of current module and test if any of them
@@ -10494,7 +10495,7 @@ package body et_kicad is
 		-- Queries the schematic components one after another.
 		-- Opens the library where the generic model is stored.
 		-- The library name is provided by the schematic component.
-			module_name : in et_coordinates.type_submodule_name.bounded_string;
+			module_name : in type_submodule_name.bounded_string;
 			module		: in type_module) is
 
 			use type_components_schematic;
@@ -10675,7 +10676,7 @@ package body et_kicad is
 		-- Process one module after another.
 		-- module_cursor points to the module in the modules.
 		while module_cursor /= type_modules.no_element loop
-			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
+			log ("module " & to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 			
 			-- query components in schematic
@@ -10695,7 +10696,7 @@ package body et_kicad is
 		count : count_type := 0;
 	
 		procedure count_nets (
-			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module_name	: in type_submodule_name.bounded_string;
 			module		: in type_module) is
 		begin
 			count := type_netlist.length (module.netlist);
@@ -10714,7 +10715,7 @@ package body et_kicad is
 		count : count_type := 0;
 	
 		procedure count_junctions (
-			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module_name	: in type_submodule_name.bounded_string;
 			module		: in type_module) is
 			use type_junctions;
 		begin
@@ -10737,96 +10738,8 @@ package body et_kicad is
 		return natural (length (modules));
 	end module_count;
 
-	
--- 	procedure copy_module (
--- 	-- Copyies a module. 
--- 	-- If copy_last is true (default) the last module in the rig is copied. 
--- 	-- If copy_last is false, the module with given name_origin is copied.
--- 	-- The module instance is always incremented automatically.
--- 		copy_last		: in boolean := true;
--- 		name_origin		: in et_coordinates.type_submodule_name.bounded_string := et_coordinates.type_submodule_name.to_bounded_string (""); -- nucleo_core_3
--- 		log_threshold	: in et_string_processing.type_log_level) is
--- 
--- 		use et_string_processing;
--- 		use type_modules;
--- 		use et_coordinates;
--- 		
--- 		module_cursor_origin : type_modules.cursor;
--- 		generic_name_origin : et_coordinates.type_submodule_name.bounded_string;
--- 		instance_origin : type_submodule_instance;
--- 		instance_new : type_submodule_instance;
--- 		module_cursor_new : type_modules.cursor;
--- 		name_origin_scratch : et_coordinates.type_submodule_name.bounded_string := name_origin;
--- 		name_new : et_coordinates.type_submodule_name.bounded_string;
--- 		inserted : boolean := false;
--- 
--- 		procedure set_instance (
--- 			module_name	: in et_coordinates.type_submodule_name.bounded_string;
--- 			module		: in out type_module) is
--- 		begin
--- 			module.instance := instance_new;
--- 		end set_instance;
--- 
--- 	begin -- copy_module
--- 		if copy_last then -- default mode
--- 			log ("copying last module ...", log_threshold);
--- 			module_cursor_origin := last (rig); -- set module cursor to last module in rig
--- 		else
--- 			log ("copying module " & to_string (name_origin) & " ...", log_threshold);
--- 			module_cursor_origin := find (rig, name_origin); -- set module cursor to given origin module
--- 
--- 			-- if given module does not exist, raise error
--- 			if module_cursor_origin = type_modules.no_element then
--- 				log_indentation_reset;
--- 				log (message_error & " module " & to_string (name_origin) & " not found !", console => true);
--- 				raise constraint_error;
--- 			end if;
--- 		end if;
--- 			
--- 		log_indentation_up;
--- 
--- 		-- load generic name of origin module
--- 		generic_name_origin := element (module_cursor_origin).generic_name; -- nucleo_core
--- 		log ("generic name    : " & to_string (generic_name_origin), log_threshold + 1);
--- 
--- 		-- load instance of origin module		
--- 		instance_origin := element (module_cursor_origin).instance; -- 3
--- 		log ("instance origin : " & to_string (instance_origin), log_threshold + 1);
--- 
--- 		-- compute instance of new module
--- 		instance_new := instance_origin + 1;
--- 		log ("instance new    : " & to_string (instance_new), log_threshold + 1);
--- 
--- 		-- build name of new module
--- 		name_new := append_instance (submodule => generic_name_origin, instance => instance_new);
--- 		log ("name new        : " & to_string (name_new), log_threshold);
--- 		
--- 		-- Create new module: The module indicated by module_cursor_origin is inserted again.
--- 		-- afterward module_cursor_new points to the newly create module.
--- 		insert (
--- 			container	=> rig,
--- 			new_item	=> element (module_cursor_origin),
--- 			key 		=> name_new,
--- 			position 	=> module_cursor_new,
--- 			inserted 	=> inserted);
--- 		
--- 		if not inserted then
--- 			log_indentation_reset;
--- 			log (message_error & " module " & to_string (name_new) & " not created !", console => true);
--- 			raise constraint_error;
--- 		end if;
--- 
--- 		-- set the new instance in the newly create module
--- 		update_element (
--- 			container	=> rig,
--- 			position	=> module_cursor_new,
--- 			process		=> set_instance'access);
--- 		
--- 		log_indentation_down;
--- 	end copy_module;
-
 	procedure validate_module (
-		module_name : in et_coordinates.type_submodule_name.bounded_string) is
+		module_name : in type_submodule_name.bounded_string) is
 	-- Tests if the given module exists. Raises error if not existent.
 		module_cursor : type_modules.cursor;
 		use type_modules;
@@ -10845,7 +10758,7 @@ package body et_kicad is
 	function compare_hierarchic_sheets (left, right : in type_hierarchic_sheet_name) return boolean is
 	-- Returns true if left comes before right. If left equals right, the return is false.
 		use type_schematic_file_name;
-		use et_coordinates.type_submodule_name;
+		use type_submodule_name;
 	begin
 		-- first compare file names
 		if left.file > right.file then
@@ -10871,13 +10784,14 @@ package body et_kicad is
 		gui_sub_mod	: in type_hierarchic_sheet) is
 
 		procedure add (
-			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+			mod_name	: in type_submodule_name.bounded_string;
 			module		: in out type_module) is
 			
 			inserted	: boolean := false;
 			cursor		: type_hierarchic_sheets.cursor;
 
 			use et_string_processing;
+			
 		begin
 			module.hierarchic_sheets.insert (
 				key			=> name,
@@ -10906,14 +10820,13 @@ package body et_kicad is
 	end add_hierarchic_sheet;
 
 
-
 	procedure add_sheet_header (
 	-- Inserts a sheet header in the module (indicated by module_cursor).
 		header	: in type_sheet_header;
 		sheet	: in type_schematic_file_name.bounded_string) is
 
 		procedure add (
-			mod_name	: in et_coordinates.type_submodule_name.bounded_string;
+			mod_name	: in type_submodule_name.bounded_string;
 			module		: in out type_module) is
 
 			--use et_string_processing;
@@ -11125,7 +11038,7 @@ package body et_kicad is
 
 				type type_junction is record
 					expected : boolean := false;
-					position : et_coordinates.type_coordinates;
+					position : kicad_coordinates.type_coordinates;
 				end record;
 
 				junction : type_junction;
@@ -11156,8 +11069,7 @@ package body et_kicad is
 						
 						while segment_cursor_sec /= type_net_segments.no_element loop
 						
-							log (et_schematic.to_string (
-								et_schematic.type_net_segment_base (element (segment_cursor_sec))), log_threshold + 4);
+							log (to_string (type_net_segment_base (element (segment_cursor_sec))), log_threshold + 4);
 						
 							-- Test segments that are on the same path and sheet. It is sufficient
 							-- to compare the start coordinates of the segments.
@@ -11212,7 +11124,7 @@ package body et_kicad is
 
 						log (et_general.to_string (element (strand_cursor_sec).name)
 							& " at " 
-							& et_coordinates.to_string (element (strand_cursor_sec).coordinates, scope => et_coordinates.module),
+							& to_string (element (strand_cursor_sec).coordinates, scope => kicad_coordinates.MODULE),
 							log_threshold + 3);
 					
 						query_element (
@@ -11233,7 +11145,7 @@ package body et_kicad is
 				
 					procedure query_junctions (
 					-- Query junctions. Exits prematurely once a junction is found.
-						module_name : in et_coordinates.type_submodule_name.bounded_string;
+						module_name : in type_submodule_name.bounded_string;
 						module 		: in type_module) is
 						use type_junctions;
 						junction_cursor : type_junctions.cursor := module.junctions.first;
