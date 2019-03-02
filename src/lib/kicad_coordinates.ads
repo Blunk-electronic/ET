@@ -126,12 +126,12 @@ package kicad_coordinates is
 		return string;
 
 
-	function sheet (position : in type_coordinates) return type_submodule_sheet_number;
+	function sheet (position : in type_coordinates) return type_sheet_number;
 
 	function same_path_and_sheet (left, right : in type_coordinates) return boolean;
 	-- Returns true if the given coordinates have same path and sheet.
 	
-	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number);
+	procedure set_sheet (position : in out type_coordinates; sheet : in type_sheet_number);
 	-- Sets the sheet number in given position.
 
 	
@@ -139,7 +139,7 @@ package kicad_coordinates is
 	
 		type type_coordinates is new et_coordinates.type_point with record
 			path            : type_path_to_submodule.list; 
-			sheet_number	: type_submodule_sheet_number := type_submodule_sheet_number'first;
+			sheet_number	: type_sheet_number := type_sheet_number'first;
 		end record;
 
 		

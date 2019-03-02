@@ -312,17 +312,17 @@ package body et_coordinates is
 		return type_distance (dis);
 	end distance;
 	
-	function to_string (sheet_number : in type_submodule_sheet_number) return string is
+	function to_string (sheet_number : in type_sheet_number) return string is
 	-- Returns a sheet number as string.
 	begin
-		--return trim (type_submodule_sheet_number'image (sheet_number), left);
-		return type_submodule_sheet_number'image (sheet_number);
+		--return trim (type_sheet_number'image (sheet_number), left);
+		return type_sheet_number'image (sheet_number);
 	end to_string;
 
-	function to_sheet_number (sheet_number : in string) return type_submodule_sheet_number is
-	-- Converts a string to type_submodule_sheet_number
+	function to_sheet_number (sheet_number : in string) return type_sheet_number is
+	-- Converts a string to type_sheet_number
 	begin
-		return type_submodule_sheet_number'value (sheet_number);
+		return type_sheet_number'value (sheet_number);
 	end to_sheet_number;
 	
 	function to_coordinates (point : in type_point'class)
@@ -338,7 +338,7 @@ package body et_coordinates is
 
 	function to_coordinates (
 		point 	: in type_point'class;
-		sheet	: in type_submodule_sheet_number)
+		sheet	: in type_sheet_number)
 		return type_coordinates is
 	begin
 		return (
@@ -359,12 +359,12 @@ package body et_coordinates is
 				& to_string (distance_y (position));
 	end to_string;
 
-	function sheet (position : in type_coordinates) return type_submodule_sheet_number is
+	function sheet (position : in type_coordinates) return type_sheet_number is
 	begin
 		return position.sheet_number;
 	end sheet;
 
-	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number) is
+	procedure set_sheet (position : in out type_coordinates; sheet : in type_sheet_number) is
 	-- Sets the sheet number in given position.
 	begin
 		position.sheet_number := sheet;

@@ -309,7 +309,7 @@ package body kicad_coordinates is
 		end case;
 	end to_string;
 
-	function sheet (position : in type_coordinates) return type_submodule_sheet_number is begin
+	function sheet (position : in type_coordinates) return type_sheet_number is begin
 		return position.sheet_number;
 	end sheet;
 
@@ -328,7 +328,7 @@ package body kicad_coordinates is
 		return same;
 	end same_path_and_sheet;
 	
-	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number) is
+	procedure set_sheet (position : in out type_coordinates; sheet : in type_sheet_number) is
 	-- Sets the sheet number in given position.
 	begin
 		position.sheet_number := sheet;

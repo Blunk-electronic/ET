@@ -165,15 +165,15 @@ package et_coordinates is
 	--hierarchy_separator : constant string (1..1) := ".";
 	hierarchy_separator : constant string (1..1) := "/";
 
-	-- A submodule may have up to x sheets.
-	submodule_sheet_count_max : constant positive := 100; -- CS rename to frame_count_max
-	type type_submodule_sheet_number is new positive range 1..submodule_sheet_count_max; -- CS rename to type_frame_number
+	-- Sheets
+	sheet_count_max : constant positive := 100;
+	type type_sheet_number is new positive range 1 .. sheet_count_max;
 
-	function to_string (sheet_number : in type_submodule_sheet_number) return string;
+	function to_string (sheet_number : in type_sheet_number) return string;
 	-- Returns a sheet number as string.
 
-	function to_sheet_number (sheet_number : in string) return type_submodule_sheet_number;
-	-- Converts a string to type_submodule_sheet_number
+	function to_sheet_number (sheet_number : in string) return type_sheet_number;
+	-- Converts a string to type_sheet_number
 	
 	-- The whole schematic may have a total of x pages.
 	schematic_page_count_max : constant positive := 100;
@@ -188,7 +188,7 @@ package et_coordinates is
 
 	function to_coordinates (
 		point 	: in type_point'class;
-		sheet	: in type_submodule_sheet_number)
+		sheet	: in type_sheet_number)
 		return type_coordinates;
 
 	
@@ -217,9 +217,9 @@ package et_coordinates is
 
 	function to_string (position : in type_coordinates) return string;
 	
-	function sheet (position : in type_coordinates) return type_submodule_sheet_number;
+	function sheet (position : in type_coordinates) return type_sheet_number;
 
-	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number);
+	procedure set_sheet (position : in out type_coordinates; sheet : in type_sheet_number);
 	-- Sets the sheet number in given position.
 
 	-- PAPER SIZES
@@ -248,11 +248,11 @@ package et_coordinates is
 
 	
 		type type_coordinates is new type_point with record
-			sheet_number	: type_submodule_sheet_number := type_submodule_sheet_number'first;
+			sheet_number	: type_sheet_number := type_sheet_number'first;
 		end record;
 
 		zero_position : constant type_coordinates := (
-			sheet_number	=> type_submodule_sheet_number'first,
+			sheet_number	=> type_sheet_number'first,
 			x				=> 0.0,
 			y				=> 0.0 );
 		
