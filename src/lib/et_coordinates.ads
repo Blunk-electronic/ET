@@ -98,64 +98,64 @@ package et_coordinates is
 
 	
 	
-	type type_2d_point is tagged private;
+	type type_point is tagged private;
 
-	zero : constant type_2d_point;
+	zero : constant type_point;
 
 	axis_separator		: constant string (1..1) := "/";
 	--position_preamble	: constant string (1..15) := "position (x" & axis_separator & "y) ";
 	position_preamble	: constant string (1..11) := " pos (x" & axis_separator & "y) ";
 	--position_preamble	: constant string (1..6) := "(x" & axis_separator & "y) ";
 	
-	function to_string (point : in type_2d_point'class) return string;
+	function to_string (point : in type_point'class) return string;
 	-- Returns the given point coordinates to a string.
 
-	function distance_x (point : in type_2d_point) return type_distance_xy;
+	function distance_x (point : in type_point) return type_distance_xy;
 	-- Returns the x distance of point from the drawing origin.
 	-- CS remove and use function distance instead.	
 	
-	function distance_y (point : in type_2d_point) return type_distance_xy;
+	function distance_y (point : in type_point) return type_distance_xy;
 	-- Returns the y distance of point from the drawing origin.
 	-- CS remove and use function distance instead.	
 
 	function distance (
 	-- Returns the distance of the point in x or y from the origin.
 		axis	: in type_axis;
-		point	: in type_2d_point'class)
+		point	: in type_point'class)
 		return type_distance_xy;
 	
-	procedure set_x (point : in out type_2d_point; x : in type_distance_xy);
+	procedure set_x (point : in out type_point; x : in type_distance_xy);
 	-- Assigns a point the given x position.
 	
-	procedure set_y (point : in out type_2d_point'class; y : in type_distance_xy);
+	procedure set_y (point : in out type_point'class; y : in type_distance_xy);
 	
 	procedure set_xy (
-		point	 : in out type_2d_point;
-		position : in type_2d_point'class);
+		point	 : in out type_point;
+		position : in type_point'class);
 
-	function set_point (x, y : in type_distance_xy) return type_2d_point'class;
+	function set_point (x, y : in type_distance_xy) return type_point'class;
 	
 	procedure mirror (
-		point	: in out type_2d_point;
+		point	: in out type_point;
 		axis	: in type_axis);	
 
 	procedure move (
-		point	: in out type_2d_point;
-		offset	: in type_2d_point'class);
+		point	: in out type_point;
+		offset	: in type_point'class);
 
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
-		point	: in out type_2d_point;
+		point	: in out type_point;
 		angle	: in type_angle;
 		log_threshold : in et_string_processing.type_log_level);
 
-	function distance (point_1, point_2 : in type_2d_point) return type_distance;
+	function distance (point_1, point_2 : in type_point) return type_distance;
 	-- Returns the total distance between the given points.
 
 	function distance (
 	-- Returns the absolute distance on the given axis between the given points.
-		point_1	: in type_2d_point;
-		point_2	: in type_2d_point;
+		point_1	: in type_point;
+		point_2	: in type_point;
 		axis	: in type_axis) 
 		return type_distance;
 	
@@ -180,14 +180,14 @@ package et_coordinates is
 	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
 	
 
-	type type_coordinates is new type_2d_point with private;
+	type type_coordinates is new type_point with private;
 
-	function to_coordinates (point : in type_2d_point'class)
-	-- Converts a type_2d_point to type_coordinates.
+	function to_coordinates (point : in type_point'class)
+	-- Converts a type_point to type_coordinates.
 		return type_coordinates;
 
 	function to_coordinates (
-		point 	: in type_2d_point'class;
+		point 	: in type_point'class;
 		sheet	: in type_submodule_sheet_number)
 		return type_coordinates;
 
@@ -240,14 +240,14 @@ package et_coordinates is
 	
 	private 
 		-- In general every object has at least x,y coordinates.
-		type type_2d_point is tagged record -- CS: rename to type_point
+		type type_point is tagged record
 			x, y : type_distance_xy := zero_distance;
 		end record;
 		
-		zero : constant type_2d_point := (x => zero_distance, y => zero_distance);
+		zero : constant type_point := (x => zero_distance, y => zero_distance);
 
 	
-		type type_coordinates is new type_2d_point with record
+		type type_coordinates is new type_point with record
 			sheet_number	: type_submodule_sheet_number := type_submodule_sheet_number'first;
 		end record;
 

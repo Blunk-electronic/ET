@@ -77,7 +77,7 @@ package submodules is
 	
 	type type_submodule_port is record
 		-- the position somewhere at the edge of the box
-		position : et_coordinates.type_2d_point;
+		position : et_coordinates.type_point;
 		
 		-- The net inside the submodule is here the port name:
 		name : et_general.type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
@@ -111,7 +111,7 @@ package submodules is
 
 	
 	type type_netchanger_port is record
-		position	: type_2d_point;
+		position	: type_point;
 		length		: type_port_length; 
 		rotation	: et_coordinates.type_angle;
 	end record;
@@ -119,22 +119,22 @@ package submodules is
 	type type_netchanger_symbol is record
 		-- the port on the right
 		master_port	: type_netchanger_port := (
-						position	=> type_2d_point (set_point (x => 10.0, y => 0.0)),
+						position	=> type_point (set_point (x => 10.0, y => 0.0)),
 						length		=> 5.0,
 						rotation	=> 0.0);
 
 		-- the port on the left
 		slave_port	: type_netchanger_port := (
-						position	=> type_2d_point (set_point (x => -10.0, y => 0.0)),
+						position	=> type_point (set_point (x => -10.0, y => 0.0)),
 						length		=> 5.0,
 						rotation	=> 180.0);
 
 		-- the arc that connects the ports
 		arc	: et_libraries.type_arc := (
-						center		=> type_2d_point (set_point (x => 0.0, y => 0.0)),
+						center		=> type_point (set_point (x => 0.0, y => 0.0)),
 						radius		=> 5.0,
-						start_point	=> type_2d_point (set_point (x => -5.0, y => 0.0)),
-						end_point	=> type_2d_point (set_point (x =>  5.0, y => 0.0)),
+						start_point	=> type_point (set_point (x => -5.0, y => 0.0)),
+						end_point	=> type_point (set_point (x =>  5.0, y => 0.0)),
 						width		=> line_width_port_default);
 	end record;
 
@@ -158,7 +158,7 @@ package submodules is
 -- 		external	: type_port := (
 -- 						
 -- 						-- the position is relative to the module center:
--- 						position	=> type_2d_point (set_point (x => 0.0, y => 0.0)),
+-- 						position	=> type_point (set_point (x => 0.0, y => 0.0)),
 -- 						length		=> 5.0,
 -- 						rotation	=> 0.0);
 -- 
@@ -178,7 +178,7 @@ package submodules is
 -- CS
 -- 	type type_module_connector_symbol is record
 -- 		circle	: et_libraries.type_circle := (
--- 						center		=> type_2d_point (set_point (x => 0.0, y => 0.0)),
+-- 						center		=> type_point (set_point (x => 0.0, y => 0.0)),
 -- 						radius		=> 2.0,
 -- 						width		=> line_width_port_default);
 -- 	end record;

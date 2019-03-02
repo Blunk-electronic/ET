@@ -529,9 +529,9 @@ package body et_kicad is
 	-- Returns the lowest x/y position of the given strand.
 		strand			: in type_strand;
 		log_threshold	: in et_string_processing.type_log_level
-		) return et_coordinates.type_2d_point is
+		) return et_coordinates.type_point is
 		
-		point_1, point_2 : et_coordinates.type_2d_point;
+		point_1, point_2 : et_coordinates.type_point;
 		segment : type_net_segments.cursor;
 	
 		use type_net_segments;
@@ -553,7 +553,7 @@ package body et_kicad is
 
 			-- check start point of segment
 			-- if closer to orign than point_1 keep start point
-			point_2	:= type_2d_point (element (segment).coordinates_start);
+			point_2	:= type_point (element (segment).coordinates_start);
 			if distance (point_2, zero) < distance (point_1, zero) then
 				log (" start", log_threshold + 2);
 				point_1 := point_2;
@@ -561,7 +561,7 @@ package body et_kicad is
 
 			-- check start point of segment
 			-- if closer to orign than point_1 keep end point
-			point_2	:= type_2d_point (element (segment).coordinates_end);
+			point_2	:= type_point (element (segment).coordinates_end);
 			if distance (point_2, zero) < distance (point_1, zero) then
 				log (" end", log_threshold + 2);
 				point_1 := point_2;
@@ -797,8 +797,8 @@ package body et_kicad is
 		end if;
 	end validate_prefix;
 			
-	function to_point (x_in, y_in : in string) return et_coordinates.type_2d_point is
-		point : et_coordinates.type_2d_point;
+	function to_point (x_in, y_in : in string) return et_coordinates.type_point is
+		point : et_coordinates.type_point;
 		x, y : et_coordinates.type_distance_xy;
 
 		use et_coordinates;
@@ -1491,7 +1491,7 @@ package body et_kicad is
 				end_point	: positive := positive (et_string_processing.field_count (line)) - 2;
 
 				-- temporarily we store coordinates of a point here
-				point		: et_coordinates.type_2d_point;
+				point		: et_coordinates.type_point;
 
 				use et_coordinates;
 			begin -- to_polyline
@@ -3669,8 +3669,8 @@ package body et_kicad is
 		begin
 			distance := distance_of_point_from_line (
 				point 		=> port.coordinates,
-				line_start	=> type_2d_point (segment.coordinates_start),
-				line_end	=> type_2d_point (segment.coordinates_end),
+				line_start	=> type_point (segment.coordinates_start),
+				line_end	=> type_point (segment.coordinates_end),
 				line_range	=> with_end_points);
 
 			-- start and end points of the segment are inclued in the test
@@ -5689,9 +5689,9 @@ package body et_kicad is
 					-- calculate the shortes distance of point from line.
 					d := distance_of_point_from_line (
 						--point		=> et_libraries.type_coordinates(point),
-						point		=> type_2d_point (label.coordinates),
-						line_start	=> type_2d_point (segment.coordinates_start),
-						line_end	=> type_2d_point (segment.coordinates_end),
+						point		=> type_point (label.coordinates),
+						line_start	=> type_point (segment.coordinates_start),
+						line_end	=> type_point (segment.coordinates_end),
 						line_range	=> with_end_points);
 					
 					--log ("distance: " & type_grid'image(d.distance), level => 1);
@@ -7359,7 +7359,7 @@ package body et_kicad is
 			
 				function to_field return et_libraries.type_text is
 				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
-					text_position : type_2d_point;
+					text_position : type_point;
 					size : type_text_size;
 				begin
 					-- test if the field content is longer than allowed:
@@ -9075,9 +9075,9 @@ package body et_kicad is
 	begin
 		-- calculate the shortes distance of point from line.
 		d := distance_of_point_from_line (
-			point 		=> type_2d_point (junction.coordinates),
-			line_start	=> type_2d_point (segment.coordinates_start),
-			line_end	=> type_2d_point (segment.coordinates_end),
+			point 		=> type_point (junction.coordinates),
+			line_start	=> type_point (segment.coordinates_start),
+			line_end	=> type_point (segment.coordinates_end),
 			line_range	=> inside_end_points);
 
 		if (not d.out_of_range) and d.distance = zero then
@@ -9463,9 +9463,9 @@ package body et_kicad is
 
 				-- calculate the shortes distance of point from line.
 				distance := distance_of_point_from_line (
-					point 		=> type_2d_point (port.coordinates),
-					line_start	=> type_2d_point (segment.coordinates_start),
-					line_end	=> type_2d_point (segment.coordinates_end),
+					point 		=> type_point (port.coordinates),
+					line_start	=> type_point (segment.coordinates_start),
+					line_end	=> type_point (segment.coordinates_end),
 					line_range	=> with_end_points);
 
 				if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
@@ -9915,7 +9915,7 @@ package body et_kicad is
 					
 				begin -- add
 					-- Init port coordinates with the coordinates of the port found in the library.
-					-- The port position is a type_2d_point and must be converted to type_coordinates.
+					-- The port position is a type_point and must be converted to type_coordinates.
 					set_xy (
 						point		=> port_coordinates,
 						position	=> element (port_cursor).position);
@@ -11080,9 +11080,9 @@ package body et_kicad is
 								-- If START point of primary segment sits BETWEEN start and end point of secondary segment,
 								-- exit prematurely and return the coordinates of the expected junction.
 								distance := distance_of_point_from_line (
-									point 		=> type_2d_point (element (segment_cursor_prim).coordinates_start),
-									line_start	=> type_2d_point (element (segment_cursor_sec).coordinates_start),
-									line_end	=> type_2d_point (element (segment_cursor_sec).coordinates_end),
+									point 		=> type_point (element (segment_cursor_prim).coordinates_start),
+									line_start	=> type_point (element (segment_cursor_sec).coordinates_start),
+									line_end	=> type_point (element (segment_cursor_sec).coordinates_end),
 									line_range	=> inside_end_points);
 
 								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
@@ -11094,9 +11094,9 @@ package body et_kicad is
 								-- If END point of primary segment sits BETWEEN start and end point of secondary segment,
 								-- exit prematurely and return the coordinates of the expected junction.
 								distance := distance_of_point_from_line (
-									point 		=> type_2d_point (element (segment_cursor_prim).coordinates_end),
-									line_start	=> type_2d_point (element (segment_cursor_sec).coordinates_start),
-									line_end	=> type_2d_point (element (segment_cursor_sec).coordinates_end),
+									point 		=> type_point (element (segment_cursor_prim).coordinates_end),
+									line_start	=> type_point (element (segment_cursor_sec).coordinates_start),
+									line_end	=> type_point (element (segment_cursor_sec).coordinates_end),
 									line_range	=> inside_end_points);
 
 								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
@@ -11286,9 +11286,9 @@ package body et_kicad is
 							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
 
 								distance := distance_of_point_from_line (
-									point 		=> type_2d_point (element (junction_cursor).coordinates),
-									line_start	=> type_2d_point (element (segment_cursor).coordinates_start),
-									line_end	=> type_2d_point (element (segment_cursor).coordinates_end),
+									point 		=> type_point (element (junction_cursor).coordinates),
+									line_start	=> type_point (element (segment_cursor).coordinates_start),
+									line_end	=> type_point (element (segment_cursor).coordinates_end),
 									line_range	=> with_end_points);
 
 								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
@@ -11404,9 +11404,9 @@ package body et_kicad is
 							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
 
 								distance := distance_of_point_from_line (
-									point 		=> type_2d_point (element (junction_cursor).coordinates),
-									line_start	=> type_2d_point (element (segment_cursor).coordinates_start),
-									line_end	=> type_2d_point (element (segment_cursor).coordinates_end),
+									point 		=> type_point (element (junction_cursor).coordinates),
+									line_start	=> type_point (element (segment_cursor).coordinates_start),
+									line_end	=> type_point (element (segment_cursor).coordinates_end),
 									line_range	=> with_end_points);
 
 								-- count segments
@@ -11588,9 +11588,9 @@ package body et_kicad is
 								element (segment_cursor).coordinates_start) then
 															
 								distance := distance_of_point_from_line (
-									point 		=> type_2d_point (element (no_connection_flag_cursor).coordinates),
-									line_start	=> type_2d_point (element (segment_cursor).coordinates_start),
-									line_end	=> type_2d_point (element (segment_cursor).coordinates_end),
+									point 		=> type_point (element (no_connection_flag_cursor).coordinates),
+									line_start	=> type_point (element (segment_cursor).coordinates_start),
+									line_end	=> type_point (element (segment_cursor).coordinates_end),
 									line_range	=> with_end_points);
 
 								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then

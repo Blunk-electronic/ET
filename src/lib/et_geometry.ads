@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -56,7 +56,7 @@ package et_geometry is
 	-- Computes the shortest distance (perpendicular) of a given point from the given line.
 	-- If the point is outside the
 	-- range of the x coordinate, the corresponding flag in the return value is set.
-		point, line_start, line_end: in et_coordinates.type_2d_point;
+		point, line_start, line_end: in et_coordinates.type_point;
 		line_range : in type_line_range) return type_distance_point_from_line;
 
 end et_geometry;

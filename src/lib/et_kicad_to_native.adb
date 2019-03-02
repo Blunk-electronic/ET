@@ -182,7 +182,7 @@ package body et_kicad_to_native is
 		end move;
 
 		procedure move (
-			point_actual	: in out et_coordinates.type_2d_point;	-- the point it is about
+			point_actual	: in out et_coordinates.type_point;	-- the point it is about
 			point_help		: in kicad_coordinates.type_coordinates	-- supportive point that proviedes the sheet number
 			) is
 		-- Transposes the schematic point_actual from the kicad frame to the ET native frame.
@@ -2763,7 +2763,7 @@ package body et_kicad_to_native is
 						-- copy the x/y position of kicad junction to native junction
 						et_coordinates.set_xy (
 							point		=> junction_native.coordinates,
-							position	=> et_coordinates.type_2d_point (element (junction_cursor).coordinates));
+							position	=> et_coordinates.type_point (element (junction_cursor).coordinates));
 						
 						et_schematic.type_junctions.append (
 							container	=> junctions,
@@ -2809,9 +2809,9 @@ package body et_kicad_to_native is
 
 							-- calculate distance of port from segment
 							distance := distance_of_point_from_line (
-								point 		=> type_2d_point (element (port_cursor_kicad).coordinates),
-								line_start	=> type_2d_point (segment.coordinates_start),
-								line_end	=> type_2d_point (segment.coordinates_end),
+								point 		=> type_point (element (port_cursor_kicad).coordinates),
+								line_start	=> type_point (segment.coordinates_start),
+								line_end	=> type_point (segment.coordinates_end),
 								line_range	=> with_end_points);
 
 							-- If port sits on segment, append it to ports_of_segment.
@@ -2849,7 +2849,7 @@ package body et_kicad_to_native is
 -- 						junction_native	: et_schematic.type_net_junction;
 -- 					begin
 -- 						-- A native junction contains x and y only.
--- 						junction_native.coordinates := et_coordinates.type_2d_point (junction_kicad.coordinates);
+-- 						junction_native.coordinates := et_coordinates.type_point (junction_kicad.coordinates);
 -- 
 -- 						-- Append native junction to native list of junctions:
 -- 						et_schematic.type_junctions.append (junctions_out, junction_native);
@@ -3379,7 +3379,7 @@ package body et_kicad_to_native is
 							-- This is the native line that will be appended to native_shapes.lines:
 							line : et_libraries.type_line := (width => rectangle.width, others => <>);
 							width, height : et_coordinates.type_distance;
-							corner_C, corner_D : type_2d_point;
+							corner_C, corner_D : type_point;
 							
 							procedure append_line is begin
 								et_libraries.type_lines.append (
@@ -3397,13 +3397,13 @@ package body et_kicad_to_native is
 							-- corner_B is the upper right corner of the rectangle -> already known by the given rectangle
 
 							-- corner_C is the lower right corner:
-							corner_C := type_2d_point (set_point (
+							corner_C := type_point (set_point (
 								x => distance (X, rectangle.corner_A) + width,
 								y => distance (Y, rectangle.corner_A)
 								));
 
 							-- corner_D is the upper left corner:
-							corner_D := type_2d_point (set_point (
+							corner_D := type_point (set_point (
 								x => distance (X, rectangle.corner_A),
 								y => distance (Y, rectangle.corner_A) + height
 								));

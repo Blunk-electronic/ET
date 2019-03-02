@@ -154,7 +154,7 @@ package et_libraries is
 	
 	-- This is a placeholder for a text. It does not have content yet, but a meaning:
 	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with record
-		position : type_2d_point;
+		position : type_point;
 	end record;
 
 	procedure write_placeholder_properties (
@@ -250,7 +250,7 @@ package et_libraries is
 	line_width_port_default : constant type_line_width := 0.2;
 	
 	type type_port_base is tagged record 	-- CS: set defaults	
-		position			: type_2d_point;
+		position			: type_point;
 		length				: type_port_length; 
 		-- CS line_width	: type_line_width := line_width_port_default;
 		rotation			: type_angle := zero_angle;
@@ -532,18 +532,18 @@ package et_libraries is
 
 	-- lines
 	type type_line is record
-		start_point : type_2d_point;
-		end_point   : type_2d_point;
+		start_point : type_point;
+		end_point   : type_point;
 		width		: type_line_width;
 	end record;
 	package type_lines is new doubly_linked_lists (type_line);
 
 	-- Arcs
 	type type_arc is tagged record
-		center		: type_2d_point;
+		center		: type_point;
 		radius  	: type_distance;
-		start_point	: type_2d_point;
-		end_point	: type_2d_point;
+		start_point	: type_point;
+		end_point	: type_point;
 		width		: type_line_width;
 	end record;
 	package type_arcs is new doubly_linked_lists (type_arc);
@@ -554,7 +554,7 @@ package et_libraries is
 	
 	-- Circles
 	type type_circle_base is tagged record
-		center		: type_2d_point;
+		center		: type_point;
 		radius  	: type_distance;
 		width		: type_line_width;
 	end record;
@@ -647,7 +647,7 @@ package et_libraries is
 	-- An internal unit is owned by the particular device exclusively.
 	type type_unit_internal (appearance : type_component_appearance) is record
 		symbol		: type_symbol (appearance);
-		position	: type_2d_point; -- the position of the unit inside the device editor
+		position	: type_point; -- the position of the unit inside the device editor
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
 	end record;
@@ -665,7 +665,7 @@ package et_libraries is
 	-- An external unit has a reference and a swap level.
 	type type_unit_external is record
 		file		: type_symbol_model_file.bounded_string; -- like /my_libraries/NAND.sym
-		position	: type_2d_point := zero; -- the position within the device editor
+		position	: type_point := zero; -- the position within the device editor
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
 	end record;
@@ -837,8 +837,8 @@ package et_libraries is
 	function to_template_name (name : in string) return type_frame_template_name.bounded_string;
 	
     type type_title_block_line is record
-		coordinates_start : et_coordinates.type_2d_point;
-		coordinates_end   : et_coordinates.type_2d_point;
+		coordinates_start : et_coordinates.type_point;
+		coordinates_end   : et_coordinates.type_point;
     end record;
 
 	package type_title_block_lines is new doubly_linked_lists (type_title_block_line);
@@ -855,7 +855,7 @@ package et_libraries is
 	
 	type type_title_block_text is record
 		meaning			: type_title_block_text_meaning;
- 		coordinates		: et_coordinates.type_2d_point;
+ 		coordinates		: et_coordinates.type_point;
 		text			: type_title_block_text_content.bounded_string; -- CS: rename to content
  		size			: et_libraries.type_text_size;
  		orientation		: et_coordinates.type_angle; -- CS: rename to rotation
@@ -866,7 +866,7 @@ package et_libraries is
 
     -- the final title block
     type type_title_block is record
-        coordinates     : et_coordinates.type_2d_point; -- CS rename to position
+        coordinates     : et_coordinates.type_point; -- CS rename to position
         lines           : type_title_block_lines.list;
         texts           : type_title_block_texts.list;
     end record;
@@ -874,14 +874,14 @@ package et_libraries is
     -- A drawing frame consists of straight lines and texts.
     -- The text is a character at the x/y border that helps to locate objects.
     type type_frame_line is record
-		coordinates_start : et_coordinates.type_2d_point;
-        coordinates_end   : et_coordinates.type_2d_point;
+		coordinates_start : et_coordinates.type_point;
+        coordinates_end   : et_coordinates.type_point;
 	end record;
 	
 	package type_frame_lines is new doubly_linked_lists (type_frame_line);
 
 	type type_frame_text is record
-		coordinates		: et_coordinates.type_2d_point; -- CS rename to position
+		coordinates		: et_coordinates.type_point; -- CS rename to position
 		text			: character_set := et_string_processing.general_characters; -- CS rename to content
 		size			: et_libraries.type_text_size;
 		orientation		: et_coordinates.type_angle; -- CS rename to rotation

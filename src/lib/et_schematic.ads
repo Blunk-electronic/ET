@@ -202,7 +202,7 @@ package et_schematic is
 
 	-- A net junction is where segments can be connected with each other.
 	type type_net_junction is record -- CS rename to type_junction
-		coordinates : et_coordinates.type_2d_point; -- CS rename to position
+		coordinates : et_coordinates.type_point; -- CS rename to position
 	end record;
 
 	-- Junctions are to be collected in a list.
@@ -241,7 +241,7 @@ package et_schematic is
 	function to_direction (direction : in string) return type_net_label_direction;
 
 	type type_net_label_base is tagged record
-		coordinates	: et_coordinates.type_2d_point; -- CS rename to position
+		coordinates	: et_coordinates.type_point; -- CS rename to position
 		orientation	: et_coordinates.type_angle; -- CS rename to rotation
         size		: et_libraries.type_text_size := et_libraries.text_size_default;
         style		: et_libraries.type_text_style := et_libraries.type_text_style'first;
@@ -271,7 +271,7 @@ package et_schematic is
 	
 	type type_net_segment is record
 		coordinates_start 	: et_coordinates.type_coordinates;
-		coordinates_end   	: et_coordinates.type_coordinates; -- CS et_coordinates.type_2d_point ?
+		coordinates_end   	: et_coordinates.type_coordinates; -- CS et_coordinates.type_point ?
 		labels			: type_net_labels.list;
 		junctions		: type_junctions.list;
 		component_ports	: type_ports_component.list; -- CS rename to device ports

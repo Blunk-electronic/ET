@@ -78,7 +78,7 @@ package body et_coordinates is
 	end to_angle;
 
 	
-	function to_string (point : in type_2d_point'class) return string is
+	function to_string (point : in type_point'class) return string is
 	-- Returns the given point coordinates to a string.
 		use et_string_processing;
 	begin
@@ -91,7 +91,7 @@ package body et_coordinates is
 	
 	end to_string;
 
-	function distance_x (point : in type_2d_point) return type_distance_xy is
+	function distance_x (point : in type_point) return type_distance_xy is
 	-- Returns the x distance of point from the drawing origin.		
 	-- CS remove and use function distance instead.
 	begin
@@ -99,7 +99,7 @@ package body et_coordinates is
 		return point.x;
 	end distance_x;
 
-	function distance_y (point : in type_2d_point) return type_distance_xy is
+	function distance_y (point : in type_point) return type_distance_xy is
 	-- Returns the y distance of point from the drawing origin.
 	-- CS remove and use function distance instead.
 	begin
@@ -110,7 +110,7 @@ package body et_coordinates is
 	function distance (
 	-- Returns the distance of the point in x or y from the origin.
 		axis	: in type_axis;
-		point	: in type_2d_point'class)
+		point	: in type_point'class)
 		return type_distance_xy is
 	begin
 		case axis is
@@ -119,29 +119,29 @@ package body et_coordinates is
 		end case;
 	end distance;
 	
-	procedure set_x (point : in out type_2d_point; x : in type_distance_xy) is
+	procedure set_x (point : in out type_point; x : in type_distance_xy) is
 	-- Assigns a point the given x position.
 		use et_string_processing;
 	begin
 		point.x := x;
 	end set_x;
 	
-	procedure set_y (point : in out type_2d_point'class; y : in type_distance_xy) is
+	procedure set_y (point : in out type_point'class; y : in type_distance_xy) is
 	-- Assigns a point the given y position.
 	begin
 		point.y := y;
 	end set_y;
 
 	procedure set_xy (
-		point 		: in out type_2d_point;
-		position	: in type_2d_point'class) is
+		point 		: in out type_point;
+		position	: in type_point'class) is
 	begin
 		point.x := position.x;
 		point.y := position.y;
 	end set_xy;
 
-	function set_point (x, y : in type_distance_xy) return type_2d_point'class is 
-		point : type_2d_point;
+	function set_point (x, y : in type_distance_xy) return type_point'class is 
+		point : type_point;
 	begin
 		point.x := x;
 		point.y := y;
@@ -149,7 +149,7 @@ package body et_coordinates is
 	end set_point;
 	
 	procedure mirror (
-		point	: in out type_2d_point;
+		point	: in out type_point;
 		axis	: in type_axis)
 		is
 	begin
@@ -162,8 +162,8 @@ package body et_coordinates is
 	end mirror;
 
 	procedure move (
-		point	: in out type_2d_point;
-		offset	: in type_2d_point'class)
+		point	: in out type_point;
+		offset	: in type_point'class)
 		is
 	begin
 		point.x := point.x + offset.x;
@@ -172,7 +172,7 @@ package body et_coordinates is
 
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
-		point	: in out type_2d_point;
+		point	: in out type_point;
 		angle	: in type_angle;
 		log_threshold : in et_string_processing.type_log_level)
 		is
@@ -264,7 +264,7 @@ package body et_coordinates is
 		end if; -- if angle not zero
 	end rotate;
 
-	function distance (point_1, point_2 : in type_2d_point) return type_distance is
+	function distance (point_1, point_2 : in type_point) return type_distance is
 	-- Returns the total distance between the given points.
 		dis : float;
 		package functions_distance is new ada.numerics.generic_elementary_functions (float);
@@ -295,8 +295,8 @@ package body et_coordinates is
 
 	function distance (
 	-- Returns the absolute distance on the given axis between the given points.
-		point_1	: in type_2d_point;
-		point_2	: in type_2d_point;
+		point_1	: in type_point;
+		point_2	: in type_point;
 		axis	: in type_axis) 
 		return type_distance is
 		dis : type_distance;
@@ -325,8 +325,8 @@ package body et_coordinates is
 		return type_submodule_sheet_number'value (sheet_number);
 	end to_sheet_number;
 	
-	function to_coordinates (point : in type_2d_point'class)
-	-- Converts a type_2d_point to type_coordinates.
+	function to_coordinates (point : in type_point'class)
+	-- Converts a type_point to type_coordinates.
 		return type_coordinates is
 	begin
 		return (
@@ -337,7 +337,7 @@ package body et_coordinates is
 	end;
 
 	function to_coordinates (
-		point 	: in type_2d_point'class;
+		point 	: in type_point'class;
 		sheet	: in type_submodule_sheet_number)
 		return type_coordinates is
 	begin

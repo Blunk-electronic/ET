@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -49,7 +49,7 @@ package body et_geometry is
 	-- CS: provide range and accuracy via parameter
 	-- CS: type_Y_axis_positive (upwards, downwards) may matter here. 
 	
-		point, line_start, line_end: in et_coordinates.type_2d_point;
+		point, line_start, line_end: in et_coordinates.type_point;
 		line_range : in type_line_range) return type_distance_point_from_line is
 
 		use et_coordinates;
@@ -57,13 +57,13 @@ package body et_geometry is
 		type type_float is digits 11 range -100000000.0 .. 100000000.0; -- CS: probably way too much
 		package functions is new ada.numerics.generic_elementary_functions (type_float);
 	
-		s : type_2d_point := line_start;
-		e : type_2d_point := line_end;		
+		s : type_point := line_start;
+		e : type_point := line_end;		
 		
 		delta_x : type_distance := distance_x (e) - distance_x (s);
 		delta_y : type_distance := distance_y (e) - distance_y (s);
 
-		line_scratch : type_2d_point;
+		line_scratch : type_point;
 		
 		result : type_distance_point_from_line;
 		s1,s2,s3,s4,s5,s6,s7,s8 : type_float;
