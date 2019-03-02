@@ -159,41 +159,6 @@ package et_coordinates is
 		axis	: in type_axis) 
 		return type_distance;
 	
--- 	procedure check_submodule_name_length (name : in string);
--- 	-- Checks if the given submodule name is not longer than allowed.
--- 
--- 	
--- 	function to_string (submodule : in type_submodule_name.bounded_string) return string;
--- 	-- Returns the given submodule name as string.
--- 
--- 	function to_submodule_name (submodule : in string) return type_submodule_name.bounded_string;
--- 	-- Converts a string to type_submodule_name.
--- 	
--- 	-- Instead of full submodule names, abbrevations like "MCU" or "MOT" are used:
--- 	submodule_abbrevation_characters : character_set := to_set (span => ('A','Z')); 
--- 	submodule_abbrevation_length_max : constant positive := 5;
--- 	package type_submodule_abbrevation is new generic_bounded_length (submodule_abbrevation_length_max);
--- 	procedure check_submodule_abbrevation_length (abbrevation : in string);
--- 	-- Checks if the given submodule abbrevation is not longer than allowed.
--- 
--- 	procedure check_submodule_abbrevation_characters (
--- 	abbrevation : in type_submodule_abbrevation.bounded_string;
--- 	characters : in character_set := submodule_abbrevation_characters);
--- 	-- Checks for forbidden characters in submodule abbrevation.
--- 	
--- 	function to_string (abbrevation : in type_submodule_abbrevation.bounded_string) return string;
--- 	-- Returns the given submodule abbrevation as string.
--- 
--- 	function to_abbrevation (abbrevation : in string) return type_submodule_abbrevation.bounded_string;
--- 	-- Converts a string to type_submodule_abbrevation.
-	
-
-	
---     -- The location of a submodule within the design hierarchy is reflected by
---     -- a list of submodule names like motor_driver/counter/supply
---     -- The first item in this list is the name of the top level module.
---     package type_path_to_submodule is new doubly_linked_lists (
---         element_type => type_submodule_name.bounded_string);
 
 	-- When handling hierachic structures we use a separator.
 	-- Example: net name "HEATER_CONTROL/DRIVER/CLK"
@@ -214,12 +179,7 @@ package et_coordinates is
 	schematic_page_count_max : constant positive := 100;
 	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
 	
--- 	function to_string (
--- 		path 		: in type_path_to_submodule.list;
--- 		top_module	: in boolean := true) return string;
--- 	-- Returns the given path as string with hierarchy_separator.
--- 	-- If top_module = false, the name of the top module is omitted.
-	
+
 	type type_coordinates is new type_2d_point with private;
 
 	function to_coordinates (point : in type_2d_point'class)

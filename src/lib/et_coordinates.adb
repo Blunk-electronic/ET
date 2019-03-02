@@ -41,7 +41,6 @@ with ada.characters.handling;	use ada.characters.handling;
 
 with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.strings.unbounded;
 
 with ada.exceptions;
 
@@ -313,126 +312,6 @@ package body et_coordinates is
 		return type_distance (dis);
 	end distance;
 	
--- 	procedure check_submodule_name_length (name : in string) is
--- 	-- Checks if the given submodule name is not longer than allowed.
--- 		use et_string_processing;
--- 	begin
--- 		if name'length > submodule_name_length_max then
--- 			log_indentation_reset;
--- 			log (message_error & "max. number of characters for module name is" 
--- 				 & positive'image (submodule_name_length_max) & " !",
--- 				console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end check_submodule_name_length;
--- 	
--- 	function to_string (submodule : in type_submodule_name.bounded_string) return string is
--- 	-- Returns the given submodule name as string.
--- 	begin
--- 		return type_submodule_name.to_string (submodule);
--- 	end to_string;
--- 
--- 	function to_submodule_name (submodule : in string) return type_submodule_name.bounded_string is
--- 	-- Converts a string to type_submodule_name.
--- 	begin
--- 		return type_submodule_name.to_bounded_string (submodule);
--- 	end to_submodule_name;
--- 	
--- 	procedure check_submodule_abbrevation_length (abbrevation : in string) is
--- 	-- Checks if the given submodule abbrevation is not longer than allowed.
--- 		use et_string_processing;
--- 	begin
--- 		if abbrevation'length > submodule_abbrevation_length_max then
--- 			log_indentation_reset;
--- 			log (message_error & "max. number of characters for submodule abbrevation is" 
--- 				 & positive'image (submodule_abbrevation_length_max) & " !",
--- 				console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end check_submodule_abbrevation_length;
--- 
--- 	procedure check_submodule_abbrevation_characters (
--- 	-- Checks for forbidden characters in submodule abbrevation.
--- 		abbrevation : in type_submodule_abbrevation.bounded_string;
--- 		characters : in character_set := submodule_abbrevation_characters) is
--- 		use et_string_processing;
--- 		invalid_character_position : natural := 0;
--- 	begin
--- 		-- Test given submodule abbrevation and get position of possible invalid characters.
--- 		invalid_character_position := type_submodule_abbrevation.index (
--- 			source => abbrevation,
--- 			set => characters,
--- 			test => outside);
--- 
--- 		-- Evaluate position of invalid character.
--- 		if invalid_character_position > 0 then
--- 			log_indentation_reset;
--- 			log (message_error & "invalid character in submodule abbrevation '" 
--- 				& to_string (abbrevation) & "' at position" & natural'image (invalid_character_position),
--- 				console => true);
--- 			raise constraint_error;
--- 		end if;
--- 
--- 	end check_submodule_abbrevation_characters;
--- 
--- 	function to_string (abbrevation : in type_submodule_abbrevation.bounded_string) return string is
--- 	-- Returns the given submodule abbrevation as string.
--- 	begin
--- 		return type_submodule_abbrevation.to_string (abbrevation);
--- 	end to_string;
--- 	
--- 	function to_abbrevation (abbrevation : in string) return type_submodule_abbrevation.bounded_string is
--- 	-- Converts a string to type_submodule_abbrevation.
--- 	begin
--- 		return type_submodule_abbrevation.to_bounded_string (abbrevation);
--- 	end to_abbrevation;
-
--- 	procedure check_number_of_instances (instances : in string) is
--- 	-- Checks if given instances is a digit and if it is within allowed range.
--- 		use et_string_processing;
--- 	begin
--- 		-- check characters. all must be digits
--- 		for place in instances'first .. instances'last loop
--- 			if not is_digit (instances (place)) then
--- 				log_indentation_reset;
--- 				log (message_error & "instances must contain only digits !", console => true);
--- 				raise constraint_error;
--- 			end if;
--- 		end loop;
--- 
--- 		-- Test if within range:
--- 		if positive'value (instances) not in type_submodule_instance then
--- 			log_indentation_reset;
--- 			log (message_error & "max. number of instances per module is" 
--- 				 & type_submodule_instance'image (type_submodule_instance'last) & " !",
--- 				console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end check_number_of_instances;
-
--- 	function to_number_of_instances (instances : in string) return type_submodule_instance is
--- 	begin
--- 		return type_submodule_instance'value (instances);
--- 	end to_number_of_instances;
-
--- 	function to_string (instance : in type_submodule_instance) return string is
--- 	-- Converts a submodule instance index to a string.
--- 	begin
--- 		return trim (type_submodule_instance'image (instance), left);
--- 	end to_string;
-
--- 	function append_instance (
--- 		submodule	: in type_submodule_name.bounded_string; -- nucleo_core
--- 		separator	: in string := "_";
--- 		instance	: in type_submodule_instance) -- 4
--- 		return type_submodule_name.bounded_string is -- nucleo_core_4
--- 	begin
--- 		return 
--- 			submodule -- nucleo_core
--- 			& type_submodule_name.to_bounded_string (separator) -- "_"
--- 			& type_submodule_name.to_bounded_string (trim (type_submodule_instance'image (instance), left)); -- 4
--- 	end append_instance;
-
 	function to_string (sheet_number : in type_submodule_sheet_number) return string is
 	-- Returns a sheet number as string.
 	begin
@@ -445,42 +324,6 @@ package body et_coordinates is
 	begin
 		return type_submodule_sheet_number'value (sheet_number);
 	end to_sheet_number;
-	
--- 	function to_string (
--- 		path : in type_path_to_submodule.list;
--- 		top_module : in boolean := true) return string is
--- 	-- Returns the given path as string with hierarchy_separator.
--- 	-- If top_module = false, the name of the top module is omitted.
--- 	
--- 		use type_path_to_submodule;
--- 		use ada.strings.unbounded;
--- 	
--- 		submodule : type_path_to_submodule.cursor := path.first;
--- 		result : unbounded_string;
--- 	begin
--- 		-- If top_module is false, advance cursor right to next module.
--- 		if not top_module then
--- 			next (submodule);
--- 		end if;
--- 
--- 		if is_empty (path) then
--- 			result := to_unbounded_string (hierarchy_separator);
--- 		else
--- 			-- Loop through list of submodules and collect their names in "result".
--- 			while submodule /= type_path_to_submodule.no_element loop
--- 				result := result & hierarchy_separator 
--- 					& to_unbounded_string (to_string (element (submodule)));
--- -- 					& hierarchy_separator;
--- 				next (submodule);
--- 			end loop;
--- 		end if;
--- -- 		if result = hierarchy_separator then
--- -- 			result := result & " (top module)";
--- -- 		end if;
--- 		
--- 		--return to_string ("location " & result);
--- 		return to_string (result);
--- 	end to_string;
 	
 	function to_coordinates (point : in type_2d_point'class)
 	-- Converts a type_2d_point to type_coordinates.
@@ -504,8 +347,6 @@ package body et_coordinates is
 			sheet_number	=> sheet
 			);
 	end;
-			
-
 	
 	function to_string (position : in type_coordinates) return string is
 		use et_string_processing;
@@ -518,36 +359,10 @@ package body et_coordinates is
 				& to_string (distance_y (position));
 	end to_string;
 
--- 	function path (position : in type_coordinates) return type_path_to_submodule.list is
--- 	begin
--- 		return position.path;
--- 	end path;
-	
 	function sheet (position : in type_coordinates) return type_submodule_sheet_number is
 	begin
 		return position.sheet_number;
 	end sheet;
-
--- 	function same_path_and_sheet (left, right : in type_coordinates) return boolean is
--- 	-- Returns true if the given coordinates have same path and sheet.
--- 		same : boolean := false;
--- 		use type_path_to_submodule;
--- 	begin 
--- 		-- We compare path and sheet. x/y are ignored
--- 		if path (left) = path (right) then
--- 			if sheet (left) = sheet (right) then
--- 				same := true;
--- 			end if;
--- 		end if;
--- 
--- 		return same;
--- 	end same_path_and_sheet;
-	
--- 	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list) is
--- 	-- Sets the path in given position.
--- 	begin
--- 		position.path := path;
--- 	end set_path;
 
 	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number) is
 	-- Sets the sheet number in given position.

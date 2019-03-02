@@ -259,24 +259,6 @@ package et_schematic is
 
 	package type_net_labels is new indefinite_doubly_linked_lists (type_net_label);
 	
-	-- This is the definition of a net segment with start/end point and junctions
--- 	type type_net_segment_base is tagged record
--- 		coordinates_start 	: et_coordinates.type_coordinates;
--- 		coordinates_end   	: et_coordinates.type_coordinates; -- CS et_coordinates.type_2d_point ?
--- 	end record;
-
-	
-
-
-
-	-- A strand is a collection of net segments which belong to each other. 
-	-- Segments belong to each other because their start/end points meet.
-	-- A strand has coordinates. 
-	-- x/y position are the lowest values within the strand.
--- 	type type_strand_base is tagged record
--- 		coordinates : et_coordinates.type_coordinates; -- lowest x/y -- CS rename to position
--- 	end record;
-
 
 	-- This is a net:
 	type type_net_base is tagged record
@@ -286,7 +268,6 @@ package et_schematic is
 		class 	: et_pcb.type_net_class_name.bounded_string := et_pcb.net_class_name_default;
 	end record;
 
-	
 	
 	type type_net_segment is record
 		coordinates_start 	: et_coordinates.type_coordinates;

@@ -46,7 +46,6 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_string_processing;
---with et_general;
 with et_coordinates;			use et_coordinates;
 
 package kicad_coordinates is
@@ -75,6 +74,9 @@ package kicad_coordinates is
  	submodule_name_length_max : constant positive := 100;
 	package type_submodule_name is new generic_bounded_length (submodule_name_length_max); 
 	use type_submodule_name;
+
+-- 	procedure check_submodule_name_length (name : in string);
+-- 	-- Checks if the given submodule name is not longer than allowed.
 	
 	submodule_name_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set("-_"); 
@@ -100,104 +102,15 @@ package kicad_coordinates is
 	
 	type type_coordinates is new et_coordinates.type_2d_point with private;
 
--- 	function to_coordinates (point : in type_2d_point'class)
--- 	-- Converts a type_2d_point to type_coordinates.
--- 		return type_coordinates;
-	
+
 	function path (position : in type_coordinates) return type_path_to_submodule.list;
 
 	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list);
 	-- Sets the path in given position.
 	
--- 	procedure check_submodule_name_length (name : in string);
--- 	-- Checks if the given submodule name is not longer than allowed.
--- 
--- 	procedure check_submodule_name_characters (
--- 		name : in type_submodule_name.bounded_string;
--- 		characters : in character_set := submodule_name_characters);
--- 	-- Checks for forbiddedn characters in submodule name.
 	
 	function to_string (submodule : in type_submodule_name.bounded_string) return string;
 	function to_submodule_name (submodule : in string) return type_submodule_name.bounded_string;
-	
--- 	-- Instead of full submodule names, abbrevations like "MCU" or "MOT" are used:
--- 	submodule_abbrevation_characters : character_set := to_set (span => ('A','Z')); 
--- 	submodule_abbrevation_length_max : constant positive := 5;
--- 	package type_submodule_abbrevation is new generic_bounded_length (submodule_abbrevation_length_max);
--- 	procedure check_submodule_abbrevation_length (abbrevation : in string);
--- 	-- Checks if the given submodule abbrevation is not longer than allowed.
--- 
--- 	procedure check_submodule_abbrevation_characters (
--- 	abbrevation : in type_submodule_abbrevation.bounded_string;
--- 	characters : in character_set := submodule_abbrevation_characters);
--- 	-- Checks for forbidden characters in submodule abbrevation.
--- 	
--- 	function to_string (abbrevation : in type_submodule_abbrevation.bounded_string) return string;
--- 	-- Returns the given submodule abbrevation as string.
--- 
--- 	function to_abbrevation (abbrevation : in string) return type_submodule_abbrevation.bounded_string;
--- 	-- Converts a string to type_submodule_abbrevation.
--- 	
--- 	
---     -- The location of a submodule within the design hierarchy is reflected by
---     -- a list of submodule names like motor_driver/counter/supply
---     -- The first item in this list is the name of the top level module.
---     package type_path_to_submodule is new doubly_linked_lists (
---         element_type => type_submodule_name.bounded_string);
--- 
--- 	-- When handling hierachic structures we use a separator.
--- 	-- Example: net name "HEATER_CONTROL/DRIVER/CLK"
--- 	--hierarchy_separator : constant string (1..1) := ".";
--- 	hierarchy_separator : constant string (1..1) := "/";
--- 
--- 	-- A submodule may have up to x sheets.
--- 	submodule_sheet_count_max : constant positive := 100; -- CS rename to frame_count_max
--- 	type type_submodule_sheet_number is new positive range 1..submodule_sheet_count_max; -- CS rename to type_frame_number
--- 
--- 	function to_string (sheet_number : in type_submodule_sheet_number) return string;
--- 	-- Returns a sheet number as string.
--- 
--- 	function to_sheet_number (sheet_number : in string) return type_submodule_sheet_number;
--- 	-- Converts a string to type_submodule_sheet_number
--- 	
--- 	-- The whole schematic may have a total of x pages.
--- 	schematic_page_count_max : constant positive := 100;
--- 	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
--- 	
--- 	function to_string (
--- 		path : in type_path_to_submodule.list;
--- 		top_module : in boolean := true) return string;
--- 	-- Returns the given path as string with hierarchy_separator.
--- 	-- If top_module = false, the name of the top module is omitted.
--- 	
--- 	type type_coordinates is new type_2d_point with private;
--- 
--- 	function to_coordinates (point : in type_2d_point'class)
--- 	-- Converts a type_2d_point to type_coordinates.
--- 		return type_coordinates;
--- 
--- 	zero_position : constant type_coordinates;
--- 
--- 	coordinates_preamble_xy : constant string (1..11) := " pos "
--- 		& "(x"
--- 		& axis_separator
--- 		& "y) ";
--- 	
--- 	coordinates_preamble_sheet : constant string (1..17) := " pos "
--- 		& "(sheet"
--- 		& axis_separator
--- 		& "x"
--- 		& axis_separator
--- 		& "y) ";
--- 
--- 	coordinates_preamble_module : constant string (1..22) := " pos "
--- 		& "(path"
--- 		& axis_separator
--- 		& "sheet"
--- 		& axis_separator
--- 		& "x"
--- 		& axis_separator
--- 		& "y) ";
 
 	
 	type type_scope is (
@@ -221,31 +134,6 @@ package kicad_coordinates is
 	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number);
 	-- Sets the sheet number in given position.
 
--- 	-- PAPER SIZES
--- 	-- As default we assume landscape format for all sheets.
--- 	paper_size_A3_x : constant et_coordinates.type_distance := 420.0; -- CS use a common anchestor type and default value with sizes defined in et_pcb_coordinates.ads.
--- 	paper_size_A3_y : constant et_coordinates.type_distance := 297.0;
--- 	
--- 	paper_size_A4_x : constant et_coordinates.type_distance := 297.0;
--- 	paper_size_A4_y : constant et_coordinates.type_distance := 210.0;
--- 
--- 	function paper_dimension (
--- 	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
--- 		paper_size	: in et_general.type_paper_size;
--- 		orientation	: in et_general.type_paper_orientation := et_general.LANDSCAPE;
--- 		axis		: in type_axis)
--- 		return type_distance_xy;
-
--- 	overriding function to_coordinates (point : in type_2d_point'class)
--- 	-- Converts a type_2d_point to type_coordinates.
--- 		return type_coordinates;
-
--- 	function to_coordinates (
--- 		point 	: in type_2d_point'class;
--- 		sheet	: in type_submodule_sheet_number;
--- 		path	: in type_path_to_submodule.list)
--- 		return type_coordinates;
-
 	
 	private 
 	
@@ -254,11 +142,6 @@ package kicad_coordinates is
 			sheet_number	: type_submodule_sheet_number := type_submodule_sheet_number'first;
 		end record;
 
--- 		zero_position : constant type_coordinates := (
--- 			path			=> type_path_to_submodule.empty_list,
--- 			sheet_number	=> type_submodule_sheet_number'first,
--- 			x				=> 0.0,
--- 			y				=> 0.0 );
 		
 end kicad_coordinates;
 

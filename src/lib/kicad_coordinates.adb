@@ -52,8 +52,6 @@ with et_coordinates;			use et_coordinates;
 
 package body kicad_coordinates is
 
--- 	procedure dummy is begin null; end;
-	
 	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) return type_distance_xy is
 	-- Returns the given mils as type_distance_xy.
 		use et_string_processing;
@@ -179,17 +177,6 @@ package body kicad_coordinates is
 		return to_string (result);
 	end to_string;
 
--- 	function to_coordinates (point : in type_2d_point'class)
--- 	-- Converts a type_2d_point to type_coordinates.
--- 		return type_coordinates is
--- 	begin
--- 		return (
--- 			x				=> point.x,
--- 			y				=> point.y,
--- 			sheet_number	=> 1
--- 			);
--- 	end;
-	
 	function path (position : in type_coordinates) return type_path_to_submodule.list is begin
 		return position.path;
 	end;
@@ -200,7 +187,6 @@ package body kicad_coordinates is
 	-- Sets the path in given position.
 		position.path := path;
 	end;
-
 	
 -- 	procedure check_submodule_name_length (name : in string) is
 -- 	-- Checks if the given submodule name is not longer than allowed.
@@ -250,114 +236,7 @@ package body kicad_coordinates is
 		return type_submodule_name.to_bounded_string (submodule);
 	end;
 	
--- 	procedure check_submodule_abbrevation_length (abbrevation : in string) is
--- 	-- Checks if the given submodule abbrevation is not longer than allowed.
--- 		use et_string_processing;
--- 	begin
--- 		if abbrevation'length > submodule_abbrevation_length_max then
--- 			log_indentation_reset;
--- 			log (message_error & "max. number of characters for submodule abbrevation is" 
--- 				 & positive'image (submodule_abbrevation_length_max) & " !",
--- 				console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end check_submodule_abbrevation_length;
--- 
--- 	procedure check_submodule_abbrevation_characters (
--- 	-- Checks for forbidden characters in submodule abbrevation.
--- 		abbrevation : in type_submodule_abbrevation.bounded_string;
--- 		characters : in character_set := submodule_abbrevation_characters) is
--- 		use et_string_processing;
--- 		invalid_character_position : natural := 0;
--- 	begin
--- 		-- Test given submodule abbrevation and get position of possible invalid characters.
--- 		invalid_character_position := type_submodule_abbrevation.index (
--- 			source => abbrevation,
--- 			set => characters,
--- 			test => outside);
--- 
--- 		-- Evaluate position of invalid character.
--- 		if invalid_character_position > 0 then
--- 			log_indentation_reset;
--- 			log (message_error & "invalid character in submodule abbrevation '" 
--- 				& to_string (abbrevation) & "' at position" & natural'image (invalid_character_position),
--- 				console => true);
--- 			raise constraint_error;
--- 		end if;
--- 
--- 	end check_submodule_abbrevation_characters;
--- 
--- 	function to_string (abbrevation : in type_submodule_abbrevation.bounded_string) return string is
--- 	-- Returns the given submodule abbrevation as string.
--- 	begin
--- 		return type_submodule_abbrevation.to_string (abbrevation);
--- 	end to_string;
--- 	
--- 	function to_abbrevation (abbrevation : in string) return type_submodule_abbrevation.bounded_string is
--- 	-- Converts a string to type_submodule_abbrevation.
--- 	begin
--- 		return type_submodule_abbrevation.to_bounded_string (abbrevation);
--- 	end to_abbrevation;
--- 
--- -- 	procedure check_number_of_instances (instances : in string) is
--- -- 	-- Checks if given instances is a digit and if it is within allowed range.
--- -- 		use et_string_processing;
--- -- 	begin
--- -- 		-- check characters. all must be digits
--- -- 		for place in instances'first .. instances'last loop
--- -- 			if not is_digit (instances (place)) then
--- -- 				log_indentation_reset;
--- -- 				log (message_error & "instances must contain only digits !", console => true);
--- -- 				raise constraint_error;
--- -- 			end if;
--- -- 		end loop;
--- -- 
--- -- 		-- Test if within range:
--- -- 		if positive'value (instances) not in type_submodule_instance then
--- -- 			log_indentation_reset;
--- -- 			log (message_error & "max. number of instances per module is" 
--- -- 				 & type_submodule_instance'image (type_submodule_instance'last) & " !",
--- -- 				console => true);
--- -- 			raise constraint_error;
--- -- 		end if;
--- -- 	end check_number_of_instances;
--- 
--- -- 	function to_number_of_instances (instances : in string) return type_submodule_instance is
--- -- 	begin
--- -- 		return type_submodule_instance'value (instances);
--- -- 	end to_number_of_instances;
--- 
--- -- 	function to_string (instance : in type_submodule_instance) return string is
--- -- 	-- Converts a submodule instance index to a string.
--- -- 	begin
--- -- 		return trim (type_submodule_instance'image (instance), left);
--- -- 	end to_string;
--- 
--- -- 	function append_instance (
--- -- 		submodule	: in type_submodule_name.bounded_string; -- nucleo_core
--- -- 		separator	: in string := "_";
--- -- 		instance	: in type_submodule_instance) -- 4
--- -- 		return type_submodule_name.bounded_string is -- nucleo_core_4
--- -- 	begin
--- -- 		return 
--- -- 			submodule -- nucleo_core
--- -- 			& type_submodule_name.to_bounded_string (separator) -- "_"
--- -- 			& type_submodule_name.to_bounded_string (trim (type_submodule_instance'image (instance), left)); -- 4
--- -- 	end append_instance;
--- 
--- 	function to_string (sheet_number : in type_submodule_sheet_number) return string is
--- 	-- Returns a sheet number as string.
--- 	begin
--- 		--return trim (type_submodule_sheet_number'image (sheet_number), left);
--- 		return type_submodule_sheet_number'image (sheet_number);
--- 	end to_string;
--- 
--- 	function to_sheet_number (sheet_number : in string) return type_submodule_sheet_number is
--- 	-- Converts a string to type_submodule_sheet_number
--- 	begin
--- 		return type_submodule_sheet_number'value (sheet_number);
--- 	end to_sheet_number;
--- 	
+	
 -- 	function to_string (
 -- 		path : in type_path_to_submodule.list;
 -- 		top_module : in boolean := true) return string is
@@ -393,19 +272,7 @@ package body kicad_coordinates is
 -- 		--return to_string ("location " & result);
 -- 		return to_string (result);
 -- 	end to_string;
--- 	
--- 	function to_coordinates (point : in type_2d_point'class)
--- 	-- Converts a type_2d_point to type_coordinates.
--- 		return type_coordinates is
--- 	begin
--- 		return (
--- 			x		=> point.x,
--- 			y		=> point.y,
--- 			path	=> type_path_to_submodule.empty_list,
--- 			sheet_number	=> 1
--- 			);
--- 	end to_coordinates;
--- 	
+
 	function to_string (
 	-- Returns the given position as string. Scope specifies how much position is to
 	-- be displayed. See specification of type_scope.
@@ -461,66 +328,12 @@ package body kicad_coordinates is
 		return same;
 	end same_path_and_sheet;
 	
--- 	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list) is
--- 	-- Sets the path in given position.
--- 	begin
--- 		position.path := path;
--- 	end set_path;
-
 	procedure set_sheet (position : in out type_coordinates; sheet : in type_submodule_sheet_number) is
 	-- Sets the sheet number in given position.
 	begin
 		position.sheet_number := sheet;
 	end set_sheet;
 
--- 	function paper_dimension (
--- 	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
--- 		paper_size	: in et_general.type_paper_size;
--- 		orientation	: in et_general.type_paper_orientation := et_general.LANDSCAPE;
--- 		axis		: in type_axis)
--- 		return type_distance_xy is
--- 
--- 		dimension : type_distance;
--- 		use et_general;
--- 	
--- 	begin
--- 		case orientation is
--- 			when LANDSCAPE =>
--- 				case paper_size is 
--- 					when A3 =>
--- 						case axis is
--- 							when X => dimension := paper_size_A3_x;
--- 							when Y => dimension := paper_size_A3_y;
--- 						end case;
--- 
--- 					when A4 =>
--- 						case axis is
--- 							when X => dimension := paper_size_A4_x;
--- 							when Y => dimension := paper_size_A4_y;
--- 						end case;
--- 				end case;
--- 
--- 			when PORTRAIT =>
--- 				case paper_size is 
--- 					when A3 =>
--- 						case axis is
--- 							when X => dimension := paper_size_A3_y;
--- 							when Y => dimension := paper_size_A3_x;
--- 						end case;
--- 
--- 					when A4 =>
--- 						case axis is
--- 							when X => dimension := paper_size_A4_y;
--- 							when Y => dimension := paper_size_A4_x;
--- 						end case;
--- 				end case;
--- 
--- 		end case;
--- 
--- 		return dimension;
--- 	end paper_dimension;
-
-	
 	
 end kicad_coordinates;
 

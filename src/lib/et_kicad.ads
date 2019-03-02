@@ -1328,15 +1328,6 @@ package et_kicad is
 	function module_count return natural;
 	-- Returns the number of modules available in container "modules".
 	
--- 	procedure copy_module (
--- 	-- Copyies a rig module. 
--- 	-- If copy_last is true (default) the last module in the rig is copied. 
--- 	-- If copy_last is false, the module with given name_origin is copied.
--- 	-- The module instance is always incremented automatically.
--- 		copy_last		: in boolean := true;						  
--- 		name_origin		: in et_coordinates.type_submodule_name.bounded_string := et_coordinates.type_submodule_name.to_bounded_string (""); -- nucleo_core_3
--- 		log_threshold	: in et_string_processing.type_log_level);
-
 	procedure validate_module (
 		module_name : in type_submodule_name.bounded_string);
 	-- Tests if the given module exists in container "modules". Raises error if not existent.
