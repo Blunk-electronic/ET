@@ -325,17 +325,6 @@ package body et_coordinates is
 		return type_sheet_number'value (sheet_number);
 	end to_sheet_number;
 	
-	function to_coordinates (point : in type_point'class)
-	-- Converts a type_point to type_coordinates.
-		return type_coordinates is
-	begin
-		return (
-			x				=> point.x,
-			y				=> point.y,
-			sheet_number	=> 1
-			);
-	end;
-
 	function to_coordinates (
 		point 	: in type_point'class;
 		sheet	: in type_sheet_number)

@@ -182,10 +182,6 @@ package et_coordinates is
 
 	type type_coordinates is new type_point with private;
 
-	function to_coordinates (point : in type_point'class)
-	-- Converts a type_point to type_coordinates.
-		return type_coordinates;
-
 	function to_coordinates (
 		point 	: in type_point'class;
 		sheet	: in type_sheet_number)

@@ -50,8 +50,6 @@ with et_coordinates;			use et_coordinates;
 
 package kicad_coordinates is
 
--- 	procedure dummy;
-	
 	mil_min : constant float := -390_000_000.0; -- equals approx. type_distance_xy'first
 	mil_max : constant float :=  390_000_000.0; -- equals approx. type_distance_xy'last
 	
