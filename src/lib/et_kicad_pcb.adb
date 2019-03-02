@@ -56,7 +56,7 @@ with ada.exceptions;
 
 with et_general;				use et_general;
 with et_import;
-with et_coordinates;
+with kicad_coordinates;
 with et_libraries;
 with et_schematic;
 with et_kicad_general;			use et_kicad_general;
@@ -7314,7 +7314,6 @@ package body et_kicad_pcb is
 		-- Only the package position, reference position and value position are read and assigned to the
 		-- selectors "position" and "text_placeholders" of a schematic component. See specs et_schematic.type_component
 		-- for details.
-			use et_coordinates;
 			use et_schematic;
 
 			function to_net_name (
@@ -7371,7 +7370,7 @@ package body et_kicad_pcb is
 			
 			procedure add_board_objects (
 			-- Adds board objects to the schematic module.
-				mod_name : in type_submodule_name.bounded_string;
+				mod_name : in kicad_coordinates.type_submodule_name.bounded_string;
 				module   : in out et_kicad.type_module) is
 
 				-- The nets of the module are copied here (in their present state):
@@ -8066,7 +8065,7 @@ package body et_kicad_pcb is
 		end merge_board_and_schematic;
 
 		procedure set_board_available_flag (
-			module_name	: in et_coordinates.type_submodule_name.bounded_string;
+			module_name	: in kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
 		begin
 			module.board_available := et_schematic.TRUE;
@@ -8128,7 +8127,6 @@ package body et_kicad_pcb is
 	procedure read_boards (log_threshold : in et_string_processing.type_log_level) is
 	-- Imports layout files. The files to be imported are named after the schematic modules.
 	-- The schematic modules are indicated by module_cursor.
-		use et_coordinates;
 		use et_kicad.type_modules;
 		use et_string_processing;
 		use ada.directories;
@@ -8140,13 +8138,13 @@ package body et_kicad_pcb is
 		-- Process one module after another.
 		-- module_cursor points to the module.
 		while module_cursor /= et_kicad.type_modules.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log ("module " & kicad_coordinates.to_string (key (module_cursor)), log_threshold);
 			log_indentation_up;
 	
 			-- read the layout file
 			et_kicad_pcb.read_board (
 				file_name => compose (
-						name 		=> to_string (key (module_cursor)),
+						name 		=> kicad_coordinates.to_string (key (module_cursor)),
 						extension	=> file_extension_board),
 				log_threshold 	=> log_threshold + 1);
 
