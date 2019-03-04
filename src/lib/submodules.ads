@@ -144,7 +144,7 @@ package submodules is
 		--symbol			: type_netchanger_symbol; -- CS for visualisation only
 		
 		position_brd	: et_pcb_coordinates.type_point_2d; -- x,y
-		signal_layer	: et_pcb.type_signal_layer := et_pcb.type_signal_layer'first;
+		layer			: et_pcb.type_signal_layer := et_pcb.type_signal_layer'first;
 	end record;
 
 	package type_netchangers is new ordered_maps (

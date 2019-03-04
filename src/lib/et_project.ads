@@ -310,6 +310,7 @@ package et_project is
 	keyword_start					: constant string := "start";
 	keyword_end						: constant string := "end";
 	keyword_rotation				: constant string := "rotation";
+	keyword_rotation_in_schematic	: constant string := "rotation_in_schematic";
 	keyword_size					: constant string := "size";
 	keyword_style					: constant string := "style"; -- CS remove ?
 	keyword_line_width				: constant string := "line_width";
@@ -359,6 +360,7 @@ package et_project is
 	keyword_sheet					: constant string := "sheet";
 	--keyword_path					: constant string := "path";	
 	keyword_position_in_board		: constant string := "position_in_board";
+	keyword_position_in_schematic	: constant string := "position_in_schematic";	
 	keyword_view_mode				: constant string := "view_mode";
 	keyword_reference_offset		: constant string := "reference_offset";	
 	keyword_content					: constant string := "content";

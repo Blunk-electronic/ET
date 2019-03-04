@@ -1683,6 +1683,21 @@ package body et_project is
 			section_mark (section_devices, FOOTER);
 		end query_devices;
 
+		procedure query_netchangers is
+			use submodules;
+			use type_netchangers;
+
+			procedure query_netchanger (cursor : type_netchangers.cursor) is
+			begin
+				null;
+			end query_netchanger;
+			
+		begin
+			section_mark (section_netchangers, HEADER);
+			iterate (module.netchangers, query_netchanger'access);
+			section_mark (section_netchangers, FOOTER);
+		end query_netchangers;
+		
 		procedure query_frames is		
 			use et_libraries;
 			use type_frame_template_name;
@@ -2069,13 +2084,15 @@ package body et_project is
 		
 		-- devices
 		query_devices;
+
+		-- netchangers
+		query_netchangers;
 		
 		-- board
 		query_board;
 	
 	
 		write_module_footer;
-
 		
 		log_indentation_down;
 
@@ -7729,8 +7746,7 @@ package body et_project is
 			unit_placeholder_value		: et_libraries.type_text_placeholder (meaning => et_libraries.VALUE);
 			unit_placeholder_purpose	: et_libraries.type_text_placeholder (meaning => et_libraries.PURPOSE);
 
-			-- temporarily netchangers are collected here:
-			netchangers		: submodules.type_netchangers.map;
+			-- temporarily a netchanger is stored here:
 			netchanger		: submodules.type_netchanger;
 			netchanger_name : positive := 1;
 						
@@ -9070,7 +9086,9 @@ package body et_project is
 						board_circle_contour := (others => <>);
 					end insert_circle_contour;
 
-					procedure insert_netchanger is
+					procedure insert_netchanger (
+						module_name	: in type_module_name.bounded_string;
+						module		: in out et_schematic.type_module) is
 						inserted : boolean;
 						use submodules;
 						use type_netchangers;
@@ -9080,7 +9098,7 @@ package body et_project is
 
 						-- insert netchanger in container netchangers:
 						insert (
-							container	=> netchangers,
+							container	=> module.netchangers,
 							key			=> netchanger_name,
 							new_item	=> netchanger,
 							inserted	=> inserted,
@@ -9990,13 +10008,7 @@ package body et_project is
 
 						when SEC_NETCHANGERS =>
 							case stack.parent is
-								when SEC_INIT =>
-
-									-- copy collection of netchangers to module
-									module.netchangers := netchangers;
-
-									-- clean up
-									type_submodules.type_netchangers.clear (netchangers);
+								when SEC_INIT => null;
 								when others => invalid_section;
 							end case;
 
@@ -10004,8 +10016,11 @@ package body et_project is
 							case stack.parent is
 								when SEC_NETCHANGERS =>
 
-									-- insert netchanger in collection of netchangers
-									insert_netchanger;
+									-- insert netchanger in module
+									update_element (
+										container	=> modules,
+										position	=> module_cursor,
+										process		=> insert_netchanger'access);
 									
 								when others => invalid_section;
 							end case;
@@ -11823,16 +11838,26 @@ package body et_project is
 											expect_field_count (line, 2);
 											netchanger_name := positive'value (f (line, 2));
 											
-										elsif kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
+										elsif kw = keyword_position_in_schematic then -- position_in_schematic sheet 1 x 1.000 y 5.555
 											expect_field_count (line, 7);
 
 											-- extract position (in schematic) starting at field 2
 											netchanger.position_sch := to_position (line, 2);
 
-										elsif kw = keyword_rotation then -- rotation 180.0
+										elsif kw = keyword_rotation_in_schematic then -- rotation_in_schematic 180.0
 											expect_field_count (line, 2);
 											netchanger.rotation := et_coordinates.to_angle (f (line, 2));
 
+										elsif kw = keyword_position_in_board then -- position_in_board x 55.000 y 7.555
+											expect_field_count (line, 5);
+
+											-- extract position (in board) starting at field 2
+											netchanger.position_brd := to_position (line, 2);
+
+										elsif kw = keyword_layer then -- layer 3 (signal layer in board)
+											expect_field_count (line, 2);
+											netchanger.layer := et_pcb.to_signal_layer (f (line, 2));
+											
 										else
 											invalid_keyword (kw);
 										end if;
