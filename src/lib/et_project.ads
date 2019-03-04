@@ -454,6 +454,9 @@ package et_project is
 	section_devices				: constant string	:= "[DEVICES";
 	section_device				: constant string	:= "[DEVICE";
 
+	section_netchangers			: constant string 	:= "[NETCHANGERS";
+	section_netchanger			: constant string 	:= "[NETCHANGER";
+	
 	section_units				: constant string	:= "[UNITS";
 	section_unit				: constant string	:= "[UNIT";
 
@@ -529,6 +532,8 @@ package et_project is
 		SEC_BOARD,
 		SEC_DEVICES,
 		SEC_DEVICE,
+		SEC_NETCHANGERS,
+		SEC_NETCHANGER,
 		SEC_TEXTS,
 		SEC_TEXT,
 		SEC_UNITS,

@@ -125,8 +125,8 @@ package et_schematic is
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a device.
 	type type_unit_base is tagged record
-		rotation	: et_coordinates.type_angle;
-		mirror		: type_mirror;
+		rotation	: et_coordinates.type_angle; -- CS default
+		mirror		: type_mirror; -- CS default
 	end record;
 
 	-- Some placeholders of a unit are available when the component appears in both schematic and layout:	
@@ -343,6 +343,7 @@ package et_schematic is
 		devices			: type_devices.map;						-- the devices of the module
 		net_classes		: et_pcb.type_net_classes.map;			-- the net classes
 		submods			: submodules.type_submodules.map;		-- submodules
+		netchangers		: submodules.type_netchangers.map;		-- netchangers
 		
 		frame_template_schematic	: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frm
 		

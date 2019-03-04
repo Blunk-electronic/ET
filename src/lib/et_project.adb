@@ -7729,6 +7729,11 @@ package body et_project is
 			unit_placeholder_value		: et_libraries.type_text_placeholder (meaning => et_libraries.VALUE);
 			unit_placeholder_purpose	: et_libraries.type_text_placeholder (meaning => et_libraries.PURPOSE);
 
+			-- temporarily netchangers are collected here:
+			netchangers		: submodules.type_netchangers.map;
+			netchanger		: submodules.type_netchanger;
+			netchanger_name : positive := 1;
+						
 			-- general board stuff
 			type type_line is new et_pcb.type_line_2d with null record;
 			board_line : type_line;
@@ -9064,6 +9069,35 @@ package body et_project is
 						-- clean up for next pcb contour circle
 						board_circle_contour := (others => <>);
 					end insert_circle_contour;
+
+					procedure insert_netchanger is
+						inserted : boolean;
+						use submodules;
+						use type_netchangers;
+						cursor : type_netchangers.cursor;
+					begin
+						log ("netchanger " & positive'image (netchanger_name), log_threshold + 2);
+
+						-- insert netchanger in container netchangers:
+						insert (
+							container	=> netchangers,
+							key			=> netchanger_name,
+							new_item	=> netchanger,
+							inserted	=> inserted,
+							position	=> cursor);
+
+						-- A netchanger name must be unique:
+						if not inserted then
+							log_indentation_reset;
+							log (message_error & "netchanger id" & positive'image (netchanger_name) 
+								 & " already used !", console => true);
+							raise constraint_error;
+						end if;
+						
+						-- clean up for next netchanger
+						netchanger_name := 1;
+						netchanger := (others => <>);
+					end insert_netchanger;
 					
 				begin -- execute_section
 					case stack.current is
@@ -9954,6 +9988,28 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
+						when SEC_NETCHANGERS =>
+							case stack.parent is
+								when SEC_INIT =>
+
+									-- copy collection of netchangers to module
+									module.netchangers := netchangers;
+
+									-- clean up
+									type_submodules.type_netchangers.clear (netchangers);
+								when others => invalid_section;
+							end case;
+
+						when SEC_NETCHANGER =>
+							case stack.parent is
+								when SEC_NETCHANGERS =>
+
+									-- insert netchanger in collection of netchangers
+									insert_netchanger;
+									
+								when others => invalid_section;
+							end case;
+							
 						when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 							SEC_STOP_MASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
 							SEC_COPPER | SEC_PCB_CONTOURS_NON_PLATED =>
@@ -10047,10 +10103,12 @@ package body et_project is
 				elsif set (section_drawing_frames, SEC_DRAWING_FRAMES) then null;
 				elsif set (section_schematic, SEC_SCHEMATIC) then null;
 				elsif set (section_board, SEC_BOARD) then null;
-				elsif set (section_devices, SEC_DEVICES) then null;				
+				elsif set (section_devices, SEC_DEVICES) then null;
 				elsif set (section_device, SEC_DEVICE) then null;
 				elsif set (section_units, SEC_UNITS) then null;
 				elsif set (section_unit, SEC_UNIT) then null;
+				elsif set (section_netchangers, SEC_NETCHANGERS) then null;
+				elsif set (section_netchanger, SEC_NETCHANGER) then null;
 				elsif set (section_placeholders, SEC_PLACEHOLDERS) then null;				
 				elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
 				elsif set (section_package, SEC_PACKAGE) then null;
@@ -11748,6 +11806,41 @@ package body et_project is
 								when others => invalid_section;
 							end case;
 
+						when SEC_NETCHANGERS =>
+							case stack.parent is
+								when SEC_INIT => null; -- nothing to do
+								when others => invalid_section;
+							end case;
+
+						when SEC_NETCHANGER =>
+							case stack.parent is
+								when SEC_NETCHANGERS =>
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_name then -- name 1, 2, 304, ...
+											expect_field_count (line, 2);
+											netchanger_name := positive'value (f (line, 2));
+											
+										elsif kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
+											expect_field_count (line, 7);
+
+											-- extract position (in schematic) starting at field 2
+											netchanger.position_sch := to_position (line, 2);
+
+										elsif kw = keyword_rotation then -- rotation 180.0
+											expect_field_count (line, 2);
+											netchanger.rotation := et_coordinates.to_angle (f (line, 2));
+
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+
+								when others => invalid_section;
+							end case;
+							
 						when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 							SEC_STOP_MASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
 							SEC_COPPER | SEC_PCB_CONTOURS_NON_PLATED =>

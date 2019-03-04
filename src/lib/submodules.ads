@@ -140,7 +140,8 @@ package submodules is
 
 	type type_netchanger is record
 		position_sch	: et_coordinates.type_coordinates; -- x,y,sheet
-		symbol			: type_netchanger_symbol;
+		rotation		: et_coordinates.type_angle := 0.0;
+		--symbol			: type_netchanger_symbol; -- CS for visualisation only
 		
 		position_brd	: et_pcb_coordinates.type_point_2d; -- x,y
 		signal_layer	: et_pcb.type_signal_layer := et_pcb.type_signal_layer'first;
