@@ -1689,7 +1689,13 @@ package body et_project is
 
 			procedure query_netchanger (cursor : type_netchangers.cursor) is
 			begin
-				null;
+				section_mark (section_netchanger, HEADER);
+				write (keyword => keyword_name,	parameters => positive'image (key (cursor))); -- 1, 2, 201, ...
+				write (keyword => keyword_position_in_schematic, parameters => position (element (cursor).position_sch)); -- position_in_schematic sheet 1 x 147.32 y 96.97
+				write (keyword => keyword_rotation_in_schematic, parameters => rotation (element (cursor).rotation)); -- rotation_in_schematic 90.0
+				write (keyword => keyword_position_in_board, parameters => position (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
+				write (keyword => keyword_layer, parameters => et_pcb.to_string (element (cursor).layer)); -- layer 2
+				section_mark (section_netchanger, FOOTER);
 			end query_netchanger;
 			
 		begin
