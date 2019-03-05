@@ -73,13 +73,14 @@ package et_project is
 	directory_libraries_schemlets		: constant string (1..9) 	:= "schemlets";
 	
 	-- supplementary stuff of a project
-	directory_dru			: constant string (1..12)	:= "design_rules";
-	directory_cam			: constant string (1..3)	:= "CAM";
-	directory_net_classes	: constant string (1..11)	:= "net_classes";	
-	directory_settings		: constant string (1..8)	:= "settings";
-	directory_reports		: constant string (1..7)	:= "reports";
-	directory_documentation	: constant string (1..13)	:= "documentation";
-	directory_miscellaneous	: constant string (1..13)	:= "miscellaneous";		
+	directory_dru			: constant string := "design_rules";
+	directory_cam			: constant string := "CAM";
+	directory_net_classes	: constant string := "net_classes";
+	directory_templates		: constant string := "templates";		
+	directory_settings		: constant string := "settings";
+	directory_reports		: constant string := "reports";
+	directory_documentation	: constant string := "documentation";
+	directory_miscellaneous	: constant string := "miscellaneous";		
 
 	subtype type_file_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
 	file_name_text_size_default : constant type_file_name_text_size := 1.3;
@@ -110,6 +111,9 @@ package et_project is
 	-- The module file name:
 	module_file_name_length_max : constant positive := 100;
 	package type_module_file_name is new generic_bounded_length (module_file_name_length_max);
+
+	function to_module_file_name (name : in string) return type_module_file_name.bounded_string;
+	function to_string (name : in type_module_file_name.bounded_string) return string;
 	
 	module_file_name_extension : constant string := "mod";
 	module_file_name_extension_asterisk : constant string := "*." & module_file_name_extension;
@@ -321,7 +325,8 @@ package et_project is
 	keyword_pos_y					: constant string := "y";		
 	keyword_device					: constant string := "device";
 	keyword_port					: constant string := "port";
-	keyword_submodule				: constant string := "submodule";	
+	keyword_submodule				: constant string := "submodule";
+	keyword_netchanger				: constant string := "netchanger";		
 	keyword_layer					: constant string := "layer";
 	keyword_width					: constant string := "width";
 	keyword_height					: constant string := "height";	

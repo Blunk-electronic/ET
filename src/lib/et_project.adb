@@ -126,6 +126,14 @@ package body et_project is
 		return type_et_project_path.to_bounded_string (path);
 	end to_project_path;
 
+	function to_module_file_name (name : in string) return type_module_file_name.bounded_string is begin
+		return type_module_file_name.to_bounded_string (name);
+	end;
+
+	function to_string (name : in type_module_file_name.bounded_string) return string is begin
+		return type_module_file_name.to_string (name);
+	end;
+	
 	function to_string (name : in type_module_name.bounded_string) return string is begin
 		return type_module_name.to_string (name);
 	end;
@@ -261,6 +269,7 @@ package body et_project is
 		create_directory (compose (path, directory_dru));
 		create_directory (compose (path, directory_cam));
 		--create_directory (compose (path, directory_net_classes));
+		create_directory (compose (path, directory_templates));
 		create_directory (compose (path, directory_settings));
 		create_directory (compose (path, directory_reports));
 		create_directory (compose (path, directory_documentation));
@@ -1211,6 +1220,7 @@ package body et_project is
 		procedure write_module_header is 
 		-- Creates the module file and writes a nice header in it.
 			use ada.directories;
+			use gnat.directory_operations;
 			use type_project_name;
 			use type_et_project_path;
 			use et_general;
@@ -1232,10 +1242,16 @@ package body et_project is
 					name 					=> to_string (project_name),
 					extension 				=> module_file_name_extension));
 			else
-				module_file_name := type_module_file_name.to_bounded_string (compose (
-					containing_directory	=> to_string (path),
-					name 					=> to_string (module_name),
-					extension 				=> module_file_name_extension));
+				-- Compose the full path of the module file. 
+				-- NOTE: The function "compose" in ada.directories does not work here
+				-- because it does not accept directory separators in a module_name.
+				module_file_name := to_module_file_name (
+					to_string (path) &			-- ./project_abc
+					dir_separator &				-- /
+					to_string (module_name) &	-- motor_driver, templates/clock_generator
+					latin_1.full_stop &			-- .
+					module_file_name_extension	-- mod
+					);
 			end if;
 			
 			log (" module file name is now " & type_module_file_name.to_string (module_file_name), log_threshold + 2);
@@ -7664,6 +7680,8 @@ package body et_project is
 		net_submodule_port : et_schematic.type_port_submodule;
 		net_submodule_ports : et_schematic.type_ports_submodule.list;
 
+		--net_netchanger_port : positive := 1;
+
 		route			: et_pcb.type_route;
 		route_line 		: et_pcb.type_copper_line_pcb;
 		route_arc		: et_pcb.type_copper_arc_pcb;
@@ -10391,7 +10409,7 @@ package body et_project is
 											invalid_keyword (f (line, 3));
 										end if;
 
-									elsif kw = keyword_submodule then -- submodule motor_driver port A
+									elsif kw = keyword_submodule then -- submodule motor_driver port mot_on_off
 										expect_field_count (line, 4);
 										
 										net_submodule_port.module := et_general.to_instance_name (f (line, 2)); -- motor_driver
@@ -10404,6 +10422,25 @@ package body et_project is
 
 											-- clean up for next submodule port
 											net_submodule_port := (others => <>);
+
+										else
+											invalid_keyword (f (line, 3));
+										end if;
+
+									elsif kw = keyword_netchanger then -- netchanger 1 port A
+										expect_field_count (line, 4);
+										
+										--net_submodule_port.module := et_general.to_instance_name (f (line, 2)); -- 1
+
+										if f (line, 3) = keyword_port then -- port
+											null; -- CS
+											--net_submodule_port.port := to_net_name (f (line, 4)); -- A
+
+											-- append submodule port to collection of submodule ports
+											--et_schematic.type_ports_submodule.append (net_submodule_ports, net_submodule_port);
+
+											-- clean up for next submodule port
+											--net_submodule_port := (others => <>);
 
 										else
 											invalid_keyword (f (line, 3));
@@ -11897,6 +11934,36 @@ package body et_project is
 			
 		end process_line;
 
+
+		procedure read_submodule_files is
+
+			use submodules;
+			use type_submodules;
+			
+			submods : submodules.type_submodules.map;
+			
+			procedure get_submodules (
+				module_name	: type_module_name.bounded_string;
+				module		: et_schematic.type_module) is
+			begin
+				submods := module.submods;
+			end;
+
+			procedure query_module (cursor : in type_submodules.cursor) is
+			begin
+				null;
+				read_module_file (to_string (element (cursor).file), log_threshold + 1);
+			end;
+			
+		begin
+			query_element (
+				position	=> module_cursor,
+				process		=> get_submodules'access);
+			
+			iterate (submods, query_module'access);
+
+		end read_submodule_files;
+		
 		use ada.directories;
 		
 	begin -- read_module_file
@@ -11924,7 +11991,7 @@ package body et_project is
 			position	=> module_cursor,
 			inserted	=> module_inserted);
 
-		log ("module name " & to_string (key (module_cursor)), log_threshold + 1);
+		--log ("module name " & to_string (key (module_cursor)), log_threshold + 1);
 		
 		-- read the file line by line
 		while not end_of_file loop
@@ -11950,6 +12017,9 @@ package body et_project is
 		set_input (standard_input);
 		close (file_handle);
 
+		read_submodule_files;
+
+		
 		exception when event: others =>
 			if is_open (file_handle) then close (file_handle); end if;
 			raise;
