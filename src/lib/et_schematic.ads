@@ -192,7 +192,7 @@ package et_schematic is
 		
 	
 	
--- NET LABELS
+
 
 	subtype type_net_label_text_size is et_coordinates.type_distance range 1.0 .. 5.0; -- unit is mm
 	net_label_text_size_default : constant type_net_label_text_size := 1.3;
@@ -200,6 +200,10 @@ package et_schematic is
 	function to_net_label_text_size (text : in string) return type_net_label_text_size;
 	-- Converts a string to type_net_label_text_size.
 
+
+
+
+	
 	-- A net junction is where segments can be connected with each other.
 	type type_net_junction is record -- CS rename to type_junction
 		coordinates : et_coordinates.type_point; -- CS rename to position
@@ -207,16 +211,18 @@ package et_schematic is
 
 	-- Junctions are to be collected in a list.
 	package type_junctions is new doubly_linked_lists (type_net_junction);
+
 	
 	-- This is the port of a device:
 	type type_port_component is record -- CS rename to type_port_device
 		reference	: et_libraries.type_component_reference;
-		name		: et_libraries.type_port_name.bounded_string;
+		name		: et_libraries.type_port_name.bounded_string; -- CS rename to port ?
 		-- CS unit name ?
 	end record;
 
 	package type_ports_component is new doubly_linked_lists (type_port_component);
 
+	
 	-- This is the port of a submodule:
 	type type_port_submodule is record
 		-- The instance of a certain submodule:
@@ -227,7 +233,20 @@ package et_schematic is
 	end record;
 
 	package type_ports_submodule is new doubly_linked_lists (type_port_submodule);
-		
+
+
+	-- This is the port of a netchanger:
+	type type_port_netchanger is record
+		id		: submodules.type_netchanger_id := submodules.type_netchanger_id'first;
+		port	: submodules.type_netchanger_port_name := submodules.SLAVE; -- CS reasonable default ?
+	end record;
+
+	package type_ports_netchanger is new doubly_linked_lists (type_port_netchanger);
+
+
+	
+	
+	
 	type type_net_label_appearance is (
 		SIMPLE,	-- a label that shows just the name of the net
 		TAG 	-- a lable that shows the net name, the sheet name and the row/column

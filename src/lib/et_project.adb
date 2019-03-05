@@ -1706,7 +1706,7 @@ package body et_project is
 			procedure query_netchanger (cursor : type_netchangers.cursor) is
 			begin
 				section_mark (section_netchanger, HEADER);
-				write (keyword => keyword_name,	parameters => positive'image (key (cursor))); -- 1, 2, 201, ...
+				write (keyword => keyword_name,	parameters => to_string (key (cursor))); -- 1, 2, 201, ...
 				write (keyword => keyword_position_in_schematic, parameters => position (element (cursor).position_sch)); -- position_in_schematic sheet 1 x 147.32 y 96.97
 				write (keyword => keyword_rotation_in_schematic, parameters => rotation (element (cursor).rotation)); -- rotation_in_schematic 90.0
 				write (keyword => keyword_position_in_board, parameters => position (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
@@ -7768,7 +7768,7 @@ package body et_project is
 
 		-- temporarily a netchanger is stored here:
 		netchanger		: submodules.type_netchanger;
-		netchanger_name : positive := 1;
+		netchanger_id	: submodules.type_netchanger_id := submodules.type_netchanger_id'first;
 					
 		-- general board stuff
 		type type_line is new et_pcb.type_line_2d with null record;
@@ -9116,12 +9116,12 @@ package body et_project is
 					use type_netchangers;
 					cursor : type_netchangers.cursor;
 				begin
-					log ("netchanger " & positive'image (netchanger_name), log_threshold + 2);
+					log ("netchanger " & to_string (netchanger_id), log_threshold + 2);
 
 					-- insert netchanger in container netchangers:
 					insert (
 						container	=> module.netchangers,
-						key			=> netchanger_name,
+						key			=> netchanger_id,
 						new_item	=> netchanger,
 						inserted	=> inserted,
 						position	=> cursor);
@@ -9129,13 +9129,13 @@ package body et_project is
 					-- A netchanger name must be unique:
 					if not inserted then
 						log_indentation_reset;
-						log (message_error & "netchanger id" & positive'image (netchanger_name) 
+						log (message_error & "netchanger id" & to_string (netchanger_id) 
 								& " already used !", console => true);
 						raise constraint_error;
 					end if;
 					
 					-- clean up for next netchanger
-					netchanger_name := 1;
+					netchanger_id := type_netchanger_id'first;
 					netchanger := (others => <>);
 				end insert_netchanger;
 				
@@ -11877,7 +11877,7 @@ package body et_project is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then -- name 1, 2, 304, ...
 										expect_field_count (line, 2);
-										netchanger_name := positive'value (f (line, 2));
+										netchanger_id := submodules.to_netchanger_id (f (line, 2));
 										
 									elsif kw = keyword_position_in_schematic then -- position_in_schematic sheet 1 x 1.000 y 5.555
 										expect_field_count (line, 7);

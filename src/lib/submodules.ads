@@ -105,10 +105,16 @@ package submodules is
 
 
 
+	netchanger_id_max : constant positive := 10000; -- CS  increase if necessary
+	type type_netchanger_id is range 1 .. netchanger_id_max;
 
-
+	function to_netchanger_id (id : in string) return type_netchanger_id;
+	function to_string (id : in type_netchanger_id) return string;		
 	
+	type type_netchanger_port_name is (MASTER, SLAVE);
 
+	function to_port_name (name : in string) return type_netchanger_port_name;
+	function to_string (name : in type_netchanger_port_name) return string;	
 	
 	type type_netchanger_port is record
 		position	: type_point;
@@ -148,7 +154,7 @@ package submodules is
 	end record;
 
 	package type_netchangers is new ordered_maps (
-		key_type		=> positive, -- CS dedicated type required
+		key_type		=> type_netchanger_id,
 		element_type	=> type_netchanger);
 	
 	-- A module connector connects the parent module with the submodule.

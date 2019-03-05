@@ -73,6 +73,22 @@ package body submodules is
 		return type_submodule_view_mode'value (mode);
 	end;
 
+	function to_netchanger_id (id : in string) return type_netchanger_id is begin
+		return type_netchanger_id'value (id);
+	end;
+
+	function to_string (id : in type_netchanger_id) return string is begin
+		return type_netchanger_id'image (id);
+	end;
+
+	function to_port_name (name : in string) return type_netchanger_port_name is begin
+		return type_netchanger_port_name'value (name);
+	end;
+
+	function to_string (name : in type_netchanger_port_name) return string is begin
+		return latin_1.space & to_lower (type_netchanger_port_name'image (name));
+	end;
+
 	
 end submodules;
 
