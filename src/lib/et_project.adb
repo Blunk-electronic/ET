@@ -1416,6 +1416,22 @@ package body et_project is
 						end loop;
 					end query_submodule_ports;
 					
+					procedure query_netchanger_ports (segment : in type_net_segment) is
+						use type_ports_netchanger;
+						port_cursor : type_ports_netchanger.cursor := segment.netchanger_ports.first;
+					begin
+						while port_cursor /= type_ports_netchanger.no_element loop
+
+							write (keyword => keyword_netchanger, parameters => 
+								submodules.to_string (element (port_cursor).id)
+								& space & keyword_port
+								& submodules.to_string (element (port_cursor).port)
+								); -- netchanger 1 port master/slave
+
+							next (port_cursor);
+						end loop;
+					end query_netchanger_ports;
+
 				begin -- query_segments
 					section_mark (section_segments, HEADER);
 					while segment_cursor /= type_net_segments.no_element loop
@@ -1430,7 +1446,7 @@ package body et_project is
 						section_mark (section_ports, HEADER);
 						query_element (segment_cursor, query_device_ports'access);
 						query_element (segment_cursor, query_submodule_ports'access);
-						-- CS netchanger ports
+						query_element (segment_cursor, query_netchanger_ports'access);
 						section_mark (section_ports, FOOTER);
 						
 						section_mark (section_segment, FOOTER);
@@ -7680,7 +7696,8 @@ package body et_project is
 		net_submodule_port : et_schematic.type_port_submodule;
 		net_submodule_ports : et_schematic.type_ports_submodule.list;
 
-		--net_netchanger_port : positive := 1;
+		net_netchanger_port : et_schematic.type_port_netchanger;
+		net_netchanger_ports : et_schematic.type_ports_netchanger.list;
 
 		route			: et_pcb.type_route;
 		route_line 		: et_pcb.type_copper_line_pcb;
@@ -7878,7 +7895,7 @@ package body et_project is
 					use submodules;
 					use submodules.type_submodules;
 					cursor : submodules.type_submodules.cursor;
-				begin -- insert_submodule
+				begin
 					log ("submodule " & et_general.to_string (submodule_name), log_threshold + 1);
 
 					-- CS: notify about missing parameters (by reading the parameter-found-flags)
@@ -7898,8 +7915,8 @@ package body et_project is
 						raise constraint_error;
 					end if;
 
-					-- CS open and read submodule.file
-					--read_module_file (to_string (submodule.file), log_threshold + 2);
+					-- The submodule/template (kept in submodule.file) will be read later once the 
+					-- parent module has been read completely.
 					
 					-- clean up for next submodule
 					submodule_name := to_instance_name ("");
@@ -9283,7 +9300,8 @@ package body et_project is
 
 								-- NOTE: A device, submodule or netchanger port is defined by a
 								-- single line.
-								-- Upon reading the line like "device/submodule/netchanger x port 1" 
+								-- Upon reading the a line like 
+								--   "device/submodule/netchanger x port 1/4/slave/master" 
 								-- the port is appended to the corresponding port collection 
 								-- immediately when the line is read. See main code of process_line.
 								-- There is no section for a single port like [PORT BEGIN].
@@ -9293,10 +9311,14 @@ package body et_project is
 
 								-- insert submodule ports in segment
 								net_segment.submodule_ports := net_submodule_ports;
+
+								-- insert netchanger ports in segment
+								net_segment.netchanger_ports := net_netchanger_ports;
 								
 								-- clean up for next port collections (of another net segment)
 								et_schematic.type_ports_component.clear (net_device_ports);
 								et_schematic.type_ports_submodule.clear (net_submodule_ports);
+								et_schematic.type_ports_netchanger.clear (net_netchanger_ports);
 
 							when SEC_SUBMODULE =>
 								-- copy collection of ports to submodule
@@ -10427,20 +10449,19 @@ package body et_project is
 											invalid_keyword (f (line, 3));
 										end if;
 
-									elsif kw = keyword_netchanger then -- netchanger 1 port A
+									elsif kw = keyword_netchanger then -- netchanger 1 port master/slave
 										expect_field_count (line, 4);
 										
-										--net_submodule_port.module := et_general.to_instance_name (f (line, 2)); -- 1
+										net_netchanger_port.id := submodules.to_netchanger_id (f (line, 2)); -- 1
 
 										if f (line, 3) = keyword_port then -- port
-											null; -- CS
-											--net_submodule_port.port := to_net_name (f (line, 4)); -- A
+											net_netchanger_port.port := submodules.to_port_name (f (line, 4)); -- MASTER, SLAVE
 
-											-- append submodule port to collection of submodule ports
-											--et_schematic.type_ports_submodule.append (net_submodule_ports, net_submodule_port);
+											-- append netchanger port to collection of netchanger ports
+											et_schematic.type_ports_netchanger.append (net_netchanger_ports, net_netchanger_port);
 
-											-- clean up for next submodule port
-											--net_submodule_port := (others => <>);
+											-- clean up for next netchanger port
+											net_netchanger_port := (others => <>);
 
 										else
 											invalid_keyword (f (line, 3));
@@ -11936,38 +11957,52 @@ package body et_project is
 
 
 		procedure read_submodule_files is
+		-- Pointer module_cursor points to the last module that has been read.
+		-- Take a copy of the submodules stored in module.submods. 
+		-- Then iterate in that copy (submods) to read the actual 
+		-- module files (like templates/clock_generator.mod).
+		-- NOTE: The parent procedure "read_module_file" calls itself here !
 
 			use submodules;
 			use type_submodules;
-			
+
+			-- Here the copy of submodules lives:
 			submods : submodules.type_submodules.map;
 			
 			procedure get_submodules (
+			-- Copies the submodules in submods.
 				module_name	: type_module_name.bounded_string;
 				module		: et_schematic.type_module) is
 			begin
 				submods := module.submods;
 			end;
 
-			procedure query_module (cursor : in type_submodules.cursor) is
-			begin
-				null;
+			procedure query_module (cursor : in type_submodules.cursor) is begin
+				-- Read the template file:
 				read_module_file (to_string (element (cursor).file), log_threshold + 1);
 			end;
 			
-		begin
+		begin -- read_submodule_files
+			-- take a copy of submodules
 			query_element (
 				position	=> module_cursor,
 				process		=> get_submodules'access);
+
+			if length (submods) > 0 then
+				log ("submodules/templates ...", log_threshold);
+				log_indentation_up;
 			
-			iterate (submods, query_module'access);
+				-- Query submodules of the parent module (accessed by module_cursor):
+				iterate (submods, query_module'access);
+
+				log_indentation_down;
+			end if;
 
 		end read_submodule_files;
 		
 		use ada.directories;
 		
 	begin -- read_module_file
-		-- write name of configuration file
 		log (file_name, log_threshold);
 		log_indentation_up;
 
@@ -11986,13 +12021,10 @@ package body et_project is
 		-- Create an empty module named after the module file (omitting extension *.mod).
 		type_modules.insert (
 			container	=> modules,
-			--key			=> to_module_name (base_name (file_name)),
 			key			=> to_module_name (remove_extension (file_name)),
 			position	=> module_cursor,
 			inserted	=> module_inserted);
 
-		--log ("module name " & to_string (key (module_cursor)), log_threshold + 1);
-		
 		-- read the file line by line
 		while not end_of_file loop
 			line := et_string_processing.read_line (
@@ -12017,8 +12049,10 @@ package body et_project is
 		set_input (standard_input);
 		close (file_handle);
 
+		-- Pointer module_cursor points to the last module that has been read.		
+		-- The names of submodule/template files are stored in module.submods.file.
+		-- But the files itself have not been read. That is what we do next:
 		read_submodule_files;
-
 		
 		exception when event: others =>
 			if is_open (file_handle) then close (file_handle); end if;
