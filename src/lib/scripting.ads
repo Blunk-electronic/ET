@@ -55,7 +55,7 @@ with et_schematic;
 with et_pcb;
 
 package scripting is
-	comment_mark : constant string := ("--");
+	comment_mark : constant string := ("#");
 
 	script_name_length_max : constant positive := 100; -- CS increase if necessary
 	package type_script_name is new generic_bounded_length (script_name_length_max);
@@ -72,6 +72,30 @@ package scripting is
 		ERROR
 		);
 
+	type type_domain is (
+		RIG,
+		SCH,
+		BRD,
+		DEV,
+		SYM,
+		PAC
+		);
+
+	function to_string (domain : in type_domain) return string;
+	function to_domain (domain : in string) return type_domain;
+
+	type type_verb is (
+		DELETE,
+		MOVE,
+		DRAG,
+		ADD
+		);
+
+	function to_string (verb : in type_verb) return string;
+	function to_verb (verb : in string) return type_verb;
+
+	
+	
 	function execute_script (
 		file_name		: in type_script_name.bounded_string;
 		log_threshold	: in type_log_level)

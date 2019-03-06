@@ -65,6 +65,9 @@ with submodules;
 
 package body scripting is
 
+	function f (line : in type_fields_of_line; position : in positive) return string 
+		renames et_string_processing.field;
+	
 	function to_string (name : in type_script_name.bounded_string) return string is begin
 		return type_script_name.to_string (name);
 	end;
@@ -73,16 +76,50 @@ package body scripting is
 		return type_script_name.to_bounded_string (name);
 	end;
 
+	function to_string (domain : in type_domain) return string is begin
+		return type_domain'image (domain);
+	end;
+
+	function to_domain (domain : in string) return type_domain is begin
+		return type_domain'value (domain);
+
+		exception when event: others => 
+			log (message_error & "domain '" & domain & "' invalid !", console => true);
+			raise;
+	end;
+
+	function to_string (verb : in type_verb) return string is begin
+		return type_verb'image (verb);
+	end;
+
+	function to_verb (verb : in string) return type_verb is begin
+		return type_verb'value (verb);
+		exception when event: others => 
+			log (message_error & "verb '" & verb & "' invalid !", console => true);
+			raise;
+	end;
+	
+	
 	function execute_command (
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 		return type_exit_code is
 
 		exit_code : type_exit_code := SUCCESSFUL;
+		domain : type_domain;
+		verb : type_verb;
 	begin
 		log ("cmd --> " & to_string (cmd), log_threshold);
+		domain := to_domain (f (cmd, 1));
+		verb := to_verb (f (cmd, 2));
 		
 		return exit_code;
+
+		exception when event: others => 
+			log (message_error & affected_line (cmd) & "command '" &
+				to_string (cmd) & "' invalid !", console => true);
+			return ERROR;
+
 	end execute_command;
 
 	
