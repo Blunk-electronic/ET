@@ -12010,7 +12010,7 @@ package body et_project is
 		open (
 			file => file_handle,
 			mode => in_file, 
-			name => file_name);
+			name => expand (file_name, log_threshold + 1));
 
 		set_input (file_handle);
 		
