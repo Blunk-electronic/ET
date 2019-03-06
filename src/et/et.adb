@@ -60,6 +60,7 @@ with et_kicad;
 with et_kicad_pcb;
 with et_kicad_to_native;
 with et_project;
+with scripting;
 
 procedure et is
 
@@ -67,7 +68,9 @@ procedure et is
 	conv_file_name_use		: conventions.type_conventions_file_name.bounded_string;
 
 	project_name_import		: et_project.type_project_name.bounded_string; -- the project to be imported
-	project_name_save_as	: et_project.type_project_name.bounded_string; -- the "save as" name of the project	
+	project_name_save_as	: et_project.type_project_name.bounded_string; -- the "save as" name of the project
+
+	script_name	: scripting.type_script_name.bounded_string;
 	
 	procedure get_commandline_arguments is
 		use et_schematic;
@@ -87,6 +90,7 @@ procedure et is
 						& latin_1.space & switch_conventions & latin_1.equals_sign
 						& latin_1.space & switch_native_project_open & latin_1.equals_sign
 						& latin_1.space & switch_native_project_save_as & latin_1.equals_sign
+						& latin_1.space & switch_execute_script & latin_1.equals_sign
 					) is
 
 				when latin_1.hyphen => -- which is a '-'
@@ -119,6 +123,10 @@ procedure et is
 					elsif full_switch = switch_native_project_save_as then
 						log (arg & full_switch & space & parameter);
 						project_name_save_as := et_project.to_project_name (remove_trailing_directory_separator (parameter));
+
+					elsif full_switch = switch_execute_script then
+						log (arg & full_switch & space & parameter);
+						script_name := scripting.to_script_name (parameter);
 						
 					elsif full_switch = switch_log_level then
 						log (arg & full_switch & space & parameter);
@@ -241,6 +249,7 @@ procedure et is
 
 	procedure process_commandline_arguments is
 		use et_project.type_project_name;
+		use scripting.type_script_name;
 		use conventions.type_conventions_file_name;
 
 		procedure read_configuration_file is begin
@@ -250,12 +259,15 @@ procedure et is
 					log_threshold	=> 0);
 			end if;
 		end read_configuration_file;
-	
+
+		exit_code_script : scripting.type_exit_code;
+		
 	begin -- process_commandline_arguments
 		-- The arguments are processed according to a certain priority.
-		-- 1. creating conventions file
-		-- 2. importing foreign project
-		-- 3. opening native project
+		-- 1. create conventions file
+		-- 2. import foreign project
+		-- 3. open native project
+		-- 3.1. execute script on native project
 
 		-- If the operator wishes to create a conventions file it will be done.
 		-- Other command line parameters are ignored:
@@ -272,6 +284,12 @@ procedure et is
 				read_configuration_file;
 				et_project.open_project (log_threshold => 0);
 
+				-- If operator whishes to execute a script on the native project:
+				if length (script_name) > 0 then
+					exit_code_script := scripting.execute_script (script_name, log_threshold => 0);
+					-- CS evaluate exit code and do something useful
+				end if;
+				
 				-- optionally the project can be saved elsewhere
 				if length (project_name_save_as) > 0 then
 					et_project.save_project (project_name_save_as, log_threshold => 0);

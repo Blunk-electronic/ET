@@ -90,7 +90,7 @@ package et_general is
 	switch_conventions				: constant string := "-conventions";
 	switch_native_project_open		: constant string := "-open";
 	switch_native_project_save_as	: constant string := "-save_as";		
-
+	switch_execute_script			: constant string := "-script";
 
 	
 -- PAPER SIZES
