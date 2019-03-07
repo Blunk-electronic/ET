@@ -181,6 +181,8 @@ package et_schematic is
 				-- and placeholders reference, value, purpose.
 				position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
 				text_placeholders	: et_pcb.type_text_placeholders;
+
+				-- CS flags that signal whether partcode, purpose, bom are displayed or not.
 				
 			when et_libraries.sch => 
 				null;

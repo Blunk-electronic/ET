@@ -62,11 +62,9 @@ with et_pcb;
 with et_pcb_coordinates;
 with conventions;
 with submodules;
+with et_project;
 
 package body scripting is
-
-	function f (line : in type_fields_of_line; position : in positive) return string 
-		renames et_string_processing.field;
 	
 	function to_string (name : in type_script_name.bounded_string) return string is begin
 		return type_script_name.to_string (name);
@@ -76,42 +74,258 @@ package body scripting is
 		return type_script_name.to_bounded_string (name);
 	end;
 
-	function to_string (domain : in type_domain) return string is begin
-		return type_domain'image (domain);
+	function to_string (domain : in type_domain) return string is 
+	-- Removes the domain_prefix from a domain name and returns the remainder as string.
+	-- DOM_PACKAGE becomes PACKAGE.
+		s : string := type_domain'image (domain);
+	begin
+		return s (domain_prefix'length + 1 .. s'last);
 	end;
 
 	function to_domain (domain : in string) return type_domain is begin
-		return type_domain'value (domain);
+	-- Prepends the domain_prefix to the given string and returns a type_domain.
+	-- PACKAGE becomes DOM_PACKAGE.
+		return type_domain'value (domain_prefix & domain);
 
 		exception when event: others => 
 			log (message_error & "domain '" & domain & "' invalid !", console => true);
 			raise;
 	end;
 
-	function to_string (verb : in type_verb) return string is begin
-		return type_verb'image (verb);
+	function to_string (verb : in type_verb_board) return string is begin
+		return type_verb_board'image (verb);
 	end;
 
-	function to_verb (verb : in string) return type_verb is begin
-		return type_verb'value (verb);
+	function to_verb (verb : in string) return type_verb_board is begin
+		return type_verb_board'value (verb);
 		exception when event: others => 
 			log (message_error & "verb '" & verb & "' invalid !", console => true);
 			raise;
 	end;
 	
+	function to_string (verb : in type_verb_schematic) return string is begin
+		return type_verb_schematic'image (verb);
+	end;
+
+	function to_verb (verb : in string) return type_verb_schematic is begin
+		return type_verb_schematic'value (verb);
+		exception when event: others => 
+			log (message_error & "verb '" & verb & "' invalid !", console => true);
+			raise;
+	end;
+	
+	function to_string (noun : in type_noun_schematic) return string is begin
+		return type_noun_schematic'image (noun);
+	end;
+
+	function to_noun (noun : in string) return type_noun_schematic is begin
+		return type_noun_schematic'value (noun);
+		exception when event: others => 
+			log (message_error & "noun '" & noun & "' invalid !", console => true);
+			raise;
+	end;
+
+	function to_string (noun : in type_noun_board) return string is begin
+		return type_noun_board'image (noun);
+	end;
+
+	function to_noun (noun : in string) return type_noun_board is begin
+		return type_noun_board'value (noun);
+		exception when event: others => 
+			log (message_error & "noun '" & noun & "' invalid !", console => true);
+			raise;
+	end;
 	
 	function execute_command (
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 		return type_exit_code is
 
+		function f (place : in positive) return string is begin
+			return et_string_processing.field (cmd, place);
+		end;
+		
+		use et_project;
+		
 		exit_code : type_exit_code := SUCCESSFUL;
-		domain : type_domain;
-		verb : type_verb;
-	begin
+		domain	: type_domain; -- DOM_SCHEMATIC
+		module	: type_module_name.bounded_string; -- motor_driver
+		
+		verb_schematic	: type_verb_schematic;
+		noun_schematic	: type_noun_schematic;
+		verb_board		: type_verb_board;
+		noun_board		: type_noun_board;
+
+		procedure invalid_noun (noun : in string) is begin
+			log (message_error & "invalid noun '" & noun & "' for this operation !", console => true);
+			raise constraint_error;
+		end;
+		
+		procedure schematic_cmd (verb : in type_verb_schematic; noun : in type_noun_schematic) is
+			use et_schematic;
+		begin
+			case verb is
+				when ADD =>
+					case noun is
+						when DEVICE =>
+							NULL; -- CS
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when DELETE =>
+					case noun is
+						when DEVICE =>
+							NULL; -- CS
+
+						when NET =>
+							NULL; -- CS
+
+						when TEXT =>
+							NULL; -- CS
+							
+						when UNIT =>
+							NULL; -- CS
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when DRAW =>
+					case noun is
+						when NET =>
+							NULL; -- CS
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when INVOKE =>
+					case noun is
+						when UNIT =>
+							NULL; -- CS
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when MOVE =>
+					case noun is
+						when UNIT_NAME =>
+							NULL; -- CS
+
+						when UNIT_VALUE =>
+							NULL; -- CS
+
+						when UNIT_PARTCODE =>
+							NULL; -- CS
+
+						when UNIT_PURPOSE =>
+							NULL; -- CS
+
+						when NET =>
+							NULL; -- CS
+
+						when TEXT =>
+							NULL; -- CS
+
+						when UNIT =>
+							NULL; -- CS
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when RENAME =>
+					case noun is
+						when DEVICE =>
+							NULL; -- CS
+
+						when NET =>
+							NULL; -- CS
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
+				when ROTATE =>
+					case noun is
+						when TEXT =>
+							NULL; -- CS
+
+						when UNIT =>
+							NULL; -- CS
+
+						when UNIT_NAME =>
+							NULL; -- CS
+
+						when UNIT_VALUE =>
+							NULL; -- CS
+
+						when UNIT_PARTCODE =>
+							NULL; -- CS
+
+						when UNIT_PURPOSE =>
+							NULL; -- CS
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when SET =>
+					case noun is
+						when DEVICE_PARTCODE =>
+							NULL; -- CS
+
+						when DEVICE_PURPOSE =>
+							NULL; -- CS
+							
+						when DEVICE_VALUE =>
+							NULL; -- CS
+
+						when TEXT_SIZE =>
+							NULL; -- CS
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when WRITE =>
+					case noun is
+						when TEXT =>
+							NULL; -- CS
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+			end case;
+		end schematic_cmd;
+
+		procedure board_cmd (verb : in type_verb_board; noun : in type_noun_board) is
+		begin
+			null; -- CS
+		end board_cmd;
+		
+	begin -- execute_command
 		log ("cmd --> " & to_string (cmd), log_threshold);
-		domain := to_domain (f (cmd, 1));
-		verb := to_verb (f (cmd, 2));
+		domain := to_domain (f (1));
+
+		case domain is
+			when DOM_SCHEMATIC =>
+				module := to_module_name (f (2));
+				-- CS character and length check
+				-- CS test if module exists
+
+				verb_schematic := to_verb (f (3));
+				noun_schematic := to_noun (f (4));
+
+				schematic_cmd (verb_schematic, noun_schematic);
+				
+			when DOM_BOARD =>
+				module := to_module_name (f (2));
+				-- CS character and length check
+				-- CS test if module exists
+
+				verb_board := to_verb (f (3));
+				noun_board := to_noun (f (4));
+
+				board_cmd (verb_board, noun_board);
+		end case;
+		
+
 		
 		return exit_code;
 

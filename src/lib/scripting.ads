@@ -72,29 +72,93 @@ package scripting is
 		ERROR
 		);
 
+	-- This is a workaround in order not to use reserved GNAT keywords:
+	domain_prefix : constant string := ("DOM_");
+	
 	type type_domain is (
-		RIG,
-		SCH,
-		BRD,
-		DEV,
-		SYM,
-		PAC
+-- 		DOM_RIG,
+		DOM_SCHEMATIC,
+		DOM_BOARD
+-- 		DOM_DEVICE,
+-- 		DOM_SYMBOL,
+-- 		DOM_PACKAGE
 		);
 
 	function to_string (domain : in type_domain) return string;
 	function to_domain (domain : in string) return type_domain;
 
-	type type_verb is (
+	type type_verb_schematic is (
+		ADD,
 		DELETE,
+		--DRAG,
+		DRAW,
+		INVOKE,
 		MOVE,
-		DRAG,
-		ADD
+		RENAME,
+		ROTATE,
+		SET,
+		WRITE
 		);
 
-	function to_string (verb : in type_verb) return string;
-	function to_verb (verb : in string) return type_verb;
+	function to_string (verb : in type_verb_schematic) return string;
+	function to_verb (verb : in string) return type_verb_schematic;
+
+	type type_noun_schematic is (
+		DEVICE,
+		DEVICE_NAME,
+		DEVICE_PARTCODE,
+		DEVICE_PURPOSE,
+		DEVICE_VALUE,
+		NET,
+		TEXT,
+		TEXT_SIZE,
+		UNIT,
+		UNIT_NAME,
+		UNIT_PARTCODE,
+		UNIT_PURPOSE,
+		UNIT_VALUE
+		);
+
+	function to_string (noun : in type_noun_schematic) return string;
+	function to_noun (noun : in string) return type_noun_schematic;
 
 	
+	type type_verb_board is (
+		ADD,
+		DELETE,
+		--DRAG,
+		DRAW,		
+		FLIP,
+		MOVE,
+		PLACE,
+		ROTATE,
+		ROUTE,
+		RIPUP,
+		SET,
+		WRITE
+		);
+
+	function to_string (verb : in type_verb_board) return string;
+	function to_verb (verb : in string) return type_verb_board;
+	
+
+	type type_noun_board is (
+		DEVICE,
+		DEVICE_NAME,
+		DEVICE_PARTCODE,
+		DEVICE_PURPOSE,
+		DEVICE_VALUE,
+		NET,
+		TEXT,
+		TEXT_SIZE,
+		TEXT_LINE_WIDTH,
+		VIA,
+		VIA_DRILL
+		);
+
+	function to_string (noun : in type_noun_board) return string;
+	function to_noun (noun : in string) return type_noun_board;
+
 	
 	function execute_script (
 		file_name		: in type_script_name.bounded_string;
