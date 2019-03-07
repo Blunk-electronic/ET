@@ -41,7 +41,6 @@ with ada.characters.latin_1;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
-with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
@@ -106,7 +105,6 @@ package et_project is
 	function to_string (path : in type_et_project_path.bounded_string) return string;
 	function to_project_path (path : in string) return type_et_project_path.bounded_string;
 	
---	package type_project_file_name is new generic_bounded_length (project_path_max + project_name_max + 1); -- incl. directory separator
 
 	-- The module file name:
 	module_file_name_length_max : constant positive := 100;
@@ -186,16 +184,13 @@ package et_project is
 	-- Generic modules (which contain schematic and layout stuff)
 	-- are collected here:
 	package type_modules is new ordered_maps (
-		key_type		=> type_module_name.bounded_string,
+		key_type		=> type_module_name.bounded_string, -- motor_driver (without extension *.mod)
 		"<"				=> type_module_name."<",
 		element_type	=> et_schematic.type_module,
 		"="				=> et_schematic."=");
 
-	use type_modules;
 	modules : type_modules.map;
 
-
-	
 	
 	type type_section_name_rig_configuration is (
 		SEC_INIT,
@@ -637,6 +632,16 @@ package et_project is
 		SEC_CORNERS,
 		SEC_PACKAGE_3D_CONTOURS
 		);
+
+
+-- SCHEMATIC OPERATIONS
+	
+	procedure delete_device (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device			: in et_libraries.type_component_reference; -- IC45
+		log_threshold	: in et_string_processing.type_log_level);
+
+
 	
 -- GENERICS
 	

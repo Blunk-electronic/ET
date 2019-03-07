@@ -7534,6 +7534,7 @@ package body et_project is
 		log_threshold	: in et_string_processing.type_log_level) 
 		is
 		file_handle : ada.text_io.file_type;
+		use type_modules;
 		module_cursor : type_modules.cursor;
 		module_inserted : boolean;
 
@@ -7821,7 +7822,7 @@ package body et_project is
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
 			-- and finally assembled to actual objects:
-
+				
 				-- for sorting general board stuff:
 				type type_layer is (SILK_SCREEN, ASSEMBLY_DOCUMENTATION, STENCIL, STOP_MASK, KEEPOUT);
 				
@@ -12586,7 +12587,8 @@ package body et_project is
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use ada.directories;
-
+		use type_modules;
+		
 		-- break down destination into path and project name:
 		path : type_et_project_path.bounded_string := to_project_path (containing_directory (to_string (destination)));
 		name : type_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
@@ -12657,6 +12659,21 @@ package body et_project is
 		
 		log_indentation_down;
 	end save_project;
+
+
+-- SCHEMATIC OPERATIONS
+
+	procedure delete_device (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device			: in et_libraries.type_component_reference; -- IC45
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_string_processing;
+	begin
+		log ("module " & et_project.to_string (module_name) &
+			" deleting " & et_libraries.to_string (device) & " ...", log_threshold);
+		null;
+	end delete_device;
+
 	
 	
 -- GENERICS

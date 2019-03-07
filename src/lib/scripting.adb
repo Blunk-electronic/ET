@@ -149,7 +149,7 @@ package body scripting is
 		
 		exit_code : type_exit_code := SUCCESSFUL;
 		domain	: type_domain; -- DOM_SCHEMATIC
-		module	: type_module_name.bounded_string; -- motor_driver
+		module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		
 		verb_schematic	: type_verb_schematic;
 		noun_schematic	: type_noun_schematic;
@@ -162,7 +162,8 @@ package body scripting is
 		end;
 		
 		procedure schematic_cmd (verb : in type_verb_schematic; noun : in type_noun_schematic) is
-			use et_schematic;
+			use et_project;
+			use et_libraries;
 		begin
 			case verb is
 				when ADD =>
@@ -176,7 +177,7 @@ package body scripting is
 				when DELETE =>
 					case noun is
 						when DEVICE =>
-							NULL; -- CS
+							delete_device (module, to_device_name (f (5)), log_threshold + 1);
 
 						when NET =>
 							NULL; -- CS
