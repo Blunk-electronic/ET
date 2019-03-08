@@ -191,8 +191,6 @@ package et_schematic is
 		end case;
 	end record;
 
-		
-	
 	
 
 
@@ -385,6 +383,11 @@ package et_schematic is
 		board			: et_pcb.type_board;
 	end record;
 
+
+	type type_unit_positions is new ordered_maps (
+	key_type		=> et_libraries.type_unit_name.bounded_string, -- A, B, IO_BANK_1
+	"<" 			=> et_libraries.type_unit_name."<",
+	element_type	=> et_coordinates.type_coordinates); -- sheet, x, y
 
 	
 -- MISC
