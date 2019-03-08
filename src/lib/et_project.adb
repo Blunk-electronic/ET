@@ -12674,6 +12674,64 @@ package body et_project is
 		null;
 	end delete_device;
 
+-- 	function locate_module (name : in type_module_name.bounded_string) -- motor_driver (without extension *.mod)
+-- 	-- Locates the given module in the global container "modules".
+-- 	-- Raises exception if module could not be found.
+-- 		return type_modules.cursor is
+-- 		use type_modules;
+-- 		cursor : type_modules.cursor := find (modules, name);
+-- 		use et_string_processing;
+-- 	begin
+-- 		if cursor = type_modules.no_element then
+-- 			log (message_error & "module " & to_string (name) & " not found !");
+-- 			raise constraint_error;
+-- 		end if;
+-- 		return cursor;
+-- 		exception when event: others => raise;
+-- 	end locate_module;
+
+	
+	
+-- 	function position (
+-- 		module	: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+-- 		device	: in et_libraries.type_component_reference; -- IC45
+-- 		log_threshold	: in et_string_processing.type_log_level) 
+-- 		--return et_schematic.type_device_position is
+-- 		return et_schematic.type_devices.cursor is
+-- 		
+-- 		use type_modules;
+-- 		module_cursor : type_modules.cursor;
+-- 		
+-- 		use et_schematic;
+-- 		use et_string_processing;
+-- 		--dev_pos : type_device_position; -- to be returned
+-- 		--use type_devices;
+-- 		dev_cursor : et_schematic.type_devices.cursor;
+-- 
+-- 		procedure query_device (
+-- 			module_name	: in type_module_name.bounded_string;
+-- 			module		: in type_module) is
+-- 		begin
+-- 			null;
+-- 		end query_device;
+-- 		
+-- 	begin
+-- 		log ("module " & et_project.to_string (module) &
+-- 			" locating " & et_libraries.to_string (device) & " ...", log_threshold);
+-- 
+-- 		module_cursor := locate_module (module);
+-- 
+-- 		query_element (
+-- 			position	=> module_cursor,
+-- 			process		=> query_device'access);
+-- 				
+-- 		return dev_cursor;
+-- 
+-- 		exception when event: others => raise;
+-- 			
+-- 	end position;
+
+	
 	
 	
 -- GENERICS

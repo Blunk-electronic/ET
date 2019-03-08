@@ -384,11 +384,22 @@ package et_schematic is
 	end record;
 
 
-	type type_unit_positions is new ordered_maps (
-	key_type		=> et_libraries.type_unit_name.bounded_string, -- A, B, IO_BANK_1
-	"<" 			=> et_libraries.type_unit_name."<",
-	element_type	=> et_coordinates.type_coordinates); -- sheet, x, y
+-- 	package type_unit_positions is new ordered_maps (
+-- 		key_type		=> et_libraries.type_unit_name.bounded_string, -- A, B, IO_BANK_1
+-- 		"<" 			=> et_libraries.type_unit_name."<",
+-- 		element_type	=> et_coordinates.type_coordinates, -- sheet, x, y
+-- 		"="				=> et_coordinates."=");
 
+	--function position (device : in type_device) return type_unit_positions.map;
+	-- Returns a list of units and their coordinates in the schematic.
+
+-- 	type type_device_position is record
+-- 		schematic	: type_unit_positions.map;
+-- 		board		: et_pcb_coordinates.type_package_position; -- incl. angle and face
+-- 	end record;
+
+	--function position (device : in et_libraries.type_component_reference) return type_device_position;
+	
 	
 -- MISC
 	type type_danger is (

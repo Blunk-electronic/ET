@@ -177,7 +177,8 @@ package body scripting is
 				when DELETE =>
 					case noun is
 						when DEVICE =>
-							delete_device (module, to_device_name (f (5)), log_threshold + 1);
+							--delete_device (module, to_device_name (f (5)), log_threshold + 1);
+							null;
 
 						when NET =>
 							NULL; -- CS

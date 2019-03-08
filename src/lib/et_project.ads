@@ -636,10 +636,10 @@ package et_project is
 
 -- SCHEMATIC OPERATIONS
 	
-	procedure delete_device (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device			: in et_libraries.type_component_reference; -- IC45
-		log_threshold	: in et_string_processing.type_log_level);
+-- 	procedure delete_device (
+-- 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+-- 		device			: in et_libraries.type_component_reference; -- IC45
+-- 		log_threshold	: in et_string_processing.type_log_level);
 
 
 	

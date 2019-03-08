@@ -261,6 +261,29 @@ package body et_schematic is
 		end if;
 	end check_purpose_characters;
 
+
+-- 	function position (device : in type_device) return type_unit_positions.map is
+-- 	-- Returns a list of units and their coordinates in the schematic.
+-- 		list : type_unit_positions.map; -- to be returned
+-- 		use type_units;
+-- 		use type_unit_positions;
+-- 		
+-- 		procedure query_unit (cursor : type_units.cursor) is begin
+-- 			list.insert (key (cursor), element (cursor).position);
+-- 		end;
+-- 		
+-- 	begin
+-- 		iterate (device.units, query_unit'access);
+-- 		return list;
+-- 	end position;
+
+	
+-- 	function position (device : in et_libraries.type_component_reference) return type_device_position is
+-- 		dev_pos : type_device_position; -- to be returned
+-- 		use type_devices;
+-- 	begin
+-- 		return dev_pos;
+-- 	end position;
 	
 	function show_danger (danger : in type_danger) return string is
 		preamble : constant string (1..9) := " RISK OF ";
