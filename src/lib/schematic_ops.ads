@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                          SYSTEM ET SCRIPTING                             --
+--                     SYSTEM ET SCHEMATIC OPERATIONS                       --
 --                                                                          --
 --                                 ET                                       --
 --                                                                          --
@@ -40,123 +40,28 @@ with ada.text_io;				use ada.text_io;
 with ada.characters.latin_1;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
+with ada.containers;            use ada.containers;
+with ada.containers.doubly_linked_lists;
+with ada.containers.indefinite_doubly_linked_lists;
+with ada.containers.ordered_maps;
+with ada.containers.indefinite_ordered_maps;
+with ada.containers.ordered_sets;
 
-with et_general;
+-- with et_general;
+with et_coordinates;			--use et_coordinates;
+with et_libraries;
 with et_string_processing;		use et_string_processing;
-with schematic_ops;
--- with board_ops;
+with et_schematic;				use et_schematic;
+with et_project;				use et_project;
 
-package scripting is
-	comment_mark : constant string := ("#");
+package schematic_ops is
 
-	script_name_length_max : constant positive := 100; -- CS increase if necessary
-	package type_script_name is new generic_bounded_length (script_name_length_max);
-	
-	function to_string (name : in type_script_name.bounded_string) return string;
-	function to_script_name (name : in string) return type_script_name.bounded_string;
-	
-	script_name : type_script_name.bounded_string;
-									  
-
-	type type_exit_code is (
-		SUCCESSFUL,
-		WARNINGS,
-		ERROR
-		);
-
-	-- This is a workaround in order not to use reserved GNAT keywords:
-	domain_prefix : constant string := ("DOM_");
-	
-	type type_domain is (
--- 		DOM_RIG,
-		DOM_SCHEMATIC,
-		DOM_BOARD
--- 		DOM_DEVICE,
--- 		DOM_SYMBOL,
--- 		DOM_PACKAGE
-		);
-
-	function to_string (domain : in type_domain) return string;
-	function to_domain (domain : in string) return type_domain;
-
-	type type_verb_schematic is (
-		ADD,
-		DELETE,
-		--DRAG,
-		DRAW,
-		INVOKE,
-		MOVE,
-		RENAME,
-		ROTATE,
-		SET,
-		WRITE
-		);
-
-	function to_string (verb : in type_verb_schematic) return string;
-	function to_verb (verb : in string) return type_verb_schematic;
-
-	type type_noun_schematic is (
-		DEVICE,
-		DEVICE_NAME,
-		DEVICE_PARTCODE,
-		DEVICE_PURPOSE,
-		DEVICE_VALUE,
-		NET,
-		TEXT,
-		TEXT_SIZE,
-		UNIT,
-		UNIT_NAME,
-		UNIT_PARTCODE,
-		UNIT_PURPOSE,
-		UNIT_VALUE
-		);
-
-	function to_string (noun : in type_noun_schematic) return string;
-	function to_noun (noun : in string) return type_noun_schematic;
+	procedure delete_device (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device			: in et_libraries.type_component_reference; -- IC45
+		log_threshold	: in et_string_processing.type_log_level);
 
 	
-	type type_verb_board is (
-		ADD,
-		DELETE,
-		--DRAG,
-		DRAW,		
-		FLIP,
-		MOVE,
-		PLACE,
-		ROTATE,
-		ROUTE,
-		RIPUP,
-		SET,
-		WRITE
-		);
-
-	function to_string (verb : in type_verb_board) return string;
-	function to_verb (verb : in string) return type_verb_board;
-	
-
-	type type_noun_board is (
-		DEVICE,
-		DEVICE_NAME,
-		DEVICE_PARTCODE,
-		DEVICE_PURPOSE,
-		DEVICE_VALUE,
-		NET,
-		TEXT,
-		TEXT_SIZE,
-		TEXT_LINE_WIDTH,
-		VIA,
-		VIA_DRILL
-		);
-
-	function to_string (noun : in type_noun_board) return string;
-	function to_noun (noun : in string) return type_noun_board;
-
-	
-	function execute_script (
-		file_name		: in type_script_name.bounded_string;
-		log_threshold	: in type_log_level)
-		return type_exit_code;
-
-end scripting;
+end schematic_ops;
 
 -- Soli Deo Gloria

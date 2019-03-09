@@ -3,6 +3,7 @@ TARGET = et
 VPATH = include
 
 OBJS = $(TARGET).o \
+	schematic_ops.o \
 	scripting.o \
 	submodules.o \
 	et_schematic.o \

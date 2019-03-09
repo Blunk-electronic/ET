@@ -12661,18 +12661,7 @@ package body et_project is
 	end save_project;
 
 
--- SCHEMATIC OPERATIONS
 
-	procedure delete_device (
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device			: in et_libraries.type_component_reference; -- IC45
-		log_threshold	: in et_string_processing.type_log_level) is
-		use et_string_processing;
-	begin
-		log ("module " & et_project.to_string (module_name) &
-			" deleting " & et_libraries.to_string (device) & " ...", log_threshold);
-		null;
-	end delete_device;
 
 -- 	function locate_module (name : in type_module_name.bounded_string) -- motor_driver (without extension *.mod)
 -- 	-- Locates the given module in the global container "modules".

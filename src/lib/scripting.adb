@@ -42,27 +42,20 @@ with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.text_io;				use ada.text_io;
 
-with ada.tags;
-
 with ada.exceptions;
 with ada.directories;
 with gnat.directory_operations;
 
 with ada.containers;            use ada.containers;
-with ada.containers.ordered_maps;
 
 with et_general;				use et_general;
-with et_coordinates;
 with et_string_processing;
-with et_libraries;
-with et_export;
-with et_import;
-with et_schematic;
-with et_pcb;
-with et_pcb_coordinates;
-with conventions;
-with submodules;
 with et_project;
+
+with et_libraries;				use et_libraries;
+with schematic_ops;
+-- with board_ops;
+
 
 package body scripting is
 	
@@ -163,7 +156,6 @@ package body scripting is
 		
 		procedure schematic_cmd (verb : in type_verb_schematic; noun : in type_noun_schematic) is
 			use et_project;
-			use et_libraries;
 		begin
 			case verb is
 				when ADD =>
@@ -177,7 +169,7 @@ package body scripting is
 				when DELETE =>
 					case noun is
 						when DEVICE =>
-							--delete_device (module, to_device_name (f (5)), log_threshold + 1);
+							schematic_ops.delete_device (module, to_device_name (f (5)), log_threshold + 1);
 							null;
 
 						when NET =>
