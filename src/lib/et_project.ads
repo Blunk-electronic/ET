@@ -191,6 +191,13 @@ package et_project is
 
 	modules : type_modules.map;
 
+	function exists (module : in type_module_name.bounded_string) return boolean;
+	-- Returns true if the module with the given name exists in container modules.
+
+	function locate_module (name : in type_module_name.bounded_string) -- motor_driver (without extension *.mod)
+	-- Locates the given module in the global container "modules".
+		return type_modules.cursor;
+
 	
 	type type_section_name_rig_configuration is (
 		SEC_INIT,

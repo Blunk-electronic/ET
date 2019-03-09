@@ -287,7 +287,23 @@ procedure et is
 				-- If operator whishes to execute a script on the native project:
 				if length (script_name) > 0 then
 					exit_code_script := scripting.execute_script (script_name, log_threshold => 0);
-					-- CS evaluate exit code and do something useful
+
+					-- evaluate exit code
+					case exit_code_script is
+						when scripting.ERROR =>
+							log_indentation_reset;
+							log (message_error & " execution of script " & to_string (script_name) &
+								" failed !", console => true);
+							raise constraint_error;
+
+						when scripting.WARNINGS =>
+							log (message_warning & " execution of script " & to_string (script_name) &
+								 " produced warnings !", console => true);
+
+						when scripting.SUCCESSFUL =>
+							log ("execution of script " & to_string (script_name) & " successful");
+							
+					end case;
 				end if;
 				
 				-- optionally the project can be saved elsewhere

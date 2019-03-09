@@ -141,6 +141,19 @@ package body et_project is
 	function to_module_name (name : in string) return type_module_name.bounded_string is begin
 		return type_module_name.to_bounded_string (name);
 	end;
+
+	function exists (module : in type_module_name.bounded_string) return boolean is begin
+	-- Returns true if the module with the given name exists in container modules.
+		return type_modules.contains (modules, module);
+	end;
+
+	function locate_module (name : in type_module_name.bounded_string) -- motor_driver (without extension *.mod)
+	-- Locates the given module in the global container "modules".
+		return type_modules.cursor is
+		use type_modules;
+	begin
+		return find (modules, name);
+	end;
 	
 	function to_string (section : in type_section_name_rig_configuration) return string is
 	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
@@ -12663,21 +12676,6 @@ package body et_project is
 
 
 
--- 	function locate_module (name : in type_module_name.bounded_string) -- motor_driver (without extension *.mod)
--- 	-- Locates the given module in the global container "modules".
--- 	-- Raises exception if module could not be found.
--- 		return type_modules.cursor is
--- 		use type_modules;
--- 		cursor : type_modules.cursor := find (modules, name);
--- 		use et_string_processing;
--- 	begin
--- 		if cursor = type_modules.no_element then
--- 			log (message_error & "module " & to_string (name) & " not found !");
--- 			raise constraint_error;
--- 		end if;
--- 		return cursor;
--- 		exception when event: others => raise;
--- 	end locate_module;
 
 	
 	

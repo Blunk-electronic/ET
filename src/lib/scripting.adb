@@ -130,6 +130,7 @@ package body scripting is
 	end;
 	
 	function execute_command (
+		file_name		: in type_script_name.bounded_string;
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 		return type_exit_code is
@@ -149,6 +150,14 @@ package body scripting is
 		verb_board		: type_verb_board;
 		noun_board		: type_noun_board;
 
+		procedure validate_module_name is begin
+			if not exists (module) then
+				log (message_error & "module " & to_string (module) &
+					" not found !", console => true);
+				raise constraint_error;
+			end if;
+		end;
+		
 		procedure invalid_noun (noun : in string) is begin
 			log (message_error & "invalid noun '" & noun & "' for this operation !", console => true);
 			raise constraint_error;
@@ -170,7 +179,6 @@ package body scripting is
 					case noun is
 						when DEVICE =>
 							schematic_ops.delete_device (module, to_device_name (f (5)), log_threshold + 1);
-							null;
 
 						when NET =>
 							NULL; -- CS
@@ -301,7 +309,8 @@ package body scripting is
 			when DOM_SCHEMATIC =>
 				module := to_module_name (f (2));
 				-- CS character and length check
-				-- CS test if module exists
+				
+				validate_module_name; -- test if module exists
 
 				verb_schematic := to_verb (f (3));
 				noun_schematic := to_noun (f (4));
@@ -311,7 +320,8 @@ package body scripting is
 			when DOM_BOARD =>
 				module := to_module_name (f (2));
 				-- CS character and length check
-				-- CS test if module exists
+				
+				validate_module_name; -- test if module exists
 
 				verb_board := to_verb (f (3));
 				noun_board := to_noun (f (4));
@@ -319,12 +329,11 @@ package body scripting is
 				board_cmd (verb_board, noun_board);
 		end case;
 		
-
-		
 		return exit_code;
 
 		exception when event: others => 
-			log (message_error & affected_line (cmd) & "command '" &
+			log (message_error & "script " & to_string (file_name) & latin_1.space &
+				affected_line (cmd) & "command '" &
 				to_string (cmd) & "' invalid !", console => true);
 			return ERROR;
 
@@ -364,7 +373,7 @@ package body scripting is
 			if field_count (line) > 0 then
 
 				-- execute the line as command
-				exit_code := execute_command (line, log_threshold + 1);
+				exit_code := execute_command (file_name, line, log_threshold + 1);
 
 				-- evaluate exit code and do things necessary (abort, log messages, ...)
 				case exit_code is

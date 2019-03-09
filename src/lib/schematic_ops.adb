@@ -52,20 +52,45 @@ with ada.containers.ordered_maps;
 with et_general;				use et_general;
 with et_coordinates;
 with et_string_processing;		use et_string_processing;
-with et_libraries;
+with et_libraries;				use et_libraries;
 with et_schematic;				use et_schematic;
 with et_project;				use et_project;
 
 package body schematic_ops is
 
+	use type_modules;
+
+	procedure device_not_found (name : in type_component_reference) is begin
+		log (message_error & "device " & to_string (name) & " not found !", console => true);
+		raise constraint_error;
+	end;
+	
 	procedure delete_device (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device			: in et_libraries.type_component_reference; -- IC45
-		log_threshold	: in et_string_processing.type_log_level) is
-	begin
-		log ("module " & et_project.to_string (module_name) &
-			" deleting " & et_libraries.to_string (device) & " ...", log_threshold);
-		null;
+		device_name		: in type_component_reference; -- IC45
+		log_threshold	: in type_log_level) is
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+		begin
+			if contains (module.devices, device_name) then
+				delete (module.devices, device_name);
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- delete_device
+		log ("module " & to_string (module_name) &
+			 " deleting " & to_string (device_name) & " ...", log_threshold);
+
+		update_element (
+			container	=> modules,
+			position	=> locate_module (module_name),
+			process		=> query_devices'access);
+
 	end delete_device;
 
 	

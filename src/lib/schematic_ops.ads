@@ -49,7 +49,7 @@ with ada.containers.ordered_sets;
 
 -- with et_general;
 with et_coordinates;			--use et_coordinates;
-with et_libraries;
+with et_libraries;				use et_libraries;
 with et_string_processing;		use et_string_processing;
 with et_schematic;				use et_schematic;
 with et_project;				use et_project;
@@ -58,8 +58,8 @@ package schematic_ops is
 
 	procedure delete_device (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device			: in et_libraries.type_component_reference; -- IC45
-		log_threshold	: in et_string_processing.type_log_level);
+		device_name		: in type_component_reference; -- IC45
+		log_threshold	: in type_log_level);
 
 	
 end schematic_ops;
