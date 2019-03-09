@@ -143,14 +143,23 @@ package et_schematic is
 		-- basic coordinates (x/y). Via the unit position the sheet number can be obtained.
 	end record;
 
-	
-	-- Units of a component are collected in a map.
+	-- Units of a device are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
 	package type_units is new indefinite_ordered_maps (
 		key_type		=> et_libraries.type_unit_name.bounded_string,
 		"<" 			=> et_libraries.type_unit_name."<",
 		element_type 	=> type_unit);
 
+	package type_unit_positions is new ordered_maps (
+		key_type		=> et_libraries.type_unit_name.bounded_string, -- A, B, IO_BANK_1
+		"<" 			=> et_libraries.type_unit_name."<",
+		element_type	=> et_coordinates.type_coordinates, -- sheet, x, y
+		"="				=> et_coordinates."=");
+
+	function unit_positions (units : in type_units.map) return type_unit_positions.map;
+	--Returns a list of units and their coordinates in the schematic.	
+
+	
 	-- BOM STATUS
 	type type_bom is (YES, NO); -- if a component is to be mounted or not
 	function to_string (bom : in type_bom) return string;
@@ -163,7 +172,7 @@ package et_schematic is
 	-- Validates BOM status. Case sensitive !	
 	
 
-	-- This is a component as it appears in the schematic.
+	-- This is a device as it appears in the schematic.
 	type type_device (appearance : type_appearance_schematic) is record
 		model	: et_libraries.type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
 		units	: type_units.map; -- PWR, A, B, ...
@@ -384,14 +393,7 @@ package et_schematic is
 	end record;
 
 
--- 	package type_unit_positions is new ordered_maps (
--- 		key_type		=> et_libraries.type_unit_name.bounded_string, -- A, B, IO_BANK_1
--- 		"<" 			=> et_libraries.type_unit_name."<",
--- 		element_type	=> et_coordinates.type_coordinates, -- sheet, x, y
--- 		"="				=> et_coordinates."=");
 
-	--function position (device : in type_device) return type_unit_positions.map;
-	-- Returns a list of units and their coordinates in the schematic.
 
 -- 	type type_device_position is record
 -- 		schematic	: type_unit_positions.map;

@@ -64,7 +64,7 @@ package body schematic_ops is
 		log (message_error & "device " & to_string (name) & " not found !", console => true);
 		raise constraint_error;
 	end;
-	
+
 	procedure delete_device (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_component_reference; -- IC45
@@ -74,9 +74,36 @@ package body schematic_ops is
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_schematic.type_devices;
-		begin
+			device_cursor : et_schematic.type_devices.cursor;
+
+			-- temporarily storage of unit coordinates:
+			positions : type_unit_positions.map;
+			
+			procedure get_positions_of_units (
+				device_name : in type_component_reference;
+				device		: in et_schematic.type_device) is
+			begin
+				positions := unit_positions (device.units);
+			end;
+			
+		begin -- query_devices
 			if contains (module.devices, device_name) then
+
+				-- Before the actual deletion, the coordinates of the
+				-- units must be fetched. These coordinates will later assist
+				-- in deleting the port names from connected net segments.
+				
+				device_cursor := find (module.devices, device_name); -- the device should be there
+
+				query_element (
+					position	=> device_cursor,
+					process		=> get_positions_of_units'access);
+
+				-- Delete the targeted device:
 				delete (module.devices, device_name);
+
+				-- CS delete_ports (module.nets, device_name);
+				
 			else
 				device_not_found (device_name);
 			end if;
