@@ -3496,7 +3496,7 @@ package body et_kicad is
 				if log_level >= log_threshold + 2 then
 					log_indentation_up;
 					log ("strand at " & to_string (
-						position => element (strand).coordinates, scope => kicad_coordinates.MODULE));
+						position => element (strand).position, scope => kicad_coordinates.MODULE));
 					log_indentation_down;
 				end if;
 				
@@ -3533,7 +3533,7 @@ package body et_kicad is
 					if anonymous (element (strand).name) then
 						log (message_warning & "net " & et_general.to_string (element (strand).name) 
 							& " at" & to_string (
-								position => element (strand).coordinates, scope => kicad_coordinates.MODULE)
+								position => element (strand).position, scope => kicad_coordinates.MODULE)
 							& " has no dedicated name !");
 					end if;
 
@@ -3557,14 +3557,14 @@ package body et_kicad is
 -- 					end if;
 
 					-- if strand is in top module form a net name like "/MASTER_RESET"
-					if type_path_to_submodule.is_empty (path (element (strand).coordinates)) then
+					if type_path_to_submodule.is_empty (path (element (strand).position)) then
 						net_name := to_net_name (
 							et_coordinates.hierarchy_separator
 							& et_general.to_string (element (strand).name));
 
 					else -- strand is in any submodule. form a net name like "/SENSOR/RESET"
 						net_name := to_net_name (
-							to_string (path (element (strand).coordinates))
+							to_string (path (element (strand).position))
 							& et_coordinates.hierarchy_separator 
 							& et_general.to_string (element (strand).name));
 					end if;
@@ -3876,7 +3876,7 @@ package body et_kicad is
 				while h_strand /= type_strands.no_element loop
 					--if et_schematic."=" (element (h_strand).scope, et_schematic.hierarchic) then
 					if element (h_strand).scope = HIERARCHIC then
-						if path (element (h_strand).coordinates) = net.path then
+						if path (element (h_strand).position) = net.path then
 							if element (h_strand).name = net.name then
 								hierarchic_net_found := true;
 
@@ -4138,7 +4138,7 @@ package body et_kicad is
 				while strand /= type_strands.no_element loop
 					log ("strand #" & trim (count_type'image (strand_number), left) &
 						 " at" & to_string (
-							position => element (strand).coordinates, scope => kicad_coordinates.MODULE)
+							position => element (strand).position, scope => kicad_coordinates.MODULE)
 						);
 
 					query_element (
@@ -6037,11 +6037,11 @@ package body et_kicad is
 							log_indentation_down;
 							
                             -- assign coordinates
-							set_path (strand.coordinates, path_to_sheet);
-							set_sheet (strand.coordinates, sheet_number);
+							set_path (strand.position, path_to_sheet);
+							set_sheet (strand.position, sheet_number);
 
 							-- set x,y coordinates (lowest available on the sheet)
-							set_xy (strand.coordinates, lowest_xy (strand, log_threshold + 3));
+							set_xy (strand.position, lowest_xy (strand, log_threshold + 3));
                             
 							-- insert strand in module, then purge strand.segments for next spin
 							log ("inserting strand in module ...", log_threshold + 2);
@@ -6092,11 +6092,11 @@ package body et_kicad is
 							log_indentation_down;
 
                             -- assign coordinates
-                            set_path (strand.coordinates, path_to_sheet);
-							set_sheet (strand.coordinates, sheet_number);
+                            set_path (strand.position, path_to_sheet);
+							set_sheet (strand.position, sheet_number);
 
 							-- set x,y coordinates (lowest available on the sheet)
-							set_xy (strand.coordinates, lowest_xy (strand, log_threshold + 3));
+							set_xy (strand.position, lowest_xy (strand, log_threshold + 3));
 							
 							-- insert strand in module, then purge strand.segments for next spin
 							log ("inserting strand in module ...", log_threshold + 2);
@@ -9279,7 +9279,7 @@ package body et_kicad is
 -- 							& to_string (name_after) & " ...",
 -- 							level => 2
 -- 						);
-					log (to_string (position => strand.coordinates, scope => kicad_coordinates.MODULE),
+					log (to_string (position => strand.position, scope => kicad_coordinates.MODULE),
 						log_threshold + 1);
 
 					log_indentation_down;
@@ -9692,7 +9692,7 @@ package body et_kicad is
 
 					log (et_general.to_string (element (strand).name) &
 						 " scope " & to_string (element (strand).scope) &
-						 " in " & to_string (path (element (strand).coordinates)));
+						 " in " & to_string (path (element (strand).position)));
 					
 					type_strands.query_element (
 						position	=> strand,
@@ -11123,7 +11123,7 @@ package body et_kicad is
 
 						log (et_general.to_string (element (strand_cursor_sec).name)
 							& " at " 
-							& to_string (element (strand_cursor_sec).coordinates, scope => kicad_coordinates.MODULE),
+							& to_string (element (strand_cursor_sec).position, scope => kicad_coordinates.MODULE),
 							log_threshold + 3);
 					
 						query_element (
@@ -11204,7 +11204,7 @@ package body et_kicad is
 			
 				log (et_general.to_string (element (strand_cursor_prim).name)
 					& " at " 
-					& to_string (element (strand_cursor_prim).coordinates, scope => kicad_coordinates.MODULE),
+					& to_string (element (strand_cursor_prim).position, scope => kicad_coordinates.MODULE),
 					log_threshold + 1);
 			
 				-- query segments of current strand
@@ -11642,7 +11642,7 @@ package body et_kicad is
 
 				log (et_general.to_string (element (strand_cursor).name)
 					& " at " 
-					& to_string (element (strand_cursor).coordinates, scope => kicad_coordinates.MODULE),
+					& to_string (element (strand_cursor).position, scope => kicad_coordinates.MODULE),
 					log_threshold + 1);
 			
 				-- query segments of current strand
@@ -12417,7 +12417,7 @@ package body et_kicad is
 								-- path and at the same sheet as the port.
 								-- Probing other ports would be a waste of time.
 								if same_path_and_sheet (
-									left => strand.coordinates, 
+									left => strand.position, 
 									right => element (port_cursor).coordinates ) then
 
 									--if et_schematic."=" (element (port_cursor).connected, et_schematic.NO) then
@@ -12495,7 +12495,7 @@ package body et_kicad is
 					while strand_cursor /= type_strands.no_element loop
 
 						-- log strand coordinates
-						log ("strand " & to_string (element (strand_cursor).coordinates, scope => kicad_coordinates.MODULE),
+						log ("strand " & to_string (element (strand_cursor).position, scope => kicad_coordinates.MODULE),
 							 log_threshold + 3);
 
 						query_element (

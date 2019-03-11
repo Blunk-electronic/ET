@@ -774,7 +774,7 @@ package et_kicad is
 	-- As long as strands are independed of each other they must 
 	-- have a name and their own scope.
 	type type_strand is record
-		coordinates : kicad_coordinates.type_coordinates; -- lowest x/y -- CS rename to position
+		position	: kicad_coordinates.type_coordinates; -- lowest x/y
 		name		: et_general.type_net_name.bounded_string; -- example "CPU_CLOCK"		
 		scope 		: type_strand_scope := type_strand_scope'first; -- example "local"
 		segments	: type_net_segments.list;

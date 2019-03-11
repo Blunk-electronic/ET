@@ -166,7 +166,7 @@ package body schematic_ops is
 						
 					begin -- query_strand
 						log_indentation_up;
-						log ("strand " & to_string (position => element (strand_cursor).coordinates),
+						log ("strand " & to_string (position => element (strand_cursor).position),
 							 log_threshold + 2);
 
 						update_element (

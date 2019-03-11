@@ -553,9 +553,9 @@ package body et_kicad_to_native is
 				begin -- query_segments
 
 					-- Move the start coordinates of the strand from kicad frame to native frame:
-					log ("schematic strand start " & before & et_coordinates.to_string (point => strand.coordinates), log_threshold + 3);
-					move (strand.coordinates); 
-					log ("schematic strand start " & now & et_coordinates.to_string (point => strand.coordinates), log_threshold + 3);
+					log ("schematic strand start " & before & et_coordinates.to_string (point => strand.position), log_threshold + 3);
+					move (strand.position); 
+					log ("schematic strand start " & now & et_coordinates.to_string (point => strand.position), log_threshold + 3);
 
 					-- Change path of segments:
 					while segment_cursor /= et_kicad.type_net_segments.no_element loop
@@ -2805,7 +2805,7 @@ package body et_kicad_to_native is
 
 						-- compare sheet numbers
 						if 	kicad_coordinates.sheet (element (port_cursor_kicad).coordinates) = 
-							kicad_coordinates.sheet (element (kicad_strand_cursor).coordinates) then
+							kicad_coordinates.sheet (element (kicad_strand_cursor).position) then
 
 							-- calculate distance of port from segment
 							distance := distance_of_point_from_line (
@@ -2866,7 +2866,7 @@ package body et_kicad_to_native is
 				-- loop in strands of current kicad net
 				while kicad_strand_cursor /= et_kicad.type_strands.no_element loop
 					log ("strand" & kicad_coordinates.to_string (
-						 position	=> element (kicad_strand_cursor).coordinates,
+						 position	=> element (kicad_strand_cursor).position,
 						 scope		=> kicad_coordinates.SHEET),
 						 log_threshold + 3);
 					
@@ -2910,7 +2910,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 
 					-- get lowest x/y coordinates of current kicad strand:
-					strand_native.coordinates := to_native_coordinates (element (kicad_strand_cursor).coordinates);
+					strand_native.position := to_native_coordinates (element (kicad_strand_cursor).position);
 
 					-- copy net segments to native strand
 					strand_native.segments := net_segments_native;
