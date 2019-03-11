@@ -47,6 +47,7 @@ with ada.directories;
 -- with gnat.directory_operations;
 
 with ada.containers;            use ada.containers;
+with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
 with et_general;				use et_general;
@@ -54,6 +55,7 @@ with et_coordinates;
 with et_string_processing;		use et_string_processing;
 with et_libraries;				use et_libraries;
 with et_schematic;				use et_schematic;
+with et_pcb_coordinates;
 with et_project;				use et_project;
 
 package body schematic_ops is
@@ -65,11 +67,153 @@ package body schematic_ops is
 		raise constraint_error;
 	end;
 
+	procedure log_unit_positions (
+	-- Writes the positions of the device unis in the log file.
+		positions 		: in type_unit_positions.map;
+		log_threshold	: in type_log_level) is
+		
+		procedure write (cursor : in type_unit_positions.cursor) is begin
+			log (
+				"unit " &
+				et_libraries.to_string (type_unit_positions.key (cursor)) & -- unit name
+				et_coordinates.to_string (position => type_unit_positions.element (cursor)), -- sheet x y
+				log_threshold);
+		end;
+		
+	begin
+		log ("location(s) in schematic:", log_threshold);
+		log_indentation_up;
+		et_schematic.type_unit_positions.iterate (positions, write'access);
+		log_indentation_down;
+	end;
+	
+	procedure log_package_position (
+	-- Writes the position of the package in the log file. If device is virtual, nothing happens.
+		device_cursor	: in et_schematic.type_devices.cursor;
+		log_threshold	: in type_log_level) is
+		use et_pcb_coordinates;
+		use et_schematic.type_devices;
+	begin
+		if element (device_cursor).appearance = SCH_PCB then
+			log ("location in board:" & 
+				to_string (point => type_point_2d (element (device_cursor).position)) &
+				" face" & 
+				to_string (get_face (element (device_cursor).position)),
+				log_threshold);
+		end if;
+	end;
+
+	function positions_of_units (
+	-- Collects the positions of units (in schematic) of the given device and returns
+	-- them in a list.
+		device_cursor : in et_schematic.type_devices.cursor) 
+		return type_unit_positions.map is
+
+		-- temporarily storage of unit coordinates:
+		positions : type_unit_positions.map;
+		
+		procedure get_positions (
+			device_name : in type_component_reference;
+			device		: in et_schematic.type_device) is
+		begin
+			positions := unit_positions (device.units);
+		end;
+
+	begin -- positions_of_units
+		et_schematic.type_devices.query_element (
+			position	=> device_cursor,
+			process		=> get_positions'access);
+
+		return positions;
+	end;
+	
+	procedure delete_ports (
+		module			: in type_modules.cursor;
+		device			: in type_component_reference;
+		positions		: in type_unit_positions.map;
+		log_threshold	: in type_log_level) is
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			procedure query_net (net_cursor : in type_nets.cursor) is
+				use type_nets;
+
+				procedure query_strands (
+					net_name	: in type_net_name.bounded_string;
+					net			: in out type_net) is
+					use type_strands;
+
+					procedure query_strand (strand_cursor : in type_strands.cursor) is
+						use et_coordinates;
+
+						procedure query_segments (strand : in out type_strand) is
+							use type_net_segments;
+
+							procedure query_segment (segment_cursor : in type_net_segments.cursor) is
+							begin
+								log_indentation_up;
+								log ("segment (start/end)" & to_string (point => element (segment_cursor).coordinates_start) &
+									 to_string (point => element (segment_cursor).coordinates_end),
+									 log_threshold + 2);
+								log_indentation_down;
+							end query_segment;
+							
+						begin -- query_segments
+							iterate (strand.segments, query_segment'access);
+						end query_segments;
+						
+					begin -- query_strand
+						log_indentation_up;
+						log ("strand " & to_string (position => element (strand_cursor).coordinates),
+							 log_threshold + 2);
+
+						update_element (
+							container	=> net.strands,
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+						
+						log_indentation_down;
+					end query_strand;
+					
+				begin -- query_strands
+					iterate (net.strands, query_strand'access);
+				end query_strands;
+				
+			begin -- query_net
+				log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+
+				update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_strands'access);
+				
+			end query_net;				
+			
+		begin -- query_nets
+			type_nets.iterate (module.nets, query_net'access);
+		end query_nets;
+		
+	begin
+		log ("deleting ports in net ...", log_threshold);
+		log_indentation_up;
+		
+		update_element (
+			container	=> modules,
+			position	=> module,
+			process		=> query_nets'access);
+
+		log_indentation_down;
+	end delete_ports;
+	
 	procedure delete_device (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_component_reference; -- IC45
 		log_threshold	: in type_log_level) is
 
+		module_cursor : type_modules.cursor; -- points to the module being modified
+		
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
@@ -79,30 +223,33 @@ package body schematic_ops is
 			-- temporarily storage of unit coordinates:
 			positions : type_unit_positions.map;
 			
-			procedure get_positions_of_units (
-				device_name : in type_component_reference;
-				device		: in et_schematic.type_device) is
-			begin
-				positions := unit_positions (device.units);
-			end;
-			
+-- 			procedure get_positions_of_units (
+-- 				device_name : in type_component_reference;
+-- 				device		: in et_schematic.type_device) is
+-- 			begin
+-- 				positions := unit_positions (device.units);
+-- 			end;
+-- 			
 		begin -- query_devices
 			if contains (module.devices, device_name) then
 
 				-- Before the actual deletion, the coordinates of the
 				-- units must be fetched. These coordinates will later assist
 				-- in deleting the port names from connected net segments.
-				
 				device_cursor := find (module.devices, device_name); -- the device should be there
+				positions := positions_of_units (device_cursor);
 
-				query_element (
-					position	=> device_cursor,
-					process		=> get_positions_of_units'access);
+				log_unit_positions (positions, log_threshold + 1);
+				log_package_position (device_cursor, log_threshold + 1);
 
+-- 				query_element (
+-- 					position	=> device_cursor,
+-- 					process		=> get_positions_of_units'access);
+-- 				
 				-- Delete the targeted device:
 				delete (module.devices, device_name);
 
-				-- CS delete_ports (module.nets, device_name);
+				delete_ports (module_cursor, device_name, positions, log_threshold + 1);
 				
 			else
 				device_not_found (device_name);
@@ -113,9 +260,12 @@ package body schematic_ops is
 		log ("module " & to_string (module_name) &
 			 " deleting " & to_string (device_name) & " ...", log_threshold);
 
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
 		update_element (
 			container	=> modules,
-			position	=> locate_module (module_name),
+			position	=> module_cursor,
 			process		=> query_devices'access);
 
 	end delete_device;

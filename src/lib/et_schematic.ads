@@ -317,7 +317,7 @@ package et_schematic is
 	type type_strand is record
 	-- NOTE: ET does not provide a name for a strand.
 	-- As a strand is part of a net, there is no need for individual strand names.
-		coordinates : et_coordinates.type_coordinates; -- lowest x/y -- CS rename to position
+		coordinates : et_coordinates.type_coordinates; -- sheet and lowest x/y -- CS rename to position
 		segments	: type_net_segments.list;
 	end record;
 
