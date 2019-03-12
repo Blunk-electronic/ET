@@ -151,10 +151,43 @@ package body schematic_ops is
 						procedure query_segments (strand : in out type_strand) is
 							use type_net_segments;
 
-							procedure query_segment (segment_cursor : in type_net_segments.cursor) is
-							begin
+							procedure query_segment (segment_cursor : in type_net_segments.cursor) is 
+								use type_ports_component;
+
+								procedure query_ports (segment : in out type_net_segment) is
+								-- Tests device ports of given segment if their device name matches the given device name.
+								-- On match the port is skipped. All other ports are collected in ports_new.	
+									ports_new : type_ports_component.list;
+									
+									procedure query_port (port_cursor : in type_ports_component.cursor) is
+										port : type_port_component := element (port_cursor); -- take a copy of the port
+										use type_ports_component;
+									begin -- query_port
+										if port.reference = device then -- on match just report the port and skip it
+											log_indentation_up;
+											log ("delete port " & to_string (port.name), log_threshold + 3);
+											log_indentation_down;
+										else
+											ports_new.append (port); -- all other ports a collected in ports_new.
+										end if;
+									end query_port;
+									
+								begin -- query_ports
+									iterate (segment.component_ports, query_port'access); -- loop in portlist of given segment
+
+									-- overwrite old portlist by new portlist
+									segment.component_ports := ports_new;
+								end query_ports;
+								
+							begin -- query_segment
 								log_indentation_up;
 								log (to_string (segment_cursor), log_threshold + 2);
+
+								update_element (
+									container	=> strand.segments,
+									position	=> segment_cursor,
+									process		=> query_ports'access);
+												   
 								log_indentation_down;
 							end query_segment;
 							
@@ -193,7 +226,7 @@ package body schematic_ops is
 			type_nets.iterate (module.nets, query_net'access);
 		end query_nets;
 		
-	begin
+	begin -- delete_ports
 		log ("deleting ports in net ...", log_threshold);
 		log_indentation_up;
 		
@@ -221,13 +254,6 @@ package body schematic_ops is
 			-- temporarily storage of unit coordinates:
 			positions : type_unit_positions.map;
 			
--- 			procedure get_positions_of_units (
--- 				device_name : in type_component_reference;
--- 				device		: in et_schematic.type_device) is
--- 			begin
--- 				positions := unit_positions (device.units);
--- 			end;
--- 			
 		begin -- query_devices
 			if contains (module.devices, device_name) then
 
@@ -237,18 +263,18 @@ package body schematic_ops is
 				device_cursor := find (module.devices, device_name); -- the device should be there
 				positions := positions_of_units (device_cursor);
 
+				log_indentation_up;
 				log_unit_positions (positions, log_threshold + 1);
+
 				log_package_position (device_cursor, log_threshold + 1);
 
--- 				query_element (
--- 					position	=> device_cursor,
--- 					process		=> get_positions_of_units'access);
--- 				
 				-- Delete the targeted device:
 				delete (module.devices, device_name);
 
+				-- Delete the ports of the targeted device from module.nets
 				delete_ports (module_cursor, device_name, positions, log_threshold + 1);
-				
+
+				log_indentation_down;				
 			else
 				device_not_found (device_name);
 			end if;
