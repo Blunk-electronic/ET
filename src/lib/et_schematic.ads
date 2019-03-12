@@ -309,6 +309,9 @@ package et_schematic is
 	end record;
 
 	package type_net_segments is new doubly_linked_lists (type_net_segment);
+
+	function to_string (segment : in type_net_segments.cursor) return string;
+	-- Returns a string that tells about start and end coordinates of the net segment.
 	
 	-- A strand is a collection of net segments which belong to each other. 
 	-- Segments belong to each other because their start/end points meet.

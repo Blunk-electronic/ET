@@ -81,6 +81,18 @@ package body et_schematic is
 		return type_net_label_direction'value (direction);
 	end to_direction;
 
+	function to_string (segment : in type_net_segments.cursor) return string is
+	-- Returns a string that tells about start and end coordinates of the net segment.
+		use et_coordinates;
+		use type_net_segments;
+	begin
+		return ("segment start" & 
+			to_string (point => element (segment).coordinates_start) &
+			" / end" &	
+			to_string (point => element (segment).coordinates_end)
+			);
+	end to_string;
+	
 	procedure set_strand_position (strand : in out type_strand) is
 	-- Calculates and sets the lowest x/y position and the sheet number of the given strand.	
 		point_1, point_2 : et_coordinates.type_point;

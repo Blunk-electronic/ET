@@ -154,9 +154,7 @@ package body schematic_ops is
 							procedure query_segment (segment_cursor : in type_net_segments.cursor) is
 							begin
 								log_indentation_up;
-								log ("segment (start/end)" & to_string (point => element (segment_cursor).coordinates_start) &
-									 to_string (point => element (segment_cursor).coordinates_end),
-									 log_threshold + 2);
+								log (to_string (segment_cursor), log_threshold + 2);
 								log_indentation_down;
 							end query_segment;
 							
