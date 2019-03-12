@@ -80,6 +80,49 @@ package body et_schematic is
 	function to_direction (direction : in string) return type_net_label_direction is begin
 		return type_net_label_direction'value (direction);
 	end to_direction;
+
+	procedure set_strand_position (strand : in out type_strand) is
+	-- Calculates and sets the lowest x/y position and the sheet number of the given strand.	
+		point_1, point_2 : et_coordinates.type_point;
+	
+		use type_net_segments;
+		use et_string_processing;
+		use et_coordinates;
+
+		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
+
+		procedure query_strand (cursor : in type_net_segments.cursor) is begin
+			-- Test start point of segment. 
+			-- if closer to orign than point_1 keep start point
+			point_2	:= type_point (element (cursor).coordinates_start);
+			if distance (point_2, zero) < distance (point_1, zero) then
+				point_1 := point_2;
+			end if;
+
+			-- Test start point of segment.
+			-- if closer to orign than point_1 keep end point
+			point_2	:= type_point (element (cursor).coordinates_end);
+			if distance (point_2, zero) < distance (point_1, zero) then
+				point_1 := point_2;
+			end if;
+		end query_strand;
+	
+	begin
+		-- init point_1 as the farest possible point from drawing origin
+		point_1 := type_point (set_point (x => type_distance_xy'last, y => type_distance_xy'last));
+
+		-- loop through segments and keep the nearest point to origin
+		iterate (strand.segments, query_strand'access);
+
+		-- build and assign the final strand position from point_1 and the sheet number
+		-- of the latest net segment. (NOTE: It does not matter which segment because all the segments
+		-- are on the same sheet.)
+		strand.position := to_coordinates (
+			point	=> point_1,
+			sheet	=> sheet (last_element (strand.segments).coordinates_start)
+			);
+		
+	end set_strand_position;
 	
 	function to_string (net_scope : in type_net_scope) return string is
 	begin

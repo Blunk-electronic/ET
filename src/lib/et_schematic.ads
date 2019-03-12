@@ -321,6 +321,9 @@ package et_schematic is
 		segments	: type_net_segments.list;
 	end record;
 
+	procedure set_strand_position (strand : in out type_strand);
+	-- Calculates and sets the lowest x/y position and the sheet number of the given strand.	
+	
 	package type_strands is new doubly_linked_lists (type_strand);
 
 	-- If a net exists in a (sub)module exclusively or whether it can be

@@ -9237,6 +9237,9 @@ package body et_project is
 						case stack.parent is
 							when SEC_STRANDS =>
 
+								-- calculate the lowest x/y position and set sheet number of the strand
+								et_schematic.set_strand_position (strand);
+								
 								-- insert strand in collection of strands
 								et_schematic.type_strands.append (
 									container	=> strands,
