@@ -630,30 +630,30 @@ package body et_libraries is
 		end if;
 	end value_characters_valid;
 	
-	function to_string (prefix : in type_component_prefix.bounded_string) return string is
+	function to_string (prefix : in type_device_name_prefix.bounded_string) return string is
 	-- returns the given prefix as string
 	begin
-		return type_component_prefix.to_string (prefix); -- leading space not allowd !
+		return type_device_name_prefix.to_string (prefix); -- leading space not allowd !
 	end to_string;
 
-	function to_prefix (prefix : in string) return type_component_prefix.bounded_string is begin
-		return type_component_prefix.to_bounded_string (prefix);
+	function to_prefix (prefix : in string) return type_device_name_prefix.bounded_string is begin
+		return type_device_name_prefix.to_bounded_string (prefix);
 	end to_prefix;
 
 	procedure check_prefix_length (prefix : in string) is
 	-- Tests if the given prefix is longer than allowed.
 		use et_string_processing;
 	begin
-		if prefix'length > component_prefix_length_max then
+		if prefix'length > device_name_prefix_length_max then
 			log_indentation_reset;
 			log (message_error & "max. number of characters for device name prefix is" 
-				 & positive'image (component_prefix_length_max) & " !",
+				 & positive'image (device_name_prefix_length_max) & " !",
 				console => true);
 			raise constraint_error;
 		end if;
 	end check_prefix_length;
 	
-	procedure check_prefix_characters (prefix : in type_component_prefix.bounded_string) is
+	procedure check_prefix_characters (prefix : in type_device_name_prefix.bounded_string) is
 	-- Tests if the given prefix contains only valid characters.
 	-- Raises exception if invalid character found.
 		use et_string_processing;
@@ -661,7 +661,7 @@ package body et_libraries is
 	begin
 		invalid_character_position := index (
 			source	=> prefix,
-			set		=> component_prefix_characters,
+			set		=> device_name_prefix_characters,
 			test	=> outside);
 
 		if invalid_character_position > 0 then
@@ -696,12 +696,12 @@ package body et_libraries is
 		text_in_justified : string (1 .. text_in'length) := text_in;
 	
 		r : type_device_name := (
-				prefix		=> type_component_prefix.to_bounded_string(""),
+				prefix		=> type_device_name_prefix.to_bounded_string(""),
 				id 			=> 0,
 				id_width	=> 1);
 	
 		c : character;
-		p : type_component_prefix.bounded_string;
+		p : type_device_name_prefix.bounded_string;
 	
 		procedure invalid_reference is
 			use et_string_processing;
@@ -715,7 +715,7 @@ package body et_libraries is
 		d : positive;
 		digit : natural := 0;
 
-		use et_libraries.type_component_prefix;
+		use et_libraries.type_device_name_prefix;
 
 	begin -- to_device_name
 		-- assemble prefix
@@ -725,7 +725,7 @@ package body et_libraries is
 			case i is 
 				-- The first character MUST be a valid prefix character.
 				when 1 => 
-					if is_in (c, component_prefix_characters) then
+					if is_in (c, device_name_prefix_characters) then
 						r.prefix := r.prefix & c;
 					else 
 						invalid_reference;
@@ -734,7 +734,7 @@ package body et_libraries is
 				-- Further characters are appended to prefix if they are valid prefix characters.
 				-- If anything else is found, the prefix is assumed as complete.
 				when others =>
-					if is_in (c, component_prefix_characters) then
+					if is_in (c, device_name_prefix_characters) then
 						r.prefix := r.prefix & c;
 					else
 						d := i; -- d holds the position of the charcter after the prefix.
@@ -889,16 +889,16 @@ package body et_libraries is
 	begin
 		case lz is
 			when 0 => -- no leading zeroes
-				return (type_component_prefix.to_string (reference.prefix) 
+				return (type_device_name_prefix.to_string (reference.prefix) 
 					& trim(natural'image (reference.id),left));
 				
 			when others => -- leading zeros required
-				return (type_component_prefix.to_string (reference.prefix) 
+				return (type_device_name_prefix.to_string (reference.prefix) 
 					& lz * '0' & trim(natural'image (reference.id),left));
 		end case;
 	end to_string;
 	
-	function prefix (reference : in type_device_name) return type_component_prefix.bounded_string is
+	function prefix (reference : in type_device_name) return type_device_name_prefix.bounded_string is
 	-- Returns the prefix of the given device name.
 	begin
 		return reference.prefix;

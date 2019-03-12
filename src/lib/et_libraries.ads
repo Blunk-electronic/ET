@@ -392,23 +392,23 @@ package et_libraries is
 -- DEVICE NAMES
 	-- A device name consists of a prefix (like R, C, IC, ..)
 	-- and a consecutive number. Both form something like "IC702"
-	component_prefix_characters : character_set := to_set (span => ('A','Z'));
-	component_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
-	package type_component_prefix is new generic_bounded_length (component_prefix_length_max);
-	use type_component_prefix;
+	device_name_prefix_characters : character_set := to_set (span => ('A','Z'));
+	device_name_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
+	package type_device_name_prefix is new generic_bounded_length (device_name_prefix_length_max);
+	use type_device_name_prefix;
 
-	function to_string (prefix : in type_component_prefix.bounded_string) return string;
-	function to_prefix (prefix : in string) return type_component_prefix.bounded_string;
+	function to_string (prefix : in type_device_name_prefix.bounded_string) return string;
+	function to_prefix (prefix : in string) return type_device_name_prefix.bounded_string;
 
 	procedure check_prefix_length (prefix : in string);
 	-- Tests if the given prefix is longer than allowed.
 	
-	procedure check_prefix_characters (prefix : in type_component_prefix.bounded_string);
+	procedure check_prefix_characters (prefix : in type_device_name_prefix.bounded_string);
 	-- Tests if the given prefix contains only valid characters.
 	-- Raises exception if invalid character found.
 	
 	type type_device_name_element is (PREFIX, ID);
-	component_reference_prefix_default : constant type_component_prefix.bounded_string := to_bounded_string("?");
+	component_reference_prefix_default : constant type_device_name_prefix.bounded_string := to_bounded_string("?");
 
 	subtype type_component_reference_id is natural range natural'first .. 99_999; -- R1..R99999, IC1..IC99999 should be enough
 	component_reference_id_default : constant type_component_reference_id := 0;
@@ -419,7 +419,7 @@ package et_libraries is
 	subtype type_component_reference_id_width is positive range positive'first .. 5; -- see number of digits of type_component_reference_id
 	
 	type type_device_name is record -- CS: should be private
-		prefix		: type_component_prefix.bounded_string := component_reference_prefix_default; -- like "IC"
+		prefix		: type_device_name_prefix.bounded_string := component_reference_prefix_default; -- like "IC"
 		id			: type_component_reference_id := component_reference_id_default; -- like "303"
 		id_width	: type_component_reference_id_width; -- the number of digits of the id. 3 in case of an id of 303
 		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
@@ -437,7 +437,7 @@ package et_libraries is
 	-- Returns the given device name as string.
 	-- Prepends leading zeros according to reference.id_width.
 	
-	function prefix (reference : in type_device_name) return type_component_prefix.bounded_string;
+	function prefix (reference : in type_device_name) return type_device_name_prefix.bounded_string;
 	-- Returns the prefix of the given device name.
 
 	
@@ -768,7 +768,7 @@ package et_libraries is
 
 -- DEVICES
 	type type_device (appearance : type_component_appearance) is record
-		prefix			: type_component_prefix.bounded_string; -- R, C, IC, ...
+		prefix			: type_device_name_prefix.bounded_string; -- R, C, IC, ...
 		units_internal	: type_units_internal.map := type_units_internal.empty_map;
 		units_external	: type_units_external.map := type_units_external.empty_map;
 

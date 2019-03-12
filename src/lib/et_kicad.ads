@@ -425,7 +425,7 @@ package et_kicad is
 	
 	-- This is a component as it appears in the library:.
 	type type_component_library (appearance : et_libraries.type_component_appearance) is record
-		prefix			: et_libraries.type_component_prefix.bounded_string; -- R, C, IC, ...
+		prefix			: et_libraries.type_device_name_prefix.bounded_string; -- R, C, IC, ...
 		value			: et_libraries.type_component_value.bounded_string; -- 74LS00
 		units			: type_units_library.map := type_units_library.empty_map;
 
@@ -1111,7 +1111,7 @@ package et_kicad is
 	power_symbol_prefix : constant string (1..4) := "#PWR";	
 
 	-- These are the characters allowed for a component prefix:
-	component_prefix_characters : character_set := et_libraries.component_prefix_characters 
+	component_prefix_characters : character_set := et_libraries.device_name_prefix_characters
 		or to_set (schematic_component_power_symbol_prefix);
 
 	-- These characters are allowed for a component reference. 

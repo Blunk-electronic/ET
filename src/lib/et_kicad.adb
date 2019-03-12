@@ -286,12 +286,12 @@ package body et_kicad is
 	end units_of_component;
 
 	procedure check_prefix_characters (
-		prefix 		: in et_libraries.type_component_prefix.bounded_string;
+		prefix 		: in et_libraries.type_device_name_prefix.bounded_string;
 		characters	: in character_set) is
 	-- Tests if the given prefix contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
 		use et_string_processing;
-		use et_libraries.type_component_prefix;
+		use et_libraries.type_device_name_prefix;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
@@ -326,12 +326,12 @@ package body et_kicad is
 		text_in_justified : string (1 .. text_in'length) := text_in;
 	
 		r : type_device_name := (
-				prefix 		=> type_component_prefix.to_bounded_string(""),
+				prefix 		=> type_device_name_prefix.to_bounded_string(""),
 				id 			=> 0,
 				id_width	=> 1);
 	
 		c : character;
-		p : type_component_prefix.bounded_string;
+		p : type_device_name_prefix.bounded_string;
 	
 		procedure invalid_reference is
 			use et_string_processing;
@@ -345,7 +345,7 @@ package body et_kicad is
 		d : positive;
 		digit : natural := 0;
 
-		use et_libraries.type_component_prefix;
+		use et_libraries.type_device_name_prefix;
 	begin -- to_component_reference
 		-- assemble prefix
 		for i in text_in_justified'first .. text_in_justified'last loop
@@ -756,11 +756,11 @@ package body et_kicad is
 		raise constraint_error;
 	end invalid_field;
 
-	procedure validate_prefix (prefix : in et_libraries.type_component_prefix.bounded_string) is
+	procedure validate_prefix (prefix : in et_libraries.type_device_name_prefix.bounded_string) is
 	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
 		use et_string_processing;
-		use et_libraries.type_component_prefix;
+		use et_libraries.type_device_name_prefix;
 	begin
 		if to_string (prefix) = power_flag_prefix or to_string (prefix) = power_symbol_prefix then
 			null;
@@ -780,7 +780,7 @@ package body et_kicad is
 	procedure validate_prefix (reference : in et_libraries.type_device_name) is
 	-- Tests if the given reference has a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
-		use et_libraries.type_component_prefix;
+		use et_libraries.type_device_name_prefix;
 	begin
 		if to_string (reference.prefix) = power_flag_prefix or to_string (reference.prefix) = power_symbol_prefix then
 			null;
@@ -1162,7 +1162,7 @@ package body et_kicad is
 		return type_power_flag is
 	-- If the given component reference is one that belongs to a "power flag" returns YES.
 		use et_libraries;
-		use type_component_prefix;
+		use type_device_name_prefix;
 	begin
 		--log (et_schematic.to_string (reference));
 		if et_libraries.prefix (reference) = power_flag_prefix then
@@ -1294,7 +1294,7 @@ package body et_kicad is
 			-- gets fully assembled and inserted into the component list of a particular library.
 			-- These properties apply for the whole component (means for all its units):
 			tmp_component_name		: type_component_generic_name.bounded_string; -- 74LS00 -- CS: rename to generic_name
-			tmp_prefix				: type_component_prefix.bounded_string; -- IC -- CS: rename to prefix
+			tmp_prefix				: type_device_name_prefix.bounded_string; -- IC -- CS: rename to prefix
 			tmp_appearance			: type_component_appearance; -- CS: rename to appearance
 
 			tmp_port_name_visible		: type_port_name_visible;
@@ -1948,7 +1948,7 @@ package body et_kicad is
 					when REFERENCE =>
 						check_prefix_length (content (text));
 						check_prefix_characters (
-							prefix => type_component_prefix.to_bounded_string (content (text)),
+							prefix => type_device_name_prefix.to_bounded_string (content (text)),
 							characters => et_kicad.component_prefix_characters);
 					
 					when VALUE =>
@@ -2054,7 +2054,7 @@ package body et_kicad is
 						else
 							check_prefix_characters (
 								prefix => tmp_prefix,
-								characters => et_libraries.component_prefix_characters);
+								characters => et_libraries.device_name_prefix_characters);
 							
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_reference.size);
 						end if;
@@ -2778,7 +2778,7 @@ package body et_kicad is
 						-- CS: Do a cross check of prefix and reference -- "U" 
 						-- The prefix is already defined in the component hearder. 
 						-- Why this redundance ? Ask the kicad makers...
-						if strip_quotes (et_string_processing.field (line,2)) = type_component_prefix.to_string (tmp_prefix) then
+						if strip_quotes (et_string_processing.field (line,2)) = type_device_name_prefix.to_string (tmp_prefix) then
 							null; -- fine
 						else
 							log (message_warning & affected_line (line) & ": prefix vs. reference mismatch !");
@@ -2992,7 +2992,7 @@ package body et_kicad is
 								--  #9 : all units not interchangeable L (otherwise F), (similar to swap level in EAGLE)
 								--  #10: power symbol P (otherwise N)
 
-								tmp_prefix := type_component_prefix.to_bounded_string (et_string_processing.field (line,3)); -- U
+								tmp_prefix := type_device_name_prefix.to_bounded_string (et_string_processing.field (line,3)); -- U
 
 								-- Detect invalid characters in tmp_prefix:
 								-- NOTE: we test against the kicad specific character set that allows a #
@@ -7734,13 +7734,13 @@ package body et_kicad is
 				-- The assumption is that their prefix always starts with a hash character.
 					et_libraries.type_device_name is
 					use et_libraries;
-					use type_component_prefix;
+					use type_device_name_prefix;
 					reference_out : et_libraries.type_device_name := reference; -- to be returned -- like PWR04
 				begin
 					--log ("renaming " & to_string (reference_out));
 					--log ("length" & positive'image (length (reference_out.prefix)));
 					reference_out.prefix := to_bounded_string (slice (reference_out.prefix, 2, length (reference_out.prefix)));
-					--log ("prefix new '" & type_component_prefix.to_string (reference_out.prefix) & "'");
+					--log ("prefix new '" & type_device_name_prefix.to_string (reference_out.prefix) & "'");
 					--log (" to " & to_string (reference_out));
 					return reference_out;
 				end remove_leading_hash;

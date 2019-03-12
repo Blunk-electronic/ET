@@ -152,7 +152,7 @@ package body et_schematic is
 		use et_libraries;
 	begin
 		return ((
-			prefix		=> type_component_prefix.to_bounded_string (""),
+			prefix		=> type_device_name_prefix.to_bounded_string (""),
 			id			=> component_reference_id_default,
 			id_width	=> 1));
 	end default_component_reference;
@@ -162,7 +162,7 @@ package body et_schematic is
 	-- If left equals right, the return is false.
 	-- CS: needs verification !
 		result : boolean := false;
-		use et_libraries.type_component_prefix;
+		use et_libraries.type_device_name_prefix;
 	begin
 		-- First we compare the prefix.
 		-- Example: If left is C201 and right is R4 then the result is true as C comes before R.
@@ -190,7 +190,7 @@ package body et_schematic is
 	-- Returns true if left equals right.
 	-- Example: if IC4 = IC4 then return true.
 		result : boolean := false;
-		use et_libraries.type_component_prefix;
+		use et_libraries.type_device_name_prefix;
 	begin
 		-- First we compare the prefix. If prefixes are equal, we compare the id.
 		-- If either of them does not match, the result is set false.
