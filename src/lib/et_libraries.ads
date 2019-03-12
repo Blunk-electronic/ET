@@ -408,19 +408,19 @@ package et_libraries is
 	-- Raises exception if invalid character found.
 	
 	type type_device_name_element is (PREFIX, ID);
-	component_reference_prefix_default : constant type_device_name_prefix.bounded_string := to_bounded_string("?");
+	device_name_prefix_default : constant type_device_name_prefix.bounded_string := to_bounded_string("?");
 
-	subtype type_component_reference_id is natural range natural'first .. 99_999; -- R1..R99999, IC1..IC99999 should be enough
-	component_reference_id_default : constant type_component_reference_id := 0;
+	subtype type_device_name_index is natural range natural'first .. 99_999; -- R1..R99999, IC1..IC99999 should be enough
+	device_name_index_default : constant type_device_name_index := 0;
 
-	function to_string (ref_id : in type_component_reference_id) return string;
-	function to_reference_id (ref_id : in string) return type_component_reference_id;
+	function to_string (ref_id : in type_device_name_index) return string;
+	function to_reference_id (ref_id : in string) return type_device_name_index;
 
-	subtype type_component_reference_id_width is positive range positive'first .. 5; -- see number of digits of type_component_reference_id
+	subtype type_component_reference_id_width is positive range positive'first .. 5; -- see number of digits of type_device_name_index
 	
 	type type_device_name is record -- CS: should be private
-		prefix		: type_device_name_prefix.bounded_string := component_reference_prefix_default; -- like "IC"
-		id			: type_component_reference_id := component_reference_id_default; -- like "303"
+		prefix		: type_device_name_prefix.bounded_string := device_name_prefix_default; -- like "IC"
+		id			: type_device_name_index := device_name_index_default; -- like "303"
 		id_width	: type_component_reference_id_width; -- the number of digits of the id. 3 in case of an id of 303
 		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
 	end record;

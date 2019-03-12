@@ -675,12 +675,12 @@ package body et_libraries is
 		end if;
 	end check_prefix_characters;
 
-	function to_string (ref_id : in type_component_reference_id) return string is begin
-		return latin_1.space & type_component_reference_id'image (ref_id);
+	function to_string (ref_id : in type_device_name_index) return string is begin
+		return latin_1.space & type_device_name_index'image (ref_id);
 	end to_string;
 
-	function to_reference_id (ref_id : in string) return type_component_reference_id is begin
-		return type_component_reference_id'value (ref_id);
+	function to_reference_id (ref_id : in string) return type_device_name_index is begin
+		return type_device_name_index'value (ref_id);
 	end to_reference_id;
 
 	function to_device_name (

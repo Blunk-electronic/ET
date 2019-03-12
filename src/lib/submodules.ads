@@ -93,7 +93,7 @@ package submodules is
 		size				: type_submodule_size;
 		position_in_board	: et_pcb_coordinates.type_point_2d_with_angle;
 		view_mode			: type_submodule_view_mode;
-		reference_offset	: et_libraries.type_component_reference_id;	-- R88 turns to R2088 or R788
+		reference_offset	: et_libraries.type_device_name_index;	-- R88 turns to R2088 or R788
 		ports				: type_submodule_ports.list;
 	end record;
 
