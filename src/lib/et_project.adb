@@ -1399,7 +1399,7 @@ package body et_project is
 
 					procedure query_device_ports (segment : in type_net_segment) is
 						use type_ports_component;
-						port_cursor : type_ports_component.cursor := segment.component_ports.first;
+						port_cursor : type_ports_component.cursor := segment.ports_devices.first;
 					begin -- query_device_ports
 						while port_cursor /= type_ports_component.no_element loop
 							
@@ -1415,7 +1415,7 @@ package body et_project is
 
 					procedure query_submodule_ports (segment : in type_net_segment) is
 						use type_ports_submodule;
-						port_cursor : type_ports_submodule.cursor := segment.submodule_ports.first;
+						port_cursor : type_ports_submodule.cursor := segment.ports_submodules.first;
 					begin -- query_submodule_ports
 						while port_cursor /= type_ports_submodule.no_element loop
 
@@ -1431,7 +1431,7 @@ package body et_project is
 					
 					procedure query_netchanger_ports (segment : in type_net_segment) is
 						use type_ports_netchanger;
-						port_cursor : type_ports_netchanger.cursor := segment.netchanger_ports.first;
+						port_cursor : type_ports_netchanger.cursor := segment.ports_netchangers.first;
 					begin
 						while port_cursor /= type_ports_netchanger.no_element loop
 
@@ -9324,13 +9324,13 @@ package body et_project is
 								-- There is no section for a single port like [PORT BEGIN].
 
 								-- insert port collection in segment
-								net_segment.component_ports := net_device_ports;
+								net_segment.ports_devices := net_device_ports;
 
 								-- insert submodule ports in segment
-								net_segment.submodule_ports := net_submodule_ports;
+								net_segment.ports_submodules := net_submodule_ports;
 
 								-- insert netchanger ports in segment
-								net_segment.netchanger_ports := net_netchanger_ports;
+								net_segment.ports_netchangers := net_netchanger_ports;
 								
 								-- clean up for next port collections (of another net segment)
 								et_schematic.type_ports_component.clear (net_device_ports);

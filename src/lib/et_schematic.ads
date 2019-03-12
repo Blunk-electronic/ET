@@ -302,9 +302,9 @@ package et_schematic is
 		coordinates_end   	: et_coordinates.type_coordinates; -- CS et_coordinates.type_point ?
 		labels				: type_net_labels.list;
 		junctions			: type_junctions.list;
-		component_ports		: type_ports_component.list; -- CS rename to device ports
-		submodule_ports		: type_ports_submodule.list;
-		netchanger_ports	: type_ports_netchanger.list;
+		ports_devices		: type_ports_component.list;
+		ports_submodules	: type_ports_submodule.list;
+		ports_netchangers	: type_ports_netchanger.list;
 		-- CS no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags
 	end record;
 

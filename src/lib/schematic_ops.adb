@@ -173,10 +173,10 @@ package body schematic_ops is
 									end query_port;
 									
 								begin -- query_ports
-									iterate (segment.component_ports, query_port'access); -- loop in portlist of given segment
+									iterate (segment.ports_devices, query_port'access); -- loop in portlist of given segment
 
 									-- overwrite old portlist by new portlist
-									segment.component_ports := ports_new;
+									segment.ports_devices := ports_new;
 								end query_ports;
 								
 							begin -- query_segment
