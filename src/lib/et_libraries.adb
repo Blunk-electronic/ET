@@ -803,6 +803,7 @@ package body et_libraries is
 	function to_unit_name (unit_name : in string) return type_unit_name.bounded_string is
 	-- Returns the given unit name as type_unit_name.
 	begin
+		-- CS do character and length checks
 		return type_unit_name.to_bounded_string (unit_name);
 	end to_unit_name;
 

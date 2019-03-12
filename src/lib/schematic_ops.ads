@@ -61,6 +61,12 @@ package schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		log_threshold	: in type_log_level);
 
+	procedure delete_unit (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- A
+		log_threshold	: in type_log_level);
+
 	
 end schematic_ops;
 

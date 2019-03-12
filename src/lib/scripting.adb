@@ -178,7 +178,10 @@ package body scripting is
 				when DELETE =>
 					case noun is
 						when DEVICE =>
-							schematic_ops.delete_device (module, to_device_name (f (5)), log_threshold + 1);
+							schematic_ops.delete_device (
+								module_name 	=> module,
+								device_name		=> to_device_name (f (5)),
+								log_threshold	=> log_threshold + 1);
 
 						when NET =>
 							NULL; -- CS
@@ -187,7 +190,11 @@ package body scripting is
 							NULL; -- CS
 							
 						when UNIT =>
-							NULL; -- CS
+							schematic_ops.delete_unit (
+								module_name 	=> module,
+								device_name		=> to_device_name (f (5)),
+								unit_name		=> to_unit_name (f (6)),
+								log_threshold	=> log_threshold + 1);
 
 						when others => invalid_noun (to_string (noun));
 					end case;

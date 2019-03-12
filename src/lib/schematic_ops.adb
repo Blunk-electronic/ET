@@ -67,6 +67,11 @@ package body schematic_ops is
 		raise constraint_error;
 	end;
 
+	procedure unit_not_found (name : in type_unit_name.bounded_string) is begin
+		log (message_error & "unit " & to_string (name) & " not found !", console => true);
+		raise constraint_error;
+	end;
+	
 	procedure log_unit_positions (
 	-- Writes the positions of the device unis in the log file.
 		positions 		: in type_unit_positions.map;
@@ -294,6 +299,85 @@ package body schematic_ops is
 
 	end delete_device;
 
+	procedure delete_unit (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- A
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module being modified
+		
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+
+			-- temporarily storage of unit coordinates:
+			position : et_coordinates.type_coordinates;
+
+			procedure query_units (
+				device_name	: in type_device_name;
+				device		: in out et_schematic.type_device) is
+				use et_schematic.type_units;
+				unit_cursor : et_schematic.type_units.cursor;
+			begin
+				if contains (device.units, unit_name) then
+					-- locate unit by its name
+					unit_cursor := find (device.units, unit_name);
+
+					-- load position
+					position := element (unit_cursor).position;
+
+					-- CS log unit position
+					
+					-- delete the unit
+					delete (device.units, unit_name);
+				else
+					unit_not_found (unit_name);
+				end if;
+			end query_units;
+			
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+
+				-- Before the actual deletion, the coordinates of the
+				-- unit must be fetched. These coordinates will later assist
+				-- in deleting the port names from connected net segments.
+				device_cursor := find (module.devices, device_name); -- the device should be there
+
+				-- locate the unit, load position and then delete unit
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor,
+					process		=> query_units'access);
+				
+				log_indentation_up;
+				-- CS log_unit_position (position, log_threshold + 1);
+
+				-- Delete the ports of the targeted unit from module.nets
+				-- CS delete_ports (module_cursor, device_name, positions, log_threshold + 1);
+
+				log_indentation_down;				
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- delete_unit
+		log ("module " & to_string (module_name) &
+			 " deleting " & to_string (device_name) & " unit " & 
+			 to_string (unit_name) & " ...", log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+	end delete_unit;
 	
 end schematic_ops;
 	
