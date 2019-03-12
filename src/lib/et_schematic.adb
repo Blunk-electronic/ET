@@ -146,8 +146,8 @@ package body et_schematic is
 		return type_net_scope'value (scope);
 	end to_net_scope;
 
-	function default_component_reference return et_libraries.type_component_reference is
-	-- Returns a default component reference with an empty prefix and and id 0.
+	function default_component_reference return et_libraries.type_device_name is
+	-- Returns a default device name with an empty prefix and and id 0.
 	-- Used to initialize a component reference.	
 		use et_libraries;
 	begin
@@ -157,7 +157,7 @@ package body et_schematic is
 			id_width	=> 1));
 	end default_component_reference;
 		
-	function compare_reference (left, right : in et_libraries.type_component_reference) return boolean is
+	function compare_reference (left, right : in et_libraries.type_device_name) return boolean is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.
 	-- CS: needs verification !
@@ -186,7 +186,7 @@ package body et_schematic is
 		return result;
 	end compare_reference;
 
-	function equal_reference (left, right : in et_libraries.type_component_reference) return boolean is
+	function equal_reference (left, right : in et_libraries.type_device_name) return boolean is
 	-- Returns true if left equals right.
 	-- Example: if IC4 = IC4 then return true.
 		result : boolean := false;
@@ -332,7 +332,7 @@ package body et_schematic is
 	end unit_positions;
 
 	
--- 	function position (device : in et_libraries.type_component_reference) return type_device_position is
+-- 	function position (device : in et_libraries.type_device_name) return type_device_position is
 -- 		dev_pos : type_device_position; -- to be returned
 -- 		use type_devices;
 -- 	begin

@@ -389,8 +389,8 @@ package et_libraries is
 
 	
 
--- COMPONENT PREFIXES AND REFERENCES
-	-- A component reference (in Eagle "device name") consists of a prefix (like R, C, IC, ..)
+-- DEVICE NAMES
+	-- A device name consists of a prefix (like R, C, IC, ..)
 	-- and a consecutive number. Both form something like "IC702"
 	component_prefix_characters : character_set := to_set (span => ('A','Z'));
 	component_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
@@ -407,7 +407,7 @@ package et_libraries is
 	-- Tests if the given prefix contains only valid characters.
 	-- Raises exception if invalid character found.
 	
-	type type_component_reference_element is (PREFIX, ID);
+	type type_device_name_element is (PREFIX, ID);
 	component_reference_prefix_default : constant type_component_prefix.bounded_string := to_bounded_string("?");
 
 	subtype type_component_reference_id is natural range natural'first .. 99_999; -- R1..R99999, IC1..IC99999 should be enough
@@ -418,7 +418,7 @@ package et_libraries is
 
 	subtype type_component_reference_id_width is positive range positive'first .. 5; -- see number of digits of type_component_reference_id
 	
-	type type_component_reference is record -- CS: should be private
+	type type_device_name is record -- CS: should be private
 		prefix		: type_component_prefix.bounded_string := component_reference_prefix_default; -- like "IC"
 		id			: type_component_reference_id := component_reference_id_default; -- like "303"
 		id_width	: type_component_reference_id_width; -- the number of digits of the id. 3 in case of an id of 303
@@ -426,19 +426,19 @@ package et_libraries is
 	end record;
 
 	function to_device_name (
-	-- Converts a string like "IC303" to a composite type_component_reference.
+	-- Converts a string like "IC303" to a composite type_device_name.
 	-- Raises constraint error if prefix contains invalid characters.
 	-- Raises constraint error if id contains non-digit characters.
 	-- Leading zeroes in the id are removed. R002 becomes R2.
 		text_in : in string)
-		return type_component_reference;
+		return type_device_name;
 	
-	function to_string (reference : in type_component_reference) return string;
-	-- Returns the given component reference as string.
+	function to_string (reference : in type_device_name) return string;
+	-- Returns the given device name as string.
 	-- Prepends leading zeros according to reference.id_width.
 	
-	function prefix (reference : in type_component_reference) return type_component_prefix.bounded_string;
-	-- Returns the prefix of the given component reference.
+	function prefix (reference : in type_device_name) return type_component_prefix.bounded_string;
+	-- Returns the prefix of the given device name.
 
 	
 -- COMPONENT APPEARANCE	

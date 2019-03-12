@@ -200,7 +200,7 @@ package conventions is
 	-- Returns the category of the given component prefix. If no category could be
 	-- found, returns category UNKNOWN.
 	
-	function category (reference : in et_libraries.type_component_reference) return
+	function category (reference : in et_libraries.type_device_name) return
 		type_component_category;
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
@@ -347,7 +347,7 @@ package conventions is
 
 	
 -- 	function requires_operator_interaction (
--- 		reference : in et_libraries.type_component_reference)
+-- 		reference : in et_libraries.type_device_name)
 -- 		return type_component_requires_operator_interaction;	
 
 	-- This type is required for handling text sizes:
@@ -460,7 +460,7 @@ package conventions is
 	--  - If partcode keywords are specified in the conventions file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
 		partcode		: in et_libraries.type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
-		reference		: in et_libraries.type_component_reference;						-- R45
+		reference		: in et_libraries.type_device_name;						-- R45
 		packge			: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
 		value 			: in et_libraries.type_component_value.bounded_string; 			-- 100R
 		log_threshold	: in et_string_processing.type_log_level);
@@ -497,7 +497,7 @@ package conventions is
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
 	
-	function prefix_valid (reference : in et_libraries.type_component_reference) return boolean;
+	function prefix_valid (reference : in et_libraries.type_device_name) return boolean;
 	-- Tests if the given reference has a valid prefix as specified in the conventions file.
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.

@@ -1612,7 +1612,7 @@ package body et_project is
 			use type_devices;
 			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
 
-			procedure query_units (device_name : in et_libraries.type_component_reference; device : in et_schematic.type_device) is
+			procedure query_units (device_name : in et_libraries.type_device_name; device : in et_schematic.type_device) is
 				use et_schematic.type_units;
 				unit_cursor : type_units.cursor := device.units.first;
 
@@ -1654,7 +1654,7 @@ package body et_project is
 				section_mark (section_units, FOOTER);
 			end query_units;
 
-			procedure query_placeholders (device_name : in et_libraries.type_component_reference; device : in et_schematic.type_device) is
+			procedure query_placeholders (device_name : in et_libraries.type_device_name; device : in et_schematic.type_device) is
 				use et_pcb_coordinates;
 				use et_pcb;
 				use et_pcb.type_text_placeholders_package;
@@ -7761,7 +7761,7 @@ package body et_project is
 		-- The temporarily device will exist where "device" points at:
 		device					: access et_schematic.type_device;
 		
-		device_name				: et_libraries.type_component_reference; -- C12
+		device_name				: et_libraries.type_device_name; -- C12
 		device_model			: et_libraries.type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
 		device_value			: et_libraries.type_component_value.bounded_string; -- 470R
 		device_appearance		: et_schematic.type_appearance_schematic;
@@ -12684,7 +12684,7 @@ package body et_project is
 	
 -- 	function position (
 -- 		module	: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
--- 		device	: in et_libraries.type_component_reference; -- IC45
+-- 		device	: in et_libraries.type_device_name; -- IC45
 -- 		log_threshold	: in et_string_processing.type_log_level) 
 -- 		--return et_schematic.type_device_position is
 -- 		return et_schematic.type_devices.cursor is

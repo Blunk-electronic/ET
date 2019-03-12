@@ -684,18 +684,18 @@ package body et_libraries is
 	end to_reference_id;
 
 	function to_device_name (
-	-- Converts a string like "IC303" to a composite type_component_reference.
+	-- Converts a string like "IC303" to a composite type_device_name.
 	-- Raises constraint error if prefix contains invalid characters.
 	-- Raises constraint error if id contains non-digit characters.
 	-- Leading zeroes in the id are removed. R002 becomes R2.
 		text_in : in string)
-		return type_component_reference is
+		return type_device_name is
 		use et_libraries;
 
 		-- justify given text_in on the left
 		text_in_justified : string (1 .. text_in'length) := text_in;
 	
-		r : type_component_reference := (
+		r : type_device_name := (
 				prefix		=> type_component_prefix.to_bounded_string(""),
 				id 			=> 0,
 				id_width	=> 1);
@@ -874,8 +874,8 @@ package body et_libraries is
 		return " terminal count" & type_terminal_count'image (terminals);
 	end to_string;
 	
-	function to_string (reference : in type_component_reference) return string is
-	-- Returns the given component reference as string.
+	function to_string (reference : in type_device_name) return string is
+	-- Returns the given device name as string.
 	-- Prepends leading zeros according to reference.id_width.
 		id_width_wanted	: natural := reference.id_width;
 	
@@ -898,8 +898,8 @@ package body et_libraries is
 		end case;
 	end to_string;
 	
-	function prefix (reference : in type_component_reference) return type_component_prefix.bounded_string is
-	-- Returns the prefix of the given component reference.
+	function prefix (reference : in type_device_name) return type_component_prefix.bounded_string is
+	-- Returns the prefix of the given device name.
 	begin
 		return reference.prefix;
 	end prefix;

@@ -224,7 +224,7 @@ package et_schematic is
 	
 	-- This is the port of a device:
 	type type_port_component is record -- CS rename to type_port_device
-		reference	: et_libraries.type_component_reference;
+		reference	: et_libraries.type_device_name;
 		name		: et_libraries.type_port_name.bounded_string; -- CS rename to port ?
 		-- CS unit name ?
 	end record;
@@ -347,15 +347,15 @@ package et_schematic is
 	
 
 	
-	function default_component_reference return et_libraries.type_component_reference;
+	function default_component_reference return et_libraries.type_device_name;
 	-- Returns a default component reference with an empty prefix and and id 0.
 	-- Used to initialize a component reference.
 	
-	function compare_reference (left, right : in et_libraries.type_component_reference) return boolean;
+	function compare_reference (left, right : in et_libraries.type_device_name) return boolean;
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.	
 	
-	function equal_reference (left, right : in et_libraries.type_component_reference) return boolean;
+	function equal_reference (left, right : in et_libraries.type_device_name) return boolean;
 	-- Returns true if left equals right.
 
 
@@ -364,7 +364,7 @@ package et_schematic is
 
 	-- The devices of a module are collected in a map.
  	package type_devices is new indefinite_ordered_maps (
-		key_type		=> et_libraries.type_component_reference, -- something like "IC43"
+		key_type		=> et_libraries.type_device_name, -- something like "IC43"
 		"<"				=> compare_reference,
  		element_type	=> type_device);
 
@@ -406,7 +406,7 @@ package et_schematic is
 -- 		board		: et_pcb_coordinates.type_package_position; -- incl. angle and face
 -- 	end record;
 
-	--function position (device : in et_libraries.type_component_reference) return type_device_position;
+	--function position (device : in et_libraries.type_device_name) return type_device_position;
 	
 	
 -- MISC

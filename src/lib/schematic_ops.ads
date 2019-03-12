@@ -58,7 +58,7 @@ package schematic_ops is
 
 	procedure delete_device (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_component_reference; -- IC45
+		device_name		: in type_device_name; -- IC45
 		log_threshold	: in type_log_level);
 
 	

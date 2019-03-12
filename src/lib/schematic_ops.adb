@@ -62,7 +62,7 @@ package body schematic_ops is
 
 	use type_modules;
 
-	procedure device_not_found (name : in type_component_reference) is begin
+	procedure device_not_found (name : in type_device_name) is begin
 		log (message_error & "device " & to_string (name) & " not found !", console => true);
 		raise constraint_error;
 	end;
@@ -113,7 +113,7 @@ package body schematic_ops is
 		positions : type_unit_positions.map;
 		
 		procedure get_positions (
-			device_name : in type_component_reference;
+			device_name : in type_device_name;
 			device		: in et_schematic.type_device) is
 		begin
 			positions := unit_positions (device.units);
@@ -129,7 +129,7 @@ package body schematic_ops is
 	
 	procedure delete_ports (
 		module			: in type_modules.cursor;
-		device			: in type_component_reference;
+		device			: in type_device_name;
 		positions		: in type_unit_positions.map;
 		log_threshold	: in type_log_level) is
 
@@ -240,7 +240,7 @@ package body schematic_ops is
 	
 	procedure delete_device (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_component_reference; -- IC45
+		device_name		: in type_device_name; -- IC45
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module being modified

@@ -185,7 +185,7 @@ package et_kicad is
 
 	procedure add_unit (
 	-- Adds a unit into the given commponent.
-		reference		: in et_libraries.type_component_reference;
+		reference		: in et_libraries.type_device_name;
 		unit_name		: in et_libraries.type_unit_name.bounded_string;
 		unit 			: in type_unit_schematic;
 		log_threshold	: in et_string_processing.type_log_level);
@@ -497,7 +497,7 @@ package et_kicad is
 
 	
 	procedure no_generic_model_found (
-		reference		: in et_libraries.type_component_reference; -- IC303
+		reference		: in et_libraries.type_device_name; -- IC303
 		library			: in type_device_library_name.bounded_string; -- ../lib/xilinx/spartan.lib
 		generic_name	: in type_component_generic_name.bounded_string);
 	
@@ -524,7 +524,7 @@ package et_kicad is
 	
 	type type_alternative_reference is record
 		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
-		reference	: et_libraries.type_component_reference; -- R452
+		reference	: et_libraries.type_device_name; -- R452
 		part		: et_libraries.type_unit_name.bounded_string; -- CS is this about a unit name ? currently written but never read
 	end record;
 
@@ -564,19 +564,19 @@ package et_kicad is
 	
 	procedure add_component (
 	-- Adds a component into the the module (indicated by module_cursor).
-		reference		: in et_libraries.type_component_reference;
+		reference		: in et_libraries.type_device_name;
 		component		: in type_component_schematic;
 		log_threshold	: in et_string_processing.type_log_level);
 
 
 	-- The components of a module are collected in a map.
  	package type_components_schematic is new indefinite_ordered_maps (
-		key_type 		=> et_libraries.type_component_reference, -- something like "IC43"
+		key_type 		=> et_libraries.type_device_name, -- something like "IC43"
 		"<" 			=> et_schematic.compare_reference,
  		element_type 	=> type_component_schematic);
 
 	function component_reference (cursor : in type_components_schematic.cursor) 
-		return et_libraries.type_component_reference;
+		return et_libraries.type_device_name;
 	-- Returns the component reference where cursor points to.
 	
 	
@@ -584,7 +584,7 @@ package et_kicad is
 	-- Returns the units of the given component.
 
 	function to_component_reference (	
-	-- Converts a string like "IC303" to a composite type_component_reference.
+	-- Converts a string like "IC303" to a composite type_device_name.
 	-- If allow_special_character_in_prefix is given true, the first character
 	-- is allowed to be a special character (like in #FLG01).
 	-- Raises constraint error if prefix contains invalid characters.
@@ -592,7 +592,7 @@ package et_kicad is
 	-- Leading zeroes in the id are removed. R002 becomes R2.
 		text_in			: in string;
 		leading_hash	: in boolean := false)
-		return et_libraries.type_component_reference;
+		return et_libraries.type_device_name;
 
 	
 	procedure write_component_properties (
@@ -637,7 +637,7 @@ package et_kicad is
 
 	-- The components with their ports are collected in a map with the component reference as key:
 	package type_portlists is new ordered_maps (
-		key_type		=> et_libraries.type_component_reference,
+		key_type		=> et_libraries.type_device_name,
 		element_type	=> type_ports.list,
 		"<"				=> et_schematic.compare_reference,
 		"="				=> type_ports."=");
@@ -645,7 +645,7 @@ package et_kicad is
 	-- If component ports are to be listed, 
 	-- we need additionally the component reference like R102 or IC7
 	type type_port_with_reference is new type_port with record
-		reference : et_libraries.type_component_reference;
+		reference : et_libraries.type_device_name;
 	end record;
 
 	function to_string (port : in type_port_with_reference) return string;
@@ -667,7 +667,7 @@ package et_kicad is
 	-- When inquiring the net connected with certain component we use this composite:
 	type type_port_of_module is record
 		module		: type_submodule_name.bounded_string;			-- nucleo_core_3
-		reference	: et_libraries.type_component_reference;		-- N409
+		reference	: et_libraries.type_device_name;		-- N409
 		name		: et_libraries.type_port_name.bounded_string;	-- 2
 	end record;
 	
@@ -1271,7 +1271,7 @@ package et_kicad is
 -- 	-- Returns the purpose of the given component in the given module.
 -- 	-- If no purpose specified for the component, an empty string is returned.						 
 -- 		module_name		: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
--- 		reference		: in et_libraries.type_component_reference; -- X701
+-- 		reference		: in et_libraries.type_device_name; -- X701
 -- 		log_threshold	: in et_string_processing.type_log_level)
 -- 		return et_libraries.type_component_purpose.bounded_string;
 
@@ -1389,7 +1389,7 @@ package et_kicad is
 	-- Detects if a junction is missing where a port is connected with a net.
 	
 	function terminal_count (
-		reference		: in et_libraries.type_component_reference;
+		reference		: in et_libraries.type_device_name;
 		log_threshold	: in et_string_processing.type_log_level)
 		return et_libraries.type_terminal_count;
 	-- Returns the number of terminals of the given component reference.
@@ -1398,7 +1398,7 @@ package et_kicad is
 	function connected_net (
 	-- Returns the name of the net connected with the given component and terminal.
 		module			: in type_submodule_name.bounded_string;	-- nucleo_core
-		reference		: in et_libraries.type_component_reference;	-- IC45
+		reference		: in et_libraries.type_device_name;	-- IC45
 		terminal		: in et_libraries.type_terminal_name.bounded_string; -- E14
 		log_threshold	: in et_string_processing.type_log_level)		
 		return et_general.type_net_name.bounded_string;

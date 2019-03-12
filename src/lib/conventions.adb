@@ -164,7 +164,7 @@ package body conventions is
 -- 		instance			: in et_coordinates.type_submodule_instance;				-- 1
 -- 		purpose				: in et_libraries.type_component_purpose.bounded_string;	-- "PWR CTRL IN"
 -- 		log_threshold		: in type_log_level) 
--- 		return et_libraries.type_component_reference is
+-- 		return et_libraries.type_device_name is
 -- 
 -- 		use et_coordinates;
 -- 		--use et_schematic;
@@ -173,7 +173,7 @@ package body conventions is
 -- 		module_cursor : et_kicad.type_rig.cursor;
 -- 		module_found : boolean := false;
 -- 		connector_found : boolean := false; -- goes true once a suitable connector was found
--- 		ref : et_libraries.type_component_reference; -- the reference to be returned
+-- 		ref : et_libraries.type_device_name; -- the reference to be returned
 -- 
 -- 		procedure locate_component (
 -- 		-- Searches the component list of the module for a connector with the given purpose.
@@ -268,10 +268,10 @@ package body conventions is
 -- 	-- CS: verificaton required
 -- 		module_A		: in et_coordinates.type_submodule_name.bounded_string; -- generic name like nucleo_core
 -- 		instance_A		: in et_coordinates.type_submodule_instance;			-- 1
--- 		reference_A		: in et_libraries.type_component_reference;				-- X46
+-- 		reference_A		: in et_libraries.type_device_name;				-- X46
 -- 		module_B		: in et_coordinates.type_submodule_name.bounded_string;	-- generic name like motor_driver
 -- 		instance_B		: in et_coordinates.type_submodule_instance;			-- 4
--- 		reference_B		: in et_libraries.type_component_reference;				-- X701
+-- 		reference_B		: in et_libraries.type_device_name;				-- X701
 -- 		log_threshold	: in type_log_level) is
 -- 
 -- 		use et_coordinates;
@@ -397,10 +397,10 @@ package body conventions is
 -- 	
 -- 		module_A		: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core
 -- 		instance_A		: in et_coordinates.type_submodule_instance;			-- 1
--- 		reference_A		: in et_libraries.type_component_reference;				-- X1
+-- 		reference_A		: in et_libraries.type_device_name;				-- X1
 -- 		module_B		: in et_coordinates.type_submodule_name.bounded_string;	-- motor_driver
 -- 		instance_B		: in et_coordinates.type_submodule_instance;			-- 4
--- 		reference_B		: in et_libraries.type_component_reference;				-- X701
+-- 		reference_B		: in et_libraries.type_device_name;				-- X701
 -- 		warn_only		: in type_net_comparator_warn_only;						-- warn or abort on difference
 -- 		log_threshold	: in type_log_level) is
 -- 
@@ -422,9 +422,9 @@ package body conventions is
 -- 		instance_left : type_submodule_instance := instance_B; -- 4
 -- 		instance_swap : type_submodule_instance;
 -- 	
--- 		reference_right : type_component_reference := reference_A;	-- X1
--- 		reference_left : type_component_reference := reference_B;	-- X701
--- 		reference_swap : type_component_reference;
+-- 		reference_right : type_device_name := reference_A;	-- X1
+-- 		reference_left : type_device_name := reference_B;	-- X701
+-- 		reference_swap : type_device_name;
 -- 	
 -- 		procedure query_nets_left (
 -- 			module_name : in type_submodule_name.bounded_string;
@@ -678,7 +678,7 @@ package body conventions is
 -- 		module_A, module_B			: type_import_module;
 -- 		instance_A, instance_B		: type_submodule_instance;
 -- 		purpose_A, purpose_B 		: et_libraries.type_component_purpose.bounded_string;
--- 		reference_A, reference_B	: et_libraries.type_component_reference;
+-- 		reference_A, reference_B	: et_libraries.type_device_name;
 -- 	begin
 -- 		log ("validating module interconnections ...", log_threshold);
 -- 		log_indentation_up;
@@ -832,7 +832,7 @@ package body conventions is
 	end category;
 
 	
-	function category (reference : in et_libraries.type_component_reference) return
+	function category (reference : in et_libraries.type_device_name) return
 		type_component_category is
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
@@ -959,7 +959,7 @@ package body conventions is
 -- 	-- NOTE: The given module name is the GENERIC name of the module.
 -- 		module			: in et_coordinates.type_submodule_name.bounded_string;	-- nucleo_core, led_matrix
 -- 		instance		: in et_coordinates.type_submodule_instance;			-- 2
--- 		reference		: in et_libraries.type_component_reference;				-- X701
+-- 		reference		: in et_libraries.type_device_name;				-- X701
 -- 		log_threshold	: in et_string_processing.type_log_level 
 -- 		) return boolean is
 -- 		
@@ -1110,7 +1110,7 @@ package body conventions is
 -- 		connector_found : boolean := false; -- goes true once the opposide connector has been found
 -- 	
 -- 		generic_module_name_opposide : et_coordinates.type_submodule_name.bounded_string; -- pwr_supply
--- 		reference_opposide : et_libraries.type_component_reference; -- X45
+-- 		reference_opposide : et_libraries.type_device_name; -- X45
 -- 
 -- 		use type_module_interconnections;
 -- 		interconnection_cursor : type_module_interconnections.cursor := module_interconnections.first;
@@ -2280,7 +2280,7 @@ package body conventions is
 	--  - If partcode keywords are specified in the configuration file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
 		partcode		: in et_libraries.type_component_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-		reference		: in et_libraries.type_component_reference;						-- R45
+		reference		: in et_libraries.type_device_name;						-- R45
 		packge			: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
 		value 			: in et_libraries.type_component_value.bounded_string;			-- 100R
 		log_threshold	: in et_string_processing.type_log_level)
@@ -3201,7 +3201,7 @@ package body conventions is
 		return result;
 	end prefix_valid;
 	
-	function prefix_valid (reference : in et_libraries.type_component_reference) return boolean is
+	function prefix_valid (reference : in et_libraries.type_device_name) return boolean is
 	-- Tests if the given reference has a valid prefix as specified in the configuration file.
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
