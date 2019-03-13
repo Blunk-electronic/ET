@@ -664,7 +664,7 @@ package et_libraries is
 	
 	-- An external unit has a reference and a swap level.
 	type type_unit_external is record
-		file		: type_symbol_model_file.bounded_string; -- like /my_libraries/NAND.sym
+		file		: type_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym -- CS rename to model
 		position	: type_point := zero; -- the position within the device editor
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
@@ -798,7 +798,7 @@ package et_libraries is
 -- STORAGE
 	
 	package type_symbols is new indefinite_ordered_maps (
-		key_type		=> type_symbol_model_file.bounded_string, -- ../lbr/logic/NAND.sym
+		key_type		=> type_symbol_model_file.bounded_string, -- ../libraries/symbols/NAND.sym
 		"<"				=> type_symbol_model_file."<",
 		element_type	=> type_symbol);
 
@@ -813,7 +813,7 @@ package et_libraries is
 	function to_file_name (name : in string) return type_device_model_file.bounded_string;
 	
 	package type_devices is new indefinite_ordered_maps (
-		key_type 		=> type_device_model_file.bounded_string, -- ../lbr/logic_ttl/7400.dev
+		key_type 		=> type_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
 		"<"				=> type_device_model_file."<",
 		element_type	=> type_device);
 

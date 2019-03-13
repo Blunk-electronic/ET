@@ -174,7 +174,7 @@ package et_schematic is
 
 	-- This is a device as it appears in the schematic.
 	type type_device (appearance : type_appearance_schematic) is record
-		model	: et_libraries.type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
+		model	: et_libraries.type_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
 		units	: type_units.map; -- PWR, A, B, ...
 		
 		case appearance is
@@ -401,13 +401,6 @@ package et_schematic is
 
 
 
--- 	type type_device_position is record
--- 		schematic	: type_unit_positions.map;
--- 		board		: et_pcb_coordinates.type_package_position; -- incl. angle and face
--- 	end record;
-
-	--function position (device : in et_libraries.type_device_name) return type_device_position;
-	
 	
 -- MISC
 	type type_danger is (

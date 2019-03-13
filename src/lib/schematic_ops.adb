@@ -131,13 +131,17 @@ package body schematic_ops is
 
 		return positions;
 	end;
+
 	
 	procedure delete_ports (
-		module			: in type_modules.cursor;
-		device			: in type_device_name;
-		positions		: in type_unit_positions.map;
+		module			: in type_modules.cursor;		-- the module
+		device			: in type_device_name;			-- the device
+		ports			: in type_ports.list := type_ports.empty_list; -- the ports (if empty, all ports of the device will be deleted)
+		positions		: in type_unit_positions.map;	-- the sheet numbers where the units can be found
 		log_threshold	: in type_log_level) is
 
+		dedicated_ports : boolean := false; -- goes true if "ports" contains something.
+		
 		procedure query_nets (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
@@ -169,11 +173,22 @@ package body schematic_ops is
 										use type_ports_component;
 									begin -- query_port
 										if port.reference = device then -- on match just report the port and skip it
+
 											log_indentation_up;
-											log ("delete port " & to_string (port.name), log_threshold + 3);
+											
+											if dedicated_ports then
+												if type_ports.contains (ports, port.name) then
+													log ("delete port " & to_string (port.name), log_threshold + 3);
+												else
+													ports_new.append (port); -- all other ports are collected in ports_new.
+												end if;
+											else
+												log ("delete port " & to_string (port.name), log_threshold + 3);	
+											end if;
+																						
 											log_indentation_down;
 										else
-											ports_new.append (port); -- all other ports a collected in ports_new.
+											ports_new.append (port); -- all other ports are collected in ports_new.
 										end if;
 									end query_port;
 									
@@ -233,6 +248,13 @@ package body schematic_ops is
 		
 	begin -- delete_ports
 		log ("deleting ports in net ...", log_threshold);
+
+		-- If ports are provided, we have to delete exactly those in list "ports".
+		-- The flag dedicated_ports is later required in order to do this job:
+		if type_ports.length (ports) > 0 then
+			dedicated_ports := true;
+		end if;
+		
 		log_indentation_up;
 		
 		update_element (
@@ -276,8 +298,12 @@ package body schematic_ops is
 				-- Delete the targeted device:
 				delete (module.devices, device_name);
 
-				-- Delete the ports of the targeted device from module.nets
-				delete_ports (module_cursor, device_name, positions, log_threshold + 1);
+				-- Delete all ports of the targeted device from module.nets
+				delete_ports (
+					module			=> module_cursor,
+					device			=> device_name,
+					positions		=> positions,
+					log_threshold	=> log_threshold + 1);
 
 				log_indentation_down;				
 			else
@@ -299,6 +325,121 @@ package body schematic_ops is
 
 	end delete_device;
 
+	function ports_of_unit (
+	-- Returns a simple list of port names of the given device and unit.
+		device_cursor	: in et_schematic.type_devices.cursor;
+		unit_name		: in type_unit_name.bounded_string)
+		return type_ports.list is
+
+		ports : type_ports.list; -- to be returned
+		
+		model : type_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
+		device_cursor_lib : et_libraries.type_devices.cursor;
+
+		procedure query_internal_units (
+			model	: in type_device_model_file.bounded_string;
+			device	: in et_libraries.type_device) is
+			use type_units_internal;
+			unit_cursor : type_units_internal.cursor;
+			ports_lib : et_libraries.type_ports.map; -- the port list of the unit in the library model
+
+			procedure query_ports (cursor : in et_libraries.type_ports.cursor) is begin
+				type_ports.append (
+					container	=> ports,
+					new_item	=> et_libraries.type_ports.key (cursor));
+			end;
+				
+		begin -- query_internal_units
+			-- locate the given unit among the internal units
+			unit_cursor := find (device.units_internal, unit_name);
+
+			-- Fetch the ports of the internal unit.
+			-- CS: constraint_error arises here if unit can not be located.
+			ports_lib := element (unit_cursor).symbol.ports;
+
+			-- Transfer the ports to the portlist to be returned:
+			et_libraries.type_ports.iterate (ports_lib, query_ports'access);
+		end query_internal_units;
+
+		procedure query_external_units (
+			model	: in type_device_model_file.bounded_string;
+			device	: in et_libraries.type_device) is
+			use type_units_external;
+			unit_cursor : type_units_external.cursor;
+			sym_model : type_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
+
+			procedure query_symbol (
+			-- Appends the ports names of the external unit to the portlist to 
+			-- be returned.
+				symbol_name	: in type_symbol_model_file.bounded_string;
+				symbol		: in type_symbol ) is
+
+				procedure query_ports (cursor : in et_libraries.type_ports.cursor) is begin
+					type_ports.append (
+						container	=> ports,
+						new_item	=> et_libraries.type_ports.key (cursor));
+				end;
+				
+			begin -- query_symbol
+				et_libraries.type_ports.iterate (symbol.ports, query_ports'access);
+			end query_symbol;
+			
+		begin -- query_external_units
+			-- locate the given unit among the external units
+			unit_cursor := find (device.units_external, unit_name);
+
+			-- Fetch the symbol model file of the external unit.
+			-- CS: constraint_error arises here if unit could not be located.
+			sym_model := element (unit_cursor).file;
+
+			-- Fetch the ports of the external unit.
+			-- CS: constraint_error arises here if symbol model could not be located.
+			type_symbols.query_element (
+				position	=> et_libraries.type_symbols.find (et_libraries.symbols, sym_model),
+				process		=> query_symbol'access);
+			
+		end query_external_units;
+		
+	begin -- ports_of_unit
+
+		-- Fetch the model name of the given device. 
+		model := et_schematic.type_devices.element (device_cursor).model;
+
+		-- Get cursor to device in device library (the model name is the key into the device library).
+		-- CS: constraint_error will arise here if no associated device exits.
+		device_cursor_lib := et_libraries.type_devices.find (et_libraries.devices, model);
+
+		-- Query external units of device (in library). It is most likely that
+		-- the unit is among the external units:
+		et_libraries.type_devices.query_element (
+			position	=> device_cursor_lib,
+			process		=> query_external_units'access);
+
+		-- If unit could not be found among external units then look up the internal units:
+		if type_ports.length (ports) = 0 then
+
+			-- Query internal units of device (in library):
+			et_libraries.type_devices.query_element (
+				position	=> device_cursor_lib,
+				process		=> query_internal_units'access);
+		end if;
+
+		-- If still no ports found, we have a problem:
+		if type_ports.length (ports) = 0 then
+			raise constraint_error;
+		end if;
+		
+		return ports;
+
+		exception
+			when event: others =>
+				log_indentation_reset;
+				log (ada.exceptions.exception_information (event), console => true);
+				raise;
+		
+	end ports_of_unit;
+
+	
 	procedure delete_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
@@ -313,8 +454,11 @@ package body schematic_ops is
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor;
 
-			-- temporarily storage of unit coordinates:
-			position : et_coordinates.type_coordinates;
+			-- temporarily storage of unit coordinates.
+			-- In the end there will be only one unit in this container.
+			positions : type_unit_positions.map;
+
+			ports : type_ports.list;
 
 			procedure query_units (
 				device_name	: in type_device_name;
@@ -326,10 +470,13 @@ package body schematic_ops is
 					-- locate unit by its name
 					unit_cursor := find (device.units, unit_name);
 
-					-- load position
-					position := element (unit_cursor).position;
+					-- load unit position and insert in container "positions"
+					type_unit_positions.insert (
+						container	=> positions, 
+						key			=> unit_name,
+						new_item	=> element (unit_cursor).position);
 
-					-- CS log unit position
+					log_unit_positions (positions, log_threshold + 1); -- there is only one unit
 					
 					-- delete the unit
 					delete (device.units, unit_name);
@@ -338,6 +485,18 @@ package body schematic_ops is
 				end if;
 			end query_units;
 			
+			units_invoked : boolean := true; -- goes false if no unit used anymore
+
+			procedure query_number_of_invoked_units (
+				device_name	: in type_device_name;
+				device		: in et_schematic.type_device) is
+				use et_schematic.type_units;
+			begin
+				if length (device.units) = 0 then
+					units_invoked := false;
+				end if;
+			end query_number_of_invoked_units;
+
 		begin -- query_devices
 			if contains (module.devices, device_name) then
 
@@ -346,18 +505,37 @@ package body schematic_ops is
 				-- in deleting the port names from connected net segments.
 				device_cursor := find (module.devices, device_name); -- the device should be there
 
-				-- locate the unit, load position and then delete unit
+				-- locate the unit, load position and then delete the targeted unit
 				update_element (
 					container	=> module.devices,
 					position	=> device_cursor,
 					process		=> query_units'access);
 				
 				log_indentation_up;
-				-- CS log_unit_position (position, log_threshold + 1);
 
+				-- Fetch the ports of the unit to be deleted.
+				ports := ports_of_unit (device_cursor, unit_name);
+				
 				-- Delete the ports of the targeted unit from module.nets
-				-- CS delete_ports (module_cursor, device_name, positions, log_threshold + 1);
+				delete_ports (
+					module			=> module_cursor,
+					device			=> device_name,
+					ports			=> ports,
+					positions		=> positions, -- there is only one unit 
+					log_threshold	=> log_threshold + 1);
 
+				-- In case no more units are invoked then the device must be
+				-- deleted entirely from module.devices.
+				-- First we query the number of still invoked units. If none invoked,
+				-- the flag units_invoked goes false.
+				query_element (
+					position	=> device_cursor,
+					process		=> query_number_of_invoked_units'access);
+
+				if not units_invoked then
+					delete (module.devices, device_cursor);
+				end if;
+				
 				log_indentation_down;				
 			else
 				device_not_found (device_name);
