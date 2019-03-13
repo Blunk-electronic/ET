@@ -52,6 +52,7 @@ with et_general;				use et_general;
 with et_string_processing;
 with et_project;
 
+with et_coordinates;			use et_coordinates;
 with et_libraries;				use et_libraries;
 with schematic_ops;
 -- with board_ops;
@@ -165,6 +166,8 @@ package body scripting is
 		
 		procedure schematic_cmd (verb : in type_verb_schematic; noun : in type_noun_schematic) is
 			use et_project;
+			use schematic_ops;
+			coordinates : schematic_ops.type_coordinates;
 		begin
 			case verb is
 				when ADD =>
@@ -236,7 +239,27 @@ package body scripting is
 							NULL; -- CS
 
 						when UNIT =>
-							NULL; -- CS
+							coordinates := schematic_ops.to_coordinates (f (7));
+
+							case coordinates is
+								when RELATIVE => NULL; -- CS
+								
+								WHEN ABSOLUTE =>
+									schematic_ops.move_unit_absolute
+										(
+										module_name 	=> module,
+										device_name		=> to_device_name (f (5)),
+										unit_name		=> to_unit_name (f (6)),
+										position 		=> et_coordinates.to_coordinates 
+											(
+											sheet	=> to_sheet_number (f (8)),
+											point	=> set_point (
+														x => to_distance (f (9)),
+														y => to_distance (f (10)))
+											),
+										log_threshold	=> log_threshold + 1
+										);
+							end case;
 							
 						when others => invalid_noun (to_string (noun));
 					end case;

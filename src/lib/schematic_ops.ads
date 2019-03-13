@@ -75,6 +75,19 @@ package schematic_ops is
 		device_cursor	: in et_schematic.type_devices.cursor;
 		unit_name		: in type_unit_name.bounded_string)
 		return type_ports.list;
+
+	type type_coordinates is (RELATIVE, ABSOLUTE);
+
+	function to_string (coordinates : in type_coordinates) return string;
+	function to_coordinates (coordinates : in string) return type_coordinates;
+
+	procedure move_unit_absolute (
+	-- Moves the given unit to an absolute position in schematic.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- A
+		position		: in et_coordinates.type_coordinates;
+		log_threshold	: in type_log_level);
 	
 end schematic_ops;
 

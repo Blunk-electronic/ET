@@ -556,6 +556,136 @@ package body schematic_ops is
 			process		=> query_devices'access);
 
 	end delete_unit;
+
+
+	function to_string (coordinates : in type_coordinates) return string is begin
+		return latin_1.space & to_lower (type_coordinates'image (coordinates));
+	end;
+
+	function to_coordinates (coordinates : in string) return type_coordinates is begin
+		return type_coordinates'value (coordinates);
+
+		exception
+			when event: others =>
+				log (ada.exceptions.exception_information (event), console => true);
+				raise;
+	end;
+
+	procedure move_unit_absolute (
+	-- Moves the given unit to an absolute position in schematic.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- A
+		position		: in et_coordinates.type_coordinates;
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+
+			-- temporarily storage of unit coordinates.
+			-- In the end there will be only one unit in this container.
+			positions : type_unit_positions.map;
+
+			ports : type_ports.list;
+
+			procedure query_units (
+				device_name	: in type_device_name;
+				device		: in out et_schematic.type_device) is
+				use et_schematic.type_units;
+				unit_cursor : et_schematic.type_units.cursor;
+
+				procedure move_unit (
+					unit_name	: in type_unit_name.bounded_string;
+					unit		: in out et_schematic.type_unit) is
+				begin
+					unit.position := position;
+				end move_unit;
+				
+			begin -- query_units
+				if contains (device.units, unit_name) then
+					-- locate unit by its name
+					unit_cursor := find (device.units, unit_name);
+
+					-- load unit position and insert in container "positions"
+					type_unit_positions.insert (
+						container	=> positions, 
+						key			=> unit_name,
+						new_item	=> element (unit_cursor).position);
+
+					-- log old unit position
+					log_unit_positions (positions, log_threshold + 1); -- there is only one unit
+-- 					log ("position before " & 
+-- 						 et_coordinates.to_string (
+-- 							type_ports.first_element (positions)), log_threshold + 1);
+
+					update_element (
+						container	=> device.units,
+						position	=> unit_cursor,
+						process		=> move_unit'access);
+					
+				else
+					unit_not_found (unit_name);
+				end if;
+			end query_units;
+
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+
+				-- Before the actual move, the coordinates of the
+				-- unit must be fetched. These coordinates will later assist
+				-- in deleting the port names from connected net segments.
+				device_cursor := find (module.devices, device_name); -- the device should be there
+
+				-- locate the unit, load current position, set new position
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor,
+					process		=> query_units'access);
+				
+				log_indentation_up;
+
+				-- Fetch the ports of the unit to be moved.
+				ports := ports_of_unit (device_cursor, unit_name);
+				
+				-- Delete the ports of the targeted unit from module.nets
+				delete_ports (
+					module			=> module_cursor,
+					device			=> device_name,
+					ports			=> ports,
+					positions		=> positions, -- there is only one unit 
+					log_threshold	=> log_threshold + 1);
+
+				-- CS update nets
+				
+				log_indentation_down;				
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- move_unit_absolute
+		log ("module " & to_string (module_name) &
+			 " moving " & to_string (device_name) & " unit " & 
+			 to_string (unit_name) & " to" &
+			 et_coordinates.to_string (position => position), log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+	end move_unit_absolute;
+		
+
+
 	
 end schematic_ops;
 	
