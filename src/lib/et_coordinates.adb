@@ -324,11 +324,36 @@ package body et_coordinates is
 	begin
 		return type_sheet_number'value (sheet_number);
 	end to_sheet_number;
+
+	procedure move (
+		position	: in out type_coordinates'class;
+		offset		: in type_coordinates_relative) is
+		use et_string_processing;
+	begin
+		position.x := position.x + offset.x;
+		position.y := position.y + offset.y;
+
+		-- Constraint error will arise here if resulting sheet number is less than 1.
+		position.sheet_number := type_sheet_number (
+				integer (position.sheet_number) + offset.sheet_number);
+	end;
 	
 	function to_coordinates (
 		point 	: in type_point'class;
 		sheet	: in type_sheet_number)
 		return type_coordinates is
+	begin
+		return (
+			x				=> point.x,
+			y				=> point.y,
+			sheet_number	=> sheet
+			);
+	end;
+
+	function to_coordinates_relative (
+		point 	: in type_point'class;
+		sheet	: in integer)
+		return type_coordinates_relative is
 	begin
 		return (
 			x				=> point.x,

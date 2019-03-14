@@ -87,7 +87,9 @@ package schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
-		position		: in et_coordinates.type_coordinates;
+-- 		position		: in et_coordinates.type_coordinates;
+		sheet			: in integer; -- -3/0/2 -- CS use dedicated type
+		point			: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level);
 	
 end schematic_ops;

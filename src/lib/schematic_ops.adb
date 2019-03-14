@@ -577,7 +577,8 @@ package body schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
-		position		: in et_coordinates.type_coordinates;
+		sheet			: in integer; -- -3/0/2
+		point			: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module being modified
@@ -603,14 +604,26 @@ package body schematic_ops is
 				procedure move_unit (
 					unit_name	: in type_unit_name.bounded_string;
 					unit		: in out et_schematic.type_unit) is
+					use et_coordinates;
 				begin
 					case coordinates is
 						when ABSOLUTE =>
-							unit.position := position;
+							unit.position := to_coordinates (point, type_sheet_number (sheet));
 
 						when RELATIVE =>
-							null; -- CS
+							null;
+							move (
+								position	=> unit.position,
+								offset		=> to_coordinates_relative (point, sheet)
+								);
 					end case;
+
+					exception
+						when event: others =>
+							log (message_error & "coordinates invalid !", console => true); -- CS required more details
+							log (ada.exceptions.exception_information (event), console => true);
+							raise;
+					
 				end move_unit;
 				
 			begin -- query_units
@@ -680,14 +693,14 @@ package body schematic_ops is
 			when ABSOLUTE =>
 				log ("module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " to" &
-					et_coordinates.to_string (position => position), log_threshold);
+					to_string (unit_name) & " to sheet " & integer'image (sheet) &
+					et_coordinates.to_string (point), log_threshold);
 
 			when RELATIVE =>
 				log ("module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " by" &
-					et_coordinates.to_string (position => position), log_threshold);
+					to_string (unit_name) & " by " & integer'image (sheet) & " sheet(s)" &
+					et_coordinates.to_string (point), log_threshold);
 		end case;
 		
 		-- locate module

@@ -181,12 +181,23 @@ package et_coordinates is
 	
 
 	type type_coordinates is new type_point with private;
-
+	type type_coordinates_relative is new type_point with private;
+	
+	procedure move (
+		position	: in out type_coordinates'class;
+		offset		: in type_coordinates_relative);
+	
 	function to_coordinates (
 		point 	: in type_point'class;
 		sheet	: in type_sheet_number)
 		return type_coordinates;
 
+
+
+	function to_coordinates_relative (
+		point 	: in type_point'class;
+		sheet	: in integer)
+		return type_coordinates_relative;
 	
 	zero_position : constant type_coordinates;
 
@@ -247,6 +258,10 @@ package et_coordinates is
 			sheet_number	: type_sheet_number := type_sheet_number'first;
 		end record;
 
+		type type_coordinates_relative is new type_point with record
+			sheet_number	: integer := 0;
+		end record;
+		
 		zero_position : constant type_coordinates := (
 			sheet_number	=> type_sheet_number'first,
 			x				=> 0.0,
