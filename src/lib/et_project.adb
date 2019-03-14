@@ -1472,7 +1472,8 @@ package body et_project is
 				section_mark (section_strands, HEADER);
 				while strand_cursor /= type_strands.no_element loop
 					section_mark (section_strand, HEADER);
-					-- CS write strand position
+
+					write (keyword => keyword_position, parameters => position (element (strand_cursor).position));
 
 					query_element (strand_cursor, query_segments'access);
 					
@@ -10294,7 +10295,21 @@ package body et_project is
 
 					when SEC_STRAND =>
 						case stack.parent is
-							when SEC_STRANDS => null; -- nothing to do
+							when SEC_STRANDS =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
+										expect_field_count (line, 7);
+
+										-- extract strand position starting at field 2
+										strand.position := to_position (line, 2);
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+							
 							when others => invalid_section;
 						end case;
 						
