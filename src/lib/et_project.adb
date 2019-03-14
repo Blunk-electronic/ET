@@ -476,7 +476,7 @@ package body et_project is
 			return text; -- a 2d point has just x and y
 		else
 			-- A type_coordinates also has the sheet number:
-			return space & keyword_sheet & to_string (sheet (type_coordinates (pos))) & text;
+			return space & keyword_sheet & to_sheet (sheet (type_coordinates (pos))) & text;
 		end if;
 	end position;
 
@@ -7580,7 +7580,7 @@ package body et_project is
 
 				-- We expect after "sheet" the sheet number
 				if f (line, place) = keyword_sheet then
-					set_sheet (point, to_sheet_number (f (line, place + 1)));
+					set_sheet (point, to_sheet (f (line, place + 1)));
 					
 				-- We expect after the x the corresponding value for x
 				elsif f (line, place) = keyword_pos_x then

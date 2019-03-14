@@ -110,7 +110,7 @@ package body et_kicad_to_native is
 			end if;
 		end board_available;
 		
-		function paper_size_of_schematic_sheet (sheet_number : in et_coordinates.type_sheet_number)
+		function paper_size_of_schematic_sheet (sheet_number : in et_coordinates.type_sheet)
 		-- Returns for a given sheet number the respective paper size.
 			return et_general.type_paper_size is
 
@@ -148,7 +148,7 @@ package body et_kicad_to_native is
 
 			if not sheet_found then
 				log_indentation_reset;
-				log (message_error & "sheet with number" & et_coordinates.to_string (sheet_number) & " not found !");
+				log (message_error & "sheet with number" & et_coordinates.to_sheet (sheet_number) & " not found !");
 				raise constraint_error;
 			end if;
 			
@@ -160,7 +160,7 @@ package body et_kicad_to_native is
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 			use et_coordinates;
-			sheet_number 		: et_coordinates.type_sheet_number;
+			sheet_number 		: et_coordinates.type_sheet;
 			sheet_paper_size	: et_general.type_paper_size;
 			sheet_height		: et_coordinates.type_distance_xy;
 			new_y				: et_coordinates.type_distance_xy;
@@ -190,7 +190,7 @@ package body et_kicad_to_native is
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 			use et_coordinates;
-			sheet_number 		: et_coordinates.type_sheet_number;
+			sheet_number 		: et_coordinates.type_sheet;
 			sheet_paper_size	: et_general.type_paper_size;
 			sheet_height		: et_coordinates.type_distance_xy;
 			new_y				: et_coordinates.type_distance_xy;

@@ -286,7 +286,7 @@ package body kicad_coordinates is
 			when MODULE =>
 				return coordinates_preamble_module
 					& to_string (position.path) & latin_1.space & hierarchy_separator & latin_1.space
-					& to_string (position.sheet_number) 
+					& to_sheet (position.sheet_number) 
 					& latin_1.space & axis_separator & latin_1.space
 					& to_string (distance_x (position))
 					& latin_1.space & axis_separator & latin_1.space
@@ -294,7 +294,7 @@ package body kicad_coordinates is
 				
 			when SHEET =>
 				return coordinates_preamble_sheet
-					& to_string (position.sheet_number) 
+					& to_sheet (position.sheet_number) 
 					& latin_1.space & axis_separator & latin_1.space
 					& to_string (distance_x (position))
 					& latin_1.space & axis_separator & latin_1.space
@@ -309,7 +309,7 @@ package body kicad_coordinates is
 		end case;
 	end to_string;
 
-	function sheet (position : in type_coordinates) return type_sheet_number is begin
+	function sheet (position : in type_coordinates) return type_sheet is begin
 		return position.sheet_number;
 	end sheet;
 
@@ -328,7 +328,7 @@ package body kicad_coordinates is
 		return same;
 	end same_path_and_sheet;
 	
-	procedure set_sheet (position : in out type_coordinates; sheet : in type_sheet_number) is
+	procedure set_sheet (position : in out type_coordinates; sheet : in type_sheet) is
 	-- Sets the sheet number in given position.
 	begin
 		position.sheet_number := sheet;

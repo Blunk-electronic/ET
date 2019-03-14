@@ -312,12 +312,12 @@ package body et_coordinates is
 		return type_distance (dis);
 	end distance;
 	
-	function to_string (sheet_number : in type_sheet_number) return string is begin
-		return type_sheet_number'image (sheet_number);
+	function to_sheet (sheet : in type_sheet) return string is begin
+		return type_sheet'image (sheet);
 	end;
 
-	function to_sheet_number (sheet_number : in string) return type_sheet_number is	begin
-		return type_sheet_number'value (sheet_number);
+	function to_sheet (sheet : in string) return type_sheet is begin
+		return type_sheet'value (sheet);
 	end;
 
 	function to_sheet_relative (sheet : in type_sheet_relative) return string is begin
@@ -338,19 +338,18 @@ package body et_coordinates is
 		position.y := position.y + offset.y;
 
 		-- Constraint error will arise here if resulting sheet number is less than 1.
-		position.sheet_number := type_sheet_number (
-				type_sheet_relative (position.sheet_number) + offset.sheet_number);
+		position.sheet := type_sheet (type_sheet_relative (position.sheet) + offset.sheet);
 	end;
 	
 	function to_coordinates (
 		point 	: in type_point'class;
-		sheet	: in type_sheet_number)
+		sheet	: in type_sheet)
 		return type_coordinates is
 	begin
 		return (
-			x				=> point.x,
-			y				=> point.y,
-			sheet_number	=> sheet
+			x		=> point.x,
+			y		=> point.y,
+			sheet	=> sheet
 			);
 	end;
 
@@ -360,9 +359,9 @@ package body et_coordinates is
 		return type_coordinates_relative is
 	begin
 		return (
-			x				=> point.x,
-			y				=> point.y,
-			sheet_number	=> sheet
+			x		=> point.x,
+			y		=> point.y,
+			sheet	=> sheet
 			);
 	end;
 	
@@ -370,22 +369,22 @@ package body et_coordinates is
 		use et_string_processing;
 	begin
 		return coordinates_preamble_sheet
-				& to_string (position.sheet_number) 
+				& to_sheet (position.sheet) 
 				& latin_1.space & axis_separator & latin_1.space
 				& to_string (distance_x (position))
 				& latin_1.space & axis_separator & latin_1.space
 				& to_string (distance_y (position));
 	end to_string;
 
-	function sheet (position : in type_coordinates) return type_sheet_number is
+	function sheet (position : in type_coordinates) return type_sheet is
 	begin
-		return position.sheet_number;
+		return position.sheet;
 	end sheet;
 
-	procedure set_sheet (position : in out type_coordinates; sheet : in type_sheet_number) is
+	procedure set_sheet (position : in out type_coordinates; sheet : in type_sheet) is
 	-- Sets the sheet number in given position.
 	begin
-		position.sheet_number := sheet;
+		position.sheet := sheet;
 	end set_sheet;
 
 	function paper_dimension (

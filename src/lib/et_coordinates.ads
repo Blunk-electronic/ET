@@ -168,10 +168,10 @@ package et_coordinates is
 	-- Sheets
 	sheet_count_max : constant positive := 100;
 	type type_sheet_relative is new integer range -(sheet_count_max) .. sheet_count_max;
-	subtype type_sheet_number is type_sheet_relative range 1 .. type_sheet_relative'last;
+	subtype type_sheet is type_sheet_relative range 1 .. type_sheet_relative'last;
 	
-	function to_string (sheet_number : in type_sheet_number) return string;
-	function to_sheet_number (sheet_number : in string) return type_sheet_number;
+	function to_sheet (sheet : in type_sheet) return string;
+	function to_sheet (sheet : in string) return type_sheet;
 
 	function to_sheet_relative (sheet : in type_sheet_relative) return string;
 	function to_sheet_relative (sheet : in string) return type_sheet_relative;
@@ -190,7 +190,7 @@ package et_coordinates is
 	
 	function to_coordinates (
 		point 	: in type_point'class;
-		sheet	: in type_sheet_number)
+		sheet	: in type_sheet)
 		return type_coordinates;
 
 
@@ -225,9 +225,9 @@ package et_coordinates is
 
 	function to_string (position : in type_coordinates) return string;
 	
-	function sheet (position : in type_coordinates) return type_sheet_number;
+	function sheet (position : in type_coordinates) return type_sheet;
 
-	procedure set_sheet (position : in out type_coordinates; sheet : in type_sheet_number);
+	procedure set_sheet (position : in out type_coordinates; sheet : in type_sheet);
 	-- Sets the sheet number in given position.
 
 	-- PAPER SIZES
@@ -256,17 +256,17 @@ package et_coordinates is
 
 	
 		type type_coordinates is new type_point with record
-			sheet_number	: type_sheet_number := type_sheet_number'first;
+			sheet : type_sheet := type_sheet'first;
 		end record;
 
 		type type_coordinates_relative is new type_point with record
-			sheet_number	: type_sheet_relative := 0;
+			sheet : type_sheet_relative := 0;
 		end record;
 		
 		zero_position : constant type_coordinates := (
-			sheet_number	=> type_sheet_number'first,
-			x				=> 0.0,
-			y				=> 0.0 );
+			sheet	=> type_sheet'first,
+			x		=> 0.0,
+			y		=> 0.0 );
 		
 end et_coordinates;
 

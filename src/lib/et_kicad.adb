@@ -4214,7 +4214,7 @@ package body et_kicad is
 
 		-- The sheet number is incremented each time a sheet has been read.
 		-- NOTE: The sheet number written in the schematic file header (a line like "Sheet 1 7") has no meaning.
-		sheet_number : et_coordinates.type_sheet_number := 1;
+		sheet_number : et_coordinates.type_sheet := 1;
 
 		package stack_of_sheet_lists is new et_general.stack_lifo (max => 10, item => type_hierarchic_sheet_file_names_extended);
         use stack_of_sheet_lists;
@@ -5412,7 +5412,7 @@ package body et_kicad is
 			-- This is the total number of sheets as it is given in the sheet header. 
 			-- A line like "Sheet 1 7" gives the sheet number (1), which is meaningless,
 			-- and the total number of sheet of the design (7).
-			sheet_count_total : type_sheet_number;
+			sheet_count_total : type_sheet;
 
 			wild_simple_labels	: type_simple_labels.list;
             wild_tag_labels 	: type_tag_labels.list;
@@ -6605,10 +6605,10 @@ package body et_kicad is
 					-- The sheet number written here is meaningless:
 					--sheet_number_current := to_sheet_number (field (et_kicad.line,2));
 					-- Instead we log the global sheet_number:
-					log ("sheet number" & to_string (sheet_number), log_threshold + 1);
+					log ("sheet number" & to_sheet (sheet_number), log_threshold + 1);
 
 					-- Get the total number of sheet of this design. 
-					sheet_count_total := to_sheet_number (et_string_processing.field (et_kicad.line,3));
+					sheet_count_total := to_sheet (et_string_processing.field (et_kicad.line,3));
 					
 					-- CS: sheet_count_total must not change from sheet to sheet. Check required.
 					if sheet_count_total > 1 then
