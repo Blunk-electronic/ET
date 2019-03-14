@@ -133,10 +133,10 @@ package body schematic_ops is
 	end;
 	
 	procedure delete_ports (
-		module	: in type_modules.cursor;		-- the module
-		device	: in type_device_name;			-- the device
-		ports	: in et_libraries.type_ports.map := et_libraries.type_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
-		sheets	: in type_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
+		module			: in type_modules.cursor;		-- the module
+		device			: in type_device_name;			-- the device
+		ports			: in et_libraries.type_ports.map := et_libraries.type_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
+		sheets			: in type_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
 		log_threshold	: in type_log_level) is
 
 		dedicated_ports : boolean := false; -- goes true if "ports" contains something.
@@ -246,7 +246,7 @@ package body schematic_ops is
 		end query_nets;
 		
 	begin -- delete_ports
-		log ("deleting ports in net ...", log_threshold);
+		log ("deleting ports in nets ...", log_threshold);
 
 		-- If ports are provided, we have to delete exactly those in list "ports".
 		-- The flag dedicated_ports is later required in order to do this job:
@@ -551,12 +551,96 @@ package body schematic_ops is
 				raise;
 	end;
 
-	procedure offset_ports (
-		ports		: in out et_libraries.type_ports.map;
-		position	: in et_coordinates.type_coordinates) is
-	begin
-		null;
-	end;
+	procedure move_ports (
+	-- Moves the given unit ports by given offset.
+		ports	: in out et_libraries.type_ports.map; -- the portlist
+		offset	: in et_coordinates.type_coordinates) -- the offset (only x/y matters)
+		is
+		use et_libraries.type_ports;
+
+		procedure move (
+			name	: in type_port_name.bounded_string;
+			port	: in out type_port) is
+		begin
+			move (port.position, offset);
+		end;
+
+		procedure query_port (cursor : in type_ports.cursor) is begin
+			update_element (
+				container	=> ports,
+				position	=> cursor,
+				process		=> move'access);
+		end;
+			
+	begin -- offset_ports
+		iterate (ports, query_port'access);
+	end move_ports;
+
+	procedure insert_ports (
+		module			: in type_modules.cursor;		-- the module
+		device			: in type_device_name;			-- the device
+		ports			: in et_libraries.type_ports.map; -- the unit ports
+		sheet			: in type_sheet;	-- the sheet to look at
+		log_threshold	: in type_log_level) is
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			procedure query_net (net_cursor : in type_nets.cursor) is
+				use type_nets;
+
+				procedure query_strands (
+					net_name	: in type_net_name.bounded_string;
+					net			: in out type_net) is
+					use type_strands;
+
+					procedure query_strand (strand_cursor : in type_strands.cursor) is
+						use et_coordinates;
+					begin -- query_strand
+						if et_coordinates.sheet (element (strand_cursor).position) = sheet then
+							log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+
+							log_indentation_up;
+							log ("strand " & to_string (position => element (strand_cursor).position),
+								log_threshold + 1);
+
+-- 						update_element (
+-- 							container	=> net.strands,
+-- 							position	=> strand_cursor,
+-- 							process		=> query_segments'access);
+						
+							log_indentation_down;
+						end if;
+					end query_strand;
+					
+				begin -- query_strands
+					iterate (net.strands, query_strand'access);
+				end query_strands;
+				
+			begin -- query_net
+				update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_strands'access);
+			end query_net;				
+			
+		begin -- query_nets
+			type_nets.iterate (module.nets, query_net'access);
+		end query_nets;
+
+	begin --insert_ports
+		log ("inserting ports in nets on sheet" & 
+			 to_sheet (sheet) & " ...", log_threshold);
+		log_indentation_up;
+		
+		update_element (
+			container	=> modules,
+			position	=> module,
+			process		=> query_nets'access);
+
+		log_indentation_down;
+	end insert_ports;
 	
 	procedure move_unit (
 	-- Moves the given unit within the schematic.
@@ -578,7 +662,7 @@ package body schematic_ops is
 
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
-			position_of_unit : type_unit_positions.map;
+			position_of_unit_old : type_unit_positions.map;
 
 			position_of_unit_new : et_coordinates.type_coordinates;
 
@@ -606,6 +690,7 @@ package body schematic_ops is
 								);
 					end case;
 
+					-- store new unit position
 					position_of_unit_new := unit.position;
 					
 					exception
@@ -623,12 +708,12 @@ package body schematic_ops is
 
 					-- load unit position and insert in container "positions"
 					type_unit_positions.insert (
-						container	=> position_of_unit, 
+						container	=> position_of_unit_old, 
 						key			=> unit_name,
 						new_item	=> element (unit_cursor).position);
 
 					-- log old unit position
-					log_unit_positions (position_of_unit, log_threshold + 1); -- there is only one unit
+					log_unit_positions (position_of_unit_old, log_threshold + 1); -- there is only one unit
 -- 					log ("position before " & 
 -- 						 et_coordinates.to_string (
 -- 							type_ports.first_element (positions)), log_threshold + 1);
@@ -667,12 +752,19 @@ package body schematic_ops is
 					module			=> module_cursor,
 					device			=> device_name,
 					ports			=> ports,
-					sheets			=> position_of_unit,
+					sheets			=> position_of_unit_old,
 					log_threshold	=> log_threshold + 1);
 
-				-- CS update nets
-				-- Calculate the new positions of the ports:
-				offset_ports (ports, position_of_unit_new);
+				-- Calculate the new positions of the unit ports:
+				move_ports (ports, position_of_unit_new);
+
+				-- Insert the new unit ports in the nets (type_module.nets):
+				insert_ports (
+					module			=> module_cursor,
+					device			=> device_name,
+					ports			=> ports,
+					sheet			=> et_coordinates.sheet (position_of_unit_new),
+					log_threshold	=> log_threshold + 1);
 				
 				log_indentation_down;				
 			else
