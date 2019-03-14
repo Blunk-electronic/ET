@@ -245,14 +245,6 @@ package body scripting is
 								device_name		=> to_device_name (f (5)),
 								unit_name		=> to_unit_name (f (6)),
 								coordinates		=> schematic_ops.to_coordinates (f (7)),
--- 								position 		=> et_coordinates.to_coordinates 
--- 									(
--- 									sheet	=> to_sheet_number (f (8)),
--- 									point	=> set_point (
--- 												x => to_distance (f (9)),
--- 												y => to_distance (f (10)))
--- 									),
-
 								sheet			=> to_sheet_relative (f (8)),
 								point			=> et_coordinates.type_point (set_point (
 													x => to_distance (f (9)),

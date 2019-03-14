@@ -692,7 +692,7 @@ package body schematic_ops is
 			when ABSOLUTE =>
 				log ("module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " to sheet " & to_sheet (sheet) &
+					to_string (unit_name) & " to sheet" & to_sheet (sheet) &
 					et_coordinates.to_string (point), log_threshold);
 
 			when RELATIVE =>
