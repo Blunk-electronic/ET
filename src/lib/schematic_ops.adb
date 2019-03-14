@@ -135,7 +135,8 @@ package body schematic_ops is
 	procedure delete_ports (
 		module	: in type_modules.cursor;		-- the module
 		device	: in type_device_name;			-- the device
-		ports	: in type_ports.list := type_ports.empty_list; -- the ports (if empty, all ports of the device will be deleted)
+		--ports	: in type_ports.list := type_ports.empty_list; -- the ports (if empty, all ports of the device will be deleted)
+		ports	: in et_libraries.type_ports.map := et_libraries.type_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
 		sheets	: in type_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
 		log_threshold	: in type_log_level) is
 
@@ -176,7 +177,7 @@ package body schematic_ops is
 											log_indentation_up;
 											
 											if dedicated_ports then
-												if type_ports.contains (ports, port.name) then
+												if et_libraries.type_ports.contains (ports, port.name) then
 													log ("delete port " & to_string (port.name), log_threshold + 3);
 												else
 													ports_new.append (port); -- all other ports are collected in ports_new.
@@ -250,7 +251,7 @@ package body schematic_ops is
 
 		-- If ports are provided, we have to delete exactly those in list "ports".
 		-- The flag dedicated_ports is later required in order to do this job:
-		if type_ports.length (ports) > 0 then
+		if et_libraries.type_ports.length (ports) > 0 then
 			dedicated_ports := true;
 		end if;
 		
@@ -325,12 +326,12 @@ package body schematic_ops is
 	end delete_device;
 
 	function ports_of_unit (
-	-- Returns a simple list of port names of the given device and unit.
+	-- Returns a map of ports of the given device and unit.
 		device_cursor	: in et_schematic.type_devices.cursor;
 		unit_name		: in type_unit_name.bounded_string)
-		return type_ports.list is
+		return et_libraries.type_ports.map is
 
-		ports : type_ports.list; -- to be returned
+		ports : et_libraries.type_ports.map; -- to be returned
 		
 		model : type_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
 		device_cursor_lib : et_libraries.type_devices.cursor;
@@ -340,24 +341,14 @@ package body schematic_ops is
 			device	: in et_libraries.type_device) is
 			use type_units_internal;
 			unit_cursor : type_units_internal.cursor;
-			ports_lib : et_libraries.type_ports.map; -- the port list of the unit in the library model
-
-			procedure query_ports (cursor : in et_libraries.type_ports.cursor) is begin
-				type_ports.append (
-					container	=> ports,
-					new_item	=> et_libraries.type_ports.key (cursor));
-			end;
-				
 		begin -- query_internal_units
 			-- locate the given unit among the internal units
 			unit_cursor := find (device.units_internal, unit_name);
 
 			-- Fetch the ports of the internal unit.
+			-- Transfer the ports to the portlist to be returned:			
 			-- CS: constraint_error arises here if unit can not be located.
-			ports_lib := element (unit_cursor).symbol.ports;
-
-			-- Transfer the ports to the portlist to be returned:
-			et_libraries.type_ports.iterate (ports_lib, query_ports'access);
+			ports := element (unit_cursor).symbol.ports;
 		end query_internal_units;
 
 		procedure query_external_units (
@@ -372,15 +363,8 @@ package body schematic_ops is
 			-- be returned.
 				symbol_name	: in type_symbol_model_file.bounded_string;
 				symbol		: in type_symbol ) is
-
-				procedure query_ports (cursor : in et_libraries.type_ports.cursor) is begin
-					type_ports.append (
-						container	=> ports,
-						new_item	=> et_libraries.type_ports.key (cursor));
-				end;
-				
 			begin -- query_symbol
-				et_libraries.type_ports.iterate (symbol.ports, query_ports'access);
+				ports := symbol.ports;
 			end query_symbol;
 			
 		begin -- query_external_units
@@ -415,7 +399,7 @@ package body schematic_ops is
 			process		=> query_external_units'access);
 
 		-- If unit could not be found among external units then look up the internal units:
-		if type_ports.length (ports) = 0 then
+		if et_libraries.type_ports.length (ports) = 0 then
 
 			-- Query internal units of device (in library):
 			et_libraries.type_devices.query_element (
@@ -424,7 +408,7 @@ package body schematic_ops is
 		end if;
 
 		-- If still no ports found, we have a problem:
-		if type_ports.length (ports) = 0 then
+		if et_libraries.type_ports.length (ports) = 0 then
 			raise constraint_error;
 		end if;
 		
@@ -437,7 +421,6 @@ package body schematic_ops is
 				raise;
 		
 	end ports_of_unit;
-
 	
 	procedure delete_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -457,7 +440,7 @@ package body schematic_ops is
 			-- There will be only one unit in this container.
 			position_of_unit : type_unit_positions.map;
 
-			ports : type_ports.list;
+			ports : et_libraries.type_ports.map;
 
 			procedure query_units (
 				device_name	: in type_device_name;
@@ -556,7 +539,6 @@ package body schematic_ops is
 
 	end delete_unit;
 
-
 	function to_string (coordinates : in type_coordinates) return string is begin
 		return latin_1.space & to_lower (type_coordinates'image (coordinates));
 	end;
@@ -592,7 +574,7 @@ package body schematic_ops is
 			-- There will be only one unit in this container.
 			position_of_unit : type_unit_positions.map;
 
-			ports : type_ports.list;
+			ports : et_libraries.type_ports.map;
 
 			procedure query_units (
 				device_name	: in type_device_name;

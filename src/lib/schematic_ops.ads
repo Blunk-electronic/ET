@@ -67,14 +67,14 @@ package schematic_ops is
 		unit_name		: in type_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level);
 
-	package type_ports is new doubly_linked_lists (
-		element_type	=> et_libraries.type_port_name.bounded_string,
-		"="				=> et_libraries.type_port_name."=");
+-- 	package type_ports is new doubly_linked_lists (
+-- 		element_type	=> et_libraries.type_port_name.bounded_string,
+-- 		"="				=> et_libraries.type_port_name."=");
 
-	function ports_of_unit (
-		device_cursor	: in et_schematic.type_devices.cursor;
-		unit_name		: in type_unit_name.bounded_string)
-		return type_ports.list;
+-- 	function ports_of_unit (
+-- 		device_cursor	: in et_schematic.type_devices.cursor;
+-- 		unit_name		: in type_unit_name.bounded_string)
+-- 		return type_ports.list;
 
 	type type_coordinates is (RELATIVE, ABSOLUTE);
 
