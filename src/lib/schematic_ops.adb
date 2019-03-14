@@ -577,7 +577,7 @@ package body schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
-		sheet			: in integer; -- -3/0/2
+		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
@@ -611,7 +611,6 @@ package body schematic_ops is
 							unit.position := to_coordinates (point, type_sheet_number (sheet));
 
 						when RELATIVE =>
-							null;
 							move (
 								position	=> unit.position,
 								offset		=> to_coordinates_relative (point, sheet)
@@ -693,13 +692,13 @@ package body schematic_ops is
 			when ABSOLUTE =>
 				log ("module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " to sheet " & integer'image (sheet) &
+					to_string (unit_name) & " to sheet " & to_string (sheet) &
 					et_coordinates.to_string (point), log_threshold);
 
 			when RELATIVE =>
 				log ("module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " by " & integer'image (sheet) & " sheet(s)" &
+					to_string (unit_name) & " by " & to_sheet_relative (sheet) & " sheet(s)" &
 					et_coordinates.to_string (point), log_threshold);
 		end case;
 		

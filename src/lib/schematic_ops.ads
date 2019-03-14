@@ -48,7 +48,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 -- with et_general;
-with et_coordinates;			--use et_coordinates;
+with et_coordinates;			use et_coordinates;
 with et_libraries;				use et_libraries;
 with et_string_processing;		use et_string_processing;
 with et_schematic;				use et_schematic;
@@ -88,7 +88,7 @@ package schematic_ops is
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 -- 		position		: in et_coordinates.type_coordinates;
-		sheet			: in integer; -- -3/0/2 -- CS use dedicated type
+		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level);
 	

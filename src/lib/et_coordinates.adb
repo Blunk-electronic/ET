@@ -312,19 +312,23 @@ package body et_coordinates is
 		return type_distance (dis);
 	end distance;
 	
-	function to_string (sheet_number : in type_sheet_number) return string is
-	-- Returns a sheet number as string.
-	begin
-		--return trim (type_sheet_number'image (sheet_number), left);
+	function to_string (sheet_number : in type_sheet_number) return string is begin
 		return type_sheet_number'image (sheet_number);
-	end to_string;
+	end;
 
-	function to_sheet_number (sheet_number : in string) return type_sheet_number is
-	-- Converts a string to type_sheet_number
-	begin
+	function to_sheet_number (sheet_number : in string) return type_sheet_number is	begin
 		return type_sheet_number'value (sheet_number);
-	end to_sheet_number;
+	end;
 
+	function to_sheet_relative (sheet : in type_sheet_relative) return string is begin
+		return type_sheet_relative'image (sheet);
+	end;
+	
+	function to_sheet_relative (sheet : in string) return type_sheet_relative is begin
+		return type_sheet_relative'value (sheet);
+	end;
+
+	
 	procedure move (
 		position	: in out type_coordinates'class;
 		offset		: in type_coordinates_relative) is
@@ -335,7 +339,7 @@ package body et_coordinates is
 
 		-- Constraint error will arise here if resulting sheet number is less than 1.
 		position.sheet_number := type_sheet_number (
-				integer (position.sheet_number) + offset.sheet_number);
+				type_sheet_relative (position.sheet_number) + offset.sheet_number);
 	end;
 	
 	function to_coordinates (
@@ -352,7 +356,7 @@ package body et_coordinates is
 
 	function to_coordinates_relative (
 		point 	: in type_point'class;
-		sheet	: in integer)
+		sheet	: in type_sheet_relative)
 		return type_coordinates_relative is
 	begin
 		return (

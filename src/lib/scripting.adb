@@ -253,7 +253,7 @@ package body scripting is
 -- 												y => to_distance (f (10)))
 -- 									),
 
-								sheet			=> integer'value (f (8)),
+								sheet			=> to_sheet_relative (f (8)),
 								point			=> et_coordinates.type_point (set_point (
 													x => to_distance (f (9)),
 													y => to_distance (f (10)))),

@@ -167,13 +167,14 @@ package et_coordinates is
 
 	-- Sheets
 	sheet_count_max : constant positive := 100;
-	type type_sheet_number is new positive range 1 .. sheet_count_max;
-
+	type type_sheet_relative is new integer range -(sheet_count_max) .. sheet_count_max;
+	subtype type_sheet_number is type_sheet_relative range 1 .. type_sheet_relative'last;
+	
 	function to_string (sheet_number : in type_sheet_number) return string;
-	-- Returns a sheet number as string.
-
 	function to_sheet_number (sheet_number : in string) return type_sheet_number;
-	-- Converts a string to type_sheet_number
+
+	function to_sheet_relative (sheet : in type_sheet_relative) return string;
+	function to_sheet_relative (sheet : in string) return type_sheet_relative;
 	
 	-- The whole schematic may have a total of x pages.
 	schematic_page_count_max : constant positive := 100;
@@ -196,7 +197,7 @@ package et_coordinates is
 
 	function to_coordinates_relative (
 		point 	: in type_point'class;
-		sheet	: in integer)
+		sheet	: in type_sheet_relative)
 		return type_coordinates_relative;
 	
 	zero_position : constant type_coordinates;
@@ -259,7 +260,7 @@ package et_coordinates is
 		end record;
 
 		type type_coordinates_relative is new type_point with record
-			sheet_number	: integer := 0;
+			sheet_number	: type_sheet_relative := 0;
 		end record;
 		
 		zero_position : constant type_coordinates := (
