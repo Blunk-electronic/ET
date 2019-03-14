@@ -298,8 +298,8 @@ package et_schematic is
 
 	
 	type type_net_segment is record
-		coordinates_start 	: et_coordinates.type_coordinates;
-		coordinates_end   	: et_coordinates.type_coordinates; -- CS et_coordinates.type_point ?
+		coordinates_start 	: et_coordinates.type_point;
+		coordinates_end   	: et_coordinates.type_point;
 		labels				: type_net_labels.list;
 		junctions			: type_junctions.list;
 		ports_devices		: type_ports_component.list;

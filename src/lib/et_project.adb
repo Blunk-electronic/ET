@@ -10378,13 +10378,13 @@ package body et_project is
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_start then -- "start x 3 y 4"
-										expect_field_count (line, 7);
+										expect_field_count (line, 5);
 
 										-- extract start position starting at field 2
 										net_segment.coordinates_start := to_position (line, from => 2);
 										
 									elsif kw = keyword_end then -- "end x 6 y 4"
-										expect_field_count (line, 7);
+										expect_field_count (line, 5);
 
 										-- extract end position starting at field 2
 										net_segment.coordinates_end := to_position (line, from => 2);

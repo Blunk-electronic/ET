@@ -2885,8 +2885,8 @@ package body et_kicad_to_native is
 							log_threshold + 4);
 						
 						-- get coordinates from current kicad net segment:
-						net_segment_native.coordinates_start := to_native_coordinates (element (kicad_segment_cursor).coordinates_start);
-						net_segment_native.coordinates_end   := to_native_coordinates (element (kicad_segment_cursor).coordinates_end);
+						net_segment_native.coordinates_start := et_coordinates.type_point (element (kicad_segment_cursor).coordinates_start);
+						net_segment_native.coordinates_end   := et_coordinates.type_point (element (kicad_segment_cursor).coordinates_end);
 
 						-- get labels from current kicad net segment
 						net_segment_native.labels := tag_and_simple_labels (element (kicad_segment_cursor));

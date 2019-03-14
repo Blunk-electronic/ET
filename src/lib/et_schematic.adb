@@ -131,7 +131,8 @@ package body et_schematic is
 		-- are on the same sheet.)
 		strand.position := to_coordinates (
 			point	=> point_1,
-			sheet	=> sheet (last_element (strand.segments).coordinates_start)
+			--sheet	=> sheet (last_element (strand.segments).coordinates_start)
+			sheet	=> 1 -- CS
 			);
 		
 	end set_strand_position;
