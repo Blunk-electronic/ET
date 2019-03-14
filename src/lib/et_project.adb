@@ -9238,8 +9238,24 @@ package body et_project is
 						case stack.parent is
 							when SEC_STRANDS =>
 
-								-- calculate the lowest x/y position and set sheet number of the strand
-								et_schematic.set_strand_position (strand);
+								declare
+									use et_coordinates;
+									position_found_in_module_file : type_point := type_point (strand.position);
+								begin
+									-- Calculate the lowest x/y position and set sheet number of the strand
+									-- and overwrite previous x/y position. 
+									-- So the calculated position takes precedence over the position found in 
+									-- the module file.
+									et_schematic.set_strand_position (strand);
+
+									-- Issue warning about this mismatch:
+									if type_point (strand.position) /= position_found_in_module_file then
+										log (message_warning & affected_line (line) & "Net " &
+											et_general.to_string (net_name) & ": Found invalid lowest x/y position of strand !" &
+											 " Will be overridden by calculated position" &
+											 to_string (position => strand.position));
+									end if;
+								end;
 								
 								-- insert strand in collection of strands
 								et_schematic.type_strands.append (

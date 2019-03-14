@@ -94,7 +94,8 @@ package body et_schematic is
 	end to_string;
 	
 	procedure set_strand_position (strand : in out type_strand) is
-	-- Calculates and sets the lowest x/y position and the sheet number of the given strand.	
+	-- Calculates and sets the lowest x/y position of the given strand.
+	-- Leaves the sheet of the strand untouched.
 		point_1, point_2 : et_coordinates.type_point;
 	
 		use type_net_segments;
@@ -126,15 +127,11 @@ package body et_schematic is
 		-- loop through segments and keep the nearest point to origin
 		iterate (strand.segments, query_strand'access);
 
-		-- build and assign the final strand position from point_1 and the sheet number
-		-- of the latest net segment. (NOTE: It does not matter which segment because all the segments
-		-- are on the same sheet.)
-		strand.position := to_coordinates (
-			point	=> point_1,
-			--sheet	=> sheet (last_element (strand.segments).coordinates_start)
-			sheet	=> 1 -- CS
-			);
-		
+		-- build and assign the final strand position from point_1
+		set_xy (
+			point	 => strand.position,
+			position => point_1);
+
 	end set_strand_position;
 	
 	function to_string (net_scope : in type_net_scope) return string is
