@@ -109,7 +109,7 @@ package body schematic_ops is
 	end;
 
 	function positions_of_units (
-	-- Collects the positions of units (in schematic) of the given device and returns
+	-- Collects the positions of all units (in schematic) of the given device and returns
 	-- them in a list.
 		device_cursor : in et_schematic.type_devices.cursor) 
 		return type_unit_positions.map is
@@ -131,13 +131,12 @@ package body schematic_ops is
 
 		return positions;
 	end;
-
 	
 	procedure delete_ports (
-		module			: in type_modules.cursor;		-- the module
-		device			: in type_device_name;			-- the device
-		ports			: in type_ports.list := type_ports.empty_list; -- the ports (if empty, all ports of the device will be deleted)
-		positions		: in type_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
+		module	: in type_modules.cursor;		-- the module
+		device	: in type_device_name;			-- the device
+		ports	: in type_ports.list := type_ports.empty_list; -- the ports (if empty, all ports of the device will be deleted)
+		sheets	: in type_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
 		log_threshold	: in type_log_level) is
 
 		dedicated_ports : boolean := false; -- goes true if "ports" contains something.
@@ -279,7 +278,7 @@ package body schematic_ops is
 			device_cursor : et_schematic.type_devices.cursor;
 
 			-- temporarily storage of unit coordinates:
-			positions : type_unit_positions.map;
+			position_of_units : type_unit_positions.map;
 			
 		begin -- query_devices
 			if contains (module.devices, device_name) then
@@ -288,10 +287,10 @@ package body schematic_ops is
 				-- units must be fetched. These coordinates will later assist
 				-- in deleting the port names from connected net segments.
 				device_cursor := find (module.devices, device_name); -- the device should be there
-				positions := positions_of_units (device_cursor);
+				position_of_units := positions_of_units (device_cursor);
 
 				log_indentation_up;
-				log_unit_positions (positions, log_threshold + 1);
+				log_unit_positions (position_of_units, log_threshold + 1);
 
 				log_package_position (device_cursor, log_threshold + 1);
 
@@ -302,7 +301,7 @@ package body schematic_ops is
 				delete_ports (
 					module			=> module_cursor,
 					device			=> device_name,
-					positions		=> positions,
+					sheets			=> position_of_units, -- the sheets to look at
 					log_threshold	=> log_threshold + 1);
 
 				log_indentation_down;				
@@ -406,7 +405,7 @@ package body schematic_ops is
 		model := et_schematic.type_devices.element (device_cursor).model;
 
 		-- Get cursor to device in device library (the model name is the key into the device library).
-		-- CS: constraint_error will arise here if no associated device exits.
+		-- CS: constraint_error will arise here if no associated device exists.
 		device_cursor_lib := et_libraries.type_devices.find (et_libraries.devices, model);
 
 		-- Query external units of device (in library). It is most likely that
@@ -455,8 +454,8 @@ package body schematic_ops is
 			device_cursor : et_schematic.type_devices.cursor;
 
 			-- temporarily storage of unit coordinates.
-			-- In the end there will be only one unit in this container.
-			positions : type_unit_positions.map;
+			-- There will be only one unit in this container.
+			position_of_unit : type_unit_positions.map;
 
 			ports : type_ports.list;
 
@@ -470,13 +469,13 @@ package body schematic_ops is
 					-- locate unit by its name
 					unit_cursor := find (device.units, unit_name);
 
-					-- load unit position and insert in container "positions"
+					-- Load the single unit position and insert in container "position_of_unit"
 					type_unit_positions.insert (
-						container	=> positions, 
+						container	=> position_of_unit, 
 						key			=> unit_name,
 						new_item	=> element (unit_cursor).position);
 
-					log_unit_positions (positions, log_threshold + 1); -- there is only one unit
+					log_unit_positions (position_of_unit, log_threshold + 1);
 					
 					-- delete the unit
 					delete (device.units, unit_name);
@@ -521,7 +520,7 @@ package body schematic_ops is
 					module			=> module_cursor,
 					device			=> device_name,
 					ports			=> ports,
-					positions		=> positions, -- there is only one unit 
+					sheets			=> position_of_unit, -- there is only one unit -> only one sheet to look at
 					log_threshold	=> log_threshold + 1);
 
 				-- In case no more units are invoked then the device must be
@@ -590,8 +589,8 @@ package body schematic_ops is
 			device_cursor : et_schematic.type_devices.cursor;
 
 			-- temporarily storage of unit coordinates.
-			-- In the end there will be only one unit in this container.
-			positions : type_unit_positions.map;
+			-- There will be only one unit in this container.
+			position_of_unit : type_unit_positions.map;
 
 			ports : type_ports.list;
 
@@ -632,12 +631,12 @@ package body schematic_ops is
 
 					-- load unit position and insert in container "positions"
 					type_unit_positions.insert (
-						container	=> positions, 
+						container	=> position_of_unit, 
 						key			=> unit_name,
 						new_item	=> element (unit_cursor).position);
 
 					-- log old unit position
-					log_unit_positions (positions, log_threshold + 1); -- there is only one unit
+					log_unit_positions (position_of_unit, log_threshold + 1); -- there is only one unit
 -- 					log ("position before " & 
 -- 						 et_coordinates.to_string (
 -- 							type_ports.first_element (positions)), log_threshold + 1);
@@ -676,7 +675,7 @@ package body schematic_ops is
 					module			=> module_cursor,
 					device			=> device_name,
 					ports			=> ports,
-					positions		=> positions, -- there is only one unit 
+					sheets			=> position_of_unit,
 					log_threshold	=> log_threshold + 1);
 
 				-- CS update nets
