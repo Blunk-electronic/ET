@@ -167,7 +167,7 @@ package body scripting is
 		procedure schematic_cmd (verb : in type_verb_schematic; noun : in type_noun_schematic) is
 			use et_project;
 			use schematic_ops;
-			coordinates : schematic_ops.type_coordinates;
+			--coordinates : schematic_ops.type_coordinates;
 		begin
 			case verb is
 				when ADD =>
@@ -239,27 +239,21 @@ package body scripting is
 							NULL; -- CS
 
 						when UNIT =>
-							coordinates := schematic_ops.to_coordinates (f (7));
-
-							case coordinates is
-								when RELATIVE => NULL; -- CS
-								
-								WHEN ABSOLUTE =>
-									schematic_ops.move_unit_absolute
-										(
-										module_name 	=> module,
-										device_name		=> to_device_name (f (5)),
-										unit_name		=> to_unit_name (f (6)),
-										position 		=> et_coordinates.to_coordinates 
-											(
-											sheet	=> to_sheet_number (f (8)),
-											point	=> set_point (
-														x => to_distance (f (9)),
-														y => to_distance (f (10)))
-											),
-										log_threshold	=> log_threshold + 1
-										);
-							end case;
+							schematic_ops.move_unit
+								(
+								module_name 	=> module,
+								device_name		=> to_device_name (f (5)),
+								unit_name		=> to_unit_name (f (6)),
+								coordinates		=> schematic_ops.to_coordinates (f (7)),
+								position 		=> et_coordinates.to_coordinates 
+									(
+									sheet	=> to_sheet_number (f (8)),
+									point	=> set_point (
+												x => to_distance (f (9)),
+												y => to_distance (f (10)))
+									),
+								log_threshold	=> log_threshold + 1
+								);
 							
 						when others => invalid_noun (to_string (noun));
 					end case;

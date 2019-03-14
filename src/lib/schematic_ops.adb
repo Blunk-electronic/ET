@@ -137,7 +137,7 @@ package body schematic_ops is
 		module			: in type_modules.cursor;		-- the module
 		device			: in type_device_name;			-- the device
 		ports			: in type_ports.list := type_ports.empty_list; -- the ports (if empty, all ports of the device will be deleted)
-		positions		: in type_unit_positions.map;	-- the sheet numbers where the units can be found
+		positions		: in type_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
 		log_threshold	: in type_log_level) is
 
 		dedicated_ports : boolean := false; -- goes true if "ports" contains something.
@@ -571,11 +571,12 @@ package body schematic_ops is
 				raise;
 	end;
 
-	procedure move_unit_absolute (
-	-- Moves the given unit to an absolute position in schematic.
+	procedure move_unit (
+	-- Moves the given unit within the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
+		coordinates		: in type_coordinates; -- relative/absolute
 		position		: in et_coordinates.type_coordinates;
 		log_threshold	: in type_log_level) is
 
@@ -603,7 +604,13 @@ package body schematic_ops is
 					unit_name	: in type_unit_name.bounded_string;
 					unit		: in out et_schematic.type_unit) is
 				begin
-					unit.position := position;
+					case coordinates is
+						when ABSOLUTE =>
+							unit.position := position;
+
+						when RELATIVE =>
+							null; -- CS
+					end case;
 				end move_unit;
 				
 			begin -- query_units
@@ -668,12 +675,21 @@ package body schematic_ops is
 			end if;
 		end query_devices;
 		
-	begin -- move_unit_absolute
-		log ("module " & to_string (module_name) &
-			 " moving " & to_string (device_name) & " unit " & 
-			 to_string (unit_name) & " to" &
-			 et_coordinates.to_string (position => position), log_threshold);
+	begin -- move_unit
+		case coordinates is
+			when ABSOLUTE =>
+				log ("module " & to_string (module_name) &
+					" moving " & to_string (device_name) & " unit " & 
+					to_string (unit_name) & " to" &
+					et_coordinates.to_string (position => position), log_threshold);
 
+			when RELATIVE =>
+				log ("module " & to_string (module_name) &
+					" moving " & to_string (device_name) & " unit " & 
+					to_string (unit_name) & " by" &
+					et_coordinates.to_string (position => position), log_threshold);
+		end case;
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 		
@@ -682,7 +698,7 @@ package body schematic_ops is
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
-	end move_unit_absolute;
+	end move_unit;
 		
 
 
