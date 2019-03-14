@@ -135,7 +135,6 @@ package body schematic_ops is
 	procedure delete_ports (
 		module	: in type_modules.cursor;		-- the module
 		device	: in type_device_name;			-- the device
-		--ports	: in type_ports.list := type_ports.empty_list; -- the ports (if empty, all ports of the device will be deleted)
 		ports	: in et_libraries.type_ports.map := et_libraries.type_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
 		sheets	: in type_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
 		log_threshold	: in type_log_level) is
@@ -552,6 +551,13 @@ package body schematic_ops is
 				raise;
 	end;
 
+	procedure offset_ports (
+		ports		: in out et_libraries.type_ports.map;
+		position	: in et_coordinates.type_coordinates) is
+	begin
+		null;
+	end;
+	
 	procedure move_unit (
 	-- Moves the given unit within the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -573,6 +579,8 @@ package body schematic_ops is
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
 			position_of_unit : type_unit_positions.map;
+
+			position_of_unit_new : et_coordinates.type_coordinates;
 
 			ports : et_libraries.type_ports.map;
 
@@ -598,6 +606,8 @@ package body schematic_ops is
 								);
 					end case;
 
+					position_of_unit_new := unit.position;
+					
 					exception
 						when event: others =>
 							log (message_error & "coordinates invalid !", console => true); -- CS required more details
@@ -652,7 +662,7 @@ package body schematic_ops is
 				-- Fetch the ports of the unit to be moved.
 				ports := ports_of_unit (device_cursor, unit_name);
 				
-				-- Delete the ports of the targeted unit from module.nets
+				-- Delete the old ports of the targeted unit from module.nets
 				delete_ports (
 					module			=> module_cursor,
 					device			=> device_name,
@@ -661,6 +671,8 @@ package body schematic_ops is
 					log_threshold	=> log_threshold + 1);
 
 				-- CS update nets
+				-- Calculate the new positions of the ports:
+				offset_ports (ports, position_of_unit_new);
 				
 				log_indentation_down;				
 			else
