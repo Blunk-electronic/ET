@@ -9251,9 +9251,10 @@ package body et_project is
 									-- Issue warning about this mismatch:
 									if type_point (strand.position) /= position_found_in_module_file then
 										log (message_warning & affected_line (line) & "Net " &
-											et_general.to_string (net_name) & ": Found invalid lowest x/y position of strand !" &
-											 " Will be overridden by calculated position" &
-											 to_string (position => strand.position));
+											 et_general.to_string (net_name) & ": Lowest x/y position of strand invalid !");
+										log (" Found " & to_string (point => position_found_in_module_file));
+										log (" Will be overridden by calculated position" & 
+											 to_string (point => type_point (strand.position)));
 									end if;
 								end;
 								
