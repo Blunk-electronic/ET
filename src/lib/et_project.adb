@@ -12509,6 +12509,7 @@ package body et_project is
 		end read_conf_file;
 		
 	begin -- open_project
+		log (row_separator_double, log_threshold);
 		log ("opening project " & to_string (project_name) & " ...", log_threshold, console => true);
 		log_indentation_up;
 		
@@ -12688,6 +12689,7 @@ package body et_project is
 		end query_rig_configuration;
 		
 	begin -- save_project
+		log (row_separator_double, log_threshold);
 		log ("saving project as " & to_string (destination) & " ...", log_threshold, console => true);
 		log_indentation_up;
 

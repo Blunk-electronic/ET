@@ -371,6 +371,7 @@ package body scripting is
 		line : et_string_processing.type_fields_of_line;
 		
 	begin -- execute_script
+		log (row_separator_double, log_threshold);
 		log ("executing script " & to_string (file_name), log_threshold);
 		log_indentation_up;
 

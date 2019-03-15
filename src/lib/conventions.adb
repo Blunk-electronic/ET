@@ -2881,6 +2881,7 @@ package body conventions is
 		end process_previous_section;
 		
 	begin -- read_conventions
+		log (row_separator_double, log_threshold);		
 		log ("reading conventions file " & to_string (file_name) & " ...", log_threshold);
 
 		if exists (to_string (file_name)) then
