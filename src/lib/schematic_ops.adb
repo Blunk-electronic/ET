@@ -830,7 +830,7 @@ package body schematic_ops is
 					-- locate unit by its name
 					unit_cursor := find (device.units, unit_name);
 
-					-- load unit position and insert in container "positions"
+					-- load unit position and insert in container "position_of_unit_old"
 					type_unit_positions.insert (
 						container	=> position_of_unit_old, 
 						key			=> unit_name,
@@ -920,6 +920,166 @@ package body schematic_ops is
 			process		=> query_devices'access);
 
 	end move_unit;
+		
+	procedure drag_unit (
+	-- Drags the given unit within the schematic.
+	-- Already existing connections with net segments are kept.
+	-- Net segment positions are modified.
+	-- This operation applies to a single sheet. Dragging from one sheet
+	-- to another is not possible.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- A
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in et_coordinates.type_point; -- x/y
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+
+			-- temporarily storage of unit coordinates.
+			-- There will be only one unit in this container.
+			position_of_unit_old : type_unit_positions.map;
+
+			position_of_unit_new : et_coordinates.type_coordinates;
+
+			ports, ports_old, ports_new : et_libraries.type_ports.map;
+
+			procedure query_units (
+				device_name	: in type_device_name;
+				device		: in out et_schematic.type_device) is
+				use et_schematic.type_units;
+				unit_cursor : et_schematic.type_units.cursor;
+
+				procedure move_unit (
+					unit_name	: in type_unit_name.bounded_string;
+					unit		: in out et_schematic.type_unit) is
+					use et_coordinates;
+
+					-- Load the current sheet number where the unit is.
+					-- NOTE: The sheet number does not change in drag operations.
+					sheet : type_sheet := et_coordinates.sheet (unit.position);
+				begin
+					-- Set new x/y position. Sheet number is unchanged.
+					case coordinates is
+						when ABSOLUTE =>
+							unit.position := to_coordinates (point, sheet);
+
+						when RELATIVE =>
+							move (
+								point	=> unit.position,
+								offset	=> point
+								);
+					end case;
+
+					-- store new unit position
+					position_of_unit_new := unit.position;
+					
+					exception
+						when event: others =>
+							log (message_error & "coordinates invalid !", console => true); -- CS required more details
+							log (ada.exceptions.exception_information (event), console => true);
+							raise;
+					
+				end move_unit;
+				
+			begin -- query_units
+				if contains (device.units, unit_name) then
+					-- locate unit by its name
+					unit_cursor := find (device.units, unit_name);
+
+					-- load unit position and insert in container "position_of_unit_old"
+					type_unit_positions.insert (
+						container	=> position_of_unit_old, 
+						key			=> unit_name,
+						new_item	=> element (unit_cursor).position);
+
+					-- log old unit position
+					log_unit_positions (position_of_unit_old, log_threshold + 1); -- there is only one unit
+
+					update_element (
+						container	=> device.units,
+						position	=> unit_cursor,
+						process		=> move_unit'access);
+
+					-- position_of_unit_new now updated
+				else
+					unit_not_found (unit_name);
+				end if;
+			end query_units;
+
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+
+				-- Before the actual drag, the coordinates of the
+				-- unit must be fetched. These coordinates will later assist
+				-- in changing the positions of connected net segments.
+				device_cursor := find (module.devices, device_name); -- the device should be there
+
+-- 				-- Fetch the ports of the unit to be moved.
+-- 				ports_old := ports_of_unit (device_cursor, unit_name);
+-- 				
+-- 				-- Calculate the old positions of the unit ports:
+-- 				move_ports (ports_old, position_of_unit_new);
+
+				
+				-- locate the unit, load current position, set new position
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor,
+					process		=> query_units'access);
+				
+				log_indentation_up;
+
+				-- Fetch the ports of the unit to be moved.
+				ports := ports_of_unit (device_cursor, unit_name);
+				
+				-- Calculate the new positions of the unit ports:
+				move_ports (ports, position_of_unit_new);
+
+				-- Change net segments in the affected nets (type_module.nets):
+-- 				insert_ports (
+-- 					module			=> module_cursor,
+-- 					device			=> device_name,
+-- 					ports			=> ports,
+-- 					sheet			=> et_coordinates.sheet (position_of_unit_new),
+-- 					log_threshold	=> log_threshold + 1);
+				
+				log_indentation_down;				
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- drag_unit
+		case coordinates is
+			when ABSOLUTE =>
+				log ("module " & to_string (module_name) &
+					" dragging " & to_string (device_name) & " unit " & 
+					to_string (unit_name) & " to" &
+					et_coordinates.to_string (point), log_threshold);
+
+			when RELATIVE =>
+				log ("module " & to_string (module_name) &
+					" dragging " & to_string (device_name) & " unit " & 
+					to_string (unit_name) & " by" & 
+					et_coordinates.to_string (point), log_threshold);
+		end case;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+	end drag_unit;
 		
 
 

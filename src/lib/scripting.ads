@@ -82,7 +82,7 @@ package scripting is
 	type type_verb_schematic is (
 		ADD,
 		DELETE,
-		--DRAG,
+		DRAG,
 		DRAW,
 		INVOKE,
 		MOVE,

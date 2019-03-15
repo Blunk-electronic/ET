@@ -202,6 +202,25 @@ package body scripting is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+				when DRAG =>
+					case noun is
+						when UNIT =>
+							schematic_ops.drag_unit
+								(
+								module_name 	=> module,
+								device_name		=> to_device_name (f (5)),
+								unit_name		=> to_unit_name (f (6)),
+								coordinates		=> schematic_ops.to_coordinates (f (7)), -- relative/absolute
+								point			=> et_coordinates.type_point (set_point (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+								log_threshold	=> log_threshold + 1
+								);
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+						
+					
 				when DRAW =>
 					case noun is
 						when NET =>
@@ -244,7 +263,7 @@ package body scripting is
 								module_name 	=> module,
 								device_name		=> to_device_name (f (5)),
 								unit_name		=> to_unit_name (f (6)),
-								coordinates		=> schematic_ops.to_coordinates (f (7)),
+								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
 								sheet			=> to_sheet_relative (f (8)),
 								point			=> et_coordinates.type_point (set_point (
 													x => to_distance (f (9)),
