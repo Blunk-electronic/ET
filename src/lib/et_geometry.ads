@@ -47,7 +47,7 @@ package et_geometry is
 	end record;
 
 	type type_line_range is (
-		inside_end_points,	-- start and end point excluded
+		inside_end_points,	-- start and end point excluded -- CS rename to between_end_points ?
 		with_end_points,	-- start and end point included
 		beyond_end_points	-- unlimited line assumed. extends beyond both start and end point into infinity
 		);

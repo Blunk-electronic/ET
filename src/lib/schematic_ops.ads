@@ -91,6 +91,16 @@ package schematic_ops is
 		point			: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level);
 
+	type type_drag is record
+		before	: et_coordinates.type_point;
+		after	: et_coordinates.type_point;
+	end record;
+
+	package type_drags_of_ports is new ada.containers.ordered_maps (
+		key_type		=> type_port_name.bounded_string,
+		"<"				=> type_port_name."<",
+		element_type	=> type_drag);
+	
 	procedure drag_unit (
 	-- Drags the given unit within the schematic.
 	-- Already existing connections with net segments are kept.

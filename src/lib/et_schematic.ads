@@ -326,6 +326,8 @@ package et_schematic is
 
 	procedure set_strand_position (strand : in out type_strand);
 	-- Calculates and sets the lowest x/y position and the sheet number of the given strand.	
+
+	-- CS write procedure set_strand_position that takes a cursor to a strand.
 	
 	package type_strands is new doubly_linked_lists (type_strand);
 

@@ -556,7 +556,7 @@ package body schematic_ops is
 		point 	: in et_coordinates.type_point;
 		segment : in type_net_segments.cursor)
 		return boolean is
-	-- Returns true if given port sits on given segment.
+	-- Returns true if given point sits on given segment.
 		use et_geometry;
 		distance : type_distance_point_from_line;
 		use et_coordinates;
@@ -575,6 +575,32 @@ package body schematic_ops is
 			return false;
 		end if;
 	end on_segment;
+
+	function between_start_and_end_point (
+		point 	: in et_coordinates.type_point;
+		segment : in type_net_segments.cursor)
+		return boolean is
+	-- Returns true if given point sits between start and end 
+	-- point of given segment.
+		use et_geometry;
+		distance : type_distance_point_from_line;
+		use et_coordinates;
+		use type_net_segments;
+	begin
+		distance := distance_of_point_from_line (
+			point 		=> point,
+			line_start	=> element (segment).coordinates_start,
+			line_end	=> element (segment).coordinates_end,
+			line_range	=> inside_end_points);
+
+		-- start and end points of the segment are inclued in the test
+		if not distance.out_of_range and distance.distance = zero_distance then
+			return true;
+		else
+			return false;
+		end if;
+	end between_start_and_end_point;
+
 	
 	procedure move_ports (
 	-- Moves the given unit ports by given offset.
@@ -602,8 +628,11 @@ package body schematic_ops is
 	end move_ports;
 
 	procedure insert_ports (
-	-- Inserts the given ports in the net segments. The port must sit on a net segement
-	-- in order to regard it as connected with the segment.
+	-- Inserts the given ports in the net segments.
+	-- If a port lands on a segment, it is regarded as "connected" with the segment.
+	-- A junction will be placed:
+	--  - if the ports lands between start and end point AND
+	--  - no other junction is there already at this place.
 		module			: in type_modules.cursor;		-- the module
 		device			: in type_device_name;			-- the device
 		ports			: in et_libraries.type_ports.map; -- the unit ports
@@ -643,27 +672,6 @@ package body schematic_ops is
 
 									port_cursor : type_ports.cursor := ports_scratch.first;
 									
--- 									procedure query_port (port_cursor : in type_ports.cursor) is
--- 										use type_ports_component;
--- 									begin -- query_port
--- 										log ("probing port " & to_string (key (port_cursor)) &
--- 											to_string (element (port_cursor).position), log_threshold + 3);
--- 
--- 										-- If port sits on segment, append it to the portlist of the segment.
--- 										if on_segment (
--- 											point	=> element (port_cursor).position,
--- 											segment	=> segment_cursor) then
--- 
--- 											type_ports_component.append (
--- 												container	=> segment.ports_devices,
--- 												new_item	=> (device, key (port_cursor))); -- IC23, VCC_IO
--- 
--- 											log (" sits on segment -> inserted", log_threshold + 3);
--- 
--- 											
--- 										end if;
--- 									end query_port;
-									
 								begin -- query_ports
 									--iterate (ports_scratch, query_port'access);
 
@@ -688,6 +696,8 @@ package body schematic_ops is
 
 											-- set all_ports_processed true all given ports processed.
 											if is_empty (ports_scratch) then all_ports_processed := true; end if;
+
+											-- CS: place junction
 										end if;
 											
 										next (port_cursor);
@@ -920,6 +930,159 @@ package body schematic_ops is
 			process		=> query_devices'access);
 
 	end move_unit;
+
+
+	procedure drag_net_segments (
+	-- Drags the given net segments.
+		module			: in type_modules.cursor;		-- the module
+		drag_list		: in type_drags_of_ports.map;
+		sheet			: in type_sheet;	-- the sheet to look at
+		log_threshold	: in type_log_level) is
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			procedure query_net (net_cursor : in type_nets.cursor) is
+				use type_nets;
+
+				procedure query_strands (
+					net_name	: in type_net_name.bounded_string;
+					net			: in out type_net) is
+					use type_strands;
+
+					procedure query_strand (strand_cursor : in type_strands.cursor) is
+						use et_coordinates;
+
+						procedure query_segments (strand : in out type_strand) is
+							use type_net_segments;
+
+							procedure query_segment (segment_cursor : in type_net_segments.cursor) is 
+
+								procedure query_drag_list (segment : in out type_net_segment) is
+									use type_drags_of_ports;
+									drag_cursor : type_drags_of_ports.cursor := drag_list.first;
+									
+								begin -- query_drag_list
+									-- loop in drag list
+									while drag_cursor /= type_drags_of_ports.no_element loop
+										log ("probing port " & to_string (key (drag_cursor)), log_threshold + 3);
+
+										-- if port sits on a start point of a segment -> move start point
+										if segment.coordinates_start = element (drag_cursor).before then
+											log ("move segment start point from " & 
+												to_string (segment.coordinates_start),
+												log_threshold + 3);
+
+											segment.coordinates_start := element (drag_cursor).after;
+
+											log ("to " & 
+												to_string (segment.coordinates_start),
+												log_threshold + 3);
+										end if;
+
+										-- if port sits on an end point of a segment -> move end point
+										if segment.coordinates_end = element (drag_cursor).before then
+											log ("move segment end point from " & 
+												to_string (segment.coordinates_end),
+												log_threshold + 3);
+
+											segment.coordinates_end := element (drag_cursor).after;
+
+											log ("to " & 
+												to_string (segment.coordinates_end),
+												log_threshold + 3);
+										end if;
+
+										-- if ports sits between start and end point of a segment -> delete the segment
+										-- and insert two new segments. Move junction to position where the two new
+										-- segments meet.
+										if between_start_and_end_point (
+											point	=> element (drag_cursor).before,
+											segment	=> segment_cursor) then
+
+											null;
+-- 											log (" sits on segment -> inserted", log_threshold + 3);
+-- 
+-- 											-- Remove port from ports_scratch. The port is not connected elsewhere.
+-- 											type_ports.delete (container => ports_scratch, position => port_cursor);
+-- 
+-- 											-- set all_ports_processed true all given ports processed.
+-- 											if is_empty (ports_scratch) then all_ports_processed := true; end if;
+										end if;
+											
+										next (drag_cursor);
+									end loop;
+									
+								end query_drag_list;
+
+							begin -- query_segment
+								log_indentation_up;
+								log ("probing " & to_string (segment_cursor), log_threshold + 2);
+
+								update_element (
+									container	=> strand.segments,
+									position	=> segment_cursor,
+									process		=> query_drag_list'access);
+												
+								log_indentation_down;
+							end query_segment;
+							
+						begin -- query_segments
+							iterate (strand.segments, query_segment'access);
+
+							-- Update strand position
+							set_strand_position (strand); 
+							-- CS write in et_schematic a procedure set_strand_position 
+							-- that takes a cursor instead (should improve preformance)
+							
+						end query_segments;
+						
+					begin -- query_strand
+						-- We pick out only the strands on the targeted sheet:
+						if et_coordinates.sheet (element (strand_cursor).position) = sheet then
+							log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+
+							log_indentation_up;
+							log ("strand " & to_string (position => element (strand_cursor).position),
+								log_threshold + 1);
+
+							update_element (
+								container	=> net.strands,
+								position	=> strand_cursor,
+								process		=> query_segments'access);
+						
+							log_indentation_down;
+						end if;
+					end query_strand;
+					
+				begin -- query_strands
+					iterate (net.strands, query_strand'access);
+				end query_strands;
+				
+			begin -- query_net
+				update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_strands'access);
+			end query_net;				
+			
+		begin -- query_nets
+			type_nets.iterate (module.nets, query_net'access);
+		end query_nets;
+
+	begin -- drag_net_segments
+		log ("dragging net segments on sheet" & 
+			 to_sheet (sheet) & " ...", log_threshold);
+		log_indentation_up;
+
+		update_element (
+			container	=> modules,
+			position	=> module,
+			process		=> query_nets'access);
+
+		log_indentation_down;
+	end drag_net_segments;
 		
 	procedure drag_unit (
 	-- Drags the given unit within the schematic.
@@ -936,6 +1099,40 @@ package body schematic_ops is
 
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
+		function make_drag_list ( 
+		-- Merges the two maps ports_old and ports_new to a drag list.
+		-- The resulting drag list tells which port is to be moved from old to new position.
+			ports_old : in et_libraries.type_ports.map;
+			ports_new : in et_libraries.type_ports.map) 
+			return type_drags_of_ports.map is
+			use type_drags_of_ports;
+			drag_list : type_drags_of_ports.map;
+
+			-- ports_old and ports_new are both equally long and contain 
+			-- equal keys (the port names). So we use two cursors and advance them
+			-- simultaneously in a loop (see below).
+			use et_libraries.type_ports;
+			cursor_old : et_libraries.type_ports.cursor := ports_old.first;
+			cursor_new : et_libraries.type_ports.cursor := ports_new.first;
+		begin
+			-- Loop in ports_old, copy the key to the drag list.
+			-- Take the old position from ports_old and the new position from ports_new:
+			while cursor_old /= type_ports.no_element loop
+				insert (
+					container	=> drag_list,
+					key			=> key (cursor_old), -- the port name
+					new_item	=> (
+								before	=> element (cursor_old).position, -- x/y
+								after	=> element (cursor_new).position) -- x/y
+					   );
+				
+				next (cursor_old);
+				next (cursor_new);
+			end loop;
+			
+			return drag_list;
+		end make_drag_list;
+		
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
@@ -944,8 +1141,8 @@ package body schematic_ops is
 
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
-			position_of_unit_old : type_unit_positions.map;
-
+			--position_of_unit_old : type_unit_positions.map;
+			position_of_unit_old : et_coordinates.type_coordinates;	
 			position_of_unit_new : et_coordinates.type_coordinates;
 
 			ports, ports_old, ports_new : et_libraries.type_ports.map;
@@ -976,9 +1173,6 @@ package body schematic_ops is
 								offset	=> point
 								);
 					end case;
-
-					-- store new unit position
-					position_of_unit_new := unit.position;
 					
 					exception
 						when event: others =>
@@ -990,65 +1184,61 @@ package body schematic_ops is
 				
 			begin -- query_units
 				if contains (device.units, unit_name) then
-					-- locate unit by its name
-					unit_cursor := find (device.units, unit_name);
+					unit_cursor := find (device.units, unit_name); -- the unit should be there
 
-					-- load unit position and insert in container "position_of_unit_old"
-					type_unit_positions.insert (
-						container	=> position_of_unit_old, 
-						key			=> unit_name,
-						new_item	=> element (unit_cursor).position);
+					-- store old unit position
+					position_of_unit_old := element (unit_cursor).position;
+					log ("unit position old: " & to_string (position => position_of_unit_old), log_threshold + 1);
 
-					-- log old unit position
-					log_unit_positions (position_of_unit_old, log_threshold + 1); -- there is only one unit
-
+					-- move the unit
 					update_element (
 						container	=> device.units,
 						position	=> unit_cursor,
 						process		=> move_unit'access);
 
-					-- position_of_unit_new now updated
+					-- store new unit position
+					position_of_unit_new := element (unit_cursor).position;
+					log ("unit position new: " & to_string (position => position_of_unit_new), log_threshold + 1);
 				else
 					unit_not_found (unit_name);
 				end if;
 			end query_units;
-
+			
 		begin -- query_devices
 			if contains (module.devices, device_name) then
+				device_cursor := find (module.devices, device_name); -- the device should be there
+
+				log_indentation_up;
 
 				-- Before the actual drag, the coordinates of the
 				-- unit must be fetched. These coordinates will later assist
 				-- in changing the positions of connected net segments.
-				device_cursor := find (module.devices, device_name); -- the device should be there
-
--- 				-- Fetch the ports of the unit to be moved.
--- 				ports_old := ports_of_unit (device_cursor, unit_name);
--- 				
--- 				-- Calculate the old positions of the unit ports:
--- 				move_ports (ports_old, position_of_unit_new);
-
 				
-				-- locate the unit, load current position, set new position
+				-- locate the unit, store old position, move it, store new position
 				update_element (
 					container	=> module.devices,
 					position	=> device_cursor,
 					process		=> query_units'access);
 				
-				log_indentation_up;
-
-				-- Fetch the ports of the unit to be moved.
+				-- Fetch the ports of the unit to be moved. These are the default port positions
+				-- (relative to the symbol origin) as they are defined in the device model.
 				ports := ports_of_unit (device_cursor, unit_name);
 				
-				-- Calculate the new positions of the unit ports:
-				move_ports (ports, position_of_unit_new);
+				-- Calculate the old and new positions of the unit ports:
+				ports_old := ports;
+				move_ports (ports_old, position_of_unit_old); 
+				-- ports_old now contains the absolute port positions in the schematic BEFORE the move.
 
+				ports_new := ports;
+				move_ports (ports_new, position_of_unit_new);
+				-- ports_old now contains the absolute port positions in the schematic AFTER the move.
+				
 				-- Change net segments in the affected nets (type_module.nets):
--- 				insert_ports (
--- 					module			=> module_cursor,
--- 					device			=> device_name,
--- 					ports			=> ports,
--- 					sheet			=> et_coordinates.sheet (position_of_unit_new),
--- 					log_threshold	=> log_threshold + 1);
+				drag_net_segments (
+					module			=> module_cursor,
+					drag_list		=> make_drag_list (ports_old, ports_new),
+					sheet			=> et_coordinates.sheet (position_of_unit_new), -- or position_of_unit_old
+					log_threshold	=> log_threshold + 1);
 				
 				log_indentation_down;				
 			else
@@ -1073,6 +1263,7 @@ package body schematic_ops is
 		
 		-- locate module
 		module_cursor := locate_module (module_name);
+	
 		
 		update_element (
 			container	=> modules,
