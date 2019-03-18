@@ -685,6 +685,8 @@ package body schematic_ops is
 											point	=> element (port_cursor).position,
 											segment	=> segment_cursor) then
 
+											-- CS if port not already in segment
+											
 											type_ports_component.append (
 												container	=> segment.ports_devices,
 												new_item	=> (device, key (port_cursor))); -- IC23, VCC_IO
@@ -1277,6 +1279,16 @@ package body schematic_ops is
 					module			=> module_cursor,
 					drag_list		=> make_drag_list (ports_old, ports_new),
 					sheet			=> et_coordinates.sheet (position_of_unit_new), -- or position_of_unit_old
+					log_threshold	=> log_threshold + 1);
+
+				-- The drag operation might result in new port-to-net connections.
+				-- So we must insert new ports in segments.
+				-- Insert the new unit ports in the nets (type_module.nets):
+				insert_ports (
+					module			=> module_cursor,
+					device			=> device_name,
+					ports			=> ports_new,
+					sheet			=> et_coordinates.sheet (position_of_unit_new),
 					log_threshold	=> log_threshold + 1);
 				
 				log_indentation_down;				
