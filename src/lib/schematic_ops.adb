@@ -629,10 +629,12 @@ package body schematic_ops is
 
 	procedure insert_ports (
 	-- Inserts the given ports in the net segments.
-	-- If a port lands on a segment, it is regarded as "connected" with the segment.
-	-- A junction will be placed:
-	--  - if the port lands between start and end point AND
-	--  - no other junction is there already at this place.
+	-- If a port lands on either the start or end point of a segment, it will
+	-- be regarded as "connected" with the segment.
+	-- If a ports lands between start or end point of a segment, nothing happens
+	-- as the docking to net segments is possible on segment ends/starts only.
+	-- CS: Automatic splitting the segment into two and placing a junction is not supported
+	-- jet and probably not a good idea.
 		module			: in type_modules.cursor;		-- the module
 		device			: in type_device_name;			-- the device
 		ports			: in et_libraries.type_ports.map; -- the unit ports
@@ -665,10 +667,11 @@ package body schematic_ops is
 
 						procedure change_segment (segment : in out type_net_segment) is
 						begin -- change_segment
-							-- If port sits on segment, append it to the portlist of the segment.
-							if on_segment (
-								point	=> element (port_cursor).position,
-								segment	=> segment_cursor) then
+							-- If port sits on start OR end point of segment AND if it
+							-- is not already in the segment then append it to segment.ports_devices.
+							-- append it to the portlist of the segment.
+							if 	segment.coordinates_start = element (port_cursor).position or
+								segment.coordinates_end = element (port_cursor).position then
 
 								-- If port not already in segment, append it.
 								-- Otherwise it must not be appended again.
@@ -688,8 +691,6 @@ package body schematic_ops is
 								end if;
 								
 								port_processed := true;
-								
-								-- CS: place junction
 							end if;
 								
 						end change_segment;
