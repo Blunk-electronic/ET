@@ -1354,67 +1354,71 @@ package body et_project is
 					use type_net_segments;
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 
+					use type_ports_component;
+					use type_ports_submodule;
+					use type_ports_netchanger;
+					
 					procedure query_labels (segment : in type_net_segment) is
 						use type_net_labels;
 						label_cursor : type_net_labels.cursor := segment.labels.first;
 						use et_libraries;
 					begin -- query_labels
-						section_mark (section_labels, HEADER);
-						while label_cursor /= type_net_labels.no_element loop
-							section_mark (section_label, HEADER);
-							
-							write (keyword => keyword_position, parameters => position (element (label_cursor).coordinates));
-							write (keyword => keyword_rotation, parameters => rotation (element (label_cursor).orientation));
-							write (keyword => keyword_size, parameters => 
-								   et_libraries.to_string (size => element (label_cursor).size, preamble => false));
-							write (keyword => keyword_style, parameters => to_string (element (label_cursor).style));
-							write (keyword => keyword_line_width, parameters =>
-								   et_libraries.to_string (width => element (label_cursor).width));
+						if not is_empty (segment.labels) then
+							section_mark (section_labels, HEADER);
+							while label_cursor /= type_net_labels.no_element loop
+								section_mark (section_label, HEADER);
+								
+								write (keyword => keyword_position, parameters => position (element (label_cursor).coordinates));
+								write (keyword => keyword_rotation, parameters => rotation (element (label_cursor).orientation));
+								write (keyword => keyword_size, parameters => 
+									et_libraries.to_string (size => element (label_cursor).size, preamble => false));
+								write (keyword => keyword_style, parameters => to_string (element (label_cursor).style));
+								write (keyword => keyword_line_width, parameters =>
+									et_libraries.to_string (width => element (label_cursor).width));
 
-							write (keyword => keyword_appearance, parameters =>
-								   et_schematic.to_string (appearance => element (label_cursor).appearance));
-							
-							-- a tag label also indicates a signal direction
-							if element (label_cursor).appearance = TAG then
-								write (keyword => keyword_direction, parameters => to_string (element (label_cursor).direction));
-							end if;
-							
-							section_mark (section_label, FOOTER);
-							next (label_cursor);
-						end loop;
-						section_mark (section_labels, FOOTER);
+								write (keyword => keyword_appearance, parameters =>
+									et_schematic.to_string (appearance => element (label_cursor).appearance));
+								
+								-- a tag label also indicates a signal direction
+								if element (label_cursor).appearance = TAG then
+									write (keyword => keyword_direction, parameters => to_string (element (label_cursor).direction));
+								end if;
+								
+								section_mark (section_label, FOOTER);
+								next (label_cursor);
+							end loop;
+							section_mark (section_labels, FOOTER);
+						end if;
 					end query_labels;
 
 					procedure query_junctions (segment : in type_net_segment) is
 						use type_junctions;
 						junction_cursor : type_junctions.cursor := segment.junctions.first;
-					begin -- query_labels
-						section_mark (section_junctions, HEADER);
-						while junction_cursor /= type_junctions.no_element loop
-							write (keyword => keyword_position, parameters => position (element (junction_cursor).coordinates));
-							next (junction_cursor);
-						end loop;
-						section_mark (section_junctions, FOOTER);
+					begin -- query_junctions
+						if not is_empty (segment.junctions) then
+							section_mark (section_junctions, HEADER);
+							while junction_cursor /= type_junctions.no_element loop
+								write (keyword => keyword_position, parameters => position (element (junction_cursor).coordinates));
+								next (junction_cursor);
+							end loop;
+							section_mark (section_junctions, FOOTER);
+						end if;
 					end query_junctions;
 
 					procedure query_device_ports (segment : in type_net_segment) is
-						use type_ports_component;
 						port_cursor : type_ports_component.cursor := segment.ports_devices.first;
 					begin -- query_device_ports
 						while port_cursor /= type_ports_component.no_element loop
-							
 							write (keyword => keyword_device, parameters => 
 								space & et_libraries.to_string (element (port_cursor).reference)
 								& space & keyword_port & space
 								& et_libraries.to_string (element (port_cursor).name)
 								); -- device IC1 port A
-							
 							next (port_cursor);
 						end loop;
 					end query_device_ports;
 
 					procedure query_submodule_ports (segment : in type_net_segment) is
-						use type_ports_submodule;
 						port_cursor : type_ports_submodule.cursor := segment.ports_submodules.first;
 					begin -- query_submodule_ports
 						while port_cursor /= type_ports_submodule.no_element loop
@@ -1430,7 +1434,6 @@ package body et_project is
 					end query_submodule_ports;
 					
 					procedure query_netchanger_ports (segment : in type_net_segment) is
-						use type_ports_netchanger;
 						port_cursor : type_ports_netchanger.cursor := segment.ports_netchangers.first;
 					begin
 						while port_cursor /= type_ports_netchanger.no_element loop
@@ -1456,12 +1459,19 @@ package body et_project is
 						query_element (segment_cursor, query_labels'access);
 						query_element (segment_cursor, query_junctions'access);
 
-						section_mark (section_ports, HEADER);
-						query_element (segment_cursor, query_device_ports'access);
-						query_element (segment_cursor, query_submodule_ports'access);
-						query_element (segment_cursor, query_netchanger_ports'access);
-						section_mark (section_ports, FOOTER);
-						
+						-- write ports there are any. otherwise leave out section ports.
+						if 	is_empty (element (segment_cursor).ports_devices) and
+							is_empty (element (segment_cursor).ports_submodules) and
+							is_empty (element (segment_cursor).ports_netchangers) then
+							null;
+						else
+							section_mark (section_ports, HEADER);
+							query_element (segment_cursor, query_device_ports'access);
+							query_element (segment_cursor, query_submodule_ports'access);
+							query_element (segment_cursor, query_netchanger_ports'access);
+							section_mark (section_ports, FOOTER);
+						end if;
+							
 						section_mark (section_segment, FOOTER);
 						next (segment_cursor);
 					end loop;
@@ -1601,6 +1611,7 @@ package body et_project is
 				query_element (net_cursor, query_route'access);
 				
 				section_mark (section_net, FOOTER);
+				new_line;
 				next (net_cursor);
 			end loop;
 			section_mark (section_nets, FOOTER);
@@ -1724,6 +1735,8 @@ package body et_project is
 				query_element (device_cursor, query_units'access);
 				
 				section_mark (section_device, FOOTER);
+				new_line;
+				
 				next (device_cursor);
 			end loop;
 			section_mark (section_devices, FOOTER);
@@ -2121,28 +2134,35 @@ package body et_project is
 		
 		-- net classes
 		query_net_classes;
-
+		put_line (row_separator_single);
+		
 		-- nets
 		query_nets;
-
+		put_line (row_separator_single);
+		
 		-- frames
 		query_frames;
+		put_line (row_separator_single);
 		
 		-- notes
 		query_texts;
+		put_line (row_separator_single);
 		
 		-- submodules
 		query_submodules;
+		put_line (row_separator_single);
 		
 		-- devices
 		query_devices;
-
+		put_line (row_separator_single);
+		
 		-- netchangers
 		query_netchangers;
+		put_line (row_separator_single);
 		
 		-- board
 		query_board;
-	
+		put_line (row_separator_single);	
 	
 		write_module_footer;
 		
