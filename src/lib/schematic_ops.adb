@@ -631,7 +631,7 @@ package body schematic_ops is
 	-- Inserts the given ports in the net segments.
 	-- If a port lands on a segment, it is regarded as "connected" with the segment.
 	-- A junction will be placed:
-	--  - if the ports lands between start and end point AND
+	--  - if the port lands between start and end point AND
 	--  - no other junction is there already at this place.
 		module			: in type_modules.cursor;		-- the module
 		device			: in type_device_name;			-- the device
@@ -640,7 +640,9 @@ package body schematic_ops is
 		log_threshold	: in type_log_level) is
 
 		-- We make a copy of the given portlist. Inside the copy ports will be
-		-- deleted as soon as they have been processed. So ports_scratch gets
+		-- deleted as soon as they have been processed. This way a port won't be processed
+		-- a second time and thus be inserted only once.
+		-- So ports_scratch gets
 		-- shorter and shorter each time a port has been inserted in a net segment.
 		ports_scratch : et_libraries.type_ports.map := ports; -- the unit ports
 
@@ -673,8 +675,6 @@ package body schematic_ops is
 									port_cursor : type_ports.cursor := ports_scratch.first;
 									
 								begin -- query_ports
-									--iterate (ports_scratch, query_port'access);
-
 									-- loop in ports_scratch and probe ports.
 									while port_cursor /= type_ports.no_element loop
 										log ("probing port " & to_string (key (port_cursor)) &
@@ -685,14 +685,23 @@ package body schematic_ops is
 											point	=> element (port_cursor).position,
 											segment	=> segment_cursor) then
 
-											-- CS if port not already in segment
-											
-											type_ports_component.append (
+											-- If port not already in segment, append it.
+											-- Otherwise it must not be appended again.
+											if type_ports_component.contains (
 												container	=> segment.ports_devices,
-												new_item	=> (device, key (port_cursor))); -- IC23, VCC_IO
+												item		=> (device, key (port_cursor)) -- IC23, VCC_IO
+												) then 
 
-											log (" sits on segment -> inserted", log_threshold + 3);
+												log (" already there -> skipped", log_threshold + 3);
+											else
+												type_ports_component.append (
+													container	=> segment.ports_devices,
+													new_item	=> (device, key (port_cursor))); -- IC23, VCC_IO
 
+												log (" sits on segment -> inserted", log_threshold + 3);
+
+											end if;
+											
 											-- Remove port from ports_scratch. The port is not connected elsewhere.
 											type_ports.delete (container => ports_scratch, position => port_cursor);
 
@@ -1283,14 +1292,17 @@ package body schematic_ops is
 
 				-- The drag operation might result in new port-to-net connections.
 				-- So we must insert new ports in segments.
-				-- Insert the new unit ports in the nets (type_module.nets):
+				-- Insert possible new unit ports in the nets (type_module.nets):
+				log_indentation_up;
+				
 				insert_ports (
 					module			=> module_cursor,
 					device			=> device_name,
 					ports			=> ports_new,
 					sheet			=> et_coordinates.sheet (position_of_unit_new),
 					log_threshold	=> log_threshold + 1);
-				
+
+				log_indentation_down;
 				log_indentation_down;				
 			else
 				device_not_found (device_name);
