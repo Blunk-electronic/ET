@@ -92,8 +92,8 @@ package schematic_ops is
 		log_threshold	: in type_log_level);
 
 	type type_drag is record
-		before	: et_coordinates.type_point;
-		after	: et_coordinates.type_point;
+		before		: et_coordinates.type_point;
+		after		: et_coordinates.type_point;
 	end record;
 
 	package type_drags_of_ports is new ada.containers.ordered_maps (
