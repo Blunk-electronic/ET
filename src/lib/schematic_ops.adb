@@ -639,16 +639,6 @@ package body schematic_ops is
 		sheet			: in type_sheet;	-- the sheet to look at
 		log_threshold	: in type_log_level) is
 
-		-- We make a copy of the given portlist. Inside the copy ports will be
-		-- deleted as soon as they have been processed. This way a port won't be processed
-		-- a second time and thus be inserted only once.
-		-- So ports_scratch gets
-		-- shorter and shorter each time a port has been inserted in a net segment.
-		ports_scratch : et_libraries.type_ports.map := ports; -- the unit ports
-
-		-- If this flag goes true, lots of iterations are skipped (improves performance).
-		all_ports_processed : boolean := false;
-		
 		procedure query_nets (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
@@ -659,85 +649,83 @@ package body schematic_ops is
 				procedure query_strands (
 					net_name	: in type_net_name.bounded_string;
 					net			: in out type_net) is
+					use et_coordinates;
+					
 					use type_strands;
+					strand_cursor : type_strands.cursor;
 
-					procedure query_strand (strand_cursor : in type_strands.cursor) is
-						use et_coordinates;
+					use type_ports;
+					port_cursor : type_ports.cursor := ports.first;
 
-						procedure query_segments (strand : in out type_strand) is
-							use type_net_segments;
+					port_processed : boolean;
+					
+					procedure query_segments (strand : in out type_strand) is
+						use type_net_segments;
+						segment_cursor : type_net_segments.cursor := strand.segments.first;
 
-							procedure query_segment (segment_cursor : in type_net_segments.cursor) is 
+						procedure change_segment (segment : in out type_net_segment) is
+						begin -- change_segment
+							-- If port sits on segment, append it to the portlist of the segment.
+							if on_segment (
+								point	=> element (port_cursor).position,
+								segment	=> segment_cursor) then
 
-								procedure query_ports (segment : in out type_net_segment) is
-									use et_libraries.type_ports;
+								-- If port not already in segment, append it.
+								-- Otherwise it must not be appended again.
+								if type_ports_component.contains (
+									container	=> segment.ports_devices,
+									item		=> (device, key (port_cursor)) -- IC23, VCC_IO
+									) then 
 
-									port_cursor : type_ports.cursor := ports_scratch.first;
-									
-								begin -- query_ports
-									-- loop in ports_scratch and probe ports.
-									while port_cursor /= type_ports.no_element loop
-										log ("probing port " & to_string (key (port_cursor)) &
-											to_string (element (port_cursor).position), log_threshold + 3);
+									log (" already there -> skipped", log_threshold + 3);
+								else
+									type_ports_component.append (
+										container	=> segment.ports_devices,
+										new_item	=> (device, key (port_cursor))); -- IC23, VCC_IO
 
-										-- If port sits on segment, append it to the portlist of the segment.
-										if on_segment (
-											point	=> element (port_cursor).position,
-											segment	=> segment_cursor) then
+									log (" sits on segment -> inserted", log_threshold + 3);
 
-											-- If port not already in segment, append it.
-											-- Otherwise it must not be appended again.
-											if type_ports_component.contains (
-												container	=> segment.ports_devices,
-												item		=> (device, key (port_cursor)) -- IC23, VCC_IO
-												) then 
-
-												log (" already there -> skipped", log_threshold + 3);
-											else
-												type_ports_component.append (
-													container	=> segment.ports_devices,
-													new_item	=> (device, key (port_cursor))); -- IC23, VCC_IO
-
-												log (" sits on segment -> inserted", log_threshold + 3);
-
-											end if;
-											
-											-- Remove port from ports_scratch. The port is not connected elsewhere.
-											type_ports.delete (container => ports_scratch, position => port_cursor);
-
-											-- set all_ports_processed true all given ports processed.
-											if is_empty (ports_scratch) then all_ports_processed := true; end if;
-
-											-- CS: place junction
-										end if;
-											
-										next (port_cursor);
-									end loop;
-									
-								end query_ports;
-
-							begin -- query_segment
-								if not all_ports_processed then
-									log_indentation_up;
-									log ("probing " & to_string (segment_cursor), log_threshold + 2);
-
-									update_element (
-										container	=> strand.segments,
-										position	=> segment_cursor,
-										process		=> query_ports'access);
-													
-									log_indentation_down;
 								end if;
-							end query_segment;
+								
+								port_processed := true;
+								
+								-- CS: place junction
+							end if;
+								
+						end change_segment;
+
+					begin -- query_segments
+						-- On the first segment, where the port sits on, this loop ends prematurely.
+						while not port_processed and segment_cursor /= type_net_segments.no_element loop
+
+							log_indentation_up;
+							log ("probing " & to_string (segment_cursor), log_threshold + 2);
 							
-						begin -- query_segments
-							-- CS if not all_ports_processed then ... could improve performance
-							iterate (strand.segments, query_segment'access);
-						end query_segments;
+							type_net_segments.update_element (
+								container	=> strand.segments,
+								position	=> segment_cursor,
+								process		=> change_segment'access);
+
+							log_indentation_down;
+							next (segment_cursor);
+						end loop;
+
+					end query_segments;
+				
+				begin -- query_strands
+					-- loop in portlist
+					while port_cursor /= type_ports.no_element loop
+						log ("probing port " & to_string (key (port_cursor)), log_threshold + 1);
+						log_indentation_up;
+
+						-- If the current port sits on a strand, this flag will go true. Other 
+						-- strands will then not be looked at because the port can only sit on 
+						-- one strand.
+						port_processed := false;
 						
-					begin -- query_strand
-						if not all_ports_processed then
-							
+						strand_cursor := net.strands.first;
+						while strand_cursor /= type_strands.no_element loop
+
 							-- We pick out only the strands on the targeted sheet:
 							if et_coordinates.sheet (element (strand_cursor).position) = sheet then
 								log ("net " & to_string (key (net_cursor)), log_threshold + 1);
@@ -753,16 +741,21 @@ package body schematic_ops is
 							
 								log_indentation_down;
 							end if;
-						end if;
-					end query_strand;
-					
-				begin -- query_strands
-					-- CS if not all_ports_processed then ... could improve performance
-					iterate (net.strands, query_strand'access);
+
+							-- If the port has been processed, there is no need to look up
+							-- other strands for this port.
+							if port_processed then exit; end if;
+							
+							next (strand_cursor);
+						end loop;
+
+						log_indentation_down;
+						next (port_cursor);
+					end loop;
+
 				end query_strands;
 				
 			begin -- query_net
-				-- CS if not all_ports_processed then ... could improve performance
 				update_element (
 					container	=> module.nets,
 					position	=> net_cursor,
@@ -770,7 +763,6 @@ package body schematic_ops is
 			end query_net;				
 			
 		begin -- query_nets
-			-- CS if not all_ports_processed then ... could improve performance
 			type_nets.iterate (module.nets, query_net'access);
 		end query_nets;
 
@@ -1048,12 +1040,14 @@ package body schematic_ops is
 						begin -- query_segment
 							log_indentation_up;
 							log ("probing " & to_string (segment_cursor), log_threshold + 2);
-
+							log_indentation_up;
+							
 							update_element (
 								container	=> strand.segments,
 								position	=> segment_cursor,
 								process		=> change_segment'access);
 											
+							log_indentation_down;
 							log_indentation_down;
 						end query_segment;
 						
@@ -1071,10 +1065,11 @@ package body schematic_ops is
 					-- loop in drag list
 					while drag_cursor /= type_drags_of_ports.no_element loop
 						log ("probing port " & to_string (key (drag_cursor)), log_threshold + 1);
+						log_indentation_up;
 
-						-- If the current drag point sits on a strand, this flag goes true. Other 
-						-- strand will then not be looked at because the point can only sit on a 
-						-- single strand.
+						-- If the current drag point sits on a strand, this flag will go true. Other 
+						-- strands will then not be looked at because the point can only sit on 
+						-- one strand.
 						drag_processed := false;
 						
 						strand_cursor := net.strands.first;
@@ -1099,12 +1094,13 @@ package body schematic_ops is
 							end if;
 
 							-- If the drag point has been processed, there is no need to look up
-							-- other strands.
+							-- other strands for this port.
 							if drag_processed then exit; end if;
 							
 							next (strand_cursor);
 						end loop;
-						
+
+						log_indentation_down;
 						next (drag_cursor);
 					end loop;
 						
