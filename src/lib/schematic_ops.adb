@@ -933,10 +933,10 @@ package body schematic_ops is
 
 
 	procedure drag_net_segments (
-	-- Drags the given net segments.
+	-- Drags the net segments according to the given drag_list.
 		module			: in type_modules.cursor;		-- the module
-		drag_list		: in type_drags_of_ports.map;
-		sheet			: in type_sheet;	-- the sheet to look at
+		drag_list		: in type_drags_of_ports.map;	-- the old and new port positions
+		sheet			: in type_sheet;				-- the sheet to look at
 		log_threshold	: in type_log_level) is
 
 		procedure query_nets (
@@ -964,11 +964,41 @@ package body schematic_ops is
 
 						procedure query_segment (segment_cursor : in type_net_segments.cursor) is 
 
-							procedure change_segment (segment : in out type_net_segment) is begin
+							procedure change_segment (segment : in out type_net_segment) is 
+							-- Changes the position of start or end point of a segment according to the drag point.
+							-- Moves possible junctions sitting at the start or end point of the segment according
+							-- to the drag point. There should be no more than one junction.
+								use type_junctions;								
+
+								procedure query_junctions (junction_cursor : in type_junctions.cursor) is 
+									procedure move_junction (junction : in out type_net_junction) is begin
+										if junction.coordinates = element (drag_cursor).before then
+											log_indentation_up;
+
+											log ("move junction from" & 
+												to_string (junction.coordinates), log_threshold + 3);
+
+											junction.coordinates := element (drag_cursor).after;
+
+											log ("to" & 
+												to_string (junction.coordinates), log_threshold + 3);
+											
+											log_indentation_down;
+										end if;
+									end move_junction;
+									
+								begin -- query_junctions
+									update_element (
+										container 	=> segment.junctions,
+										position	=> junction_cursor,
+										process		=> move_junction'access);
+								end query_junctions;
+								
+							begin -- change_segment
 								
 								-- if port sits on a start point of a segment -> move start point
 								if segment.coordinates_start = element (drag_cursor).before then
-									log ("move segment start point from " & 
+									log ("move segment start point from" & 
 										to_string (segment.coordinates_start),
 										log_threshold + 3);
 
@@ -978,12 +1008,15 @@ package body schematic_ops is
 										to_string (segment.coordinates_start),
 										log_threshold + 3);
 
+									-- move junctions
+									iterate (segment.junctions, query_junctions'access);
+																		
 									drag_processed := true;
 								end if;
 
 								-- if port sits on an end point of a segment -> move end point
 								if segment.coordinates_end = element (drag_cursor).before then
-									log ("move segment end point from " & 
+									log ("move segment end point from" & 
 										to_string (segment.coordinates_end),
 										log_threshold + 3);
 
@@ -993,27 +1026,12 @@ package body schematic_ops is
 										to_string (segment.coordinates_end),
 										log_threshold + 3);
 
+									-- move junctions
+									iterate (segment.junctions, query_junctions'access);
+									
 									drag_processed := true;
 								end if;
 
-								-- if ports sits between start and end point of a segment -> delete the segment
-								-- and insert two new segments. Move junction to position where the two new
-								-- segments meet.
-								if between_start_and_end_point (
-									point	=> element (drag_cursor).before,
-									segment	=> segment_cursor) then
-
-									null;
--- 											log (" sits on segment -> inserted", log_threshold + 3);
--- 
--- 											-- Remove port from ports_scratch. The port is not connected elsewhere.
--- 											type_ports.delete (container => ports_scratch, position => port_cursor);
--- 
--- 											-- set all_ports_processed true all given ports processed.
--- 											if is_empty (ports_scratch) then all_ports_processed := true; end if;
-
-									drag_processed := true;
-								end if;
 							end change_segment;
 
 						begin -- query_segment
