@@ -1424,9 +1424,9 @@ package body et_project is
 						while port_cursor /= type_ports_submodule.no_element loop
 
 							write (keyword => keyword_submodule, parameters => 
-								space & to_string (element (port_cursor).module)
+								space & to_string (element (port_cursor).module_name)
 								& space & keyword_port & space
-								& et_general.to_string (element (port_cursor).port)
+								& et_general.to_string (element (port_cursor).port_name)
 								); -- submodule CLK_GENERATOR port out
 
 							next (port_cursor);
@@ -7729,7 +7729,7 @@ package body et_project is
 		net_device_ports : et_schematic.type_ports_device.set;
 
 		net_submodule_port : et_schematic.type_port_submodule;
-		net_submodule_ports : et_schematic.type_ports_submodule.list;
+		net_submodule_ports : et_schematic.type_ports_submodule.set;
 
 		net_netchanger_port : et_schematic.type_port_netchanger;
 		net_netchanger_ports : et_schematic.type_ports_netchanger.list;
@@ -10513,13 +10513,22 @@ package body et_project is
 									elsif kw = keyword_submodule then -- submodule motor_driver port mot_on_off
 										expect_field_count (line, 4);
 										
-										net_submodule_port.module := et_general.to_instance_name (f (line, 2)); -- motor_driver
+										net_submodule_port.module_name := et_general.to_instance_name (f (line, 2)); -- motor_driver
 
 										if f (line, 3) = keyword_port then -- port
-											net_submodule_port.port := to_net_name (f (line, 4)); -- A
+											net_submodule_port.port_name := to_net_name (f (line, 4)); -- A
 
-											-- append submodule port to collection of submodule ports
-											et_schematic.type_ports_submodule.append (net_submodule_ports, net_submodule_port);
+											-- Insert submodule port in collection of submodule ports. First make sure it is
+											-- not already in the net segment.
+											if et_schematic.type_ports_submodule.contains (net_submodule_ports, net_submodule_port) then
+												log_indentation_reset;
+												log (message_error & "submodule " & to_string (net_submodule_port.module_name) &
+													" port " & et_general.to_string (net_submodule_port.port_name) & 
+													" already in net segment !", console => true);
+												raise constraint_error;
+											end if;
+											
+											et_schematic.type_ports_submodule.insert (net_submodule_ports, net_submodule_port);
 
 											-- clean up for next submodule port
 											net_submodule_port := (others => <>);

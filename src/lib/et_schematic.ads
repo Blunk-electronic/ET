@@ -233,14 +233,14 @@ package et_schematic is
 	-- This is the port of a submodule:
 	type type_port_submodule is record
 		-- The instance of a certain submodule:
-		module		: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+		module_name	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 
 		-- The net of the submodule is here the port name:
-		port	: type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+		port_name	: type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
 	end record;
 
-	package type_ports_submodule is new doubly_linked_lists (type_port_submodule);
-	-- CS this should be an ordred set which would allow a port only once.
+	function "<" (left, right : in type_port_submodule) return boolean;
+	package type_ports_submodule is new ordered_sets (type_port_submodule);
 	
 
 	-- This is the port of a netchanger:
@@ -302,7 +302,7 @@ package et_schematic is
 		labels				: type_net_labels.list;
 		junctions			: type_junctions.list;
 		ports_devices		: type_ports_device.set;
-		ports_submodules	: type_ports_submodule.list;
+		ports_submodules	: type_ports_submodule.set;
 		ports_netchangers	: type_ports_netchanger.list;
 		-- CS no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags
 	end record;

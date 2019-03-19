@@ -77,7 +77,21 @@ package body et_schematic is
 		else
 			return false;
 		end if;
-	end "<";
+	end;
+
+	function "<" (left, right : in type_port_submodule) return boolean is
+		use et_general.type_module_instance_name;
+	begin
+		if left.module_name < right.module_name then
+			return true;
+		elsif left.module_name > right.module_name then
+			return false;
+		elsif left.port_name < right.port_name then
+			return true;
+		else
+			return false;
+		end if;
+	end;
 	
 	function to_string (appearance : in type_net_label_appearance) return string is begin
 		return latin_1.space & to_lower (type_net_label_appearance'image (appearance));
