@@ -373,7 +373,7 @@ package et_kicad is
 		PORT, 
 		TEXT); -- text embedded in a symbol
 	
-	type type_symbol (appearance : et_libraries.type_component_appearance) is new et_libraries.type_symbol_base with record
+	type type_symbol (appearance : et_libraries.type_device_appearance) is new et_libraries.type_symbol_base with record
 		shapes	: type_symbol_shapes; -- the collection of shapes		
 		ports	: type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol
 
@@ -391,7 +391,7 @@ package et_kicad is
 	end record;
 
 	-- a component unit in the library
-	type type_unit_library (appearance : et_libraries.type_component_appearance) is record
+	type type_unit_library (appearance : et_libraries.type_device_appearance) is record
 		symbol		: type_symbol (appearance);
 		coordinates	: et_coordinates.type_point;
 		-- Units that harbor component wide pins have this flag set.
@@ -424,7 +424,7 @@ package et_kicad is
 
 	
 	-- This is a component as it appears in the library:.
-	type type_component_library (appearance : et_libraries.type_component_appearance) is record
+	type type_component_library (appearance : et_libraries.type_device_appearance) is record
 		prefix			: et_libraries.type_device_name_prefix.bounded_string; -- R, C, IC, ...
 		value			: et_libraries.type_component_value.bounded_string; -- 74LS00
 		units			: type_units_library.map := type_units_library.empty_map;
@@ -504,7 +504,7 @@ package et_kicad is
 	
 	function component_appearance (cursor : in type_components_library.cursor)
 	-- Returns the component appearance where cursor points to.
-		return et_libraries.type_component_appearance;
+		return et_libraries.type_device_appearance;
 
 	function to_package_name (
 		library_name	: in type_device_library_name.bounded_string; -- ../libraries/transistors.lib

@@ -771,7 +771,7 @@ package body et_libraries is
 
 	
 	function to_string (
-		appearance	: in type_component_appearance;
+		appearance	: in type_device_appearance;
 		verbose		: in boolean := false)
 		return string is
 	-- Returns the given component appearance as string.
@@ -786,12 +786,12 @@ package body et_libraries is
 					return ("appears in layout only (mechanical component)");
 			end case;
 		else
-			return latin_1.space & to_lower (type_component_appearance'image (appearance));
+			return latin_1.space & to_lower (type_device_appearance'image (appearance));
 		end if;
 	end to_string;
 
-	function to_appearance (appearance : in string) return type_component_appearance is begin
-		return type_component_appearance'value (appearance);
+	function to_appearance (appearance : in string) return type_device_appearance is begin
+		return type_device_appearance'value (appearance);
 	end to_appearance;
 
 	function to_string (unit_name : in type_unit_name.bounded_string) return string is

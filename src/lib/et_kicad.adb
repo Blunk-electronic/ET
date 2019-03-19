@@ -595,7 +595,7 @@ package body et_kicad is
 	
 	function component_appearance (cursor : in type_components_library.cursor)
 	-- Returns the component appearance where cursor points to.
-		return et_libraries.type_component_appearance is
+		return et_libraries.type_device_appearance is
 	begin
 		return type_components_library.element (cursor).appearance;
 	end component_appearance;
@@ -1042,16 +1042,16 @@ package body et_kicad is
 -- 	end to_field_visible;
 
 	function to_appearance (line : in type_fields_of_line; schematic : in boolean) 
-	-- Converts the apperance flag to type_component_appearance.
+	-- Converts the apperance flag to type_device_appearance.
 	-- The parameter "schematic" specifies whether we are dealing with a schematic
 	-- or a library component.
 	-- The appearance (power symbol or normal) is defined in the component library by P/N
 	-- example: DEF 74LS00 IC 0 30 Y Y 4 F N
 	-- In a schematic it is defined by a hash sign:
 	-- example: L P3V3 #PWR07
-		return et_libraries.type_component_appearance is
+		return et_libraries.type_device_appearance is
 		
-		comp_app	: et_libraries.type_component_appearance;
+		comp_app	: et_libraries.type_device_appearance;
 		lca			: type_library_component_appearance;
 
 		procedure invalid_appearance is
@@ -1295,7 +1295,7 @@ package body et_kicad is
 			-- These properties apply for the whole component (means for all its units):
 			tmp_component_name		: type_component_generic_name.bounded_string; -- 74LS00 -- CS: rename to generic_name
 			tmp_prefix				: type_device_name_prefix.bounded_string; -- IC -- CS: rename to prefix
-			tmp_appearance			: type_component_appearance; -- CS: rename to appearance
+			tmp_appearance			: type_device_appearance; -- CS: rename to appearance
 
 			tmp_port_name_visible		: type_port_name_visible;
 			tmp_terminal_name_visible	: type_terminal_name_visible;
@@ -7328,7 +7328,7 @@ package body et_kicad is
 				use et_string_processing;
 
 				reference					: type_device_name;	-- like IC5	
-				appearance					: type_component_appearance := et_libraries.sch; -- CS: why this default ?
+				appearance					: type_device_appearance := et_libraries.sch; -- CS: why this default ?
 				generic_name_in_lbr			: type_component_generic_name.bounded_string; -- like TRANSISTOR_PNP
 
 				-- V5:
@@ -7856,7 +7856,7 @@ package body et_kicad is
 									raise constraint_error;
 								end if;
 
-						when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
+						when others => -- CS: This should never happen. A subtype of type_device_appearance could be a solution.
 							null;
 							raise constraint_error;
 							
@@ -8287,7 +8287,7 @@ package body et_kicad is
 
 								log ("reference " & to_string (reference) & " (preliminary)", log_threshold);
 								
-							when others => -- CS: This should never happen. A subtype of type_component_appearance could be a solution.
+							when others => -- CS: This should never happen. A subtype of type_device_appearance could be a solution.
 								null;
 								raise constraint_error;
 								

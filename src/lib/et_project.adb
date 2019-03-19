@@ -5007,7 +5007,7 @@ package body et_project is
 		end to_string;
 		
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
-		appearance			: type_component_appearance; -- sch, sch_pcb
+		appearance			: type_device_appearance; -- sch, sch_pcb
 		symbol				: access type_symbol;
 		symbol_line			: et_libraries.type_line;
 		symbol_arc			: et_libraries.type_arc;
@@ -5780,7 +5780,7 @@ package body et_project is
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		prefix				: type_device_name_prefix.bounded_string; -- T, IC
 		value				: type_component_value.bounded_string; -- BC548
-		appearance			: type_component_appearance; -- sch, sch_pcb
+		appearance			: type_device_appearance; -- sch, sch_pcb
 		partcode			: type_component_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
 		variant				: type_component_variant;
 		variant_name		: type_component_variant_name.bounded_string; -- N, D

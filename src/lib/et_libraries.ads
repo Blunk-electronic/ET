@@ -442,33 +442,32 @@ package et_libraries is
 
 	
 -- DEVICE APPEARANCE	
-	type type_component_appearance is ( 
-		sch,		-- a component that exists in the schematic only (like power symbols)
-		sch_pcb,	-- a component that exists in both schematic and soldered on a pcb
-		pcb			-- a component that exists on the pcb only (like a fiducial)		
+	type type_device_appearance is ( 
+		sch,		-- a device that exists in the schematic only (like power symbols)
+		sch_pcb,	-- a device that exists in both schematic and soldered on a pcb
+		pcb			-- a device that exists on the pcb only (like a fiducial)		
 		-- CS: cable 
 		-- CS: wire
-		-- CS: net-ties, netchanger
 		-- ...
 		);
 
 	function to_string (
-		appearance	: in type_component_appearance;
+		appearance	: in type_device_appearance;
 		verbose		: in boolean := false)
 		return string;
-	-- Returns the given component appearance as string.
+	-- Returns the given device appearance as string.
 
-	function to_appearance (appearance : in string) return type_component_appearance;
+	function to_appearance (appearance : in string) return type_device_appearance;
 	
 
 
 	
--- COMPONENT PACKAGES
-	-- A component package is something like "SOT32" or "NDIP14". It is a more or less standardized (JEDEC)
+-- PACKAGES
+	-- A package is something like "SOT32" or "NDIP14". It is a more or less standardized (JEDEC)
 	-- designator for the housing or the case of an electronical component. The package name is independed of
-	-- the actual purpose of a component. An LED can have an SOT23 package and a transistor can also come in an SOT23.
+	-- the actual purpose of a device. An LED can have an SOT23 package and a transistor can also come in an SOT23.
 
-	-- component package/footprint names like "SOT23" or "TO220" are stored in bounded strings:
+	-- device package names like "SOT23" or "TO220" are stored in bounded strings:
 	component_package_name_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) 
 		or to_set('.')
@@ -598,7 +597,7 @@ package et_libraries is
 		texts : type_symbol_texts.list; -- the collection of texts (meaning misc)
 	end record;
 
-	type type_symbol (appearance : type_component_appearance) is new type_symbol_base with record
+	type type_symbol (appearance : type_device_appearance) is new type_symbol_base with record
 		shapes	: type_shapes; -- the collection of shapes
 		ports	: type_ports.map;
 		case appearance is
@@ -645,7 +644,7 @@ package et_libraries is
 	
 	-- An internal unit is a symbol with a swap level.
 	-- An internal unit is owned by the particular device exclusively.
-	type type_unit_internal (appearance : type_component_appearance) is record
+	type type_unit_internal (appearance : type_device_appearance) is record
 		symbol		: type_symbol (appearance);
 		position	: type_point; -- the position of the unit inside the device editor
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
@@ -767,21 +766,21 @@ package et_libraries is
 
 
 -- DEVICES
-	type type_device (appearance : type_component_appearance) is record
+	type type_device (appearance : type_device_appearance) is record
 		prefix			: type_device_name_prefix.bounded_string; -- R, C, IC, ...
 		units_internal	: type_units_internal.map := type_units_internal.empty_map;
 		units_external	: type_units_external.map := type_units_external.empty_map;
 
 		case appearance is
 
-			-- If a component appears in the schematic only, it is a virtual component 
+			-- If a device appears in the schematic only, it is a virtual component 
 			-- and thus does not have any package variants.
 			-- Such components are power symbols. Later when building netlists
 			-- those components enforce net names (like GND or P3V3).
 			when sch => 
 				null;
 
-			-- If a component appears in both schematic and layout it comes 
+			-- If a device appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
 			when sch_pcb => 
 				value		: type_component_value.bounded_string; -- 74LS00

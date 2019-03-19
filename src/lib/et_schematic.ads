@@ -119,7 +119,7 @@ package et_schematic is
 	
 	-- In a schematic we handle only virtual components (like GND symbols)
 	-- and those which appear in both schematic an layout (so called real components):
-	subtype type_appearance_schematic is et_libraries.type_component_appearance 
+	subtype type_appearance_schematic is et_libraries.type_device_appearance 
 		range et_libraries.SCH .. et_libraries.SCH_PCB;
 
 	-- In a schematic we find units spread all over.
