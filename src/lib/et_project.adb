@@ -177,7 +177,7 @@ package body et_project is
 	function compare_connectors (left, right : in type_connector) return boolean is
 	-- Returns true if left connector comes before right connector.
 	-- Returns false if connectors are equal.
-		use et_schematic.type_component_purpose;
+		use et_schematic.type_device_purpose;
 		use type_module_instance_name;
 		r : boolean := false; -- to be returned
 	begin
@@ -7794,7 +7794,7 @@ package body et_project is
 		device_units			: et_schematic.type_units.map; -- PWR, A, B, ...
 		
 		device_partcode			: et_libraries.type_component_partcode.bounded_string;
-		device_purpose			: et_schematic.type_component_purpose.bounded_string;
+		device_purpose			: et_schematic.type_device_purpose.bounded_string;
 		device_bom				: et_schematic.type_bom := et_schematic.type_bom'first;
 		device_variant			: et_libraries.type_component_variant_name.bounded_string; -- D, N
 		device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
@@ -12198,7 +12198,7 @@ package body et_project is
 				instance_name := to_instance_name ("");
 			end clear_module_instance;
 			
-			purpose_A, purpose_B : et_schematic.type_component_purpose.bounded_string; -- power_in, power_out
+			purpose_A, purpose_B : et_schematic.type_device_purpose.bounded_string; -- power_in, power_out
 			instance_A, instance_B : type_module_instance_name.bounded_string; -- DRV_1, PWR
 
 			procedure clear_connector is begin
@@ -12246,7 +12246,7 @@ package body et_project is
 						rig			: in out type_rig) is
 						connection_inserted : boolean;
 						connection_cursor : type_module_connectors.cursor;
-						use et_schematic.type_component_purpose;
+						use et_schematic.type_device_purpose;
 						use et_general.type_module_instance_name;
 					begin
 						-- If NONE of the four elements that make a module connection is specified,

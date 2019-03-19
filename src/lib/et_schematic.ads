@@ -75,10 +75,8 @@ package et_schematic is
 
 	package type_texts is new doubly_linked_lists (type_text);
 
-
--- UNITS AND COMPONENTS
-
-	-- units can be placed mirrored along the x or y axis or not at all.
+	
+	-- Units can be placed mirrored along the x or y axis or not at all.
 	type type_mirror is (NO, X_AXIS, Y_AXIS);
 
 	function to_string (
@@ -90,35 +88,34 @@ package et_schematic is
 	function to_mirror_style (style : in string) return type_mirror;
 
 	
--- COMPONENT PURPOSE
-	-- Components that require operator interaction like connectors, LEDs or switches 
+	-- Devices that require operator interaction like connectors, LEDs or switches 
 	-- MUST have a purpose assigned.
 	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
-	component_purpose_characters : character_set := to_set 
+	device_purpose_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_- "); 
-	component_purpose_length_max : constant positive := 100;
-	package type_component_purpose is new generic_bounded_length (component_purpose_length_max);
+	device_purpose_length_max : constant positive := 100;
+	package type_device_purpose is new generic_bounded_length (device_purpose_length_max);
 	purpose_default : constant string := "dummy";
 
 	procedure validate_purpose (purpose : in string);
 	-- Raises alarm if purpose is empty, purpose_default or nonsense.
 	
-	function to_string (purpose : in type_component_purpose.bounded_string) return string;
-	function to_purpose (purpose : in string) return type_component_purpose.bounded_string;
+	function to_string (purpose : in type_device_purpose.bounded_string) return string;
+	function to_purpose (purpose : in string) return type_device_purpose.bounded_string;
 	
 	procedure check_purpose_length (purpose : in string);
 	-- Tests if the given purpose is longer than allowed.
 	
 	procedure check_purpose_characters (
-		purpose		: in type_component_purpose.bounded_string;
-		characters	: in character_set := component_purpose_characters);
+		purpose		: in type_device_purpose.bounded_string;
+		characters	: in character_set := device_purpose_characters);
 	-- Tests if the given purpose contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
 
 	
-	-- In a schematic we handle only virtual components (like GND symbols)
-	-- and those which appear in both schematic an layout (so called real components):
+	-- In a schematic we handle only virtual devices (like GND symbols)
+	-- and those which appear in both schematic an layout (so called real devices):
 	subtype type_appearance_schematic is et_libraries.type_device_appearance 
 		range et_libraries.SCH .. et_libraries.SCH_PCB;
 
@@ -129,7 +126,7 @@ package et_schematic is
 		mirror		: type_mirror; -- CS default
 	end record;
 
-	-- Some placeholders of a unit are available when the component appears in both schematic and layout:	
+	-- Some placeholders of a unit are available when the device appears in both schematic and layout:	
 	type type_unit (appearance : type_appearance_schematic) is new type_unit_base with record
 		position	: et_coordinates.type_coordinates;
 		case appearance is
@@ -182,7 +179,7 @@ package et_schematic is
 			when et_libraries.sch_pcb => 
 				value		: et_libraries.type_component_value.bounded_string; -- 470R
 				partcode	: et_libraries.type_component_partcode.bounded_string;
-				purpose		: type_component_purpose.bounded_string;
+				purpose		: type_device_purpose.bounded_string;
 				bom			: type_bom; -- whether mounted or not
 				variant		: et_libraries.type_component_variant_name.bounded_string; -- D, N
 

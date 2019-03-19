@@ -277,39 +277,39 @@ package body et_schematic is
 		
 	end validate_purpose;
 	
-	function to_string (purpose : in type_component_purpose.bounded_string) return string is
+	function to_string (purpose : in type_device_purpose.bounded_string) return string is
 	-- Returns the given purpose as string.
 	begin
-		return type_component_purpose.to_string (purpose);
+		return type_device_purpose.to_string (purpose);
 	end to_string;
 
-	function to_purpose (purpose : in string) return type_component_purpose.bounded_string is
-	-- Converts a string to type_component_purpose	
+	function to_purpose (purpose : in string) return type_device_purpose.bounded_string is
+	-- Converts a string to type_device_purpose	
 	begin
-		return type_component_purpose.to_bounded_string (purpose);
+		return type_device_purpose.to_bounded_string (purpose);
 	end to_purpose;
 
 	procedure check_purpose_length (purpose : in string) is
 	-- Tests if the given purpose is longer than allowed.
 		use et_string_processing;
 	begin
-		if purpose'length > component_purpose_length_max then
+		if purpose'length > device_purpose_length_max then
 			log_indentation_reset;
 			log (message_error & "max. number of characters for purpose is" 
-				 & positive'image (component_purpose_length_max) & " !",
+				 & positive'image (device_purpose_length_max) & " !",
 				console => true);
 			raise constraint_error;
 		end if;
 	end check_purpose_length;
 	
 	procedure check_purpose_characters (
-		purpose		: in type_component_purpose.bounded_string;
-		characters	: in character_set := component_purpose_characters) is
+		purpose		: in type_device_purpose.bounded_string;
+		characters	: in character_set := device_purpose_characters) is
 	-- Tests if the given purpose contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
 		use et_string_processing;
-		use type_component_purpose;
+		use type_device_purpose;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
