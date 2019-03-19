@@ -111,7 +111,27 @@ package schematic_ops is
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level);
+
+	function exists_device_port (
+	-- Returns true if given device with the given port exists in module indicated by module_cursor.
+		module_cursor	: in type_modules.cursor; -- motor_driver
+		device_name		: in type_device_name; -- IC45
+		port_name		: in type_port_name.bounded_string) -- CE
+		return boolean;
 	
+	function exists_device_unit_port (
+	-- Returns true if given device exists in module indicated by module_cursor.
+	-- The unit and port names are optionally.
+		module_cursor	: in type_modules.cursor; -- motor_driver
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string := to_unit_name (""); -- A
+		port_name		: in type_port_name.bounded_string := to_port_name ("")) -- CE		
+		return boolean;						
+	
+	procedure check_integrity (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		log_threshold	: in type_log_level);
+								  
 end schematic_ops;
 
 -- Soli Deo Gloria

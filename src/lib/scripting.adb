@@ -167,7 +167,6 @@ package body scripting is
 		procedure schematic_cmd (verb : in type_verb_schematic; noun : in type_noun_schematic) is
 			use et_project;
 			use schematic_ops;
-			--coordinates : schematic_ops.type_coordinates;
 		begin
 			case verb is
 				when ADD =>
@@ -178,6 +177,16 @@ package body scripting is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+				when CHECK =>
+					case noun is
+						when INTEGRITY =>
+							schematic_ops.check_integrity (
+								module_name 	=> module,
+								log_threshold	=> log_threshold + 1);
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
 				when DELETE =>
 					case noun is
 						when DEVICE =>

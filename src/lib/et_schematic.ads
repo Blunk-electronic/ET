@@ -224,12 +224,13 @@ package et_schematic is
 	
 	-- This is the port of a device:
 	type type_port_component is record -- CS rename to type_port_device
-		reference	: et_libraries.type_device_name;
+		reference	: et_libraries.type_device_name; -- CS rename to device_name
 		name		: et_libraries.type_port_name.bounded_string; -- CS rename to port ?
 		-- CS unit name ?
 	end record;
 
 	package type_ports_component is new doubly_linked_lists (type_port_component);
+	-- CS this should be an ordred set which would allow a port only once.
 
 	
 	-- This is the port of a submodule:

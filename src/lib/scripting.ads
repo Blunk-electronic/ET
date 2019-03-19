@@ -81,6 +81,7 @@ package scripting is
 
 	type type_verb_schematic is (
 		ADD,
+		CHECK,
 		DELETE,
 		DRAG,
 		DRAW,
@@ -101,7 +102,8 @@ package scripting is
 		DEVICE_PARTCODE,
 		DEVICE_PURPOSE,
 		DEVICE_VALUE,
-		NET,
+		INTEGRITY,
+		NET,		
 		TEXT,
 		TEXT_SIZE,
 		UNIT,

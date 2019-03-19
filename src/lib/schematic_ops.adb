@@ -1331,7 +1331,271 @@ package body schematic_ops is
 			process		=> query_devices'access);
 
 	end drag_unit;
+
+	function exists_device_port (
+	-- Returns true if given device with the given port exists in module indicated by module_cursor.
+		module_cursor	: in type_modules.cursor; -- motor_driver
+		device_name		: in type_device_name; -- IC45
+		port_name		: in type_port_name.bounded_string) -- CE
+		return boolean is
+
+		result : boolean := false; -- to be returned. goes true once the target has been found
 		
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use et_libraries.type_unit_name;
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+
+			procedure query_units (
+				device_name	: in type_device_name;
+				device		: in et_schematic.type_device) is
+				use et_schematic.type_units;
+				unit_cursor : et_schematic.type_units.cursor := device.units.first;
+				use et_libraries.type_ports;
+				ports : et_libraries.type_ports.map;
+				use et_libraries.type_port_name;
+			begin
+				while unit_cursor /= type_units.no_element loop
+					--log ("unit " & type_unit_name.to_string (key (unit_cursor)));
+					--log ("port " & type_port_name.to_string (port_name));
+					
+					-- fetch the unit ports from the library model
+					ports := ports_of_unit (device_cursor, key (unit_cursor));
+
+					-- if the unit has a port named port_name then we have
+					-- a match. no further search required.
+					if contains (ports, port_name) then
+						result := true;
+						exit;
+					end if;
+										
+					next (unit_cursor);
+				end loop;
+			end query_units;
+			
+		begin -- query_devices
+			if contains (module.devices, device_name) then -- device found
+
+				device_cursor := find (module.devices, device_name);
+					
+				query_element (
+					position	=> device_cursor,
+					process		=> query_units'access);
+
+			end if;
+		end query_devices;
+		
+	begin -- exists_device_port
+		query_element (
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+		return result;
+	end exists_device_port;
+	
+	function exists_device_unit_port (
+	-- Returns true if given device exists in module indicated by module_cursor.
+	-- The unit and port names are optionally.
+		module_cursor	: in type_modules.cursor; -- motor_driver
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string := to_unit_name (""); -- A
+		port_name		: in type_port_name.bounded_string := to_port_name ("")) -- CE
+		return boolean is
+
+		result : boolean := false; -- to be returned, goes true once the target has been found
+		
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use et_libraries.type_unit_name;
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+
+			procedure query_units (
+				device_name	: in type_device_name;
+				device		: in et_schematic.type_device) is
+				use et_schematic.type_units;
+				use et_libraries.type_ports;
+				ports : et_libraries.type_ports.map;
+				use et_libraries.type_port_name;
+			begin
+				if contains (device.units, unit_name) then
+					if length (port_name) > 0 then -- search for port in unit
+
+						-- fetch the unit ports from the library model
+						ports := ports_of_unit (device_cursor, unit_name);
+
+						if contains (ports, port_name) then
+							result := true;
+						end if;
+						
+					else
+						result := true;
+					end if;
+				end if;
+			end query_units;
+			
+		begin -- query_devices
+			if contains (module.devices, device_name) then -- device found
+
+				-- If unit name given, search for the unit.
+				if length (unit_name) > 0 then
+					device_cursor := find (module.devices, device_name);
+					
+					query_element (
+						position	=> device_cursor,
+						process		=> query_units'access);
+
+				else
+					result := true;
+				end if;
+				
+			end if;
+		end query_devices;
+		
+	begin -- exists_device_unit_port
+		query_element (
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+		return result;
+	end exists_device_unit_port;
+
+	
+	procedure check_integrity (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module being checked
+
+		errors : natural := 0;
+		warnings : natural := 0;
+
+		procedure error is begin errors := errors + 1; end;
+		procedure warning is begin warnings := warnings + 1; end;
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use type_nets;
+			
+			procedure query_net (net_cursor : in type_nets.cursor) is
+				use et_general.type_net_name;
+
+				procedure query_strands (
+					net_name	: in type_net_name.bounded_string;
+					net			: in type_net) is
+					use type_strands;
+
+					procedure query_strand (strand_cursor : in type_strands.cursor) is
+
+						procedure query_segments (strand : in type_strand) is
+							use type_net_segments;
+
+							procedure query_segment (segment_cursor : in type_net_segments.cursor) is
+
+								procedure query_ports_devices (segment : in type_net_segment) is
+									use type_ports_component;
+									procedure query_port (port_cursor : in type_ports_component.cursor) is 
+									begin
+										log ("device " & et_libraries.to_string (element (port_cursor).reference) &
+											 " port " & et_libraries.to_string (element (port_cursor).name), log_threshold + 4);
+
+										if not exists_device_port (
+											module_cursor	=> module_cursor,
+											device_name		=> element (port_cursor).reference,
+											port_name		=> element (port_cursor).name) then
+
+											error;
+											
+											log (message_error & "device " & et_libraries.to_string (element (port_cursor).reference) &
+												 " port " & et_libraries.to_string (element (port_cursor).name) &
+												 " does not exist !");
+										end if;
+										
+									end query_port;
+										
+								begin -- query_ports_devices
+									log_indentation_up;
+									iterate (segment.ports_devices, query_port'access);
+									log_indentation_down;
+								end query_ports_devices;
+								
+							begin -- query_segment
+								log (to_string (segment_cursor), log_threshold + 3);
+
+								-- Check ports of devices. Issues error if device and port
+								-- not found in module.devices.
+								query_element (
+									position	=> segment_cursor,
+									process		=> query_ports_devices'access);
+
+								-- CS check ports of submodules
+
+								-- CS check ports of netchangers
+								
+							end query_segment;
+							
+						begin -- query_segments
+							iterate (strand.segments, query_segment'access);
+						end query_segments;
+
+					begin -- query_strand
+						log ("strand " & to_string (position => element (strand_cursor).position), log_threshold + 2);
+						log_indentation_up;
+						
+						query_element (
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+
+						log_indentation_down;
+					end query_strand;
+					
+				begin -- query_strands
+					log_indentation_up;
+					iterate (net.strands, query_strand'access);
+					log_indentation_down;
+				end query_strands;
+
+			begin -- query_net
+				log ("net " & et_general.to_string (key (net_cursor)), log_threshold + 1);
+
+				query_element (
+					position	=> net_cursor,
+					process		=> query_strands'access);
+				
+			end query_net;
+			
+		begin -- query_nets
+			iterate (module.nets, query_net'access);
+		end query_nets;
+
+	begin -- check_integrity
+		log ("module " & to_string (module_name) & " integrity check ...", log_threshold);
+		log_indentation_up;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_nets'access);
+
+
+		if errors > 0 then
+			log (message_warning & "integrity check found errors !");
+			log ("errors   :" & natural'image (errors));
+		end if;
+
+		if warnings > 0 then
+			log (message_warning & "integrity check issued warnings !");
+			log ("warnings :" & natural'image (warnings));
+		end if;
+
+		log_indentation_down;
+	end check_integrity;
 
 
 	
