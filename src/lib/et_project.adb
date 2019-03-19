@@ -11443,7 +11443,7 @@ package body et_project is
 
 									elsif kw = keyword_reference_offset then -- reference_offset 1000
 										expect_field_count (line, 2);
-										submodule.reference_offset := et_libraries.to_reference_id (f (line, 2));
+										submodule.reference_offset := et_libraries.to_device_name_index (f (line, 2));
 										
 									else
 										invalid_keyword (kw);

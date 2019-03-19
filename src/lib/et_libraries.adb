@@ -675,13 +675,13 @@ package body et_libraries is
 		end if;
 	end check_prefix_characters;
 
-	function to_string (ref_id : in type_device_name_index) return string is begin
-		return latin_1.space & type_device_name_index'image (ref_id);
+	function to_string (index : in type_device_name_index) return string is begin
+		return latin_1.space & type_device_name_index'image (index);
 	end to_string;
 
-	function to_reference_id (ref_id : in string) return type_device_name_index is begin
-		return type_device_name_index'value (ref_id);
-	end to_reference_id;
+	function to_device_name_index (index : in string) return type_device_name_index is begin
+		return type_device_name_index'value (index);
+	end to_device_name_index;
 
 	function to_device_name (
 	-- Converts a string like "IC303" to a composite type_device_name.
@@ -875,34 +875,34 @@ package body et_libraries is
 		return " terminal count" & type_terminal_count'image (terminals);
 	end to_string;
 	
-	function to_string (reference : in type_device_name) return string is
+	function to_string (name : in type_device_name) return string is
 	-- Returns the given device name as string.
-	-- Prepends leading zeros according to reference.id_width.
-		id_width_wanted	: natural := reference.id_width;
+	-- Prepends leading zeros according to name.id_width.
+		id_width_wanted	: natural := name.id_width;
 	
 		-- The width of the given id is obtained by converting the id to a string
 		-- and then by measuring its length:
-		id_width_given	: natural := trim(natural'image(reference.id),left)'length;
+		id_width_given	: natural := trim (natural'image (name.id),left)'length;
 
 		-- Finally the number of zeros to prepend is the difference of wanted 
 		-- and given digits:
-		lz				: natural := id_width_wanted - id_width_given;
+		lz : natural := id_width_wanted - id_width_given;
 	begin
 		case lz is
 			when 0 => -- no leading zeroes
-				return (type_device_name_prefix.to_string (reference.prefix) 
-					& trim(natural'image (reference.id),left));
+				return type_device_name_prefix.to_string (name.prefix) 
+					& trim (natural'image (name.id),left);
 				
 			when others => -- leading zeros required
-				return (type_device_name_prefix.to_string (reference.prefix) 
-					& lz * '0' & trim(natural'image (reference.id),left));
+				return type_device_name_prefix.to_string (name.prefix) 
+					& lz * '0' & trim (natural'image (name.id),left);
 		end case;
 	end to_string;
 	
-	function prefix (reference : in type_device_name) return type_device_name_prefix.bounded_string is
+	function prefix (name : in type_device_name) return type_device_name_prefix.bounded_string is
 	-- Returns the prefix of the given device name.
 	begin
-		return reference.prefix;
+		return name.prefix;
 	end prefix;
 
 	
