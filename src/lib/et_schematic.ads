@@ -222,15 +222,12 @@ package et_schematic is
 	package type_junctions is new doubly_linked_lists (type_net_junction);
 
 	
-	-- This is the port of a device:
+	-- This is the port of a device as it appears in a net segment:
 	type type_port_device is record
 		device_name	: et_libraries.type_device_name;
 		port_name	: et_libraries.type_port_name.bounded_string;
 		-- CS unit name ?
 	end record;
-
-	package type_ports_component is new doubly_linked_lists (type_port_device);
-	-- CS this should be an ordred set which would allow a port only once.
 
 	function "<" (left, right : in type_port_device) return boolean;
 	package type_ports_device is new ordered_sets (type_port_device);
@@ -307,7 +304,7 @@ package et_schematic is
 		coordinates_end   	: et_coordinates.type_point;
 		labels				: type_net_labels.list;
 		junctions			: type_junctions.list;
-		ports_devices		: type_ports_component.list;
+		ports_devices		: type_ports_device.set;
 		ports_submodules	: type_ports_submodule.list;
 		ports_netchangers	: type_ports_netchanger.list;
 		-- CS no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags

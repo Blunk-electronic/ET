@@ -161,16 +161,15 @@ package body schematic_ops is
 							use type_net_segments;
 
 							procedure query_segment (segment_cursor : in type_net_segments.cursor) is 
-								use type_ports_component;
+								use type_ports_device;
 
 								procedure query_ports (segment : in out type_net_segment) is
 								-- Tests device ports of given segment if their device name matches the given device name.
 								-- On match the port is skipped. All other ports are collected in ports_new.	
-									ports_new : type_ports_component.list;
+									ports_new : type_ports_device.set;
 									
-									procedure query_port (port_cursor : in type_ports_component.cursor) is
+									procedure query_port (port_cursor : in type_ports_device.cursor) is
 										port : type_port_device := element (port_cursor); -- take a copy of the port
-										use type_ports_component;
 									begin -- query_port
 										if port.device_name = device then -- on match just report the port and skip it
 
@@ -180,7 +179,7 @@ package body schematic_ops is
 												if et_libraries.type_ports.contains (ports, port.port_name) then
 													log ("delete port " & to_string (port.port_name), log_threshold + 3);
 												else
-													ports_new.append (port); -- all other ports are collected in ports_new.
+													ports_new.insert (port); -- all other ports are collected in ports_new.
 												end if;
 											else
 												log ("delete port " & to_string (port.port_name), log_threshold + 3);	
@@ -188,7 +187,7 @@ package body schematic_ops is
 																						
 											log_indentation_down;
 										else
-											ports_new.append (port); -- all other ports are collected in ports_new.
+											ports_new.insert (port); -- all other ports are collected in ports_new.
 										end if;
 									end query_port;
 									
@@ -675,14 +674,14 @@ package body schematic_ops is
 
 								-- If port not already in segment, append it.
 								-- Otherwise it must not be appended again.
-								if type_ports_component.contains (
+								if type_ports_device.contains (
 									container	=> segment.ports_devices,
 									item		=> (device, key (port_cursor)) -- IC23, VCC_IO
 									) then 
 
 									log (" already there -> skipped", log_threshold + 3);
 								else
-									type_ports_component.append (
+									type_ports_device.insert (
 										container	=> segment.ports_devices,
 										new_item	=> (device, key (port_cursor))); -- IC23, VCC_IO
 
@@ -1497,9 +1496,9 @@ package body schematic_ops is
 							procedure query_segment (segment_cursor : in type_net_segments.cursor) is
 
 								procedure query_ports_devices (segment : in type_net_segment) is
-									use type_ports_component;
-									procedure query_port (port_cursor : in type_ports_component.cursor) is 
-									begin
+									use type_ports_device;
+									
+									procedure query_port (port_cursor : in type_ports_device.cursor) is begin
 										log ("device " & et_libraries.to_string (element (port_cursor).device_name) &
 											 " port " & et_libraries.to_string (element (port_cursor).port_name), log_threshold + 4);
 

@@ -1354,7 +1354,7 @@ package body et_project is
 					use type_net_segments;
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 
-					use type_ports_component;
+					use type_ports_device;
 					use type_ports_submodule;
 					use type_ports_netchanger;
 					
@@ -1406,9 +1406,9 @@ package body et_project is
 					end query_junctions;
 
 					procedure query_device_ports (segment : in type_net_segment) is
-						port_cursor : type_ports_component.cursor := segment.ports_devices.first;
+						port_cursor : type_ports_device.cursor := segment.ports_devices.first;
 					begin -- query_device_ports
-						while port_cursor /= type_ports_component.no_element loop
+						while port_cursor /= type_ports_device.no_element loop
 							write (keyword => keyword_device, parameters => 
 								space & et_libraries.to_string (element (port_cursor).device_name)
 								& space & keyword_port & space
@@ -7726,7 +7726,7 @@ package body et_project is
 		net_junctions : et_schematic.type_junctions.list;
 
 		net_device_port : et_schematic.type_port_device;
-		net_device_ports : et_schematic.type_ports_component.list;
+		net_device_ports : et_schematic.type_ports_device.set;
 
 		net_submodule_port : et_schematic.type_port_submodule;
 		net_submodule_ports : et_schematic.type_ports_submodule.list;
@@ -9371,7 +9371,7 @@ package body et_project is
 								net_segment.ports_netchangers := net_netchanger_ports;
 								
 								-- clean up for next port collections (of another net segment)
-								et_schematic.type_ports_component.clear (net_device_ports);
+								et_schematic.type_ports_device.clear (net_device_ports);
 								et_schematic.type_ports_submodule.clear (net_submodule_ports);
 								et_schematic.type_ports_netchanger.clear (net_netchanger_ports);
 
@@ -10494,8 +10494,8 @@ package body et_project is
 										if f (line, 3) = keyword_port then -- port
 											net_device_port.port_name := et_libraries.to_port_name (f (line, 4)); -- CE
 
-											-- append port to port collection of device ports
-											et_schematic.type_ports_component.append (net_device_ports, net_device_port); 
+											-- insert port in port collection of device ports
+											et_schematic.type_ports_device.insert (net_device_ports, net_device_port); 
 										else
 											invalid_keyword (f (line, 3));
 										end if;
