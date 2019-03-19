@@ -223,14 +223,17 @@ package et_schematic is
 
 	
 	-- This is the port of a device:
-	type type_port_component is record -- CS rename to type_port_device
-		reference	: et_libraries.type_device_name; -- CS rename to device_name
-		name		: et_libraries.type_port_name.bounded_string; -- CS rename to port ?
+	type type_port_device is record
+		device_name	: et_libraries.type_device_name;
+		port_name	: et_libraries.type_port_name.bounded_string;
 		-- CS unit name ?
 	end record;
 
-	package type_ports_component is new doubly_linked_lists (type_port_component);
+	package type_ports_component is new doubly_linked_lists (type_port_device);
 	-- CS this should be an ordred set which would allow a port only once.
+
+	function "<" (left, right : in type_port_device) return boolean;
+	package type_ports_device is new ordered_sets (type_port_device);
 
 	
 	-- This is the port of a submodule:
@@ -243,7 +246,8 @@ package et_schematic is
 	end record;
 
 	package type_ports_submodule is new doubly_linked_lists (type_port_submodule);
-
+	-- CS this should be an ordred set which would allow a port only once.
+	
 
 	-- This is the port of a netchanger:
 	type type_port_netchanger is record
@@ -252,7 +256,7 @@ package et_schematic is
 	end record;
 
 	package type_ports_netchanger is new doubly_linked_lists (type_port_netchanger);
-
+	-- CS this should be an ordred set which would allow a port only once.
 
 	
 	

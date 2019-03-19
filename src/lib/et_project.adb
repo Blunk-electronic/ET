@@ -1410,9 +1410,9 @@ package body et_project is
 					begin -- query_device_ports
 						while port_cursor /= type_ports_component.no_element loop
 							write (keyword => keyword_device, parameters => 
-								space & et_libraries.to_string (element (port_cursor).reference)
+								space & et_libraries.to_string (element (port_cursor).device_name)
 								& space & keyword_port & space
-								& et_libraries.to_string (element (port_cursor).name)
+								& et_libraries.to_string (element (port_cursor).port_name)
 								); -- device IC1 port A
 							next (port_cursor);
 						end loop;
@@ -7725,7 +7725,7 @@ package body et_project is
 		net_junction : et_schematic.type_net_junction;
 		net_junctions : et_schematic.type_junctions.list;
 
-		net_device_port : et_schematic.type_port_component;
+		net_device_port : et_schematic.type_port_device;
 		net_device_ports : et_schematic.type_ports_component.list;
 
 		net_submodule_port : et_schematic.type_port_submodule;
@@ -10489,10 +10489,10 @@ package body et_project is
 									if kw = keyword_device then -- device R1 port 1
 										expect_field_count (line, 4);
 
-										net_device_port.reference := et_libraries.to_device_name (f (line, 2)); -- IC3
+										net_device_port.device_name := et_libraries.to_device_name (f (line, 2)); -- IC3
 
 										if f (line, 3) = keyword_port then -- port
-											net_device_port.name := et_libraries.to_port_name (f (line, 4)); -- CE
+											net_device_port.port_name := et_libraries.to_port_name (f (line, 4)); -- CE
 
 											-- append port to port collection of device ports
 											et_schematic.type_ports_component.append (net_device_ports, net_device_port); 

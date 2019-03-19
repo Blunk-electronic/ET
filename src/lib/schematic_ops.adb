@@ -169,21 +169,21 @@ package body schematic_ops is
 									ports_new : type_ports_component.list;
 									
 									procedure query_port (port_cursor : in type_ports_component.cursor) is
-										port : type_port_component := element (port_cursor); -- take a copy of the port
+										port : type_port_device := element (port_cursor); -- take a copy of the port
 										use type_ports_component;
 									begin -- query_port
-										if port.reference = device then -- on match just report the port and skip it
+										if port.device_name = device then -- on match just report the port and skip it
 
 											log_indentation_up;
 											
 											if dedicated_ports then
-												if et_libraries.type_ports.contains (ports, port.name) then
-													log ("delete port " & to_string (port.name), log_threshold + 3);
+												if et_libraries.type_ports.contains (ports, port.port_name) then
+													log ("delete port " & to_string (port.port_name), log_threshold + 3);
 												else
 													ports_new.append (port); -- all other ports are collected in ports_new.
 												end if;
 											else
-												log ("delete port " & to_string (port.name), log_threshold + 3);	
+												log ("delete port " & to_string (port.port_name), log_threshold + 3);	
 											end if;
 																						
 											log_indentation_down;
@@ -1500,18 +1500,18 @@ package body schematic_ops is
 									use type_ports_component;
 									procedure query_port (port_cursor : in type_ports_component.cursor) is 
 									begin
-										log ("device " & et_libraries.to_string (element (port_cursor).reference) &
-											 " port " & et_libraries.to_string (element (port_cursor).name), log_threshold + 4);
+										log ("device " & et_libraries.to_string (element (port_cursor).device_name) &
+											 " port " & et_libraries.to_string (element (port_cursor).port_name), log_threshold + 4);
 
 										if not exists_device_port (
 											module_cursor	=> module_cursor,
-											device_name		=> element (port_cursor).reference,
-											port_name		=> element (port_cursor).name) then
+											device_name		=> element (port_cursor).device_name,
+											port_name		=> element (port_cursor).port_name) then
 
 											error;
 											
-											log (message_error & "device " & et_libraries.to_string (element (port_cursor).reference) &
-												 " port " & et_libraries.to_string (element (port_cursor).name) &
+											log (message_error & "device " & et_libraries.to_string (element (port_cursor).device_name) &
+												 " port " & et_libraries.to_string (element (port_cursor).port_name) &
 												 " does not exist !");
 										end if;
 										

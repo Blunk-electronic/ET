@@ -65,6 +65,20 @@ package body et_schematic is
 		return type_net_label_text_size'value (text);
 	end to_net_label_text_size;
 
+	function "<" (left, right : in type_port_device) return boolean is
+		use et_libraries.type_port_name;
+	begin
+		if compare_reference (right.device_name, left.device_name) then
+			return true;
+		elsif compare_reference (left.device_name, right.device_name) then
+			return false;
+		elsif left.port_name < right.port_name then
+			return true;
+		else
+			return false;
+		end if;
+	end "<";
+	
 	function to_string (appearance : in type_net_label_appearance) return string is begin
 		return latin_1.space & to_lower (type_net_label_appearance'image (appearance));
 	end to_string;

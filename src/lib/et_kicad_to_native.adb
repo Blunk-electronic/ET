@@ -2827,8 +2827,8 @@ package body et_kicad_to_native is
 								et_schematic.type_ports_component.append (
 									container	=> ports_of_segment,
 									new_item	=> (
-											reference 	=> element (port_cursor_kicad).reference,
-											name		=> element (port_cursor_kicad).name));
+											device_name	=> element (port_cursor_kicad).reference,
+											port_name	=> element (port_cursor_kicad).name));
 							end if;
 
 						end if;
