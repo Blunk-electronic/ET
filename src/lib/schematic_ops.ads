@@ -47,7 +47,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
--- with et_general;
+with et_general;
 with et_coordinates;			use et_coordinates;
 with et_libraries;				use et_libraries;
 with et_string_processing;		use et_string_processing;
@@ -127,6 +127,13 @@ package schematic_ops is
 		unit_name		: in type_unit_name.bounded_string := to_unit_name (""); -- A
 		port_name		: in type_port_name.bounded_string := to_port_name ("")) -- CE		
 		return boolean;						
+
+	function exists_submodule_port (
+	-- Returns true if given submodule with the given port exists in module indicated by module_cursor.
+		module_cursor	: in type_modules.cursor; -- motor_driver
+		submod_instance : in et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+		port_name		: in et_general.type_net_name.bounded_string) -- RESET
+		return boolean;
 	
 	procedure check_integrity (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

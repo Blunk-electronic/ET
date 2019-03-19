@@ -57,6 +57,7 @@ with et_libraries;				use et_libraries;
 with et_schematic;				use et_schematic;
 with et_pcb_coordinates;
 with et_project;				use et_project;
+with submodules;
 with et_geometry;
 
 package body schematic_ops is
@@ -1462,6 +1463,61 @@ package body schematic_ops is
 		return result;
 	end exists_device_unit_port;
 
+	function exists_submodule_port (
+	-- Returns true if given submodule with the given port exists in module indicated by module_cursor.
+		module_cursor	: in type_modules.cursor; -- motor_driver
+		submod_instance	: in et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+		port_name		: in et_general.type_net_name.bounded_string) -- RESET
+		return boolean is
+
+		use et_general.type_module_instance_name;
+		use submodules;
+		
+		result : boolean := false; -- to be returned, goes true once the target has been found
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use type_submodules;
+			submod_cursor : type_submodules.cursor;
+
+			procedure query_ports (
+			-- Searches the portlist of the submodule for a port having the port_name.
+			-- Exits prematurely on match.
+				submod_name	: in type_module_instance_name.bounded_string;
+				submodule	: in type_submodule) is
+				use type_net_name;
+				use type_submodule_ports;
+				port_cursor : type_submodule_ports.cursor := submodule.ports.first;
+			begin
+				while port_cursor /= type_submodule_ports.no_element loop
+					if element (port_cursor).name = port_name then
+						result := true;
+						exit;
+					end if;
+
+					next (port_cursor);
+				end loop;
+			end query_ports;
+			
+		begin -- query_submodules
+			if contains (module.submods, submod_instance) then -- submodule found
+				submod_cursor := find (module.submods, submod_instance);
+				
+				query_element (
+					position	=> submod_cursor,
+					process		=> query_ports'access);
+								  
+			end if;
+		end query_submodules;
+		
+	begin -- exists_submodule_port
+		query_element (
+			position	=> module_cursor,
+			process		=> query_submodules'access);
+
+		return result;
+	end exists_submodule_port;
 	
 	procedure check_integrity (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -1479,12 +1535,12 @@ package body schematic_ops is
 			module_name	: in type_module_name.bounded_string;
 			module		: in type_module) is
 			use type_nets;
-			use type_ports_device;			
 
 			-- Here we collect all ports of devices (like IC4 CE, R2 1, ...) across all the nets.
-			-- Since port_collector is an ordered set, an exception will be raised if
+			-- Since device_port_collector is an ordered set, an exception will be raised if
 			-- a port is to be inserted more than once. Something like IC4 port CE must
 			-- occur only ONCE throughout the module.
+			use type_ports_device;
 			device_port_collector : type_ports_device.set;
 
 			procedure collect_device_port (
@@ -1504,6 +1560,32 @@ package body schematic_ops is
 
 					log (ada.exceptions.exception_message (event), console => true);
 			end collect_device_port;
+
+			-- Here we collect all ports of submodules (like MOT_DRV reset) across all the nets.
+			-- Since submodule_port_collector is an ordered set, an exception will be raised if
+			-- a port is to be inserted more than once. Something like "MOT_DRV reset" must
+			-- occur only ONCE throughout the module.
+			use type_ports_submodule;
+			submodule_port_collector : type_ports_submodule.set;
+
+			procedure collect_submodule_port (
+				port	: in type_port_submodule;
+				net		: in type_net_name.bounded_string)
+			is begin
+			-- Collect submodule ports. exception will be raised of port occurs more than once.
+				insert (submodule_port_collector, port);
+
+				exception when event: others =>
+					log (message_error & "net " & to_string (net) &
+						" submodule " & et_general.to_string (port.module_name) &
+						" port " & et_general.to_string (port.port_name) &
+						" already used !",
+						console => true);
+					-- CS: show the net, sheet, xy where the port is in use already
+
+					log (ada.exceptions.exception_message (event), console => true);
+			end collect_submodule_port;
+
 			
 			procedure query_net (net_cursor : in type_nets.cursor) is
 				use et_general.type_net_name;
@@ -1546,6 +1628,33 @@ package body schematic_ops is
 									iterate (segment.ports_devices, query_port'access);
 									log_indentation_down;
 								end query_ports_devices;
+
+								procedure query_ports_submodules (segment : in type_net_segment) is
+
+									procedure query_port (port_cursor : in type_ports_submodule.cursor) is begin
+										log ("submodule " & et_general.to_string (element (port_cursor).module_name) &
+											 " port " & et_general.to_string (element (port_cursor).port_name), log_threshold + 4);
+
+										if not exists_submodule_port (
+											module_cursor	=> module_cursor,
+											submod_instance	=> element (port_cursor).module_name, -- MOT_DRV_3
+											port_name		=> element (port_cursor).port_name) then -- RESET
+
+											error;
+											
+											log (message_error & "submodule " & et_general.to_string (element (port_cursor).module_name) &
+												 " port " & et_general.to_string (element (port_cursor).port_name) &
+												 " does not exist !");
+										end if;
+
+										collect_submodule_port (port => element (port_cursor), net => net_name);
+									end query_port;
+									
+								begin -- query_ports_submodules
+									log_indentation_up;
+									iterate (segment.ports_submodules, query_port'access);
+									log_indentation_down;
+								end query_ports_submodules;
 								
 							begin -- query_segment
 								log (to_string (segment_cursor), log_threshold + 3);
@@ -1556,7 +1665,11 @@ package body schematic_ops is
 									position	=> segment_cursor,
 									process		=> query_ports_devices'access);
 
-								-- CS check ports of submodules
+								-- Check ports of submodules. Issue error if submodule and port
+								-- not found in module.submodules
+								query_element (
+									position	=> segment_cursor,
+									process		=> query_ports_submodules'access);
 
 								-- CS check ports of netchangers
 								
