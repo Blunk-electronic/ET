@@ -1439,7 +1439,7 @@ package body et_project is
 						while port_cursor /= type_ports_netchanger.no_element loop
 
 							write (keyword => keyword_netchanger, parameters => 
-								submodules.to_string (element (port_cursor).id)
+								submodules.to_string (element (port_cursor).index)
 								& space & keyword_port
 								& submodules.to_string (element (port_cursor).port)
 								); -- netchanger 1 port master/slave
@@ -7732,7 +7732,7 @@ package body et_project is
 		net_submodule_ports : et_schematic.type_ports_submodule.set;
 
 		net_netchanger_port : et_schematic.type_port_netchanger;
-		net_netchanger_ports : et_schematic.type_ports_netchanger.list;
+		net_netchanger_ports : et_schematic.type_ports_netchanger.set;
 
 		route			: et_pcb.type_route;
 		route_line 		: et_pcb.type_copper_line_pcb;
@@ -10540,13 +10540,22 @@ package body et_project is
 									elsif kw = keyword_netchanger then -- netchanger 1 port master/slave
 										expect_field_count (line, 4);
 										
-										net_netchanger_port.id := submodules.to_netchanger_id (f (line, 2)); -- 1
+										net_netchanger_port.index := submodules.to_netchanger_id (f (line, 2)); -- 1
 
 										if f (line, 3) = keyword_port then -- port
 											net_netchanger_port.port := submodules.to_port_name (f (line, 4)); -- MASTER, SLAVE
 
-											-- append netchanger port to collection of netchanger ports
-											et_schematic.type_ports_netchanger.append (net_netchanger_ports, net_netchanger_port);
+											-- Insert netchanger port in collection of netchanger ports. First make sure it is
+											-- not already in the net segment.
+											if et_schematic.type_ports_netchanger.contains (net_netchanger_ports, net_netchanger_port) then
+												log_indentation_reset;
+												log (message_error & "netchanger" & submodules.to_string (net_netchanger_port.index) &
+													submodules.to_string (net_netchanger_port.port) & " port" & 
+													" already in net segment !", console => true);
+												raise constraint_error;
+											end if;
+											
+											et_schematic.type_ports_netchanger.insert (net_netchanger_ports, net_netchanger_port);
 
 											-- clean up for next netchanger port
 											net_netchanger_port := (others => <>);

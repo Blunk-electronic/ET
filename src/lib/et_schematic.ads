@@ -243,15 +243,14 @@ package et_schematic is
 	package type_ports_submodule is new ordered_sets (type_port_submodule);
 	
 
-	-- This is the port of a netchanger:
+	-- This is the port of a netchanger as it appears in a net segment:
 	type type_port_netchanger is record
-		id		: submodules.type_netchanger_id := submodules.type_netchanger_id'first;
+		index	: submodules.type_netchanger_id := submodules.type_netchanger_id'first;
 		port	: submodules.type_netchanger_port_name := submodules.SLAVE; -- CS reasonable default ?
 	end record;
 
-	package type_ports_netchanger is new doubly_linked_lists (type_port_netchanger);
-	-- CS this should be an ordred set which would allow a port only once.
-
+	function "<" (left, right : in type_port_netchanger) return boolean;	
+	package type_ports_netchanger is new ordered_sets (type_port_netchanger);
 	
 	
 	
@@ -303,7 +302,7 @@ package et_schematic is
 		junctions			: type_junctions.list;
 		ports_devices		: type_ports_device.set;
 		ports_submodules	: type_ports_submodule.set;
-		ports_netchangers	: type_ports_netchanger.list;
+		ports_netchangers	: type_ports_netchanger.set;
 		-- CS no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags
 	end record;
 

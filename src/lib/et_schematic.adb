@@ -92,6 +92,20 @@ package body et_schematic is
 			return false;
 		end if;
 	end;
+
+	function "<" (left, right : in type_port_netchanger) return boolean is
+		use submodules;
+	begin
+		if left.index < right.index then
+			return true;
+		elsif left.index > right.index then
+			return false;
+		elsif left.port < right.port then
+			return true;
+		else
+			return false;
+		end if;
+	end;
 	
 	function to_string (appearance : in type_net_label_appearance) return string is begin
 		return latin_1.space & to_lower (type_net_label_appearance'image (appearance));
