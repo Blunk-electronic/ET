@@ -1479,6 +1479,31 @@ package body schematic_ops is
 			module_name	: in type_module_name.bounded_string;
 			module		: in type_module) is
 			use type_nets;
+			use type_ports_device;			
+
+			-- Here we collect all ports (like IC4 CE, R2 1, ...) across all the nets.
+			-- Since port_collector is an ordered set, an exception will be raised if
+			-- a port is to be inserted more than once. Something like IC4 port CE must
+			-- occur only ONCE throughout the module.
+			port_collector : type_ports_device.set;
+
+			procedure collect_port (
+				port	: in type_port_device;
+				net		: in type_net_name.bounded_string)
+			is begin
+			-- Collect ports. exception will be raised of port occurs more than once.
+				insert (port_collector, port);
+
+				exception when event: others =>
+					log (message_error & "net " & to_string (net) &
+						" device " & et_libraries.to_string (port.device_name) &
+						" port " & et_libraries.to_string (port.port_name) &
+						" already used !",
+						console => true);
+					-- CS: show the net, sheet, xy where the port is in use already
+
+					log (ada.exceptions.exception_message (event), console => true);
+			end collect_port;
 			
 			procedure query_net (net_cursor : in type_nets.cursor) is
 				use et_general.type_net_name;
@@ -1496,7 +1521,6 @@ package body schematic_ops is
 							procedure query_segment (segment_cursor : in type_net_segments.cursor) is
 
 								procedure query_ports_devices (segment : in type_net_segment) is
-									use type_ports_device;
 									
 									procedure query_port (port_cursor : in type_ports_device.cursor) is begin
 										log ("device " & et_libraries.to_string (element (port_cursor).device_name) &
@@ -1513,7 +1537,8 @@ package body schematic_ops is
 												 " port " & et_libraries.to_string (element (port_cursor).port_name) &
 												 " does not exist !");
 										end if;
-										
+
+										collect_port (port => element (port_cursor), net => net_name);
 									end query_port;
 										
 								begin -- query_ports_devices

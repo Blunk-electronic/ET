@@ -10494,8 +10494,18 @@ package body et_project is
 										if f (line, 3) = keyword_port then -- port
 											net_device_port.port_name := et_libraries.to_port_name (f (line, 4)); -- CE
 
-											-- insert port in port collection of device ports
+											-- Insert port in port collection of device ports. First make sure it is
+											-- not already in the net segment.
+											if et_schematic.type_ports_device.contains (net_device_ports, net_device_port) then
+												log_indentation_reset;
+												log (message_error & "device " & et_libraries.to_string (net_device_port.device_name) &
+													" port " & et_libraries.to_string (net_device_port.port_name) & 
+													" already in net segment !", console => true);
+												raise constraint_error;
+											end if;
+
 											et_schematic.type_ports_device.insert (net_device_ports, net_device_port); 
+
 										else
 											invalid_keyword (f (line, 3));
 										end if;
