@@ -53,6 +53,7 @@ with et_libraries;				use et_libraries;
 with et_string_processing;		use et_string_processing;
 with et_schematic;				use et_schematic;
 with et_project;				use et_project;
+with submodules;
 
 package schematic_ops is
 
@@ -133,6 +134,12 @@ package schematic_ops is
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		submod_instance : in et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 		port_name		: in et_general.type_net_name.bounded_string) -- RESET
+		return boolean;
+
+	function exists_netchanger (
+	-- Returns true if given netchanger exists in module indicated by module_cursor.
+		module_cursor	: in type_modules.cursor; -- motor_driver
+		index			: in submodules.type_netchanger_id) -- 1, 2, 3, ...
 		return boolean;
 	
 	procedure check_integrity (

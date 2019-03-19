@@ -1518,6 +1518,32 @@ package body schematic_ops is
 
 		return result;
 	end exists_submodule_port;
+
+	function exists_netchanger (
+	-- Returns true if given netchanger exists in module indicated by module_cursor.
+		module_cursor	: in type_modules.cursor; -- motor_driver
+		index			: in submodules.type_netchanger_id) -- 1, 2, 3, ...
+		return boolean is
+
+		result : boolean := false; -- to be returned, goes true once the target has been found		
+
+		procedure query_netchangers (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use submodules.type_netchangers;
+		begin -- query_netchangers
+			if contains (module.netchangers, index) then
+				result := true;
+			end if;
+		end query_netchangers;
+		
+	begin -- exists_netchanger
+		query_element (
+			position	=> module_cursor,
+			process		=> query_netchangers'access);
+
+		return result;
+	end exists_netchanger;
 	
 	procedure check_integrity (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -1586,6 +1612,30 @@ package body schematic_ops is
 					log (ada.exceptions.exception_message (event), console => true);
 			end collect_submodule_port;
 
+			-- Here we collect all ports of netchangers (like netchanger port master/slave) across all the nets.
+			-- Since netchanger_ports_collector is an ordered set, an exception will be raised if
+			-- a port is to be inserted more than once. Something like "netchanger port master" must
+			-- occur only ONCE throughout the module.
+			use type_ports_netchanger;
+			netchanger_ports_collector : type_ports_netchanger.set;
+
+			procedure collect_netchanger_port (
+				port	: in type_port_netchanger;
+				net		: in type_net_name.bounded_string)
+			is begin
+			-- Collect netchanger ports. exception will be raised of port occurs more than once.
+				insert (netchanger_ports_collector, port);
+
+				exception when event: others =>
+					log (message_error & "net " & to_string (net) &
+						" netchanger" & submodules.to_string (port.index) &
+						" port" & submodules.to_string (port.port) &
+						" already used !",
+						console => true);
+					-- CS: show the net, sheet, xy where the port is in use already
+
+					log (ada.exceptions.exception_message (event), console => true);
+			end collect_netchanger_port;
 			
 			procedure query_net (net_cursor : in type_nets.cursor) is
 				use et_general.type_net_name;
@@ -1603,7 +1653,6 @@ package body schematic_ops is
 							procedure query_segment (segment_cursor : in type_net_segments.cursor) is
 
 								procedure query_ports_devices (segment : in type_net_segment) is
-									
 									procedure query_port (port_cursor : in type_ports_device.cursor) is begin
 										log ("device " & et_libraries.to_string (element (port_cursor).device_name) &
 											 " port " & et_libraries.to_string (element (port_cursor).port_name), log_threshold + 4);
@@ -1630,7 +1679,6 @@ package body schematic_ops is
 								end query_ports_devices;
 
 								procedure query_ports_submodules (segment : in type_net_segment) is
-
 									procedure query_port (port_cursor : in type_ports_submodule.cursor) is begin
 										log ("submodule " & et_general.to_string (element (port_cursor).module_name) &
 											 " port " & et_general.to_string (element (port_cursor).port_name), log_threshold + 4);
@@ -1655,6 +1703,30 @@ package body schematic_ops is
 									iterate (segment.ports_submodules, query_port'access);
 									log_indentation_down;
 								end query_ports_submodules;
+
+								procedure query_ports_netchangers (segment : in type_net_segment) is
+									procedure query_port (port_cursor : in type_ports_netchanger.cursor) is begin
+										log ("netchanger " & submodules.to_string (element (port_cursor).index) &
+											 " port " & submodules.to_string (element (port_cursor).port), log_threshold + 4);
+
+										if not exists_netchanger (
+											module_cursor	=> module_cursor,
+											index			=> element (port_cursor).index) then -- 1, 2, 3, ...
+
+											error;
+											
+											log (message_error & "netchanger" & submodules.to_string (element (port_cursor).index) &
+												 " does not exist !");
+										end if;
+
+										collect_netchanger_port (port => element (port_cursor), net => net_name);
+									end query_port;
+
+								begin -- query_ports_netchangers
+									log_indentation_up;
+									iterate (segment.ports_netchangers, query_port'access);
+									log_indentation_down;
+								end query_ports_netchangers;
 								
 							begin -- query_segment
 								log (to_string (segment_cursor), log_threshold + 3);
@@ -1671,7 +1743,11 @@ package body schematic_ops is
 									position	=> segment_cursor,
 									process		=> query_ports_submodules'access);
 
-								-- CS check ports of netchangers
+								-- Check netchangers. Issue error if netchanger not
+								-- found in module.netchangers.
+								query_element (
+									position	=> segment_cursor,
+									process		=> query_ports_netchangers'access);
 								
 							end query_segment;
 							
