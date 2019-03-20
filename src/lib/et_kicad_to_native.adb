@@ -2678,7 +2678,6 @@ package body et_kicad_to_native is
 				net_segment_native : et_schematic.type_net_segment;
 
 				use et_schematic.type_net_labels;
-				use et_schematic.type_junctions;
 				use et_schematic.type_ports_device;
 				
 				function tag_and_simple_labels (segment : in et_kicad.type_net_segment) 
@@ -2744,36 +2743,36 @@ package body et_kicad_to_native is
 					return labels;
 				end tag_and_simple_labels;
 
-				function read_net_junctions (segment : in et_kicad.type_net_segment)
-				-- Collects net junctions given in segment and returns them in a single list.
-					return et_schematic.type_junctions.list is
-					junctions : et_schematic.type_junctions.list; -- to be returned
-
-					use et_kicad.type_junctions;
-					junction_cursor : et_kicad.type_junctions.cursor := segment.junctions.first;
-					junction_native : et_schematic.type_net_junction;
-				begin
-					log_indentation_up;
-					while junction_cursor /= et_kicad.type_junctions.no_element loop
-
-						log ("junction" & et_coordinates.to_string (
-							point => element (junction_cursor).coordinates),
-							log_threshold + 5);
-						
-						-- copy the x/y position of kicad junction to native junction
-						et_coordinates.set_xy (
-							point		=> junction_native.coordinates,
-							position	=> et_coordinates.type_point (element (junction_cursor).coordinates));
-						
-						et_schematic.type_junctions.append (
-							container	=> junctions,
-							new_item	=> junction_native);
-						
-						next (junction_cursor);
-					end loop;
-					log_indentation_down;
-					return junctions;
-				end read_net_junctions;
+-- 				function read_net_junctions (segment : in et_kicad.type_net_segment)
+-- 				-- Collects net junctions given in segment and returns them in a single list.
+-- 					return et_schematic.type_junctions.list is
+-- 					junctions : et_schematic.type_junctions.list; -- to be returned
+-- 
+-- 					use et_kicad.type_junctions;
+-- 					junction_cursor : et_kicad.type_junctions.cursor := segment.junctions.first;
+-- 					junction_native : et_schematic.type_net_junction;
+-- 				begin
+-- 					log_indentation_up;
+-- 					while junction_cursor /= et_kicad.type_junctions.no_element loop
+-- 
+-- 						log ("junction" & et_coordinates.to_string (
+-- 							point => element (junction_cursor).coordinates),
+-- 							log_threshold + 5);
+-- 						
+-- 						-- copy the x/y position of kicad junction to native junction
+-- 						et_coordinates.set_xy (
+-- 							point		=> junction_native.coordinates,
+-- 							position	=> et_coordinates.type_point (element (junction_cursor).coordinates));
+-- 						
+-- 						et_schematic.type_junctions.append (
+-- 							container	=> junctions,
+-- 							new_item	=> junction_native);
+-- 						
+-- 						next (junction_cursor);
+-- 					end loop;
+-- 					log_indentation_down;
+-- 					return junctions;
+-- 				end read_net_junctions;
 
 				function read_net_junctions_2 (segment : in et_kicad.type_net_segment)
 				-- Iterates junctions of segment. Tests if they sit on start or end point

@@ -940,7 +940,6 @@ package body schematic_ops is
 	procedure drag_net_segments (
 	-- Drags the net segments according to the given drag_list.
 	-- Changes the position of start or end points of segments.
-	-- Moves possible junctions sitting at the start or end point of the segment.
 	-- Does NOT create new connections with segments if a port
 	-- lands on the start or end point of another segment.
 	-- Does NOT create a new connection with a segments if a port
@@ -977,34 +976,6 @@ package body schematic_ops is
 
 							procedure change_segment (segment : in out type_net_segment) is 
 							-- Changes the position of start or end point of a segment according to the drag point.
-							-- Moves possible junctions sitting at the start or end point of the segment according
-							-- to the drag point. There should be no more than one junction.
-								use type_junctions;								
-
-								procedure query_junctions (junction_cursor : in type_junctions.cursor) is 
-									procedure move_junction (junction : in out type_net_junction) is begin
-										if junction.coordinates = element (drag_cursor).before then
-											log_indentation_up;
-
-											log ("move junction from" & 
-												to_string (junction.coordinates), log_threshold + 3);
-
-											junction.coordinates := element (drag_cursor).after;
-
-											log ("to" & 
-												to_string (junction.coordinates), log_threshold + 3);
-											
-											log_indentation_down;
-										end if;
-									end move_junction;
-									
-								begin -- query_junctions
-									update_element (
-										container 	=> segment.junctions,
-										position	=> junction_cursor,
-										process		=> move_junction'access);
-								end query_junctions;
-								
 							begin -- change_segment
 								
 								-- if port sits on a start point of a segment -> move start point
@@ -1019,9 +990,6 @@ package body schematic_ops is
 										to_string (segment.coordinates_start),
 										log_threshold + 3);
 
-									-- move junctions
-									iterate (segment.junctions, query_junctions'access);
-																		
 									drag_processed := true;
 								end if;
 
@@ -1037,9 +1005,6 @@ package body schematic_ops is
 										to_string (segment.coordinates_end),
 										log_threshold + 3);
 
-									-- move junctions
-									iterate (segment.junctions, query_junctions'access);
-									
 									drag_processed := true;
 								end if;
 
