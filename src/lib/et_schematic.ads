@@ -294,16 +294,20 @@ package et_schematic is
 		class 	: et_pcb.type_net_class_name.bounded_string := et_pcb.net_class_name_default;
 	end record;
 
+	type type_junctions_2 is record
+		start_point	: boolean := false;
+		end_point	: boolean := false;
+	end record;
 	
 	type type_net_segment is record
 		coordinates_start 	: et_coordinates.type_point;
 		coordinates_end   	: et_coordinates.type_point;
 		labels				: type_net_labels.list;
 		junctions			: type_junctions.list;
+		junctions_2			: type_junctions_2;
 		ports_devices		: type_ports_device.set;
 		ports_submodules	: type_ports_submodule.set;
 		ports_netchangers	: type_ports_netchanger.set;
-		-- CS no_connections	: type_no_connection_flags.list;-- the list of no-connection-flags
 	end record;
 
 	package type_net_segments is new doubly_linked_lists (type_net_segment);

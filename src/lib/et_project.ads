@@ -430,7 +430,7 @@ package et_project is
 	section_segments			: constant string := "[SEGMENTS";
 	section_segment				: constant string := "[SEGMENT";
 
-	section_junctions			: constant string := "[JUNCTIONS";
+	--section_junctions			: constant string := "[JUNCTIONS";
 	
 	section_labels				: constant string := "[LABELS";
 	section_label				: constant string := "[LABEL";
@@ -525,7 +525,7 @@ package et_project is
 		SEC_SEGMENT,
 		SEC_LABELS,
 		SEC_LABEL,
-		SEC_JUNCTIONS,
+		--SEC_JUNCTIONS,
 		SEC_PORTS,
 		SEC_PORT,
 		SEC_ROUTE,
