@@ -781,7 +781,8 @@ package body schematic_ops is
 	end insert_ports;
 	
 	procedure move_unit (
-	-- Moves the given unit within the schematic.
+	-- Moves the given unit within the schematic. Disconnects the unit from
+	-- start or end points of net segments.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
@@ -938,6 +939,12 @@ package body schematic_ops is
 
 	procedure drag_net_segments (
 	-- Drags the net segments according to the given drag_list.
+	-- Changes the position of start or end points of segments.
+	-- Moves possible junctions sitting at the start or end point of the segment.
+	-- Does NOT create new connections with segments if a port
+	-- lands on the start or end point of another segment.
+	-- Does NOT create a new connection with a segments if a port
+	-- lands between start and end point.
 		module			: in type_modules.cursor;		-- the module
 		drag_list		: in type_drags_of_ports.map;	-- the old and new port positions
 		sheet			: in type_sheet;				-- the sheet to look at
