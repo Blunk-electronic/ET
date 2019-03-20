@@ -6146,14 +6146,15 @@ package body et_kicad is
 				segment_cursor : type_wild_segments.cursor; -- points to the current segment
 				
 			begin -- process junctions
-				
 				log_indentation_up;
 				
 				-- Break down net segments that have a junction. Do that if the sheet has junctions at all. Otherwise skip this procedure.
 				-- After breaking down net segments, the numbner of segments increases, so segment_count must be updated finally.
+				-- CS NOTE: In this process, segments may evolve, which have junctions not sitting at the segment. A clean up would be useful.
 				if not is_empty (wild_junctions) then 
 					log ("processing" & count_type'image (length (wild_junctions)) & " net junctions ...", log_threshold);
-
+					log_indentation_up;
+					
 					-- We reason there are segments to be broken down. After smashing a segment, segment_count increases. If it
 					-- does not increase anymore, all segments are processed.
 					while segment_smashed loop
@@ -6163,6 +6164,7 @@ package body et_kicad is
 						while segment_cursor /= type_wild_segments.no_element loop
 						
 							segment := type_wild_segments.element (segment_cursor); -- get a segment
+							log ("probing segment" & to_string (segment => segment, scope => xy), log_threshold);
 
 							-- loop in wild junction list until a junction has been found that sits on the segment
 							junction_cursor := wild_junctions.first; -- reset junction cursor to begin of junction list
@@ -6175,16 +6177,16 @@ package body et_kicad is
 
 									if log_level >= log_threshold + 1 then
 										log_indentation_up;
-										log (to_string (position => junction.coordinates, scope => xy));
+										log ("has junction" & to_string (position => junction.coordinates, scope => xy));
 										log_indentation_down;
 									end if;
 									-- NOTE: junctions sitting on a net crossing may appear twice here.
 
 									-- move start coord. of the current segment to the position of the junction
 									type_wild_segments.update_element (
-										container => wild_segments,
-										position => segment_cursor,
-										process => change_segment_start_coordinates'access
+										container	=> wild_segments,
+										position	=> segment_cursor,
+										process		=> change_segment_start_coordinates'access
 										);
 
 									-- replace end coord. of segment by pos. of junction
@@ -6202,8 +6204,8 @@ package body et_kicad is
 									
 									-- append new segment to list of wild segments
 									type_wild_segments.append (
-										container => wild_segments,
-										new_item => segment
+										container	=> wild_segments,
+										new_item	=> segment
 										);
 
 									exit loop_s;
@@ -6226,6 +6228,7 @@ package body et_kicad is
 						end if;
 					end loop;
 
+					log_indentation_down;
 					log ("update: net segments total" & count_type'image (segment_count), log_threshold);
 				end if;
 
