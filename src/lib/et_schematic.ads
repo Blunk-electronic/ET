@@ -35,12 +35,12 @@
 --   history of changes:
 --
 --   ToDo: 
---		1. Objects like net segments, net labels, junctions, notes ... 
+--		1. Objects like net segments, net labels, notes ... 
 --		   should be collected in ordered sets instead of doubly_linked_lists
 --			- the benefits: placing identical objects at the same position would be impossible
 --			- the cons: ordering subprograms required
---		2. Templates via copy and via reference
---		3. Assembly variants
+--		2. Assembly variants
+--		3. device accessories
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
