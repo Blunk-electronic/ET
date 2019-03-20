@@ -6145,7 +6145,7 @@ package body et_kicad is
 				use type_wild_segments;
 				segment_cursor : type_wild_segments.cursor; -- points to the current segment
 				
-			begin -- process junctions
+			begin -- process_junctions
 				log_indentation_up;
 				
 				-- Break down net segments that have a junction. Do that if the sheet has junctions at all. Otherwise skip this procedure.

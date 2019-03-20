@@ -1391,27 +1391,13 @@ package body et_project is
 						end if;
 					end query_labels;
 
--- 					procedure query_junctions (segment : in type_net_segment) is
--- 						use type_junctions;
--- 						junction_cursor : type_junctions.cursor := segment.junctions.first;
--- 					begin -- query_junctions
--- 						if not is_empty (segment.junctions) then
--- 							section_mark (section_junctions, HEADER);
--- 							while junction_cursor /= type_junctions.no_element loop
--- 								write (keyword => keyword_position, parameters => position (element (junction_cursor).coordinates));
--- 								next (junction_cursor);
--- 							end loop;
--- 							section_mark (section_junctions, FOOTER);
--- 						end if;
--- 					end query_junctions;
-
 					procedure query_junctions (segment : in type_net_segment) is
 					begin
-						if segment.junctions_2.start_point then
+						if segment.junctions.start_point then
 							write (keyword => keyword_junction, space => true, parameters => keyword_start);
 						end if;
 
-						if segment.junctions_2.end_point then
+						if segment.junctions.end_point then
 							write (keyword => keyword_junction, space => true, parameters => keyword_end);
 						end if;
 					end query_junctions;
@@ -7733,9 +7719,6 @@ package body et_project is
 		-- The net label direction is relevant if appearance is TAG:
 		net_label_direction : et_schematic.type_net_label_direction := et_schematic.type_net_label_direction'first;
 		
-		--net_junction : et_schematic.type_net_junction;
-		--net_junctions : et_schematic.type_junctions.list;
-
 		net_device_port : et_schematic.type_port_device;
 		net_device_ports : et_schematic.type_ports_device.set;
 
@@ -7862,7 +7845,7 @@ package body et_project is
 
 		lock_status : et_pcb.type_locked := et_pcb.type_locked'first;
 
-		net_junctions : et_schematic.type_junctions_2;
+		net_junctions : et_schematic.type_junctions;
 		
 		procedure set_junction (place : in string) is
 		begin
@@ -9332,7 +9315,7 @@ package body et_project is
 							when SEC_SEGMENTS =>
 
 								-- Copy the net_junctions into the segment.
-								net_segment.junctions_2 := net_junctions;
+								net_segment.junctions := net_junctions;
 
 								-- Reset net_junctions for next net segment.
 								net_junctions := (others => <>);
@@ -9360,25 +9343,6 @@ package body et_project is
 
 							when others => invalid_section;
 						end case;
-
--- 					when SEC_JUNCTIONS =>
--- 						case stack.parent is
--- 							when SEC_SEGMENT =>
--- 
--- 								-- NOTE: A junction is defined by a single line.
--- 								-- Upon reading the line like "position x 4 y 4" the junction is
--- 								-- appended to the junction collection immediately when the line 
--- 								-- is read. See main code of process_line.
--- 								-- There is no section for a single junction like [JUNCTION BEGIN].
--- 
--- 								-- insert junction collection in segment
--- 								net_segment.junctions := net_junctions;
--- 
--- 								-- clean up for next junction collection (of another net segment)
--- 								et_schematic.type_junctions.clear (net_junctions);
--- 
--- 							when others => invalid_section;
--- 						end case;
 
 					when SEC_PORTS =>
 						case stack.parent is
@@ -10234,7 +10198,6 @@ package body et_project is
 			elsif set (section_segment, SEC_SEGMENT) then null;
 			elsif set (section_labels, SEC_LABELS) then null;
 			elsif set (section_label, SEC_LABEL) then null;
-			--elsif set (section_junctions, SEC_JUNCTIONS) then null;
 			elsif set (section_ports, SEC_PORTS) then null;
 			elsif set (section_port, SEC_PORT) then null;				
 			elsif set (section_route, SEC_ROUTE) then null;								
@@ -10480,34 +10443,6 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 						
--- 					when SEC_JUNCTIONS =>
--- 						case stack.parent is
--- 							when SEC_SEGMENT =>
--- 								-- read junction parameters
--- 								-- NOTE: A junction is defined by a single line.
--- 								-- Upon reading the line like "position x 4 y 4" the junction is
--- 								-- appended to the junction collection immediately here. See procdure
--- 								-- execute_section.
--- 								-- There is no section for a single junction like [JUNCTION BEGIN].
--- 								declare
--- 									kw : string := f (line, 1);
--- 								begin
--- 									if kw = keyword_position then
--- 										expect_field_count (line, 5);
--- 
--- 										-- extract position of junction starting at field 2
--- 										net_junction.coordinates := to_position (line, from => 2);
--- 
--- 										-- append junction to junction collection
--- 										et_schematic.type_junctions.append (net_junctions, net_junction);
--- 									else
--- 										invalid_keyword (kw);
--- 									end if;
--- 								end;
--- 
--- 							when others => invalid_section;
--- 						end case;
-
 					when SEC_PORTS =>
 						case stack.parent is 
 							when SEC_SEGMENT =>

@@ -210,15 +210,6 @@ package et_schematic is
 
 
 	
--- 	-- A net junction is where segments can be connected with each other.
--- 	type type_net_junction is record -- CS rename to type_junction
--- 		coordinates : et_coordinates.type_point; -- CS rename to position
--- 	end record;
--- 
--- 	-- Junctions are to be collected in a list.
--- 	package type_junctions is new doubly_linked_lists (type_net_junction);
-
-	
 	-- This is the port of a device as it appears in a net segment:
 	type type_port_device is record
 		device_name	: et_libraries.type_device_name;
@@ -294,7 +285,8 @@ package et_schematic is
 		class 	: et_pcb.type_net_class_name.bounded_string := et_pcb.net_class_name_default;
 	end record;
 
-	type type_junctions_2 is record
+	-- A net junction is where segments and ports meet each other.	
+	type type_junctions is record
 		start_point	: boolean := false;
 		end_point	: boolean := false;
 	end record;
@@ -303,7 +295,7 @@ package et_schematic is
 		coordinates_start 	: et_coordinates.type_point;
 		coordinates_end   	: et_coordinates.type_point;
 		labels				: type_net_labels.list;
-		junctions_2			: type_junctions_2;
+		junctions			: type_junctions;
 		ports_devices		: type_ports_device.set;
 		ports_submodules	: type_ports_submodule.set;
 		ports_netchangers	: type_ports_netchanger.set;
