@@ -2775,6 +2775,48 @@ package body et_kicad_to_native is
 					return junctions;
 				end read_net_junctions;
 
+				function read_net_junctions_2 (segment : in et_kicad.type_net_segment)
+				-- Iterates junctions of segment. Tests if they sit on start or end point
+				-- and sets the corresponding flag in the native junctions of the native segment.
+				-- Issues warning on misplaced junction. The misplaced junction is discarded.
+				-- By this mechanism excessive junctions (sitting on top of each other) 
+				-- are reduced to a single junction (without warning).
+					return et_schematic.type_junctions_2 is
+					junctions : et_schematic.type_junctions_2; -- to be returned
+
+					use kicad_coordinates;
+					use et_kicad.type_junctions;
+					junction_cursor : et_kicad.type_junctions.cursor := segment.junctions.first;
+				begin
+					log_indentation_up;
+					
+					while junction_cursor /= et_kicad.type_junctions.no_element loop
+
+						log ("junction" & et_coordinates.to_string (
+							point => element (junction_cursor).coordinates),
+							log_threshold + 5);
+
+						-- Test if junction sits at start point of segment:
+						if element (junction_cursor).coordinates = segment.coordinates_start then
+							junctions.start_point := true;
+
+						-- Test if junction sits at end point of segment:
+						elsif element (junction_cursor).coordinates = segment.coordinates_end then
+							junctions.end_point := true;
+
+						-- If junction misplaced, issue warning:
+						else
+							log (message_warning & 
+								"misplaced junction between start and end point of segment -> ignored !");
+						end if;
+						
+						next (junction_cursor);
+					end loop;
+					
+					log_indentation_down;
+					return junctions;
+				end read_net_junctions_2;
+				
 				function read_ports (segment : in et_kicad.type_net_segment)
 				-- Returns the component ports connected with the given net segment.
 					return et_schematic.type_ports_device.set is
@@ -2891,8 +2933,9 @@ package body et_kicad_to_native is
 						-- get labels from current kicad net segment
 						net_segment_native.labels := tag_and_simple_labels (element (kicad_segment_cursor));
 
-						-- read net junctions of the current segment in temp. collection net_junctions_native
-						net_segment_native.junctions := read_net_junctions (element (kicad_segment_cursor));
+						-- read net junctions of the current segment
+						--net_segment_native.junctions := read_net_junctions (element (kicad_segment_cursor));
+						net_segment_native.junctions_2 := read_net_junctions_2 (element (kicad_segment_cursor));
 
 						-- read ports connected with the segment
 						net_segment_native.ports_devices := read_ports (element (kicad_segment_cursor));
