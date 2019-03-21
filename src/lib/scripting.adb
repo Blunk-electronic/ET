@@ -228,7 +228,6 @@ package body scripting is
 
 						when others => invalid_noun (to_string (noun));
 					end case;
-						
 					
 				when DRAW =>
 					case noun is
@@ -284,6 +283,28 @@ package body scripting is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+				when PLACE =>
+					case noun is
+						when JUNCTION =>
+							schematic_ops.place_junction 
+								(
+								module_name 	=> module,
+								place			=> to_coordinates 
+													(
+													sheet => to_sheet (f (5)),
+													point => set_point 
+																(
+																x => to_distance (f (6)),
+																y => to_distance (f (7))
+																)
+													),
+									
+								log_threshold	=> log_threshold + 1
+								);
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
 				when RENAME =>
 					case noun is
 						when DEVICE =>

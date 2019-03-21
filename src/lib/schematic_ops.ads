@@ -141,8 +141,22 @@ package schematic_ops is
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		index			: in submodules.type_netchanger_id) -- 1, 2, 3, ...
 		return boolean;
+
+	procedure place_junction (
+	-- Places a net junction at the given position.
+	-- The targeted net segement is split in two with the junction between them.
+	-- If there is no net segment at the given position, nothing happens.							 
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (
+	-- Performs an in depth check on the schematic of the given module.
+	-- Tests nets:
+	-- 1. for device/submodule/netchanger port that do not have a same named device/submodule/netchanger.
+	-- 2. for device/submodule/netchanger port that occur more than once.
+	-- 3. CS: for net junctions sitting on top of each other
+	-- 4. CS: for device/submodule/netchanger port that do not have a visual connection to the net
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 								  

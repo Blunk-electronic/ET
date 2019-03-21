@@ -325,6 +325,70 @@ package body schematic_ops is
 
 	end delete_device;
 
+	function position (
+	-- Returns the sheet/x/y position of the given device and port.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC34
+		port_name		: in type_port_name.bounded_string; -- CE
+		log_threshold	: in type_log_level)
+		return type_coordinates is
+
+		port_position : type_coordinates; -- to be returned		
+		
+		module_cursor : type_modules.cursor; -- points to the module being inquired
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+			unit_position : type_coordinates;
+
+			procedure query_units (
+				device_name	: in type_device_name;
+				device		: in et_schematic.type_device) is
+				use et_schematic.type_units;
+				unit_cursor : type_units.cursor := device.units.first;
+			begin
+				while unit_cursor /= type_units.no_element loop
+-- 					if contains (element (unit_cursor).ports, port_name) then
+-- 						null;
+-- 					end if;
+					next (unit_cursor);
+				end loop;
+			end query_units;
+			
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+				device_cursor := find (module.devices, device_name); -- the device should be there
+
+				log_indentation_up;
+				
+				et_schematic.type_devices.query_element (
+					position	=> device_cursor,
+					process		=> query_units'access);
+
+				log_indentation_down;				
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- position
+		log ("module " & to_string (module_name) &
+			 " locating " & to_string (device_name) & 
+			 " port " & to_string (port_name) & " ...", log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_devices'access);
+		
+		return port_position;
+	end position;
+	
 	function ports_of_unit (
 	-- Returns a map of ports of the given device and unit.
 		device_cursor	: in et_schematic.type_devices.cursor;
@@ -623,12 +687,12 @@ package body schematic_ops is
 				process		=> move'access);
 		end;
 			
-	begin -- offset_ports
+	begin -- move_ports
 		iterate (ports, query_port'access);
 	end move_ports;
 
 	procedure insert_ports (
-	-- Inserts the given ports in the net segments.
+	-- Inserts the given device ports in the net segments.
 	-- If a port lands on either the start or end point of a segment, it will
 	-- be regarded as "connected" with the segment.
 	-- If a ports lands between start or end point of a segment, nothing happens
@@ -637,7 +701,7 @@ package body schematic_ops is
 	-- jet and probably not a good idea.
 		module			: in type_modules.cursor;		-- the module
 		device			: in type_device_name;			-- the device
-		ports			: in et_libraries.type_ports.map; -- the unit ports
+		ports			: in et_libraries.type_ports.map; -- the ports to be inserted
 		sheet			: in type_sheet;	-- the sheet to look at
 		log_threshold	: in type_log_level) is
 
@@ -1295,7 +1359,6 @@ package body schematic_ops is
 		
 		-- locate module
 		module_cursor := locate_module (module_name);
-	
 		
 		update_element (
 			container	=> modules,
@@ -1516,8 +1579,189 @@ package body schematic_ops is
 
 		return result;
 	end exists_netchanger;
+
+	procedure place_junction (
+	-- Places a net junction at the given position.
+	-- The targeted net segement is split in two with the junction between them.
+	-- If there is no net segment at the given position, nothing happens.							 
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		log_threshold	: in type_log_level) is
+		use et_coordinates;
+		
+		module_cursor : type_modules.cursor; -- points to the module being checked
+
+		segment_found : boolean := false;
+		old_segment : type_net_segment;
+		
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_nets;
+			net_cursor : type_nets.cursor := module.nets.first;
+
+			procedure query_strands (
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+				use et_coordinates;
+				
+				use type_strands;
+				strand_cursor : type_strands.cursor := net.strands.first;
+				
+				procedure query_segments (strand : in out type_strand) is
+					use type_net_segments;
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+			
+				begin -- query_segments
+					while segment_cursor /= type_net_segments.no_element loop
+						--log_indentation_up;
+						--log ("probing " & to_string (segment_cursor), log_threshold + 2);
+
+						if between_start_and_end_point (
+							point	=> type_point (place),
+							segment	=> segment_cursor) then -- targeted segment found
+
+							log ("net " & to_string (net_name) & " strand" &
+								 to_string (position => strand.position), log_threshold + 1);
+							log (to_string (segment_cursor), log_threshold + 1);
+
+							-- backup old segment (it contains port and junction information)
+							old_segment := element (segment_cursor);
+
+							-- delete the targeted segment. it will later be replaced by two new segments.
+							delete (strand.segments, segment_cursor);
+
+							-- no further search reguired
+							segment_found := true;
+							exit;
+						end if;
+						
+ 						--log_indentation_down;
+						next (segment_cursor);
+					end loop;
+
+					-- If targeted segment has been found, insert two new segments in the strand.
+					if segment_found then
+						declare
+							segment_1, segment_2 : type_net_segment;
+						begin
+							-- set start and end points of new segments
+							segment_1.coordinates_start := old_segment.coordinates_start;
+							segment_1.coordinates_end := type_point (place);
+							segment_2.coordinates_start := type_point (place);
+							segment_2.coordinates_end := old_segment.coordinates_end;
+
+							-- set junctions
+							segment_1.junctions.start_point := old_segment.junctions.start_point;
+							segment_1.junctions.end_point := true; -- because there is the new junction
+							segment_2.junctions.start_point := false; -- no need for another junction at the same place
+							segment_2.junctions.end_point := old_segment.junctions.end_point;
+							
+							type_net_segments.insert (
+								container	=> strand.segments,
+								before		=> segment_cursor,
+								new_item	=> segment_1);
+
+							type_net_segments.insert (
+								container	=> strand.segments,
+								before		=> segment_cursor,
+								new_item	=> segment_2);
+						end;
+					end if;
+
+				end query_segments;
+					
+			begin -- query_strands
+				while (not segment_found) and strand_cursor /= type_strands.no_element loop
+					
+					-- We pick out only the strands on the targeted sheet:
+					if sheet (element (strand_cursor).position) = sheet (place) then
+						--log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+						--log_indentation_up;
+						
+						--log ("strand " & to_string (position => element (strand_cursor).position),
+						--	log_threshold + 1);
+					
+						update_element (
+							container	=> net.strands,
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+					
+						--log_indentation_down;
+					end if;
+
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+			
+		begin -- query_nets
+			while (not segment_found) and net_cursor /= type_nets.no_element loop
+
+				update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_strands'access);
+
+				next (net_cursor);
+			end loop;
+		end query_nets;
+
+		procedure update_device_ports is 
+		-- Queries the positions of the device ports in the old_segment. By the
+		-- position assigns the ports to either of the new segments.
+			use type_ports_device;
+
+			procedure query_ports (cursor : in type_ports_device.cursor) is
+				device_name 	: type_device_name; -- IC23
+				port_name		: type_port_name.bounded_string; -- CE
+				port_position 	: type_coordinates; -- the position of the port
+			begin
+				device_name	:= element (cursor).device_name;
+				port_name	:= element (cursor).port_name;
+
+				-- locate the port
+
+				port_position := position (module_name, device_name, port_name, log_threshold + 1);
+			end query_ports;
+			
+		begin -- update_device_ports
+			log ("updating device ports ...", log_threshold + 1);
+			log_indentation_up;
+			
+			iterate (old_segment.ports_devices, query_ports'access);
+			log_indentation_down;
+		end update_device_ports;
+		
+		
+	begin -- place_junction
+		log ("module " & to_string (module_name) & " placing junction at" &
+			 to_string (position => place) & " ...", log_threshold);
+		log_indentation_up;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_nets'access);
+
+		update_device_ports;
+
+		-- CS update_submodule_ports;
+
+		-- CS update_netchanger_ports;
+		
+		log_indentation_down;
+	end place_junction;
 	
 	procedure check_integrity (
+	-- Performs an in depth check on the schematic of the given module.
+	-- Tests nets:
+	-- 1. for device/submodule/netchanger port that do not have a same named device/submodule/netchanger.
+	-- 2. for device/submodule/netchanger port that occur more than once.
+	-- 3. CS: for net junctions sitting on top of each other
+	-- 4. CS: for device/submodule/netchanger port that do not have a visual connection to the net
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level) is
 
