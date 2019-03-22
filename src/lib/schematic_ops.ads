@@ -144,8 +144,9 @@ package schematic_ops is
 
 	procedure place_junction (
 	-- Places a net junction at the given position.
-	-- The targeted net segement is split in two with the junction between them.
-	-- If there is no net segment at the given position, nothing happens.							 
+	-- If the junction is to be placed between start and end point of a segment, then the segment 
+	-- is split in two new segments with the junction between them.
+	-- If there is no net segment at the given position, no junction is placed and warning issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		place			: in et_coordinates.type_coordinates; -- sheet/x/y
 		log_threshold	: in type_log_level);

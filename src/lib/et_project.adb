@@ -1451,7 +1451,7 @@ package body et_project is
 						section_mark (section_segment, HEADER);
 
 						write (keyword => keyword_start, parameters => position (element (segment_cursor).coordinates_start));
-						write (keyword => keyword_end,   parameters => position (element (segment_cursor).coordinates_end));
+						write (keyword => keyword_end,   parameters => "  " & position (element (segment_cursor).coordinates_end));
 
 						query_element (segment_cursor, query_labels'access);
 						query_element (segment_cursor, query_junctions'access);

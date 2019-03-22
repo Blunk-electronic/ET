@@ -1612,8 +1612,9 @@ package body schematic_ops is
 
 	procedure place_junction (
 	-- Places a net junction at the given position.
-	-- The targeted net segement is split in two with the junction between them.
-	-- If there is no net segment at the given position, nothing happens.							 
+	-- If the junction is to be placed between start and end point of a segment, then the segment 
+	-- is split in two new segments with the junction between them.
+	-- If there is no net segment at the given position, no junction is placed and warning issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		place			: in et_coordinates.type_coordinates; -- sheet/x/y
 		log_threshold	: in type_log_level) is
@@ -1621,12 +1622,8 @@ package body schematic_ops is
 		
 		module_cursor : type_modules.cursor; -- points to the module being checked
 
-		segment_found : boolean := false;
-		old_segment : type_net_segment;
-
-		use type_net_segments;
-		--segment_1_cursor, segment_2_cursor : type_net_segments.cursor;
-		
+		segment_found : boolean := false; -- goes true if a net segment has been found to place the junction at
+	
 		procedure query_nets (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
@@ -1642,8 +1639,94 @@ package body schematic_ops is
 				strand_cursor : type_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in out type_strand) is
+					use type_net_segments;
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
-			
+					old_segment : type_net_segment; -- here a backup of the old segment lives
+					
+					procedure insert_two_new_segments is
+						segment_1, segment_2 : type_net_segment;
+
+						procedure update_device_ports is 
+						-- Queries the positions of the device ports in the old_segment. By the
+						-- position assigns the ports to the new segments. 
+							use type_ports_device;
+
+							procedure query_ports (cursor : in type_ports_device.cursor) is
+								device_name 	: type_device_name; -- IC23
+								port_name		: type_port_name.bounded_string; -- CE
+								port_position 	: et_coordinates.type_point; -- the xy-position of the port
+							begin
+								device_name	:= element (cursor).device_name;
+								port_name	:= element (cursor).port_name;
+
+								-- locate the port
+								port_position := type_point (position (module_name, device_name, port_name, log_threshold + 1));
+								log_indentation_up;
+								
+								log ("device " & to_string (device_name) & " port " & to_string (port_name) &
+									" at" & et_coordinates.to_string (point => port_position),
+									log_threshold + 1);
+
+								-- If the port was at the start point of the old segment, then
+								-- it goes into segment_1.
+								if port_position = old_segment.coordinates_start then
+									insert (segment_1.ports_devices, element (cursor));
+
+								-- If the port was at the end point of the old segment, then
+								-- it goes into segment_2.
+								elsif port_position = old_segment.coordinates_end then
+									insert (segment_2.ports_devices, element (cursor));
+
+								-- If port was somewhere else, we have a problem. This should never happen.
+								else
+									log_indentation_reset;
+									log (message_error & "port not on segment !");
+									raise constraint_error;
+								end if;
+								
+								log_indentation_down;
+							end query_ports;
+							
+						begin -- update_device_ports
+							log ("updating device ports ...", log_threshold + 1);
+							log_indentation_up;
+							
+							iterate (old_segment.ports_devices, query_ports'access);
+							log_indentation_down;
+						end update_device_ports;
+						
+					begin -- insert_two_new_segments
+						-- set start and end points of new segments
+						segment_1.coordinates_start := old_segment.coordinates_start;
+						segment_1.coordinates_end := type_point (place);
+						segment_2.coordinates_start := type_point (place);
+						segment_2.coordinates_end := old_segment.coordinates_end;
+
+						-- set junctions
+						segment_1.junctions.start_point := old_segment.junctions.start_point;
+						segment_1.junctions.end_point := true; -- because there is the new junction
+						segment_2.junctions.start_point := false; -- no need for another junction at the same place
+						segment_2.junctions.end_point := old_segment.junctions.end_point;
+
+						-- Ports which were part of the old segment must now be assigned to the 
+						-- two new segements.
+						update_device_ports;
+
+						-- CS update_submodule_ports;
+
+						-- CS update_netchanger_ports;
+						
+						type_net_segments.insert (
+							container	=> strand.segments,
+							before		=> segment_cursor,
+							new_item	=> segment_1);
+
+						type_net_segments.insert (
+							container	=> strand.segments,
+							before		=> segment_cursor,
+							new_item	=> segment_2);
+					end insert_two_new_segments;
+					
 				begin -- query_segments
 					while segment_cursor /= type_net_segments.no_element loop
 						--log_indentation_up;
@@ -1672,37 +1755,10 @@ package body schematic_ops is
 						next (segment_cursor);
 					end loop;
 
-					-- If targeted segment has been found, insert two new segments in the strand.
-					if segment_found then
-						declare
-							segment_1, segment_2 : type_net_segment;
-						begin
-							-- set start and end points of new segments
-							segment_1.coordinates_start := old_segment.coordinates_start;
-							segment_1.coordinates_end := type_point (place);
-							segment_2.coordinates_start := type_point (place);
-							segment_2.coordinates_end := old_segment.coordinates_end;
-
-							-- set junctions
-							segment_1.junctions.start_point := old_segment.junctions.start_point;
-							segment_1.junctions.end_point := true; -- because there is the new junction
-							segment_2.junctions.start_point := false; -- no need for another junction at the same place
-							segment_2.junctions.end_point := old_segment.junctions.end_point;
-
-							--segment_1_cursor := segment_cursor;
-							
-							type_net_segments.insert (
-								container	=> strand.segments,
-								before		=> segment_cursor,
-								new_item	=> segment_1);
-
-							--segment_2_cursor := segment_cursor;
-							
-							type_net_segments.insert (
-								container	=> strand.segments,
-								before		=> segment_cursor,
-								new_item	=> segment_2);
-						end;
+					-- If targeted segment has been found, insert two new segments in the strand
+					-- and rearrange the ports of devices, submodules and netchangers.
+					if segment_found then 
+						insert_two_new_segments;
 					end if;
 
 				end query_segments;
@@ -1742,38 +1798,6 @@ package body schematic_ops is
 			end loop;
 		end query_nets;
 
-		procedure update_device_ports is 
-		-- Queries the positions of the device ports in the old_segment. By the
-		-- position assigns the ports to the new segments.
-			use type_ports_device;
-
-			procedure query_ports (cursor : in type_ports_device.cursor) is
-				device_name 	: type_device_name; -- IC23
-				port_name		: type_port_name.bounded_string; -- CE
-				port_position 	: et_coordinates.type_coordinates; -- the position of the port
-			begin
-				device_name	:= element (cursor).device_name;
-				port_name	:= element (cursor).port_name;
-
-				-- locate the port
-				port_position := position (module_name, device_name, port_name, log_threshold + 1);
-				log_indentation_up;
-				
-				log ("rearrange device " & to_string (device_name) & " port " & to_string (port_name) &
-					 " at" & et_coordinates.to_string (position => port_position),
-					 log_threshold + 1);
-
-				log_indentation_down;
-			end query_ports;
-			
-		begin -- update_device_ports
-			log ("updating device ports ...", log_threshold + 1);
-			log_indentation_up;
-			
-			iterate (old_segment.ports_devices, query_ports'access);
-			log_indentation_down;
-		end update_device_ports;
-				
 	begin -- place_junction
 		log ("module " & to_string (module_name) & " placing junction at" &
 			 to_string (position => place) & " ...", log_threshold);
@@ -1787,11 +1811,9 @@ package body schematic_ops is
 			position	=> module_cursor,
 			process		=> query_nets'access);
 
-		update_device_ports;
-
-		-- CS update_submodule_ports;
-
-		-- CS update_netchanger_ports;
+		if not segment_found then
+			log (message_warning & "attempt to place junction in the void. Junction not placed !");
+		end if;
 		
 		log_indentation_down;
 	end place_junction;
