@@ -324,73 +324,11 @@ package body schematic_ops is
 			process		=> query_devices'access);
 
 	end delete_device;
-
-	function position (
-	-- Returns the sheet/x/y position of the given device and port.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC34
-		port_name		: in type_port_name.bounded_string; -- CE
-		log_threshold	: in type_log_level)
-		return type_coordinates is
-
-		port_position : type_coordinates; -- to be returned		
-		
-		module_cursor : type_modules.cursor; -- points to the module being inquired
-
-		procedure query_devices (
-			module_name	: in type_module_name.bounded_string;
-			module		: in type_module) is
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
-			unit_position : type_coordinates;
-
-			procedure query_units (
-				device_name	: in type_device_name;
-				device		: in et_schematic.type_device) is
-				use et_schematic.type_units;
-				unit_cursor : type_units.cursor := device.units.first;
-			begin
-				while unit_cursor /= type_units.no_element loop
--- 					if contains (element (unit_cursor).ports, port_name) then
--- 						null;
--- 					end if;
-					next (unit_cursor);
-				end loop;
-			end query_units;
-			
-		begin -- query_devices
-			if contains (module.devices, device_name) then
-				device_cursor := find (module.devices, device_name); -- the device should be there
-
-				log_indentation_up;
-				
-				et_schematic.type_devices.query_element (
-					position	=> device_cursor,
-					process		=> query_units'access);
-
-				log_indentation_down;				
-			else
-				device_not_found (device_name);
-			end if;
-		end query_devices;
-		
-	begin -- position
-		log ("module " & to_string (module_name) &
-			 " locating " & to_string (device_name) & 
-			 " port " & to_string (port_name) & " ...", log_threshold);
-
-		-- locate module
-		module_cursor := locate_module (module_name);
-		
-		query_element (
-			position	=> module_cursor,
-			process		=> query_devices'access);
-		
-		return port_position;
-	end position;
 	
 	function ports_of_unit (
 	-- Returns a map of ports of the given device and unit.
+	-- The coordinates of the ports are default xy-positions relative
+	-- to the center of the unit.
 		device_cursor	: in et_schematic.type_devices.cursor;
 		unit_name		: in type_unit_name.bounded_string)
 		return et_libraries.type_ports.map is
@@ -485,6 +423,124 @@ package body schematic_ops is
 				raise;
 		
 	end ports_of_unit;
+
+	procedure move_ports (
+	-- Moves the given unit ports by given offset.
+		ports	: in out et_libraries.type_ports.map; -- the portlist
+		offset	: in et_coordinates.type_coordinates) -- the offset (only x/y matters)
+		is
+		use et_libraries.type_ports;
+
+		procedure move (
+			name	: in type_port_name.bounded_string;
+			port	: in out type_port) is
+		begin
+			move (port.position, offset);
+		end;
+
+		procedure query_port (cursor : in type_ports.cursor) is begin
+			update_element (
+				container	=> ports,
+				position	=> cursor,
+				process		=> move'access);
+		end;
+			
+	begin -- move_ports
+		iterate (ports, query_port'access);
+	end move_ports;
+	
+	function position (
+	-- Returns the sheet/x/y position of the given device and port.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC34
+		port_name		: in type_port_name.bounded_string; -- CE
+		log_threshold	: in type_log_level)
+		return et_coordinates.type_coordinates is
+
+		port_position : et_coordinates.type_coordinates; -- to be returned		
+		
+		module_cursor : type_modules.cursor; -- points to the module being inquired
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+			unit_position : et_coordinates.type_coordinates;
+
+			procedure query_units (
+				device_name	: in type_device_name;
+				device		: in et_schematic.type_device) is
+				
+				use et_schematic.type_units;
+				unit_cursor : type_units.cursor := device.units.first;
+				unit_name : type_unit_name.bounded_string;
+				
+				use et_libraries.type_ports;
+				ports : et_libraries.type_ports.map;
+				port_cursor : et_libraries.type_ports.cursor;
+			begin
+				-- Locate unit in schematic device:
+				while unit_cursor /= type_units.no_element loop
+
+					-- Load the default xy-positions of ports relative to the center of the unit.
+					unit_name := key (unit_cursor);
+					ports := ports_of_unit (device_cursor, unit_name);
+
+					-- If the unit has a port named port_name: 
+					if contains (ports, port_name) then -- port found
+						
+						-- calculate the port position in the schematic
+						unit_position := element (unit_cursor).position; -- unit pos. in schematic
+
+						port_cursor := find (ports, port_name);
+						port_position := et_coordinates.to_coordinates (
+									sheet	=> sheet (unit_position), -- the sheet where the unit is
+									point	=> element (port_cursor).position -- default xy pos of port
+									);														 
+
+						-- move port so that it ends up at the position in the schematic:
+						et_coordinates.move (
+							point 	=> port_position,
+							offset	=> unit_position);
+						
+						exit; -- no need to look at other units
+					end if;
+					
+					next (unit_cursor);
+				end loop;
+			end query_units;
+			
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+				device_cursor := find (module.devices, device_name); -- the device should be there
+
+				log_indentation_up;
+				
+				et_schematic.type_devices.query_element (
+					position	=> device_cursor,
+					process		=> query_units'access);
+
+				log_indentation_down;				
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- position
+		log ("module " & to_string (module_name) &
+			 " locating " & to_string (device_name) & 
+			 " port " & to_string (port_name) & " ...", log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_devices'access);
+		
+		return port_position;
+	end position;
 	
 	procedure delete_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -664,32 +720,6 @@ package body schematic_ops is
 			return false;
 		end if;
 	end between_start_and_end_point;
-
-	
-	procedure move_ports (
-	-- Moves the given unit ports by given offset.
-		ports	: in out et_libraries.type_ports.map; -- the portlist
-		offset	: in et_coordinates.type_coordinates) -- the offset (only x/y matters)
-		is
-		use et_libraries.type_ports;
-
-		procedure move (
-			name	: in type_port_name.bounded_string;
-			port	: in out type_port) is
-		begin
-			move (port.position, offset);
-		end;
-
-		procedure query_port (cursor : in type_ports.cursor) is begin
-			update_element (
-				container	=> ports,
-				position	=> cursor,
-				process		=> move'access);
-		end;
-			
-	begin -- move_ports
-		iterate (ports, query_port'access);
-	end move_ports;
 
 	procedure insert_ports (
 	-- Inserts the given device ports in the net segments.
@@ -1593,6 +1623,9 @@ package body schematic_ops is
 
 		segment_found : boolean := false;
 		old_segment : type_net_segment;
+
+		use type_net_segments;
+		--segment_1_cursor, segment_2_cursor : type_net_segments.cursor;
 		
 		procedure query_nets (
 			module_name	: in type_module_name.bounded_string;
@@ -1609,7 +1642,6 @@ package body schematic_ops is
 				strand_cursor : type_strands.cursor := net.strands.first;
 				
 				procedure query_segments (strand : in out type_strand) is
-					use type_net_segments;
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 			
 				begin -- query_segments
@@ -1656,12 +1688,16 @@ package body schematic_ops is
 							segment_1.junctions.end_point := true; -- because there is the new junction
 							segment_2.junctions.start_point := false; -- no need for another junction at the same place
 							segment_2.junctions.end_point := old_segment.junctions.end_point;
+
+							--segment_1_cursor := segment_cursor;
 							
 							type_net_segments.insert (
 								container	=> strand.segments,
 								before		=> segment_cursor,
 								new_item	=> segment_1);
 
+							--segment_2_cursor := segment_cursor;
+							
 							type_net_segments.insert (
 								container	=> strand.segments,
 								before		=> segment_cursor,
@@ -1708,20 +1744,26 @@ package body schematic_ops is
 
 		procedure update_device_ports is 
 		-- Queries the positions of the device ports in the old_segment. By the
-		-- position assigns the ports to either of the new segments.
+		-- position assigns the ports to the new segments.
 			use type_ports_device;
 
 			procedure query_ports (cursor : in type_ports_device.cursor) is
 				device_name 	: type_device_name; -- IC23
 				port_name		: type_port_name.bounded_string; -- CE
-				port_position 	: type_coordinates; -- the position of the port
+				port_position 	: et_coordinates.type_coordinates; -- the position of the port
 			begin
 				device_name	:= element (cursor).device_name;
 				port_name	:= element (cursor).port_name;
 
 				-- locate the port
-
 				port_position := position (module_name, device_name, port_name, log_threshold + 1);
+				log_indentation_up;
+				
+				log ("rearrange device " & to_string (device_name) & " port " & to_string (port_name) &
+					 " at" & et_coordinates.to_string (position => port_position),
+					 log_threshold + 1);
+
+				log_indentation_down;
 			end query_ports;
 			
 		begin -- update_device_ports
@@ -1731,8 +1773,7 @@ package body schematic_ops is
 			iterate (old_segment.ports_devices, query_ports'access);
 			log_indentation_down;
 		end update_device_ports;
-		
-		
+				
 	begin -- place_junction
 		log ("module " & to_string (module_name) & " placing junction at" &
 			 to_string (position => place) & " ...", log_threshold);
