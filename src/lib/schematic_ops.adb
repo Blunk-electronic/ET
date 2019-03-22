@@ -529,7 +529,7 @@ package body schematic_ops is
 		
 	begin -- position
 		log ("module " & to_string (module_name) &
-			 " locating " & to_string (device_name) & 
+			 " locating device " & to_string (device_name) & 
 			 " port " & to_string (port_name) & " ...", log_threshold);
 
 		-- locate module
@@ -541,6 +541,64 @@ package body schematic_ops is
 		
 		return port_position;
 	end position;
+
+	function position (
+	-- Returns the sheet/x/y position of the given device and port.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		submod_name		: in et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+		port_name		: in type_net_name.bounded_string; -- RESET
+		log_threshold	: in type_log_level)
+		return et_coordinates.type_coordinates is
+
+		port_position : et_coordinates.type_coordinates; -- to be returned		
+		
+		module_cursor : type_modules.cursor; -- points to the module being inquired
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use submodules;			
+			use type_submodules;
+			submod_cursor : type_submodules.cursor;
+			submod_position : et_coordinates.type_coordinates;
+		begin -- query_submodules
+			if contains (module.submods, submod_name) then
+				submod_cursor := find (module.submods, submod_name); -- the submodule should be there
+
+				log_indentation_up;
+				submod_position := element (submod_cursor).position;
+
+-- 				et_coordinates.move (
+-- 					point	=> submod_position,
+-- 					offset	=>
+					
+-- 				et_schematic.type_devices.query_element (
+-- 					position	=> device_cursor,
+-- 					process		=> query_units'access);
+
+				log_indentation_down;				
+			else
+				null; -- CS
+				--device_not_found (device_name);
+			end if;
+		end query_submodules;
+		
+	begin -- position
+		log ("module " & to_string (module_name) &
+			 " locating submodule " & to_string (submod_name) & 
+			 " port " & to_string (port_name) & " ...", log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_submodules'access);
+		
+		return port_position;
+	end position;
+
+
 	
 	procedure delete_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -1694,6 +1752,55 @@ package body schematic_ops is
 							iterate (old_segment.ports_devices, query_ports'access);
 							log_indentation_down;
 						end update_device_ports;
+
+						procedure update_submodule_ports is 
+						-- Queries the positions of the submodule ports in the old_segment. 
+						-- By the position assigns the ports to the new segments. 
+							use type_ports_submodule;
+
+							procedure query_ports (cursor : in type_ports_submodule.cursor) is
+								submod_name 	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+								port_name		: type_net_name.bounded_string; -- RESET
+								port_position 	: et_coordinates.type_point; -- the xy-position of the port
+							begin
+								submod_name	:= element (cursor).module_name; -- CLOCK_GENERATOR
+								port_name	:= element (cursor).port_name;	-- RESET
+
+								-- locate the port by module, submodule and port name:
+								port_position := type_point (position (module_name, submod_name, port_name, log_threshold + 1));
+								log_indentation_up;
+								
+								log ("submodule " & to_string (submod_name) & " port " & to_string (port_name) &
+									" at" & et_coordinates.to_string (point => port_position),
+									log_threshold + 1);
+
+								-- If the port was at the start point of the old segment, then
+								-- it goes into segment_1.
+								if port_position = old_segment.coordinates_start then
+									insert (segment_1.ports_submodules, element (cursor));
+
+								-- If the port was at the end point of the old segment, then
+								-- it goes into segment_2.
+								elsif port_position = old_segment.coordinates_end then
+									insert (segment_2.ports_submodules, element (cursor));
+
+								-- If port was somewhere else, we have a problem. This should never happen.
+								else
+									log_indentation_reset;
+									log (message_error & "port not on segment !");
+									raise constraint_error;
+								end if;
+								
+								log_indentation_down;
+							end query_ports;
+							
+						begin -- update_submodule_ports
+							log ("updating submodule ports ...", log_threshold + 1);
+							log_indentation_up;
+							
+							iterate (old_segment.ports_submodules, query_ports'access);
+							log_indentation_down;
+						end update_submodule_ports;
 						
 					begin -- insert_two_new_segments
 						-- set start and end points of new segments
@@ -1711,8 +1818,7 @@ package body schematic_ops is
 						-- Ports which were part of the old segment must now be assigned to the 
 						-- two new segements.
 						update_device_ports;
-
-						-- CS update_submodule_ports;
+						update_submodule_ports;
 
 						-- CS update_netchanger_ports;
 						
