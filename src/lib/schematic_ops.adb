@@ -1647,8 +1647,8 @@ package body schematic_ops is
 						segment_1, segment_2 : type_net_segment;
 
 						procedure update_device_ports is 
-						-- Queries the positions of the device ports in the old_segment. By the
-						-- position assigns the ports to the new segments. 
+						-- Queries the positions of the device ports in the old_segment. 
+						-- By the position assigns the ports to the new segments. 
 							use type_ports_device;
 
 							procedure query_ports (cursor : in type_ports_device.cursor) is
@@ -1659,7 +1659,7 @@ package body schematic_ops is
 								device_name	:= element (cursor).device_name;
 								port_name	:= element (cursor).port_name;
 
-								-- locate the port
+								-- locate the port by module, device and port name:
 								port_position := type_point (position (module_name, device_name, port_name, log_threshold + 1));
 								log_indentation_up;
 								
@@ -1726,13 +1726,48 @@ package body schematic_ops is
 							before		=> segment_cursor,
 							new_item	=> segment_2);
 					end insert_two_new_segments;
+
+					procedure junction_at_start_point (segment : in out type_net_segment) is begin
+						segment.junctions.start_point := true;
+					end;
+
+					procedure junction_at_end_point (segment : in out type_net_segment) is begin
+						segment.junctions.end_point := true;
+					end;
 					
 				begin -- query_segments
 					while segment_cursor /= type_net_segments.no_element loop
+
+						-- The junction can be placed at the start or end point of a segment OR
+						-- between start and end point of a segment. If none of these conditions
+						-- is positive, go to next segment.
+						
 						--log_indentation_up;
 						--log ("probing " & to_string (segment_cursor), log_threshold + 2);
 
-						if between_start_and_end_point (
+						if type_point (place) = element (segment_cursor).coordinates_start then
+
+							-- place junction at start point of segment
+							update_element (
+								container	=> strand.segments,
+								position	=> segment_cursor,
+								process		=> junction_at_start_point'access);
+
+							segment_found := true;
+							exit; -- no need to search for other segments
+							
+						elsif type_point (place) = element (segment_cursor).coordinates_end then
+
+							-- place junction at end point of segment
+							update_element (
+								container	=> strand.segments,
+								position	=> segment_cursor,
+								process		=> junction_at_end_point'access);
+
+							segment_found := true;
+							exit; -- no need to search for other segments
+							
+						elsif between_start_and_end_point (
 							point	=> type_point (place),
 							segment	=> segment_cursor) then -- targeted segment found
 
@@ -1746,20 +1781,18 @@ package body schematic_ops is
 							-- delete the targeted segment. it will later be replaced by two new segments.
 							delete (strand.segments, segment_cursor);
 
-							-- no further search reguired
-							segment_found := true;
+							-- Insert two new segments in the strand
+							-- and rearrange the ports of devices, submodules and netchangers.
+							insert_two_new_segments;
+							
+							-- no further search required
+							segment_found := true; 
 							exit;
 						end if;
-						
+							
  						--log_indentation_down;
 						next (segment_cursor);
 					end loop;
-
-					-- If targeted segment has been found, insert two new segments in the strand
-					-- and rearrange the ports of devices, submodules and netchangers.
-					if segment_found then 
-						insert_two_new_segments;
-					end if;
 
 				end query_segments;
 					
