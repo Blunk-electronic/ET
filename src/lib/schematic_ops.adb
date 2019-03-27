@@ -73,6 +73,11 @@ package body schematic_ops is
 		log (message_error & "unit " & to_string (name) & " not found !", console => true);
 		raise constraint_error;
 	end;
+
+	procedure submodule_not_found (name : in et_general.type_module_instance_name.bounded_string) is begin
+		log (message_error & "submodule " & et_general.to_string (name) & " not found !", console => true);
+		raise constraint_error;
+	end;
 	
 	procedure log_unit_positions (
 	-- Writes the positions of the device unis in the log file.
@@ -543,7 +548,7 @@ package body schematic_ops is
 	end position;
 
 	function position (
-	-- Returns the sheet/x/y position of the given device and port.
+	-- Returns the sheet/x/y position of the given submodule port.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		submod_name		: in et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 		port_name		: in type_net_name.bounded_string; -- RESET
@@ -561,25 +566,56 @@ package body schematic_ops is
 			use type_submodules;
 			submod_cursor : type_submodules.cursor;
 			submod_position : et_coordinates.type_coordinates;
+
+			procedure query_ports (
+				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submodule	: in type_submodule) is
+				use type_submodule_ports;
+				port_xy : type_point;
+				cursor : type_submodule_ports.cursor := find (submodule.ports, port_name);
+			begin
+				if cursor /= type_submodule_ports.no_element then
+
+					-- If the port exits, get its relative x/y position (relative to submodule position).
+					port_xy := element (cursor).position;
+
+					-- Calculate the absolute port position:
+					et_coordinates.move (
+						point	=> port_xy,
+						offset	=> submod_position);
+
+					-- Now port_xy holds the absoltue x/y of the port in the schematic.
+
+					-- Assemble the port_position to be returned:
+					port_position := to_coordinates (
+						point	=> port_xy,
+						sheet	=> sheet (submod_position)
+						);
+
+				else
+					log_indentation_reset;
+					log (message_error & "port " & et_general.to_string (port_name) & " not found !",
+						 console => true);
+				end if;
+			end query_ports;
+			
 		begin -- query_submodules
 			if contains (module.submods, submod_name) then
 				submod_cursor := find (module.submods, submod_name); -- the submodule should be there
 
 				log_indentation_up;
+
+				-- get submodule position (sheet/x/y)
 				submod_position := element (submod_cursor).position;
 
--- 				et_coordinates.move (
--- 					point	=> submod_position,
--- 					offset	=>
-					
--- 				et_schematic.type_devices.query_element (
--- 					position	=> device_cursor,
--- 					process		=> query_units'access);
+				-- look for the given port
+				query_element (
+					position	=> submod_cursor,
+					process		=> query_ports'access);
 
 				log_indentation_down;				
 			else
-				null; -- CS
-				--device_not_found (device_name);
+				submodule_not_found (submod_name);
 			end if;
 		end query_submodules;
 		
@@ -597,8 +633,6 @@ package body schematic_ops is
 		
 		return port_position;
 	end position;
-
-
 	
 	procedure delete_unit (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
