@@ -78,6 +78,11 @@ package body schematic_ops is
 		log (message_error & "submodule " & et_general.to_string (name) & " not found !", console => true);
 		raise constraint_error;
 	end;
+
+	procedure netchanger_not_found (index : in submodules.type_netchanger_id) is begin
+		log (message_error & "netchanger " & submodules.to_string (index) & " not found !", console => true);
+		raise constraint_error;
+	end;
 	
 	procedure log_unit_positions (
 	-- Writes the positions of the device unis in the log file.
@@ -504,6 +509,9 @@ package body schematic_ops is
 									point	=> element (port_cursor).position -- default xy pos of port
 									);														 
 
+						-- CS rotate port_position by unit angle
+						-- CS mirror ?
+						
 						-- move port so that it ends up at the position in the schematic:
 						et_coordinates.move (
 							point 	=> port_position,
@@ -630,6 +638,62 @@ package body schematic_ops is
 		query_element (
 			position	=> module_cursor,
 			process		=> query_submodules'access);
+		
+		return port_position;
+	end position;
+
+	function position (
+	-- Returns the sheet/x/y position of the given netchanger port.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		port			: in submodules.type_netchanger_port_name; -- SLAVE/MASTER
+		log_threshold	: in type_log_level)
+		return et_coordinates.type_coordinates is
+
+		use submodules;
+		port_position : et_coordinates.type_coordinates; -- to be returned		
+		
+		module_cursor : type_modules.cursor; -- points to the module being inquired
+
+		procedure query_netchangers (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use type_netchangers;
+			nc_cursor : type_netchangers.cursor;
+			nc_position : et_coordinates.type_coordinates;
+			nc_rotation : et_coordinates.type_angle;
+		begin -- query_netchangers
+			if contains (module.netchangers, index) then
+				nc_cursor := find (module.netchangers, index); -- the netchanger should be there
+
+				log_indentation_up;
+
+				-- get netchanger position (sheet/x/y)
+				nc_position := element (nc_cursor).position_sch;
+				nc_rotation := element (nc_cursor).rotation;
+
+				-- look for the given port
+-- 				query_element (
+-- 					position	=> submod_cursor,
+-- 					process		=> query_ports'access);
+
+				log_indentation_down;				
+			else
+				netchanger_not_found (index);
+			end if;
+		end query_netchangers;
+		
+	begin -- position
+		log ("module " & to_string (module_name) &
+			 " locating netchanger " & to_string (index) & 
+			 " port " &  to_string (port) & " ...", log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_netchangers'access);
 		
 		return port_position;
 	end position;
@@ -1835,6 +1899,56 @@ package body schematic_ops is
 							iterate (old_segment.ports_submodules, query_ports'access);
 							log_indentation_down;
 						end update_submodule_ports;
+
+						procedure update_netchanger_ports is 
+						-- Queries the positions of the netchanger ports in the old_segment. 
+						-- By the position assigns the ports to the new segments. 
+							use type_ports_netchanger;
+							use submodules;
+
+							procedure query_ports (cursor : in type_ports_netchanger.cursor) is
+								index	: type_netchanger_id; -- 1,2,3,...
+								port	: type_netchanger_port_name; -- SLAVE/MASTER
+								port_position 	: et_coordinates.type_point; -- the xy-position of the port
+							begin
+								index := element (cursor).index;
+								port := element (cursor).port;
+
+								-- locate the port by module, netchanger index and port:
+								port_position := type_point (position (module_name, index, port, log_threshold + 1));
+								log_indentation_up;
+								
+								log ("netchanger " & to_string (index) & " port " & to_string (port) &
+									" at" & et_coordinates.to_string (point => port_position),
+									log_threshold + 1);
+
+								-- If the port was at the start point of the old segment, then
+								-- it goes into segment_1.
+								if port_position = old_segment.coordinates_start then
+									insert (segment_1.ports_netchangers, element (cursor));
+
+								-- If the port was at the end point of the old segment, then
+								-- it goes into segment_2.
+								elsif port_position = old_segment.coordinates_end then
+									insert (segment_2.ports_netchangers, element (cursor));
+
+								-- If port was somewhere else, we have a problem. This should never happen.
+								else
+									log_indentation_reset;
+									log (message_error & "port not on segment !");
+									raise constraint_error;
+								end if;
+								
+								log_indentation_down;
+							end query_ports;
+							
+						begin -- update_netchanger_ports
+							log ("updating netchanger ports ...", log_threshold + 1);
+							log_indentation_up;
+							
+							iterate (old_segment.ports_netchangers, query_ports'access);
+							log_indentation_down;
+						end update_netchanger_ports;
 						
 					begin -- insert_two_new_segments
 						-- set start and end points of new segments
@@ -1853,8 +1967,7 @@ package body schematic_ops is
 						-- two new segements.
 						update_device_ports;
 						update_submodule_ports;
-
-						-- CS update_netchanger_ports;
+						update_netchanger_ports;
 						
 						type_net_segments.insert (
 							container	=> strand.segments,
