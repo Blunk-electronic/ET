@@ -46,7 +46,7 @@ with ada.containers.doubly_linked_lists;
 -- with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 -- with ada.containers.indefinite_ordered_maps;
--- with ada.containers.ordered_sets;
+with ada.containers.ordered_sets;
 
 with et_general;
 with et_coordinates;		use et_coordinates;
@@ -79,13 +79,14 @@ package submodules is
 		-- the position somewhere at the edge of the box
 		position : et_coordinates.type_point;
 		
-		-- The net inside the submodule is here the port name:
-		name : et_general.type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
-
 		-- CS symbol : type_module_connector_symbol;
 	end record;
-
-	package type_submodule_ports is new doubly_linked_lists (type_submodule_port);
+	
+	package type_submodule_ports is new ordered_maps (
+		element_type	=> type_submodule_port,
+		-- The net inside the submodule is here the port name:
+		"<"				=> et_general.type_net_name."<",
+		key_type		=> et_general.type_net_name.bounded_string); -- CLOCK_GENERATOR_OUT
 	
 	type type_submodule is record
 		file				: type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
@@ -94,7 +95,7 @@ package submodules is
 		position_in_board	: et_pcb_coordinates.type_point_2d_with_angle;
 		view_mode			: type_submodule_view_mode;
 		reference_offset	: et_libraries.type_device_name_index;	-- R88 turns to R2088 or R788
-		ports				: type_submodule_ports.list; -- CS should be an ordered set ?
+		ports				: type_submodule_ports.map;
 	end record;
 
 	package type_submodules is new ordered_maps (

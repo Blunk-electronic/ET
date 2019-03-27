@@ -1614,7 +1614,7 @@ package body schematic_ops is
 				port_cursor : type_submodule_ports.cursor := submodule.ports.first;
 			begin
 				while port_cursor /= type_submodule_ports.no_element loop
-					if element (port_cursor).name = port_name then
+					if key (port_cursor) = port_name then
 						result := true;
 						exit;
 					end if;

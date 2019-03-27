@@ -1788,7 +1788,7 @@ package body et_project is
 				use type_submodule_ports;
 			begin
 				section_mark (section_port, HEADER);
-				write (keyword => keyword_name, space => true, parameters => et_general.to_string (element (port_cursor).name)); -- name clk_out
+				write (keyword => keyword_name, space => true, parameters => et_general.to_string (key (port_cursor))); -- name clk_out
 				write (keyword => keyword_position, parameters => position (element (port_cursor).position)); -- position x 0 y 10
 				section_mark (section_port, FOOTER);
 			end;
@@ -7766,10 +7766,11 @@ package body et_project is
 		end reset_polygon_parameters;
 
 		-- submodules
-		submodule_port	: submodules.type_submodule_port;
-		submodule_ports	: submodules.type_submodule_ports.list;
-		submodule_name 	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-		submodule		: submodules.type_submodule;
+		submodule_port		: submodules.type_submodule_port;
+		submodule_port_name	: et_general.type_net_name.bounded_string; -- RESET
+		submodule_ports		: submodules.type_submodule_ports.map;
+		submodule_name 		: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+		submodule			: submodules.type_submodule;
 
 		note : et_schematic.type_text;
 
@@ -9838,9 +9839,13 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_SUBMODULE =>
 										-- append port to collection of submodule ports
-										submodules.type_submodule_ports.append (submodule_ports, submodule_port);
+										submodules.type_submodule_ports.insert (
+											container	=> submodule_ports,
+											key			=> submodule_port_name, -- RESET
+											new_item	=> submodule_port);
 
-										-- clean up for next ports
+										-- clean up for next port
+										submodule_port_name := to_net_name ("");
 										submodule_port := (others => <>);
 
 									when others => invalid_section;
@@ -11451,7 +11456,7 @@ package body et_project is
 											-- CS: In the following: set a corresponding parameter-found-flag
 											if kw = keyword_name then -- name clk_out
 												expect_field_count (line, 2);
-												submodule_port.name := to_net_name (f (line, 2));
+												submodule_port_name := to_net_name (f (line, 2));
 
 											elsif kw = keyword_position then -- position x 0 y 10
 												expect_field_count (line, 5);

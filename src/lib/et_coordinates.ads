@@ -102,6 +102,8 @@ package et_coordinates is
 
 	zero : constant type_point;
 
+	function "<" (left, right : in type_point) return boolean;
+	
 	axis_separator		: constant string (1..1) := "/";
 	--position_preamble	: constant string (1..15) := "position (x" & axis_separator & "y) ";
 	position_preamble	: constant string (1..11) := " pos (x" & axis_separator & "y) ";

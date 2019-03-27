@@ -77,7 +77,21 @@ package body et_coordinates is
 		return type_angle'value (angle);
 	end to_angle;
 
-	
+	function "<" (left, right : in type_point) return boolean is begin
+		if left.x < right.x then
+			return true;
+		elsif left.x > right.x then
+			return false;
+
+		-- left.x = right.x -> compare y:
+		elsif left.y < right.y then
+			return true;
+		else 
+			-- if left.y greater or equal right.y
+			return false;
+		end if;
+	end;
+
 	function to_string (point : in type_point'class) return string is
 	-- Returns the given point coordinates to a string.
 		use et_string_processing;
