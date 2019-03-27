@@ -7766,11 +7766,11 @@ package body et_project is
 		end reset_polygon_parameters;
 
 		-- submodules
-		submodule_port		: submodules.type_submodule_port;
-		submodule_port_name	: et_general.type_net_name.bounded_string; -- RESET
-		submodule_ports		: submodules.type_submodule_ports.map;
-		submodule_name 		: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-		submodule			: submodules.type_submodule;
+		submodule_port			: submodules.type_submodule_port;
+		submodule_port_name		: et_general.type_net_name.bounded_string; -- RESET
+		submodule_ports			: submodules.type_submodule_ports.map;
+		submodule_name 			: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+		submodule				: submodules.type_submodule;
 
 		note : et_schematic.type_text;
 
@@ -9838,11 +9838,28 @@ package body et_project is
 							when SEC_PORTS =>
 								case stack.parent (degree => 2) is
 									when SEC_SUBMODULE =>
-										-- append port to collection of submodule ports
-										submodules.type_submodule_ports.insert (
-											container	=> submodule_ports,
-											key			=> submodule_port_name, -- RESET
-											new_item	=> submodule_port);
+										declare
+											cursor : submodules.type_submodule_ports.cursor;
+											inserted : boolean;
+										begin
+											-- append port to collection of submodule ports
+											submodules.type_submodule_ports.insert (
+												container	=> submodule_ports,
+												key			=> submodule_port_name, -- RESET
+												new_item	=> submodule_port,
+												inserted	=> inserted,
+												position	=> cursor
+												);
+
+											if not inserted then
+												log_indentation_reset;
+												log (message_error & "port " & 
+													 et_general.to_string (submodule_port_name) & " already used !",
+													 console => true
+													);
+												raise constraint_error;
+											end if;
+										end;
 
 										-- clean up for next port
 										submodule_port_name := to_net_name ("");
@@ -10143,6 +10160,11 @@ package body et_project is
 					when SEC_INIT => null; -- CS: should never happen
 				end case;
 
+-- 				exception when event:
+-- 					others => 
+-- 						log (ada.exceptions.exception_message (event), console => true);
+-- 						raise;
+				
 			end execute_section;
 			
 			function set (
