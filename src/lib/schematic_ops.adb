@@ -509,10 +509,17 @@ package body schematic_ops is
 									point	=> element (port_cursor).position -- default xy pos of port
 									);														 
 
-						-- CS rotate port_position by unit angle
+						-- Calculate the absolute port position in schematic by
+						-- first rotating port_xy, and then moving port_xy:
+						
+						et_coordinates.rotate (
+							point			=> port_position,
+							angle			=> element (unit_cursor).rotation,
+							log_threshold	=> log_threshold + 3);
+						
 						-- CS mirror ?
 						
-						-- move port so that it ends up at the position in the schematic:
+						-- Calculate the absoltue port position in the schematic:
 						et_coordinates.move (
 							point 	=> port_position,
 							offset	=> unit_position);
@@ -592,7 +599,7 @@ package body schematic_ops is
 						point	=> port_xy,
 						offset	=> submod_position);
 
-					-- Now port_xy holds the absoltue x/y of the port in the schematic.
+					-- Now port_xy holds the absolute x/y of the port in the schematic.
 
 					-- Assemble the port_position to be returned:
 					port_position := to_coordinates (
@@ -662,21 +669,46 @@ package body schematic_ops is
 			nc_cursor : type_netchangers.cursor;
 			nc_position : et_coordinates.type_coordinates;
 			nc_rotation : et_coordinates.type_angle;
+			port_xy : type_point;
 		begin -- query_netchangers
 			if contains (module.netchangers, index) then
 				nc_cursor := find (module.netchangers, index); -- the netchanger should be there
 
 				log_indentation_up;
 
-				-- get netchanger position (sheet/x/y)
+				-- get netchanger position (sheet/x/y) and rotation in schematic
 				nc_position := element (nc_cursor).position_sch;
 				nc_rotation := element (nc_cursor).rotation;
 
-				-- look for the given port
--- 				query_element (
--- 					position	=> submod_cursor,
--- 					process		=> query_ports'access);
+				-- get the port position relative to the center of the netchanger
+				case port is
+					when MASTER =>
+						port_xy := position_master_port_default;
 
+					when SLAVE =>
+						port_xy := position_slave_port_default;
+				end case;
+
+				-- Calculate the absolute port position in schematic by
+				-- first rotating port_xy, and then moving port_xy:
+				
+				et_coordinates.rotate (
+					point			=> port_xy,
+					angle			=> nc_rotation,
+					log_threshold	=> log_threshold + 3);
+				
+				et_coordinates.move (
+					point	=> port_xy,
+					offset	=> nc_position);
+
+				-- Now port_xy holds the absoltue x/y of the port in the schematic.
+
+				-- Assemble the port_position to be returned:
+				port_position := to_coordinates (
+					point	=> port_xy,
+					sheet	=> sheet (nc_position)
+					);
+				
 				log_indentation_down;				
 			else
 				netchanger_not_found (index);
@@ -1964,7 +1996,7 @@ package body schematic_ops is
 						segment_2.junctions.end_point := old_segment.junctions.end_point;
 
 						-- Ports which were part of the old segment must now be assigned to the 
-						-- two new segements.
+						-- two new segments.
 						update_device_ports;
 						update_submodule_ports;
 						update_netchanger_ports;

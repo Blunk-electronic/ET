@@ -122,17 +122,20 @@ package submodules is
 		length		: type_port_length; 
 		rotation	: et_coordinates.type_angle;
 	end record;
+
+	position_master_port_default : constant type_point := type_point (set_point (x =>  10.0, y => 0.0));
+	position_slave_port_default  : constant type_point := type_point (set_point (x => -10.0, y => 0.0));	
 	
 	type type_netchanger_symbol is record
 		-- the port on the right
 		master_port	: type_netchanger_port := (
-						position	=> type_point (set_point (x => 10.0, y => 0.0)),
+						position	=> position_master_port_default,
 						length		=> 5.0,
 						rotation	=> 0.0);
 
 		-- the port on the left
 		slave_port	: type_netchanger_port := (
-						position	=> type_point (set_point (x => -10.0, y => 0.0)),
+						position	=> position_slave_port_default,
 						length		=> 5.0,
 						rotation	=> 180.0);
 
