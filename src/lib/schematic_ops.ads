@@ -113,6 +113,13 @@ package schematic_ops is
 		point			: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level);
 
+	procedure rename_device (
+	-- Renames the given device.
+		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name_before	: in type_device_name; -- IC1
+		device_name_after	: in type_device_name; -- IC23
+		log_threshold		: in type_log_level);
+	
 	function exists_device_port (
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
 		module_cursor	: in type_modules.cursor; -- motor_driver

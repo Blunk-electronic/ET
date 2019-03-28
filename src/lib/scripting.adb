@@ -308,7 +308,13 @@ package body scripting is
 				when RENAME =>
 					case noun is
 						when DEVICE =>
-							NULL; -- CS
+							schematic_ops.rename_device
+								(
+								module_name 		=> module,
+								device_name_before	=> to_device_name (f (5)), -- IC1
+								device_name_after	=> to_device_name (f (6)), -- IC23
+								log_threshold		=> log_threshold + 1
+								);
 
 						when NET =>
 							NULL; -- CS
