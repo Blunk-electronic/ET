@@ -1283,12 +1283,25 @@ package body schematic_ops is
 				procedure rotate_unit (
 					name	: in type_unit_name.bounded_string; -- A
 					unit	: in out type_unit) is
-				begin
+
+					procedure rotate_placeholders (rot : in type_angle) is begin
+					-- Rotate position of placeholders. 
+					-- CS The placeholder should never be rotated to 91 .. 269 degree
+					-- CS The rotation of the placeholder itself should be either 0 or 90 degree.
+						rotate (unit.reference.position, rot);
+						rotate (unit.value.position, rot);
+						rotate (unit.purpose.position, rot);
+					end rotate_placeholders;
+	
+				begin -- rotate_unit
 					case coordinates is
 						when ABSOLUTE =>
 							unit.rotation := rotation;
+							rotate_placeholders (unit.rotation);
+							
 						when RELATIVE =>
 							unit.rotation := rotation_before + rotation;
+							rotate_placeholders (unit.rotation);
 					end case;
 				end rotate_unit;
 				
