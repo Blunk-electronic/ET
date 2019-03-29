@@ -138,7 +138,7 @@ package et_libraries is
         size    	: type_text_size := text_size_default;
         style		: type_text_style := type_text_style'first;
         line_width	: type_text_line_width := type_text_line_width'first; -- CS: use a general type_line_width ?
-        rotation	: type_angle := 0.0;
+        rotation	: type_angle_90 := type_angle_90'first;
 		alignment	: type_text_alignment;
 	end record;
 
