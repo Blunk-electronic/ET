@@ -9925,8 +9925,8 @@ package body et_kicad is
 					-- rotate port coordinates
 					rotate (
 						point => port_coordinates,
-						angle => orientation_of_unit (unit_name_lib, units_sch),
-						log_threshold => log_threshold + 3);
+						angle => orientation_of_unit (unit_name_lib, units_sch)
+						);
 
 					-- Mirror port coordinates if required.
 					case mirror_style_of_unit (unit_name_lib, units_sch) is

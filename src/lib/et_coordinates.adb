@@ -187,9 +187,7 @@ package body et_coordinates is
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
 		point	: in out type_point;
-		angle	: in type_angle;
-		log_threshold : in et_string_processing.type_log_level)
-		is
+		angle	: in type_angle) is
 
 		type type_float_distance is digits 7 range -1000.0 .. 1000.0; -- CS: refine
 		package functions_distance is new ada.numerics.generic_elementary_functions (type_float_distance);
@@ -203,7 +201,7 @@ package body et_coordinates is
 		distance_to_origin	: type_float_distance;	-- unit is mm
 		scratch				: type_float_distance;
 
-		use et_string_processing;
+		--use et_string_processing;
 	begin
 		-- Do nothing if the given rotation is zero.
 		if angle /= 0.0 then
@@ -255,14 +253,14 @@ package body et_coordinates is
 			-- This computation depends on the Y axis style. The in the conventional style (Y going upwards positive)
 			-- we add the given angle to the current angle. In the old fashioned stlyle (Y going downwards positive)
 			-- we subtract the given angle from the current angle.
-			log_indentation_up;
-			log ("angle in  " & to_string (type_angle (angle_out)), log_threshold);
+-- 			log_indentation_up;
+-- 			log ("angle in  " & to_string (type_angle (angle_out)), log_threshold);
 			if Y_axis_positive = upwards then
 				angle_out := angle_out + type_float_angle (angle);
 			else
 				angle_out := angle_out - type_float_angle (angle);
 			end if;
-			log ("angle out " & type_float_angle'image (angle_out), log_threshold);
+-- 			log ("angle out " & type_float_angle'image (angle_out), log_threshold);
 			
 			-- compute new x   -- (cos angle_out) * distance_to_origin
 			scratch := cos (type_float_distance (angle_out), type_float_distance (units_per_cycle));
@@ -272,8 +270,8 @@ package body et_coordinates is
 			-- compute new y   -- (sin angle_out) * distance_to_origin
 			scratch := sin (type_float_distance (angle_out), type_float_distance (units_per_cycle));
 			point.y := type_distance (scratch * distance_to_origin);
-			log ("point out " & to_string (point), log_threshold);
-			log_indentation_down;
+-- 			log ("point out " & to_string (point), log_threshold);
+-- 			log_indentation_down;
 	
 		end if; -- if angle not zero
 	end rotate;

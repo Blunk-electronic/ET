@@ -523,9 +523,8 @@ package body schematic_ops is
 						-- first rotating port_xy, and then moving port_xy:
 						
 						et_coordinates.rotate (
-							point			=> port_position,
-							angle			=> element (unit_cursor).rotation,
-							log_threshold	=> log_threshold + 3);
+							point	=> port_position,
+							angle	=> element (unit_cursor).rotation);
 						
 						-- CS mirror ?
 						
@@ -703,9 +702,8 @@ package body schematic_ops is
 				-- first rotating port_xy, and then moving port_xy:
 				
 				et_coordinates.rotate (
-					point			=> port_xy,
-					angle			=> nc_rotation,
-					log_threshold	=> log_threshold + 3);
+					point	=> port_xy,
+					angle	=> nc_rotation);
 				
 				et_coordinates.move (
 					point	=> port_xy,
@@ -1239,7 +1237,7 @@ package body schematic_ops is
 			name	: in type_port_name.bounded_string;
 			port	: in out type_port) is
 		begin
-			rotate (port.position, angle, 1);
+			rotate (port.position, angle);
 		end;
 
 		procedure query_port (cursor : in type_ports.cursor) is begin

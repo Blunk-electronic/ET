@@ -148,8 +148,7 @@ package et_coordinates is
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
 		point	: in out type_point;
-		angle	: in type_angle;
-		log_threshold : in et_string_processing.type_log_level);
+		angle	: in type_angle);
 
 	function distance (point_1, point_2 : in type_point) return type_distance;
 	-- Returns the total distance between the given points.
