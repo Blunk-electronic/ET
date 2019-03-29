@@ -529,7 +529,7 @@ package body schematic_ops is
 						
 						-- CS mirror ?
 						
-						-- Calculate the absoltue port position in the schematic:
+						-- Calculate the absolute port position in the schematic:
 						et_coordinates.move (
 							point 	=> port_position,
 							offset	=> unit_position);
@@ -711,7 +711,7 @@ package body schematic_ops is
 					point	=> port_xy,
 					offset	=> nc_position);
 
-				-- Now port_xy holds the absoltue x/y of the port in the schematic.
+				-- Now port_xy holds the absolute x/y of the port in the schematic.
 
 				-- Assemble the port_position to be returned:
 				port_position := to_coordinates (
@@ -1228,7 +1228,192 @@ package body schematic_ops is
 
 	end move_unit;
 
+	procedure rotate_ports (
+	-- Rotates the given unit ports by given angle around the origin.
+		ports	: in out et_libraries.type_ports.map; -- the portlist
+		angle	: in et_coordinates.type_angle) -- 90.0
+		is
+		use et_libraries.type_ports;
 
+		procedure rotate (
+			name	: in type_port_name.bounded_string;
+			port	: in out type_port) is
+		begin
+			rotate (port.position, angle, 1);
+		end;
+
+		procedure query_port (cursor : in type_ports.cursor) is begin
+			update_element (
+				container	=> ports,
+				position	=> cursor,
+				process		=> rotate'access);
+		end;
+			
+	begin -- rotate_ports
+		iterate (ports, query_port'access);
+	end rotate_ports;
+	
+	procedure rotate_unit (
+	-- Rotates the given unit within the schematic. Disconnects the unit from
+	-- start or end points of net segments.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- A
+		coordinates		: in type_coordinates; -- relative/absolute
+		rotation		: in et_coordinates.type_angle; -- 90.0
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+
+			position_of_unit : et_coordinates.type_coordinates;
+			rotation_before : et_coordinates.type_angle;
+
+			ports_lib, ports_scratch : et_libraries.type_ports.map;
+
+			procedure query_units (
+				device_name	: in type_device_name;
+				device		: in out et_schematic.type_device) is
+				use et_schematic.type_units;
+				unit_cursor : et_schematic.type_units.cursor;
+
+				procedure rotate_unit (
+					name	: in type_unit_name.bounded_string; -- A
+					unit	: in out type_unit) is
+				begin
+					case coordinates is
+						when ABSOLUTE =>
+							unit.rotation := rotation;
+						when RELATIVE =>
+							unit.rotation := rotation_before + rotation;
+					end case;
+				end rotate_unit;
+				
+			begin -- query_units
+				if contains (device.units, unit_name) then
+					-- locate unit by its name
+					unit_cursor := find (device.units, unit_name);
+
+					-- load unit position and current rotation
+					position_of_unit := element (unit_cursor).position;
+					rotation_before := element (unit_cursor).rotation;
+
+					-- log unit position and current rotation
+					log (to_string (position => position_of_unit) &
+						 to_string (rotation_before), log_threshold + 1);
+
+					type_units.update_element (
+						container	=> device.units,
+						position	=> unit_cursor,
+						process		=> rotate_unit'access);
+				else
+					unit_not_found (unit_name);
+				end if;
+			end query_units;
+
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+
+				-- Before the rotation, the coordinates of the
+				-- unit must be fetched. These coordinates will later assist
+				-- in deleting the port names from connected net segments.
+				device_cursor := find (module.devices, device_name); -- the device should be there
+
+				-- rotate the unit
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor,
+					process		=> query_units'access);
+				
+				log_indentation_up;
+
+				-- Fetch the ports of the unit to be rotated.
+				-- The coordinates here are the default positions (in the library model)
+				-- relative to the center of the units.
+				ports_lib := ports_of_unit (device_cursor, unit_name);
+				
+				ports_scratch := ports_lib;						 
+
+				-- Calculate the absolute positions of the unit ports in the schematic
+				-- as they are BEFORE the rotation:
+				rotate_ports (ports_scratch, rotation_before);
+				move_ports (ports_scratch, position_of_unit);
+				
+				-- Delete the old ports of the targeted unit from module.nets.
+				-- The unit is on a certain sheet. The procedure delete_ports however
+				-- requires a list of unit positions (containing sheet numbers).
+				-- So we create a list "sheets", put the unit name and position in it,
+				-- and pass it to procedure delete_ports:
+				declare
+					sheets : type_unit_positions.map;
+				begin
+					type_unit_positions.insert (
+						container	=> sheets,
+						key			=> unit_name,
+						new_item	=> position_of_unit);
+
+					delete_ports (
+						module			=> module_cursor,
+						device			=> device_name,
+						ports			=> ports_scratch,
+						sheets			=> sheets, 
+						log_threshold	=> log_threshold + 1);
+				end;
+
+				-- Calculate the new positions of the unit ports.
+				case coordinates is
+					when ABSOLUTE =>
+						rotate_ports (ports_lib, rotation);
+					when RELATIVE =>
+						 -- The given angle of rotation adds to the rotation_before:
+						rotate_ports (ports_lib, rotation_before + rotation);
+				end case;
+				
+				move_ports (ports_lib, position_of_unit);
+				
+				-- Insert the new unit ports in the nets (type_module.nets):
+				insert_ports (
+					module			=> module_cursor,
+					device			=> device_name,
+					ports			=> ports_lib,
+					sheet			=> et_coordinates.sheet (position_of_unit),
+					log_threshold	=> log_threshold + 1);
+				
+				log_indentation_down;				
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- rotate_unit
+		case coordinates is
+			when ABSOLUTE =>
+				log ("module " & to_string (module_name) &
+					" rotating " & to_string (device_name) & " unit " & 
+					to_string (unit_name) & " to" & to_string (rotation), log_threshold);
+
+			when RELATIVE =>
+				log ("module " & to_string (module_name) &
+					" rotating " & to_string (device_name) & " unit " & 
+					to_string (unit_name) & " by" & to_string (rotation), log_threshold);
+		end case;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+	end rotate_unit;
+
+	
 	procedure drag_net_segments (
 	-- Drags the net segments according to the given drag_list.
 	-- Changes the position of start or end points of segments.

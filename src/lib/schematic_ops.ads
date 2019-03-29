@@ -92,6 +92,16 @@ package schematic_ops is
 		point			: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level);
 
+	procedure rotate_unit (
+	-- Rotates the given unit within the schematic. Disconnects the unit from
+	-- start or end points of net segments.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- A
+		coordinates		: in type_coordinates; -- relative/absolute		
+		rotation		: in et_coordinates.type_angle; -- 90.0
+		log_threshold	: in type_log_level);
+	
 	type type_drag is record
 		before		: et_coordinates.type_point;
 		after		: et_coordinates.type_point;
