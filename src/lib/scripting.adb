@@ -334,7 +334,7 @@ package body scripting is
 								device_name		=> to_device_name (f (5)), -- IC1
 								unit_name		=> to_unit_name (f (6)), -- A
 								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-								rotation		=> to_angle (f (8)), -- 90.0
+								rotation		=> to_angle (f (8)), -- 90
 								log_threshold	=> log_threshold + 1
 								);
 

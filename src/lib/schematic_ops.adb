@@ -1258,7 +1258,7 @@ package body schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
-		rotation		: in et_coordinates.type_angle; -- 90.0
+		rotation		: in et_coordinates.type_angle; -- 90
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module being modified
@@ -1316,7 +1316,7 @@ package body schematic_ops is
 
 					-- log unit position and current rotation
 					log (to_string (position => position_of_unit) &
-						 to_string (rotation_before), log_threshold + 1);
+						 et_coordinates.to_string (rotation_before), log_threshold + 1);
 
 					type_units.update_element (
 						container	=> device.units,
@@ -1406,13 +1406,13 @@ package body schematic_ops is
 			when ABSOLUTE =>
 				log ("module " & to_string (module_name) &
 					" rotating " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " to" & to_string (rotation), log_threshold);
+					to_string (unit_name) & " to" & et_coordinates.to_string (rotation), log_threshold);
 
 			when RELATIVE =>
 -- 				if rotation in type_rotation_relative then
 					log ("module " & to_string (module_name) &
 						" rotating " & to_string (device_name) & " unit " & 
-						to_string (unit_name) & " by" & to_string (rotation), log_threshold);
+						to_string (unit_name) & " by" & et_coordinates.to_string (rotation), log_threshold);
 -- 				else
 -- 					log (message_error & " given relative angle out of range !");
 -- 					raise constraint_error;

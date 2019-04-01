@@ -42,6 +42,8 @@ with ada.characters.handling;	use ada.characters.handling;
 with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 
+
+with system.assertions;
 with ada.exceptions;
 
 with ada.numerics.generic_elementary_functions;
@@ -49,7 +51,8 @@ with et_string_processing;
 with et_general;
 
 package body et_coordinates is
-
+	pragma assertion_policy (check);
+	
 	function to_distance (distance : in string) return type_distance_xy is begin
 		return type_distance'value (distance);
 	end to_distance;
@@ -73,8 +76,33 @@ package body et_coordinates is
 		return (preamble & type_angle'image (angle) & suffix);
 	end to_string;
 
-	function to_angle (angle : in string) return type_angle is begin
-		return type_angle'value (angle);
+	function to_angle (angle : in string) return type_angle is 
+		use et_string_processing;
+		r : type_angle;
+	begin
+		r := type_angle'value (angle);
+		return r;
+
+		exception 
+			when constraint_error => 
+				log (message_error & "Rotation " & angle & " outside range " & 
+					 et_coordinates.to_string (-270) &
+					 " .. " & 
+					 et_coordinates.to_string (270) &
+					 " (must be an integer) !",
+					 console => true
+					);
+				raise;
+				
+			when system.assertions.assert_failure =>
+				log (message_error & "Rotation " & angle & " is not a multiple of " &
+					 et_coordinates.to_string (rotation_delta),
+					 console => true
+					);
+				raise;
+				
+			when others =>
+				raise;
 	end to_angle;
 
 	function "<" (left, right : in type_point) return boolean is begin
@@ -204,7 +232,7 @@ package body et_coordinates is
 		--use et_string_processing;
 	begin
 		-- Do nothing if the given rotation is zero.
-		if angle /= 0.0 then
+		if angle /= 0 then
 
 			-- compute distance of given point to origin
 			if point.x = zero_distance and point.y = zero_distance then

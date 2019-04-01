@@ -48,8 +48,11 @@ with ada.containers.doubly_linked_lists;
 with et_string_processing;
 with et_general;
 
-package et_coordinates is
+-- with system.assertions;
 
+package et_coordinates is
+	pragma assertion_policy (check);
+	
 	type type_axis is (X, Y);
 
 	-- There are drawings with the origin at the upper left corner (used by KiCad, ...).
@@ -78,21 +81,19 @@ package et_coordinates is
 
 	units_per_cycle : constant float := 360.0;
 	
-	-- Angles are to be interpreted as: 
-	-- positive angle -> counter clock wise
-	-- negative angle -> clock wise
--- 	type type_angle is delta 0.1 range -359.9 .. 359.9; -- unit is degrees
-	-- 	for type_angle'small use 0.1;
-	--type type_angle is delta 90.0 range -359.0 .. 359.0; -- unit is degrees
-	type type_angle is new integer range -359 .. 359; -- unit is degrees
-	--type nummer is range -10 .. 10;
-	--for type_angle'small use 90;
+	-- Angles/rotations are to be interpreted as: 
+	-- positive rotation -> counter clock wise
+	-- negative rotation -> clock wise
+	rotation_delta : constant := 90;
+	pragma assertion_policy (check);		
+	subtype type_angle is integer range -270 .. 270 
+		with dynamic_predicate => type_angle mod rotation_delta = 0;
 
 	subtype type_rotation_relative is type_angle range -90 .. 180;
 
 	zero_angle : constant type_angle := 0;
 
-	subtype type_angle_90 is type_angle range 0 .. 90; -- CS rename to type_rotation_text
+	subtype type_rotation_text is type_angle range 0 .. 90;
 	-- CS: make use of this type by membership tests when required
 
 	function to_string (angle : in type_angle) return string;

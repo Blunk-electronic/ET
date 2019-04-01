@@ -910,8 +910,8 @@ package body et_kicad is
 	-- Converts a kicad field text orientation character (H/V) to type_angle.
 	begin	
 		case type_field_orientation'value (text) is
-			when H => return 0.0;
-			when V => return 90.0;
+			when H => return 0;
+			when V => return 90;
 		end case;
 
 		exception 
@@ -1716,7 +1716,7 @@ package body et_kicad is
 				use et_coordinates;
 			begin -- to_text
 				text.rotation := to_degrees (et_string_processing.field (line,2));
-				if text.rotation not in type_angle_90 then
+				if text.rotation not in type_rotation_text then
 					warning_angle_greater_90_degrees;
 				end if;
 				
@@ -1849,10 +1849,10 @@ package body et_kicad is
 					rot : et_coordinates.type_angle := zero_angle;
 				begin
 					case orient is
-						when 'D' => rot := 90.0; -- to be connected with a net from top
-						when 'U' => rot := 270.0; -- below
-						when 'R' => rot := 180.0; -- left
-						when 'L' => rot := 0.0; -- right
+						when 'D' => rot := 90; -- to be connected with a net from top
+						when 'U' => rot := 270; -- below
+						when 'R' => rot := 180; -- left
+						when 'L' => rot := 0; -- right
 						when others => 
 							log_indentation_reset;
 							log (message_error & "invalid port orientation !", console => true);
@@ -5349,10 +5349,10 @@ package body et_kicad is
 			o_out : et_coordinates.type_angle;
 		begin
 			case o_in is
-				when 0 => o_out := 180.0; -- CS: probably 0.0 ?
-				when 1 => o_out :=  90.0;
-				when 2 => o_out :=   0.0; -- CS: probably 180.0 ?
-				when 3 => o_out := 270.0;
+				when 0 => o_out := 180; -- CS: probably 0.0 ?
+				when 1 => o_out :=  90;
+				when 2 => o_out :=   0; -- CS: probably 180.0 ?
+				when 3 => o_out := 270;
 			end case;
 			return o_out;
 			-- CS: exception handler
@@ -8014,7 +8014,7 @@ package body et_kicad is
 					case orient_1 is
 						when -1 =>
 							if orient_2 = 0 then
-								orientation := 180.0;
+								orientation := 180;
 
 								-- compute unit mirror style
 								if mirror_1 = 0 then
@@ -8040,7 +8040,7 @@ package body et_kicad is
 						when  0 =>
 							case orient_2 is
 								when -1 => 
-									orientation :=  90.0;
+									orientation := 90;
 									
 									-- compute unit mirror style
 									case mirror_1 is
@@ -8066,7 +8066,7 @@ package body et_kicad is
 									end case;
 
 								when  1 =>
-									orientation := -90.0;
+									orientation := -90;
 
 									-- compute unit mirror style
 									case mirror_1 is
@@ -8098,7 +8098,7 @@ package body et_kicad is
 
 						when  1 =>
 							if orient_2 = 0 then
-								orientation := 0.0;
+								orientation := 0;
 
 								-- compute unit mirror style
 								if mirror_1 = 0 then
@@ -14051,7 +14051,7 @@ package body et_kicad is
 			log ("line width" & et_libraries.type_text_line_width'image (note.line_width));
 
 			-- rotation
-			log (to_string (note.rotation));
+			log (et_coordinates.to_string (note.rotation));
 
 			-- visible
 			--log ("visible " & to_lower (et_libraries.type_text_visible'image (note.visible)));

@@ -107,8 +107,8 @@ package body kicad_coordinates is
 		use et_string_processing;
 	begin
 		log (et_string_processing.message_warning 
-			& "text placed in an angle greater than" 
-			& type_angle_90'image (type_angle_90'last));
+			& "rotation of text outside range " 
+			& et_coordinates.to_string (0) & " .. " & et_coordinates.to_string (90) & " !");
 	end warning_angle_greater_90_degrees;
 	
 	function to_string (schematic : in type_schematic_file_name.bounded_string) return string is begin
