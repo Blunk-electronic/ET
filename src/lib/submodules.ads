@@ -120,7 +120,7 @@ package submodules is
 	type type_netchanger_port is record
 		position	: type_point;
 		length		: type_port_length; 
-		rotation	: et_coordinates.type_angle;
+		rotation	: et_coordinates.type_rotation;
 	end record;
 
 	position_master_port_default : constant type_point := type_point (set_point (x =>  10.0, y => 0.0));
@@ -150,7 +150,7 @@ package submodules is
 
 	type type_netchanger is record
 		position_sch	: et_coordinates.type_coordinates; -- x,y,sheet
-		rotation		: et_coordinates.type_angle := 0;
+		rotation		: et_coordinates.type_rotation := 0;
 		--symbol			: type_netchanger_symbol; -- CS for visualisation only
 		
 		position_brd	: et_pcb_coordinates.type_point_2d; -- x,y

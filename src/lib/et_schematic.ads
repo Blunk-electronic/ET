@@ -122,7 +122,7 @@ package et_schematic is
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a device.
 	type type_unit_base is tagged record
-		rotation	: et_coordinates.type_angle; -- CS default
+		rotation	: et_coordinates.type_rotation; -- CS default
 		mirror		: type_mirror; -- CS default
 	end record;
 
@@ -259,7 +259,7 @@ package et_schematic is
 
 	type type_net_label_base is tagged record
 		coordinates	: et_coordinates.type_point; -- CS rename to position
-		orientation	: et_coordinates.type_angle; -- CS rename to rotation
+		orientation	: et_coordinates.type_rotation; -- CS rename to rotation
         size		: et_libraries.type_text_size := et_libraries.text_size_default;
         style		: et_libraries.type_text_style := et_libraries.type_text_style'first;
 		width		: et_libraries.type_text_line_width := et_libraries.type_text_line_width'first;

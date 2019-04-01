@@ -253,7 +253,7 @@ package et_libraries is
 		position			: type_point;
 		length				: type_port_length; 
 		-- CS line_width	: type_line_width := line_width_port_default;
-		rotation			: type_angle := zero_angle;
+		rotation			: type_rotation := 0;
 		
 		port_name_visible		: type_port_name_visible;
 		port_name_size			: type_port_name_text_size;
@@ -857,7 +857,7 @@ package et_libraries is
  		coordinates		: et_coordinates.type_point;
 		text			: type_title_block_text_content.bounded_string; -- CS: rename to content
  		size			: et_libraries.type_text_size;
- 		orientation		: et_coordinates.type_angle; -- CS: rename to rotation
+ 		orientation		: et_coordinates.type_rotation; -- CS: rename to rotation
 		-- CS: font, ...
  	end record;
 
@@ -883,7 +883,7 @@ package et_libraries is
 		coordinates		: et_coordinates.type_point; -- CS rename to position
 		text			: character_set := et_string_processing.general_characters; -- CS rename to content
 		size			: et_libraries.type_text_size;
-		orientation		: et_coordinates.type_angle; -- CS rename to rotation
+		orientation		: et_coordinates.type_rotation; -- CS rename to rotation
 		-- CS: font, ...
 	end record;
 	

@@ -68,20 +68,20 @@ package body et_coordinates is
 	end to_string;
 
 
-	function to_string (angle : in type_angle) return string is
+	function to_string (angle : in type_rotation) return string is
 	-- Returns the the given angle as string.
 		--preamble	: constant string := " angle ";
 		preamble	: constant string := " ";
 		suffix		: constant string := " deg";
 	begin
-		return (preamble & type_angle'image (angle) & suffix);
+		return (preamble & type_rotation'image (angle) & suffix);
 	end to_string;
 
-	function to_angle (angle : in string) return type_angle is 
+	function to_angle (angle : in string) return type_rotation is 
 		use et_string_processing;
-		r : type_angle;
+		r : type_rotation;
 	begin
-		r := type_angle'value (angle);
+		r := type_rotation'value (angle);
 		return r;
 
 		exception 
@@ -106,12 +106,12 @@ package body et_coordinates is
 				raise;
 	end to_angle;
 
-	function add (left, right : in type_angle) return type_angle is
+	function add (left, right : in type_rotation) return type_rotation is
 	-- Adds two angles.
 	-- If result greater or equal 360 degree then 360 degree is subtracted from result.
 	-- If reuslt less or equal 360 degree then 360 degree is added to the result.
 		scratch : integer;
-		result : type_angle; -- to be returned
+		result : type_rotation; -- to be returned
 	begin
 		scratch := integer (left) + integer (right);
 		
@@ -122,7 +122,7 @@ package body et_coordinates is
 			scratch := scratch + 360;
 		end if;
 
-		result := type_angle (scratch);
+		result := type_rotation (scratch);
 		return result;
 	end;
 	
@@ -236,7 +236,7 @@ package body et_coordinates is
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
 		point	: in out type_point;
-		angle	: in type_angle) is
+		angle	: in type_rotation) is
 
 		type type_float_distance is digits 7 range -1000.0 .. 1000.0; -- CS: refine
 		package functions_distance is new ada.numerics.generic_elementary_functions (type_float_distance);
@@ -303,7 +303,7 @@ package body et_coordinates is
 			-- we add the given angle to the current angle. In the old fashioned stlyle (Y going downwards positive)
 			-- we subtract the given angle from the current angle.
 -- 			log_indentation_up;
--- 			log ("angle in  " & to_string (type_angle (angle_out)), log_threshold);
+-- 			log ("angle in  " & to_string (type_rotation (angle_out)), log_threshold);
 			if Y_axis_positive = upwards then
 				angle_out := angle_out + type_float_angle (angle);
 			else

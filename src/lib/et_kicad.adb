@@ -165,7 +165,7 @@ package body et_kicad is
 	-- The unit is an element in the given list of units.
 		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
-		return et_coordinates.type_angle is
+		return et_coordinates.type_rotation is
 		unit_cursor : type_units_schematic.cursor;
 	begin
 		unit_cursor := type_units_schematic.find (container => units, key => name);
@@ -906,8 +906,8 @@ package body et_kicad is
 		
 	end to_text_meaning;
 								 
-	function to_field_orientation (text : in string) return et_coordinates.type_angle is
-	-- Converts a kicad field text orientation character (H/V) to type_angle.
+	function to_field_orientation (text : in string) return et_coordinates.type_rotation is
+	-- Converts a kicad field text orientation character (H/V) to type_rotation.
 	begin	
 		case type_field_orientation'value (text) is
 			when H => return 0;
@@ -1133,8 +1133,8 @@ package body et_kicad is
 		
 	end to_alternative_representation;
 
-	function to_degrees (angle : in string) return et_coordinates.type_angle is
-	-- Converts a given angle as string to type_angle.
+	function to_degrees (angle : in string) return et_coordinates.type_rotation is
+	-- Converts a given angle as string to type_rotation.
 		
 		a_in  : type_angle; -- unit is tenth of degrees -3599 .. 3599
 		use et_libraries;
@@ -1152,8 +1152,8 @@ package body et_kicad is
 		-- Convert given angle to a real type
 		a_tmp := type_angle_real (a_in); -- -3599.0 .. 3599.0
 
-		-- convert given angle to et_libraries.type_angle.
-		return et_coordinates.type_angle (a_tmp / 10.0); -- -359.9 .. 359.9
+		-- convert given angle to et_coordinates.type_rotation.
+		return et_coordinates.type_rotation (a_tmp / 10.0); -- -359.9 .. 359.9
 
 		-- CS: exception handler
 	end to_degrees;
@@ -1842,11 +1842,11 @@ package body et_kicad is
 					-- CS: exception handler
 				end to_style;
 
-				function to_rotation (orientation : in string) return et_coordinates.type_angle is
+				function to_rotation (orientation : in string) return et_coordinates.type_rotation is
 				-- Translates orientation up/down/left/right (U/D/L/R) to angle.
 					use et_coordinates;
 					orient : constant character := orientation (orientation'first);
-					rot : et_coordinates.type_angle := zero_angle;
+					rot : et_coordinates.type_rotation := 0;
 				begin
 					case orient is
 						when 'D' => rot := 90; -- to be connected with a net from top
@@ -5342,11 +5342,11 @@ package body et_kicad is
 					);
 		end read_project_file;
 
-		function to_angle (text_in : in string) return et_coordinates.type_angle is
-		-- Converts the label orientation to type_angle.
+		function to_angle (text_in : in string) return et_coordinates.type_rotation is
+		-- Converts the label orientation to type_rotation.
 		-- CS: use a dedicated type for input parameter.
 			o_in : type_label_orientation := type_label_orientation'value(text_in);
-			o_out : et_coordinates.type_angle;
+			o_out : et_coordinates.type_rotation;
 		begin
 			case o_in is
 				when 0 => o_out :=   0;
@@ -6775,16 +6775,16 @@ package body et_kicad is
 
 				end to_direction;
 
-				function to_orientation (or_in : in string) return et_coordinates.type_angle is
-				-- Converts a string to type_angle
-					result : et_coordinates.type_angle;
+				function to_orientation (or_in : in string) return et_coordinates.type_rotation is
+				-- Converts a string to type_rotation
+					result : et_coordinates.type_rotation;
 					orientation : type_sheet_port_orientation; -- see et_kicad.ads
 				begin
 					orientation := type_sheet_port_orientation'value (or_in);
 
 					case orientation is
-						when R => result := et_coordinates.type_angle (0.0);
-						when L => result := et_coordinates.type_angle (180.0);
+						when R => result := et_coordinates.type_rotation (0.0);
+						when L => result := et_coordinates.type_rotation (180.0);
 					end case;
 					
 					return result;
@@ -7223,7 +7223,7 @@ package body et_kicad is
 				-- "ERC32 Test Board" is read here. It contains the actual text.
 			
 				note : type_text; -- the text note being built
-				rotation : et_coordinates.type_angle;
+				rotation : et_coordinates.type_rotation;
 
 				procedure warn is begin 
 					log (message_warning & " text note at " & kicad_coordinates.to_string (note.coordinates) &
@@ -7361,7 +7361,7 @@ package body et_kicad is
 				alternative_references		: type_alternative_references.list;
 				unit_name					: type_unit_name.bounded_string; -- A, B, PWR, CT, IO-BANK1 ...
 				position					: kicad_coordinates.type_coordinates;
-				orientation					: et_coordinates.type_angle;
+				orientation					: et_coordinates.type_rotation;
 				mirror						: type_mirror;
 				timestamp					: type_timestamp; -- 59F202F2
 				alternative_representation	: type_de_morgan_representation;

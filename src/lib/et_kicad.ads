@@ -226,7 +226,7 @@ package et_kicad is
 	-- The unit is an element in the given list of units.
 		name 	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
-		return et_coordinates.type_angle;
+		return et_coordinates.type_rotation;
 	
 	procedure write_unit_properties (
 	-- Writes the properties of the unit indicated by the given cursor.
@@ -347,8 +347,8 @@ package et_kicad is
 	
 	-- arcs of a symbol:
 	type type_symbol_arc is new et_libraries.type_arc with record
-		start_angle		: et_coordinates.type_angle;
-		end_angle		: et_coordinates.type_angle;
+		start_angle		: et_coordinates.type_rotation;
+		end_angle		: et_coordinates.type_rotation;
  		fill			: type_fill;
 	end record;
 	package type_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
@@ -693,7 +693,7 @@ package et_kicad is
 
 	type type_net_label (label_appearance : et_schematic.type_net_label_appearance) is record
 		coordinates	: et_coordinates.type_point;
-		orientation	: et_coordinates.type_angle;
+		orientation	: et_coordinates.type_rotation;
         text		: et_general.type_net_name.bounded_string;
         size		: et_libraries.type_text_size;
         style		: et_libraries.type_text_style;
@@ -1188,7 +1188,7 @@ package et_kicad is
 		direction	: type_port_direction;
 		text_size	: et_libraries.type_text_size;
 		coordinates	: et_coordinates.type_point;
-        orientation	: et_coordinates.type_angle;
+        orientation	: et_coordinates.type_rotation;
         processed   : boolean; -- used when linking hierarchic nets
 	end record;
 
