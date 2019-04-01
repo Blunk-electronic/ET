@@ -1409,14 +1409,20 @@ package body schematic_ops is
 					to_string (unit_name) & " to" & et_coordinates.to_string (rotation), log_threshold);
 
 			when RELATIVE =>
--- 				if rotation in type_rotation_relative then
+				if rotation in type_rotation_relative then
 					log ("module " & to_string (module_name) &
 						" rotating " & to_string (device_name) & " unit " & 
 						to_string (unit_name) & " by" & et_coordinates.to_string (rotation), log_threshold);
--- 				else
--- 					log (message_error & " given relative angle out of range !");
--- 					raise constraint_error;
--- 				end if;
+				else
+					log (message_error & "Relative rotation must be in range" & 
+						et_coordinates.to_string (rotation_relative_min) &
+						" .." & 
+						et_coordinates.to_string (rotation_relative_max),
+						console => true
+						);
+					
+					raise constraint_error;
+				end if;
 		end case;
 		
 		-- locate module

@@ -7244,6 +7244,9 @@ package body et_kicad is
 				
 				--note.rotation := to_angle (et_string_processing.field (et_kicad.line,5));
 				rotation := to_angle (et_string_processing.field (et_kicad.line,5));
+
+				-- Notes might be upside down or readable from the left. So we must fit the rotation
+				-- into a range between 0 and 90 degree:
 				if rotation < 0 then
 					note.rotation := 90;
 					warn;

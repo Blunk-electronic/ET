@@ -85,15 +85,21 @@ package et_coordinates is
 	-- positive rotation -> counter clock wise
 	-- negative rotation -> clock wise
 	rotation_delta : constant := 90;
+	rotation_min : constant := -270;
+	rotation_max : constant :=  270;
 	pragma assertion_policy (check);		
-	subtype type_angle is integer range -270 .. 270 
+	subtype type_angle is integer range rotation_min .. rotation_max 
 		with dynamic_predicate => type_angle mod rotation_delta = 0;
 
-	subtype type_rotation_relative is type_angle range -90 .. 180;
+	rotation_relative_min : constant type_angle := -90;
+	rotation_relative_max : constant type_angle := 180;	
+	subtype type_rotation_relative is type_angle range rotation_relative_min .. rotation_relative_max;
 
 	zero_angle : constant type_angle := 0;
 
-	subtype type_rotation_text is type_angle range 0 .. 90;
+	rotation_text_min : constant :=  0;
+	rotation_text_max : constant := 90;
+	subtype type_rotation_text is type_angle range rotation_text_min .. rotation_text_max;
 	-- CS: make use of this type by membership tests when required
 
 	function to_string (angle : in type_angle) return string;

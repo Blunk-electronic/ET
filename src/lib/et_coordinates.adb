@@ -87,9 +87,9 @@ package body et_coordinates is
 		exception 
 			when constraint_error => 
 				log (message_error & "Rotation " & angle & " outside range" & 
-					 et_coordinates.to_string (-270) &
+					 et_coordinates.to_string (rotation_min) &
 					 " .." & 
-					 et_coordinates.to_string (270) &
+					 et_coordinates.to_string (rotation_max) &
 					 " (must be an integer) !",
 					 console => true
 					);
