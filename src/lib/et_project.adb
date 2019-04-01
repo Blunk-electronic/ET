@@ -1369,7 +1369,7 @@ package body et_project is
 								section_mark (section_label, HEADER);
 								
 								write (keyword => keyword_position, parameters => position (element (label_cursor).coordinates));
-								write (keyword => keyword_rotation, parameters => rotation (element (label_cursor).orientation));
+								write (keyword => keyword_rotation, parameters => rotation (element (label_cursor).rotation));
 								write (keyword => keyword_size, parameters => 
 									et_libraries.to_string (size => element (label_cursor).size, preamble => false));
 								write (keyword => keyword_style, parameters => to_string (element (label_cursor).style));
@@ -10585,7 +10585,7 @@ package body et_project is
 										
 									elsif kw = keyword_rotation then -- rotation 0.0
 										expect_field_count (line, 2);
-										net_label.orientation := et_coordinates.to_angle (f (line, 2));
+										net_label.rotation := et_coordinates.to_angle (f (line, 2));
 
 									elsif kw = keyword_size then -- size 1.3
 										expect_field_count (line, 2);

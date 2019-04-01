@@ -176,6 +176,7 @@ package schematic_ops is
 	-- 3. CS: for net junctions sitting on top of each other
 	-- 4. CS: for device/submodule/netchanger port that do not have a visual connection to the net
 	-- 5. CS: for overlapping net segments
+	-- 6. CS: unconnected ports of R, C, L (category depended)
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 								  

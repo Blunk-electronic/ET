@@ -7087,7 +7087,7 @@ package body et_kicad is
 				set_x (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
 				set_y (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
 
-				label.orientation := to_angle (et_string_processing.field (et_kicad.line,5));
+				label.rotation := to_angle (et_string_processing.field (et_kicad.line,5));
 				label.size := mil_to_distance (et_string_processing.field (et_kicad.line,6));
 				label.style := to_text_style (style_in => et_string_processing.field (et_kicad.line,7), text => true);
 				label.width := et_libraries.type_text_line_width'value (et_string_processing.field (et_kicad.line,8));
@@ -7166,7 +7166,7 @@ package body et_kicad is
 				set_x (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
 				set_y (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
 
-				label.orientation := to_angle (et_string_processing.field (et_kicad.line,5));
+				label.rotation := to_angle (et_string_processing.field (et_kicad.line,5));
 				label.direction := to_direction (et_string_processing.field (et_kicad.line,7));
 
 				-- build text attributes from size, font and line width
@@ -11870,7 +11870,7 @@ package body et_kicad is
 		end case;
 
 		log_indentation_up;
-		log (to_string (label.orientation), level => log_threshold + 1);
+		log (to_string (label.rotation), level => log_threshold + 1);
 		
 		case label.label_appearance is
 			when simple =>

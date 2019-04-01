@@ -857,7 +857,7 @@ package et_libraries is
  		coordinates		: et_coordinates.type_point;
 		text			: type_title_block_text_content.bounded_string; -- CS: rename to content
  		size			: et_libraries.type_text_size;
- 		orientation		: et_coordinates.type_rotation; -- CS: rename to rotation
+ 		rotation		: et_coordinates.type_rotation;
 		-- CS: font, ...
  	end record;
 
@@ -883,7 +883,7 @@ package et_libraries is
 		coordinates		: et_coordinates.type_point; -- CS rename to position
 		text			: character_set := et_string_processing.general_characters; -- CS rename to content
 		size			: et_libraries.type_text_size;
-		orientation		: et_coordinates.type_rotation; -- CS rename to rotation
+		rotation		: et_coordinates.type_rotation;
 		-- CS: font, ...
 	end record;
 	

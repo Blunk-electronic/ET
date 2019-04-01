@@ -2707,7 +2707,7 @@ package body et_kicad_to_native is
 							new_item	=> (
 								appearance	=> et_schematic.SIMPLE,
 								coordinates	=> element (simple_label_cursor).coordinates,
-								orientation	=> element (simple_label_cursor).orientation,
+								rotation	=> element (simple_label_cursor).rotation,
 								size		=> element (simple_label_cursor).size,
 								style		=> element (simple_label_cursor).style,
 								width		=> element (simple_label_cursor).width)
@@ -2728,7 +2728,7 @@ package body et_kicad_to_native is
 							new_item	=> (
 								appearance	=> et_schematic.TAG,
 								coordinates	=> element (tag_label_cursor).coordinates,
-								orientation	=> element (tag_label_cursor).orientation,
+								rotation	=> element (tag_label_cursor).rotation,
 								size		=> element (tag_label_cursor).size,
 								style		=> element (tag_label_cursor).style,
 								width		=> element (tag_label_cursor).width,

@@ -693,7 +693,7 @@ package et_kicad is
 
 	type type_net_label (label_appearance : et_schematic.type_net_label_appearance) is record
 		coordinates	: et_coordinates.type_point;
-		orientation	: et_coordinates.type_rotation;
+		rotation	: et_coordinates.type_rotation;
         text		: et_general.type_net_name.bounded_string;
         size		: et_libraries.type_text_size;
         style		: et_libraries.type_text_style;

@@ -259,7 +259,7 @@ package et_schematic is
 
 	type type_net_label_base is tagged record
 		coordinates	: et_coordinates.type_point; -- CS rename to position
-		orientation	: et_coordinates.type_rotation; -- CS rename to rotation
+		rotation	: et_coordinates.type_rotation;
         size		: et_libraries.type_text_size := et_libraries.text_size_default;
         style		: et_libraries.type_text_style := et_libraries.type_text_style'first;
 		width		: et_libraries.type_text_line_width := et_libraries.type_text_line_width'first;
