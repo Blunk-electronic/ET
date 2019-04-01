@@ -5349,9 +5349,9 @@ package body et_kicad is
 			o_out : et_coordinates.type_angle;
 		begin
 			case o_in is
-				when 0 => o_out := 180; -- CS: probably 0.0 ?
+				when 0 => o_out :=   0;
 				when 1 => o_out :=  90;
-				when 2 => o_out :=   0; -- CS: probably 180.0 ?
+				when 2 => o_out := 180;
 				when 3 => o_out := 270;
 			end case;
 			return o_out;
@@ -7223,7 +7223,14 @@ package body et_kicad is
 				-- "ERC32 Test Board" is read here. It contains the actual text.
 			
 				note : type_text; -- the text note being built
-			begin
+				rotation : et_coordinates.type_angle;
+
+				procedure warn is begin 
+					log (message_warning & " text note at " & kicad_coordinates.to_string (note.coordinates) &
+						 " might be misplaced !");
+				end;
+				
+			begin -- make_text_note
 				--log ("making text note ...", log_threshold);
 				--log_indentation_up;
 				
@@ -7235,7 +7242,18 @@ package body et_kicad is
 				set_x (note.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
 				set_y (note.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
 				
-				note.rotation := to_angle (et_string_processing.field (et_kicad.line,5));
+				--note.rotation := to_angle (et_string_processing.field (et_kicad.line,5));
+				rotation := to_angle (et_string_processing.field (et_kicad.line,5));
+				if rotation < 0 then
+					note.rotation := 90;
+					warn;
+				elsif rotation > 90 and rotation < 270 then
+					note.rotation := 0;
+					warn;					
+				elsif rotation > 270 then
+					note.rotation := 90;
+					warn;
+				end if;
 
 				-- set text size and check for excessive size
 				note.size := et_libraries.to_text_size (mil_to_distance (et_string_processing.field (et_kicad.line,6)));

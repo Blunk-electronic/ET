@@ -70,7 +70,8 @@ package body et_coordinates is
 
 	function to_string (angle : in type_angle) return string is
 	-- Returns the the given angle as string.
-		preamble	: constant string := " angle ";
+		--preamble	: constant string := " angle ";
+		preamble	: constant string := " ";
 		suffix		: constant string := " deg";
 	begin
 		return (preamble & type_angle'image (angle) & suffix);
@@ -85,9 +86,9 @@ package body et_coordinates is
 
 		exception 
 			when constraint_error => 
-				log (message_error & "Rotation " & angle & " outside range " & 
+				log (message_error & "Rotation " & angle & " outside range" & 
 					 et_coordinates.to_string (-270) &
-					 " .. " & 
+					 " .." & 
 					 et_coordinates.to_string (270) &
 					 " (must be an integer) !",
 					 console => true
@@ -95,8 +96,8 @@ package body et_coordinates is
 				raise;
 				
 			when system.assertions.assert_failure =>
-				log (message_error & "Rotation " & angle & " is not a multiple of " &
-					 et_coordinates.to_string (rotation_delta),
+				log (message_error & "Rotation " & angle & " is not a multiple of" &
+					 et_coordinates.to_string (rotation_delta) & " !",
 					 console => true
 					);
 				raise;
