@@ -79,7 +79,7 @@ package et_coordinates is
 	-- Returns the given distance as a string.
 
 
-	units_per_cycle : constant float := 360.0;
+
 	
 	-- Angles/rotations are to be interpreted as: 
 	-- positive rotation -> counter clock wise

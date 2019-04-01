@@ -250,8 +250,8 @@ package body et_coordinates is
 		distance_to_origin	: type_float_distance;	-- unit is mm
 		scratch				: type_float_distance;
 
-		--use et_string_processing;
-	begin
+		units_per_cycle : constant float := 360.0; -- CS type_float_angle ?
+	begin -- rotate
 		-- Do nothing if the given rotation is zero.
 		if angle /= 0 then
 
@@ -270,7 +270,7 @@ package body et_coordinates is
 					);
 			end if;
 			
-			-- compute the current angle of the given point (in degrees)
+			-- compute the current angle of the given point (in degrees):
 
 			if point.x = zero_distance then
 				if point.y > zero_distance then
