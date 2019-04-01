@@ -1229,7 +1229,7 @@ package body schematic_ops is
 	procedure rotate_ports (
 	-- Rotates the given unit ports by given angle around the origin.
 		ports	: in out et_libraries.type_ports.map; -- the portlist
-		angle	: in et_coordinates.type_angle) -- 90.0
+		angle	: in et_coordinates.type_angle) -- 90
 		is
 		use et_libraries.type_ports;
 
@@ -1300,7 +1300,7 @@ package body schematic_ops is
 							rotate_placeholders (unit.rotation);
 							
 						when RELATIVE =>
-							unit.rotation := rotation_before + rotation;
+							unit.rotation := add (rotation_before, rotation);
 							rotate_placeholders (unit.rotation);
 					end case;
 				end rotate_unit;
@@ -1382,7 +1382,7 @@ package body schematic_ops is
 						rotate_ports (ports_lib, rotation);
 					when RELATIVE =>
 						 -- The given angle of rotation adds to the rotation_before:
-						rotate_ports (ports_lib, rotation_before + rotation);
+						rotate_ports (ports_lib, add (rotation_before, rotation));
 				end case;
 				
 				move_ports (ports_lib, position_of_unit);

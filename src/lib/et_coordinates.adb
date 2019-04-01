@@ -106,6 +106,26 @@ package body et_coordinates is
 				raise;
 	end to_angle;
 
+	function add (left, right : in type_angle) return type_angle is
+	-- Adds two angles.
+	-- If result greater or equal 360 degree then 360 degree is subtracted from result.
+	-- If reuslt less or equal 360 degree then 360 degree is added to the result.
+		scratch : integer;
+		result : type_angle; -- to be returned
+	begin
+		scratch := integer (left) + integer (right);
+		
+		if scratch >= 360 then
+			scratch := scratch - 360;
+			
+		elsif scratch <= -360 then
+			scratch := scratch + 360;
+		end if;
+
+		result := type_angle (scratch);
+		return result;
+	end;
+	
 	function "<" (left, right : in type_point) return boolean is begin
 		if left.x < right.x then
 			return true;
