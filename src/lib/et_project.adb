@@ -6434,7 +6434,8 @@ package body et_project is
 
 								if not et_libraries.value_characters_valid (value) then
 									log (message_warning & "default value in device model " &
-										to_string (file_name) & " contains invalid characters !");
+										 to_string (file_name) & " contains invalid characters !");
+									-- CS: This should be an error with constraint_error raised.
 								end if;
 								
 								log ("value " & to_string (value), log_threshold + 1);
@@ -8194,7 +8195,8 @@ package body et_project is
 
 						if not et_libraries.value_characters_valid (device_value) then
 							log (message_warning & "value of " & et_libraries.to_string (device_name) &
-									" contains invalid characters !");
+								 " contains invalid characters !");
+							-- CS this should be an error and constraint_error raised
 						end if;
 						
 						log ("value " & et_libraries.to_string (device_value), log_threshold + 2);
