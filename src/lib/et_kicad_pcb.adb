@@ -3281,7 +3281,7 @@ package body et_kicad_pcb is
 
 		package_text 		: type_text_package;
 		package_reference 	: et_libraries.type_device_name := et_schematic.default_component_reference;
-		package_value 		: et_libraries.type_component_value.bounded_string;
+		package_value 		: et_libraries.type_value.bounded_string;
 
 		package_time_stamp	: type_timestamp; -- temporarily storage of package timestamp
 		package_time_edit	: type_timestamp; -- temporarily storage of package time of edit
@@ -7993,7 +7993,7 @@ package body et_kicad_pcb is
 
 							-- Make sure the value in schematic matches value in layout.
 							-- On mismatch -> error and abort
-							if et_libraries.type_component_value."=" (
+							if et_libraries.type_value."=" (
 								element (component_cursor).value, -- value in schematic
 								element (package_cursor).value) then -- value in layout
 

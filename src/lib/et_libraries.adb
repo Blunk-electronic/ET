@@ -568,15 +568,15 @@ package body et_libraries is
 		return type_text_content.to_string (c);
 	end content;
 
-	function to_string (value : in type_component_value.bounded_string) return string is
+	function to_string (value : in type_value.bounded_string) return string is
 	-- Returns the given value as string.
 	begin
-		return type_component_value.to_string (value);
+		return type_value.to_string (value);
 	end to_string;
 
-	function to_value (value : in string) return type_component_value.bounded_string is
+	function to_value (value : in string) return type_value.bounded_string is
 	begin
-		return type_component_value.to_bounded_string (value);
+		return type_value.to_bounded_string (value);
 	end to_value;
 	
 	function value_length_valid (value : in string) return boolean is
@@ -584,34 +584,33 @@ package body et_libraries is
 	-- Returns true if length is in allowed range.		
 		use et_string_processing;
 	begin
-		if value'length > component_value_length_max then
+		if value'length > value_length_max then
 			log (message_warning & "value " & value & " is longer than" 
-				 & positive'image (component_value_length_max) & " characters !");
+				 & positive'image (value_length_max) & " characters !");
 			return false;
 		else
 			return true;
 		end if;
 	end value_length_valid;
 
-	function truncate (value : in string) return type_component_value.bounded_string is
-		value_out : string (1 .. component_value_length_max);
+	function truncate (value : in string) return type_value.bounded_string is
+		value_out : string (1 .. value_length_max);
 		use et_string_processing;
 	begin
-		value_out := value ((value'first) 
-							.. value'first - 1 + component_value_length_max);
+		value_out := value ((value'first) .. value'first - 1 + value_length_max);
 
 		log (message_warning & "value will be truncated to " & value_out);
 		return to_value (value_out);
 	end truncate;
 	
 	function value_characters_valid (
-		value		: in type_component_value.bounded_string;
-		characters	: in character_set := component_value_characters) 
+		value		: in type_value.bounded_string;
+		characters	: in character_set := value_characters) 
 		return boolean is
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
 		use et_string_processing;
-		use type_component_value;
+		use type_value;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (

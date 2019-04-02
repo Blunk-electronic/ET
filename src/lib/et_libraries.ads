@@ -354,30 +354,30 @@ package et_libraries is
 
 
 	
--- COMPONENT VALUES
-	-- The component value is something like 330R or 100n or 74LS00
-	component_value_length_max : constant positive := 50;
+-- DEVICE VALUES
+	-- The device value is something like 330R or 100n or 74LS00
+	value_length_max : constant positive := 50;
 
-	-- Define the characters that are allowed for a component value:
-	component_value_characters : character_set := 
+	-- Define the characters that are allowed for a value:
+	value_characters : character_set := 
 		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) 
 		or to_set ('_')
 		or to_set ('-');
 	
-	package type_component_value is new generic_bounded_length (component_value_length_max);
+	package type_value is new generic_bounded_length (value_length_max);
 
-	function to_string (value : in type_component_value.bounded_string) return string;
-	function to_value (value : in string) return type_component_value.bounded_string;
+	function to_string (value : in type_value.bounded_string) return string;
+	function to_value (value : in string) return type_value.bounded_string;
 	
 	function value_length_valid (value : in string) return boolean;
 	-- Tests if the given value is longer than allowed. Returns false if too long.
 	-- Returns true if length is in allowed range.
 
-	function truncate (value : in string) return type_component_value.bounded_string;
+	function truncate (value : in string) return type_value.bounded_string;
 	
 	function value_characters_valid (
-		value		: in type_component_value.bounded_string;
-		characters	: in character_set := component_value_characters)
+		value		: in type_value.bounded_string;
+		characters	: in character_set := value_characters)
 		return boolean;
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
@@ -692,7 +692,7 @@ package et_libraries is
 	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string;
 	-- Converts a string to a type_terminal_name.
 	
--- COMPONENT VARIANTS
+-- PACKAGE VARIANTS
 	-- The variant is usually a suffix in a component value, given by its manufacturer. The variant is a manufacturer
 	-- specific abbrevation for the package a component comes with.
 	-- Example: An opamp made by TI can be the type TL084N or TL084D. N means the NDIP14 package
@@ -783,7 +783,7 @@ package et_libraries is
 			-- If a device appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
 			when sch_pcb => 
-				value		: type_component_value.bounded_string; -- 74LS00
+				value		: type_value.bounded_string; -- 74LS00
 				--partcode	: type_component_partcode.bounded_string;
 				variants	: type_component_variants.map;
 				

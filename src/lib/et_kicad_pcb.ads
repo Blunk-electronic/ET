@@ -647,7 +647,7 @@ package et_kicad_pcb is
 		assembly_documentation	: et_pcb.type_assembly_documentation_package_both_sides;
 		terminals				: type_terminals.map; -- terminals with net names
 		time_edit				: type_timestamp;
-		value					: et_libraries.type_component_value.bounded_string;
+		value					: et_libraries.type_value.bounded_string;
 		position				: et_pcb_coordinates.type_package_position; -- incl. angle, face
 	end record;
 

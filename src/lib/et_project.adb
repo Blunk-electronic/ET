@@ -5776,7 +5776,7 @@ package body et_project is
 		
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		prefix				: type_device_name_prefix.bounded_string; -- T, IC
-		value				: type_component_value.bounded_string; -- BC548
+		value				: type_value.bounded_string; -- BC548
 		appearance			: type_device_appearance; -- sch, sch_pcb
 		partcode			: type_component_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
 		variant				: type_component_variant;
@@ -6961,7 +6961,7 @@ package body et_project is
 					-- If a value was specified (via an entry like "value 100R),
 					-- check if it meets certain conventions regarding its prefix.
 					-- The prefix gives information about the category of the device:
-					if et_libraries.type_component_value.length (value) > 0 then
+					if et_libraries.type_value.length (value) > 0 then
 						if not conventions.value_valid (value, prefix) then
 							log (message_warning & "default value of device model " &
 								to_string (file_name) & 
@@ -7779,7 +7779,7 @@ package body et_project is
 		
 		device_name				: et_libraries.type_device_name; -- C12
 		device_model			: et_libraries.type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
-		device_value			: et_libraries.type_component_value.bounded_string; -- 470R
+		device_value			: et_libraries.type_value.bounded_string; -- 470R
 		device_appearance		: et_schematic.type_appearance_schematic;
 		device_unit				: et_schematic.type_unit_base;
 		device_unit_name		: et_libraries.type_unit_name.bounded_string; -- GPIO_BANK_1

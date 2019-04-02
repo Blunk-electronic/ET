@@ -177,7 +177,7 @@ package et_schematic is
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
 			when et_libraries.sch_pcb => 
-				value		: et_libraries.type_component_value.bounded_string; -- 470R
+				value		: et_libraries.type_value.bounded_string; -- 470R
 				partcode	: et_libraries.type_component_partcode.bounded_string;
 				purpose		: type_device_purpose.bounded_string;
 				bom			: type_bom; -- whether mounted or not

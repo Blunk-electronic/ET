@@ -2129,13 +2129,13 @@ package body conventions is
 	-- in something like R_PAC_S_0805_VAL_100R.
 		prefix		: in et_libraries.type_device_name_prefix.bounded_string;			-- R
 		packge		: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
-		value 		: in et_libraries.type_component_value.bounded_string := et_libraries.type_component_value.to_bounded_string ("")) -- 100R
+		value 		: in et_libraries.type_value.bounded_string := et_libraries.type_value.to_bounded_string ("")) -- 100R
 		return et_libraries.type_component_partcode.bounded_string is
 
 		use et_libraries;
 		use type_device_name_prefix;
 		use type_component_package_name;
-		use type_component_value;
+		use type_value;
 		use type_component_partcode;
 
 	begin
@@ -2282,7 +2282,7 @@ package body conventions is
 		partcode		: in et_libraries.type_component_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		reference		: in et_libraries.type_device_name;						-- R45
 		packge			: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
-		value 			: in et_libraries.type_component_value.bounded_string;			-- 100R
+		value 			: in et_libraries.type_value.bounded_string;			-- 100R
 		log_threshold	: in et_string_processing.type_log_level)
 		is
 
@@ -2976,7 +2976,7 @@ package body conventions is
 	-- in the configuration file, this test does nothing.
 	-- Returns false if any violation has been detected.							 
 	-- CS: If value is 10,0R outputs the same warning multiple times. Rework required.
-		value 	: in et_libraries.type_component_value.bounded_string; -- 100R, 1A5
+		value 	: in et_libraries.type_value.bounded_string; -- 100R, 1A5
 		prefix	: in et_libraries.type_device_name_prefix.bounded_string) -- R, F
 		return boolean is
 
@@ -2987,7 +2987,7 @@ package body conventions is
 		use et_string_processing;
 
 		component_category : type_component_category;
-		value_length : natural := type_component_value.length (value);
+		value_length : natural := type_value.length (value);
 
 		procedure value_invalid is begin
 			log (message_warning & "value " & to_string (value) & " invalid ! Check unit of measurement !");
@@ -3012,7 +3012,7 @@ package body conventions is
 		
 			use type_unit_abbrevation;
 			use type_units_of_measurement;
-			use type_component_value;
+			use type_value;
 		
 			function valid (unit : in type_unit_of_measurement) 
 				return boolean is

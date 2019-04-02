@@ -2002,7 +2002,7 @@ package body schematic_ops is
 	-- Sets the value of a device.
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
-		value				: in type_component_value.bounded_string; -- 470R
+		value				: in type_value.bounded_string; -- 470R
 		log_threshold		: in type_log_level) is
 		
 		module_cursor : type_modules.cursor; -- points to the module being modified

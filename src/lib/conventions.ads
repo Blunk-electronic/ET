@@ -462,7 +462,7 @@ package conventions is
 		partcode		: in et_libraries.type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
 		reference		: in et_libraries.type_device_name;						-- R45
 		packge			: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
-		value 			: in et_libraries.type_component_value.bounded_string; 			-- 100R
+		value 			: in et_libraries.type_value.bounded_string; 			-- 100R
 		log_threshold	: in et_string_processing.type_log_level);
 
 	
@@ -488,7 +488,7 @@ package conventions is
 	-- This test depends on the category of the device. If no prefixes specified
 	-- in the conventions file, this test does nothing.
 	-- Returns false if any violation has been detected.
-		value 	: in et_libraries.type_component_value.bounded_string;
+		value 	: in et_libraries.type_value.bounded_string;
 		prefix	: in et_libraries.type_device_name_prefix.bounded_string)
 		return boolean;
 	
