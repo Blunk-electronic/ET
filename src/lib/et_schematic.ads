@@ -103,19 +103,9 @@ package et_schematic is
 	function to_string (purpose : in type_device_purpose.bounded_string) return string;
 	function to_purpose (purpose : in string) return type_device_purpose.bounded_string;
 	
--- 	procedure check_purpose_length (purpose : in string);
-	-- Tests if the given purpose is longer than allowed.
-
 	function purpose_length_valid (purpose : in string) return boolean;
 	-- Returns true if given purpose is too long. Issues warning.	
 	
--- 	procedure check_purpose_characters (
--- 		purpose		: in type_device_purpose.bounded_string;
--- 		characters	: in character_set := device_purpose_characters);
--- 	-- Tests if the given purpose contains only valid characters as specified
--- 	-- by given character set.
--- 	-- Raises exception if invalid character found.
-
 	function purpose_characters_valid (
 		purpose		: in type_device_purpose.bounded_string;
 		characters	: in character_set := device_purpose_characters) 

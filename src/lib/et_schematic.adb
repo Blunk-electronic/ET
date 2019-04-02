@@ -317,19 +317,6 @@ package body et_schematic is
 		return type_device_purpose.to_bounded_string (purpose);
 	end to_purpose;
 
--- 	procedure check_purpose_length (purpose : in string) is
--- 	-- Tests if the given purpose is longer than allowed.
--- 		use et_string_processing;
--- 	begin
--- 		if purpose'length > device_purpose_length_max then
--- 			log_indentation_reset;
--- 			log (message_error & "max. number of characters for purpose is" 
--- 				 & positive'image (device_purpose_length_max) & " !",
--- 				console => true);
--- 			raise constraint_error;
--- 		end if;
--- 	end check_purpose_length;
-
 	function purpose_length_valid (purpose : in string) return boolean is 
 	-- Returns true if given purpose is too long. Issues warning.
 		use et_string_processing;
@@ -344,38 +331,12 @@ package body et_schematic is
 		end if;
 	end;
 		
--- 	procedure check_purpose_characters (
--- 		purpose		: in type_device_purpose.bounded_string;
--- 		characters	: in character_set := device_purpose_characters) is
--- 	-- Tests if the given purpose contains only valid characters as specified
--- 	-- by given character set.
--- 	-- Raises exception if invalid character found.
--- 		use et_string_processing;
--- 		use type_device_purpose;
--- 		invalid_character_position : natural := 0;
--- 	begin
--- 		invalid_character_position := index (
--- 			source => purpose,
--- 			set => characters,
--- 			test => outside);
--- 
--- 		if invalid_character_position > 0 then
--- 			log_indentation_reset;
--- 			log (message_error & "device purpose " & enclose_in_quotes (to_string (purpose))
--- 				 & " has invalid character at position"
--- 				 & natural'image (invalid_character_position),
--- 				console => true
--- 				);
--- 			raise constraint_error;
--- 		end if;
--- 	end check_purpose_characters;
-
 	function purpose_characters_valid (
+	-- Tests if the given value contains only valid characters as specified
+	-- by given character set. Returns false if invalid character found.
 		purpose		: in type_device_purpose.bounded_string;
 		characters	: in character_set := device_purpose_characters) 
 		return boolean is
-	-- Tests if the given value contains only valid characters as specified
-	-- by given character set. Returns false if invalid character found.
 		use et_string_processing;
 		use type_device_purpose;
 		invalid_character_position : natural := 0;
