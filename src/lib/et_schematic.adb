@@ -266,44 +266,44 @@ package body et_schematic is
 		return type_mirror'value (style);
 	end to_mirror_style;
 
-	procedure validate_purpose (purpose : in string) is
-	-- Raises alarm if purpose is empty, purpose_default or nonsense.
-		use et_string_processing;
-		procedure purpose_invalid is
-		begin
-			log_indentation_reset;
-			log (message_error & "purpose '" & purpose & "' not sufficiently specified !",
-				 console => true);
-			raise constraint_error;
-		end purpose_invalid;
-
-		place : natural := 0;
-	begin -- validate_purpose
-
-		-- test for the default string
-		if purpose = purpose_default then
-			purpose_invalid;
-		end if;
-
-		-- test if length is non-zero
-		if purpose'length = 0 then 
-			log_indentation_reset;
-			log (message_error & "no purpose specified !",
-				 console => true);
-			raise constraint_error;
-		end if;
-
-		-- test for keywords and characters
-		
-		place := ada.strings.fixed.count (to_lower (purpose), "purpose");
-		if place > 0 then purpose_invalid; end if;
-
-		place := ada.strings.fixed.count (purpose, "?");
-		if place > 0 then purpose_invalid; end if;
-
-		-- CS: others like "to do, TODO, TBD
-		
-	end validate_purpose;
+-- 	procedure validate_purpose (purpose : in string) is
+-- 	-- Raises alarm if purpose is empty, purpose_default or nonsense.
+-- 		use et_string_processing;
+-- 		procedure purpose_invalid is
+-- 		begin
+-- 			log_indentation_reset;
+-- 			log (message_error & "purpose '" & purpose & "' not sufficiently specified !",
+-- 				 console => true);
+-- 			raise constraint_error;
+-- 		end purpose_invalid;
+-- 
+-- 		place : natural := 0;
+-- 	begin -- validate_purpose
+-- 
+-- 		-- test for the default string
+-- 		if purpose = purpose_default then
+-- 			purpose_invalid;
+-- 		end if;
+-- 
+-- 		-- test if length is non-zero
+-- 		if purpose'length = 0 then 
+-- 			log_indentation_reset;
+-- 			log (message_error & "no purpose specified !",
+-- 				 console => true);
+-- 			raise constraint_error;
+-- 		end if;
+-- 
+-- 		-- test for keywords and characters
+-- 		
+-- 		place := ada.strings.fixed.count (to_lower (purpose), "purpose");
+-- 		if place > 0 then purpose_invalid; end if;
+-- 
+-- 		place := ada.strings.fixed.count (purpose, "?");
+-- 		if place > 0 then purpose_invalid; end if;
+-- 
+-- 		-- CS: others like "to do, TODO, TBD
+-- 		
+-- 	end validate_purpose;
 	
 	function to_string (purpose : in type_device_purpose.bounded_string) return string is
 	-- Returns the given purpose as string.
@@ -317,45 +317,86 @@ package body et_schematic is
 		return type_device_purpose.to_bounded_string (purpose);
 	end to_purpose;
 
-	procedure check_purpose_length (purpose : in string) is
-	-- Tests if the given purpose is longer than allowed.
+-- 	procedure check_purpose_length (purpose : in string) is
+-- 	-- Tests if the given purpose is longer than allowed.
+-- 		use et_string_processing;
+-- 	begin
+-- 		if purpose'length > device_purpose_length_max then
+-- 			log_indentation_reset;
+-- 			log (message_error & "max. number of characters for purpose is" 
+-- 				 & positive'image (device_purpose_length_max) & " !",
+-- 				console => true);
+-- 			raise constraint_error;
+-- 		end if;
+-- 	end check_purpose_length;
+
+	function purpose_length_valid (purpose : in string) return boolean is 
+	-- Returns true if given purpose is too long. Issues warning.
 		use et_string_processing;
 	begin
 		if purpose'length > device_purpose_length_max then
-			log_indentation_reset;
-			log (message_error & "max. number of characters for purpose is" 
-				 & positive'image (device_purpose_length_max) & " !",
+			log (message_warning & "purpose " & enclose_in_quotes (purpose) & " is longer than" 
+				 & positive'image (device_purpose_length_max) & " characters !", 
 				console => true);
-			raise constraint_error;
+			return false;
+		else
+			return true;
 		end if;
-	end check_purpose_length;
-	
-	procedure check_purpose_characters (
+	end;
+		
+-- 	procedure check_purpose_characters (
+-- 		purpose		: in type_device_purpose.bounded_string;
+-- 		characters	: in character_set := device_purpose_characters) is
+-- 	-- Tests if the given purpose contains only valid characters as specified
+-- 	-- by given character set.
+-- 	-- Raises exception if invalid character found.
+-- 		use et_string_processing;
+-- 		use type_device_purpose;
+-- 		invalid_character_position : natural := 0;
+-- 	begin
+-- 		invalid_character_position := index (
+-- 			source => purpose,
+-- 			set => characters,
+-- 			test => outside);
+-- 
+-- 		if invalid_character_position > 0 then
+-- 			log_indentation_reset;
+-- 			log (message_error & "device purpose " & enclose_in_quotes (to_string (purpose))
+-- 				 & " has invalid character at position"
+-- 				 & natural'image (invalid_character_position),
+-- 				console => true
+-- 				);
+-- 			raise constraint_error;
+-- 		end if;
+-- 	end check_purpose_characters;
+
+	function purpose_characters_valid (
 		purpose		: in type_device_purpose.bounded_string;
-		characters	: in character_set := device_purpose_characters) is
-	-- Tests if the given purpose contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
+		characters	: in character_set := device_purpose_characters) 
+		return boolean is
+	-- Tests if the given value contains only valid characters as specified
+	-- by given character set. Returns false if invalid character found.
 		use et_string_processing;
 		use type_device_purpose;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
-			source => purpose,
-			set => characters,
-			test => outside);
+			source	=> purpose,
+			set 	=> characters,
+			test 	=> outside);
 
 		if invalid_character_position > 0 then
-			log_indentation_reset;
-			log (message_error & "component purpose " & to_string (purpose) 
+			log (message_warning & "purpose " & enclose_in_quotes (to_string (purpose))
 				 & " has invalid character at position"
-				 & natural'image (invalid_character_position),
-				console => true
+				 & natural'image (invalid_character_position)
 				);
-			raise constraint_error;
+			return false;
+		else
+			return true;
 		end if;
-	end check_purpose_characters;
+	end purpose_characters_valid;
 
+	
 	function unit_positions (units : in type_units.map) return type_unit_positions.map is
 	-- Returns a list of units and their coordinates in the schematic.
 		list : type_unit_positions.map; -- to be returned

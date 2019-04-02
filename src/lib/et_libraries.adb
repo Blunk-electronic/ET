@@ -609,14 +609,15 @@ package body et_libraries is
 		return boolean is
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
+	-- Issues warning.
 		use et_string_processing;
 		use type_value;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
-			source => value,
-			set => characters,
-			test => outside);
+			source	=> value,
+			set 	=> characters,
+			test 	=> outside);
 
 		if invalid_character_position > 0 then
 			log (message_warning & "value " & enclose_in_quotes (to_string (value))

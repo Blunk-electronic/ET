@@ -54,6 +54,7 @@ with et_project;
 
 with et_coordinates;			use et_coordinates;
 with et_libraries;				use et_libraries;
+with et_schematic;
 with schematic_ops;
 -- with board_ops;
 
@@ -359,7 +360,32 @@ package body scripting is
 							NULL; -- CS
 
 						when PURPOSE =>
-							NULL; -- CS
+							declare
+								use et_schematic;
+								purpose : type_device_purpose.bounded_string; -- brightness_control
+							begin
+								if purpose_length_valid (f (6)) then
+									purpose := to_purpose (f (6));
+								else
+									raise constraint_error; -- CS: truncate ?
+								end if;
+								
+								if purpose_characters_valid (purpose) then
+
+									-- set the purpose
+									schematic_ops.set_purpose
+										(
+										module_name 	=> module,
+										device_name		=> to_device_name (f (5)), -- R1
+										purpose			=> purpose, -- brightness_control
+										log_threshold	=> log_threshold + 1
+										);
+								else
+									log (message_error & "purpose " & enclose_in_quotes (to_string (purpose)) &
+										 " invalid !", console => true);
+									raise constraint_error;
+								end if;
+							end;
 							
 						when VALUE =>
 
@@ -384,7 +410,7 @@ package body scripting is
 										log_threshold	=> log_threshold + 1
 										);
 								else
-									log (message_error & "Value " & enclose_in_quotes (to_string (value)) &
+									log (message_error & "value " & enclose_in_quotes (to_string (value)) &
 										 " invalid !", console => true);
 									raise constraint_error;
 								end if;

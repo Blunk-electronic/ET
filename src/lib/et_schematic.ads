@@ -93,26 +93,36 @@ package et_schematic is
 	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
 	device_purpose_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_- "); 
-	device_purpose_length_max : constant positive := 100;
+	device_purpose_length_max : constant positive := 50;
 	package type_device_purpose is new generic_bounded_length (device_purpose_length_max);
 	purpose_default : constant string := "dummy";
 
-	procedure validate_purpose (purpose : in string);
+	--procedure validate_purpose (purpose : in string);
 	-- Raises alarm if purpose is empty, purpose_default or nonsense.
 	
 	function to_string (purpose : in type_device_purpose.bounded_string) return string;
 	function to_purpose (purpose : in string) return type_device_purpose.bounded_string;
 	
-	procedure check_purpose_length (purpose : in string);
+-- 	procedure check_purpose_length (purpose : in string);
 	-- Tests if the given purpose is longer than allowed.
-	
-	procedure check_purpose_characters (
-		purpose		: in type_device_purpose.bounded_string;
-		characters	: in character_set := device_purpose_characters);
-	-- Tests if the given purpose contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
 
+	function purpose_length_valid (purpose : in string) return boolean;
+	-- Returns true if given purpose is too long. Issues warning.	
+	
+-- 	procedure check_purpose_characters (
+-- 		purpose		: in type_device_purpose.bounded_string;
+-- 		characters	: in character_set := device_purpose_characters);
+-- 	-- Tests if the given purpose contains only valid characters as specified
+-- 	-- by given character set.
+-- 	-- Raises exception if invalid character found.
+
+	function purpose_characters_valid (
+		purpose		: in type_device_purpose.bounded_string;
+		characters	: in character_set := device_purpose_characters) 
+		return boolean;
+	-- Tests if the given value contains only valid characters as specified
+	-- by given character set. Returns false if invalid character found.
+	
 	
 	-- In a schematic we handle only virtual devices (like GND symbols)
 	-- and those which appear in both schematic an layout (so called real devices):

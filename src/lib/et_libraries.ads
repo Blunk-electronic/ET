@@ -381,7 +381,7 @@ package et_libraries is
 		return boolean;
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
-	
+	-- Issues warning.	
 
 
 

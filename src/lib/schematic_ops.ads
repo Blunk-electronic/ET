@@ -136,6 +136,13 @@ package schematic_ops is
 		device_name			: in type_device_name; -- R2
 		value				: in type_value.bounded_string; -- 470R
 		log_threshold		: in type_log_level);
+
+	procedure set_purpose (
+	-- Sets the purpose of a device.
+		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name			: in type_device_name; -- R2
+		purpose				: in type_device_purpose.bounded_string; -- brightness_control
+		log_threshold		: in type_log_level);
 	
 	function exists_device_port (
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
@@ -177,13 +184,16 @@ package schematic_ops is
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
-	-- Tests nets:
+	-- Tests:
 	-- 1. for device/submodule/netchanger port that do not have a same named device/submodule/netchanger.
 	-- 2. for device/submodule/netchanger port that occur more than once.
 	-- 3. CS: for net junctions sitting on top of each other
 	-- 4. CS: for device/submodule/netchanger port that do not have a visual connection to the net
 	-- 5. CS: for overlapping net segments
 	-- 6. CS: unconnected ports of R, C, L (category depended)
+	-- 7. CS: devices with empty values
+	-- 8. CS: interactive devices with empty purpose
+	-- 9. CS: check partcode (conventions.validate_partcode)								  
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 								  
