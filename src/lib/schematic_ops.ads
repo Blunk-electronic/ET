@@ -129,6 +129,13 @@ package schematic_ops is
 		device_name_before	: in type_device_name; -- IC1
 		device_name_after	: in type_device_name; -- IC23
 		log_threshold		: in type_log_level);
+
+	procedure set_value (
+	-- Sets the value of a device.
+		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name			: in type_device_name; -- R2
+		value				: in type_component_value.bounded_string; -- 470R
+		log_threshold		: in type_log_level);
 	
 	function exists_device_port (
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.

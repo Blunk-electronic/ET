@@ -1998,6 +1998,79 @@ package body schematic_ops is
 		log_indentation_down;
 	end rename_device;
 
+	procedure set_value (
+	-- Sets the value of a device.
+		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name			: in type_device_name; -- R2
+		value				: in type_component_value.bounded_string; -- 470R
+		log_threshold		: in type_log_level) is
+		
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+
+			device_cursor : et_schematic.type_devices.cursor;
+
+			procedure set_value (
+				device_name	: in type_device_name;
+				device		: in out et_schematic.type_device) is
+			begin
+				device.value := value;
+			end;
+			
+		begin -- query_devices
+			-- locate the device
+			device_cursor := find (module.devices, device_name); -- R1
+
+			if device_cursor /= et_schematic.type_devices.no_element then -- the device should be there
+
+				-- Only real devices have a value. Issue warning if targeted device is virtual.
+				if element (device_cursor).appearance = SCH_PCB then
+
+					-- Check value regarding the device category:
+					if conventions.value_valid (value, prefix (device_name)) then 
+					
+						update_element (
+							container	=> module.devices,
+							position	=> device_cursor,
+							process		=> set_value'access);
+
+					else
+						log (message_error & "value invalid for this kind of device !");
+						-- CS more details ?
+						raise constraint_error;
+					end if;
+				else
+					log (message_warning & "device " & to_string (device_name) &
+						 " is virtual and has no value !");
+				end if;
+
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- set_value
+		log ("module " & to_string (module_name) &
+			" setting " & to_string (device_name) & " value to " & to_string (value),
+			log_threshold);
+
+		log_indentation_up;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+		log_indentation_down;
+	end set_value;
+	
 	function exists_device_port (
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
 		module_cursor	: in type_modules.cursor; -- motor_driver

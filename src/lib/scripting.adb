@@ -247,16 +247,16 @@ package body scripting is
 
 				when MOVE =>
 					case noun is
-						when UNIT_NAME =>
+						when NAME =>
 							NULL; -- CS
 
-						when UNIT_VALUE =>
+						when VALUE =>
 							NULL; -- CS
 
-						when UNIT_PARTCODE =>
+						when PARTCODE =>
 							NULL; -- CS
 
-						when UNIT_PURPOSE =>
+						when PURPOSE =>
 							NULL; -- CS
 
 						when NET =>
@@ -338,16 +338,16 @@ package body scripting is
 								log_threshold	=> log_threshold + 1
 								);
 
-						when UNIT_NAME =>
+						when NAME =>
 							NULL; -- CS
 
-						when UNIT_VALUE =>
+						when VALUE =>
 							NULL; -- CS
 
-						when UNIT_PARTCODE =>
+						when PARTCODE =>
 							NULL; -- CS
 
-						when UNIT_PURPOSE =>
+						when PURPOSE =>
 							NULL; -- CS
 							
 						when others => invalid_noun (to_string (noun));
@@ -355,14 +355,20 @@ package body scripting is
 
 				when SET =>
 					case noun is
-						when DEVICE_PARTCODE =>
+						when PARTCODE =>
 							NULL; -- CS
 
-						when DEVICE_PURPOSE =>
+						when PURPOSE =>
 							NULL; -- CS
 							
-						when DEVICE_VALUE =>
-							NULL; -- CS
+						when VALUE =>
+							schematic_ops.set_value
+								(
+								module_name 		=> module,
+								device_name			=> to_device_name (f (5)), -- R1
+								value				=> to_value (f (6)), -- 470R
+								log_threshold		=> log_threshold + 1
+								);
 
 						when TEXT_SIZE =>
 							NULL; -- CS

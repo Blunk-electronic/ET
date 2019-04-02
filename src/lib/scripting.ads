@@ -99,20 +99,24 @@ package scripting is
 
 	type type_noun_schematic is (
 		DEVICE,
-		DEVICE_NAME,
-		DEVICE_PARTCODE,
-		DEVICE_PURPOSE,
-		DEVICE_VALUE,
+		NAME,
+		--DEVICE_NAME,
+		--DEVICE_PARTCODE,
+		--DEVICE_PURPOSE,
+		--DEVICE_VALUE,
 		INTEGRITY,
 		JUNCTION,
-		NET,		
+		NET,
+		PARTCODE,
+		PURPOSE,
 		TEXT,
 		TEXT_SIZE,
 		UNIT,
-		UNIT_NAME,
-		UNIT_PARTCODE,
-		UNIT_PURPOSE,
-		UNIT_VALUE
+-- 		UNIT_NAME,
+-- 		UNIT_PARTCODE,
+-- 		UNIT_PURPOSE,
+		-- 		UNIT_VALUE
+		VALUE
 		);
 
 	function to_string (noun : in type_noun_schematic) return string;
