@@ -362,14 +362,34 @@ package body scripting is
 							NULL; -- CS
 							
 						when VALUE =>
-							schematic_ops.set_value
-								(
-								module_name 		=> module,
-								device_name			=> to_device_name (f (5)), -- R1
-								value				=> to_value (f (6)), -- 470R
-								log_threshold		=> log_threshold + 1
-								);
 
+							declare
+								value : type_value.bounded_string; -- 470R
+							begin
+								-- validate value length. truncate if too long.
+								if et_libraries.value_length_valid (f (6)) then
+									value := et_libraries.to_value (f (6));
+								else
+									value := et_libraries.truncate (f (6));
+								end if;
+
+								if et_libraries.value_characters_valid (value) then
+
+									-- set the value
+									schematic_ops.set_value
+										(
+										module_name 	=> module,
+										device_name		=> to_device_name (f (5)), -- R1
+										value			=> value, -- 470R
+										log_threshold	=> log_threshold + 1
+										);
+								else
+									log (message_error & "Value " & enclose_in_quotes (to_string (value)) &
+										 " invalid !", console => true);
+									raise constraint_error;
+								end if;
+							end;
+							
 						when TEXT_SIZE =>
 							NULL; -- CS
 							

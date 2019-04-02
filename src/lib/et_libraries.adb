@@ -585,7 +585,7 @@ package body et_libraries is
 		use et_string_processing;
 	begin
 		if value'length > value_length_max then
-			log (message_warning & "value " & value & " is longer than" 
+			log (message_warning & "value " & enclose_in_quotes (value) & " is longer than" 
 				 & positive'image (value_length_max) & " characters !");
 			return false;
 		else
@@ -599,7 +599,7 @@ package body et_libraries is
 	begin
 		value_out := value ((value'first) .. value'first - 1 + value_length_max);
 
-		log (message_warning & "value will be truncated to " & value_out);
+		log (message_warning & "value will be truncated to " & enclose_in_quotes (value_out));
 		return to_value (value_out);
 	end truncate;
 	
@@ -619,7 +619,7 @@ package body et_libraries is
 			test => outside);
 
 		if invalid_character_position > 0 then
-			log (message_warning & "value " & to_string (value) 
+			log (message_warning & "value " & enclose_in_quotes (to_string (value))
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position)
 				);

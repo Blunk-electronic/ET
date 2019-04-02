@@ -2990,7 +2990,8 @@ package body conventions is
 		value_length : natural := type_value.length (value);
 
 		procedure value_invalid is begin
-			log (message_warning & "value " & to_string (value) & " invalid ! Check unit of measurement !");
+			log (message_warning & "value " & enclose_in_quotes (to_string (value)) &
+				" invalid ! Check unit of measurement !");
 			result := false;			
 		end;
 

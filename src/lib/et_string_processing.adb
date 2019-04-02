@@ -360,7 +360,7 @@ package body et_string_processing is
 	end strip_quotes;
 
 	function enclose_in_quotes (text_in : in string; quote : in character := latin_1.apostrophe) return string is
-	-- Adds heading and trailing quotate to given string.
+	-- Adds heading and trailing quotes to given string.
 	begin
 		return quote & text_in & quote;
 	end enclose_in_quotes;

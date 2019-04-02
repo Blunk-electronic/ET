@@ -2039,7 +2039,8 @@ package body schematic_ops is
 							process		=> set_value'access);
 
 					else
-						log (message_error & "value invalid for this kind of device !");
+						log (message_error & "value " & enclose_in_quotes (to_string (value)) 
+							 & " invalid for this kind of device !", console => true);
 						-- CS more details ?
 						raise constraint_error;
 					end if;
@@ -2055,7 +2056,8 @@ package body schematic_ops is
 		
 	begin -- set_value
 		log ("module " & to_string (module_name) &
-			" setting " & to_string (device_name) & " value to " & to_string (value),
+			" setting " & to_string (device_name) & " value to " &
+			enclose_in_quotes (to_string (value)),
 			log_threshold);
 
 		log_indentation_up;
