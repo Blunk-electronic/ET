@@ -143,6 +143,13 @@ package schematic_ops is
 		device_name			: in type_device_name; -- R2
 		purpose				: in type_device_purpose.bounded_string; -- brightness_control
 		log_threshold		: in type_log_level);
+
+	procedure set_partcode (
+	-- Sets the partcode of a device.
+		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name			: in type_device_name; -- R2
+		partcode			: in type_component_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		log_threshold		: in type_log_level);
 	
 	function exists_device_port (
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.

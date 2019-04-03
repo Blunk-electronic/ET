@@ -357,7 +357,31 @@ package body scripting is
 				when SET =>
 					case noun is
 						when PARTCODE =>
-							NULL; -- CS
+							declare
+								partcode : type_component_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+							begin
+-- 								if purpose_length_valid (f (6)) then
+-- 									purpose := to_purpose (f (6));
+-- 								else
+-- 									raise constraint_error; -- CS: truncate ?
+-- 								end if;
+-- 								
+-- 								if purpose_characters_valid (purpose) then
+
+									-- set the purpose
+									schematic_ops.set_partcode
+										(
+										module_name 	=> module,
+										device_name		=> to_device_name (f (5)), -- R1
+										partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
+										log_threshold	=> log_threshold + 1
+										);
+-- 								else
+-- 									log (message_error & "purpose " & enclose_in_quotes (to_string (purpose)) &
+-- 										 " invalid !", console => true);
+-- 									raise constraint_error;
+-- 								end if;
+							end;
 
 						when PURPOSE =>
 							declare

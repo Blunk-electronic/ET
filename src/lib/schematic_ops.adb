@@ -2139,6 +2139,74 @@ package body schematic_ops is
 		log_indentation_down;
 	end set_purpose;
 
+	procedure set_partcode (
+	-- Sets the partcode of a device.
+		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name			: in type_device_name; -- R2
+		partcode			: in type_component_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		log_threshold		: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+
+			device_cursor : et_schematic.type_devices.cursor;
+
+			procedure set_partcode (
+				device_name	: in type_device_name;
+				device		: in out et_schematic.type_device) is
+			begin
+				device.partcode := partcode;
+			end;
+			
+		begin -- query_devices
+			-- locate the device
+			device_cursor := find (module.devices, device_name); -- R1
+
+			if device_cursor /= et_schematic.type_devices.no_element then -- the device should be there
+
+				-- Only real devices have a purpose. Issue warning if targeted device is virtual.
+				if element (device_cursor).appearance = SCH_PCB then
+
+					update_element (
+						container	=> module.devices,
+						position	=> device_cursor,
+						process		=> set_partcode'access);
+
+				else
+					log (message_warning & "device " & to_string (device_name) &
+						 " is virtual and has no partcode !");
+				end if;
+
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+
+	begin -- set_partcode
+		log ("module " & to_string (module_name) &
+			" setting " & to_string (device_name) & " partcode to " &
+			enclose_in_quotes (to_string (partcode)),
+			log_threshold);
+
+		log_indentation_up;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+		log_indentation_down;
+	end set_partcode;
+
+
+	
 	
 	function exists_device_port (
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
