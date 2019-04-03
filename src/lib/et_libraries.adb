@@ -643,6 +643,16 @@ package body et_libraries is
 			return true;
 		end if;
 	end value_characters_valid;
+
+	procedure value_invalid (value : in string) is 
+	-- Issues error message and raises constraint error.
+		use et_string_processing;
+	begin
+		log (message_error & "value " & enclose_in_quotes (value) &
+			 " invalid !", console => true);
+		raise constraint_error;
+	end;
+
 	
 	function to_string (prefix : in type_device_name_prefix.bounded_string) return string is
 	-- returns the given prefix as string

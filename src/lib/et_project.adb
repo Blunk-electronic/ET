@@ -6435,7 +6435,8 @@ package body et_project is
 								if not et_libraries.value_characters_valid (value) then
 									log (message_warning & "default value in device model " &
 										 to_string (file_name) & " contains invalid characters !");
-									-- CS: This should be an error with constraint_error raised.
+									log_indentation_reset;
+									value_invalid (to_string (value));
 								end if;
 								
 								log ("value " & to_string (value), log_threshold + 1);
@@ -6447,7 +6448,14 @@ package body et_project is
 
 							elsif kw = keyword_partcode then -- partcode IC_PAC_S_SO14_VAL_
 								expect_field_count (line, 2);
-								partcode := et_libraries.to_partcode (f (line,2));
+
+								-- validate partcode length
+								if partcode_length_valid (f (line, 2)) then
+									partcode := et_libraries.to_partcode (f (line,2));
+								else
+									partcode_invalid (f (line,2));
+								end if;
+								
 								log ("partcode " & to_string (partcode), log_threshold + 1);
 
 							else
@@ -8196,7 +8204,8 @@ package body et_project is
 						if not et_libraries.value_characters_valid (device_value) then
 							log (message_warning & "value of " & et_libraries.to_string (device_name) &
 								 " contains invalid characters !");
-							-- CS this should be an error and constraint_error raised
+							log_indentation_reset;
+							value_invalid (to_string (device_value));
 						end if;
 						
 						log ("value " & et_libraries.to_string (device_value), log_threshold + 2);

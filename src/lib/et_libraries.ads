@@ -383,6 +383,8 @@ package et_libraries is
 	-- by given character set. Returns false if invalid character found.
 	-- Issues warning.	
 
+	procedure value_invalid (value : in string);
+	-- Issues error message and raises constraint error.
 
 
 
