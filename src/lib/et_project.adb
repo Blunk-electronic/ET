@@ -8211,9 +8211,7 @@ package body et_project is
 							device.partcode	:= device_partcode;
 						else
 							log_indentation_reset;
-							log (message_error & "partcode " & enclose_in_quotes (to_string (device_partcode)) &
-								 " invalid !", console => true);
-							raise constraint_error;
+							partcode_invalid (to_string (device_partcode));
 						end if;
 
 						log ("purpose " & et_schematic.to_string (device_purpose), log_threshold + 2);
@@ -11724,9 +11722,7 @@ package body et_project is
 											device_partcode := et_libraries.to_partcode (f (line, 2));
 										else
 											log_indentation_reset;
-											log (message_error & "partcode " & enclose_in_quotes (f (line, 2)) &
-												 " invalid !", console => true);
-											raise constraint_error;
+											et_libraries.partcode_invalid (f (line, 2));
 										end if;
 
 									elsif kw = keyword_purpose then -- purpose power_out

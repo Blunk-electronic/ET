@@ -423,6 +423,15 @@ package body et_libraries is
 			return true;
 		end if;
 	end;
+
+	procedure partcode_invalid (partcode : in string) is 
+	-- Issues error message and raises constraint error.
+		use et_string_processing;
+	begin
+		log (message_error & "partcode " & enclose_in_quotes (partcode) &
+			 " invalid !", console => true);
+		raise constraint_error;
+	end;
 	
 	function to_string (filled : in type_circle_filled) return string is begin
 		return latin_1.space & to_lower (type_circle_filled'image (filled));

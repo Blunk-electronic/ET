@@ -363,7 +363,7 @@ package body scripting is
 								if partcode_length_valid (f (6)) then
 									partcode := to_partcode (f (6));
 								else
-									raise constraint_error;
+									partcode_invalid (f (6));
 								end if;
 								
 								if partcode_characters_valid (partcode) then
@@ -377,9 +377,7 @@ package body scripting is
 										log_threshold	=> log_threshold + 1
 										);
 								else
-									log (message_error & "partcode " & enclose_in_quotes (to_string (partcode)) &
-										 " invalid !", console => true);
-									raise constraint_error;
+									partcode_invalid (f (6));
 								end if;
 							end;
 

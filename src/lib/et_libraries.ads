@@ -524,7 +524,8 @@ package et_libraries is
 	-- Tests if the given partcode contains only valid characters as specified
 	-- by given character set. Returns false if not. Issues warning.
 
-
+	procedure partcode_invalid (partcode : in string);
+	-- Issues error message and raises constraint error.
 
 
 
