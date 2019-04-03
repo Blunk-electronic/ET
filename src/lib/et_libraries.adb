@@ -379,31 +379,34 @@ package body et_libraries is
 		return type_frame_template_name.to_bounded_string (name);
 	end to_template_name;
 	
-	function to_string (partcode : in type_component_partcode.bounded_string) return string is begin
-		return type_component_partcode.to_string (partcode);
+	function to_string (partcode : in type_partcode.bounded_string) return string is begin
+		return type_partcode.to_string (partcode);
 	end to_string;
 
-	function to_partcode (partcode : in string) return type_component_partcode.bounded_string is begin
-		return type_component_partcode.to_bounded_string (partcode);
+	function to_partcode (partcode : in string) return type_partcode.bounded_string is begin
+		return type_partcode.to_bounded_string (partcode);
 	end to_partcode;
 	
-	procedure check_partcode_length (partcode : in string) is
-	-- Tests if the given partcode is longer than allowed.
+	function partcode_length_valid (partcode : in string) return boolean is
+		-- Returns true if length of given partcode is ok. Issues warning if not.	
 		use et_string_processing;
 	begin
-		if partcode'length > component_partcode_length_max then
-			log (message_warning & "partcode too long. Max. length is" 
-				 & positive'image (component_partcode_length_max) & " !");
+		if partcode'length > partcode_length_max then
+			log (message_warning & "partcode " & enclose_in_quotes (partcode) & " is longer than" 
+				 & positive'image (partcode_length_max) & " characters !");
+			return false;
+		else
+			return true;
 		end if;
-	end check_partcode_length;
-	
-	procedure check_partcode_characters (
-		partcode	: in type_component_partcode.bounded_string;
-		characters	: in character_set := component_partcode_characters) is
+	end;
+
+	function partcode_characters_valid (
+		partcode	: in type_partcode.bounded_string;
+		characters	: in character_set := partcode_characters) return boolean is
 	-- Tests if the given partcode contains only valid characters as specified
-	-- by given character set.
+	-- by given character set. Returns false if not. Issues warning.
 		use et_string_processing;
-		use type_component_partcode;
+		use type_partcode;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
@@ -412,13 +415,15 @@ package body et_libraries is
 			test	=> outside);
 
 		if invalid_character_position > 0 then
-			log (message_warning & "partcode " & to_string (partcode) 
+			log (message_warning & "partcode " & enclose_in_quotes (to_string (partcode))
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position));
+			return false;
+		else
+			return true;
 		end if;
-	end check_partcode_characters;
-
-
+	end;
+	
 	function to_string (filled : in type_circle_filled) return string is begin
 		return latin_1.space & to_lower (type_circle_filled'image (filled));
 	end to_string;

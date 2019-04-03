@@ -1976,12 +1976,12 @@ package body conventions is
 	end check_schematic_text_size;
 
 
--- 	function to_string (partcode : in type_component_partcode.bounded_string) return string is begin
--- 		return type_component_partcode.to_string (partcode);
+-- 	function to_string (partcode : in type_partcode.bounded_string) return string is begin
+-- 		return type_partcode.to_string (partcode);
 -- 	end to_string;
 -- 
--- 	function to_partcode (partcode : in string) return type_component_partcode.bounded_string is begin
--- 		return type_component_partcode.to_bounded_string (partcode);
+-- 	function to_partcode (partcode : in string) return type_partcode.bounded_string is begin
+-- 		return type_partcode.to_bounded_string (partcode);
 -- 	end to_partcode;
 -- 	
 -- 	procedure check_partcode_length (partcode : in string) is
@@ -1998,13 +1998,13 @@ package body conventions is
 -- 	end check_partcode_length;
 -- 	
 -- 	procedure check_partcode_characters (
--- 		partcode	: in type_component_partcode.bounded_string;
+-- 		partcode	: in type_partcode.bounded_string;
 -- 		characters	: in character_set := component_partcode_characters) is
 -- 	-- Tests if the given partcode contains only valid characters as specified
 -- 	-- by given character set.
 -- 	-- Raises exception if invalid character found.
 -- 		use et_string_processing;
--- 		use type_component_partcode;
+-- 		use type_partcode;
 -- 		invalid_character_position : natural := 0;
 -- 	begin
 -- 		invalid_character_position := index (
@@ -2130,13 +2130,13 @@ package body conventions is
 		prefix		: in et_libraries.type_device_name_prefix.bounded_string;			-- R
 		packge		: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
 		value 		: in et_libraries.type_value.bounded_string := et_libraries.type_value.to_bounded_string ("")) -- 100R
-		return et_libraries.type_component_partcode.bounded_string is
+		return et_libraries.type_partcode.bounded_string is
 
 		use et_libraries;
 		use type_device_name_prefix;
 		use type_component_package_name;
 		use type_value;
-		use type_component_partcode;
+		use type_partcode;
 
 	begin
 		return to_bounded_string (
@@ -2155,12 +2155,12 @@ package body conventions is
 	procedure validate_other_partcode_keywords (
 	-- Validates optional keywords as specified in configuration file.
 	-- Starts the validation from the given character position.
-		partcode		: in et_libraries.type_component_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R_TOL_5_PMAX_0W125
+		partcode		: in et_libraries.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R_TOL_5_PMAX_0W125
 		from			: in positive; -- the character position to start from
 		log_threshold	: in et_string_processing.type_log_level) is
 
 		use type_partcode_keywords;
-		use et_libraries.type_component_partcode;
+		use et_libraries.type_partcode;
 		use type_partcode_keyword_argument;
 		use et_string_processing;
 		
@@ -2223,7 +2223,7 @@ package body conventions is
 					validate_partcode_keyword (keyword);
 					
 					-- A keyword must occur only once:
-					if et_libraries.type_component_partcode.count (partcode, to_string (keyword)) > 1 then
+					if et_libraries.type_partcode.count (partcode, to_string (keyword)) > 1 then
 						log (message_warning & "keyword " & to_string (keyword) & " can be used only once !");
 					end if;
 				else
@@ -2279,7 +2279,7 @@ package body conventions is
 	--    to specify a correct partcode.
 	--  - If partcode keywords are specified in the configuration file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
-		partcode		: in et_libraries.type_component_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode		: in et_libraries.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		reference		: in et_libraries.type_device_name;						-- R45
 		packge			: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
 		value 			: in et_libraries.type_value.bounded_string;			-- 100R
@@ -2287,10 +2287,10 @@ package body conventions is
 		is
 
 		use et_string_processing;
-		use et_libraries.type_component_partcode;
+		use et_libraries.type_partcode;
 
 		place : natural;
-		partcode_root : et_libraries.type_component_partcode.bounded_string;
+		partcode_root : et_libraries.type_partcode.bounded_string;
 		
 		procedure partcode_invalid is begin
 			log (message_warning & "device " & et_libraries.to_string (reference)

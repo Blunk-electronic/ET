@@ -358,15 +358,15 @@ package body scripting is
 					case noun is
 						when PARTCODE =>
 							declare
-								partcode : type_component_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+								partcode : type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 							begin
--- 								if purpose_length_valid (f (6)) then
--- 									purpose := to_purpose (f (6));
--- 								else
--- 									raise constraint_error; -- CS: truncate ?
--- 								end if;
--- 								
--- 								if purpose_characters_valid (purpose) then
+								if partcode_length_valid (f (6)) then
+									partcode := to_partcode (f (6));
+								else
+									raise constraint_error;
+								end if;
+								
+								if partcode_characters_valid (partcode) then
 
 									-- set the purpose
 									schematic_ops.set_partcode
@@ -376,11 +376,11 @@ package body scripting is
 										partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
 										log_threshold	=> log_threshold + 1
 										);
--- 								else
--- 									log (message_error & "purpose " & enclose_in_quotes (to_string (purpose)) &
--- 										 " invalid !", console => true);
--- 									raise constraint_error;
--- 								end if;
+								else
+									log (message_error & "partcode " & enclose_in_quotes (to_string (partcode)) &
+										 " invalid !", console => true);
+									raise constraint_error;
+								end if;
 							end;
 
 						when PURPOSE =>

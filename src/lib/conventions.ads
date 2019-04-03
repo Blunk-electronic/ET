@@ -452,14 +452,14 @@ package conventions is
 	-- If no keyword specified (or no conf. file applied) returns an empty string.
 
 	procedure validate_partcode (
-	-- Tests if the given partcode of a schematic component is correct.
-	-- The given properties are assumed to be those of a real component.
+	-- Tests if the given partcode of a schematic device is correct.
+	-- The given properties are assumed to be those of a real device.
 	--  - If partcode keywords are not specified in the 
 	--    conventions file, nothing is validated. It is the users responsibility 
 	--    to specify a correct partcode.
 	--  - If partcode keywords are specified in the conventions file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
-		partcode		: in et_libraries.type_component_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
+		partcode		: in et_libraries.type_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
 		reference		: in et_libraries.type_device_name;						-- R45
 		packge			: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
 		value 			: in et_libraries.type_value.bounded_string; 			-- 100R

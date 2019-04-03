@@ -5778,7 +5778,7 @@ package body et_project is
 		prefix				: type_device_name_prefix.bounded_string; -- T, IC
 		value				: type_value.bounded_string; -- BC548
 		appearance			: type_device_appearance; -- sch, sch_pcb
-		partcode			: type_component_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
+		partcode			: type_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
 		variant				: type_component_variant;
 		variant_name		: type_component_variant_name.bounded_string; -- N, D
 		variants			: type_component_variants.map;
@@ -7789,7 +7789,7 @@ package body et_project is
 		-- temporarily collection of units:
 		device_units			: et_schematic.type_units.map; -- PWR, A, B, ...
 		
-		device_partcode			: et_libraries.type_component_partcode.bounded_string;
+		device_partcode			: et_libraries.type_partcode.bounded_string;
 		device_purpose			: et_schematic.type_device_purpose.bounded_string;
 		device_bom				: et_schematic.type_bom := et_schematic.type_bom'first;
 		device_variant			: et_libraries.type_component_variant_name.bounded_string; -- D, N
@@ -8207,8 +8207,14 @@ package body et_project is
 						end if;
 
 						log ("partcode " & et_libraries.to_string (device_partcode), log_threshold + 2);
-						et_libraries.check_partcode_characters (device_partcode);
-						device.partcode	:= device_partcode;
+						if et_libraries.partcode_characters_valid (device_partcode) then
+							device.partcode	:= device_partcode;
+						else
+							log_indentation_reset;
+							log (message_error & "partcode " & enclose_in_quotes (to_string (device_partcode)) &
+								 " invalid !", console => true);
+							raise constraint_error;
+						end if;
 
 						log ("purpose " & et_schematic.to_string (device_purpose), log_threshold + 2);
 						device.purpose	:= device_purpose;
@@ -11714,8 +11720,14 @@ package body et_project is
 
 									elsif kw = keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
 										expect_field_count (line, 2);
-										et_libraries.check_partcode_length (f (line, 2));
-										device_partcode := et_libraries.to_partcode (f (line, 2));
+										if et_libraries.partcode_length_valid (f (line, 2)) then
+											device_partcode := et_libraries.to_partcode (f (line, 2));
+										else
+											log_indentation_reset;
+											log (message_error & "partcode " & enclose_in_quotes (f (line, 2)) &
+												 " invalid !", console => true);
+											raise constraint_error;
+										end if;
 
 									elsif kw = keyword_purpose then -- purpose power_out
 										expect_field_count (line, 2);

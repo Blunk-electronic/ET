@@ -505,25 +505,24 @@ package et_libraries is
 -- PARTCODES
 	-- The component part code is THE key into the ERP system of the user. It can be a crytic SAP number
 	-- or something human readable like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5".
-	-- The keywords for the latter can be specified via the configuration file. See package et_configuration.
-	component_partcode_characters : character_set := to_set
+	-- The keywords for the latter can be specified via the conventions file. See package "convention".
+	partcode_characters : character_set := to_set
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ('_'); 
-	component_partcode_length_max : constant positive := 100;
-	package type_component_partcode is new generic_bounded_length (component_partcode_length_max);
+	partcode_length_max : constant positive := 100;
+	package type_partcode is new generic_bounded_length (partcode_length_max);
 	partcode_default : constant string := "dummy";
 	
-	function to_string (partcode : in type_component_partcode.bounded_string) return string;
-	function to_partcode (partcode : in string) return type_component_partcode.bounded_string;
+	function to_string (partcode : in type_partcode.bounded_string) return string;
+	function to_partcode (partcode : in string) return type_partcode.bounded_string;
 
-	procedure check_partcode_length (partcode : in string);
-	-- Tests if the given partcode is longer than allowed.
+	function partcode_length_valid (partcode : in string) return boolean;
+	-- Returns true if length of given partcode is ok. Issues warning if not.
 	
-	procedure check_partcode_characters (
-		partcode	: in type_component_partcode.bounded_string;
-		characters	: in character_set := component_partcode_characters);
+	function partcode_characters_valid (
+		partcode	: in type_partcode.bounded_string;
+		characters	: in character_set := partcode_characters) return boolean;
 	-- Tests if the given partcode contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
+	-- by given character set. Returns false if not. Issues warning.
 
 
 

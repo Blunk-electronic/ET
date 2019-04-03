@@ -2143,7 +2143,7 @@ package body schematic_ops is
 	-- Sets the partcode of a device.
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
-		partcode			: in type_component_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode			: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		log_threshold		: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module being modified
