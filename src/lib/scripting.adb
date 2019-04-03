@@ -389,7 +389,7 @@ package body scripting is
 								if purpose_length_valid (f (6)) then
 									purpose := to_purpose (f (6));
 								else
-									raise constraint_error; -- CS: truncate ?
+									purpose_invalid (f (6)); -- CS: truncate ?
 								end if;
 								
 								if purpose_characters_valid (purpose) then
@@ -403,9 +403,7 @@ package body scripting is
 										log_threshold	=> log_threshold + 1
 										);
 								else
-									log (message_error & "purpose " & enclose_in_quotes (to_string (purpose)) &
-										 " invalid !", console => true);
-									raise constraint_error;
+									purpose_invalid (f (6));
 								end if;
 							end;
 							

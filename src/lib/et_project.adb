@@ -8215,7 +8215,12 @@ package body et_project is
 						end if;
 
 						log ("purpose " & et_schematic.to_string (device_purpose), log_threshold + 2);
-						device.purpose	:= device_purpose;
+						if et_schematic.purpose_characters_valid (device_purpose) then
+							device.purpose	:= device_purpose;
+						else
+							log_indentation_reset;
+							purpose_invalid (to_string (device_purpose));
+						end if;
 
 						log ("bom" & et_schematic.to_string (device_bom), log_threshold + 2);
 						device.bom		:= device_bom;
@@ -11727,7 +11732,12 @@ package body et_project is
 
 									elsif kw = keyword_purpose then -- purpose power_out
 										expect_field_count (line, 2);
-										device_purpose := et_schematic.to_purpose (f (line, 2));
+										if et_schematic.purpose_length_valid (f (line, 2)) then
+											device_purpose := et_schematic.to_purpose (f (line, 2));
+										else
+											log_indentation_reset;
+											et_schematic.purpose_invalid (f (line, 2));
+										end if;
 
 									elsif kw = keyword_bom then -- bom yes/no
 										expect_field_count (line, 2);
@@ -12483,11 +12493,11 @@ package body et_project is
 										elsif kw = keyword_purpose_A then
 											expect_field_count (line, 2);
 											purpose_A := et_schematic.to_purpose (f (line,2));
-											-- CS: test if a connector with this purpose exits in the instance
+											-- CS: test if a connector with this purpose exists in the instance
 										elsif kw = keyword_purpose_B then
 											expect_field_count (line, 2);
 											purpose_B := et_schematic.to_purpose (f (line,2));
-											-- CS: test if a connector with this purpose exits in the instance
+											-- CS: test if a connector with this purpose exists in the instance
 											
 										-- CS: net comparator and warning on/off
 										else

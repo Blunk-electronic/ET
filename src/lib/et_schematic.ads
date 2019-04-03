@@ -112,6 +112,9 @@ package et_schematic is
 		return boolean;
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
+
+	procedure purpose_invalid (purpose : in string);
+	-- Issues error message and raises constraint error.
 	
 	
 	-- In a schematic we handle only virtual devices (like GND symbols)

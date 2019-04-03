@@ -357,6 +357,14 @@ package body et_schematic is
 		end if;
 	end purpose_characters_valid;
 
+	procedure purpose_invalid (purpose : in string) is 
+	-- Issues error message and raises constraint error.
+		use et_string_processing;
+	begin
+		log (message_error & "purpose " & enclose_in_quotes (purpose) &
+			 " invalid !", console => true);
+		raise constraint_error;
+	end;
 	
 	function unit_positions (units : in type_units.map) return type_unit_positions.map is
 	-- Returns a list of units and their coordinates in the schematic.
