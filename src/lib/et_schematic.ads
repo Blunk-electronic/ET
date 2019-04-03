@@ -178,7 +178,7 @@ package et_schematic is
 		units	: type_units.map; -- PWR, A, B, ...
 		
 		case appearance is
-			-- If a component appears in both schematic and layout it has got:
+			-- If a device appears in both schematic and layout it has got:
 			when et_libraries.sch_pcb => 
 				value		: et_libraries.type_value.bounded_string; -- 470R
 				partcode	: et_libraries.type_partcode.bounded_string;

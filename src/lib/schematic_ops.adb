@@ -2205,9 +2205,6 @@ package body schematic_ops is
 		log_indentation_down;
 	end set_partcode;
 
-
-	
-	
 	function exists_device_port (
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
 		module_cursor	: in type_modules.cursor; -- motor_driver
@@ -2758,6 +2755,77 @@ package body schematic_ops is
 		
 		log_indentation_down;
 	end place_junction;
+
+	procedure add_device (
+	-- Adds a device to the schematic. The unit is determined by the unit add levels.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		rotation		: in et_coordinates.type_rotation; -- 90		
+		log_threshold	: in type_log_level) is
+
+		use et_coordinates;
+		
+		module_cursor : type_modules.cursor; -- points to the targeted module
+
+		use et_libraries.type_devices;
+		device_cursor_lib : et_libraries.type_devices.cursor; -- points to the device in the library
+
+		procedure add (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+			device_cursor_sch : et_schematic.type_devices.cursor;
+			inserted : boolean;
+			name : et_libraries.type_device_name := to_device_name ("R12"); -- prefix in library
+		begin
+			case element (device_cursor_lib).appearance is
+				when SCH =>
+					et_schematic.type_devices.insert (
+						container	=> module.devices,
+						inserted	=> inserted,
+						position	=> device_cursor_sch,
+						key			=> name,
+						new_item	=> (
+								appearance 	=> SCH,
+								model		=> key (device_cursor_lib),
+								units		=> type_units.empty_map
+								));
+
+				when SCH_PCB =>
+					null;
+			
+				when others => null; -- CS
+			end case;
+		end add;
+			
+	begin -- add_device
+		log ("module " & to_string (module_name) &
+			" adding device " & to_string (device_model) & " at" &
+			to_string (position => place),
+			log_threshold);
+
+		log_indentation_up;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- Read the device file and store it in container et_libraries.devices.
+		-- If the device is in et_libraries.devices, nothing happpens.
+		et_project.read_device_file (
+			file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
+			log_threshold	=> log_threshold + 1);
+
+		-- locate the device in the library
+		device_cursor_lib := find (et_libraries.devices, device_model);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> add'access);
+
+		log_indentation_down;
+	end add_device;
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

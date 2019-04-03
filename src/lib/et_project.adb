@@ -6927,12 +6927,24 @@ package body et_project is
 		if et_libraries.type_devices.contains (et_libraries.devices, file_name) then
 			log ("already read -> skipped", log_threshold + 1);
 		else
-			
-			-- open device model file
-			open (
-				file => file_handle,
-				mode => in_file, 
-				name => expand (to_string (file_name), log_threshold + 1));
+			-- If the model file is to be read, first check if the file exists.
+			declare
+				file : string := expand (to_string (file_name), log_threshold + 1);
+			begin
+				if ada.directories.exists (file) then
+
+					-- open device model file
+					open (
+						file => file_handle,
+						mode => in_file, 
+						name => file);
+
+				else
+					log (message_error & "device model " & file &
+						 " not found !", console => true);
+					raise constraint_error;
+				end if;
+			end;
 
 			set_input (file_handle);
 			

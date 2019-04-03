@@ -173,7 +173,21 @@ package body scripting is
 				when ADD =>
 					case noun is
 						when DEVICE =>
-							NULL; -- CS
+							schematic_ops.add_device (
+								module_name 	=> module,
+								device_model	=> to_file_name (f (5)),
+								place			=> to_coordinates 
+													(
+													sheet => to_sheet (f (6)),
+													point => set_point 
+																(
+																x => to_distance (f (7)),
+																y => to_distance (f (8))
+																)
+													),
+								rotation		=> to_angle (f (9)),
+								log_threshold	=> log_threshold + 1
+								);
 
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -408,7 +422,6 @@ package body scripting is
 							end;
 							
 						when VALUE =>
-
 							declare
 								value : type_value.bounded_string; -- 470R
 							begin

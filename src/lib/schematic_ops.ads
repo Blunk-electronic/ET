@@ -188,6 +188,15 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		place			: in et_coordinates.type_coordinates; -- sheet/x/y
 		log_threshold	: in type_log_level);
+
+	procedure add_device (
+	-- Adds a device to the schematic. The unit is determined by the unit add levels.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		rotation		: in et_coordinates.type_rotation; -- 90		
+		log_threshold	: in type_log_level);
+							 
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
