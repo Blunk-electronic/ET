@@ -140,6 +140,10 @@ package body scripting is
 		function f (place : in positive) return string is begin
 			return et_string_processing.field (cmd, place);
 		end;
+
+		function fields return count_type is begin
+			return et_string_processing.field_count (cmd);
+		end;
 		
 		use et_project;
 		
@@ -161,8 +165,21 @@ package body scripting is
 		end;
 		
 		procedure invalid_noun (noun : in string) is begin
-			log (message_error & "invalid noun '" & noun & "' for this operation !", console => true);
+			log (message_error & "invalid noun '" & noun & "' for this operation !",
+				 console => true);
 			raise constraint_error;
+		end;
+
+		procedure command_incomplete is begin
+			log (message_error & "command " & enclose_in_quotes (to_string (cmd)) &
+				" not complete !", console => true);
+			raise constraint_error;
+		end;
+
+		procedure command_too_long (from : in count_type) is begin
+			log (message_warning & "command " & enclose_in_quotes (to_string (cmd)) &
+				 " too long !");
+			log (" -> Arguments from no." & count_type'image (from) & " on will be ignored !");
 		end;
 		
 		procedure schematic_cmd (verb : in type_verb_schematic; noun : in type_noun_schematic) is
@@ -173,22 +190,52 @@ package body scripting is
 				when ADD =>
 					case noun is
 						when DEVICE =>
-							schematic_ops.add_device (
-								module_name 	=> module,
-								device_model	=> to_file_name (f (5)),
-								place			=> to_coordinates 
-													(
-													sheet => to_sheet (f (6)),
-													point => set_point 
-																(
-																x => to_distance (f (7)),
-																y => to_distance (f (8))
-																)
-													),
-								rotation		=> to_angle (f (9)),
-								log_threshold	=> log_threshold + 1
-								);
+							case fields is
+								when 9 =>
+									-- If a virtual device is added, then no variant is required.
+									schematic_ops.add_device (
+										module_name 	=> module,
+										device_model	=> to_file_name (f (5)),
+										place			=> to_coordinates 
+											(
+											sheet => to_sheet (f (6)),
+											point => set_point 
+														(
+														x => to_distance (f (7)),
+														y => to_distance (f (8))
+														)
+											),
+										rotation		=> to_angle (f (9)),
+										variant			=> to_component_variant_name (""),
+										log_threshold	=> log_threshold + 1
+										);
 
+								when 10 =>
+									-- A real device requires specification of a package variant.
+									schematic_ops.add_device (
+										module_name 	=> module,
+										device_model	=> to_file_name (f (5)),
+										place			=> to_coordinates 
+											(
+											sheet => to_sheet (f (6)),
+											point => set_point 
+														(
+														x => to_distance (f (7)),
+														y => to_distance (f (8))
+														)
+											),
+										rotation		=> to_angle (f (9)),
+										variant			=> to_component_variant_name (f (10)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 11 .. count_type'last =>
+									command_too_long (10);
+									
+								when others =>
+									command_incomplete;
+							end case;
+							
 						when others => invalid_noun (to_string (noun));
 					end case;
 

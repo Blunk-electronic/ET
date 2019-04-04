@@ -189,10 +189,18 @@ package schematic_ops is
 		place			: in et_coordinates.type_coordinates; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+	function next_device_name (
+	-- Returns for the given device prefix the next available device name in the module.
+	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.
+		module_cursor	: in type_modules.cursor;
+		prefix			: in et_libraries.type_device_name_prefix.bounded_string) -- C
+		return et_libraries.type_device_name; -- C2
+	
 	procedure add_device (
 	-- Adds a device to the schematic. The unit is determined by the unit add levels.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
+		variant			: in et_libraries.type_component_variant_name.bounded_string; -- N, D, S_0805
 		place			: in et_coordinates.type_coordinates; -- sheet/x/y
 		rotation		: in et_coordinates.type_rotation; -- 90		
 		log_threshold	: in type_log_level);

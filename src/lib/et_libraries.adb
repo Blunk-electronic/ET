@@ -371,6 +371,32 @@ package body et_libraries is
 		
 	end to_string;
 
+	function variant_available (
+	-- Returns true if given device provides the given package variant.
+		device_cursor	: in type_devices.cursor;
+		variant			: in type_component_variant_name.bounded_string)
+		return boolean is
+		
+		result : boolean := false; -- to be returned
+		
+		procedure query_variants (
+			device_name	: in type_device_model_file.bounded_string;
+			device		: in type_device) is
+		begin
+			if type_component_variants.contains (device.variants, variant) then
+				result := true;
+			end if;
+		end;
+		
+	begin
+		type_devices.query_element (
+			position	=> device_cursor,
+			process		=> query_variants'access);
+		
+		return result;
+	end variant_available;
+
+	
 	function to_string (name : in type_frame_template_name.bounded_string) return string is begin
 		return type_frame_template_name.to_string (name);
 	end to_string;
@@ -923,12 +949,50 @@ package body et_libraries is
 		end case;
 	end to_string;
 	
-	function prefix (name : in type_device_name) return type_device_name_prefix.bounded_string is
+	function prefix (name : in type_device_name) return type_device_name_prefix.bounded_string is begin
 	-- Returns the prefix of the given device name.
-	begin
 		return name.prefix;
-	end prefix;
+	end;
 
+	function index (name : in type_device_name) return type_device_name_index is begin
+	-- Returns the index of the given device name.
+		return name.id;
+	end;
+
+	function to_device_name (
+	-- Builds a device name by given prefix (like R) and index (like 23) to a device name (like R23).
+	-- If width is not provided, then the width of the index is calculated automatically. In case of R23 the width is 2.
+	-- If width is provided, then it is set accordingly.
+		prefix	: in type_device_name_prefix.bounded_string; 	-- R, C, L
+		index	: in type_device_name_index;					-- 1, 20, ..
+		width	: in type_device_name_index_width := type_device_name_index_width'first) -- the number of digits
+		return type_device_name is
+		device_name : type_device_name; -- to be returned
+	begin
+		-- assign prefix and index as requested:
+		device_name.prefix := prefix;
+		device_name.id := index;
+
+		-- Calculate the width of the index. examples: it is 3 for IC987, 2 for C77
+		-- The width of the index is obtained by converting the given index to a string
+		-- and then by measuring its length:
+		device_name.id_width := trim (natural'image (index),left)'length;
+
+		-- If width IS provided AND wider than the just calculated width,
+		-- then the calculated width is overwritten.
+		if width /= type_device_name_index_width'first then
+
+			-- If width is smaller or equal the calculated width nothing happens.
+			-- Otherwise width is set according to the provided width:
+			if width <= device_name.id_width then
+				null;
+			else			
+				device_name.id_width := width;
+			end if;
+		end if;
+		
+		return device_name;
+	end;
 	
 end et_libraries;
 

@@ -423,7 +423,7 @@ package et_libraries is
 	type type_device_name is record -- CS: should be private
 		prefix		: type_device_name_prefix.bounded_string := device_name_prefix_default; -- like "IC"
 		id			: type_device_name_index := device_name_index_default; -- like "303"
-		id_width	: type_device_name_index_width; -- the number of digits of the id. 3 in case of an id of 303
+		id_width	: type_device_name_index_width; -- the number of digits of the id. 3 in case of an id of 303 -- CS default ?
 		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
 	end record;
 
@@ -442,6 +442,14 @@ package et_libraries is
 	function prefix (name : in type_device_name) return type_device_name_prefix.bounded_string;
 	-- Returns the prefix of the given device name.
 
+	function index (name : in type_device_name) return type_device_name_index;
+	-- Returns the index of the given device name.
+
+	function to_device_name (
+		prefix	: in type_device_name_prefix.bounded_string; 	-- R, C, L
+		index	: in type_device_name_index;					-- 1, 20, ..
+		width	: in type_device_name_index_width := type_device_name_index_width'first) -- the number of digits
+		return type_device_name;
 	
 -- DEVICE APPEARANCE	
 	type type_device_appearance is ( 
@@ -823,6 +831,11 @@ package et_libraries is
 	-- HERE RIG WIDE DEVICES ARE KEPT:
 	devices : type_devices.map;
 
+	function variant_available (
+	-- Returns true if given device provides the given package variant.								   
+		device_cursor	: in type_devices.cursor;
+		variant			: in type_component_variant_name.bounded_string)
+		return boolean;
 
 	
 -- DRAWING FRAME

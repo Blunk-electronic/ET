@@ -2756,10 +2756,56 @@ package body schematic_ops is
 		log_indentation_down;
 	end place_junction;
 
+	function next_device_name (
+	-- Returns for the given device prefix the next available device name in the module.
+	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.
+		module_cursor	: in type_modules.cursor;
+		prefix			: in et_libraries.type_device_name_prefix.bounded_string) -- C
+		return et_libraries.type_device_name is -- C2
+		
+		next_name : et_libraries.type_device_name; -- to be returned
+
+		procedure search_gap (
+		-- Searches for the lowest available device name. Looks at devices
+		-- whose prefix equals the given prefix. Example: If given prefix is R, it looks
+		-- for the lowest available resistor index.
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
+			use et_libraries.type_device_name_prefix;
+			index_expected : et_libraries.type_device_name_index := type_device_name_index'first + 1;
+		begin
+			while device_cursor /= et_schematic.type_devices.no_element loop
+				if et_libraries.prefix (key (device_cursor)) = prefix then
+					
+					if index (key (device_cursor)) /= index_expected then -- we have a gap
+
+						-- build the next available device name and exit
+						next_name := to_device_name (prefix, index_expected);
+						exit;
+					end if;
+
+					index_expected := index_expected + 1;
+				end if;
+				
+				next (device_cursor);
+			end loop;
+		end search_gap;
+		
+	begin -- next_device_name
+		query_element (
+			position	=> module_cursor,
+			process		=> search_gap'access);
+		
+		return next_name;
+	end next_device_name;
+	
 	procedure add_device (
 	-- Adds a device to the schematic. The unit is determined by the unit add levels.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
+		variant			: in et_libraries.type_component_variant_name.bounded_string; -- N, D, S_0805
 		place			: in et_coordinates.type_coordinates; -- sheet/x/y
 		rotation		: in et_coordinates.type_rotation; -- 90		
 		log_threshold	: in type_log_level) is
@@ -2777,7 +2823,7 @@ package body schematic_ops is
 			use et_schematic.type_devices;
 			device_cursor_sch : et_schematic.type_devices.cursor;
 			inserted : boolean;
-			name : et_libraries.type_device_name := to_device_name ("R12"); -- prefix in library
+			name : et_libraries.type_device_name := next_device_name (module_cursor, element (device_cursor_lib).prefix);
 		begin
 			case element (device_cursor_lib).appearance is
 				when SCH =>
@@ -2793,18 +2839,57 @@ package body schematic_ops is
 								));
 
 				when SCH_PCB =>
-					null;
-			
+					-- A real device requires a package variant.
+					if type_component_variant_name.length (variant) > 0 then
+
+						if variant_available (device_cursor_lib, variant) then
+							et_schematic.type_devices.insert (
+								container	=> module.devices,
+								inserted	=> inserted,
+								position	=> device_cursor_sch,
+								key			=> name,
+								new_item	=> (
+										appearance 	=> SCH_PCB,
+										model		=> key (device_cursor_lib),
+										units		=> type_units.empty_map,
+										value		=> element (device_cursor_lib).value,
+										bom			=> YES,
+										variant		=> variant,
+										others		=> <>
+										));
+							
+						else -- variant not available
+							log (message_error & "package variant " & enclose_in_quotes (to_string (variant)) &
+								 " not available in the specified device model !", console => true);
+							raise constraint_error;
+						end if;
+						
+					else -- no variant specified
+						log (message_error & "device requires specification of package variant !",
+							 console => true);
+						raise constraint_error;
+					end if;
+					
 				when others => null; -- CS
 			end case;
 		end add;
 			
 	begin -- add_device
-		log ("module " & to_string (module_name) &
-			" adding device " & to_string (device_model) & " at" &
-			to_string (position => place),
-			log_threshold);
-
+		if type_component_variant_name.length (variant) > 0 then
+			log ("module " & to_string (module_name) &
+				" adding device " & to_string (device_model) &
+				" package variant " & to_string (variant) &
+				" at" &
+				to_string (position => place),
+				log_threshold);
+		else
+			log ("module " & to_string (module_name) &
+				" adding device " & to_string (device_model) &
+				" at" &
+				to_string (position => place),
+				log_threshold);
+		end if;
+			
 		log_indentation_up;
 		
 		-- locate module
