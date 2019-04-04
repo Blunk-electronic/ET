@@ -2774,15 +2774,21 @@ package body schematic_ops is
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
 			use et_libraries.type_device_name_prefix;
+
+			-- We start the search with index 1. Not 0 because this would result in a zero based
+			-- numbering order. Index zero is allowed but not automatically choosen.
 			index_expected : et_libraries.type_device_name_index := type_device_name_index'first + 1;
-		begin
+
+			gap_found : boolean := false; -- goes true once a gap has been found
+		begin -- search_gap
 			while device_cursor /= et_schematic.type_devices.no_element loop
-				if et_libraries.prefix (key (device_cursor)) = prefix then
+				if et_libraries.prefix (key (device_cursor)) = prefix then -- category match
 					
 					if index (key (device_cursor)) /= index_expected then -- we have a gap
 
 						-- build the next available device name and exit
 						next_name := to_device_name (prefix, index_expected);
+						gap_found := true;
 						exit;
 					end if;
 
@@ -2791,6 +2797,13 @@ package body schematic_ops is
 				
 				next (device_cursor);
 			end loop;
+
+			-- If no gap has been found, then the device name must be assembled
+			-- using the latest index_expected.
+			if not gap_found then
+				next_name := to_device_name (prefix, index_expected);
+			end if;
+			
 		end search_gap;
 		
 	begin -- next_device_name
@@ -2823,15 +2836,21 @@ package body schematic_ops is
 			use et_schematic.type_devices;
 			device_cursor_sch : et_schematic.type_devices.cursor;
 			inserted : boolean;
-			name : et_libraries.type_device_name := next_device_name (module_cursor, element (device_cursor_lib).prefix);
-		begin
+
+			-- build the next available device name:
+			next_name : et_libraries.type_device_name := 
+				next_device_name (module_cursor, element (device_cursor_lib).prefix);
+			
+		begin -- add
+			log ("adding device " & to_string (next_name), log_threshold + 1);
+			
 			case element (device_cursor_lib).appearance is
 				when SCH =>
 					et_schematic.type_devices.insert (
 						container	=> module.devices,
 						inserted	=> inserted,
 						position	=> device_cursor_sch,
-						key			=> name,
+						key			=> next_name,
 						new_item	=> (
 								appearance 	=> SCH,
 								model		=> key (device_cursor_lib),
@@ -2847,7 +2866,7 @@ package body schematic_ops is
 								container	=> module.devices,
 								inserted	=> inserted,
 								position	=> device_cursor_sch,
-								key			=> name,
+								key			=> next_name,
 								new_item	=> (
 										appearance 	=> SCH_PCB,
 										model		=> key (device_cursor_lib),
@@ -2872,6 +2891,9 @@ package body schematic_ops is
 					
 				when others => null; -- CS
 			end case;
+
+			-- CS add unit
+			
 		end add;
 			
 	begin -- add_device
