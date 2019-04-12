@@ -127,6 +127,11 @@ $ sh install.sh
 - Ada is defined by ISO/IEC 8652:2012 and MIL-STD-1815
 - Ada is beautiful :-)
 
+### Things to do and issues
+- Assembly variants
+- Zero-Ohms Resistors
+- Accessories of components
+
 ### Collaboration
 - We need a nice web site for the project.
 - You are highly welcome !
