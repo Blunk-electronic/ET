@@ -2813,6 +2813,128 @@ package body schematic_ops is
 		
 		return next_name;
 	end next_device_name;
+
+	type type_unit_cursors_lib is record
+		int : et_libraries.type_units_internal.cursor;
+		ext : et_libraries.type_units_external.cursor;
+	end record;
+
+	function first_unit (device_cursor : in et_libraries.type_devices.cursor) return type_unit_cursors_lib is
+	-- Returns the cursor of the first internal or external unit. Searches first in internal and
+	-- then in external units. The search order is further-on determined
+	-- by the add levels of the units. Priority is add level MUST, then ALWAYS, then NEXT, then REQUEST, then CAN.
+	-- If no suitable internal unit found, the cursor of internal units in the return is no_element.
+	-- If no suitable external unit found, the cursor of external units in the return is no_element.
+		cursors : type_unit_cursors_lib; -- to be returned
+		use et_libraries;
+		use et_libraries.type_devices;
+		use et_libraries.type_units_internal;
+		use et_libraries.type_units_external;
+
+		procedure query_units (
+			device_name	: in type_device_model_file.bounded_string;
+			device		: in et_libraries.type_device) is
+
+			function first_internal (add_level : in et_libraries.type_unit_add_level) 
+				return et_libraries.type_units_internal.cursor is
+			-- Searches for a unit with given add_level. Returns the cursor of that unit.
+			-- If no suitable unit found, returns cursor with no_element.
+				cursor : type_units_internal.cursor := device.units_internal.first;
+			begin
+				while cursor /= type_units_internal.no_element loop
+					if element (cursor).add_level = add_level then
+						return cursor; -- unit found, no further search required. exit prematurely.
+					end if;
+					next (cursor);
+				end loop;
+				-- no unit found. return no_element:
+				return type_units_internal.no_element;
+			end;
+
+			function first_external (add_level : in et_libraries.type_unit_add_level) 
+				return et_libraries.type_units_external.cursor is
+			-- Searches for a unit with given add_level. Returns the cursor of that unit.
+			-- If no suitable unit found, returns cursor with no_element.
+				cursor : type_units_external.cursor := device.units_external.first;
+			begin
+				while cursor /= type_units_external.no_element loop
+					if element (cursor).add_level = add_level then
+						return cursor; -- unit found, no further search required. exit prematurely.
+					end if;
+					next (cursor);
+				end loop;
+				-- no unit found. return no_element:
+				return type_units_external.no_element;
+			end;
+			
+		begin -- query_units
+			-- First search among the internal units for a MUST-unit:
+			cursors.int := first_internal (MUST);
+
+			-- if no MUST-unit found, search for an ALWAYS-unit:
+			if cursors.int = type_units_internal.no_element then
+				cursors.int := first_internal (ALWAYS);
+
+				-- if no ALWAYS-unit found, search for a NEXT-unit:
+				if cursors.int = type_units_internal.no_element then
+					cursors.int := first_internal (NEXT);
+
+					-- if no NEXT-unit found, search for a REQUEST-unit
+					if cursors.int = type_units_internal.no_element then
+						cursors.int := first_internal (REQUEST);
+
+						-- if no REQUEST-unit found, search for a CAN-unit
+						if cursors.int = type_units_internal.no_element then
+							cursors.int := first_internal (et_libraries.CAN);
+						end if;
+					end if;					
+				end if;
+			end if;
+
+			-- if no suitable internal unit found, search among the external units:
+			if cursors.int = type_units_internal.no_element then
+
+				-- search among the external units for a MUST-unit
+				cursors.ext := first_external (MUST);
+
+				-- if no MUST-unit found, search for an ALWAYS-unit:
+				if cursors.ext = type_units_external.no_element then
+					cursors.ext := first_external (ALWAYS);
+
+					-- if no ALWAYS-unit found, search for a NEXT-unit:
+					if cursors.ext = type_units_external.no_element then
+						cursors.ext := first_external (NEXT);
+
+						-- if no NEXT-unit found, search for a REQUEST-unit
+						if cursors.ext = type_units_external.no_element then
+							cursors.ext := first_external (REQUEST);
+
+							-- if no REQUEST-unit found, search for a CAN-unit
+							if cursors.ext = type_units_external.no_element then
+								cursors.ext := first_external (et_libraries.CAN);
+							end if;
+						end if;					
+					end if;
+				end if;
+			
+				-- if no suitable external unit found, we have a problem:
+				if cursors.ext = type_units_external.no_element then
+					log (message_error & " Device model has no units !", console => true);
+					raise constraint_error;
+				end if;
+
+			end if;
+			
+		end query_units;
+		
+	begin -- first_unit
+		query_element (
+			position	=> device_cursor,
+			process		=> query_units'access);
+		
+		return cursors;
+	end first_unit;
+
 	
 	procedure add_device (
 	-- Adds a device to the schematic. The unit is determined by the unit add levels.
@@ -2840,6 +2962,11 @@ package body schematic_ops is
 			-- build the next available device name:
 			next_name : et_libraries.type_device_name := 
 				next_device_name (module_cursor, element (device_cursor_lib).prefix);
+
+			unit_cursors : type_unit_cursors_lib;
+
+			use et_libraries.type_units_internal;
+			use et_libraries.type_units_external;
 			
 		begin -- add
 			log ("adding device " & to_string (next_name), log_threshold + 1);
@@ -2871,7 +2998,7 @@ package body schematic_ops is
 										appearance 	=> SCH_PCB,
 										model		=> key (device_cursor_lib),
 										units		=> type_units.empty_map,
-										value		=> element (device_cursor_lib).value,
+										value		=> element (device_cursor_lib).value, -- predefined in dev. model
 										bom			=> YES,
 										variant		=> variant,
 										others		=> <>
@@ -2892,7 +3019,21 @@ package body schematic_ops is
 				when others => null; -- CS
 			end case;
 
-			-- CS add unit
+            -- add first available unit (according to search order specified in function first_unit).
+			unit_cursors := first_unit (device_cursor_lib);
+
+			if unit_cursors.int /= type_units_internal.no_element then
+				null;
+-- 				et_schematic.type_devices.update_element (
+-- 					container	=> module.devices,
+-- 					position	=> device_cursor_sch,
+-- 					process		=> add_unit'process);
+				
+			elsif unit_cursors.ext /= type_units_external.no_element then
+				null;
+			else
+				raise constraint_error; -- CS should never happen. function first_unit excludes this case.
+			end if;
 			
 		end add;
 			
@@ -2918,7 +3059,7 @@ package body schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		-- Read the device file and store it in container et_libraries.devices.
-		-- If the device is in et_libraries.devices, nothing happpens.
+		-- If the device is already in et_libraries.devices, nothing happpens.
 		et_project.read_device_file (
 			file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
 			log_threshold	=> log_threshold + 1);
