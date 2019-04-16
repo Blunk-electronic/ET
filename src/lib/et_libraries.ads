@@ -584,12 +584,12 @@ package et_libraries is
 	
 -- SYMBOLS AND UNITS
 
-	-- In schematics electrical components like resistors, capactors and inductors are called "symbols".
+	-- In schematics things like resistors, capactors and inductors are called "symbols".
 	-- Since they are frequently used we store such things in symbol libraries like bel_primitives.sym.
 	-- The symbol name is something very general like "NAND", "Resistor", "Switch"
 
-	-- A component has one or more units. A unit is a subsection of a component (EAGLE refer to them as "gates").
-	-- There are internal units, which exist for the particular component exclusively. 
+	-- A device has one or more units. A unit is a subsection of a device.
+	-- There are internal units, which exist for the particular device exclusively. 
 	-- An internal unit has a symbol and further properties like a swap level.
 	-- There are external units, which are used for frequently used symbols like resistors or capacitors.
 	-- An external unit is just a reference to a symbol library, the symbol name therein and other properties
@@ -612,7 +612,7 @@ package et_libraries is
 		ports	: type_ports.map;
 		case appearance is
 			when SCH_PCB =>
-				-- Placeholders for component wide texts. To be filled with content when 
+				-- Placeholders for device wide texts. To be filled with content when 
 				-- a symbol is placed in the schematic:
 				reference	: type_text_placeholder (meaning => et_libraries.REFERENCE);
 				value		: type_text_placeholder (meaning => et_libraries.VALUE);
@@ -643,9 +643,9 @@ package et_libraries is
 	type type_unit_add_level is (
 		NEXT, 		-- should be default. for things like logic gates, multi-OP-Amps, ...
 		REQUEST, 	-- for power supply 
-		CAN,		-- for things like optional relay contacts
-		ALWAYS,		-- 
-		MUST);		-- for things like relay coils
+		CAN,		-- OPTIONAl units. things like relay contacts
+		ALWAYS,		-- units that SHOULD be used always
+		MUST);		-- units that MUST be used. things like relay coils.
 
 	unit_add_level_default : constant type_unit_add_level := type_unit_add_level'first;
 	
@@ -672,8 +672,10 @@ package et_libraries is
 	function to_file_name (name : in string) return type_symbol_model_file.bounded_string;
 	
 	-- An external unit has a reference and a swap level.
-	type type_unit_external is record
-		file		: type_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym -- CS rename to model
+    type type_unit_external is record
+        -- file is the link to the symbol in container symbols:
+        file		: type_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym -- CS rename to model
+        
 		position	: type_point := zero; -- the position within the device editor
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
@@ -703,13 +705,13 @@ package et_libraries is
 	-- Converts a string to a type_terminal_name.
 	
 -- PACKAGE VARIANTS
-	-- The variant is usually a suffix in a component value, given by its manufacturer. The variant is a manufacturer
-	-- specific abbrevation for the package a component comes with.
+	-- The variant is usually a suffix in a device value, given by its manufacturer. The variant is a manufacturer
+	-- specific abbrevation for the package a device comes with.
 	-- Example: An opamp made by TI can be the type TL084N or TL084D. N means the NDIP14 package
 	-- whereas D means the SO14 package.
-	-- If a component has package variants, a suffix after the component type indicates the package
+	-- If a device has package variants, a suffix after the component type indicates the package
 	-- The variant name is manufacturer specific. example: TL084D or TL084N
-	-- component package variant names like "N" or "D" are stored in bounded strings.
+	-- device package variant names like "N" or "D" are stored in bounded strings.
 	component_variant_name_characters : character_set := 
 		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set ("_-"); -- CS rename to package_variant_name_characters
 	

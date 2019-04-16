@@ -2967,9 +2967,98 @@ package body schematic_ops is
 
 			use et_libraries.type_units_internal;
 			use et_libraries.type_units_external;
+
+			procedure add_unit_internal (
+			-- Add an internal unit to the schematic device.
+			-- The unit to be added is accessed by unit_cursors.int.
+				device_name	: in type_device_name;
+				device		: in out et_schematic.type_device) is
+			begin
+				log ("adding internal unit " & to_string (key (unit_cursors.int)), log_threshold + 2);
+				
+				case element (device_cursor_lib).appearance is
+					when SCH =>
+						type_units.insert (
+							container	=> device.units,
+							key			=> key (unit_cursors.int), -- the unit name like A, B
+							new_item	=> (
+								appearance	=> SCH,
+								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
+								others 		=> <>) -- rotation and mirror
+								);
+						
+					when SCH_PCB =>
+						type_units.insert (
+							container	=> device.units,
+							key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
+							new_item	=> (
+								appearance	=> SCH_PCB,
+								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
+								reference	=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
+								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
+								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
+								others 		=> <>)
+								);
+						
+					when others => null; -- CS
+				end case;
+
+			end add_unit_internal;
+
+			procedure add_unit_external (
+			-- Add an external unit to the schematic device.
+			-- The unit to be added is accessed by unit_cursors.ext.
+				device_name	: in type_device_name;
+				device		: in out et_schematic.type_device) is
+				use et_libraries.type_symbols;
+				symbol_cursor : et_libraries.type_symbols.cursor;
+				symbol_file : et_libraries.type_symbol_model_file.bounded_string; -- *.sym
+			begin
+				log ("adding external unit " & to_string (key (unit_cursors.ext)), log_threshold + 2);
+				
+				case element (device_cursor_lib).appearance is
+					when SCH =>
+						type_units.insert (
+							container	=> device.units,
+							key			=> key (unit_cursors.ext), -- the unit name like A, B
+							new_item	=> (
+								appearance	=> SCH,
+								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
+								others 		=> <>) -- rotation and mirror
+								);
+						
+					when SCH_PCB =>
+						-- The symbol file name is provided by unit_cursors.ext.
+						symbol_file := element (unit_cursors.ext).file; -- *.sym
+						
+						-- Locate the external symbol in container "symbols".
+						-- The key into symbols is the file name (*.sym).
+						symbol_cursor := et_libraries.type_symbols.find (symbols, symbol_file);
+
+						-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
+						-- and constraint_error would arise here:
+						
+						type_units.insert (
+							container	=> device.units,
+							key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
+							new_item	=> (
+								appearance	=> SCH_PCB,
+								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
+								reference	=> element (symbol_cursor).reference,	-- placeholder for device name
+								value		=> element (symbol_cursor).value,		-- placeholder for device value
+								purpose		=> element (symbol_cursor).purpose,		-- placeholder for device purpose
+								others 		=> <>)
+								);
+
+					when others => null; -- CS
+				end case;
+
+			end add_unit_external;
+
 			
 		begin -- add
 			log ("adding device " & to_string (next_name), log_threshold + 1);
+			log_indentation_up;
 			
 			case element (device_cursor_lib).appearance is
 				when SCH =>
@@ -3019,22 +3108,32 @@ package body schematic_ops is
 				when others => null; -- CS
 			end case;
 
-            -- add first available unit (according to search order specified in function first_unit).
+			-- Add first available unit (according to search order specified in function first_unit)
+			-- to device in schematic.
 			unit_cursors := first_unit (device_cursor_lib);
 
+			-- If a internal unit available, add it to device. If no internal unit available
+			-- but an external, add it to the device. So the operator will not take notice
+			-- whether an internal or external unit is placed.
 			if unit_cursors.int /= type_units_internal.no_element then
-				null;
--- 				et_schematic.type_devices.update_element (
--- 					container	=> module.devices,
--- 					position	=> device_cursor_sch,
--- 					process		=> add_unit'process);
+
+				et_schematic.type_devices.update_element (
+					container	=> module.devices,
+					position	=> device_cursor_sch,
+					process		=> add_unit_internal'access);
 				
 			elsif unit_cursors.ext /= type_units_external.no_element then
-				null;
+
+				et_schematic.type_devices.update_element (
+					container	=> module.devices,
+					position	=> device_cursor_sch,
+					process		=> add_unit_external'access);
+
 			else
 				raise constraint_error; -- CS should never happen. function first_unit excludes this case.
 			end if;
-			
+
+			log_indentation_down;
 		end add;
 			
 	begin -- add_device

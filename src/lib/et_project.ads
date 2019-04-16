@@ -274,6 +274,11 @@ package et_project is
 		device			: in et_libraries.type_device; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level);
 
+	procedure read_symbol (
+	-- Opens the symbol file and stores the symbol in container et_libraries.symbols.
+		file_name 		: in et_libraries.type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+		log_threshold	: in et_string_processing.type_log_level);
+    
 	procedure read_device_file (
 	-- Opens the device and stores it in container et_libraries.devices.
 		file_name 		: in et_libraries.type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
