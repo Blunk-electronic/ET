@@ -55,6 +55,7 @@ with et_coordinates;
 with et_string_processing;		use et_string_processing;
 with et_libraries;				use et_libraries;
 with et_schematic;				use et_schematic;
+with et_pcb;
 with et_pcb_coordinates;
 with et_project;				use et_project;
 with submodules;
@@ -2935,6 +2936,14 @@ package body schematic_ops is
 		return cursors;
 	end first_unit;
 
+	function placeholders_of_package (
+		device	: in et_libraries.type_devices.cursor;
+		variant	: in et_libraries.type_component_variant_name.bounded_string) -- N, D, S_0805
+		return et_pcb.type_text_placeholders is
+		placeholders : et_pcb.type_text_placeholders; -- to be returned
+	begin
+		return placeholders;
+	end placeholders_of_package;
 	
 	procedure add_device (
 	-- Adds a device to the schematic. The unit is determined by the unit add levels.
@@ -3091,7 +3100,13 @@ package body schematic_ops is
 									value		=> element (device_cursor_lib).value, -- if predefined in dev. model
 									bom			=> YES,
 									variant		=> variant,
-									others		=> <> -- CS: placeholders in layout ?
+
+									-- Initially, the text placeholders are copies of the placeholders 
+									-- defined in the package.
+									-- Extract them from the device model and the variant:
+									text_placeholders	=> placeholders_of_package (device_cursor_lib, variant),
+									
+									others		=> <>
 									));
 							
 						else -- variant not available
@@ -3212,6 +3227,7 @@ package body schematic_ops is
 	-- 7. CS: devices with empty values
 	-- 8. CS: interactive devices with empty purpose
 	-- 9. CS: check partcode (conventions.validate_partcode)
+	-- 10. CS: units sitting on to of each other (same origin position)
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level) is
 

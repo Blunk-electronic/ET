@@ -218,6 +218,7 @@ package schematic_ops is
 	-- 7. CS: devices with empty values
 	-- 8. CS: interactive devices with empty purpose
 	-- 9. CS: check partcode (conventions.validate_partcode)								  
+	-- 10. CS: units sitting on to of each other (same origin position)
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 								  
