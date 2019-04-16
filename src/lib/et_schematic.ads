@@ -125,8 +125,8 @@ package et_schematic is
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a device.
 	type type_unit_base is tagged record
-		rotation	: et_coordinates.type_rotation; -- CS default
-		mirror		: type_mirror; -- CS default
+		rotation	: et_coordinates.type_rotation := et_coordinates.rotation_zero;
+		mirror		: type_mirror := NO;
 	end record;
 
 	-- Some placeholders of a unit are available when the device appears in both schematic and layout:	

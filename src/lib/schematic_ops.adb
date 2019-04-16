@@ -3054,7 +3054,6 @@ package body schematic_ops is
 				end case;
 
 			end add_unit_external;
-
 			
 		begin -- add
 			log ("adding device " & to_string (next_name), log_threshold + 1);
@@ -3068,10 +3067,10 @@ package body schematic_ops is
 						position	=> device_cursor_sch,
 						key			=> next_name,
 						new_item	=> (
-								appearance 	=> SCH,
-								model		=> key (device_cursor_lib),
-								units		=> type_units.empty_map
-								));
+							appearance 	=> SCH,
+							model		=> key (device_cursor_lib),
+							units		=> type_units.empty_map
+							));
 
 				when SCH_PCB =>
 					-- A real device requires a package variant.
@@ -3084,14 +3083,14 @@ package body schematic_ops is
 								position	=> device_cursor_sch,
 								key			=> next_name,
 								new_item	=> (
-										appearance 	=> SCH_PCB,
-										model		=> key (device_cursor_lib),
-										units		=> type_units.empty_map,
-										value		=> element (device_cursor_lib).value, -- predefined in dev. model
-										bom			=> YES,
-										variant		=> variant,
-										others		=> <>
-										));
+									appearance 	=> SCH_PCB,
+									model		=> key (device_cursor_lib),
+									units		=> type_units.empty_map,
+									value		=> element (device_cursor_lib).value, -- if predefined in dev. model
+									bom			=> YES,
+									variant		=> variant,
+									others		=> <>
+									));
 							
 						else -- variant not available
 							log (message_error & "package variant " & enclose_in_quotes (to_string (variant)) &

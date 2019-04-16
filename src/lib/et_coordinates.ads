@@ -91,6 +91,8 @@ package et_coordinates is
 	subtype type_rotation is integer range rotation_min .. rotation_max 
 		with dynamic_predicate => type_rotation mod rotation_delta = 0;
 
+    rotation_zero : type_rotation := 0;
+    
 	rotation_relative_min : constant type_rotation := -90;
 	rotation_relative_max : constant type_rotation := 180;	
 	subtype type_rotation_relative is type_rotation range rotation_relative_min .. rotation_relative_max;
