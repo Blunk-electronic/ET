@@ -3002,7 +3002,7 @@ package body schematic_ops is
 						
 					when others => null; -- CS
 				end case;
-
+				
 			end add_unit_internal;
 
 			procedure add_unit_external (
@@ -3054,6 +3054,8 @@ package body schematic_ops is
 				end case;
 
 			end add_unit_external;
+
+			ports : et_libraries.type_ports.map;
 			
 		begin -- add
 			log ("adding device " & to_string (next_name), log_threshold + 1);
@@ -3089,7 +3091,7 @@ package body schematic_ops is
 									value		=> element (device_cursor_lib).value, -- if predefined in dev. model
 									bom			=> YES,
 									variant		=> variant,
-									others		=> <>
+									others		=> <> -- CS: placeholders in layout ?
 									));
 							
 						else -- variant not available
@@ -3120,6 +3122,11 @@ package body schematic_ops is
 					container	=> module.devices,
 					position	=> device_cursor_sch,
 					process		=> add_unit_internal'access);
+
+				-- fetch ports of unit
+				ports := ports_of_unit (
+					device_cursor	=> device_cursor_sch,
+					unit_name		=> key (unit_cursors.int));
 				
 			elsif unit_cursors.ext /= type_units_external.no_element then
 
@@ -3128,10 +3135,16 @@ package body schematic_ops is
 					position	=> device_cursor_sch,
 					process		=> add_unit_external'access);
 
+				-- fetch ports of unit
+				ports := ports_of_unit (
+					device_cursor	=> device_cursor_sch,
+					unit_name		=> key (unit_cursors.ext));
+				
 			else
 				raise constraint_error; -- CS should never happen. function first_unit excludes this case.
 			end if;
 
+			
 			log_indentation_down;
 		end add;
 			
