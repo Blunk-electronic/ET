@@ -3123,7 +3123,7 @@ package body schematic_ops is
 					position	=> device_cursor_sch,
 					process		=> add_unit_internal'access);
 
-				-- fetch ports of unit
+				-- fetch ports of unit and their position relative to the unit origin
 				ports := ports_of_unit (
 					device_cursor	=> device_cursor_sch,
 					unit_name		=> key (unit_cursors.int));
@@ -3135,7 +3135,7 @@ package body schematic_ops is
 					position	=> device_cursor_sch,
 					process		=> add_unit_external'access);
 
-				-- fetch ports of unit
+				-- fetch ports of unit and their position relative to the unit origin
 				ports := ports_of_unit (
 					device_cursor	=> device_cursor_sch,
 					unit_name		=> key (unit_cursors.ext));
@@ -3144,6 +3144,20 @@ package body schematic_ops is
 				raise constraint_error; -- CS should never happen. function first_unit excludes this case.
 			end if;
 
+			-- Calculate the absolute positions of the unit ports. Rotate first if required:
+			if rotation /= rotation_zero then
+				rotate_ports (ports, rotation);
+			end if;
+
+			move_ports (ports, place);
+			
+			-- Insert the new unit ports in the nets (type_module.nets):
+			insert_ports (
+				module			=> module_cursor,
+				device			=> next_name,
+				ports			=> ports,
+				sheet			=> et_coordinates.sheet (place),
+				log_threshold	=> log_threshold + 2);
 			
 			log_indentation_down;
 		end add;
