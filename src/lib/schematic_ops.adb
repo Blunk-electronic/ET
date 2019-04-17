@@ -2938,6 +2938,66 @@ package body schematic_ops is
 		return cursors;
 	end first_unit;
 
+	function any_unit (
+	-- Returns the cursor of the desired internal or external unit.
+		device_cursor	: in et_libraries.type_devices.cursor;
+		unit_name		: in type_unit_name.bounded_string)
+		return type_unit_cursors_lib is
+
+		cursors : type_unit_cursors_lib; -- to be returned
+		
+		use et_libraries;
+		use et_libraries.type_devices;
+		use et_libraries.type_unit_name;
+		use et_libraries.type_units_internal;
+		use et_libraries.type_units_external;
+
+		procedure query_units (
+			device_name	: in type_device_model_file.bounded_string;
+			device		: in et_libraries.type_device) is
+		begin -- query_units
+			-- First search among the internal units:
+			cursors.int := device.units_internal.first;
+
+			while cursors.int /= type_units_internal.no_element loop
+				if key (cursors.int) = unit_name then
+					exit; -- unit found, no further search required. exit prematurely.
+				end if;
+				next (cursors.int);
+			end loop;
+
+			-- if no suitable internal unit found, search among the external units:
+			if cursors.int = type_units_internal.no_element then
+
+				cursors.ext := device.units_external.first;
+
+				while cursors.ext /= type_units_external.no_element loop
+					if key (cursors.ext) = unit_name then
+						exit; -- unit found, no further search required. exit prematurely.
+					end if;
+					next (cursors.ext);
+				end loop;
+				
+				-- if no suitable external unit found, we have a problem:
+				if cursors.ext = type_units_external.no_element then
+					log (message_error & "unit " & et_libraries.to_string (unit_name) &
+						 " not found in device model !", console => true);
+					raise constraint_error;
+				end if;
+
+			end if;
+			
+		end query_units;
+		
+	begin -- any_unit
+		query_element (
+			position	=> device_cursor,
+			process		=> query_units'access);
+		
+		return cursors;
+	end any_unit;
+
+	
 	function placeholders_of_package (
 	-- Returns the placeholders of the package of a device. The package is indirectly selected
 	-- by the given variant name. The given device is accessed by the given device cursor.
@@ -3283,7 +3343,7 @@ package body schematic_ops is
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
 			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor;
+			device_cursor_sch : et_schematic.type_devices.cursor;
 
 			procedure query_units_in_use (
 				device_name	: in type_device_name;
@@ -3298,20 +3358,28 @@ package body schematic_ops is
 					raise constraint_error;
 				end if;
 			end query_units_in_use;
+
+			device_model : type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
+			device_cursor_lib : et_libraries.type_devices.cursor;
+			unit_cursors : type_unit_cursors_lib;
 			
 		begin -- query_devices
 			if contains (module.devices, device_name) then -- device exists in schematic
 
-				device_cursor := find (module.devices, device_name);
+				device_cursor_sch := find (module.devices, device_name);
 				
-				-- Test whether desired unit is already used. Abort if 
-				-- unit already in use.
+				-- Test whether desired unit is already used by the device (in schematic).
+				-- Abort if unit already in use.
 				query_element (
-					position	=> device_cursor,
+					position	=> device_cursor_sch,
 					process		=> query_units_in_use'access);
 
+				-- Locate the device model in the library:
+				device_model := element (device_cursor_sch).model;
+				device_cursor_lib := et_libraries.type_devices.find (et_libraries.devices, device_model);
+
 				-- Test whether desired unit exists in device model:
-				
+				unit_cursors := any_unit (device_cursor_lib, unit_name);
 			else
 				device_not_found (device_name);
 			end if;
