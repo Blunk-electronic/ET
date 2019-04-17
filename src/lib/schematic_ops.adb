@@ -3536,7 +3536,8 @@ package body schematic_ops is
 					ports			=> ports,
 					sheet			=> et_coordinates.sheet (place),
 					log_threshold	=> log_threshold + 2);
-				
+
+				log_indentation_down;
 			else
 				device_not_found (device_name);
 			end if;
