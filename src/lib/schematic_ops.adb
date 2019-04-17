@@ -395,14 +395,16 @@ package body schematic_ops is
 			unit_cursor := find (device.units_external, unit_name);
 
 			-- Fetch the symbol model file of the external unit.
-			-- CS: constraint_error arises here if unit could not be located.
-			sym_model := element (unit_cursor).file;
+			-- If unit could not be located, nothing happens -> ports remains empty.
+			if unit_cursor /= type_units_external.no_element then
+				sym_model := element (unit_cursor).file;
 
-			-- Fetch the ports of the external unit.
-			-- CS: constraint_error arises here if symbol model could not be located.
-			type_symbols.query_element (
-				position	=> et_libraries.type_symbols.find (et_libraries.symbols, sym_model),
-				process		=> query_symbol'access);
+				-- Fetch the ports of the external unit.
+				-- CS: constraint_error arises here if symbol model could not be located.
+				type_symbols.query_element (
+					position	=> et_libraries.type_symbols.find (et_libraries.symbols, sym_model),
+					process		=> query_symbol'access);
+			end if;
 			
 		end query_external_units;
 		
@@ -3173,18 +3175,27 @@ package body schematic_ops is
 					process		=> add_unit_internal'access);
 
 				-- fetch ports of unit and their position relative to the unit origin
+				log_indentation_up;				
+				log ("fetching relative port positions of internal unit " &
+					 to_string (key (unit_cursors.int)) & " ...", log_threshold + 2);
+				
 				ports := ports_of_unit (
 					device_cursor	=> device_cursor_sch,
 					unit_name		=> key (unit_cursors.int));
-				
-			elsif unit_cursors.ext /= type_units_external.no_element then
 
+			-- no internal unit available -> add external unit
+			elsif unit_cursors.ext /= type_units_external.no_element then
+				
 				et_schematic.type_devices.update_element (
 					container	=> module.devices,
 					position	=> device_cursor_sch,
 					process		=> add_unit_external'access);
 
 				-- fetch ports of unit and their position relative to the unit origin
+				log_indentation_up;
+				log ("fetching relative port positions of external unit " &
+					 to_string (key (unit_cursors.ext)) & " ...", log_threshold + 2);
+
 				ports := ports_of_unit (
 					device_cursor	=> device_cursor_sch,
 					unit_name		=> key (unit_cursors.ext));
@@ -3194,6 +3205,7 @@ package body schematic_ops is
 			end if;
 
 			-- Calculate the absolute positions of the unit ports. Rotate first if required:
+			log ("calculating absolute port positions ...", log_threshold + 2);
 			if rotation /= rotation_zero then
 				rotate_ports (ports, rotation);
 			end if;
@@ -3208,6 +3220,7 @@ package body schematic_ops is
 				sheet			=> et_coordinates.sheet (place),
 				log_threshold	=> log_threshold + 2);
 			
+			log_indentation_down;
 			log_indentation_down;
 		end add;
 			
