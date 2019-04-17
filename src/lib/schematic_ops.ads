@@ -205,7 +205,16 @@ package schematic_ops is
 		place			: in et_coordinates.type_coordinates; -- sheet/x/y
 		rotation		: in et_coordinates.type_rotation; -- 90		
 		log_threshold	: in type_log_level);
-							 
+
+	procedure invoke_unit (
+	-- Invokes a unit of a device into the schematic.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC1
+		unit_name		: in type_unit_name.bounded_string; -- A, B, IO_BANK_2
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		rotation		: in et_coordinates.type_rotation; -- 90		
+		log_threshold	: in type_log_level);
+	
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

@@ -3231,14 +3231,16 @@ package body schematic_ops is
 				" adding device " & to_string (device_model) &
 				" package variant " & to_string (variant) &
 				" at" &
-				to_string (position => place),
+				to_string (position => place) &
+				" rotation" & et_coordinates.to_string (rotation),				
 				log_threshold);
 			
 		else -- virtual device
 			log ("module " & to_string (module_name) &
 				" adding device " & to_string (device_model) &
 				" at" &
-				to_string (position => place),
+				to_string (position => place) &
+				" rotation" & et_coordinates.to_string (rotation),				
 				log_threshold);
 		end if;
 			
@@ -3263,6 +3265,79 @@ package body schematic_ops is
 
 		log_indentation_down;
 	end add_device;
+
+	procedure invoke_unit (
+	-- Invokes a unit of a device into the schematic.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC1
+		unit_name		: in type_unit_name.bounded_string; -- A, B, IO_BANK_2
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		rotation		: in et_coordinates.type_rotation; -- 90		
+		log_threshold	: in type_log_level) is
+
+		use et_coordinates;
+		
+		module_cursor : type_modules.cursor; -- points to the targeted module
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+
+			procedure query_units_in_use (
+				device_name	: in type_device_name;
+				device		: in et_schematic.type_device) is
+				use et_schematic.type_units;
+			begin
+				if contains (device.units, unit_name) then
+					log (message_error & 
+						 to_string (device_name) &
+						 " unit " & to_string (unit_name) &
+						 " already in use !", console => true);
+					raise constraint_error;
+				end if;
+			end query_units_in_use;
+			
+		begin -- query_devices
+			if contains (module.devices, device_name) then -- device exists in schematic
+
+				device_cursor := find (module.devices, device_name);
+				
+				-- Test whether desired unit is already used. Abort if 
+				-- unit already in use.
+				query_element (
+					position	=> device_cursor,
+					process		=> query_units_in_use'access);
+
+				-- Test whether desired unit exists in device model:
+				
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- invoke_unit
+		log ("module " & to_string (module_name) &
+			" device " & to_string (device_name) &
+			" invoking unit " & to_string (unit_name) &
+			" at" &
+			to_string (position => place) &
+			" rotation" & et_coordinates.to_string (rotation),
+			log_threshold);
+
+		log_indentation_up;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+		
+		log_indentation_down;		
+	end invoke_unit;
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

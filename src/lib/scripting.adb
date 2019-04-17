@@ -302,7 +302,31 @@ package body scripting is
 				when INVOKE =>
 					case noun is
 						when UNIT =>
-							NULL; -- CS
+							case fields is
+								when 10 =>
+									schematic_ops.invoke_unit (
+										module_name		=> module,
+										device_name		=> to_device_name (f (5)),
+										unit_name		=> to_unit_name (f (6)),
+										place			=> to_coordinates 
+											(
+											sheet => to_sheet (f (7)),
+											point => set_point 
+														(
+														x => to_distance (f (8)),
+														y => to_distance (f (9))
+														)
+											),
+										rotation		=> to_angle (f (10)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 11 .. count_type'last =>
+									command_too_long (10);
+									
+								when others =>
+									command_incomplete;
+							end case;
 
 						when others => invalid_noun (to_string (noun));
 					end case;
