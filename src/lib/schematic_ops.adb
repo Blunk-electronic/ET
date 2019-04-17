@@ -2937,11 +2937,45 @@ package body schematic_ops is
 	end first_unit;
 
 	function placeholders_of_package (
+	-- Returns the placeholders of the package of a device. The package is indirectly selected
+	-- by the given variant name. The given device is accessed by the given device cursor.
 		device	: in et_libraries.type_devices.cursor;
 		variant	: in et_libraries.type_component_variant_name.bounded_string) -- N, D, S_0805
 		return et_pcb.type_text_placeholders is
-		placeholders : et_pcb.type_text_placeholders; -- to be returned
-	begin
+		use et_libraries;
+		use et_libraries.type_devices;
+		use et_libraries.type_component_variants;
+		placeholders		: et_pcb.type_text_placeholders; -- to be returned
+
+		-- fetch the package variants available for the given device:
+		variants_available	: type_component_variants.map := element (device).variants;
+		
+		variant_cursor		: type_component_variants.cursor;
+		package_model		: type_package_model_file.bounded_string; -- ../lbr/smd/SO15.pac
+
+		use et_pcb;		
+		use et_pcb.type_packages;
+		package_cursor		: et_pcb.type_packages.cursor;
+
+	begin -- placeholders_of_package
+		
+		-- locate the given variant in the device:
+		variant_cursor := type_component_variants.find (variants_available, variant);
+
+		-- get the package model name:
+		package_model := element (variant_cursor).package_model; -- ../lbr/smd/SO15.pac
+
+		-- locate the package model in the package library:
+		package_cursor := et_pcb.type_packages.find (et_pcb.packages, package_model);
+
+		-- fetch the placeholders of silk screen top and bottom
+		placeholders.silk_screen.top := element (package_cursor).silk_screen.top.placeholders;
+		placeholders.silk_screen.bottom := element (package_cursor).silk_screen.bottom.placeholders;
+
+		-- fetch the placeholders of assembly documentation top and bottom
+		placeholders.assy_doc.top := element (package_cursor).assembly_documentation.top.placeholders;
+		placeholders.assy_doc.bottom := element (package_cursor).assembly_documentation.bottom.placeholders;
+		
 		return placeholders;
 	end placeholders_of_package;
 	

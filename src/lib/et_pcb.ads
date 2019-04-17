@@ -244,8 +244,10 @@ package et_pcb is
 	function to_layer (layer : in string) return type_placeholder_package_layer;
 	
 	-- A collection of text placeholders in silk screen and assembly documentation 
-	-- modelled by this type. It is used by a schematic module in order to
-	-- store text positions and properties of a package:
+	-- modelled by this type. The user is free to change them in the 
+	-- layout (position, text size, rotation, line width ...).
+	-- Initally, when a device is added to the schematic, these placeholders are 
+	-- copies of the placeholders defined in the package model.
 	type type_text_placeholders_silk_screen is record
 		top		: type_text_placeholders_package.list;
 		bottom	: type_text_placeholders_package.list;
