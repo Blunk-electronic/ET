@@ -2983,6 +2983,7 @@ package body schematic_ops is
 	
 	procedure add_device (
 	-- Adds a device to the schematic. The unit is determined by the unit add levels.
+	-- If the given variant is empty (zero length) the the device is assumed to be virtual.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in et_libraries.type_component_variant_name.bounded_string; -- N, D, S_0805
@@ -3225,14 +3226,15 @@ package body schematic_ops is
 		end add;
 			
 	begin -- add_device
-		if type_component_variant_name.length (variant) > 0 then
+		if type_component_variant_name.length (variant) > 0 then -- real device
 			log ("module " & to_string (module_name) &
 				" adding device " & to_string (device_model) &
 				" package variant " & to_string (variant) &
 				" at" &
 				to_string (position => place),
 				log_threshold);
-		else
+			
+		else -- virtual device
 			log ("module " & to_string (module_name) &
 				" adding device " & to_string (device_model) &
 				" at" &

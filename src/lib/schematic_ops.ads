@@ -198,6 +198,7 @@ package schematic_ops is
 	
 	procedure add_device (
 	-- Adds a device to the schematic. The unit is determined by the unit add levels.
+	-- If the given variant is empty (zero length) the the device is assumed to be virtual.							 
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in et_libraries.type_component_variant_name.bounded_string; -- N, D, S_0805
