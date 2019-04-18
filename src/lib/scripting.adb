@@ -334,16 +334,46 @@ package body scripting is
 				when MOVE =>
 					case noun is
 						when NAME =>
-							NULL; -- CS
+							schematic_ops.move_unit_placeholder
+								(
+								module_name 	=> module,
+								device_name		=> to_device_name (f (5)), -- IC1
+								unit_name		=> to_unit_name (f (6)), -- A
+								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+								point			=> et_coordinates.type_point (set_point (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+								meaning			=> et_libraries.REFERENCE,
+								log_threshold	=> log_threshold + 1
+								);
 
 						when VALUE =>
-							NULL; -- CS
-
-						when PARTCODE =>
-							NULL; -- CS
+							schematic_ops.move_unit_placeholder
+								(
+								module_name 	=> module,
+								device_name		=> to_device_name (f (5)), -- IC1
+								unit_name		=> to_unit_name (f (6)), -- A
+								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+								point			=> et_coordinates.type_point (set_point (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+								meaning			=> et_libraries.VALUE,
+								log_threshold	=> log_threshold + 1
+								);
 
 						when PURPOSE =>
-							NULL; -- CS
+							schematic_ops.move_unit_placeholder
+								(
+								module_name 	=> module,
+								device_name		=> to_device_name (f (5)), -- IC1
+								unit_name		=> to_unit_name (f (6)), -- A
+								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+								point			=> et_coordinates.type_point (set_point (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+								meaning			=> et_libraries.PURPOSE,
+								log_threshold	=> log_threshold + 1
+								);
 
 						when NET =>
 							NULL; -- CS
