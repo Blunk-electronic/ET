@@ -1427,8 +1427,6 @@ package body schematic_ops is
 
 					procedure rotate_placeholders (rot : in type_rotation) is begin
 					-- Rotate position of placeholders around the unit origin. 
-					-- CS The placeholder should never be rotated to 91 .. 269 degree
-					-- CS The rotation of the placeholder itself should be either 0 or 90 degree.
 						rotate (unit.reference.position, rot);
 						rotate (unit.value.position, rot);
 						rotate (unit.purpose.position, rot);
@@ -1580,11 +1578,11 @@ package body schematic_ops is
 
 	procedure rotate_unit_placeholder (
 	-- Rotates the given unit placeholder around its origin.
+	-- The rotation is absolute.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
-		coordinates		: in type_coordinates; -- relative/absolute		
-		rotation		: in et_coordinates.type_rotation; -- 90
+		rotation		: in et_coordinates.type_rotation_text; -- absolute ! -- 90
 		meaning			: in et_libraries.type_text_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level) is
 
@@ -1608,42 +1606,17 @@ package body schematic_ops is
 				begin -- rotate_placeholder
 					case meaning is
 						when REFERENCE =>
-							case coordinates is
-								when ABSOLUTE =>
-									unit.reference.rotation := rotation;
-
-								when RELATIVE =>
-									unit.reference.rotation := add (unit.reference.rotation, rotation);
-							end case;
+							unit.reference.rotation := rotation;
 							
 						when VALUE =>
-							case coordinates is
-								when ABSOLUTE =>
-									unit.value.rotation := rotation;
-
-								when RELATIVE =>
-									unit.value.rotation := add (unit.value.rotation, rotation);
-							end case;
+							unit.value.rotation := rotation;
 							
 						when PURPOSE =>
-							case coordinates is
-								when ABSOLUTE =>
-									unit.purpose.rotation := rotation;
-
-								when RELATIVE =>
-									unit.purpose.rotation := add (unit.purpose.rotation, rotation);
-							end case;
+							unit.purpose.rotation := rotation;
 
 						when others =>
 							raise constraint_error; -- CS no longer required once et_libraries.type_text_meaning has been reworked.
 					end case;
-
-					exception
-						when event: others =>
-							log (message_error & "coordinates invalid !", console => true); -- CS required more details
-							log (ada.exceptions.exception_information (event), console => true);
-							raise;
-					
 				end rotate_placeholder;
 				
 			begin -- query_units
@@ -1678,30 +1651,10 @@ package body schematic_ops is
 		end query_devices;
 		
 	begin -- rotate_unit_placeholder
-		case coordinates is
-			when ABSOLUTE =>
-				log ("module " & to_string (module_name) &
-					" rotating " & to_string (device_name) & " unit " &
-					to_string (unit_name) & " placeholder" & to_string (meaning) & " to" &
-					et_coordinates.to_string (rotation), log_threshold);
-
-			when RELATIVE =>
-				if rotation in type_rotation_relative then
-					log ("module " & to_string (module_name) &
-						" rotating " & to_string (device_name) & " unit " & 
-						to_string (unit_name) & " placeholder" & to_string (meaning) & " by" &
-						et_coordinates.to_string (rotation), log_threshold);
-				else
-					log (message_error & "Relative rotation must be in range" & 
-						et_coordinates.to_string (rotation_relative_min) &
-						" .." & 
-						et_coordinates.to_string (rotation_relative_max),
-						console => true
-						);
-					
-					raise constraint_error;
-				end if;
-		end case;
+		log ("module " & to_string (module_name) &
+			" rotating " & to_string (device_name) & " unit " &
+			to_string (unit_name) & " placeholder" & to_string (meaning) & " to" &
+			et_coordinates.to_string (rotation), log_threshold);
 		
 		-- locate module
 		module_cursor := locate_module (module_name);

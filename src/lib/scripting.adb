@@ -460,8 +460,7 @@ package body scripting is
 								module_name 	=> module,
 								device_name		=> to_device_name (f (5)), -- IC1
 								unit_name		=> to_unit_name (f (6)), -- A
-								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-								rotation		=> to_angle (f (8)), -- 90
+								rotation		=> to_angle (f (7)), -- 90
 								meaning			=> et_libraries.REFERENCE,
 								log_threshold	=> log_threshold + 1
 								);
@@ -472,8 +471,7 @@ package body scripting is
 								module_name 	=> module,
 								device_name		=> to_device_name (f (5)), -- IC1
 								unit_name		=> to_unit_name (f (6)), -- A
-								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-								rotation		=> to_angle (f (8)), -- 90
+								rotation		=> to_angle (f (7)), -- 90
 								meaning			=> et_libraries.VALUE,
 								log_threshold	=> log_threshold + 1
 								);
@@ -484,8 +482,7 @@ package body scripting is
 								module_name 	=> module,
 								device_name		=> to_device_name (f (5)), -- IC1
 								unit_name		=> to_unit_name (f (6)), -- A
-								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-								rotation		=> to_angle (f (8)), -- 90
+								rotation		=> to_angle (f (7)), -- 90
 								meaning			=> et_libraries.PURPOSE,
 								log_threshold	=> log_threshold + 1
 								);

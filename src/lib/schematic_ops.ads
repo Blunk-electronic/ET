@@ -109,11 +109,11 @@ package schematic_ops is
 
 	procedure rotate_unit_placeholder (
 	-- Rotates the given unit placeholder around its origin.
+	-- The rotation is absolute.										  
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
-		coordinates		: in type_coordinates; -- relative/absolute		
-		rotation		: in et_coordinates.type_rotation; -- 90
+		rotation		: in et_coordinates.type_rotation_text; -- absolute ! -- 90
 		meaning			: in et_libraries.type_text_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level);
 	
