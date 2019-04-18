@@ -63,19 +63,13 @@ package schematic_ops is
 		log_threshold	: in type_log_level);
 
 	procedure delete_unit (
+	-- Deletes a unit of a device. 
+	-- In case the last unit has been delete, then the device is 
+	-- deleted entirely from module.devices.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level);
-
--- 	package type_ports is new doubly_linked_lists (
--- 		element_type	=> et_libraries.type_port_name.bounded_string,
--- 		"="				=> et_libraries.type_port_name."=");
-
--- 	function ports_of_unit (
--- 		device_cursor	: in et_schematic.type_devices.cursor;
--- 		unit_name		: in type_unit_name.bounded_string)
--- 		return type_ports.list;
 
 	type type_coordinates is (RELATIVE, ABSOLUTE);
 
@@ -225,6 +219,7 @@ package schematic_ops is
 	-- 4. CS: for device/submodule/netchanger port that do not have a visual connection to the net
 	-- 5. CS: for overlapping net segments
 	-- 6. CS: unconnected ports of R, C, L (category depended)
+	-- 6.1 CS: unconnected inputs
 	-- 7. CS: devices with empty values
 	-- 8. CS: interactive devices with empty purpose
 	-- 9. CS: check partcode (conventions.validate_partcode)								  
