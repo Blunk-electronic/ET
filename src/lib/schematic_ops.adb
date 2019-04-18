@@ -1346,13 +1346,13 @@ package body schematic_ops is
 			when ABSOLUTE =>
 				log ("module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " name to" &
+					to_string (unit_name) & " placeholder" & to_string (meaning) & " to" &
 					et_coordinates.to_string (point), log_threshold);
 
 			when RELATIVE =>
 				log ("module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " name by " &
+					to_string (unit_name) & " placeholder" & to_string (meaning) & " by" &
 					et_coordinates.to_string (point), log_threshold);
 		end case;
 
@@ -1365,7 +1365,7 @@ package body schematic_ops is
 			process		=> query_devices'access);
 		
 	end move_unit_placeholder;
-	
+
 	procedure rotate_ports (
 	-- Rotates the given unit ports by given angle around the origin.
 		ports	: in out et_libraries.type_ports.map; -- the portlist
@@ -1394,6 +1394,7 @@ package body schematic_ops is
 	procedure rotate_unit (
 	-- Rotates the given unit within the schematic. Disconnects the unit from
 	-- start or end points of net segments.
+	-- Rotates the placeholders around the unit.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
@@ -1425,12 +1426,14 @@ package body schematic_ops is
 					unit	: in out type_unit) is
 
 					procedure rotate_placeholders (rot : in type_rotation) is begin
-					-- Rotate position of placeholders. 
+					-- Rotate position of placeholders around the unit origin. 
 					-- CS The placeholder should never be rotated to 91 .. 269 degree
 					-- CS The rotation of the placeholder itself should be either 0 or 90 degree.
 						rotate (unit.reference.position, rot);
 						rotate (unit.value.position, rot);
 						rotate (unit.purpose.position, rot);
+
+						-- CS set rotation of placeholders ?
 					end rotate_placeholders;
 	
 				begin -- rotate_unit
@@ -1575,6 +1578,140 @@ package body schematic_ops is
 
 	end rotate_unit;
 
+	procedure rotate_unit_placeholder (
+	-- Rotates the given unit placeholder around its origin.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- A
+		coordinates		: in type_coordinates; -- relative/absolute		
+		rotation		: in et_coordinates.type_rotation; -- 90
+		meaning			: in et_libraries.type_text_meaning; -- name, value, purpose		
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+
+			procedure query_units (
+				device_name	: in type_device_name;
+				device		: in out et_schematic.type_device) is
+				use et_schematic.type_units;
+				unit_cursor : et_schematic.type_units.cursor;
+
+				procedure rotate_placeholder (
+					name	: in type_unit_name.bounded_string; -- A
+					unit	: in out type_unit) is
+				begin -- rotate_placeholder
+					case meaning is
+						when REFERENCE =>
+							case coordinates is
+								when ABSOLUTE =>
+									unit.reference.rotation := rotation;
+
+								when RELATIVE =>
+									unit.reference.rotation := add (unit.reference.rotation, rotation);
+							end case;
+							
+						when VALUE =>
+							case coordinates is
+								when ABSOLUTE =>
+									unit.value.rotation := rotation;
+
+								when RELATIVE =>
+									unit.value.rotation := add (unit.value.rotation, rotation);
+							end case;
+							
+						when PURPOSE =>
+							case coordinates is
+								when ABSOLUTE =>
+									unit.purpose.rotation := rotation;
+
+								when RELATIVE =>
+									unit.purpose.rotation := add (unit.purpose.rotation, rotation);
+							end case;
+
+						when others =>
+							raise constraint_error; -- CS no longer required once et_libraries.type_text_meaning has been reworked.
+					end case;
+
+					exception
+						when event: others =>
+							log (message_error & "coordinates invalid !", console => true); -- CS required more details
+							log (ada.exceptions.exception_information (event), console => true);
+							raise;
+					
+				end rotate_placeholder;
+				
+			begin -- query_units
+				if contains (device.units, unit_name) then
+
+					-- locate unit by its name
+					unit_cursor := find (device.units, unit_name);
+
+					type_units.update_element (
+						container	=> device.units,
+						position	=> unit_cursor,
+						process		=> rotate_placeholder'access);
+				else
+					unit_not_found (unit_name);
+				end if;
+			end query_units;
+
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+
+				-- locate the device. it should be there
+				device_cursor := find (module.devices, device_name);
+
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor,
+					process		=> query_units'access);
+				
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- rotate_unit_placeholder
+		case coordinates is
+			when ABSOLUTE =>
+				log ("module " & to_string (module_name) &
+					" rotating " & to_string (device_name) & " unit " &
+					to_string (unit_name) & " placeholder" & to_string (meaning) & " to" &
+					et_coordinates.to_string (rotation), log_threshold);
+
+			when RELATIVE =>
+				if rotation in type_rotation_relative then
+					log ("module " & to_string (module_name) &
+						" rotating " & to_string (device_name) & " unit " & 
+						to_string (unit_name) & " placeholder" & to_string (meaning) & " by" &
+						et_coordinates.to_string (rotation), log_threshold);
+				else
+					log (message_error & "Relative rotation must be in range" & 
+						et_coordinates.to_string (rotation_relative_min) &
+						" .." & 
+						et_coordinates.to_string (rotation_relative_max),
+						console => true
+						);
+					
+					raise constraint_error;
+				end if;
+		end case;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+	end rotate_unit_placeholder;
 	
 	procedure drag_net_segments (
 	-- Drags the net segments according to the given drag_list.

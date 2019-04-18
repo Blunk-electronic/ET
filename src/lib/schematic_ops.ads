@@ -77,7 +77,7 @@ package schematic_ops is
 	function to_coordinates (coordinates : in string) return type_coordinates;
 
 	procedure move_unit (
-	-- Moves the given unit within the schematic.
+	-- Moves the given unit.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
@@ -97,13 +97,24 @@ package schematic_ops is
 		log_threshold	: in type_log_level);
 
 	procedure rotate_unit (
-	-- Rotates the given unit within the schematic. Disconnects the unit from
+	-- Rotates the given unit. Disconnects the unit from
 	-- start or end points of net segments.
+	-- Rotates the placeholders around the unit.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_coordinates.type_rotation; -- 90
+		log_threshold	: in type_log_level);
+
+	procedure rotate_unit_placeholder (
+	-- Rotates the given unit placeholder around its origin.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- A
+		coordinates		: in type_coordinates; -- relative/absolute		
+		rotation		: in et_coordinates.type_rotation; -- 90
+		meaning			: in et_libraries.type_text_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level);
 	
 	type type_drag is record

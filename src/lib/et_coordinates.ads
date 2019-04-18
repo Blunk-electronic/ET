@@ -108,7 +108,7 @@ package et_coordinates is
 	function add (left, right : in type_rotation) return type_rotation;
 	-- Adds two angles.
 	-- If result greater or equal 360 degree then 360 degree is subtracted from result.
-	-- If reuslt less or equal 360 degree then 360 degree is added to the result.
+	-- If result less or equal 360 degree then 360 degree is added to the result.
 
 	
 	
