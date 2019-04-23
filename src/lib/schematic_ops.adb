@@ -3833,27 +3833,87 @@ package body schematic_ops is
 		module_cursor : type_modules.cursor; -- points to the module being checked
 
 		use et_schematic.type_nets;
-		net_cursor : type_nets.cursor; -- points to the net being modified
+		net_cursor_old : type_nets.cursor; -- points to the old net
+		net_cursor_new : type_nets.cursor; -- points to the new net
 
+		procedure create_net (
+		-- Creates a new empty net named net_name_after. 
+		-- Sets the cursor net_cursor_new to the new net.
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			inserted : boolean;
+		begin
+			insert (
+				container	=> module.nets,
+				key			=> net_name_after,
+
+				-- The scope of the net assumes the default value LOCAL.
+				-- CS: It could be reasonable to assume the scope of the old net.
+				new_item	=> (others => <>),
+				
+				inserted	=> inserted,
+				position	=> net_cursor_new
+				);
+		end create_net;
+		
 		procedure rename_everywhere (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
 
-			-- backup the content of the targeted net
-			net	: et_schematic.type_net := element (net_cursor);
-		begin
-			-- delete the old net:
+			-- backup the old net
+			net_old	: et_schematic.type_net := element (net_cursor_old);
+
+			procedure copy_net_content (
+				net_name	: in et_general.type_net_name.bounded_string;
+				net			: in out et_schematic.type_net) is
+			begin
+				net := net_old;
+			end copy_net_content;
+			
+		begin -- rename_everywhere
+			
+			-- delete the old net entirely:
 			delete (
 				container	=> module.nets,
-				position	=> net_cursor);
+				position	=> net_cursor_old);
 
-			-- insert a the new net with the content of the old net:
-			insert (
+			-- copy the old net to the new net:
+			update_element (	
 				container	=> module.nets,
-				key			=> net_name_after,
-				new_item	=> net);
+				position	=> net_cursor_new,
+				process		=> copy_net_content'access);
 			
 		end rename_everywhere;
+
+		procedure rename_on_sheet (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			procedure query_strands (
+				net_name	: in et_general.type_net_name.bounded_string;
+				net			: in out et_schematic.type_net) is
+
+				use et_schematic.type_strands;
+				strand_cursor : et_schematic.type_strands.cursor;
+				strand : et_schematic.type_strand;
+			begin
+				while strand_cursor /= type_strands.no_element loop
+					if sheet (element (strand_cursor).position) = sheet (place) then
+						strand := element (strand_cursor);
+					
+					end if;
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+			
+		begin -- rename_on_sheet
+
+			update_element (
+				container	=> module.nets,
+				position	=> net_cursor_old,
+				process		=> query_strands'access);
+			
+		end rename_on_sheet;
 		
 	begin -- rename_net
 		
@@ -3865,14 +3925,27 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
-		-- locate the requested net in the module
-		net_cursor := locate_net (module_cursor, net_name_before);
+		-- locate the requested nets in the module
+		net_cursor_old := locate_net (module_cursor, net_name_before);
+		net_cursor_new := locate_net (module_cursor, net_name_after);		
 
-		-- issue error if net does not exist:
-		if net_cursor = type_nets.no_element then
+		-- issue error if old net does not exist:
+		if net_cursor_old = type_nets.no_element then
 			net_not_found (net_name_before);
 		end if;
 
+		-- if there is no net named net_name_after, notify operator about a new
+		-- net being created. 
+		if net_cursor_new = type_nets.no_element then
+			log ("creating new net " & to_string (net_name_after), log_threshold + 1);
+
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> create_net'access);
+		end if;
+		-- Now net_cursor_new points to the new net.
+		
 		log_indentation_up;
 
 		-- show where the renaming will be taking place:
@@ -3882,6 +3955,11 @@ package body schematic_ops is
 
 			when SHEET =>
 				log ("scope: all strands on sheet" & et_coordinates.to_sheet (sheet (place)), log_threshold);
+
+				update_element (
+					container	=> modules,
+					position	=> module_cursor,
+					process		=> rename_on_sheet'access);
 				
 			when EVERYWHERE =>
 				log ("scope: everywhere -> all strands on all sheets", log_threshold);
