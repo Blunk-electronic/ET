@@ -3791,6 +3791,50 @@ package body schematic_ops is
 		
 		log_indentation_down;		
 	end invoke_unit;
+
+	procedure rename_net (
+	-- Renames a net. The scope determines whether to rename a certain strand,
+	-- all strands on a certain sheet or on all sheets.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name_before	: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		net_name_after	: in et_general.type_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
+		scope			: in type_net_scope; -- strand, sheet, everywhere
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module being checked
+		
+	begin -- rename_net
+		
+		log ("module " & to_string (module_name) &
+			 " renaming net " & to_string (net_name_before) &
+			 " to " & to_string (net_name_after),
+			log_threshold);
+
+		log_indentation_up;
+
+		-- show where the renaming will take place:
+		case scope is
+			when STRAND => 
+				log ("scope: strand at" & to_string (position => place), log_threshold);
+
+			when SHEET =>
+				log ("scope: all strands on sheet" & et_coordinates.to_sheet (sheet (place)), log_threshold);
+				
+			when EVERYWHERE =>
+				log ("scope: all strands on all sheets", log_threshold);
+		end case;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+-- 		update_element (
+-- 			container	=> modules,
+-- 			position	=> module_cursor,
+-- 			process		=> query_devices'access);
+		
+		log_indentation_down;		
+	end rename_net;
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

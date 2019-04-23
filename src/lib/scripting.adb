@@ -433,7 +433,62 @@ package body scripting is
 								);
 
 						when NET =>
-							NULL; -- CS
+							case fields is
+
+								-- If the statement has only 6 fields, the net scope is EVERYWHERE.
+								-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
+								-- by the called procedure:
+								when 6 =>
+									schematic_ops.rename_net
+										(
+										module_name			=> module,
+										net_name_before		=> to_net_name (f (5)), -- RESET
+										net_name_after		=> to_net_name (f (6)), -- RESET_N
+										scope				=> EVERYWHERE,
+										place				=> to_coordinates (
+																point => zero,
+																sheet => 1),
+										log_threshold		=> log_threshold + 1);
+
+								-- If the statement has 7 fields, the net scope is SHEET.
+								-- Sheet is set by the 7th argument. x and y assume default (0/0)
+								-- and are further-on ignored by the called procedure:
+								when 7 =>
+									schematic_ops.rename_net
+										(
+										module_name			=> module,
+										net_name_before		=> to_net_name (f (5)), -- RESET
+										net_name_after		=> to_net_name (f (6)), -- RESET_N
+										scope				=> SHEET,
+										place				=> to_coordinates (
+																point => zero,
+																sheet => to_sheet (f (7))), -- sheet number
+										log_threshold		=> log_threshold + 1);
+
+								-- If the statement has 9 fields, the net scope is STRAND.
+								-- Place is set according to arguments 7..9.
+								when 9 =>
+									schematic_ops.rename_net
+										(
+										module_name			=> module,
+										net_name_before		=> to_net_name (f (5)), -- RESET
+										net_name_after		=> to_net_name (f (6)), -- RESET_N
+										scope				=> STRAND,
+										place				=> to_coordinates (
+																point => set_point (
+																	x => to_distance (f (8)),
+																	y => to_distance (f (9))),
+																sheet => to_sheet (f (7))), -- sheet number
+										log_threshold		=> log_threshold + 1);
+
+									
+								when 10 .. count_type'last =>
+									command_too_long (9);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
 
 						when others => invalid_noun (to_string (noun));
 					end case;
