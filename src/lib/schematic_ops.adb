@@ -94,6 +94,11 @@ package body schematic_ops is
 		log (message_error & "netchanger " & submodules.to_string (index) & " not found !", console => true);
 		raise constraint_error;
 	end;
+
+	procedure net_not_found (name : in et_general.type_net_name.bounded_string) is begin
+		log (message_error & "net " & to_string (name) & " not found !", console => true);
+		raise constraint_error;
+	end;
 	
 	procedure log_unit_positions (
 	-- Writes the positions of the device unis in the log file.
@@ -3792,6 +3797,29 @@ package body schematic_ops is
 		log_indentation_down;		
 	end invoke_unit;
 
+	function locate_net (
+	-- Yields a cursor to the requested net in the given module. If the net could
+	-- not be found, returns no_element.
+		module		: in type_modules.cursor;
+		net_name	: in et_general.type_net_name.bounded_string)		
+		return type_nets.cursor is
+		cursor : et_schematic.type_nets.cursor;
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+		begin
+			cursor := et_schematic.type_nets.find (module.nets, net_name);
+		end query_nets;
+		
+	begin -- locate_net
+		query_element (
+			position	=> module,
+			process		=> query_nets'access);
+		
+		return cursor;
+	end locate_net;
+	
 	procedure rename_net (
 	-- Renames a net. The scope determines whether to rename a certain strand,
 	-- all strands on a certain sheet or on all sheets.
@@ -3803,6 +3831,29 @@ package body schematic_ops is
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module being checked
+
+		use et_schematic.type_nets;
+		net_cursor : type_nets.cursor; -- points to the net being modified
+
+		procedure rename_everywhere (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			-- backup the content of the targeted net
+			net	: et_schematic.type_net := element (net_cursor);
+		begin
+			-- delete the old net:
+			delete (
+				container	=> module.nets,
+				position	=> net_cursor);
+
+			-- insert a the new net with the content of the old net:
+			insert (
+				container	=> module.nets,
+				key			=> net_name_after,
+				new_item	=> net);
+			
+		end rename_everywhere;
 		
 	begin -- rename_net
 		
@@ -3811,9 +3862,20 @@ package body schematic_ops is
 			 " to " & to_string (net_name_after),
 			log_threshold);
 
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- locate the requested net in the module
+		net_cursor := locate_net (module_cursor, net_name_before);
+
+		-- issue error if net does not exist:
+		if net_cursor = type_nets.no_element then
+			net_not_found (net_name_before);
+		end if;
+
 		log_indentation_up;
 
-		-- show where the renaming will take place:
+		-- show where the renaming will be taking place:
 		case scope is
 			when STRAND => 
 				log ("scope: strand at" & to_string (position => place), log_threshold);
@@ -3822,16 +3884,15 @@ package body schematic_ops is
 				log ("scope: all strands on sheet" & et_coordinates.to_sheet (sheet (place)), log_threshold);
 				
 			when EVERYWHERE =>
-				log ("scope: all strands on all sheets", log_threshold);
-		end case;
-		
-		-- locate module
-		module_cursor := locate_module (module_name);
+				log ("scope: everywhere -> all strands on all sheets", log_threshold);
 
--- 		update_element (
--- 			container	=> modules,
--- 			position	=> module_cursor,
--- 			process		=> query_devices'access);
+				update_element (
+					container	=> modules,
+					position	=> module_cursor,
+					process		=> rename_everywhere'access);
+				
+		end case;
+
 		
 		log_indentation_down;		
 	end rename_net;
