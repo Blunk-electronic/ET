@@ -3941,7 +3941,7 @@ package body schematic_ops is
 				log (message_warning & "no strands have been renamed on sheet" & to_sheet (sheet (place)) &
 					 ". Check net name and sheet number !");
 
-				-- A net without strands is useless. So the just created net must be deleted.
+				-- A net without strands is useless. So the just created net must be discarded.
 				log ("deleting net " & to_string (net_name_after), log_threshold + 1);
 				delete (module.nets, net_cursor_new);
 				
@@ -3959,7 +3959,78 @@ package body schematic_ops is
 			end if;
 			
 		end rename_on_sheet;
-		
+
+		procedure rename_strand (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			use et_schematic.type_strands;			
+			strand_temp : et_schematic.type_strand;
+			strand_found : boolean := false;
+
+			procedure locate_strand (
+			-- Locates the strand that starts at place and stores it in strand_temp.
+				net_name	: in et_general.type_net_name.bounded_string;
+				net			: in out et_schematic.type_net) is
+				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
+			begin
+				-- Find the strand that starts at the given position.
+				while strand_cursor /= type_strands.no_element loop
+					if element (strand_cursor).position = place then
+
+						-- fetch strand from old net
+						strand_temp := element (strand_cursor);
+
+						-- delete strand in old net
+						delete (net.strands, strand_cursor);
+
+						strand_found := true;
+						-- no need for further searching
+						exit;
+					end if;
+					next (strand_cursor);
+				end loop;
+			end locate_strand;
+
+			procedure move_strand (
+			-- Moves strand_temp to the targeted net.
+				net_name	: in et_general.type_net_name.bounded_string;
+				net			: in out et_schematic.type_net) is
+			begin
+				append (net.strands, strand_temp);
+			end;
+			
+		begin -- rename_strand
+
+			-- locate the targeted strand and store it in strand_temp:
+			update_element (
+				container	=> module.nets,
+				position	=> net_cursor_old,
+				process		=> locate_strand'access);
+
+			if not strand_found then
+				log (message_warning & "strand not found at" & to_string (position => place) &
+					 ". Check net name and position !");
+
+				-- A net without strands is useless. So the just created net must be discarded.
+				log ("deleting net " & to_string (net_name_after), log_threshold + 1);
+				delete (module.nets, net_cursor_new);
+				
+			else -- strand found
+				-- move strand_temp to the targeted net
+				update_element (
+					container	=> module.nets,
+					position	=> net_cursor_new,
+					process		=> move_strand'access);
+			end if;
+
+			-- If the old net has no strands anymore, delete it.
+			if is_empty (element (net_cursor_old).strands) then
+				delete (module.nets, net_cursor_old);
+			end if;
+			
+		end rename_strand;
+					
 	begin -- rename_net
 		
 		log ("module " & to_string (module_name) &
@@ -3995,8 +4066,13 @@ package body schematic_ops is
 
 		-- show where the renaming will be taking place:
 		case scope is
-			when STRAND => 
-				log ("scope: strand at" & to_string (position => place), log_threshold);
+			when EVERYWHERE =>
+				log ("scope: everywhere -> all strands on all sheets", log_threshold);
+
+				update_element (
+					container	=> modules,
+					position	=> module_cursor,
+					process		=> rename_everywhere'access);
 
 			when SHEET =>
 				log ("scope: all strands on sheet" & et_coordinates.to_sheet (sheet (place)), log_threshold);
@@ -4005,17 +4081,16 @@ package body schematic_ops is
 					container	=> modules,
 					position	=> module_cursor,
 					process		=> rename_on_sheet'access);
-				
-			when EVERYWHERE =>
-				log ("scope: everywhere -> all strands on all sheets", log_threshold);
+
+			when STRAND => 
+				log ("scope: strand at" & to_string (position => place), log_threshold);
 
 				update_element (
 					container	=> modules,
 					position	=> module_cursor,
-					process		=> rename_everywhere'access);
+					process		=> rename_strand'access);
 				
 		end case;
-
 		
 		log_indentation_down;		
 	end rename_net;
