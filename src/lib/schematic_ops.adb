@@ -3889,29 +3889,74 @@ package body schematic_ops is
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
 
-			procedure query_strands (
+			-- temporarily collection of strands
+			use et_schematic.type_strands;
+			strands_on_sheet : et_schematic.type_strands.list;
+			
+			procedure collect_strands_of_sheet (
+			-- Collects all strands on the targeted sheet in container strands_on_sheet.
+			-- Deletes the affected strands from the old net.
 				net_name	: in et_general.type_net_name.bounded_string;
 				net			: in out et_schematic.type_net) is
 
-				use et_schematic.type_strands;
-				strand_cursor : et_schematic.type_strands.cursor;
+				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
 				strand : et_schematic.type_strand;
 			begin
+				-- Look at the strands that are on the targeted sheet.
 				while strand_cursor /= type_strands.no_element loop
 					if sheet (element (strand_cursor).position) = sheet (place) then
-						strand := element (strand_cursor);
-					
+
+						-- append strand to temporarily collection of strands on this sheet
+						append (strands_on_sheet, element (strand_cursor));
+
+						-- delete strand in old net
+						delete (net.strands, strand_cursor);
 					end if;
 					next (strand_cursor);
 				end loop;
-			end query_strands;
+
+			end collect_strands_of_sheet;
+
+			procedure move_strands (
+			-- Moves the temporarily collection of strands strands_on_sheet 
+			-- to the targeted net.
+				net_name	: in et_general.type_net_name.bounded_string;
+				net			: in out et_schematic.type_net) is
+			begin
+				move (target => net.strands, source => strands_on_sheet);
+			end;
 			
 		begin -- rename_on_sheet
 
+			-- collect strands in old net
 			update_element (
 				container	=> module.nets,
 				position	=> net_cursor_old,
-				process		=> query_strands'access);
+				process		=> collect_strands_of_sheet'access);
+
+			-- Issue warning if no strands have been collected. This can result:
+			-- - from an attempt to rename on a sheet that does not exist 
+			-- - from the fact that the targeted sheet does not contain the targeted net 
+			if is_empty (strands_on_sheet) then
+				log (message_warning & "no strands have been renamed on sheet" & to_sheet (sheet (place)) &
+					 ". Check net name and sheet number !");
+
+				-- A net without strands is useless. So the just created net must be deleted.
+				log ("deleting net " & to_string (net_name_after), log_threshold + 1);
+				delete (module.nets, net_cursor_new);
+				
+			else
+				-- move strands to new net
+				update_element (
+					container	=> module.nets,
+					position	=> net_cursor_new,
+					process		=> move_strands'access);
+			end if;
+
+			-- If the old net has no strands anymore, delete it.
+			if is_empty (element (net_cursor_old).strands) then
+				delete (module.nets, net_cursor_old);
+			end if;
 			
 		end rename_on_sheet;
 		
