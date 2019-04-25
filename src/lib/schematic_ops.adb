@@ -3833,7 +3833,7 @@ package body schematic_ops is
 		place			: in et_coordinates.type_coordinates; -- sheet/x/y
 		log_threshold	: in type_log_level) is
 
-		module_cursor : type_modules.cursor; -- points to the module being checked
+		module_cursor : type_modules.cursor; -- points to the module
 
 		use et_schematic.type_nets;
 		net_cursor_old : type_nets.cursor; -- points to the old net
@@ -4099,6 +4099,181 @@ package body schematic_ops is
 		
 		log_indentation_down;		
 	end rename_net;
+
+	procedure delete_net (
+	-- Deletes a net. The scope determines whether to delete a certain strand,
+	-- all strands on a certain sheet or on all sheets.
+	-- CS If a particular strand on a sheet is to be deleted, the argument "place"
+	-- must provide sheet and x/y start position of strand. In the future x/y can be
+	-- any point on any segment of the strand. See comment in procedure locate_strand.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		scope			: in type_net_scope; -- strand, sheet, everywhere
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use et_schematic.type_nets;
+		net_cursor : type_nets.cursor; -- points to the net
+
+		use et_schematic.type_strands;
+		
+		procedure delete_everywhere (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+		begin
+			delete (
+				container	=> module.nets,
+				position	=> net_cursor);
+		end;
+
+		procedure delete_on_sheet (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			procedure delete_strands_of_sheet (
+			-- Removes the affected strands from the net.
+				net_name	: in et_general.type_net_name.bounded_string;
+				net			: in out et_schematic.type_net) is
+				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
+				strand_count_before : count_type := length (net.strands);
+			begin
+				-- Look at the strands that are on the targeted sheet.
+				while strand_cursor /= type_strands.no_element loop
+					if sheet (element (strand_cursor).position) = sheet (place) then
+						delete (net.strands, strand_cursor);
+					end if;
+					next (strand_cursor);
+				end loop;
+
+				-- Issue warning if no strands have been deleted. This can result:
+				-- - from an attempt to rename on a sheet that does not exist 
+				-- - from the fact that the targeted sheet does not contain the targeted net 
+				-- This simple check is a compare of the number of strands before with the
+				-- number of strands after the deletion:
+				if length (net.strands) = strand_count_before then -- nothing deleted
+					log (message_warning & "no strands have been deleted on sheet" & to_sheet (sheet (place)) &
+						". Check net name and sheet number !");
+				end if;
+			end;
+			
+		begin -- delete_on_sheet
+
+			-- delete strands in net
+			update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> delete_strands_of_sheet'access);
+
+			-- If the net has no strands anymore, delete it.
+			if is_empty (element (net_cursor).strands) then
+				delete (module.nets, net_cursor);
+			end if;
+			
+		end delete_on_sheet;
+
+		procedure delete_strand (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			use et_schematic.type_strands;			
+
+			strand_found : boolean := false;
+
+			procedure locate_strand (
+			-- Locates the strand that starts at place.
+				net_name	: in et_general.type_net_name.bounded_string;
+				net			: in out et_schematic.type_net) is
+				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
+			begin
+				-- Find the strand that starts at the given position.
+				while strand_cursor /= type_strands.no_element loop
+					if element (strand_cursor).position = place then
+						-- CS: if place is not exactly the start position of the strand,
+						-- search for any other point on the strand instead.
+
+						-- delete strand in net
+						delete (net.strands, strand_cursor);
+
+						strand_found := true;
+						-- no need for further searching
+						exit;
+					end if;
+					next (strand_cursor);
+				end loop;
+			end locate_strand;
+		
+		begin -- delete_strand
+
+			-- locate the targeted strand
+			update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> locate_strand'access);
+
+			if not strand_found then
+				log (message_warning & "strand not found at" & to_string (position => place) &
+					 ". Check net name and position !");
+			end if;
+
+			-- If the net has no strands anymore, delete it.
+			if is_empty (element (net_cursor).strands) then
+				delete (module.nets, net_cursor);
+			end if;
+			
+		end delete_strand;
+					
+	begin -- delete_net
+		
+		log ("module " & to_string (module_name) &
+			 " deleting net " & to_string (net_name),
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- locate the requested nets in the module
+		net_cursor := locate_net (module_cursor, net_name);
+
+		-- issue error if net does not exist:
+		if net_cursor = type_nets.no_element then
+			net_not_found (net_name);
+		end if;
+
+		log_indentation_up;
+
+		-- show where the deletion will be taking place:
+		case scope is
+			when EVERYWHERE =>
+				log ("scope: everywhere -> all strands on all sheets", log_threshold);
+
+				update_element (
+					container	=> modules,
+					position	=> module_cursor,
+					process		=> delete_everywhere'access);
+
+			when SHEET =>
+				log ("scope: all strands on sheet" & et_coordinates.to_sheet (sheet (place)), log_threshold);
+
+				update_element (
+					container	=> modules,
+					position	=> module_cursor,
+					process		=> delete_on_sheet'access);
+
+			when STRAND => 
+				log ("scope: strand at" & to_string (position => place), log_threshold);
+
+				update_element (
+					container	=> modules,
+					position	=> module_cursor,
+					process		=> delete_strand'access);
+				
+		end case;
+		
+		log_indentation_down;		
+	end delete_net;
+
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

@@ -258,7 +258,59 @@ package body scripting is
 								log_threshold	=> log_threshold + 1);
 
 						when NET =>
-							NULL; -- CS
+							case fields is
+
+								-- If the statement has only 6 fields, the net scope is EVERYWHERE.
+								-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
+								-- by the called procedure:
+								when 5 =>
+									schematic_ops.delete_net
+										(
+										module_name			=> module,
+										net_name			=> to_net_name (f (5)), -- RESET
+										scope				=> EVERYWHERE,
+										place				=> to_coordinates (
+																point => zero,
+																sheet => 1),
+										log_threshold		=> log_threshold + 1);
+
+								-- If the statement has 7 fields, the net scope is SHEET.
+								-- Sheet is set by the 7th argument. x and y assume default (0/0)
+								-- and are further-on ignored by the called procedure:
+								when 6 =>
+									schematic_ops.delete_net
+										(
+										module_name			=> module,
+										net_name			=> to_net_name (f (5)), -- RESET
+										scope				=> SHEET,
+										place				=> to_coordinates (
+																point => zero,
+																sheet => to_sheet (f (6))), -- sheet number
+										log_threshold		=> log_threshold + 1);
+
+								-- If the statement has 9 fields, the net scope is STRAND.
+								-- Place is set according to arguments 7..9.
+								when 8 =>
+									schematic_ops.delete_net
+										(
+										module_name			=> module,
+										net_name			=> to_net_name (f (5)), -- RESET
+										scope				=> STRAND,
+										place				=> to_coordinates (
+																point => set_point (
+																	x => to_distance (f (7)),
+																	y => to_distance (f (8))),
+																sheet => to_sheet (f (6))), -- sheet number
+										log_threshold		=> log_threshold + 1);
+
+									
+								when 9 .. count_type'last =>
+									command_too_long (8);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
 
 						when TEXT =>
 							NULL; -- CS

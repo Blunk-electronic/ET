@@ -248,7 +248,19 @@ package schematic_ops is
 		scope			: in type_net_scope; -- strand, sheet, everywhere
 		place			: in et_coordinates.type_coordinates; -- sheet/x/y
 		log_threshold	: in type_log_level);
-							 
+
+	procedure delete_net (
+	-- Deletes a net. The scope determines whether to delete a certain strand,
+	-- all strands on a certain sheet or on all sheets.
+	-- CS If a particular strand on a sheet is to be deleted, the argument "place"
+	-- must provide sheet and x/y start position of strand. In the future x/y can be
+	-- any point on any segment of the strand.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		scope			: in type_net_scope; -- strand, sheet, everywhere
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		log_threshold	: in type_log_level);
+	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
 	-- Tests:
