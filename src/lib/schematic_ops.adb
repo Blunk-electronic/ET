@@ -4350,21 +4350,22 @@ package body schematic_ops is
 							container	=> net.strands,
 							position	=> strand_cursor,
 							process		=> query_segments'access);
+
+						-- In case no more segments are left in the strand,
+						-- remove the now useless strand entirely.
+						if is_empty (element (strand_cursor).segments) then
+							delete (net.strands, strand_cursor);
+							null;
+						end if;
 						
  					end if;
 					next (strand_cursor);
 				end loop;
 
+				-- Issue warning if no strand has been found.
 				if not strand_found then
 					no_segment;
 				end if;
-
-				-- In case no more segments are left in the strand,
-				-- remove the now useless strand entirely.
--- 				if is_empty (element (strand_cursor).segments) then
-					--delete (net.strands, strand_cursor);
--- 					null;
--- 				end if;
 				
 			end query_strands;
 		
@@ -4376,15 +4377,15 @@ package body schematic_ops is
 				position	=> net_cursor,
 				process		=> query_strands'access);
 
--- 			-- If the net has no strands anymore, delete it.
--- 			if is_empty (element (net_cursor).strands) then
--- 				delete (module.nets, net_cursor);
--- 			end if;
+			-- If the net has no strands anymore, delete it entirely because a
+			-- net without strands is useless.
+			if is_empty (element (net_cursor).strands) then
+				delete (module.nets, net_cursor);
+			end if;
 			
 		end query_net;
 							
 	begin -- delete_segment
-		
 		log ("module " & to_string (module_name) &
 			 " deleting in net " & to_string (net_name) &
 			 " segment at" & to_string (position => place),
@@ -4409,7 +4410,6 @@ package body schematic_ops is
 			process		=> query_net'access);
 		
 		log_indentation_down;		
-
 	end delete_segment;
 	
 	procedure check_integrity (
