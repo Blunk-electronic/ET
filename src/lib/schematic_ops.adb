@@ -4411,6 +4411,151 @@ package body schematic_ops is
 		
 		log_indentation_down;		
 	end delete_segment;
+
+	procedure drag_segment (
+	-- Drags a segment of a net.
+	-- Place adresses the segment within the schematic. 
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y, this addresses the segment
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in et_coordinates.type_point; -- x/y, the new position 
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use et_schematic.type_nets;
+		net_cursor : type_nets.cursor; -- points to the net
+
+		use et_schematic.type_strands;
+
+		procedure no_segment is begin
+			log (message_warning & "segment not found at" & to_string (position => place) &
+			 ". Check net name and position !");
+		end;
+
+		procedure query_net (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			procedure query_strands (
+			-- Searches the strands of the net for a segment that sits on given place.
+				net_name	: in et_general.type_net_name.bounded_string;
+				net			: in out et_schematic.type_net) is
+				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
+				segment_found, strand_found : boolean := false;
+
+				use type_net_segments;				
+				
+				procedure query_segments (strand : in out type_strand) is
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					zone : type_zone;
+				begin
+					while segment_cursor /= type_net_segments.no_element loop
+
+						-- If segment crosses the given x/y position (in place) then
+						-- the segment has been found:
+						if between_start_and_end_point (
+							point	=> type_point (place),
+							segment	=> segment_cursor) then
+
+							-- calculate the zone where place is
+							zone := which_zone (
+								point	=> type_point (place),
+								segment	=> segment_cursor);
+
+							-- depending on zone, drag start point, end point or both
+							
+							-- signal the calling unit to abort the search
+							segment_found := true;
+
+							-- no further search required
+							exit;
+						end if;
+
+						next (segment_cursor);
+					end loop;
+
+					if not segment_found then
+						no_segment;
+					end if;
+					
+				end query_segments;
+				
+			begin -- query_strands
+				
+				-- Look at strands that are on the given sheet. This loop ends prematurely
+				-- as soon as a segment has been found.
+				while not segment_found and strand_cursor /= type_strands.no_element loop
+					
+					if sheet (element (strand_cursor).position) = sheet (place) then
+
+						-- signal the calling unit that a strand has been found:
+						strand_found := true;
+
+						update_element (
+							container	=> net.strands,
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+
+ 					end if;
+					next (strand_cursor);
+				end loop;
+
+				-- Issue warning if no strand has been found.
+				if not strand_found then
+					no_segment;
+				end if;
+				
+			end query_strands;
+		
+		begin -- query_net
+
+			-- query the affected strands
+			update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> query_strands'access);
+			
+		end query_net;
+		
+	begin -- drag_segment
+		case coordinates is
+			when ABSOLUTE =>
+				log ("module " & to_string (module_name) &
+					" dragging in net " & to_string (net_name) &
+					" segment at" & to_string (position => place) &
+					" to" & et_coordinates.to_string (point), log_threshold);
+
+			when RELATIVE =>
+				log ("module " & to_string (module_name) &
+					" dragging in net " & to_string (net_name) &
+					" segment at" & to_string (position => place) &
+					" by" & et_coordinates.to_string (point), log_threshold);
+		end case;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- locate the requested nets in the module
+		net_cursor := locate_net (module_cursor, net_name);
+
+		-- issue error if net does not exist:
+		if net_cursor = type_nets.no_element then
+			net_not_found (net_name);
+		end if;
+
+		log_indentation_up;
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_net'access);
+		
+		log_indentation_down;		
+	end drag_segment;
+
+
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

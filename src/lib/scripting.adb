@@ -352,6 +352,26 @@ package body scripting is
 								log_threshold	=> log_threshold + 1
 								);
 
+						when SEGMENT =>
+							schematic_ops.drag_segment
+								(
+								module_name			=> module,
+								net_name			=> to_net_name (f (5)), -- RESET
+								place				=> to_coordinates (
+														point => set_point (
+															x => to_distance (f (7)),
+															y => to_distance (f (8))),
+														sheet => to_sheet (f (6))), -- sheet number
+								
+								coordinates		=> schematic_ops.to_coordinates (f (9)), -- relative/absolute
+								
+								point			=> et_coordinates.type_point (set_point (
+													x => to_distance (f (10)),
+													y => to_distance (f (11)))),
+								
+								log_threshold		=> log_threshold + 1);
+
+							
 						when others => invalid_noun (to_string (noun));
 					end case;
 					

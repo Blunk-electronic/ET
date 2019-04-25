@@ -267,6 +267,17 @@ package schematic_ops is
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		place			: in et_coordinates.type_coordinates; -- sheet/x/y
 		log_threshold	: in type_log_level);
+
+	procedure drag_segment (
+	-- Drags a segment of a net.
+	-- Place adresses the segment within the schematic. 
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y, this addresses the segment
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in et_coordinates.type_point; -- x/y, the new position 
+		log_threshold	: in type_log_level);
+
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

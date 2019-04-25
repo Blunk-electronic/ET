@@ -123,6 +123,53 @@ package body et_schematic is
 		return type_net_label_direction'value (direction);
 	end to_direction;
 
+	function which_zone (
+	-- Calculates the zone on the segment where point is nearest.
+		point	: in et_coordinates.type_point;
+		segment	: in type_net_segments.cursor) 
+		return type_zone is
+
+		use et_coordinates;
+		use type_net_segments;
+		start_point : type_point := element (segment).coordinates_start;
+		end_point   : type_point := element (segment).coordinates_end;
+
+		--type type_range is digits 
+		segment_length : type_distance;
+	begin
+		if distance (X, start_point) = distance (X, end_point) then -- vertical placed segment
+			segment_length := distance (start_point, end_point, Y);
+
+			if distance (Y, start_point) < distance (Y, end_point) then -- drawn upwards
+				null;
+			else -- drawn downwards
+-- 			case distance (Y, point) is
+-- 				when distance (Y,
+-- 
+				-- 			end case;
+			end if;
+			
+		elsif distance (Y, start_point) = distance (Y, end_point) then -- horizontal placed segment
+			segment_length := distance (start_point, end_point, X);
+			
+		else -- segment is neither horizontal nor vertical
+
+			-- The longest distance between start and end point in X or Y determines 
+			-- the axis referred to.
+			if distance (start_point, end_point, X) > distance (start_point, end_point, Y) then
+
+				-- distance in X greater -> decision will be made along the X axis
+				null;
+			else
+
+				-- distance in Y greater or equal distance in X -> decision will be made along the Y axis
+				null;
+			end if;
+		end if;
+		
+		return CENTER;
+	end which_zone;
+	
 	function to_string (segment : in type_net_segments.cursor) return string is
 	-- Returns a string that tells about start and end coordinates of the net segment.
 		use et_coordinates;

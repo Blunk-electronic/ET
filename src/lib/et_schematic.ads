@@ -293,7 +293,7 @@ package et_schematic is
 		start_point	: boolean := false;
 		end_point	: boolean := false;
 	end record;
-	
+
 	type type_net_segment is record
 		coordinates_start 	: et_coordinates.type_point;
 		coordinates_end   	: et_coordinates.type_point;
@@ -306,6 +306,16 @@ package et_schematic is
 
 	package type_net_segments is new doubly_linked_lists (type_net_segment);
 
+	type type_zone is (START_POINT, CENTER, END_POINT);
+
+	--type type_zone_center_width is range 1..
+	
+	function which_zone (
+	-- Calculates the zone on the segment where point is nearest.
+		point	: in et_coordinates.type_point;
+		segment	: in type_net_segments.cursor) 
+		return type_zone;
+	
 	function to_string (segment : in type_net_segments.cursor) return string;
 	-- Returns a string that tells about start and end coordinates of the net segment.
 	
