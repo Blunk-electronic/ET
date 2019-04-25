@@ -109,6 +109,7 @@ package scripting is
 		NET,
 		PARTCODE,
 		PURPOSE,
+		SEGMENT, -- net segment
 		TEXT,
 		TEXT_SIZE,
 		UNIT,

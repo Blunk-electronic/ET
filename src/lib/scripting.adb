@@ -312,6 +312,18 @@ package body scripting is
 
 							end case;
 
+						when SEGMENT =>
+							schematic_ops.delete_segment
+								(
+								module_name			=> module,
+								net_name			=> to_net_name (f (5)), -- RESET
+								place				=> to_coordinates (
+														point => set_point (
+															x => to_distance (f (7)),
+															y => to_distance (f (8))),
+														sheet => to_sheet (f (6))), -- sheet number
+								log_threshold		=> log_threshold + 1);
+							
 						when TEXT =>
 							NULL; -- CS
 							

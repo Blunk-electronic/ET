@@ -4274,6 +4274,49 @@ package body schematic_ops is
 		log_indentation_down;		
 	end delete_net;
 
+	procedure delete_segment (
+	-- Deletes a segment of a net.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use et_schematic.type_nets;
+		net_cursor : type_nets.cursor; -- points to the net
+
+		use et_schematic.type_strands;
+		
+	begin -- delete_segment
+		
+		log ("module " & to_string (module_name) &
+			 " deleting in net " & to_string (net_name) &
+			 " segment at" & to_string (position => place),
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- locate the requested nets in the module
+		net_cursor := locate_net (module_cursor, net_name);
+
+		-- issue error if net does not exist:
+		if net_cursor = type_nets.no_element then
+			net_not_found (net_name);
+		end if;
+
+		log_indentation_up;
+
+-- 		update_element (
+-- 			container	=> modules,
+-- 			position	=> module_cursor,
+-- 			process		=> delete_strand'access);
+				
+		
+		log_indentation_down;		
+
+	end delete_segment;
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
