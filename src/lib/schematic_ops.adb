@@ -4287,7 +4287,102 @@ package body schematic_ops is
 		net_cursor : type_nets.cursor; -- points to the net
 
 		use et_schematic.type_strands;
+
+		procedure no_segment is begin
+			log (message_warning & "segment not found at" & to_string (position => place) &
+			 ". Check net name and position !");
+		end;
+
+		procedure query_net (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			procedure query_strands (
+			-- Searches the strands of the net for a segment that sits on given place.
+				net_name	: in et_general.type_net_name.bounded_string;
+				net			: in out et_schematic.type_net) is
+				strand_cursor : et_schematic.type_strands.cursor := net.strands.first;
+				segment_found, strand_found : boolean := false;
+
+				use type_net_segments;				
+				
+				procedure query_segments (strand : in out type_strand) is
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+				begin
+					while segment_cursor /= type_net_segments.no_element loop
+
+						-- If segment crosses the given x/y position (in place),
+						-- delete the segment.
+						if between_start_and_end_point (
+							point	=> type_point (place),
+							segment	=> segment_cursor) then
+
+							delete (strand.segments, segment_cursor);
+
+							-- signal the calling unit to abort the search
+							segment_found := true;
+
+							-- no further search required
+							exit;
+						end if;
+
+						next (segment_cursor);
+					end loop;
+
+					if not segment_found then
+						no_segment;
+					end if;
+					
+				end query_segments;
+				
+			begin -- query_strands
+				
+				-- Look at strands that are on the given sheet. This loop ends prematurely
+				-- as soon as a segment has been found.
+				while not segment_found and strand_cursor /= type_strands.no_element loop
+					
+					if sheet (element (strand_cursor).position) = sheet (place) then
+
+						-- signal the calling unit that a strand has been found:
+						strand_found := true;
+
+						update_element (
+							container	=> net.strands,
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+						
+ 					end if;
+					next (strand_cursor);
+				end loop;
+
+				if not strand_found then
+					no_segment;
+				end if;
+
+				-- In case no more segments are left in the strand,
+				-- remove the now useless strand entirely.
+-- 				if is_empty (element (strand_cursor).segments) then
+					--delete (net.strands, strand_cursor);
+-- 					null;
+-- 				end if;
+				
+			end query_strands;
 		
+		begin -- query_net
+
+			-- query the affected strands
+			update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> query_strands'access);
+
+-- 			-- If the net has no strands anymore, delete it.
+-- 			if is_empty (element (net_cursor).strands) then
+-- 				delete (module.nets, net_cursor);
+-- 			end if;
+			
+		end query_net;
+							
 	begin -- delete_segment
 		
 		log ("module " & to_string (module_name) &
@@ -4308,11 +4403,10 @@ package body schematic_ops is
 
 		log_indentation_up;
 
--- 		update_element (
--- 			container	=> modules,
--- 			position	=> module_cursor,
--- 			process		=> delete_strand'access);
-				
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_net'access);
 		
 		log_indentation_down;		
 
