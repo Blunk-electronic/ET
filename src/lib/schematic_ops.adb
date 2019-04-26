@@ -4465,6 +4465,8 @@ package body schematic_ops is
 								segment	=> segment_cursor);
 
 							-- depending on zone, drag start point, end point or both
+
+							-- if start or end point is fixed by a port, nothing happens
 							
 							-- signal the calling unit to abort the search
 							segment_found := true;
