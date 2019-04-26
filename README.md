@@ -139,6 +139,7 @@ $ sh install.sh
 - Assembly variants
 - Zero-Ohms Resistors
 - Accessories of components
+- Import EAGLE projects and libraries
 
 ### Collaboration
 - We need a nice web site for the project.
