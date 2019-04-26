@@ -140,65 +140,65 @@ package body et_schematic is
 		segment_length : type_distance;
 		zone_border : type_distance;
 	begin
-		if distance (X, start_point) = distance (X, end_point) then 
-		-- VERTICAL PLACED SEGMENT
-
-			-- calculate the zone border. This depends on the segment length.
-			segment_length := distance (start_point, end_point, Y);
-			zone_border := segment_length / type_distance (zone_division_factor);
-
-			if distance (Y, start_point) < distance (Y, end_point) then 
-			-- DRAWN UPWARDS
-				if distance (Y, point) < distance (Y, start_point) + zone_border then
-					zone := et_schematic.START_POINT; -- point is in the zone of start_point
-				elsif distance (Y, point) > distance (Y, end_point) - zone_border then
-					zone := et_schematic.END_POINT; -- point is in the zone of end_point
-				else
-					zone := et_schematic.CENTER;
-				end if;
-					
-			else 
-			-- DRAWN DOWNWARDS
-				if distance (Y, point) > distance (Y, start_point) - zone_border then
-					zone := et_schematic.START_POINT; -- point is in the zone of start_point
-				elsif distance (Y, point) < distance (Y, end_point) + zone_border then
-					zone := et_schematic.END_POINT; -- point is in the zone of end_point
-				else
-					zone := et_schematic.CENTER;
-				end if;
-			end if;
-			
-		elsif distance (Y, start_point) = distance (Y, end_point) then
-		-- HORIZONTAL PLACED SEGMENT
-
-			-- calculate the zone border. This depends on the segment length.
-			segment_length := distance (start_point, end_point, X);
-			zone_border := segment_length / type_distance (zone_division_factor);
-			
-			if distance (X, start_point) < distance (X, end_point) then 
-			-- DRAWN FROM LEFT TO THE RIGHT
-				if distance (X, point) < distance (X, start_point) + zone_border then
-					zone := et_schematic.START_POINT; -- point is in the zone of start_point
-				elsif distance (X, point) > distance (X, end_point) - zone_border then
-					zone := et_schematic.END_POINT; -- point is in the zone of end_point
-				else
-					zone := et_schematic.CENTER;
-				end if;
-
-			else 
-			-- DRAWN FROM RIGHT TO THE LEFT
-				if distance (X, point) > distance (X, start_point) - zone_border then
-					zone := et_schematic.START_POINT; -- point is in the zone of start_point
-				elsif distance (X, point) < distance (X, end_point) + zone_border then
-					zone := et_schematic.END_POINT; -- point is in the zone of end_point
-				else
-					zone := et_schematic.CENTER;
-				end if;
-			end if;
-
-			
-		else 
-		-- SEGMENT IS NEITHER HORIZONTAL NOR VERTICAL
+-- 		if distance (X, start_point) = distance (X, end_point) then 
+-- 		-- VERTICAL PLACED SEGMENT
+-- 
+-- 			-- calculate the zone border. This depends on the segment length.
+-- 			segment_length := distance (start_point, end_point, Y);
+-- 			zone_border := segment_length / type_distance (zone_division_factor);
+-- 
+-- 			if distance (Y, start_point) < distance (Y, end_point) then 
+-- 			-- DRAWN UPWARDS
+-- 				if distance (Y, point) < distance (Y, start_point) + zone_border then
+-- 					zone := et_schematic.START_POINT; -- point is in the zone of start_point
+-- 				elsif distance (Y, point) > distance (Y, end_point) - zone_border then
+-- 					zone := et_schematic.END_POINT; -- point is in the zone of end_point
+-- 				else
+-- 					zone := et_schematic.CENTER;
+-- 				end if;
+-- 					
+-- 			else 
+-- 			-- DRAWN DOWNWARDS
+-- 				if distance (Y, point) > distance (Y, start_point) - zone_border then
+-- 					zone := et_schematic.START_POINT; -- point is in the zone of start_point
+-- 				elsif distance (Y, point) < distance (Y, end_point) + zone_border then
+-- 					zone := et_schematic.END_POINT; -- point is in the zone of end_point
+-- 				else
+-- 					zone := et_schematic.CENTER;
+-- 				end if;
+-- 			end if;
+-- 			
+-- 		elsif distance (Y, start_point) = distance (Y, end_point) then
+-- 		-- HORIZONTAL PLACED SEGMENT
+-- 
+-- 			-- calculate the zone border. This depends on the segment length.
+-- 			segment_length := distance (start_point, end_point, X);
+-- 			zone_border := segment_length / type_distance (zone_division_factor);
+-- 			
+-- 			if distance (X, start_point) < distance (X, end_point) then 
+-- 			-- DRAWN FROM LEFT TO THE RIGHT
+-- 				if distance (X, point) < distance (X, start_point) + zone_border then
+-- 					zone := et_schematic.START_POINT; -- point is in the zone of start_point
+-- 				elsif distance (X, point) > distance (X, end_point) - zone_border then
+-- 					zone := et_schematic.END_POINT; -- point is in the zone of end_point
+-- 				else
+-- 					zone := et_schematic.CENTER;
+-- 				end if;
+-- 
+-- 			else 
+-- 			-- DRAWN FROM RIGHT TO THE LEFT
+-- 				if distance (X, point) > distance (X, start_point) - zone_border then
+-- 					zone := et_schematic.START_POINT; -- point is in the zone of start_point
+-- 				elsif distance (X, point) < distance (X, end_point) + zone_border then
+-- 					zone := et_schematic.END_POINT; -- point is in the zone of end_point
+-- 				else
+-- 					zone := et_schematic.CENTER;
+-- 				end if;
+-- 			end if;
+-- 
+-- 			
+-- 		else 
+-- 		-- SEGMENT IS NEITHER HORIZONTAL NOR VERTICAL
 
 			-- The greater distance from start to end point in X or Y determines 
 			-- whether the segment is handled like a horizontal or vertical drawn segment.
@@ -266,7 +266,7 @@ package body et_schematic is
 				
 				
 			end if;
-		end if;
+-- 		end if;
 		
 		return zone;
 	end which_zone;
