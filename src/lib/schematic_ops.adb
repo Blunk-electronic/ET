@@ -4438,22 +4438,25 @@ package body schematic_ops is
 			segment	: in type_net_segment;
 			zone	: in type_zone) 
 			return boolean is
-			result : boolean := true; -- to be returned
-			use type_ports_device;
-			use type_ports_submodule;
-			use type_ports_netchanger;
 
-			devices : boolean := true;
-			submodules : boolean := true;
-			netchangers : boolean := true;
+			result : boolean := true; -- to be returned. true means the zone is movable.
+			-- Goes false once a port has been found in the given zone.
 
 			point : et_coordinates.type_coordinates;
 
 			procedure search_ports is
+			-- Searches ports of devices, netchangers and submodules that sit on
+			-- the point of interest.	
+			-- On the first finding, sets result to false and finishes. If no 
+			-- finding, result remains true.	
+				use type_ports_device;
+				use type_ports_submodule;
+				use type_ports_netchanger;
+
 				device : type_ports_device.cursor := segment.ports_devices.first;
 				submodule : type_ports_submodule.cursor := segment.ports_submodules.first;
 				netchanger : type_ports_netchanger.cursor := segment.ports_netchangers.first;
-			begin
+			begin -- search_ports
 				while device /= type_ports_device.no_element loop
 
 					if position (
@@ -4519,55 +4522,47 @@ package body schematic_ops is
 				end if;
 
 				-- if no port found, result is still true
-				
 			end search_ports;
 			
-		begin
-			-- Set flags devices, submodules or netchangers if segment is connected
-			-- with any of them:
-			if is_empty (segment.ports_devices) then devices := false; end if;
-			if is_empty (segment.ports_submodules) then submodules := false; end if;
-			if is_empty (segment.ports_netchangers) then netchangers := false; end if;
+		begin -- movable
 			
-			-- If the segment it not connected with any devices, submodules or netchangers,
-			-- then it is freely movable. In this case no further checks are required.
-			if not devices and not submodules and not netchangers then
-				result := true;
-			else
-				-- The point of interest is on the sheet specified in argument "place".
-				-- The x/y coordinates are taken from the segment start or end point.
-				
-				case zone is
-					when START_POINT =>
-						point := to_coordinates (
-								point => segment.coordinates_start,
-								sheet => sheet (place));
+			-- The point of interest is on the sheet specified in argument "place".
+			-- The x/y coordinates are taken from the segment start or end point.
+			
+			case zone is
+				when START_POINT =>
+					point := to_coordinates (
+							point => segment.coordinates_start,
+							sheet => sheet (place));
 
-						search_ports;
-						
-					when END_POINT =>
+					search_ports; -- sets result to false if a port is connected with the start point
+					
+				when END_POINT =>
+					point := to_coordinates (
+							point => segment.coordinates_end,
+							sheet => sheet (place));
+
+					search_ports; -- sets result to false if a port is connected with the end point
+					
+				when CENTER =>
+					-- Both start and end point must be checked for any ports.
+					-- First check the start point of the segment.
+					-- If start point is movable, then the end point must be checked too.
+					point := to_coordinates (
+							point => segment.coordinates_start,
+							sheet => sheet (place));
+
+					search_ports; -- sets result to false if a port is connected with the start point
+
+					-- If start point is movable, check end point.
+					if result = true then
 						point := to_coordinates (
 								point => segment.coordinates_end,
 								sheet => sheet (place));
 
-						
-					when CENTER =>
-						point := to_coordinates (
-								point => segment.coordinates_start,
-								sheet => sheet (place));
-
-						point := to_coordinates (
-								point => segment.coordinates_end,
-								sheet => sheet (place));
-						
-				end case;
-				
-			end if;
-
--- 			if not is_empty (segment.ports_devices) then
-
-
--- 			end if;
+						search_ports; -- sets result to false if a port is connected with the end point
+					end if;
+			end case;
 			
 			return result;
 		end movable;
@@ -4597,7 +4592,7 @@ package body schematic_ops is
 							point	=> type_point (place),
 							segment	=> segment_cursor) then
 
-							-- calculate the zone where place is
+							-- Calculate the zone of attack. This is where place is.
 							zone := which_zone (
 								point	=> type_point (place),
 								segment	=> segment_cursor);
@@ -4605,31 +4600,23 @@ package body schematic_ops is
 							-- depending on zone, drag start point, end point or both
 							log ("dragging at " & type_zone'image (zone), log_threshold + 2);
 
-							-- If start or end point is fixed by the port of a device or
-							-- a submodule, nothing happens.
-
-							-- move 
+							-- Test whether the zone is movable. If not movable, nothing happens.
 							if movable (element (segment_cursor), zone) then
-								null;
+								
+								case zone is
+									when START_POINT =>
+											null; -- CS move all segment ends that meet at start point.
+											
+									when END_POINT =>
+											null; -- CS move all segment ends that meet at end point.
+
+									when CENTER =>
+										null; -- CS move all segment ends that meet at start point.
+										null; -- CS move all segment ends that meet at end point.
+								end case;
+
 							end if;
-							
--- 							case zone is
--- 								when START_POINT =>
--- 									
--- 										null; -- CS
--- 									end if;
--- 										
--- 								when END_POINT =>
--- 									if not fixed (zone, element (segment_cursor)) then
--- 										null; -- CS
--- 									end if;
--- 
--- 								when CENTER =>
--- 									if 	not fixed (zone, element (segment_cursor)) then
--- 										null; -- CS
--- 									end if;
--- 							end case;
-									
+
 							-- signal the calling unit to abort the search
 							segment_found := true;
 
