@@ -111,10 +111,10 @@ ET creates in the current working directory a folder named "ET/reports" for log 
 ### Installation
 - Currently there is no proper install script.
 - Install the following packages: 
- - the GNAT Ada compiler (version 7 or later). It should come along with major linux distros.
- - make
- - gprbuild
- - gtkada
+    - the GNAT Ada compiler (version 7 or later). It should come along with major linux distros.
+    - make
+    - gprbuild
+    - gtkada
 
 - Change into src/et and follow the instructions in readme.txt.
 
