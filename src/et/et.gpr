@@ -1,13 +1,14 @@
- project et is
+with "gtkada.gpr";
+
+project et is
 
 	for exec_dir use external ("HOME") & "/bin";
 	--for exec_dir use ".";
 	for object_dir use "obj";
  	for source_dirs use ("." , "../lib");
-	--for source_dirs use (".");
-
  	for main use ("et");
- end et;
+
+end et;
 
 -- build with command "gprbuild -j2 et"
 -- build with command "gprbuild -j2 -g et"
