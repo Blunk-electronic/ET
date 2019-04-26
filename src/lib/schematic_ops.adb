@@ -4636,85 +4636,87 @@ package body schematic_ops is
 						end case;
 					end move_targeted_segment;
 
-					procedure move_connected_segment (segment : in out type_net_segment) is begin
+					procedure move_connected_segment (segment : in out type_net_segment) is 
+					-- Compares the segment_target start/end point with the start/end 
+					-- points of other segments in the strand.
+					-- IMPORTANT: segment_target is a copy of the targeted segment BEFORE it
+					-- has been dragged. 
+					-- This procedure moves the start/end points of segments that are connected
+					-- with the segment_target.
+					begin
 						case zone is
 							when START_POINT =>
 								if segment_target.coordinates_start = segment.coordinates_start then
-									case coordinates is
-										when ABSOLUTE =>
-											segment.coordinates_start := point; -- given position is absolute
-											
-										when RELATIVE =>
-											move (
-												point	=> segment.coordinates_start,
-												offset	=> point -- the given position is relative
-												);
-									end case;
+									segment.coordinates_start := element (segment_cursor_target).coordinates_start;
 								end if;
 
 								if segment_target.coordinates_start = segment.coordinates_end then								
-									case coordinates is
-										when ABSOLUTE =>
-											segment.coordinates_end := point; -- given position is absolute
-
-										when RELATIVE =>
-											move (
-												point	=> segment.coordinates_end,
-												offset	=> point -- the given position is relative
-												);
-									end case;
+									segment.coordinates_end := element (segment_cursor_target).coordinates_start;									
 								end if;
-
 								
 							when END_POINT =>
-								if segment_target.coordinates_end = segment.coordinates_end then								
-									case coordinates is
-										when ABSOLUTE =>
-											segment.coordinates_end := point; -- given position is absolute
-
-										when RELATIVE =>
-											move (
-												point	=> segment.coordinates_end,
-												offset	=> point -- the given position is relative
-												);
-									end case;
+								if segment_target.coordinates_end = segment.coordinates_end then
+									segment.coordinates_end := element (segment_cursor_target).coordinates_end;
 								end if;
 
-								if segment_target.coordinates_end = segment.coordinates_start then								
-									case coordinates is
-										when ABSOLUTE =>
-											segment.coordinates_start := point; -- given position is absolute
-
-										when RELATIVE =>
-											move (
-												point	=> segment.coordinates_start,
-												offset	=> point -- the given position is relative
-												);
-									end case;
+								if segment_target.coordinates_end = segment.coordinates_start then
+									segment.coordinates_start := element (segment_cursor_target).coordinates_end;
 								end if;
-
 								
 							when CENTER =>
+								-- CS: currently absolute dragging at the center is not possible.
 								if segment_target.coordinates_start = segment.coordinates_start then
 									case coordinates is
 										when ABSOLUTE =>
-											-- CS: currently absolute dragging at the center is not possible.
 											null; 
-											--log (message_warning & "absolute dragging at center not possible !");
 
 										when RELATIVE =>
 											move (
 												point	=> segment.coordinates_start,
 												offset	=> point -- the given position is relative
 												);
+									end case;
+								end if;
 
+								if segment_target.coordinates_start = segment.coordinates_end then
+									case coordinates is
+										when ABSOLUTE =>
+											null; 
+
+										when RELATIVE =>
 											move (
 												point	=> segment.coordinates_end,
 												offset	=> point -- the given position is relative
 												);
-											
 									end case;
 								end if;
+
+								if segment_target.coordinates_end = segment.coordinates_start then
+									case coordinates is
+										when ABSOLUTE =>
+											null; 
+
+										when RELATIVE =>
+											move (
+												point	=> segment.coordinates_start,
+												offset	=> point -- the given position is relative
+												);
+									end case;
+								end if;
+
+								if segment_target.coordinates_end = segment.coordinates_end then
+									case coordinates is
+										when ABSOLUTE =>
+											null; 
+
+										when RELATIVE =>
+											move (
+												point	=> segment.coordinates_end,
+												offset	=> point -- the given position is relative
+												);
+									end case;
+								end if;
+								
 						end case;
 					end move_connected_segment;
 					
