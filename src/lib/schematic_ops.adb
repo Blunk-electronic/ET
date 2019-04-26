@@ -4525,6 +4525,7 @@ package body schematic_ops is
 			end search_ports;
 			
 		begin -- movable
+			log_indentation_up;
 			
 			-- The point of interest is on the sheet specified in argument "place".
 			-- The x/y coordinates are taken from the segment start or end point.
@@ -4563,6 +4564,8 @@ package body schematic_ops is
 						search_ports; -- sets result to false if a port is connected with the end point
 					end if;
 			end case;
+
+			log_indentation_down;
 			
 			return result;
 		end movable;
@@ -4582,8 +4585,141 @@ package body schematic_ops is
 				
 				procedure query_segments (strand : in out type_strand) is
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
+					segment_cursor_target : type_net_segments.cursor;
+					segment_target : type_net_segment;
 					zone : type_zone;
-				begin
+
+					procedure move_targeted_segment (segment : in out type_net_segment) is begin
+						case zone is
+							when START_POINT =>
+								case coordinates is
+									when ABSOLUTE =>
+										segment.coordinates_start := point; -- given position is absolute
+
+									when RELATIVE =>
+										move (
+											point	=> segment.coordinates_start,
+											offset	=> point -- the given position is relative
+											);
+								end case;
+								
+							when END_POINT =>
+								case coordinates is
+									when ABSOLUTE =>
+										segment.coordinates_end := point; -- given position is absolute
+
+									when RELATIVE =>
+										move (
+											point	=> segment.coordinates_end,
+											offset	=> point -- the given position is relative
+											);
+								end case;
+
+							when CENTER =>
+								case coordinates is
+									when ABSOLUTE =>
+										-- CS: currently absolute dragging at the center is not possible.
+										log (message_warning & "absolute dragging at center not possible !");
+
+									when RELATIVE =>
+										move (
+											point	=> segment.coordinates_start,
+											offset	=> point -- the given position is relative
+											);
+
+										move (
+											point	=> segment.coordinates_end,
+											offset	=> point -- the given position is relative
+											);
+										
+								end case;
+						end case;
+					end move_targeted_segment;
+
+					procedure move_connected_segment (segment : in out type_net_segment) is begin
+						case zone is
+							when START_POINT =>
+								if segment_target.coordinates_start = segment.coordinates_start then
+									case coordinates is
+										when ABSOLUTE =>
+											segment.coordinates_start := point; -- given position is absolute
+											
+										when RELATIVE =>
+											move (
+												point	=> segment.coordinates_start,
+												offset	=> point -- the given position is relative
+												);
+									end case;
+								end if;
+
+								if segment_target.coordinates_start = segment.coordinates_end then								
+									case coordinates is
+										when ABSOLUTE =>
+											segment.coordinates_end := point; -- given position is absolute
+
+										when RELATIVE =>
+											move (
+												point	=> segment.coordinates_end,
+												offset	=> point -- the given position is relative
+												);
+									end case;
+								end if;
+
+								
+							when END_POINT =>
+								if segment_target.coordinates_end = segment.coordinates_end then								
+									case coordinates is
+										when ABSOLUTE =>
+											segment.coordinates_end := point; -- given position is absolute
+
+										when RELATIVE =>
+											move (
+												point	=> segment.coordinates_end,
+												offset	=> point -- the given position is relative
+												);
+									end case;
+								end if;
+
+								if segment_target.coordinates_end = segment.coordinates_start then								
+									case coordinates is
+										when ABSOLUTE =>
+											segment.coordinates_start := point; -- given position is absolute
+
+										when RELATIVE =>
+											move (
+												point	=> segment.coordinates_start,
+												offset	=> point -- the given position is relative
+												);
+									end case;
+								end if;
+
+								
+							when CENTER =>
+								if segment_target.coordinates_start = segment.coordinates_start then
+									case coordinates is
+										when ABSOLUTE =>
+											-- CS: currently absolute dragging at the center is not possible.
+											null; 
+											--log (message_warning & "absolute dragging at center not possible !");
+
+										when RELATIVE =>
+											move (
+												point	=> segment.coordinates_start,
+												offset	=> point -- the given position is relative
+												);
+
+											move (
+												point	=> segment.coordinates_end,
+												offset	=> point -- the given position is relative
+												);
+											
+									end case;
+								end if;
+						end case;
+					end move_connected_segment;
+					
+				begin -- query_segments
+					-- MOVE TARGETED SEGMENT
 					while segment_cursor /= type_net_segments.no_element loop
 
 						-- If segment crosses the given x/y position (in place) then
@@ -4602,19 +4738,19 @@ package body schematic_ops is
 
 							-- Test whether the zone is movable. If not movable, nothing happens.
 							if movable (element (segment_cursor), zone) then
-								
-								case zone is
-									when START_POINT =>
-											null; -- CS move all segment ends that meet at start point.
-											
-									when END_POINT =>
-											null; -- CS move all segment ends that meet at end point.
 
-									when CENTER =>
-										null; -- CS move all segment ends that meet at start point.
-										null; -- CS move all segment ends that meet at end point.
-								end case;
+								-- Backup the cursor of the targeted segment and the segment itself.
+								-- They are required later.
+								segment_cursor_target := segment_cursor;
+								segment_target := element (segment_cursor);
 
+								-- move the targeted segment
+								et_schematic.type_net_segments.update_element (
+									container	=> strand.segments,
+									position	=> segment_cursor,
+									process		=> move_targeted_segment'access);
+							else
+								log (message_warning & "segment is tied to a port. Dragging not possible !");
 							end if;
 
 							-- signal the calling unit to abort the search
@@ -4627,9 +4763,24 @@ package body schematic_ops is
 						next (segment_cursor);
 					end loop;
 
-					if not segment_found then
-						no_segment;
-					end if;
+					if not segment_found then no_segment; end if;
+
+					-- MOVE SEGMENTS CONNECTED WITH THE TARGETED SEGMENT. 
+					-- Iterate in segments. skip targeted segment because it has been dragged
+					-- already (see above).
+					segment_cursor := strand.segments.first; -- reset segment cursor
+					while segment_cursor /= type_net_segments.no_element loop
+						if segment_cursor /= segment_cursor_target then
+
+							et_schematic.type_net_segments.update_element (
+								container	=> strand.segments,
+								position	=> segment_cursor,
+								process		=> move_connected_segment'access);
+
+						end if;
+
+						next (segment_cursor);
+					end loop;
 					
 				end query_segments;
 				
