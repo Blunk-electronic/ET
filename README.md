@@ -109,8 +109,16 @@ ET creates in the current working directory a folder named "ET/reports" for log 
 
 
 ### Installation
-- Install the GNAT Ada compiler (version 7 or later). It should come along with major linux distros.
-- Run the install script install.sh as non-root user.
+- Currently there is no proper install script.
+- Install the following packages: 
+# the GNAT Ada compiler (version 7 or later). It should come along with major linux distros.
+# make
+# gprbuild
+# gtkada
+
+- Change into src/et and follow the instructions in readme.txt.
+
+<!--- Run the install script install.sh as non-root user.
 
 ```sh
 $ sh install.sh
@@ -118,7 +126,7 @@ $ sh install.sh
 
 - The script installs the executable binary et in $HOME/bin and further-on creates a hidden directory .ET in $HOME where other configuration files live.
 - Currently there is nothing to do in the configuration directory -> leave it as it is.
-- For help contact info@blunk-electronic.de . You are highly welcome :-)
+- For help contact info@blunk-electronic.de . You are highly welcome :-)-->
 
 #### Why Ada ??
 - The only programming language that provides a robust and strong typing system is Ada.
