@@ -321,7 +321,7 @@ package et_schematic is
 		point	: in et_coordinates.type_point;
 		segment	: in type_net_segments.cursor) 
 		return type_zone;
-	
+
 	function to_string (segment : in type_net_segments.cursor) return string;
 	-- Returns a string that tells about start and end coordinates of the net segment.
 	

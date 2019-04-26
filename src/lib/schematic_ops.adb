@@ -4434,6 +4434,144 @@ package body schematic_ops is
 			 ". Check net name and position !");
 		end;
 
+		function movable (
+			segment	: in type_net_segment;
+			zone	: in type_zone) 
+			return boolean is
+			result : boolean := true; -- to be returned
+			use type_ports_device;
+			use type_ports_submodule;
+			use type_ports_netchanger;
+
+			devices : boolean := true;
+			submodules : boolean := true;
+			netchangers : boolean := true;
+
+			point : et_coordinates.type_coordinates;
+
+			procedure search_ports is
+				device : type_ports_device.cursor := segment.ports_devices.first;
+				submodule : type_ports_submodule.cursor := segment.ports_submodules.first;
+				netchanger : type_ports_netchanger.cursor := segment.ports_netchangers.first;
+			begin
+				while device /= type_ports_device.no_element loop
+
+					if position (
+						module_name		=> module_name,
+						device_name		=> element (device).device_name,
+						port_name		=> element (device).port_name,
+						log_threshold	=> log_threshold + 2) 
+						
+						= point then
+
+						result := false; -- not movable
+						exit;
+
+					end if;
+					
+					next (device);
+				end loop;
+
+				-- if no device port found, search in submodule ports
+				if result = true then
+
+					while submodule /= type_ports_submodule.no_element loop
+
+						if position (
+							module_name		=> module_name,
+							submod_name		=> element (submodule).module_name,
+							port_name		=> element (submodule).port_name,
+							log_threshold	=> log_threshold + 2) 
+							
+							= point then
+
+							result := false; -- not movable
+							exit;
+
+						end if;
+						
+						next (submodule);
+					end loop;
+
+				end if;
+
+				-- if no submodule port found, search in netchanger ports
+				if result = true then
+
+					while netchanger /= type_ports_netchanger.no_element loop
+
+						if position (
+							module_name		=> module_name,
+							index			=> element (netchanger).index,
+							port			=> element (netchanger).port,
+							log_threshold	=> log_threshold + 2) 
+							
+							= point then
+
+							result := false; -- not movable
+							exit;
+
+						end if;
+						
+						next (netchanger);
+					end loop;
+
+				end if;
+
+				-- if no port found, result is still true
+				
+			end search_ports;
+			
+		begin
+			-- Set flags devices, submodules or netchangers if segment is connected
+			-- with any of them:
+			if is_empty (segment.ports_devices) then devices := false; end if;
+			if is_empty (segment.ports_submodules) then submodules := false; end if;
+			if is_empty (segment.ports_netchangers) then netchangers := false; end if;
+			
+			-- If the segment it not connected with any devices, submodules or netchangers,
+			-- then it is freely movable. In this case no further checks are required.
+			if not devices and not submodules and not netchangers then
+				result := true;
+			else
+				-- The point of interest is on the sheet specified in argument "place".
+				-- The x/y coordinates are taken from the segment start or end point.
+				
+				case zone is
+					when START_POINT =>
+						point := to_coordinates (
+								point => segment.coordinates_start,
+								sheet => sheet (place));
+
+						search_ports;
+						
+					when END_POINT =>
+						point := to_coordinates (
+								point => segment.coordinates_end,
+								sheet => sheet (place));
+
+						
+					when CENTER =>
+						point := to_coordinates (
+								point => segment.coordinates_start,
+								sheet => sheet (place));
+
+						point := to_coordinates (
+								point => segment.coordinates_end,
+								sheet => sheet (place));
+						
+				end case;
+				
+			end if;
+
+-- 			if not is_empty (segment.ports_devices) then
+
+
+-- 			end if;
+			
+			return result;
+		end movable;
+		
 		procedure query_net (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
@@ -4465,9 +4603,33 @@ package body schematic_ops is
 								segment	=> segment_cursor);
 
 							-- depending on zone, drag start point, end point or both
+							log ("dragging at " & type_zone'image (zone), log_threshold + 2);
 
-							-- if start or end point is fixed by a port, nothing happens
+							-- If start or end point is fixed by the port of a device or
+							-- a submodule, nothing happens.
+
+							-- move 
+							if movable (element (segment_cursor), zone) then
+								null;
+							end if;
 							
+-- 							case zone is
+-- 								when START_POINT =>
+-- 									
+-- 										null; -- CS
+-- 									end if;
+-- 										
+-- 								when END_POINT =>
+-- 									if not fixed (zone, element (segment_cursor)) then
+-- 										null; -- CS
+-- 									end if;
+-- 
+-- 								when CENTER =>
+-- 									if 	not fixed (zone, element (segment_cursor)) then
+-- 										null; -- CS
+-- 									end if;
+-- 							end case;
+									
 							-- signal the calling unit to abort the search
 							segment_found := true;
 
