@@ -466,7 +466,7 @@ package body schematic_ops is
 			move (port.position, offset);
 		end;
 
-		procedure query_port (cursor : in type_ports.cursor) is begin
+		procedure query_port (cursor : in et_libraries.type_ports.cursor) is begin
 			update_element (
 				container	=> ports,
 				position	=> cursor,
@@ -960,8 +960,8 @@ package body schematic_ops is
 					use type_strands;
 					strand_cursor : type_strands.cursor;
 
-					use type_ports;
-					port_cursor : type_ports.cursor := ports.first;
+					use et_libraries.type_ports;
+					port_cursor : et_libraries.type_ports.cursor := ports.first;
 
 					port_processed : boolean;
 					
@@ -1019,7 +1019,7 @@ package body schematic_ops is
 				
 				begin -- query_strands
 					-- loop in portlist
-					while port_cursor /= type_ports.no_element loop
+					while port_cursor /= et_libraries.type_ports.no_element loop
 						log ("probing port " & to_string (key (port_cursor)), log_threshold + 1);
 						log_indentation_up;
 
@@ -1388,7 +1388,7 @@ package body schematic_ops is
 			rotate (port.position, angle);
 		end;
 
-		procedure query_port (cursor : in type_ports.cursor) is begin
+		procedure query_port (cursor : in et_libraries.type_ports.cursor) is begin
 			update_element (
 				container	=> ports,
 				position	=> cursor,
@@ -1873,7 +1873,7 @@ package body schematic_ops is
 		begin
 			-- Loop in ports_old, copy the key to the drag list.
 			-- Take the old position from ports_old and the new position from ports_new:
-			while cursor_old /= type_ports.no_element loop
+			while cursor_old /= et_libraries.type_ports.no_element loop
 				insert (
 					container	=> drag_list,
 					key			=> key (cursor_old), -- the port name
@@ -4415,6 +4415,17 @@ package body schematic_ops is
 		log_indentation_down;		
 	end delete_segment;
 
+	function ports_at_place (
+	-- Returns lists of device, netchanger and submodule ports at the given place.
+		module_name	: in type_module_name.bounded_string;
+		place		: in et_coordinates.type_coordinates
+		) return type_ports is
+		ports : type_ports; -- to be returned
+	begin
+
+		return ports;
+	end ports_at_place;
+	
 	procedure drag_segment (
 	-- Drags a segment of a net.
 	-- Place adresses the segment within the schematic. 
@@ -4681,6 +4692,56 @@ package body schematic_ops is
 								copy_end_point;
 						end case;
 					end move_connected_segment;
+
+					procedure connect_ports (segment : in out type_net_segment) is
+					-- Looks up ports that are to be connected with the segment.
+						ports : schematic_ops.type_ports;
+					begin
+						case zone is
+							when START_POINT =>
+								ports := ports_at_place 
+									(
+									module_name	=> module_name, 
+									place 		=> to_coordinates (
+													point => segment.coordinates_start,
+													sheet => sheet (place))
+									);
+
+								-- CS assign portlists to segment
+								
+							when END_POINT =>
+								ports := ports_at_place 
+									(
+									module_name	=> module_name, 
+									place 		=> to_coordinates (
+													point => segment.coordinates_end,
+													sheet => sheet (place))
+									);
+
+								-- CS assign portlists to segment
+								
+							when CENTER =>
+								ports := ports_at_place 
+									(
+									module_name	=> module_name, 
+									place 		=> to_coordinates (
+													point => segment.coordinates_start,
+													sheet => sheet (place))
+									);
+
+								-- CS assign portlists to segment
+								
+								ports := ports_at_place 
+									(
+									module_name	=> module_name, 
+									place 		=> to_coordinates (
+													point => segment.coordinates_end,
+													sheet => sheet (place))
+									);
+								
+								-- CS assign portlists to segment
+						end case;
+					end connect_ports;						
 					
 				begin -- query_segments
 					-- MOVE TARGETED SEGMENT
@@ -4751,6 +4812,16 @@ package body schematic_ops is
 
 					-- update strand position
 					set_strand_position (strand);
+
+					-- Look for ports at the start or end points of the segment. The segment
+					-- is now at the new position (either start point or end point or both).
+					-- If any port (of a device, netchanger or submodule) sits there, it must be
+					-- connected with the segment. That means adding the port to the segment.
+					update_element (
+						container	=> strand.segments,
+						position	=> segment_cursor_target,
+						process		=> connect_ports'access);
+					
 				end query_segments;
 				
 			begin -- query_strands

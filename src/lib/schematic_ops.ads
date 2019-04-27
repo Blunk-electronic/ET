@@ -268,6 +268,19 @@ package schematic_ops is
 		place			: in et_coordinates.type_coordinates; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+	-- If ports at a certain position in a schematic are inquired this type is required:
+	type type_ports is record
+		devices		: type_ports_device.set;
+		submodules	: type_ports_submodule.set;
+		netchangers	: type_ports_netchanger.set;
+	end record;
+
+	function ports_at_place (
+	-- Returns lists of device, netchanger and submodule ports at the given place.
+		module_name	: in type_module_name.bounded_string;
+		place		: in et_coordinates.type_coordinates)
+		return type_ports;	
+	
 	procedure drag_segment (
 	-- Drags a segment of a net.
 	-- Place adresses the segment within the schematic. 
