@@ -4586,7 +4586,7 @@ package body schematic_ops is
 				procedure query_segments (strand : in out type_strand) is
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 					segment_cursor_target : type_net_segments.cursor;
-					segment_target : type_net_segment;
+					target_segment_before : type_net_segment;
 					zone : type_zone;
 
 					procedure move_targeted_segment (segment : in out type_net_segment) is begin
@@ -4636,87 +4636,46 @@ package body schematic_ops is
 						end case;
 					end move_targeted_segment;
 
-					procedure move_connected_segment (segment : in out type_net_segment) is 
-					-- Compares the segment_target start/end point with the start/end 
-					-- points of other segments in the strand.
-					-- IMPORTANT: segment_target is a copy of the targeted segment BEFORE it
-					-- has been dragged. 
+					procedure move_connected_segment (connected_segment : in out type_net_segment) is 
 					-- This procedure moves the start/end points of segments that are connected
-					-- with the segment_target.
-					begin
+					-- with the target_segment_before.
+
+						procedure copy_start_point is begin
+							if connected_segment.coordinates_start = target_segment_before.coordinates_start then
+								connected_segment.coordinates_start := element (segment_cursor_target).coordinates_start;
+							end if;
+
+							if connected_segment.coordinates_end = target_segment_before.coordinates_start then
+								connected_segment.coordinates_end := element (segment_cursor_target).coordinates_start;
+							end if;
+						end;
+
+						procedure copy_end_point is begin
+							if connected_segment.coordinates_start = target_segment_before.coordinates_end then
+								connected_segment.coordinates_start := element (segment_cursor_target).coordinates_end;
+							end if;
+
+							if connected_segment.coordinates_end = target_segment_before.coordinates_end then
+								connected_segment.coordinates_end := element (segment_cursor_target).coordinates_end;
+							end if;
+						end;
+						
+					begin -- move_connected_segment
 						case zone is
-							when START_POINT =>
-								if segment_target.coordinates_start = segment.coordinates_start then
-									segment.coordinates_start := element (segment_cursor_target).coordinates_start;
-								end if;
-
-								if segment_target.coordinates_start = segment.coordinates_end then								
-									segment.coordinates_end := element (segment_cursor_target).coordinates_start;									
-								end if;
+							when START_POINT => 
+								-- The segment start or end point moves to the targeted segment start point.
+								copy_start_point; 
 								
-							when END_POINT =>
-								if segment_target.coordinates_end = segment.coordinates_end then
-									segment.coordinates_end := element (segment_cursor_target).coordinates_end;
-								end if;
-
-								if segment_target.coordinates_end = segment.coordinates_start then
-									segment.coordinates_start := element (segment_cursor_target).coordinates_end;
-								end if;
+							when END_POINT => 
+								-- The segment start or end point moves to the targeted segment end point.
+								copy_end_point;
 								
-							when CENTER =>
-								-- CS: currently absolute dragging at the center is not possible.
-								if segment_target.coordinates_start = segment.coordinates_start then
-									case coordinates is
-										when ABSOLUTE =>
-											null; 
+							when CENTER => 
+								-- The segment start or end point moves to the targeted segment start point.
+								copy_start_point; 
 
-										when RELATIVE =>
-											move (
-												point	=> segment.coordinates_start,
-												offset	=> point -- the given position is relative
-												);
-									end case;
-								end if;
-
-								if segment_target.coordinates_start = segment.coordinates_end then
-									case coordinates is
-										when ABSOLUTE =>
-											null; 
-
-										when RELATIVE =>
-											move (
-												point	=> segment.coordinates_end,
-												offset	=> point -- the given position is relative
-												);
-									end case;
-								end if;
-
-								if segment_target.coordinates_end = segment.coordinates_start then
-									case coordinates is
-										when ABSOLUTE =>
-											null; 
-
-										when RELATIVE =>
-											move (
-												point	=> segment.coordinates_start,
-												offset	=> point -- the given position is relative
-												);
-									end case;
-								end if;
-
-								if segment_target.coordinates_end = segment.coordinates_end then
-									case coordinates is
-										when ABSOLUTE =>
-											null; 
-
-										when RELATIVE =>
-											move (
-												point	=> segment.coordinates_end,
-												offset	=> point -- the given position is relative
-												);
-									end case;
-								end if;
-								
+								-- The segment start or end point moves to the targeted segment end point.
+								copy_end_point;
 						end case;
 					end move_connected_segment;
 					
@@ -4741,10 +4700,11 @@ package body schematic_ops is
 							-- Test whether the zone is movable. If not movable, nothing happens.
 							if movable (element (segment_cursor), zone) then
 
-								-- Backup the cursor of the targeted segment and the segment itself.
+								-- Backup the cursor of the targeted segment.
+								-- Backup the segment as it was BEFORE the dragging.
 								-- They are required later.
 								segment_cursor_target := segment_cursor;
-								segment_target := element (segment_cursor);
+								target_segment_before := element (segment_cursor);
 
 								-- move the targeted segment
 								et_schematic.type_net_segments.update_element (
@@ -4783,7 +4743,9 @@ package body schematic_ops is
 
 						next (segment_cursor);
 					end loop;
-					
+
+					-- update strand position
+					set_strand_position (strand);
 				end query_segments;
 				
 			begin -- query_strands
