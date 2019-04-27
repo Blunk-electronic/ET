@@ -185,6 +185,7 @@ package body scripting is
 		procedure schematic_cmd (verb : in type_verb_schematic; noun : in type_noun_schematic) is
 			use et_project;
 			use schematic_ops;
+		-- CS: test field count for all commands
 		begin
 			case verb is
 				when ADD =>
@@ -734,6 +735,9 @@ package body scripting is
 		
 	begin -- execute_command
 		log ("cmd --> " & to_string (cmd), log_threshold);
+		log_indentation_up;
+		
+		-- field 1 contains the domain of operation
 		domain := to_domain (f (1));
 
 		case domain is
@@ -746,6 +750,7 @@ package body scripting is
 				verb_schematic := to_verb (f (3));
 				noun_schematic := to_noun (f (4));
 
+				-- execute schematic command
 				schematic_cmd (verb_schematic, noun_schematic);
 				
 			when DOM_BOARD =>
@@ -757,8 +762,11 @@ package body scripting is
 				verb_board := to_verb (f (3));
 				noun_board := to_noun (f (4));
 
+				-- execute board command
 				board_cmd (verb_board, noun_board);
 		end case;
+
+		log_indentation_down;
 		
 		return exit_code;
 
