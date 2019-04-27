@@ -278,6 +278,13 @@ package schematic_ops is
 		point			: in et_coordinates.type_point; -- x/y, the new position 
 		log_threshold	: in type_log_level);
 
+	procedure draw_net (
+	-- Draws a segment of a net.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		start_point		: in et_coordinates.type_coordinates; -- sheet/x/y
+		end_point		: in et_coordinates.type_point; -- x/y
+		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

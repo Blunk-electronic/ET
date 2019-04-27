@@ -4826,6 +4826,41 @@ package body schematic_ops is
 		log_indentation_down;		
 	end drag_segment;
 
+	procedure draw_net (
+	-- Draws a segment of a net.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		start_point		: in et_coordinates.type_coordinates; -- sheet/x/y
+		end_point		: in et_coordinates.type_point; -- x/y
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+	begin
+		log ("module " & to_string (module_name) &
+			" drawing net " & to_string (net_name) &
+			" segment from" & to_string (position => start_point) &
+			" to" & et_coordinates.to_string (end_point), log_threshold);
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+-- 		-- locate the requested nets in the module
+-- 		net_cursor := locate_net (module_cursor, net_name);
+
+-- 		-- issue error if net does not exist:
+-- 		if net_cursor = type_nets.no_element then
+-- 			net_not_found (net_name);
+-- 		end if;
+
+		log_indentation_up;
+
+-- 		update_element (
+-- 			container	=> modules,
+-- 			position	=> module_cursor,
+-- 			process		=> query_net'access);
+		
+		log_indentation_down;		
+	end draw_net;
 
 	
 	procedure check_integrity (
