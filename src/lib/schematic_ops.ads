@@ -277,8 +277,9 @@ package schematic_ops is
 
 	function ports_at_place (
 	-- Returns lists of device, netchanger and submodule ports at the given place.
-		module_name	: in type_module_name.bounded_string;
-		place		: in et_coordinates.type_coordinates)
+		module_name		: in type_module_name.bounded_string;
+		place			: in et_coordinates.type_coordinates;
+		log_threshold	: in type_log_level)		
 		return type_ports;	
 	
 	procedure drag_segment (

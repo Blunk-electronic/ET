@@ -4417,12 +4417,105 @@ package body schematic_ops is
 
 	function ports_at_place (
 	-- Returns lists of device, netchanger and submodule ports at the given place.
-		module_name	: in type_module_name.bounded_string;
-		place		: in et_coordinates.type_coordinates
-		) return type_ports is
+		module_name		: in type_module_name.bounded_string;
+		place			: in et_coordinates.type_coordinates;
+		log_threshold	: in type_log_level)
+		return type_ports is
 		ports : type_ports; -- to be returned
-	begin
 
+		module_cursor : type_modules.cursor; -- points to the module
+
+		procedure query_module (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use et_schematic.type_devices;
+
+			procedure query_devices (device_cursor : in et_schematic.type_devices.cursor) is
+
+				procedure query_units (unit_cursor : in et_schematic.type_units.cursor) is
+					use et_schematic.type_units;
+					use et_libraries.type_unit_name;
+					unit_position : et_coordinates.type_coordinates;
+					ports : et_libraries.type_ports.map;
+
+					procedure query_port (port_cursor : in et_libraries.type_ports.cursor) is
+						use et_libraries.type_ports;
+					begin
+						log ("port " & to_string (key (port_cursor)) &
+							 " at" & et_coordinates.to_string (element (port_cursor).position),
+							 log_threshold + 3);
+
+						-- If the port sits at x/y of place then we have a match:
+						if element (port_cursor).position = type_point (place) then
+
+							-- Insert the port in the portlist to be returned:
+							et_schematic.type_ports_device.insert 
+								(
+								container	=> ports_at_place.ports.devices,
+								new_item	=> 
+									(
+									device_name => key (device_cursor),
+									port_name	=> key (port_cursor)
+									)
+								);
+						end if;
+					end query_port;
+					
+				begin -- query_units
+					log ("unit " & type_unit_name.to_string (key (unit_cursor)), log_threshold + 2);
+					log_indentation_up;
+					
+					unit_position := element (unit_cursor).position;
+
+					-- Look at units on the given sheet of place:
+					if sheet (unit_position) = sheet (place) then
+						ports := ports_of_unit (
+							device_cursor	=> device_cursor,
+							unit_name		=> key (unit_cursor));
+						
+						move_ports (ports, unit_position);
+
+						et_libraries.type_ports.iterate (ports, query_port'access);
+					end if;
+					
+					log_indentation_down;
+				end query_units;
+				
+			begin -- query_devices
+				log ("device " & to_string (key (device_cursor)), log_threshold + 1);
+				log_indentation_up;
+
+				et_schematic.type_units.iterate (
+					container	=> element (device_cursor).units,
+					process		=> query_units'access);
+				
+				log_indentation_down;
+			end query_devices;
+			
+		begin -- query_module
+			iterate (module.devices, query_devices'access);
+		end query_module;
+		
+	begin -- ports_at_place
+		log ("module " & to_string (module_name) &
+			 " locating ports at" & to_string (position => place),
+			 log_threshold);
+
+		log_indentation_up;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		--iterate (element ( 2462
+		-- CS query netchangers
+
+		-- CS query submodules
+
+		log_indentation_down;
 		return ports;
 	end ports_at_place;
 	
@@ -4704,7 +4797,8 @@ package body schematic_ops is
 									module_name	=> module_name, 
 									place 		=> to_coordinates (
 													point => segment.coordinates_start,
-													sheet => sheet (place))
+													sheet => sheet (place)),
+									log_threshold => log_threshold + 1
 									);
 
 								-- CS assign portlists to segment
@@ -4715,7 +4809,8 @@ package body schematic_ops is
 									module_name	=> module_name, 
 									place 		=> to_coordinates (
 													point => segment.coordinates_end,
-													sheet => sheet (place))
+													sheet => sheet (place)),
+									log_threshold => log_threshold + 1
 									);
 
 								-- CS assign portlists to segment
@@ -4726,7 +4821,8 @@ package body schematic_ops is
 									module_name	=> module_name, 
 									place 		=> to_coordinates (
 													point => segment.coordinates_start,
-													sheet => sheet (place))
+													sheet => sheet (place)),
+									log_threshold => log_threshold + 1
 									);
 
 								-- CS assign portlists to segment
@@ -4736,7 +4832,8 @@ package body schematic_ops is
 									module_name	=> module_name, 
 									place 		=> to_coordinates (
 													point => segment.coordinates_end,
-													sheet => sheet (place))
+													sheet => sheet (place)),
+									log_threshold => log_threshold + 1
 									);
 								
 								-- CS assign portlists to segment
