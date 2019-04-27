@@ -107,11 +107,11 @@ package body et_geometry is
 		-- https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
 		if delta_x = zero_distance then
 			--log ("delta_x zero -> vertical line", level => 4);
-			result.distance := distance_x (point) - distance_x (s);
+			result.distance := abs (distance_x (point) - distance_x (s));
 			
 		elsif delta_y = zero_distance then
 			--log ("delta_y zero -> horizontal line", level => 4);
-			result.distance := distance_y (s) - distance_y (point);
+			result.distance := abs (distance_y (s) - distance_y (point));
 			
 		else
 			s1 := type_float ((distance_y (e) - distance_y (s)) * distance_x (point));
@@ -123,7 +123,7 @@ package body et_geometry is
 			s7 := type_float (distance_x (e) - distance_x (s)) ** 2;
 			s8 := functions.sqrt (s6 + s7);
 
-			result.distance := type_distance (s5 / s8);
+			result.distance := type_distance (s5 / s8); -- always positive
 		end if;
 		
 		--log ("distance " & type_distance'image (result.distance), level => 4);
