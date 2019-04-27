@@ -904,11 +904,14 @@ package body schematic_ops is
 	end on_segment;
 
 	function between_start_and_end_point (
-		point 	: in et_coordinates.type_point;
-		segment : in type_net_segments.cursor)
+	-- Returns true if given point sits between start and end point of given segment.
+	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
+	-- the greater can be the distance of point from the segment.
+		point 		: in et_coordinates.type_point;
+		segment 	: in type_net_segments.cursor;
+		catch_zone	: in et_coordinates.type_catch_zone := zero_distance
+		)
 		return boolean is
-	-- Returns true if given point sits between start and end 
-	-- point of given segment.
 		use et_geometry;
 		distance : type_distance_point_from_line;
 		use et_coordinates;
@@ -920,8 +923,8 @@ package body schematic_ops is
 			line_end	=> element (segment).coordinates_end,
 			line_range	=> inside_end_points);
 
-		-- start and end points of the segment are inclued in the test
-		if not distance.out_of_range and distance.distance = zero_distance then
+		--if not distance.out_of_range and distance.distance = zero_distance then
+		if not distance.out_of_range and distance.distance <= catch_zone then
 			return true;
 		else
 			return false;
@@ -4686,8 +4689,10 @@ package body schematic_ops is
 						-- If segment crosses the given x/y position (in place) then
 						-- the segment has been found:
 						if between_start_and_end_point (
-							point	=> type_point (place),
-							segment	=> segment_cursor) then
+							point		=> type_point (place),
+							segment		=> segment_cursor,
+							catch_zone	=> et_coordinates.catch_zone
+							) then
 
 							-- Calculate the zone of attack. This is where place is.
 							zone := which_zone (

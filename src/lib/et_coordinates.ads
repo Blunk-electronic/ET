@@ -73,6 +73,9 @@ package et_coordinates is
 	subtype type_distance_xy is type_distance range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
 	zero_distance : constant type_distance := 0.0;
 
+	subtype type_catch_zone is type_distance range 0.0 .. 10.0;
+	catch_zone : type_catch_zone := 2.0; -- CS: should be a system setting in the future
+	
 	function to_distance (distance : in string) return type_distance_xy;	
 
 	function to_string (distance : in type_distance) return string;
