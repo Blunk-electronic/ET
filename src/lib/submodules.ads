@@ -132,13 +132,11 @@ package submodules is
 	position_slave_port_default  : constant type_point := type_point (set_point (x => -10.0, y => 0.0));	
 	
 	type type_netchanger_symbol is record
-		-- the port on the right
 		master_port	: type_netchanger_port := (
 						position	=> position_master_port_default,
 						length		=> 5.0,
 						rotation	=> 0);
 
-		-- the port on the left
 		slave_port	: type_netchanger_port := (
 						position	=> position_slave_port_default,
 						length		=> 5.0,
@@ -159,12 +157,23 @@ package submodules is
 		--symbol			: type_netchanger_symbol; -- CS for visualisation only
 		
 		position_brd	: et_pcb_coordinates.type_point_2d; -- x,y
+		-- in board there is no rotation because the netchanger is just a point in x/y.
 		layer			: et_pcb.type_signal_layer := et_pcb.type_signal_layer'first;
 	end record;
 
 	package type_netchangers is new ordered_maps (
 		key_type		=> type_netchanger_id,
 		element_type	=> type_netchanger);
+
+	type type_netchanger_ports is record
+		master	: et_coordinates.type_point := position_master_port_default;
+		slave	: et_coordinates.type_point := position_slave_port_default;
+	end record;
+	
+	function netchanger_ports (
+	-- Returns the absolute x/y positions of the given netchanger.
+		netchanger_cursor	: in type_netchangers.cursor)
+		return type_netchanger_ports;
 	
 	-- A module connector connects the parent module with the submodule.
 	-- The connector consists of an external port and and internal port.

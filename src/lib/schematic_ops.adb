@@ -4547,33 +4547,7 @@ package body schematic_ops is
 
 			procedure query_netchangers (netchanger_cursor : in submodules.type_netchangers.cursor) is
 				netchanger_position : et_coordinates.type_coordinates;
-				
--- 				ports : submodules.type_submodule_ports.map;
-
--- 				procedure query_port (port_cursor : in submodules.type_submodule_ports.cursor) is
--- 					use submodules.type_submodule_ports;
--- 					use et_general.type_net_name;
--- 				begin
--- 					log ("port " & type_net_name.to_string (key (port_cursor)) &
--- 							" at" & et_coordinates.to_string (element (port_cursor).position),
--- 							log_threshold + 2);
--- 
--- 					-- If the port sits at x/y of place then we have a match:
--- 					if element (port_cursor).position = type_point (place) then
--- 
--- 						-- Insert the port in the portlist to be returned:
--- 						et_schematic.type_ports_submodule.insert 
--- 							(
--- 							container	=> ports_at_place.ports.submodules,
--- 							new_item	=> 
--- 								(
--- 								module_name => key (submodule_cursor),
--- 								port_name	=> key (port_cursor)
--- 								)
--- 							);
--- 					end if;
--- 				end query_port;
-
+				ports : submodules.type_netchanger_ports;
 			begin -- query_netchangers
 				log ("netchanger " & submodules.to_string (key (netchanger_cursor)), log_threshold + 1);
 				log_indentation_up;
@@ -4582,12 +4556,51 @@ package body schematic_ops is
 
 				-- Look at netchangers on the given sheet of place:
 				if sheet (netchanger_position) = sheet (place) then
-					null;
--- 					ports := element (submodule_cursor).ports;
--- 					
--- 					submodules.move_ports (ports, submodule_position);
--- 
--- 					submodules.type_submodule_ports.iterate (ports, query_port'access);
+
+					-- get the absolute port positions of the netchanger
+					ports := submodules.netchanger_ports (netchanger_cursor);
+
+					-- If the port sits at x/y of place then we have a match.
+					-- The match can either be at the msster or slave port.
+					-- The match can/should NEVER be at both ports simultaneously.
+					
+					-- First test whether the master port sits here:
+					if ports.master = type_point (place) then
+
+						log ("port " & submodules.to_string (submodules.MASTER) &
+							" at" & et_coordinates.to_string (ports.master),
+							log_threshold + 2);
+						
+						-- Insert the port in the portlist to be returned:
+						et_schematic.type_ports_netchanger.insert 
+							(
+							container	=> ports_at_place.ports.netchangers,
+							new_item	=> 
+								(
+								index	=> key (netchanger_cursor),
+								port	=> submodules.MASTER
+								)
+							);
+
+					-- Second, test wheter slave port sits here:
+					elsif ports.slave = type_point (place) then
+
+						log ("port " & submodules.to_string (submodules.SLAVE) &
+							" at" & et_coordinates.to_string (ports.slave),
+							log_threshold + 2);
+						
+						-- Insert the port in the portlist to be returned:
+						et_schematic.type_ports_netchanger.insert 
+							(
+							container	=> ports_at_place.ports.netchangers,
+							new_item	=> 
+								(
+								index	=> key (netchanger_cursor),
+								port	=> submodules.SLAVE
+								)
+							);
+					end if;
+					
 				end if;
 				
 				log_indentation_down;

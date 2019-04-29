@@ -115,6 +115,24 @@ package body submodules is
 		return latin_1.space & to_lower (type_netchanger_port_name'image (name));
 	end;
 
+	function netchanger_ports (
+	-- Returns absolute the x/y positions of the given netchanger.
+		netchanger_cursor	: in type_netchangers.cursor)
+		return type_netchanger_ports is
+		use type_netchangers;
+		use et_coordinates;
+		ports : type_netchanger_ports;
+	begin
+		-- rotate the ports according to rotation in schematic
+		rotate (ports.master, element (netchanger_cursor).rotation);
+		rotate (ports.slave,  element (netchanger_cursor).rotation);
+
+		-- move the ports according to position in schematic
+		move (ports.master, element (netchanger_cursor).position_sch);
+		move (ports.slave,  element (netchanger_cursor).position_sch);
+				
+		return ports;
+	end netchanger_ports;
 	
 end submodules;
 
