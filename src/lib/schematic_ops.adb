@@ -5133,24 +5133,30 @@ package body schematic_ops is
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
-	begin
+
+		use et_schematic.type_nets;
+		net_cursor : type_nets.cursor; -- points to the net
+		
+	begin -- draw_net
 		log ("module " & to_string (module_name) &
 			" drawing net " & to_string (net_name) &
 			" segment from" & to_string (position => start_point) &
 			" to" & et_coordinates.to_string (end_point), log_threshold);
-		
+
 		-- locate module
 		module_cursor := locate_module (module_name);
 
--- 		-- locate the requested nets in the module
--- 		net_cursor := locate_net (module_cursor, net_name);
-
--- 		-- issue error if net does not exist:
--- 		if net_cursor = type_nets.no_element then
--- 			net_not_found (net_name);
--- 		end if;
+		-- The net can be in the module already. Locate the requested nets in the module.
+		-- net_cursor will point to no_element if the net is not already there.
+		net_cursor := locate_net (module_cursor, net_name);
 
 		log_indentation_up;
+		
+		-- Notify operator if a new net is created:
+		if net_cursor = type_nets.no_element then
+			log ("creating new net " & to_string (net_name), log_threshold + 1);
+		end if;
+
 
 -- 		update_element (
 -- 			container	=> modules,
