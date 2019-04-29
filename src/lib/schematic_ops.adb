@@ -452,7 +452,7 @@ package body schematic_ops is
 		
 	end ports_of_unit;
 
-	procedure move_ports (
+	procedure move_ports ( -- CS move to et_libraries
 	-- Moves the given unit ports by given offset.
 		ports	: in out et_libraries.type_ports.map; -- the portlist
 		offset	: in et_coordinates.type_coordinates) -- the offset (only x/y matters)
@@ -1374,7 +1374,7 @@ package body schematic_ops is
 		
 	end move_unit_placeholder;
 
-	procedure rotate_ports (
+	procedure rotate_ports ( -- CS move to et_libraries
 	-- Rotates the given unit ports by given angle around the origin.
 		ports	: in out et_libraries.type_ports.map; -- the portlist
 		angle	: in et_coordinates.type_rotation) -- 90
@@ -4429,13 +4429,16 @@ package body schematic_ops is
 			module_name	: in type_module_name.bounded_string;
 			module		: in type_module) is
 			use et_schematic.type_devices;
-
+			use submodules.type_submodules;
+			use submodules.type_netchangers;			
+			
 			procedure query_devices (device_cursor : in et_schematic.type_devices.cursor) is
 
 				procedure query_units (unit_cursor : in et_schematic.type_units.cursor) is
 					use et_schematic.type_units;
 					use et_libraries.type_unit_name;
 					unit_position : et_coordinates.type_coordinates;
+					unit_rotation : et_coordinates.type_rotation;
 					ports : et_libraries.type_ports.map;
 
 					procedure query_port (port_cursor : in et_libraries.type_ports.cursor) is
@@ -4466,13 +4469,17 @@ package body schematic_ops is
 					log_indentation_up;
 					
 					unit_position := element (unit_cursor).position;
+					unit_rotation := element (unit_cursor).rotation;
 
 					-- Look at units on the given sheet of place:
 					if sheet (unit_position) = sheet (place) then
 						ports := ports_of_unit (
 							device_cursor	=> device_cursor,
 							unit_name		=> key (unit_cursor));
-						
+
+						-- CS mirror before rotate or after rotate ?
+						rotate_ports (ports, unit_rotation);
+
 						move_ports (ports, unit_position);
 
 						et_libraries.type_ports.iterate (ports, query_port'access);
@@ -4491,9 +4498,105 @@ package body schematic_ops is
 				
 				log_indentation_down;
 			end query_devices;
-			
+
+			procedure query_submodules (submodule_cursor : in submodules.type_submodules.cursor) is
+				submodule_position : et_coordinates.type_coordinates;
+				ports : submodules.type_submodule_ports.map;
+
+				procedure query_port (port_cursor : in submodules.type_submodule_ports.cursor) is
+					use submodules.type_submodule_ports;
+					use et_general.type_net_name;
+				begin
+					log ("port " & type_net_name.to_string (key (port_cursor)) &
+							" at" & et_coordinates.to_string (element (port_cursor).position),
+							log_threshold + 2);
+
+					-- If the port sits at x/y of place then we have a match:
+					if element (port_cursor).position = type_point (place) then
+
+						-- Insert the port in the portlist to be returned:
+						et_schematic.type_ports_submodule.insert 
+							(
+							container	=> ports_at_place.ports.submodules,
+							new_item	=> 
+								(
+								module_name => key (submodule_cursor),
+								port_name	=> key (port_cursor)
+								)
+							);
+					end if;
+				end query_port;
+
+			begin -- query_submodules
+				log ("submodule " & to_string (key (submodule_cursor)), log_threshold + 1);
+				log_indentation_up;
+
+				submodule_position := element (submodule_cursor).position;
+
+				-- Look at submodules on the given sheet of place:
+				if sheet (submodule_position) = sheet (place) then
+					ports := element (submodule_cursor).ports;
+					
+					submodules.move_ports (ports, submodule_position);
+
+					submodules.type_submodule_ports.iterate (ports, query_port'access);
+				end if;
+				
+				log_indentation_down;
+			end query_submodules;
+
+			procedure query_netchangers (netchanger_cursor : in submodules.type_netchangers.cursor) is
+				netchanger_position : et_coordinates.type_coordinates;
+				
+-- 				ports : submodules.type_submodule_ports.map;
+
+-- 				procedure query_port (port_cursor : in submodules.type_submodule_ports.cursor) is
+-- 					use submodules.type_submodule_ports;
+-- 					use et_general.type_net_name;
+-- 				begin
+-- 					log ("port " & type_net_name.to_string (key (port_cursor)) &
+-- 							" at" & et_coordinates.to_string (element (port_cursor).position),
+-- 							log_threshold + 2);
+-- 
+-- 					-- If the port sits at x/y of place then we have a match:
+-- 					if element (port_cursor).position = type_point (place) then
+-- 
+-- 						-- Insert the port in the portlist to be returned:
+-- 						et_schematic.type_ports_submodule.insert 
+-- 							(
+-- 							container	=> ports_at_place.ports.submodules,
+-- 							new_item	=> 
+-- 								(
+-- 								module_name => key (submodule_cursor),
+-- 								port_name	=> key (port_cursor)
+-- 								)
+-- 							);
+-- 					end if;
+-- 				end query_port;
+
+			begin -- query_netchangers
+				log ("netchanger " & submodules.to_string (key (netchanger_cursor)), log_threshold + 1);
+				log_indentation_up;
+
+				netchanger_position := element (netchanger_cursor).position_sch;
+
+				-- Look at netchangers on the given sheet of place:
+				if sheet (netchanger_position) = sheet (place) then
+					null;
+-- 					ports := element (submodule_cursor).ports;
+-- 					
+-- 					submodules.move_ports (ports, submodule_position);
+-- 
+-- 					submodules.type_submodule_ports.iterate (ports, query_port'access);
+				end if;
+				
+				log_indentation_down;
+			end query_netchangers;
+						
 		begin -- query_module
 			iterate (module.devices, query_devices'access);
+			iterate (module.submods, query_submodules'access);
+			iterate (module.netchangers, query_netchangers'access);
 		end query_module;
 		
 	begin -- ports_at_place
@@ -4509,11 +4612,6 @@ package body schematic_ops is
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
-
-		--iterate (element ( 2462
-		-- CS query netchangers
-
-		-- CS query submodules
 
 		log_indentation_down;
 		return ports;

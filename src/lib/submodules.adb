@@ -50,6 +50,7 @@ with ada.strings.bounded;       use ada.strings.bounded;
 -- with ada.containers.indefinite_ordered_maps;
 -- with ada.containers.ordered_sets;
 
+with et_general;
 with et_coordinates;
 with et_libraries;
 with et_pcb;
@@ -64,6 +65,31 @@ package body submodules is
 	function to_string (path : in submodules.type_submodule_path.bounded_string) return string is begin
 		return type_submodule_path.to_string (path);
 	end;
+
+	procedure move_ports (
+	-- Moves the given ports by the given offset.
+		ports	: in out type_submodule_ports.map; -- the portlist
+		offset	: in et_coordinates.type_coordinates) -- the offset (only x/y matters)
+		is
+
+		procedure move (
+			name	: in et_general.type_net_name.bounded_string;
+			port	: in out type_submodule_port) is
+		begin
+			move (port.position, offset);
+		end;
+
+		procedure query_port (cursor : in type_submodule_ports.cursor) is begin
+			type_submodule_ports.update_element (
+				container	=> ports,
+				position	=> cursor,
+				process		=> move'access);
+		end;
+			
+	begin -- move_ports
+		type_submodule_ports.iterate (ports, query_port'access);
+	end move_ports;
+
 	
 	function to_string (view : in type_submodule_view_mode) return string is begin
 		return latin_1.space & to_lower (type_submodule_view_mode'image (view));

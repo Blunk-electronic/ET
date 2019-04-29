@@ -87,6 +87,11 @@ package submodules is
 		-- The net inside the submodule is here the port name:
 		"<"				=> et_general.type_net_name."<",
 		key_type		=> et_general.type_net_name.bounded_string); -- CLOCK_GENERATOR_OUT
+
+	procedure move_ports (
+	-- Moves the given ports by the given offset.
+		ports	: in out type_submodule_ports.map; -- the portlist
+		offset	: in et_coordinates.type_coordinates); -- the offset (only x/y matters)
 	
 	type type_submodule is record
 		file				: type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
