@@ -4898,9 +4898,27 @@ package body schematic_ops is
 					end move_connected_segment;
 
 					procedure connect_ports (segment : in out type_net_segment) is
-					-- Looks up ports that are to be connected with the segment.
+					-- Looks up ports of devices, netchangers or submodules that are 
+					-- to be connected with the segment. The place where ports are
+					-- searched depends on the zone that has been moved.
+					-- (The given segment sits already at the new position.)
 						ports : schematic_ops.type_ports;
-					begin
+
+						procedure append_portlists is 
+						-- Append the portlists obtained from function ports_at_place
+						-- to the segment.
+						-- CS: Special threatment required if a port is among the portlists
+						-- that is already somewhere in the strand. 
+						-- This particular port must be exempted from the appending.
+						-- Currently only the integrity check (procedure check_integrity)
+						-- detects this rare case.
+						begin
+							type_ports_device.union (segment.ports_devices, ports.devices);
+							type_ports_submodule.union (segment.ports_submodules, ports.submodules);
+							type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
+						end append_portlists;
+						
+					begin -- connect_ports
 						case zone is
 							when START_POINT =>
 								ports := ports_at_place 
@@ -4912,7 +4930,7 @@ package body schematic_ops is
 									log_threshold => log_threshold + 1
 									);
 
-								-- CS assign portlists to segment
+								append_portlists;
 								
 							when END_POINT =>
 								ports := ports_at_place 
@@ -4924,7 +4942,7 @@ package body schematic_ops is
 									log_threshold => log_threshold + 1
 									);
 
-								-- CS assign portlists to segment
+								append_portlists;
 								
 							when CENTER =>
 								ports := ports_at_place 
@@ -4936,7 +4954,7 @@ package body schematic_ops is
 									log_threshold => log_threshold + 1
 									);
 
-								-- CS assign portlists to segment
+								append_portlists;
 								
 								ports := ports_at_place 
 									(
@@ -4947,7 +4965,7 @@ package body schematic_ops is
 									log_threshold => log_threshold + 1
 									);
 								
-								-- CS assign portlists to segment
+								append_portlists;
 						end case;
 					end connect_ports;						
 					
@@ -5021,10 +5039,10 @@ package body schematic_ops is
 					-- update strand position
 					set_strand_position (strand);
 
-					-- Look for ports at the start or end points of the segment. The segment
+					-- Look for ports at the start/end points of the segment. The segment
 					-- is now at the new position (either start point or end point or both).
 					-- If any port (of a device, netchanger or submodule) sits there, it must be
-					-- connected with the segment. That means adding the port to the segment.
+					-- connected with the segment. That means adding these ports to the segment.
 					update_element (
 						container	=> strand.segments,
 						position	=> segment_cursor_target,
@@ -5145,8 +5163,8 @@ package body schematic_ops is
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
 	-- Tests:
-	-- 1. for device/submodule/netchanger port that do not have a same named device/submodule/netchanger.
-	-- 2. for device/submodule/netchanger port that occur more than once.
+	-- 1. for device/submodule/netchanger ports that do not have a same named device/submodule/netchanger.
+	-- 2. for device/submodule/netchanger ports that occur more than once.
 	-- 3. CS: for net junctions sitting on top of each other
 	-- 4. CS: for device/submodule/netchanger port that do not have a visual connection to the net
 	-- 5. CS: for overlapping net segments

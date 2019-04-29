@@ -303,8 +303,8 @@ package schematic_ops is
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
 	-- Tests:
-	-- 1. for device/submodule/netchanger port that do not have a same named device/submodule/netchanger.
-	-- 2. for device/submodule/netchanger port that occur more than once.
+	-- 1. for device/submodule/netchanger ports that do not have a same named device/submodule/netchanger.
+	-- 2. for device/submodule/netchanger ports that occur more than once.
 	-- 3. CS: for net junctions sitting on top of each other
 	-- 4. CS: for device/submodule/netchanger port that do not have a visual connection to the net
 	-- 5. CS: for overlapping net segments
