@@ -4450,7 +4450,8 @@ package body schematic_ops is
 
 						-- If the port sits at x/y of place then we have a match:
 						if element (port_cursor).position = type_point (place) then
-
+							log (" match", log_threshold + 2);
+							
 							-- Insert the port in the portlist to be returned:
 							et_schematic.type_ports_device.insert 
 								(
@@ -4461,6 +4462,7 @@ package body schematic_ops is
 									port_name	=> key (port_cursor)
 									)
 								);
+
 						end if;
 					end query_port;
 					
@@ -4515,7 +4517,8 @@ package body schematic_ops is
 
 					-- If the port sits at x/y of place then we have a match:
 					if element (port_cursor).position = type_point (place) then
-
+						log (" match", log_threshold + 2);
+						
 						-- Insert the port in the portlist to be returned:
 						et_schematic.type_ports_submodule.insert 
 							(
@@ -5136,6 +5139,79 @@ package body schematic_ops is
 
 		use et_schematic.type_nets;
 		net_cursor : type_nets.cursor; -- points to the net
+
+		procedure create_net (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			inserted : boolean;
+			segment : type_net_segment;
+			ports : type_ports;
+			strand : type_strand;
+			net : type_net;
+
+			procedure assign_ports_to_segment is begin
+				type_ports_device.union (segment.ports_devices, ports.devices);
+				type_ports_submodule.union (segment.ports_submodules, ports.submodules);
+				type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
+			end;
+
+		begin -- create_net
+			-- Test whether another net crosses the start or end point
+			-- CS place in net_cursor out
+			
+			-- build the segment from given start and end point
+			segment.coordinates_start := type_point (start_point);
+			segment.coordinates_end := end_point;
+
+			-----------
+			-- look for any ports at start point of the new net segment
+			ports := ports_at_place (
+					module_name		=> module_name,
+					place			=> start_point,
+					log_threshold	=> log_threshold + 1);
+
+			assign_ports_to_segment;
+
+			-- look for any ports at end point of the new net segment
+			-- The end point is just x/y. The sheet must be derived from the start point.
+			ports := ports_at_place (
+					module_name		=> module_name,
+					place			=> to_coordinates (
+										sheet => sheet (start_point),
+										point => end_point),
+					log_threshold	=> log_threshold + 1);
+
+			assign_ports_to_segment;
+			------------
+			
+			-- insert segment in strand
+			type_net_segments.append (
+				container	=> strand.segments,
+				new_item	=> segment);
+
+			-- set the sheet number of the strand by deriving it from the segement start point
+			set_sheet (strand.position, sheet (start_point));
+			
+			-- set lowest x/y position of strand
+			set_strand_position (strand);
+
+			-- insert the strand in the net
+			type_strands.append (
+				container	=> net.strands,
+				new_item	=> strand);
+			
+			-- insert the net in the module
+			insert (
+				container	=> module.nets,
+				key			=> net_name,
+				inserted	=> inserted,
+				new_item	=> net,
+				position	=> net_cursor);
+				   
+			
+		end create_net;
+
+
 		
 	begin -- draw_net
 		log ("module " & to_string (module_name) &
@@ -5152,11 +5228,24 @@ package body schematic_ops is
 
 		log_indentation_up;
 		
-		-- Notify operator if a new net is created:
+		-- If no net named net_name exists yet, notify operator if a new net is created
+		-- and create a new net.
+		-- If the net already exists, extend it by a net segment.
 		if net_cursor = type_nets.no_element then
 			log ("creating new net " & to_string (net_name), log_threshold + 1);
+
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> create_net'access);
+		else
+			-- extend the net
+
+			-- CS
+			null;
 		end if;
 
+		
 
 -- 		update_element (
 -- 			container	=> modules,

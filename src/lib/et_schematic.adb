@@ -285,7 +285,7 @@ package body et_schematic is
 	
 	procedure set_strand_position (strand : in out type_strand) is
 	-- Calculates and sets the lowest x/y position of the given strand.
-	-- Leaves the sheet of the strand untouched.
+	-- Leaves the sheet number of the strand as it is.
 		point_1, point_2 : et_coordinates.type_point;
 	
 		use type_net_segments;
