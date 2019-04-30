@@ -40,6 +40,7 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings.unbounded;
 with ada.text_io;				use ada.text_io;
 
 with ada.exceptions;
@@ -5127,8 +5128,107 @@ package body schematic_ops is
 		log_indentation_down;		
 	end drag_segment;
 
+	function nets_at_place (
+	-- Returns lists of nets that cross the given place.
+		module_name		: in type_module_name.bounded_string;
+		place			: in et_coordinates.type_coordinates;
+		log_threshold	: in type_log_level)
+		return type_net_names.list is
+		nets : type_net_names.list; -- to be returned
+
+		module_cursor : type_modules.cursor; -- points to the module
+		use et_schematic.type_nets;
+		net_cursor : type_nets.cursor; -- points to the net
+
+		procedure query_module (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+
+			procedure query_nets (net_cursor : in type_nets.cursor) is
+				use type_strands;
+				net : type_net := element (net_cursor);
+
+				-- once a segment has been found at place, this flag goes true:
+				match : boolean := false;
+				
+				strand_cursor : type_strands.cursor := net.strands.first;
+
+				procedure query_segments (strand : in type_strand) is
+					use type_net_segments;
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+				begin -- query_segments
+					while segment_cursor /= type_net_segments.no_element loop
+						log ("segment " & to_string (segment_cursor), log_threshold + 2);
+						
+						if on_segment (
+							point 	=> type_point (place),
+							segment	=> segment_cursor) then
+
+							log (" match", log_threshold + 2);
+
+							match := true; -- signals the calling unit to cancel the search
+
+							-- store net name in return value
+							type_net_names.append (nets, key (net_cursor));
+
+							exit; -- no need to search for more segments in this strand
+						end if;
+						
+						next (segment_cursor);
+					end loop;
+				end query_segments;
+				
+			begin -- query_nets
+				-- Search in strands of net. Cancel search after the first matching segment.
+				while not match and strand_cursor /= type_strands.no_element loop
+
+					-- Look at strands on the given sheet only:
+					if sheet (element (strand_cursor).position) = sheet (place) then
+
+						log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+						log_indentation_up;
+						
+						type_strands.query_element (
+							position	=> strand_cursor,
+							process 	=> query_segments'access);
+
+						log_indentation_down;
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+			end query_nets;				
+			
+		begin -- query_module
+			iterate (module.nets, query_nets'access);
+		end query_module;
+		
+	begin -- nets_at_place
+		log ("module " & to_string (module_name) &
+			 " locating nets at" & to_string (position => place),
+			 log_threshold);
+
+		log_indentation_up;
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+		return nets;
+	end nets_at_place;
+	
 	procedure draw_net (
-	-- Draws a segment of a net.
+	-- Draws a segment of a net. If the start or end point of the new segment
+	-- meets a port then the port will be connected with the segment.
+	-- 1. If the segment is part of a new net, the net is created with a single segment
+	--  specified by start_point and end_point. If the new segment collides with a foreign
+	--  net, an error is raised.
+	-- 2. If the net_name is a name of an already existing net, the given net segment (specified
+	--  by start_point and end_point) will be added to the existing net.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		start_point		: in et_coordinates.type_coordinates; -- sheet/x/y
@@ -5155,14 +5255,68 @@ package body schematic_ops is
 				type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
 			end;
 
+			net_names : type_net_names.list;
+
+			procedure evaluate_net_names (point : in et_coordinates.type_coordinates) is 
+			-- Issues error message and raises constraint_error if net_names contains
+			-- any foreign net names.
+				use type_net_names;
+
+				function list_nets return string is 
+					net_cursor : type_net_names.cursor := net_names.first;
+					use ada.strings.unbounded;
+					names : ada.strings.unbounded.unbounded_string;
+				begin
+					while net_cursor /= type_net_names.no_element loop
+						names := names & to_string (element (net_cursor)) & latin_1.space;
+						next (net_cursor);
+					end loop;
+					return to_string (names);
+				end;
+
+			begin -- evaluate_net_names
+				if not is_empty (net_names) then
+					log (message_error & "net segment collides at" & to_string (position => point) &
+						 " with net(s): " & list_nets & " !", console => true);
+					raise constraint_error;
+				end if;
+			end;
+
+			point : et_coordinates.type_coordinates;
+			
 		begin -- create_net
-			-- Test whether another net crosses the start or end point
-			-- CS place in net_cursor out
+		
+			------------
+			-- Test whether any foreign nets cross the start point of the segment:
+			point := start_point;
+			
+			net_names := nets_at_place (
+					module_name		=> module_name,
+					place			=> point,
+					log_threshold	=> log_threshold + 1);
+
+			evaluate_net_names (point);
+			
+			-- Test whether any foreign nets cross the end point of the segment:
+			point := to_coordinates (
+					sheet => sheet (start_point),
+					point => end_point);
+			
+			net_names := nets_at_place (
+					module_name		=> module_name,
+					place			=> point,
+					log_threshold	=> log_threshold + 1);
+
+			evaluate_net_names (point);
+			-------------
+			
 			
 			-- build the segment from given start and end point
 			segment.coordinates_start := type_point (start_point);
 			segment.coordinates_end := end_point;
 
+
+			
 			-----------
 			-- look for any ports at start point of the new net segment
 			ports := ports_at_place (
@@ -5183,6 +5337,8 @@ package body schematic_ops is
 
 			assign_ports_to_segment;
 			------------
+
+
 			
 			-- insert segment in strand
 			type_net_segments.append (
@@ -5207,10 +5363,8 @@ package body schematic_ops is
 				inserted	=> inserted,
 				new_item	=> net,
 				position	=> net_cursor);
-				   
-			
+						
 		end create_net;
-
 
 		
 	begin -- draw_net

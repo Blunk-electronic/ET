@@ -292,8 +292,19 @@ package schematic_ops is
 		point			: in et_coordinates.type_point; -- x/y, the new position 
 		log_threshold	: in type_log_level);
 
+	package type_net_names is new doubly_linked_lists (
+		element_type	=> et_general.type_net_name.bounded_string,
+		"="				=> et_general.type_net_name."="
+		);
+	
 	procedure draw_net (
-	-- Draws a segment of a net.
+	-- Draws a segment of a net. If the start or end point of the new segment
+	-- meets a port then the port will be connected with the segment.
+	-- 1. If the segment is part of a new net, the net is created with a single segment
+	--  specified by start_point and end_point. If the new segment collides with a foreign
+	--  net, an error is raised.
+	-- 2. If the net_name is a name of an already existing net, the given net segment (specified
+	--  by start_point and end_point) will be added to the existing net.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		start_point		: in et_coordinates.type_coordinates; -- sheet/x/y
