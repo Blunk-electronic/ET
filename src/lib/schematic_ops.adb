@@ -5257,20 +5257,21 @@ package body schematic_ops is
 			end loop;
 			return to_string (names);
 		end;
+
+		ports : type_ports;
+		
+		procedure assign_ports_to_segment is begin
+			type_ports_device.union (segment.ports_devices, ports.devices);
+			type_ports_submodule.union (segment.ports_submodules, ports.submodules);
+			type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
+		end;
 		
 		procedure create_net (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
 			inserted : boolean;
-			ports : type_ports;
 			strand : type_strand;
 			net : type_net;
-
-			procedure assign_ports_to_segment is begin
-				type_ports_device.union (segment.ports_devices, ports.devices);
-				type_ports_submodule.union (segment.ports_submodules, ports.submodules);
-				type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
-			end;
 
 			procedure evaluate_net_names (point : in et_coordinates.type_coordinates) is 
 			-- Issues error message and raises constraint_error if net_names contains
@@ -5282,7 +5283,6 @@ package body schematic_ops is
 					raise constraint_error;
 				end if;
 			end;
-
 			
 		begin -- create_net
 		
@@ -5310,10 +5310,6 @@ package body schematic_ops is
 			evaluate_net_names (point);
 			-------------
 			
-			
-			-- build the segment from given start and end point
-			segment.coordinates_start := type_point (start_point);
-			segment.coordinates_end := end_point;
 
 
 			
@@ -5369,8 +5365,92 @@ package body schematic_ops is
 		procedure extend_net (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-		begin
-			null;
+
+			attach_to_strand : boolean := false;
+
+			procedure evaluate_net_names (point : in et_coordinates.type_coordinates) is 
+			-- Issues error message and raises constraint_error if net_names contains
+			-- any net names but the give net_name.
+			-- If net_names contains the given net_name, then the flag attach_to_strand
+			-- is set. The strand will be extended later by the segment specified by 
+			-- start_point and end_point.
+			begin -- evaluate_net_names
+				if is_empty (net_names) then -- no nets here
+					null;
+					
+				else -- there are nets
+
+					if contains (net_names, net_name) then
+						-- segment will be attached to an already existing strand
+						attach_to_strand := true; 
+						
+					else
+						-- Segment collides with foreign nets.
+						log (message_error & "net segment collides at" & to_string (position => point) &
+						 " with net(s): " & list_nets & " !", console => true);
+						raise constraint_error;
+					end if;
+						
+				end if;
+			end;
+			
+		begin -- extend_net
+			------------
+			-- Obtain the names of nets that cross the start point of the segment:
+			point := start_point;
+			
+			net_names := nets_at_place (
+					module_name		=> module_name,
+					place			=> point,
+					log_threshold	=> log_threshold + 1);
+
+			evaluate_net_names (point);
+			
+			-- Obtain the names of nets that cross the end point of the segment:
+			point := to_coordinates (
+					sheet => sheet (start_point),
+					point => end_point);
+			
+			net_names := nets_at_place (
+					module_name		=> module_name,
+					place			=> point,
+					log_threshold	=> log_threshold + 1);
+
+			evaluate_net_names (point);
+			-------------
+
+
+			
+			-----------
+			-- look for any ports at start point of the new net segment
+			ports := ports_at_place (
+					module_name		=> module_name,
+					place			=> start_point,
+					log_threshold	=> log_threshold + 1);
+
+			assign_ports_to_segment;
+
+			-- look for any ports at end point of the new net segment
+			-- The end point is just x/y. The sheet must be derived from the start point.
+			ports := ports_at_place (
+					module_name		=> module_name,
+					place			=> to_coordinates (
+										sheet => sheet (start_point),
+										point => end_point),
+					log_threshold	=> log_threshold + 1);
+
+			assign_ports_to_segment;
+			------------
+			
+			if attach_to_strand then
+
+				-- strand_cursor (segment, start_point)
+
+				-- CS clean up strand from multiple used ports
+				null;
+
+			end if;
+
 		end extend_net;
 		
 	begin -- draw_net
@@ -5386,6 +5466,10 @@ package body schematic_ops is
 		-- net_cursor will point to no_element if the net is not already there.
 		net_cursor := locate_net (module_cursor, net_name);
 
+		-- build the segment from given start and end point
+		segment.coordinates_start := type_point (start_point);
+		segment.coordinates_end := end_point;
+		
 		log_indentation_up;
 		
 		-- If no net named net_name exists yet, notify operator that a 
