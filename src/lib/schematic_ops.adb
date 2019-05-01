@@ -5366,6 +5366,8 @@ package body schematic_ops is
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
 
+			use type_strands;
+			strand_cursor : type_strands.cursor;
 			attach_to_strand : boolean := false;
 
 			procedure evaluate_net_names (point : in et_coordinates.type_coordinates) is 
@@ -5393,6 +5395,27 @@ package body schematic_ops is
 						
 				end if;
 			end;
+
+			function which_strand (place : in et_coordinates.type_coordinates) 
+			-- Returns a cursor to the strand at place.
+				return type_strands.cursor is
+				
+				strand_cursor : type_strands.cursor; -- to be returned
+
+				procedure query_strands (
+					net_name	: in type_net_name.bounded_string;
+					net			: in type_net) is
+				begin
+					null;
+				end query_strands;
+				
+			begin -- which_strand
+				query_element (
+					position	=> net_cursor,
+					process		=> query_strands'access);
+				return strand_cursor;
+			end which_strand;
+
 			
 		begin -- extend_net
 			------------
@@ -5441,14 +5464,34 @@ package body schematic_ops is
 
 			assign_ports_to_segment;
 			------------
+
+			-- 1. Now we know the new segment position is acceptable and valid. Means the start
+			--    and end point does not collide with a foreign net.
+			-- 2. The net segment is now also connected with ports (if start or end point meets any).
+			-- 3. We also know whether to attach the segment to an existing strand
+			--    or whether the segment is going to start a new strand.
 			
 			if attach_to_strand then
 
-				-- strand_cursor (segment, start_point)
+				-- Obtain the cursor to the strand that crosses the start point:
+				strand_cursor := which_strand (start_point);
 
+				-- Alternatively the strand could be crossing the end point:
+				if strand_cursor /= type_strands.no_element then
+					strand_cursor := which_strand (to_coordinates (
+										sheet => sheet (start_point),
+										point => end_point));
+
+				else
+					raise constraint_error; -- CS: this should never happen
+				end if;
+				
 				-- CS clean up strand from multiple used ports
-				null;
 
+				-- CS set_strand_position
+			else
+				-- A new strand must be created:
+				null;
 			end if;
 
 		end extend_net;
