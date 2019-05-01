@@ -5239,12 +5239,29 @@ package body schematic_ops is
 
 		use et_schematic.type_nets;
 		net_cursor : type_nets.cursor; -- points to the net
+		segment : type_net_segment;
+		point : et_coordinates.type_coordinates;		
 
+		use type_net_names;
+		net_names : type_net_names.list;
+		
+		function list_nets return string is 
+		-- Returns the content of net_names in a single string.
+			net_cursor : type_net_names.cursor := net_names.first;
+			use ada.strings.unbounded;
+			names : ada.strings.unbounded.unbounded_string;
+		begin
+			while net_cursor /= type_net_names.no_element loop
+				names := names & to_string (element (net_cursor)) & latin_1.space;
+				next (net_cursor);
+			end loop;
+			return to_string (names);
+		end;
+		
 		procedure create_net (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
 			inserted : boolean;
-			segment : type_net_segment;
 			ports : type_ports;
 			strand : type_strand;
 			net : type_net;
@@ -5255,25 +5272,9 @@ package body schematic_ops is
 				type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
 			end;
 
-			net_names : type_net_names.list;
-
 			procedure evaluate_net_names (point : in et_coordinates.type_coordinates) is 
 			-- Issues error message and raises constraint_error if net_names contains
 			-- any foreign net names.
-				use type_net_names;
-
-				function list_nets return string is 
-					net_cursor : type_net_names.cursor := net_names.first;
-					use ada.strings.unbounded;
-					names : ada.strings.unbounded.unbounded_string;
-				begin
-					while net_cursor /= type_net_names.no_element loop
-						names := names & to_string (element (net_cursor)) & latin_1.space;
-						next (net_cursor);
-					end loop;
-					return to_string (names);
-				end;
-
 			begin -- evaluate_net_names
 				if not is_empty (net_names) then
 					log (message_error & "net segment collides at" & to_string (position => point) &
@@ -5282,7 +5283,6 @@ package body schematic_ops is
 				end if;
 			end;
 
-			point : et_coordinates.type_coordinates;
 			
 		begin -- create_net
 		
@@ -5366,6 +5366,12 @@ package body schematic_ops is
 						
 		end create_net;
 
+		procedure extend_net (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+		begin
+			null;
+		end extend_net;
 		
 	begin -- draw_net
 		log ("module " & to_string (module_name) &
@@ -5382,10 +5388,12 @@ package body schematic_ops is
 
 		log_indentation_up;
 		
-		-- If no net named net_name exists yet, notify operator if a new net is created
-		-- and create a new net.
+		-- If no net named net_name exists yet, notify operator that a 
+		-- new net will be created.
 		-- If the net already exists, extend it by a net segment.
 		if net_cursor = type_nets.no_element then
+
+			-- net does not exists yet
 			log ("creating new net " & to_string (net_name), log_threshold + 1);
 
 			update_element (
@@ -5393,19 +5401,16 @@ package body schematic_ops is
 				position	=> module_cursor,
 				process		=> create_net'access);
 		else
-			-- extend the net
+			-- net exists. extend the net by the given net segment
+			log ("extending net " & to_string (net_name), log_threshold + 1);
+			
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> extend_net'access);
 
-			-- CS
-			null;
 		end if;
 
-		
-
--- 		update_element (
--- 			container	=> modules,
--- 			position	=> module_cursor,
--- 			process		=> query_net'access);
-		
 		log_indentation_down;		
 	end draw_net;
 
