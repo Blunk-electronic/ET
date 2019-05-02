@@ -5396,6 +5396,11 @@ package body schematic_ops is
 				end if;
 			end;
 
+			type type_which_strand_result is record
+				strand_cursor		:	type_strands.cursor;
+				junction_required	: boolean;
+			end record;
+			
 			function which_strand (place : in et_coordinates.type_coordinates) 
 			-- Returns a cursor to the strand at place.
 				return type_strands.cursor is
@@ -5403,19 +5408,111 @@ package body schematic_ops is
 				strand_cursor : type_strands.cursor; -- to be returned
 
 				procedure query_strands (
+				-- Searches strands of given net for a segment that crosses place.
+				-- Cancels search on first match.
 					net_name	: in type_net_name.bounded_string;
 					net			: in type_net) is
-				begin
-					null;
+					segment_found : boolean := false;
+					junction_required : boolean := false;
+					
+					procedure query_segments (strand : in type_strand) is
+					-- Iterate segments until first match.
+						use type_net_segments;
+						segment_cursor : type_net_segments.cursor := strand.segments.first;
+					begin
+						while segment_cursor /= type_net_segments.no_element loop
+
+							-- Test if place sits on segment.
+							if on_segment (type_point (place), segment_cursor) then
+
+								-- signal "strand iterator" to abort search prematurely
+								segment_found := true;
+
+								-- test whether a junction is required at place
+								if between_start_and_end_point (type_point (place), segment_cursor) then
+									junction_required := true;
+								end if;
+								
+								exit; -- no further search required. 
+								
+								-- segment_cursor points to the segment just found
+							end if;
+							
+							next (segment_cursor);
+						end loop;
+					end query_segments;
+					
+				begin -- query_strands
+					strand_cursor := net.strands.first;
+
+					-- Iterate strands. Cancel prematurely once a segment has been found.
+					-- Look at strands on the relevant sheet only.
+					while strand_cursor /= type_strands.no_element loop
+						if sheet (element (strand_cursor).position) = sheet (place) then
+
+							type_strands.query_element (
+								position	=> strand_cursor,
+								process		=> query_segments'access);
+
+							if segment_found then exit; end if;
+							
+						end if;
+						next (strand_cursor);
+					end loop;
 				end query_strands;
 				
 			begin -- which_strand
 				query_element (
 					position	=> net_cursor,
 					process		=> query_strands'access);
+				
 				return strand_cursor;
 			end which_strand;
 
+			procedure locate_strand (
+			-- Locates the strand (indicated by strand_cursor) and appends
+			-- the new segment to it.
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+
+				procedure append_segment (strand : in out type_strand) is
+				begin
+					type_net_segments.append (strand.segments, segment);
+					set_strand_position (strand);
+				end append_segment;
+				
+			begin -- locate_strand
+				type_strands.update_element (
+					container	=> net.strands,
+					position	=> strand_cursor,
+					process		=> append_segment'access);
+
+			end locate_strand;
+			
+			procedure create_strand (
+			-- Creates a new strand that contains the segment.
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+				strand : type_strand;
+			begin -- create_strand
+				
+				-- insert segment in strand
+				type_net_segments.append (
+					container	=> strand.segments,
+					new_item	=> segment);
+
+				-- set the sheet number of the strand by deriving it from the segement start point
+				set_sheet (strand.position, sheet (start_point));
+				
+				-- set lowest x/y position of strand
+				set_strand_position (strand);
+
+				-- insert the strand in the net
+				type_strands.append (
+					container	=> net.strands,
+					new_item	=> strand);
+				
+			end create_strand;
 			
 		begin -- extend_net
 			------------
@@ -5472,28 +5569,64 @@ package body schematic_ops is
 			--    or whether the segment is going to start a new strand.
 			
 			if attach_to_strand then
-
+				log ("attaching segment to strand ...", log_threshold + 2);
+				log_indentation_up;
+				
 				-- Obtain the cursor to the strand that crosses the start point:
 				strand_cursor := which_strand (start_point);
-
-				-- Alternatively the strand could be crossing the end point:
+				
 				if strand_cursor /= type_strands.no_element then
+					log ("with its start point at " & 
+						 to_string (position => start_point), log_threshold + 3);
+				end if;
+				
+				-- Alternatively the strand could be crossing the end point:
+				if strand_cursor = type_strands.no_element then
 					strand_cursor := which_strand (to_coordinates (
 										sheet => sheet (start_point),
 										point => end_point));
 
-				else
+					log ("with its end point at " & to_string (
+								position => to_coordinates (
+									sheet => sheet (start_point),
+									point => end_point)
+									),
+						 log_threshold + 3);
+				end if;
+
+				-- Safety measure:
+				-- Since we know there is a strand at either start_point or end_point
+				-- strand_cursor must not point to no_element.
+				if strand_cursor = type_strands.no_element then
 					raise constraint_error; -- CS: this should never happen
 				end if;
+
+				-- Append the segment to the strand (indicated by strand_cursor):
+				type_nets.update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> locate_strand'access);
 				
 				-- CS clean up strand from multiple used ports
 
-				-- CS set_strand_position
+				log_indentation_down;
+				
 			else
-				-- A new strand must be created:
-				null;
+				-- A new strand must be created in the net.
+				-- The strand will contain the new segment:
+				type_nets.update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> create_strand'access);
+				
 			end if;
 
+			exception
+				when event: others =>
+					log_indentation_reset;
+					log (ada.exceptions.exception_information (event), console => true);
+					raise;
+			
 		end extend_net;
 		
 	begin -- draw_net
@@ -5530,12 +5663,14 @@ package body schematic_ops is
 		else
 			-- net exists. extend the net by the given net segment
 			log ("extending net " & to_string (net_name), log_threshold + 1);
+			log_indentation_up;
 			
 			update_element (
 				container	=> modules,
 				position	=> module_cursor,
 				process		=> extend_net'access);
 
+			log_indentation_down;
 		end if;
 
 		log_indentation_down;		
