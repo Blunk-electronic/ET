@@ -3801,6 +3801,104 @@ package body schematic_ops is
 		log_indentation_down;		
 	end invoke_unit;
 
+	function next_netchanger_index (
+	-- Returns the next available netchanger index in the module.
+		module_cursor	: in type_modules.cursor)
+		return submodules.type_netchanger_id is
+
+		use submodules;
+		next_idx : type_netchanger_id; -- to be returned
+
+		procedure search_gap (
+		-- Searches for the lowest available index.
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use type_netchangers;
+			cursor : type_netchangers.cursor := module.netchangers.first;
+
+			-- We start the search with index 1.
+			index_expected : type_netchanger_id := type_netchanger_id'first;
+
+			gap_found : boolean := false; -- goes true once a gap has been found
+			
+		begin -- search_gap
+			while cursor /= type_netchangers.no_element loop
+					
+				if key (cursor) /= index_expected then -- we have a gap
+					next_idx := index_expected;
+					gap_found := true;
+					exit;
+				end if;
+
+				index_expected := index_expected + 1;
+				next (cursor);
+			end loop;
+
+			-- If no gap has been found, then the index is the latest expected index.
+			if not gap_found then
+				next_idx := index_expected;
+			end if;
+			
+		end search_gap;
+		
+	begin -- next_netchanger_index
+		query_element (
+			position	=> module_cursor,
+			process		=> search_gap'access);
+		
+		return next_idx;
+	end next_netchanger_index;
+	
+	procedure add_netchanger (
+	-- Adds a netchanger to the schematic.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		rotation		: in et_coordinates.type_rotation; -- 90				
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		procedure query_netchangers (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use submodules;
+			use type_netchangers;
+			cursor : type_netchangers.cursor;
+			index : type_netchanger_id;
+			netchanger : type_netchanger;
+		begin -- query_netchangers
+			cursor := last (module.netchangers);
+			index := key (cursor);
+
+			netchanger.position_sch := place;
+			netchanger.rotation := rotation;
+			
+			insert (
+				container 	=> module.netchangers,
+				key			=> next_netchanger_index (module_cursor),
+				new_item	=> netchanger);
+			
+		end query_netchangers;
+		
+	begin -- add_netchanger
+		log ("module " & to_string (module_name) &
+			" adding netchanger at" & to_string (position => place) &
+			" rotation" & et_coordinates.to_string (rotation),
+			log_threshold);
+
+		log_indentation_up;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_netchangers'access);
+		
+		log_indentation_down;		
+	end add_netchanger;
+		
 	function locate_net (
 	-- Yields a cursor to the requested net in the given module. If the net could
 	-- not be found, returns no_element.

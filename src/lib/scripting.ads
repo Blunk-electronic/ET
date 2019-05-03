@@ -99,14 +99,15 @@ package scripting is
 
 	type type_noun_schematic is (
 		DEVICE,
-		NAME,
 		--DEVICE_NAME,
 		--DEVICE_PARTCODE,
 		--DEVICE_PURPOSE,
 		--DEVICE_VALUE,
 		INTEGRITY,
 		JUNCTION,
+		NAME,
 		NET,
+		NETCHANGER,
 		PARTCODE,
 		PURPOSE,
 		SEGMENT, -- net segment

@@ -236,6 +236,31 @@ package body scripting is
 								when others =>
 									command_incomplete;
 							end case;
+
+						when NETCHANGER =>
+							case fields is
+								when 8 =>
+									schematic_ops.add_netchanger (
+										module_name 	=> module,
+										place			=> to_coordinates 
+											(
+											sheet => to_sheet (f (5)),
+											point => set_point 
+														(
+														x => to_distance (f (6)),
+														y => to_distance (f (7))
+														)
+											),
+										rotation		=> to_angle (f (8)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last =>
+									command_too_long (8);
+									
+								when others =>
+									command_incomplete;
+							end case;
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
