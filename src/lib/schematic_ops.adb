@@ -5243,11 +5243,13 @@ package body schematic_ops is
 		segment : type_net_segment;
 		point : et_coordinates.type_coordinates;
 
-		junction_required_at_start_point : boolean := false;
-		junction_place_at_start_point : et_coordinates.type_coordinates;
+		type type_junction is record
+			required	: boolean := false;
+			place		: et_coordinates.type_coordinates;
+		end record;
 
-		junction_required_at_end_point : boolean := false;
-		junction_place_at_end_point : et_coordinates.type_coordinates;
+		junction_at_start_point : type_junction;
+		junction_at_end_point	: type_junction;
 		
 		use type_net_names;
 		net_names : type_net_names.list;
@@ -5403,21 +5405,28 @@ package body schematic_ops is
 
 			use type_strands;
 			
-			type type_which_strand_result is record
-				strand_cursor		: type_strands.cursor;
+			type type_which_strand is record
+				cursor				: type_strands.cursor;
 				junction_required	: boolean := false;
 			end record;
 
-			which_strand_query : type_which_strand_result;
-			which_strand_query_start : type_which_strand_result;
-			which_strand_query_end : type_which_strand_result;
+			strand_at_start : type_which_strand;
+			strand_at_end   : type_which_strand;
+
+			function dead_end (strand : in type_which_strand) return boolean is begin
+				if strand.cursor = type_strands.no_element then
+					return true;
+				else 
+					return false;
+				end if;
+			end dead_end;
 			
 			function which_strand (place : in et_coordinates.type_coordinates) 
 			-- Returns a cursor to the strand at place and a flag whether to place
 			-- a junction at the given place.
-				return type_which_strand_result is
+				return type_which_strand is
 
-				result : type_which_strand_result; -- to be returned
+				result : type_which_strand; -- to be returned
 
 				procedure query_strands (
 				-- Searches strands of given net for a segment that crosses place.
@@ -5454,21 +5463,21 @@ package body schematic_ops is
 					end query_segments;
 					
 				begin -- query_strands
-					result.strand_cursor := net.strands.first;
+					result.cursor := net.strands.first;
 
 					-- Iterate strands. Cancel prematurely once a segment has been found.
 					-- Look at strands on the relevant sheet only.
-					while result.strand_cursor /= type_strands.no_element loop
-						if sheet (element (result.strand_cursor).position) = sheet (place) then
+					while result.cursor /= type_strands.no_element loop
+						if sheet (element (result.cursor).position) = sheet (place) then
 
 							type_strands.query_element (
-								position	=> result.strand_cursor,
+								position	=> result.cursor,
 								process		=> query_segments'access);
 
 							if segment_found then exit; end if;
 							
 						end if;
-						next (result.strand_cursor);
+						next (result.cursor);
 					end loop;
 				end query_strands;
 				
@@ -5481,8 +5490,8 @@ package body schematic_ops is
 			end which_strand;
 
 			procedure locate_strand (
-			-- Locates the strand (indicated by which_strand_query_start.strand_cursor
-			-- or which_strand_query_end.strand_cursor) and appends the new segment to it.
+			-- Locates the strand (indicated by strand_at_start or strand_at_end)
+			-- and appends the new segment to it. 
 				net_name	: in type_net_name.bounded_string;
 				net			: in out type_net) is
 
@@ -5493,18 +5502,20 @@ package body schematic_ops is
 				end append_segment;
 				
 			begin -- locate_strand
-				if which_strand_query_start.strand_cursor /= type_strands.no_element then
+				-- There must be a strand either at the start or the end point
+				-- of the segment.
+				if not dead_end (strand_at_start) then
 					
 					type_strands.update_element (
 						container	=> net.strands,
-						position	=> which_strand_query_start.strand_cursor,
+						position	=> strand_at_start.cursor,
 						process		=> append_segment'access);
 
-				elsif which_strand_query_end.strand_cursor /= type_strands.no_element then
+				elsif not dead_end (strand_at_end) then
 					
 					type_strands.update_element (
 						container	=> net.strands,
-						position	=> which_strand_query_end.strand_cursor,
+						position	=> strand_at_end.cursor,
 						process		=> append_segment'access);
 					
 				else
@@ -5537,8 +5548,6 @@ package body schematic_ops is
 				
 			end create_strand;
 
-			start_point_dead_end, end_point_dead_end : boolean := false;
-			
 		begin -- extend_net
 			------------
 			-- Obtain the names of nets that cross the start point of the segment:
@@ -5574,26 +5583,23 @@ package body schematic_ops is
 				log_indentation_up;
 				
 				-- Obtain the cursor to the strand that crosses the start point:
-				which_strand_query_start := which_strand (start_point);
+				strand_at_start := which_strand (start_point);
 				
-				if which_strand_query_start.strand_cursor /= type_strands.no_element then
+				if not dead_end (strand_at_start) then
 					-- The start point will be connected with a strand:
 					log ("with its start point at " & 
 						 to_string (position => start_point), log_threshold + 3);
 
 					-- If required, prepare placing a junction at start point of segment.
 					-- The junction will be placed later.
-					if which_strand_query_start.junction_required then
-						junction_required_at_start_point := true;
-						junction_place_at_start_point := start_point;
+					if strand_at_start.junction_required then
+						junction_at_start_point.required := true;
+						junction_at_start_point.place := start_point;
 					end if;
-				else
-					-- The start point will not be connected with any strand.
-					start_point_dead_end := true;
 				end if;
 
 				-- collect ports at dead end or where a junction is to be placed:
-				if start_point_dead_end or junction_required_at_start_point then
+				if dead_end (strand_at_start) or junction_at_start_point.required then
 					-- look for any ports at start point of the new net segment
 					ports := ports_at_place (
 							module_name		=> module_name,
@@ -5605,11 +5611,11 @@ package body schematic_ops is
 				----------
 				
 				-- Alternatively the strand could be crossing the end point:
-				which_strand_query_end := which_strand (to_coordinates (
+				strand_at_end := which_strand (to_coordinates (
 									sheet => sheet (start_point),
 									point => end_point));
 
-				if which_strand_query_end.strand_cursor /= type_strands.no_element then
+				if not dead_end (strand_at_end) then
 					-- The end point will be connected with a strand:
 					log ("with its end point at " & to_string (
 								position => to_coordinates (
@@ -5620,19 +5626,16 @@ package body schematic_ops is
 
 					-- If required, prepare placing a junction at end point of segment.
 					-- The junction will be placed later.
-					if which_strand_query_end.junction_required then
-						junction_required_at_end_point := true;
-						junction_place_at_end_point := to_coordinates (
+					if strand_at_end.junction_required then
+						junction_at_end_point.required := true;
+						junction_at_end_point.place := to_coordinates (
 									sheet => sheet (start_point),
 									point => end_point);
 					end if;
-				else
-					-- The end point will not be connected with any strand.
-					end_point_dead_end := true;
 				end if;
 				
 				-- collect ports at dead end or where a junction is to be placed:
-				if end_point_dead_end or junction_required_at_end_point then
+				if dead_end (strand_at_end) or junction_at_end_point.required then
 					-- look for any ports at end point of the new net segment
 					-- The end point is just x/y. The sheet must be derived from the start point.
 					ports := ports_at_place (
@@ -5645,8 +5648,8 @@ package body schematic_ops is
 					assign_ports_to_segment;
 				end if;
 
-				-- Append the segment to the strand:
-				if (not start_point_dead_end) xor (not end_point_dead_end) then
+				-- Append the segment to one of the posible strands.
+				if not dead_end (strand_at_start) xor not dead_end (strand_at_end) then -- CS: correct term ??
 					type_nets.update_element (
 						container	=> module.nets,
 						position	=> net_cursor,
@@ -5655,9 +5658,8 @@ package body schematic_ops is
 
 				-----------
 
-				-- If both ends are to be connected with a strand, we have to union
-				-- both strands.
-				if not start_point_dead_end and not end_point_dead_end then
+				-- If both ends are to be connected with a strand, we have to union both strands.
+				if not dead_end (strand_at_start) and not dead_end (strand_at_end) then
 					-- CS The segment will be connecting two strands.
 					-- CS implementation required
 					raise constraint_error;
@@ -5725,17 +5727,17 @@ package body schematic_ops is
 				process		=> extend_net'access);
 
 			-- place junctions if required
-			if junction_required_at_start_point then
+			if junction_at_start_point.required then
 				place_junction (
 					module_name		=> module_name,
-					place			=> junction_place_at_start_point,
+					place			=> junction_at_start_point.place,
 					log_threshold	=> log_threshold + 2);
 			end if;
 
-			if junction_required_at_end_point then
+			if junction_at_end_point.required then
 				place_junction (
 					module_name		=> module_name,
-					place			=> junction_place_at_end_point,
+					place			=> junction_at_end_point.place,
 					log_threshold	=> log_threshold + 2);
 			end if;
 
