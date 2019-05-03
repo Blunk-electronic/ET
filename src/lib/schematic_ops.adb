@@ -937,7 +937,7 @@ package body schematic_ops is
 	-- If a port lands on either the start or end point of a segment, it will
 	-- be regarded as "connected" with the segment.
 	-- If a ports lands between start or end point of a segment, nothing happens
-	-- as the docking to net segments is possible on segment ends/starts only.
+	-- because the docking to net segments is possible on segment ends/starts only.
 	-- CS: Automatic splitting the segment into two and placing a junction is not supported
 	-- jet and probably not a good idea.
 		module			: in type_modules.cursor;		-- the module
@@ -1073,7 +1073,7 @@ package body schematic_ops is
 		end query_nets;
 
 	begin --insert_ports
-		log ("inserting ports in nets on sheet" & 
+		log ("inserting device ports in nets on sheet" & 
 			 to_sheet (sheet) & " ...", log_threshold);
 		log_indentation_up;
 		
@@ -3848,6 +3848,150 @@ package body schematic_ops is
 		
 		return next_idx;
 	end next_netchanger_index;
+
+	procedure insert_ports (
+	-- Inserts the given netchanger ports in the net segments.
+	-- If a port lands on either the start or end point of a segment, it will
+	-- be regarded as "connected" with the segment.
+	-- If a ports lands between start or end point of a segment, nothing happens
+	-- because the docking to net segments is possible on segment ends/starts only.
+	-- CS: Automatic splitting the segment into two and placing a junction is not supported
+	-- jet and probably not a good idea.
+		module			: in type_modules.cursor;		-- the module
+		index			: in submodules.type_netchanger_id;	-- the netchanger id
+		ports			: in submodules.type_netchanger_ports; -- the ports to be inserted
+		sheet			: in type_sheet;	-- the sheet to look at
+		log_threshold	: in type_log_level) is
+
+		use submodules;
+		
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			procedure probe_port (
+				port : in type_point; -- x/y
+				name : in type_netchanger_port_name) -- master/slave
+				is
+
+				-- This flag goes true on the first match. It signals
+				-- all iterations to cancel prematurely.
+				port_processed : boolean := false;
+					
+				use type_nets;
+				net_cursor : type_nets.cursor := module.nets.first;
+				
+				procedure query_strands (
+					net_name	: in type_net_name.bounded_string;
+					net			: in out type_net) is
+					use et_coordinates;
+					use type_strands;
+					strand_cursor : type_strands.cursor := net.strands.first;
+
+					procedure query_segments (strand : in out type_strand) is
+						use type_net_segments;
+						segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+						procedure change_segment (segment : in out type_net_segment) is
+						begin
+							-- If port sits on start OR end point of segment then append 
+							-- it to segment.ports_netchangers.
+							if 	segment.coordinates_start = port or
+								segment.coordinates_end = port then
+
+								log (" match", log_threshold + 4);
+								
+								type_ports_netchanger.insert (
+									container	=> segment.ports_netchangers,
+									new_item	=> (index, name)); -- 1,2,3, .. / master/slave
+
+								-- signal iterations in upper levels to cancel
+								port_processed := true;
+							end if;
+						end change_segment;
+
+					begin -- query_segments
+						log_indentation_up;
+
+						-- On the first segment, where the port sits on, this loop ends prematurely.
+						while not port_processed and segment_cursor /= type_net_segments.no_element loop
+							log ("probing " & to_string (segment_cursor), log_threshold + 4);
+							
+							type_net_segments.update_element (
+								container	=> strand.segments,
+								position	=> segment_cursor,
+								process		=> change_segment'access);
+
+							next (segment_cursor);
+						end loop;
+
+						log_indentation_down;
+					end query_segments;
+					
+				begin -- query_strands
+					log_indentation_up;
+					
+					while not port_processed and strand_cursor /= type_strands.no_element loop
+
+						-- We pick out only the strands on the targeted sheet:
+						if et_coordinates.sheet (element (strand_cursor).position) = sheet then
+							log ("net " & to_string (key (net_cursor)), log_threshold + 3);
+
+							log_indentation_up;
+							log ("strand " & to_string (position => element (strand_cursor).position),
+								log_threshold + 3);
+
+							update_element (
+								container	=> net.strands,
+								position	=> strand_cursor,
+								process		=> query_segments'access);
+						
+							log_indentation_down;
+						end if;
+							
+						next (strand_cursor);
+					end loop;
+					
+					log_indentation_down;
+				end query_strands;
+				
+			begin -- probe_port
+				log_indentation_up;
+				log ("at" & et_coordinates.to_string (port), log_threshold + 2);
+				
+				while not port_processed and net_cursor /= type_nets.no_element loop
+					
+					update_element (
+						container	=> module.nets,
+						position	=> net_cursor,
+						process		=> query_strands'access);
+				
+					next (net_cursor);
+				end loop;
+
+				log_indentation_down;
+			end probe_port;
+			
+		begin -- query_nets
+			log ("master port", log_threshold + 1);
+			probe_port (ports.master, MASTER);
+
+			log ("slave port", log_threshold + 1);			
+			probe_port (ports.slave, SLAVE);
+		end query_nets;
+
+	begin --insert_ports
+		log ("inserting netchanger ports in nets on sheet" & 
+			 to_sheet (sheet) & " ...", log_threshold);
+		log_indentation_up;
+		
+		update_element (
+			container	=> modules,
+			position	=> module,
+			process		=> query_nets'access);
+
+		log_indentation_down;
+	end insert_ports;
 	
 	procedure add_netchanger (
 	-- Adds a netchanger to the schematic.
@@ -3866,17 +4010,37 @@ package body schematic_ops is
 			cursor : type_netchangers.cursor;
 			index : type_netchanger_id;
 			netchanger : type_netchanger;
+			inserted : boolean;
+			ports : type_netchanger_ports;
 		begin -- query_netchangers
-			cursor := last (module.netchangers);
-			index := key (cursor);
 
+			-- set the index to be used for the new netchanger
+			index := next_netchanger_index (module_cursor);
+
+			-- build the new netchanger
 			netchanger.position_sch := place;
 			netchanger.rotation := rotation;
-			
+
+			-- insert the new netchanger in the module
 			insert (
 				container 	=> module.netchangers,
-				key			=> next_netchanger_index (module_cursor),
-				new_item	=> netchanger);
+				key			=> index,
+				new_item	=> netchanger,
+				position	=> cursor,
+				inserted	=> inserted -- CS not further evaluated. should always be true
+				);
+
+			-- Get the absolute positions of the netchanger ports according to 
+			-- location and rotation in schematic.
+			ports := netchanger_ports (cursor);
+
+			-- Inserts the given netchanger ports in the net segments.
+			insert_ports (
+				module			=> module_cursor,
+				index			=> index,
+				ports			=> ports,
+				sheet			=> sheet (place),
+				log_threshold	=> log_threshold + 1);
 			
 		end query_netchangers;
 		

@@ -116,7 +116,7 @@ package body submodules is
 	end;
 
 	function netchanger_ports (
-	-- Returns absolute the x/y positions of the given netchanger.
+	-- Returns the absolute x/y positions of the given netchanger.
 		netchanger_cursor	: in type_netchangers.cursor)
 		return type_netchanger_ports is
 		use type_netchangers;
