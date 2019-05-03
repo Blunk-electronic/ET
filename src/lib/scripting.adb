@@ -56,6 +56,7 @@ with et_coordinates;			use et_coordinates;
 with et_libraries;				use et_libraries;
 with et_schematic;
 with schematic_ops;
+with submodules;
 -- with board_ops;
 
 
@@ -338,6 +339,22 @@ package body scripting is
 
 							end case;
 
+						when NETCHANGER =>
+							case fields is
+								when 5 =>
+									schematic_ops.delete_netchanger
+										(
+										module_name		=> module,
+										index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+										log_threshold		=> log_threshold + 1);
+
+								when 6 .. count_type'last =>
+									command_too_long (5);
+									
+								when others =>
+									command_incomplete;
+							end case;
+							
 						when SEGMENT =>
 							schematic_ops.delete_segment
 								(

@@ -749,7 +749,7 @@ package body schematic_ops is
 	
 	procedure delete_unit (
 	-- Deletes a unit of a device. 
-	-- In case the last unit has been delete, then the device is 
+	-- In case the last unit has been deleted, then the device is 
 	-- deleted entirely from module.devices.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
@@ -4062,7 +4062,35 @@ package body schematic_ops is
 		
 		log_indentation_down;		
 	end add_netchanger;
+
+	procedure delete_netchanger (
+	-- Deletes a netchanger.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+		use submodules;
 		
+	begin -- add_netchanger
+		log ("module " & to_string (module_name) &
+			" deleting netchanger" & to_string (index),
+			log_threshold);
+
+		log_indentation_up;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+-- 		update_element (
+-- 			container	=> modules,
+-- 			position	=> module_cursor,
+-- 			process		=> query_netchangers'access);
+		
+		log_indentation_down;		
+	end delete_netchanger;
+
+	
 	function locate_net (
 	-- Yields a cursor to the requested net in the given module. If the net could
 	-- not be found, returns no_element.

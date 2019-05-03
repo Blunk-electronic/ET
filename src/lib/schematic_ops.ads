@@ -64,7 +64,7 @@ package schematic_ops is
 
 	procedure delete_unit (
 	-- Deletes a unit of a device. 
-	-- In case the last unit has been delete, then the device is 
+	-- In case the last unit has been deleted, then the device is 
 	-- deleted entirely from module.devices.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
@@ -235,6 +235,12 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		place			: in et_coordinates.type_coordinates; -- sheet/x/y
 		rotation		: in et_coordinates.type_rotation; -- 90				
+		log_threshold	: in type_log_level);
+
+	procedure delete_netchanger (
+	-- Deletes a netchanger.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		index			: in submodules.type_netchanger_id; -- 1,2,3,...
 		log_threshold	: in type_log_level);
 	
 	type type_net_scope is (
