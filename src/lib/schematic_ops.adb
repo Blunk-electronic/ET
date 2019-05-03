@@ -5548,6 +5548,46 @@ package body schematic_ops is
 				
 			end create_strand;
 
+			procedure merge_strands (
+			-- Merges two strands indicated by strand_at_start and strand_at_end.
+			-- The strand_at_start will merge into strand_at_end.
+			-- strand_at_start will be gone finally. All its segments will move to 
+			-- strand_at_end.
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+
+				-- Get the segments of the strand that will be removed. These segments will
+				-- move into the final strand.
+				segments_source : type_net_segments.list := element (strand_at_start.cursor).segments;
+				
+				procedure merge (strand : in out type_strand) is begin
+				-- Appends to the segments of strand at start point
+				-- the segments_source.
+					type_net_segments.splice (
+						target	=> strand.segments,
+						before	=> type_net_segments.no_element, -- default, means just appending after target
+						source	=> segments_source);
+
+					-- update strand position
+					set_strand_position (strand);
+				end merge;
+					
+			begin -- merge_strands
+				log ("merging strands ...", log_threshold + 3);
+				
+				-- Append segments_source to the strand indicated by strand_at_end:
+				type_strands.update_element (
+					container	=> net.strands,
+					position	=> strand_at_end.cursor,
+					process		=> merge'access);
+
+				-- Delete the "source" strand. Its segments are already part of strand_at_end.
+				type_strands.delete (
+					container	=> net.strands,
+					position	=> strand_at_start.cursor);
+				
+			end merge_strands;	
+			
 		begin -- extend_net
 			------------
 			-- Obtain the names of nets that cross the start point of the segment:
@@ -5648,7 +5688,7 @@ package body schematic_ops is
 					assign_ports_to_segment;
 				end if;
 
-				-- Append the segment to one of the posible strands.
+				-- Append the segment to one of the possible strands.
 				if not dead_end (strand_at_start) xor not dead_end (strand_at_end) then -- CS: correct term ??
 					type_nets.update_element (
 						container	=> module.nets,
@@ -5660,9 +5700,15 @@ package body schematic_ops is
 
 				-- If both ends are to be connected with a strand, we have to union both strands.
 				if not dead_end (strand_at_start) and not dead_end (strand_at_end) then
-					-- CS The segment will be connecting two strands.
-					-- CS implementation required
-					raise constraint_error;
+					log_indentation_up;
+					
+					-- The segment will be connecting two strands.
+					type_nets.update_element (
+						container	=> module.nets,
+						position	=> net_cursor,
+						process		=> merge_strands'access);
+
+					log_indentation_down;
 				end if;
 								
 				log_indentation_down;
