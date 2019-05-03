@@ -5585,7 +5585,7 @@ package body schematic_ops is
 					-- The junction will be placed later.
 					if which_strand_query_start.junction_required then
 						junction_required_at_start_point := true;
-						junction_place_at_end_point := start_point;
+						junction_place_at_start_point := start_point;
 					end if;
 				else
 					-- The start point will not be connected with any strand.
@@ -5593,7 +5593,7 @@ package body schematic_ops is
 				end if;
 
 				-- collect ports at dead end or where a junction is to be placed:
-				if start_point_dead_end or junction_required_at_end_point then
+				if start_point_dead_end or junction_required_at_start_point then
 					-- look for any ports at start point of the new net segment
 					ports := ports_at_place (
 							module_name		=> module_name,
@@ -5645,17 +5645,17 @@ package body schematic_ops is
 					assign_ports_to_segment;
 				end if;
 
-				-- Append the segment to the strand (indicated by which_strand_query.strand_cursor):
-
-				if not end_point_dead_end then
+				-- Append the segment to the strand:
+				if (not start_point_dead_end) xor (not end_point_dead_end) then
 					type_nets.update_element (
 						container	=> module.nets,
 						position	=> net_cursor,
 						process		=> locate_strand'access);
 				end if;
+
 				-----------
 
-				-- If both ends are to be conneced with a strand, we have to union
+				-- If both ends are to be connected with a strand, we have to union
 				-- both strands.
 				if not start_point_dead_end and not end_point_dead_end then
 					-- CS The segment will be connecting two strands.
