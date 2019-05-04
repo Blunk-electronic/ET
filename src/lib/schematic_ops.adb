@@ -92,7 +92,7 @@ package body schematic_ops is
 	end;
 
 	procedure netchanger_not_found (index : in submodules.type_netchanger_id) is begin
-		log (message_error & "netchanger " & submodules.to_string (index) & " not found !", console => true);
+		log (message_error & "netchanger" & submodules.to_string (index) & " not found !", console => true);
 		raise constraint_error;
 	end;
 
@@ -162,6 +162,7 @@ package body schematic_ops is
 	end;
 	
 	procedure delete_ports (
+	-- Deletes ports of the given device in nets.
 		module			: in type_modules.cursor;		-- the module
 		device			: in type_device_name;			-- the device
 		ports			: in et_libraries.type_ports.map := et_libraries.type_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
@@ -274,7 +275,7 @@ package body schematic_ops is
 		end query_nets;
 		
 	begin -- delete_ports
-		log ("deleting ports in nets ...", log_threshold);
+		log ("deleting device ports in nets ...", log_threshold);
 
 		-- If ports are provided, we have to delete exactly those in list "ports".
 		-- The flag dedicated_ports is later required in order to do this job:
@@ -4063,6 +4064,131 @@ package body schematic_ops is
 		log_indentation_down;		
 	end add_netchanger;
 
+	procedure delete_ports (
+	-- Deletes ports of the given netchanger in nets.
+		module			: in type_modules.cursor;			-- the module
+		index			: in submodules.type_netchanger_id;	-- the netchanger id
+		sheet			: in et_coordinates.type_sheet;		-- the sheet where the netchanger is
+		log_threshold	: in type_log_level) is
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_nets;
+			net_cursor : type_nets.cursor := module.nets.first;
+
+			-- In order to speed up things we have two flags that indicate
+			-- whether the master or slave port has been deleted from the nets.
+			type type_deleted_ports is record
+				master	: boolean := false;
+				slave	: boolean := false;
+			end record;
+
+			deleted_ports : type_deleted_ports;
+
+			-- This function returns true if master and slave port have been deleted.
+			-- All iterations abort prematurely once all ports have been deleted.
+			function all_ports_deleted return boolean is begin
+				return deleted_ports.master and deleted_ports.slave;
+			end;
+			
+			procedure query_strands (
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+				use et_coordinates;
+				use type_strands;
+				strand_cursor : type_strands.cursor := net.strands.first;
+
+				procedure query_segments (strand : in out type_strand) is
+					use type_net_segments;
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+					procedure query_ports (segment : in out type_net_segment) is
+						use type_ports_netchanger;
+						use submodules;
+						port_cursor : type_ports_netchanger.cursor;
+
+						procedure delete_port is begin
+							log ("sheet" & to_sheet (sheet) & " net " &
+								to_string (key (net_cursor)) & latin_1.space &
+								to_string (segment_cursor),
+								log_threshold + 1);
+							delete (segment.ports_netchangers, port_cursor);
+						end;
+	
+					begin -- query_ports
+						-- Search for the master port if it has not been deleted yet:
+						if not deleted_ports.master then
+							port_cursor := find (segment.ports_netchangers, (index, MASTER));
+							if port_cursor /= type_ports_netchanger.no_element then
+								delete_port;
+								deleted_ports.master := true;
+							end if;
+						end if;
+
+						-- Search for the slave port if it has not been deleted yet:
+						if not deleted_ports.slave then
+							port_cursor := find (segment.ports_netchangers, (index, SLAVE));
+							if port_cursor /= type_ports_netchanger.no_element then
+								delete_port;
+								deleted_ports.slave := true;
+							end if;
+						end if;
+					end query_ports;
+					
+				begin -- query_segments
+					while not all_ports_deleted and segment_cursor /= type_net_segments.no_element loop
+
+						type_net_segments.update_element (
+							container	=> strand.segments,
+							position	=> segment_cursor,
+							process		=> query_ports'access);
+						
+						next (segment_cursor);
+					end loop;
+				end query_segments;
+				
+			begin -- query_strands
+				while not all_ports_deleted and strand_cursor /= type_strands.no_element loop
+
+					if et_coordinates.sheet (element (strand_cursor).position) = sheet then
+
+						update_element (
+							container	=> net.strands,
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+			
+		begin -- query_nets
+			while not all_ports_deleted and net_cursor /= type_nets.no_element loop
+
+				update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_strands'access);
+				
+				next (net_cursor);
+			end loop;
+		end query_nets;
+		
+	begin -- delete_ports
+		log ("deleting netchanger ports in nets ...", log_threshold);
+
+		log_indentation_up;
+		
+		update_element (
+			container	=> modules,
+			position	=> module,
+			process		=> query_nets'access);
+
+		log_indentation_down;
+	end delete_ports;
+
 	procedure delete_netchanger (
 	-- Deletes a netchanger.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -4071,8 +4197,52 @@ package body schematic_ops is
 
 		module_cursor : type_modules.cursor; -- points to the module
 		use submodules;
+
+		procedure query_netchangers (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_coordinates;
+			use type_netchangers;
+			cursor : type_netchangers.cursor;
+			location : et_coordinates.type_coordinates;
+		begin -- query_netchangers
+
+			-- locate given netchanger
+			cursor := find (module.netchangers, index);
+
+			if cursor /= type_netchangers.no_element then 
+				-- netchanger exists
+
+				-- Get coordinates of netchanger.
+				-- Since the ports of a netchanger are always on the same sheet,
+				-- it can be located by the slave or master port.
+				location := position (
+					module_name		=> module_name,
+					index			=> index,
+					port			=> MASTER,
+					log_threshold	=> log_threshold + 1);
+
+				log_indentation_up;
+
+				-- Delete netchanger ports in nets:
+				delete_ports (
+	 				module			=> module_cursor,
+					index			=> index,
+					sheet			=> et_coordinates.sheet (location),
+					log_threshold	=> log_threshold + 1);
+
+				-- Delete the netchanger itself:
+				delete (module.netchangers, cursor);
+				
+				log_indentation_down;
+			else
+				-- netchanger does not exist
+				netchanger_not_found (index);
+			end if;
+			
+		end query_netchangers;
 		
-	begin -- add_netchanger
+	begin -- delete_netchanger
 		log ("module " & to_string (module_name) &
 			" deleting netchanger" & to_string (index),
 			log_threshold);
@@ -4082,14 +4252,13 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
--- 		update_element (
--- 			container	=> modules,
--- 			position	=> module_cursor,
--- 			process		=> query_netchangers'access);
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_netchangers'access);
 		
 		log_indentation_down;		
 	end delete_netchanger;
-
 	
 	function locate_net (
 	-- Yields a cursor to the requested net in the given module. If the net could
