@@ -4259,6 +4259,97 @@ package body schematic_ops is
 		
 		log_indentation_down;		
 	end delete_netchanger;
+
+	procedure move_netchanger (
+	-- Moves the given netchanger. Disconnects the netchanger from
+	-- start or end points of net segments.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		coordinates		: in type_coordinates; -- relative/absolute
+		sheet			: in type_sheet_relative; -- -3/0/2
+		point			: in et_coordinates.type_point; -- x/y
+		log_threshold	: in type_log_level) is
+
+		use submodules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_netchangers (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_coordinates;
+			use type_netchangers;
+			cursor : type_netchangers.cursor;
+			location : et_coordinates.type_coordinates;
+		begin -- query_netchangers
+
+			-- locate given netchanger
+			cursor := find (module.netchangers, index);
+
+			if cursor /= type_netchangers.no_element then 
+				-- netchanger exists
+
+				-- Get coordinates of netchanger BEFORE the move operation.
+				-- Since the ports of a netchanger are always on the same sheet,
+				-- it can be located by the slave or master port.
+				location := position (
+					module_name		=> module_name,
+					index			=> index,
+					port			=> MASTER,
+					log_threshold	=> log_threshold + 1);
+
+				log_indentation_up;
+
+				-- Delete netchanger ports in nets:
+				delete_ports (
+	 				module			=> module_cursor,
+					index			=> index,
+					sheet			=> et_coordinates.sheet (location),
+					log_threshold	=> log_threshold + 1);
+
+				-- calculate the new position 
+				case coordinates is
+					when ABSOLUTE =>
+						location := to_coordinates (point, type_sheet (sheet));
+
+					when RELATIVE =>
+						move (
+							position	=> location,
+							offset		=> to_coordinates_relative (point, sheet));
+				end case;
+				
+				log_indentation_down;
+			else
+				-- netchanger does not exist
+				netchanger_not_found (index);
+			end if;
+			
+		end query_netchangers;
+		
+	begin -- move_netchanger
+		case coordinates is
+			when ABSOLUTE =>
+				log ("module " & to_string (module_name) &
+					" moving netchanger" & to_string (index) &
+					" to sheet" & to_sheet (sheet) &
+					et_coordinates.to_string (point), log_threshold);
+
+			when RELATIVE =>
+				log ("module " & to_string (module_name) &
+					" moving netchanger" & to_string (index) &
+					" by " & to_sheet_relative (sheet) & " sheet(s)" &
+					et_coordinates.to_string (point), log_threshold);
+		end case;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_netchangers'access);
+
+	end move_netchanger;
+
 	
 	function locate_net (
 	-- Yields a cursor to the requested net in the given module. If the net could

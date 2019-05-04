@@ -242,6 +242,16 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in submodules.type_netchanger_id; -- 1,2,3,...
 		log_threshold	: in type_log_level);
+
+	procedure move_netchanger (
+	-- Moves the given netchanger. Disconnects the netchanger from
+	-- start or end points of net segments.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		coordinates		: in type_coordinates; -- relative/absolute
+		sheet			: in type_sheet_relative; -- -3/0/2
+		point			: in et_coordinates.type_point; -- x/y
+		log_threshold	: in type_log_level);
 	
 	type type_net_scope is (
 		STRAND,

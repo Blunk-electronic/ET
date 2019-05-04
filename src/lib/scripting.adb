@@ -517,8 +517,19 @@ package body scripting is
 								log_threshold	=> log_threshold + 1
 								);
 
-						when NET =>
-							NULL; -- CS
+						when NETCHANGER =>
+							schematic_ops.move_netchanger
+								(
+								module_name 	=> module,
+								index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
+								coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+								sheet			=> to_sheet_relative (f (7)),
+								point			=> et_coordinates.type_point (set_point (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+									
+								log_threshold	=> log_threshold + 1
+								);
 
 						when TEXT =>
 							NULL; -- CS
