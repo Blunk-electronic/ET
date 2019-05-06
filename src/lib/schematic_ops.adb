@@ -4213,9 +4213,9 @@ package body schematic_ops is
 			if cursor /= type_netchangers.no_element then 
 				-- netchanger exists
 
-				-- Get coordinates of netchanger.
-				-- Since the ports of a netchanger are always on the same sheet,
-				-- it can be located by the slave or master port.
+				-- Get coordinates of netchanger master port.
+				-- Since the ports of a netchanger are all on the same sheet,
+				-- the sheet is now provided by location.
 				location := position (
 					module_name		=> module_name,
 					index			=> index,
@@ -4228,7 +4228,10 @@ package body schematic_ops is
 				delete_ports (
 	 				module			=> module_cursor,
 					index			=> index,
+
+					-- Get sheet number from location:
 					sheet			=> et_coordinates.sheet (location),
+					
 					log_threshold	=> log_threshold + 1);
 
 				-- Delete the netchanger itself:
@@ -4280,6 +4283,15 @@ package body schematic_ops is
 			use type_netchangers;
 			cursor : type_netchangers.cursor;
 			location : et_coordinates.type_coordinates;
+			ports : type_netchanger_ports;
+			
+			procedure move (
+				index		: in type_netchanger_id;
+				netchanger	: in out type_netchanger) is
+			begin
+				netchanger.position_sch := location;
+			end move;
+			
 		begin -- query_netchangers
 
 			-- locate given netchanger
@@ -4288,9 +4300,9 @@ package body schematic_ops is
 			if cursor /= type_netchangers.no_element then 
 				-- netchanger exists
 
-				-- Get coordinates of netchanger BEFORE the move operation.
-				-- Since the ports of a netchanger are always on the same sheet,
-				-- it can be located by the slave or master port.
+				-- Get coordinates of netchanger master port.
+				-- Since the ports of a netchanger are all on the same sheet,
+				-- the sheet is now provided by location.
 				location := position (
 					module_name		=> module_name,
 					index			=> index,
@@ -4303,20 +4315,48 @@ package body schematic_ops is
 				delete_ports (
 	 				module			=> module_cursor,
 					index			=> index,
+
+					-- Get sheet number from location:
 					sheet			=> et_coordinates.sheet (location),
+					
 					log_threshold	=> log_threshold + 1);
 
 				-- calculate the new position 
 				case coordinates is
 					when ABSOLUTE =>
+						-- The absolute position is defined by the given point (x/y) 
+						-- and the given sheet number:
 						location := to_coordinates (point, type_sheet (sheet));
 
 					when RELATIVE =>
+						-- The relative position is the netchanger position BEFORE 
+						-- the move operation shifted by the given point (x/y)
+						-- and the given sheet number:
+						location := element (cursor).position_sch;
+						
 						move (
 							position	=> location,
 							offset		=> to_coordinates_relative (point, sheet));
 				end case;
-				
+
+				-- move the netchanger to the new position
+				update_element (
+					container	=> module.netchangers,
+					position	=> cursor,
+					process		=> move'access);
+
+				-- Get the NEW absolute positions of the netchanger ports AFTER
+				-- the move operation according to location and rotation in schematic.
+				ports := netchanger_ports (cursor);
+
+				-- Inserts the netchanger ports in the net segments.
+				insert_ports (
+					module			=> module_cursor,
+					index			=> index,
+					ports			=> ports,
+					sheet			=> et_coordinates.sheet (location),
+					log_threshold	=> log_threshold + 1);
+
 				log_indentation_down;
 			else
 				-- netchanger does not exist
