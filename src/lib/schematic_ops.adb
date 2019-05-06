@@ -1831,7 +1831,7 @@ package body schematic_ops is
 		end query_nets;
 
 	begin -- drag_net_segments
-		log ("dragging net segments on sheet" & 
+		log ("dragging net segments with units on sheet" & 
 			 to_sheet (sheet) & " ...", log_threshold);
 		log_indentation_up;
 
@@ -1985,6 +1985,11 @@ package body schematic_ops is
 				
 				-- Calculate the old and new positions of the unit ports:
 				ports_old := ports;
+
+				-- CS: test whether all ports in ports_old are not at the same place
+				-- as netchanger or submodule ports. If so, the dragging is not possible because
+				-- the affected netchanger or submodule had to be moved simultaneously.
+				
 				move_ports (ports_old, position_of_unit_old); 
 				-- ports_old now contains the absolute port positions in the schematic BEFORE the move.
 
@@ -4393,6 +4398,303 @@ package body schematic_ops is
 
 	end move_netchanger;
 
+	procedure drag_net_segments (
+	-- Drags the net segments according to the given netchanger ports.
+	-- Changes the position of start or end points of segments.
+	-- Does NOT create new connections with segments if a port
+	-- lands on the start or end point of another segment.
+	-- Does NOT create a new connection with a segments if a port
+	-- lands between start and end point.
+		module			: in type_modules.cursor;	-- the module
+		ports_before	: in submodules.type_netchanger_ports;	-- the old port positions
+		ports_after		: in submodules.type_netchanger_ports;	-- the new port positions
+		sheet			: in type_sheet;			-- the sheet to look at
+		log_threshold	: in type_log_level) is
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			procedure query_net (net_cursor : in type_nets.cursor) is
+				use type_nets;
+
+				procedure query_strands (
+					net_name	: in type_net_name.bounded_string;
+					net			: in out type_net) is
+					use et_coordinates;
+					
+					use type_strands;
+					strand_cursor : type_strands.cursor;
+					
+					--drag_processed : boolean;
+					--ports : type_point;
+
+-- 					procedure probe_ports (ports : in type_netchanger_ports) is 
+-- 
+-- 						procedure query_segments (strand : in out type_strand) is
+-- 							use type_net_segments;
+-- 
+-- 							procedure query_segment (segment_cursor : in type_net_segments.cursor) is 
+-- 
+-- 								procedure change_segment (segment : in out type_net_segment) is 
+-- 								-- Changes the position of start or end point of a segment according to the drag point.
+-- 								begin -- change_segment
+-- 									
+-- 									-- if port sits on a start point of a segment -> move start point
+-- 									if segment.coordinates_start = element (drag_cursor).before then
+-- 										log ("move segment start point from" & 
+-- 											to_string (segment.coordinates_start),
+-- 											log_threshold + 3);
+-- 
+-- 										segment.coordinates_start := element (drag_cursor).after;
+-- 
+-- 										log ("to" & 
+-- 											to_string (segment.coordinates_start),
+-- 											log_threshold + 3);
+-- 
+-- 										drag_processed := true;
+-- 									end if;
+-- 
+-- 									-- if port sits on an end point of a segment -> move end point
+-- 									if segment.coordinates_end = element (drag_cursor).before then
+-- 										log ("move segment end point from" & 
+-- 											to_string (segment.coordinates_end),
+-- 											log_threshold + 3);
+-- 
+-- 										segment.coordinates_end := element (drag_cursor).after;
+-- 
+-- 										log ("to" & 
+-- 											to_string (segment.coordinates_end),
+-- 											log_threshold + 3);
+-- 
+-- 										drag_processed := true;
+-- 									end if;
+-- 
+-- 								end change_segment;
+-- 
+-- 							begin -- query_segment
+-- 								log_indentation_up;
+-- 								log ("probing " & to_string (segment_cursor), log_threshold + 2);
+-- 								log_indentation_up;
+-- 								
+-- 								update_element (
+-- 									container	=> strand.segments,
+-- 									position	=> segment_cursor,
+-- 									process		=> change_segment'access);
+-- 												
+-- 								log_indentation_down;
+-- 								log_indentation_down;
+-- 							end query_segment;
+-- 							
+-- 						begin -- query_segments
+-- 							iterate (strand.segments, query_segment'access);
+-- 
+-- 							-- Update strand position
+-- 							set_strand_position (strand); 
+-- 							-- CS write in et_schematic a procedure set_strand_position 
+-- 							-- that takes a cursor instead (should improve preformance)
+-- 							
+-- 						end query_segments;
+-- 
+-- 					begin
+-- 						log ("probing port " & to_string (port), log_threshold + 1);
+-- 						log_indentation_up;
+-- 
+-- 						-- If the current point sits on a strand, this flag will go true. Other 
+-- 						-- strands will then not be looked at because the point can only sit on 
+-- 						-- one strand.
+-- 						drag_processed := false;
+-- 						
+-- 						strand_cursor := net.strands.first;
+-- 						while strand_cursor /= type_strands.no_element loop
+-- 							
+-- 							-- We pick out only the strands on the targeted sheet:
+-- 							if et_coordinates.sheet (element (strand_cursor).position) = sheet then
+-- 								log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+-- 
+-- 								log_indentation_up;
+-- 								log ("strand " & to_string (position => element (strand_cursor).position),
+-- 									log_threshold + 1);
+-- 							
+-- 								-- Iterate in segments of strand. If point sits on any segment
+-- 								-- the flag drag_processed goes true.
+-- 								update_element (
+-- 									container	=> net.strands,
+-- 									position	=> strand_cursor,
+-- 									process		=> query_segments'access);
+-- 							
+-- 								log_indentation_down;
+-- 							end if;
+-- 
+-- 							-- If the drag point has been processed, there is no need to look up
+-- 							-- other strands for this port.
+-- 							if drag_processed then exit; end if;
+-- 							
+-- 							next (strand_cursor);
+-- 						end loop;
+-- 
+-- 						log_indentation_down;
+-- 					end probe_ports;
+					
+				begin -- query_strands
+					--port := ports_before.master;
+					--probe_ports (ports_before);
+					null;					
+				end query_strands;
+				
+			begin -- query_net
+				update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_strands'access);
+			end query_net;				
+			
+		begin -- query_nets
+			type_nets.iterate (module.nets, query_net'access);
+		end query_nets;
+
+	begin -- drag_net_segments
+		log ("dragging net segments with netchangers on sheet" & 
+			 to_sheet (sheet) & " ...", log_threshold);
+		log_indentation_up;
+
+		update_element (
+			container	=> modules,
+			position	=> module,
+			process		=> query_nets'access);
+
+		log_indentation_down;
+	end drag_net_segments;
+	
+	procedure drag_netchanger (
+	-- Drags the given netchanger within the schematic.
+	-- Already existing connections with net segments are kept.
+	-- Net segment positions are modified.
+	-- This operation applies to a single sheet. Dragging from one sheet
+	-- to another is not possible.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in et_coordinates.type_point; -- x/y
+		log_threshold	: in type_log_level) is
+
+		use submodules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_netchangers (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_coordinates;
+			use type_netchangers;
+			cursor : type_netchangers.cursor;
+			location : et_coordinates.type_coordinates;
+			ports_old : type_netchanger_ports;
+			ports_new : type_netchanger_ports;
+			
+			procedure move (
+				index		: in type_netchanger_id;
+				netchanger	: in out type_netchanger) is
+			begin
+				netchanger.position_sch := location;
+			end move;
+			
+		begin -- query_netchangers
+
+			-- locate given netchanger
+			cursor := find (module.netchangers, index);
+
+			if cursor /= type_netchangers.no_element then 
+				-- netchanger exists
+
+				-- Before the actual drag, the coordinates of the
+				-- netchanger ports must be fetched. These coordinates will later assist
+				-- in changing the positions of connected net segments.
+				ports_old := netchanger_ports (cursor);
+
+				-- CS: test whether all ports in ports_old are not at the same place
+				-- as unit or submodule ports. If so, the dragging is not possible because
+				-- the affected unit or submodule had to be moved simultaneously.
+			
+				-- Fetch the netchanger position BEFORE the move.
+				location := element (cursor).position_sch;
+				
+				-- calculate the new position the netchanger will have AFTER the move:
+				case coordinates is
+					when ABSOLUTE =>
+						-- The absolute position is defined by the given point (x/y).
+						-- The sheet number does not change.
+						set_xy (location, point);
+
+					when RELATIVE =>
+						-- The new relative position is the netchanger position BEFORE 
+						-- the move operation shifted by the given point (x/y).
+						-- The sheet number does not change.
+						et_coordinates.move (
+							point		=> location,
+							offset		=> point);
+				end case;
+
+				-- move the netchanger to the new position
+				update_element (
+					container	=> module.netchangers,
+					position	=> cursor,
+					process		=> move'access);
+
+				-- Get the NEW absolute positions of the netchanger ports AFTER
+				-- the move operation according to location and rotation in schematic.
+				ports_new := netchanger_ports (cursor);
+
+				-- Change net segments in the affected nets (type_module.nets):
+				drag_net_segments (
+					module			=> module_cursor,
+					ports_before	=> ports_old,
+					ports_after		=> ports_new,
+					sheet			=> et_coordinates.sheet (location),
+					log_threshold	=> log_threshold + 1);
+
+				-- The drag operation might result in new port-to-net connections.
+				-- So we must insert new ports in segments.
+				-- Insert possible new netchanger ports in the nets (type_module.nets):
+				log_indentation_up;
+				
+				-- Inserts the netchanger ports in the net segments.
+				insert_ports (
+					module			=> module_cursor,
+					index			=> index,
+					ports			=> ports_new,
+					sheet			=> et_coordinates.sheet (location),
+					log_threshold	=> log_threshold + 1);
+
+				log_indentation_down;
+			else
+				-- netchanger does not exist
+				netchanger_not_found (index);
+			end if;
+			
+		end query_netchangers;
+		
+	begin -- drag_netchanger
+		case coordinates is
+			when ABSOLUTE =>
+				log ("module " & to_string (module_name) &
+					" dragging netchanger" & to_string (index) &
+					" to" & et_coordinates.to_string (point), log_threshold);
+
+			when RELATIVE =>
+				log ("module " & to_string (module_name) &
+					" dragging netchanger" & to_string (index) &
+					" by" & et_coordinates.to_string (point), log_threshold);
+		end case;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_netchangers'access);
+
+	end drag_netchanger;
 	
 	function locate_net (
 	-- Yields a cursor to the requested net in the given module. If the net could

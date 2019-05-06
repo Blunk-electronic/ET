@@ -252,6 +252,18 @@ package schematic_ops is
 		sheet			: in type_sheet_relative; -- -3/0/2
 		point			: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level);
+
+	procedure drag_netchanger (
+	-- Drags the given netchanger within the schematic.
+	-- Already existing connections with net segments are kept.
+	-- Net segment positions are modified.
+	-- This operation applies to a single sheet. Dragging from one sheet
+	-- to another is not possible.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in et_coordinates.type_point; -- x/y
+		log_threshold	: in type_log_level);
 	
 	type type_net_scope is (
 		STRAND,

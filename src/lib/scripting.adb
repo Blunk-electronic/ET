@@ -395,6 +395,26 @@ package body scripting is
 								log_threshold	=> log_threshold + 1
 								);
 
+						when NETCHANGER =>
+							case fields is
+								when 8 =>
+									schematic_ops.drag_netchanger (
+										module_name 	=> module,
+										index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+										coordinates		=> schematic_ops.to_coordinates (f (6)), -- relative/absolute
+										point			=> et_coordinates.type_point (set_point (
+															x => to_distance (f (7)),
+															y => to_distance (f (8)))),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last =>
+									command_too_long (8);
+									
+								when others =>
+									command_incomplete;
+							end case;
+							
 						when SEGMENT =>
 							schematic_ops.drag_segment
 								(
