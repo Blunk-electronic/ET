@@ -1088,7 +1088,8 @@ package body schematic_ops is
 	
 	procedure move_unit (
 	-- Moves the given unit within the schematic. Disconnects the unit from
-	-- start or end points of net segments.
+	-- start or end points of net segments BEFORE the move. 
+	-- Connects unit ports with segment end or strart points AFTER the move.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
@@ -4017,7 +4018,8 @@ package body schematic_ops is
 
 			-- set the index to be used for the new netchanger
 			index := next_netchanger_index (module_cursor);
-
+			log ("netchanger index is" & to_string (index), log_threshold + 1);
+			
 			-- build the new netchanger
 			netchanger.position_sch := place;
 			netchanger.rotation := rotation;
@@ -4265,7 +4267,8 @@ package body schematic_ops is
 
 	procedure move_netchanger (
 	-- Moves the given netchanger. Disconnects the netchanger from
-	-- start or end points of net segments.
+	-- start or end points of net segments BEFORE the move. 
+	-- Connects netchanger ports with segment end or strart points AFTER the move.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
