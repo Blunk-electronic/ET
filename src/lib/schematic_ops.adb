@@ -1767,8 +1767,11 @@ package body schematic_ops is
 					begin -- query_segments
 						iterate (strand.segments, query_segment'access);
 
-						-- Update strand position
-						set_strand_position (strand); 
+						-- Update strand position if any movement took place.
+						if drag_processed then
+							set_strand_position (strand); 
+						end if;
+						
 					end query_segments;
 						
 				begin -- query_strands
