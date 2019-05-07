@@ -108,7 +108,10 @@ ET has an internal script processor that reads and executes a script file. The s
 $ et --open my_et_project/ --script my_et_project/my_script.scr --save_as modified_project --log_level 2
 ```
 
-
+#### Executing scripts
+An example of a script that modifies things in a dummy module (named "submoduletest") can be seen here:
+<https://github.com/Blunk-electronic/ET_training/blob/master/submoduletest/test.scr>
+As the script processor is evolving more an more commands are moving up from section "not supported" to "supported".
 
 ### Installation
 - Currently there is no proper install script.
@@ -137,11 +140,13 @@ $ sh install.sh
 - Ada is defined by ISO/IEC 8652:2012 and MIL-STD-1815
 - Ada is beautiful :-)
 
-### Things to do and issues
-- Assembly variants
-- Zero-Ohms Resistors
-- Accessories of components
-- Import EAGLE projects and libraries
+### Roadmap, things to do and issues
+- assembly variants
+- zero-Ohms resistors
+- accessories of components (screws, washers, clamps, ...)
+- import EAGLE projects and libraries
+- graphical user interface (GTKada based)
+- web browser support so that ET can be operated on every operating system
 
 ### Collaboration
 - We need a nice web site for the project.
