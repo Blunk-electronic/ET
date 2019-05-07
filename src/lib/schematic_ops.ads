@@ -116,12 +116,14 @@ package schematic_ops is
 		rotation		: in et_coordinates.type_rotation_text; -- absolute ! -- 90
 		meaning			: in et_libraries.type_text_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level);
-	
+
+	-- CS move to et_schematic ?
 	type type_drag is record
 		before		: et_coordinates.type_point;
 		after		: et_coordinates.type_point;
 	end record;
 
+	-- CS move to et_schematic ?	
 	package type_drags_of_ports is new ada.containers.ordered_maps (
 		key_type		=> type_port_name.bounded_string,
 		"<"				=> type_port_name."<",
@@ -263,6 +265,15 @@ package schematic_ops is
 		index			: in submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in et_coordinates.type_point; -- x/y
+		log_threshold	: in type_log_level);
+
+	procedure rotate_netchanger (
+	-- Rotates the given netchanger. Disconnects it from
+	-- start or end points of net segments.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		coordinates		: in type_coordinates; -- relative/absolute
+		rotation		: in et_coordinates.type_rotation; -- 90
 		log_threshold	: in type_log_level);
 	
 	type type_net_scope is (

@@ -714,6 +714,24 @@ package body scripting is
 								meaning			=> et_libraries.PURPOSE,
 								log_threshold	=> log_threshold + 1
 								);
+
+						when NETCHANGER =>
+							case fields is
+								when 7 =>
+									schematic_ops.rotate_netchanger (
+										module_name 	=> module,
+										index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+										coordinates		=> schematic_ops.to_coordinates (f (6)), -- relative/absolute
+										rotation		=> to_angle (f (7)), -- 90
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 8 .. count_type'last =>
+									command_too_long (7);
+									
+								when others =>
+									command_incomplete;
+							end case;
 							
 						when others => invalid_noun (to_string (noun));
 					end case;

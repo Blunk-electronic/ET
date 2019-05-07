@@ -80,6 +80,16 @@ package body schematic_ops is
 -- 	procedure device_prefix_invalid (name : in type_device_name) is begin
 -- 		log (message_warning & "prefix of device name " & to_string (name) & " invalid !");
 -- 	end;
+
+	procedure relative_rotation_invalid is begin
+		log (message_error & "Relative rotation must be in range" & 
+			et_coordinates.to_string (rotation_relative_min) &
+			" .." & 
+			et_coordinates.to_string (rotation_relative_max),
+			console => true
+			);
+		raise constraint_error;
+	end;
 	
 	procedure unit_not_found (name : in type_unit_name.bounded_string) is begin
 		log (message_error & "unit " & to_string (name) & " not found !", console => true);
@@ -1566,14 +1576,7 @@ package body schematic_ops is
 						" rotating " & to_string (device_name) & " unit " & 
 						to_string (unit_name) & " by" & et_coordinates.to_string (rotation), log_threshold);
 				else
-					log (message_error & "Relative rotation must be in range" & 
-						et_coordinates.to_string (rotation_relative_min) &
-						" .." & 
-						et_coordinates.to_string (rotation_relative_max),
-						console => true
-						);
-					
-					raise constraint_error;
+					relative_rotation_invalid;
 				end if;
 		end case;
 		
@@ -4329,6 +4332,9 @@ package body schematic_ops is
 					port			=> MASTER,
 					log_threshold	=> log_threshold + 1);
 
+				-- CS this would be easier:
+				-- location := element (cursor).position_sch;
+				
 				log_indentation_up;
 
 				-- Delete netchanger ports in nets:
@@ -4718,7 +4724,127 @@ package body schematic_ops is
 			process		=> query_netchangers'access);
 
 	end drag_netchanger;
-	
+
+	procedure rotate_netchanger (
+	-- Rotates the given netchanger. Disconnects it from
+	-- start or end points of net segments.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		index			: in submodules.type_netchanger_id; -- 1,2,3,...
+		coordinates		: in type_coordinates; -- relative/absolute
+		rotation		: in et_coordinates.type_rotation; -- 90
+		log_threshold	: in type_log_level) is
+
+		use submodules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_netchangers (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_coordinates;
+			use type_netchangers;
+			cursor : type_netchangers.cursor;
+			location : et_coordinates.type_coordinates;
+			rotation : et_coordinates.type_rotation;
+			ports_old : type_netchanger_ports;
+			ports_new : type_netchanger_ports;
+			
+			procedure rotate (
+				index		: in type_netchanger_id;
+				netchanger	: in out type_netchanger) is
+			begin
+				netchanger.rotation := rotation;
+			end;
+			
+		begin -- query_netchangers
+
+			-- locate given netchanger
+			cursor := find (module.netchangers, index);
+
+			if cursor /= type_netchangers.no_element then 
+				-- netchanger exists
+
+				log_indentation_up;
+
+				-- Before the actual rotation, the coordinates of the
+				-- netchanger ports must be fetched.
+				ports_old := netchanger_ports (cursor);
+			
+				-- Fetch the current netchanger position and rotation:
+				location := element (cursor).position_sch;
+				rotation := element (cursor).rotation;
+
+				-- Delete netchanger ports in nets:
+				delete_ports (
+	 				module			=> module_cursor,
+					index			=> index,
+
+					-- Get sheet number from location:
+					sheet			=> et_coordinates.sheet (location),
+					
+					log_threshold	=> log_threshold + 1);
+				
+				-- calculate the rotation the netchanger will have AFTER the move:
+				case coordinates is
+					when ABSOLUTE =>
+						rotation := rotate_netchanger.rotation;
+
+					when RELATIVE =>
+						rotation := add (rotation, rotate_netchanger.rotation);
+				end case;
+
+				-- rotate the netchanger to the new rotation
+				update_element (
+					container	=> module.netchangers,
+					position	=> cursor,
+					process		=> rotate'access);
+
+				-- Get the NEW absolute positions of the netchanger ports AFTER
+				-- the rotation according to location and rotation in schematic.
+				ports_new := netchanger_ports (cursor);
+
+				-- Inserts the netchanger ports in the net segments.
+				insert_ports (
+					module			=> module_cursor,
+					index			=> index,
+					ports			=> ports_new,
+					sheet			=> et_coordinates.sheet (location),
+					log_threshold	=> log_threshold + 1);
+
+				log_indentation_down;
+			else
+				-- netchanger does not exist
+				netchanger_not_found (index);
+			end if;
+			
+		end query_netchangers;
+		
+	begin -- rotate_netchanger
+		case coordinates is
+			when ABSOLUTE =>
+				log ("module " & to_string (module_name) &
+					 " rotating netchanger" & to_string (index) &
+					 " to" & et_coordinates.to_string (rotation), log_threshold);
+
+			when RELATIVE =>
+				if rotation in type_rotation_relative then
+					log ("module " & to_string (module_name) &
+						" rotating netchanger" & to_string (index) &
+						" by" & et_coordinates.to_string (rotation), log_threshold);
+				else
+					relative_rotation_invalid;
+				end if;
+		end case;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_netchangers'access);
+
+	end rotate_netchanger;
+
 	function locate_net (
 	-- Yields a cursor to the requested net in the given module. If the net could
 	-- not be found, returns no_element.
