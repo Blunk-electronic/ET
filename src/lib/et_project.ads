@@ -374,7 +374,7 @@ package et_project is
 	keyword_position_in_board		: constant string := "position_in_board";
 	keyword_position_in_schematic	: constant string := "position_in_schematic";	
 	keyword_view_mode				: constant string := "view_mode";
-	keyword_reference_offset		: constant string := "reference_offset";	
+	keyword_device_names_offset		: constant string := "device_names_offset";	
 	keyword_content					: constant string := "content";
 	keyword_radius					: constant string := "radius";
 	keyword_filled					: constant string := "filled";		

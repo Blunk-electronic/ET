@@ -6843,7 +6843,7 @@ package body schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		file			: in submodules.type_submodule_path.bounded_string; -- templates/oscillator.mod
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		position		: in et_coordinates.type_coordinates; -- sheet/x/y
+		position		: in et_coordinates.type_coordinates; -- sheet, lower left corner x/y 
 		size			: in submodules.type_submodule_size; -- the size of the box in x and y
 		log_threshold	: in type_log_level) is
 
@@ -6884,9 +6884,13 @@ package body schematic_ops is
 			inserted : boolean;
 			submodule : type_submodule;
 		begin -- add
+
+			-- initialize the submodule with basic properties
 			submodule.file := file;
 			submodule.position := position;
 			submodule.size := size;
+			-- Other properties like view mode, device name offset and ports
+			-- have to be set via other commands.
 
 			insert (
 				container	=> module.submods,
