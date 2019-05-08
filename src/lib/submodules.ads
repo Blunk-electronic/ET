@@ -61,6 +61,12 @@ package submodules is
 	end record;
 
 	function to_submodule_size (size : in type_submodule_size) return string;
+
+	function at_edge (
+	-- Returns true if the given point sits at the edge of a submodule box.
+		point	: in et_coordinates.type_point;
+		size	: in submodules.type_submodule_size)
+		return boolean;
 	
 	type type_submodule_view_mode is (
 		ORIGIN,		-- device names and net names displayed as drawn in the generic submodule

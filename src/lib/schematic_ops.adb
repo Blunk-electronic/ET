@@ -6841,8 +6841,8 @@ package body schematic_ops is
 
 	procedure add_submodule (
 	-- Adds a submodule instance to the schematic.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		file			: in submodules.type_submodule_path.bounded_string; -- templates/oscillator.mod
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		file			: in submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		position		: in et_coordinates.type_coordinates; -- sheet, lower left corner x/y 
 		size			: in submodules.type_submodule_size; -- the size of the box in x and y
@@ -6860,7 +6860,9 @@ package body schematic_ops is
 			inserted : boolean;
 			submodule : type_submodule;
 		begin -- add
-
+			-- THE FOLLOWING IS ABOUT THE GRAPHICAL REPRESENTATION OF A SUBMODULE.
+			-- THIS IS THE RECTANGULAR BOX AT THE SHEET WHERE IT THE SUBMODULE IS INSTANTIATED.
+			
 			-- initialize the submodule with basic properties
 			submodule.file := file;
 			submodule.position := position;
@@ -6908,6 +6910,13 @@ package body schematic_ops is
 				 console => true);
 			raise constraint_error;
 		end if;
+
+		-- THIS IS ABOUT THE SCHEMATIC AND LAYOUT STUFF OF THE SUBMODULE:
+		-- Read the submodule file and store its content in container et_project.modules:
+		if not contains (modules, to_module_name (file))) then
+			null;
+		--et_project.read_module_file (to_string (file), log_threshold + 1);
+		end if;
 		
 	end add_submodule;
 
@@ -6928,6 +6937,44 @@ package body schematic_ops is
 			module		: in out type_module) is
 			use type_submodules;
 			submod_cursor : type_submodules.cursor;
+
+			procedure query_ports (
+				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submodule	: in out type_submodule) is
+				use type_submodule_ports;
+				cursor : type_submodule_ports.cursor;
+				inserted : boolean;
+				port : type_submodule_port;
+			begin
+				-- Test whether the submodule provides the given port.
+				-- CS
+				
+				-- The given port position must be somewhere at the edge
+				-- of the submodule:
+				if at_edge (position, submodule.size) then
+					port.position := position;
+				else
+					log (message_error & "port " & to_string (port_name) &
+						 " must be at the edge of the submodule !", console => true);
+					raise constraint_error;
+				end if;
+
+				-- Insert the new port in the submodule:
+				insert (
+					container	=> submodule.ports,
+					key			=> port_name,
+					new_item	=> port,
+					position	=> cursor,
+					inserted	=> inserted);
+
+				if not inserted then
+					log (message_error & "port " & to_string (port_name) &
+						 " already in submodule !", console => true);
+					raise constraint_error;
+				end if;
+				
+			end query_ports;
+			
 		begin -- query_submodules
 			if contains (module.submods, instance) then
 
@@ -6935,13 +6982,11 @@ package body schematic_ops is
 
 				log_indentation_up;
 
--- 				-- get submodule position (sheet/x/y)
--- 				submod_position := element (submod_cursor).position;
--- 
--- 				-- look for the given port
--- 				query_element (
--- 					position	=> submod_cursor,
--- 					process		=> query_ports'access);
+ 				-- insert the given port in the submodule
+				update_element (
+					container	=> module.submods,
+					position	=> submod_cursor,
+					process		=> query_ports'access);
 
 				log_indentation_down;				
 			else

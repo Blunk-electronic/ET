@@ -359,8 +359,8 @@ package schematic_ops is
 
 	procedure add_submodule (
 	-- Adds a submodule instance to the schematic.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		file			: in submodules.type_submodule_path.bounded_string; -- templates/oscillator.mod
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		file			: in submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		position		: in et_coordinates.type_coordinates; -- sheet, lower left corner x/y 
 		size			: in submodules.type_submodule_size; -- the size of the box in x and y

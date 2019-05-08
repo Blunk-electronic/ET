@@ -66,6 +66,16 @@ package body submodules is
 			axis_separator &
 			et_coordinates.to_string (size.y);
 	end;
+
+	function at_edge (
+	-- Returns true if the given point sits at the edge of a submodule box.
+		point	: in et_coordinates.type_point;
+		size	: in submodules.type_submodule_size)
+		return boolean is
+	begin
+		return true; -- CS
+	end at_edge;
+
 	
 	function to_submodule_path (path : in string) return type_submodule_path.bounded_string is begin
 		return type_submodule_path.to_bounded_string (path);

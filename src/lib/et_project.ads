@@ -181,7 +181,7 @@ package et_project is
 	-- The collection of rig configurations:
 	rigs : type_rigs.map;
 
-	-- Generic modules (which contain schematic and layout stuff)
+	-- Generic modules and submodules (which contain schematic and layout stuff)
 	-- are collected here:
 	package type_modules is new ordered_maps (
 		key_type		=> type_module_name.bounded_string, -- motor_driver (without extension *.mod)
@@ -569,6 +569,14 @@ package et_project is
 
 	function to_string (section : in type_section_name_module) return string;
 	-- Converts a section like SEC_NET to a string "net".
+
+	function remove_extension (file_name : in string) return string;
+	-- Removes from a string like templates/clock_generator.mod the extension so that
+	-- the return would be templates/clock_generator .
+	
+	procedure read_module_file (
+		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
+		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure open_project (log_threshold : in et_string_processing.type_log_level);
 	-- Enters the project directory specified by project_name.
@@ -641,7 +649,7 @@ package et_project is
 		SEC_CORNERS,
 		SEC_PACKAGE_3D_CONTOURS
 		);
-
+	
 
 	
 -- GENERICS
