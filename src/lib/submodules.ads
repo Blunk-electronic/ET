@@ -60,6 +60,8 @@ package submodules is
 		x, y : et_coordinates.type_distance; -- size x/y of the box
 	end record;
 
+	function to_submodule_size (size : in type_submodule_size) return string;
+	
 	type type_submodule_view_mode is (
 		ORIGIN,		-- references and net names displayed as drawn in the generic submodule
 		INSTANCE	-- references and net names displayed after renumbering and prefixing
@@ -98,8 +100,8 @@ package submodules is
 		position		    : et_coordinates.type_coordinates;
 		size				: type_submodule_size;
 		position_in_board	: et_pcb_coordinates.type_point_2d_with_angle;
-		view_mode			: type_submodule_view_mode;
-		reference_offset	: et_libraries.type_device_name_index;	-- R88 turns to R2088 or R788
+		view_mode			: type_submodule_view_mode := ORIGIN;
+		device_names_offset	: et_libraries.type_device_name_index;	-- R88 turns to R2088 or R788
 		ports				: type_submodule_ports.map;
 	end record;
 

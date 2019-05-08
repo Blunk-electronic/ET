@@ -57,6 +57,15 @@ with et_pcb;
 with et_pcb_coordinates;
 
 package body submodules is
+
+	function to_submodule_size (size : in type_submodule_size) return string is 
+		use et_coordinates;
+	begin
+		return " size (x/y)" &
+			et_coordinates.to_string (size.x) &
+			axis_separator &
+			et_coordinates.to_string (size.y);
+	end;
 	
 	function to_submodule_path (path : in string) return type_submodule_path.bounded_string is begin
 		return type_submodule_path.to_bounded_string (path);

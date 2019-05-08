@@ -6838,6 +6838,99 @@ package body schematic_ops is
 		log_indentation_down;		
 	end draw_net;
 
+	procedure add_submodule (
+	-- Adds a submodule instance to the schematic.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		file			: in submodules.type_submodule_path.bounded_string; -- templates/oscillator.mod
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		position		: in et_coordinates.type_coordinates; -- sheet/x/y
+		size			: in submodules.type_submodule_size; -- the size of the box in x and y
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use submodules;
+
+-- 		procedure query_submodules (
+-- 			module_name	: in type_module_name.bounded_string;
+-- 			module		: in type_module) is
+-- 			use type_submodules;
+-- 			submod_cursor : type_submodules.cursor;
+-- 		begin -- query_submodules
+-- 			if contains (module.submods, submod_name) then
+-- 				submod_cursor := find (module.submods, submod_name); -- the submodule should be there
+-- 
+-- 				log_indentation_up;
+-- 
+-- 				-- get submodule position (sheet/x/y)
+-- 				submod_position := element (submod_cursor).position;
+-- 
+-- 				-- look for the given port
+-- 				query_element (
+-- 					position	=> submod_cursor,
+-- 					process		=> query_ports'access);
+-- 
+-- 				log_indentation_down;				
+-- 			else
+-- 				submodule_not_found (submod_name);
+-- 			end if;
+-- 		end query_submodules;
+
+		procedure add (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_submodules;
+			submod_cursor : type_submodules.cursor;
+			inserted : boolean;
+			submodule : type_submodule;
+		begin -- add
+			submodule.file := file;
+			submodule.position := position;
+			submodule.size := size;
+
+			insert (
+				container	=> module.submods,
+				key			=> instance,
+				new_item	=> submodule,
+				position	=> submod_cursor,
+				inserted	=> inserted);
+				
+			if not inserted then
+				log (message_error & "submodule instance " &
+					enclose_in_quotes (to_string (instance)) &
+					" already exists !", console => true);
+				raise constraint_error;
+			end if;
+		end add;
+
+		
+	begin -- add_submodule
+		log ("module " & to_string (module_name) &
+			" adding submodule " & to_string (file) & 
+			" instance " & to_string (instance),
+			log_threshold);
+
+		log (" at" & to_string (position => position) &
+			to_submodule_size (size),
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		if ada.directories.exists (to_string (file)) then
+			
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> add'access);
+
+		else
+			log (message_error & "submodule file " & to_string (file) & " not found !",
+				 console => true);
+			raise constraint_error;
+		end if;
+		
+	end add_submodule;
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

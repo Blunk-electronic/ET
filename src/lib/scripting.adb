@@ -262,6 +262,36 @@ package body scripting is
 								when others =>
 									command_incomplete;
 							end case;
+
+						when SUBMODULE =>
+							case fields is
+								when 11 =>
+									schematic_ops.add_submodule (
+										module_name 	=> module,
+										file			=> submodules.to_submodule_path (f (5)),
+										instance		=> et_general.to_instance_name (f (6)),
+										position		=> to_coordinates 
+											(
+											sheet => to_sheet (f (7)),
+											point => set_point 
+														(
+														x => to_distance (f (8)),
+														y => to_distance (f (9))
+														)
+											),
+										size => (
+											x => to_distance (f (10)),
+											y => to_distance (f (11))
+											),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 12 .. count_type'last =>
+									command_too_long (11);
+									
+								when others =>
+									command_incomplete;
+							end case;
 							
 						when others => invalid_noun (to_string (noun));
 					end case;

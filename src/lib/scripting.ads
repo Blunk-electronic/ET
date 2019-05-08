@@ -111,6 +111,7 @@ package scripting is
 		PARTCODE,
 		PURPOSE,
 		SEGMENT, -- net segment
+		SUBMODULE,
 		TEXT,
 		TEXT_SIZE,
 		UNIT,

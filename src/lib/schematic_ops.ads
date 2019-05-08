@@ -356,6 +356,15 @@ package schematic_ops is
 		start_point		: in et_coordinates.type_coordinates; -- sheet/x/y
 		end_point		: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level);
+
+	procedure add_submodule (
+	-- Adds a submodule instance to the schematic.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		file			: in submodules.type_submodule_path.bounded_string; -- templates/oscillator.mod
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		position		: in et_coordinates.type_coordinates; -- sheet/x/y
+		size			: in submodules.type_submodule_size; -- the size of the box in x and y
+		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
