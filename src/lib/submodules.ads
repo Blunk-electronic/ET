@@ -63,8 +63,8 @@ package submodules is
 	function to_submodule_size (size : in type_submodule_size) return string;
 	
 	type type_submodule_view_mode is (
-		ORIGIN,		-- references and net names displayed as drawn in the generic submodule
-		INSTANCE	-- references and net names displayed after renumbering and prefixing
+		ORIGIN,		-- device names and net names displayed as drawn in the generic submodule
+		INSTANCE	-- device names and net names displayed after renumbering and prefixing
 		);
 
 	function to_string (view : in type_submodule_view_mode) return string;

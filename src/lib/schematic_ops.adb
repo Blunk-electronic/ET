@@ -97,7 +97,8 @@ package body schematic_ops is
 	end;
 
 	procedure submodule_not_found (name : in et_general.type_module_instance_name.bounded_string) is begin
-		log (message_error & "submodule " & et_general.to_string (name) & " not found !", console => true);
+		log (message_error & "submodule " & enclose_in_quotes (et_general.to_string (name)) &
+			 " not found !", console => true);
 		raise constraint_error;
 	end;
 
@@ -6851,31 +6852,6 @@ package body schematic_ops is
 
 		use submodules;
 
--- 		procedure query_submodules (
--- 			module_name	: in type_module_name.bounded_string;
--- 			module		: in type_module) is
--- 			use type_submodules;
--- 			submod_cursor : type_submodules.cursor;
--- 		begin -- query_submodules
--- 			if contains (module.submods, submod_name) then
--- 				submod_cursor := find (module.submods, submod_name); -- the submodule should be there
--- 
--- 				log_indentation_up;
--- 
--- 				-- get submodule position (sheet/x/y)
--- 				submod_position := element (submod_cursor).position;
--- 
--- 				-- look for the given port
--- 				query_element (
--- 					position	=> submod_cursor,
--- 					process		=> query_ports'access);
--- 
--- 				log_indentation_down;				
--- 			else
--- 				submodule_not_found (submod_name);
--- 			end if;
--- 		end query_submodules;
-
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
@@ -6906,12 +6882,11 @@ package body schematic_ops is
 				raise constraint_error;
 			end if;
 		end add;
-
 		
 	begin -- add_submodule
 		log ("module " & to_string (module_name) &
 			" adding submodule " & to_string (file) & 
-			" instance " & to_string (instance),
+			" instance " & enclose_in_quotes (to_string (instance)),
 			log_threshold);
 
 		log (" at" & to_string (position => position) &
@@ -6935,7 +6910,63 @@ package body schematic_ops is
 		end if;
 		
 	end add_submodule;
-	
+
+	procedure add_port (
+	-- Adds a port to a submodule instance.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		port_name		: in type_net_name.bounded_string; -- clk_out
+		position		: in et_coordinates.type_point; -- x/y along the edge of the box
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use submodules;
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_submodules;
+			submod_cursor : type_submodules.cursor;
+		begin -- query_submodules
+			if contains (module.submods, instance) then
+
+ 				submod_cursor := find (module.submods, instance); -- the submodule should be there
+
+				log_indentation_up;
+
+-- 				-- get submodule position (sheet/x/y)
+-- 				submod_position := element (submod_cursor).position;
+-- 
+-- 				-- look for the given port
+-- 				query_element (
+-- 					position	=> submod_cursor,
+-- 					process		=> query_ports'access);
+
+				log_indentation_down;				
+			else
+				submodule_not_found (instance);
+			end if;
+		end query_submodules;
+
+	begin -- add_port
+		log ("module " & to_string (module_name) &
+			" submodule instance " & enclose_in_quotes (to_string (instance)) & 
+			" adding port " & to_string (port_name) &
+			" at" & to_string (position),
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_submodules'access);
+		
+	end add_port;
+
+		
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
 	-- Tests:

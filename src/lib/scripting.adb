@@ -263,6 +263,28 @@ package body scripting is
 									command_incomplete;
 							end case;
 
+						when PORT =>
+							case fields is
+								when 8 =>
+									schematic_ops.add_port (
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)),
+										port_name		=> et_general.to_net_name (f (6)),
+										position		=> type_point (set_point 
+													(
+													x => to_distance (f (7)),
+													y => to_distance (f (8))
+													)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last =>
+									command_too_long (8);
+									
+								when others =>
+									command_incomplete;
+							end case;
+							
 						when SUBMODULE =>
 							case fields is
 								when 11 =>

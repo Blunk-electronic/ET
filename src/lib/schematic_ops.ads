@@ -365,6 +365,14 @@ package schematic_ops is
 		position		: in et_coordinates.type_coordinates; -- sheet, lower left corner x/y 
 		size			: in submodules.type_submodule_size; -- the size of the box in x and y
 		log_threshold	: in type_log_level);
+
+	procedure add_port (
+	-- Adds a port to a submodule instance.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		port_name		: in et_general.type_net_name.bounded_string; -- clk_out
+		position		: in et_coordinates.type_point; -- x/y along the edge of the box
+		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

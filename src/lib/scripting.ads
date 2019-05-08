@@ -109,6 +109,7 @@ package scripting is
 		NET,
 		NETCHANGER,
 		PARTCODE,
+		PORT, -- of a submodule instance
 		PURPOSE,
 		SEGMENT, -- net segment
 		SUBMODULE,
