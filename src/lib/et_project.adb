@@ -12161,7 +12161,7 @@ package body et_project is
 			position	=> module_cursor,
 			inserted	=> module_inserted);
 
--- 		if module_inserted then
+-- 		CS if module_inserted then
 		
 		-- read the file line by line
 		while not end_of_file loop
