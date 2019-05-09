@@ -182,7 +182,10 @@ package et_project is
 	rigs : type_rigs.map;
 
 	-- Generic modules and submodules (which contain schematic and layout stuff)
-	-- are collected here:
+	-- are collected here.
+	-- Module names are things like "motor_driver" or "temperature_controller".
+	-- Submodule names are things like "templates/clock_generator" or
+	-- "$TEMPLATES/clock_generator" or "/home/user/templates/clock_generator":
 	package type_modules is new ordered_maps (
 		key_type		=> type_module_name.bounded_string, -- motor_driver (without extension *.mod)
 		"<"				=> type_module_name."<",

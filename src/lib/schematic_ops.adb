@@ -6898,6 +6898,7 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+		-- make sure the submodule file exists:
 		if ada.directories.exists (to_string (file)) then
 			
 			update_element (
@@ -6911,14 +6912,9 @@ package body schematic_ops is
 			raise constraint_error;
 		end if;
 
-		-- THIS IS ABOUT THE SCHEMATIC AND LAYOUT STUFF OF THE SUBMODULE:
+		-- THIS IS ABOUT THE ACTUAL SCHEMATIC AND LAYOUT STUFF OF THE SUBMODULE:
 		-- Read the submodule file and store its content in container et_project.modules:
--- 		if not contains (modules, to_module_name (remove_extension (to_string (file)))) then
--- 			null;
--- 			log ("submodule " & to_string (file) & " not imported yet.", log_threshold);
--- 		else
 		et_project.read_module_file (to_string (file), log_threshold + 1);		
--- 		end if;
 		
 	end add_submodule;
 

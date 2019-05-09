@@ -7586,13 +7586,18 @@ package body et_project is
 		log_threshold	: in et_string_processing.type_log_level) 
 		is
 		previous_input : ada.text_io.file_type renames current_input;
+
+		use et_string_processing;
+
+		-- This is the full file name with its path after expanding
+		-- (environment variables could be in file name):
+		full_file_name : constant string := expand (file_name, log_threshold + 1);
 			
 		file_handle : ada.text_io.file_type;
 		use type_modules;
 		module_cursor : type_modules.cursor;
 		module_inserted : boolean;
 
-		use et_string_processing;
 		line : et_string_processing.type_fields_of_line;
 
 		function f (line : in type_fields_of_line; position : in positive) return string 
@@ -12142,57 +12147,76 @@ package body et_project is
 		log (file_name, log_threshold);
 		log_indentation_up;
 
-		-- open module file
-		open (
-			file => file_handle,
-			mode => in_file, 
-			name => expand (file_name, log_threshold + 1));
+		-- Make sure the module file exists.
+		-- The file is identified by its full path and name.
+		if exists (full_file_name) then
 
-		set_input (file_handle);
-		
-		-- Init section stack.
-		stack.init;
-		stack.push (SEC_INIT);
+			-- Create an empty module named after the module file (omitting extension *.mod).
+			-- So the module names are things like "templates/clock_generator" or
+			-- "$TEMPLATES/clock_generator" or "/home/user/templates/clock_generator":
+			type_modules.insert (
+				container	=> modules,
+				key			=> to_module_name (remove_extension (file_name)),
+				position	=> module_cursor,
+				inserted	=> module_inserted);
 
-		-- Create an empty module named after the module file (omitting extension *.mod).
-		type_modules.insert (
-			container	=> modules,
-			key			=> to_module_name (remove_extension (file_name)),
-			position	=> module_cursor,
-			inserted	=> module_inserted);
+			-- If the module is new, then open the file and read it. 
+			-- Otherwise notify operator that module has already been loaded.			 
+			if module_inserted then
+				
+				-- open module file
+				open (
+					file => file_handle,
+					mode => in_file, 
+					name => full_file_name); -- full path and name
+				
+				set_input (file_handle);
+				
+				-- Init section stack.
+				stack.init;
+				stack.push (SEC_INIT);
+				
+				-- read the file line by line
+				while not end_of_file loop
+					line := et_string_processing.read_line (
+						line 			=> get_line,
+						number			=> ada.text_io.line (current_input),
+						comment_mark 	=> comment_mark,
+						delimiter_wrap	=> true, -- strings are enclosed in quotations
+						ifs 			=> latin_1.space); -- fields are separated by space
 
--- 		CS if module_inserted then
-		
-		-- read the file line by line
-		while not end_of_file loop
-			line := et_string_processing.read_line (
-				line 			=> get_line,
-				number			=> ada.text_io.line (current_input),
-				comment_mark 	=> comment_mark,
-				delimiter_wrap	=> true, -- strings are enclosed in quotations
-				ifs 			=> latin_1.space); -- fields are separated by space
+					-- we are interested in lines that contain something. emtpy lines are skipped:
+					if field_count (line) > 0 then
+						process_line;
+					end if;
+				end loop;
 
-			-- we are interested in lines that contain something. emtpy lines are skipped:
-			if field_count (line) > 0 then
-				process_line;
+				-- As a safety measure the top section must be reached finally.
+				if stack.depth > 1 then 
+					log (message_warning & write_section_stack_not_empty);
+				end if;
+
+				set_input (previous_input);
+				close (file_handle);
+
+				-- Pointer module_cursor points to the last module that has been read.		
+				-- The names of submodule/template files are stored in module.submods.file.
+				-- But the files itself have not been read. That is what we do next:
+				read_submodule_files;
+
+			else
+				log ("module " & enclose_in_quotes (file_name) &
+					 " already loaded -> no need to load anew.", log_threshold);
 			end if;
-		end loop;
-
-		-- As a safety measure the top section must be reached finally.
-		if stack.depth > 1 then 
-			log (message_warning & write_section_stack_not_empty);
+			
+		else -- module file not found
+			log_indentation_reset;
+			log (message_error & "module file " & enclose_in_quotes (file_name) &
+				 " not found !", console => true);
+			raise constraint_error;
 		end if;
 
--- 		put_line ("module read");
-		
 		log_indentation_down;
-		set_input (previous_input);
-		close (file_handle);
-
-		-- Pointer module_cursor points to the last module that has been read.		
-		-- The names of submodule/template files are stored in module.submods.file.
-		-- But the files itself have not been read. That is what we do next:
-		read_submodule_files;
 		
 		exception when event: others =>
 			if is_open (file_handle) then close (file_handle); end if;
