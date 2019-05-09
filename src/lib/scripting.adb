@@ -938,12 +938,23 @@ package body scripting is
 
 	
 	function execute_script (
-		file_name		: in type_script_name.bounded_string;
+	-- Executes the given script file.
+	-- Changes into the directory where the script lives and starts
+	-- execution there.
+		file_name		: in type_script_name.bounded_string; -- dummy_module/my_script.scr
 		log_threshold	: in type_log_level)
 		return type_exit_code is
 		
-		exit_code : type_exit_code := SUCCESSFUL;
+		exit_code : type_exit_code := SUCCESSFUL; -- to be returned
 
+		use ada.directories;
+
+		-- Here we backup the current working directory:
+		projects_directory : type_script_name.bounded_string;
+
+		-- Here we store the directory where the script resides:
+		script_directory : type_script_name.bounded_string;
+		
 		file_handle : ada.text_io.file_type;
 		line : et_string_processing.type_fields_of_line;
 		
@@ -952,38 +963,63 @@ package body scripting is
 		log ("executing script " & to_string (file_name), log_threshold);
 		log_indentation_up;
 
-		-- open script file
-		open (
-			file => file_handle,
-			mode => in_file, 
-			name => to_string (file_name)); -- demo.scr
+		-- build the directory where the script is located:
+		script_directory := to_script_name (full_name (to_string (file_name)));
+		script_directory := to_script_name (containing_directory (to_string (script_directory)));
 
-		set_input (file_handle);
-		
-		-- read the file line by line
-		while not end_of_file loop
+		-- backup the current working directory
+		projects_directory := to_script_name (containing_directory (to_string (script_directory)));
+		--log ("projects directory " & to_string (projects_directory), log_threshold);
+
+		-- change in directory where the script is:
+		log ("changing to directory " & to_string (script_directory), log_threshold + 1);
+		set_directory (to_string (script_directory));
+
+		-- make sure the script file exists:
+		if exists (simple_name (to_string (file_name))) then
+
+			-- open script file
+			open (
+				file => file_handle,
+				mode => in_file, 
+				name => simple_name (to_string (file_name))); -- demo.scr
+
+			set_input (file_handle);
 			
-			line := et_string_processing.read_line (
-				line 			=> get_line,
-				number			=> ada.text_io.line (current_input),
-				comment_mark 	=> comment_mark, -- comments start with "--"
-				delimiter_wrap	=> true, -- strings are enclosed in quotations
-				ifs 			=> latin_1.space); -- fields are separated by space
-
-			-- we are interested in lines that contain something. emtpy lines are skipped:
-			if field_count (line) > 0 then
-
-				-- execute the line as command
-				exit_code := execute_command (file_name, line, log_threshold + 1);
-
-				-- evaluate exit code and do things necessary (abort, log messages, ...)
-				case exit_code is
-					when ERROR => exit;
-					when others => null;
-				end case;
+			-- read the file line by line
+			while not end_of_file loop
 				
-			end if;
-		end loop;
+				line := et_string_processing.read_line (
+					line 			=> get_line,
+					number			=> ada.text_io.line (current_input),
+					comment_mark 	=> comment_mark, -- comments start with "--"
+					delimiter_wrap	=> true, -- strings are enclosed in quotations
+					ifs 			=> latin_1.space); -- fields are separated by space
+
+				-- we are interested in lines that contain something. emtpy lines are skipped:
+				if field_count (line) > 0 then
+
+					-- execute the line as command
+					exit_code := execute_command (file_name, line, log_threshold + 1);
+
+					-- evaluate exit code and do things necessary (abort, log messages, ...)
+					case exit_code is
+						when ERROR => exit;
+						when others => null;
+					end case;
+					
+				end if;
+			end loop;
+
+		else -- script file not found
+			log (message_error & "script file " & 
+				 enclose_in_quotes (simple_name (to_string (file_name))) &
+				 " not found !", console => true);
+			raise constraint_error;
+		end if;
+															   
+		log ("returning to directory " & to_string (projects_directory), log_threshold + 1);
+		set_directory (to_string (projects_directory));
 		
 		log_indentation_down;
 		set_input (standard_input);
@@ -994,7 +1030,7 @@ package body scripting is
 		exception when event: others =>
 			if is_open (file_handle) then close (file_handle); end if;
 			set_input (standard_input);
-			raise;
+			--raise;
 			return ERROR;
 		
 	end execute_script;
