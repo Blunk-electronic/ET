@@ -6913,10 +6913,12 @@ package body schematic_ops is
 
 		-- THIS IS ABOUT THE SCHEMATIC AND LAYOUT STUFF OF THE SUBMODULE:
 		-- Read the submodule file and store its content in container et_project.modules:
-		if not contains (modules, to_module_name (file))) then
-			null;
-		--et_project.read_module_file (to_string (file), log_threshold + 1);
-		end if;
+-- 		if not contains (modules, to_module_name (remove_extension (to_string (file)))) then
+-- 			null;
+-- 			log ("submodule " & to_string (file) & " not imported yet.", log_threshold);
+-- 		else
+		et_project.read_module_file (to_string (file), log_threshold + 1);		
+-- 		end if;
 		
 	end add_submodule;
 

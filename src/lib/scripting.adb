@@ -941,7 +941,9 @@ package body scripting is
 		file_name		: in type_script_name.bounded_string;
 		log_threshold	: in type_log_level)
 		return type_exit_code is
+		
 		exit_code : type_exit_code := SUCCESSFUL;
+
 		file_handle : ada.text_io.file_type;
 		line : et_string_processing.type_fields_of_line;
 		
@@ -960,6 +962,7 @@ package body scripting is
 		
 		-- read the file line by line
 		while not end_of_file loop
+			
 			line := et_string_processing.read_line (
 				line 			=> get_line,
 				number			=> ada.text_io.line (current_input),
@@ -983,18 +986,16 @@ package body scripting is
 		end loop;
 		
 		log_indentation_down;
-
-		set_input (current_input);
+		set_input (standard_input);
 		close (file_handle);
 		
 		return exit_code;
 
 		exception when event: others =>
 			if is_open (file_handle) then close (file_handle); end if;
+			set_input (standard_input);
 			raise;
 			return ERROR;
-
-
 		
 	end execute_script;
 

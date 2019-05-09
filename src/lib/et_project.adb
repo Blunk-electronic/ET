@@ -7585,6 +7585,8 @@ package body et_project is
 		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
 		log_threshold	: in et_string_processing.type_log_level) 
 		is
+		previous_input : ada.text_io.file_type renames current_input;
+			
 		file_handle : ada.text_io.file_type;
 		use type_modules;
 		module_cursor : type_modules.cursor;
@@ -12159,6 +12161,8 @@ package body et_project is
 			position	=> module_cursor,
 			inserted	=> module_inserted);
 
+-- 		if module_inserted then
+		
 		-- read the file line by line
 		while not end_of_file loop
 			line := et_string_processing.read_line (
@@ -12179,8 +12183,10 @@ package body et_project is
 			log (message_warning & write_section_stack_not_empty);
 		end if;
 
+-- 		put_line ("module read");
+		
 		log_indentation_down;
-		set_input (standard_input);
+		set_input (previous_input);
 		close (file_handle);
 
 		-- Pointer module_cursor points to the last module that has been read.		
@@ -12190,6 +12196,7 @@ package body et_project is
 		
 		exception when event: others =>
 			if is_open (file_handle) then close (file_handle); end if;
+			set_input (previous_input);
 			raise;
 		
 	end read_module_file;
