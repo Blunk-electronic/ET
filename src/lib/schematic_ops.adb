@@ -6850,6 +6850,8 @@ package body schematic_ops is
 
 		module_cursor : type_modules.cursor; -- points to the module
 
+		full_file_name : constant string := et_project.expand (submodules.to_string (file), log_threshold + 1);
+		
 		use submodules;
 
 		procedure add (
@@ -6898,8 +6900,12 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
-		-- make sure the submodule file exists:
-		if ada.directories.exists (to_string (file)) then
+		-- Make sure the submodule file exists. The file is 
+		-- identified by its full path and name. If the file exists
+		-- then a submodule is inserted in the targeted module.
+		-- NOTE: This is the rectangular box at the targeted sheet that
+		-- represents the submodule:
+		if ada.directories.exists (full_file_name) then
 			
 			update_element (
 				container	=> modules,

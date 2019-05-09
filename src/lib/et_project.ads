@@ -81,6 +81,14 @@ package et_project is
 	directory_documentation	: constant string := "documentation";
 	directory_miscellaneous	: constant string := "miscellaneous";		
 
+	function expand (
+	-- Translates a file name like $HOME/libraries/devices/7400.dev to
+	-- /home/user/libraries/devices/7400.dev
+	-- CS: works on unix/linux only
+		name_in			: in string; -- $HOME/libraries/devices/7400.dev
+		log_threshold	: et_string_processing.type_log_level)
+		return string;
+	
 	subtype type_file_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
 	file_name_text_size_default : constant type_file_name_text_size := 1.3;
 

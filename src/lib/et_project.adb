@@ -1231,7 +1231,7 @@ package body et_project is
 		module_file_handle : ada.text_io.file_type;
 		
 		procedure write_module_header is 
-		-- Creates the module file and writes a nice header in it.
+		-- Creates the module/submodule file and writes a nice header in it.
 			use ada.directories;
 			use gnat.directory_operations;
 			use type_project_name;
@@ -12759,6 +12759,7 @@ package body et_project is
 		name : type_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
 
 		procedure query_modules (module_cursor : in type_modules.cursor) is
+		-- Saves a module or a submodule (indicated by module_cursor).
 			module_name : type_module_name.bounded_string := key (module_cursor); -- motor_driver
 		begin
 			log_indentation_up;
