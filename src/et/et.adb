@@ -186,6 +186,7 @@ procedure et is
 
 	procedure import_project is
 	-- CAUTION: uses the global variable project_name_import !!!
+	-- As a result of the import, a native project is created in the work_directory (ET/...).
 		use et_schematic;
 		use et_project.type_project_name;
 		use et_import;
@@ -207,6 +208,7 @@ procedure et is
 			raise constraint_error;
 		end if;		
 
+		-- CS not required for importing foreign projects. Update README.md. :
 		-- read conventions file if specified. otherwise issue warning
 		if conventions.type_conventions_file_name.length (conv_file_name_use) > 0 then
 			conventions.read_conventions (conv_file_name_use, log_threshold => 0);
