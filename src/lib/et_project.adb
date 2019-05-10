@@ -12764,83 +12764,41 @@ package body et_project is
 		-- Saves a module or a submodule (indicated by module_cursor).
 			module_name : type_module_name.bounded_string := key (module_cursor); -- motor_driver
 
-			function in_destination_directory return boolean is
+			function in_project_directory return boolean is
+			-- Tests whether the current module is inside the project directory.
+			-- NOTE: This works on Linux only.
+			-- 1. The expanded module_name may be a relative path to a directory outside the project.
+			--    In this case the expanded path starts with ../ and the return will be false.
+			-- 2. The expanded module_name may be a relative path to a subdirectory inside the project.
+			--    In this case the return would be true.
+			-- 3. The expanded module_name may be an absolute path pointing elsewhere in the filesystem.
+			--    In this case the expanded path starts with / and the return will be false.
 				use gnat.directory_operations;
-
-				dest_dir : constant string := to_string (destination);
 				expanded_name : constant string := expand (to_string (module_name), log_threshold + 4);
-
--- 				function format (path : in string) return string is begin
--- 				-- Removes a possible heading ./ from the path.
--- 					if index (path, "./") = 1 then
--- 						return path (path'first + 2 .. path'last);
--- 					else
--- 						return path;
--- 					end if;
--- 				end;
--- 
--- 				-- Compose the full path and name of the module file.
--- 				module_file : constant  string := format (
--- 					to_string (path) &			-- /home/user/ecad
--- 					dir_separator &				-- /
--- 					to_string (name) &			-- blood_sample_analyzer
--- 					dir_separator &				-- /
--- 					to_string (module_name) &	-- motor_driver, templates/clock_generator
--- 					latin_1.full_stop &			-- .
--- 					module_file_name_extension);-- mod
--- 					 
-			begin -- in_destination_directory
--- 				log ("destination : " & dest_dir);
--- 				log ("module file : " & module_file);
-				
-				-- destination     : /home/user/ecad/blood_sample_analyzer
-				
-				-- module file name: /home/user/ecad/blood_sample_analyzer/motor_driver.mod
-				-- module file name: /home/user/ecad/blood_sample_analyzer/templates/clock_generator.mod
-				--                     path         / project_name        / module_name 
-
--- 				if index (module_file, dest_dir) = 1 then
--- 					return true;
--- 				else
--- 					return false;
-				-- 				end if;
-
--- 				log ("expanded name: " & expanded_name, log_threshold + 2);
-
--- 				if 	type_module_name.index (module_name, to_set (dir_separator)) = 1 or
--- 					type_module_name.index (module_name, ".." & dir_separator) = 1 then
--- 					return false;
--- 				else
--- 					return true;
--- 				end if;
-
-				if 	index (expanded_name, to_set (dir_separator)) = 1 or
-					index (expanded_name, ".." & dir_separator) = 1 then
+			begin
+				if 	index (expanded_name, to_set (dir_separator)) = 1 or -- absolute path
+					index (expanded_name, ".." & dir_separator) = 1 then -- relative outside the project
 					return false;
 				else
 					return true;
 				end if;
-				
 			end;
 			
 		begin -- query_modules
 			log_indentation_up;
-			--module_name := to_module_name (full_name (to_string (module_name), log_threshold + 1));
 
--- 			log ("module " & full_name (to_string (module_name)));
--- 			et_schematic.module := element (module_cursor);
-
-			if in_destination_directory then
+			-- Only those modules inside the project will be saved in the new project:
+			if in_project_directory then
 				log ("saving module " & to_string (module_name), log_threshold + 1);
 				
 				log_indentation_up;
 				
--- 				save_module (
--- 					module			=> element (module_cursor), -- the module it is about
--- 					project_name	=> name, -- blood_sample_analyzer
--- 					module_name		=> module_name,	-- motor_driver
--- 					project_path	=> path, -- /home/user/ecad
--- 					log_threshold 	=> log_threshold + 2);
+				save_module (
+					module			=> element (module_cursor), -- the module it is about
+					project_name	=> name, -- blood_sample_analyzer
+					module_name		=> module_name,	-- motor_driver
+					project_path	=> path, -- /home/user/ecad
+					log_threshold 	=> log_threshold + 2);
 
 				-- FOR TESTING ONLY
 				-- save libraries (et_libraries.devices and et_pcb.packages)
