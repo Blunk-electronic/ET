@@ -12152,7 +12152,7 @@ package body et_project is
 		if exists (full_file_name) then
 
 			-- Create an empty module named after the module file (omitting extension *.mod).
-			-- So the module names are things like "templates/clock_generator" or
+			-- So the module names are things like "motor_driver", "templates/clock_generator" or
 			-- "$TEMPLATES/clock_generator" or "/home/user/templates/clock_generator":
 			type_modules.insert (
 				container	=> modules,
@@ -12761,28 +12761,80 @@ package body et_project is
 		procedure query_modules (module_cursor : in type_modules.cursor) is
 		-- Saves a module or a submodule (indicated by module_cursor).
 			module_name : type_module_name.bounded_string := key (module_cursor); -- motor_driver
-		begin
+
+			function in_destination_directory return boolean is
+				use gnat.directory_operations;
+
+				dest_dir : constant string := to_string (destination);
+
+				function format (path : in string) return string is begin
+				-- Removes a possible heading ./ from the path.
+					if index (path, "./") = 1 then
+						return path (path'first + 2 .. path'last);
+					else
+						return path;
+					end if;
+				end;
+
+				-- Compose the full path and name of the module file.
+				module_file : constant  string := format (
+					to_string (path) &			-- /home/user/ecad
+					dir_separator &				-- /
+					to_string (name) &			-- blood_sample_analyzer
+					dir_separator &				-- /
+					to_string (module_name) &	-- motor_driver, templates/clock_generator
+					latin_1.full_stop &			-- .
+					module_file_name_extension);-- mod
+					 
+			begin -- in_destination_directory
+-- 				log ("destination : " & dest_dir);
+-- 				log ("module file : " & module_file);
+				
+				-- destination     : /home/user/ecad/blood_sample_analyzer
+				
+				-- module file name: /home/user/ecad/blood_sample_analyzer/motor_driver.mod
+				-- module file name: /home/user/ecad/blood_sample_analyzer/templates/clock_generator.mod
+				--                     path         / project_name        / module_name 
+
+-- 				if index (module_file, dest_dir) = 1 then
+-- 					return true;
+-- 				else
+-- 					return false;
+				-- 				end if;
+
+				if type_module_name.index (module_name, to_set (dir_separator)) = 1 then
+					return false;
+				else
+					return true;
+				end if;
+			end;
+			
+		begin -- query_modules
 			log_indentation_up;
 			log ("module " & to_string (module_name), log_threshold + 1);
+			--log ("module " & full_name (to_string (module_name)));
 -- 			et_schematic.module := element (module_cursor);
 
-			log_indentation_up;
-			
-			save_module (
-				module			=> element (module_cursor), -- the module it is about
-				project_name	=> name, -- blood_sample_analyzer
-				module_name		=> module_name,	-- motor_driver
-				project_path	=> path, -- /home/user/ecad
-				log_threshold 	=> log_threshold + 2);
+			if in_destination_directory then
+				log_indentation_up;
+				
+				save_module (
+					module			=> element (module_cursor), -- the module it is about
+					project_name	=> name, -- blood_sample_analyzer
+					module_name		=> module_name,	-- motor_driver
+					project_path	=> path, -- /home/user/ecad
+					log_threshold 	=> log_threshold + 2);
 
-			-- FOR TESTING ONLY
-			-- save libraries (et_libraries.devices and et_pcb.packages)
--- 			save_libraries (
--- 				project_name	=> name, -- blood_sample_analyzer
--- 				project_path	=> path, -- /home/user/ecad
--- 				log_threshold 	=> log_threshold + 1);
+				-- FOR TESTING ONLY
+				-- save libraries (et_libraries.devices and et_pcb.packages)
+	-- 			save_libraries (
+	-- 				project_name	=> name, -- blood_sample_analyzer
+	-- 				project_path	=> path, -- /home/user/ecad
+	-- 				log_threshold 	=> log_threshold + 1);
+				
+				log_indentation_down;
+			end if;
 			
-			log_indentation_down;
 			log_indentation_down;			
 		end query_modules;
 
