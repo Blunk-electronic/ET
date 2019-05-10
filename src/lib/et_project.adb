@@ -12151,6 +12151,8 @@ package body et_project is
 		-- The file is identified by its full path and name.
 		if exists (full_file_name) then
 
+			log ("expanded name: " & full_name (full_file_name), log_threshold + 1);
+			
 			-- Create an empty module named after the module file (omitting extension *.mod).
 			-- So the module names are things like "motor_driver", "templates/clock_generator" or
 			-- "$TEMPLATES/clock_generator" or "/home/user/templates/clock_generator":
@@ -12766,26 +12768,27 @@ package body et_project is
 				use gnat.directory_operations;
 
 				dest_dir : constant string := to_string (destination);
+				expanded_name : constant string := expand (to_string (module_name), log_threshold + 4);
 
-				function format (path : in string) return string is begin
-				-- Removes a possible heading ./ from the path.
-					if index (path, "./") = 1 then
-						return path (path'first + 2 .. path'last);
-					else
-						return path;
-					end if;
-				end;
-
-				-- Compose the full path and name of the module file.
-				module_file : constant  string := format (
-					to_string (path) &			-- /home/user/ecad
-					dir_separator &				-- /
-					to_string (name) &			-- blood_sample_analyzer
-					dir_separator &				-- /
-					to_string (module_name) &	-- motor_driver, templates/clock_generator
-					latin_1.full_stop &			-- .
-					module_file_name_extension);-- mod
-					 
+-- 				function format (path : in string) return string is begin
+-- 				-- Removes a possible heading ./ from the path.
+-- 					if index (path, "./") = 1 then
+-- 						return path (path'first + 2 .. path'last);
+-- 					else
+-- 						return path;
+-- 					end if;
+-- 				end;
+-- 
+-- 				-- Compose the full path and name of the module file.
+-- 				module_file : constant  string := format (
+-- 					to_string (path) &			-- /home/user/ecad
+-- 					dir_separator &				-- /
+-- 					to_string (name) &			-- blood_sample_analyzer
+-- 					dir_separator &				-- /
+-- 					to_string (module_name) &	-- motor_driver, templates/clock_generator
+-- 					latin_1.full_stop &			-- .
+-- 					module_file_name_extension);-- mod
+-- 					 
 			begin -- in_destination_directory
 -- 				log ("destination : " & dest_dir);
 -- 				log ("module file : " & module_file);
@@ -12802,28 +12805,42 @@ package body et_project is
 -- 					return false;
 				-- 				end if;
 
-				if type_module_name.index (module_name, to_set (dir_separator)) = 1 then
+-- 				log ("expanded name: " & expanded_name, log_threshold + 2);
+
+-- 				if 	type_module_name.index (module_name, to_set (dir_separator)) = 1 or
+-- 					type_module_name.index (module_name, ".." & dir_separator) = 1 then
+-- 					return false;
+-- 				else
+-- 					return true;
+-- 				end if;
+
+				if 	index (expanded_name, to_set (dir_separator)) = 1 or
+					index (expanded_name, ".." & dir_separator) = 1 then
 					return false;
 				else
 					return true;
 				end if;
+				
 			end;
 			
 		begin -- query_modules
 			log_indentation_up;
-			log ("module " & to_string (module_name), log_threshold + 1);
-			--log ("module " & full_name (to_string (module_name)));
+			--module_name := to_module_name (full_name (to_string (module_name), log_threshold + 1));
+
+-- 			log ("module " & full_name (to_string (module_name)));
 -- 			et_schematic.module := element (module_cursor);
 
 			if in_destination_directory then
+				log ("saving module " & to_string (module_name), log_threshold + 1);
+				
 				log_indentation_up;
 				
-				save_module (
-					module			=> element (module_cursor), -- the module it is about
-					project_name	=> name, -- blood_sample_analyzer
-					module_name		=> module_name,	-- motor_driver
-					project_path	=> path, -- /home/user/ecad
-					log_threshold 	=> log_threshold + 2);
+-- 				save_module (
+-- 					module			=> element (module_cursor), -- the module it is about
+-- 					project_name	=> name, -- blood_sample_analyzer
+-- 					module_name		=> module_name,	-- motor_driver
+-- 					project_path	=> path, -- /home/user/ecad
+-- 					log_threshold 	=> log_threshold + 2);
 
 				-- FOR TESTING ONLY
 				-- save libraries (et_libraries.devices and et_pcb.packages)
