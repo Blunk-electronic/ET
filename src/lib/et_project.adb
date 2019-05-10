@@ -71,8 +71,8 @@ package body et_project is
 	-- Translates a file name like $HOME/libraries/devices/7400.dev to
 	-- /home/user/libraries/devices/7400.dev
 	-- CS: works on unix/linux only
-		name_in			: in string; -- $HOME/libraries/devices/7400.dev
-		log_threshold	: et_string_processing.type_log_level)
+		name_in			: in string) -- $HOME/libraries/devices/7400.dev
+		--log_threshold	: et_string_processing.type_log_level)
 		return string is
 
 		prefix : constant string := ("$"); -- CS: windows ? (like %home%)
@@ -80,12 +80,12 @@ package body et_project is
 		
 		place_prefix, place_separator : natural := 0;
 		--use gnat.directory_operations;
-		use et_string_processing;
+		--use et_string_processing;
 		
-		function do_it (path : in string) return string is begin
-			log ("full path is " & path, log_threshold + 1);
-			return path;
-		end;
+-- 		function do_it (path : in string) return string is begin
+-- 			log ("full path is " & path, log_threshold + 1);
+-- 			return path;
+-- 		end;
 		
 	begin -- expand
 		place_prefix := index (name_in, prefix);
@@ -95,14 +95,15 @@ package body et_project is
 			return name_in; -- return given name as it is
 		else
 			-- name contains an environment variable
-			log_indentation_up;
+			--log_indentation_up;
 			
-			log ("expanding " & name_in, log_threshold);
+			--log ("expanding " & name_in, log_threshold);
 			-- CS test_vars (name_in); -- test if environment variables exist
 			
-			log_indentation_down;
+			--log_indentation_down;
 			
-			return do_it (gnat.directory_operations.expand_path (name_in));
+			--return do_it (gnat.directory_operations.expand_path (name_in));
+			return gnat.directory_operations.expand_path (name_in);
 		end if;
 
 	end expand;
@@ -4917,7 +4918,7 @@ package body et_project is
 			open (
 				file => file_handle,
 				mode => in_file, 
-				name => expand (to_string (file_name), log_threshold + 1));
+				name => expand (to_string (file_name)));
 
 			set_input (file_handle);
 			
@@ -5691,7 +5692,7 @@ package body et_project is
 			open (
 				file => file_handle,
 				mode => in_file, 
-				name => expand (to_string (file_name), log_threshold + 1));
+				name => expand (to_string (file_name)));
 
 			set_input (file_handle);
 			
@@ -6929,7 +6930,7 @@ package body et_project is
 		else
 			-- If the model file is to be read, first check if the file exists.
 			declare
-				file : string := expand (to_string (file_name), log_threshold + 1);
+				file : string := expand (to_string (file_name));
 			begin
 				if ada.directories.exists (file) then
 
@@ -7591,7 +7592,7 @@ package body et_project is
 
 		-- This is the full file name with its path after expanding
 		-- (environment variables could be in file name):
-		full_file_name : constant string := expand (file_name, log_threshold + 1);
+		full_file_name : constant string := expand (file_name);
 			
 		file_handle : ada.text_io.file_type;
 		use type_modules;
@@ -12774,7 +12775,7 @@ package body et_project is
 			-- 3. The expanded module_name may be an absolute path pointing elsewhere in the filesystem.
 			--    In this case the expanded path starts with / and the return will be false.
 				use gnat.directory_operations;
-				expanded_name : constant string := expand (to_string (module_name), log_threshold + 4);
+				expanded_name : constant string := expand (to_string (module_name));
 			begin
 				if 	index (expanded_name, to_set (dir_separator)) = 1 or -- absolute path
 					index (expanded_name, ".." & dir_separator) = 1 then -- relative outside the project

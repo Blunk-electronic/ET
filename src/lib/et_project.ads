@@ -85,8 +85,8 @@ package et_project is
 	-- Translates a file name like $HOME/libraries/devices/7400.dev to
 	-- /home/user/libraries/devices/7400.dev
 	-- CS: works on unix/linux only
-		name_in			: in string; -- $HOME/libraries/devices/7400.dev
-		log_threshold	: et_string_processing.type_log_level)
+		name_in			: in string) -- $HOME/libraries/devices/7400.dev
+		--log_threshold	: et_string_processing.type_log_level)
 		return string;
 	
 	subtype type_file_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
