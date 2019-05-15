@@ -119,8 +119,6 @@ package submodules is
 		"<" 			=> et_general.type_module_instance_name."<",
 		element_type	=> type_submodule);
 
-
-
 	netchanger_id_max : constant positive := 10000; -- CS  increase if necessary
 	type type_netchanger_id is range 1 .. netchanger_id_max;
 

@@ -12856,7 +12856,59 @@ package body et_project is
 	end save_project;
 
 
+	function exists (
+	-- Returns true if the given module provides the given port.
+		module			: in submodules.type_submodules.cursor;
+		port			: in et_general.type_net_name.bounded_string;
+		log_threshold	: in et_string_processing.type_log_level)
+		return boolean is
 
+		result : boolean := false; -- to be returned
+		
+		use et_string_processing;
+		use submodules;
+		use et_schematic;
+		
+		submodule_file : type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
+		module_name : type_module_name.bounded_string; 
+		module_cursor : type_modules.cursor;
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			net_cursor : type_nets.cursor;
+
+			-- The port being inquired is a net inside the submodule.
+			net : constant string := et_general.to_string (port);
+			use type_nets;
+		begin
+			-- locate the net in the submodule
+			net_cursor := find (module.nets, to_net_name (net));
+
+			-- if net found, test if it is connected with a netchanger
+			if net_cursor /= type_nets.no_element then
+				null;
+			else
+				-- net not found: result is false
+				result := false;
+			end if;
+		end query_nets;
+		
+	begin -- exists
+		submodule_file := type_submodules.element (module).file;
+		log ("locating port " & et_general.to_string (port) & "in module " &
+			 enclose_in_quotes (to_string (submodule_file)) & " ...",
+			 log_threshold);
+
+		module_name := to_module_name (remove_extension (to_string (submodule_file)));
+		module_cursor := locate_module (module_name);
+
+		type_modules.query_element (
+			position	=> module_cursor,
+			process		=> query_nets'access);
+		
+		return result;
+	end exists;
 
 	
 -- GENERICS

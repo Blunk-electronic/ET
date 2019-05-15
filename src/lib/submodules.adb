@@ -108,7 +108,6 @@ package body submodules is
 	begin -- move_ports
 		type_submodule_ports.iterate (ports, query_port'access);
 	end move_ports;
-
 	
 	function to_string (view : in type_submodule_view_mode) return string is begin
 		return latin_1.space & to_lower (type_submodule_view_mode'image (view));

@@ -6951,32 +6951,38 @@ package body schematic_ops is
 				port : type_submodule_port;
 			begin
 				-- Test whether the submodule provides the given port.
-				-- CS
+				if exists (module => submod_cursor, port => port_name, log_threshold => log_threshold + 1) then
 				
-				-- The given port position must be somewhere at the edge
-				-- of the submodule:
-				if at_edge (position, submodule.size) then
-					port.position := position;
-				else
-					log (message_error & "port " & to_string (port_name) &
-						 " must be at the edge of the submodule !", console => true);
+					-- The given port position must be somewhere at the edge
+					-- of the submodule:
+					if at_edge (position, submodule.size) then
+						port.position := position;
+					else
+						log (message_error & "port " & to_string (port_name) &
+							" must be at the edge of the submodule !", console => true);
+						raise constraint_error;
+					end if;
+
+					-- Insert the new port in the submodule:
+					insert (
+						container	=> submodule.ports,
+						key			=> port_name,
+						new_item	=> port,
+						position	=> cursor,
+						inserted	=> inserted);
+
+					if not inserted then
+						log (message_error & "port " & to_string (port_name) &
+							" already in submodule !", console => true);
+						raise constraint_error;
+					end if;
+
+				else -- port not provided
+					log (message_error & "submodule does not provide a port named " &
+						 to_string (port_name), console => true);
 					raise constraint_error;
 				end if;
-
-				-- Insert the new port in the submodule:
-				insert (
-					container	=> submodule.ports,
-					key			=> port_name,
-					new_item	=> port,
-					position	=> cursor,
-					inserted	=> inserted);
-
-				if not inserted then
-					log (message_error & "port " & to_string (port_name) &
-						 " already in submodule !", console => true);
-					raise constraint_error;
-				end if;
-				
+					
 			end query_ports;
 			
 		begin -- query_submodules

@@ -52,6 +52,7 @@ with et_coordinates;			use et_coordinates;
 with et_libraries;
 with et_string_processing;
 with et_schematic;
+with submodules;
 with et_pcb;
 
 package et_project is
@@ -662,6 +663,13 @@ package et_project is
 		);
 	
 
+	function exists (
+	-- Returns true if the given module provides the given port.
+		module			: in submodules.type_submodules.cursor;
+		port			: in et_general.type_net_name.bounded_string;
+		log_threshold	: in et_string_processing.type_log_level)		
+		return boolean;
+	
 	
 -- GENERICS
 	
