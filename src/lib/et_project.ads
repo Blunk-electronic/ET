@@ -210,6 +210,18 @@ package et_project is
 	-- Locates the given module in the global container "modules".
 		return type_modules.cursor;
 
+	function port_connected (
+	-- Returns true if given port of netchanger is connected with any net.
+		module	: in type_modules.cursor;	
+		port	: in et_schematic.type_port_netchanger)
+		return boolean;
+	
+	function netchanger_as_port_available (
+	-- Returns true if the given net provides a netchanger that may serve as port
+	-- to a parent module.
+		module	: in type_modules.cursor;
+		net		: in et_schematic.type_nets.cursor) 
+		return boolean;
 	
 	type type_section_name_rig_configuration is (
 		SEC_INIT,
@@ -666,8 +678,7 @@ package et_project is
 	function exists (
 	-- Returns true if the given module provides the given port.
 		module			: in submodules.type_submodules.cursor;
-		port			: in et_general.type_net_name.bounded_string;
-		log_threshold	: in et_string_processing.type_log_level)		
+		port			: in et_general.type_net_name.bounded_string)
 		return boolean;
 	
 	

@@ -284,7 +284,7 @@ package et_schematic is
 	type type_net_base is tagged record
 		route	: et_pcb.type_route; -- routing information -> pcb related
 
-		-- The net class of the net: default, High_Voltage, EMV-critical, ...
+		-- The net class of the net: default, High_Voltage, EM/SI-critical, ...
 		class 	: et_pcb.type_net_class_name.bounded_string := et_pcb.net_class_name_default;
 	end record;
 
@@ -344,7 +344,10 @@ package et_schematic is
 
 	-- If a net exists in a (sub)module exclusively or whether it can be
 	-- seen from the parent module. For example power nets like GND are global.
-	type type_net_scope is (LOCAL, GLOBAL);
+	type type_net_scope is (
+		LOCAL,	-- parent module can connect to it via netchanger only
+		GLOBAL	-- parent module can connect to it directly
+		);
 
 	function to_string (net_scope : in type_net_scope) return string;
 	function to_net_scope (scope : in string) return type_net_scope;
@@ -357,8 +360,6 @@ package et_schematic is
 	package type_nets is new ordered_maps (
 		key_type		=> type_net_name.bounded_string,
 		element_type	=> type_net);
-	
-
 	
 	function default_component_reference return et_libraries.type_device_name;
 	-- Returns a default component reference with an empty prefix and and id 0.

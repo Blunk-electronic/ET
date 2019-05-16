@@ -155,6 +155,177 @@ package body et_project is
 	begin
 		return find (modules, name);
 	end;
+
+	function port_connected (
+	-- Returns true if given port of netchanger is connected with any net.
+		module	: in type_modules.cursor;
+		port	: in et_schematic.type_port_netchanger)
+		return boolean is
+		result : boolean := false; -- to be returned. goes true on the first (and only) match.
+
+		use et_schematic;
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use type_nets;
+			net_cursor : type_nets.cursor := module.nets.first;
+
+			procedure query_strands (
+				net_name	: in et_general.type_net_name.bounded_string;
+				net			: in type_net) is
+				use type_strands;
+				strand_cursor : type_strands.cursor := net.strands.first;
+
+				procedure query_segments (strand : in type_strand) is
+					use type_net_segments;
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+					procedure query_ports (segment : in type_net_segment) is 
+						use submodules;
+						use type_ports_netchanger;
+						port_cursor : type_ports_netchanger.cursor := segment.ports_netchangers.first;
+					begin
+						while port_cursor /= type_ports_netchanger.no_element loop
+							if element (port_cursor) = port then
+								result := true;
+								exit; -- no more searching for netchanger ports required
+							end if;
+							next (port_cursor);
+						end loop;
+					end query_ports;
+					
+				begin -- query_segments
+					while result = false and segment_cursor /= type_net_segments.no_element loop
+						
+						query_element (
+							position	=> segment_cursor,
+							process		=> query_ports'access);
+						
+						next (segment_cursor);
+					end loop;
+				end query_segments;
+				
+			begin -- query_strands
+				while result = false and strand_cursor /= type_strands.no_element loop
+
+					query_element (
+						position	=> strand_cursor,
+						process		=> query_segments'access);
+					
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+			
+		begin -- query_nets
+			while result = false and net_cursor /= type_nets.no_element loop
+
+				type_nets.query_element (
+					position	=> net_cursor,
+					process		=> query_strands'access);
+
+				next (net_cursor);
+			end loop;
+			
+		end query_nets;
+		
+	begin -- port_not_connected
+
+		type_modules.query_element (
+			position	=> module,
+			process		=> query_nets'access);
+		
+		return result;
+	end port_connected;
+
+	
+	function netchanger_as_port_available (
+	-- Returns true if the given net provides a netchanger that may serve as port
+	-- to a parent module.
+		module	: in type_modules.cursor;
+		net		: in et_schematic.type_nets.cursor) 
+		return boolean is
+		
+		result : boolean := false; -- to be returned. goes true on the first
+		-- suitable netchanger found.
+		
+		use et_schematic;
+		
+		procedure query_strands (
+			net_name	: in et_general.type_net_name.bounded_string;
+			net			: in type_net) is
+			use type_strands;
+			strand_cursor : type_strands.cursor := net.strands.first;
+
+			procedure query_segments (strand : in type_strand) is
+				use type_net_segments;
+				segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+				procedure query_ports (segment : in type_net_segment) is 
+					use submodules;
+					use type_ports_netchanger;
+					port_cursor : type_ports_netchanger.cursor := segment.ports_netchangers.first;
+				begin
+					while port_cursor /= type_ports_netchanger.no_element loop
+
+						-- The opposide port must be not connected. So if the current port
+						-- is a master, then check whether the slave port is not connected.
+						-- If the current port is a slave port, check the master port.
+						case element (port_cursor).port is
+							when MASTER =>
+								if not port_connected (
+									module	=> module,
+									port	=> (index	=> element (port_cursor).index,
+												port	=> SLAVE)) then
+									
+									result := true;
+									exit; -- no more searching for netchanger ports required
+								end if;
+								
+							when SLAVE =>
+								if not port_connected (
+									module	=> module,
+									port	=> (index	=> element (port_cursor).index,
+												port	=> MASTER)) then
+									
+									result := true;
+									exit; -- no more searching for netchanger ports required
+								end if;
+						end case;
+						
+						next (port_cursor);
+					end loop;
+				end query_ports;
+				
+			begin -- query_segments
+				while result = false and segment_cursor /= type_net_segments.no_element loop
+					
+					query_element (
+						position	=> segment_cursor,
+						process		=> query_ports'access);
+					
+					next (segment_cursor);
+				end loop;
+			end query_segments;
+			
+		begin -- query_strands
+			while result = false and strand_cursor /= type_strands.no_element loop
+
+				query_element (
+					position	=> strand_cursor,
+					process		=> query_segments'access);
+				
+				next (strand_cursor);
+			end loop;
+		end query_strands;
+		
+	begin -- netchanger_as_port_available
+		type_nets.query_element (
+			position	=> net,
+			process		=> query_strands'access);
+		
+		return result;
+	end netchanger_as_port_available;
 	
 	function to_string (section : in type_section_name_rig_configuration) return string is
 	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
@@ -12859,8 +13030,7 @@ package body et_project is
 	function exists (
 	-- Returns true if the given module provides the given port.
 		module			: in submodules.type_submodules.cursor;
-		port			: in et_general.type_net_name.bounded_string;
-		log_threshold	: in et_string_processing.type_log_level)
+		port			: in et_general.type_net_name.bounded_string)
 		return boolean is
 
 		result : boolean := false; -- to be returned
@@ -12885,20 +13055,34 @@ package body et_project is
 			-- locate the net in the submodule
 			net_cursor := find (module.nets, to_net_name (net));
 
-			-- if net found, test if it is connected with a netchanger
-			if net_cursor /= type_nets.no_element then
-				null;
-			else
-				-- net not found: result is false
+			-- If net found, test its scope. If it is global,
+			-- then all requirements are met -> result true.
+			-- If net is local, then a netchanger is required.
+			if net_cursor /= type_nets.no_element then -- net found
+
+				case element (net_cursor).scope is
+					when GLOBAL => 
+						result := true;
+
+					when LOCAL =>
+						if netchanger_as_port_available (module_cursor, net_cursor) then
+							result := true;
+						else
+							result := false;
+						end if;
+				end case;
+				
+			else -- net not found: result is false
 				result := false;
 			end if;
+
 		end query_nets;
 		
 	begin -- exists
 		submodule_file := type_submodules.element (module).file;
-		log ("locating port " & et_general.to_string (port) & "in module " &
-			 enclose_in_quotes (to_string (submodule_file)) & " ...",
-			 log_threshold);
+-- 		log ("locating port " & et_general.to_string (port) & " in module " &
+-- 			 enclose_in_quotes (to_string (submodule_file)) & " ...",
+-- 			 log_threshold);
 
 		module_name := to_module_name (remove_extension (to_string (submodule_file)));
 		module_cursor := locate_module (module_name);

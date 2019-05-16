@@ -333,7 +333,7 @@ package body et_schematic is
 	begin
 		return type_net_scope'value (scope);
 	end to_net_scope;
-
+	
 	function default_component_reference return et_libraries.type_device_name is
 	-- Returns a default device name with an empty prefix and and id 0.
 	-- Used to initialize a component reference.	

@@ -6951,7 +6951,7 @@ package body schematic_ops is
 				port : type_submodule_port;
 			begin
 				-- Test whether the submodule provides the given port.
-				if exists (module => submod_cursor, port => port_name, log_threshold => log_threshold + 1) then
+				if exists (module => submod_cursor, port => port_name) then
 				
 					-- The given port position must be somewhere at the edge
 					-- of the submodule:
@@ -6979,7 +6979,7 @@ package body schematic_ops is
 
 				else -- port not provided
 					log (message_error & "submodule does not provide a port named " &
-						 to_string (port_name), console => true);
+						 enclose_in_quotes (to_string (port_name)) & " !", console => true);
 					raise constraint_error;
 				end if;
 					
@@ -7007,7 +7007,7 @@ package body schematic_ops is
 	begin -- add_port
 		log ("module " & to_string (module_name) &
 			" submodule instance " & enclose_in_quotes (to_string (instance)) & 
-			" adding port " & to_string (port_name) &
+			" adding port " & enclose_in_quotes (to_string (port_name)) &
 			" at" & to_string (position),
 			log_threshold);
 
