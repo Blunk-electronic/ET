@@ -105,7 +105,7 @@ package submodules is
 	-- THE RECTANGULAR BOX AT THE SHEET WHERE IT THE SUBMODULE IS INSTANTIATED.
 	type type_submodule is record
 		file				: type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
-		position		    : et_coordinates.type_coordinates;
+		position		    : et_coordinates.type_coordinates; -- the lower left corner
 		size				: type_submodule_size;
 		position_in_board	: et_pcb_coordinates.type_point_2d_with_angle;
 		view_mode			: type_submodule_view_mode := ORIGIN;

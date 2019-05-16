@@ -6924,6 +6924,24 @@ package body schematic_ops is
 		
 	end add_submodule;
 
+	procedure insert_port (
+	-- Inserts the given submmdule port in the net segments.
+	-- If the port lands on either the start or end point of a segment, it will
+	-- be regarded as "connected" with the segment.
+	-- If the port lands between start or end point of a segment, nothing happens
+	-- because the docking to net segments is possible on segment ends/starts only.
+	-- CS: Automatic splitting the segment into two and placing a junction is not supported
+	-- jet and probably not a good idea.
+		module			: in type_modules.cursor;		-- the module
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
+		port			: in et_general.type_net_name.bounded_string; -- clock_output
+		position		: in et_coordinates.type_coordinates; -- the port position
+		log_threshold	: in type_log_level) is
+	begin
+		null;
+	end insert_port;
+
+	
 	procedure add_port (
 	-- Adds a port to a submodule instance.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -6936,6 +6954,12 @@ package body schematic_ops is
 
 		use submodules;
 
+		-- The place where the box is in the parent module:
+		submodule_position : et_coordinates.type_coordinates;
+
+		-- Handling the absolute position of the port requires this variable:
+		port_position : et_coordinates.type_coordinates;
+		
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
@@ -6988,7 +7012,11 @@ package body schematic_ops is
 		begin -- query_submodules
 			if contains (module.submods, instance) then
 
- 				submod_cursor := find (module.submods, instance); -- the submodule should be there
+				submod_cursor := find (module.submods, instance); -- the submodule should be there
+
+				-- For inserting the submodule port in the nets
+				-- we take a copy of the coordinates of the submodule (the box):
+				submodule_position := element (submod_cursor).position;
 
 				log_indentation_up;
 
@@ -7011,13 +7039,46 @@ package body schematic_ops is
 			" at" & to_string (position),
 			log_threshold);
 
-		-- locate module
+		-- locate parent module
 		module_cursor := locate_module (module_name);
 
+		-- add the port to the box in the parent module
 		update_element (
 			container	=> modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
+
+		-- insert the submodule port in the nets:
+		-- We know the absolute position of the box by submodule_position.
+		-- We know the position of the port relative to the submodule_position
+		-- which is in variable "position".
+
+		-- Build the absoltue port_position:
+
+		-- 1. assume x/y as given by position (which is the relative position):
+		set_xy (
+			point		=> port_position,
+			position	=> position); -- the relative port position
+
+		-- 2. move port_position by x/y of submodule_position:
+		move (
+			point		=> port_position,
+			offset		=> submodule_position);
+
+		-- x/y of port_position is now absolute
+
+		-- 3. set sheet number as given by submodule_position:
+		set_sheet (
+			position	=> port_position,
+			sheet		=> sheet (submodule_position));
+
+		-- port_position is now ready to insert the submodule port in the nets:
+		insert_port (
+			module			=> module_cursor,
+			instance		=> instance,
+			port			=> port_name,
+			position		=> port_position,
+			log_threshold	=> log_threshold + 1);
 		
 	end add_port;
 

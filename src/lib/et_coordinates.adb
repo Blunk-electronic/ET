@@ -225,6 +225,7 @@ package body et_coordinates is
 	end mirror;
 
 	procedure move (
+	-- moves x/y of given point by x/y of given offset
 		point	: in out type_point;
 		offset	: in type_point'class)
 		is

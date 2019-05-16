@@ -159,6 +159,7 @@ package et_coordinates is
 		axis	: in type_axis);	
 
 	procedure move (
+	-- moves x/y of given point by x/y of given offset
 		point	: in out type_point;
 		offset	: in type_point'class);
 
