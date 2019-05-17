@@ -3918,13 +3918,13 @@ package body schematic_ops is
 									item		=> (index, name)
 									) then
 
-									log (" already there -> skipped", log_threshold + 3);
+									log (" already there -> skipped", log_threshold + 5);
 								else
 									type_ports_netchanger.insert (
 										container	=> segment.ports_netchangers,
 										new_item	=> (index, name)); -- 1,2,3, .. / master/slave
 
-									log (" sits on segment -> inserted", log_threshold + 3);
+									log (" sits on segment -> inserted", log_threshold + 5);
 								end if;
 								
 								-- signal iterations in upper levels to cancel
@@ -6937,8 +6937,128 @@ package body schematic_ops is
 		port			: in et_general.type_net_name.bounded_string; -- clock_output
 		position		: in et_coordinates.type_coordinates; -- the port position
 		log_threshold	: in type_log_level) is
-	begin
-		null;
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			-- This flag goes true on the first match. It signals
+			-- all iterations to cancel prematurely.
+			port_processed : boolean := false;
+			
+			use type_nets;
+			net_cursor : type_nets.cursor := module.nets.first;
+
+			procedure query_strands (
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+				use et_coordinates;
+				use type_strands;
+				strand_cursor : type_strands.cursor := net.strands.first;
+
+				procedure query_segments (strand : in out type_strand) is
+					use type_net_segments;
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+					procedure change_segment (segment : in out type_net_segment) is
+					begin
+						-- If port sits on start OR end point of segment AND if it
+						-- is not already in the segment then append it to the 
+						-- portlist of the segment.
+						if 	segment.coordinates_start = type_point (position) or
+							segment.coordinates_end = type_point (position) then
+
+							-- If port not already in segment, append it.
+							-- Otherwise it must not be appended again. constraint_error would arise.
+							if type_ports_submodule.contains (
+								container	=> segment.ports_submodules,
+								item		=> (instance, port) -- OSC1, clock_output
+								) then
+
+								log (" already there -> skipped", log_threshold + 3);
+							else
+								type_ports_submodule.insert (
+									container	=> segment.ports_submodules,
+									new_item	=> (instance, port)); -- OSC1, clock_output
+
+								log (" sits on segment -> inserted", log_threshold + 3);
+							end if;
+							
+							-- signal iterations in upper levels to cancel
+							port_processed := true;
+						end if;
+						
+					end change_segment;
+
+				begin -- query_segments
+					log_indentation_up;
+
+					-- On the first segment, where the port sits on, this loop ends prematurely.
+					while not port_processed and segment_cursor /= type_net_segments.no_element loop
+						log ("probing " & to_string (segment_cursor), log_threshold + 2);
+						
+						type_net_segments.update_element (
+							container	=> strand.segments,
+							position	=> segment_cursor,
+							process		=> change_segment'access);
+
+						next (segment_cursor);
+					end loop;
+
+					log_indentation_down;
+				end query_segments;
+				
+			begin -- query_strands
+				log_indentation_up;
+				
+				while not port_processed and strand_cursor /= type_strands.no_element loop
+
+					-- We pick out only the strands on the targeted sheet:
+					if et_coordinates.sheet (element (strand_cursor).position) = sheet (position) then
+						log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+
+						log_indentation_up;
+						log ("strand " & to_string (position => element (strand_cursor).position),
+							log_threshold + 1);
+
+						update_element (
+							container	=> net.strands,
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+					
+						log_indentation_down;
+					end if;
+						
+					next (strand_cursor);
+				end loop;
+				
+				log_indentation_down;
+			end query_strands;
+			
+		begin -- query_nets
+			while not port_processed and net_cursor /= type_nets.no_element loop
+				
+				update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_strands'access);
+			
+				next (net_cursor);
+			end loop;
+		end query_nets;
+		
+	begin -- insert_port
+		log ("inserting submodule port in net at" & 
+			 to_string (position => position) & " ...", log_threshold);
+		log_indentation_up;
+		
+		update_element (
+			container	=> modules,
+			position	=> module,
+			process		=> query_nets'access);
+
+		log_indentation_down;
+
 	end insert_port;
 
 	
@@ -6978,7 +7098,8 @@ package body schematic_ops is
 				if exists (module => submod_cursor, port => port_name) then
 				
 					-- The given port position must be somewhere at the edge
-					-- of the submodule:
+					-- of the submodule. position is relative to the lower left
+					-- corner of the box:
 					if at_edge (position, submodule.size) then
 						port.position := position;
 					else
