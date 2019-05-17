@@ -4203,6 +4203,8 @@ package body schematic_ops is
 				
 				next (net_cursor);
 			end loop;
+
+			-- CS: warning if all_ports_deleted still true ?
 		end query_nets;
 		
 	begin -- delete_ports
@@ -7241,11 +7243,15 @@ package body schematic_ops is
 						use type_ports_submodule;
 						port_cursor : type_ports_submodule.cursor;
 					begin
+						-- Search for the port and delete it if existing:
 						port_cursor := find (
 							container	=> segment.ports_submodules,
 							item		=> port); -- OSC1, clock_output
 
-						delete (segment.ports_submodules, port_cursor);
+						if port_cursor /= type_ports_submodule.no_element then
+							delete (segment.ports_submodules, port_cursor);
+							port_processed := true;
+						end if;
 						
 					end change_segment;
 
@@ -7304,6 +7310,8 @@ package body schematic_ops is
 			
 				next (net_cursor);
 			end loop;
+
+			-- CS warning if port_processed still false ?
 		end query_nets;
 		
 	begin -- delete_submodule_port
