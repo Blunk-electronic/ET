@@ -373,6 +373,13 @@ package schematic_ops is
 		port_name		: in et_general.type_net_name.bounded_string; -- clk_out
 		position		: in et_coordinates.type_point; -- x/y along the edge of the box
 		log_threshold	: in type_log_level);
+
+	procedure delete_port (
+	-- Deletes a port of a submodule instance (the box in the parent sheet).
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		port_name		: in et_general.type_net_name.bounded_string; -- clk_out
+		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

@@ -111,7 +111,13 @@ package body schematic_ops is
 		log (message_error & "net " & to_string (name) & " not found !", console => true);
 		raise constraint_error;
 	end;
-	
+
+	procedure submodule_port_not_found (name : in et_general.type_net_name.bounded_string) is begin
+		log (message_error & "port " &
+			enclose_in_quotes (to_string (name)) & " not found !", console => true);
+		raise constraint_error;
+	end;
+
 	procedure log_unit_positions (
 	-- Writes the positions of the device unis in the log file.
 		positions 		: in type_unit_positions.map;
@@ -7062,7 +7068,7 @@ package body schematic_ops is
 	end insert_port;
 	
 	procedure add_port (
-	-- Adds a port to a submodule instance.
+	-- Adds a port to a submodule instance (the box in the parent sheet).
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		port_name		: in type_net_name.bounded_string; -- clk_out
@@ -7201,7 +7207,206 @@ package body schematic_ops is
 			log_threshold	=> log_threshold + 1);
 		
 	end add_port;
+
+	procedure delete_submodule_port (
+	-- Removes a port from the net segments.
+		module			: in type_modules.cursor;		-- the module
+		port			: in et_schematic.type_port_submodule; -- OSC1 / clock_output
+		position		: in et_coordinates.type_coordinates; -- the submodule position (only sheet matters)
+		log_threshold	: in type_log_level) is
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			-- This flag goes true on the first match. It signals
+			-- all iterations to cancel prematurely.
+			port_processed : boolean := false;
+			
+			use type_nets;
+			net_cursor : type_nets.cursor := module.nets.first;
+
+			procedure query_strands (
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+				use et_coordinates;
+				use type_strands;
+				strand_cursor : type_strands.cursor := net.strands.first;
+
+				procedure query_segments (strand : in out type_strand) is
+					use type_net_segments;
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+					procedure change_segment (segment : in out type_net_segment) is
+						use type_ports_submodule;
+						port_cursor : type_ports_submodule.cursor;
+					begin
+						port_cursor := find (
+							container	=> segment.ports_submodules,
+							item		=> port); -- OSC1, clock_output
+
+						delete (segment.ports_submodules, port_cursor);
+						
+					end change_segment;
+
+				begin -- query_segments
+					log_indentation_up;
+
+					-- On the first segment, where the port sits on, this loop ends prematurely.
+					while not port_processed and segment_cursor /= type_net_segments.no_element loop
+						log ("probing " & to_string (segment_cursor), log_threshold + 2);
+						
+						type_net_segments.update_element (
+							container	=> strand.segments,
+							position	=> segment_cursor,
+							process		=> change_segment'access);
+
+						next (segment_cursor);
+					end loop;
+
+					log_indentation_down;
+				end query_segments;
+				
+			begin -- query_strands
+				log_indentation_up;
+				
+				while not port_processed and strand_cursor /= type_strands.no_element loop
+
+					-- We pick out only the strands on the targeted sheet:
+					if et_coordinates.sheet (element (strand_cursor).position) = sheet (position) then
+						log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+
+						log_indentation_up;
+						log ("strand " & to_string (position => element (strand_cursor).position),
+							log_threshold + 1);
+
+						update_element (
+							container	=> net.strands,
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+					
+						log_indentation_down;
+					end if;
+						
+					next (strand_cursor);
+				end loop;
+				
+				log_indentation_down;
+			end query_strands;
+			
+		begin -- query_nets
+			while not port_processed and net_cursor /= type_nets.no_element loop
+				
+				update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_strands'access);
+			
+				next (net_cursor);
+			end loop;
+		end query_nets;
 		
+	begin -- delete_submodule_port
+		log ("deleting submodule port in nets ...", log_threshold);
+
+		log_indentation_up;
+		
+		update_element (
+			container	=> modules,
+			position	=> module,
+			process		=> query_nets'access);
+
+		log_indentation_down;
+
+	end delete_submodule_port;
+	
+	procedure delete_port (
+	-- Deletes a port of a submodule instance (the box in the parent sheet).
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		port_name		: in type_net_name.bounded_string; -- clk_out
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use submodules;
+
+		-- The place where the box is in the parent module:
+		submodule_position : et_coordinates.type_coordinates;
+		
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_submodules;
+			submod_cursor : type_submodules.cursor;
+
+			procedure query_ports (
+				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submodule	: in out type_submodule) is
+				use type_submodule_ports;
+				port_cursor : type_submodule_ports.cursor;
+			begin
+				-- Test whether the submodule provides the given port.
+				port_cursor := find (submodule.ports, port_name);
+
+				-- If the port is available (at the edge of the box) then
+				-- it must be removed from the box.
+				if port_cursor /= type_submodule_ports.no_element then
+					delete (submodule.ports, port_cursor);
+				else
+					submodule_port_not_found (port_name);
+				end if;
+					
+			end query_ports;
+			
+		begin -- query_submodules
+			if contains (module.submods, instance) then
+
+				submod_cursor := find (module.submods, instance); -- the submodule should be there
+
+				-- For removing the submodule port from the nets
+				-- we take a copy of the coordinates of the submodule (the box):
+				submodule_position := element (submod_cursor).position;
+
+				log_indentation_up;
+
+ 				-- insert the given port in the submodule
+				update_element (
+					container	=> module.submods,
+					position	=> submod_cursor,
+					process		=> query_ports'access);
+
+				log_indentation_down;				
+			else
+				submodule_not_found (instance);
+			end if;
+		end query_submodules;
+
+	begin -- delete_port
+		log ("module " & to_string (module_name) &
+			" submodule instance " & enclose_in_quotes (to_string (instance)) & 
+			" deleting port " & enclose_in_quotes (to_string (port_name)),
+			log_threshold);
+
+		-- locate parent module
+		module_cursor := locate_module (module_name);
+
+		-- remove the port from the box in the parent module
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_submodules'access);
+
+		-- now the port must be removed from the nets.
+		delete_submodule_port (
+			module			=> module_cursor,
+			port			=> (instance, port_name), -- OSC1 / clock_output
+			position		=> submodule_position, -- the submodule position (only sheet matters)
+			log_threshold	=> log_threshold + 1);
+		
+	end delete_port;
+
+	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
 	-- Tests:

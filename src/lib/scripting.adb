@@ -406,6 +406,24 @@ package body scripting is
 								when others =>
 									command_incomplete;
 							end case;
+
+						when PORT =>
+							case fields is
+								when 6 =>
+									schematic_ops.delete_port
+										(
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)),
+										port_name		=> et_general.to_net_name (f (6)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 7 .. count_type'last =>
+									command_too_long (6);
+									
+								when others =>
+									command_incomplete;
+							end case;
 							
 						when SEGMENT =>
 							schematic_ops.delete_segment
