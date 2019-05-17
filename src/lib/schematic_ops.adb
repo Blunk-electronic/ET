@@ -7060,7 +7060,6 @@ package body schematic_ops is
 		log_indentation_down;
 
 	end insert_port;
-
 	
 	procedure add_port (
 	-- Adds a port to a submodule instance.
@@ -7103,7 +7102,7 @@ package body schematic_ops is
 					if at_edge (position, submodule.size) then
 						port.position := position;
 					else
-						log (message_error & "port " & to_string (port_name) &
+						log (message_error & "port " & enclose_in_quotes (to_string (port_name)) &
 							" must be at the edge of the submodule !", console => true);
 						raise constraint_error;
 					end if;
@@ -7202,7 +7201,6 @@ package body schematic_ops is
 			log_threshold	=> log_threshold + 1);
 		
 	end add_port;
-
 		
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
