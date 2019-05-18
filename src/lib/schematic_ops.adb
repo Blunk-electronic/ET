@@ -118,6 +118,12 @@ package body schematic_ops is
 		raise constraint_error;
 	end;
 
+	procedure port_not_at_edge (name : in et_general.type_net_name.bounded_string) is begin
+		log (message_error & "port " & enclose_in_quotes (to_string (name)) &
+			" must be at the edge of the submodule !", console => true);
+		raise constraint_error;
+	end;
+		
 	procedure log_unit_positions (
 	-- Writes the positions of the device unis in the log file.
 		positions 		: in type_unit_positions.map;
@@ -7110,9 +7116,7 @@ package body schematic_ops is
 					if at_edge (position, submodule.size) then
 						port.position := position;
 					else
-						log (message_error & "port " & enclose_in_quotes (to_string (port_name)) &
-							" must be at the edge of the submodule !", console => true);
-						raise constraint_error;
+						port_not_at_edge (port_name);
 					end if;
 
 					-- Insert the new port in the submodule:
@@ -7414,6 +7418,173 @@ package body schematic_ops is
 		
 	end delete_port;
 
+	procedure move_port (
+	-- Moves the given submmdule port. Disconnects the port from
+	-- start or end points of net segments BEFORE the move. 
+	-- Connects unit ports with segment end or start points AFTER the move.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
+		port_name		: in et_general.type_net_name.bounded_string; -- clock_output
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in et_coordinates.type_point; -- x/y
+		log_threshold	: in type_log_level) is
+
+		use submodules;
+
+		-- The place where the box is in the parent module:
+		submodule_position : et_coordinates.type_coordinates;
+
+		-- Handling the absolute position of the port requires this variable:
+		port_position : et_coordinates.type_coordinates;
+		
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_submodules;
+			submod_cursor : type_submodules.cursor;
+
+			procedure query_ports (
+				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submodule	: in out type_submodule) is
+				use type_submodule_ports;
+				port_cursor : type_submodule_ports.cursor;
+
+				procedure move (
+					port_name	: in et_general.type_net_name.bounded_string;
+					port		: in out type_submodule_port) is
+					submod_pos_tmp : et_coordinates.type_point := type_point (submodule_position);
+					point_tmp : et_coordinates.type_point := point;
+				begin
+					case coordinates is
+						when ABSOLUTE =>
+							-- From the given point the absolute submodule position must 
+							-- be subtracted. This requires inversion of x/y of submodule position.
+							-- We accompish that by mirroring along x and y axis.
+							mirror (submod_pos_tmp, X);
+							mirror (submod_pos_tmp, Y);
+
+							-- Subtract from given point the absolute submodule position:
+							move (
+								point	=> point_tmp,
+								offset	=> submod_pos_tmp);
+
+							-- assign the new port position
+							port.position := point_tmp;
+
+						when RELATIVE =>
+							move (
+								point	=> port.position,
+								offset	=> point);
+							
+					end case;
+					
+					-- The port must be somewhere at the edge of the box
+					-- of the submodule. The port position is relative to 
+					-- the lower left corner of the box:
+					if at_edge (port.position, submodule.size) then
+
+						-- Later, for inserting the new port in the nets the
+						-- absolute port position must be built:
+						port_position := to_coordinates (
+									point	=> port.position, -- relative x/y to submodule position
+									sheet	=> sheet (submodule_position));
+
+						move (
+							point	=> port_position,
+							offset	=> submodule_position);
+						-- now port_position contains the absolute port position
+
+					else
+						port_not_at_edge (port_name);
+					end if;
+					
+				end move;
+								
+			begin -- query_ports
+				-- Test whether the submodule provides the given port.
+				port_cursor := find (submodule.ports, port_name);
+
+				-- If the port is available (at the edge of the box) then
+				-- it can be moved:
+				if port_cursor /= type_submodule_ports.no_element then
+
+					update_element (
+						container	=> submodule.ports,
+						position	=> port_cursor,
+						process		=> move'access);
+					
+				else
+					submodule_port_not_found (port_name);
+				end if;
+					
+			end query_ports;
+			
+		begin -- query_submodules
+			if contains (module.submods, instance) then
+
+				submod_cursor := find (module.submods, instance); -- the submodule should be there
+
+				-- For moving the submodule port
+				-- we take a copy of the coordinates of the submodule (the box):
+				submodule_position := element (submod_cursor).position;
+
+				log_indentation_up;
+
+				update_element (
+					container	=> module.submods,
+					position	=> submod_cursor,
+					process		=> query_ports'access);
+
+				log_indentation_down;				
+			else
+				submodule_not_found (instance);
+			end if;
+		end query_submodules;
+		
+	begin -- move_port
+		case coordinates is
+			when ABSOLUTE =>
+				log ("module " & to_string (module_name) &
+					" moving port " & enclose_in_quotes (to_string (port_name)) &
+					" to" & et_coordinates.to_string (point),
+					log_threshold);
+
+			when RELATIVE =>
+				log ("module " & to_string (module_name) &
+					" moving port " & enclose_in_quotes (to_string (port_name)) &
+					" by" & et_coordinates.to_string (point),
+					log_threshold);
+
+		end case;
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- move the port along the edge of the box:
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_submodules'access);
+
+		-- now the old port must be removed from the nets.
+		delete_submodule_port (
+			module			=> module_cursor,
+			port			=> (instance, port_name), -- OSC1 / clock_output
+			position		=> submodule_position, -- the submodule position (only sheet matters)
+			log_threshold	=> log_threshold + 1);
+
+		-- Now, port_position contains the new absolute port position in the schematic.
+		-- So we insert the new submodule port in the net segments:
+		insert_port (
+			module			=> module_cursor,
+			instance		=> instance,
+			port			=> port_name,
+			position		=> port_position,
+			log_threshold	=> log_threshold + 1);
+		
+	end move_port;
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

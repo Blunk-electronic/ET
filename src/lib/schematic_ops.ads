@@ -380,6 +380,17 @@ package schematic_ops is
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		port_name		: in et_general.type_net_name.bounded_string; -- clk_out
 		log_threshold	: in type_log_level);
+
+	procedure move_port (
+	-- Moves the given submmdule port. Disconnects the port from
+	-- start or end points of net segments BEFORE the move. 
+	-- Connects unit ports with segment end or start points AFTER the move.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
+		port_name		: in et_general.type_net_name.bounded_string; -- clock_output
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in et_coordinates.type_point; -- x/y
+		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
