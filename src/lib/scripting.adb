@@ -484,6 +484,27 @@ package body scripting is
 								when others =>
 									command_incomplete;
 							end case;
+
+						when PORT =>
+							case fields is
+								when 9 =>
+									schematic_ops.drag_port (
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)),
+										port_name		=> et_general.to_net_name (f (6)),
+										coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+										point			=> et_coordinates.type_point (set_point (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last =>
+									command_too_long (9);
+									
+								when others =>
+									command_incomplete;
+							end case;
 							
 						when SEGMENT =>
 							schematic_ops.drag_segment
@@ -613,7 +634,6 @@ package body scripting is
 								when others =>
 									command_incomplete;
 							end case;
-
 									
 						when PURPOSE =>
 							schematic_ops.move_unit_placeholder

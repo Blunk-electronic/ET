@@ -391,6 +391,19 @@ package schematic_ops is
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level);
+
+	procedure drag_port (
+	-- Drags the given submmdule port.	
+	-- Already existing connections with net segments are kept.
+	-- Net segment positions are modified.
+	-- This operation applies to a single sheet. Dragging from one sheet
+	-- to another is not possible.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
+		port_name		: in et_general.type_net_name.bounded_string; -- clock_output
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in et_coordinates.type_point; -- x/y
+		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
