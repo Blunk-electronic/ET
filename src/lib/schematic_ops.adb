@@ -123,7 +123,14 @@ package body schematic_ops is
 			" must be at the edge of the submodule !", console => true);
 		raise constraint_error;
 	end;
-		
+
+	procedure dragging_not_possible (port : in et_schematic.type_port_submodule) is begin
+		log (message_error & "port " & enclose_in_quotes (to_string (port.port_name)) &
+			 " is directly connected with other ports. Dragging not possible !",
+			 console => true);
+		raise constraint_error;
+	end;
+	
 	procedure log_unit_positions (
 	-- Writes the positions of the device unis in the log file.
 		positions 		: in type_unit_positions.map;
@@ -5476,6 +5483,94 @@ package body schematic_ops is
 		log_indentation_down;		
 	end delete_segment;
 
+	function net_segment_at_place (
+	-- Returns true if at given place a net segment starts or ends.
+		module_cursor	: in type_modules.cursor;
+		place			: in et_coordinates.type_coordinates)
+		return boolean is
+
+		-- This flag goes true once a segment has been found.
+		segment_found : boolean := false; -- to be returned
+		
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+
+			use type_nets;			
+			net_cursor : type_nets.cursor := module.nets.first;
+
+			procedure query_strands (
+				net_name	: in type_net_name.bounded_string;
+				net			: in type_net) is
+				use et_coordinates;
+				use type_strands;
+				strand_cursor : type_strands.cursor := net.strands.first;
+				
+				procedure query_segments (strand : in type_strand) is
+					use type_net_segments;
+
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+					procedure probe_segment (segment : in type_net_segment) is begin
+						-- if port sits on a start point of a segment
+						if segment.coordinates_start = type_point (place) then
+							-- signal iterations in upper level to cancel
+							segment_found := true;
+						end if;
+
+						-- if port sits on an end point of a segment
+						if segment.coordinates_end = type_point (place) then
+							-- signal iterations in upper level to cancel
+							segment_found := true;
+						end if;
+					end probe_segment;
+					
+				begin -- query_segments
+					while not segment_found and segment_cursor /= type_net_segments.no_element loop
+						query_element (
+							position	=> segment_cursor,
+							process		=> probe_segment'access);
+						
+						next (segment_cursor);
+					end loop;
+				end query_segments;
+				
+			begin -- query_strands
+				while not segment_found and strand_cursor /= type_strands.no_element loop
+					
+					-- We pick out only the strands on the targeted sheet:
+					if et_coordinates.sheet (element (strand_cursor).position) = sheet (place) then
+
+						query_element (
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+					
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+			
+		begin -- query_nets
+			while not segment_found and net_cursor /= type_nets.no_element loop
+
+				query_element (
+					position	=> net_cursor,
+					process		=> query_strands'access);
+
+				next (net_cursor);
+			end loop;
+		end query_nets;
+
+	begin -- net_segment_at_place
+
+		query_element (
+			position	=> module_cursor,
+			process		=> query_nets'access);
+		
+		return segment_found;
+	end net_segment_at_place;
+
 	function ports_at_place (
 	-- Returns lists of device, netchanger and submodule ports at the given place.
 		module_name		: in type_module_name.bounded_string;
@@ -7771,6 +7866,59 @@ package body schematic_ops is
 		
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
+		procedure movable_test (point : in et_coordinates.type_coordinates) is 
+			ports : type_ports;
+			port : et_schematic.type_port_submodule;
+
+			use type_ports_submodule;
+			use type_ports_device;
+			use type_ports_netchanger;
+			
+		begin
+			log ("movable test ...", log_threshold + 1);
+			log_indentation_up;
+
+			-- If no net segments start or end at given point then this test won't
+			-- complain. If segments are meeting this point, no other ports must be
+			-- here (except the port to be dragged):
+			if net_segment_at_place (module_cursor, point) then
+
+				-- There are net segments starting or ending at point.
+				-- Make sure at point are no ports of devices, netchangers or other 
+				-- submodules (except the submodule port to be dragged):
+
+				port := (instance, port_name); -- the port to be dragged
+
+				-- Collect all ports at point:
+				ports := ports_at_place (module_name, point, log_threshold + 2);
+
+				-- If no device or netchanger ports here:
+				if is_empty (ports.devices) and is_empty (ports.netchangers) then
+
+					-- If the ONE and ONLY submodule port is the 
+					-- port-to-be-dragged then everything is fine.
+					if length (ports.submodules) = 1 then
+						
+						if contains (ports.submodules, port) then
+							null; -- fine -> movable test passed
+						else
+							-- there is another submodule port
+							dragging_not_possible (port);
+						end if;
+					
+					else
+						-- there are more submodule ports
+						dragging_not_possible (port);
+					end if;
+					
+				else -- device or netchanger ports here
+					dragging_not_possible (port);
+				end if;
+			end if;
+			
+			log_indentation_down;
+		end movable_test;
+		
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
@@ -7799,6 +7947,9 @@ package body schematic_ops is
 						offset	=> submodule_position);
 					-- Now port_position_before contains the absolute port position of 
 					-- the port BEFORE the drag operation.
+
+					-- Test whether the port at the current position can be dragged:
+					movable_test (port_position_before);
 					
 					case coordinates is
 						when ABSOLUTE =>
