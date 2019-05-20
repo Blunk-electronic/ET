@@ -124,8 +124,8 @@ package body schematic_ops is
 		raise constraint_error;
 	end;
 
-	procedure dragging_not_possible (port : in et_schematic.type_port_submodule) is begin
-		log (message_error & "port " & enclose_in_quotes (to_string (port.port_name)) &
+	procedure dragging_not_possible (port : in string) is begin
+		log (message_error & "port " & enclose_in_quotes (port) &
 			 " is directly connected with other ports. Dragging not possible !",
 			 console => true);
 		raise constraint_error;
@@ -1865,7 +1865,95 @@ package body schematic_ops is
 
 		log_indentation_down;
 	end drag_net_segments;
+
+	function net_segment_at_place (
+	-- Returns true if at given place a net segment starts or ends.
+		module_cursor	: in type_modules.cursor;
+		place			: in et_coordinates.type_coordinates)
+		return boolean is
+
+		-- This flag goes true once a segment has been found.
+		segment_found : boolean := false; -- to be returned
 		
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+
+			use type_nets;			
+			net_cursor : type_nets.cursor := module.nets.first;
+
+			procedure query_strands (
+				net_name	: in type_net_name.bounded_string;
+				net			: in type_net) is
+				use et_coordinates;
+				use type_strands;
+				strand_cursor : type_strands.cursor := net.strands.first;
+				
+				procedure query_segments (strand : in type_strand) is
+					use type_net_segments;
+
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+					procedure probe_segment (segment : in type_net_segment) is begin
+						-- if port sits on a start point of a segment
+						if segment.coordinates_start = type_point (place) then
+							-- signal iterations in upper level to cancel
+							segment_found := true;
+						end if;
+
+						-- if port sits on an end point of a segment
+						if segment.coordinates_end = type_point (place) then
+							-- signal iterations in upper level to cancel
+							segment_found := true;
+						end if;
+					end probe_segment;
+					
+				begin -- query_segments
+					while not segment_found and segment_cursor /= type_net_segments.no_element loop
+						query_element (
+							position	=> segment_cursor,
+							process		=> probe_segment'access);
+						
+						next (segment_cursor);
+					end loop;
+				end query_segments;
+				
+			begin -- query_strands
+				while not segment_found and strand_cursor /= type_strands.no_element loop
+					
+					-- We pick out only the strands on the targeted sheet:
+					if et_coordinates.sheet (element (strand_cursor).position) = sheet (place) then
+
+						query_element (
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+					
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+			
+		begin -- query_nets
+			while not segment_found and net_cursor /= type_nets.no_element loop
+
+				query_element (
+					position	=> net_cursor,
+					process		=> query_strands'access);
+
+				next (net_cursor);
+			end loop;
+		end query_nets;
+
+	begin -- net_segment_at_place
+
+		query_element (
+			position	=> module_cursor,
+			process		=> query_nets'access);
+		
+		return segment_found;
+	end net_segment_at_place;
+	
 	procedure drag_unit (
 	-- Drags the given unit within the schematic.
 	-- Already existing connections with net segments are kept.
@@ -4633,6 +4721,91 @@ package body schematic_ops is
 		use submodules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
+		procedure movable_test (
+		-- Tests whether the given netchanger ports of the netchanger at location 
+		-- are movable. 
+		-- The criteria for movement are: no device, no submodule ports there.
+		-- The ports allowed here are the ports-to-be-dragged itself.
+			location 			: in et_coordinates.type_coordinates; -- only sheet number matters
+			netchanger_ports	: in submodules.type_netchanger_ports) -- x/y of master and slave port
+			is			
+
+			procedure test_point (
+				point		: in et_coordinates.type_coordinates; -- sheet/x/y -- the point to be probed
+				port_name	: in submodules.type_netchanger_port_name) -- master/slave
+				is 
+				ports : type_ports;
+				port : et_schematic.type_port_netchanger;
+
+				use type_ports_submodule;
+				use type_ports_device;
+				use type_ports_netchanger;
+			begin
+				-- If no net segments start or end at given point then this test won't
+				-- complain. If segments are meeting this point, no other ports must be
+				-- here (except the port-to-be-dragged):
+				if net_segment_at_place (module_cursor, point) then
+
+					-- There are net segments starting or ending at point.
+					-- Make sure at point are no ports of devices, submodules or other 
+					-- netchangers (except the submodule port to be dragged):
+
+					port := (index, port_name); -- the port to be dragged, like netchanger 12 port master
+
+					-- Collect all ports of possible other devices, submodules and netchangers
+					-- at given point:
+					ports := ports_at_place (module_name, point, log_threshold + 2);
+
+					-- If no device or submodule ports here:
+					if is_empty (ports.devices) and is_empty (ports.submodules) then
+
+						-- If the ONE and ONLY netchanger port is the 
+						-- port-to-be-dragged then everything is fine.
+						if length (ports.netchangers) = 1 then
+							
+							if contains (ports.netchangers, port) then
+								null; -- fine -> movable test passed
+							else
+								-- there is another netchanger port
+								dragging_not_possible (to_string (port_name));
+							end if;
+						
+						else
+							-- there are more submodule ports
+							dragging_not_possible (to_string (port_name));
+						end if;
+						
+					else -- device or netchanger ports here
+						dragging_not_possible (to_string (port_name));
+					end if;
+				end if;
+			end test_point;
+			
+		begin -- movable_test
+			log ("movable test ...", log_threshold + 1);
+			log_indentation_up;
+
+			-- Test point where the master port is:
+			test_point 
+				(
+				point		=> to_coordinates (
+								point => netchanger_ports.master,
+								sheet => sheet (location)),
+				port_name	=> MASTER
+				);
+
+			-- Test point where the slave port is:			
+			test_point 
+				(
+				point		=> to_coordinates (
+								point => netchanger_ports.slave,
+								sheet => sheet (location)),
+				port_name	=> SLAVE
+				);
+		
+			log_indentation_down;
+		end movable_test;
+		
 		procedure query_netchangers (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
@@ -4663,12 +4836,11 @@ package body schematic_ops is
 				-- in changing the positions of connected net segments.
 				ports_old := netchanger_ports (cursor);
 
-				-- CS: test whether all ports in ports_old are not at the same place
-				-- as unit or submodule ports. If so, the dragging is not possible because
-				-- the affected unit or submodule had to be moved simultaneously.
-			
 				-- Fetch the netchanger position BEFORE the move.
 				location := element (cursor).position_sch;
+
+				-- Test whether the port at the current position can be dragged:
+				movable_test (location, ports_old);
 				
 				-- calculate the new position the netchanger will have AFTER the move:
 				case coordinates is
@@ -5482,94 +5654,6 @@ package body schematic_ops is
 		
 		log_indentation_down;		
 	end delete_segment;
-
-	function net_segment_at_place (
-	-- Returns true if at given place a net segment starts or ends.
-		module_cursor	: in type_modules.cursor;
-		place			: in et_coordinates.type_coordinates)
-		return boolean is
-
-		-- This flag goes true once a segment has been found.
-		segment_found : boolean := false; -- to be returned
-		
-		procedure query_nets (
-			module_name	: in type_module_name.bounded_string;
-			module		: in type_module) is
-
-			use type_nets;			
-			net_cursor : type_nets.cursor := module.nets.first;
-
-			procedure query_strands (
-				net_name	: in type_net_name.bounded_string;
-				net			: in type_net) is
-				use et_coordinates;
-				use type_strands;
-				strand_cursor : type_strands.cursor := net.strands.first;
-				
-				procedure query_segments (strand : in type_strand) is
-					use type_net_segments;
-
-					segment_cursor : type_net_segments.cursor := strand.segments.first;
-
-					procedure probe_segment (segment : in type_net_segment) is begin
-						-- if port sits on a start point of a segment
-						if segment.coordinates_start = type_point (place) then
-							-- signal iterations in upper level to cancel
-							segment_found := true;
-						end if;
-
-						-- if port sits on an end point of a segment
-						if segment.coordinates_end = type_point (place) then
-							-- signal iterations in upper level to cancel
-							segment_found := true;
-						end if;
-					end probe_segment;
-					
-				begin -- query_segments
-					while not segment_found and segment_cursor /= type_net_segments.no_element loop
-						query_element (
-							position	=> segment_cursor,
-							process		=> probe_segment'access);
-						
-						next (segment_cursor);
-					end loop;
-				end query_segments;
-				
-			begin -- query_strands
-				while not segment_found and strand_cursor /= type_strands.no_element loop
-					
-					-- We pick out only the strands on the targeted sheet:
-					if et_coordinates.sheet (element (strand_cursor).position) = sheet (place) then
-
-						query_element (
-							position	=> strand_cursor,
-							process		=> query_segments'access);
-					
-					end if;
-					
-					next (strand_cursor);
-				end loop;
-			end query_strands;
-			
-		begin -- query_nets
-			while not segment_found and net_cursor /= type_nets.no_element loop
-
-				query_element (
-					position	=> net_cursor,
-					process		=> query_strands'access);
-
-				next (net_cursor);
-			end loop;
-		end query_nets;
-
-	begin -- net_segment_at_place
-
-		query_element (
-			position	=> module_cursor,
-			process		=> query_nets'access);
-		
-		return segment_found;
-	end net_segment_at_place;
 
 	function ports_at_place (
 	-- Returns lists of device, netchanger and submodule ports at the given place.
@@ -7867,6 +7951,9 @@ package body schematic_ops is
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		procedure movable_test (point : in et_coordinates.type_coordinates) is 
+		-- Tests whether the submodule port at the given point is movable. The criteria
+		-- for movement are: no device, no netchanger ports there.
+		-- The ONE and ONLY port allowed here is the port-to-be-dragged itself.
 			ports : type_ports;
 			port : et_schematic.type_port_submodule;
 
@@ -7874,22 +7961,23 @@ package body schematic_ops is
 			use type_ports_device;
 			use type_ports_netchanger;
 			
-		begin
+		begin -- movable_test
 			log ("movable test ...", log_threshold + 1);
 			log_indentation_up;
 
 			-- If no net segments start or end at given point then this test won't
 			-- complain. If segments are meeting this point, no other ports must be
-			-- here (except the port to be dragged):
+			-- here (except the port-to-be-dragged):
 			if net_segment_at_place (module_cursor, point) then
 
 				-- There are net segments starting or ending at point.
 				-- Make sure at point are no ports of devices, netchangers or other 
 				-- submodules (except the submodule port to be dragged):
 
-				port := (instance, port_name); -- the port to be dragged
+				port := (instance, port_name); -- the port to be dragged, like instance OSC port 'clock_out'
 
-				-- Collect all ports at point:
+				-- Collect all ports of possible other devices, submodules and netchangers
+				-- at given point:
 				ports := ports_at_place (module_name, point, log_threshold + 2);
 
 				-- If no device or netchanger ports here:
@@ -7903,16 +7991,16 @@ package body schematic_ops is
 							null; -- fine -> movable test passed
 						else
 							-- there is another submodule port
-							dragging_not_possible (port);
+							dragging_not_possible (to_string (port.port_name));
 						end if;
 					
 					else
 						-- there are more submodule ports
-						dragging_not_possible (port);
+						dragging_not_possible (to_string (port.port_name));
 					end if;
 					
 				else -- device or netchanger ports here
-					dragging_not_possible (port);
+					dragging_not_possible (to_string (port.port_name));
 				end if;
 			end if;
 			
