@@ -4513,7 +4513,8 @@ package body schematic_ops is
 					log_indentation_up;
 
 					-- Probe all segments of strand for port_before. This loop must not
-					-- abort even if drag_processed goes true.
+					-- abort even if drag_processed goes true. Reason: All segements
+					-- meeting here must be dragged.
 					while segment_cursor /= type_net_segments.no_element loop
 
 						log ("probing " & to_string (segment_cursor), log_threshold + 2);
@@ -7591,7 +7592,7 @@ package body schematic_ops is
 	-- Changes the position of start or end points of segments.
 	-- Does NOT create new connections with segments if the port
 	-- lands on the start or end point of another segment.
-	-- Does NOT create a new connection with a segments if the port
+	-- Does NOT create a new connection with segments if the port
 	-- lands between start and end point.
 		module			: in type_modules.cursor;				-- the module
 		port			: in et_schematic.type_port_submodule;	-- instance and port name
@@ -7613,106 +7614,107 @@ package body schematic_ops is
 				use type_strands;
 				strand_cursor : type_strands.cursor := net.strands.first;
 
--- 				-- This flag goes true once port_before has been found the first time
--- 				-- and affected end points of segments have been moved to port_after.
--- 				drag_processed : boolean := false;
--- 				
--- 				procedure query_segments (strand : in out type_strand) is
--- 					use type_net_segments;
--- 
--- 					segment_cursor : type_net_segments.cursor := strand.segments.first;
--- 
--- 					procedure change_segment (segment : in out type_net_segment) is 
--- 					-- Changes the position of start or end point of a segment according to the drag point.
--- 					begin -- change_segment
--- 						log_indentation_up;
--- 						
--- 						-- if port sits on a start point of a segment -> move start point
--- 						if segment.coordinates_start = port_before then
--- 							log ("move segment start point from" & 
--- 								to_string (segment.coordinates_start),
--- 								log_threshold + 3);
--- 
--- 							segment.coordinates_start := port_after;
--- 
--- 							log ("to" & 
--- 								to_string (segment.coordinates_start),
--- 								log_threshold + 3);
--- 
--- 							-- signal iterations in upper level to cancel
--- 							drag_processed := true;
--- 						end if;
--- 
--- 						-- if port sits on an end point of a segment -> move end point
--- 						if segment.coordinates_end = port_before then
--- 							log ("move segment end point from" & 
--- 								to_string (segment.coordinates_end),
--- 								log_threshold + 3);
--- 
--- 							segment.coordinates_end := port_after;
--- 
--- 							log ("to" & 
--- 								to_string (segment.coordinates_end),
--- 								log_threshold + 3);
--- 							
--- 							-- signal iterations in upper level to cancel
--- 							drag_processed := true;
--- 						end if;
--- 						
--- 						log_indentation_down;
--- 					end change_segment;
--- 					
--- 				begin -- query_segments
--- 					log_indentation_up;
--- 
--- 					-- Probe all segments of strand for port_before. This loop must not
--- 					-- abort even if drag_processed goes true.
--- 					while segment_cursor /= type_net_segments.no_element loop
--- 
--- 						log ("probing " & to_string (segment_cursor), log_threshold + 2);
--- 						
--- 						update_element (
--- 							container	=> strand.segments,
--- 							position	=> segment_cursor,
--- 							process		=> change_segment'access);
--- 						
--- 						next (segment_cursor);
--- 					end loop;
--- 
--- 					-- Update strand position if any movement took place.
--- 					if drag_processed then
--- 						set_strand_position (strand);
--- 					end if;
--- 					
--- 					log_indentation_down;
--- 				end query_segments;
+				-- This flag goes true once the port has been found the first time
+				-- and affected end points of segments have been moved.
+				drag_processed : boolean := false;
+				
+				procedure query_segments (strand : in out type_strand) is
+					use type_net_segments;
+
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+					procedure change_segment (segment : in out type_net_segment) is 
+					-- Changes the position of start or end point of a segment according to the drag point.
+					begin -- change_segment
+						log_indentation_up;
+						
+						-- if port sits on a start point of a segment -> move start point
+						if segment.coordinates_start = type_point (pos_before) then
+							log ("move segment start point from" & 
+								to_string (segment.coordinates_start),
+								log_threshold + 3);
+
+							segment.coordinates_start := type_point (pos_after);
+
+							log ("to" & 
+								to_string (segment.coordinates_start),
+								log_threshold + 3);
+
+							-- signal iterations in upper level to cancel
+							drag_processed := true;
+						end if;
+
+						-- if port sits on an end point of a segment -> move end point
+						if segment.coordinates_end = type_point (pos_before) then
+							log ("move segment end point from" & 
+								to_string (segment.coordinates_end),
+								log_threshold + 3);
+
+							segment.coordinates_end := type_point (pos_after);
+
+							log ("to" & 
+								to_string (segment.coordinates_end),
+								log_threshold + 3);
+							
+							-- signal iterations in upper level to cancel
+							drag_processed := true;
+						end if;
+						
+						log_indentation_down;
+					end change_segment;
+					
+				begin -- query_segments
+					log_indentation_up;
+
+					-- Probe all segments of strand for pos_before. This loop must not
+					-- abort even if drag_processed goes true. Reason: All segements
+					-- meeting here must be dragged.
+					while segment_cursor /= type_net_segments.no_element loop
+
+						log ("probing " & to_string (segment_cursor), log_threshold + 2);
+						
+						update_element (
+							container	=> strand.segments,
+							position	=> segment_cursor,
+							process		=> change_segment'access);
+						
+						next (segment_cursor);
+					end loop;
+
+					-- Update strand position if any movement took place.
+					if drag_processed then
+						set_strand_position (strand);
+					end if;
+					
+					log_indentation_down;
+				end query_segments;
 				
 			begin -- query_strands
 				log_indentation_up;
 				while strand_cursor /= type_strands.no_element loop
 					
--- 					-- We pick out only the strands on the targeted sheet:
--- 					if et_coordinates.sheet (element (strand_cursor).position) = sheet then
--- 						log ("net " & to_string (key (net_cursor)), log_threshold + 1);
--- 
--- 						log_indentation_up;
--- 						log ("strand " & to_string (position => element (strand_cursor).position),
--- 							log_threshold + 1);
--- 					
--- 						-- Iterate in segments of strand. If point sits on any segment
--- 						-- the flag drag_processed goes true.
--- 						update_element (
--- 							container	=> net.strands,
--- 							position	=> strand_cursor,
--- 							process		=> query_segments'access);
--- 					
--- 						log_indentation_down;
--- 					end if;
--- 					-- All segments of strand probed (and maybe moved).
--- 
--- 					-- If the drag point has been processed, there is no need to look up
--- 					-- other strands for port_before.
--- 					if drag_processed then exit; end if;
+					-- We pick out only the strands on the targeted sheet:
+					if et_coordinates.sheet (element (strand_cursor).position) = sheet (pos_before) then
+						log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+
+						log_indentation_up;
+						log ("strand " & to_string (position => element (strand_cursor).position),
+							log_threshold + 1);
+					
+						-- Iterate in segments of strand. If point sits on any segment
+						-- the flag drag_processed goes true.
+						update_element (
+							container	=> net.strands,
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+					
+						log_indentation_down;
+					end if;
+					-- All segments of strand probed (and maybe moved).
+
+					-- If the drag point has been processed, there is no need to look up
+					-- other strands for port_before.
+					if drag_processed then exit; end if;
 					
 					next (strand_cursor);
 				end loop;
@@ -7744,10 +7746,9 @@ package body schematic_ops is
 		
 		log_indentation_down;
 	end drag_net_segments;
-
 	
 	procedure drag_port (
-	-- Drags the given submmdule port.	
+	-- Drags the given submodule port.	
 	-- Already existing connections with net segments are kept.
 	-- Net segment positions are modified.
 	-- This operation applies to a single sheet. Dragging from one sheet
@@ -7852,7 +7853,7 @@ package body schematic_ops is
 				-- If the port is available (at the edge of the box) then
 				-- it can be moved:
 				if port_cursor /= type_submodule_ports.no_element then
-
+									
 					update_element (
 						container	=> submodule.ports,
 						position	=> port_cursor,
@@ -7905,6 +7906,10 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+		-- CS: test whether the port is not at the same place
+		-- as unit or netchanger ports. If so, the dragging is not possible because
+		-- the affected unit or netchanger had to be moved simultaneously.
+		
 		-- move the port along the edge of the box:
 		update_element (
 			container	=> modules,
