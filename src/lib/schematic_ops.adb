@@ -7696,9 +7696,9 @@ package body schematic_ops is
 	end delete_port;
 
 	procedure move_port (
-	-- Moves the given submmdule port. Disconnects the port from
+	-- Moves the given submodule port. Disconnects the port from
 	-- start or end points of net segments BEFORE the move. 
-	-- Connects unit ports with segment end or start points AFTER the move.
+	-- Connects submodule port with segment end or start points AFTER the move.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
 		port_name		: in et_general.type_net_name.bounded_string; -- clock_output
@@ -8415,6 +8415,82 @@ package body schematic_ops is
 			process		=> query_nets'access);
 		
 	end delete_submodule;
+
+	procedure move_submodule (
+	-- Moves the given submodule instance (the box). Disconnects the ports from
+	-- start or end points of net segments BEFORE the move. 
+	-- Connects submodule ports with segment end or start points AFTER the move.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		coordinates		: in type_coordinates; -- relative/absolute
+		sheet			: in type_sheet_relative; -- -3/0/2
+		point			: in et_coordinates.type_point; -- x/y
+		log_threshold	: in type_log_level) is
+
+		use submodules;
+
+		-- The place where the box is in the parent module:
+		submodule_position : et_coordinates.type_coordinates;
+		
+		module_cursor : type_modules.cursor; -- points to the module being modified
+		
+	begin -- move_submodule
+		case coordinates is
+			when ABSOLUTE =>
+				log ("module " & to_string (module_name) &
+					" moving submodule instance " & to_string (instance) &
+					" to sheet" & to_sheet (sheet) &
+					et_coordinates.to_string (point), log_threshold);
+
+			when RELATIVE =>
+				log ("module " & to_string (module_name) &
+					" moving submodule instance" & to_string (instance) &
+					" by " & to_sheet_relative (sheet) & " sheet(s)" &
+					et_coordinates.to_string (point), log_threshold);
+		end case;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+	end move_submodule;
+	
+	procedure drag_submodule (
+	-- Drags the given submodule instance (the box) within the schematic.
+	-- Already existing connections with net segments are kept.
+	-- Net segment positions are modified.
+	-- This operation applies to a single sheet. Dragging from one sheet
+	-- to another is not possible.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in et_coordinates.type_point; -- x/y
+		log_threshold	: in type_log_level) is
+
+		use submodules;
+
+		-- The place where the box is in the parent module:
+		submodule_position : et_coordinates.type_coordinates;
+		
+		module_cursor : type_modules.cursor; -- points to the module being modified
+		
+	begin -- drag_submodule
+		case coordinates is
+			when ABSOLUTE =>
+				log ("module " & to_string (module_name) &
+					" dragging submodule instance " & to_string (instance) &
+					" to" & et_coordinates.to_string (point), log_threshold);
+
+			when RELATIVE =>
+				log ("module " & to_string (module_name) &
+					" dragging submodule instance" & to_string (instance) &
+					" by " & et_coordinates.to_string (point), log_threshold);
+		end case;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+	end drag_submodule;
+
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

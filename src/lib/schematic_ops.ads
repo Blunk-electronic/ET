@@ -382,9 +382,9 @@ package schematic_ops is
 		log_threshold	: in type_log_level);
 
 	procedure move_port (
-	-- Moves the given submmdule port. Disconnects the port from
+	-- Moves the given submodule port. Disconnects the port from
 	-- start or end points of net segments BEFORE the move. 
-	-- Connects unit ports with segment end or start points AFTER the move.
+	-- Connects submodule port with segment end or start points AFTER the move.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
 		port_name		: in et_general.type_net_name.bounded_string; -- clock_output
@@ -409,6 +409,29 @@ package schematic_ops is
 	-- Removes a submodule instance from the schematic.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		log_threshold	: in type_log_level);
+
+	procedure move_submodule (
+	-- Moves the given submodule instance (the box). Disconnects the ports from
+	-- start or end points of net segments BEFORE the move. 
+	-- Connects submodule ports with segment end or start points AFTER the move.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		coordinates		: in type_coordinates; -- relative/absolute
+		sheet			: in type_sheet_relative; -- -3/0/2
+		point			: in et_coordinates.type_point; -- x/y
+		log_threshold	: in type_log_level);
+
+	procedure drag_submodule (
+	-- Drags the given submodule instance (the box) within the schematic.
+	-- Already existing connections with net segments are kept.
+	-- Net segment positions are modified.
+	-- This operation applies to a single sheet. Dragging from one sheet
+	-- to another is not possible.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (

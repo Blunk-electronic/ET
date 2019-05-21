@@ -541,6 +541,25 @@ package body scripting is
 								
 								log_threshold	=> log_threshold + 1);
 
+						when SUBMODULE =>
+							case fields is
+								when 8 =>
+									schematic_ops.drag_submodule (
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)),
+										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+										point			=> et_coordinates.type_point (set_point (
+													x => to_distance (f (7)),
+													y => to_distance (f (8)))),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last =>
+									command_too_long (8);
+									
+								when others =>
+									command_incomplete;
+							end case;
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -682,6 +701,27 @@ package body scripting is
 						when TEXT =>
 							NULL; -- CS
 
+						when SUBMODULE =>
+							case fields is
+								when 9 =>
+									schematic_ops.move_submodule (
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)),
+										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+										sheet			=> to_sheet_relative (f (7)),
+										point			=> et_coordinates.type_point (set_point (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last =>
+									command_too_long (9);
+									
+								when others =>
+									command_incomplete;
+							end case;
+							
 						when UNIT =>
 							schematic_ops.move_unit
 								(
