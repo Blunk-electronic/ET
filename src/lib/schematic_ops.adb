@@ -8242,10 +8242,6 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
-		-- CS: test whether the port is not at the same place
-		-- as unit or netchanger ports. If so, the dragging is not possible because
-		-- the affected unit or netchanger had to be moved simultaneously.
-		
 		-- move the port along the edge of the box:
 		update_element (
 			container	=> modules,
@@ -8261,6 +8257,164 @@ package body schematic_ops is
 		
 	end drag_port;
 
+	procedure delete_submodule (
+	-- Removes a submodule instance from the schematic.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		log_threshold	: in type_log_level) is
+
+		use submodules;
+
+		-- The place where the box is in the parent module:
+		submodule_position : et_coordinates.type_coordinates;
+		
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_submodules;
+			submod_cursor : type_submodules.cursor;
+
+			-- the submodule ports to be removed
+-- 			ports : type_submodule_ports.map; -- port names and x/y positions
+		begin -- query_submodules
+			if contains (module.submods, instance) then
+
+				submod_cursor := find (module.submods, instance); -- the submodule should be there
+
+				-- For removing the submodule ports
+				-- we take a copy of the coordinates of the submodule (the box):
+				submodule_position := element (submod_cursor).position;
+
+				-- delete the submodule (the box)
+				delete (module.submods, submod_cursor);
+				
+				-- Get the relative port positions relative to the lower left 
+				-- corner of the submodule box.
+-- 				ports := element (submod_cursor).ports;
+
+				-- calculate the absolute port positions
+-- 				submodules.move_ports (ports, submodule_position);
+				
+-- 				log_indentation_up;
+
+
+-- 				log_indentation_down;				
+			else
+				submodule_not_found (instance);
+			end if;
+		end query_submodules;
+
+		procedure query_nets (
+		-- Removes all references to the submodule instance from the net segments.
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			use type_nets;
+			net_cursor : type_nets.cursor := module.nets.first;
+
+			procedure query_strands (
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+				use et_coordinates;
+				use type_strands;
+				strand_cursor : type_strands.cursor := net.strands.first;
+
+				procedure query_segments (strand : in out type_strand) is
+					use type_net_segments;
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+					procedure change_segment (segment : in out type_net_segment) is
+						use type_module_instance_name;
+						use type_ports_submodule;
+						port_cursor : type_ports_submodule.cursor := segment.ports_submodules.first;
+					begin
+						while port_cursor /= type_ports_submodule.no_element loop
+							if element (port_cursor).module_name = instance then -- OSC1
+								delete (segment.ports_submodules, port_cursor);
+							end if;
+							next (port_cursor);
+						end loop;
+					end change_segment;
+
+				begin -- query_segments
+					log_indentation_up;
+
+					while segment_cursor /= type_net_segments.no_element loop
+						log ("probing " & to_string (segment_cursor), log_threshold + 2);
+						
+						type_net_segments.update_element (
+							container	=> strand.segments,
+							position	=> segment_cursor,
+							process		=> change_segment'access);
+
+						next (segment_cursor);
+					end loop;
+
+					log_indentation_down;
+				end query_segments;
+				
+			begin -- query_strands
+				log_indentation_up;
+				
+				while strand_cursor /= type_strands.no_element loop
+
+					-- We pick out only the strands on the targeted sheet:
+					if et_coordinates.sheet (element (strand_cursor).position) = sheet (submodule_position) then
+						log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+
+						log_indentation_up;
+						log ("strand " & to_string (position => element (strand_cursor).position),
+							log_threshold + 1);
+
+						update_element (
+							container	=> net.strands,
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+					
+						log_indentation_down;
+					end if;
+						
+					next (strand_cursor);
+				end loop;
+				
+				log_indentation_down;
+			end query_strands;
+			
+		begin -- query_nets
+			while net_cursor /= type_nets.no_element loop
+				
+				update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_strands'access);
+			
+				next (net_cursor);
+			end loop;
+		end query_nets;
+		
+	begin -- delete_submodule
+		log ("module " & to_string (module_name) &
+			" deleting submodule instance " & enclose_in_quotes (to_string (instance)),
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- load submodule_position and delete submodule
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_submodules'access);
+
+		-- delete all references to the submodule in the nets
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_nets'access);
+		
+	end delete_submodule;
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

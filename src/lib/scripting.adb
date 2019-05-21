@@ -436,6 +436,22 @@ package body scripting is
 															y => to_distance (f (8))),
 														sheet => to_sheet (f (6))), -- sheet number
 								log_threshold		=> log_threshold + 1);
+
+						when SUBMODULE =>
+							case fields is
+								when 5 =>
+									schematic_ops.delete_submodule (
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 6 .. count_type'last =>
+									command_too_long (5);
+									
+								when others =>
+									command_incomplete;
+							end case;
 							
 						when TEXT =>
 							NULL; -- CS

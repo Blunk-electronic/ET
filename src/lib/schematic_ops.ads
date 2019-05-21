@@ -365,7 +365,7 @@ package schematic_ops is
 		position		: in et_coordinates.type_coordinates; -- sheet, lower left corner x/y 
 		size			: in submodules.type_submodule_size; -- the size of the box in x and y
 		log_threshold	: in type_log_level);
-
+	
 	procedure add_port (
 	-- Adds a port to a submodule instance.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -403,6 +403,12 @@ package schematic_ops is
 		port_name		: in et_general.type_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in et_coordinates.type_point; -- x/y
+		log_threshold	: in type_log_level);
+
+	procedure delete_submodule (
+	-- Removes a submodule instance from the schematic.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (
