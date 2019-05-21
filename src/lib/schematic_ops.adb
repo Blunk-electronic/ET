@@ -2100,6 +2100,23 @@ package body schematic_ops is
 
 			ports, ports_old, ports_new : et_libraries.type_ports.map;
 
+			procedure query_unit_location (
+				device_name	: in type_device_name;
+				device		: in et_schematic.type_device) is
+				use et_schematic.type_units;
+				unit_cursor : et_schematic.type_units.cursor;
+			begin
+				if contains (device.units, unit_name) then
+					unit_cursor := find (device.units, unit_name); -- the unit should be there
+
+					-- store old unit position
+					position_of_unit_old := element (unit_cursor).position;
+					log ("unit position old: " & to_string (position => position_of_unit_old), log_threshold + 1);
+				else
+					unit_not_found (unit_name);
+				end if;
+			end query_unit_location;
+			
 			procedure query_units (
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
@@ -2136,25 +2153,18 @@ package body schematic_ops is
 				end move_unit;
 				
 			begin -- query_units
-				if contains (device.units, unit_name) then
-					unit_cursor := find (device.units, unit_name); -- the unit should be there
+				unit_cursor := find (device.units, unit_name); -- the unit should be there
 
-					-- store old unit position
-					position_of_unit_old := element (unit_cursor).position;
-					log ("unit position old: " & to_string (position => position_of_unit_old), log_threshold + 1);
+				-- move the unit
+				update_element (
+					container	=> device.units,
+					position	=> unit_cursor,
+					process		=> move_unit'access);
 
-					-- move the unit
-					update_element (
-						container	=> device.units,
-						position	=> unit_cursor,
-						process		=> move_unit'access);
-
-					-- store new unit position
-					position_of_unit_new := element (unit_cursor).position;
-					log ("unit position new: " & to_string (position => position_of_unit_new), log_threshold + 1);
-				else
-					unit_not_found (unit_name);
-				end if;
+				-- store new unit position
+				position_of_unit_new := element (unit_cursor).position;
+				
+				log ("unit position new: " & to_string (position => position_of_unit_new), log_threshold + 1);
 			end query_units;
 			
 		begin -- query_devices
@@ -2167,11 +2177,10 @@ package body schematic_ops is
 				-- unit must be fetched. These coordinates will later assist
 				-- in changing the positions of connected net segments.
 				
-				-- locate the unit, store old position, move it, store new position
-				update_element (
-					container	=> module.devices,
+				-- locate the unit, store old position in position_of_unit_old
+				query_element (
 					position	=> device_cursor,
-					process		=> query_units'access);
+					process		=> query_unit_location'access);
 				
 				-- Fetch the ports of the unit to be moved. These are the default port positions
 				-- (relative to the symbol origin) as they are defined in the device model.
@@ -2185,10 +2194,16 @@ package body schematic_ops is
 
 				-- Test whether the ports of the unit can be dragged:
 				movable_test (position_of_unit_old, ports_old);
+
+				-- locate the unit, move it, store new position in position_of_unit_new
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor,
+					process		=> query_units'access);
 				
 				ports_new := ports;
 				move_ports (ports_new, position_of_unit_new);
-				-- ports_old now contains the absolute port positions in the schematic AFTER the move.
+				-- ports_new now contains the absolute port positions in the schematic AFTER the move.
 				
 				-- Change net segments in the affected nets (type_module.nets):
 				drag_net_segments (
