@@ -7339,7 +7339,7 @@ package body schematic_ops is
 		end query_nets;
 		
 	begin -- insert_port
-		log ("inserting submodule port in net at" & 
+		log ("inserting submodule port " & enclose_in_quotes (to_string (port)) & " in net at" & 
 			 to_string (position => position) & " ...", log_threshold);
 		log_indentation_up;
 		
@@ -8488,12 +8488,13 @@ package body schematic_ops is
 							point	=> element (port_cursor).position,
 							sheet	=> et_coordinates.sheet (submodule_position_after)
 							);
-					
+
+					-- insert the port
 					insert_port (
 						module			=> module_cursor,
-						instance		=> instance,
-						port			=> key (port_cursor),
-						position		=> position,
+						instance		=> instance, -- OSC1
+						port			=> key (port_cursor), -- port name like CE
+						position		=> position, -- sheet/x/y
 						log_threshold	=> log_threshold + 1);
 					
 					next (port_cursor);
@@ -8553,7 +8554,7 @@ package body schematic_ops is
 
 			when RELATIVE =>
 				log ("module " & to_string (module_name) &
-					" moving submodule instance" & to_string (instance) &
+					" moving submodule instance " & to_string (instance) &
 					" by " & to_sheet_relative (sheet) & " sheet(s)" &
 					et_coordinates.to_string (point), log_threshold);
 		end case;
