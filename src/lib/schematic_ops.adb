@@ -8257,54 +8257,12 @@ package body schematic_ops is
 		
 	end drag_port;
 
-	procedure delete_submodule (
-	-- Removes a submodule instance from the schematic.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+	procedure delete_ports (
+	-- Deletes all references to the given submodule in the nets.
+		module_cursor	: in type_modules.cursor;					-- the module
+		instance		: in et_general.type_module_instance_name.bounded_string; -- the submodule instance
+		position		: in et_coordinates.type_coordinates; 		-- the location in the schematic (only sheet matters)
 		log_threshold	: in type_log_level) is
-
-		use submodules;
-
-		-- The place where the box is in the parent module:
-		submodule_position : et_coordinates.type_coordinates;
-		
-		module_cursor : type_modules.cursor; -- points to the module being modified
-
-		procedure query_submodules (
-			module_name	: in type_module_name.bounded_string;
-			module		: in out type_module) is
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
-
-			-- the submodule ports to be removed
--- 			ports : type_submodule_ports.map; -- port names and x/y positions
-		begin -- query_submodules
-			if contains (module.submods, instance) then
-
-				submod_cursor := find (module.submods, instance); -- the submodule should be there
-
-				-- For removing the submodule ports
-				-- we take a copy of the coordinates of the submodule (the box):
-				submodule_position := element (submod_cursor).position;
-
-				-- delete the submodule (the box)
-				delete (module.submods, submod_cursor);
-				
-				-- Get the relative port positions relative to the lower left 
-				-- corner of the submodule box.
--- 				ports := element (submod_cursor).ports;
-
-				-- calculate the absolute port positions
--- 				submodules.move_ports (ports, submodule_position);
-				
--- 				log_indentation_up;
-
-
--- 				log_indentation_down;				
-			else
-				submodule_not_found (instance);
-			end if;
-		end query_submodules;
 
 		procedure query_nets (
 		-- Removes all references to the submodule instance from the net segments.
@@ -8361,7 +8319,7 @@ package body schematic_ops is
 				while strand_cursor /= type_strands.no_element loop
 
 					-- We pick out only the strands on the targeted sheet:
-					if et_coordinates.sheet (element (strand_cursor).position) = sheet (submodule_position) then
+					if et_coordinates.sheet (element (strand_cursor).position) = sheet (position) then
 						log ("net " & to_string (key (net_cursor)), log_threshold + 1);
 
 						log_indentation_up;
@@ -8394,6 +8352,50 @@ package body schematic_ops is
 			end loop;
 		end query_nets;
 		
+	begin -- delete_ports
+		log ("deleting submodule ports in nets ...", log_threshold);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_nets'access);
+
+	end delete_ports;
+	
+	procedure delete_submodule (
+	-- Removes a submodule instance from the schematic.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		log_threshold	: in type_log_level) is
+
+		use submodules;
+
+		-- The place where the box is in the parent module:
+		submodule_position : et_coordinates.type_coordinates;
+		
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_submodules;
+			submod_cursor : type_submodules.cursor;
+		begin -- query_submodules
+			if contains (module.submods, instance) then
+
+				submod_cursor := find (module.submods, instance); -- the submodule should be there
+
+				-- For removing the submodule ports
+				-- we take a copy of the coordinates of the submodule (the box):
+				submodule_position := element (submod_cursor).position;
+
+				-- delete the submodule (the box)
+				delete (module.submods, submod_cursor);
+			else
+				submodule_not_found (instance);
+			end if;
+		end query_submodules;
+	
 	begin -- delete_submodule
 		log ("module " & to_string (module_name) &
 			" deleting submodule instance " & enclose_in_quotes (to_string (instance)),
@@ -8409,10 +8411,11 @@ package body schematic_ops is
 			process		=> query_submodules'access);
 
 		-- delete all references to the submodule in the nets
-		update_element (
-			container	=> modules,
-			position	=> module_cursor,
-			process		=> query_nets'access);
+		delete_ports (
+			module_cursor	=> module_cursor,
+			instance		=> instance,
+			position		=> submodule_position,
+			log_threshold	=> log_threshold + 1);
 		
 	end delete_submodule;
 
@@ -8429,10 +8432,116 @@ package body schematic_ops is
 
 		use submodules;
 
-		-- The place where the box is in the parent module:
-		submodule_position : et_coordinates.type_coordinates;
+		-- The place where the box is in the parent module BEFORE and AFTER the move:
+		submodule_position_before : et_coordinates.type_coordinates;
+		submodule_position_after : et_coordinates.type_coordinates;		
 		
 		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_submodules;
+			submod_cursor : type_submodules.cursor;
+
+			-- the submodule ports to be moved
+			ports : type_submodule_ports.map; -- port names and relative x/y positions
+
+			procedure move (
+				instance	: in et_general.type_module_instance_name.bounded_string;
+				submodule	: in out type_submodule) is
+			begin
+				case coordinates is
+					when ABSOLUTE =>
+						submodule.position := to_coordinates (point, sheet);
+
+					when RELATIVE =>
+						move (
+							position	=> submodule.position,
+							offset		=> to_coordinates_relative (point, sheet)
+							);
+				end case;
+
+				-- store new submodule position
+				submodule_position_after := submodule.position;
+
+				exception
+					when event: others =>
+						log (message_error & "coordinates invalid !", console => true); -- CS required more details
+						log (ada.exceptions.exception_information (event), console => true);
+						raise;
+				
+			end move;
+
+			procedure insert_ports is 
+			-- Inserts the ports into the nets. The sheet number is taken
+			-- from the submodule_position_after (or submodule_position_before).
+				use type_submodule_ports;
+				port_cursor : type_submodule_ports.cursor := ports.first;
+				position : et_coordinates.type_coordinates;
+			begin
+				while port_cursor /= type_submodule_ports.no_element loop
+
+					-- build the port position (sheet/x/y)
+					position := to_coordinates 
+							(
+							point	=> element (port_cursor).position,
+							sheet	=> et_coordinates.sheet (submodule_position_after)
+							);
+					
+					insert_port (
+						module			=> module_cursor,
+						instance		=> instance,
+						port			=> key (port_cursor),
+						position		=> position,
+						log_threshold	=> log_threshold + 1);
+					
+					next (port_cursor);
+				end loop;
+			end insert_ports;
+			
+		begin -- query_submodules
+			if contains (module.submods, instance) then
+
+				submod_cursor := find (module.submods, instance); -- the submodule should be there
+
+				-- For moving the submodule ports
+				-- we take a copy of the coordinates of the submodule (the box)
+				-- BEFORE the move operation:
+				submodule_position_before := element (submod_cursor).position;
+
+				log_indentation_up;
+				
+				-- delete all references to the submodule in the nets
+				delete_ports (
+					module_cursor	=> module_cursor,
+					instance		=> instance,
+					position		=> submodule_position_before, -- only sheet number matters
+					log_threshold	=> log_threshold + 1);
+
+				-- move the submodule (the box). Load submodule_position_after
+				-- with the coordinates AFTER the move operation:
+				update_element (
+					container	=> module.submods,
+					position	=> submod_cursor,
+					process		=> move'access);
+				
+				-- Get the port positions relative to the lower left 
+				-- corner of the submodule box.
+				ports := element (submod_cursor).ports;
+
+				-- calculate the absolute port positions AFTER the move:
+				submodules.move_ports (ports, submodule_position_after);
+
+				-- ports now provides port names and absoltue x/y positions.
+				-- The new ports will be inserted in the nets now:
+				insert_ports;
+
+				log_indentation_down;				
+			else
+				submodule_not_found (instance);
+			end if;
+		end query_submodules;
 		
 	begin -- move_submodule
 		case coordinates is
@@ -8451,6 +8560,11 @@ package body schematic_ops is
 		
 		-- locate module
 		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_submodules'access);
 		
 	end move_submodule;
 	
