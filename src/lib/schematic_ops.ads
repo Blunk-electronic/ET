@@ -393,7 +393,7 @@ package schematic_ops is
 		log_threshold	: in type_log_level);
 
 	procedure drag_port (
-	-- Drags the given submmdule port.	
+	-- Drags the given submodule port along the edge of the box.
 	-- Already existing connections with net segments are kept.
 	-- Net segment positions are modified.
 	-- This operation applies to a single sheet. Dragging from one sheet

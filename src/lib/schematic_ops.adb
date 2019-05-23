@@ -2022,19 +2022,16 @@ package body schematic_ops is
 							if contains (ports.devices, port) then
 								null; -- fine -> movable test passed
 							else
-								log ("A");
 								-- there is another netchanger port
 								dragging_not_possible (to_string (key (port_cursor)), point);
 							end if;
 						
 						else
-							log ("B");
 							-- there are more submodule ports
 							dragging_not_possible (to_string (key (port_cursor)), point);
 						end if;
 						
 					else -- device or netchanger ports here
-						log ("C");
 						dragging_not_possible (to_string (key (port_cursor)), point);
 					end if;
 				end if;
@@ -8024,7 +8021,7 @@ package body schematic_ops is
 	end drag_net_segments;
 	
 	procedure drag_port (
-	-- Drags the given submodule port.	
+	-- Drags the given submodule port along the edge of the box.
 	-- Already existing connections with net segments are kept.
 	-- Net segment positions are modified.
 	-- This operation applies to a single sheet. Dragging from one sheet
@@ -8041,7 +8038,7 @@ package body schematic_ops is
 		-- The place where the box is in the parent module:
 		submodule_position : et_coordinates.type_coordinates;
 
-		-- Handling the absolute position of the port requires this variable:
+		-- Handling the absolute position of the port requires these variables:
 		port_position_before : et_coordinates.type_coordinates;
 		port_position_after  : et_coordinates.type_coordinates;
 		
@@ -8135,7 +8132,8 @@ package body schematic_ops is
 
 					-- Test whether the port at the current position can be dragged:
 					movable_test (port_position_before);
-					
+
+					-- move port along edge of box
 					case coordinates is
 						when ABSOLUTE =>
 							-- From the given point the absolute submodule position must 
@@ -8581,12 +8579,179 @@ package body schematic_ops is
 		point			: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
+		module_cursor : type_modules.cursor; -- points to the module being modified
+		
 		use submodules;
 
-		-- The place where the box is in the parent module:
-		submodule_position : et_coordinates.type_coordinates;
-		
-		module_cursor : type_modules.cursor; -- points to the module being modified
+		type type_drag is record
+			name	: et_general.type_net_name.bounded_string;
+			before	: et_coordinates.type_coordinates;
+			after 	: et_coordinates.type_coordinates;
+		end record;
+
+		package type_drags is new doubly_linked_lists (type_drag);
+		drag_list : type_drags.list;
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_submodules;
+			submod_cursor : type_submodules.cursor;
+
+			-- the submodule ports to be moved
+			use type_submodule_ports;
+			ports : type_submodule_ports.map; -- port names and relative x/y positions
+			port_cursor : type_submodule_ports.cursor := ports.first;
+
+			procedure query_ports (
+				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submodule	: in type_submodule) is
+				use type_submodule_ports;
+				port_cursor : type_submodule_ports.cursor := submodule.ports.first;
+
+				procedure build_drag_point (
+					port_name	: in et_general.type_net_name.bounded_string;
+					port		: in type_submodule_port) is
+					submod_position : et_coordinates.type_point := type_point (submodule.position);
+					point_tmp : et_coordinates.type_point := point;
+					port_position : et_coordinates.type_point := port.position;
+					drag : type_drag;
+				begin
+					drag.name := port_name;
+					
+					-- save the absolute port position before the drag operation:
+					drag.before := to_coordinates (
+								point	=> port_position, -- relative x/y to submodule position
+								sheet	=> sheet (submodule.position)); -- same sheet as submodule box
+
+					move (
+						point	=> drag.before,
+						offset	=> submodule.position);
+					-- Now drag.before contains the absolute port position of 
+					-- the port BEFORE the drag operation.
+
+					-- Test whether the port at the current position can be dragged:
+-- CS					movable_test (port_position_before);
+
+					-- move port on the sheet
+					case coordinates is
+						when ABSOLUTE =>
+							-- From the given point the absolute submodule position must 
+							-- be subtracted. This requires inversion of x/y of submodule position.
+							-- We accompish that by mirroring along x and y axis.
+							mirror (submod_position, X);
+							mirror (submod_position, Y);
+
+							-- Subtract from given point the absolute submodule position:
+							move (
+								point	=> point_tmp,
+								offset	=> submod_position);
+
+							-- assign the new port position
+							port_position := point_tmp;
+
+						when RELATIVE =>
+							move (
+								point	=> port_position,
+								offset	=> point);
+							
+					end case;
+
+					-- Later, for inserting the new port in the nets the
+					-- absolute port position after the drag must be built:
+					drag.after := to_coordinates (
+								point	=> port_position, -- relative x/y to submodule position
+								sheet	=> sheet (submodule.position)); -- same sheet as submodule box
+
+					move (
+						point	=> drag.after,
+						offset	=> submodule.position);
+					-- Now port_position_after contains the absolute port position of 
+					-- the port AFTER the drag operation.
+
+					type_drags.append (drag_list, drag);
+					
+				end build_drag_point;
+				
+			begin -- query_ports
+				while port_cursor /= type_submodule_ports.no_element loop
+
+					query_element (
+						position	=> port_cursor,
+						process		=> build_drag_point'access);
+										
+					next (port_cursor);
+				end loop;
+			end query_ports;
+
+			procedure move_box (
+			-- Moves the box around the sheet according to given target position.
+				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submodule	: in out type_submodule) is
+			begin
+				-- NOTE: The sheet number does not change in drag operations.
+				case coordinates is
+					when ABSOLUTE =>
+						set_xy (submodule.position, point);
+
+					when RELATIVE =>
+						et_coordinates.move (
+							point	=> submodule.position,
+							offset	=> point
+							);
+				end case;
+
+				exception
+					when event: others =>
+						log (message_error & "coordinates invalid !", console => true); -- CS required more details
+						log (ada.exceptions.exception_information (event), console => true);
+						raise;
+
+			end move_box;
+			
+		begin -- query_submodules
+			if contains (module.submods, instance) then
+
+				submod_cursor := find (module.submods, instance); -- the submodule should be there
+
+				log_indentation_up;
+
+				-- build the drag list (movable_test included)
+				query_element (
+					position	=> submod_cursor,
+					process		=> query_ports'access);
+				
+				-- move the submodule (the box):
+				update_element (
+					container	=> module.submods,
+					position	=> submod_cursor,
+					process		=> move_box'access);
+
+				log_indentation_down;				
+			else
+				submodule_not_found (instance);
+			end if;
+		end query_submodules;
+
+		procedure drag_segments is
+		-- Drags the net segments according to the drag_list that has been
+		-- created earlier.
+			use type_drags;
+			drag_cursor : type_drags.cursor := drag_list.first;
+		begin
+			while drag_cursor /= type_drags.no_element loop
+
+				drag_net_segments (
+					module			=> module_cursor,
+					port			=> (instance, element (drag_cursor).name),
+					pos_before		=> element (drag_cursor).before,
+					pos_after		=> element (drag_cursor).after,
+					log_threshold	=> log_threshold + 1);
+				
+				next (drag_cursor);
+				
+			end loop;
+		end drag_segments;
 		
 	begin -- drag_submodule
 		case coordinates is
@@ -8597,13 +8762,23 @@ package body schematic_ops is
 
 			when RELATIVE =>
 				log ("module " & to_string (module_name) &
-					" dragging submodule instance" & to_string (instance) &
+					" dragging submodule instance " & to_string (instance) &
 					" by " & et_coordinates.to_string (point), log_threshold);
 		end case;
 		
 		-- locate module
 		module_cursor := locate_module (module_name);
-		
+
+		-- move the ports of the submodule,
+		-- create drag_list
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_submodules'access);
+
+		-- drag the connected net segments (by drag_list)
+		drag_segments;
+
 	end drag_submodule;
 
 	
