@@ -8019,6 +8019,68 @@ package body schematic_ops is
 		
 		log_indentation_down;
 	end drag_net_segments;
+
+	procedure movable_test (
+	-- Tests whether the submodule port at the given point is movable. The criteria
+	-- for movement are: no device, no netchanger ports there.
+	-- The ONE and ONLY port allowed here is the port-to-be-dragged itself.
+		module_cursor	: in type_modules.cursor;
+		instance		: in et_general.type_module_instance_name.bounded_string;
+		port_name		: in et_general.type_net_name.bounded_string;
+		point 			: in et_coordinates.type_coordinates;
+		log_threshold	: in et_string_processing.type_log_level) is 
+		ports : type_ports;
+		port : et_schematic.type_port_submodule;
+
+		use type_ports_submodule;
+		use type_ports_device;
+		use type_ports_netchanger;
+		
+	begin -- movable_test
+		log ("movable test ...", log_threshold);
+		log_indentation_up;
+
+		-- If no net segments start or end at given point then this test won't
+		-- complain. If segments are meeting this point, no other ports must be
+		-- here (except the port-to-be-dragged):
+		if net_segment_at_place (module_cursor, point) then
+
+			-- There are net segments starting or ending at point.
+			-- Make sure at point are no ports of devices, netchangers or other 
+			-- submodules (except the submodule port to be dragged):
+
+			port := (instance, port_name); -- the port to be dragged, like instance OSC port 'clock_out'
+
+			-- Collect all ports of possible other devices, submodules and netchangers
+			-- at given point:
+			ports := ports_at_place (key (module_cursor), point, log_threshold + 1);
+
+			-- If no device or netchanger ports here:
+			if is_empty (ports.devices) and is_empty (ports.netchangers) then
+
+				-- If the ONE and ONLY submodule port is the 
+				-- port-to-be-dragged then everything is fine.
+				if length (ports.submodules) = 1 then
+					
+					if contains (ports.submodules, port) then
+						null; -- fine -> movable test passed
+					else
+						-- there is another submodule port
+						dragging_not_possible (to_string (port.port_name), point);
+					end if;
+				
+				else
+					-- there are more submodule ports
+					dragging_not_possible (to_string (port.port_name), point);
+				end if;
+				
+			else -- device or netchanger ports here
+				dragging_not_possible (to_string (port.port_name), point);
+			end if;
+		end if;
+		
+		log_indentation_down;
+	end movable_test;
 	
 	procedure drag_port (
 	-- Drags the given submodule port along the edge of the box.
@@ -8043,64 +8105,7 @@ package body schematic_ops is
 		port_position_after  : et_coordinates.type_coordinates;
 		
 		module_cursor : type_modules.cursor; -- points to the module being modified
-
-		procedure movable_test (point : in et_coordinates.type_coordinates) is 
-		-- Tests whether the submodule port at the given point is movable. The criteria
-		-- for movement are: no device, no netchanger ports there.
-		-- The ONE and ONLY port allowed here is the port-to-be-dragged itself.
-			ports : type_ports;
-			port : et_schematic.type_port_submodule;
-
-			use type_ports_submodule;
-			use type_ports_device;
-			use type_ports_netchanger;
-			
-		begin -- movable_test
-			log ("movable test ...", log_threshold + 1);
-			log_indentation_up;
-
-			-- If no net segments start or end at given point then this test won't
-			-- complain. If segments are meeting this point, no other ports must be
-			-- here (except the port-to-be-dragged):
-			if net_segment_at_place (module_cursor, point) then
-
-				-- There are net segments starting or ending at point.
-				-- Make sure at point are no ports of devices, netchangers or other 
-				-- submodules (except the submodule port to be dragged):
-
-				port := (instance, port_name); -- the port to be dragged, like instance OSC port 'clock_out'
-
-				-- Collect all ports of possible other devices, submodules and netchangers
-				-- at given point:
-				ports := ports_at_place (module_name, point, log_threshold + 2);
-
-				-- If no device or netchanger ports here:
-				if is_empty (ports.devices) and is_empty (ports.netchangers) then
-
-					-- If the ONE and ONLY submodule port is the 
-					-- port-to-be-dragged then everything is fine.
-					if length (ports.submodules) = 1 then
-						
-						if contains (ports.submodules, port) then
-							null; -- fine -> movable test passed
-						else
-							-- there is another submodule port
-							dragging_not_possible (to_string (port.port_name), point);
-						end if;
-					
-					else
-						-- there are more submodule ports
-						dragging_not_possible (to_string (port.port_name), point);
-					end if;
-					
-				else -- device or netchanger ports here
-					dragging_not_possible (to_string (port.port_name), point);
-				end if;
-			end if;
-			
-			log_indentation_down;
-		end movable_test;
-		
+	
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
@@ -8131,7 +8136,12 @@ package body schematic_ops is
 					-- the port BEFORE the drag operation.
 
 					-- Test whether the port at the current position can be dragged:
-					movable_test (port_position_before);
+					movable_test (
+						module_cursor		=> module_cursor,
+						instance			=> instance,
+						port_name			=> port_name,
+						point				=> port_position_before,
+						log_threshold		=> log_threshold + 1);
 
 					-- move port along edge of box
 					case coordinates is
@@ -8583,12 +8593,14 @@ package body schematic_ops is
 		
 		use submodules;
 
+		-- This type describes a submodule port before and after the drag operation:
 		type type_drag is record
 			name	: et_general.type_net_name.bounded_string;
 			before	: et_coordinates.type_coordinates;
 			after 	: et_coordinates.type_coordinates;
 		end record;
 
+		-- Since there are lots of submodule ports we store the drag points in a simple list:
 		package type_drags is new doubly_linked_lists (type_drag);
 		drag_list : type_drags.list;
 
@@ -8629,7 +8641,12 @@ package body schematic_ops is
 					-- the port BEFORE the drag operation.
 
 					-- Test whether the port at the current position can be dragged:
--- CS					movable_test (port_position_before);
+					movable_test (
+						module_cursor		=> module_cursor,
+						instance			=> instance,
+						port_name			=> port_name,
+						point				=> drag.before,
+						log_threshold		=> log_threshold + 1);
 
 					-- Compute the absolute port position on the sheet AFTER the drag operation.
 					-- The result is stored in drag.after:
@@ -8768,7 +8785,6 @@ package body schematic_ops is
 		drag_segments;
 
 	end drag_submodule;
-
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
@@ -8784,6 +8800,7 @@ package body schematic_ops is
 	-- 8. CS: interactive devices with empty purpose
 	-- 9. CS: check partcode (conventions.validate_partcode)
 	-- 10. CS: units sitting on to of each other (same origin position)
+	-- 11. CS: warning (or error ?) if any ports sit on top of each other. This would make the movable_tests obsolete.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level) is
 

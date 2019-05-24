@@ -448,6 +448,7 @@ package schematic_ops is
 	-- 8. CS: interactive devices with empty purpose
 	-- 9. CS: check partcode (conventions.validate_partcode)								  
 	-- 10. CS: units sitting on to of each other (same origin position)
+	-- 11. CS: warning (or error ?) if any ports sit on top of each other. This would make the movable_tests obsolete.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 								  
