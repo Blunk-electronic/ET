@@ -8612,63 +8612,51 @@ package body schematic_ops is
 				procedure build_drag_point (
 					port_name	: in et_general.type_net_name.bounded_string;
 					port		: in type_submodule_port) is
-					submod_position : et_coordinates.type_point := type_point (submodule.position);
-					point_tmp : et_coordinates.type_point := point;
-					port_position : et_coordinates.type_point := port.position;
 					drag : type_drag;
 				begin
-					drag.name := port_name;
+					-- Set the name of the drag according to the port name:
+					drag.name := port_name; -- CE, WE, ...
 					
-					-- save the absolute port position before the drag operation:
-					drag.before := to_coordinates (
-								point	=> port_position, -- relative x/y to submodule position
-								sheet	=> sheet (submodule.position)); -- same sheet as submodule box
+					-- Build and the absolute port position BEFORE the drag operation.
+					-- The result is stored in drag.before.
+					drag.before := submodule.position;
 
 					move (
 						point	=> drag.before,
-						offset	=> submodule.position);
+						offset	=> port.position);
+			
 					-- Now drag.before contains the absolute port position of 
 					-- the port BEFORE the drag operation.
 
 					-- Test whether the port at the current position can be dragged:
 -- CS					movable_test (port_position_before);
 
-					-- move port on the sheet
+					-- Compute the absolute port position on the sheet AFTER the drag operation.
+					-- The result is stored in drag.after:
 					case coordinates is
 						when ABSOLUTE =>
-							-- From the given point the absolute submodule position must 
-							-- be subtracted. This requires inversion of x/y of submodule position.
-							-- We accompish that by mirroring along x and y axis.
-							mirror (submod_position, X);
-							mirror (submod_position, Y);
 
-							-- Subtract from given point the absolute submodule position:
-							move (
-								point	=> point_tmp,
-								offset	=> submod_position);
-
-							-- assign the new port position
-							port_position := point_tmp;
+							drag.after := to_coordinates (
+								point	=> point,
+								sheet	=> sheet (submodule.position));
 
 						when RELATIVE =>
-							move (
-								point	=> port_position,
-								offset	=> point);
-							
-					end case;
 
-					-- Later, for inserting the new port in the nets the
-					-- absolute port position after the drag must be built:
-					drag.after := to_coordinates (
-								point	=> port_position, -- relative x/y to submodule position
-								sheet	=> sheet (submodule.position)); -- same sheet as submodule box
+							drag.after := submodule.position;
+
+							move (
+								point	=> drag.after,
+								offset	=> point);
+
+					end case;
 
 					move (
 						point	=> drag.after,
-						offset	=> submodule.position);
-					-- Now port_position_after contains the absolute port position of 
-					-- the port AFTER the drag operation.
+						offset	=> port.position);
 
+					-- Now drag.after contains the absolute port position of 
+					-- the port AFTER the drag operation.
+					
 					type_drags.append (drag_list, drag);
 					
 				end build_drag_point;
@@ -8685,7 +8673,7 @@ package body schematic_ops is
 			end query_ports;
 
 			procedure move_box (
-			-- Moves the box around the sheet according to given target position.
+			-- Moves the box on the sheet according to given target position.
 				submod_name	: in et_general.type_module_instance_name.bounded_string;
 				submodule	: in out type_submodule) is
 			begin
