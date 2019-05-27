@@ -223,6 +223,15 @@ package schematic_ops is
 		rotation		: in et_coordinates.type_rotation; -- 90		
 		log_threshold	: in type_log_level);
 
+	procedure copy_device (
+	-- Copies the given device. Places the first unit of the device (according to add level)
+	-- at the given destination in the schematic.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		destination		: in et_coordinates.type_coordinates; -- sheet/x/y
+		rotation		: in et_coordinates.type_rotation; -- 90		
+		log_threshold	: in type_log_level);
+	
 	procedure invoke_unit (
 	-- Invokes a unit of a device into the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

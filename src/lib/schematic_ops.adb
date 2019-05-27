@@ -3677,7 +3677,7 @@ package body schematic_ops is
 			-- to device in schematic.
 			unit_cursors := first_unit (device_cursor_lib);
 
-			-- If a internal unit available, add it to device. If no internal unit available
+			-- If an internal unit available, add it to device. If no internal unit available
 			-- but an external, add it to the device. So the operator will not take notice
 			-- whether an internal or external unit is placed.
 			if unit_cursors.int /= type_units_internal.no_element then
@@ -3778,6 +3778,108 @@ package body schematic_ops is
 		log_indentation_down;
 	end add_device;
 
+	procedure copy_device (
+	-- Copies the given device. Places the first unit of the device (according to add level)
+	-- at the given destination in the schematic.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		destination		: in et_coordinates.type_coordinates; -- sheet/x/y
+		rotation		: in et_coordinates.type_rotation; -- 90		
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module being modified
+		
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+			device_cursor_sch : et_schematic.type_devices.cursor;
+
+			use et_libraries.type_devices;
+			device_cursor_lib : et_libraries.type_devices.cursor; -- points to the device in the library
+			
+			-- the next available device name:
+			next_name : et_libraries.type_device_name;
+			inserted : boolean;
+
+			unit_cursors : type_unit_cursors_lib;
+			
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+
+				device_cursor_sch := find (module.devices, device_name); -- the device should be there
+
+				log_indentation_up;
+
+				-- build the next available device name:
+				next_name := next_device_name (module_cursor, prefix (key (device_cursor_sch))); -- IC46
+				
+				-- Create a new device. Copy lots of properties from the original device.
+				-- The unit list is empty for the time being:
+				case element (device_cursor_sch).appearance is
+					when SCH =>
+						et_schematic.type_devices.insert (
+							container	=> module.devices,
+							inserted	=> inserted,
+							position	=> device_cursor_sch,
+							key			=> next_name,
+							new_item	=> (
+								appearance 	=> SCH,
+								model		=> element (device_cursor_sch).model,
+								units		=> type_units.empty_map
+								));
+
+					when SCH_PCB =>
+						et_schematic.type_devices.insert (
+							container	=> module.devices,
+							inserted	=> inserted,
+							position	=> device_cursor_sch,
+							key			=> next_name,
+							new_item	=> (
+								appearance 	=> SCH_PCB,
+								model		=> element (device_cursor_sch).model,
+								units		=> type_units.empty_map,
+								value		=> element (device_cursor_sch).value, -- if predefined in dev. model
+								partcode	=> element (device_cursor_sch).partcode,
+								purpose		=> element (device_cursor_sch).purpose,
+								bom			=> element (device_cursor_sch).bom,
+								variant		=> element (device_cursor_sch).variant,
+								text_placeholders	=> element (device_cursor_sch).text_placeholders, -- layout related
+								others		=> <> )); -- position in layout assumes default
+
+				end case;
+
+				-- locate the device in the library
+				device_cursor_lib := find (et_libraries.devices, element (device_cursor_sch).model);
+
+				-- Add first available unit (according to search order specified in function first_unit)
+				-- to device in schematic.
+				unit_cursors := first_unit (device_cursor_lib);
+
+				
+				log_indentation_down;				
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- copy_device
+		log ("module " & to_string (module_name) &
+			" copying " & to_string (device_name) & 
+			" to" & to_string (position => destination) &
+			" rotation" & et_coordinates.to_string (rotation) & " ...", log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+	end copy_device;
+
+	
 	procedure invoke_unit (
 	-- Invokes a unit of a device into the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

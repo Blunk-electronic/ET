@@ -327,6 +327,38 @@ package body scripting is
 
 						when others => invalid_noun (to_string (noun));
 					end case;
+
+				when COPY =>
+					case noun is
+						when DEVICE =>
+							case fields is
+								when 9 =>
+									schematic_ops.copy_device (
+										module_name 	=> module,
+										device_name		=> to_device_name (f (5)),
+										destination		=> to_coordinates 
+											(
+											sheet => to_sheet (f (6)),
+											point => set_point 
+														(
+														x => to_distance (f (7)),
+														y => to_distance (f (8))
+														)
+											),
+										rotation		=> to_angle (f (9)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last =>
+									command_too_long (9);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
 					
 				when DELETE =>
 					case noun is

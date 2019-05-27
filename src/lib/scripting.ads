@@ -82,6 +82,7 @@ package scripting is
 	type type_verb_schematic is (
 		ADD,
 		CHECK,
+		COPY,
 		DELETE,
 		DRAG,
 		DRAW,
