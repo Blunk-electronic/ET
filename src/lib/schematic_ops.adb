@@ -1057,9 +1057,11 @@ package body schematic_ops is
 				begin -- query_strands
 					-- loop in portlist
 					while port_cursor /= et_libraries.type_ports.no_element loop
+						-- CS: If the current net is not on the targeted sheet then this log message
+						-- is issued many times without providing any useful information. Rework required:
 						log ("probing port " & to_string (key (port_cursor)), log_threshold + 1);
 						log_indentation_up;
-
+						
 						-- If the current port sits on a strand, this flag will go true. Other 
 						-- strands will then not be looked at because the port can only sit on 
 						-- one strand.
@@ -3677,7 +3679,7 @@ package body schematic_ops is
 			-- to device in schematic.
 			unit_cursors := first_unit (device_cursor_lib);
 
-			-- If an internal unit available, add it to device. If no internal unit available
+			-- If an internal unit is available, add it to device. If no internal unit available
 			-- but an external, add it to the device. So the operator will not take notice
 			-- whether an internal or external unit is placed.
 			if unit_cursors.int /= type_units_internal.no_element then
@@ -3803,6 +3805,101 @@ package body schematic_ops is
 			inserted : boolean;
 
 			unit_cursors : type_unit_cursors_lib;
+			ports : et_libraries.type_ports.map;
+
+			use et_libraries.type_units_internal;
+			use et_libraries.type_units_external;
+			
+			procedure add_unit_internal (
+			-- Add an internal unit to the schematic device.
+			-- The unit to be added is accessed by unit_cursors.int.
+				device_name	: in type_device_name;
+				device		: in out et_schematic.type_device) is
+			begin
+				log ("adding internal unit " & to_string (key (unit_cursors.int)), log_threshold + 2);
+				
+				case element (device_cursor_lib).appearance is
+					when SCH =>
+						type_units.insert (
+							container	=> device.units,
+							key			=> key (unit_cursors.int), -- the unit name like A, B
+							new_item	=> (
+								appearance	=> SCH,
+								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
+								rotation	=> rotation, -- the rotation provided by the calling unit
+								others 		=> <>) -- rotation and mirror
+								);
+						
+					when SCH_PCB =>
+						type_units.insert (
+							container	=> device.units,
+							key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
+							new_item	=> (
+								appearance	=> SCH_PCB,
+								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
+								rotation	=> rotation, -- the rotation provided by the calling unit								
+								reference	=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
+								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
+								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
+								others 		=> <>)
+								);
+						
+					when others => null; -- CS
+				end case;
+				
+			end add_unit_internal;
+
+			procedure add_unit_external (
+			-- Add an external unit to the schematic device.
+			-- The unit to be added is accessed by unit_cursors.ext.
+				device_name	: in type_device_name;
+				device		: in out et_schematic.type_device) is
+				use et_libraries.type_symbols;
+				symbol_cursor : et_libraries.type_symbols.cursor;
+				symbol_file : et_libraries.type_symbol_model_file.bounded_string; -- *.sym
+			begin
+				log ("adding external unit " & to_string (key (unit_cursors.ext)), log_threshold + 2);
+				
+				case element (device_cursor_lib).appearance is
+					when SCH =>
+						type_units.insert (
+							container	=> device.units,
+							key			=> key (unit_cursors.ext), -- the unit name like A, B
+							new_item	=> (
+								appearance	=> SCH,
+								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
+								rotation	=> rotation, -- the rotation provided by the calling unit								
+								others 		=> <>) -- rotation and mirror
+								);
+						
+					when SCH_PCB =>
+						-- The symbol file name is provided by unit_cursors.ext.
+						symbol_file := element (unit_cursors.ext).file; -- *.sym
+						
+						-- Locate the external symbol in container "symbols".
+						-- The key into symbols is the file name (*.sym).
+						symbol_cursor := et_libraries.type_symbols.find (symbols, symbol_file);
+
+						-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
+						-- and constraint_error would arise here:
+						
+						type_units.insert (
+							container	=> device.units,
+							key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
+							new_item	=> (
+								appearance	=> SCH_PCB,
+								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
+								rotation	=> rotation, -- the rotation provided by the calling unit								
+								reference	=> element (symbol_cursor).reference,	-- placeholder for device name
+								value		=> element (symbol_cursor).value,		-- placeholder for device value
+								purpose		=> element (symbol_cursor).purpose,		-- placeholder for device purpose
+								others 		=> <>)
+								);
+
+					when others => null; -- CS
+				end case;
+
+			end add_unit_external;
 			
 		begin -- query_devices
 			if contains (module.devices, device_name) then
@@ -3813,6 +3910,8 @@ package body schematic_ops is
 
 				-- build the next available device name:
 				next_name := next_device_name (module_cursor, prefix (key (device_cursor_sch))); -- IC46
+				log ("adding device " & to_string (next_name), log_threshold + 1);
+				log_indentation_up;
 				
 				-- Create a new device. Copy lots of properties from the original device.
 				-- The unit list is empty for the time being:
@@ -3856,8 +3955,65 @@ package body schematic_ops is
 				-- to device in schematic.
 				unit_cursors := first_unit (device_cursor_lib);
 
+				-- If an internal unit is available, add it to device. If no internal unit available
+				-- but an external, add it to the device. So the operator will not take notice
+				-- whether an internal or external unit is placed.
+				if unit_cursors.int /= type_units_internal.no_element then
+
+					et_schematic.type_devices.update_element (
+						container	=> module.devices,
+						position	=> device_cursor_sch,
+						process		=> add_unit_internal'access);
+
+					-- fetch ports of unit and their positions relative to the unit origin
+					log_indentation_up;				
+					log ("fetching relative port positions of internal unit " &
+						to_string (key (unit_cursors.int)) & " ...", log_threshold + 2);
+					
+					ports := ports_of_unit (
+						device_cursor	=> device_cursor_sch,
+						unit_name		=> key (unit_cursors.int));
+
+				-- no internal unit available -> add external unit
+				elsif unit_cursors.ext /= type_units_external.no_element then
+					
+					et_schematic.type_devices.update_element (
+						container	=> module.devices,
+						position	=> device_cursor_sch,
+						process		=> add_unit_external'access);
+
+					-- fetch ports of unit and their positions relative to the unit origin
+					log_indentation_up;
+					log ("fetching relative port positions of external unit " &
+						to_string (key (unit_cursors.ext)) & " ...", log_threshold + 2);
+
+					ports := ports_of_unit (
+						device_cursor	=> device_cursor_sch,
+						unit_name		=> key (unit_cursors.ext));
+					
+				else
+					raise constraint_error; -- CS should never happen. function first_unit excludes this case.
+				end if;
+
+				-- Calculate the absolute positions of the unit ports. Rotate first if required:
+				log ("calculating absolute port positions ...", log_threshold + 2);
+				if rotation /= rotation_zero then
+					rotate_ports (ports, rotation);
+				end if;
 				
-				log_indentation_down;				
+				move_ports (ports, destination);
+				
+				-- Insert the new unit ports in the nets (type_module.nets):
+				insert_ports (
+					module			=> module_cursor,
+					device			=> next_name,
+					ports			=> ports,
+					sheet			=> et_coordinates.sheet (destination),
+					log_threshold	=> log_threshold + 2);
+				
+				log_indentation_down;
+				log_indentation_down;
+				log_indentation_down;
 			else
 				device_not_found (device_name);
 			end if;
@@ -3878,7 +4034,6 @@ package body schematic_ops is
 			process		=> query_devices'access);
 
 	end copy_device;
-
 	
 	procedure invoke_unit (
 	-- Invokes a unit of a device into the schematic.
