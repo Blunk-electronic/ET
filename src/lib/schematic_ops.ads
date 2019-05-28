@@ -451,6 +451,12 @@ package schematic_ops is
 		destination		: in et_coordinates.type_coordinates; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+	procedure set_submodule_file (
+	-- Sets the file name of a submodule instance.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		file			: in submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

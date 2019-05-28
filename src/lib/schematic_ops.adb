@@ -9161,6 +9161,53 @@ package body schematic_ops is
 			process		=> query_submodules'access);
 		
 	end copy_submodule;
+
+	procedure set_submodule_file (
+	-- Sets the file name of a submodule instance.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		file			: in submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		full_file_name : constant string := et_project.expand (submodules.to_string (file));
+		
+		use submodules;
+		
+	begin -- set_submodule_file
+		log ("module " & to_string (module_name) &
+			" setting instance " & enclose_in_quotes (to_string (instance)) &
+			" file to " & to_string (file),
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- Make sure the submodule file exists. The file is 
+		-- identified by its full path and name. If the file exists
+		-- then the given submodule instance gets the file assigned.
+		-- NOTE: This is the rectangular box at the targeted sheet that
+		-- represents the submodule:
+		if ada.directories.exists (full_file_name) then
+
+			null;
+-- 			update_element (
+-- 				container	=> modules,
+-- 				position	=> module_cursor,
+-- 				process		=> add'access);
+
+		else
+			log (message_error & "submodule file " & to_string (file) & " not found !",
+				 console => true);
+			raise constraint_error;
+		end if;
+
+		-- THIS IS ABOUT THE ACTUAL SCHEMATIC AND LAYOUT STUFF OF THE SUBMODULE:
+		-- Read the submodule file and store its content in container et_project.modules:
+		et_project.read_module_file (to_string (file), log_threshold + 1);		
+		
+	end set_submodule_file;
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
