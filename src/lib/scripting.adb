@@ -356,6 +356,33 @@ package body scripting is
 									command_incomplete;
 
 							end case;
+
+						when SUBMODULE =>
+							case fields is
+								when 9 =>
+									schematic_ops.copy_submodule (
+										module_name 	=> module,
+										instance_origin	=> et_general.to_instance_name (f (5)),
+										instance_new	=> et_general.to_instance_name (f (6)),
+										destination		=> to_coordinates 
+											(
+											sheet => to_sheet (f (7)),
+											point => set_point 
+														(
+														x => to_distance (f (8)),
+														y => to_distance (f (9))
+														)
+											),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last =>
+									command_too_long (9);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
 							
 						when others => invalid_noun (to_string (noun));
 					end case;

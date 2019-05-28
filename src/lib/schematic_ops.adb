@@ -9042,6 +9042,125 @@ package body schematic_ops is
 		drag_segments;
 
 	end drag_submodule;
+
+	procedure copy_submodule (
+	-- Copies a submodule instance.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance_origin	: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		instance_new	: in et_general.type_module_instance_name.bounded_string; -- CLOCK_GENERATOR
+		destination		: in et_coordinates.type_coordinates; -- sheet/x/y
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module being modified
+		
+		use submodules;
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_submodules;
+			submod_cursor : type_submodules.cursor;
+			inserted : boolean;
+			submodule : type_submodule;
+
+			-- the submodule ports to be inserted in the nets
+			ports : type_submodule_ports.map; -- port names and relative x/y positions
+
+			procedure insert_ports is 
+			-- Inserts the ports into the nets. The sheet number is taken
+			-- from the submodule position.
+				use type_submodule_ports;
+				port_cursor : type_submodule_ports.cursor := ports.first;
+				position : et_coordinates.type_coordinates;
+			begin
+				while port_cursor /= type_submodule_ports.no_element loop
+
+					-- build the port position (sheet/x/y)
+					position := to_coordinates 
+							(
+							point	=> element (port_cursor).position,
+							sheet	=> et_coordinates.sheet (element (submod_cursor).position)
+							);
+
+					-- insert the port
+					insert_port (
+						module			=> module_cursor,
+						instance		=> instance_new, -- CLOCK_GENERATOR
+						port			=> key (port_cursor), -- port name like CE
+						position		=> position, -- sheet/x/y
+						log_threshold	=> log_threshold + 1);
+					
+					next (port_cursor);
+				end loop;
+			end insert_ports;
+			
+		begin -- query_submodules
+			-- locate the submodule of origin
+			if contains (module.submods, instance_origin) then
+
+				submod_cursor := find (module.submods, instance_origin); -- the submodule of origin should be there
+
+				-- THE FOLLOWING IS ABOUT THE GRAPHICAL REPRESENTATION OF A SUBMODULE.
+				-- THIS IS THE RECTANGULAR BOX AT THE SHEET WHERE IT THE SUBMODULE IS INSTANTIATED.
+
+				-- copy submodule of origin to temporarily submodule
+				submodule := element (submod_cursor); 
+ 
+				-- overwrite position as given by destination
+				submodule.position := destination;
+
+				-- Overwrite position in schematic by zero so that the new instance sits at 
+				-- the lower left corner of the layout drawing:
+				submodule.position_in_board := et_pcb_coordinates.submodule_position_default;
+
+				insert (
+					container	=> module.submods,
+					key			=> instance_new,
+					position	=> submod_cursor,
+					inserted	=> inserted,
+					new_item	=> submodule);
+					
+				if not inserted then
+					log (message_error & "submodule instance " &
+						enclose_in_quotes (to_string (instance_new)) &
+						" already exists !", console => true);
+					raise constraint_error;
+				end if;
+				
+				log_indentation_up;
+
+				-- Get the port positions of the new instance relative to the lower left 
+				-- corner of the submodule box.
+				ports := element (submod_cursor).ports;
+
+				-- calculate the absolute port positions:
+				submodules.move_ports (ports, element (submod_cursor).position);
+
+				-- ports now provides port names and absoltue x/y positions.
+				-- The new ports will be inserted in the nets now:
+				insert_ports;
+
+				log_indentation_down;				
+			else
+				submodule_not_found (instance_origin);
+			end if;
+		end query_submodules;
+		
+	begin -- copy_submodule
+		log ("module " & to_string (module_name) &
+			 " copying submodule instance " & to_string (instance_origin) &
+			 " to instance " & to_string (instance_new) &
+			" at" & et_coordinates.to_string (position => destination), log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_submodules'access);
+		
+	end copy_submodule;
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

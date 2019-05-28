@@ -149,7 +149,8 @@ package et_pcb_coordinates is
 	terminal_position_default : constant type_point_2d_with_angle;
 	package_position_default : constant type_package_position;
 	placeholder_position_default : constant type_package_position;	
-
+	submodule_position_default : constant type_point_2d_with_angle; 
+	
 	procedure reset_point (
 	-- Moves the given point to the origin (0/0).
 		point	: in out type_point_2d'class);					
@@ -215,6 +216,11 @@ package et_pcb_coordinates is
 			y		=> zero_distance,																			  
 			x		=> zero_distance,
 			angle	=> zero_angle);
+
+		submodule_position_default : constant type_point_2d_with_angle := (
+			y		=> zero_distance,																			  
+			x		=> zero_distance,
+			angle	=> zero_angle); 
 		
 		--type type_submodule_position is new type_point_2d_with_angle with null record;
 		

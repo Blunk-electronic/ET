@@ -442,6 +442,15 @@ package schematic_ops is
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level);
+
+	procedure copy_submodule (
+	-- Copies a submodule instance.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance_origin	: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		instance_new	: in et_general.type_module_instance_name.bounded_string; -- CLOCK_GENERATOR
+		destination		: in et_coordinates.type_coordinates; -- sheet/x/y
+		log_threshold	: in type_log_level);
+
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
