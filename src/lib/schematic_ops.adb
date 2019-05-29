@@ -7390,6 +7390,42 @@ package body schematic_ops is
 		log_indentation_down;		
 	end draw_net;
 
+	procedure place_net_label (
+	-- Places a label of a net at the given position.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		position		: in et_coordinates.type_coordinates; -- sheet/x/y
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use et_schematic.type_nets;
+		net_cursor : type_nets.cursor; -- points to the net
+		
+	begin -- place_net_label
+		log ("module " & to_string (module_name) &
+			" net " & to_string (net_name) &
+			" placing label at"  &
+			et_coordinates.to_string (position => position), log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- The net must be in the module already.
+		net_cursor := locate_net (module_cursor, net_name);
+
+		log_indentation_up;
+		
+		if net_cursor /= type_nets.no_element then
+			null;
+		else
+			net_not_found (net_name);
+		end if;
+
+		log_indentation_down;		
+	end place_net_label;
+
+	
 	procedure add_submodule (
 	-- Adds a submodule instance to the schematic.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)

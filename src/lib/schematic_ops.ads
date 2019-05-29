@@ -366,6 +366,13 @@ package schematic_ops is
 		end_point		: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level);
 
+	procedure place_net_label (
+	-- Places a label of a net at the given position.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		position		: in et_coordinates.type_coordinates; -- sheet/x/y
+		log_threshold	: in type_log_level);
+	
 	procedure add_submodule (
 	-- Adds a submodule instance to the schematic.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)

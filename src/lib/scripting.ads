@@ -106,6 +106,7 @@ package scripting is
 		--DEVICE_VALUE,
 		INTEGRITY,
 		JUNCTION,
+		LABEL,
 		NAME,
 		NET,
 		NETCHANGER,

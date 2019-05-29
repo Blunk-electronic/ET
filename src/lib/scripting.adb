@@ -818,6 +818,29 @@ package body scripting is
 								log_threshold	=> log_threshold + 1
 								);
 
+						when LABEL =>
+							case fields is
+								when 8 =>
+									schematic_ops.place_net_label
+										(
+										module_name		=> module,
+										net_name		=> to_net_name (f (5)), -- RESET
+										position		=> to_coordinates (
+															point => set_point (
+																x => to_distance (f (7)),
+																y => to_distance (f (8))),
+															sheet => to_sheet (f (6))), -- sheet number
+										log_threshold	=> log_threshold + 1);
+									
+								when 9 .. count_type'last =>
+									command_too_long (8);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
+
+							
 						when others => invalid_noun (to_string (noun));
 					end case;
 					
