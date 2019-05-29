@@ -1015,6 +1015,23 @@ package body scripting is
 									purpose_invalid (f (6));
 								end if;
 							end;
+
+						when SUBMODULE_FILE =>
+							case fields is
+								when 6 =>
+									schematic_ops.set_submodule_file (
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)),
+										file			=> submodules.to_submodule_path (f (6)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 7 .. count_type'last =>
+									command_too_long (6);
+									
+								when others =>
+									command_incomplete;
+							end case;
 							
 						when VALUE =>
 							declare

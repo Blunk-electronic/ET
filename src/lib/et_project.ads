@@ -677,6 +677,7 @@ package et_project is
 
 	function exists (
 	-- Returns true if the given module provides the given port.
+	-- The module being searched in must be in the rig already.						
 		module			: in submodules.type_submodules.cursor;
 		port			: in et_general.type_net_name.bounded_string)
 		return boolean;

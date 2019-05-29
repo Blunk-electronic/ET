@@ -114,6 +114,7 @@ package scripting is
 		PURPOSE,
 		SEGMENT, -- net segment
 		SUBMODULE,
+		SUBMODULE_FILE,		
 		TEXT,
 		TEXT_SIZE,
 		UNIT,

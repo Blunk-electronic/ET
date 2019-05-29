@@ -124,6 +124,12 @@ package body schematic_ops is
 		raise constraint_error;
 	end;
 
+	procedure port_not_provided (port_name : in et_general.type_net_name.bounded_string) is begin
+		log (message_error & "submodule does not provide a port named " &
+			 enclose_in_quotes (to_string (port_name)) & " !", console => true);
+		raise constraint_error;
+	end;
+	
 	procedure dragging_not_possible (
 		port 		: in string;
 		position	: in et_coordinates.type_coordinates) is
@@ -7659,15 +7665,14 @@ package body schematic_ops is
 						inserted	=> inserted);
 
 					if not inserted then
-						log (message_error & "port " & to_string (port_name) &
+						log (message_error & "port " & 
+							enclose_in_quotes (to_string (port_name)) &
 							" already in submodule !", console => true);
 						raise constraint_error;
 					end if;
 
 				else -- port not provided
-					log (message_error & "submodule does not provide a port named " &
-						 enclose_in_quotes (to_string (port_name)) & " !", console => true);
-					raise constraint_error;
+					port_not_provided (port_name);
 				end if;
 					
 			end query_ports;
@@ -9174,6 +9179,87 @@ package body schematic_ops is
 		full_file_name : constant string := et_project.expand (submodules.to_string (file));
 		
 		use submodules;
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_submodules;
+			submod_cursor : type_submodules.cursor;
+
+			procedure set_file (
+				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submodule	: in out type_submodule) is
+
+				-- Prior to assigning the file, we create a test submodule and test
+				-- whether it provides all the ports as required by the graphical 
+				-- representation of the submodule (the box). 
+				-- The test module is a copy of the targeted submodule except that it
+				-- get the given file assigned. The test submodule will then be stored in a
+				-- map and will be the only item in the map:
+				test_mods : type_submodules.map;
+				test_mod : type_submodule := submodule;
+				test_mod_cursor : type_submodules.cursor;
+
+				-- For iterating the ports of the submodule box, we need a cursor:
+				use type_submodule_ports;
+				port_cursor : type_submodule_ports.cursor := submodule.ports.first;
+
+			begin -- set_file
+				log ("testing ports ...", log_threshold + 1);
+				log_indentation_up;
+				
+				test_mod.file := file; -- assign the file to the test submodule
+
+				-- insert the test submodule in map test_mods:
+				insert (
+					container	=> test_mods,
+					key			=> instance,
+					new_item	=> test_mod);
+
+				test_mod_cursor := test_mods.first;
+
+				-- Test ports of targeted submodule whether they are provided by
+				-- the test module (indicated by test_mod_cursor). If all ports
+				-- have been found in the submodule schematic, overwrite the given 
+				-- submodule with the test module.
+				while port_cursor /= type_submodule_ports.no_element loop
+					log (to_string (key (port_cursor)), log_threshold + 2);
+
+					if not exists (module => test_mod_cursor, port => key (port_cursor)) then
+ 						port_not_provided (key (port_cursor));
+					end if;
+					
+					next (port_cursor);
+				end loop;
+
+				log_indentation_down;
+
+				-- Overwrite submodule with test module:
+				submodule := test_mod;
+				
+				exception
+					when event: others =>
+						log_indentation_reset;
+						log (ada.exceptions.exception_information (event), console => true);
+						raise;
+				
+			end;
+				
+		begin -- query_submodules
+			if contains (module.submods, instance) then
+
+				submod_cursor := find (module.submods, instance); -- the submodule should be there
+				
+				update_element (
+					container	=> module.submods,
+					position	=> submod_cursor,
+					process		=> set_file'access);
+				
+			else
+				submodule_not_found (instance);
+			end if;
+
+		end query_submodules;
 		
 	begin -- set_submodule_file
 		log ("module " & to_string (module_name) &
@@ -9191,21 +9277,24 @@ package body schematic_ops is
 		-- represents the submodule:
 		if ada.directories.exists (full_file_name) then
 
-			null;
--- 			update_element (
--- 				container	=> modules,
--- 				position	=> module_cursor,
--- 				process		=> add'access);
+			-- THIS IS ABOUT THE ACTUAL SCHEMATIC AND LAYOUT STUFF OF THE SUBMODULE:
+			-- Read the submodule file and store its content in container et_project.modules:
+			et_project.read_module_file (to_string (file), log_threshold + 1);		
+			
+			log_indentation_up;
 
+			-- THIS IS ABOUT THE GRAPHICAL REPRESENTATION OF THE SUBMODULE:
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> query_submodules'access);
+
+			log_indentation_down;
 		else
 			log (message_error & "submodule file " & to_string (file) & " not found !",
 				 console => true);
 			raise constraint_error;
 		end if;
-
-		-- THIS IS ABOUT THE ACTUAL SCHEMATIC AND LAYOUT STUFF OF THE SUBMODULE:
-		-- Read the submodule file and store its content in container et_project.modules:
-		et_project.read_module_file (to_string (file), log_threshold + 1);		
 		
 	end set_submodule_file;
 	

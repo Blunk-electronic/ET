@@ -13029,6 +13029,7 @@ package body et_project is
 
 	function exists (
 	-- Returns true if the given module provides the given port.
+	-- The module being searched in must be in the rig already.
 		module			: in submodules.type_submodules.cursor;
 		port			: in et_general.type_net_name.bounded_string)
 		return boolean is
@@ -13080,9 +13081,6 @@ package body et_project is
 		
 	begin -- exists
 		submodule_file := type_submodules.element (module).file;
--- 		log ("locating port " & et_general.to_string (port) & " in module " &
--- 			 enclose_in_quotes (to_string (submodule_file)) & " ...",
--- 			 log_threshold);
 
 		module_name := to_module_name (remove_extension (to_string (submodule_file)));
 		module_cursor := locate_module (module_name);
@@ -13092,6 +13090,13 @@ package body et_project is
 			process		=> query_nets'access);
 		
 		return result;
+
+		exception
+			when event: others =>
+				log_indentation_reset;
+				log (ada.exceptions.exception_information (event), console => true);
+				raise;
+		
 	end exists;
 
 	
