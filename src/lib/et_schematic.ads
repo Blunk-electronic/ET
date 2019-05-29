@@ -261,7 +261,7 @@ package et_schematic is
 	function to_direction (direction : in string) return type_net_label_direction;
 
 	type type_net_label_base is tagged record
-		coordinates	: et_coordinates.type_point; -- CS rename to position
+		position	: et_coordinates.type_point;
 		rotation	: et_coordinates.type_rotation;
         size		: et_libraries.type_text_size := et_libraries.text_size_default;
         style		: et_libraries.type_text_style := et_libraries.type_text_style'first;

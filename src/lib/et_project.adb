@@ -1540,7 +1540,7 @@ package body et_project is
 							while label_cursor /= type_net_labels.no_element loop
 								section_mark (section_label, HEADER);
 								
-								write (keyword => keyword_position, parameters => position (element (label_cursor).coordinates));
+								write (keyword => keyword_position, parameters => position (element (label_cursor).position));
 								write (keyword => keyword_rotation, parameters => rotation (element (label_cursor).rotation));
 								write (keyword => keyword_size, parameters => 
 									et_libraries.to_string (size => element (label_cursor).size, preamble => false));
@@ -10792,7 +10792,7 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract label position starting at field 2 of line
-										net_label.coordinates := to_position (line, 2);
+										net_label.position := to_position (line, 2);
 										
 									elsif kw = keyword_rotation then -- rotation 0.0
 										expect_field_count (line, 2);
