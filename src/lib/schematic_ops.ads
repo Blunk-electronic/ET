@@ -374,6 +374,12 @@ package schematic_ops is
 		rotation		: in et_coordinates.type_rotation; -- 0 / 90 degree
 		appearance 		: in type_net_label_appearance; -- simple/tag label		
 		log_threshold	: in type_log_level);
+
+	procedure delete_net_label (
+	-- Deletes a label.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		position		: in et_coordinates.type_coordinates; -- sheet/x/y
+		log_threshold	: in type_log_level);
 	
 	procedure add_submodule (
 	-- Adds a submodule instance to the schematic.

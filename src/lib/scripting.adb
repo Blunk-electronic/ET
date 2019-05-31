@@ -396,6 +396,29 @@ package body scripting is
 								device_name		=> to_device_name (f (5)),
 								log_threshold	=> log_threshold + 1);
 
+						when LABEL =>
+							case fields is
+								when 7 =>
+									schematic_ops.delete_net_label
+										(
+										module_name		=> module,
+
+										position		=> to_coordinates (
+															point => set_point (
+																x => to_distance (f (6)),
+																y => to_distance (f (7))),
+															sheet => to_sheet (f (5))), -- sheet number
+										
+										log_threshold	=> log_threshold + 1);
+									
+								when 8 .. count_type'last =>
+									command_too_long (7);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
+							
 						when NET =>
 							case fields is
 
@@ -838,6 +861,7 @@ package body scripting is
 
 										rotation			=> to_angle (f (10)), -- 0 / 90
 										appearance 			=> et_schematic.to_appearance (f (11)), -- simple / tag
+										-- CS: provide direction instead as optional 11th argument
 
 										log_threshold		=> log_threshold + 1);
 									

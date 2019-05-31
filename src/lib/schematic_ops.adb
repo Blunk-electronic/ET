@@ -7505,11 +7505,9 @@ package body schematic_ops is
 				process		=> query_strands'access);
 
 		end query_nets;
-		
-		
+				
 	begin -- place_net_label
 		log ("module " & to_string (module_name) &
-			--" net " & to_string (net_name) &
 			" labeling segment at"  &
 			et_coordinates.to_string (position => segment_position) &
 			" with " & to_string (appearance) & " label at" &
@@ -7536,11 +7534,6 @@ package body schematic_ops is
 				-- Set the cursor to the net.
 				net_cursor := locate_net (module_cursor, net_name);
 
--- 				update_element (
--- 					container	=> module.nets,
--- 					position	=> net_cursor,
-				-- 					process		=> query_strands'access);
-
 				update_element (
 					container	=> modules,
 					position	=> module_cursor,
@@ -7555,6 +7548,136 @@ package body schematic_ops is
 		log_indentation_down;		
 	end place_net_label;
 
+	procedure delete_net_label (
+	-- Deletes a label.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		position		: in et_coordinates.type_coordinates; -- sheet/x/y
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			use type_nets;
+			net_cursor : type_nets.cursor := module.nets.first;
+			
+			-- This flag goes true once the first segment of the targeted net at
+			-- the targeted sheet has been found.
+			segment_found : boolean := false; -- to be returned
+
+			procedure query_strands (
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+				use et_coordinates;
+				use type_strands;
+				strand_cursor : type_strands.cursor := net.strands.first;
+				
+				procedure query_segments (strand : in out type_strand) is
+					use type_net_segments;
+
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+					procedure attach_label (segment : in out type_net_segment) is 
+						use type_net_labels;
+						label : type_net_label_base;
+					begin
+						label.position := label_position; -- x/y
+						label.rotation := rotation; -- the given rotation
+						-- CS: label size, style and line width assume default. could be provided by further
+						-- parameters passed to procedure place_net_label.
+
+						case appearance is
+							when SIMPLE =>
+								append (
+									container	=> segment.labels,
+									new_item	=> (label with 
+										appearance	=> SIMPLE)
+									   );
+								
+							when TAG =>
+								append (
+									container	=> segment.labels,
+									new_item	=> (label with
+										appearance	=> TAG,
+										direction	=> PASSIVE) -- CS -- requires additional parameter
+									   );
+
+						end case;
+					end attach_label;
+					
+				begin -- query_segments
+					while not segment_found and segment_cursor /= type_net_segments.no_element loop
+
+						if on_segment (
+							point	=> type_point (segment_position),
+							segment	=> segment_cursor) then
+
+							update_element (
+								container	=> strand.segments,
+								position	=> segment_cursor,
+								process		=> attach_label'access);
+
+							-- signal iterations in upper level to cancel
+							segment_found := true;
+						end if;
+						
+						next (segment_cursor);
+					end loop;
+				end query_segments;
+				
+			begin -- query_strands
+				while not segment_found and strand_cursor /= type_strands.no_element loop
+					
+					-- We pick out only the strands on the targeted sheet:
+					if et_coordinates.sheet (element (strand_cursor).position) = sheet (segment_position) then
+
+						update_element (
+							container	=> net.strands,
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+					
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+			
+		begin -- query_nets
+			while not label_found and net_cursor /= type_nets.no_element loop
+				update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_strands'access);
+
+				next (net_cursor);
+			end loop;
+		end query_nets;
+		
+	begin -- delete_net_label
+		log ("module " & to_string (module_name) &
+			" deleting net label at" &
+			et_coordinates.to_string (position => position),
+			log_threshold);
+		
+		log_indentation_up;
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_nets'access);
+
+		if not label_found then
+			log (message_warning & "no net label found at given position !");
+		end if;
+		
+		log_indentation_down;
+	end delete_net_label;
+	
 	
 	procedure add_submodule (
 	-- Adds a submodule instance to the schematic.

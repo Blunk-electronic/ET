@@ -256,7 +256,7 @@ package et_schematic is
 	function to_string (appearance : in type_net_label_appearance) return string;
 	function to_appearance (appearance : in string) return type_net_label_appearance;
 	
-	type type_net_label_direction is (INPUT, OUTPUT, BIDIR, TRISTATE, PASSIVE);
+	type type_net_label_direction is (INPUT, OUTPUT, BIDIR, TRISTATE, PASSIVE); -- POWER ?
 	function to_string (direction : in type_net_label_direction) return string;
 	function to_direction (direction : in string) return type_net_label_direction;
 
