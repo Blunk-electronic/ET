@@ -1908,13 +1908,13 @@ package body schematic_ops is
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 					procedure probe_segment (segment : in type_net_segment) is begin
-						-- if port sits on a start point of a segment
+						-- if place is a start point of a segment
 						if segment.coordinates_start = type_point (place) then
 							-- signal iterations in upper level to cancel
 							segment_found := true;
 						end if;
 
-						-- if port sits on an end point of a segment
+						-- if place is an end point of a segment
 						if segment.coordinates_end = type_point (place) then
 							-- signal iterations in upper level to cancel
 							segment_found := true;
@@ -7391,37 +7391,167 @@ package body schematic_ops is
 	end draw_net;
 
 	procedure place_net_label (
-	-- Places a label of a net at the given position.
+	-- Places a label next to a segment at position.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		position		: in et_coordinates.type_coordinates; -- sheet/x/y
+		segment_position: in et_coordinates.type_coordinates; -- sheet/x/y
+		label_position	: in et_coordinates.type_point; -- x/y
+		rotation		: in et_coordinates.type_rotation; -- 0 / 90 degree
+		appearance 		: in type_net_label_appearance; -- simple/tag label
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
 
 		use et_schematic.type_nets;
 		net_cursor : type_nets.cursor; -- points to the net
+
+		function no_label_placed return string is begin
+			return (et_coordinates.to_string (position => segment_position) & " !" &
+				" No label placed ! Specify another segment position and try again.");
+		end;
+		
+		use type_net_names;
+		nets : type_net_names.list;
+		net_name : et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			-- This flag goes true once the first segment of the targeted net at
+			-- the targeted sheet has been found.
+			segment_found : boolean := false; -- to be returned
+
+			procedure query_strands (
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+				use et_coordinates;
+				use type_strands;
+				strand_cursor : type_strands.cursor := net.strands.first;
+				
+				procedure query_segments (strand : in out type_strand) is
+					use type_net_segments;
+
+					segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+					procedure attach_label (segment : in out type_net_segment) is 
+						use type_net_labels;
+						label : type_net_label_base;
+					begin
+						label.position := label_position; -- x/y
+						label.rotation := rotation; -- the given rotation
+						-- CS: label size, style and line width assume default. could be provided by further
+						-- parameters passed to procedure place_net_label.
+
+						case appearance is
+							when SIMPLE =>
+								append (
+									container	=> segment.labels,
+									new_item	=> (label with 
+										appearance	=> SIMPLE)
+									   );
+								
+							when TAG =>
+								append (
+									container	=> segment.labels,
+									new_item	=> (label with
+										appearance	=> TAG,
+										direction	=> PASSIVE) -- CS -- requires additional parameter
+									   );
+
+						end case;
+					end attach_label;
+					
+				begin -- query_segments
+					while not segment_found and segment_cursor /= type_net_segments.no_element loop
+
+						if on_segment (
+							point	=> type_point (segment_position),
+							segment	=> segment_cursor) then
+
+							update_element (
+								container	=> strand.segments,
+								position	=> segment_cursor,
+								process		=> attach_label'access);
+
+							-- signal iterations in upper level to cancel
+							segment_found := true;
+						end if;
+						
+						next (segment_cursor);
+					end loop;
+				end query_segments;
+				
+			begin -- query_strands
+				while not segment_found and strand_cursor /= type_strands.no_element loop
+					
+					-- We pick out only the strands on the targeted sheet:
+					if et_coordinates.sheet (element (strand_cursor).position) = sheet (segment_position) then
+
+						update_element (
+							container	=> net.strands,
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+					
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+			
+		begin -- query_nets
+			update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> query_strands'access);
+
+		end query_nets;
+		
 		
 	begin -- place_net_label
 		log ("module " & to_string (module_name) &
-			" net " & to_string (net_name) &
-			" placing label at"  &
-			et_coordinates.to_string (position => position), log_threshold);
+			--" net " & to_string (net_name) &
+			" labeling segment at"  &
+			et_coordinates.to_string (position => segment_position) &
+			" with " & to_string (appearance) & " label at" &
+			et_coordinates.to_string (point => label_position) &
+			" rotation" & to_string (angle => rotation),
+			log_threshold);
+		
+		log_indentation_up;
 
 		-- locate module
 		module_cursor := locate_module (module_name);
 
-		-- The net must be in the module already.
-		net_cursor := locate_net (module_cursor, net_name);
+		-- collect names of nets that cross the given segment_position
+		nets := nets_at_place (module_name, segment_position, log_threshold + 1);
 
-		log_indentation_up;
+		case length (nets) is
+			when 0 =>
+				log (message_warning & "no net found at" & no_label_placed);
+
+			when 1 => 
+				net_name := element (nets.first);
+				log ("net name " & to_string (net_name), log_threshold + 1);
+				
+				-- Set the cursor to the net.
+				net_cursor := locate_net (module_cursor, net_name);
+
+-- 				update_element (
+-- 					container	=> module.nets,
+-- 					position	=> net_cursor,
+				-- 					process		=> query_strands'access);
+
+				update_element (
+					container	=> modules,
+					position	=> module_cursor,
+					process		=> query_nets'access);
+
+			when others =>
+				log (message_warning & "more than one net found at" & no_label_placed);
+				-- CS show the net names
+				
+		end case;
 		
-		if net_cursor /= type_nets.no_element then
-			null;
-		else
-			net_not_found (net_name);
-		end if;
-
 		log_indentation_down;		
 	end place_net_label;
 

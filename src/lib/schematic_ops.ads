@@ -367,10 +367,12 @@ package schematic_ops is
 		log_threshold	: in type_log_level);
 
 	procedure place_net_label (
-	-- Places a label of a net at the given position.
+	-- Places a label next to a segment at position.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		position		: in et_coordinates.type_coordinates; -- sheet/x/y
+		segment_position: in et_coordinates.type_coordinates; -- sheet/x/y
+		label_position	: in et_coordinates.type_point; -- x/y
+		rotation		: in et_coordinates.type_rotation; -- 0 / 90 degree
+		appearance 		: in type_net_label_appearance; -- simple/tag label		
 		log_threshold	: in type_log_level);
 	
 	procedure add_submodule (

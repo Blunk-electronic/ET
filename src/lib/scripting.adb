@@ -178,9 +178,10 @@ package body scripting is
 		end;
 
 		procedure command_too_long (from : in count_type) is begin
-			log (message_warning & "command " & enclose_in_quotes (to_string (cmd)) &
+			log (message_error & "command " & enclose_in_quotes (to_string (cmd)) &
 				 " too long !");
-			log (" -> Arguments from no." & count_type'image (from) & " on will be ignored !");
+			log (" -> Excessive arguments after no." & count_type'image (from) & " !");
+			raise constraint_error;
 		end;
 		
 		procedure schematic_cmd (verb : in type_verb_schematic; noun : in type_noun_schematic) is
@@ -820,20 +821,28 @@ package body scripting is
 
 						when LABEL =>
 							case fields is
-								when 8 =>
+								when 11 =>
 									schematic_ops.place_net_label
 										(
-										module_name		=> module,
-										net_name		=> to_net_name (f (5)), -- RESET
-										position		=> to_coordinates (
-															point => set_point (
-																x => to_distance (f (7)),
-																y => to_distance (f (8))),
-															sheet => to_sheet (f (6))), -- sheet number
-										log_threshold	=> log_threshold + 1);
+										module_name			=> module,
+
+										segment_position	=> to_coordinates (
+																point => set_point (
+																	x => to_distance (f (6)),
+																	y => to_distance (f (7))),
+																sheet => to_sheet (f (5))), -- sheet number
+
+										label_position		=> type_point (set_point (
+																	x => to_distance (f (8)),
+																	y => to_distance (f (9)))),
+
+										rotation			=> to_angle (f (10)), -- 0 / 90
+										appearance 			=> et_schematic.to_appearance (f (11)), -- simple / tag
+
+										log_threshold		=> log_threshold + 1);
 									
-								when 9 .. count_type'last =>
-									command_too_long (8);
+								when 12 .. count_type'last =>
+									command_too_long (11);
 									
 								when others =>
 									command_incomplete;
