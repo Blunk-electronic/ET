@@ -373,6 +373,7 @@ package schematic_ops is
 		label_position	: in et_coordinates.type_point; -- x/y
 		rotation		: in et_coordinates.type_rotation; -- 0 / 90 degree
 		appearance 		: in type_net_label_appearance; -- simple/tag label		
+		direction		: in et_schematic.type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level);
 
 	procedure delete_net_label (

@@ -844,6 +844,32 @@ package body scripting is
 
 						when LABEL =>
 							case fields is
+								when 10 =>
+									schematic_ops.place_net_label
+										(
+										module_name			=> module,
+
+										segment_position	=> to_coordinates (
+																point => set_point (
+																	x => to_distance (f (6)),
+																	y => to_distance (f (7))),
+																sheet => to_sheet (f (5))), -- sheet number
+
+										label_position		=> type_point (set_point (
+																	x => to_distance (f (8)),
+																	y => to_distance (f (9)))),
+
+										rotation			=> to_angle (f (10)), -- 0 / 90
+										appearance 			=> et_schematic.SIMPLE,
+
+										-- A simple label does not indicate the direction
+										-- of information flow. But this procedure call requires a
+										-- direction. So we just pass direction PASSIVE. It has no 
+										-- further meaning.
+										direction			=> et_schematic.PASSIVE,
+
+										log_threshold		=> log_threshold + 1);
+
 								when 11 =>
 									schematic_ops.place_net_label
 										(
@@ -860,8 +886,11 @@ package body scripting is
 																	y => to_distance (f (9)))),
 
 										rotation			=> to_angle (f (10)), -- 0 / 90
-										appearance 			=> et_schematic.to_appearance (f (11)), -- simple / tag
-										-- CS: provide direction instead as optional 11th argument
+										appearance 			=> et_schematic.TAG,
+
+										-- A tag label requires specification of direction
+										-- which is specified by the 11th argument:
+										direction			=> et_schematic.to_direction (f (11)), -- INPUT, OUTPUT, PASSIVE, ...
 
 										log_threshold		=> log_threshold + 1);
 									

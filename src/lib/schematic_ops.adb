@@ -7397,6 +7397,7 @@ package body schematic_ops is
 		label_position	: in et_coordinates.type_point; -- x/y
 		rotation		: in et_coordinates.type_rotation; -- 0 / 90 degree
 		appearance 		: in type_net_label_appearance; -- simple/tag label
+		direction		: in et_schematic.type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -7459,7 +7460,7 @@ package body schematic_ops is
 									container	=> segment.labels,
 									new_item	=> (label with
 										appearance	=> TAG,
-										direction	=> PASSIVE) -- CS -- requires additional parameter
+										direction	=> direction) -- the given direction
 									   );
 
 						end case;
