@@ -7437,7 +7437,11 @@ package body schematic_ops is
 						use type_net_labels;
 						label : type_net_label_base;
 					begin
-						label.position := label_position; -- x/y
+						-- label_position is relative to segment_position
+						label.position := label_position;
+						move (label.position, segment_position);
+						-- now label.position is absolute
+						
 						label.rotation := rotation; -- the given rotation
 						-- CS: label size, style and line width assume default. could be provided by further
 						-- parameters passed to procedure place_net_label.
@@ -7556,16 +7560,16 @@ package body schematic_ops is
 
 		module_cursor : type_modules.cursor; -- points to the module
 
+		-- This flag goes true once the targeted net label
+		-- has been found. All iterations are cancelled as soon as it goes true.
+		label_found : boolean := false;
+		
 		procedure query_nets (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
 
 			use type_nets;
 			net_cursor : type_nets.cursor := module.nets.first;
-			
-			-- This flag goes true once the first segment of the targeted net at
-			-- the targeted sheet has been found.
-			segment_found : boolean := false; -- to be returned
 
 			procedure query_strands (
 				net_name	: in type_net_name.bounded_string;
@@ -7579,59 +7583,41 @@ package body schematic_ops is
 
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 
-					procedure attach_label (segment : in out type_net_segment) is 
+					procedure query_labels (segment : in out type_net_segment) is 
 						use type_net_labels;
-						label : type_net_label_base;
+						label_cursor : type_net_labels.cursor := segment.labels.first;
 					begin
-						label.position := label_position; -- x/y
-						label.rotation := rotation; -- the given rotation
-						-- CS: label size, style and line width assume default. could be provided by further
-						-- parameters passed to procedure place_net_label.
+						while label_cursor /= type_net_labels.no_element loop
 
-						case appearance is
-							when SIMPLE =>
-								append (
-									container	=> segment.labels,
-									new_item	=> (label with 
-										appearance	=> SIMPLE)
-									   );
-								
-							when TAG =>
-								append (
-									container	=> segment.labels,
-									new_item	=> (label with
-										appearance	=> TAG,
-										direction	=> PASSIVE) -- CS -- requires additional parameter
-									   );
+							-- If label sits at position, delete it from the label list
+							-- of that segment:
+							if element (label_cursor).position = type_point (position) then
+								delete (segment.labels, label_cursor);
+								label_found := true;
+								exit;
+							end if;
 
-						end case;
-					end attach_label;
+							next (label_cursor);
+						end loop;
+					end query_labels;
 					
 				begin -- query_segments
-					while not segment_found and segment_cursor /= type_net_segments.no_element loop
+					while not label_found and segment_cursor /= type_net_segments.no_element loop
 
-						if on_segment (
-							point	=> type_point (segment_position),
-							segment	=> segment_cursor) then
-
-							update_element (
-								container	=> strand.segments,
-								position	=> segment_cursor,
-								process		=> attach_label'access);
-
-							-- signal iterations in upper level to cancel
-							segment_found := true;
-						end if;
+						update_element (
+							container	=> strand.segments,
+							position	=> segment_cursor,
+							process		=> query_labels'access);
 						
 						next (segment_cursor);
 					end loop;
 				end query_segments;
 				
 			begin -- query_strands
-				while not segment_found and strand_cursor /= type_strands.no_element loop
+				while not label_found and strand_cursor /= type_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
-					if et_coordinates.sheet (element (strand_cursor).position) = sheet (segment_position) then
+					if et_coordinates.sheet (element (strand_cursor).position) = sheet (position) then
 
 						update_element (
 							container	=> net.strands,
@@ -7677,8 +7663,7 @@ package body schematic_ops is
 		
 		log_indentation_down;
 	end delete_net_label;
-	
-	
+		
 	procedure add_submodule (
 	-- Adds a submodule instance to the schematic.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
