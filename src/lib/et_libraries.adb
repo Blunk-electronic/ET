@@ -679,6 +679,106 @@ package body et_libraries is
 		raise constraint_error;
 	end;
 
+	function to_string (purpose : in type_device_purpose.bounded_string) return string is
+	-- Returns the given purpose as string.
+	begin
+		return type_device_purpose.to_string (purpose);
+	end to_string;
+
+	function to_purpose (purpose : in string) return type_device_purpose.bounded_string is
+	-- Converts a string to type_device_purpose	
+	begin
+		return type_device_purpose.to_bounded_string (purpose);
+	end to_purpose;
+
+	function purpose_length_valid (purpose : in string) return boolean is 
+	-- Returns true if given purpose is too long. Issues warning.
+		use et_string_processing;
+	begin
+		if purpose'length > device_purpose_length_max then
+			log (message_warning & "purpose " & enclose_in_quotes (purpose) & " is longer than" 
+				 & positive'image (device_purpose_length_max) & " characters !", 
+				console => true);
+			return false;
+		else
+			return true;
+		end if;
+	end;
+		
+	function purpose_characters_valid (
+	-- Tests if the given value contains only valid characters as specified
+	-- by given character set. Returns false if invalid character found.
+		purpose		: in type_device_purpose.bounded_string;
+		characters	: in character_set := device_purpose_characters) 
+		return boolean is
+		use et_string_processing;
+		use type_device_purpose;
+		invalid_character_position : natural := 0;
+	begin
+		invalid_character_position := index (
+			source	=> purpose,
+			set 	=> characters,
+			test 	=> outside);
+
+		if invalid_character_position > 0 then
+			log (message_warning & "purpose " & enclose_in_quotes (to_string (purpose))
+				 & " has invalid character at position"
+				 & natural'image (invalid_character_position)
+				);
+			return false;
+		else
+			return true;
+		end if;
+	end purpose_characters_valid;
+
+	procedure purpose_invalid (purpose : in string) is 
+	-- Issues error message and raises constraint error.
+		use et_string_processing;
+	begin
+		log (message_error & "purpose " & enclose_in_quotes (purpose) &
+			 " invalid !", console => true);
+		raise constraint_error;
+	end;
+
+-- 	procedure validate_purpose (purpose : in string) is
+-- 	-- Raises alarm if purpose is empty, purpose_default or nonsense.
+-- 		use et_string_processing;
+-- 		procedure purpose_invalid is
+-- 		begin
+-- 			log_indentation_reset;
+-- 			log (message_error & "purpose '" & purpose & "' not sufficiently specified !",
+-- 				 console => true);
+-- 			raise constraint_error;
+-- 		end purpose_invalid;
+-- 
+-- 		place : natural := 0;
+-- 	begin -- validate_purpose
+-- 
+-- 		-- test for the default string
+-- 		if purpose = purpose_default then
+-- 			purpose_invalid;
+-- 		end if;
+-- 
+-- 		-- test if length is non-zero
+-- 		if purpose'length = 0 then 
+-- 			log_indentation_reset;
+-- 			log (message_error & "no purpose specified !",
+-- 				 console => true);
+-- 			raise constraint_error;
+-- 		end if;
+-- 
+-- 		-- test for keywords and characters
+-- 		
+-- 		place := ada.strings.fixed.count (to_lower (purpose), "purpose");
+-- 		if place > 0 then purpose_invalid; end if;
+-- 
+-- 		place := ada.strings.fixed.count (purpose, "?");
+-- 		if place > 0 then purpose_invalid; end if;
+-- 
+-- 		-- CS: others like "to do, TODO, TBD
+-- 		
+-- 	end validate_purpose;
+
 	
 	function to_string (prefix : in type_device_name_prefix.bounded_string) return string is
 	-- returns the given prefix as string

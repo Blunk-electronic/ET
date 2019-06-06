@@ -156,9 +156,9 @@ package et_project is
 	-- module connection (or board-to-board connector). NOTE: This could be a cable as well.
 	type type_connector is record
 		instance_A	: et_general.type_module_instance_name.bounded_string; -- LMX_2
-		purpose_A	: et_schematic.type_device_purpose.bounded_string; -- pwr_in
+		purpose_A	: et_libraries.type_device_purpose.bounded_string; -- pwr_in
 		instance_B	: et_general.type_module_instance_name.bounded_string; -- PWR
-		purpose_B	: et_schematic.type_device_purpose.bounded_string; -- pwr_out
+		purpose_B	: et_libraries.type_device_purpose.bounded_string; -- pwr_out
 
 		-- CS
 		-- net_comparator : on/off 

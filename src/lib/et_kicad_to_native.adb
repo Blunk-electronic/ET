@@ -2620,7 +2620,7 @@ package body et_kicad_to_native is
 
 								value				=> element (component_cursor_kicad).value,
 								partcode			=> et_libraries.to_partcode (et_libraries.partcode_default), -- not provided by kicad
-								purpose				=> et_schematic.to_purpose (et_schematic.purpose_default), -- not provided by kicad
+								purpose				=> et_libraries.to_purpose (et_libraries.purpose_default), -- not provided by kicad
 								bom					=> YES, -- in kicad there is no bom status -> assume part is mounted
 								variant				=> element (component_cursor_kicad).variant,
 

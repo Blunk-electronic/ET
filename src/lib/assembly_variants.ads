@@ -48,10 +48,7 @@ with ada.containers.indefinite_ordered_maps;
 
 with et_general;
 with et_libraries;				--use et_libraries;
-with et_schematic;				--use et_schematic;
 with et_string_processing;		use et_string_processing;
--- with schematic_ops;
--- with board_ops;
 
 package assembly_variants is
 	
@@ -68,7 +65,7 @@ package assembly_variants is
 			when YES =>
 				value		: et_libraries.type_value.bounded_string; -- 470R
 				partcode	: et_libraries.type_partcode.bounded_string;
-				purpose		: et_schematic.type_device_purpose.bounded_string;
+				purpose		: et_libraries.type_device_purpose.bounded_string;
 
 			when NO =>
 				null;
@@ -92,7 +89,7 @@ package assembly_variants is
 		devices		: type_devices.map;
 	end record;
 	
-	-- The name of an assembly variant is a text like "low cost" or "with temperature sensor":
+	-- The name of an assembly variant is a text like "low_cost" or "with temperature sensor" or just a number like V345:
 	variant_name_length_max : constant positive := 100;
 	package type_variant_name is new generic_bounded_length (variant_name_length_max);
 	use type_variant_name;
@@ -102,7 +99,7 @@ package assembly_variants is
 
 	-- Since a board may have lots of variants, we keep them in a map:
 	package type_variants is new ordered_maps (
-		key_type		=> type_variant_name.bounded_string, -- "low cost"
+		key_type		=> type_variant_name.bounded_string, -- "low_cost"
 		element_type	=> type_variant);
 	
 end assembly_variants;

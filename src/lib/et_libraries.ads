@@ -387,7 +387,31 @@ package et_libraries is
 	-- Issues error message and raises constraint error.
 
 
+-- DEVICE PURPOSE
+	-- Devices that require operator interaction like connectors, LEDs or switches 
+	-- MUST have a purpose assigned.
+	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
+	device_purpose_characters : character_set := to_set 
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_- "); 
+	device_purpose_length_max : constant positive := 50;
+	package type_device_purpose is new generic_bounded_length (device_purpose_length_max);
+	purpose_default : constant string := "dummy";
 
+	function to_string (purpose : in type_device_purpose.bounded_string) return string;
+	function to_purpose (purpose : in string) return type_device_purpose.bounded_string;
+	
+	function purpose_length_valid (purpose : in string) return boolean;
+	-- Returns true if given purpose is too long. Issues warning.	
+	
+	function purpose_characters_valid (
+		purpose		: in type_device_purpose.bounded_string;
+		characters	: in character_set := device_purpose_characters) 
+		return boolean;
+	-- Tests if the given value contains only valid characters as specified
+	-- by given character set. Returns false if invalid character found.
+
+	procedure purpose_invalid (purpose : in string);
+	-- Issues error message and raises constraint error.
 
 	
 

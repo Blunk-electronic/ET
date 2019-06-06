@@ -57,7 +57,7 @@ with et_general;				use et_general;
 
 with et_coordinates;
 with et_libraries;
---with assembly_variants;
+with assembly_variants;
 with et_string_processing;
 with et_pcb;
 with et_pcb_coordinates;
@@ -88,34 +88,6 @@ package et_schematic is
 
 	function to_mirror_style (style : in string) return type_mirror;
 
-	
-	-- Devices that require operator interaction like connectors, LEDs or switches 
-	-- MUST have a purpose assigned.
-	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
-	device_purpose_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_- "); 
-	device_purpose_length_max : constant positive := 50;
-	package type_device_purpose is new generic_bounded_length (device_purpose_length_max);
-	purpose_default : constant string := "dummy";
-
-	--procedure validate_purpose (purpose : in string);
-	-- Raises alarm if purpose is empty, purpose_default or nonsense.
-	
-	function to_string (purpose : in type_device_purpose.bounded_string) return string;
-	function to_purpose (purpose : in string) return type_device_purpose.bounded_string;
-	
-	function purpose_length_valid (purpose : in string) return boolean;
-	-- Returns true if given purpose is too long. Issues warning.	
-	
-	function purpose_characters_valid (
-		purpose		: in type_device_purpose.bounded_string;
-		characters	: in character_set := device_purpose_characters) 
-		return boolean;
-	-- Tests if the given value contains only valid characters as specified
-	-- by given character set. Returns false if invalid character found.
-
-	procedure purpose_invalid (purpose : in string);
-	-- Issues error message and raises constraint error.
 	
 	
 	-- In a schematic we handle only virtual devices (like GND symbols)
@@ -183,7 +155,7 @@ package et_schematic is
 			when et_libraries.sch_pcb => 
 				value		: et_libraries.type_value.bounded_string; -- 470R
 				partcode	: et_libraries.type_partcode.bounded_string;
-				purpose		: type_device_purpose.bounded_string;
+				purpose		: et_libraries.type_device_purpose.bounded_string;
 				bom			: type_bom; -- whether mounted or not
 				variant		: et_libraries.type_component_variant_name.bounded_string; -- D, N
 
@@ -400,6 +372,8 @@ package et_schematic is
 		-- the nets of the module (incl. routing information from the board):
 		nets 	    	: type_nets.map;
 
+		-- the assembly variants of the module
+		assy_variants	: assembly_variants.type_variants.map;
 		
 		-- General non-component related board stuff (silk screen, documentation, ...):
 		board			: et_pcb.type_board;
