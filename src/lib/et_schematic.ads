@@ -57,6 +57,7 @@ with et_general;				use et_general;
 
 with et_coordinates;
 with et_libraries;
+--with assembly_variants;
 with et_string_processing;
 with et_pcb;
 with et_pcb_coordinates;
@@ -365,9 +366,9 @@ package et_schematic is
 	-- Returns a default component reference with an empty prefix and and id 0.
 	-- Used to initialize a component reference.
 	
-	function compare_reference (left, right : in et_libraries.type_device_name) return boolean;
-	-- Returns true if left comes before right.
-	-- If left equals right, the return is false.	
+-- 	function compare_reference (left, right : in et_libraries.type_device_name) return boolean;
+-- 	-- Returns true if left comes before right.
+-- 	-- If left equals right, the return is false.	
 	
 	function equal_reference (left, right : in et_libraries.type_device_name) return boolean;
 	-- Returns true if left equals right.
@@ -379,7 +380,7 @@ package et_schematic is
 	-- The devices of a module are collected in a map.
  	package type_devices is new indefinite_ordered_maps (
 		key_type		=> et_libraries.type_device_name, -- something like "IC43"
-		"<"				=> compare_reference,
+		"<"				=> et_libraries.compare_reference,
  		element_type	=> type_device);
 
 	-- For designs which have only a schematic, this flag goes false.
@@ -407,6 +408,7 @@ package et_schematic is
 
 		-- the nets of the module (incl. routing information from the board):
 		nets 	    	: type_nets.map;
+
 		
 		-- General non-component related board stuff (silk screen, documentation, ...):
 		board			: et_pcb.type_board;
