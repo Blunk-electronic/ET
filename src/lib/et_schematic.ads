@@ -365,11 +365,6 @@ package et_schematic is
 	function default_component_reference return et_libraries.type_device_name;
 	-- Returns a default component reference with an empty prefix and and id 0.
 	-- Used to initialize a component reference.
-	
-	function equal_reference (left, right : in et_libraries.type_device_name) return boolean;
-	-- Returns true if left equals right.
-
-
 
 -- MODULE
 

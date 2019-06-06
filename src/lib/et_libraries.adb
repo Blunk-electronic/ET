@@ -847,6 +847,30 @@ package body et_libraries is
 		-- in case of equivalence of left and right, we return false (default)
 		return result;
 	end;	
+
+	function equal_reference (left, right : in type_device_name) return boolean is
+	-- Returns true if left equals right.
+	-- Example: if IC4 = IC4 then return true.
+		result : boolean := false;
+		use et_libraries;
+		use et_libraries.type_device_name_prefix;
+	begin
+		-- First we compare the prefix. If prefixes are equal, we compare the id.
+		-- If either of them does not match, the result is set false.
+		if left.prefix = right.prefix then -- like IC and IC
+
+			if left.id = right.id then -- like 4 and 4
+				result := true;
+			else -- like 5 and 6
+				result := false;
+			end if;
+			
+		else -- like R and IC
+			result := false; 
+		end if;
+
+		return result;
+	end;
 	
 	function to_string (
 		appearance	: in type_device_appearance;
