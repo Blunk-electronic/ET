@@ -439,7 +439,7 @@ package et_libraries is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.	
 
-	function equal_reference (left, right : in type_device_name) return boolean;
+	function equal_name (left, right : in type_device_name) return boolean;
 	-- Returns true if left equals right.
 	
 	function to_string (name : in type_device_name) return string;
