@@ -62,6 +62,7 @@ with et_pcb;
 with et_pcb_coordinates;
 with conventions;
 with submodules;
+with assembly_variants;
 
 package body et_project is
 
@@ -1911,6 +1912,31 @@ package body et_project is
 			section_mark (section_devices, FOOTER);
 		end query_devices;
 
+		procedure query_assembly_variants is		
+-- 			use et_schematic;
+			use assembly_variants;
+			use type_variants;
+			variant_cursor : type_variants.cursor := module.variants.first;
+			
+		begin -- query_assembly_variants
+			section_mark (section_assembly_variants, HEADER);			
+
+			while variant_cursor /= type_variants.no_element loop
+				section_mark (section_assembly_variant, HEADER);
+-- 				write (keyword => keyword_name, parameters => et_libraries.to_string (key (device_cursor)), space => true);
+-- 				write (keyword => keyword_appearance, parameters => et_libraries.to_string (element (device_cursor).appearance));
+-- 				write (keyword => keyword_model, parameters => et_libraries.to_string (element (device_cursor).model), space => true);
+-- 
+
+				section_mark (section_assembly_variant, FOOTER);
+				new_line;
+				
+				next (variant_cursor);
+			end loop;
+			
+			section_mark (section_assembly_variants, FOOTER);
+		end query_assembly_variants;
+		
 		procedure query_netchangers is
 			use submodules;
 			use type_netchangers;
@@ -2323,6 +2349,10 @@ package body et_project is
 		
 		-- devices
 		query_devices;
+		put_line (row_separator_single);
+
+		-- assembly variants
+		query_assembly_variants;
 		put_line (row_separator_single);
 		
 		-- netchangers
@@ -7985,6 +8015,11 @@ package body et_project is
 		device_unit_name		: et_libraries.type_unit_name.bounded_string; -- GPIO_BANK_1
 		device_unit_position	: et_coordinates.type_coordinates; -- x,y,sheet
 
+		-- assembly variants
+		assembly_variant_name			: assembly_variants.type_variant_name.bounded_string; -- low_cost
+		assembly_variant_description	: assembly_variants.type_description; -- "variant without temp. sensor"
+		assembly_variant_devices		: assembly_variants.type_devices.map;
+		
 		-- temporarily collection of units:
 		device_units			: et_schematic.type_units.map; -- PWR, A, B, ...
 		
@@ -10333,6 +10368,20 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
+						
+					when SEC_ASSEMBLY_VARIANTS =>
+						case stack.parent is
+							when SEC_INIT => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_ASSEMBLY_VARIANT =>
+						case stack.parent is
+							when SEC_ASSEMBLY_VARIANTS => null;
+							when others => invalid_section;
+						end case;
+
+						
 					when SEC_NETCHANGERS =>
 						case stack.parent is
 							when SEC_INIT => null;
@@ -10453,6 +10502,8 @@ package body et_project is
 			elsif set (section_device, SEC_DEVICE) then null;
 			elsif set (section_units, SEC_UNITS) then null;
 			elsif set (section_unit, SEC_UNIT) then null;
+			elsif set (section_assembly_variants, SEC_ASSEMBLY_VARIANTS) then null;
+			elsif set (section_assembly_variant, SEC_ASSEMBLY_VARIANT) then null;
 			elsif set (section_netchangers, SEC_NETCHANGERS) then null;
 			elsif set (section_netchanger, SEC_NETCHANGER) then null;
 			elsif set (section_placeholders, SEC_PLACEHOLDERS) then null;				
@@ -10492,6 +10543,141 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
+					when SEC_ASSEMBLY_VARIANTS =>
+						case stack.parent is
+							when SEC_INIT => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+
+					when SEC_ASSEMBLY_VARIANT =>
+						case stack.parent is
+							when SEC_ASSEMBLY_VARIANTS =>
+								declare
+									kw : string := f (line, 1);
+									device_name	: et_libraries.type_device_name; -- R1
+									device		: access assembly_variants.type_device;
+									cursor		: assembly_variants.type_devices.cursor;
+									inserted	: boolean;
+								begin
+-- 									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_name then -- name low_cost
+										expect_field_count (line, 2);
+										assembly_variant_name := assembly_variants.to_variant (f (line, 2));
+
+									elsif kw = keyword_description then -- description "variant without temperature sensor"
+										expect_field_count (line, 2);
+
+										assembly_variant_description := assembly_variants.to_unbounded_string (f (line, 2));
+										
+									-- A line like "device R1 not_mounted" or
+									-- a line like "device R1 value 270R partcode 12345" or		
+									-- a line like "device R1 value 270R partcode 12345 purpose "set temperature""
+									-- tells whether a device is mounted or not.
+									elsif kw = keyword_device then
+
+										-- there must be at least 3 fields:
+										expect_field_count (line, 3, warn => false);
+										
+										device_name := et_libraries.to_device_name (f (line, 2));
+
+										if f (line, 3) = keyword_not_mounted then
+											-- line like "device R1 not_mounted"
+
+											device := new assembly_variants.type_device'(
+												mounted	=> assembly_variants.NO);
+											
+										elsif f (line, 3) = keyword_value then
+											-- line like "device R1 value 270R partcode 12345"
+
+											-- create a device with discriminant "mounted" where
+											-- pointer assembly_variant_device is pointing at.
+											device := new assembly_variants.type_device'(
+												mounted	=> assembly_variants.YES,
+												others	=> <>); -- to be assigned later
+											
+											-- there must be at least 6 fields:
+											expect_field_count (line, 6, warn => false);
+
+											-- read value
+											-- validate value length. truncate if too long.
+											if et_libraries.value_length_valid (f (line, 4)) then
+												device.value := et_libraries.to_value (f (line, 4));
+											else
+												device.value := et_libraries.truncate (f (line, 4));
+											end if;
+
+											-- read partcode
+											if f (line, 5) = keyword_partcode then
+
+												if et_libraries.partcode_length_valid (f (line, 6)) then
+													device.partcode := et_libraries.to_partcode (f (line, 6));
+												else
+													log_indentation_reset;
+													et_libraries.partcode_invalid (f (line, 6));
+												end if;
+
+											else -- keyword partcode not found
+												log_indentation_reset;
+												log (message_error & "expect keyword " & enclose_in_quotes (keyword_partcode) &
+													 " after value !", console => true);
+												raise constraint_error;
+											end if;
+
+											-- read optional purpose
+											if field_count (line) > 6 then
+												expect_field_count (line, 8);
+
+												if f (line, 7) = keyword_purpose then
+
+													if et_libraries.purpose_length_valid (f (line, 8)) then
+														device.purpose := et_libraries.to_purpose (f (line, 8));
+													else
+														log_indentation_reset;
+														et_libraries.purpose_invalid (f (line, 8));
+													end if;
+
+												else -- keyword purpose not found
+													log_indentation_reset;
+														log (message_error & "expect keyword " & enclose_in_quotes (keyword_purpose) &
+															" after partcode !", console => true);
+													raise constraint_error;
+												end if;
+											end if;
+												
+										else -- keyword value not found
+											log_indentation_reset;
+											log (message_error & "expect keyword " & enclose_in_quotes (keyword_value) &
+												 " or keyword " & enclose_in_quotes (keyword_not_mounted) &
+												 " after device name !", console => true);
+											raise constraint_error;
+										end if;											
+
+										-- Insert the device in the current assembly variant:
+										assembly_variants.type_devices.insert (
+											container	=> assembly_variant_devices,
+											key			=> device_name, -- R1
+											new_item	=> device.all,
+											inserted	=> inserted,
+											position	=> cursor);
+
+										-- Raise error if device occurs more than once:
+										if not inserted then
+											log_indentation_reset;
+											log (message_error & "device " &
+												 enclose_in_quotes (et_libraries.to_string (device_name)) &
+												 " already specified !", console => true);
+											raise constraint_error;
+										end if;
+										
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+								
+							when others => invalid_section;
+						end case;
+
+						
 					when SEC_TEXTS =>
 						case stack.parent is
 							when SEC_INIT => null; -- nothing to do								

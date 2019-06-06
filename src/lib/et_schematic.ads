@@ -373,7 +373,7 @@ package et_schematic is
 		nets 	    	: type_nets.map;
 
 		-- the assembly variants of the module
-		assy_variants	: assembly_variants.type_variants.map;
+		variants		: assembly_variants.type_variants.map;
 		
 		-- General non-component related board stuff (silk screen, documentation, ...):
 		board			: et_pcb.type_board;

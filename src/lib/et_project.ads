@@ -437,6 +437,7 @@ package et_project is
 	keyword_stop_mask				: constant string := "stop_mask";
 	keyword_solder_paste			: constant string := "solder_paste";
 	keyword_drill_size				: constant string := "drill_size";
+	keyword_not_mounted				: constant string := "not_mounted";
 
 	section_begin				: constant string := "BEGIN]";	
 	section_end					: constant string := "END]";
@@ -490,6 +491,9 @@ package et_project is
 	section_devices				: constant string	:= "[DEVICES";
 	section_device				: constant string	:= "[DEVICE";
 
+	section_assembly_variants	: constant string	:= "[ASSEMBLY_VARIANTS";
+	section_assembly_variant	: constant string	:= "[VARIANT";	
+	
 	section_netchangers			: constant string 	:= "[NETCHANGERS";
 	section_netchanger			: constant string 	:= "[NETCHANGER";
 	
@@ -567,6 +571,8 @@ package et_project is
 		SEC_BOARD,
 		SEC_DEVICES,
 		SEC_DEVICE,
+		SEC_ASSEMBLY_VARIANTS,
+		SEC_ASSEMBLY_VARIANT,
 		SEC_NETCHANGERS,
 		SEC_NETCHANGER,
 		SEC_TEXTS,
