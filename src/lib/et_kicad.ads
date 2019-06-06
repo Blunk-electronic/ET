@@ -572,7 +572,7 @@ package et_kicad is
 	-- The components of a module are collected in a map.
  	package type_components_schematic is new indefinite_ordered_maps (
 		key_type 		=> et_libraries.type_device_name, -- something like "IC43"
-		"<" 			=> et_libraries.compare_reference,
+		"<" 			=> et_libraries.compare_name,
  		element_type 	=> type_component_schematic);
 
 	function component_reference (cursor : in type_components_schematic.cursor) 
@@ -639,7 +639,7 @@ package et_kicad is
 	package type_portlists is new ordered_maps (
 		key_type		=> et_libraries.type_device_name,
 		element_type	=> type_ports.list,
-		"<"				=> et_libraries.compare_reference,
+		"<"				=> et_libraries.compare_name,
 		"="				=> type_ports."=");
 
 	-- If component ports are to be listed, 
