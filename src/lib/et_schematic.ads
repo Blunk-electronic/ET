@@ -366,10 +366,6 @@ package et_schematic is
 	-- Returns a default component reference with an empty prefix and and id 0.
 	-- Used to initialize a component reference.
 	
--- 	function compare_reference (left, right : in et_libraries.type_device_name) return boolean;
--- 	-- Returns true if left comes before right.
--- 	-- If left equals right, the return is false.	
-	
 	function equal_reference (left, right : in et_libraries.type_device_name) return boolean;
 	-- Returns true if left equals right.
 

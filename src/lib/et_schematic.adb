@@ -345,35 +345,6 @@ package body et_schematic is
 			id			=> device_name_index_default,
 			id_width	=> 1));
 	end default_component_reference;
-		
--- 	function compare_reference (left, right : in et_libraries.type_device_name) return boolean is
--- 	-- Returns true if left comes before right.
--- 	-- If left equals right, the return is false.
--- 	-- CS: needs verification !
--- 		result : boolean := false;
--- 		use et_libraries.type_device_name_prefix;
--- 	begin
--- 		-- First we compare the prefix.
--- 		-- Example: If left is C201 and right is R4 then the result is true as C comes before R.
--- 
--- 		if left.prefix < right.prefix then -- like C201 and R4
--- 			result := true;
--- 		elsif left.prefix > right.prefix then -- like R4 and C201
--- 			result := false;
--- 		elsif left.prefix = right.prefix then -- like IC33 and IC34
--- 
--- 			-- If equal prefixes, we compare the id:
--- 			if left.id < right.id then -- like 33 and 34
--- 				result := true;
--- 			else
--- 				result := false; -- like 34 and 33
--- 			end if;
--- 
--- 		end if;
--- 
--- 		-- in case of equivalence of left and right, we return false (default)
--- 		return result;
--- 	end compare_reference;
 
 	function equal_reference (left, right : in et_libraries.type_device_name) return boolean is
 	-- Returns true if left equals right.
