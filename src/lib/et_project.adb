@@ -9445,6 +9445,42 @@ package body et_project is
 					netchanger_id := type_netchanger_id'first;
 					netchanger := (others => <>);
 				end insert_netchanger;
+
+				procedure insert_assembly_variant (
+					module_name	: in type_module_name.bounded_string;
+					module		: in out et_schematic.type_module) is
+					inserted : boolean;
+					use assembly_variants;
+					cursor : type_variants.cursor;
+				begin
+					log ("assembly variant " & 
+						 enclose_in_quotes (to_variant (assembly_variant_name)), log_threshold + 2);
+
+					-- insert variant in container variants
+					type_variants.insert (
+						container	=> module.variants,
+						key			=> assembly_variant_name,
+						inserted	=> inserted,
+						position	=> cursor,
+						new_item	=> (
+								description	=> assembly_variant_description,
+								devices		=> assembly_variant_devices));
+
+					-- An assembly variant must be unique:
+					if not inserted then
+						log_indentation_reset;
+						log (message_error & "assembly variant " & 
+							 enclose_in_quotes (to_variant (assembly_variant_name)) 
+								& " already used !", console => true);
+						raise constraint_error;
+					end if;
+
+					-- clean up for next assembly variant
+					assembly_variant_name := to_variant ("");
+					assembly_variant_description := to_unbounded_string ("");
+					assembly_variant_devices := type_devices.empty_map;
+					
+				end insert_assembly_variant;
 				
 			begin -- execute_section
 				case stack.current is
@@ -10368,19 +10404,24 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
-						
+					when SEC_ASSEMBLY_VARIANT =>
+						case stack.parent is
+							when SEC_ASSEMBLY_VARIANTS => 
+
+								-- insert the assembly variant in the module
+								update_element (
+									container	=> modules,
+									position	=> module_cursor,
+									process		=> insert_assembly_variant'access);
+								
+							when others => invalid_section;
+						end case;
+
 					when SEC_ASSEMBLY_VARIANTS =>
 						case stack.parent is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
-
-					when SEC_ASSEMBLY_VARIANT =>
-						case stack.parent is
-							when SEC_ASSEMBLY_VARIANTS => null;
-							when others => invalid_section;
-						end case;
-
 						
 					when SEC_NETCHANGERS =>
 						case stack.parent is
