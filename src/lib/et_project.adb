@@ -1912,22 +1912,72 @@ package body et_project is
 			section_mark (section_devices, FOOTER);
 		end query_devices;
 
-		procedure query_assembly_variants is		
--- 			use et_schematic;
+		procedure query_assembly_variants is
+		-- writes the assembly variants in the module file
 			use assembly_variants;
 			use type_variants;
 			variant_cursor : type_variants.cursor := module.variants.first;
+
+			procedure query_devices (
+				variant_name	: in type_variant_name.bounded_string;
+				variant			: in type_variant) is
+				use assembly_variants.type_devices;
+				device_cursor : assembly_variants.type_devices.cursor := variant.devices.first;
+
+				function purpose return string is 
+					use et_libraries;
+					use type_device_purpose;
+				begin
+					if length (element (device_cursor).purpose) > 0 then
+						return latin_1.space & keyword_purpose & latin_1.space &
+							enclose_in_quotes (
+								text_in => et_libraries.to_string (element (device_cursor).purpose),
+								quote	=> latin_1.quotation);
+					else
+						return "";
+					end if;
+				end;
+				
+			begin -- query_devices
+				while device_cursor /= assembly_variants.type_devices.no_element loop
+					case element (device_cursor).mounted is
+						when NO =>
+							write (
+								keyword		=> keyword_device,
+								parameters	=> et_libraries.to_string (key (device_cursor)) & 
+												latin_1.space & keyword_not_mounted,
+								space 		=> true);
+
+						when YES =>
+							write (
+								keyword		=> keyword_device,
+								parameters	=> et_libraries.to_string (key (device_cursor)) & 
+												latin_1.space &
+												keyword_value & latin_1.space &
+												et_libraries.to_string (element (device_cursor).value) &
+												latin_1.space & keyword_partcode & latin_1.space &
+												et_libraries.to_string (element (device_cursor).partcode) &
+												purpose,
+								space 		=> true);
+
+					end case;
+					
+					next (device_cursor);
+				end loop;
+			end query_devices;
 			
 		begin -- query_assembly_variants
 			section_mark (section_assembly_variants, HEADER);			
 
 			while variant_cursor /= type_variants.no_element loop
 				section_mark (section_assembly_variant, HEADER);
--- 				write (keyword => keyword_name, parameters => et_libraries.to_string (key (device_cursor)), space => true);
--- 				write (keyword => keyword_appearance, parameters => et_libraries.to_string (element (device_cursor).appearance));
--- 				write (keyword => keyword_model, parameters => et_libraries.to_string (element (device_cursor).model), space => true);
--- 
+				write (keyword => keyword_name, parameters => to_variant (key (variant_cursor)), space => true);
+				write (keyword => keyword_description, wrap => true, parameters => to_string (element (variant_cursor).description));
 
+				query_element (
+					position	=> variant_cursor,
+					process		=> query_devices'access);
+				
 				section_mark (section_assembly_variant, FOOTER);
 				new_line;
 				
@@ -1938,6 +1988,7 @@ package body et_project is
 		end query_assembly_variants;
 		
 		procedure query_netchangers is
+		-- writes the netchangers in the module file
 			use submodules;
 			use type_netchangers;
 
@@ -10600,7 +10651,7 @@ package body et_project is
 									cursor		: assembly_variants.type_devices.cursor;
 									inserted	: boolean;
 								begin
--- 									-- CS: In the following: set a corresponding parameter-found-flag
+									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then -- name low_cost
 										expect_field_count (line, 2);
 										assembly_variant_name := assembly_variants.to_variant (f (line, 2));
