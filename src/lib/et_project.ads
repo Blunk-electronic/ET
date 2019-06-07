@@ -687,6 +687,13 @@ package et_project is
 		module			: in submodules.type_submodules.cursor;
 		port			: in et_general.type_net_name.bounded_string)
 		return boolean;
+
+	function exists (
+	-- Returns true if the given module provides the given device.
+	-- The module being searched in must be in the rig already.						
+		module	: in type_modules.cursor;
+		device	: in et_libraries.type_device_name)
+		return boolean;
 	
 	
 -- GENERICS

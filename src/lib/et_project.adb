@@ -10621,6 +10621,15 @@ package body et_project is
 										
 										device_name := et_libraries.to_device_name (f (line, 2));
 
+										-- test whether device exists
+										if not exists (module_cursor, device_name) then
+											log_indentation_reset;
+											log (message_error & "device " &
+												 enclose_in_quotes (et_libraries.to_string (device_name)) &
+												 " does not exist !", console => true);
+											raise constraint_error;
+										end if;
+
 										if f (line, 3) = keyword_not_mounted then
 											-- line like "device R1 not_mounted"
 
@@ -13326,6 +13335,33 @@ package body et_project is
 		
 	end exists;
 
+	function exists (
+	-- Returns true if the given module provides the given device.
+	-- The module being searched in must be in the rig already.						
+		module	: in type_modules.cursor;
+		device	: in et_libraries.type_device_name)
+		return boolean is
+
+		device_found : boolean := false; -- to be returned
+		
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use et_schematic.type_devices;
+		begin
+			if contains (module.devices, device) then
+				device_found := true;
+			end if;
+		end query_devices;
+		
+	begin -- exists
+		type_modules.query_element (
+			position	=> module,
+			process		=> query_devices'access);
+
+		return device_found;
+	end exists;
+	
 	
 -- GENERICS
 	
