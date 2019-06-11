@@ -9580,13 +9580,39 @@ package body schematic_ops is
 		module_cursor : type_modules.cursor; -- points to the module
 
 		use assembly_variants;
-	begin
+
+		procedure create (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			inserted : boolean;
+			cursor : type_variants.cursor;
+		begin
+			-- create the variant
+			type_variants.insert (
+				container	=> module.variants,
+				key			=> variant_name,
+				position	=> cursor,
+				inserted	=> inserted);
+
+			if not inserted then
+				log (message_error & "assembly variant " & enclose_in_quotes (to_variant (variant_name)) &
+					 " already exists !", console => true);
+				raise constraint_error;
+			end if;
+		end create;
+			
+	begin -- create_assembly_variant
 		log ("module " & to_string (module_name) &
 			" creating new assembly variant " & enclose_in_quotes (to_variant (variant_name)),
 			log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> create'access);
 		
 	end create_assembly_variant;
 
@@ -9599,18 +9625,46 @@ package body schematic_ops is
 		module_cursor : type_modules.cursor; -- points to the module
 
 		use assembly_variants;
-	begin
+
+		procedure delete (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_variants;
+			cursor : type_variants.cursor;
+		begin
+			-- before deleting, the variant must be located
+			cursor := find (module.variants, variant_name);
+
+			if cursor /= type_variants.no_element then
+				
+				delete (
+					container	=> module.variants,
+					position	=> cursor);
+
+			else
+				log (message_error & "assembly variant " & enclose_in_quotes (to_variant (variant_name)) &
+					 " not found !", console => true);
+				raise constraint_error;
+			end if;
+		end delete;
+		
+	begin -- delete_assembly_variant
 		log ("module " & to_string (module_name) &
 			" deleting assembly variant " & enclose_in_quotes (to_variant (variant_name)),
 			log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> delete'access);
 		
 	end delete_assembly_variant;
 
 	procedure describe_assembly_variant (
-	-- Describes an assembly variant.
+	-- Describes an assembly variant. Overwrites the previous description.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost											
 		description		: in assembly_variants.type_description; -- "this is the low budget variant"
@@ -9619,7 +9673,40 @@ package body schematic_ops is
 		module_cursor : type_modules.cursor; -- points to the module
 
 		use assembly_variants;
-	begin
+
+		procedure describe (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_variants;
+			cursor : type_variants.cursor;
+
+			procedure assign_description (
+				name		: in type_variant_name.bounded_string;
+				variant		: in out type_variant) is
+			begin
+				variant.description := description;
+			end assign_description;
+			
+		begin -- describe
+			-- before describing, the variant must be located
+			cursor := find (module.variants, variant_name);
+
+			if cursor /= type_variants.no_element then
+
+				type_variants.update_element (
+					container	=> module.variants,
+					position	=> cursor,
+					process		=> assign_description'access);
+
+			else
+				log (message_error & "assembly variant " & enclose_in_quotes (to_variant (variant_name)) &
+					 " not found !", console => true);
+				raise constraint_error;
+			end if;
+
+		end describe;
+
+	begin -- describe_assembly_variant
 		log ("module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
 			 " description " & enclose_in_quotes (to_string (description)),
@@ -9627,6 +9714,11 @@ package body schematic_ops is
 
 		-- locate module
 		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> describe'access);
 		
 	end describe_assembly_variant;
 

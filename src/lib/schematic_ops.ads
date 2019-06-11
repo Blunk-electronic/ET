@@ -488,7 +488,7 @@ package schematic_ops is
 		log_threshold	: in type_log_level);
 	
 	procedure describe_assembly_variant (
-	-- Describes an assembly variant.
+	-- Describes an assembly variant. Overwrites the previous description.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		description		: in assembly_variants.type_description; -- "this is the low budget variant"
