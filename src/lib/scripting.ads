@@ -83,7 +83,9 @@ package scripting is
 		ADD,
 		CHECK,
 		COPY,
+		CREATE,
 		DELETE,
+		DESCRIBE,
 		DRAG,
 		DRAW,
 		INVOKE,
@@ -123,6 +125,7 @@ package scripting is
 -- 		UNIT_PARTCODE,
 -- 		UNIT_PURPOSE,
 		-- 		UNIT_VALUE
+		VARIANT,
 		VALUE
 		);
 

@@ -9570,6 +9570,67 @@ package body schematic_ops is
 		end if;
 		
 	end set_submodule_file;
+
+	procedure create_assembly_variant (
+	-- Creates a new assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use assembly_variants;
+	begin
+		log ("module " & to_string (module_name) &
+			" creating new assembly variant " & enclose_in_quotes (to_variant (variant_name)),
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+	end create_assembly_variant;
+
+	procedure delete_assembly_variant (
+	-- Deletes an assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use assembly_variants;
+	begin
+		log ("module " & to_string (module_name) &
+			" deleting assembly variant " & enclose_in_quotes (to_variant (variant_name)),
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+	end delete_assembly_variant;
+
+	procedure describe_assembly_variant (
+	-- Describes an assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost											
+		description		: in assembly_variants.type_description; -- "this is the low budget variant"
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use assembly_variants;
+	begin
+		log ("module " & to_string (module_name) &
+			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
+			 " description " & enclose_in_quotes (to_string (description)),
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+	end describe_assembly_variant;
+
+
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

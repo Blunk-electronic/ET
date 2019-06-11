@@ -54,6 +54,7 @@ with et_string_processing;		use et_string_processing;
 with et_schematic;				use et_schematic;
 with et_project;				use et_project;
 with submodules;
+with assembly_variants;
 
 package schematic_ops is
 
@@ -473,7 +474,26 @@ package schematic_ops is
 		file			: in submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level);
+
+	procedure create_assembly_variant (
+	-- Creates a new assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		log_threshold	: in type_log_level);
+
+	procedure delete_assembly_variant (
+	-- Deletes an assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		log_threshold	: in type_log_level);
 	
+	procedure describe_assembly_variant (
+	-- Describes an assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		description		: in assembly_variants.type_description; -- "this is the low budget variant"
+		log_threshold	: in type_log_level);
+
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
 	-- Tests:

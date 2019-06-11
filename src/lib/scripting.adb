@@ -57,6 +57,7 @@ with et_libraries;				use et_libraries;
 with et_schematic;
 with schematic_ops;
 with submodules;
+with assembly_variants;
 -- with board_ops;
 
 
@@ -387,7 +388,29 @@ package body scripting is
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
-					
+
+				when CREATE =>
+					case noun is
+						when VARIANT => 
+							case fields is
+								when 5 =>
+									schematic_ops.create_assembly_variant
+										(
+										module_name		=> module,
+										variant_name	=> assembly_variants.to_variant (f (5)),
+										log_threshold	=> log_threshold + 1);
+									
+								when 6 .. count_type'last =>
+									command_too_long (5);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+																	  
 				when DELETE =>
 					case noun is
 						when DEVICE =>
@@ -546,9 +569,49 @@ package body scripting is
 								unit_name		=> to_unit_name (f (6)),
 								log_threshold	=> log_threshold + 1);
 
+						when VARIANT => 
+							case fields is
+								when 5 =>
+									schematic_ops.delete_assembly_variant
+										(
+										module_name		=> module,
+										variant_name	=> assembly_variants.to_variant (f (5)),
+										log_threshold	=> log_threshold + 1);
+									
+								when 6 .. count_type'last =>
+									command_too_long (5);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
+							
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+				when DESCRIBE =>
+					case noun is
+						when VARIANT => 
+							case fields is
+								when 6 =>
+									schematic_ops.describe_assembly_variant
+										(
+										module_name		=> module,
+										variant_name	=> assembly_variants.to_variant (f (5)), -- low_cost
+										description		=> assembly_variants.to_unbounded_string (f (6)), -- "the cheap version"
+										log_threshold	=> log_threshold + 1);
+									
+								when 7 .. count_type'last =>
+									command_too_long (6);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
 				when DRAG =>
 					case noun is
 						when UNIT =>
