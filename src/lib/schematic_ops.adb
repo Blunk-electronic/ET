@@ -3655,7 +3655,6 @@ package body schematic_ops is
 									model		=> key (device_cursor_lib),
 									units		=> type_units.empty_map,
 									value		=> element (device_cursor_lib).value, -- if predefined in dev. model
-									bom			=> YES,
 									variant		=> variant,
 
 									-- Initially, the text placeholders are copies of the placeholders 
@@ -3947,7 +3946,6 @@ package body schematic_ops is
 								value		=> element (device_cursor_sch).value, -- if predefined in dev. model
 								partcode	=> element (device_cursor_sch).partcode,
 								purpose		=> element (device_cursor_sch).purpose,
-								bom			=> element (device_cursor_sch).bom,
 								variant		=> element (device_cursor_sch).variant,
 								text_placeholders	=> element (device_cursor_sch).text_placeholders, -- layout related
 								others		=> <> )); -- position in layout assumes default

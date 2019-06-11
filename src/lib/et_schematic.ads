@@ -156,7 +156,6 @@ package et_schematic is
 				value		: et_libraries.type_value.bounded_string; -- 470R
 				partcode	: et_libraries.type_partcode.bounded_string;
 				purpose		: et_libraries.type_device_purpose.bounded_string;
-				bom			: type_bom; -- whether mounted or not
 				variant		: et_libraries.type_component_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position

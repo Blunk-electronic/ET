@@ -1888,7 +1888,6 @@ package body et_project is
 						write (keyword => keyword_variant , parameters => et_libraries.to_string (element (device_cursor).variant), space => true);
 						write (keyword => keyword_partcode, parameters => et_libraries.to_string (element (device_cursor).partcode), space => true);
 						write (keyword => keyword_purpose , parameters => et_libraries.to_string (element (device_cursor).purpose), space => true, wrap => true);
-						write (keyword => keyword_bom     , parameters => et_schematic.to_string (element (device_cursor).bom));
 						
 						section_mark (section_package, HEADER);
 
@@ -8507,9 +8506,6 @@ package body et_project is
 							log_indentation_reset;
 							purpose_invalid (to_string (device_purpose));
 						end if;
-
-						log ("bom" & et_schematic.to_string (device_bom), log_threshold + 2);
-						device.bom		:= device_bom;
 
 						log ("variant " & et_libraries.to_string (device_variant), log_threshold + 2);
 						et_libraries.check_variant_name_characters (device_variant);
