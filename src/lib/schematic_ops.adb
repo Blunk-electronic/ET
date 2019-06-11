@@ -9722,7 +9722,141 @@ package body schematic_ops is
 		
 	end describe_assembly_variant;
 
+	procedure mount_device (
+	-- Sets the value, partcode and (optionally the purpose) of a device in 
+	-- the given assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		device			: in type_device_name; -- R1
+		value			: in type_value.bounded_string; -- 220R
+		partcode		: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
+		purpose			: in type_device_purpose.bounded_string := to_purpose ("");
+		log_threshold	: in type_log_level) is
 
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use assembly_variants;
+
+		function write_purpose return string is
+			use type_device_purpose;
+		begin
+			if length (purpose) = 0 then
+				return "";
+			else
+				return " purpose " & enclose_in_quotes (et_libraries.to_string (purpose));
+			end if;
+		end;
+
+-- 		procedure describe (
+-- 			module_name	: in type_module_name.bounded_string;
+-- 			module		: in out type_module) is
+-- 			use type_variants;
+-- 			cursor : type_variants.cursor;
+-- 
+-- 			procedure assign_description (
+-- 				name		: in type_variant_name.bounded_string;
+-- 				variant		: in out type_variant) is
+-- 			begin
+-- 				variant.description := description;
+-- 			end assign_description;
+-- 			
+-- 		begin -- describe
+-- 			-- before describing, the variant must be located
+-- 			cursor := find (module.variants, variant_name);
+-- 
+-- 			if cursor /= type_variants.no_element then
+-- 
+-- 				type_variants.update_element (
+-- 					container	=> module.variants,
+-- 					position	=> cursor,
+-- 					process		=> assign_description'access);
+-- 
+-- 			else
+-- 				log (message_error & "assembly variant " & enclose_in_quotes (to_variant (variant_name)) &
+-- 					 " not found !", console => true);
+-- 				raise constraint_error;
+-- 			end if;
+-- 
+-- 		end describe;
+
+	begin -- mount_device
+		log ("module " & to_string (module_name) &
+			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
+			 " mount device " & to_string (device) &
+			 " value " & to_string (value) &
+			 " partcode " & to_string (partcode) &
+			 write_purpose,
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+-- 		update_element (
+-- 			container	=> modules,
+-- 			position	=> module_cursor,
+-- 			process		=> describe'access);
+		
+	end mount_device;
+
+	procedure unmount_device (
+	-- Sets the gvien device as not mounted in 
+	-- the given assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		device			: in type_device_name; -- R1
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use assembly_variants;
+
+-- 		procedure describe (
+-- 			module_name	: in type_module_name.bounded_string;
+-- 			module		: in out type_module) is
+-- 			use type_variants;
+-- 			cursor : type_variants.cursor;
+-- 
+-- 			procedure assign_description (
+-- 				name		: in type_variant_name.bounded_string;
+-- 				variant		: in out type_variant) is
+-- 			begin
+-- 				variant.description := description;
+-- 			end assign_description;
+-- 			
+-- 		begin -- describe
+-- 			-- before describing, the variant must be located
+-- 			cursor := find (module.variants, variant_name);
+-- 
+-- 			if cursor /= type_variants.no_element then
+-- 
+-- 				type_variants.update_element (
+-- 					container	=> module.variants,
+-- 					position	=> cursor,
+-- 					process		=> assign_description'access);
+-- 
+-- 			else
+-- 				log (message_error & "assembly variant " & enclose_in_quotes (to_variant (variant_name)) &
+-- 					 " not found !", console => true);
+-- 				raise constraint_error;
+-- 			end if;
+-- 
+-- 		end describe;
+
+	begin -- unmount_device
+		log ("module " & to_string (module_name) &
+			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
+			 " unmounting device " & to_string (device),
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+-- 		update_element (
+-- 			container	=> modules,
+-- 			position	=> module_cursor,
+-- 			process		=> describe'access);
+		
+	end unmount_device;
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

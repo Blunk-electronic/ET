@@ -886,6 +886,66 @@ package body scripting is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+				when MOUNT =>
+					case noun is
+						when DEVICE => 
+							declare
+								value : type_value.bounded_string; -- 470R
+								partcode : type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+							begin
+								-- validate value length. truncate if too long.
+								if et_libraries.value_length_valid (f (7)) then
+									value := et_libraries.to_value (f (7));
+								else
+									value := et_libraries.truncate (f (7));
+								end if;
+
+								-- validate partcode
+								if partcode_length_valid (f (8)) then
+									partcode := to_partcode (f (8));
+								else
+									partcode_invalid (f (8));
+								end if;
+								
+								case fields is
+									when 8 =>
+										-- CS check length of value, partcode and purpose
+										
+										-- set value and partcode
+										schematic_ops.mount_device
+											(
+											module_name		=> module,
+											variant_name	=> assembly_variants.to_variant (f (5)), -- low_cost
+											device			=> to_device_name (f (6)), -- R1
+											value			=> value, -- 220R
+											partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
+											log_threshold	=> log_threshold + 1);
+
+									when 9 =>
+										-- optionally the purpose can be set also
+										schematic_ops.mount_device
+											(
+											module_name		=> module,
+											variant_name	=> assembly_variants.to_variant (f (5)), -- low_cost
+											device			=> to_device_name (f (6)), -- R1
+											value			=> value, -- 220R
+											partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
+											purpose			=> to_purpose (f (9)), -- brightness_control
+											log_threshold	=> log_threshold + 1);
+										
+									when 10 .. count_type'last =>
+										command_too_long (9);
+										
+									when others =>
+										command_incomplete;
+
+								end case;
+
+							end; -- declare
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
 				when PLACE =>
 					case noun is
 						when JUNCTION =>
@@ -1215,6 +1275,29 @@ package body scripting is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+				when UNMOUNT =>
+					case noun is
+						when DEVICE => 
+							case fields is
+								when 6 =>
+									schematic_ops.unmount_device
+										(
+										module_name		=> module,
+										variant_name	=> assembly_variants.to_variant (f (5)), -- low_cost
+										device			=> to_device_name (f (6)), -- R1
+										log_threshold	=> log_threshold + 1);
+
+								when 7 .. count_type'last =>
+									command_too_long (6);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
 				when WRITE =>
 					case noun is
 						when TEXT =>

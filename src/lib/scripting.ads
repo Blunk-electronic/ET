@@ -90,10 +90,12 @@ package scripting is
 		DRAW,
 		INVOKE,
 		MOVE,
+		MOUNT,
 		PLACE,
 		RENAME,
 		ROTATE,
 		SET,
+		UNMOUNT,
 		WRITE
 		);
 

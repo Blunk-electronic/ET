@@ -494,6 +494,25 @@ package schematic_ops is
 		description		: in assembly_variants.type_description; -- "this is the low budget variant"
 		log_threshold	: in type_log_level);
 
+	procedure mount_device (
+	-- Sets the value, partcode and (optionally the purpose) of a device in 
+	-- the given assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		device			: in type_device_name; -- R1
+		value			: in type_value.bounded_string; -- 220R
+		partcode		: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
+		purpose			: in type_device_purpose.bounded_string := to_purpose ("");
+		log_threshold	: in type_log_level);
+
+	procedure unmount_device (
+	-- Sets the gvien device as not mounted in 
+	-- the given assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		device			: in type_device_name; -- R1
+		log_threshold	: in type_log_level);
+	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
 	-- Tests:
