@@ -132,18 +132,6 @@ package et_schematic is
 	function unit_positions (units : in type_units.map) return type_unit_positions.map;
 	--Returns a list of units and their coordinates in the schematic.	
 
-	
-	-- BOM STATUS
-	type type_bom is (YES, NO); -- if a component is to be mounted or not
-	function to_string (bom : in type_bom) return string;
-	function to_bom_status (bom : in string) return type_bom;
-
-	procedure check_bom_characters (bom : in string);
-	-- Checks if given string is a bom status. Case sensitive !
-	
-	procedure validate_bom_status (text : in string); -- CS: requires appearance and category
-	-- Validates BOM status. Case sensitive !	
-	
 
 	-- This is a device as it appears in the schematic.
 	type type_device (appearance : type_appearance_schematic) is record

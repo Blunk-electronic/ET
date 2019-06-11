@@ -1825,7 +1825,6 @@ package body et_project is
 						write_placeholder (element (unit_cursor).value);
 						write_placeholder (element (unit_cursor).purpose);
 						--write_placeholder (element (unit_cursor).partcode);
-						--write_placeholder (element (unit_cursor).bom);
 
 						section_mark (section_placeholders, FOOTER);
 					end if;
@@ -8075,7 +8074,6 @@ package body et_project is
 		
 		device_partcode			: et_libraries.type_partcode.bounded_string;
 		device_purpose			: et_libraries.type_device_purpose.bounded_string;
-		device_bom				: et_schematic.type_bom := et_schematic.type_bom'first;
 		device_variant			: et_libraries.type_component_variant_name.bounded_string; -- D, N
 		device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
 
@@ -8552,7 +8550,6 @@ package body et_project is
 					device_value	:= to_value ("");
 					device_purpose	:= to_purpose ("");
 					device_partcode := to_partcode ("");
-					device_bom		:= type_bom'first;
 					device_variant	:= to_component_variant_name ("");
 
 					log_indentation_down;
@@ -12222,10 +12219,6 @@ package body et_project is
 											et_libraries.purpose_invalid (f (line, 2));
 										end if;
 
-									elsif kw = keyword_bom then -- bom yes/no
-										expect_field_count (line, 2);
-										device_bom := et_schematic.to_bom_status (f (line, 2));
-										
 									else
 										invalid_keyword (kw);
 									end if;

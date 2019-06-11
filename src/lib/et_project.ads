@@ -382,7 +382,6 @@ package et_project is
 	keyword_template				: constant string := "template";
 	keyword_model					: constant string := "model";				
 	keyword_value					: constant string := "value";
-	keyword_bom						: constant string := "bom";		
 	keyword_partcode				: constant string := "partcode";	
 	keyword_purpose					: constant string := "purpose";	
 	keyword_variant					: constant string := "variant";

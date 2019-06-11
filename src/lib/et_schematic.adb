@@ -398,56 +398,6 @@ package body et_schematic is
 		end case;	
 	end show_danger;
 	
-	function to_string (bom : in type_bom) return string is begin
-		return latin_1.space & to_lower (type_bom'image (bom));
-	end to_string;
-
-	function to_bom_status (bom : in string) return type_bom is begin
-		return type_bom'value (bom);
-	end to_bom_status;
-	
-	procedure check_bom_characters (bom : in string) is
-	-- Checks if given string is a bom status. Case sensitive ! 
-		use et_string_processing;
-	begin
-		if bom = type_bom'image (YES) then
-			null;
-		elsif bom = type_bom'image (NO) then
-			null;
-		else
-			log_indentation_reset;
-			log (message_error & "BOM status '"
-					& bom & "' invalid !" 
-					& " Must be either "
-					& to_string (YES) & " or "
-					& to_string (NO) & " !",
-				console => true);
-			raise constraint_error;
-		end if;
-
-		-- CS: warning if lower case used
-	end check_bom_characters;
-	
-	procedure validate_bom_status (text : in string) is -- CS: see spec
-	-- Validates BOM status. Case sensitive !
-		use et_string_processing;
-	begin
-		if text = type_bom'image (YES) then
-			null;
-		elsif text = type_bom'image (NO) then
-			null;
-		else
-			log_indentation_reset;
-			log (message_error & "BOM status '"
-					& text & "' invalid !" 
-					& " Must be either "
-					& to_string (YES) & " or "
-					& to_string (NO) & " !",
-				console => true);
-			raise constraint_error;
-		end if;
-	end validate_bom_status;
-
 	procedure statistics_set (
 		cat			: in type_statistics_category;
 		increment	: in boolean := true;
