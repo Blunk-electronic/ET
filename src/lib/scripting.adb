@@ -1035,7 +1035,7 @@ package body scripting is
 							case fields is
 								when 6 =>
 					
-									schematic_ops.remove_device
+									schematic_ops.remove_device -- from assembly variant
 										(
 										module_name		=> module,
 										variant_name	=> assembly_variants.to_variant (f (5)), -- low_cost

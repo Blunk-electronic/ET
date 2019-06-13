@@ -367,7 +367,6 @@ package et_libraries is
 	package type_value is new generic_bounded_length (value_length_max);
 
 	function to_string (value : in type_value.bounded_string) return string;
-	function to_value (value : in string) return type_value.bounded_string;
 	
 	function value_length_valid (value : in string) return boolean;
 	-- Tests if the given value is longer than allowed. Returns false if too long.
@@ -386,6 +385,12 @@ package et_libraries is
 	procedure value_invalid (value : in string);
 	-- Issues error message and raises constraint error.
 
+	function to_value (
+	-- Tests the given value for length and invalid characters.
+		value						: in string;
+		error_on_invalid_character	: in boolean := false)
+		return type_value.bounded_string;
+	
 
 -- DEVICE PURPOSE
 	-- Devices that require operator interaction like connectors, LEDs or switches 

@@ -614,11 +614,6 @@ package body et_libraries is
 		return type_value.to_string (value);
 	end to_string;
 
-	function to_value (value : in string) return type_value.bounded_string is
-	begin
-		return type_value.to_bounded_string (value);
-	end to_value;
-	
 	function value_length_valid (value : in string) return boolean is
 	-- Tests if the given value is longer than allowed. Returns false if too long.
 	-- Returns true if length is in allowed range.		
@@ -660,7 +655,8 @@ package body et_libraries is
 			test 	=> outside);
 
 		if invalid_character_position > 0 then
-			log (message_warning & "value " & enclose_in_quotes (to_string (value))
+			log (message_warning & "value " &
+				 enclose_in_quotes (type_value.to_string (value))
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position)
 				);
@@ -679,6 +675,34 @@ package body et_libraries is
 		raise constraint_error;
 	end;
 
+	function to_value (
+	-- Tests the given value for length and invalid characters.
+		value						: in string;
+		error_on_invalid_character	: in boolean := false)
+		return type_value.bounded_string is
+		
+		value_out : type_value.bounded_string; -- to be returned		
+	begin
+		-- Test length of given value. truncate if too long:
+		if value_length_valid (value) then
+			value_out := type_value.to_bounded_string (value);
+		else
+			value_out := truncate (value);
+		end if;
+
+		-- Test characters in (truncated) value. If error_on_invalid_character 
+		-- is required by caller, abort on invalid character.
+		if value_characters_valid (value_out) then
+			null;
+		else
+			if error_on_invalid_character then
+				value_invalid (type_value.to_string (value_out));
+			end if;
+		end if;
+			
+		return value_out;
+	end to_value;
+	
 	function to_string (purpose : in type_device_purpose.bounded_string) return string is
 	-- Returns the given purpose as string.
 	begin
