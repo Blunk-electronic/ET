@@ -1952,13 +1952,16 @@ package body et_kicad is
 							characters => et_kicad.component_prefix_characters);
 					
 					when VALUE =>
-						if not value_length_valid (content (text)) then
-							null; -- CS write something helpful
-						end if;
-						
-						if not value_characters_valid (to_value (content (text))) then
-							null; -- CS write something helpful
-						end if;						
+						declare
+							value : et_libraries.type_value.bounded_string;
+						begin
+							value := to_value (
+									value 						=> content (text),
+									error_on_invalid_character	=> false);
+							-- For the operators convenice no error is raised if invalid
+							-- character found. This was the design gets imported but with
+							-- (lots of) warnings.
+						end;
 					
 					when DATASHEET =>
 						check_datasheet_length (content (text));
@@ -2144,7 +2147,14 @@ package body et_kicad is
 											leading_hash	=> true)),
 
 								prefix			=> tmp_prefix,
-								value			=> to_value (content (field_value)),
+								value			=> to_value (
+													value => content (field_value),
+													error_on_invalid_character => false
+													),
+												-- For the operators convenice no error is raised if invalid
+												-- character found. This was the design gets imported but with
+												-- (lots of) warnings.
+								
 								units			=> type_units_library.empty_map
 								)
 							);
@@ -7831,8 +7841,13 @@ package body et_kicad is
 									generic_name	=> generic_name_in_lbr,
 									alt_references	=> alternative_references,
 									
-									value 			=> to_value (content (field_value)),
-
+									value 			=> to_value (
+														value => content (field_value),
+														error_on_invalid_character => false),
+										-- For the operators convenice no error is raised if invalid
+										-- character found. This was the design gets imported but with
+										-- (lots of) warnings.
+									
 									-- At this stage we do not know if and how many units there are. So the unit list is empty.
 									units 			=> type_units_schematic.empty_map),
 								log_threshold => log_threshold + 2);
@@ -7848,7 +7863,12 @@ package body et_kicad is
 									generic_name	=> generic_name_in_lbr,
 									alt_references	=> alternative_references,
 									
-									value			=> to_value (content (field_value)),
+									value 			=> to_value (
+														value => content (field_value),
+														error_on_invalid_character => false),
+										-- For the operators convenice no error is raised if invalid
+										-- character found. This was the design gets imported but with
+										-- (lots of) warnings.
 
 									-- properties of a real component (appears in schematic and layout);
 									datasheet		=> type_component_datasheet.to_bounded_string (content (field_datasheet)),
@@ -8371,13 +8391,18 @@ package body et_kicad is
 							when component_field_value =>
 								field_value_found := true;
 								field_value := to_field;
-								if not value_length_valid (content (field_value)) then
-									null; -- CS write something useful
-								end if;
 
-								if not value_characters_valid (to_value (content (field_value))) then
-									null; -- CS write something useful
-								end if;
+								declare
+									value : et_libraries.type_value.bounded_string;
+								begin
+									value := to_value (
+											value 						=> content (field_value),
+											error_on_invalid_character	=> false);
+									-- For the operators convenice no error is raised if invalid
+									-- character found. This was the design gets imported but with
+									-- (lots of) warnings.
+								end;
+
 								
 							when component_field_package =>
 								field_package_found := true;
