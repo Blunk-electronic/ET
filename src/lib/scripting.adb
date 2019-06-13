@@ -1264,12 +1264,8 @@ package body scripting is
 							declare
 								value : type_value.bounded_string; -- 470R
 							begin
-								-- validate value length. truncate if too long.
-								if et_libraries.value_length_valid (f (6)) then
-									value := et_libraries.to_value (f (6));
-								else
-									value := et_libraries.truncate (f (6));
-								end if;
+								-- validate value
+								value := et_libraries.to_value (f (6));
 
 								if et_libraries.value_characters_valid (value) then
 
