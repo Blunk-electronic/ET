@@ -10716,12 +10716,8 @@ package body et_project is
 
 												if f (line, 7) = keyword_purpose then
 
-													if et_libraries.purpose_length_valid (f (line, 8)) then
-														device.purpose := et_libraries.to_purpose (f (line, 8));
-													else
-														log_indentation_reset;
-														et_libraries.purpose_invalid (f (line, 8));
-													end if;
+													-- validate purpose
+													device.purpose := et_libraries.to_purpose (f (line, 8));
 
 												else -- keyword purpose not found
 													log_indentation_reset;
@@ -12201,13 +12197,9 @@ package body et_project is
 
 									elsif kw = keyword_purpose then -- purpose power_out
 										expect_field_count (line, 2);
-										if et_libraries.purpose_length_valid (f (line, 2)) then
-											device_purpose := et_libraries.to_purpose (f (line, 2));
-										else
-											log_indentation_reset;
-											et_libraries.purpose_invalid (f (line, 2));
-										end if;
 
+										-- validate purpose
+										device_purpose := et_libraries.to_purpose (f (line, 2));
 									else
 										invalid_keyword (kw);
 									end if;
