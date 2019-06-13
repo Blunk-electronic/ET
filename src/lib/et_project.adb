@@ -6676,12 +6676,10 @@ package body et_project is
 							elsif kw = keyword_value then -- value 7400
 								expect_field_count (line, 2);
 
-								-- validate value length. truncate if too long.
-								if et_libraries.value_length_valid (f (line, 2)) then
-									value := et_libraries.to_value (f (line,2));
-								else
-									value := et_libraries.truncate (f (line, 2));
-								end if;
+								-- validate value
+								value := et_libraries.to_value (
+										value						=> f (line, 2),
+										error_on_invalid_character	=> false);
 
 								if not et_libraries.value_characters_valid (value) then
 									log (message_warning & "default value in device model " &
@@ -10692,13 +10690,8 @@ package body et_project is
 											-- there must be at least 6 fields:
 											expect_field_count (line, 6, warn => false);
 
-											-- read value
-											-- validate value length. truncate if too long.
-											if et_libraries.value_length_valid (f (line, 4)) then
-												device.value := et_libraries.to_value (f (line, 4));
-											else
-												device.value := et_libraries.truncate (f (line, 4));
-											end if;
+											-- read and validate value
+											device.value := et_libraries.to_value (f (line, 4));
 
 											-- read partcode
 											if f (line, 5) = keyword_partcode then
@@ -12185,12 +12178,8 @@ package body et_project is
 									elsif kw = keyword_value then -- value 100n
 										expect_field_count (line, 2);
 
-										-- validate value length. truncate if too long.
-										if et_libraries.value_length_valid (f (line, 2)) then
-											device_value := et_libraries.to_value (f (line, 2));
-										else
-											device_value := et_libraries.truncate (f (line, 2));
-										end if;
+										-- validate value
+										device_value := et_libraries.to_value (f (line, 2));
 
 									elsif kw = keyword_model then -- model /models/capacitor.dev
 										expect_field_count (line, 2);
