@@ -709,12 +709,6 @@ package body et_libraries is
 		return type_device_purpose.to_string (purpose);
 	end to_string;
 
-	function to_purpose (purpose : in string) return type_device_purpose.bounded_string is
-	-- Converts a string to type_device_purpose	
-	begin
-		return type_device_purpose.to_bounded_string (purpose);
-	end to_purpose;
-
 	function purpose_length_valid (purpose : in string) return boolean is 
 	-- Returns true if given purpose is too long. Issues warning.
 		use et_string_processing;
@@ -764,45 +758,30 @@ package body et_libraries is
 		raise constraint_error;
 	end;
 
--- 	procedure validate_purpose (purpose : in string) is
--- 	-- Raises alarm if purpose is empty, purpose_default or nonsense.
--- 		use et_string_processing;
--- 		procedure purpose_invalid is
--- 		begin
--- 			log_indentation_reset;
--- 			log (message_error & "purpose '" & purpose & "' not sufficiently specified !",
--- 				 console => true);
--- 			raise constraint_error;
--- 		end purpose_invalid;
--- 
--- 		place : natural := 0;
--- 	begin -- validate_purpose
--- 
--- 		-- test for the default string
--- 		if purpose = purpose_default then
--- 			purpose_invalid;
--- 		end if;
--- 
--- 		-- test if length is non-zero
--- 		if purpose'length = 0 then 
--- 			log_indentation_reset;
--- 			log (message_error & "no purpose specified !",
--- 				 console => true);
--- 			raise constraint_error;
--- 		end if;
--- 
--- 		-- test for keywords and characters
--- 		
--- 		place := ada.strings.fixed.count (to_lower (purpose), "purpose");
--- 		if place > 0 then purpose_invalid; end if;
--- 
--- 		place := ada.strings.fixed.count (purpose, "?");
--- 		if place > 0 then purpose_invalid; end if;
--- 
--- 		-- CS: others like "to do, TODO, TBD
--- 		
--- 	end validate_purpose;
+	function to_purpose (
+	-- Tests the given purpose for length and invalid characters.
+		purpose 					: in string;
+		error_on_invalid_character	: in boolean := true)
+		return type_device_purpose.bounded_string is
 
+		purpose_out : type_device_purpose.bounded_string; -- to be returned
+	begin
+		-- Test length of given purpose:
+		if purpose_length_valid (purpose) then
+			purpose_out := type_device_purpose.to_bounded_string (purpose);
+		else
+			purpose_invalid (purpose);
+		end if;
+
+		-- Test characters:
+		if purpose_characters_valid (purpose_out) then
+			null;
+		else
+			purpose_invalid (purpose);
+		end if;
+
+		return purpose_out;
+	end to_purpose;
 	
 	function to_string (prefix : in type_device_name_prefix.bounded_string) return string is
 	-- returns the given prefix as string

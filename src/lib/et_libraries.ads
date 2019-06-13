@@ -403,7 +403,6 @@ package et_libraries is
 	purpose_default : constant string := "dummy";
 
 	function to_string (purpose : in type_device_purpose.bounded_string) return string;
-	function to_purpose (purpose : in string) return type_device_purpose.bounded_string;
 	
 	function purpose_length_valid (purpose : in string) return boolean;
 	-- Returns true if given purpose is too long. Issues warning.	
@@ -418,6 +417,11 @@ package et_libraries is
 	procedure purpose_invalid (purpose : in string);
 	-- Issues error message and raises constraint error.
 
+	function to_purpose (
+	-- Tests the given purpose for length and invalid characters.
+		purpose 					: in string;
+		error_on_invalid_character	: in boolean := true)
+		return type_device_purpose.bounded_string;
 	
 
 -- DEVICE NAMES
