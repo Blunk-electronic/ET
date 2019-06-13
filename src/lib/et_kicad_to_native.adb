@@ -2682,6 +2682,8 @@ package body et_kicad_to_native is
 				function tag_and_simple_labels (segment : in et_kicad.type_net_segment) 
 				-- Copies from the given kicad net segment all simple and tag labels and returns
 				-- them in a single list.
+				-- CS: Labels placed at 180 or 270 degree are rotated to 0 or 90 degree. This might
+				-- cause the labels to shift to the right or up.
 					return et_schematic.type_net_labels.list is
 					labels : et_schematic.type_net_labels.list; -- to be returned
 
@@ -2691,6 +2693,9 @@ package body et_kicad_to_native is
 					use et_kicad.type_tag_labels;
 					tag_label_cursor : et_kicad.type_tag_labels.cursor := segment.label_list_tag.first;
 
+					-- For converting kicad rotation to native rotation:
+					rotation : et_coordinates.type_rotation_text;
+					
 				begin -- tag_and_simple_labels
 					log_indentation_up;
 					
@@ -2700,13 +2705,21 @@ package body et_kicad_to_native is
 						log ("simple label" & et_kicad.to_string (
 							label => et_kicad.type_net_label (element (simple_label_cursor))),
 							log_threshold + 5);
+
+						-- Kicad label might be rotated by 180 or 270 degree. Translate into native label
+						-- rotation:
+						case element (simple_label_cursor).rotation is
+							when 180 => rotation := 0;
+							when 270 => rotation := 90;
+							when others => rotation := element (simple_label_cursor).rotation;
+						end case;
 						
 						et_schematic.type_net_labels.append (
 							container	=> labels,
 							new_item	=> (
 								appearance	=> et_schematic.SIMPLE,
 								position	=> element (simple_label_cursor).coordinates,
-								rotation	=> element (simple_label_cursor).rotation,
+								rotation	=> rotation,
 								size		=> element (simple_label_cursor).size,
 								style		=> element (simple_label_cursor).style,
 								width		=> element (simple_label_cursor).width)
@@ -2720,14 +2733,22 @@ package body et_kicad_to_native is
 
 						log ("tag label" & et_kicad.to_string (
 							label => et_kicad.type_net_label (element (tag_label_cursor))),
-							log_threshold + 5);
+							 log_threshold + 5);
+
+						-- Kicad label might be rotated by 180 or 270 degree. Translate into native label
+						-- rotation:
+						case element (tag_label_cursor).rotation is
+							when 180 => rotation := 0;
+							when 270 => rotation := 90;
+							when others => rotation := element (tag_label_cursor).rotation;
+						end case;
 						
 						et_schematic.type_net_labels.append (
 							container	=> labels,
 							new_item	=> (
 								appearance	=> et_schematic.TAG,
 								position	=> element (tag_label_cursor).coordinates,
-								rotation	=> element (tag_label_cursor).rotation,
+								rotation	=> rotation,
 								size		=> element (tag_label_cursor).size,
 								style		=> element (tag_label_cursor).style,
 								width		=> element (tag_label_cursor).width,

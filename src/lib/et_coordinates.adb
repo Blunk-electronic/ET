@@ -70,11 +70,9 @@ package body et_coordinates is
 
 	function to_string (angle : in type_rotation) return string is
 	-- Returns the the given angle as string.
-		--preamble	: constant string := " angle ";
-		preamble	: constant string := " ";
-		suffix		: constant string := " deg";
+		suffix : constant string := " deg";
 	begin
-		return (preamble & type_rotation'image (angle) & suffix);
+		return type_rotation'image (angle) & suffix;
 	end to_string;
 
 	function to_angle (angle : in string) return type_rotation is 
