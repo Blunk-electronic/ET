@@ -9817,11 +9817,17 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
-		update_element (
-			container	=> modules,
-			position	=> module_cursor,
-			process		=> mount'access);
+		-- Test whether the given device exists in the module.
+		if exists (module_cursor, device) then
 		
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> mount'access);
+
+		else
+			device_not_found (device);
+		end if;
 	end mount_device;
 
 	procedure unmount_device (
@@ -9895,11 +9901,18 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
-		update_element (
-			container	=> modules,
-			position	=> module_cursor,
-			process		=> unmount'access);
-		
+		-- Test whether the given device exists in the module.
+		if exists (module_cursor, device) then
+			
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> unmount'access);
+
+		else
+			device_not_found (device);
+		end if;
+			
 	end unmount_device;
 
 	procedure remove_device (
@@ -9967,10 +9980,17 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
-		update_element (
-			container	=> modules,
-			position	=> module_cursor,
-			process		=> remove'access);
+		-- Test whether the given device exists in the module.
+		if exists (module_cursor, device) then
+			
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> remove'access);
+
+		else
+			device_not_found (device);
+		end if;
 		
 	end remove_device;
 
