@@ -1028,6 +1028,30 @@ package body scripting is
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
+
+				when REMOVE =>
+					case noun is
+						when DEVICE => 
+							case fields is
+								when 6 =>
+					
+									schematic_ops.remove_device
+										(
+										module_name		=> module,
+										variant_name	=> assembly_variants.to_variant (f (5)), -- low_cost
+										device			=> to_device_name (f (6)), -- R1
+										log_threshold	=> log_threshold + 1);
+
+								when 7 .. count_type'last =>
+									command_too_long (6);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
+
+						when others => invalid_noun (to_string (noun));
+					end case;
 					
 				when RENAME =>
 					case noun is

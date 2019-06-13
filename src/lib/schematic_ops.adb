@@ -118,6 +118,14 @@ package body schematic_ops is
 		raise constraint_error;
 	end;
 
+	procedure assembly_variant_not_found (variant : in assembly_variants.type_variant_name.bounded_string) is 
+		use assembly_variants;
+	begin
+		log (message_error & "assembly variant " &
+			 enclose_in_quotes (to_variant (variant)) & " not found !", console => true);
+		raise constraint_error;
+	end;
+	
 	procedure port_not_at_edge (name : in et_general.type_net_name.bounded_string) is begin
 		log (message_error & "port " & enclose_in_quotes (to_string (name)) &
 			" must be at the edge of the submodule !", console => true);
@@ -9642,9 +9650,7 @@ package body schematic_ops is
 					position	=> cursor);
 
 			else
-				log (message_error & "assembly variant " & enclose_in_quotes (to_variant (variant_name)) &
-					 " not found !", console => true);
-				raise constraint_error;
+				assembly_variant_not_found (variant_name);
 			end if;
 		end delete;
 		
@@ -9699,9 +9705,7 @@ package body schematic_ops is
 					process		=> assign_description'access);
 
 			else
-				log (message_error & "assembly variant " & enclose_in_quotes (to_variant (variant_name)) &
-					 " not found !", console => true);
-				raise constraint_error;
+				assembly_variant_not_found (variant_name);
 			end if;
 
 		end describe;
@@ -9724,13 +9728,14 @@ package body schematic_ops is
 
 	procedure mount_device (
 	-- Sets the value, partcode and (optionally the purpose) of a device in 
-	-- the given assembly variant.
+	-- the given assembly variant. An already existing device will be overwritten
+	-- without warning.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
 		value			: in type_value.bounded_string; -- 220R
 		partcode		: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
-		purpose			: in type_device_purpose.bounded_string := to_purpose ("");
+		purpose			: in type_device_purpose.bounded_string := to_purpose (""); -- set temperature
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -9747,37 +9752,58 @@ package body schematic_ops is
 			end if;
 		end;
 
--- 		procedure describe (
--- 			module_name	: in type_module_name.bounded_string;
--- 			module		: in out type_module) is
--- 			use type_variants;
--- 			cursor : type_variants.cursor;
--- 
--- 			procedure assign_description (
--- 				name		: in type_variant_name.bounded_string;
--- 				variant		: in out type_variant) is
--- 			begin
--- 				variant.description := description;
--- 			end assign_description;
--- 			
--- 		begin -- describe
--- 			-- before describing, the variant must be located
--- 			cursor := find (module.variants, variant_name);
--- 
--- 			if cursor /= type_variants.no_element then
--- 
--- 				type_variants.update_element (
--- 					container	=> module.variants,
--- 					position	=> cursor,
--- 					process		=> assign_description'access);
--- 
--- 			else
--- 				log (message_error & "assembly variant " & enclose_in_quotes (to_variant (variant_name)) &
--- 					 " not found !", console => true);
--- 				raise constraint_error;
--- 			end if;
--- 
--- 		end describe;
+		procedure mount (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_variants;
+			cursor : type_variants.cursor;
+
+			procedure insert_device (
+				name		: in type_variant_name.bounded_string;
+				variant		: in out type_variant) is
+				use assembly_variants.type_devices;
+				cursor : assembly_variants.type_devices.cursor;
+				inserted : boolean;
+			begin
+				-- Locate the device in the variant.
+				-- If already there, delete it and insert it anew
+				-- as specified by the operator.
+				cursor := find (variant.devices, device);
+
+				if cursor /= assembly_variants.type_devices.no_element then -- device already there
+					delete (variant.devices, cursor);
+				end if;
+					
+				insert (
+					container	=> variant.devices,
+					position	=> cursor,
+					inserted	=> inserted,
+					key			=> device, -- R1
+					new_item	=> (
+							mounted		=> YES,
+							value		=> value,		-- 220R
+							partcode	=> partcode,	-- R_PAC_S_0805_VAL_220R
+							purpose		=> purpose)		-- set temperature
+				   );
+					
+			end insert_device;
+			
+		begin -- mount
+			-- the variant must exists
+			cursor := find (module.variants, variant_name);
+
+			if cursor /= type_variants.no_element then
+
+				type_variants.update_element (
+					container	=> module.variants,
+					position	=> cursor,
+					process		=> insert_device'access);
+
+			else
+				assembly_variant_not_found (variant_name);
+			end if;
+
+		end mount;
 
 	begin -- mount_device
 		log ("module " & to_string (module_name) &
@@ -9791,16 +9817,17 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
--- 		update_element (
--- 			container	=> modules,
--- 			position	=> module_cursor,
--- 			process		=> describe'access);
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> mount'access);
 		
 	end mount_device;
 
 	procedure unmount_device (
 	-- Sets the gvien device as not mounted in 
-	-- the given assembly variant.
+	-- the given assembly variant. An already existing device will be overwritten
+	-- without warning.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
@@ -9810,37 +9837,54 @@ package body schematic_ops is
 
 		use assembly_variants;
 
--- 		procedure describe (
--- 			module_name	: in type_module_name.bounded_string;
--- 			module		: in out type_module) is
--- 			use type_variants;
--- 			cursor : type_variants.cursor;
--- 
--- 			procedure assign_description (
--- 				name		: in type_variant_name.bounded_string;
--- 				variant		: in out type_variant) is
--- 			begin
--- 				variant.description := description;
--- 			end assign_description;
--- 			
--- 		begin -- describe
--- 			-- before describing, the variant must be located
--- 			cursor := find (module.variants, variant_name);
--- 
--- 			if cursor /= type_variants.no_element then
--- 
--- 				type_variants.update_element (
--- 					container	=> module.variants,
--- 					position	=> cursor,
--- 					process		=> assign_description'access);
--- 
--- 			else
--- 				log (message_error & "assembly variant " & enclose_in_quotes (to_variant (variant_name)) &
--- 					 " not found !", console => true);
--- 				raise constraint_error;
--- 			end if;
--- 
--- 		end describe;
+		procedure unmount (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_variants;
+			cursor : type_variants.cursor;
+
+			procedure insert_device (
+				name		: in type_variant_name.bounded_string;
+				variant		: in out type_variant) is
+				use assembly_variants.type_devices;
+				cursor : assembly_variants.type_devices.cursor;
+				inserted : boolean;
+			begin
+				-- Locate the device in the variant.
+				-- If already there, delete it and insert it anew.
+				cursor := find (variant.devices, device);
+
+				if cursor /= assembly_variants.type_devices.no_element then -- device already there
+					delete (variant.devices, cursor);
+				end if;
+					
+				insert (
+					container	=> variant.devices,
+					position	=> cursor,
+					inserted	=> inserted,
+					key			=> device, -- R1
+					new_item	=> (
+							mounted		=> NO)
+				   );
+					
+			end insert_device;
+			
+		begin -- unmount
+			-- the variant must exists
+			cursor := find (module.variants, variant_name);
+
+			if cursor /= type_variants.no_element then
+
+				type_variants.update_element (
+					container	=> module.variants,
+					position	=> cursor,
+					process		=> insert_device'access);
+
+			else
+				assembly_variant_not_found (variant_name);
+			end if;
+
+		end unmount;
 
 	begin -- unmount_device
 		log ("module " & to_string (module_name) &
@@ -9851,12 +9895,85 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
--- 		update_element (
--- 			container	=> modules,
--- 			position	=> module_cursor,
--- 			process		=> describe'access);
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> unmount'access);
 		
 	end unmount_device;
+
+	procedure remove_device (
+	-- Removes the gvien device from the given assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		device			: in type_device_name; -- R1
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use assembly_variants;
+
+		procedure remove (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_variants;
+			cursor : type_variants.cursor;
+
+			procedure delete_device (
+				name		: in type_variant_name.bounded_string;
+				variant		: in out type_variant) is
+				use assembly_variants.type_devices;
+				cursor : assembly_variants.type_devices.cursor;
+			begin
+				-- Locate the device in the variant. Issue error message
+				-- if not found.
+				cursor := find (variant.devices, device);
+
+				if cursor /= assembly_variants.type_devices.no_element then
+					delete (variant.devices, cursor);
+				else
+					log (message_error & "device " & to_string (device) &
+						" not found in assembly variant " &
+						enclose_in_quotes (to_variant (variant_name)) & " !",
+						 console => true);
+					raise constraint_error;
+				end if;
+					
+			end delete_device;
+			
+		begin -- remove
+			-- the variant must exists
+			cursor := find (module.variants, variant_name);
+
+			if cursor /= type_variants.no_element then
+
+				type_variants.update_element (
+					container	=> module.variants,
+					position	=> cursor,
+					process		=> delete_device'access);
+
+			else
+				assembly_variant_not_found (variant_name);
+			end if;
+
+		end remove;
+
+	begin -- remove_device
+		log ("module " & to_string (module_name) &
+			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
+			 " removing device " & to_string (device),
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> remove'access);
+		
+	end remove_device;
+
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

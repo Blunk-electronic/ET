@@ -92,6 +92,7 @@ package scripting is
 		MOVE,
 		MOUNT,
 		PLACE,
+		REMOVE,
 		RENAME,
 		ROTATE,
 		SET,
