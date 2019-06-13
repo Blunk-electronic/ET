@@ -893,12 +893,8 @@ package body scripting is
 								value : type_value.bounded_string; -- 470R
 								partcode : type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 							begin
-								-- validate value length. truncate if too long.
-								if et_libraries.value_length_valid (f (7)) then
-									value := et_libraries.to_value (f (7));
-								else
-									value := et_libraries.truncate (f (7));
-								end if;
+								-- validate value
+								value := et_libraries.to_value (f (7));
 
 								-- validate partcode
 								if partcode_length_valid (f (8)) then
@@ -1034,7 +1030,6 @@ package body scripting is
 						when DEVICE => 
 							case fields is
 								when 6 =>
-					
 									schematic_ops.remove_device -- from assembly variant
 										(
 										module_name		=> module,

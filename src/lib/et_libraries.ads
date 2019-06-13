@@ -388,7 +388,7 @@ package et_libraries is
 	function to_value (
 	-- Tests the given value for length and invalid characters.
 		value						: in string;
-		error_on_invalid_character	: in boolean := false)
+		error_on_invalid_character	: in boolean := true)
 		return type_value.bounded_string;
 	
 

@@ -678,7 +678,7 @@ package body et_libraries is
 	function to_value (
 	-- Tests the given value for length and invalid characters.
 		value						: in string;
-		error_on_invalid_character	: in boolean := false)
+		error_on_invalid_character	: in boolean := true)
 		return type_value.bounded_string is
 		
 		value_out : type_value.bounded_string; -- to be returned		
@@ -691,7 +691,7 @@ package body et_libraries is
 		end if;
 
 		-- Test characters in (truncated) value. If error_on_invalid_character 
-		-- is required by caller, abort on invalid character.
+		-- is required by caller, abort on invalid character (default).
 		if value_characters_valid (value_out) then
 			null;
 		else
