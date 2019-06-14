@@ -9735,7 +9735,7 @@ package body schematic_ops is
 		device			: in type_device_name; -- R1
 		value			: in type_value.bounded_string; -- 220R
 		partcode		: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
-		purpose			: in type_device_purpose.bounded_string := to_purpose (""); -- set temperature
+		purpose			: in type_device_purpose.bounded_string := type_device_purpose.to_bounded_string (""); -- set temperature
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
