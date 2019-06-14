@@ -6699,14 +6699,9 @@ package body et_project is
 								expect_field_count (line, 2);
 
 								-- validate partcode length
-								if partcode_length_valid (f (line, 2)) then
-									partcode := et_libraries.to_partcode (f (line,2));
-								else
-									partcode_invalid (f (line,2));
-								end if;
+								partcode := et_libraries.to_partcode (f (line,2));
 								
 								log ("partcode " & to_string (partcode), log_threshold + 1);
-
 							else
 								invalid_keyword (kw);
 							end if;
@@ -8545,9 +8540,9 @@ package body et_project is
 
 					-- clean up temporarily variables for next device
 					device_model	:= to_file_name ("");
-					device_value	:= to_value ("");
-					device_purpose	:= to_purpose ("");
-					device_partcode := to_partcode ("");
+					device_value	:= type_value.to_bounded_string ("");
+					device_purpose	:= type_device_purpose.to_bounded_string ("");
+					device_partcode := type_partcode.to_bounded_string ("");
 					device_variant	:= to_component_variant_name ("");
 
 					log_indentation_down;
@@ -10695,14 +10690,7 @@ package body et_project is
 
 											-- read partcode
 											if f (line, 5) = keyword_partcode then
-
-												if et_libraries.partcode_length_valid (f (line, 6)) then
-													device.partcode := et_libraries.to_partcode (f (line, 6));
-												else
-													log_indentation_reset;
-													et_libraries.partcode_invalid (f (line, 6));
-												end if;
-
+												device.partcode := et_libraries.to_partcode (f (line, 6));
 											else -- keyword partcode not found
 												log_indentation_reset;
 												log (message_error & "expect keyword " & enclose_in_quotes (keyword_partcode) &
@@ -12188,12 +12176,9 @@ package body et_project is
 
 									elsif kw = keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
 										expect_field_count (line, 2);
-										if et_libraries.partcode_length_valid (f (line, 2)) then
-											device_partcode := et_libraries.to_partcode (f (line, 2));
-										else
-											log_indentation_reset;
-											et_libraries.partcode_invalid (f (line, 2));
-										end if;
+
+										-- validate partcode
+										device_partcode := et_libraries.to_partcode (f (line, 2));
 
 									elsif kw = keyword_purpose then -- purpose power_out
 										expect_field_count (line, 2);
@@ -12719,7 +12704,7 @@ package body et_project is
 			instance_A, instance_B : type_module_instance_name.bounded_string; -- DRV_1, PWR
 
 			procedure clear_connector is begin
-				purpose_A := et_libraries.to_purpose ("");
+				purpose_A := et_libraries.type_device_purpose.to_bounded_string ("");
 				purpose_A := purpose_B;
 				instance_A := to_instance_name ("");
 				instance_B := instance_A;
@@ -12977,6 +12962,7 @@ package body et_project is
 											expect_field_count (line, 2);
 											purpose_A := et_libraries.to_purpose (f (line,2));
 											-- CS: test if a connector with this purpose exists in the instance
+											
 										elsif kw = keyword_purpose_B then
 											expect_field_count (line, 2);
 											purpose_B := et_libraries.to_purpose (f (line,2));
