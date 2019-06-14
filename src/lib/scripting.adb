@@ -892,16 +892,13 @@ package body scripting is
 							declare
 								value : type_value.bounded_string; -- 470R
 								partcode : type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+								purpose : type_device_purpose.bounded_string; -- brightness_control
 							begin
 								-- validate value
 								value := et_libraries.to_value (f (7));
 
 								-- validate partcode
-								if partcode_length_valid (f (8)) then
-									partcode := to_partcode (f (8));
-								else
-									partcode_invalid (f (8));
-								end if;
+								partcode := to_partcode (f (8));
 								
 								case fields is
 									when 8 =>
@@ -919,6 +916,8 @@ package body scripting is
 
 									when 9 =>
 										-- optionally the purpose can be set also
+										purpose := to_purpose (f (9)); -- brightness_control
+												   
 										schematic_ops.mount_device
 											(
 											module_name		=> module,
@@ -926,7 +925,7 @@ package body scripting is
 											device			=> to_device_name (f (6)), -- R1
 											value			=> value, -- 220R
 											partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
-											purpose			=> to_purpose (f (9)), -- brightness_control
+											purpose			=> purpose, -- brightness_control
 											log_threshold	=> log_threshold + 1);
 										
 									when 10 .. count_type'last =>
@@ -1196,25 +1195,16 @@ package body scripting is
 							declare
 								partcode : type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 							begin
-								if partcode_length_valid (f (6)) then
-									partcode := to_partcode (f (6));
-								else
-									partcode_invalid (f (6));
-								end if;
-								
-								if partcode_characters_valid (partcode) then
+								partcode := to_partcode (f (6));
 
-									-- set the purpose
-									schematic_ops.set_partcode
-										(
-										module_name 	=> module,
-										device_name		=> to_device_name (f (5)), -- R1
-										partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
-										log_threshold	=> log_threshold + 1
-										);
-								else
-									partcode_invalid (f (6));
-								end if;
+								-- set the purpose
+								schematic_ops.set_partcode
+									(
+									module_name 	=> module,
+									device_name		=> to_device_name (f (5)), -- R1
+									partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
+									log_threshold	=> log_threshold + 1
+									);
 							end;
 
 						when PURPOSE =>
@@ -1222,25 +1212,16 @@ package body scripting is
 								use et_schematic;
 								purpose : type_device_purpose.bounded_string; -- brightness_control
 							begin
-								if purpose_length_valid (f (6)) then
-									purpose := to_purpose (f (6));
-								else
-									purpose_invalid (f (6)); -- CS: truncate ?
-								end if;
+								purpose := to_purpose (f (6));
 								
-								if purpose_characters_valid (purpose) then
-
-									-- set the purpose
-									schematic_ops.set_purpose
-										(
-										module_name 	=> module,
-										device_name		=> to_device_name (f (5)), -- R1
-										purpose			=> purpose, -- brightness_control
-										log_threshold	=> log_threshold + 1
-										);
-								else
-									purpose_invalid (f (6));
-								end if;
+								-- set the purpose
+								schematic_ops.set_purpose
+									(
+									module_name 	=> module,
+									device_name		=> to_device_name (f (5)), -- R1
+									purpose			=> purpose, -- brightness_control
+									log_threshold	=> log_threshold + 1
+									);
 							end;
 
 						when SUBMODULE_FILE =>
@@ -1267,21 +1248,14 @@ package body scripting is
 								-- validate value
 								value := et_libraries.to_value (f (6));
 
-								if et_libraries.value_characters_valid (value) then
-
-									-- set the value
-									schematic_ops.set_value
-										(
-										module_name 	=> module,
-										device_name		=> to_device_name (f (5)), -- R1
-										value			=> value, -- 470R
-										log_threshold	=> log_threshold + 1
-										);
-								else
-									log (message_error & "value " & enclose_in_quotes (to_string (value)) &
-										 " invalid !", console => true);
-									raise constraint_error;
-								end if;
+								-- set the value
+								schematic_ops.set_value
+									(
+									module_name 	=> module,
+									device_name		=> to_device_name (f (5)), -- R1
+									value			=> value, -- 470R
+									log_threshold	=> log_threshold + 1
+									);
 							end;
 							
 						when TEXT_SIZE =>
