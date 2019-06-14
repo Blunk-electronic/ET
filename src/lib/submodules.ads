@@ -102,7 +102,7 @@ package submodules is
 		offset	: in et_coordinates.type_coordinates); -- the offset (only x/y matters)
 
 	-- THIS IS THE GRAPHICAL REPRESENTATION OF A SUBMODULE ->
-	-- THE RECTANGULAR BOX AT THE SHEET WHERE IT THE SUBMODULE IS INSTANTIATED.
+	-- THE RECTANGULAR BOX AT THE SHEET WHERE THE SUBMODULE IS INSTANTIATED.
 	type type_submodule is record
 		file				: type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
 		position		    : et_coordinates.type_coordinates; -- the lower left corner

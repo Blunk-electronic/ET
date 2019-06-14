@@ -694,6 +694,13 @@ package et_project is
 		device	: in et_libraries.type_device_name)
 		return boolean;
 	
+	function exists (
+	-- Returns true if the given module provides the given submodule instance.
+	-- The module being searched in must be in the rig already.						
+		module		: in type_modules.cursor;
+		instance	: in et_general.type_module_instance_name.bounded_string)
+		return boolean;
+
 	
 -- GENERICS
 	

@@ -10754,7 +10754,14 @@ package body et_project is
 
 										submod_name := et_general.to_instance_name (f (line, 2)); -- OSC1
 
-										-- CS test whether submodule instance exists
+										-- test whether submodule instance exists
+										if not exists (module_cursor, submod_name) then
+											log_indentation_reset;
+											log (message_error & "submodule instance " &
+												 enclose_in_quotes (et_general.to_string (submod_name)) &
+												 " does not exist !", console => true);
+											raise constraint_error;
+										end if;
 
 										-- After the instance name (like OSC1) must come the keyword "variant"
 										-- followed by the variant name:
@@ -13415,6 +13422,32 @@ package body et_project is
 		return device_found;
 	end exists;
 	
+	function exists (
+	-- Returns true if the given module provides the given submodule instance.
+	-- The module being searched in must be in the rig already.						
+		module		: in type_modules.cursor;
+		instance	: in et_general.type_module_instance_name.bounded_string)
+		return boolean is
+
+		instance_found : boolean := false; -- to be returned
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use submodules.type_submodules;
+		begin
+			if contains (module.submods, instance) then
+				instance_found := true;
+			end if;
+		end query_submodules;
+
+	begin -- exists
+		type_modules.query_element (
+			position	=> module,
+			process		=> query_submodules'access);
+
+		return instance_found;
+	end exists;
 	
 -- GENERICS
 	
