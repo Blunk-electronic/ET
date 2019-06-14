@@ -8061,6 +8061,7 @@ package body et_project is
 		assembly_variant_name			: assembly_variants.type_variant_name.bounded_string; -- low_cost
 		assembly_variant_description	: assembly_variants.type_description; -- "variant without temp. sensor"
 		assembly_variant_devices		: assembly_variants.type_devices.map;
+		assembly_variant_submodules		: assembly_variants.type_submodules.map;
 		
 		-- temporarily collection of units:
 		device_units			: et_schematic.type_units.map; -- PWR, A, B, ...
@@ -10631,11 +10632,15 @@ package body et_project is
 						case stack.parent is
 							when SEC_ASSEMBLY_VARIANTS =>
 								declare
-									kw : string := f (line, 1);
-									device_name	: et_libraries.type_device_name; -- R1
-									device		: access assembly_variants.type_device;
-									cursor		: assembly_variants.type_devices.cursor;
-									inserted	: boolean;
+									kw : string 	:= f (line, 1);
+									device_name		: et_libraries.type_device_name; -- R1
+									device			: access assembly_variants.type_device;
+									device_cursor	: assembly_variants.type_devices.cursor;
+									
+									submod_name		: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+									submod_var		: assembly_variants.type_variant_name.bounded_string; -- low_cost
+									submod_cursor	: assembly_variants.type_submodules.cursor;
+									inserted		: boolean;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then -- name low_cost
@@ -10729,7 +10734,7 @@ package body et_project is
 											key			=> device_name, -- R1
 											new_item	=> device.all,
 											inserted	=> inserted,
-											position	=> cursor);
+											position	=> device_cursor);
 
 										-- Raise error if device occurs more than once:
 										if not inserted then
@@ -10737,6 +10742,47 @@ package body et_project is
 											log (message_error & "device " &
 												 enclose_in_quotes (et_libraries.to_string (device_name)) &
 												 " already specified !", console => true);
+											raise constraint_error;
+										end if;
+
+									-- a line like "submodule OSC1 variant low_cost
+									-- tells which assembly variant of a submodule is used:
+									elsif kw = keyword_submodule then
+
+										-- there must be 4 fields:
+										expect_field_count (line, 4);
+
+										submod_name := et_general.to_instance_name (f (line, 2)); -- OSC1
+
+										-- CS test whether submodule instance exists
+
+										-- After the instance name (like OSC1) must come the keyword "variant"
+										-- followed by the variant name:
+										if f (line, 3) = keyword_variant then
+											submod_var := assembly_variants.to_variant (f (line, 4));
+											-- CS test whether submodule provides the variant
+
+											-- Insert the submodule in the current assembly variant:
+											assembly_variants.type_submodules.insert (
+												container	=> assembly_variant_submodules,
+												key			=> submod_name, -- OSC1
+												new_item	=> (variant => submod_var), -- type_submodule is a record with currently only one element
+												inserted	=> inserted,
+												position	=> submod_cursor);
+
+											-- Raise error if submodule occurs more than once:
+											if not inserted then
+												log_indentation_reset;
+												log (message_error & "submodule " &
+													enclose_in_quotes (et_general.to_string (submod_name)) &
+													" already specified !", console => true);
+												raise constraint_error;
+											end if;
+											
+										else
+											log_indentation_reset;
+											log (message_error & "expect keyword " & enclose_in_quotes (keyword_variant) &
+												 " after instance name !", console => true);
 											raise constraint_error;
 										end if;
 										

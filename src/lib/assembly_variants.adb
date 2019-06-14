@@ -78,6 +78,7 @@ package body assembly_variants is
 	end;
 
 	function to_variant (variant : in string) return type_variant_name.bounded_string is begin
+		-- CS lenght and character check
 		return type_variant_name.to_bounded_string (variant);
 	end;
 		

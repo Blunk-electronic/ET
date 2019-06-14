@@ -93,6 +93,7 @@ package assembly_variants is
 
 	-- Submodules may come with their own assembly variants. 
 	-- NOTE: In contrast to type_device there is no option to not mount a submodule.
+	-- There might be furhter extensions in the future, so we use a record:
 	type type_submodule is record
 		variant : type_variant_name.bounded_string; -- low_cost, fixed_frequency
 	end record;

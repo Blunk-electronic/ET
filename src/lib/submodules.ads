@@ -114,8 +114,7 @@ package submodules is
 	end record;
 
 	package type_submodules is new ordered_maps (
-		-- The instance name like MOT_DRV_3:
-		key_type		=> et_general.type_module_instance_name.bounded_string, 
+		key_type		=> et_general.type_module_instance_name.bounded_string, -- MOT_DRV_3
 		"<" 			=> et_general.type_module_instance_name."<",
 		element_type	=> type_submodule);
 
