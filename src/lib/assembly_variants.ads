@@ -51,6 +51,17 @@ with et_libraries;				--use et_libraries;
 with et_string_processing;		use et_string_processing;
 
 package assembly_variants is
+
+	-- The name of an assembly variant is a text like "low_cost" or "with temperature sensor" or just a number like V345:
+	variant_name_length_max : constant positive := 100;
+	package type_variant_name is new generic_bounded_length (variant_name_length_max);
+	use type_variant_name;
+
+	function to_variant (variant : in type_variant_name.bounded_string) return string;
+	function to_variant (variant : in string) return type_variant_name.bounded_string;
+
+	-- An assembly variant should be described more or less detailled by the operator:
+	type type_description is new unbounded_string;
 	
 	type type_mounted is (YES, NO);
 
@@ -72,7 +83,7 @@ package assembly_variants is
 		end case;
 	end record;
 
-	-- Variants for devices are collected in a map.
+	-- Variants of devices are collected in a map.
 	package type_devices is new indefinite_ordered_maps (
 		key_type		=> et_libraries.type_device_name, -- something like "IC43"
 		"<"				=> et_libraries.compare_name,
@@ -80,22 +91,24 @@ package assembly_variants is
 
 	use type_devices;
 
-	-- An assembly variant should be described more or less detailled by the operator:
-	type type_description is new unbounded_string;
+	-- Submodules may come with their own assembly variants. 
+	-- NOTE: In contrast to type_device there is no option to not mount a submodule.
+	type type_submodule is record
+		variant : type_variant_name.bounded_string; -- low_cost, fixed_frequency
+	end record;
+
+	-- Variants of submodules are collected in a map.	
+	package type_submodules is new ordered_maps (
+		key_type		=> et_general.type_module_instance_name.bounded_string, -- MOT_DRV_3
+		"<" 			=> et_general.type_module_instance_name."<",
+		element_type	=> type_submodule);
 
 	-- The final assembly variant is composed of a description and the affected devices:
 	type type_variant is record
 		description	: type_description;
 		devices		: type_devices.map;
+		--submodules	: type_submodules.map;
 	end record;
-	
-	-- The name of an assembly variant is a text like "low_cost" or "with temperature sensor" or just a number like V345:
-	variant_name_length_max : constant positive := 100;
-	package type_variant_name is new generic_bounded_length (variant_name_length_max);
-	use type_variant_name;
-
-	function to_variant (variant : in type_variant_name.bounded_string) return string;
-	function to_variant (variant : in string) return type_variant_name.bounded_string;
 
 	-- Since a board may have lots of variants, we keep them in a map:
 	package type_variants is new ordered_maps (
