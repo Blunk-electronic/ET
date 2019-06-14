@@ -563,7 +563,6 @@ package et_libraries is
 	partcode_default : constant string := "dummy";
 	
 	function to_string (partcode : in type_partcode.bounded_string) return string;
-	function to_partcode (partcode : in string) return type_partcode.bounded_string;
 
 	function partcode_length_valid (partcode : in string) return boolean;
 	-- Returns true if length of given partcode is ok. Issues warning if not.
@@ -577,7 +576,11 @@ package et_libraries is
 	procedure partcode_invalid (partcode : in string);
 	-- Issues error message and raises constraint error.
 
-
+	function to_partcode (
+	-- Tests the given value for length and invalid characters.							 
+		partcode 					: in string;
+		error_on_invalid_character	: in boolean := true) 
+		return type_partcode.bounded_string;
 
 	-- lines
 	type type_line is record

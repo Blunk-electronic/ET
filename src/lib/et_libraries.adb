@@ -408,10 +408,6 @@ package body et_libraries is
 	function to_string (partcode : in type_partcode.bounded_string) return string is begin
 		return type_partcode.to_string (partcode);
 	end to_string;
-
-	function to_partcode (partcode : in string) return type_partcode.bounded_string is begin
-		return type_partcode.to_bounded_string (partcode);
-	end to_partcode;
 	
 	function partcode_length_valid (partcode : in string) return boolean is
 		-- Returns true if length of given partcode is ok. Issues warning if not.	
@@ -458,6 +454,32 @@ package body et_libraries is
 			 " invalid !", console => true);
 		raise constraint_error;
 	end;
+
+	function to_partcode (
+	-- Tests the given value for length and invalid characters.							 
+		partcode 					: in string;
+		error_on_invalid_character	: in boolean := true) 
+		return type_partcode.bounded_string is
+
+		partcode_out : type_partcode.bounded_string; -- to be returned
+	begin
+		-- Test length of given partcode
+		if partcode_length_valid (partcode) then
+			partcode_out := type_partcode.to_bounded_string (partcode);
+		else
+			partcode_invalid (partcode);
+		end if;
+
+		-- Test characters
+		if partcode_characters_valid (partcode_out) then
+			null;
+		else
+			partcode_invalid (partcode);
+		end if;
+
+		return partcode_out;
+	end to_partcode;
+
 	
 	function to_string (filled : in type_circle_filled) return string is begin
 		return latin_1.space & to_lower (type_circle_filled'image (filled));
@@ -635,7 +657,7 @@ package body et_libraries is
 		value_out := value ((value'first) .. value'first - 1 + value_length_max);
 
 		log (message_warning & "value will be truncated to " & enclose_in_quotes (value_out));
-		return to_value (value_out);
+		return type_value.to_bounded_string (value_out);
 	end truncate;
 	
 	function value_characters_valid (
