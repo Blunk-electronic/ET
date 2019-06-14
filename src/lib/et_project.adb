@@ -9517,6 +9517,7 @@ package body et_project is
 					assembly_variant_name := to_variant ("");
 					assembly_variant_description := to_unbounded_string ("");
 					assembly_variant_devices := type_devices.empty_map;
+					assembly_variant_submodules := type_submodules.empty_map;
 					
 				end insert_assembly_variant;
 				
@@ -10767,25 +10768,35 @@ package body et_project is
 										-- followed by the variant name:
 										if f (line, 3) = keyword_variant then
 											submod_var := assembly_variants.to_variant (f (line, 4));
-											-- CS test whether submodule provides the variant
+											
+											-- test whether submodule provides the variant
+											if exists (module_cursor, submod_name, submod_var) then
 
-											-- Insert the submodule in the current assembly variant:
-											assembly_variants.type_submodules.insert (
-												container	=> assembly_variant_submodules,
-												key			=> submod_name, -- OSC1
-												new_item	=> (variant => submod_var), -- type_submodule is a record with currently only one element
-												inserted	=> inserted,
-												position	=> submod_cursor);
+												-- Insert the submodule in the current assembly variant:
+												assembly_variants.type_submodules.insert (
+													container	=> assembly_variant_submodules,
+													key			=> submod_name, -- OSC1
+													new_item	=> (variant => submod_var), -- type_submodule is a record with currently only one element
+													inserted	=> inserted,
+													position	=> submod_cursor);
 
-											-- Raise error if submodule occurs more than once:
-											if not inserted then
+												-- Raise error if submodule occurs more than once:
+												if not inserted then
+													log_indentation_reset;
+													log (message_error & "submodule " &
+														enclose_in_quotes (et_general.to_string (submod_name)) &
+														" already specified !", console => true);
+													raise constraint_error;
+												end if;
+
+											else
 												log_indentation_reset;
-												log (message_error & "submodule " &
-													enclose_in_quotes (et_general.to_string (submod_name)) &
-													" already specified !", console => true);
+												log (message_error & "submodule does not provide assembly variant " &
+													 enclose_in_quotes (assembly_variants.to_variant (submod_var)),
+													console => true);
 												raise constraint_error;
 											end if;
-											
+																								
 										else
 											log_indentation_reset;
 											log (message_error & "expect keyword " & enclose_in_quotes (keyword_variant) &
@@ -13448,6 +13459,70 @@ package body et_project is
 
 		return instance_found;
 	end exists;
+
+	function exists (
+	-- Returns true if the given submodule instance provides the
+	-- given assembly variant. The submodule instance is searched for
+	-- in the parent module indicated by cursor "module".
+	-- The module being searched in must be in the rig already.												
+		module		: in type_modules.cursor;						
+		instance	: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		variant		: in assembly_variants.type_variant_name.bounded_string) -- low_cost				
+		return boolean is
+
+		variant_found : boolean := false; -- to be returned
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use submodules;
+			use submodules.type_submodules;
+			submod_instance_cursor : submodules.type_submodules.cursor;
+			submod_path : type_submodule_path.bounded_string;
+			submod_name	: type_module_name.bounded_string;
+			submod_cursor : type_modules.cursor;
+
+-- 			procedure query_variants (
+-- 				module_name	: in type_module_name.bounded_string;
+-- 				module		: in et_schematic.type_module) is
+-- 			begin
+-- 				null;
+-- 			end query_variants;
+				
+		begin -- query_submodules
+			-- locate the submodule instance by the given instance name
+			submod_instance_cursor := find (module.submods, instance);
+
+			-- get the file name of the submodule like $ET_TEMPLATES/motor_driver.mod
+			submod_path :=  element (submod_instance_cursor).file;
+
+			-- convert the submodule path to a submodule name
+			submod_name := to_module_name (remove_extension (to_string (submod_path)));
+
+			-- get a cursor to the submodule file
+			submod_cursor := locate_module (submod_name);
+
+-- 			query_element (
+-- 				position	=> submod_cursor,
+-- 				process		=> query_variants'access);
+
+-- 			if assembly_variants.type_variants.contains (element (submod_cursor).variants, variant) then
+-- 				variant_found := true;
+-- 			end if;
+		end query_submodules;
+		
+	begin -- exists
+		type_modules.query_element (
+			position	=> module,
+			process		=> query_submodules'access);
+
+		return variant_found;
+
+	end exists;
+
+
+
+
 	
 -- GENERICS
 	

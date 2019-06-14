@@ -53,6 +53,7 @@ with et_libraries;
 with et_string_processing;
 with et_schematic;
 with submodules;
+with assembly_variants;
 with et_pcb;
 
 package et_project is
@@ -701,6 +702,16 @@ package et_project is
 		instance	: in et_general.type_module_instance_name.bounded_string)
 		return boolean;
 
+	function exists (
+	-- Returns true if the given submodule instance provides the
+	-- given assembly variant. The submodule instance is searched for
+	-- in the parent module indicated by cursor "module".
+	-- The module being searched in must be in the rig already.						
+		module		: in type_modules.cursor;						
+		instance	: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		variant		: in assembly_variants.type_variant_name.bounded_string) -- low_cost				
+		return boolean;
+		
 	
 -- GENERICS
 	
