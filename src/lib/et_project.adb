@@ -1963,6 +1963,25 @@ package body et_project is
 					next (device_cursor);
 				end loop;
 			end query_devices;
+
+			procedure query_submodules (
+				variant_name	: in type_variant_name.bounded_string;
+				variant			: in type_variant) is
+				use assembly_variants;
+				use assembly_variants.type_submodules;
+				submodule_cursor : assembly_variants.type_submodules.cursor := variant.submodules.first;
+			begin
+				while submodule_cursor /= type_submodules.no_element loop
+					write (
+						keyword		=> keyword_submodule,
+						parameters	=> et_general.to_string (key (submodule_cursor)) &
+										latin_1.space & keyword_variant & latin_1.space &
+										to_variant (element (submodule_cursor).variant),
+						space		=> true);
+					
+					next (submodule_cursor);
+				end loop;
+			end query_submodules;
 			
 		begin -- query_assembly_variants
 			section_mark (section_assembly_variants, HEADER);			
@@ -1972,9 +1991,15 @@ package body et_project is
 				write (keyword => keyword_name, parameters => to_variant (key (variant_cursor)), space => true);
 				write (keyword => keyword_description, wrap => true, parameters => to_string (element (variant_cursor).description));
 
+				-- write the device variants
 				query_element (
 					position	=> variant_cursor,
 					process		=> query_devices'access);
+
+				-- write the submodule variants
+				query_element (
+					position	=> variant_cursor,
+					process		=> query_submodules'access);
 				
 				section_mark (section_assembly_variant, FOOTER);
 				new_line;
