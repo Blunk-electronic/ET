@@ -13436,7 +13436,7 @@ package body et_project is
 	function exists (
 	-- Returns true if the given module provides the given submodule instance.
 	-- The module being searched in must be in the rig already.						
-		module		: in type_modules.cursor;
+		module		: in type_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in et_general.type_module_instance_name.bounded_string)
 		return boolean is
 
@@ -13453,6 +13453,7 @@ package body et_project is
 		end query_submodules;
 
 	begin -- exists
+		-- search in the parent module for the given submodule instance
 		type_modules.query_element (
 			position	=> module,
 			process		=> query_submodules'access);
@@ -13465,7 +13466,7 @@ package body et_project is
 	-- given assembly variant. The submodule instance is searched for
 	-- in the parent module indicated by cursor "module".
 	-- The module being searched in must be in the rig already.												
-		module		: in type_modules.cursor;						
+		module		: in type_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		variant		: in assembly_variants.type_variant_name.bounded_string) -- low_cost				
 		return boolean is
@@ -13482,12 +13483,17 @@ package body et_project is
 			submod_name	: type_module_name.bounded_string;
 			submod_cursor : type_modules.cursor;
 
--- 			procedure query_variants (
--- 				module_name	: in type_module_name.bounded_string;
--- 				module		: in et_schematic.type_module) is
--- 			begin
--- 				null;
--- 			end query_variants;
+			procedure query_variants (
+			-- Locates the given assembly variant in the submodule.
+			-- Sets flag variant_found.
+				submodule_name	: in type_module_name.bounded_string;
+				submodule		: in et_schematic.type_module) is
+				use assembly_variants;
+			begin
+				if type_variants.contains (submodule.variants, variant) then
+					variant_found := true;
+				end if;
+			end query_variants;
 				
 		begin -- query_submodules
 			-- locate the submodule instance by the given instance name
@@ -13502,16 +13508,16 @@ package body et_project is
 			-- get a cursor to the submodule file
 			submod_cursor := locate_module (submod_name);
 
--- 			query_element (
--- 				position	=> submod_cursor,
--- 				process		=> query_variants'access);
+			-- locate the given variant in the submodule
+			type_modules.query_element (
+				position	=> submod_cursor,
+				process		=> query_variants'access);
 
--- 			if assembly_variants.type_variants.contains (element (submod_cursor).variants, variant) then
--- 				variant_found := true;
--- 			end if;
 		end query_submodules;
 		
 	begin -- exists
+
+		-- search in the parent module for the given submodule instance
 		type_modules.query_element (
 			position	=> module,
 			process		=> query_submodules'access);

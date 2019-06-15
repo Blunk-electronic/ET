@@ -698,7 +698,7 @@ package et_project is
 	function exists (
 	-- Returns true if the given module provides the given submodule instance.
 	-- The module being searched in must be in the rig already.						
-		module		: in type_modules.cursor;
+		module		: in type_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in et_general.type_module_instance_name.bounded_string)
 		return boolean;
 
@@ -707,7 +707,7 @@ package et_project is
 	-- given assembly variant. The submodule instance is searched for
 	-- in the parent module indicated by cursor "module".
 	-- The module being searched in must be in the rig already.						
-		module		: in type_modules.cursor;						
+		module		: in type_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		variant		: in assembly_variants.type_variant_name.bounded_string) -- low_cost				
 		return boolean;
