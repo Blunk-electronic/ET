@@ -9501,8 +9501,9 @@ package body et_project is
 						inserted	=> inserted,
 						position	=> cursor,
 						new_item	=> (
-								description	=> assembly_variant_description,
-								devices		=> assembly_variant_devices));
+							description	=> assembly_variant_description,
+							devices		=> assembly_variant_devices,
+							submodules	=> assembly_variant_submodules));
 
 					-- An assembly variant must be unique:
 					if not inserted then
@@ -10769,34 +10770,28 @@ package body et_project is
 										if f (line, 3) = keyword_variant then
 											submod_var := assembly_variants.to_variant (f (line, 4));
 											
-											-- test whether submodule provides the variant
-											if exists (module_cursor, submod_name, submod_var) then
+											-- NOTE: A test whether the submodule does provide the variant can
+											-- not be executed at this stage because the submodules have not 
+											-- been read yet. This will be done after procdure 
+											-- read_submodule_files has been executed. See far below.
 
-												-- Insert the submodule in the current assembly variant:
-												assembly_variants.type_submodules.insert (
-													container	=> assembly_variant_submodules,
-													key			=> submod_name, -- OSC1
-													new_item	=> (variant => submod_var), -- type_submodule is a record with currently only one element
-													inserted	=> inserted,
-													position	=> submod_cursor);
+											-- Insert the submodule in the current assembly variant:
+											assembly_variants.type_submodules.insert (
+												container	=> assembly_variant_submodules,
+												key			=> submod_name, -- OSC1
+												new_item	=> (variant => submod_var), -- type_submodule is a record with currently only one element
+												inserted	=> inserted,
+												position	=> submod_cursor);
 
-												-- Raise error if submodule occurs more than once:
-												if not inserted then
-													log_indentation_reset;
-													log (message_error & "submodule " &
-														enclose_in_quotes (et_general.to_string (submod_name)) &
-														" already specified !", console => true);
-													raise constraint_error;
-												end if;
-
-											else
+											-- Raise error if submodule occurs more than once:
+											if not inserted then
 												log_indentation_reset;
-												log (message_error & "submodule does not provide assembly variant " &
-													 enclose_in_quotes (assembly_variants.to_variant (submod_var)),
-													console => true);
+												log (message_error & "submodule " &
+													enclose_in_quotes (et_general.to_string (submod_name)) &
+													" already specified !", console => true);
 												raise constraint_error;
 											end if;
-																								
+
 										else
 											log_indentation_reset;
 											log (message_error & "expect keyword " & enclose_in_quotes (keyword_variant) &
@@ -12618,6 +12613,96 @@ package body et_project is
 			end if;
 
 		end read_submodule_files;
+
+		procedure test_assembly_variants_of_submodules is
+		-- Tests whether the submodules provides the assembly variants as 
+		-- specified in module file section ASSEMBLY_VARIANTS.
+
+			procedure query_variants (
+				module_name	: in type_module_name.bounded_string;
+				module		: in et_schematic.type_module) is
+
+				use assembly_variants;
+				use type_variants;
+				variant_cursor : type_variants.cursor := module.variants.first;
+				variant_name : type_variant_name.bounded_string; -- low_cost
+
+				procedure query_submodules (
+					variant_name	: in type_variant_name.bounded_string;
+					variant			: in type_variant) is
+					use type_submodules;
+					submod_cursor : type_submodules.cursor := variant.submodules.first;
+					submod_name : type_module_instance_name.bounded_string; -- CLK_GENERATOR
+					submod_variant : type_variant_name.bounded_string; -- fixed_frequency
+				begin -- query_submodules
+					if submod_cursor = type_submodules.no_element then
+						log ("no submodule variants specified", log_threshold + 1);
+					else
+						-- iterate variants of submodules
+						while submod_cursor /= type_submodules.no_element loop
+							submod_name := key (submod_cursor); -- CLK_GENERATOR
+							submod_variant := element (submod_cursor).variant;
+							
+							log ("submodule instance " & 
+								 enclose_in_quotes (to_string (submod_name)) &
+								 " variant " & 
+								 enclose_in_quotes (to_variant (submod_variant)),
+								 log_threshold + 2);
+
+							if not exists (module_cursor, submod_name, submod_variant) then
+								log_indentation_reset;
+								log (message_error & "submodule " &
+									enclose_in_quotes (to_string (submod_name)) &
+									" does not provide assembly variant " &
+									enclose_in_quotes (to_variant (submod_variant)) & " !",
+									console => true);
+
+								log ("Look up section " & section_assembly_variants (2..section_assembly_variants'last) &
+									 " to fix the issue !");
+								
+								raise constraint_error;
+							end if;
+
+							next (submod_cursor);
+						end loop;
+					end if;
+				end query_submodules;
+				
+			begin -- query_variants
+				if variant_cursor = type_variants.no_element then
+					log ("no variants specified", log_threshold);
+				else
+					-- iterate assembly variants of parent module
+					while variant_cursor /= type_variants.no_element loop
+						variant_name := key (variant_cursor);
+
+						-- show assembly variant of parent module
+						log ("variant " & enclose_in_quotes (to_variant (variant_name)), log_threshold + 1);
+						log_indentation_up;
+
+						-- look up the submodule variants
+						query_element (
+							position	=> variant_cursor,
+							process		=> query_submodules'access);
+
+						log_indentation_down;
+						
+						next (variant_cursor);
+					end loop;
+				end if;
+			end;
+			
+		begin -- test_assembly_variants_of_submodules
+			log ("verifying assembly variants of submodules ...", log_threshold);
+			log_indentation_up;
+
+			query_element (
+				position	=> module_cursor,
+				process		=> query_variants'access);
+
+			log_indentation_down;
+		end test_assembly_variants_of_submodules;
+
 		
 		use ada.directories;
 		
@@ -12684,6 +12769,9 @@ package body et_project is
 				-- But the files itself have not been read. That is what we do next:
 				read_submodule_files;
 
+				-- Test existence of assembly variants of submodules.
+				test_assembly_variants_of_submodules;
+				
 			else
 				log ("module " & enclose_in_quotes (file_name) &
 					 " already loaded -> no need to load anew.", log_threshold);
@@ -13504,6 +13592,8 @@ package body et_project is
 
 			-- convert the submodule path to a submodule name
 			submod_name := to_module_name (remove_extension (to_string (submod_path)));
+
+			--et_string_processing.log ("submod name " & to_string (submod_name));
 
 			-- get a cursor to the submodule file
 			submod_cursor := locate_module (submod_name);

@@ -108,7 +108,7 @@ package assembly_variants is
 	type type_variant is record
 		description	: type_description;
 		devices		: type_devices.map;
-		--submodules	: type_submodules.map;
+		submodules	: type_submodules.map;
 	end record;
 
 	-- Since a board may have lots of variants, we keep them in a map:
