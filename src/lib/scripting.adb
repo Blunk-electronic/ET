@@ -1226,6 +1226,23 @@ package body scripting is
 
 				when SET =>
 					case noun is
+						when DEVICE_NAME_OFFSET =>
+							case fields is
+								when 6 =>
+									schematic_ops.set_offset (
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)),
+										offset			=> et_libraries.to_device_name_index (f (6)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 7 .. count_type'last =>
+									command_too_long (6);
+									
+								when others =>
+									command_incomplete;
+							end case;
+							
 						when PARTCODE =>
 							declare
 								partcode : type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R

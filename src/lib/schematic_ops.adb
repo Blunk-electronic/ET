@@ -10170,7 +10170,71 @@ package body schematic_ops is
 		end if;
 		
 	end remove_submodule;
-	
+
+	procedure set_offset (
+	-- Sets the device numbering offset of a submodule instance.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		offset			: in et_libraries.type_device_name_index;
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		procedure query_submodules (
+		-- Locates the targeted assembly variant of the parent module.
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			use submodules;
+			use type_submodules;
+			submod_cursor : type_submodules.cursor;
+
+			procedure assign_offset (
+				submod_name	: in et_general.type_module_instance_name.bounded_string;
+				submodule	: in out type_submodule) is
+			begin
+				submodule.device_names_offset := offset;
+			end;
+			
+		begin -- query_submodules
+			if contains (module.submods, instance) then
+
+				submod_cursor := find (module.submods, instance); -- the submodule should be there
+
+				-- assign the given offset to the submodule
+				update_element (
+					container	=> module.submods,
+					position	=> submod_cursor,
+					process		=> assign_offset'access);
+				
+			else
+				submodule_not_found (instance);
+			end if;
+
+		end query_submodules;
+		
+	begin -- set_offset
+		log ("module " & to_string (module_name) &
+			" submodule instance " & enclose_in_quotes (to_string (instance)) &
+			" setting device name offset to" & et_libraries.to_string (offset),
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- Test whether the given parent module contains the given submodule instance (OSC1)
+		if exists (module_cursor, instance) then
+
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> query_submodules'access);
+
+		else
+			submodule_not_found (instance);
+		end if;
+		
+	end set_offset;
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

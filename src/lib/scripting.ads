@@ -105,7 +105,7 @@ package scripting is
 
 	type type_noun_schematic is (
 		DEVICE,
-		--DEVICE_NAME,
+		DEVICE_NAME_OFFSET,
 		--DEVICE_PARTCODE,
 		--DEVICE_PURPOSE,
 		--DEVICE_VALUE,
