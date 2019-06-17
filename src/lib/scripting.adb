@@ -938,16 +938,17 @@ package body scripting is
 
 						when SUBMODULE =>
 							case fields is
-								when 6 =>
+								when 7 =>
 									schematic_ops.mount_submodule
 										(
 										module_name		=> module,
-										instance		=> et_general.to_instance_name (f (5)), -- OSC1
-										variant_name	=> assembly_variants.to_variant (f (6)), -- low_cost
+										variant_parent	=> assembly_variants.to_variant (f (5)), -- low_cost
+										instance		=> et_general.to_instance_name (f (6)), -- OSC1
+										variant_submod	=> assembly_variants.to_variant (f (7)), -- fixed_frequency
 										log_threshold	=> log_threshold + 1);
 
-								when 7 .. count_type'last =>
-									command_too_long (6);
+								when 8 .. count_type'last =>
+									command_too_long (7);
 									
 								when others =>
 									command_incomplete;
@@ -1062,15 +1063,16 @@ package body scripting is
 
 						when SUBMODULE =>
 							case fields is
-								when 5 =>
+								when 6 =>
 									schematic_ops.remove_submodule
 										(
 										module_name		=> module,
-										instance		=> et_general.to_instance_name (f (5)), -- OSC1
+										variant_parent	=> assembly_variants.to_variant (f (5)),
+										instance		=> et_general.to_instance_name (f (6)), -- OSC1
 										log_threshold	=> log_threshold + 1);
 
-								when 6 .. count_type'last =>
-									command_too_long (5);
+								when 7 .. count_type'last =>
+									command_too_long (6);
 									
 								when others =>
 									command_incomplete;

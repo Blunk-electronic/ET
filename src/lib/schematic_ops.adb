@@ -9997,8 +9997,9 @@ package body schematic_ops is
 	procedure mount_submodule (
 	-- Sets the assembly variant of a submodule instance.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		variant_parent	: in assembly_variants.type_variant_name.bounded_string; -- low_cost								  
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant_submod	: in assembly_variants.type_variant_name.bounded_string; -- fixed_frequency
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -10007,8 +10008,9 @@ package body schematic_ops is
 
 	begin -- mount_submodule
 		log ("module " & to_string (module_name) &
+			 " variant " & enclose_in_quotes (to_variant (variant_parent)) &
 			 " submodule instance " & enclose_in_quotes (to_string (instance)) &
-			 " mounting variant " & enclose_in_quotes (to_variant (variant_name)),
+			 " mounting variant " & enclose_in_quotes (to_variant (variant_submod)),
 			log_threshold);
 
 		-- locate module
@@ -10020,6 +10022,7 @@ package body schematic_ops is
 	-- Removes the assembly variant of a submodule. This results in all devices
 	-- of the submodule being mounted.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		variant_parent	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level) is
 
@@ -10029,7 +10032,8 @@ package body schematic_ops is
 
 	begin -- remove_submodule
 		log ("module " & to_string (module_name) &
-			 " removing variant of submodule instance " & enclose_in_quotes (to_string (instance)),
+			" variant " & enclose_in_quotes (to_variant (variant_parent)) &
+			" removing variant of submodule instance " & enclose_in_quotes (to_string (instance)),
 			log_threshold);
 
 		-- locate module
