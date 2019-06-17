@@ -902,8 +902,6 @@ package body scripting is
 								
 								case fields is
 									when 8 =>
-										-- CS check length of value, partcode and purpose
-										
 										-- set value and partcode
 										schematic_ops.mount_device
 											(
@@ -937,6 +935,24 @@ package body scripting is
 								end case;
 
 							end; -- declare
+
+						when SUBMODULE =>
+							case fields is
+								when 6 =>
+									schematic_ops.mount_submodule
+										(
+										module_name		=> module,
+										instance		=> et_general.to_instance_name (f (5)), -- OSC1
+										variant_name	=> assembly_variants.to_variant (f (6)), -- low_cost
+										log_threshold	=> log_threshold + 1);
+
+								when 7 .. count_type'last =>
+									command_too_long (6);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -1044,6 +1060,23 @@ package body scripting is
 
 							end case;
 
+						when SUBMODULE =>
+							case fields is
+								when 5 =>
+									schematic_ops.remove_submodule
+										(
+										module_name		=> module,
+										instance		=> et_general.to_instance_name (f (5)), -- OSC1
+										log_threshold	=> log_threshold + 1);
+
+								when 6 .. count_type'last =>
+									command_too_long (5);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
+							
 						when others => invalid_noun (to_string (noun));
 					end case;
 					

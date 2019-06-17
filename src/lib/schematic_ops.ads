@@ -519,6 +519,21 @@ package schematic_ops is
 		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
 		log_threshold	: in type_log_level);
+
+	procedure mount_submodule (
+	-- Sets the assembly variant of a submodule instance.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		log_threshold	: in type_log_level);
+
+	procedure remove_submodule (
+	-- Removes the assembly variant of a submodule. This results in all devices
+	-- of the submodule being mounted.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		log_threshold	: in type_log_level);
+
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

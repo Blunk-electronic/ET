@@ -9994,6 +9994,49 @@ package body schematic_ops is
 		
 	end remove_device;
 
+	procedure mount_submodule (
+	-- Sets the assembly variant of a submodule instance.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use assembly_variants;
+
+	begin -- mount_submodule
+		log ("module " & to_string (module_name) &
+			 " submodule instance " & enclose_in_quotes (to_string (instance)) &
+			 " mounting variant " & enclose_in_quotes (to_variant (variant_name)),
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+	end mount_submodule;
+
+	procedure remove_submodule (
+	-- Removes the assembly variant of a submodule. This results in all devices
+	-- of the submodule being mounted.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use assembly_variants;
+
+	begin -- remove_submodule
+		log ("module " & to_string (module_name) &
+			 " removing variant of submodule instance " & enclose_in_quotes (to_string (instance)),
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+	end remove_submodule;
+	
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
