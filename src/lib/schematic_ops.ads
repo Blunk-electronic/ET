@@ -521,7 +521,8 @@ package schematic_ops is
 		log_threshold	: in type_log_level);
 
 	procedure mount_submodule (
-	-- Sets the assembly variant of a submodule instance.
+	-- Sets the assembly variant of a submodule instance. An already existing submodule
+	-- will be overwritten without warning.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_parent	: in assembly_variants.type_variant_name.bounded_string; -- low_cost								  
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1

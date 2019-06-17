@@ -97,7 +97,7 @@ package body schematic_ops is
 	end;
 
 	procedure submodule_not_found (name : in et_general.type_module_instance_name.bounded_string) is begin
-		log (message_error & "submodule " & enclose_in_quotes (et_general.to_string (name)) &
+		log (message_error & "submodule instance " & enclose_in_quotes (et_general.to_string (name)) &
 			 " not found !", console => true);
 		raise constraint_error;
 	end;
@@ -9623,7 +9623,7 @@ package body schematic_ops is
 			process		=> create'access);
 		
 	end create_assembly_variant;
-
+	
 	procedure delete_assembly_variant (
 	-- Deletes an assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
@@ -9942,8 +9942,8 @@ package body schematic_ops is
 				-- if not found.
 				cursor := find (variant.devices, device);
 
-				if cursor /= assembly_variants.type_devices.no_element then
-					delete (variant.devices, cursor);
+				if cursor /= assembly_variants.type_devices.no_element then  -- device in assembly variant
+					delete (variant.devices, cursor); -- delete device
 				else
 					log (message_error & "device " & to_string (device) &
 						" not found in assembly variant " &
@@ -9955,7 +9955,7 @@ package body schematic_ops is
 			end delete_device;
 			
 		begin -- remove
-			-- the variant must exists
+			-- the variant must exist
 			cursor := find (module.variants, variant_name);
 
 			if cursor /= type_variants.no_element then
@@ -9995,7 +9995,8 @@ package body schematic_ops is
 	end remove_device;
 
 	procedure mount_submodule (
-	-- Sets the assembly variant of a submodule instance.
+	-- Sets the assembly variant of a submodule instance. An already existing submodule
+	-- will be overwritten without warning.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_parent	: in assembly_variants.type_variant_name.bounded_string; -- low_cost								  
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
@@ -10006,6 +10007,55 @@ package body schematic_ops is
 
 		use assembly_variants;
 
+		procedure query_variants (
+		-- Locates the targeted assembly variant of the parent module.
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_variants;
+			cursor : type_variants.cursor;
+
+			procedure mount (
+				name		: in type_variant_name.bounded_string; -- low_cost (parent module)
+				variant		: in out type_variant) is
+				use assembly_variants.type_submodules;
+				cursor : type_submodules.cursor;
+			begin
+				-- Locate the submodule instance in the variant of the parent module.
+				-- If already there, delete it and insert it anew
+				-- as specified by the operator.
+				cursor := find (variant.submodules, instance);
+
+				if cursor /= type_submodules.no_element then -- submodule already in assembly variant
+					delete (variant.submodules, cursor); -- delete submodule instance
+				end if;
+
+				-- insert submodule instance anew with given submodule variant
+				insert (
+					container	=> variant.submodules,
+					key			=> instance, -- OSC1
+					new_item	=> (variant => variant_submod) -- fixed_frequency
+					);
+				
+			end mount;
+			
+		begin -- query_variants
+			-- the variant (low_cost) must exist in the parent module
+			cursor := find (module.variants, variant_parent);
+
+			if cursor /= type_variants.no_element then
+
+				-- Insert the submodule instance with the desired variant:
+				type_variants.update_element (
+					container	=> module.variants,
+					position	=> cursor,
+					process		=> mount'access);
+
+			else
+				assembly_variant_not_found (variant_parent);
+			end if;
+
+		end query_variants;
+		
 	begin -- mount_submodule
 		log ("module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_parent)) &
@@ -10016,6 +10066,28 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+		-- Test whether the given parent module contains the given submodule instance (OSC1)
+		if exists (module_cursor, instance) then
+
+			if exists (module_cursor, instance, variant_submod) then
+			
+				update_element (
+					container	=> modules,
+					position	=> module_cursor,
+					process		=> query_variants'access);
+			else
+				log (message_error & "submodule instance " &
+					 enclose_in_quotes (to_string (instance)) &
+					 " does not provide assembly variant " &
+					 enclose_in_quotes (to_variant (variant_submod)) & " !",
+					 console => true);
+				raise constraint_error;
+			end if;
+
+		else
+			submodule_not_found (instance);
+		end if;
+		
 	end mount_submodule;
 
 	procedure remove_submodule (
@@ -10030,6 +10102,52 @@ package body schematic_ops is
 
 		use assembly_variants;
 
+		procedure query_variants (
+		-- Locates the targeted assembly variant of the parent module.
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_variants;
+			cursor : type_variants.cursor;
+
+			procedure remove (
+				name		: in type_variant_name.bounded_string; -- low_cost (parent module)
+				variant		: in out type_variant) is
+				use assembly_variants.type_submodules;
+				cursor : type_submodules.cursor;
+			begin
+				-- Locate the submodule instance in the variant of the parent module.
+				-- Issue error message if not found.
+				cursor := find (variant.submodules, instance);
+
+				if cursor /= type_submodules.no_element then -- submodule in assembly variant
+					delete (variant.submodules, cursor); -- delete submodule instance
+				else
+					log (message_error & "submodule " & to_string (instance) &
+						" not found in assembly variant " &
+						enclose_in_quotes (to_variant (variant_parent)) & " !",
+						 console => true);
+					raise constraint_error;
+				end if;
+			end remove;
+			
+		begin -- query_variants
+			-- the variant (low_cost) must exist in the parent module
+			cursor := find (module.variants, variant_parent);
+
+			if cursor /= type_variants.no_element then
+
+				-- Remove the submodule instance
+				type_variants.update_element (
+					container	=> module.variants,
+					position	=> cursor,
+					process		=> remove'access);
+
+			else
+				assembly_variant_not_found (variant_parent);
+			end if;
+
+		end query_variants;
+		
 	begin -- remove_submodule
 		log ("module " & to_string (module_name) &
 			" variant " & enclose_in_quotes (to_variant (variant_parent)) &
@@ -10039,6 +10157,18 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+		-- Test whether the given parent module contains the given submodule instance (OSC1)
+		if exists (module_cursor, instance) then
+
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> query_variants'access);
+
+		else
+			submodule_not_found (instance);
+		end if;
+		
 	end remove_submodule;
 	
 	

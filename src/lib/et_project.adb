@@ -13631,16 +13631,39 @@ package body et_project is
 		end query_submodules;
 		
 	begin -- exists
-
 		-- search in the parent module for the given submodule instance
 		type_modules.query_element (
 			position	=> module,
 			process		=> query_submodules'access);
 
 		return variant_found;
-
 	end exists;
 
+	function exists (
+	-- Returns true if the given module provides the given assembly variant.
+		module		: in type_modules.cursor;
+		variant		: in assembly_variants.type_variant_name.bounded_string) -- low_cost
+		return boolean is
+
+		use assembly_variants;
+		use type_variants;
+
+		result : boolean := false; -- to be returned
+
+		procedure query_variants (
+			module_name	: in type_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+		begin
+			result := contains (module.variants, variant);
+		end;
+		
+	begin -- exists
+		type_modules.query_element (
+			position	=> module,
+			process		=> query_variants'access);
+
+		return result;
+	end exists;
 
 
 
