@@ -10348,6 +10348,27 @@ package body schematic_ops is
 		
 	end set_offset;
 	
+	procedure renumber_devices (
+	-- Renumbers devices according to the sheet number.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		step_width		: in et_libraries.type_device_name_index;
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+	begin -- renumber_devices
+		log ("module " & to_string (module_name) &
+			" renumbering devices." &
+			" step width per sheet" & et_libraries.to_string (step_width),
+			log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		
+	end renumber_devices;
+
+
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
 	-- Tests:

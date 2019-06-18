@@ -550,6 +550,12 @@ package schematic_ops is
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		offset			: in et_libraries.type_device_name_index;
 		log_threshold	: in type_log_level);
+
+	procedure renumber_devices (
+	-- Renumbers devices according to the sheet number.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		step_width		: in et_libraries.type_device_name_index;
+		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

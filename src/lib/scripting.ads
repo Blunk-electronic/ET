@@ -94,6 +94,7 @@ package scripting is
 		PLACE,
 		REMOVE,
 		RENAME,
+		RENUMBER,
 		ROTATE,
 		SET,
 		UNMOUNT,
@@ -105,6 +106,7 @@ package scripting is
 
 	type type_noun_schematic is (
 		DEVICE,
+		DEVICES,
 		DEVICE_NAME_OFFSET,
 		--DEVICE_PARTCODE,
 		--DEVICE_PURPOSE,

@@ -1171,6 +1171,29 @@ package body scripting is
 
 						when others => invalid_noun (to_string (noun));
 					end case;
+
+				when RENUMBER =>
+					case noun is
+						when DEVICES =>
+							case fields is
+								when 5 =>
+									schematic_ops.renumber_devices
+										(
+										module_name 	=> module,
+										step_width		=> to_device_name_index (f (5)), -- 100
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 6 .. count_type'last =>
+									command_too_long (5);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
 					
 				when ROTATE =>
 					case noun is
