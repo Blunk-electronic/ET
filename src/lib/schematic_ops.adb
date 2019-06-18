@@ -9434,8 +9434,8 @@ package body schematic_ops is
 		
 	begin -- copy_submodule
 		log ("module " & to_string (module_name) &
-			 " copying submodule instance " & to_string (instance_origin) &
-			 " to instance " & to_string (instance_new) &
+			 " copying submodule instance " & enclose_in_quotes (to_string (instance_origin)) &
+			 " to instance " & enclose_in_quotes (to_string (instance_new)) &
 			" at" & et_coordinates.to_string (position => destination), log_threshold);
 
 		-- locate module
@@ -9448,6 +9448,118 @@ package body schematic_ops is
 		
 	end copy_submodule;
 
+	procedure rename_submodule (
+	-- Renames a submodule instance.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance_old	: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		instance_new	: in et_general.type_module_instance_name.bounded_string; -- CLOCK_GENERATOR
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module being modified
+		
+		use submodules;
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use type_submodules;
+			submod_cursor : type_submodules.cursor;
+			submodule_old : type_submodule;
+
+			-- the submodule ports to be inserted in the nets
+			ports : type_submodule_ports.map; -- port names and relative x/y positions
+
+			procedure insert_ports is 
+			-- Inserts the ports into the nets. The sheet number is taken
+			-- from the submodule position.
+				use type_submodule_ports;
+				port_cursor : type_submodule_ports.cursor := submodule_old.ports.first;
+				position : et_coordinates.type_coordinates;
+			begin
+				while port_cursor /= type_submodule_ports.no_element loop
+
+					-- build the port position (sheet/x/y)
+					position := to_coordinates 
+							(
+							point	=> element (port_cursor).position,
+							sheet	=> et_coordinates.sheet (submodule_old.position)
+							);
+
+					-- insert the port
+					insert_port (
+						module			=> module_cursor,
+						instance		=> instance_new, -- CLOCK_GENERATOR
+						port			=> key (port_cursor), -- port name like CE
+						position		=> position, -- sheet/x/y
+						log_threshold	=> log_threshold + 1);
+					
+					next (port_cursor);
+				end loop;
+			end insert_ports;
+			
+		begin -- query_submodules
+			-- locate the submodule to be renamed
+			if contains (module.submods, instance_old) then
+				submod_cursor := find (module.submods, instance_old); -- the submodule should be there
+
+				-- take a copy of the old submodule
+				submodule_old := element (submod_cursor);
+
+				-- insert the old module with the new name in the module list
+				insert (
+					container	=> module.submods,
+					key			=> instance_new,
+					new_item	=> submodule_old);
+
+				-- delete all references to the old submodule in the nets
+				delete_ports (
+					module_cursor	=> module_cursor,
+					instance		=> instance_old,
+					position		=> submodule_old.position,
+					log_threshold	=> log_threshold + 1);
+
+				-- calculate the absolute port positions:
+				submodules.move_ports (submodule_old.ports, submodule_old.position);
+				
+				-- submodule_old.ports provides port names and absolute x/y positions.
+				-- The new ports will be inserted in the nets now:
+				insert_ports;
+
+				-- delete the old submodule in the module list
+				delete (
+					container	=> module.submods,
+					position	=> submod_cursor);
+
+			else
+				submodule_not_found (instance_old);
+			end if;
+		end query_submodules;
+		
+	begin -- rename_submodule
+		log ("module " & to_string (module_name) &
+			 " renaming submodule instance " & enclose_in_quotes (to_string (instance_old)) &
+			 " to " & to_string (instance_new),
+			 log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- The new name must not be in use already:
+		if exists (module_cursor, instance_new) then
+			log (message_error & "submodule instance " & enclose_in_quotes (to_string (instance_new)) &
+				 " already exists !", console => true);
+			raise constraint_error;
+		else
+			
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> query_submodules'access);
+
+		end if;
+		
+	end rename_submodule;
+	
 	procedure set_submodule_file (
 	-- Sets the file name of a submodule instance.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)

@@ -468,6 +468,13 @@ package schematic_ops is
 		destination		: in et_coordinates.type_coordinates; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+	procedure rename_submodule (
+	-- Renames a submodule instance.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance_old	: in et_general.type_module_instance_name.bounded_string; -- OSC1
+		instance_new	: in et_general.type_module_instance_name.bounded_string; -- CLOCK_GENERATOR
+		log_threshold	: in type_log_level);
+	
 	procedure set_submodule_file (
 	-- Sets the file name of a submodule instance.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)

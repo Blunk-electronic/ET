@@ -1093,6 +1093,24 @@ package body scripting is
 								log_threshold		=> log_threshold + 1
 								);
 
+						when SUBMODULE =>
+							case fields is
+								when 6 =>
+									schematic_ops.rename_submodule
+										(
+										module_name		=> module,
+										instance_old	=> et_general.to_instance_name (f (5)), -- OSC1
+										instance_new	=> et_general.to_instance_name (f (6)), -- OSC2
+										log_threshold	=> log_threshold + 1);
+
+								when 7 .. count_type'last =>
+									command_too_long (6);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
+							
 						when NET =>
 							case fields is
 
@@ -1231,8 +1249,8 @@ package body scripting is
 								when 6 =>
 									schematic_ops.set_offset (
 										module_name 	=> module,
-										instance		=> et_general.to_instance_name (f (5)),
-										offset			=> et_libraries.to_device_name_index (f (6)),
+										instance		=> et_general.to_instance_name (f (5)), -- OSC1
+										offset			=> et_libraries.to_device_name_index (f (6)), -- 100
 										log_threshold	=> log_threshold + 1
 										);
 
