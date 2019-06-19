@@ -388,6 +388,39 @@ package body et_coordinates is
 		return type_sheet_relative'value (sheet);
 	end;
 
+	function "<" (left, right : in type_coordinates) return boolean is
+	-- Returns true if left comes before right.
+		-- Returns true if left equals right.
+		result : boolean := false;
+	begin
+		if left.sheet < right.sheet then
+			result := true;
+		elsif left.sheet > right.sheet then
+			result := false;
+		else
+			-- sheet numbers are equal -> compare x
+			
+			if left.x < right.x then
+				result := true;
+			elsif left.x > right.x then
+				result := false;
+			else 
+				-- x positions equal -> compare y
+				
+				if left.y < right.y then
+					result := true;
+				elsif left.y > right.y then
+					result := false;
+				else
+					-- y positions equal
+					result := true;
+				end if;
+
+			end if;
+		end if;
+			
+		return result;
+	end;
 	
 	procedure move (
 		position	: in out type_coordinates'class;

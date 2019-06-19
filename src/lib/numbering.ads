@@ -1,0 +1,89 @@
+------------------------------------------------------------------------------
+--                                                                          --
+--                             SYSTEM ET                                    --
+--                                                                          --
+--                             NUMBERING                                    --
+--                                                                          --
+--                               S p e c                                    --
+--                                                                          --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--                                                                          --
+--    This program is free software: you can redistribute it and/or modify  --
+--    it under the terms of the GNU General Public License as published by  --
+--    the Free Software Foundation, either version 3 of the License, or     --
+--    (at your option) any later version.                                   --
+--                                                                          --
+--    This program is distributed in the hope that it will be useful,       --
+--    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
+--    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
+--    GNU General Public License for more details.                          --
+--                                                                          --
+--    You should have received a copy of the GNU General Public License     --
+--    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+------------------------------------------------------------------------------
+
+--   For correct displaying set tab width in your editor to 4.
+
+--   The two letters "CS" indicate a "construction side" where things are not
+--   finished yet or intended for the future.
+
+--   Please send your questions and comments to:
+--
+--   info@blunk-electronic.de
+--   or visit <http://www.blunk-electronic.de> for more contact data
+--
+--   history of changes:
+--
+--   ToDo: 
+--		1. Objects like net segments, net labels, notes ... 
+--		   should be collected in ordered sets instead of doubly_linked_lists
+--			- the benefits: placing identical objects at the same position would be impossible
+--			- the cons: ordering subprograms required
+--		2. Assembly variants
+--		3. device accessories
+
+with ada.text_io;				use ada.text_io;
+with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.bounded;       use ada.strings.bounded;
+with ada.containers;            use ada.containers;
+-- with ada.containers.vectors;
+-- with ada.containers.doubly_linked_lists;
+-- with ada.containers.indefinite_doubly_linked_lists;
+with ada.containers.ordered_maps;
+-- with ada.containers.indefinite_ordered_maps;
+-- with ada.containers.ordered_sets;
+
+with et_general;				use et_general;
+
+with et_coordinates;
+with et_libraries;				use et_libraries;
+-- with assembly_variants;
+with et_string_processing;		use et_string_processing;
+-- with et_pcb;
+-- with et_pcb_coordinates;
+-- with submodules;
+with et_project;
+
+package numbering is
+
+	type type_device is record
+		name	: type_device_name;
+		unit	: type_unit_name.bounded_string;
+	end record;
+
+
+	package type_devices is new ordered_maps (
+		key_type		=> et_coordinates.type_coordinates,
+		"<"				=> et_coordinates."<",
+		element_type	=> type_device);
+		
+	function sort_by_coordinates (
+		module_cursor 	: in et_project.type_modules.cursor;
+		log_threshold	: in type_log_level)
+		return type_devices.map;
+
+	
+		
+end numbering;
+
+-- Soli Deo Gloria

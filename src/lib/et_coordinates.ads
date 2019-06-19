@@ -202,6 +202,10 @@ package et_coordinates is
 
 	type type_coordinates is new type_point with private;
 	type type_coordinates_relative is new type_point with private;
+
+	function "<" (left, right : in type_coordinates) return boolean;
+	-- Returns true if left comes before right.
+	-- Returns true if left equals right.	
 	
 	procedure move (
 		position	: in out type_coordinates'class;
