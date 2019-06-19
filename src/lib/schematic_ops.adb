@@ -10357,17 +10357,64 @@ package body schematic_ops is
 
 		module_cursor : type_modules.cursor; -- points to the module
 
+		use conventions;
 		use numbering;
 		devices : numbering.type_devices.map;
 
--- 		procedure renumber (
--- 			module_cursor 	: in et_project.type_modules.cursor;
--- 			devices			: in type_devices.map;
--- 			log_threshold	: in type_log_level) is
--- 		begin
--- 			log ("renumbering ...", log_threshold);
--- 
--- 		end renumber;
+		procedure renumber (cat : in type_device_category) is
+			use numbering.type_devices;
+			cursor : numbering.type_devices.cursor := devices.first;
+			name : type_device_name; -- R1
+			use et_coordinates;
+			sheet_before, sheet_now : type_sheet := type_sheet'first;
+
+			use et_libraries;
+			index_on_sheet : type_device_name_index := type_device_name_index'first;
+			device_index : type_device_name_index;
+
+			procedure update_index is begin
+			-- Detects when the sheet number changes. In this case
+			-- resets the index_on_sheet so that the indexing starts anew.
+				sheet_now := sheet (key (cursor));
+
+				if sheet_now = sheet_before then -- no change
+					index_on_sheet := index_on_sheet + 1;
+				else -- sheet has changed
+					sheet_before := sheet_now;
+					index_on_sheet := type_device_name_index'first + 1;
+				end if;
+			end update_index;
+		
+		begin -- renumber
+			while cursor /= numbering.type_devices.no_element loop
+
+				name := element (cursor).name; -- R1
+				
+				if category (name) = cat then
+
+					update_index;
+					
+					-- step width times sheet number: like 100 * 4 = 400
+					device_index := step_width * type_device_name_index (sheet_now);
+
+					-- 400 plus index on sheet: like 407
+					device_index := device_index + index_on_sheet;
+					
+					rename_device (
+						module_name			=> module_name,
+						device_name_before	=> name,
+						device_name_after	=> to_device_name (
+										prefix	=> prefix (name), -- R, C, IC
+										index 	=> device_index -- 407
+										),
+						log_threshold		=> log_threshold + 2
+					);
+				end if;
+				
+				next (cursor);
+			end loop;
+
+		end renumber;
 
 		
 	begin -- renumber_devices
@@ -10376,14 +10423,27 @@ package body schematic_ops is
 			" step width per sheet" & et_libraries.to_string (step_width),
 			log_threshold);
 
+		log_indentation_up;
+		
 		-- locate module
 		module_cursor := locate_module (module_name);
 
-		devices := numbering.sort_by_coordinates (module_cursor, log_threshold + 1);
+		devices := numbering.sort_by_coordinates (module_cursor, log_threshold + 2);
 
---		for cat in 
+		for cat in type_device_category'pos (type_device_category'first) .. 
+			type_device_category'pos (type_device_category'last) loop
+
+			log ("category" & to_string (type_device_category'val (cat)), log_threshold + 1);
+
+			log_indentation_up;
+			renumber (type_device_category'val (cat));
+
+			log_indentation_down;
+		end loop;
+
 -- 		renumber (module_cursor, devices, log_threshold + 1);
-		
+
+		log_indentation_down;
 	end renumber_devices;
 
 

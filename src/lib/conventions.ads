@@ -183,11 +183,11 @@ package conventions is
 	function to_category (category : in string) return type_device_category;
 	-- Converts a string to type_device_category.
 	
-	-- component prefixes and their category are stored in a map:
+	-- Device prefixes and their category are stored in a map:
 	package type_component_prefixes is new ordered_maps (
-		key_type => et_libraries.type_device_name_prefix.bounded_string, -- IC
-		element_type => type_device_category, -- INTEGRATED_CIRCUIT
-		"<" => et_libraries.type_device_name_prefix."<");
+		key_type 		=> et_libraries.type_device_name_prefix.bounded_string, -- IC
+		element_type 	=> type_device_category, -- INTEGRATED_CIRCUIT
+		"<" 			=> et_libraries.type_device_name_prefix."<");
 
 	-- After reading the conventions, we store the device prefixes for the design here:
 	component_prefixes : type_component_prefixes.map;
