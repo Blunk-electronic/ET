@@ -765,18 +765,18 @@ package body conventions is
 -- 		log_indentation_down;
 -- 	end validate_module_interconnections;
 	
-	function to_string (cat : in type_component_category) return string is
+	function to_string (cat : in type_device_category) return string is
 	-- returns the given component category as string
 	begin
-		return " " & type_component_category'image (cat);
+		return " " & type_device_category'image (cat);
 	end to_string;
 
-	function to_category (category : in string) return type_component_category is
-	-- Converts a string to type_component_category.
+	function to_category (category : in string) return type_device_category is
+	-- Converts a string to type_device_category.
 		use et_string_processing;
-		category_out : type_component_category;
+		category_out : type_device_category;
 	begin
-		category_out := type_component_category'value (category);
+		category_out := type_device_category'value (category);
 		return category_out;
 
 		exception
@@ -786,10 +786,10 @@ package body conventions is
 					 console => true);
 
 				log ("supported categories are:");
-				for cat in type_component_category'pos (type_component_category'first) .. 
-					type_component_category'pos (type_component_category'last) loop
+				for cat in type_device_category'pos (type_device_category'first) .. 
+					type_device_category'pos (type_device_category'last) loop
 
-					log ("- " & to_string (type_component_category'val (cat)));
+					log ("- " & to_string (type_device_category'val (cat)));
 				end loop;
 				
 				raise constraint_error;
@@ -807,7 +807,7 @@ package body conventions is
 	end component_prefixes_specified;
 	
 	function category (prefix : in et_libraries.type_device_name_prefix.bounded_string) return
-		type_component_category is
+		type_device_category is
 	-- Returns the category of the given component prefix. If no category could be
 	-- found, returns category UNKNOWN.
 		use et_libraries.type_device_name_prefix;
@@ -833,7 +833,7 @@ package body conventions is
 
 	
 	function category (reference : in et_libraries.type_device_name) return
-		type_component_category is
+		type_device_category is
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
 		use et_libraries.type_device_name_prefix;
@@ -860,7 +860,7 @@ package body conventions is
 -- 	function ports_in_net (
 -- 		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
 -- 		net				: in et_schematic.type_net_name.bounded_string;			-- motor_on_off
--- 		category		: in type_component_category;				-- netchanger, connector
+-- 		category		: in type_device_category;				-- netchanger, connector
 -- 		log_threshold	: in et_string_processing.type_log_level)
 -- 		return et_kicad.type_ports_with_reference.set is
 -- 	-- Returns a set of component ports that are connected with the given net.
@@ -1891,7 +1891,7 @@ package body conventions is
 	-- Returns YES is given prefix requires operator interaction.
 	-- Returns NO if prefixs does not require interaction or if no prefixes
 	-- specified at all (in configuration file section COMPONENT_PREFIXES).
-		cat : type_component_category;
+		cat : type_device_category;
 		use type_categories_with_operator_interacton;
 		cat_cursor : type_categories_with_operator_interacton.cursor;
 	begin
@@ -2649,7 +2649,7 @@ package body conventions is
 			end reduced_check_coverage;
 			
 			prefix 		: type_device_name_prefix.bounded_string;
-			cat 		: type_component_category;
+			cat 		: type_device_category;
 			
 			abbrevation	: type_unit_abbrevation.bounded_string;
 			unit		: type_unit_of_measurement;
@@ -2986,7 +2986,7 @@ package body conventions is
 		use et_libraries;
 		use et_string_processing;
 
-		component_category : type_component_category;
+		component_category : type_device_category;
 		value_length : natural := type_value.length (value);
 
 		procedure value_invalid is begin

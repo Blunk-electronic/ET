@@ -123,7 +123,7 @@ package conventions is
 -- 
 -- 	module_interconnections : type_module_interconnections.list;
 
-	type type_component_category is (
+	type type_device_category is (
 		ANTENNA,
 		BATTERY,
 		BUZZER,
@@ -177,16 +177,16 @@ package conventions is
 -- 	-- Tests if module interconnections at net level make sense.
 -- 	-- NOTE: call AFTER modules have been imported !
 	
-	function to_string (cat : in type_component_category) return string;
+	function to_string (cat : in type_device_category) return string;
 	-- returns the given component category as string
 
-	function to_category (category : in string) return type_component_category;
-	-- Converts a string to type_component_category.
+	function to_category (category : in string) return type_device_category;
+	-- Converts a string to type_device_category.
 	
 	-- component prefixes and their category are stored in a map:
 	package type_component_prefixes is new ordered_maps (
 		key_type => et_libraries.type_device_name_prefix.bounded_string, -- IC
-		element_type => type_component_category, -- INTEGRATED_CIRCUIT
+		element_type => type_device_category, -- INTEGRATED_CIRCUIT
 		"<" => et_libraries.type_device_name_prefix."<");
 
 	-- After reading the conventions, we store the device prefixes for the design here:
@@ -196,19 +196,19 @@ package conventions is
 	-- Returns true if any component prefixes are specified via conventions file.
 	
 	function category (prefix : in et_libraries.type_device_name_prefix.bounded_string) return
-		type_component_category;
+		type_device_category;
 	-- Returns the category of the given component prefix. If no category could be
 	-- found, returns category UNKNOWN.
 	
 	function category (reference : in et_libraries.type_device_name) return
-		type_component_category;
+		type_device_category;
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
 
 -- 	function ports_in_net (
 -- 		module 			: in et_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
 -- 		net				: in et_schematic.type_net_name.bounded_string;			-- motor_on_off
--- 		category		: in type_component_category;				-- netchanger, connector
+-- 		category		: in type_device_category;				-- netchanger, connector
 -- 		log_threshold	: in et_string_processing.type_log_level)
 -- 		return et_kicad.type_ports_with_reference.set;
 -- 	-- Returns a set of component ports that are connected with the given net.
@@ -332,7 +332,7 @@ package conventions is
 	
 	-- Component categories that requires operator interaction are stored in a set.
 	package type_categories_with_operator_interacton is new ordered_sets (
-		element_type => type_component_category);
+		element_type => type_device_category);
 	-- After reading the conventions, we store them here:
 	component_categories_with_operator_interaction : type_categories_with_operator_interacton.set;
 
