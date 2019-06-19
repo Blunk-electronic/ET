@@ -205,7 +205,7 @@ package et_coordinates is
 
 	function "<" (left, right : in type_coordinates) return boolean;
 	-- Returns true if left comes before right.
-	-- Returns true if left equals right.	
+	-- Returns false if left equals right.	
 	
 	procedure move (
 		position	: in out type_coordinates'class;

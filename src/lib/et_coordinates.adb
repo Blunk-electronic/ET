@@ -390,7 +390,7 @@ package body et_coordinates is
 
 	function "<" (left, right : in type_coordinates) return boolean is
 	-- Returns true if left comes before right.
-		-- Returns true if left equals right.
+	-- Returns false if left equals right.
 		result : boolean := false;
 	begin
 		if left.sheet < right.sheet then
@@ -413,7 +413,7 @@ package body et_coordinates is
 					result := false;
 				else
 					-- y positions equal
-					result := true;
+					result := false;
 				end if;
 
 			end if;

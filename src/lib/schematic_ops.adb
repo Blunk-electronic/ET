@@ -60,6 +60,7 @@ with et_pcb;
 with et_pcb_coordinates;
 with et_project;				use et_project;
 with submodules;
+with numbering;
 with conventions;
 with et_geometry;
 
@@ -10356,6 +10357,19 @@ package body schematic_ops is
 
 		module_cursor : type_modules.cursor; -- points to the module
 
+		use numbering;
+		devices : numbering.type_devices.map;
+
+-- 		procedure renumber (
+-- 			module_cursor 	: in et_project.type_modules.cursor;
+-- 			devices			: in type_devices.map;
+-- 			log_threshold	: in type_log_level) is
+-- 		begin
+-- 			log ("renumbering ...", log_threshold);
+-- 
+-- 		end renumber;
+
+		
 	begin -- renumber_devices
 		log ("module " & to_string (module_name) &
 			" renumbering devices." &
@@ -10365,6 +10379,10 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+		devices := numbering.sort_by_coordinates (module_cursor, log_threshold + 1);
+
+--		for cat in 
+-- 		renumber (module_cursor, devices, log_threshold + 1);
 		
 	end renumber_devices;
 
@@ -10382,7 +10400,7 @@ package body schematic_ops is
 	-- 7. CS: devices with empty values
 	-- 8. CS: interactive devices with empty purpose
 	-- 9. CS: check partcode (conventions.validate_partcode)
-	-- 10. CS: units sitting on to of each other (same origin position)
+	-- 10. units sitting on to of each other (same origin position)
 	-- 11. CS: warning (or error ?) if any ports sit on top of each other. This would make the movable_tests obsolete.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level) is
@@ -10629,11 +10647,16 @@ package body schematic_ops is
 		
 		-- locate module
 		module_cursor := locate_module (module_name);
-		
+
+		-- check nets
 		query_element (
 			position	=> module_cursor,
 			process		=> query_nets'access);
 
+		-- check unit positions (units sitting on top of each other)
+		if not numbering.unit_positions_valid (module_cursor, log_threshold + 1) then
+			error;
+		end if;
 
 		if errors > 0 then
 			log (message_warning & "integrity check found errors !");

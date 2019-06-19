@@ -79,15 +79,18 @@ package body numbering is
 
 				procedure sort (unit_cursor : in et_schematic.type_units.cursor) is 
 					unit_name : type_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
+					unit_position : et_coordinates.type_coordinates := element (unit_cursor).position;
 					inserted : boolean := false;
 					cursor_sort : type_devices.cursor;
 				begin -- sort
-					log ("unit " & to_string (unit_name), log_threshold + 2);
+					log ("unit " & to_string (unit_name) &
+						" at " & to_string (position => unit_position),
+						 log_threshold + 2);
 					
 					numbering.type_devices.insert 
 						(
 						container	=> devices,
-						key			=> element (unit_cursor).position,
+						key			=> unit_position, -- sheet/x/y
 						inserted	=> inserted,
 						position	=> cursor_sort,
 						new_item	=> (
@@ -99,6 +102,7 @@ package body numbering is
 					if not inserted then
 						log (message_error & "device " & to_string (device_name) &
 							 " unit " & to_string (unit_name) &
+							 " at " & to_string (position => unit_position) &
 							 " sits on top of another unit !",
 							 console => true);
 						raise constraint_error;
@@ -127,7 +131,7 @@ package body numbering is
 		end query_devices;
 
 	begin -- sort_by_coordinates
-		log ("sorting devices by schematic coordinates ...", log_threshold);
+		log ("sorting devices/units by schematic coordinates ...", log_threshold);
 
 		log_indentation_up;
 		
@@ -140,6 +144,25 @@ package body numbering is
 		
 		return devices;
 	end sort_by_coordinates;
+
+	function unit_positions_valid (
+	-- Returns true if no unit sits on top of another.
+		module_cursor 	: in et_project.type_modules.cursor;
+		log_threshold	: in type_log_level)
+		return boolean is
+		devices : type_devices.map;
+	begin
+		devices := sort_by_coordinates (module_cursor, log_threshold);
+		-- If a unit sits on top of another unit, sort_by_coordinates throws a
+		-- constraint_error which will be catched here.
+
+		return true;
+		
+		exception when event: others => 
+			return false;
+		
+	end unit_positions_valid;
+
 	
 end numbering;
 	

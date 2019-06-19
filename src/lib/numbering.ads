@@ -82,8 +82,17 @@ package numbering is
 		log_threshold	: in type_log_level)
 		return type_devices.map;
 
+	function unit_positions_valid (
+	-- Returns true if no unit sits on top of another.
+		module_cursor 	: in et_project.type_modules.cursor;
+		log_threshold	: in type_log_level)
+		return boolean;
 	
-		
+-- 	procedure renumber_devices (
+-- 		module_cursor 	: in et_project.type_modules.cursor;
+-- 		devices			: in type_devices.map;
+-- 		log_threshold	: in type_log_level);
+	
 end numbering;
 
 -- Soli Deo Gloria
