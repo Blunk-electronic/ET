@@ -10348,6 +10348,90 @@ package body schematic_ops is
 		end if;
 		
 	end set_offset;
+
+	function rename_device (
+	-- Renames the given device. Returns true if device has been renamed.
+	-- Assumes that the device with name device_name_before exists.
+	-- Does not perform any conformity checks on given device names.
+		module_cursor		: in type_modules.cursor; -- the cursor to the module
+		device_name_before	: in type_device_name; -- IC1
+		device_name_after	: in type_device_name; -- IC101
+		log_threshold		: in type_log_level) 
+		return boolean is
+
+		result : boolean := false;
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+
+			device_cursor_before : et_schematic.type_devices.cursor;
+			device_cursor_after  : et_schematic.type_devices.cursor;
+			inserted : boolean;
+
+			-- temporarily storage of unit coordinates:
+			position_of_units : type_unit_positions.map;
+
+		begin -- query_devices
+			-- locate the device by the old name
+			device_cursor_before := find (module.devices, device_name_before); -- IC1
+
+			-- copy elements and properties of the old device to a new one:
+			et_schematic.type_devices.insert (
+				container	=> module.devices,
+				key			=> device_name_after, -- IC23
+				new_item	=> element (device_cursor_before), -- all elements and properties of IC1
+				inserted	=> inserted,
+				position	=> device_cursor_after);
+
+			if inserted then
+
+				-- Before deleting the old device, the coordinates of the
+				-- units must be fetched. These coordinates will later assist
+				-- in renaming the port names in connected net segments.
+				position_of_units := positions_of_units (device_cursor_before);
+				
+				-- delete the old device
+				et_schematic.type_devices.delete (
+					container	=> module.devices,
+					position	=> device_cursor_before);
+
+				-- rename all ports in module.nets
+				rename_ports (
+					module			=> module_cursor,
+					device_before	=> device_name_before,
+					device_after	=> device_name_after,
+					sheets			=> position_of_units, -- the sheets to look at
+					log_threshold	=> log_threshold + 1);
+
+				result := true; -- successful renaming
+			else
+				log ("device name " & to_string (device_name_after) & 
+					" already used -> skipped", log_threshold + 1);
+			end if;
+		end query_devices;
+
+	begin -- rename_device
+		log ("renaming " & to_string (device_name_before) & " to " & 
+			to_string (device_name_after),
+			log_threshold);
+
+		log_indentation_up;
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+		log_indentation_down;
+
+		return result;
+
+		exception when event: others =>
+			return false;
+
+	end rename_device;
 	
 	procedure renumber_devices (
 	-- Renumbers devices according to the sheet number.
@@ -10362,6 +10446,7 @@ package body schematic_ops is
 		devices : numbering.type_devices.map;
 
 		procedure renumber (cat : in type_device_category) is
+		-- Renumbers devices of given category.
 			use numbering.type_devices;
 			cursor : numbering.type_devices.cursor := devices.first;
 			name_before, name_after : type_device_name; -- R1
@@ -10407,12 +10492,21 @@ package body schematic_ops is
 
 					-- do the renaming if the new name differs from the old name:
 					if name_after /= name_before then
-						
-						rename_device (
-							module_name			=> module_name,
+
+						if rename_device (
+							module_cursor		=> module_cursor,
 							device_name_before	=> name_before, -- R1
 							device_name_after	=> name_after, -- R407
-							log_threshold		=> log_threshold + 2);
+							log_threshold		=> log_threshold + 2) then
+
+							null;
+						end if;
+						
+-- 						rename_device (
+-- 							module_name			=> module_name,
+-- 							device_name_before	=> name_before, -- R1
+-- 							device_name_after	=> name_after, -- R407
+-- 							log_threshold		=> log_threshold + 2);
 						
 					end if;
 				end if;
