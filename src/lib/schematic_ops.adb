@@ -10364,7 +10364,7 @@ package body schematic_ops is
 		procedure renumber (cat : in type_device_category) is
 			use numbering.type_devices;
 			cursor : numbering.type_devices.cursor := devices.first;
-			name : type_device_name; -- R1
+			name_before, name_after : type_device_name; -- R1
 			use et_coordinates;
 			sheet_before, sheet_now : type_sheet := type_sheet'first;
 
@@ -10388,9 +10388,9 @@ package body schematic_ops is
 		begin -- renumber
 			while cursor /= numbering.type_devices.no_element loop
 
-				name := element (cursor).name; -- R1
+				name_before := element (cursor).name; -- R1
 				
-				if category (name) = cat then
+				if category (name_before) = cat then
 
 					update_index;
 					
@@ -10399,16 +10399,22 @@ package body schematic_ops is
 
 					-- 400 plus index on sheet: like 407
 					device_index := device_index + index_on_sheet;
-					
-					rename_device (
-						module_name			=> module_name,
-						device_name_before	=> name,
-						device_name_after	=> to_device_name (
-										prefix	=> prefix (name), -- R, C, IC
-										index 	=> device_index -- 407
-										),
-						log_threshold		=> log_threshold + 2
-					);
+
+					-- build the new device name
+					name_after := to_device_name (
+								prefix	=> prefix (name_before), -- R, C, IC
+								index 	=> device_index); -- 407
+
+					-- do the renaming if the new name differs from the old name:
+					if name_after /= name_before then
+						
+						rename_device (
+							module_name			=> module_name,
+							device_name_before	=> name_before, -- R1
+							device_name_after	=> name_after, -- R407
+							log_threshold		=> log_threshold + 2);
+						
+					end if;
 				end if;
 				
 				next (cursor);
