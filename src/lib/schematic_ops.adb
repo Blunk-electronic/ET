@@ -10443,10 +10443,18 @@ package body schematic_ops is
 
 		use conventions;
 		use numbering;
+
+		-- The list of devices sorted by their coordinates.
+		-- By their order in this list the devices will be renumbered.
 		devices : numbering.type_devices.map;
 
-		procedure renumber (cat : in type_device_category) is
-		-- Renumbers devices of given category.
+		function renumber (cat : in type_device_category) return boolean is
+		-- Renumbers devices of given category. Returns true if all devices
+		-- have been renamed.
+		-- Removes every renamed device from the device list so that the second
+		-- run of this function does not try to renumber them again.
+			result : boolean := true;
+			
 			use numbering.type_devices;
 			cursor : numbering.type_devices.cursor := devices.first;
 			name_before, name_after : type_device_name; -- R1
@@ -10490,7 +10498,9 @@ package body schematic_ops is
 								prefix	=> prefix (name_before), -- R, C, IC
 								index 	=> device_index); -- 407
 
-					-- do the renaming if the new name differs from the old name:
+					-- Do the renaming if the new name differs from the old name.
+					-- If the renaming fails, set result false. Result remains false
+					-- even if other renamings succeed.
 					if name_after /= name_before then
 
 						if rename_device (
@@ -10499,14 +10509,11 @@ package body schematic_ops is
 							device_name_after	=> name_after, -- R407
 							log_threshold		=> log_threshold + 2) then
 
-							null;
+							-- Remove device from device list.
+							delete (devices, cursor);
+						else
+							result := false;
 						end if;
-						
--- 						rename_device (
--- 							module_name			=> module_name,
--- 							device_name_before	=> name_before, -- R1
--- 							device_name_after	=> name_after, -- R407
--- 							log_threshold		=> log_threshold + 2);
 						
 					end if;
 				end if;
@@ -10514,8 +10521,8 @@ package body schematic_ops is
 				next (cursor);
 			end loop;
 
+			return result;
 		end renumber;
-
 		
 	begin -- renumber_devices
 		log ("module " & to_string (module_name) &
@@ -10528,20 +10535,41 @@ package body schematic_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+		-- Get a list of devices and units where they are sorted by their coordinates.
 		devices := numbering.sort_by_coordinates (module_cursor, log_threshold + 2);
 
+		-- Renumber for each device category. If the first run fails, start another
+		-- iteration. If that fails too, issue error and abort.
+		-- Devices of unknown category are exampted from renumbering.
 		for cat in type_device_category'pos (type_device_category'first) .. 
 			type_device_category'pos (type_device_category'last) loop
 
-			log ("category" & to_string (type_device_category'val (cat)), log_threshold + 1);
+			case type_device_category'val (cat) is
+				when UNKNOWN => null;
+				
+				when others =>
 
-			log_indentation_up;
-			renumber (type_device_category'val (cat));
+					log ("category" & to_string (type_device_category'val (cat)), log_threshold + 1);
 
-			log_indentation_down;
+					log_indentation_up;
+					if renumber (type_device_category'val (cat)) = false then
+						-- first iteration failed. start a second:
+						
+						log ("another iteration required", log_threshold + 2);
+						log_indentation_up;
+						
+						if renumber (type_device_category'val (cat)) = false then
+							-- second iteration failed: abort
+							log (message_error & "renumbering failed !", console => true);
+							raise constraint_error;
+						end if;
+						
+						log_indentation_down;
+					end if;
+
+					log_indentation_down;
+			end case;
 		end loop;
-
--- 		renumber (module_cursor, devices, log_threshold + 1);
 
 		log_indentation_down;
 	end renumber_devices;
