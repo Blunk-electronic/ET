@@ -95,7 +95,8 @@ package body numbering is
 						position	=> cursor_sort,
 						new_item	=> (
 									name => device_name, -- R1, IC3
-									unit => unit_name -- 1, C, IO_BANK1
+									unit => unit_name, -- 1, C, IO_BANK1
+									done => false -- not renumbered yet
 									)
 						);
 

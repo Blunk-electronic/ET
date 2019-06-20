@@ -35,12 +35,6 @@
 --   history of changes:
 --
 --   ToDo: 
---		1. Objects like net segments, net labels, notes ... 
---		   should be collected in ordered sets instead of doubly_linked_lists
---			- the benefits: placing identical objects at the same position would be impossible
---			- the cons: ordering subprograms required
---		2. Assembly variants
---		3. device accessories
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
@@ -67,13 +61,14 @@ with et_project;
 package numbering is
 
 	type type_device is record
-		name	: type_device_name;
-		unit	: type_unit_name.bounded_string;
+		name	: type_device_name; -- R56, IC4
+		unit	: type_unit_name.bounded_string; -- 1, A, B, ...
+		done	: boolean := false; -- indicates whether the device has been renumbered
 	end record;
 
 
 	package type_devices is new ordered_maps (
-		key_type		=> et_coordinates.type_coordinates,
+		key_type		=> et_coordinates.type_coordinates, -- sheet/x/y
 		"<"				=> et_coordinates."<",
 		element_type	=> type_device);
 		
@@ -87,11 +82,6 @@ package numbering is
 		module_cursor 	: in et_project.type_modules.cursor;
 		log_threshold	: in type_log_level)
 		return boolean;
-	
--- 	procedure renumber_devices (
--- 		module_cursor 	: in et_project.type_modules.cursor;
--- 		devices			: in type_devices.map;
--- 		log_threshold	: in type_log_level);
 	
 end numbering;
 

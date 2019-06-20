@@ -10451,7 +10451,7 @@ package body schematic_ops is
 		function renumber (cat : in type_device_category) return boolean is
 		-- Renumbers devices of given category. Returns true if all devices
 		-- have been renamed.
-		-- Removes every renamed device from the device list so that the second
+		-- Marks every renamed unit in the device list so that the second
 		-- run of this function does not try to renumber them again.
 			result : boolean := true;
 			
@@ -10477,57 +10477,101 @@ package body schematic_ops is
 					index_on_sheet := type_device_name_index'first + 1;
 				end if;
 			end update_index;
-		
+
+			procedure mark_units_done is
+			-- Sets the "done" flag of all devices with name_before in the device list.
+
+				-- Start with the unit indicated by cursor. All other
+				-- units of the device come after this one.
+				cursor_done : numbering.type_devices.cursor := cursor;
+
+				procedure set_done (
+					coordinates : in et_coordinates.type_coordinates;
+					device		: in out numbering.type_device) is
+				begin
+					device.done := true;
+				end;
+				
+			begin -- mark_units_done
+				log ("marking all units done ...", log_threshold + 2);
+				
+				while cursor_done /= numbering.type_devices.no_element loop
+					
+					if element (cursor_done).name = name_before then -- IC5
+						
+						log (" unit " & to_string (element (cursor_done).unit),
+							 log_threshold + 2);
+
+						update_element (
+							container	=> devices,
+							position	=> cursor_done,
+							process		=> set_done'access);
+						
+					end if;
+					
+					next (cursor_done);
+				end loop;
+			end mark_units_done;
+			
 		begin -- renumber
 			while cursor /= numbering.type_devices.no_element loop
 
-				name_before := element (cursor).name; -- R1
-				
-				if category (name_before) = cat then
+				if not element (cursor).done then
+					name_before := element (cursor).name; -- R1
 
-					log ("device " & to_string (name_before) &
-						" unit " & to_string (element (cursor).unit), log_threshold +1);
-					log_indentation_up;
-					
-					update_index;
-					
-					-- step width times sheet number: like 100 * 4 = 400
-					device_index := step_width * type_device_name_index (sheet_now);
+					-- If the current device is in given category:
+					if category (name_before) = cat then
 
-					-- 400 plus index on sheet: like 407
-					device_index := device_index + index_on_sheet;
-
-					-- build the new device name
-					name_after := to_device_name (
-								prefix	=> prefix (name_before), -- R, C, IC
-								index 	=> device_index); -- 407
-
-					-- Do the renaming if the new name differs from the old name.
-					-- If the renaming fails, set result false. Result remains false
-					-- even if other renamings succeed.
-					if name_after /= name_before then
-
-						if rename_device (
-							module_cursor		=> module_cursor,
-							device_name_before	=> name_before, -- R1
-							device_name_after	=> name_after, -- R407
-							log_threshold		=> log_threshold + 2) then
-
-							-- Remove device from device list.
-							delete (devices, cursor);
-						else
-							result := false;
-						end if;
+						log ("device " & to_string (name_before) &
+							" unit " & to_string (element (cursor).unit), log_threshold +1);
+						log_indentation_up;
 						
-					end if;
+						update_index;
+						
+						-- step width times sheet number: like 100 * 4 = 400
+						device_index := step_width * type_device_name_index (sheet_now);
 
-					log_indentation_down;
+						-- 400 plus index on sheet: like 407
+						device_index := device_index + index_on_sheet;
+
+						-- build the new device name
+						name_after := to_device_name (
+									prefix	=> prefix (name_before), -- R, C, IC
+									index 	=> device_index); -- 407
+
+						-- Do the renaming if the new name differs from the old name.
+						-- If the renaming fails, set result false. Result remains false
+						-- even if other renamings succeed.
+						if name_after /= name_before then
+
+							if rename_device (
+								module_cursor		=> module_cursor,
+								device_name_before	=> name_before, -- R1
+								device_name_after	=> name_after, -- R407
+								log_threshold		=> log_threshold + 2) then
+
+								-- Mark all units of the device as done:
+								mark_units_done;
+							else
+								result := false;
+							end if;
+							
+						end if;
+
+						log_indentation_down;
+					end if;
 				end if;
 				
 				next (cursor);
 			end loop;
 
 			return result;
+
+			exception when event:
+				others => 
+					log (ada.exceptions.exception_message (event), console => true);
+				raise;
+			
 		end renumber;
 		
 	begin -- renumber_devices
