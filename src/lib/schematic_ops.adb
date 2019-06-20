@@ -10485,6 +10485,10 @@ package body schematic_ops is
 				
 				if category (name_before) = cat then
 
+					log ("device " & to_string (name_before) &
+						" unit " & to_string (element (cursor).unit), log_threshold +1);
+					log_indentation_up;
+					
 					update_index;
 					
 					-- step width times sheet number: like 100 * 4 = 400
@@ -10516,6 +10520,8 @@ package body schematic_ops is
 						end if;
 						
 					end if;
+
+					log_indentation_down;
 				end if;
 				
 				next (cursor);
