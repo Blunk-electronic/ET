@@ -556,6 +556,12 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		step_width		: in et_libraries.type_device_name_index;
 		log_threshold	: in type_log_level);
+
+	procedure calculate_device_index_ranges (
+	-- Calculates the device index ranges of all modules.
+	-- The given module_name is the top module.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
@@ -570,7 +576,7 @@ package schematic_ops is
 	-- 7. CS: devices with empty values
 	-- 8. CS: interactive devices with empty purpose
 	-- 9. CS: check partcode (conventions.validate_partcode)								  
-	-- 10. CS: units sitting on to of each other (same origin position)
+	-- 10. units sitting on to of each other (same origin position)
 	-- 11. CS: warning (or error ?) if any ports sit on top of each other. This would make the movable_tests obsolete.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);

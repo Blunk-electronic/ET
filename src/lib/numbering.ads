@@ -82,6 +82,11 @@ package numbering is
 		module_cursor 	: in et_project.type_modules.cursor;
 		log_threshold	: in type_log_level)
 		return boolean;
+
+	type type_index_range is record
+		lowest	: et_libraries.type_device_name_index := et_libraries.type_device_name_index'last;
+		highest	: et_libraries.type_device_name_index := et_libraries.type_device_name_index'first;		
+	end record;
 	
 end numbering;
 

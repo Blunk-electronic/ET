@@ -10624,7 +10624,107 @@ package body schematic_ops is
 		log_indentation_down;
 	end renumber_devices;
 
+	function device_index_range (
+	-- Renames the lowest and highest device index of the given module.
+		module_cursor		: in type_modules.cursor; -- the cursor to the module
+		log_threshold		: in type_log_level) 
+		return numbering.type_index_range is
 
+		index_range : numbering.type_index_range; -- to be returned
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use et_schematic.type_devices;
+
+			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
+			index_current : type_device_name_index;
+		begin -- query_devices
+			while device_cursor /= et_schematic.type_devices.no_element loop
+
+				index_current := index (key (device_cursor));
+				
+				if index_current < index_range.lowest then
+					index_range.lowest := index_current;
+				end if;
+
+				if index_current > index_range.highest then
+					index_range.highest := index_current;
+				end if;
+				
+				next (device_cursor);
+			end loop;
+
+			if length (module.devices) > 0 then
+				log ("lowest" & et_libraries.to_string (index_range.lowest) &
+					 " highest" & et_libraries.to_string (index_range.highest),
+					 log_threshold + 1);
+			else
+				log (message_warning & "no devices found !");
+			end if;
+
+		end query_devices;
+		
+	begin -- device_index_range
+		log ("module " & enclose_in_quotes (to_string (key (module_cursor))),
+			--" obtaining device index range ...",
+			log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+		log_indentation_down;
+
+		return index_range;
+		
+	end device_index_range;
+
+	procedure calculate_device_index_ranges (
+	-- Calculates the device index ranges of all modules.
+	-- The given module_name is the top module.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor := modules.first;
+		index_range : numbering.type_index_range;
+
+		use numbering;
+		
+		package type_ranges is new ordered_maps (
+			key_type		=> type_module_name.bounded_string,
+			"<"				=> type_module_name."<",
+			element_type	=> numbering.type_index_range);
+
+		ranges : type_ranges.map;
+			
+	begin -- calculate_device_index_ranges
+		log ("module " & enclose_in_quotes (to_string (module_name)) &
+			" calculating ranges of device indexes ...", log_threshold);
+		log_indentation_up;
+
+		-- Calculate the index range per module and store it in 
+		-- container "ranges":
+		while module_cursor /= type_modules.no_element loop
+
+			index_range := device_index_range (module_cursor, log_threshold + 1);
+
+			type_ranges.insert (
+				container	=> ranges,
+				key			=> key (module_cursor),
+				new_item	=> index_range);
+			
+			next (module_cursor);
+		end loop;
+
+		
+
+		log_indentation_down;
+	end calculate_device_index_ranges;
+	
+	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
 	-- Tests:
@@ -10885,7 +10985,7 @@ package body schematic_ops is
 		
 		-- locate module
 		module_cursor := locate_module (module_name);
-
+		
 		-- check nets
 		query_element (
 			position	=> module_cursor,

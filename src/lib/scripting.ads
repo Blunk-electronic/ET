@@ -81,6 +81,7 @@ package scripting is
 
 	type type_verb_schematic is (
 		ADD,
+		CALCULATE,
 		CHECK,
 		COPY,
 		CREATE,
@@ -108,6 +109,7 @@ package scripting is
 		DEVICE,
 		DEVICES,
 		DEVICE_NAME_OFFSET,
+		DEVICE_INDEX_RANGES,
 		--DEVICE_PARTCODE,
 		--DEVICE_PURPOSE,
 		--DEVICE_VALUE,

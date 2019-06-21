@@ -320,6 +320,27 @@ package body scripting is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+				when CALCULATE =>
+					case noun is
+						when DEVICE_INDEX_RANGES =>
+							case fields is
+								when 4 =>
+									schematic_ops.calculate_device_index_ranges (
+										module_name 	=> module,
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 5 .. count_type'last =>
+									command_too_long (4);
+									
+								when others =>
+									command_incomplete;
+
+							end case;
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
 				when CHECK =>
 					case noun is
 						when INTEGRITY =>
