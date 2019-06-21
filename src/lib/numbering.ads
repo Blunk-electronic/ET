@@ -41,7 +41,7 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
 -- with ada.containers.vectors;
--- with ada.containers.doubly_linked_lists;
+with ada.containers.doubly_linked_lists;
 -- with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 -- with ada.containers.indefinite_ordered_maps;
@@ -87,7 +87,11 @@ package numbering is
 		lowest	: et_libraries.type_device_name_index := et_libraries.type_device_name_index'last;
 		highest	: et_libraries.type_device_name_index := et_libraries.type_device_name_index'first;		
 	end record;
-	
+
+-- 	package type_submodules is new doubly_linked_lists (
+-- 		element_type	=> et_project.type_module_name.bounded_string,
+-- 		"="				=> et_project.type_module_name."=");
+
 end numbering;
 
 -- Soli Deo Gloria

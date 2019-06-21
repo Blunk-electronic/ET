@@ -10699,7 +10699,15 @@ package body schematic_ops is
 			element_type	=> numbering.type_index_range);
 
 		ranges : type_ranges.map;
-			
+
+		procedure query_submodules (
+		-- Locates the targeted assembly variant of the parent module.
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+		begin
+			null;
+		end query_submodules;
+		
 	begin -- calculate_device_index_ranges
 		log ("module " & enclose_in_quotes (to_string (module_name)) &
 			" calculating ranges of device indexes ...", log_threshold);
@@ -10719,6 +10727,10 @@ package body schematic_ops is
 			next (module_cursor);
 		end loop;
 
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_submodules'access);
 		
 
 		log_indentation_down;
