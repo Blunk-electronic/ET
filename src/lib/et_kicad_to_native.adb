@@ -147,8 +147,7 @@ package body et_kicad_to_native is
 			end loop;
 
 			if not sheet_found then
-				log_indentation_reset;
-				log (message_error & "sheet with number" & et_coordinates.to_sheet (sheet_number) & " not found !");
+				log (ERROR, "sheet with number" & et_coordinates.to_sheet (sheet_number) & " not found !");
 				raise constraint_error;
 			end if;
 			
@@ -2796,7 +2795,7 @@ package body et_kicad_to_native is
 
 						-- If junction misplaced, issue warning:
 						else
-							log (message_warning & 
+							log (WARNING, 
 								"misplaced junction between start and end point of segment -> ignored !");
 						end if;
 						
