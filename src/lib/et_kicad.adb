@@ -115,7 +115,7 @@ package body et_kicad is
 		use et_string_processing;
 	begin
 		log_indentation_reset;
-		log (message_error & " module " & to_string (module) & " not found !");
+		log (ERROR, " module " & to_string (module) & " not found !");
 		raise constraint_error;
 	end module_not_found;
 
@@ -301,7 +301,7 @@ package body et_kicad is
 
 		if invalid_character_position > 0 then
 			log_indentation_reset;
-			log (message_error & "component prefix " & to_string (prefix) 
+			log (ERROR, "component prefix " & to_string (prefix) 
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position),
 				console => true
@@ -336,7 +336,7 @@ package body et_kicad is
 		procedure invalid_reference is
 			use et_string_processing;
 		begin
-			log (text => latin_1.lf & message_error & "invalid component reference '" & text_in_justified & "'",
+			log (ERROR, latin_1.lf & "invalid component reference " & enclose_in_quotes (text_in_justified),
 				console => true);
 			
 			raise constraint_error;
@@ -586,7 +586,7 @@ package body et_kicad is
 		use et_libraries;
 	begin
 		log_indentation_reset;
-		log (message_error & "component " & to_string (reference) -- CS: output coordinates
+		log (ERROR, "component " & to_string (reference) -- CS: output coordinates
 			& " has no generic model " & to_string (generic_name)
 			& " in library " & to_string (library), console => true);
 		raise constraint_error;
@@ -620,7 +620,7 @@ package body et_kicad is
 			-- In case the component has no units, abort.
 			if unit_cursor = type_units_library.no_element then
 				log_indentation_reset;
-				log (message_error & "generic component " 
+				log (ERROR, "generic component " 
 						& to_string (type_components_library.key (component_cursor)) 
 						& " has no units !",
 					console => true);
@@ -678,7 +678,7 @@ package body et_kicad is
 		use et_string_processing;
 	begin
 		if datasheet'length > component_datasheet_length_max then
-			log (message_error & "max. number of characters for URL is" 
+			log (ERROR, "max. number of characters for URL is" 
 				 & positive'image (component_datasheet_length_max) & " !",
 				console => true);
 			raise constraint_error;
@@ -701,7 +701,7 @@ package body et_kicad is
 
 		if invalid_character_position > 0 then
 			log_indentation_reset;
-			log (message_error & "URL to datasheet " & to_string (datasheet) 
+			log (ERROR, "URL to datasheet " & to_string (datasheet) 
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position),
 				 console => true
@@ -742,7 +742,7 @@ package body et_kicad is
 	procedure invalid_field (line : in type_fields_of_line) is
 	begin
 		log_indentation_reset;
-		log (message_error & affected_line (line) & "invalid field !", console => true);
+		log (ERROR, affected_line (line) & "invalid field !", console => true);
 
 		log (to_string (line), console => true);
 
@@ -766,7 +766,7 @@ package body et_kicad is
 			null;
 		else
 			log_indentation_reset;
-			log (message_error & "invalid prefix "
+			log (ERROR, "invalid prefix "
 				 & to_string (prefix) & " !"
 				 & " Expected " 
 				 & power_flag_prefix & " or "
@@ -786,7 +786,7 @@ package body et_kicad is
 			null;
 		else
 			log_indentation_reset;
-			log (message_error & "invalid prefix in component reference "
+			log (ERROR, "invalid prefix in component reference "
 				 & et_libraries.to_string (reference) & " !"
 				 & " Expected " 
 				 & power_flag_prefix & " or "
@@ -917,11 +917,11 @@ package body et_kicad is
 		exception 
 			when constraint_error =>
 				log_indentation_reset;
-				log (message_error & "invalid text orientation !", console => true);
+				log (ERROR, "invalid text orientation !", console => true);
 				raise;
 			when others =>
 				log_indentation_reset;
-				log (message_error & "invalid text orientation !", console => true);
+				log (ERROR, "invalid text orientation !", console => true);
 				raise;
 	end to_field_orientation;
 	
@@ -967,7 +967,7 @@ package body et_kicad is
 		procedure invalid_style is
 		begin
 			log_indentation_reset;
-			log (message_error & "invalid text style '" & style_in & "' !");
+			log (ERROR, "invalid text style '" & style_in & "' !");
 			raise constraint_error;
 		end invalid_style;
 		
@@ -1057,7 +1057,7 @@ package body et_kicad is
 		procedure invalid_appearance is
 		begin
 			log_indentation_reset;
-			log (message_error & et_string_processing.affected_line (line) 
+			log (ERROR, et_string_processing.affected_line (line) 
 				 & "invalid visibility flag !", console => true);
 			raise constraint_error;
 		end invalid_appearance;	
@@ -1116,7 +1116,7 @@ package body et_kicad is
 
 				-- We do not support alternative representations.
 				log_indentation_reset;
-				log (text => message_error & "alternative representation (DeMorgan) not supported !",
+				log (ERROR, "alternative representation (DeMorgan) not supported !",
 					 console => true);
 				raise constraint_error;
 				
@@ -1128,7 +1128,7 @@ package body et_kicad is
 
 		exception
 			when others => 
-				log (message_error & "invalid alternative representation flag !", console => true);
+				log (ERROR, "invalid alternative representation flag !", console => true);
 				raise;			
 		
 	end to_alternative_representation;
@@ -1244,7 +1244,7 @@ package body et_kicad is
 		procedure no_package is
 		begin
 			log_indentation_reset;
-			log (message_error & "no package associated !", 
+			log (ERROR, "no package associated !", 
 				console => true);
 			raise constraint_error;
 		end no_package;
@@ -1672,7 +1672,7 @@ package body et_kicad is
 
 					procedure invalid_style is begin
 						log_indentation_reset;
-						log (message_error & "invalid text style '" & style_in & "' !");
+						log (ERROR, "invalid text style '" & style_in & "' !");
 						raise constraint_error;
 					end invalid_style;
 
@@ -1855,7 +1855,7 @@ package body et_kicad is
 						when 'L' => rot := 0; -- right
 						when others => 
 							log_indentation_reset;
-							log (message_error & "invalid port orientation !", console => true);
+							log (ERROR, "invalid port orientation !", console => true);
 							raise constraint_error;
 					end case;
 					return rot;
@@ -2013,7 +2013,7 @@ package body et_kicad is
 				procedure missing_field (meaning : in et_libraries.type_text_meaning) is 
 				begin
 					log_indentation_reset;
-					log (message_error & "text field " & to_string (meaning) & " missing !",
+					log (ERROR, "text field " & to_string (meaning) & " missing !",
 						console => true);
 					raise constraint_error;
 				end missing_field;
@@ -2190,16 +2190,14 @@ package body et_kicad is
 				if comp_inserted then
 					null;
 				else
-					log_indentation_reset;
-					log (text => message_error & "line" & affected_line (line) & " : component already in library !",
+					log (ERROR, "line" & affected_line (line) & " : component already in library !",
 						 console => true);
 					raise constraint_error;
 				end if;
 
 				exception
 					when event: others =>
-						log_indentation_reset;
-						log (text => message_error & "component " & to_string (tmp_component_name) & " invalid !",
+						log (ERROR, "component " & to_string (tmp_component_name) & " invalid !",
 							 console => true);
 						-- CS: provide details about the problem (line number, ...)
 						log (ada.exceptions.exception_message (event));
@@ -2368,7 +2366,7 @@ package body et_kicad is
 -- 									-- Tell the operator which port name the problem is:
 -- 									log_indentation_reset;
 -- 									log (
--- 										text => message_error & "file '" 
+-- 										text => ERROR, "file '" 
 -- 											& et_libraries.to_string (lib_file_name) & "' "
 -- 											& affected_line (line) 
 -- 											& "port name '" & to_string (tmp_draw_port_name)
@@ -3180,7 +3178,7 @@ package body et_kicad is
 			exception
 				when event:
 					others =>
-						log (text => message_error & affected_line (line) & to_string (line), console => true);
+						log (ERROR, affected_line (line) & to_string (line), console => true);
 						log (ada.exceptions.exception_message (event));
 						raise;
 		end read_library;
@@ -3594,7 +3592,7 @@ package body et_kicad is
                         process		=> add_net'access);
 
 				when UNKNOWN =>
-					log (message_error & "unknown scope of net !");
+					log (ERROR, "unknown scope of net !");
 					raise constraint_error; -- CS: should never happen as all strands should have a scope by now
 
 				when HIERARCHIC =>
@@ -4316,7 +4314,7 @@ package body et_kicad is
 							-- Test if the library directory exists:
 							if not exists (to_string (lib_dir_name)) then
 								log_indentation_reset;
-								log (message_error & "directory " & to_string (lib_dir_name) & " does not exist !", console => true);
+								log (ERROR, "directory " & to_string (lib_dir_name) & " does not exist !", console => true);
 								raise constraint_error;
 							end if;
 								
@@ -4393,7 +4391,7 @@ package body et_kicad is
 						-- raise alarm and abort if current library not found in any directory
 						if not library_found then
 							log_indentation_reset;
-							log (message_error & "library " & to_string (element (search_list_library_cursor)) &
+							log (ERROR, "library " & to_string (element (search_list_library_cursor)) &
 								" not found in any directory !", console => true);
 							raise constraint_error;
 						end if;
@@ -4573,7 +4571,7 @@ package body et_kicad is
 						-- raise alarm and abort if library file not found
 						else
 							log_indentation_reset;
-							log (message_error & "library " & to_string (uri) 
+							log (ERROR, "library " & to_string (uri) 
 								 & " not found !", console => true);
 							raise constraint_error;
 						end if;
@@ -4616,7 +4614,7 @@ package body et_kicad is
 						-- raise alarm and abort if library file not found
 						else
 							log_indentation_reset;
-							log (message_error & "library " & to_string (uri) 
+							log (ERROR, "library " & to_string (uri) 
 								 & " not found !", console => true);
 							raise constraint_error;
 						end if;
@@ -4743,8 +4741,8 @@ package body et_kicad is
 						else
 							-- This should never happen:
 							log_indentation_reset;
-							log (message_error & "in " & to_string (lib_table_path), console => true);
-							log (message_error & "no more lines available !", console => true);
+							log (ERROR, "in " & to_string (lib_table_path), console => true);
+							log (ERROR, "no more lines available !", console => true);
 							raise constraint_error;
 						end if;
 					end get_next_line;
@@ -4769,7 +4767,7 @@ package body et_kicad is
 
 						procedure invalid_section is begin
 							log_indentation_reset;
-							log (message_error & "invalid subsection '" & to_string (section.name) 
+							log (ERROR, "invalid subsection '" & to_string (section.name) 
 								& "' in parent section '" & to_string (section.parent) & "' ! (read section)", console => true);
 							raise constraint_error;
 						end invalid_section;
@@ -4826,11 +4824,11 @@ package body et_kicad is
 							when event:
 								others =>
 									log_indentation_reset;
-									log (message_error & "in " & to_string (lib_table_path), console => true);
-									log (message_error & affected_line (element (line_cursor)) 
+									log (ERROR, "in " & to_string (lib_table_path), console => true);
+									log (ERROR, affected_line (element (line_cursor)) 
 										& to_string (element (line_cursor)), console => true);
 
-									log (message_error & "section '" & slice (current_line, character_cursor, end_of_kw) 
+									log (ERROR, "section '" & slice (current_line, character_cursor, end_of_kw) 
 										& "' invalid or not supported yet", console => true);
 									raise;
 
@@ -4853,14 +4851,14 @@ package body et_kicad is
 
 						procedure too_many_arguments is begin
 							log_indentation_reset;
-							log (message_error & "too many arguments in section " & to_string (section.name) & " !", console => true);
+							log (ERROR, "too many arguments in section " & to_string (section.name) & " !", console => true);
 							log ("excessive argument reads '" & to_string (arg) & "'", console => true);
 							raise constraint_error;
 						end too_many_arguments;
 
 						procedure invalid_section is begin
 							log_indentation_reset;
-							log (message_error & "invalid subsection '" & to_string (section.name) 
+							log (ERROR, "invalid subsection '" & to_string (section.name) 
 								& "' in parent section '" & to_string (section.parent) & "' ! (read argument)", console => true);
 							raise constraint_error;
 						end invalid_section;
@@ -4876,7 +4874,7 @@ package body et_kicad is
 							-- if no trailing quotation found -> error
 							if end_of_arg = -1 then
 								log_indentation_reset;
-								log (message_error & affected_line (element (line_cursor))
+								log (ERROR, affected_line (element (line_cursor))
 									& latin_1.space & latin_1.quotation & " expected");
 									raise constraint_error;
 							end if;
@@ -4967,8 +4965,8 @@ package body et_kicad is
 							when event:
 								others =>
 									log_indentation_reset;
-									log (message_error & "in " & to_string (lib_table_path), console => true);
-									log (message_error & affected_line (element (line_cursor)) 
+									log (ERROR, "in " & to_string (lib_table_path), console => true);
+									log (ERROR, affected_line (element (line_cursor)) 
 										& to_string (element (line_cursor)), console => true);
 									log (ada.exceptions.exception_message (event));
 									raise;
@@ -5021,8 +5019,8 @@ package body et_kicad is
 							when event:
 								others =>
 									log_indentation_reset;
-									log (message_error & "in " & to_string (lib_table_path), console => true);
-									log (message_error & affected_line (element (line_cursor)) 
+									log (ERROR, "in " & to_string (lib_table_path), console => true);
+									log (ERROR, affected_line (element (line_cursor)) 
 										& to_string (element (line_cursor)), console => true);
 									log (ada.exceptions.exception_message (event));
 									raise;
@@ -5134,8 +5132,8 @@ package body et_kicad is
 					-- check section name. must be top level section
 					if section.name /= INIT then -- should never happen
 						log_indentation_reset;
-						log (message_error & "in " & to_string (lib_table_path), console => true);
-						log (message_error & "top level section not closed !", console => true);
+						log (ERROR, "in " & to_string (lib_table_path), console => true);
+						log (ERROR, "top level section not closed !", console => true);
 						raise constraint_error;
 					end if;
 
@@ -5385,7 +5383,7 @@ package body et_kicad is
 				d_out := passive;
 			else
 				log_indentation_reset;
-				log (message_error & "Label direction unknown !", console => true);
+				log (ERROR, "Label direction unknown !", console => true);
 				raise constraint_error;
 			end if;
 			
@@ -5442,7 +5440,7 @@ package body et_kicad is
 			procedure error_in_schematic_file (line : in type_fields_of_line) is
 			begin
 				log_indentation_reset;
-				log (message_error & "in schematic file '" 
+				log (ERROR, "in schematic file '" 
 					& to_string (current_schematic.sheet.file) & "' " 
 					& et_string_processing.affected_line (line)
 					& to_string (line),
@@ -5729,7 +5727,7 @@ package body et_kicad is
 				tag_label_cursor	: type_tag_labels.cursor; -- points to the tag label being processed
 
 				procedure output_net_label_conflict is begin
-					put_line (standard_output, message_error & "Net label conflict !");
+					put_line (standard_output, message_error & "Net label conflict !"); -- CS log ?
 				end output_net_label_conflict;
 				
 			begin -- associate_net_labels_with_anonymous_strands
@@ -6438,7 +6436,7 @@ package body et_kicad is
 									schematic_version_valid := true;
 								else
 									log_indentation_reset;
-									log (text => message_error & "schematic version" 
+									log (ERROR, "schematic version" 
 											& positive'image (schematic_version_v4) & " required.",
 										console => true);
 									raise constraint_error;
@@ -6451,7 +6449,7 @@ package body et_kicad is
 									schematic_version_valid := true;
 								else
 									log_indentation_reset;
-									log (text => message_error & "schematic version" 
+									log (ERROR, "schematic version" 
 											& positive'image(schematic_version_v5) & " required.",
 										console => true);
 									raise constraint_error;
@@ -6778,7 +6776,7 @@ package body et_kicad is
 					exception
 						when constraint_error =>
 							log_indentation_reset;
-							log (message_error & "invalid port direction '" 
+							log (ERROR, "invalid port direction '" 
 								 & dir_in & "' !");
 							-- CS: provide more details
 							raise;
@@ -6802,7 +6800,7 @@ package body et_kicad is
 					exception
 						when constraint_error =>
 							log_indentation_reset;
-							log (message_error & "invalid port orientation '" 
+							log (ERROR, "invalid port orientation '" 
 								 & or_in & "' !");
 							-- CS: provide more details
 							raise;
@@ -6913,7 +6911,7 @@ package body et_kicad is
 						-- if port could not be inserted -> abort
 						if not port_inserted then
 							log_indentation_reset;
-							log (message_error & "multiple usage of port " & et_string_processing.field (et_kicad.line, 2) & " !");
+							log (ERROR, "multiple usage of port " & et_string_processing.field (et_kicad.line, 2) & " !");
 							raise constraint_error;
 						end if;
 						
@@ -7526,7 +7524,7 @@ package body et_kicad is
 							
 							if et_libraries.to_string (reference) /= et_libraries.content (field_reference) then
 								log_indentation_reset;
-								log (message_error & "reference mismatch ! Header reads " 
+								log (ERROR, "reference mismatch ! Header reads " 
 									& et_libraries.to_string (reference) & " but field contains " 
 									& et_libraries.content (field_reference),
 									console => true);
@@ -7590,7 +7588,7 @@ package body et_kicad is
 							others =>
 								log_indentation_reset;
 								log (
-									text => message_error & "invalid field in component " & et_libraries.to_string (reference)
+									ERROR, "invalid field in component " & et_libraries.to_string (reference)
 										& to_string (position => position),
 										console => true);
 								log (ada.exceptions.exception_message (event), console => true);
@@ -7677,7 +7675,7 @@ package body et_kicad is
 						return key (lib_cursor);
 					else
 						log_indentation_reset;
-						log (message_error & "for component "  
+						log (ERROR, "for component "  
 							& et_libraries.to_string (reference)
 							& " no generic model in any library found !",
 							console => true);
@@ -7751,7 +7749,7 @@ package body et_kicad is
 						return full_name;
 					else
 						log_indentation_reset;
-						log (message_error & "for component "  
+						log (ERROR, "for component "  
 							& et_libraries.to_string (reference)
 							& " no generic model in any library named '" & et_kicad_general.to_string (component_library_name) 
 							& "' found !",
@@ -7894,7 +7892,7 @@ package body et_kicad is
 								if content (field_package)'size = 0 then
 									log_indentation_reset;
 									log (
-										text => message_error & "component " & to_string (reference) 
+										ERROR, "component " & to_string (reference) 
 											& " footprint not specified !",
 										console => true);
 									raise constraint_error;
@@ -7912,7 +7910,7 @@ package body et_kicad is
 						when constraint_error =>
 							log_indentation_reset;
 							log (
-								text => message_error & "component " & et_libraries.to_string (reference)
+								ERROR, "component " & et_libraries.to_string (reference)
 									& " " & kicad_coordinates.to_string (position => position),
 								console => true);
 							raise constraint_error;
@@ -7997,7 +7995,7 @@ package body et_kicad is
 					
 					if et_libraries.to_string (unit_name) /= et_string_processing.field (line,1) then
 						log_indentation_reset;
-						log (message_error & "invalid unit name '" & et_string_processing.field (line,1) & "'", console => true);
+						log (ERROR, "invalid unit name '" & et_string_processing.field (line,1) & "'", console => true);
 						raise constraint_error;
 					end if;
 					
@@ -8827,7 +8825,7 @@ package body et_kicad is
 
 			else
 				log_indentation_reset;
-				log (message_error & "schematic file '" & to_string (current_schematic.sheet.file) & "' not found !",
+				log (ERROR, "schematic file '" & to_string (current_schematic.sheet.file) & "' not found !",
 					console => true);
 				raise constraint_error;
 			end if;
@@ -8946,7 +8944,7 @@ package body et_kicad is
 
 				if not module_inserted then -- CS should never happen
 					log_indentation_reset;
-					log (message_error & "module " & to_string (module_name) & " already in imported !");
+					log (ERROR, "module " & to_string (module_name) & " already in imported !");
 					raise constraint_error;
 				end if;
 
@@ -9095,7 +9093,7 @@ package body et_kicad is
 -- 			when event:
 -- 				constraint_error =>
 -- 					log_indentation_reset;
--- 					log (message_error & "in schematic file '" 
+-- 					log (ERROR, "in schematic file '" 
 -- 						& to_string (current_schematic) & "' " 
 -- 						console => true);
 -- 						et_import.close_report;
@@ -9370,7 +9368,7 @@ package body et_kicad is
 		else
 			-- CS: This should never happen
 			log_indentation_reset;
-			log (message_error & "strand " 
+			log (ERROR, "strand " 
 				& et_general.to_string (name_before) & " not found !");
 			raise constraint_error;
 		end if;
@@ -9490,7 +9488,7 @@ package body et_kicad is
 				sits_on_segment := true;
 			else
 				log_indentation_reset;
-				log (message_error & "missing junction at " 
+				log (ERROR, "missing junction at " 
 					& to_string (port.coordinates, kicad_coordinates.MODULE),
 						console => true);
 				raise constraint_error;
@@ -9643,7 +9641,7 @@ package body et_kicad is
 								--elsif et_schematic."/=" (element (strand).scope, et_schematic.global) then
 								elsif element (strand).scope /= GLOBAL then
 									log_indentation_reset;
-									log (message_error & "component " & et_libraries.to_string (key (component)) 
+									log (ERROR, "component " & et_libraries.to_string (key (component)) 
 										& " POWER IN port " & to_string (element (port).name) 
 										& " at" & to_string (element (port).coordinates, module)
 										& " conflicts with " & to_string (element (strand).scope) 
@@ -10198,7 +10196,7 @@ package body et_kicad is
 			else
 				-- this should never happen
 				log_indentation_down;
-				log (text => message_error & "comonent appearance mismatch !", console => true);
+				log (ERROR, "comonent appearance mismatch !", console => true);
 				-- CS: provide more details on the affected component
 				raise constraint_error;
 			end if;
@@ -10476,7 +10474,7 @@ package body et_kicad is
 							-- For ports with other directions, issue a warning.
 							if element (port_cursor).direction = POWER_IN then
 								if not connected_by_other_unit then
-									log (message_error & "power supply not connected at" 
+									log (ERROR, "power supply not connected at" 
 										& to_string (element (port_cursor).coordinates, kicad_coordinates.MODULE)
 										& " nor via other units of this component !");
 									raise constraint_error;
@@ -10610,7 +10608,7 @@ package body et_kicad is
 -- 									-- Procdure check_open_ports detects such design errors. 
 -- 
 -- 									if et_import.cad_format /= kicad_v4 then
--- 										log (message_error & unit_not_deployed
+-- 										log (ERROR, unit_not_deployed
 -- 											& et_schematic.show_danger (et_schematic.no_power_supply));
 -- 										raise constraint_error;
 -- 									end if;
@@ -10618,7 +10616,7 @@ package body et_kicad is
 -- 								-- raise alarm if "must" unit is missing. there are numerous reasons
 -- 								-- for such a unit to be there. So no further advise possible.
 -- 								when et_libraries.must =>
--- 									log (message_error & unit_not_deployed);
+-- 									log (ERROR, unit_not_deployed);
 -- 									raise constraint_error;
 -- 
 -- 								-- "can" units may be left non-deployed
@@ -10796,7 +10794,7 @@ package body et_kicad is
 	begin
 		if find (modules, module_name) = type_modules.no_element then
 			log_indentation_reset;
-			log (message_error & "module " & to_string (module_name)
+			log (ERROR, "module " & to_string (module_name)
 				 & " does not exist !",
 				console => true);
 			raise constraint_error;
@@ -11033,7 +11031,7 @@ package body et_kicad is
 				write_unit_properties (unit => cursor, log_threshold => log_threshold + 1);
 			else -- not inserted, unit already in component -> failure
 				log_indentation_reset;
-				log (message_error & "component " & et_libraries.to_string (reference) &
+				log (ERROR, "component " & et_libraries.to_string (reference) &
 					 " unit " & et_libraries.to_string (unit_name) & " used multiple times !" &
 					 " Make sure " & et_libraries.to_string (reference) & " exists ONLY ONCE !",
 					console	=> true);
@@ -12040,7 +12038,7 @@ package body et_kicad is
 						
 						when UNKNOWN	=> -- CS: verification required
 							log_indentation_reset;
-							log (message_error & show_net & " has a port with unknown direction at " 
+							log (ERROR, show_net & " has a port with unknown direction at " 
 								& to_string (element (port_cursor).coordinates, scope => kicad_coordinates.MODULE)
 								& et_schematic.show_danger (et_schematic.not_predictable),
 								console => true
@@ -12151,7 +12149,7 @@ package body et_kicad is
 				if power_out_count > 0 then
 					if output_count > 0 then -- CS: or bidir_count pull_high pull_low
 						log_indentation_reset;
-						log (message_error & show_net & " has outputs connected with power sources !" &
+						log (ERROR, show_net & " has outputs connected with power sources !" &
 							 et_schematic.show_danger (et_schematic.short_circuit));
 						-- CS: show affected ports and their coordinates. use a loop in ports and show outputs and power outs.
 						raise constraint_error;
@@ -12163,7 +12161,7 @@ package body et_kicad is
 				-- CS: mind power flags
 -- 				if power_out_count > 1 then
 -- 					log_indentation_reset;
--- 					log (message_error & show_net & " has more than one power source !" & show_danger (contention));
+-- 					log (ERROR, show_net & " has more than one power source !" & show_danger (contention));
 -- 					-- CS: show affected ports and their coordinates
 -- 					raise constraint_error;
 -- 				end if;
@@ -12328,7 +12326,7 @@ package body et_kicad is
 			
 		else -- module not found
 			log_indentation_reset;
-			log (message_error & "module " & to_string (port.module) & " not found !", console => true);
+			log (ERROR, "module " & to_string (port.module) & " not found !", console => true);
 			raise constraint_error;
 		end if;
 		
@@ -12931,7 +12929,7 @@ package body et_kicad is
 			
 		else -- abort
 			log_indentation_reset;
-			log (message_error & et_libraries.to_string (port.reference) 
+			log (ERROR, et_libraries.to_string (port.reference) 
 				& " is a virtual component and thus has no package !");
 			raise constraint_error;
 		end if;
@@ -13011,7 +13009,7 @@ package body et_kicad is
 							log ("port name " & et_libraries.to_string (port.name), log_threshold + 4);
 						else
 							log_indentation_reset;
-							log (message_error & " terminal " & et_libraries.to_string (terminal) & " not found !",
+							log (ERROR, " terminal " & et_libraries.to_string (terminal) & " not found !",
 								 console => true);
 							raise constraint_error;
 						end if;
@@ -13034,7 +13032,7 @@ package body et_kicad is
 
 					else
 						log_indentation_reset;
-						log (message_error & " package variant " & et_libraries.to_string (key (variant_cursor)) &
+						log (ERROR, " package variant " & et_libraries.to_string (key (variant_cursor)) &
 							" not found !", console => true);
 						raise constraint_error;
 					end if;
@@ -13069,7 +13067,7 @@ package body et_kicad is
 					
 				else -- generic model not found -> abort
 					log_indentation_reset;
-					log (message_error & " generic model for " & et_libraries.to_string (reference) & " not found !", console => true);
+					log (ERROR, " generic model for " & et_libraries.to_string (reference) & " not found !", console => true);
 					raise constraint_error;
 				end if;
 					
@@ -13098,13 +13096,13 @@ package body et_kicad is
 						process		=> locate_component_in_library'access);
 				else -- library not found -> abort
 					log_indentation_reset;
-					log (message_error & " library " & et_libraries.to_string (library_name) & " not found !", console => true);
+					log (ERROR, " library " & et_libraries.to_string (library_name) & " not found !", console => true);
 					raise constraint_error;
 				end if;
 
 			else -- component nof found in schematic -> abort
 				log_indentation_reset;
-				log (message_error & " component " & et_libraries.to_string (reference) & " not found !", console => true);
+				log (ERROR, " component " & et_libraries.to_string (reference) & " not found !", console => true);
 				raise constraint_error;
 			end if;
 				
@@ -13128,7 +13126,7 @@ package body et_kicad is
 			
 		else -- module not found
 			log_indentation_reset;
-			log (message_error & "module " & to_string (module) & " not found !", console => true);
+			log (ERROR, "module " & to_string (module) & " not found !", console => true);
 			raise constraint_error;
 		end if;
 
@@ -13374,7 +13372,7 @@ package body et_kicad is
 					
 			else -- net does not exist -> abort
 				log_indentation_reset;
-				log (message_error & "in module " 
+				log (ERROR, "in module " 
 					 & to_string (module_name) & " net " & et_general.to_string (net) 
 					 & " not found !", console => true);
 				raise constraint_error;
@@ -13399,7 +13397,7 @@ package body et_kicad is
 			
 		else -- module not found
 			log_indentation_reset;
-			log (message_error & "module " & to_string (module) & " not found !", console => true);
+			log (ERROR, "module " & to_string (module) & " not found !", console => true);
 			raise constraint_error;
 		end if;
 		
@@ -13468,7 +13466,7 @@ package body et_kicad is
 					
 			else -- net does not exist -> abort
 				log_indentation_reset;
-				log (message_error & "in module " 
+				log (ERROR, "in module " 
 					 & to_string (module_name) & " net " & et_general.to_string (net) 
 					 & " not found !", console => true);
 				raise constraint_error;
@@ -13493,7 +13491,7 @@ package body et_kicad is
 			
 		else -- module not found
 			log_indentation_reset;
-			log (message_error & "module " & to_string (module) & " not found !", console => true);
+			log (ERROR, "module " & to_string (module) & " not found !", console => true);
 			raise constraint_error;
 		end if;
 		
@@ -13684,7 +13682,7 @@ package body et_kicad is
 -- 			
 -- 	begin -- multiple_purpose_warning
 -- -- 		log_indentation_reset;
--- -- 		log (message_error & "There must be ONLY ONE" 
+-- -- 		log (ERROR, "There must be ONLY ONE" 
 -- -- 			 & to_string (category) 
 -- -- 			 & " with purpose " 
 -- -- 			 & enclose_in_quotes (et_libraries.to_string (purpose)) & " !",
