@@ -157,15 +157,15 @@ package body schematic_ops is
 		log_threshold	: in type_log_level) is
 		
 		procedure write (cursor : in type_unit_positions.cursor) is begin
-			log (
+			log (text => 
 				"unit " &
 				et_libraries.to_string (type_unit_positions.key (cursor)) & -- unit name
 				et_coordinates.to_string (position => type_unit_positions.element (cursor)), -- sheet x y
-				log_threshold);
+				level => log_threshold);
 		end;
 		
 	begin
-		log ("location(s) in schematic:", log_threshold);
+		log (text => "location(s) in schematic:", level => log_threshold);
 		log_indentation_up;
 		et_schematic.type_unit_positions.iterate (positions, write'access);
 		log_indentation_down;
@@ -179,11 +179,11 @@ package body schematic_ops is
 		use et_schematic.type_devices;
 	begin
 		if element (device_cursor).appearance = SCH_PCB then
-			log ("location in board:" & 
+			log (text => "location in board:" & 
 				to_string (point => type_point_2d (element (device_cursor).position)) &
 				" face" & 
 				to_string (get_face (element (device_cursor).position)),
-				log_threshold);
+				level => log_threshold);
 		end if;
 	end;
 
@@ -256,12 +256,12 @@ package body schematic_ops is
 											
 											if dedicated_ports then
 												if et_libraries.type_ports.contains (ports, port.port_name) then
-													log ("delete port " & to_string (port.port_name), log_threshold + 3);
+													log (text => "delete port " & to_string (port.port_name), level => log_threshold + 3);
 												else
 													ports_new.insert (port); -- all other ports are collected in ports_new.
 												end if;
 											else
-												log ("delete port " & to_string (port.port_name), log_threshold + 3);	
+												log (text => "delete port " & to_string (port.port_name), level => log_threshold + 3);	
 											end if;
 																						
 											log_indentation_down;
@@ -279,7 +279,7 @@ package body schematic_ops is
 								
 							begin -- query_segment
 								log_indentation_up;
-								log (to_string (segment_cursor), log_threshold + 2);
+								log (text => to_string (segment_cursor), level => log_threshold + 2);
 
 								update_element (
 									container	=> strand.segments,
@@ -295,8 +295,8 @@ package body schematic_ops is
 						
 					begin -- query_strand
 						log_indentation_up;
-						log ("strand " & to_string (position => element (strand_cursor).position),
-							 log_threshold + 2);
+						log (text => "strand " & to_string (position => element (strand_cursor).position),
+							 level => log_threshold + 2);
 
 						update_element (
 							container	=> net.strands,
@@ -311,7 +311,7 @@ package body schematic_ops is
 				end query_strands;
 				
 			begin -- query_net
-				log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+				log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 				update_element (
 					container	=> module.nets,
@@ -325,7 +325,7 @@ package body schematic_ops is
 		end query_nets;
 		
 	begin -- delete_ports
-		log ("deleting device ports in nets ...", log_threshold);
+		log (text => "deleting device ports in nets ...", level => log_threshold);
 
 		-- If ports are provided, we have to delete exactly those in list "ports".
 		-- The flag dedicated_ports is later required in order to do this job:
@@ -390,8 +390,8 @@ package body schematic_ops is
 		end query_devices;
 		
 	begin -- delete_device
-		log ("module " & to_string (module_name) &
-			 " deleting " & to_string (device_name) & " ...", log_threshold);
+		log (text => "module " & to_string (module_name) &
+			 " deleting " & to_string (device_name) & " ...", level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -499,7 +499,7 @@ package body schematic_ops is
 		exception
 			when event: others =>
 				log_indentation_reset;
-				log (ada.exceptions.exception_information (event), console => true);
+				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;
 		
 	end ports_of_unit;
@@ -617,9 +617,9 @@ package body schematic_ops is
 		end query_devices;
 		
 	begin -- position
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " locating device " & to_string (device_name) & 
-			 " port " & to_string (port_name) & " ...", log_threshold);
+			 " port " & to_string (port_name) & " ...", level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -703,9 +703,9 @@ package body schematic_ops is
 		end query_submodules;
 		
 	begin -- position
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " locating submodule " & to_string (submod_name) & 
-			 " port " & to_string (port_name) & " ...", log_threshold);
+			 " port " & to_string (port_name) & " ...", level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -783,9 +783,9 @@ package body schematic_ops is
 		end query_netchangers;
 		
 	begin -- position
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " locating netchanger " & to_string (index) & 
-			 " port " &  to_string (port) & " ...", log_threshold);
+			 " port " &  to_string (port) & " ...", level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -903,9 +903,9 @@ package body schematic_ops is
 		end query_devices;
 		
 	begin -- delete_unit
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " deleting " & to_string (device_name) & " unit " & 
-			 to_string (unit_name) & " ...", log_threshold);
+			 to_string (unit_name) & " ...", level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -926,7 +926,7 @@ package body schematic_ops is
 
 		exception
 			when event: others =>
-				log (ada.exceptions.exception_information (event), console => true);
+				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;
 	end;
 
@@ -1035,13 +1035,13 @@ package body schematic_ops is
 									item		=> (device, key (port_cursor)) -- IC23, VCC_IO
 									) then 
 
-									log (" already there -> skipped", log_threshold + 3);
+									log (text => " already there -> skipped", level => log_threshold + 3);
 								else
 									type_ports_device.insert (
 										container	=> segment.ports_devices,
 										new_item	=> (device, key (port_cursor))); -- IC23, VCC_IO
 
-									log (" sits on segment -> inserted", log_threshold + 3);
+									log (text => " sits on segment -> inserted", level => log_threshold + 3);
 								end if;
 
 								-- signal iterations in upper levels to cancel
@@ -1055,7 +1055,7 @@ package body schematic_ops is
 						while not port_processed and segment_cursor /= type_net_segments.no_element loop
 
 							log_indentation_up;
-							log ("probing " & to_string (segment_cursor), log_threshold + 2);
+							log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 							
 							type_net_segments.update_element (
 								container	=> strand.segments,
@@ -1073,7 +1073,7 @@ package body schematic_ops is
 					while port_cursor /= et_libraries.type_ports.no_element loop
 						-- CS: If the current net is not on the targeted sheet then this log message
 						-- is issued many times without providing any useful information. Rework required:
-						log ("probing port " & to_string (key (port_cursor)), log_threshold + 1);
+						log (text => "probing port " & to_string (key (port_cursor)), level => log_threshold + 1);
 						log_indentation_up;
 						
 						-- If the current port sits on a strand, this flag will go true. Other 
@@ -1086,11 +1086,11 @@ package body schematic_ops is
 
 							-- We pick out only the strands on the targeted sheet:
 							if et_coordinates.sheet (element (strand_cursor).position) = sheet then
-								log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+								log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 								log_indentation_up;
-								log ("strand " & to_string (position => element (strand_cursor).position),
-									log_threshold + 1);
+								log (text => "strand " & to_string (position => element (strand_cursor).position),
+									level => log_threshold + 1);
 
 								update_element (
 									container	=> net.strands,
@@ -1125,8 +1125,8 @@ package body schematic_ops is
 		end query_nets;
 
 	begin --insert_ports
-		log ("inserting device ports in nets on sheet" & 
-			 to_sheet (sheet) & " ...", log_threshold);
+		log (text => "inserting device ports in nets on sheet" & 
+			 to_sheet (sheet) & " ...", level => log_threshold);
 		log_indentation_up;
 		
 		update_element (
@@ -1193,7 +1193,7 @@ package body schematic_ops is
 					exception
 						when event: others =>
 							log (ERROR, "coordinates invalid !", console => true); -- CS required more details
-							log (ada.exceptions.exception_information (event), console => true);
+							log (text => ada.exceptions.exception_information (event), console => true);
 							raise;
 					
 				end move_unit;
@@ -1211,9 +1211,9 @@ package body schematic_ops is
 
 					-- log old unit position
 					log_unit_positions (position_of_unit_old, log_threshold + 1); -- there is only one unit
--- 					log ("position before " & 
+-- 					log (text => "position before " & 
 -- 						 et_coordinates.to_string (
--- 							type_ports.first_element (positions)), log_threshold + 1);
+-- 							type_ports.first_element (positions)), level => log_threshold + 1);
 
 					update_element (
 						container	=> device.units,
@@ -1272,16 +1272,16 @@ package body schematic_ops is
 	begin -- move_unit
 		case coordinates is
 			when ABSOLUTE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
 					to_string (unit_name) & " to sheet" & to_sheet (sheet) &
-					et_coordinates.to_string (point), log_threshold);
+					et_coordinates.to_string (point), level => log_threshold);
 
 			when RELATIVE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
 					to_string (unit_name) & " by " & to_sheet_relative (sheet) & " sheet(s)" &
-					et_coordinates.to_string (point), log_threshold);
+					et_coordinates.to_string (point), level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -1365,7 +1365,7 @@ package body schematic_ops is
 					exception
 						when event: others =>
 							log (ERROR, "coordinates invalid !", console => true); -- CS required more details
-							log (ada.exceptions.exception_information (event), console => true);
+							log (text => ada.exceptions.exception_information (event), console => true);
 							raise;
 					
 				end move_placeholder;
@@ -1406,16 +1406,16 @@ package body schematic_ops is
 	begin -- move_unit_placeholder
 		case coordinates is
 			when ABSOLUTE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
 					to_string (unit_name) & " placeholder" & to_string (meaning) & " to" &
-					et_coordinates.to_string (point), log_threshold);
+					et_coordinates.to_string (point), level => log_threshold);
 
 			when RELATIVE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
 					to_string (unit_name) & " placeholder" & to_string (meaning) & " by" &
-					et_coordinates.to_string (point), log_threshold);
+					et_coordinates.to_string (point), level => log_threshold);
 		end case;
 
 		-- locate module
@@ -1518,8 +1518,8 @@ package body schematic_ops is
 					rotation_before := element (unit_cursor).rotation;
 
 					-- log unit position and current rotation
-					log (to_string (position => position_of_unit) &
-						 et_coordinates.to_string (rotation_before), log_threshold + 1);
+					log (text => to_string (position => position_of_unit) &
+						 et_coordinates.to_string (rotation_before), level => log_threshold + 1);
 
 					type_units.update_element (
 						container	=> device.units,
@@ -1607,15 +1607,15 @@ package body schematic_ops is
 	begin -- rotate_unit
 		case coordinates is
 			when ABSOLUTE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" rotating " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " to" & et_coordinates.to_string (rotation), log_threshold);
+					to_string (unit_name) & " to" & et_coordinates.to_string (rotation), level => log_threshold);
 
 			when RELATIVE =>
 				if rotation in type_rotation_relative then
-					log ("module " & to_string (module_name) &
+					log (text => "module " & to_string (module_name) &
 						" rotating " & to_string (device_name) & " unit " & 
-						to_string (unit_name) & " by" & et_coordinates.to_string (rotation), log_threshold);
+						to_string (unit_name) & " by" & et_coordinates.to_string (rotation), level => log_threshold);
 				else
 					relative_rotation_invalid;
 				end if;
@@ -1706,10 +1706,10 @@ package body schematic_ops is
 		end query_devices;
 		
 	begin -- rotate_unit_placeholder
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" rotating " & to_string (device_name) & " unit " &
 			to_string (unit_name) & " placeholder" & to_string (meaning) & " to" &
-			et_coordinates.to_string (rotation), log_threshold);
+			et_coordinates.to_string (rotation), level => log_threshold);
 		
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -1764,30 +1764,30 @@ package body schematic_ops is
 								
 								-- if port sits on a start point of a segment -> move start point
 								if segment.coordinates_start = element (drag_cursor).before then
-									log ("move segment start point from" & 
+									log (text => "move segment start point from" & 
 										to_string (segment.coordinates_start),
-										log_threshold + 3);
+										level => log_threshold + 3);
 
 									segment.coordinates_start := element (drag_cursor).after;
 
-									log ("to" & 
+									log (text => "to" & 
 										to_string (segment.coordinates_start),
-										log_threshold + 3);
+										level => log_threshold + 3);
 
 									drag_processed := true;
 								end if;
 
 								-- if port sits on an end point of a segment -> move end point
 								if segment.coordinates_end = element (drag_cursor).before then
-									log ("move segment end point from" & 
+									log (text => "move segment end point from" & 
 										to_string (segment.coordinates_end),
-										log_threshold + 3);
+										level => log_threshold + 3);
 
 									segment.coordinates_end := element (drag_cursor).after;
 
-									log ("to" & 
+									log (text => "to" & 
 										to_string (segment.coordinates_end),
-										log_threshold + 3);
+										level => log_threshold + 3);
 
 									drag_processed := true;
 								end if;
@@ -1796,7 +1796,7 @@ package body schematic_ops is
 
 						begin -- query_segment
 							log_indentation_up;
-							log ("probing " & to_string (segment_cursor), log_threshold + 2);
+							log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 							log_indentation_up;
 							
 							update_element (
@@ -1821,7 +1821,7 @@ package body schematic_ops is
 				begin -- query_strands
 					-- loop in drag list
 					while drag_cursor /= type_drags_of_ports.no_element loop
-						log ("probing port " & to_string (key (drag_cursor)), log_threshold + 1);
+						log (text => "probing port " & to_string (key (drag_cursor)), level => log_threshold + 1);
 						log_indentation_up;
 
 						-- If the current drag point sits on a strand, this flag will go true. Other 
@@ -1834,11 +1834,11 @@ package body schematic_ops is
 							
 							-- We pick out only the strands on the targeted sheet:
 							if et_coordinates.sheet (element (strand_cursor).position) = sheet then
-								log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+								log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 								log_indentation_up;
-								log ("strand " & to_string (position => element (strand_cursor).position),
-									log_threshold + 1);
+								log (text => "strand " & to_string (position => element (strand_cursor).position),
+									level => log_threshold + 1);
 							
 								-- Iterate in segments of strand. If drag point sits on any segment
 								-- the flag drag_processed goes true.
@@ -1875,8 +1875,8 @@ package body schematic_ops is
 		end query_nets;
 
 	begin -- drag_net_segments
-		log ("dragging net segments with units on sheet" & 
-			 to_sheet (sheet) & " ...", log_threshold);
+		log (text => "dragging net segments with units on sheet" & 
+			 to_sheet (sheet) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		update_element (
@@ -2054,7 +2054,7 @@ package body schematic_ops is
 			end test_point;
 			
 		begin -- movable_test
-			log ("movable test ...", log_threshold + 1);
+			log (text => "movable test ...", level => log_threshold + 1);
 			log_indentation_up;
 
 			while port_cursor /= et_libraries.type_ports.no_element loop
@@ -2124,7 +2124,7 @@ package body schematic_ops is
 
 					-- store old unit position
 					position_of_unit_old := element (unit_cursor).position;
-					log ("unit position old: " & to_string (position => position_of_unit_old), log_threshold + 1);
+					log (text => "unit position old: " & to_string (position => position_of_unit_old), level => log_threshold + 1);
 				else
 					unit_not_found (unit_name);
 				end if;
@@ -2160,7 +2160,7 @@ package body schematic_ops is
 					exception
 						when event: others =>
 							log (ERROR, "coordinates invalid !", console => true); -- CS required more details
-							log (ada.exceptions.exception_information (event), console => true);
+							log (text => ada.exceptions.exception_information (event), console => true);
 							raise;
 					
 				end move_unit;
@@ -2177,7 +2177,7 @@ package body schematic_ops is
 				-- store new unit position
 				position_of_unit_new := element (unit_cursor).position;
 				
-				log ("unit position new: " & to_string (position => position_of_unit_new), log_threshold + 1);
+				log (text => "unit position new: " & to_string (position => position_of_unit_new), level => log_threshold + 1);
 			end query_units;
 			
 		begin -- query_devices
@@ -2247,16 +2247,16 @@ package body schematic_ops is
 	begin -- drag_unit
 		case coordinates is
 			when ABSOLUTE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" dragging " & to_string (device_name) & " unit " & 
 					to_string (unit_name) & " to" &
-					et_coordinates.to_string (point), log_threshold);
+					et_coordinates.to_string (point), level => log_threshold);
 
 			when RELATIVE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" dragging " & to_string (device_name) & " unit " & 
 					to_string (unit_name) & " by" & 
-					et_coordinates.to_string (point), log_threshold);
+					et_coordinates.to_string (point), level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -2320,7 +2320,7 @@ package body schematic_ops is
 								
 							begin -- query_segment
 								log_indentation_up;
-								log (to_string (segment_cursor), log_threshold + 2);
+								log (text => to_string (segment_cursor), level => log_threshold + 2);
 
 								update_element (
 									container	=> strand.segments,
@@ -2336,8 +2336,8 @@ package body schematic_ops is
 						
 					begin -- query_strand
 						log_indentation_up;
-						log ("strand " & to_string (position => element (strand_cursor).position),
-							 log_threshold + 2);
+						log (text => "strand " & to_string (position => element (strand_cursor).position),
+							 level => log_threshold + 2);
 
 						update_element (
 							container	=> net.strands,
@@ -2352,7 +2352,7 @@ package body schematic_ops is
 				end query_strands;
 				
 			begin -- query_net
-				log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+				log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 				update_element (
 					container	=> module.nets,
@@ -2366,7 +2366,7 @@ package body schematic_ops is
 		end query_nets;
 		
 	begin -- rename_ports
-		log ("renaming ports in nets ...", log_threshold);
+		log (text => "renaming ports in nets ...", level => log_threshold);
 
 		log_indentation_up;
 		
@@ -2447,10 +2447,10 @@ package body schematic_ops is
 		end query_devices;
 
 	begin -- rename_device
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" renaming " & to_string (device_name_before) & " to " & 
 			to_string (device_name_after),
-			log_threshold);
+			level => log_threshold);
 
 		log_indentation_up;
 		
@@ -2512,7 +2512,7 @@ package body schematic_ops is
 						raise constraint_error;
 					end if;
 				else
-					log (message_warning & "device " & to_string (device_name) &
+					log (WARNING, "device " & to_string (device_name) &
 						 " is virtual and has no value !");
 				end if;
 
@@ -2522,10 +2522,10 @@ package body schematic_ops is
 		end query_devices;
 		
 	begin -- set_value
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" setting " & to_string (device_name) & " value to " &
 			enclose_in_quotes (to_string (value)),
-			log_threshold);
+			level => log_threshold);
 
 		log_indentation_up;
 		
@@ -2578,7 +2578,7 @@ package body schematic_ops is
 						process		=> set_purpose'access);
 
 				else
-					log (message_warning & "device " & to_string (device_name) &
+					log (WARNING, "device " & to_string (device_name) &
 						 " is virtual and has no practical purpose !");
 				end if;
 
@@ -2588,10 +2588,10 @@ package body schematic_ops is
 		end query_devices;
 
 	begin -- set_purpose
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" setting " & to_string (device_name) & " purpose to " &
 			enclose_in_quotes (to_string (purpose)),
-			log_threshold);
+			level => log_threshold);
 
 		log_indentation_up;
 		
@@ -2644,7 +2644,7 @@ package body schematic_ops is
 						process		=> set_partcode'access);
 
 				else
-					log (message_warning & "device " & to_string (device_name) &
+					log (WARNING, "device " & to_string (device_name) &
 						 " is virtual and has no partcode !");
 				end if;
 
@@ -2654,10 +2654,10 @@ package body schematic_ops is
 		end query_devices;
 
 	begin -- set_partcode
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" setting " & to_string (device_name) & " partcode to " &
 			enclose_in_quotes (to_string (partcode)),
-			log_threshold);
+			level => log_threshold);
 
 		log_indentation_up;
 		
@@ -2698,8 +2698,8 @@ package body schematic_ops is
 				use et_libraries.type_port_name;
 			begin
 				while unit_cursor /= type_units.no_element loop
-					--log ("unit " & type_unit_name.to_string (key (unit_cursor)));
-					--log ("port " & type_port_name.to_string (port_name));
+					--log (text => "unit " & type_unit_name.to_string (key (unit_cursor)));
+					--log (text => "port " & type_port_name.to_string (port_name));
 					
 					-- fetch the unit ports from the library model
 					ports := ports_of_unit (device_cursor, key (unit_cursor));
@@ -2938,9 +2938,9 @@ package body schematic_ops is
 								port_position := type_point (position (module_name, device_name, port_name, log_threshold + 1));
 								log_indentation_up;
 								
-								log ("device " & to_string (device_name) & " port " & to_string (port_name) &
+								log (text => "device " & to_string (device_name) & " port " & to_string (port_name) &
 									" at" & et_coordinates.to_string (point => port_position),
-									log_threshold + 1);
+									level => log_threshold + 1);
 
 								-- If the port was at the start point of the old segment, then
 								-- it goes into segment_1.
@@ -2962,7 +2962,7 @@ package body schematic_ops is
 							end query_ports;
 							
 						begin -- update_device_ports
-							log ("updating device ports ...", log_threshold + 1);
+							log (text => "updating device ports ...", level => log_threshold + 1);
 							log_indentation_up;
 							
 							iterate (old_segment.ports_devices, query_ports'access);
@@ -2986,9 +2986,9 @@ package body schematic_ops is
 								port_position := type_point (position (module_name, submod_name, port_name, log_threshold + 1));
 								log_indentation_up;
 								
-								log ("submodule " & to_string (submod_name) & " port " & to_string (port_name) &
+								log (text => "submodule " & to_string (submod_name) & " port " & to_string (port_name) &
 									" at" & et_coordinates.to_string (point => port_position),
-									log_threshold + 1);
+									level => log_threshold + 1);
 
 								-- If the port was at the start point of the old segment, then
 								-- it goes into segment_1.
@@ -3010,7 +3010,7 @@ package body schematic_ops is
 							end query_ports;
 							
 						begin -- update_submodule_ports
-							log ("updating submodule ports ...", log_threshold + 1);
+							log (text => "updating submodule ports ...", level => log_threshold + 1);
 							log_indentation_up;
 							
 							iterate (old_segment.ports_submodules, query_ports'access);
@@ -3035,9 +3035,9 @@ package body schematic_ops is
 								port_position := type_point (position (module_name, index, port, log_threshold + 1));
 								log_indentation_up;
 								
-								log ("netchanger " & to_string (index) & " port " & to_string (port) &
+								log (text => "netchanger " & to_string (index) & " port " & to_string (port) &
 									" at" & et_coordinates.to_string (point => port_position),
-									log_threshold + 1);
+									level => log_threshold + 1);
 
 								-- If the port was at the start point of the old segment, then
 								-- it goes into segment_1.
@@ -3059,7 +3059,7 @@ package body schematic_ops is
 							end query_ports;
 							
 						begin -- update_netchanger_ports
-							log ("updating netchanger ports ...", log_threshold + 1);
+							log (text => "updating netchanger ports ...", level => log_threshold + 1);
 							log_indentation_up;
 							
 							iterate (old_segment.ports_netchangers, query_ports'access);
@@ -3112,7 +3112,7 @@ package body schematic_ops is
 						-- is positive, go to next segment.
 						
 						--log_indentation_up;
-						--log ("probing " & to_string (segment_cursor), log_threshold + 2);
+						--log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 
 						if type_point (place) = element (segment_cursor).coordinates_start then
 
@@ -3140,9 +3140,9 @@ package body schematic_ops is
 							point	=> type_point (place),
 							segment	=> segment_cursor) then -- targeted segment found
 
-							log ("net " & to_string (net_name) & " strand" &
-								 to_string (position => strand.position), log_threshold + 1);
-							log (to_string (segment_cursor), log_threshold + 1);
+							log (text => "net " & to_string (net_name) & " strand" &
+								 to_string (position => strand.position), level => log_threshold + 1);
+							log (text => to_string (segment_cursor), level => log_threshold + 1);
 
 							-- backup old segment (it contains port and junction information)
 							old_segment := element (segment_cursor);
@@ -3173,7 +3173,7 @@ package body schematic_ops is
 						--log ("net " & to_string (key (net_cursor)), log_threshold + 1);
 						--log_indentation_up;
 						
-						--log ("strand " & to_string (position => element (strand_cursor).position),
+						--log (text => "strand " & to_string (position => element (strand_cursor).position),
 						--	log_threshold + 1);
 					
 						update_element (
@@ -3201,8 +3201,8 @@ package body schematic_ops is
 		end query_nets;
 
 	begin -- place_junction
-		log ("module " & to_string (module_name) & " placing junction at" &
-			 to_string (position => place) & " ...", log_threshold);
+		log (text => "module " & to_string (module_name) & " placing junction at" &
+			 to_string (position => place) & " ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- locate module
@@ -3214,7 +3214,7 @@ package body schematic_ops is
 			process		=> query_nets'access);
 
 		if not segment_found then
-			log (message_warning & "attempt to place junction in the void. Junction not placed !");
+			log (WARNING, "attempt to place junction in the void. Junction not placed !");
 		end if;
 		
 		log_indentation_down;
@@ -3541,7 +3541,7 @@ package body schematic_ops is
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
 			begin
-				log ("adding internal unit " & to_string (key (unit_cursors.int)), log_threshold + 2);
+				log (text => "adding internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
 				
 				case element (device_cursor_lib).appearance is
 					when SCH =>
@@ -3583,7 +3583,7 @@ package body schematic_ops is
 				symbol_cursor : et_libraries.type_symbols.cursor;
 				symbol_file : et_libraries.type_symbol_model_file.bounded_string; -- *.sym
 			begin
-				log ("adding external unit " & to_string (key (unit_cursors.ext)), log_threshold + 2);
+				log (text => "adding external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 				
 				case element (device_cursor_lib).appearance is
 					when SCH =>
@@ -3629,7 +3629,7 @@ package body schematic_ops is
 			ports : et_libraries.type_ports.map;
 			
 		begin -- add
-			log ("adding device " & to_string (next_name), log_threshold + 1);
+			log (text => "adding device " & to_string (next_name), level => log_threshold + 1);
 			log_indentation_up;
 			
 			case element (device_cursor_lib).appearance is
@@ -3701,8 +3701,8 @@ package body schematic_ops is
 
 				-- fetch ports of unit and their positions relative to the unit origin
 				log_indentation_up;				
-				log ("fetching relative port positions of internal unit " &
-					 to_string (key (unit_cursors.int)) & " ...", log_threshold + 2);
+				log (text => "fetching relative port positions of internal unit " &
+					 to_string (key (unit_cursors.int)) & " ...", level => log_threshold + 2);
 				
 				ports := ports_of_unit (
 					device_cursor	=> device_cursor_sch,
@@ -3718,8 +3718,8 @@ package body schematic_ops is
 
 				-- fetch ports of unit and their positions relative to the unit origin
 				log_indentation_up;
-				log ("fetching relative port positions of external unit " &
-					 to_string (key (unit_cursors.ext)) & " ...", log_threshold + 2);
+				log (text => "fetching relative port positions of external unit " &
+					 to_string (key (unit_cursors.ext)) & " ...", level => log_threshold + 2);
 
 				ports := ports_of_unit (
 					device_cursor	=> device_cursor_sch,
@@ -3730,7 +3730,7 @@ package body schematic_ops is
 			end if;
 
 			-- Calculate the absolute positions of the unit ports. Rotate first if required:
-			log ("calculating absolute port positions ...", log_threshold + 2);
+			log (text => "calculating absolute port positions ...", level => log_threshold + 2);
 			if rotation /= rotation_zero then
 				rotate_ports (ports, rotation);
 			end if;
@@ -3751,21 +3751,21 @@ package body schematic_ops is
 			
 	begin -- add_device
 		if type_component_variant_name.length (variant) > 0 then -- real device
-			log ("module " & to_string (module_name) &
+			log (text => "module " & to_string (module_name) &
 				" adding device " & to_string (device_model) &
 				" package variant " & to_string (variant) &
 				" at" &
 				to_string (position => place) &
 				" rotation" & et_coordinates.to_string (rotation),				
-				log_threshold);
+				level => log_threshold);
 			
 		else -- virtual device
-			log ("module " & to_string (module_name) &
+			log (text => "module " & to_string (module_name) &
 				" adding device " & to_string (device_model) &
 				" at" &
 				to_string (position => place) &
 				" rotation" & et_coordinates.to_string (rotation),				
-				log_threshold);
+				level => log_threshold);
 		end if;
 			
 		log_indentation_up;
@@ -3826,7 +3826,7 @@ package body schematic_ops is
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
 			begin
-				log ("adding internal unit " & to_string (key (unit_cursors.int)), log_threshold + 2);
+				log (text => "adding internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
 				
 				case element (device_cursor_lib).appearance is
 					when SCH =>
@@ -3868,7 +3868,7 @@ package body schematic_ops is
 				symbol_cursor : et_libraries.type_symbols.cursor;
 				symbol_file : et_libraries.type_symbol_model_file.bounded_string; -- *.sym
 			begin
-				log ("adding external unit " & to_string (key (unit_cursors.ext)), log_threshold + 2);
+				log (text => "adding external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 				
 				case element (device_cursor_lib).appearance is
 					when SCH =>
@@ -3920,7 +3920,7 @@ package body schematic_ops is
 
 				-- build the next available device name:
 				next_name := next_device_name (module_cursor, prefix (key (device_cursor_sch))); -- IC46
-				log ("adding device " & to_string (next_name), log_threshold + 1);
+				log (text => "adding device " & to_string (next_name), level => log_threshold + 1);
 				log_indentation_up;
 				
 				-- Create a new device. Copy lots of properties from the original device.
@@ -3976,8 +3976,8 @@ package body schematic_ops is
 
 					-- fetch ports of unit and their positions relative to the unit origin
 					log_indentation_up;				
-					log ("fetching relative port positions of internal unit " &
-						to_string (key (unit_cursors.int)) & " ...", log_threshold + 2);
+					log (text => "fetching relative port positions of internal unit " &
+						to_string (key (unit_cursors.int)) & " ...", level => log_threshold + 2);
 					
 					ports := ports_of_unit (
 						device_cursor	=> device_cursor_sch,
@@ -3993,8 +3993,8 @@ package body schematic_ops is
 
 					-- fetch ports of unit and their positions relative to the unit origin
 					log_indentation_up;
-					log ("fetching relative port positions of external unit " &
-						to_string (key (unit_cursors.ext)) & " ...", log_threshold + 2);
+					log (text => "fetching relative port positions of external unit " &
+						to_string (key (unit_cursors.ext)) & " ...", level => log_threshold + 2);
 
 					ports := ports_of_unit (
 						device_cursor	=> device_cursor_sch,
@@ -4005,7 +4005,7 @@ package body schematic_ops is
 				end if;
 
 				-- Calculate the absolute positions of the unit ports. Rotate first if required:
-				log ("calculating absolute port positions ...", log_threshold + 2);
+				log (text => "calculating absolute port positions ...", level => log_threshold + 2);
 				if rotation /= rotation_zero then
 					rotate_ports (ports, rotation);
 				end if;
@@ -4029,10 +4029,10 @@ package body schematic_ops is
 		end query_devices;
 		
 	begin -- copy_device
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" copying " & to_string (device_name) & 
 			" to" & to_string (position => destination) &
-			" rotation" & et_coordinates.to_string (rotation) & " ...", log_threshold);
+			" rotation" & et_coordinates.to_string (rotation) & " ...", level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -4091,7 +4091,7 @@ package body schematic_ops is
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
 			begin
-				log ("adding internal unit " & to_string (key (unit_cursors.int)), log_threshold + 2);
+				log (text => "adding internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
 				
 				case element (device_cursor_lib).appearance is
 					when SCH =>
@@ -4133,7 +4133,7 @@ package body schematic_ops is
 				symbol_cursor : et_libraries.type_symbols.cursor;
 				symbol_file : et_libraries.type_symbol_model_file.bounded_string; -- *.sym
 			begin
-				log ("adding external unit " & to_string (key (unit_cursors.ext)), log_threshold + 2);
+				log (text => "adding external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 				
 				case element (device_cursor_lib).appearance is
 					when SCH =>
@@ -4207,8 +4207,8 @@ package body schematic_ops is
 
 					-- fetch ports of unit and their positions relative to the unit origin
 					log_indentation_up;				
-					log ("fetching relative port positions of internal unit " &
-						to_string (key (unit_cursors.int)) & " ...", log_threshold + 1);
+					log (text => "fetching relative port positions of internal unit " &
+						to_string (key (unit_cursors.int)) & " ...", level => log_threshold + 1);
 					
 					ports := ports_of_unit (
 						device_cursor	=> device_cursor_sch,
@@ -4224,8 +4224,8 @@ package body schematic_ops is
 
 					-- fetch ports of unit and their positions relative to the unit origin
 					log_indentation_up;
-					log ("fetching relative port positions of external unit " &
-						to_string (key (unit_cursors.ext)) & " ...", log_threshold + 1);
+					log (text => "fetching relative port positions of external unit " &
+						to_string (key (unit_cursors.ext)) & " ...", level => log_threshold + 1);
 
 					ports := ports_of_unit (
 						device_cursor	=> device_cursor_sch,
@@ -4236,7 +4236,7 @@ package body schematic_ops is
 				end if;
 
 				-- Calculate the absolute positions of the unit ports. Rotate first if required:
-				log ("calculating absolute port positions ...", log_threshold + 1);
+				log (text => "calculating absolute port positions ...", level => log_threshold + 1);
 				if rotation /= rotation_zero then
 					rotate_ports (ports, rotation);
 				end if;
@@ -4258,13 +4258,13 @@ package body schematic_ops is
 		end query_devices;
 		
 	begin -- invoke_unit
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" device " & to_string (device_name) &
 			" invoking unit " & to_string (unit_name) &
 			" at" &
 			to_string (position => place) &
 			" rotation" & et_coordinates.to_string (rotation),
-			log_threshold);
+			level => log_threshold);
 
 		log_indentation_up;
 		
@@ -4385,13 +4385,13 @@ package body schematic_ops is
 									item		=> (index, name)
 									) then
 
-									log (" already there -> skipped", log_threshold + 5);
+									log (text => " already there -> skipped", level => log_threshold + 5);
 								else
 									type_ports_netchanger.insert (
 										container	=> segment.ports_netchangers,
 										new_item	=> (index, name)); -- 1,2,3, .. / master/slave
 
-									log (" sits on segment -> inserted", log_threshold + 5);
+									log (text => " sits on segment -> inserted", level => log_threshold + 5);
 								end if;
 								
 								-- signal iterations in upper levels to cancel
@@ -4405,7 +4405,7 @@ package body schematic_ops is
 
 						-- On the first segment, where the port sits on, this loop ends prematurely.
 						while not port_processed and segment_cursor /= type_net_segments.no_element loop
-							log ("probing " & to_string (segment_cursor), log_threshold + 4);
+							log (text => "probing " & to_string (segment_cursor), level => log_threshold + 4);
 							
 							type_net_segments.update_element (
 								container	=> strand.segments,
@@ -4425,11 +4425,11 @@ package body schematic_ops is
 
 						-- We pick out only the strands on the targeted sheet:
 						if et_coordinates.sheet (element (strand_cursor).position) = sheet then
-							log ("net " & to_string (key (net_cursor)), log_threshold + 3);
+							log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 3);
 
 							log_indentation_up;
-							log ("strand " & to_string (position => element (strand_cursor).position),
-								log_threshold + 3);
+							log (text => "strand " & to_string (position => element (strand_cursor).position),
+								level => log_threshold + 3);
 
 							update_element (
 								container	=> net.strands,
@@ -4447,7 +4447,7 @@ package body schematic_ops is
 				
 			begin -- probe_port
 				log_indentation_up;
-				log ("at" & et_coordinates.to_string (port), log_threshold + 2);
+				log (text => "at" & et_coordinates.to_string (port), level => log_threshold + 2);
 				
 				while not port_processed and net_cursor /= type_nets.no_element loop
 					
@@ -4463,16 +4463,16 @@ package body schematic_ops is
 			end probe_port;
 			
 		begin -- query_nets
-			log ("master port", log_threshold + 1);
+			log (text => "master port", level => log_threshold + 1);
 			probe_port (ports.master, MASTER);
 
-			log ("slave port", log_threshold + 1);			
+			log (text => "slave port", level => log_threshold + 1);			
 			probe_port (ports.slave, SLAVE);
 		end query_nets;
 
 	begin --insert_ports
-		log ("inserting netchanger ports in nets on sheet" & 
-			 to_sheet (sheet) & " ...", log_threshold);
+		log (text => "inserting netchanger ports in nets on sheet" & 
+			 to_sheet (sheet) & " ...", level => log_threshold);
 		log_indentation_up;
 		
 		update_element (
@@ -4506,7 +4506,7 @@ package body schematic_ops is
 
 			-- set the index to be used for the new netchanger
 			index := next_netchanger_index (module_cursor);
-			log ("netchanger index is" & to_string (index), log_threshold + 1);
+			log (text => "netchanger index is" & to_string (index), level => log_threshold + 1);
 			
 			-- build the new netchanger
 			netchanger.position_sch := place;
@@ -4536,10 +4536,10 @@ package body schematic_ops is
 		end query_netchangers;
 		
 	begin -- add_netchanger
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" adding netchanger at" & to_string (position => place) &
 			" rotation" & et_coordinates.to_string (rotation),
-			log_threshold);
+			level => log_threshold);
 
 		log_indentation_up;
 		
@@ -4599,10 +4599,10 @@ package body schematic_ops is
 						port_cursor : type_ports_netchanger.cursor;
 
 						procedure delete_port is begin
-							log ("sheet" & to_sheet (sheet) & " net " &
+							log (text => "sheet" & to_sheet (sheet) & " net " &
 								to_string (key (net_cursor)) & latin_1.space &
 								to_string (segment_cursor),
-								log_threshold + 1);
+								level => log_threshold + 1);
 							delete (segment.ports_netchangers, port_cursor);
 						end;
 	
@@ -4669,7 +4669,7 @@ package body schematic_ops is
 		end query_nets;
 		
 	begin -- delete_ports
-		log ("deleting netchanger ports in nets ...", log_threshold);
+		log (text => "deleting netchanger ports in nets ...", level => log_threshold);
 
 		log_indentation_up;
 		
@@ -4738,9 +4738,9 @@ package body schematic_ops is
 		end query_netchangers;
 		
 	begin -- delete_netchanger
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" deleting netchanger" & to_string (index),
-			log_threshold);
+			level => log_threshold);
 
 		log_indentation_up;
 		
@@ -4864,16 +4864,16 @@ package body schematic_ops is
 	begin -- move_netchanger
 		case coordinates is
 			when ABSOLUTE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" moving netchanger" & to_string (index) &
 					" to sheet" & to_sheet (sheet) &
-					et_coordinates.to_string (point), log_threshold);
+					et_coordinates.to_string (point), level => log_threshold);
 
 			when RELATIVE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" moving netchanger" & to_string (index) &
 					" by " & to_sheet_relative (sheet) & " sheet(s)" &
-					et_coordinates.to_string (point), log_threshold);
+					et_coordinates.to_string (point), level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -4931,15 +4931,15 @@ package body schematic_ops is
 						
 						-- if port sits on a start point of a segment -> move start point
 						if segment.coordinates_start = port_before then
-							log ("move segment start point from" & 
+							log (text => "move segment start point from" & 
 								to_string (segment.coordinates_start),
-								log_threshold + 3);
+								level => log_threshold + 3);
 
 							segment.coordinates_start := port_after;
 
-							log ("to" & 
+							log (text => "to" & 
 								to_string (segment.coordinates_start),
-								log_threshold + 3);
+								level => log_threshold + 3);
 
 							-- signal iterations in upper level to cancel
 							drag_processed := true;
@@ -4947,15 +4947,15 @@ package body schematic_ops is
 
 						-- if port sits on an end point of a segment -> move end point
 						if segment.coordinates_end = port_before then
-							log ("move segment end point from" & 
+							log (text => "move segment end point from" & 
 								to_string (segment.coordinates_end),
-								log_threshold + 3);
+								level => log_threshold + 3);
 
 							segment.coordinates_end := port_after;
 
-							log ("to" & 
+							log (text => "to" & 
 								to_string (segment.coordinates_end),
-								log_threshold + 3);
+								level => log_threshold + 3);
 							
 							-- signal iterations in upper level to cancel
 							drag_processed := true;
@@ -4972,7 +4972,7 @@ package body schematic_ops is
 					-- meeting here must be dragged.
 					while segment_cursor /= type_net_segments.no_element loop
 
-						log ("probing " & to_string (segment_cursor), log_threshold + 2);
+						log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 						
 						update_element (
 							container	=> strand.segments,
@@ -4996,11 +4996,11 @@ package body schematic_ops is
 					
 					-- We pick out only the strands on the targeted sheet:
 					if et_coordinates.sheet (element (strand_cursor).position) = sheet then
-						log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 						log_indentation_up;
-						log ("strand " & to_string (position => element (strand_cursor).position),
-							log_threshold + 1);
+						log (text => "strand " & to_string (position => element (strand_cursor).position),
+							level => log_threshold + 1);
 					
 						-- Iterate in segments of strand. If point sits on any segment
 						-- the flag drag_processed goes true.
@@ -5036,13 +5036,13 @@ package body schematic_ops is
 		end query_nets;
 
 	begin -- drag_net_segments
-		log ("dragging net segments with netchangers on sheet" & 
-			 to_sheet (sheet) & " ...", log_threshold);
+		log (text => "dragging net segments with netchangers on sheet" & 
+			 to_sheet (sheet) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		--------------
 		port_before := ports_before.master;
-		log ("probing port " & to_string (port_before), log_threshold + 1);
+		log (text => "probing port " & to_string (port_before), level => log_threshold + 1);
 
 		port_after := ports_after.master;
 		
@@ -5053,7 +5053,7 @@ package body schematic_ops is
 
 		---------------
 		port_before := ports_before.slave;
-		log ("probing port " & to_string (port_before), log_threshold + 1);
+		log (text => "probing port " & to_string (port_before), level => log_threshold + 1);
 
 		port_after := ports_after.slave;		
 		
@@ -5142,7 +5142,7 @@ package body schematic_ops is
 			end test_point;
 			
 		begin -- movable_test
-			log ("movable test ...", log_threshold + 1);
+			log (text => "movable test ...", level => log_threshold + 1);
 			log_indentation_up;
 
 			-- Test point where the master port is:
@@ -5260,14 +5260,14 @@ package body schematic_ops is
 	begin -- drag_netchanger
 		case coordinates is
 			when ABSOLUTE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" dragging netchanger" & to_string (index) &
-					" to" & et_coordinates.to_string (point), log_threshold);
+					" to" & et_coordinates.to_string (point), level => log_threshold);
 
 			when RELATIVE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" dragging netchanger" & to_string (index) &
-					" by" & et_coordinates.to_string (point), log_threshold);
+					" by" & et_coordinates.to_string (point), level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -5376,15 +5376,15 @@ package body schematic_ops is
 	begin -- rotate_netchanger
 		case coordinates is
 			when ABSOLUTE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					 " rotating netchanger" & to_string (index) &
-					 " to" & et_coordinates.to_string (rotation), log_threshold);
+					 " to" & et_coordinates.to_string (rotation), level => log_threshold);
 
 			when RELATIVE =>
 				if rotation in type_rotation_relative then
-					log ("module " & to_string (module_name) &
+					log (text => "module " & to_string (module_name) &
 						" rotating netchanger" & to_string (index) &
-						" by" & et_coordinates.to_string (rotation), log_threshold);
+						" by" & et_coordinates.to_string (rotation), level => log_threshold);
 				else
 					relative_rotation_invalid;
 				end if;
@@ -5544,11 +5544,11 @@ package body schematic_ops is
 			-- - from an attempt to rename on a sheet that does not exist 
 			-- - from the fact that the targeted sheet does not contain the targeted net 
 			if is_empty (strands_on_sheet) then
-				log (message_warning & "no strands have been renamed on sheet" & to_sheet (sheet (place)) &
+				log (WARNING, "no strands have been renamed on sheet" & to_sheet (sheet (place)) &
 					 ". Check net name and sheet number !");
 
 				-- A net without strands is useless. So the just created net must be discarded.
-				log ("deleting net " & to_string (net_name_after), log_threshold + 1);
+				log (text => "deleting net " & to_string (net_name_after), level => log_threshold + 1);
 				delete (module.nets, net_cursor_new);
 				
 			else
@@ -5617,11 +5617,11 @@ package body schematic_ops is
 				process		=> locate_strand'access);
 
 			if not strand_found then
-				log (message_warning & "strand not found at" & to_string (position => place) &
+				log (WARNING, "strand not found at" & to_string (position => place) &
 					 ". Check net name and position !");
 
 				-- A net without strands is useless. So the just created net must be discarded.
-				log ("deleting net " & to_string (net_name_after), log_threshold + 1);
+				log (text => "deleting net " & to_string (net_name_after), level => log_threshold + 1);
 				delete (module.nets, net_cursor_new);
 				
 			else -- strand found
@@ -5641,10 +5641,10 @@ package body schematic_ops is
 					
 	begin -- rename_net
 		
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " renaming net " & to_string (net_name_before) &
 			 " to " & to_string (net_name_after),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -5661,7 +5661,7 @@ package body schematic_ops is
 		-- if there is no net named net_name_after, notify operator about a new
 		-- net being created. 
 		if net_cursor_new = type_nets.no_element then
-			log ("creating new net " & to_string (net_name_after), log_threshold + 1);
+			log (text => "creating new net " & to_string (net_name_after), level => log_threshold + 1);
 
 			update_element (
 				container	=> modules,
@@ -5675,7 +5675,7 @@ package body schematic_ops is
 		-- show where the renaming will be taking place:
 		case scope is
 			when EVERYWHERE =>
-				log ("scope: everywhere -> all strands on all sheets", log_threshold);
+				log (text => "scope: everywhere -> all strands on all sheets", level => log_threshold);
 
 				update_element (
 					container	=> modules,
@@ -5683,7 +5683,7 @@ package body schematic_ops is
 					process		=> rename_everywhere'access);
 
 			when SHEET =>
-				log ("scope: all strands on sheet" & et_coordinates.to_sheet (sheet (place)), log_threshold);
+				log (text => "scope: all strands on sheet" & et_coordinates.to_sheet (sheet (place)), level => log_threshold);
 
 				update_element (
 					container	=> modules,
@@ -5691,7 +5691,7 @@ package body schematic_ops is
 					process		=> rename_on_sheet'access);
 
 			when STRAND => 
-				log ("scope: strand at" & to_string (position => place), log_threshold);
+				log (text => "scope: strand at" & to_string (position => place), level => log_threshold);
 
 				update_element (
 					container	=> modules,
@@ -5756,7 +5756,7 @@ package body schematic_ops is
 				-- This simple check is a compare of the number of strands before with the
 				-- number of strands after the deletion:
 				if length (net.strands) = strand_count_before then -- nothing deleted
-					log (message_warning & "no strands have been deleted on sheet" & to_sheet (sheet (place)) &
+					log (WARNING, "no strands have been deleted on sheet" & to_sheet (sheet (place)) &
 						". Check net name and sheet number !");
 				end if;
 			end;
@@ -5816,7 +5816,7 @@ package body schematic_ops is
 				process		=> locate_strand'access);
 
 			if not strand_found then
-				log (message_warning & "strand not found at" & to_string (position => place) &
+				log (WARNING, "strand not found at" & to_string (position => place) &
 					 ". Check net name and position !");
 			end if;
 
@@ -5829,9 +5829,9 @@ package body schematic_ops is
 					
 	begin -- delete_net
 		
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " deleting net " & to_string (net_name),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -5849,7 +5849,7 @@ package body schematic_ops is
 		-- show where the deletion will be taking place:
 		case scope is
 			when EVERYWHERE =>
-				log ("scope: everywhere -> all strands on all sheets", log_threshold);
+				log (text => "scope: everywhere -> all strands on all sheets", level => log_threshold);
 
 				update_element (
 					container	=> modules,
@@ -5857,7 +5857,7 @@ package body schematic_ops is
 					process		=> delete_everywhere'access);
 
 			when SHEET =>
-				log ("scope: all strands on sheet" & et_coordinates.to_sheet (sheet (place)), log_threshold);
+				log (text => "scope: all strands on sheet" & et_coordinates.to_sheet (sheet (place)), level => log_threshold);
 
 				update_element (
 					container	=> modules,
@@ -5865,7 +5865,7 @@ package body schematic_ops is
 					process		=> delete_on_sheet'access);
 
 			when STRAND => 
-				log ("scope: strand at" & to_string (position => place), log_threshold);
+				log (text => "scope: strand at" & to_string (position => place), level => log_threshold);
 
 				update_element (
 					container	=> modules,
@@ -5892,7 +5892,7 @@ package body schematic_ops is
 		use et_schematic.type_strands;
 
 		procedure no_segment is begin
-			log (message_warning & "segment not found at" & to_string (position => place) &
+			log (WARNING, "segment not found at" & to_string (position => place) &
 			 ". Check net name and position !");
 		end;
 
@@ -5989,10 +5989,10 @@ package body schematic_ops is
 		end query_net;
 							
 	begin -- delete_segment
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " deleting in net " & to_string (net_name) &
 			 " segment at" & to_string (position => place),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -6044,13 +6044,13 @@ package body schematic_ops is
 					procedure query_port (port_cursor : in et_libraries.type_ports.cursor) is
 						use et_libraries.type_ports;
 					begin
-						log ("port " & to_string (key (port_cursor)) &
+						log (text => "port " & to_string (key (port_cursor)) &
 							 " at" & et_coordinates.to_string (element (port_cursor).position),
-							 log_threshold + 2);
+							 level => log_threshold + 2);
 
 						-- If the port sits at x/y of place then we have a match:
 						if element (port_cursor).position = type_point (place) then
-							log (" match", log_threshold + 2);
+							log (text => " match", level => log_threshold + 2);
 							
 							-- Insert the port in the portlist to be returned:
 							et_schematic.type_ports_device.insert 
@@ -6072,8 +6072,8 @@ package body schematic_ops is
 
 					-- Look at units on the given sheet of place:
 					if sheet (unit_position) = sheet (place) then
-						log ("device " & to_string (key (device_cursor)) & " unit " &
-							 type_unit_name.to_string (key (unit_cursor)), log_threshold + 1);
+						log (text => "device " & to_string (key (device_cursor)) & " unit " &
+							 type_unit_name.to_string (key (unit_cursor)), level => log_threshold + 1);
 						log_indentation_up;
 
 						ports := ports_of_unit (
@@ -6093,7 +6093,7 @@ package body schematic_ops is
 				end query_units;
 				
 			begin -- query_devices
-				--log ("device " & to_string (key (device_cursor)), log_threshold + 1);
+				--log (text => "device " & to_string (key (device_cursor)), level => log_threshold + 1);
 				--log_indentation_up;
 
 				et_schematic.type_units.iterate (
@@ -6111,13 +6111,13 @@ package body schematic_ops is
 					use submodules.type_submodule_ports;
 					use et_general.type_net_name;
 				begin
-					log ("port " & type_net_name.to_string (key (port_cursor)) &
+					log (text => "port " & type_net_name.to_string (key (port_cursor)) &
 							" at" & et_coordinates.to_string (element (port_cursor).position),
-							log_threshold + 2);
+							level => log_threshold + 2);
 
 					-- If the port sits at x/y of place then we have a match:
 					if element (port_cursor).position = type_point (place) then
-						log (" match", log_threshold + 2);
+						log (text => " match", level => log_threshold + 2);
 						
 						-- Insert the port in the portlist to be returned:
 						et_schematic.type_ports_submodule.insert 
@@ -6137,7 +6137,7 @@ package body schematic_ops is
 
 				-- Look at submodules on the given sheet of place:
 				if sheet (submodule_position) = sheet (place) then
-					log ("submodule " & to_string (key (submodule_cursor)), log_threshold + 1);
+					log (text => "submodule " & to_string (key (submodule_cursor)), level => log_threshold + 1);
 					log_indentation_up;
 
 					ports := element (submodule_cursor).ports;
@@ -6159,7 +6159,7 @@ package body schematic_ops is
 
 				-- Look at netchangers on the given sheet of place:
 				if sheet (netchanger_position) = sheet (place) then
-					log ("netchanger " & submodules.to_string (key (netchanger_cursor)), log_threshold + 1);
+					log (text => "netchanger " & submodules.to_string (key (netchanger_cursor)), level => log_threshold + 1);
 					log_indentation_up;	
 					
 					-- get the absolute port positions of the netchanger
@@ -6172,9 +6172,9 @@ package body schematic_ops is
 					-- First test whether the master port sits here:
 					if ports.master = type_point (place) then
 
-						log ("port " & submodules.to_string (submodules.MASTER) &
+						log (text => "port " & submodules.to_string (submodules.MASTER) &
 							" at" & et_coordinates.to_string (ports.master),
-							log_threshold + 2);
+							level => log_threshold + 2);
 						
 						-- Insert the port in the portlist to be returned:
 						et_schematic.type_ports_netchanger.insert 
@@ -6190,9 +6190,9 @@ package body schematic_ops is
 					-- Second, test wheter slave port sits here:
 					elsif ports.slave = type_point (place) then
 
-						log ("port " & submodules.to_string (submodules.SLAVE) &
+						log (text => "port " & submodules.to_string (submodules.SLAVE) &
 							" at" & et_coordinates.to_string (ports.slave),
-							log_threshold + 2);
+							level => log_threshold + 2);
 						
 						-- Insert the port in the portlist to be returned:
 						et_schematic.type_ports_netchanger.insert 
@@ -6217,9 +6217,9 @@ package body schematic_ops is
 		end query_module;
 		
 	begin -- ports_at_place
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " locating ports at" & to_string (position => place),
-			 log_threshold);
+			 level => log_threshold);
 
 		log_indentation_up;
 		
@@ -6252,7 +6252,7 @@ package body schematic_ops is
 		use et_schematic.type_strands;
 
 		procedure no_segment is begin
-			log (message_warning & "segment not found at" & to_string (position => place) &
+			log (WARNING, "segment not found at" & to_string (position => place) &
 			 ". Check net name and position !");
 		end;
 
@@ -6441,7 +6441,7 @@ package body schematic_ops is
 								case coordinates is
 									when ABSOLUTE =>
 										-- CS: currently absolute dragging at the center is not possible.
-										log (message_warning & "absolute dragging at center not possible !");
+										log (WARNING, "absolute dragging at center not possible !");
 
 									when RELATIVE =>
 										move (
@@ -6591,7 +6591,7 @@ package body schematic_ops is
 								segment	=> segment_cursor);
 
 							-- depending on zone, drag start point, end point or both
-							log ("dragging at " & type_zone'image (zone), log_threshold + 2);
+							log (text => "dragging at " & type_zone'image (zone), level => log_threshold + 2);
 
 							-- Test whether the zone is movable. If not movable, nothing happens.
 							if movable (element (segment_cursor), zone) then
@@ -6608,7 +6608,7 @@ package body schematic_ops is
 									position	=> segment_cursor,
 									process		=> move_targeted_segment'access);
 							else
-								log (message_warning & "segment is tied to a port. Dragging not possible !");
+								log (WARNING, "segment is tied to a port. Dragging not possible !");
 							end if;
 
 							-- signal the calling unit to abort the search
@@ -6694,16 +6694,16 @@ package body schematic_ops is
 	begin -- drag_segment
 		case coordinates is
 			when ABSOLUTE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" dragging in net " & to_string (net_name) &
 					" segment at" & to_string (position => place) &
-					" to" & et_coordinates.to_string (point), log_threshold);
+					" to" & et_coordinates.to_string (point), level => log_threshold);
 
 			when RELATIVE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" dragging in net " & to_string (net_name) &
 					" segment at" & to_string (position => place) &
-					" by" & et_coordinates.to_string (point), log_threshold);
+					" by" & et_coordinates.to_string (point), level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -6757,13 +6757,13 @@ package body schematic_ops is
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 				begin -- query_segments
 					while segment_cursor /= type_net_segments.no_element loop
-						log ("segment " & to_string (segment_cursor), log_threshold + 2);
+						log (text => "segment " & to_string (segment_cursor), level => log_threshold + 2);
 						
 						if on_segment (
 							point 	=> type_point (place),
 							segment	=> segment_cursor) then
 
-							log (" match", log_threshold + 2);
+							log (text => " match", level => log_threshold + 2);
 
 							match := true; -- signals the calling unit to cancel the search
 
@@ -6784,7 +6784,7 @@ package body schematic_ops is
 					-- Look at strands on the given sheet only:
 					if sheet (element (strand_cursor).position) = sheet (place) then
 
-						log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 						log_indentation_up;
 						
 						type_strands.query_element (
@@ -6803,9 +6803,9 @@ package body schematic_ops is
 		end query_module;
 		
 	begin -- nets_at_place
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " locating nets at" & to_string (position => place),
-			 log_threshold);
+			 level => log_threshold);
 
 		log_indentation_up;
 
@@ -7172,7 +7172,7 @@ package body schematic_ops is
 				end merge;
 					
 			begin -- merge_strands
-				log ("merging strands ...", log_threshold + 3);
+				log (text => "merging strands ...", level => log_threshold + 3);
 				
 				-- Append segments_source to the strand indicated by strand_at_end:
 				type_strands.update_element (
@@ -7218,7 +7218,7 @@ package body schematic_ops is
 			--    or whether the segment is going to start a new strand.
 			
 			if attach_to_strand then
-				log ("attaching segment to strand ...", log_threshold + 2);
+				log (text => "attaching segment to strand ...", level => log_threshold + 2);
 				log_indentation_up;
 				
 				-- Obtain the cursor to the strand that crosses the start point:
@@ -7226,8 +7226,8 @@ package body schematic_ops is
 				
 				if not dead_end (strand_at_start) then
 					-- The start point will be connected with a strand:
-					log ("with its start point at " & 
-						 to_string (position => start_point), log_threshold + 3);
+					log (text => "with its start point at " & 
+						 to_string (position => start_point), level => log_threshold + 3);
 
 					-- If required, prepare placing a junction at start point of segment.
 					-- The junction will be placed later.
@@ -7256,12 +7256,12 @@ package body schematic_ops is
 
 				if not dead_end (strand_at_end) then
 					-- The end point will be connected with a strand:
-					log ("with its end point at " & to_string (
+					log (text => "with its end point at " & to_string (
 								position => to_coordinates (
 									sheet => sheet (start_point),
 									point => end_point)
 									),
-						 log_threshold + 3);
+						 level => log_threshold + 3);
 
 					-- If required, prepare placing a junction at end point of segment.
 					-- The junction will be placed later.
@@ -7325,16 +7325,16 @@ package body schematic_ops is
 			exception
 				when event: others =>
 					log_indentation_reset;
-					log (ada.exceptions.exception_information (event), console => true);
+					log (text => ada.exceptions.exception_information (event), console => true);
 					raise;
 			
 		end extend_net;
 		
 	begin -- draw_net
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" drawing net " & to_string (net_name) &
 			" segment from" & to_string (position => start_point) &
-			" to" & et_coordinates.to_string (end_point), log_threshold);
+			" to" & et_coordinates.to_string (end_point), level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -7355,7 +7355,7 @@ package body schematic_ops is
 		if net_cursor = type_nets.no_element then
 
 			-- net does not exists yet
-			log ("creating new net " & to_string (net_name), log_threshold + 1);
+			log (text => "creating new net " & to_string (net_name), level => log_threshold + 1);
 
 			update_element (
 				container	=> modules,
@@ -7363,7 +7363,7 @@ package body schematic_ops is
 				process		=> create_net'access);
 		else
 			-- net exists. extend the net by the given net segment
-			log ("extending net " & to_string (net_name), log_threshold + 1);
+			log (text => "extending net " & to_string (net_name), level => log_threshold + 1);
 			log_indentation_up;
 			
 			update_element (
@@ -7515,13 +7515,13 @@ package body schematic_ops is
 		end query_nets;
 				
 	begin -- place_net_label
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" labeling segment at"  &
 			et_coordinates.to_string (position => segment_position) &
 			" with " & to_string (appearance) & " label at" &
 			et_coordinates.to_string (point => label_position) &
 			" rotation" & to_string (angle => rotation),
-			log_threshold);
+			level => log_threshold);
 		
 		log_indentation_up;
 
@@ -7533,11 +7533,11 @@ package body schematic_ops is
 
 		case length (nets) is
 			when 0 =>
-				log (message_warning & "no net found at" & no_label_placed);
+				log (WARNING, "no net found at" & no_label_placed);
 
 			when 1 => 
 				net_name := element (nets.first);
-				log ("net name " & to_string (net_name), log_threshold + 1);
+				log (text => "net name " & to_string (net_name), level => log_threshold + 1);
 				
 				-- Set the cursor to the net.
 				net_cursor := locate_net (module_cursor, net_name);
@@ -7548,7 +7548,7 @@ package body schematic_ops is
 					process		=> query_nets'access);
 
 			when others =>
-				log (message_warning & "more than one net found at" & no_label_placed);
+				log (WARNING, "more than one net found at" & no_label_placed);
 				-- CS show the net names
 				
 		end case;
@@ -7646,10 +7646,10 @@ package body schematic_ops is
 		end query_nets;
 		
 	begin -- delete_net_label
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" deleting net label at" &
 			et_coordinates.to_string (position => position),
-			log_threshold);
+			level => log_threshold);
 		
 		log_indentation_up;
 
@@ -7662,7 +7662,7 @@ package body schematic_ops is
 			process		=> query_nets'access);
 
 		if not label_found then
-			log (message_warning & "no net label found at given position !");
+			log (WARNING, "no net label found at given position !");
 		end if;
 		
 		log_indentation_down;
@@ -7717,14 +7717,14 @@ package body schematic_ops is
 		end add;
 		
 	begin -- add_submodule
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" adding submodule " & to_string (file) & 
 			" instance " & enclose_in_quotes (to_string (instance)),
-			log_threshold);
+			level => log_threshold);
 
-		log (" at" & to_string (position => position) &
+		log (text => " at" & to_string (position => position) &
 			to_submodule_size (size),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -7804,13 +7804,13 @@ package body schematic_ops is
 								item		=> (instance, port) -- OSC1, clock_output
 								) then
 
-								log (" already there -> skipped", log_threshold + 3);
+								log (text => " already there -> skipped", level => log_threshold + 3);
 							else
 								type_ports_submodule.insert (
 									container	=> segment.ports_submodules,
 									new_item	=> (instance, port)); -- OSC1, clock_output
 
-								log (" sits on segment -> inserted", log_threshold + 3);
+								log (text => " sits on segment -> inserted", level => log_threshold + 3);
 							end if;
 							
 							-- signal iterations in upper levels to cancel
@@ -7824,7 +7824,7 @@ package body schematic_ops is
 
 					-- On the first segment, where the port sits on, this loop ends prematurely.
 					while not port_processed and segment_cursor /= type_net_segments.no_element loop
-						log ("probing " & to_string (segment_cursor), log_threshold + 2);
+						log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 						
 						type_net_segments.update_element (
 							container	=> strand.segments,
@@ -7844,11 +7844,11 @@ package body schematic_ops is
 
 					-- We pick out only the strands on the targeted sheet:
 					if et_coordinates.sheet (element (strand_cursor).position) = sheet (position) then
-						log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 						log_indentation_up;
-						log ("strand " & to_string (position => element (strand_cursor).position),
-							log_threshold + 1);
+						log (text => "strand " & to_string (position => element (strand_cursor).position),
+							level => log_threshold + 1);
 
 						update_element (
 							container	=> net.strands,
@@ -7877,8 +7877,8 @@ package body schematic_ops is
 		end query_nets;
 		
 	begin -- insert_port
-		log ("inserting submodule port " & enclose_in_quotes (to_string (port)) & " in net at" & 
-			 to_string (position => position) & " ...", log_threshold);
+		log (text => "inserting submodule port " & enclose_in_quotes (to_string (port)) & " in net at" & 
+			 to_string (position => position) & " ...", level => log_threshold);
 		log_indentation_up;
 		
 		update_element (
@@ -7979,11 +7979,11 @@ package body schematic_ops is
 		end query_submodules;
 
 	begin -- add_port
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" submodule instance " & enclose_in_quotes (to_string (instance)) & 
 			" adding port " & enclose_in_quotes (to_string (port_name)) &
 			" at" & to_string (position),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate parent module
 		module_cursor := locate_module (module_name);
@@ -8078,7 +8078,7 @@ package body schematic_ops is
 
 					-- On the first segment, where the port sits on, this loop ends prematurely.
 					while not port_processed and segment_cursor /= type_net_segments.no_element loop
-						log ("probing " & to_string (segment_cursor), log_threshold + 2);
+						log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 						
 						type_net_segments.update_element (
 							container	=> strand.segments,
@@ -8098,11 +8098,11 @@ package body schematic_ops is
 
 					-- We pick out only the strands on the targeted sheet:
 					if et_coordinates.sheet (element (strand_cursor).position) = sheet (position) then
-						log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 						log_indentation_up;
-						log ("strand " & to_string (position => element (strand_cursor).position),
-							log_threshold + 1);
+						log (text => "strand " & to_string (position => element (strand_cursor).position),
+							level => log_threshold + 1);
 
 						update_element (
 							container	=> net.strands,
@@ -8133,7 +8133,7 @@ package body schematic_ops is
 		end query_nets;
 		
 	begin -- delete_submodule_port
-		log ("deleting submodule port in nets ...", log_threshold);
+		log (text => "deleting submodule port in nets ...", level => log_threshold);
 
 		log_indentation_up;
 		
@@ -8209,10 +8209,10 @@ package body schematic_ops is
 		end query_submodules;
 
 	begin -- delete_port
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" submodule instance " & enclose_in_quotes (to_string (instance)) & 
 			" deleting port " & enclose_in_quotes (to_string (port_name)),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate parent module
 		module_cursor := locate_module (module_name);
@@ -8360,16 +8360,16 @@ package body schematic_ops is
 	begin -- move_port
 		case coordinates is
 			when ABSOLUTE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" moving port " & enclose_in_quotes (to_string (port_name)) &
 					" to" & et_coordinates.to_string (point),
-					log_threshold);
+					level => log_threshold);
 
 			when RELATIVE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" moving port " & enclose_in_quotes (to_string (port_name)) &
 					" by" & et_coordinates.to_string (point),
-					log_threshold);
+					level => log_threshold);
 
 		end case;
 
@@ -8443,15 +8443,15 @@ package body schematic_ops is
 						
 						-- if port sits on a start point of a segment -> move start point
 						if segment.coordinates_start = type_point (pos_before) then
-							log ("move segment start point from" & 
+							log (text => "move segment start point from" & 
 								to_string (segment.coordinates_start),
-								log_threshold + 3);
+								level => log_threshold + 3);
 
 							segment.coordinates_start := type_point (pos_after);
 
-							log ("to" & 
+							log (text => "to" & 
 								to_string (segment.coordinates_start),
-								log_threshold + 3);
+								level => log_threshold + 3);
 
 							-- signal iterations in upper level to cancel
 							drag_processed := true;
@@ -8459,15 +8459,15 @@ package body schematic_ops is
 
 						-- if port sits on an end point of a segment -> move end point
 						if segment.coordinates_end = type_point (pos_before) then
-							log ("move segment end point from" & 
+							log (text => "move segment end point from" & 
 								to_string (segment.coordinates_end),
-								log_threshold + 3);
+								level => log_threshold + 3);
 
 							segment.coordinates_end := type_point (pos_after);
 
-							log ("to" & 
+							log (text => "to" & 
 								to_string (segment.coordinates_end),
-								log_threshold + 3);
+								level => log_threshold + 3);
 							
 							-- signal iterations in upper level to cancel
 							drag_processed := true;
@@ -8484,7 +8484,7 @@ package body schematic_ops is
 					-- meeting here must be dragged.
 					while segment_cursor /= type_net_segments.no_element loop
 
-						log ("probing " & to_string (segment_cursor), log_threshold + 2);
+						log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 						
 						update_element (
 							container	=> strand.segments,
@@ -8508,11 +8508,11 @@ package body schematic_ops is
 					
 					-- We pick out only the strands on the targeted sheet:
 					if et_coordinates.sheet (element (strand_cursor).position) = sheet (pos_before) then
-						log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 						log_indentation_up;
-						log ("strand " & to_string (position => element (strand_cursor).position),
-							log_threshold + 1);
+						log (text => "strand " & to_string (position => element (strand_cursor).position),
+							level => log_threshold + 1);
 					
 						-- Iterate in segments of strand. If point sits on any segment
 						-- the flag drag_processed goes true.
@@ -8548,8 +8548,8 @@ package body schematic_ops is
 		end query_nets;
 
 	begin -- drag_net_segments
-		log ("dragging net segments with submodule ports on sheet" & 
-			 to_sheet (sheet (pos_before)) & " ...", log_threshold);
+		log (text => "dragging net segments with submodule ports on sheet" & 
+			 to_sheet (sheet (pos_before)) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		update_element (
@@ -8577,7 +8577,7 @@ package body schematic_ops is
 		use type_ports_netchanger;
 		
 	begin -- movable_test
-		log ("movable test ...", log_threshold);
+		log (text => "movable test ...", level => log_threshold);
 		log_indentation_up;
 
 		-- If no net segments start or end at given point then this test won't
@@ -8774,16 +8774,16 @@ package body schematic_ops is
 	begin -- drag_port
 		case coordinates is
 			when ABSOLUTE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" dragging port " & enclose_in_quotes (to_string (port_name)) &
 					" to" & et_coordinates.to_string (point),
-					log_threshold);
+					level => log_threshold);
 
 			when RELATIVE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" dragging port " & enclose_in_quotes (to_string (port_name)) &
 					" by" & et_coordinates.to_string (point),
-					log_threshold);
+					level => log_threshold);
 
 		end case;
 
@@ -8848,7 +8848,7 @@ package body schematic_ops is
 					log_indentation_up;
 
 					while segment_cursor /= type_net_segments.no_element loop
-						log ("probing " & to_string (segment_cursor), log_threshold + 2);
+						log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 						
 						type_net_segments.update_element (
 							container	=> strand.segments,
@@ -8868,11 +8868,11 @@ package body schematic_ops is
 
 					-- We pick out only the strands on the targeted sheet:
 					if et_coordinates.sheet (element (strand_cursor).position) = sheet (position) then
-						log ("net " & to_string (key (net_cursor)), log_threshold + 1);
+						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 
 						log_indentation_up;
-						log ("strand " & to_string (position => element (strand_cursor).position),
-							log_threshold + 1);
+						log (text => "strand " & to_string (position => element (strand_cursor).position),
+							level => log_threshold + 1);
 
 						update_element (
 							container	=> net.strands,
@@ -8901,7 +8901,7 @@ package body schematic_ops is
 		end query_nets;
 		
 	begin -- delete_ports
-		log ("deleting submodule ports in nets ...", log_threshold);
+		log (text => "deleting submodule ports in nets ...", level => log_threshold);
 		
 		update_element (
 			container	=> modules,
@@ -8945,9 +8945,9 @@ package body schematic_ops is
 		end query_submodules;
 	
 	begin -- delete_submodule
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" deleting submodule instance " & enclose_in_quotes (to_string (instance)),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -9016,7 +9016,7 @@ package body schematic_ops is
 				exception
 					when event: others =>
 						log (ERROR, "coordinates invalid !", console => true); -- CS required more details
-						log (ada.exceptions.exception_information (event), console => true);
+						log (text => ada.exceptions.exception_information (event), console => true);
 						raise;
 				
 			end move;
@@ -9095,16 +9095,16 @@ package body schematic_ops is
 	begin -- move_submodule
 		case coordinates is
 			when ABSOLUTE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" moving submodule instance " & to_string (instance) &
 					" to sheet" & to_sheet (sheet) &
-					et_coordinates.to_string (point), log_threshold);
+					et_coordinates.to_string (point), level => log_threshold);
 
 			when RELATIVE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" moving submodule instance " & to_string (instance) &
 					" by " & to_sheet_relative (sheet) & " sheet(s)" &
-					et_coordinates.to_string (point), log_threshold);
+					et_coordinates.to_string (point), level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -9249,7 +9249,7 @@ package body schematic_ops is
 				exception
 					when event: others =>
 						log (ERROR, "coordinates invalid !", console => true); -- CS required more details
-						log (ada.exceptions.exception_information (event), console => true);
+						log (text => ada.exceptions.exception_information (event), console => true);
 						raise;
 
 			end move_box;
@@ -9301,14 +9301,14 @@ package body schematic_ops is
 	begin -- drag_submodule
 		case coordinates is
 			when ABSOLUTE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" dragging submodule instance " & to_string (instance) &
-					" to" & et_coordinates.to_string (point), log_threshold);
+					" to" & et_coordinates.to_string (point), level => log_threshold);
 
 			when RELATIVE =>
-				log ("module " & to_string (module_name) &
+				log (text => "module " & to_string (module_name) &
 					" dragging submodule instance " & to_string (instance) &
-					" by " & et_coordinates.to_string (point), log_threshold);
+					" by " & et_coordinates.to_string (point), level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -9430,10 +9430,10 @@ package body schematic_ops is
 		end query_submodules;
 		
 	begin -- copy_submodule
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " copying submodule instance " & enclose_in_quotes (to_string (instance_origin)) &
 			 " to instance " & enclose_in_quotes (to_string (instance_new)) &
-			" at" & et_coordinates.to_string (position => destination), log_threshold);
+			" at" & et_coordinates.to_string (position => destination), level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -9533,10 +9533,10 @@ package body schematic_ops is
 		end query_submodules;
 		
 	begin -- rename_submodule
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " renaming submodule instance " & enclose_in_quotes (to_string (instance_old)) &
 			 " to " & to_string (instance_new),
-			 log_threshold);
+			 level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -9595,7 +9595,7 @@ package body schematic_ops is
 				port_cursor : type_submodule_ports.cursor := submodule.ports.first;
 
 			begin -- set_file
-				log ("testing ports ...", log_threshold + 1);
+				log (text => "testing ports ...", level => log_threshold + 1);
 				log_indentation_up;
 				
 				test_mod.file := file; -- assign the file to the test submodule
@@ -9613,7 +9613,7 @@ package body schematic_ops is
 				-- have been found in the submodule schematic, overwrite the given 
 				-- submodule with the test module.
 				while port_cursor /= type_submodule_ports.no_element loop
-					log (to_string (key (port_cursor)), log_threshold + 2);
+					log (text => to_string (key (port_cursor)), level => log_threshold + 2);
 
 					if not exists (module => test_mod_cursor, port => key (port_cursor)) then
  						port_not_provided (key (port_cursor));
@@ -9630,7 +9630,7 @@ package body schematic_ops is
 				exception
 					when event: others =>
 						log_indentation_reset;
-						log (ada.exceptions.exception_information (event), console => true);
+						log (text => ada.exceptions.exception_information (event), console => true);
 						raise;
 				
 			end;
@@ -9652,10 +9652,10 @@ package body schematic_ops is
 		end query_submodules;
 		
 	begin -- set_submodule_file
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" setting instance " & enclose_in_quotes (to_string (instance)) &
 			" file to " & to_string (file),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -9719,9 +9719,9 @@ package body schematic_ops is
 		end create;
 			
 	begin -- create_assembly_variant
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" creating new assembly variant " & enclose_in_quotes (to_variant (variant_name)),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -9764,9 +9764,9 @@ package body schematic_ops is
 		end delete;
 		
 	begin -- delete_assembly_variant
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" deleting assembly variant " & enclose_in_quotes (to_variant (variant_name)),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -9820,10 +9820,10 @@ package body schematic_ops is
 		end describe;
 
 	begin -- describe_assembly_variant
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
 			 " description " & enclose_in_quotes (to_string (description)),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -9915,13 +9915,13 @@ package body schematic_ops is
 		end mount;
 
 	begin -- mount_device
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
 			 " mount device " & to_string (device) &
 			 " value " & to_string (value) &
 			 " partcode " & to_string (partcode) &
 			 write_purpose,
-			log_threshold);
+			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -10002,10 +10002,10 @@ package body schematic_ops is
 		end unmount;
 
 	begin -- unmount_device
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
 			 " unmounting device " & to_string (device),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -10081,10 +10081,10 @@ package body schematic_ops is
 		end remove;
 
 	begin -- remove_device
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
 			 " removing device " & to_string (device),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -10166,11 +10166,11 @@ package body schematic_ops is
 		end query_variants;
 		
 	begin -- mount_submodule
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_parent)) &
 			 " submodule instance " & enclose_in_quotes (to_string (instance)) &
 			 " mounting variant " & enclose_in_quotes (to_variant (variant_submod)),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -10258,10 +10258,10 @@ package body schematic_ops is
 		end query_variants;
 		
 	begin -- remove_submodule
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" variant " & enclose_in_quotes (to_variant (variant_parent)) &
 			" removing variant of submodule instance " & enclose_in_quotes (to_string (instance)),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -10323,10 +10323,10 @@ package body schematic_ops is
 		end query_submodules;
 		
 	begin -- set_offset
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" submodule instance " & enclose_in_quotes (to_string (instance)) &
 			" setting device name offset to" & et_libraries.to_string (offset),
-			log_threshold);
+			level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -10403,15 +10403,15 @@ package body schematic_ops is
 
 				result := true; -- successful renaming
 			else
-				log ("device name " & to_string (device_name_after) & 
-					" already used -> skipped", log_threshold + 1);
+				log (text => "device name " & to_string (device_name_after) & 
+					" already used -> skipped", level => log_threshold + 1);
 			end if;
 		end query_devices;
 
 	begin -- rename_device
-		log ("renaming " & to_string (device_name_before) & " to " & 
+		log (text => "renaming " & to_string (device_name_before) & " to " & 
 			to_string (device_name_after),
-			log_threshold);
+			level => log_threshold);
 
 		log_indentation_up;
 		
@@ -10489,14 +10489,14 @@ package body schematic_ops is
 				end;
 				
 			begin -- mark_units_done
-				log ("marking all units done ...", log_threshold + 2);
+				log (text => "marking all units done ...", level => log_threshold + 2);
 				
 				while cursor_done /= numbering.type_devices.no_element loop
 					
 					if element (cursor_done).name = name_before then -- IC5
 						
-						log (" unit " & to_string (element (cursor_done).unit),
-							 log_threshold + 2);
+						log (text => " unit " & to_string (element (cursor_done).unit),
+							 level => log_threshold + 2);
 
 						update_element (
 							container	=> devices,
@@ -10518,8 +10518,8 @@ package body schematic_ops is
 					-- If the current device is in given category:
 					if category (name_before) = cat then
 
-						log ("device " & to_string (name_before) &
-							" unit " & to_string (element (cursor).unit), log_threshold +1);
+						log (text => "device " & to_string (name_before) &
+							" unit " & to_string (element (cursor).unit), level => log_threshold +1);
 						log_indentation_up;
 						
 						update_index;
@@ -10565,16 +10565,16 @@ package body schematic_ops is
 
 			exception when event:
 				others => 
-					log (ada.exceptions.exception_message (event), console => true);
+					log (text => ada.exceptions.exception_message (event), console => true);
 				raise;
 			
 		end renumber;
 		
 	begin -- renumber_devices
-		log ("module " & to_string (module_name) &
+		log (text => "module " & to_string (module_name) &
 			" renumbering devices." &
 			" step width per sheet" & et_libraries.to_string (step_width),
-			log_threshold);
+			level => log_threshold);
 
 		log_indentation_up;
 		
@@ -10595,13 +10595,13 @@ package body schematic_ops is
 				
 				when others =>
 
-					log ("category" & to_string (type_device_category'val (cat)), log_threshold + 1);
+					log (text => "category" & to_string (type_device_category'val (cat)), level => log_threshold + 1);
 
 					log_indentation_up;
 					if renumber (type_device_category'val (cat)) = false then
 						-- first iteration failed. start a second:
 						
-						log ("another iteration required", log_threshold + 2);
+						log (text => "another iteration required", level => log_threshold + 2);
 						log_indentation_up;
 						
 						if renumber (type_device_category'val (cat)) = false then
@@ -10652,19 +10652,19 @@ package body schematic_ops is
 			end loop;
 
 			if length (module.devices) > 0 then
-				log ("lowest" & et_libraries.to_string (index_range.lowest) &
+				log (text => "lowest" & et_libraries.to_string (index_range.lowest) &
 					 " highest" & et_libraries.to_string (index_range.highest),
-					 log_threshold + 1);
+					 level => log_threshold + 1);
 			else
-				log (message_warning & "no devices found !");
+				log (WARNING, "no devices found !");
 			end if;
 
 		end query_devices;
 		
 	begin -- device_index_range
-		log ("module " & enclose_in_quotes (to_string (key (module_cursor))),
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))),
 			--" obtaining device index range ...",
-			log_threshold);
+			level => log_threshold);
 
 		log_indentation_up;
 		
@@ -10705,8 +10705,8 @@ package body schematic_ops is
 		end query_submodules;
 		
 	begin -- calculate_device_index_ranges
-		log ("module " & enclose_in_quotes (to_string (module_name)) &
-			" calculating ranges of device indexes ...", log_threshold);
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+			" calculating ranges of device indexes ...", level => log_threshold);
 		log_indentation_up;
 
 		-- Calculate the index range per module and store it in 
@@ -10786,7 +10786,7 @@ package body schematic_ops is
 						console => true);
 					-- CS: show the net, sheet, xy where the port is in use already
 
-					log (ada.exceptions.exception_message (event), console => true);
+					log (text => ada.exceptions.exception_message (event), console => true);
 			end collect_device_port;
 
 			-- Here we collect all ports of submodules (like MOT_DRV reset) across all the nets.
@@ -10811,7 +10811,7 @@ package body schematic_ops is
 						console => true);
 					-- CS: show the net, sheet, xy where the port is in use already
 
-					log (ada.exceptions.exception_message (event), console => true);
+					log (text => ada.exceptions.exception_message (event), console => true);
 			end collect_submodule_port;
 
 			-- Here we collect all ports of netchangers (like netchanger port master/slave) across all the nets.
@@ -10836,7 +10836,7 @@ package body schematic_ops is
 						console => true);
 					-- CS: show the net, sheet, xy where the port is in use already
 
-					log (ada.exceptions.exception_message (event), console => true);
+					log (text => ada.exceptions.exception_message (event), console => true);
 			end collect_netchanger_port;
 			
 			procedure query_net (net_cursor : in type_nets.cursor) is
@@ -10856,8 +10856,8 @@ package body schematic_ops is
 
 								procedure query_ports_devices (segment : in type_net_segment) is
 									procedure query_port (port_cursor : in type_ports_device.cursor) is begin
-										log ("device " & et_libraries.to_string (element (port_cursor).device_name) &
-											 " port " & et_libraries.to_string (element (port_cursor).port_name), log_threshold + 4);
+										log (text => "device " & et_libraries.to_string (element (port_cursor).device_name) &
+											 " port " & et_libraries.to_string (element (port_cursor).port_name), level => log_threshold + 4);
 
 										if not exists_device_port (
 											module_cursor	=> module_cursor,
@@ -10882,8 +10882,8 @@ package body schematic_ops is
 
 								procedure query_ports_submodules (segment : in type_net_segment) is
 									procedure query_port (port_cursor : in type_ports_submodule.cursor) is begin
-										log ("submodule " & et_general.to_string (element (port_cursor).module_name) &
-											 " port " & et_general.to_string (element (port_cursor).port_name), log_threshold + 4);
+										log (text => "submodule " & et_general.to_string (element (port_cursor).module_name) &
+											 " port " & et_general.to_string (element (port_cursor).port_name), level => log_threshold + 4);
 
 										if not exists_submodule_port (
 											module_cursor	=> module_cursor,
@@ -10908,8 +10908,8 @@ package body schematic_ops is
 
 								procedure query_ports_netchangers (segment : in type_net_segment) is
 									procedure query_port (port_cursor : in type_ports_netchanger.cursor) is begin
-										log ("netchanger " & submodules.to_string (element (port_cursor).index) &
-											 " port " & submodules.to_string (element (port_cursor).port), log_threshold + 4);
+										log (text => "netchanger " & submodules.to_string (element (port_cursor).index) &
+											 " port " & submodules.to_string (element (port_cursor).port), level => log_threshold + 4);
 
 										if not exists_netchanger (
 											module_cursor	=> module_cursor,
@@ -10931,7 +10931,7 @@ package body schematic_ops is
 								end query_ports_netchangers;
 								
 							begin -- query_segment
-								log (to_string (segment_cursor), log_threshold + 3);
+								log (text => to_string (segment_cursor), level => log_threshold + 3);
 
 								-- Check ports of devices. Issues error if device and port
 								-- not found in module.devices.
@@ -10958,7 +10958,7 @@ package body schematic_ops is
 						end query_segments;
 
 					begin -- query_strand
-						log ("strand " & to_string (position => element (strand_cursor).position), log_threshold + 2);
+						log (text => "strand " & to_string (position => element (strand_cursor).position), level => log_threshold + 2);
 						log_indentation_up;
 						
 						query_element (
@@ -10975,7 +10975,7 @@ package body schematic_ops is
 				end query_strands;
 
 			begin -- query_net
-				log ("net " & et_general.to_string (key (net_cursor)), log_threshold + 1);
+				log (text => "net " & et_general.to_string (key (net_cursor)), level => log_threshold + 1);
 
 				query_element (
 					position	=> net_cursor,
@@ -10988,7 +10988,7 @@ package body schematic_ops is
 		end query_nets;
 
 	begin -- check_integrity
-		log ("module " & to_string (module_name) & " integrity check ...", log_threshold);
+		log (text => "module " & to_string (module_name) & " integrity check ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- locate module
@@ -11005,13 +11005,13 @@ package body schematic_ops is
 		end if;
 
 		if errors > 0 then
-			log (message_warning & "integrity check found errors !");
-			log ("errors   :" & natural'image (errors));
+			log (WARNING, "integrity check found errors !");
+			log (text => "errors   :" & natural'image (errors));
 		end if;
 
 		if warnings > 0 then
-			log (message_warning & "integrity check issued warnings !");
-			log ("warnings :" & natural'image (warnings));
+			log (WARNING, "integrity check issued warnings !");
+			log (text => "warnings :" & natural'image (warnings));
 		end if;
 
 		log_indentation_down;

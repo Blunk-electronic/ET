@@ -83,9 +83,9 @@ package body numbering is
 					inserted : boolean := false;
 					cursor_sort : type_devices.cursor;
 				begin -- sort
-					log ("unit " & to_string (unit_name) &
+					log (text => "unit " & to_string (unit_name) &
 						" at " & to_string (position => unit_position),
-						 log_threshold + 2);
+						 level => log_threshold + 2);
 					
 					numbering.type_devices.insert 
 						(
@@ -101,7 +101,7 @@ package body numbering is
 						);
 
 					if not inserted then
-						log (message_error & "device " & to_string (device_name) &
+						log (ERROR, "device " & to_string (device_name) &
 							 " unit " & to_string (unit_name) &
 							 " at " & to_string (position => unit_position) &
 							 " sits on top of another unit !",
@@ -113,8 +113,8 @@ package body numbering is
 				
 			begin -- query_units
 				
-				log ("device " & to_string (device_name), -- R1, IC3
-					 log_threshold + 1);
+				log (text => "device " & to_string (device_name), -- R1, IC3
+					 level => log_threshold + 1);
 				
 				log_indentation_up;
 				
@@ -132,7 +132,7 @@ package body numbering is
 		end query_devices;
 
 	begin -- sort_by_coordinates
-		log ("sorting devices/units by schematic coordinates ...", log_threshold);
+		log (text => "sorting devices/units by schematic coordinates ...", level => log_threshold);
 
 		log_indentation_up;
 		
