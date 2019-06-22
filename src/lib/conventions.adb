@@ -781,8 +781,7 @@ package body conventions is
 
 		exception
 			when others =>
-				log_indentation_reset;
-				log (message_error & category & " is not a supported component category !",
+				log (ERROR, category & " is not a supported device category !",
 					 console => true);
 
 				log ("supported categories are:");
@@ -821,7 +820,7 @@ package body conventions is
 		-- If prefix not specified (or no conventions at all) return category UNKNOWN.
 		-- Otherwise return the respecitve category.
 		if prefix_cursor = type_component_prefixes.no_element then
-			log (message_warning & " category of prefix " 
+			log (WARNING, "category of prefix " 
 				 & et_libraries.to_string (prefix)
 				 & latin_1.space
 				 & to_string (UNKNOWN) & " !");
@@ -847,7 +846,7 @@ package body conventions is
 		-- If prefix not specified (or no conventions at all) return category UNKNOWN.
 		-- Otherwise return the respecitve category.
 		if prefix_cursor = type_component_prefixes.no_element then
-			log (message_warning & " category of component " 
+			log (WARNING, " category of device " 
 				 & et_libraries.to_string (reference)
 				 & latin_1.space & to_string (UNKNOWN) & " !");
 			return UNKNOWN;
@@ -1832,8 +1831,7 @@ package body conventions is
 
 		exception
 			when others =>
-				log_indentation_reset;
-				log (message_error & unit & " is not a supported unit of measurement !",
+				log (ERROR, unit & " is not a supported unit of measurement !",
 					 console => true);
 
 				log ("supported units are:");
@@ -1866,8 +1864,7 @@ package body conventions is
 			test => outside);
 
 		if invalid_character_position > 0 then
-			log_indentation_reset;
-			log (message_error & "abbrevaton of unit of measurement " 
+			log (ERROR, "abbrevaton of unit of measurement " 
 				& to_string (abbrevation) 
 				& " has invalid character at position"
 				& natural'image (invalid_character_position),
@@ -1925,8 +1922,7 @@ package body conventions is
 
 		exception
 			when others =>
-				log_indentation_reset;
-				log (message_error & text & " is not a supported text category !",
+				log (ERROR, text & " is not a supported text category !",
 					 console => true);
 
 				-- show supported text categories
@@ -1964,7 +1960,7 @@ package body conventions is
 			if cursor /= no_element then
 			
 				if size /= element (cursor) then
-					log (message_warning & "Text size " & to_string (size) 
+					log (WARNING, "Text size " & to_string (size) 
 						& " invalid for category " & to_string (category) 
 						& " ! " & "Expected size " & to_string (element (cursor)) 
 						& " ! "); --(equals " & to_mil_string (element (cursor)) & " mil)");
@@ -2048,8 +2044,7 @@ package body conventions is
 		use et_string_processing;
 	begin
 		if keyword'length > partcode_keyword_length_max then
-			log_indentation_reset;
-			log (message_error & "max. number of characters for part code keyword is" 
+			log (ERROR, "max. number of characters for part code keyword is" 
 				 & positive'image (partcode_keyword_length_max) & " !",
 				 console => true);
 			raise constraint_error;
@@ -2074,8 +2069,7 @@ package body conventions is
 
 		-- Evaluate position of invalid character.
 		if invalid_character_position > 0 then
-			log_indentation_reset;
-			log (message_error & "invalid character in part code keyword '" 
+			log (ERROR, "invalid character in part code keyword '" 
 				& to_string (keyword) & "' at position" & natural'image (invalid_character_position) & " !",
 				console => true);
 
@@ -2103,8 +2097,7 @@ package body conventions is
 		end loop;
 
 		if not valid then
-			log_indentation_reset;
-			log (message_error & "invalid keyword " & to_string (keyword) & " in part code !");
+			log (ERROR, "invalid keyword " & to_string (keyword) & " in part code !");
 			log ("Available keywords are:");
 			cursor := partcode_keywords.first;
 			while cursor /= type_partcode_keywords.no_element loop
@@ -2224,7 +2217,7 @@ package body conventions is
 					
 					-- A keyword must occur only once:
 					if et_libraries.type_partcode.count (partcode, to_string (keyword)) > 1 then
-						log (message_warning & "keyword " & to_string (keyword) & " can be used only once !");
+						log (WARNING, "keyword " & to_string (keyword) & " can be used only once !");
 					end if;
 				else
 					place := place + 1;	-- next character of keyword
@@ -2241,7 +2234,7 @@ package body conventions is
 
 					-- detect missing argument
 					if place = argument_start then
-						log (message_warning & "expect argument after keyword at position" & positive'image (place) & " !");
+						log (WARNING, "expect argument after keyword at position" & positive'image (place) & " !");
 					end if;
 					
 					keyword_follows := true;
@@ -2266,7 +2259,7 @@ package body conventions is
 		exception
 			when event:
 				others =>
-					log (message_warning & "partcode " & to_string (partcode) & " invalid !");
+					log (WARNING, "partcode " & to_string (partcode) & " invalid !");
 					log (ada.exceptions.exception_message (event));
 		
 	end validate_other_partcode_keywords;
@@ -2293,7 +2286,7 @@ package body conventions is
 		partcode_root : et_libraries.type_partcode.bounded_string;
 		
 		procedure partcode_invalid is begin
-			log (message_warning & "device " & et_libraries.to_string (reference)
+			log (WARNING, "device " & et_libraries.to_string (reference)
 				 & " partcode invalid ! Found " & to_string (partcode) &
 				" . Expected " & to_string (partcode_root) & " !");
 		end partcode_invalid;
@@ -2340,8 +2333,7 @@ package body conventions is
 
 		exception
 			when others =>
-				log_indentation_reset;
-				log (message_error & text & " is not a supported partcode section !",
+				log (ERROR, text & " is not a supported partcode section !",
 					 console => true);
 
 				-- show supported sections
@@ -2565,7 +2557,7 @@ package body conventions is
 		-- PARTCODE KEYWORDS
 		put_line (section_partcode_keywords); -- section header
 		new_line;
-		put_line (comment & "sections in component part code and their keywords"); 
+		put_line (comment & "sections in device part code and their keywords"); 
 		put_line (comment & "keyword" & latin_1.space & "section");
 		new_line;
 		put_line ("PAC   " & to_string (COMPONENT_PACKAGE));
@@ -2640,7 +2632,7 @@ package body conventions is
 
 			procedure test_multiple_occurences is begin
 				if not inserted then
-					log (message_warning & affected_line (element (line_cursor)) & "multiple occurence of assignment ! Entry ignored !");
+					log (WARNING, affected_line (element (line_cursor)) & "multiple occurence of assignment ! Entry ignored !");
 				end if;
 			end test_multiple_occurences;
 
@@ -2701,14 +2693,14 @@ package body conventions is
 
 					-- Notify operator if no prefixes specified:
 					if type_component_prefixes.is_empty (conventions.component_prefixes) then
-						log (message_warning & "no component prefixes specified !" & reduced_check_coverage);
+						log (WARNING, "no device prefixes specified !" & reduced_check_coverage);
 					end if;
 					
 					log_indentation_down;
 
 				-- COMPONENT UNITS OF MEASUREMENT
 				when component_units =>
-					log ("component units of measurement ...", log_threshold + 1);
+					log ("device units of measurement ...", log_threshold + 1);
 					log_indentation_up;
 					
 					while line_cursor /= type_lines.no_element loop
@@ -2744,18 +2736,18 @@ package body conventions is
 
 					-- Notify operator if no units of measurement specified:
 					if type_units_of_measurement.is_empty (conventions.component_units) then
-						log (message_warning & "no units of measurement specified !" & reduced_check_coverage);
+						log (WARNING, "no units of measurement specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
 
 				-- COMPONENTS WITH USER INTERACTON
 				when components_with_operator_interaction =>
-					log ("component categories with operator interaction ...", log_threshold + 1);
+					log ("device categories with operator interaction ...", log_threshold + 1);
 					log_indentation_up;
 
 					if not component_prefixes_specified then
-						log (message_warning & "section " & section_component_prefixes & " empty or missing !");
-						log (message_warning & "section " & section_components_with_operator_interaction & " without effect !");
+						log (WARNING, "section " & section_component_prefixes & " empty or missing !");
+						log (WARNING, "section " & section_components_with_operator_interaction & " without effect !");
 					end if;
 					
 					while line_cursor /= type_lines.no_element loop
@@ -2774,7 +2766,7 @@ package body conventions is
 
 					-- Notify operator if no components specified:
 					if type_categories_with_operator_interacton.is_empty (conventions.component_categories_with_operator_interaction) then
-						log (message_warning & "no categories specified !" & reduced_check_coverage);
+						log (WARNING, "no categories specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
 
@@ -2824,7 +2816,7 @@ package body conventions is
 
 					-- Notify operator if no sizes specified:
 					if type_text_sizes_schematic.is_empty (conventions.text_sizes_schematic) then
-						log (message_warning & "no text sizes specified !" & reduced_check_coverage);
+						log (WARNING, "no text sizes specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
 
@@ -2855,7 +2847,7 @@ package body conventions is
 
 					-- Notify operator if no keywrds specified:
 					if type_partcode_keywords.is_empty (conventions.partcode_keywords) then
-						log (message_warning & "no part code keywords specified !" & reduced_check_coverage);
+						log (WARNING, "no part code keywords specified !" & reduced_check_coverage);
 					end if;
 					log_indentation_down;
 
@@ -2868,8 +2860,7 @@ package body conventions is
 
 			exception
 				when others =>
-					log_indentation_reset;
-					log (message_error & affected_line (element (line_cursor)) & latin_1.space & to_string (element (line_cursor)),
+					log (ERROR, affected_line (element (line_cursor)) & latin_1.space & to_string (element (line_cursor)),
 						 console => true);
 
 					-- CS: provide information on what is wrong with the line (depending on section_entered)
@@ -2962,8 +2953,7 @@ package body conventions is
 			close (conventions_file_handle);
 			
 		else
-			log_indentation_reset;
-			log (message_error & "conventions file " & to_string (file_name) & " not found !",
+			log (ERROR, "conventions file " & to_string (file_name) & " not found !",
 				 console => true);
 			raise constraint_error;
 		end if;
@@ -2990,13 +2980,13 @@ package body conventions is
 		value_length : natural := type_value.length (value);
 
 		procedure value_invalid is begin
-			log (message_warning & "value " & enclose_in_quotes (to_string (value)) &
+			log (WARNING, "value " & enclose_in_quotes (to_string (value)) &
 				" invalid ! Check unit of measurement !");
 			result := false;			
 		end;
 
 		procedure no_value is begin
-			log (message_warning & "no value found !");
+			log (WARNING, "no value found !");
 			result := false;
 		end;
 		
@@ -3195,7 +3185,7 @@ package body conventions is
 		-- if there are prefixes specified, test if the given particular prefix is among them
 		if component_prefixes_specified then
 			if component_prefixes.find (prefix) = type_component_prefixes.no_element then
-				log (message_warning & "invalid prefix " & to_string (prefix) & " !");
+				log (WARNING, "invalid prefix " & to_string (prefix) & " !");
 				result := false;
 			end if;
 		end if;
@@ -3214,7 +3204,7 @@ package body conventions is
 		-- if there are prefixes specified, test if the given particular prefix is among them
 		if component_prefixes_specified then
 			if component_prefixes.find (reference.prefix) = type_component_prefixes.no_element then
-				log (message_warning & "invalid prefix in device name "
+				log (WARNING, "invalid prefix in device name "
 					 & et_libraries.to_string (reference) & " !");
 				result := false;
 			end if;
