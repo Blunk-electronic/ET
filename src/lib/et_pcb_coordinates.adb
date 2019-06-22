@@ -115,7 +115,7 @@ package body et_pcb_coordinates is
 
 		if warn_on_negative then
 			if distance < zero_distance then
-				log (text => message_warning & "negative coordinates found !");
+				log (WARNING, "negative coordinates found !");
 			end if;
 		end if;
 		
@@ -124,8 +124,7 @@ package body et_pcb_coordinates is
 		exception
 			when event:
 				others =>
-					log_indentation_reset;
-					log (message_error & "mil value " & mil & " invalid !", console => true);
+					log (ERROR, "mil value " & mil & " invalid !", console => true);
 					log ("Allowed range for mil numbers is" 
 						& float'image (mil_min) & " .." & float'image (mil_max) & ".", console => true);
 
