@@ -100,6 +100,8 @@ package et_string_processing is
 	tabulator : constant character := latin_1.ht;
 	
 	function indent (width : in type_indentation_level) return string;
+
+	type type_message_importance is (NORMAL, NOTE, WARNING, ERROR);
 	
 	procedure log (
 		text	: in string;
@@ -108,6 +110,13 @@ package et_string_processing is
 	-- Writes the given text with the current log_indentation in the current output. 
 	-- If the system wide log level is greater or equal the the given log_level the given text is put on the log.
 
+	procedure log (
+		importance	: in type_message_importance;
+		text		: in string;
+		level		: in type_log_level := type_log_level'first;
+		console		: in boolean := false);
+	-- Writes the given text with the current log_indentation in the current output. 
+	-- If the system wide log level is greater or equal the the given log_level the given text is put on the log.
 
 
 	

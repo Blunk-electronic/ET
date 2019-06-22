@@ -111,7 +111,73 @@ package body et_string_processing is
 			end if;
 		end if;
 	end log;
+
+	procedure log (
+		importance	: in type_message_importance;
+		text		: in string;
+		level		: in type_log_level := type_log_level'first;
+		console		: in boolean := false) is
+	-- Writes the given text with the current log_indentation in the logfile. 
+	-- If the system wide log level is greater or equal the the given log_level the given text is put on the log.
+
+		function to_importance (importance : in type_message_importance) return string is begin
+			case importance is
+				when NORMAL => return "";
+				when others => return type_message_importance'image (importance) & ": ";
+			end case;
+		end;
 		
+		function write_text (indentation_on : in boolean := true) 
+			return string is 
+
+			fill : string := natural (log_indentation) * latin_1.space;
+		begin
+			if indentation_on then
+				return fill & to_importance (importance) & text;
+			else
+				return to_importance (importance) & text;
+			end if;
+		end;
+		
+	begin -- log
+		
+		if log_level >= level then
+
+			case importance is
+				when NORMAL =>
+					put_line (report_handle, write_text);
+
+					if console then
+						put_line (standard_output, write_text);
+					end if;
+
+				when NOTE =>
+					put_line (report_handle, write_text);
+
+					if console then
+						put_line (standard_output, write_text);
+					end if;
+
+				when WARNING =>
+					put_line (report_handle, write_text);
+
+					if console then
+						put_line (standard_output, write_text);
+					end if;
+
+				when ERROR =>
+					put_line (report_handle, write_text (false)); -- indentation off
+
+					if console then
+						put_line (standard_output, write_text (false)); -- indentation off
+					end if;
+					
+			end case;
+			
+		end if;
+	end log;
+
+	
 	function date_now return type_date is
 		now		: time := clock;
 		date	: string (1..19) := image(now, time_zone => utc_time_offset(now));
