@@ -12871,6 +12871,7 @@ package body et_project is
 			-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 			generic_name : type_module_name.bounded_string; -- motor_driver
 			instance_name : type_module_instance_name.bounded_string; -- DRV_1
+			assembly_variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
 
 			procedure clear_module_instance is begin
 				generic_name := to_module_name ("");
@@ -12904,7 +12905,7 @@ package body et_project is
 						-- create an instanciated module in the rig
 						rig.module_instances.insert (
 							key			=> instance_name,
-							new_item	=> (generic_name => generic_name),
+							new_item	=> (generic_name, assembly_variant),
 							inserted	=> instance_created,
 							position	=> instance_cursor
 							);
@@ -13112,6 +13113,11 @@ package body et_project is
 										elsif kw = keyword_instance_name then
 											expect_field_count (line, 2);
 											instance_name := to_instance_name (f (line,2));
+
+										elsif kw = keyword_assembly_variant then
+											expect_field_count (line, 2);
+											assembly_variant := assembly_variants.to_variant (f (line,2));
+											
 										else
 											invalid_keyword (kw);
 										end if;

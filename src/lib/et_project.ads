@@ -144,7 +144,8 @@ package et_project is
 	function to_module_name (name : in string) return type_module_name.bounded_string;
 	
 	type type_module_instance is record
-		generic_name : type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		generic_name		: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		assembly_variant	: assembly_variants.type_variant_name.bounded_string; -- low_cost
 		-- CS other properties ?
 	end record;
 
@@ -326,6 +327,7 @@ package et_project is
 	
 	keyword_generic_name			: constant string := "generic_name";
 	keyword_instance_name			: constant string := "instance_name";
+	keyword_assembly_variant		: constant string := "assembly_variant";
 	keyword_instance_A				: constant string := "instance_A";
 	keyword_instance_B				: constant string := "instance_B";		
 	keyword_purpose_A				: constant string := "purpose_A";
