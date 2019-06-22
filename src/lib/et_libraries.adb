@@ -107,8 +107,7 @@ package body et_libraries is
 		use et_string_processing;
 	begin
 		if size not in type_text_size then
-			log_indentation_reset;
-			log (message_error & "text " 
+			log (ERROR, "text " 
 				 & to_string (size => size, preamble => true)  
 				 & " out of range !",
 				 console => true);
@@ -304,7 +303,7 @@ package body et_libraries is
 		use et_string_processing;
 	begin
 		if variant_name'length > component_variant_name_length_max then
-			log (message_warning & "variant name too long. Max. length is" 
+			log (WARNING, "variant name too long. Max. length is" 
 				 & positive'image (component_variant_name_length_max) & " !");
 		end if;
 	end check_variant_name_length;
@@ -325,7 +324,7 @@ package body et_libraries is
 
 		-- Evaluate position of invalid character.
 		if invalid_character_position > 0 then
-			log (message_warning & "invalid character in variant name " 
+			log (WARNING, "invalid character in variant name " 
 				& to_string (variant) & " at position" & natural'image (invalid_character_position));
 		end if;
 	end check_variant_name_characters;
@@ -414,7 +413,7 @@ package body et_libraries is
 		use et_string_processing;
 	begin
 		if partcode'length > partcode_length_max then
-			log (message_warning & "partcode " & enclose_in_quotes (partcode) & " is longer than" 
+			log (WARNING, "partcode " & enclose_in_quotes (partcode) & " is longer than" 
 				 & positive'image (partcode_length_max) & " characters !");
 			return false;
 		else
@@ -437,7 +436,7 @@ package body et_libraries is
 			test	=> outside);
 
 		if invalid_character_position > 0 then
-			log (message_warning & "partcode " & enclose_in_quotes (to_string (partcode))
+			log (WARNING, "partcode " & enclose_in_quotes (to_string (partcode))
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position));
 			return false;
@@ -450,7 +449,7 @@ package body et_libraries is
 	-- Issues error message and raises constraint error.
 		use et_string_processing;
 	begin
-		log (message_error & "partcode " & enclose_in_quotes (partcode) &
+		log (ERROR, "partcode " & enclose_in_quotes (partcode) &
 			 " invalid !", console => true);
 		raise constraint_error;
 	end;
@@ -518,8 +517,7 @@ package body et_libraries is
 		use et_string_processing;
 	begin
 		if content'length > text_length_max then
-			log_indentation_reset;
-			log (message_error & "max. number of characters for a text field is" 
+			log (ERROR, "max. number of characters for a text field is" 
 				 & positive'image (text_length_max) & " !",
 				 console => true);
 			raise constraint_error;
@@ -642,7 +640,7 @@ package body et_libraries is
 		use et_string_processing;
 	begin
 		if value'length > value_length_max then
-			log (message_warning & "value " & enclose_in_quotes (value) & " is longer than" 
+			log (WARNING, "value " & enclose_in_quotes (value) & " is longer than" 
 				 & positive'image (value_length_max) & " characters !");
 			return false;
 		else
@@ -656,7 +654,7 @@ package body et_libraries is
 	begin
 		value_out := value ((value'first) .. value'first - 1 + value_length_max);
 
-		log (message_warning & "value will be truncated to " & enclose_in_quotes (value_out));
+		log (WARNING, "value will be truncated to " & enclose_in_quotes (value_out));
 		return type_value.to_bounded_string (value_out);
 	end truncate;
 	
@@ -677,7 +675,7 @@ package body et_libraries is
 			test 	=> outside);
 
 		if invalid_character_position > 0 then
-			log (message_warning & "value " &
+			log (WARNING, "value " &
 				 enclose_in_quotes (type_value.to_string (value))
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position)
@@ -692,7 +690,7 @@ package body et_libraries is
 	-- Issues error message and raises constraint error.
 		use et_string_processing;
 	begin
-		log (message_error & "value " & enclose_in_quotes (value) &
+		log (ERROR, "value " & enclose_in_quotes (value) &
 			 " invalid !", console => true);
 		raise constraint_error;
 	end;
@@ -736,7 +734,7 @@ package body et_libraries is
 		use et_string_processing;
 	begin
 		if purpose'length > device_purpose_length_max then
-			log (message_warning & "purpose " & enclose_in_quotes (purpose) & " is longer than" 
+			log (WARNING, "purpose " & enclose_in_quotes (purpose) & " is longer than" 
 				 & positive'image (device_purpose_length_max) & " characters !", 
 				console => true);
 			return false;
@@ -761,7 +759,7 @@ package body et_libraries is
 			test 	=> outside);
 
 		if invalid_character_position > 0 then
-			log (message_warning & "purpose " & enclose_in_quotes (to_string (purpose))
+			log (WARNING, "purpose " & enclose_in_quotes (to_string (purpose))
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position)
 				);
@@ -775,7 +773,7 @@ package body et_libraries is
 	-- Issues error message and raises constraint error.
 		use et_string_processing;
 	begin
-		log (message_error & "purpose " & enclose_in_quotes (purpose) &
+		log (ERROR, "purpose " & enclose_in_quotes (purpose) &
 			 " invalid !", console => true);
 		raise constraint_error;
 	end;
@@ -820,8 +818,7 @@ package body et_libraries is
 		use et_string_processing;
 	begin
 		if prefix'length > device_name_prefix_length_max then
-			log_indentation_reset;
-			log (message_error & "max. number of characters for device name prefix is" 
+			log (ERROR, "max. number of characters for device name prefix is" 
 				 & positive'image (device_name_prefix_length_max) & " !",
 				console => true);
 			raise constraint_error;
@@ -840,8 +837,7 @@ package body et_libraries is
 			test	=> outside);
 
 		if invalid_character_position > 0 then
-			log_indentation_reset;
-			log (message_error & "device prefix " & to_string (prefix) 
+			log (ERROR, "device prefix " & to_string (prefix) 
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position),
 				console => true
@@ -881,7 +877,7 @@ package body et_libraries is
 		procedure invalid_reference is
 			use et_string_processing;
 		begin
-			log (text => latin_1.lf & message_error & "invalid device name '" 
+			log (ERROR, latin_1.lf & "invalid device name '" 
 				 & text_in_justified & "'", console => true);
 			-- CS show position of affected character ?
 			raise constraint_error;
@@ -1068,7 +1064,7 @@ package body et_libraries is
 		use et_string_processing;
 	begin
 		if packge'length > component_package_name_length_max then
-			log (message_warning & "package name too long. Max. length is" 
+			log (WARNING, "package name too long. Max. length is" 
 				 & positive'image (component_package_name_length_max) & " !");
 		end if;
 	end check_package_name_length;
@@ -1090,7 +1086,7 @@ package body et_libraries is
 			test => outside);
 
 		if invalid_character_position > 0 then
-			log (message_warning & "package name " & to_string (packge) 
+			log (WARNING, "package name " & to_string (packge) 
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position));
 		end if;
