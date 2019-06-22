@@ -2621,14 +2621,13 @@ package body et_project is
 		if count_found = count_expected then null; -- fine, field count as expected
 		
 		elsif count_found < count_expected then -- less fields than expected
-			log_indentation_reset;
-			log (message_error & "missing parameter for '" & f1 & "' !", console => true);
+			log (ERROR, "missing parameter for '" & f1 & "' !", console => true);
 			raise constraint_error;
 			
 		elsif count_found > count_expected then -- more fields than expeced
 			if warn then
-				log (message_warning & affected_line (line) & "excessive parameters after '" 
-						& f (line, positive (count_expected)) & "' ignored !");
+				log (WARNING, affected_line (line) & "excessive parameters after '" &
+					f (line, positive (count_expected)) & "' ignored !");
 			end if;
 		end if;
 		
@@ -2786,8 +2785,7 @@ package body et_project is
 	procedure invalid_keyword (word : in string) is 
 		use et_string_processing;
 	begin
-		log_indentation_reset;
-		log (message_error & "invalid keyword '" & word & "' !", console => true);
+		log (ERROR, "invalid keyword '" & word & "' !", console => true);
 		raise constraint_error;
 	end;
 	
@@ -2806,8 +2804,7 @@ package body et_project is
 	procedure invalid_section is 
 		use et_string_processing;
 	begin
-		log_indentation_reset;
-		log (message_error & "invalid section name !", console => true);
+		log (ERROR, "invalid section name !", console => true);
 		raise constraint_error;
 	end;
 
@@ -2992,7 +2989,7 @@ package body et_project is
 
 			-- warn if layer already in container
 			if not inserted then
-				log (message_warning & affected_line (line) & "signal layer" & to_string (layer) 
+				log (WARNING, affected_line (line) & "signal layer" & to_string (layer) 
 					& " specified multiple times !");
 			end if;
 			
@@ -3183,8 +3180,7 @@ package body et_project is
 			end case;
 
 			if not inserted then
-				log_indentation_reset;
-				log (message_error & "terminal" & to_string (terminal_name) 
+				log (ERROR, "terminal" & to_string (terminal_name) 
 					 & " already used !", console => true);
 				raise constraint_error;
 			end if;
@@ -4170,8 +4166,7 @@ package body et_project is
 						return true;
 
 					else
-						log_indentation_reset;
-						log (message_error & write_missing_begin_end, console => true);
+						log (ERROR, write_missing_begin_end, console => true);
 						raise constraint_error;
 					end if;
 
@@ -5218,7 +5213,7 @@ package body et_project is
 
 			-- As a safety measure the top section must be reached finally.
 			if stack.depth > 1 then 
-				log (message_warning & write_section_stack_not_empty);
+				log (WARNING, write_section_stack_not_empty);
 			end if;
 
 			set_input (previous_input);
@@ -5412,8 +5407,7 @@ package body et_project is
 
 			-- abort if port name already used:
 			if not inserted then
-				log_indentation_reset;
-				log (message_error & "port " & to_string (port_name) & " already in use !", console => true);
+				log (ERROR, "port " & to_string (port_name) & " already in use !", console => true);
 				raise constraint_error;
 			end if;
 			
@@ -5539,8 +5533,7 @@ package body et_project is
 
 									-- Default meaning causes an error:
 									when others => 
-										log_indentation_reset;
-										log (message_error & "meaning of placeholder not specified !",
+										log (ERROR, "meaning of placeholder not specified !",
 											 console => true);
 										raise constraint_error;
 								end case;
@@ -5601,8 +5594,7 @@ package body et_project is
 						return true;
 
 					else
-						log_indentation_reset;
-						log (message_error & write_missing_begin_end, console => true);
+						log (ERROR, write_missing_begin_end, console => true);
 						raise constraint_error;
 					end if;
 
@@ -5992,7 +5984,7 @@ package body et_project is
 
 			-- As a safety measure the top section must be reached finally.
 			if stack.depth > 1 then 
-				log (message_warning & write_section_stack_not_empty);
+				log (WARNING, write_section_stack_not_empty);
 			end if;
 
 			set_input (previous_input);
@@ -6109,8 +6101,7 @@ package body et_project is
 
 			-- an assigment must be unique !
 			if not inserted then
-				log_indentation_reset;
-				log (message_error & "terminal-to-port assigment already used !", console => true);
+				log (ERROR, "terminal-to-port assigment already used !", console => true);
 				raise constraint_error;
 			end if;
 
@@ -13111,8 +13102,7 @@ package body et_project is
 											
 											-- test whether a module with this generic name exists
 											if not exists (generic_name) then
-												log_indentation_reset;
-												log (message_error & "module " & enclose_in_quotes (to_string (generic_name)) &
+												log (ERROR, "module " & enclose_in_quotes (to_string (generic_name)) &
 													 " does not exist !", console => true);
 												raise constraint_error;
 											end if;
@@ -13128,8 +13118,7 @@ package body et_project is
 											-- test whether module provides the assembly variant
 											module_cursor := locate_module (generic_name);
 											if not exists (module_cursor, assembly_variant) then
-												log_indentation_reset;
-												log (message_error & "module " & enclose_in_quotes (to_string (generic_name)) &
+												log (ERROR, "module " & enclose_in_quotes (to_string (generic_name)) &
 													 " does not provide assembly variant " &
 													 enclose_in_quotes (assembly_variants.to_variant (assembly_variant)) & " !",
 													console => true);
