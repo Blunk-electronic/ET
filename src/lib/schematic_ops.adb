@@ -69,12 +69,12 @@ package body schematic_ops is
 	use type_modules;
 
 	procedure device_not_found (name : in type_device_name) is begin
-		log (message_error & "device " & to_string (name) & " not found !", console => true);
+		log (ERROR, "device " & to_string (name) & " not found !", console => true);
 		raise constraint_error;
 	end;
 
 	procedure device_already_exists (name : in type_device_name) is begin
-		log (message_error & "device " & to_string (name) & " already exists !", console => true);
+		log (ERROR, "device " & to_string (name) & " already exists !", console => true);
 		raise constraint_error;
 	end;
 
@@ -83,7 +83,7 @@ package body schematic_ops is
 -- 	end;
 
 	procedure relative_rotation_invalid is begin
-		log (message_error & "Relative rotation must be in range" & 
+		log (ERROR, "Relative rotation must be in range" & 
 			et_coordinates.to_string (rotation_relative_min) &
 			" .." & 
 			et_coordinates.to_string (rotation_relative_max),
@@ -93,28 +93,28 @@ package body schematic_ops is
 	end;
 	
 	procedure unit_not_found (name : in type_unit_name.bounded_string) is begin
-		log (message_error & "unit " & to_string (name) & " not found !", console => true);
+		log (ERROR, "unit " & to_string (name) & " not found !", console => true);
 		raise constraint_error;
 	end;
 
 	procedure submodule_not_found (name : in et_general.type_module_instance_name.bounded_string) is begin
-		log (message_error & "submodule instance " & enclose_in_quotes (et_general.to_string (name)) &
+		log (ERROR, "submodule instance " & enclose_in_quotes (et_general.to_string (name)) &
 			 " not found !", console => true);
 		raise constraint_error;
 	end;
 
 	procedure netchanger_not_found (index : in submodules.type_netchanger_id) is begin
-		log (message_error & "netchanger" & submodules.to_string (index) & " not found !", console => true);
+		log (ERROR, "netchanger" & submodules.to_string (index) & " not found !", console => true);
 		raise constraint_error;
 	end;
 
 	procedure net_not_found (name : in et_general.type_net_name.bounded_string) is begin
-		log (message_error & "net " & to_string (name) & " not found !", console => true);
+		log (ERROR, "net " & to_string (name) & " not found !", console => true);
 		raise constraint_error;
 	end;
 
 	procedure submodule_port_not_found (name : in et_general.type_net_name.bounded_string) is begin
-		log (message_error & "port " &
+		log (ERROR, "port " &
 			enclose_in_quotes (to_string (name)) & " not found !", console => true);
 		raise constraint_error;
 	end;
@@ -122,19 +122,19 @@ package body schematic_ops is
 	procedure assembly_variant_not_found (variant : in assembly_variants.type_variant_name.bounded_string) is 
 		use assembly_variants;
 	begin
-		log (message_error & "assembly variant " &
+		log (ERROR, "assembly variant " &
 			 enclose_in_quotes (to_variant (variant)) & " not found !", console => true);
 		raise constraint_error;
 	end;
 	
 	procedure port_not_at_edge (name : in et_general.type_net_name.bounded_string) is begin
-		log (message_error & "port " & enclose_in_quotes (to_string (name)) &
+		log (ERROR, "port " & enclose_in_quotes (to_string (name)) &
 			" must be at the edge of the submodule !", console => true);
 		raise constraint_error;
 	end;
 
 	procedure port_not_provided (port_name : in et_general.type_net_name.bounded_string) is begin
-		log (message_error & "submodule does not provide a port named " &
+		log (ERROR, "submodule does not provide a port named " &
 			 enclose_in_quotes (to_string (port_name)) & " !", console => true);
 		raise constraint_error;
 	end;
@@ -143,7 +143,7 @@ package body schematic_ops is
 		port 		: in string;
 		position	: in et_coordinates.type_coordinates) is
 	begin
-		log (message_error & "port " & enclose_in_quotes (port) &
+		log (ERROR, "port " & enclose_in_quotes (port) &
 			 " is directly connected with other ports at" &
 			to_string (position => position) &
 			 ". Dragging not possible !",
@@ -677,8 +677,7 @@ package body schematic_ops is
 						);
 
 				else
-					log_indentation_reset;
-					log (message_error & "port " & et_general.to_string (port_name) & " not found !",
+					log (ERROR, "port " & et_general.to_string (port_name) & " not found !",
 						 console => true);
 				end if;
 			end query_ports;
@@ -1193,7 +1192,7 @@ package body schematic_ops is
 					
 					exception
 						when event: others =>
-							log (message_error & "coordinates invalid !", console => true); -- CS required more details
+							log (ERROR, "coordinates invalid !", console => true); -- CS required more details
 							log (ada.exceptions.exception_information (event), console => true);
 							raise;
 					
@@ -1365,7 +1364,7 @@ package body schematic_ops is
 					
 					exception
 						when event: others =>
-							log (message_error & "coordinates invalid !", console => true); -- CS required more details
+							log (ERROR, "coordinates invalid !", console => true); -- CS required more details
 							log (ada.exceptions.exception_information (event), console => true);
 							raise;
 					
@@ -2160,7 +2159,7 @@ package body schematic_ops is
 					
 					exception
 						when event: others =>
-							log (message_error & "coordinates invalid !", console => true); -- CS required more details
+							log (ERROR, "coordinates invalid !", console => true); -- CS required more details
 							log (ada.exceptions.exception_information (event), console => true);
 							raise;
 					
@@ -2507,7 +2506,7 @@ package body schematic_ops is
 							process		=> set_value'access);
 
 					else
-						log (message_error & "value " & enclose_in_quotes (to_string (value)) 
+						log (ERROR, "value " & enclose_in_quotes (to_string (value)) 
 							 & " invalid for this kind of device !", console => true);
 						-- CS more details ?
 						raise constraint_error;
@@ -2955,8 +2954,7 @@ package body schematic_ops is
 
 								-- If port was somewhere else, we have a problem. This should never happen.
 								else
-									log_indentation_reset;
-									log (message_error & "port not on segment !");
+									log (ERROR, "port not on segment !");
 									raise constraint_error;
 								end if;
 								
@@ -3004,8 +3002,7 @@ package body schematic_ops is
 
 								-- If port was somewhere else, we have a problem. This should never happen.
 								else
-									log_indentation_reset;
-									log (message_error & "port not on segment !");
+									log (ERROR, "port not on segment !");
 									raise constraint_error;
 								end if;
 								
@@ -3054,8 +3051,7 @@ package body schematic_ops is
 
 								-- If port was somewhere else, we have a problem. This should never happen.
 								else
-									log_indentation_reset;
-									log (message_error & "port not on segment !");
+									log (ERROR, "port not on segment !");
 									raise constraint_error;
 								end if;
 								
@@ -3387,7 +3383,7 @@ package body schematic_ops is
 			
 				-- if no suitable external unit found, we have a problem:
 				if cursors.ext = type_units_external.no_element then
-					log (message_error & " Device model has no units !", console => true);
+					log (ERROR, " Device model has no units !", console => true);
 					raise constraint_error;
 				end if;
 
@@ -3445,7 +3441,7 @@ package body schematic_ops is
 				
 				-- if no suitable external unit found, we have a problem:
 				if cursors.ext = type_units_external.no_element then
-					log (message_error & "unit " & et_libraries.to_string (unit_name) &
+					log (ERROR, "unit " & et_libraries.to_string (unit_name) &
 						 " not found in device model !", console => true);
 					raise constraint_error;
 				end if;
@@ -3675,13 +3671,13 @@ package body schematic_ops is
 									));
 							
 						else -- variant not available
-							log (message_error & "package variant " & enclose_in_quotes (to_string (variant)) &
+							log (ERROR, "package variant " & enclose_in_quotes (to_string (variant)) &
 								 " not available in the specified device model !", console => true);
 							raise constraint_error;
 						end if;
 						
 					else -- no variant specified
-						log (message_error & "device requires specification of package variant !",
+						log (ERROR, "device requires specification of package variant !",
 							 console => true);
 						raise constraint_error;
 					end if;
@@ -4073,7 +4069,7 @@ package body schematic_ops is
 				use et_schematic.type_units;
 			begin
 				if contains (device.units, unit_name) then
-					log (message_error & 
+					log (ERROR, 
 						 to_string (device_name) &
 						 " unit " & to_string (unit_name) &
 						 " already in use !", console => true);
@@ -6890,7 +6886,7 @@ package body schematic_ops is
 			-- any foreign net names.
 			begin -- evaluate_net_names
 				if not is_empty (net_names) then
-					log (message_error & "net segment collides at" & to_string (position => point) &
+					log (ERROR, "net segment collides at" & to_string (position => point) &
 						 " with net(s): " & list_nets & " !", console => true);
 					raise constraint_error;
 				end if;
@@ -6998,7 +6994,7 @@ package body schematic_ops is
 						
 					else
 						-- Segment collides with foreign nets.
-						log (message_error & "net segment collides at" & to_string (position => point) &
+						log (ERROR, "net segment collides at" & to_string (position => point) &
 						 " with net(s): " & list_nets & " !", console => true);
 						raise constraint_error;
 					end if;
@@ -7713,7 +7709,7 @@ package body schematic_ops is
 				inserted	=> inserted);
 				
 			if not inserted then
-				log (message_error & "submodule instance " &
+				log (ERROR, "submodule instance " &
 					enclose_in_quotes (to_string (instance)) &
 					" already exists !", console => true);
 				raise constraint_error;
@@ -7746,7 +7742,7 @@ package body schematic_ops is
 				process		=> add'access);
 
 		else
-			log (message_error & "submodule file " & to_string (file) & " not found !",
+			log (ERROR, "submodule file " & to_string (file) & " not found !",
 				 console => true);
 			raise constraint_error;
 		end if;
@@ -7947,7 +7943,7 @@ package body schematic_ops is
 						inserted	=> inserted);
 
 					if not inserted then
-						log (message_error & "port " & 
+						log (ERROR, "port " & 
 							enclose_in_quotes (to_string (port_name)) &
 							" already in submodule !", console => true);
 						raise constraint_error;
@@ -9019,7 +9015,7 @@ package body schematic_ops is
 
 				exception
 					when event: others =>
-						log (message_error & "coordinates invalid !", console => true); -- CS required more details
+						log (ERROR, "coordinates invalid !", console => true); -- CS required more details
 						log (ada.exceptions.exception_information (event), console => true);
 						raise;
 				
@@ -9252,7 +9248,7 @@ package body schematic_ops is
 
 				exception
 					when event: others =>
-						log (message_error & "coordinates invalid !", console => true); -- CS required more details
+						log (ERROR, "coordinates invalid !", console => true); -- CS required more details
 						log (ada.exceptions.exception_information (event), console => true);
 						raise;
 
@@ -9408,7 +9404,7 @@ package body schematic_ops is
 					new_item	=> submodule);
 					
 				if not inserted then
-					log (message_error & "submodule instance " &
+					log (ERROR, "submodule instance " &
 						enclose_in_quotes (to_string (instance_new)) &
 						" already exists !", console => true);
 					raise constraint_error;
@@ -9547,7 +9543,7 @@ package body schematic_ops is
 
 		-- The new name must not be in use already:
 		if exists (module_cursor, instance_new) then
-			log (message_error & "submodule instance " & enclose_in_quotes (to_string (instance_new)) &
+			log (ERROR, "submodule instance " & enclose_in_quotes (to_string (instance_new)) &
 				 " already exists !", console => true);
 			raise constraint_error;
 		else
@@ -9685,7 +9681,7 @@ package body schematic_ops is
 
 			log_indentation_down;
 		else
-			log (message_error & "submodule file " & to_string (file) & " not found !",
+			log (ERROR, "submodule file " & to_string (file) & " not found !",
 				 console => true);
 			raise constraint_error;
 		end if;
@@ -9716,7 +9712,7 @@ package body schematic_ops is
 				inserted	=> inserted);
 
 			if not inserted then
-				log (message_error & "assembly variant " & enclose_in_quotes (to_variant (variant_name)) &
+				log (ERROR, "assembly variant " & enclose_in_quotes (to_variant (variant_name)) &
 					 " already exists !", console => true);
 				raise constraint_error;
 			end if;
@@ -10058,7 +10054,7 @@ package body schematic_ops is
 				if cursor /= assembly_variants.type_devices.no_element then  -- device in assembly variant
 					delete (variant.devices, cursor); -- delete device
 				else
-					log (message_error & "device " & to_string (device) &
+					log (ERROR, "device " & to_string (device) &
 						" not found in assembly variant " &
 						enclose_in_quotes (to_variant (variant_name)) & " !",
 						 console => true);
@@ -10189,7 +10185,7 @@ package body schematic_ops is
 					position	=> module_cursor,
 					process		=> query_variants'access);
 			else
-				log (message_error & "submodule instance " &
+				log (ERROR, "submodule instance " &
 					 enclose_in_quotes (to_string (instance)) &
 					 " does not provide assembly variant " &
 					 enclose_in_quotes (to_variant (variant_submod)) & " !",
@@ -10235,7 +10231,7 @@ package body schematic_ops is
 				if cursor /= type_submodules.no_element then -- submodule in assembly variant
 					delete (variant.submodules, cursor); -- delete submodule instance
 				else
-					log (message_error & "submodule " & to_string (instance) &
+					log (ERROR, "submodule " & to_string (instance) &
 						" not found in assembly variant " &
 						enclose_in_quotes (to_variant (variant_parent)) & " !",
 						 console => true);
@@ -10610,7 +10606,7 @@ package body schematic_ops is
 						
 						if renumber (type_device_category'val (cat)) = false then
 							-- second iteration failed: abort
-							log (message_error & "renumbering failed !", console => true);
+							log (ERROR, "renumbering failed !", console => true);
 							raise constraint_error;
 						end if;
 						
@@ -10783,7 +10779,7 @@ package body schematic_ops is
 				insert (device_port_collector, port);
 
 				exception when event: others =>
-					log (message_error & "net " & to_string (net) &
+					log (ERROR, "net " & to_string (net) &
 						" device " & et_libraries.to_string (port.device_name) &
 						" port " & et_libraries.to_string (port.port_name) &
 						" already used !",
@@ -10808,7 +10804,7 @@ package body schematic_ops is
 				insert (submodule_port_collector, port);
 
 				exception when event: others =>
-					log (message_error & "net " & to_string (net) &
+					log (ERROR, "net " & to_string (net) &
 						" submodule " & et_general.to_string (port.module_name) &
 						" port " & et_general.to_string (port.port_name) &
 						" already used !",
@@ -10833,7 +10829,7 @@ package body schematic_ops is
 				insert (netchanger_ports_collector, port);
 
 				exception when event: others =>
-					log (message_error & "net " & to_string (net) &
+					log (ERROR, "net " & to_string (net) &
 						" netchanger" & submodules.to_string (port.index) &
 						" port" & submodules.to_string (port.port) &
 						" already used !",
@@ -10870,7 +10866,7 @@ package body schematic_ops is
 
 											error;
 											
-											log (message_error & "device " & et_libraries.to_string (element (port_cursor).device_name) &
+											log (ERROR, "device " & et_libraries.to_string (element (port_cursor).device_name) &
 												 " port " & et_libraries.to_string (element (port_cursor).port_name) &
 												 " does not exist !");
 										end if;
@@ -10896,7 +10892,7 @@ package body schematic_ops is
 
 											error;
 											
-											log (message_error & "submodule " & et_general.to_string (element (port_cursor).module_name) &
+											log (ERROR, "submodule " & et_general.to_string (element (port_cursor).module_name) &
 												 " port " & et_general.to_string (element (port_cursor).port_name) &
 												 " does not exist !");
 										end if;
@@ -10921,7 +10917,7 @@ package body schematic_ops is
 
 											error;
 											
-											log (message_error & "netchanger" & submodules.to_string (element (port_cursor).index) &
+											log (ERROR, "netchanger" & submodules.to_string (element (port_cursor).index) &
 												 " does not exist !");
 										end if;
 
