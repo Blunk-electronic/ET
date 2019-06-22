@@ -781,9 +781,8 @@ package body et_string_processing is
 							end if;
 
 							if wrap_started then
-								log_indentation_reset;
-								log (message_error & "missing delimiter " & delimiter & " at end of line !", console => true);
-								log ("line: " & line, console => true);
+								log (ERROR, "missing delimiter " & delimiter & " at end of line !", console => true);
+								log (text => "line: " & line, console => true);
 								raise constraint_error;
 							end if;
 							
@@ -995,7 +994,7 @@ package body et_string_processing is
 		line : natural) is -- the line number 
 	begin
 		log_indentation_reset;
-		log ("source file " & file & " line" & natural'image (line), console => true);
+		log (text => "source file " & file & " line" & natural'image (line), console => true);
 	end;
 
 	

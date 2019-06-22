@@ -125,8 +125,8 @@ package body et_kicad_pcb is
 		end search_package;
 	
 	begin -- full_library_name
-		log ("locating library '" & et_kicad_general.to_string (library_name) &
-			"' containing package '" & to_string (package_name) & "' ...", log_threshold);
+		log (text => "locating library '" & et_kicad_general.to_string (library_name) &
+			"' containing package '" & to_string (package_name) & "' ...", level => log_threshold);
 		log_indentation_up;
 
 		case cad_format is
@@ -144,7 +144,7 @@ package body et_kicad_pcb is
 						name					=> et_kicad_general.to_string (library_name),
 						extension				=> package_library_directory_extension (2..package_library_directory_extension'last))); 
 
-					log ("searching in " & et_libraries.to_string (full_library_name) & " ...", log_threshold + 1);
+					log (text => "searching in " & et_libraries.to_string (full_library_name) & " ...", level => log_threshold + 1);
 					
 					lib_cursor := et_kicad_pcb.type_libraries.find (
 						container	=> package_libraries,
@@ -180,7 +180,7 @@ package body et_kicad_pcb is
 
 						full_library_name := to_file_name (to_string (element (fp_lib_table_cursor).lib_uri));
 
-						log ("searching in " & et_libraries.to_string (full_library_name) & " ...", log_threshold + 1);
+						log (text => "searching in " & et_libraries.to_string (full_library_name) & " ...", level => log_threshold + 1);
 						
 						-- locate the library by full name (uri)
 						lib_cursor := et_kicad_pcb.type_libraries.find (
@@ -213,7 +213,7 @@ package body et_kicad_pcb is
 		end case;
 				
 		if package_found then
-			log (" found !", log_threshold + 2);
+			log (text => " found !", level => log_threshold + 2);
 		else
 			log (ERROR, "package '" & to_string (package_name) &
 				"' not found in any library named '" & et_kicad_general.to_string (library_name) & "' !", console => true);
@@ -872,11 +872,11 @@ package body et_kicad_pcb is
 			
 			procedure invalid is begin
 				log (ERROR, "contradicting layers in terminal !", console => true);
-				log ("face " & to_string (terminal_face), console => true);
-				log (" solder paste top " & to_string (terminal_top_solder_paste), console => true);
-				log (" solder paste bot " & to_string (terminal_bot_solder_paste), console => true);
-				log (" stop mask top    " & to_string (terminal_top_stop_mask), console => true);
-				log (" stop mask bot    " & to_string (terminal_bot_stop_mask), console => true);
+				log (text => "face " & to_string (terminal_face), console => true);
+				log (text => " solder paste top " & to_string (terminal_top_solder_paste), console => true);
+				log (text => " solder paste bot " & to_string (terminal_bot_solder_paste), console => true);
+				log (text => " stop mask top    " & to_string (terminal_top_stop_mask), console => true);
+				log (text => " stop mask bot    " & to_string (terminal_bot_stop_mask), console => true);
 				raise constraint_error;
 			end invalid; 
 				
@@ -941,7 +941,7 @@ package body et_kicad_pcb is
 				-- Since a single line in container "lines" (where line_cursor points to) is a list 
 				-- of strings itself, we convert them first to a fixed string and then to a bounded string.
 				current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
-				log ("line " & to_string (current_line), log_threshold + 4);
+				log (text => "line " & to_string (current_line), level => log_threshold + 4);
 			else
 				-- This should never happen:
 				log (ERROR, "in " & path_and_file_name, console => true);
@@ -1060,7 +1060,7 @@ package body et_kicad_pcb is
 			-- update cursor
 			character_cursor := end_of_kw;
 
-			log (enter_section (section.name), log_threshold + 5);
+			log (text => enter_section (section.name), level => log_threshold + 5);
 
 			exception
 				when event:
@@ -1099,7 +1099,7 @@ package body et_kicad_pcb is
 
 			procedure too_many_arguments is begin
 				log (ERROR, "too many arguments in section " & to_string (section.name) & " !", console => true);
-				log ("excessive argument reads '" & to_string (arg) & "'", console => true);
+				log (text => "excessive argument reads '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end too_many_arguments;
 
@@ -1193,7 +1193,7 @@ package body et_kicad_pcb is
 			-- Argument complete. Increment argument counter of section.
 			section.arg_counter := section.arg_counter + 1;
 			
-			log ("arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), log_threshold + 4);
+			log (text => "arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), level => log_threshold + 4);
 
 			-- Validate arguments according to current section and the parent section.
 			-- Load variables. When a section closes, the variables are used to build an object. see exec_section.
@@ -1850,7 +1850,7 @@ package body et_kicad_pcb is
 						log (ERROR, "in " & path_and_file_name, console => true);
 						log (ERROR, affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
-						log (ada.exceptions.exception_message (event));
+						log (text => ada.exceptions.exception_message (event));
 						raise;
 
 		end read_arg;
@@ -2385,20 +2385,20 @@ package body et_kicad_pcb is
 
 			
 		begin -- exec_section
-			log (process_section (section.name), log_threshold + 5);
+			log (text => process_section (section.name), level => log_threshold + 5);
 
 			-- CS case construct for section.parent (as with board packages)
 			
 			case section.name is
 
 				when SEC_TEDIT =>
-					log ("timestamp " & string (time_stamp), log_threshold + 1);
+					log (text => "timestamp " & string (time_stamp), level => log_threshold + 1);
 
 				when SEC_DESCR =>
-					log (to_string (description, verbose => true), log_threshold + 1);
+					log (text => to_string (description, verbose => true), level => log_threshold + 1);
 					
 				when SEC_TAGS =>
-					log (to_string (tags), log_threshold + 1);
+					log (text => to_string (tags), level => log_threshold + 1);
 
 				when SEC_FP_TEXT =>
 					insert_fp_text;
@@ -2420,7 +2420,7 @@ package body et_kicad_pcb is
 
 			-- restore previous section from stack
 			section := sections_stack.pop;
-			log (return_to_section (section.name), log_threshold + 5);
+			log (text => return_to_section (section.name), level => log_threshold + 5);
 			
 			exception
 				when event:
@@ -2428,7 +2428,7 @@ package body et_kicad_pcb is
 						log (ERROR, "in " & path_and_file_name, console => true);
 						log (ERROR, affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
-						log (ada.exceptions.exception_message (event));
+						log (text => ada.exceptions.exception_message (event));
 						raise;
 			
 		end exec_section;
@@ -2495,13 +2495,13 @@ package body et_kicad_pcb is
 			end number;
 		
 		begin -- check_technology
-			log ("checking package technology vs. terminal count ...", log_threshold + 1);
+			log (text => "checking package technology vs. terminal count ...", level => log_threshold + 1);
 			log_indentation_up;
 			
-			log ("appearance " & to_string (package_appearance), log_threshold + 1);
+			log (text => "appearance " & to_string (package_appearance), level => log_threshold + 1);
 			
 			if package_appearance = REAL then
-				log ("assembly technology " & to_string (package_technology), log_threshold + 1);
+				log (text => "assembly technology " & to_string (package_technology), level => log_threshold + 1);
 			
 				while cursor /= et_pcb.type_terminals.no_element loop
 					case element (cursor).technology is
@@ -2534,14 +2534,14 @@ package body et_kicad_pcb is
 		end check_technology;
 		
 	begin -- to_package_model
-		log ("parsing/building model ...", log_threshold);
+		log (text => "parsing/building model ...", level => log_threshold);
 		log_indentation_up;
 
 		sections_stack.init;
 
 		-- get first line
 		current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
-		log ("line " & to_string (current_line), log_threshold + 4);
+		log (text => "line " & to_string (current_line), level => log_threshold + 4);
 		
 		-- get position of first opening bracket
 		character_cursor := type_current_line.index (current_line, 1 * opening_bracket);
@@ -2735,7 +2735,7 @@ package body et_kicad_pcb is
 			lines : et_pcb.type_lines.list; -- all lines of a single package model
 
 		begin -- read_packages
-			log ("reading package names in " & current_directory & " ...", log_threshold + 3);
+			log (text => "reading package names in " & current_directory & " ...", level => log_threshold + 3);
 			log_indentation_up;
 
 			package_names := directory_entries (
@@ -2747,14 +2747,14 @@ package body et_kicad_pcb is
 			if is_empty (package_names) then
 				log (WARNING, "library " & to_string (library_name) & " is empty !");
 			else
-				log ("found" & count_type'image (length (package_names)) & " packages", log_threshold + 4);
+				log (text => "found" & count_type'image (length (package_names)) & " packages", level => log_threshold + 4);
 			end if;
 			
 			log_indentation_up;
 
 			package_name_cursor := package_names.first;
 			while package_name_cursor /= type_directory_entries.no_element loop
-				log (element (package_name_cursor), log_threshold + 5);
+				log (text => element (package_name_cursor), level => log_threshold + 5);
 				log_indentation_up;
 				
 				-- open package model file
@@ -2807,7 +2807,7 @@ package body et_kicad_pcb is
 				when event:
 					others =>
 						log_indentation_reset;
-						log (ada.exceptions.exception_message (event), console => true);
+						log (text => ada.exceptions.exception_message (event), console => true);
 						raise;
 
 		end read_packages;
@@ -2816,7 +2816,7 @@ package body et_kicad_pcb is
 		use et_import;
 		
 	begin -- read_libraries
-		log ("reading package libraries ...", log_threshold);
+		log (text => "reading package libraries ...", level => log_threshold);
 		log_indentation_up;
 
 		case cad_format is
@@ -2825,7 +2825,7 @@ package body et_kicad_pcb is
 				-- loop in search_list_project_lib_dirs and scan for package libraries (*.pretty stuff)
 				while lib_dir_cursor /= et_kicad.type_project_lib_dirs.no_element loop
 
-					log ("in directory " & et_kicad.to_string (element (lib_dir_cursor)), log_threshold + 1);
+					log (text => "in directory " & et_kicad.to_string (element (lib_dir_cursor)), level => log_threshold + 1);
 					
 					-- Scan for package library in directory indicated by lib_dir_cursor:
 					library_names := directory_entries (
@@ -2840,14 +2840,14 @@ package body et_kicad_pcb is
 							et_kicad.to_string (element (lib_dir_cursor)) & " !");
 					else
 						-- show number of package libraries found in the directory
-						log ("found" & count_type'image (length (library_names)) & " libraries", log_threshold + 2);
+						log (text => "found" & count_type'image (length (library_names)) & " libraries", level => log_threshold + 2);
 						log_indentation_up;
 
 						-- Loop through library_names and create the same-named empty libraries 
 						-- in container package_libraries:
 						library_name_cursor := library_names.first;
 						while library_name_cursor /= type_directory_entries.no_element loop
-							log ("reading " & element (library_name_cursor) & " ...", log_threshold + 2);
+							log (text => "reading " & element (library_name_cursor) & " ...", level => log_threshold + 2);
 
 							-- create the (empty) library in container package_libraries
 							type_libraries.insert (
@@ -2877,7 +2877,7 @@ package body et_kicad_pcb is
 								-- change back to directory of origin
 								set_directory (et_pcb.to_string (origin_directory));
 							else
-								log (" already loaded -> skipped", log_threshold + 2);
+								log (text => " already loaded -> skipped", level => log_threshold + 2);
 							end if;
 							
 							next (library_name_cursor);
@@ -3352,11 +3352,11 @@ package body et_kicad_pcb is
 			
 			procedure invalid is begin
 				log (ERROR, "contradicting layers in terminal !", console => true);
-				log ("face " & to_string (terminal_face), console => true);
-				log (" solder paste top " & to_string (terminal_top_solder_paste), console => true);
-				log (" solder paste bot " & to_string (terminal_bot_solder_paste), console => true);
-				log (" stop mask top    " & to_string (terminal_top_stop_mask), console => true);
-				log (" stop mask bot    " & to_string (terminal_bot_stop_mask), console => true);
+				log (text => "face " & to_string (terminal_face), console => true);
+				log (text => " solder paste top " & to_string (terminal_top_solder_paste), console => true);
+				log (text => " solder paste bot " & to_string (terminal_bot_solder_paste), console => true);
+				log (text => " stop mask top    " & to_string (terminal_top_stop_mask), console => true);
+				log (text => " stop mask bot    " & to_string (terminal_bot_stop_mask), console => true);
 				raise constraint_error;
 			end invalid; 
 				
@@ -3425,7 +3425,7 @@ package body et_kicad_pcb is
 				-- Since a single line in container "lines" (where line_cursor points to) is a list 
 				-- of strings itself, we convert them first to a fixed string and then to a bounded string.
 				current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
-				log ("line " & to_string (current_line), log_threshold + 4);
+				log (text => "line " & to_string (current_line), level => log_threshold + 4);
 			else
 				-- This should never happen:
 				log (ERROR, "in " & file_name, console => true);
@@ -3467,7 +3467,7 @@ package body et_kicad_pcb is
 			section.parent := section.name;
 
 			-- CS provide log info on current section
-			-- log ("section " & to_string (section.name), log_threshold + 1);
+			-- log (text => "section " & to_string (section.name), level => log_threshold + 1);
 			
 			section.arg_counter := 0;
 			
@@ -3687,7 +3687,7 @@ package body et_kicad_pcb is
 			-- update cursor
 			character_cursor := end_of_kw;
 
-			log (enter_section (section.name), log_threshold + 5);
+			log (text => enter_section (section.name), level => log_threshold + 5);
 
 			exception
 				when event:
@@ -3726,7 +3726,7 @@ package body et_kicad_pcb is
 
 			procedure too_many_arguments is begin
 				log (ERROR, "too many arguments in section " & to_string (section.name) & " !", console => true);
-				log ("excessive argument reads '" & to_string (arg) & "'", console => true);
+				log (text => "excessive argument reads '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end too_many_arguments;
 
@@ -3849,7 +3849,7 @@ package body et_kicad_pcb is
 							-- strange entry like:
 							--  (kicad_pcb (version 4) (host kicad "dummy file") )
 							if name = host_name_pcbnew_dummy_v5 then
-								log ("dummy board file found", log_threshold + 1);
+								log (text => "dummy board file found", level => log_threshold + 1);
 								board.dummy := true; -- signal other operations that this is a dummy file
 							else
 								invalid_host_name;
@@ -3926,7 +3926,7 @@ package body et_kicad_pcb is
 			-- Argument complete. Increment argument counter of section.
 			section.arg_counter := section.arg_counter + 1;
 			
-			log ("arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), log_threshold + 4);
+			log (text => "arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), level => log_threshold + 4);
 
 			-- Validate arguments according to current section and the parent section.
 			-- Load variables. When a section closes, the variables are used to build an object. see exec_section.
@@ -5761,7 +5761,7 @@ package body et_kicad_pcb is
 						log (ERROR, "in " & file_name, console => true);
 						log (ERROR, affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
-						log (ada.exceptions.exception_message (event));
+						log (text => ada.exceptions.exception_message (event));
 						raise;
 
 		end read_arg;
@@ -5883,9 +5883,9 @@ package body et_kicad_pcb is
 				if package_inserted then
 
 					-- log package coordinates
-					log ("package " & to_string (package_reference)
+					log (text => "package " & to_string (package_reference)
 						 & et_pcb.package_position (package_position), -- this is a function that returns package coordinates !
-						 log_threshold + 1);
+						 level => log_threshold + 1);
 					
 					-- CS log package properties (at least reference, value, ...) ?
 
@@ -5980,9 +5980,9 @@ package body et_kicad_pcb is
 
 				-- Abort if layer already in use. The criteria is the layer id.
 				if layer_inserted then
-					log ("layer id" & type_layer_id'image (layer_id) 
+					log (text => "layer id" & type_layer_id'image (layer_id) 
 						 & " name " & type_layer_name.to_string (layer.name)
-						 & " meaning " & type_layer_meaning'image (layer.meaning), log_threshold + 2);
+						 & " meaning " & type_layer_meaning'image (layer.meaning), level => log_threshold + 2);
 				else
 					log (ERROR, "layer id" & type_layer_id'image (layer_id) & " already used !", 
 						 console => true);
@@ -6014,7 +6014,7 @@ package body et_kicad_pcb is
 
 				if net_class_inserted then
 					-- CS log net class properties more detailled
-					log ("net class " & to_string (net_class_name), log_threshold + 1);
+					log (text => "net class " & to_string (net_class_name), level => log_threshold + 1);
 					
 					-- Clean up list of net names for next net class.
 					-- CS: We assume, all other components of net_class are provided in 
@@ -6041,9 +6041,9 @@ package body et_kicad_pcb is
 				if net_inserted then
 					-- log the net id and name. but skip the first dummy net with id 0
 					if netlist_net.id > type_net_id'first then
-						log ("net id" & to_string (netlist_net.id) & " name " 
+						log (text => "net id" & to_string (netlist_net.id) & " name " 
 							& et_general.to_string (netlist_net.name),
-							log_threshold + 1);
+							level => log_threshold + 1);
 					end if;
 				else
 					log (ERROR, "either net id" & to_string (netlist_net.id) 
@@ -6781,10 +6781,10 @@ package body et_kicad_pcb is
 					-- the terminal_net_name is empty.
 					log_indentation_up;
 					if length (terminal_net_name) > 0 then
-						log ("connected with net " & et_general.to_string (terminal_net_name),
-							log_threshold + 1);
+						log (text => "connected with net " & et_general.to_string (terminal_net_name),
+							level => log_threshold + 1);
 					else
-						log ("not connected", log_threshold + 1);
+						log (text => "not connected", level => log_threshold + 1);
 					end if;
 					log_indentation_down;
 
@@ -6893,14 +6893,15 @@ package body et_kicad_pcb is
 					container	=> board.segments,
 					new_item	=> segment);
 
-				log ("segment " & to_string (et_pcb.type_line_2d (segment)) & -- start and end point
+				log (text => "segment " & to_string (et_pcb.type_line_2d (segment)) & -- start and end point
 					 " width" & to_string (segment.width) &
 					 " layer" & to_string (segment.layer) &
 					 " net_id" & to_string (segment.net_id) &
 					 " status " & type_segment_status.to_string (segment.status),
 					 -- CS status should be decoded and detailled output. 
 					 -- see -- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
-					 log_threshold + 1);
+					 level => log_threshold + 1);
+				
 			end insert_segment;
 
 			procedure insert_via is
@@ -6915,7 +6916,7 @@ package body et_kicad_pcb is
 					container	=> board.vias,
 					new_item	=> via);
 
-				log ("via" & to_string (et_pcb.type_drill (via)) & -- position and drill diameter
+				log (text => "via" & to_string (et_pcb.type_drill (via)) & -- position and drill diameter
 					" diameter_total" & to_string (via.diameter_total) &
 					" layer_start" & to_string (via.layer_start) &
 					" layer_end" & to_string (via.layer_end) &
@@ -6923,7 +6924,7 @@ package body et_kicad_pcb is
 					" status " & type_via_status.to_string (via.status),
 					 -- CS status should be decoded and detailled output. 
 					 -- see -- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
-					log_threshold + 1);
+					level => log_threshold + 1);
 			end insert_via;
 
 			procedure add_polygon_corner_point is
@@ -6939,7 +6940,7 @@ package body et_kicad_pcb is
 					);
 
 				if inserted then
-					log ("polygon corner point at" & to_string (polygon_point), log_threshold + 3);
+					log (text => "polygon corner point at" & to_string (polygon_point), level => log_threshold + 3);
 				else
 					log (ERROR, "multiple polygon corner points at" & to_string (polygon_point), console => true);
 					raise constraint_error;
@@ -6953,7 +6954,7 @@ package body et_kicad_pcb is
 			begin
 				board.polygons.append (polygon);
 
-				log ("polygon/zone net " & et_general.to_string (polygon.net_name) &
+				log (text => "polygon/zone net " & et_general.to_string (polygon.net_name) &
 					 " " & text_polygon_signal_layer & to_string (polygon.layer) &
 					 " timestamp " & string (polygon.timestamp) & -- CS use constant
 					 " " & text_polygon_priority_level & et_pcb.to_string (polygon.priority_level) &
@@ -6972,7 +6973,7 @@ package body et_kicad_pcb is
 					 " " & text_polygon_thermal_width & to_string (polygon.thermal_width) &
 					 " " & text_polygon_pad_connection & to_string (polygon.pad_connection) &
 					 " " & text_polygon_pad_technology & to_string (polygon.pad_technology),
-					 log_threshold + 3);
+					 level => log_threshold + 3);
 
 				-- CS log corner points
 				-- CS log fill points
@@ -6989,25 +6990,25 @@ package body et_kicad_pcb is
 			end insert_polygon;
 			
 		begin -- exec_section
-			log (process_section (section.name), log_threshold + 5);
+			log (text => process_section (section.name), level => log_threshold + 5);
 			case section.parent is
 				when SEC_KICAD_PCB =>
 					case section.name is
 						when SEC_VERSION =>
 							-- In V5 the board file could be a dummy file with version 4 written in the header.
 							-- CS: It would be confusing for the operator to show the file format here.
-							--log (system_name & " version " & pcb_file_format_version_4, log_threshold + 1); 
+							--log (text => system_name & " version " & pcb_file_format_version_4, level => log_threshold + 1); 
 							null;
 
 						when SEC_HOST =>
-							--log ("host " & host_name_pcbnew & " version " & pcb_new_version_4_0_7, log_threshold + 1);
+							--log (text => "host " & host_name_pcbnew & " version " & pcb_new_version_4_0_7, level => log_threshold + 1);
 							null;
 
 						when SEC_GENERAL =>
 							null; -- CS log general information
 
 						when SEC_PAGE =>
-							log ("paper size " & et_general.to_string (board.paper_size), log_threshold + 1);
+							log (text => "paper size " & et_general.to_string (board.paper_size), level => log_threshold + 1);
 
 						when SEC_LAYERS =>
 							null; -- nothing to do. work already done on leaving SEC_LAYER_ID
@@ -7070,16 +7071,16 @@ package body et_kicad_pcb is
 				when SEC_MODULE =>
 					case section.name is
 						when SEC_TEDIT =>
-							log ("time edit  " & string (package_time_edit), log_threshold + 1);
+							log (text => "time edit  " & string (package_time_edit), level => log_threshold + 1);
 
 						when SEC_TSTAMP =>
-							log ("time stamp " & string (package_time_stamp), log_threshold + 1);
+							log (text => "time stamp " & string (package_time_stamp), level => log_threshold + 1);
 							
 						when SEC_DESCR =>
-							log (to_string (package_description, verbose => true), log_threshold + 1);
+							log (text => to_string (package_description, verbose => true), level => log_threshold + 1);
 							
 						when SEC_TAGS =>
-							log (to_string (package_tags), log_threshold + 1);
+							log (text => to_string (package_tags), level => log_threshold + 1);
 
 						when SEC_FP_TEXT =>
 							insert_fp_text;
@@ -7118,7 +7119,7 @@ package body et_kicad_pcb is
 
 			-- restore previous section from stack
 			section := sections_stack.pop;
-			log (return_to_section (section.name), log_threshold + 5);
+			log (text => return_to_section (section.name), level => log_threshold + 5);
 			
 			exception
 				when event:
@@ -7126,20 +7127,20 @@ package body et_kicad_pcb is
 						log (ERROR, "in " & file_name, console => true);
 						log (ERROR, affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
-						log (ada.exceptions.exception_message (event));
+						log (text => ada.exceptions.exception_message (event));
 						raise;
 			
 		end exec_section;
 		
 	begin -- to_board
-		log ("parsing/building board ...", log_threshold);
+		log (text => "parsing/building board ...", level => log_threshold);
 		log_indentation_up;
 
 		sections_stack.init;
 
 		-- get first line
 		current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
-		log ("line " & to_string (current_line), log_threshold + 4);
+		log (text => "line " & to_string (current_line), level => log_threshold + 4);
 
 		-- get position of first opening bracket
 		character_cursor := type_current_line.index (current_line, 1 * opening_bracket);
@@ -7416,7 +7417,7 @@ package body et_kicad_pcb is
 					use et_pcb_coordinates;
 				begin -- route
 					log_indentation_up;
-					log ("segments, vias and polygons (signal layers in IPC notation (TOP..BOTTOM / 1..n):", log_threshold + 3);
+					log (text => "segments, vias and polygons (signal layers in IPC notation (TOP..BOTTOM / 1..n):", level => log_threshold + 3);
 					 
 					-- Find all segments that have the given net_id.
 					-- Append segments to route.lines.
@@ -7448,7 +7449,7 @@ package body et_kicad_pcb is
 
 					-- Log if the net has no routed segments.
 					if et_pcb.type_copper_lines_pcb.is_empty (route.lines) then
-						log ("no segments", log_threshold + 3);
+						log (text => "no segments", level => log_threshold + 3);
 					end if;
 					
 					-- Find all vias that have the given net_id.
@@ -7490,7 +7491,7 @@ package body et_kicad_pcb is
 
 					-- Log if the net has no vias.
 					if et_pcb.type_vias.is_empty (route.vias) then
-						log ("no vias", log_threshold + 3);
+						log (text => "no vias", level => log_threshold + 3);
 					end if;
 
 					-- Append polygons to route.polygons
@@ -7741,8 +7742,8 @@ package body et_kicad_pcb is
 							
 					begin -- to_net_name
 						log_indentation_up;
-						log ("translating anonymous kicad net name " & et_general.to_string (net_name_in) & " to " &
-							et_general.system_name & " name ... ", log_threshold + 3);
+						log (text => "translating anonymous kicad net name " & et_general.to_string (net_name_in) & " to " &
+							et_general.system_name & " name ... ", level => log_threshold + 3);
 
 						-- Loop in packages until a suitable terminal has been found.
 						while package_cursor /= type_packages_board.no_element and not terminal_found loop
@@ -7770,8 +7771,8 @@ package body et_kicad_pcb is
 						net_name_out := et_kicad.connected_net (mod_name, package_name, terminal_name, log_threshold + 4);
 
 						log_indentation_up;
-						log ("the " & et_general.system_name & " net name is " 
-							 & et_general.to_string (net_name_out), log_threshold + 3);
+						log (text => "the " & et_general.system_name & " net name is " 
+							 & et_general.to_string (net_name_out), level => log_threshold + 3);
 						log_indentation_down;
 						
 						log_indentation_down;
@@ -7784,14 +7785,14 @@ package body et_kicad_pcb is
 						net 		: in out et_kicad.type_net) is
 					begin
 						net.class := key (net_class_cursor_board);
-						log (" net name " & et_general.to_string (net_name), log_threshold + 3);
+						log (text => " net name " & et_general.to_string (net_name), level => log_threshold + 3);
 					end set_net_class;
 					
 				begin -- transfer_net_classes
 					-- Copy the net class settings from kicad-board to the schematic module:
 					net_class_cursor_board := board.net_classes.first;
 					while net_class_cursor_board /= type_net_classes.no_element loop -- loop in net classes of board
-						log ("net class " & et_pcb.to_string (key (net_class_cursor_board)), log_threshold + 2);
+						log (text => "net class " & et_pcb.to_string (key (net_class_cursor_board)), level => log_threshold + 2);
 
 						-- copy net class name and its basic properties
 						module.net_classes.insert (
@@ -7855,7 +7856,7 @@ package body et_kicad_pcb is
 								));
 
 							et_pcb.floating_copper_polygon_properties (module.board.copper.polygons.last, log_threshold + 2);
-							log (WARNING, "polygon is not connected with any net !", log_threshold + 2);
+							log (WARNING, "polygon is not connected with any net !", level => log_threshold + 2);
 
 						end if;
 						next (polygon_cursor);
@@ -7891,10 +7892,10 @@ package body et_kicad_pcb is
 						net 			=> key (net_cursor),
 						log_threshold	=> log_threshold + 4).length > 1 then
 
-							-- log ("pre net " & to_string (key (net_cursor)), log_threshold + 2);
+							-- log (text => "pre net " & to_string (key (net_cursor)), level => log_threshold + 2);
 							net_id := to_net_id (key (net_cursor));
-							log ("net " & et_general.to_string (key (net_cursor)) & " id" &
-								 to_string (net_id), log_threshold + 2);
+							log (text => "net " & et_general.to_string (key (net_cursor)) & " id" &
+								 to_string (net_id), level => log_threshold + 2);
 
 							-- add route (segments and vias) to module.nets (see et_schematic type_module)
 							et_kicad.type_nets.update_element (
@@ -7918,7 +7919,7 @@ package body et_kicad_pcb is
 
 						-- set package reference as the component reference (from schematic)
 						package_reference := key (component_cursor);
-						--log ("component " & et_libraries.to_string (package_reference), log_threshold + 3);
+						--log (text => "component " & et_libraries.to_string (package_reference), level => log_threshold + 3);
 
 						-- in the board: locate the package by the given package_reference:
 						package_cursor := find (board.packages, package_reference);
@@ -7936,8 +7937,8 @@ package body et_kicad_pcb is
 
 								package_position := element (package_cursor).position;
 
-								log ("package " & et_libraries.to_string (package_reference) &
-									et_pcb.package_position (package_position), log_threshold + 2);
+								log (text => "package " & et_libraries.to_string (package_reference) &
+									et_pcb.package_position (package_position), level => log_threshold + 2);
 
 								-- Extract the text placeholders for reference and value from the 
 								-- current package (indicated by package_cursor) and store them
@@ -7984,7 +7985,7 @@ package body et_kicad_pcb is
 
 			
 		begin -- merge_board_and_schematic
-			log ("merging board and schematic ...", log_threshold + 1);
+			log (text => "merging board and schematic ...", level => log_threshold + 1);
 
 			et_kicad.modules.update_element (
 				position	=> et_kicad.module_cursor,
@@ -7994,7 +7995,7 @@ package body et_kicad_pcb is
 				when event:
 					others =>
 						log_indentation_reset;
-						log (ada.exceptions.exception_message (event), console => true);
+						log (text => ada.exceptions.exception_message (event), console => true);
 						raise;
 			
 		end merge_board_and_schematic;
@@ -8007,7 +8008,7 @@ package body et_kicad_pcb is
 		end set_board_available_flag;
 		
 	begin -- read_board
-		log ("reading board file " & file_name & " ...", log_threshold);
+		log (text => "reading board file " & file_name & " ...", level => log_threshold);
 		log_indentation_up;
 
 		if ada.directories.exists (file_name) then
@@ -8053,7 +8054,7 @@ package body et_kicad_pcb is
 			end if;
 			
 		else
-			log ("board file " & file_name & " not available. nothing to do.", log_threshold);
+			log (text => "board file " & file_name & " not available. nothing to do.", level => log_threshold);
 		end if;
 		
 		log_indentation_down;
@@ -8073,7 +8074,7 @@ package body et_kicad_pcb is
 		-- Process one module after another.
 		-- module_cursor points to the module.
 		while module_cursor /= et_kicad.type_modules.no_element loop
-			log ("module " & kicad_coordinates.to_string (key (module_cursor)), log_threshold);
+			log (text => "module " & kicad_coordinates.to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 	
 			-- read the layout file
@@ -8202,7 +8203,7 @@ package body et_kicad_pcb is
 			when event:
 				others =>
 					log_indentation_reset;
-					log (ada.exceptions.exception_message (event), console => true);
+					log (text => ada.exceptions.exception_message (event), console => true);
 					raise;
 
 	end terminal_port_map_fits;
@@ -8257,7 +8258,7 @@ package body et_kicad_pcb is
 			when event:
 				others =>
 					log_indentation_reset;
-					log (ada.exceptions.exception_message (event), console => true);
+					log (text => ada.exceptions.exception_message (event), console => true);
 					raise;
 
 	end terminal_count;
@@ -8267,7 +8268,7 @@ package body et_kicad_pcb is
 -- 	-- Converts the packages (from package_libraries) to native packages.
 -- 	-- NOTE: Packages of the board (incl. their deviations from the package_libraries) are ignored !
 -- 	begin
--- 		log ("packages ...", log_threshold);
+-- 		log (text => "packages ...", level => log_threshold);
 -- 		log_indentation_up;
 -- -- CS
 -- -- 
