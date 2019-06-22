@@ -1873,7 +1873,7 @@ package body et_kicad_pcb is
 			end invalid_layer_reference;
 
 			procedure invalid_layer_value is begin
-				log (message_warning & "value placeholder should be in a fabrication layer !");
+				log (WARNING, "value placeholder should be in a fabrication layer !");
 			end invalid_layer_value;
 
 			procedure invalid_layer_user is begin
@@ -2514,7 +2514,7 @@ package body et_kicad_pcb is
 				case package_technology is
 					when THT =>
 						if tht_count < smt_count then
-							log (message_warning & "in " & path_and_file_name &
+							log (WARNING, "in " & path_and_file_name &
 								" majority of terminals is" & to_string (SMT) &
 								number (smt_count) &
 								"Package technology should be" & to_string (SMT) & " !");
@@ -2522,7 +2522,7 @@ package body et_kicad_pcb is
 
 					when SMT =>
 						if smt_count < tht_count then
-							log (message_warning & "in " & path_and_file_name &
+							log (WARNING, "in " & path_and_file_name &
 								" majority of terminals is" & to_string (THT) &
 								number (tht_count) &
 								"Package technology should be" & to_string (THT) & " !");
@@ -2745,7 +2745,7 @@ package body et_kicad_pcb is
 
 			-- show number of package libraries
 			if is_empty (package_names) then
-				log (message_warning & "library " & to_string (library_name) & " is empty !");
+				log (WARNING, "library " & to_string (library_name) & " is empty !");
 			else
 				log ("found" & count_type'image (length (package_names)) & " packages", log_threshold + 4);
 			end if;
@@ -2836,7 +2836,7 @@ package body et_kicad_pcb is
 					-- If directory contains no packages, notify operator that there are no package libraries.
 					-- Otherwise loop through the library names and create the libraries in container package_libraries.
 					if is_empty (library_names) then
-						log (message_warning & "no package libraries found in " &
+						log (WARNING, "no package libraries found in " &
 							et_kicad.to_string (element (lib_dir_cursor)) & " !");
 					else
 						-- show number of package libraries found in the directory
@@ -5779,7 +5779,7 @@ package body et_kicad_pcb is
 			end invalid_layer_reference;
 
 			procedure invalid_layer_value is begin
-				log (message_warning & "value " & to_string (package_value) & " should be in a fabrication layer !");
+				log (WARNING, "value " & to_string (package_value) & " should be in a fabrication layer !");
 			end invalid_layer_value;
 
 			procedure invalid_layer_user is begin
@@ -5796,7 +5796,7 @@ package body et_kicad_pcb is
 			procedure warn_on_missing_net is begin
 			-- Warns operator if a terminal is not connected to a net.
 				if length (terminal_net_name) = 0 then
-					log (message_warning & to_string (package_reference) & latin_1.space
+					log (WARNING, to_string (package_reference) & latin_1.space
 						 & to_string (terminal_name) & " not connected with a net !");
 				end if;
 			end warn_on_missing_net;
@@ -6979,7 +6979,7 @@ package body et_kicad_pcb is
 
 				-- Warn about floating polygons:
 				if length (polygon.net_name) = 0 then
-					log (message_warning & "Polygon without connection with any net found !");
+					log (WARNING, "Polygon without connection with any net found !");
 				end if;
 
 				-- Reset selectors of "polygon" (variable "polygon" is a scratch variable).
@@ -7855,7 +7855,7 @@ package body et_kicad_pcb is
 								));
 
 							et_pcb.floating_copper_polygon_properties (module.board.copper.polygons.last, log_threshold + 2);
-							log (message_warning & "polygon is not connected with any net !", log_threshold + 2);
+							log (WARNING, "polygon is not connected with any net !", log_threshold + 2);
 
 						end if;
 						next (polygon_cursor);
