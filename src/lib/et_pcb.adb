@@ -79,8 +79,7 @@ package body et_pcb is
 	-- Checks whether given text size is in range of type_text_size.
 	begin
 		if size not in type_text_size then
-			log_indentation_reset;
-			log (message_error & "text size invalid ! Allowed range is" 
+			log (ERROR, "text size invalid ! Allowed range is" 
 				 & to_string (type_text_size'first) & " .."
 				 & to_string (type_text_size'last),
 				 console => true);
@@ -92,8 +91,7 @@ package body et_pcb is
 	-- Checks whether given line width is in range of type_general_line_width
 	begin
 		if width not in type_general_line_width then
-			log_indentation_reset;
-			log (message_error & "line width invalid ! Allowed range is" 
+			log (ERROR, "line width invalid ! Allowed range is" 
 				 & to_string (type_general_line_width'first) & " .."
 				 & to_string (type_general_line_width'last),
 				 console => true);
@@ -105,8 +103,7 @@ package body et_pcb is
 	-- Checks whether given line width is in range of type_text_line_width
 	begin
 		if width not in type_text_line_width then
-			log_indentation_reset;
-			log (message_error & "line width invalid ! Allowed range is" 
+			log (ERROR, "line width invalid ! Allowed range is" 
 				 & to_string (type_text_line_width'first) & " .."
 				 & to_string (type_text_line_width'last),
 				 console => true);
@@ -118,8 +115,7 @@ package body et_pcb is
 	-- Checks whether given drill size is in range of type_drill_size
 	begin
 		if drill not in type_drill_size then
-			log_indentation_reset;
-			log (message_error & "drill size invalid ! Allowed range is" 
+			log (ERROR, "drill size invalid ! Allowed range is" 
 				 & to_string (type_drill_size'first) & " .."
 				 & to_string (type_drill_size'last),
 				 console => true);
@@ -131,8 +127,7 @@ package body et_pcb is
 	-- Checks whether given pad size is in range of type_pad_size
 	begin
 		if size not in type_pad_size then
-			log_indentation_reset;
-			log (message_error & "pad size invalid ! Allowed range is" 
+			log (ERROR, "pad size invalid ! Allowed range is" 
 				 & to_string (type_pad_size'first) & " .."
 				 & to_string (type_pad_size'last),
 				 console => true);
@@ -150,8 +145,7 @@ package body et_pcb is
 	-- Checks whether the given track clearance is in range of type_track_clearance.
 	begin
 		if clearance not in type_track_clearance then
-			log_indentation_reset;
-			log (message_error & "track clearance invalid ! Allowed range is" 
+			log (ERROR, "track clearance invalid ! Allowed range is" 
 				 & to_string (type_track_clearance'first) & " .."
 				 & to_string (type_track_clearance'last),
 				 console => true);
@@ -163,8 +157,7 @@ package body et_pcb is
 	-- Checks whether the given width is in range of type_track_width.
 	begin
 		if track_width not in type_track_width then
-			log_indentation_reset;
-			log (message_error & "track width invalid ! Allowed range is" 
+			log (ERROR, "track width invalid ! Allowed range is" 
 				 & to_string (type_track_width'first) & " .."
 				 & to_string (type_track_width'last),
 				 console => true);
@@ -176,8 +169,7 @@ package body et_pcb is
 	-- Checks whether the given restring width is in range of type_restring_width.	
 	begin
 		if restring_width not in type_restring_width then
-			log_indentation_reset;
-			log (message_error & "restring width invalid ! Allowed range is" 
+			log (ERROR, "restring width invalid ! Allowed range is" 
 				 & to_string (type_restring_width'first) & " .."
 				 & to_string (type_restring_width'last),
 				 console => true);
@@ -366,8 +358,7 @@ package body et_pcb is
 		elsif to_lower (easing) = to_lower (type_corner_easing'image (FILLET)) then
 			easing_out := FILLET;
 		else
-			log_indentation_reset;
-			log (message_error & "type of easing '" & easing & "' invalid !", console => true);
+			log (ERROR, "type of easing '" & easing & "' invalid !", console => true);
 			raise constraint_error;
 		end if;
 
