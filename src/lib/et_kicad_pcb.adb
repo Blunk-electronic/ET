@@ -202,8 +202,7 @@ package body et_kicad_pcb is
 
 				-- If the library could not be located anywhere, abort here:
 				if length (full_library_name) = 0 then
-					log_indentation_reset;
-					log (message_error & "No library '" & et_kicad_general.to_string (library_name) 
+					log (ERROR, "No library '" & et_kicad_general.to_string (library_name) 
 						 & "' found ! Check local and global fp-lib-tables !", console => true);
 					raise constraint_error;
 				end if;
@@ -216,8 +215,7 @@ package body et_kicad_pcb is
 		if package_found then
 			log (" found !", log_threshold + 2);
 		else
-			log_indentation_reset;
-			log (message_error & "package '" & to_string (package_name) &
+			log (ERROR, "package '" & to_string (package_name) &
 				"' not found in any library named '" & et_kicad_general.to_string (library_name) & "' !", console => true);
 			raise constraint_error;
 		end if;
@@ -285,8 +283,7 @@ package body et_kicad_pcb is
 		if tech = "smd" then return SMT;
 		elsif tech = "thru_hole" then return THT;
 		else
-			log_indentation_reset;
-			log (message_error & "invalid assembly technology", console => true);
+			log (ERROR, "invalid assembly technology", console => true);
 			raise constraint_error;
 		end if;
 	end to_assembly_technology;
@@ -297,8 +294,7 @@ package body et_kicad_pcb is
 		elsif shape = "circle" then return CIRCULAR;
 		elsif shape = "oval" then return OVAL;
 		else
-			log_indentation_reset;
-			log (message_error & "invalid or not supported shape for a THT terminal !", console => true);
+			log (ERROR, "invalid or not supported shape for a THT terminal !", console => true);
 			raise constraint_error;
 		end if;
 	end to_pad_shape_tht;
@@ -309,8 +305,7 @@ package body et_kicad_pcb is
 		elsif shape = "oval" then return OVAL;
 		elsif shape = "circle" then return CIRCULAR;
 		else
-			log_indentation_reset;
-			log (message_error & "invalid or not supported shape for an SMT terminal !", console => true);
+			log (ERROR, "invalid or not supported shape for an SMT terminal !", console => true);
 			raise constraint_error;
 		end if;
 	end to_pad_shape_smt;
@@ -320,8 +315,7 @@ package body et_kicad_pcb is
 		id : type_signal_layer_id; -- to be returned
 
 		procedure invalid_layer is begin
-			log_indentation_reset;
-			log (message_error & "invalid layer '" & layer & "' !", console => true);
+			log (ERROR, "invalid layer '" & layer & "' !", console => true);
 			raise constraint_error;
 		end invalid_layer;
 
@@ -877,8 +871,7 @@ package body et_kicad_pcb is
 			use et_pcb_coordinates;
 			
 			procedure invalid is begin
-				log_indentation_reset;
-				log (message_error & "contradicting layers in terminal !", console => true);
+				log (ERROR, "contradicting layers in terminal !", console => true);
 				log ("face " & to_string (terminal_face), console => true);
 				log (" solder paste top " & to_string (terminal_top_solder_paste), console => true);
 				log (" solder paste bot " & to_string (terminal_bot_solder_paste), console => true);
@@ -951,9 +944,8 @@ package body et_kicad_pcb is
 				log ("line " & to_string (current_line), log_threshold + 4);
 			else
 				-- This should never happen:
-				log_indentation_reset;
-				log (message_error & "in " & path_and_file_name, console => true);
-				log (message_error & "no more lines available !", console => true);
+				log (ERROR, "in " & path_and_file_name, console => true);
+				log (ERROR, "no more lines available !", console => true);
 				raise constraint_error;
 			end if;
 		end get_next_line;
@@ -978,8 +970,7 @@ package body et_kicad_pcb is
 
 			procedure invalid_section is
 			begin
-				log_indentation_reset;
-				log (message_error & "invalid subsection '" & to_string (section.name) 
+				log (ERROR, "invalid subsection '" & to_string (section.name) 
 					 & "' in parent section '" & to_string (section.parent) & "' !", console => true);
 				raise constraint_error;
 			end invalid_section;
@@ -1074,12 +1065,11 @@ package body et_kicad_pcb is
 			exception
 				when event:
 					others =>
-						log_indentation_reset;
-						log (message_error & "in " & path_and_file_name, console => true);
-						log (message_error & affected_line (element (line_cursor)) 
+						log (ERROR, "in " & path_and_file_name, console => true);
+						log (ERROR, affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 
-						log (message_error & "section '" & slice (current_line, character_cursor, end_of_kw) 
+						log (ERROR, "section '" & slice (current_line, character_cursor, end_of_kw) 
 							& "' invalid or not supported yet", console => true);
 						raise;
 			
@@ -1103,21 +1093,18 @@ package body et_kicad_pcb is
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
 
 			procedure invalid_layer is begin
-				log_indentation_reset;
-				log (message_error & "invalid layer " & to_string (arg), console => true);
+				log (ERROR, "invalid layer " & to_string (arg), console => true);
 				raise constraint_error;
 			end invalid_layer;
 
 			procedure too_many_arguments is begin
-				log_indentation_reset;
-				log (message_error & "too many arguments in section " & to_string (section.name) & " !", console => true);
+				log (ERROR, "too many arguments in section " & to_string (section.name) & " !", console => true);
 				log ("excessive argument reads '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end too_many_arguments;
 
 			procedure invalid_fp_text_keyword is begin
-				log_indentation_reset;
-				log (message_error & "expect keyword '" & keyword_fp_text_reference 
+				log (ERROR, "expect keyword '" & keyword_fp_text_reference 
 					 & "' or '" & keyword_fp_text_value 
 					 & "' or '" & keyword_fp_text_user
 					 & "' ! found '" & to_string (arg) & "'", console => true);
@@ -1125,47 +1112,41 @@ package body et_kicad_pcb is
 			end invalid_fp_text_keyword;
 
 			procedure invalid_placeholder_reference is begin
-				log_indentation_reset;
-				log (message_error & "expect reference placeholder '" & placeholder_reference & "' !"
+				log (ERROR, "expect reference placeholder '" & placeholder_reference & "' !"
 					 & " found '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end invalid_placeholder_reference;
 
 			procedure invalid_placeholder_value is
 			begin
-				log_indentation_reset;
-				log (message_error & "expect value placeholder '" & to_string (package_name) & "' !"
+				log (ERROR, "expect value placeholder '" & to_string (package_name) & "' !"
 					 & " found '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end invalid_placeholder_value;
 
 			procedure invalid_package_name is
 			begin
-				log_indentation_reset;
-				log (message_error & "expect package name '" & to_string (package_name) & "' !"
+				log (ERROR, "expect package name '" & to_string (package_name) & "' !"
 					 & " found '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end invalid_package_name;
 
 			procedure invalid_component_assembly_face is
 			begin
-				log_indentation_reset;
-				log (message_error & "default assembly face " & et_pcb_coordinates.to_string (BOTTOM) 
+				log (ERROR, "default assembly face " & et_pcb_coordinates.to_string (BOTTOM) 
 					 & " found. Must be " & et_pcb_coordinates.to_string (TOP) & " !", console => true);
 				raise constraint_error;
 			end invalid_component_assembly_face;
 
 			procedure invalid_attribute is
 			begin
-				log_indentation_reset;
-				log (message_error & "invalid attribute !", console => true);
+				log (ERROR, "invalid attribute !", console => true);
 				raise constraint_error;
 			end invalid_attribute;
 
 			procedure invalid_section is
 			begin
-				log_indentation_reset;
-				log (message_error & "invalid subsection '" & to_string (section.name) 
+				log (ERROR, "invalid subsection '" & to_string (section.name) 
 					 & "' in parent section '" & to_string (section.parent) & "' !", console => true);
 				raise constraint_error;
 			end invalid_section;
@@ -1180,8 +1161,7 @@ package body et_kicad_pcb is
 
 				-- if no trailing quotation found -> error
 				if end_of_arg = -1 then
-					log_indentation_reset;
-					log (message_error & affected_line (element (line_cursor))
+					log (ERROR, affected_line (element (line_cursor))
 						& latin_1.space & latin_1.quotation & " expected");
 						raise constraint_error;
 				end if;
@@ -1867,9 +1847,8 @@ package body et_kicad_pcb is
 			exception
 				when event:
 					others =>
-						log_indentation_reset;
-						log (message_error & "in " & path_and_file_name, console => true);
-						log (message_error & affected_line (element (line_cursor)) 
+						log (ERROR, "in " & path_and_file_name, console => true);
+						log (ERROR, affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 						log (ada.exceptions.exception_message (event));
 						raise;
@@ -1884,14 +1863,12 @@ package body et_kicad_pcb is
 			use et_libraries;
 
 			procedure invalid_layer is begin
-				log_indentation_reset;
-				log (message_error & "invalid layer for this object !", console => true);
+				log (ERROR, "invalid layer for this object !", console => true);
 				raise constraint_error;
 			end invalid_layer;
 		
 			procedure invalid_layer_reference is begin
-				log_indentation_reset;
-				log (message_error & "reference placeholder must be in a silk screen layer !", console => true);
+				log (ERROR, "reference placeholder must be in a silk screen layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_reference;
 
@@ -1900,8 +1877,7 @@ package body et_kicad_pcb is
 			end invalid_layer_value;
 
 			procedure invalid_layer_user is begin
-				log_indentation_reset;
-				log (message_error & "user text must be in a silk screen or fabrication layer !", console => true);
+				log (ERROR, "user text must be in a silk screen or fabrication layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_user;
 
@@ -2339,8 +2315,7 @@ package body et_kicad_pcb is
 						name			=> et_pcb.type_terminals.key (terminal_cursor),
 						log_threshold	=> log_threshold + 1);
 				else
-					log_indentation_reset;
-					log (message_error & "duplicated terminal " & to_string (terminal_name) & " !", console => true);
+					log (ERROR, "duplicated terminal " & to_string (terminal_name) & " !", console => true);
 					raise constraint_error;
 				end if;
 
@@ -2450,9 +2425,8 @@ package body et_kicad_pcb is
 			exception
 				when event:
 					others =>
-						log_indentation_reset;
-						log (message_error & "in " & path_and_file_name, console => true);
-						log (message_error & affected_line (element (line_cursor)) 
+						log (ERROR, "in " & path_and_file_name, console => true);
+						log (ERROR, affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 						log (ada.exceptions.exception_message (event));
 						raise;
@@ -2480,9 +2454,8 @@ package body et_kicad_pcb is
 			end loop;
 
 			if not reference_found then
-				log_indentation_reset;
-				log (message_error & "in " & path_and_file_name, console => true);
-				log (message_error & "no placeholder for component " 
+				log (ERROR, "in " & path_and_file_name, console => true);
+				log (ERROR, "no placeholder for component " 
 					 & to_string (REFERENCE) 
 					 & " found in " & to_string (TOP) & " silk screen !", console => true);
 				raise constraint_error;
@@ -2500,9 +2473,8 @@ package body et_kicad_pcb is
 			end loop;
 
 			if not value_found then
-				log_indentation_reset;
-				log (message_error & "in " & path_and_file_name, console => true);
-				log (message_error & "no placeholder for component " 
+				log (ERROR, "in " & path_and_file_name, console => true);
+				log (ERROR, "no placeholder for component " 
 					 & to_string (VALUE) 
 					 & " found in " & to_string (TOP) & " assembly documentation !", console => true);
 				raise constraint_error;
@@ -2641,9 +2613,8 @@ package body et_kicad_pcb is
 
 		-- check section name. must be top level section
 		if section.name /= INIT then -- should never happen
-			log_indentation_reset;
-			log (message_error & "in " & path_and_file_name, console => true);
-			log (message_error & "top level section not closed !", console => true);
+			log (ERROR, "in " & path_and_file_name, console => true);
+			log (ERROR, "top level section not closed !", console => true);
 			raise constraint_error;
 		end if;
 
@@ -3380,8 +3351,7 @@ package body et_kicad_pcb is
 			use et_pcb_coordinates;
 			
 			procedure invalid is begin
-				log_indentation_reset;
-				log (message_error & "contradicting layers in terminal !", console => true);
+				log (ERROR, "contradicting layers in terminal !", console => true);
 				log ("face " & to_string (terminal_face), console => true);
 				log (" solder paste top " & to_string (terminal_top_solder_paste), console => true);
 				log (" solder paste bot " & to_string (terminal_bot_solder_paste), console => true);
@@ -3458,9 +3428,8 @@ package body et_kicad_pcb is
 				log ("line " & to_string (current_line), log_threshold + 4);
 			else
 				-- This should never happen:
-				log_indentation_reset;
-				log (message_error & "in " & file_name, console => true);
-				log (message_error & "no more lines available !", console => true);
+				log (ERROR, "in " & file_name, console => true);
+				log (ERROR, "no more lines available !", console => true);
 				raise constraint_error;
 			end if;
 		end get_next_line;
@@ -3485,8 +3454,7 @@ package body et_kicad_pcb is
 			end_of_kw : integer;  -- may become negative if no terminating character present
 
 			procedure invalid_section is begin
-				log_indentation_reset;
-				log (message_error & "invalid subsection '" & to_string (section.name) 
+				log (ERROR, "invalid subsection '" & to_string (section.name) 
 					 & "' in parent section '" & to_string (section.parent) & "' ! (read section)", console => true);
 				raise constraint_error;
 			end invalid_section;
@@ -3530,8 +3498,7 @@ package body et_kicad_pcb is
 					-- NOTE: The layer_id must be set here and further processed in procedure read_arg.
 					section.name := SEC_LAYER_ID; -- see comments above
 				else
-					log_indentation_reset;
-					log (message_error & "expect subsection name !", console => true);
+					log (ERROR, "expect subsection name !", console => true);
 					raise constraint_error;
 				end if;
 			end if;
@@ -3725,12 +3692,11 @@ package body et_kicad_pcb is
 			exception
 				when event:
 					others =>
-						log_indentation_reset;
-						log (message_error & "in " & file_name, console => true);
-						log (message_error & affected_line (element (line_cursor)) 
+						log (ERROR, "in " & file_name, console => true);
+						log (ERROR, affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 
-						log (message_error & "section '" & slice (current_line, character_cursor, end_of_kw) 
+						log (ERROR, "section '" & slice (current_line, character_cursor, end_of_kw) 
 							& "' invalid or not supported yet", console => true);
 						raise;
 			
@@ -3754,21 +3720,18 @@ package body et_kicad_pcb is
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
 
 			procedure invalid_layer is begin
-				log_indentation_reset;
-				log (message_error & "invalid layer " & to_string (arg), console => true);
+				log (ERROR, "invalid layer " & to_string (arg), console => true);
 				raise constraint_error;
 			end invalid_layer;
 
 			procedure too_many_arguments is begin
-				log_indentation_reset;
-				log (message_error & "too many arguments in section " & to_string (section.name) & " !", console => true);
+				log (ERROR, "too many arguments in section " & to_string (section.name) & " !", console => true);
 				log ("excessive argument reads '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end too_many_arguments;
 
 			procedure invalid_fp_text_keyword is begin
-				log_indentation_reset;
-				log (message_error & "expect keyword '" & keyword_fp_text_reference 
+				log (ERROR, "expect keyword '" & keyword_fp_text_reference 
 					 & "' or '" & keyword_fp_text_value 
 					 & "' or '" & keyword_fp_text_user
 					 & "' ! found '" & to_string (arg) & "'", console => true);
@@ -3776,21 +3739,18 @@ package body et_kicad_pcb is
 			end invalid_fp_text_keyword;
 
 			procedure invalid_attribute is begin
-				log_indentation_reset;
-				log (message_error & "invalid attribute !", console => true);
+				log (ERROR, "invalid attribute !", console => true);
 				raise constraint_error;
 			end invalid_attribute;
 
 			procedure invalid_section is begin
-				log_indentation_reset;
-				log (message_error & "invalid subsection '" & to_string (section.name) 
+				log (ERROR, "invalid subsection '" & to_string (section.name) 
 					 & "' in parent section '" & to_string (section.parent) & "' ! (read argument)", console => true);
 				raise constraint_error;
 			end invalid_section;
 
 			procedure invalid_file_format is begin
-				log_indentation_reset;
-				log (message_error & "invalid file format ! Expect format version " & pcb_file_format_version_4 & " !",
+				log (ERROR, "invalid file format ! Expect format version " & pcb_file_format_version_4 & " !",
 					 console => true);
 				raise constraint_error;
 			end invalid_file_format;
@@ -3836,8 +3796,7 @@ package body et_kicad_pcb is
 			-- or in v5 like:
 			-- (kicad_pcb (version 20171130) (host pcbnew 5.0.0-5.0.0)
 				procedure invalid_pcbnew_version (version : in string) is begin
-					log_indentation_reset;
-					log (message_error & "invalid " & host_name_pcbnew & " version ! Expect " & version & " !",
+					log (ERROR, "invalid " & host_name_pcbnew & " version ! Expect " & version & " !",
 						console => true);
 					raise constraint_error;
 				end invalid_pcbnew_version;
@@ -3870,8 +3829,7 @@ package body et_kicad_pcb is
 			-- or in v5 like:
 			-- (kicad_pcb (version 20171130) (host pcbnew 5.0.0-5.0.0)
 				procedure invalid_host_name is begin
-					log_indentation_reset;
-					log (message_error & "invalid host name ! Expect " & host_name_pcbnew & " !",
+					log (ERROR, "invalid host name ! Expect " & host_name_pcbnew & " !",
 						console => true);
 					raise constraint_error;
 				end invalid_host_name;
@@ -3936,8 +3894,7 @@ package body et_kicad_pcb is
 
 				-- if no trailing quotation found -> error
 				if end_of_arg = -1 then
-					log_indentation_reset;
-					log (message_error & affected_line (element (line_cursor))
+					log (ERROR, affected_line (element (line_cursor))
 						& latin_1.space & latin_1.quotation & " expected");
 						raise constraint_error;
 				end if;
@@ -4397,8 +4354,7 @@ package body et_kicad_pcb is
 								when 0 => null;
 								when 1 => 
 									if to_string (arg) /= keyword_fp_text_mirrored then
-										log_indentation_reset;
-										log (message_error & "expect keyword '" & keyword_fp_text_mirrored & "' !", console => true);
+										log (ERROR, "expect keyword '" & keyword_fp_text_mirrored & "' !", console => true);
 										raise constraint_error;
 									end if;
 								when others => too_many_arguments;
@@ -5709,8 +5665,7 @@ package body et_kicad_pcb is
 								when 1 => 
 									if to_string (arg) = "segment" then polygon.fill_mode_segment := true; -- CS use constant for "segment"
 									else 
-										log_indentation_reset;
-										log (message_error & "expect argument 'segment' for fill mode !", console => true);
+										log (ERROR, "expect argument 'segment' for fill mode !", console => true);
 										raise constraint_error;
 									end if;
 									
@@ -5803,9 +5758,8 @@ package body et_kicad_pcb is
 			exception
 				when event:
 					others =>
-						log_indentation_reset;
-						log (message_error & "in " & file_name, console => true);
-						log (message_error & affected_line (element (line_cursor)) 
+						log (ERROR, "in " & file_name, console => true);
+						log (ERROR, affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 						log (ada.exceptions.exception_message (event));
 						raise;
@@ -5820,8 +5774,7 @@ package body et_kicad_pcb is
 			use et_libraries;
 
 			procedure invalid_layer_reference is begin
-				log_indentation_reset;
-				log (message_error & "reference " & to_string (package_reference) & " must be in a silk screen layer !", console => true);
+				log (ERROR, "reference " & to_string (package_reference) & " must be in a silk screen layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_reference;
 
@@ -5830,15 +5783,13 @@ package body et_kicad_pcb is
 			end invalid_layer_value;
 
 			procedure invalid_layer_user is begin
-				log_indentation_reset;
-				log (message_error & "user text " & to_string (package_text.content) 
+				log (ERROR, "user text " & to_string (package_text.content) 
 					 & " must be in a silk screen or fabrication layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_user;
 
 			procedure invalid_layer is begin
-				log_indentation_reset;
-				log (message_error & "invalid layer for this object !", console => true);
+				log (ERROR, "invalid layer for this object !", console => true);
 				raise constraint_error;
 			end invalid_layer;
 
@@ -6005,8 +5956,7 @@ package body et_kicad_pcb is
 					package_copper.bottom.texts.clear;
 
 				else
-					log_indentation_reset;
-					log (message_error & "package " & to_string (package_reference) 
+					log (ERROR, "package " & to_string (package_reference) 
 						& et_pcb.package_position (package_position)
 						& " already used !",
 						 console => true);
@@ -6034,8 +5984,7 @@ package body et_kicad_pcb is
 						 & " name " & type_layer_name.to_string (layer.name)
 						 & " meaning " & type_layer_meaning'image (layer.meaning), log_threshold + 2);
 				else
-					log_indentation_reset;
-					log (message_error & "layer id" & type_layer_id'image (layer_id) & " already used !", 
+					log (ERROR, "layer id" & type_layer_id'image (layer_id) & " already used !", 
 						 console => true);
 					raise constraint_error;
 				end if;
@@ -6072,8 +6021,7 @@ package body et_kicad_pcb is
 					-- next net class section and thus become overwritten.
 					net_class.net_names.clear;
 				else
-					log_indentation_reset;
-					log (message_error & "net class '" & to_string (net_class_name) & "' already defined !", console => true);
+					log (ERROR, "net class '" & to_string (net_class_name) & "' already defined !", console => true);
 					raise constraint_error;
 				end if;
 			end insert_net_class;
@@ -6098,8 +6046,7 @@ package body et_kicad_pcb is
 							log_threshold + 1);
 					end if;
 				else
-					log_indentation_reset;
-					log (message_error & "either net id" & to_string (netlist_net.id) 
+					log (ERROR, "either net id" & to_string (netlist_net.id) 
 						& " or net name '" & et_general.to_string (netlist_net.name) & "' already used !",
 						 console => true);
 					raise constraint_error;
@@ -6369,8 +6316,7 @@ package body et_kicad_pcb is
 						else
 							-- CS currently there is no reason for texts in stencil, keepout, glue or other layers.
 							-- This would cause an error:
-							log_indentation_reset;
-							log (message_error & "Text not allowed in this layer !", console => true);
+							log (ERROR, "Text not allowed in this layer !", console => true);
 							-- CS output the layer by its full kicad name like B.SilkS or T.CU.
 							-- This requires a function that translates from type_layer_id to layer_top_solder_paste ... 
 							-- see layer name declarations in spec of this package
@@ -6846,8 +6792,7 @@ package body et_kicad_pcb is
 					init_terminal_net_name; -- in case the next terminal has no net connected
 
 				else -- terminal could not be inserted
-					log_indentation_reset;
-					log (message_error & "duplicated terminal " & to_string (terminal_name) & " !", console => true);
+					log (ERROR, "duplicated terminal " & to_string (terminal_name) & " !", console => true);
 					raise constraint_error;
 				end if;
 					
@@ -6962,8 +6907,7 @@ package body et_kicad_pcb is
 			-- inserts a via in the list "vias"
 			begin
 				if via.layer_start > via.layer_end then
-					log_indentation_reset;
-					log (message_error & "via start layer id must be less than end layer id !", console => true);
+					log (ERROR, "via start layer id must be less than end layer id !", console => true);
 					raise constraint_error;
 				end if;
 			
@@ -6997,8 +6941,7 @@ package body et_kicad_pcb is
 				if inserted then
 					log ("polygon corner point at" & to_string (polygon_point), log_threshold + 3);
 				else
-					log_indentation_reset;
-					log (message_error & "multiple polygon corner points at" & to_string (polygon_point), console => true);
+					log (ERROR, "multiple polygon corner points at" & to_string (polygon_point), console => true);
 					raise constraint_error;
 				end if;
 				
@@ -7180,9 +7123,8 @@ package body et_kicad_pcb is
 			exception
 				when event:
 					others =>
-						log_indentation_reset;
-						log (message_error & "in " & file_name, console => true);
-						log (message_error & affected_line (element (line_cursor)) 
+						log (ERROR, "in " & file_name, console => true);
+						log (ERROR, affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 						log (ada.exceptions.exception_message (event));
 						raise;
@@ -7270,9 +7212,8 @@ package body et_kicad_pcb is
 
 		-- check section name. must be top level section
 		if section.name /= INIT then -- should never happen
-			log_indentation_reset;
-			log (message_error & "in " & file_name, console => true);
-			log (message_error & "top level section not closed !", console => true);
+			log (ERROR, "in " & file_name, console => true);
+			log (ERROR, "top level section not closed !", console => true);
 			raise constraint_error;
 		end if;
 
@@ -7349,16 +7290,14 @@ package body et_kicad_pcb is
 					if terminal_cursor /= type_terminals.no_element then -- terminal found
 						net := element (terminal_cursor).net_name;
 					else
-						log_indentation_reset;
-						log (message_error & "component reference " & et_libraries.to_string (reference) &
+						log (ERROR, "component reference " & et_libraries.to_string (reference) &
 							" terminal " & et_libraries.to_string (terminal) &
 							 " not found in board !",
 							console => true);
 						raise constraint_error;
 					end if;
 				else -- component package does not exist
-					log_indentation_reset;
-					log (message_error & "component reference " & et_libraries.to_string (reference) &
+					log (ERROR, "component reference " & et_libraries.to_string (reference) &
 						 " not found in board !",
 						 console => true);
 					raise constraint_error;
@@ -7421,8 +7360,7 @@ package body et_kicad_pcb is
 
 						-- if the net could not be found, then board and schematic are not consistent -> error
 						if length (net_name_in_board) = 0 then
-							log_indentation_reset;
-							log (message_error & "net '" & to_string (net_name => name) & "' not found in board !", console => true);
+							log (ERROR, "net '" & to_string (net_name => name) & "' not found in board !", console => true);
 							raise constraint_error;
 						end if;
 
@@ -7819,8 +7757,7 @@ package body et_kicad_pcb is
 						end loop;
 
 						if not terminal_found then
-							log_indentation_reset;
-							log (message_error & "net " & et_general.to_string (net_name_in) 
+							log (ERROR, "net " & et_general.to_string (net_name_in) 
 								 & " not connected to any package !", console => true);
 							raise constraint_error;
 						end if;
@@ -8016,8 +7953,7 @@ package body et_kicad_pcb is
 
 								
 							else -- value mismatch
-								log_indentation_reset;
-								log (message_error & "value of " & et_libraries.to_string (package_reference) &
+								log (ERROR, "value of " & et_libraries.to_string (package_reference) &
 									 " mismatch ! In schematic: " & et_libraries.to_string (element (component_cursor).value) &
 									 " in layout: " & et_libraries.to_string (element (package_cursor).value),
 									console => true);
@@ -8025,8 +7961,7 @@ package body et_kicad_pcb is
 							end if;
 								
 						else -- package not found in layout
-							log_indentation_reset;
-							log (message_error & "package " & et_libraries.to_string (package_reference) &
+							log (ERROR, "package " & et_libraries.to_string (package_reference) &
 								 " not found in the board !", console => true);
 							raise constraint_error;
 						end if;
@@ -8185,8 +8120,7 @@ package body et_kicad_pcb is
 				terminal_name_in_map := key (terminal_cursor);
 
 				if package_terminals.find (terminal_name_in_map) = et_pcb.type_terminals.no_element then
-					log_indentation_reset;
-					log (message_error & "package " & et_libraries.to_string (packge => package_name)
+					log (ERROR, "package " & et_libraries.to_string (packge => package_name)
 						 & " does not have a terminal '" 
 						 & et_libraries.to_string (terminal_name_in_map) & "' !", console => true);
 					raise constraint_error;
@@ -8209,16 +8143,14 @@ package body et_kicad_pcb is
 			terminals : et_libraries.type_terminal_count;
 		begin
 			if is_empty (packages) then
-				log_indentation_reset;
-				log (message_error & "package library " & et_libraries.to_string (library_name)
+				log (ERROR, "package library " & et_libraries.to_string (library_name)
 					 & " is empty !", console => true);
 				raise constraint_error;
 			else
 				-- locate the package
 				package_cursor := packages.find (package_name);
 				if package_cursor = type_packages_library.no_element then
-					log_indentation_reset;
-					log (message_error & "package " & et_libraries.to_string (packge => package_name)
+					log (ERROR, "package " & et_libraries.to_string (packge => package_name)
 						& " not found in library " & et_libraries.to_string (library_name)
 						& " !", console => true);
 					raise constraint_error;
@@ -8228,8 +8160,7 @@ package body et_kicad_pcb is
 
 					-- If the package has less terminals than the given terminal_port_map abort:
 					if et_libraries."<" (terminals, et_libraries.type_terminal_count (length (terminal_port_map))) then
-						log_indentation_reset;
-						log (message_error & "package " & et_libraries.to_string (packge => package_name)
+						log (ERROR, "package " & et_libraries.to_string (packge => package_name)
 							& " as too little terminals !",
 							console => true);
 						raise constraint_error;
@@ -8248,8 +8179,7 @@ package body et_kicad_pcb is
 			library_cursor := package_libraries.find (library_name);
 
 			if library_cursor = type_libraries.no_element then
-				log_indentation_reset;
-				log (message_error & "package library " & et_libraries.to_string (library_name)
+				log (ERROR, "package library " & et_libraries.to_string (library_name)
 					 --& " not found in " & et_libraries.to_string (et_libraries.library_group)
 					 & " not found"
 					 & " !", console => true);
@@ -8262,8 +8192,7 @@ package body et_kicad_pcb is
 			end if;
 				
 		else
-			log_indentation_reset;
-			log (message_error & "no package libraries available !", console => true);
+			log (ERROR, "no package libraries available !", console => true);
 			raise constraint_error;
 		end if;
 
@@ -8315,8 +8244,7 @@ package body et_kicad_pcb is
 		library_cursor := type_libraries.find (package_libraries, library_name);
 
 		if library_cursor = type_libraries.no_element then
-			log_indentation_reset;
-			log (message_error & et_libraries.to_string (library_name) & " not found !", console => true);
+			log (ERROR, et_libraries.to_string (library_name) & " not found !", console => true);
 			raise constraint_error;
 		else
 			-- query packages in library
