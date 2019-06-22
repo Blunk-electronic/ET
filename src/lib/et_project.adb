@@ -12594,7 +12594,6 @@ package body et_project is
 			
 		end process_line;
 
-
 		procedure read_submodule_files is
 		-- Pointer module_cursor points to the last module that has been read.
 		-- Take a copy of the submodules stored in module.submods. 
@@ -13102,13 +13101,21 @@ package body et_project is
 								when SEC_MODULE_INSTANCES =>							
 									declare
 										kw : string := f (line, 1);
+										module_cursor : type_modules.cursor;
 									begin
 										if kw = keyword_generic_name then
 											expect_field_count (line, 2);
 
 											-- The generic name does not use the *.mod extension.
 											generic_name := type_module_name.to_bounded_string (f (line,2));
-											-- CS: test if module with this generic name exists
+											
+											-- test whether a module with this generic name exists
+											if not exists (generic_name) then
+												log_indentation_reset;
+												log (message_error & "module " & enclose_in_quotes (to_string (generic_name)) &
+													 " does not exist !", console => true);
+												raise constraint_error;
+											end if;
 											
 										elsif kw = keyword_instance_name then
 											expect_field_count (line, 2);
@@ -13117,7 +13124,17 @@ package body et_project is
 										elsif kw = keyword_assembly_variant then
 											expect_field_count (line, 2);
 											assembly_variant := assembly_variants.to_variant (f (line,2));
-											
+
+											-- test whether module provides the assembly variant
+											module_cursor := locate_module (generic_name);
+											if not exists (module_cursor, assembly_variant) then
+												log_indentation_reset;
+												log (message_error & "module " & enclose_in_quotes (to_string (generic_name)) &
+													 " does not provide assembly variant " &
+													 enclose_in_quotes (assembly_variants.to_variant (assembly_variant)) & " !",
+													console => true);
+												raise constraint_error;
+											end if;
 										else
 											invalid_keyword (kw);
 										end if;
@@ -13165,7 +13182,8 @@ package body et_project is
 				end if;
 
 				exception when event: others =>
-					log (affected_line (line) & to_string (line), console => true);
+					log ("file " & file_name & latin_1.space & affected_line (line) 
+						 & to_string (line), console => true);
 					raise;
 				
 			end process_line;
