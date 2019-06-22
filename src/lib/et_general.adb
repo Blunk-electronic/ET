@@ -100,8 +100,7 @@ package body et_general is
 		use et_string_processing;
 	begin
 		if net'length > net_name_length_max then
-			log_indentation_reset;
-			log (message_error & "max. number of characters for net name is" 
+			log (ERROR, "max. number of characters for net name is" 
 				 & positive'image (net_name_length_max) & " !",
 				 console => true);
 			raise constraint_error;
@@ -125,8 +124,7 @@ package body et_general is
 
 		-- Evaluate position of invalid character.
 		if invalid_character_position > 0 then
-			log_indentation_reset;
-			log (message_error & "invalid character in net name '" 
+			log (ERROR, "invalid character in net name '" 
 				 & to_string (net) & "' at position" 
 				 & natural'image (invalid_character_position) & " !",
 				 console => true);
@@ -139,8 +137,7 @@ package body et_general is
 		inversion_mark_position := type_net_name.index (net, net_inversion_mark);
 		if inversion_mark_position > 0 then
 			if inversion_mark_position /= type_net_name.length (net) then
-				log_indentation_reset;
-				log (message_error & "net " & to_string (net) 
+				log (ERROR, "net " & to_string (net) 
 					& " inversion mark must be at the end of the net name !",
 					console => true);
 				raise constraint_error;
