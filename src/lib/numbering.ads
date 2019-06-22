@@ -88,10 +88,21 @@ package numbering is
 		highest	: et_libraries.type_device_name_index := et_libraries.type_device_name_index'first;		
 	end record;
 
--- 	package type_submodules is new doubly_linked_lists (
--- 		element_type	=> et_project.type_module_name.bounded_string,
--- 		"="				=> et_project.type_module_name."=");
+	-- A collection of submodule names. like amplifier (without extension *.mod)
+	package type_submodules is new doubly_linked_lists (
+		element_type	=> et_project.type_module_name.bounded_string, -- amplifier
+		"="				=> et_project.type_module_name."=");
 
+	use type_submodules;
+	
+	-- A collection of parent module with their submodules:
+	package type_modules is new ordered_maps (
+		key_type		=> et_project.type_module_name.bounded_string, -- audio_mixer
+		"<"				=> et_project.type_module_name."<",
+		element_type	=> type_submodules.list); -- amplifier, power_supply, vu-meter
+
+	modules : type_modules.map;
+	
 end numbering;
 
 -- Soli Deo Gloria

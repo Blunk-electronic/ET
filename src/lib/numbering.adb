@@ -136,7 +136,7 @@ package body numbering is
 
 		log_indentation_up;
 		
-		type_modules.query_element (
+		et_project.type_modules.query_element (
 			position	=> module_cursor,
 			process		=> query_devices'access);
 

@@ -10711,7 +10711,7 @@ package body schematic_ops is
 
 		-- Calculate the index range per module and store it in 
 		-- container "ranges":
-		while module_cursor /= type_modules.no_element loop
+		while module_cursor /= et_project.type_modules.no_element loop
 
 			index_range := device_index_range (module_cursor, log_threshold + 1);
 
@@ -10724,7 +10724,7 @@ package body schematic_ops is
 		end loop;
 
 		update_element (
-			container	=> modules,
+			container	=> et_project.modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 		
