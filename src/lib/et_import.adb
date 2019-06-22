@@ -51,13 +51,13 @@ package body et_import is
 		if format = to_lower (type_cad_format'image (kicad_v4)) then
 			null;
 		else
-			log_indentation_reset;
-			log (message_error & "CAD format '"
+			log (ERROR, "CAD format '"
 					& format & "' invalid !" 
 					& " Supported formats: "
 					& type_cad_format'image (kicad_v4) -- CS: use a loop to offer formats
 					& " !",
 				console => true);
+			
 			raise constraint_error;
 		end if;
 	end validate_cad_format;
@@ -90,8 +90,7 @@ package body et_import is
 		if exists (type_project_name.to_string (name)) then
 			null; -- fine
 		else
-			log_indentation_reset;
-			log (message_error & "project '" & type_project_name.to_string (name) 
+			log (ERROR, "project '" & type_project_name.to_string (name) 
 				& "' not found ! Working directory correct ?",
 				console => true);
 			raise constraint_error;

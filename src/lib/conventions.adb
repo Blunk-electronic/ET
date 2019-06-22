@@ -784,11 +784,11 @@ package body conventions is
 				log (ERROR, category & " is not a supported device category !",
 					 console => true);
 
-				log ("supported categories are:");
+				log (text => "supported categories are:");
 				for cat in type_device_category'pos (type_device_category'first) .. 
 					type_device_category'pos (type_device_category'last) loop
 
-					log ("- " & to_string (type_device_category'val (cat)));
+					log (text => "- " & to_string (type_device_category'val (cat)));
 				end loop;
 				
 				raise constraint_error;
@@ -1834,10 +1834,10 @@ package body conventions is
 				log (ERROR, unit & " is not a supported unit of measurement !",
 					 console => true);
 
-				log ("supported units are:");
+				log (text => "supported units are:");
 				for uom in type_unit_of_measurement'pos (type_unit_of_measurement'first) .. 
 					type_unit_of_measurement'pos (type_unit_of_measurement'last) loop
-					log ("- " & to_string (type_unit_of_measurement'val (uom)));
+					log (text => "- " & to_string (type_unit_of_measurement'val (uom)));
 				end loop;
 						
 				raise constraint_error;
@@ -1926,9 +1926,9 @@ package body conventions is
 					 console => true);
 
 				-- show supported text categories
-				log ("Available categories are :");
+				log (text => "Available categories are :");
 				for cat in type_text_schematic'pos (type_text_schematic'first) .. type_text_schematic'pos (type_text_schematic'last) loop
-					log ("- " & type_text_schematic'image (type_text_schematic'val (cat)));
+					log (text => "- " & type_text_schematic'image (type_text_schematic'val (cat)));
 				end loop;
 				
 				raise constraint_error;
@@ -2098,10 +2098,10 @@ package body conventions is
 
 		if not valid then
 			log (ERROR, "invalid keyword " & to_string (keyword) & " in part code !");
-			log ("Available keywords are:");
+			log (text => "Available keywords are:");
 			cursor := partcode_keywords.first;
 			while cursor /= type_partcode_keywords.no_element loop
-				log ("- " & to_string (key (cursor)));
+				log (text => "- " & to_string (key (cursor)));
 				next (cursor);
 			end loop;
 
@@ -2172,8 +2172,8 @@ package body conventions is
 			kw	: in type_partcode_keyword.bounded_string;
 			arg	: in type_partcode_keyword_argument.bounded_string) is
 		begin
-			log ("keyword " & to_string (kw) 
-				 & " argument " & to_string (argument => argument), log_threshold + 1);
+			log (text => "keyword " & to_string (kw) 
+				 & " argument " & to_string (argument => argument), level => log_threshold + 1);
 
 			-- CS: currently no validation ! Here the argument could be checked against the keyword
 			-- example: after PMAX must follow something like 15 (for 15W watts)
@@ -2183,7 +2183,7 @@ package body conventions is
 		end validate_argument;
 			
 	begin -- validate_other_partcode_keywords
-		log ("optional keywords ...", log_threshold);
+		log (text => "optional keywords ...", level => log_threshold);
 		log_indentation_up;
 
 		-- If the first character to start with, is a separator, then an argument follows.
@@ -2200,14 +2200,14 @@ package body conventions is
 		while place < len loop
 
 			if keyword_follows then
-				--log ("reading keyword", log_threshold + 1);
+				--log (text => "reading keyword", level => log_threshold + 1);
 				
 				if element (partcode, place) = partcode_keyword_separator then
 					place := place + 1;
 					keyword_end := index (partcode, (1 => partcode_keyword_separator), from => place) - 1;
 					
 					keyword := to_partcode_keyword (slice (partcode, place, keyword_end));
-					log ("keyword " & to_string (keyword), log_threshold + 2);
+					log (text => "keyword " & to_string (keyword), level => log_threshold + 2);
 					
 					place := keyword_end + 1; -- point to separator right after keyword
 					argument_start := place + 1; -- so the argument is expected after the separator
@@ -2224,7 +2224,7 @@ package body conventions is
 				end if;
 
 			else -- argument follows
-				--log ("reading argument", log_threshold + 1);
+				--log ("reading argument", level => log_threshold + 1);
 				
 				place := place + 1;
 				-- If the argument starts, "place" points to the first character of the argument.
@@ -2260,7 +2260,7 @@ package body conventions is
 			when event:
 				others =>
 					log (WARNING, "partcode " & to_string (partcode) & " invalid !");
-					log (ada.exceptions.exception_message (event));
+					log (text => ada.exceptions.exception_message (event));
 		
 	end validate_other_partcode_keywords;
 
@@ -2294,7 +2294,7 @@ package body conventions is
 	begin -- validate_partcode
 		if partcode_keywords_specified then
 			
-			log ("validating partcode ...", log_threshold);
+			log (text => "validating partcode ...", level => log_threshold);
 			log_indentation_up;
 
 			-- Compose the root of the partcode as it should be.
@@ -2337,9 +2337,9 @@ package body conventions is
 					 console => true);
 
 				-- show supported sections
-				log ("Available sections are :");
+				log (text => "Available sections are :");
 				for section in type_partcode_section'pos (type_partcode_section'first) .. type_partcode_section'pos (type_partcode_section'last) loop
-					log ("- " & type_partcode_section'image (type_partcode_section'val (section)));
+					log (text => "- " & type_partcode_section'image (type_partcode_section'val (section)));
 				end loop;
 				
 				raise constraint_error;
@@ -2397,7 +2397,7 @@ package body conventions is
 
 		conventions_file_handle : ada.text_io.file_type;
 	begin
-		log ("generating default conventions file " & to_string (file_name), log_threshold);
+		log (text => "generating default conventions file " & to_string (file_name), level => log_threshold);
 
 		if exists (to_string (file_name)) then
 			-- CS: warn operator and request confirmation
@@ -2661,11 +2661,11 @@ package body conventions is
 				when NONE => null;
 
 				when COMPONENT_PREFIXES =>
-					log ("component prefixes ...", log_threshold + 1);
+					log (text => "device prefixes ...", level => log_threshold + 1);
 					log_indentation_up;
 
 					while line_cursor /= type_lines.no_element loop
-						log (to_string (element (line_cursor)), log_threshold + 2);
+						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- Build the prefix from field #1:
 						-- Test if prefix is not too long, if it contains only allowed characters.
@@ -2700,11 +2700,11 @@ package body conventions is
 
 				-- COMPONENT UNITS OF MEASUREMENT
 				when component_units =>
-					log ("device units of measurement ...", log_threshold + 1);
+					log (text => "device units of measurement ...", level => log_threshold + 1);
 					log_indentation_up;
 					
 					while line_cursor /= type_lines.no_element loop
-						log (to_string (element (line_cursor)), log_threshold + 2);
+						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- Build the unit abbrevation from field #1:
 						-- Test if abbrevation contains only allowed characters.
@@ -2742,7 +2742,7 @@ package body conventions is
 
 				-- COMPONENTS WITH USER INTERACTON
 				when components_with_operator_interaction =>
-					log ("device categories with operator interaction ...", log_threshold + 1);
+					log (text => "device categories with operator interaction ...", level => log_threshold + 1);
 					log_indentation_up;
 
 					if not component_prefixes_specified then
@@ -2751,7 +2751,7 @@ package body conventions is
 					end if;
 					
 					while line_cursor /= type_lines.no_element loop
-						log (to_string (element (line_cursor)), log_threshold + 2);
+						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- build the component category from field #1:
 						cat := to_category (et_string_processing.field (element (line_cursor), 1));
@@ -2772,11 +2772,11 @@ package body conventions is
 
 				-- TEXT SIZES SCHEMATIC
 				when text_sizes_schematic =>
-					log ("text sizes in schematic ...", log_threshold + 1);
+					log (text => "text sizes in schematic ...", level => log_threshold + 1);
 					log_indentation_up;
 					
 					while line_cursor /= type_lines.no_element loop
-						log (to_string (element (line_cursor)), log_threshold + 2);
+						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- build the text category from field #1:
 						text := to_text (et_string_processing.field (element (line_cursor), 1));
@@ -2822,11 +2822,11 @@ package body conventions is
 
 				-- PARTCODE KEYWORDS
 				when partcode_keywords =>
-					log ("part code keywords ...", log_threshold + 1);
+					log (text => "part code keywords ...", level => log_threshold + 1);
 					log_indentation_up;
 					
 					while line_cursor /= type_lines.no_element loop
-						log (to_string (element (line_cursor)), log_threshold + 2);
+						log (text => to_string (element (line_cursor)), level => log_threshold + 2);
 
 						-- build the partcode keyword from field #1:
 						check_partcode_keyword_length (et_string_processing.field (element (line_cursor), 1));
@@ -2872,8 +2872,8 @@ package body conventions is
 		end process_previous_section;
 		
 	begin -- read_conventions
-		log (row_separator_double, log_threshold);		
-		log ("reading conventions file " & to_string (file_name) & " ...", log_threshold);
+		log (text => row_separator_double, level => log_threshold);		
+		log (text => "reading conventions file " & to_string (file_name) & " ...", level => log_threshold);
 
 		if exists (to_string (file_name)) then
 
@@ -2900,7 +2900,7 @@ package body conventions is
 						-- CS: check field count ?
 						
 						-- At a certain log level we report the whole line as it is:
-						--log (to_string (line), log_threshold + 3);
+						--log (text => to_string (line), level => log_threshold + 3);
 
 						-- Wait for a section header.
 						-- Once a header was found, the PREVIOUS section is regarded as complete.

@@ -76,9 +76,8 @@ package body kicad_coordinates is
 		exception
 			when event:
 				others =>
-					log_indentation_reset;
-					log (message_error & "mil value " & mil & " invalid !", console => true);
-					log ("Allowed range for mil numbers is" 
+					log (ERROR, "mil value " & mil & " invalid !", console => true);
+					log (text => "Allowed range for mil numbers is" 
 						& float'image (mil_min) & " .." & float'image (mil_max) & ".", console => true);
 
 					-- log ("mm out " & type_distance'image (distance));
@@ -106,8 +105,8 @@ package body kicad_coordinates is
 	procedure warning_angle_greater_90_degrees is
 		use et_string_processing;
 	begin
-		log (et_string_processing.message_warning 
-			& "rotation of text outside range " 
+		log (WARNING,
+			"rotation of text outside range " 
 			& et_coordinates.to_string (rotation_text_min) & " .. " & et_coordinates.to_string (rotation_text_max) & " !");
 	end warning_angle_greater_90_degrees;
 	
@@ -134,8 +133,7 @@ package body kicad_coordinates is
 
 		-- Evaluate position of invalid character.
 		if invalid_character_position > 0 then
-			log_indentation_reset;
-			log (message_warning & "invalid character in submodule name '" 
+			log (WARNING, "invalid character in submodule name '" 
 				& to_string (name) & "' at position" & natural'image (invalid_character_position) & " !");
 		end if;
 	end check_submodule_name_characters;

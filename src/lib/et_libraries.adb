@@ -112,7 +112,7 @@ package body et_libraries is
 				 & " out of range !",
 				 console => true);
 
-			log ("Allowed range is " & to_string (type_text_size'first, preamble => false) & " .. "
+			log (text => "Allowed range is " & to_string (type_text_size'first, preamble => false) & " .. "
 				 & to_string (type_text_size'last, preamble => false),
 				 console => true);
 
@@ -532,35 +532,36 @@ package body et_libraries is
 		use et_string_processing;
 	begin
 		-- meaning
-		log (to_string (placeholder.meaning), log_threshold);
+		log (text => to_string (placeholder.meaning), level => log_threshold);
 		log_indentation_up;
 		
 		-- position
-		log (to_string (placeholder.position), log_threshold);
+		log (text => to_string (placeholder.position), level => log_threshold);
 
 		-- size
-		log (et_libraries.to_string (size => placeholder.size), log_threshold);
+		log (text => et_libraries.to_string (size => placeholder.size), level => log_threshold);
 
 		-- style
-		log ("style "
-			& to_lower (type_text_style'image (placeholder.style)), log_threshold);
+		log (text => "style "
+			& to_lower (type_text_style'image (placeholder.style)), level => log_threshold);
 
 		-- line width
-		log ("line width"
-			& to_string (width => placeholder.line_width), log_threshold);
+		log (text => "line width"
+			& to_string (width => placeholder.line_width), level => log_threshold);
 
 		-- rotation
-		log (to_string (placeholder.rotation), log_threshold); 
+		log (text => to_string (placeholder.rotation), level => log_threshold); 
 
 		-- visible
-		--log ("visible "
-		--	& to_lower (et_libraries.type_text_visible'image (placeholder.visible)), log_threshold);
+		--log (text => "visible "
+		--	& to_lower (et_libraries.type_text_visible'image (placeholder.visible)), level => log_threshold);
 
 		-- alignment
-		log ("alignment (hor/vert) "
+		log (text => "alignment (hor/vert) "
 			& to_lower (et_libraries.type_text_alignment_horizontal'image (placeholder.alignment.horizontal))
 			& "/"
-			& to_lower (et_libraries.type_text_alignment_vertical'image (placeholder.alignment.vertical)), log_threshold);
+			& to_lower (et_libraries.type_text_alignment_vertical'image (placeholder.alignment.vertical)),
+			level => log_threshold);
 
 		log_indentation_down;
 	end write_placeholder_properties;
@@ -576,40 +577,40 @@ package body et_libraries is
 -- 		log_indentation_up;
 		
 		-- meaning
-		log ("field/attribute" & et_libraries.to_string (text.meaning), level => log_threshold);
+		log (text => "field/attribute" & et_libraries.to_string (text.meaning), level => log_threshold);
 		log_indentation_up;
 		
 		-- content
 		if et_libraries.type_text_content.length (text.content) > 0 then
-			log ("content '" & et_libraries.type_text_content.to_string(text.content) & "'",
+			log (text => "content '" & et_libraries.type_text_content.to_string(text.content) & "'",
 				level => log_threshold);
 		else
-			log ("no content", level => log_threshold);
+			log (text => "no content", level => log_threshold);
 		end if;
 
 		-- position
-		log (to_string (text.position), level => log_threshold + 1);
+		log (text => to_string (text.position), level => log_threshold + 1);
 		
 		-- size
-		log ("size" & et_coordinates.to_string (text.size), level => log_threshold + 1);
+		log (text => "size" & et_coordinates.to_string (text.size), level => log_threshold + 1);
 
 		-- style
-		log ("style " & to_lower(et_libraries.type_text_style'image (text.style)),
+		log (text => "style " & to_lower(et_libraries.type_text_style'image (text.style)),
 			 level => log_threshold + 1);
 
 		-- line width
-		log ("line width" & et_coordinates.to_string (text.line_width),
+		log (text => "line width" & et_coordinates.to_string (text.line_width),
 			level => log_threshold + 1);
 
 		-- rotation
-		log (to_string (text.rotation), level => log_threshold + 1);
+		log (text => to_string (text.rotation), level => log_threshold + 1);
 
 		-- visible
-		--log ("visible " & to_lower(et_libraries.type_text_visible'image (text.visible)),
+		--log (text => "visible " & to_lower(et_libraries.type_text_visible'image (text.visible)),
 		--	level => log_threshold + 1);
 
 		-- alignment
-		log ("alignment (horizontal/vertical) "
+		log (text => "alignment (horizontal/vertical) "
 			& to_lower (et_libraries.type_text_alignment_horizontal'image (text.alignment.horizontal))
 			& "/"
 			& to_lower (et_libraries.type_text_alignment_vertical'image (text.alignment.vertical)),

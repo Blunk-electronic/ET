@@ -181,7 +181,7 @@ package body scripting is
 		procedure command_too_long (from : in count_type) is begin
 			log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
 				 " too long !");
-			log (" -> Excessive arguments after no." & count_type'image (from) & " !");
+			log (text => " -> Excessive arguments after no." & count_type'image (from) & " !");
 			raise constraint_error;
 		end;
 		
@@ -1418,7 +1418,7 @@ package body scripting is
 		end board_cmd;
 		
 	begin -- execute_command
-		log ("cmd --> " & to_string (cmd), log_threshold);
+		log (text => "cmd --> " & to_string (cmd), level => log_threshold);
 		log_indentation_up;
 		
 		-- field 1 contains the domain of operation
@@ -1485,8 +1485,8 @@ package body scripting is
 		line : et_string_processing.type_fields_of_line;
 		
 	begin -- execute_script
-		log (row_separator_double, log_threshold);
-		log ("executing script " & to_string (file_name), log_threshold);
+		log (text => row_separator_double, level => log_threshold);
+		log (text => "executing script " & to_string (file_name), level => log_threshold);
 		log_indentation_up;
 
 		-- build the directory where the script is located:
@@ -1495,10 +1495,10 @@ package body scripting is
 
 		-- backup the current working directory
 		projects_directory := to_script_name (containing_directory (to_string (script_directory)));
-		--log ("projects directory " & to_string (projects_directory), log_threshold);
+		--log (text => "projects directory " & to_string (projects_directory), level => log_threshold);
 
 		-- change in directory where the script is:
-		log ("changing to directory " & to_string (script_directory), log_threshold + 1);
+		log (text => "changing to directory " & to_string (script_directory), level => log_threshold + 1);
 		set_directory (to_string (script_directory));
 
 		-- make sure the script file exists:
@@ -1544,7 +1544,7 @@ package body scripting is
 			raise constraint_error;
 		end if;
 															   
-		log ("returning to directory " & to_string (projects_directory), log_threshold + 1);
+		log (text => "returning to directory " & to_string (projects_directory), level => log_threshold + 1);
 		set_directory (to_string (projects_directory));
 		
 		log_indentation_down;

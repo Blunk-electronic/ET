@@ -125,11 +125,12 @@ package body et_pcb_coordinates is
 			when event:
 				others =>
 					log (ERROR, "mil value " & mil & " invalid !", console => true);
-					log ("Allowed range for mil numbers is" 
-						& float'image (mil_min) & " .." & float'image (mil_max) & ".", console => true);
+					log (text => "Allowed range for mil numbers is" 
+						 & float'image (mil_min) & " .." & float'image (mil_max) & ".",
+						 console => true);
 
 					-- log ("mm out " & type_distance'image (distance));
-					log (ada.exceptions.exception_message (event));
+					log (text => ada.exceptions.exception_message (event));
 					raise;
 
 	end mil_to_distance;

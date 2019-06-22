@@ -49,9 +49,9 @@ package body et_export is
 		use et_general;
 	begin
 		if not exists (compose (work_directory, project)) then
-			log ("creating project directory " 
+			log (text => "creating project directory " 
 					& compose (work_directory, project) & " ...",
-				log_threshold);
+				level => log_threshold);
 
 			create_directory (compose (work_directory, project));
 			create_path (compose (compose (work_directory, project), directory_cam));

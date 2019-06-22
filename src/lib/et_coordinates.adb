@@ -84,7 +84,7 @@ package body et_coordinates is
 
 		exception 
 			when constraint_error => 
-				log (message_error & "Rotation " & angle & " outside range" & 
+				log (ERROR, "Rotation " & angle & " outside range" & 
 					 et_coordinates.to_string (rotation_min) &
 					 " .." & 
 					 et_coordinates.to_string (rotation_max) &
@@ -94,7 +94,7 @@ package body et_coordinates is
 				raise;
 				
 			when system.assertions.assert_failure =>
-				log (message_error & "Rotation " & angle & " is not a multiple of" &
+				log (ERROR, "Rotation " & angle & " is not a multiple of" &
 					 et_coordinates.to_string (rotation_delta) & " !",
 					 console => true
 					);

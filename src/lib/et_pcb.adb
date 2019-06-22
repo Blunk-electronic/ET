@@ -477,9 +477,9 @@ package body et_pcb is
 		line : type_copper_line;
 	begin
 		line := element (cursor);
-		log ("copper line face" & to_string (face) & latin_1.space 
+		log (text => "copper line face" & to_string (face) & latin_1.space 
 			 & to_string (type_line_2d (line))
-			 & " width" & to_string (line.width), log_threshold);
+			 & " width" & to_string (line.width), level => log_threshold);
 	end line_copper_properties;
 
 	procedure arc_copper_properties (
@@ -491,9 +491,9 @@ package body et_pcb is
 		arc : type_copper_arc;
 	begin
 		arc := element (cursor);
-		log ("copper arc face" & to_string (face) & latin_1.space 
+		log (text => "copper arc face" & to_string (face) & latin_1.space 
 			 & to_string (type_arc_2d (arc))
-			 & " width" & to_string (arc.width), log_threshold);
+			 & " width" & to_string (arc.width), level => log_threshold);
 	end arc_copper_properties;
 	
 	procedure circle_copper_properties (
@@ -505,10 +505,10 @@ package body et_pcb is
 		circle : type_copper_circle;
 	begin
 		circle := element (cursor);
-		log ("copper circle face" & to_string (face) & latin_1.space 
+		log (text => "copper circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle_2d (circle))
 			 & " width" & to_string (circle.width)
-			 & " filled" & to_string (circle.filled), log_threshold);
+			 & " filled" & to_string (circle.filled), level => log_threshold);
 	end circle_copper_properties;
 
 	procedure text_copper_properties (
@@ -520,12 +520,12 @@ package body et_pcb is
 		text : type_text_with_content_pcb;
 	begin
 		text := element (cursor);
-		log ("copper text signal layer" & to_string (text.layer) & latin_1.space
-			& "content '" & to_string (text.content) & "'", log_threshold
+		log (text => "copper text signal layer" & to_string (text.layer) & latin_1.space
+			& "content '" & to_string (text.content) & "'", level => log_threshold
 			);
 
 		log_indentation_up;
-		log (text_properties (type_text (text)), log_threshold + 1);
+		log (text => text_properties (type_text (text)), level => log_threshold + 1);
 		log_indentation_down;
 	end text_copper_properties;
 
@@ -541,11 +541,11 @@ package body et_pcb is
 		line : type_copper_line_pcb;
 	begin
 		line := element (cursor);
-		log ("segment " & et_pcb.to_string (type_line_2d (line)) &
+		log (text => "segment " & et_pcb.to_string (type_line_2d (line)) &
 			 " width" & to_string (line.width) &
 			 " layer" & to_string (line.layer)
 			 -- CS locked
-			 , log_threshold);
+			 , level => log_threshold);
 	end route_line_properties;
 	
 	procedure route_via_properties (
@@ -556,13 +556,13 @@ package body et_pcb is
 		via : type_via;
 	begin
 		via := element (cursor);
-		log ("via" & et_pcb.to_string (type_drill (via)) &
+		log (text => "via" & et_pcb.to_string (type_drill (via)) &
 			 " restring_outer" & to_string (via.restring_outer) & -- outer layers
 			 " restring_inner" & to_string (via.restring_inner) & -- inner layers
 			 " layer_start" & to_string (via.layer_start) &
 			 " layer_end" & to_string (via.layer_end)
 			 -- CS locked
-			 , log_threshold);
+			 , level => log_threshold);
 	end route_via_properties;
 
 	procedure route_polygon_properties (
@@ -575,7 +575,7 @@ package body et_pcb is
 		point_cursor : type_polygon_points.cursor;
 	begin
 		-- general stuff
-		log ("polygon" & 
+		log (text => "polygon" & 
 			 " " & text_polygon_signal_layer & to_string (element (cursor).layer) &
 			 " " & text_polygon_width_min & to_string (element (cursor).width_min) &
 			 " " & text_polygon_pad_connection & to_string (element (cursor).pad_connection) &
@@ -583,32 +583,32 @@ package body et_pcb is
 			 " " & text_polygon_isolation_gap & to_string (element (cursor).isolation_gap) &
 			 " " & text_polygon_corner_easing & to_string (element (cursor).corner_easing) &
 			 " " & text_polygon_easing_radius & to_string (element (cursor).easing_radius),
-			 log_threshold);
+			 level => log_threshold);
 
 		log_indentation_up;
 		
 		-- type depended stuff
 		case element (cursor).pad_connection is
 			when THERMAL =>
-				log (text_polygon_pad_technology & to_string (element (cursor).thermal_technology) &
+				log (text => text_polygon_pad_technology & to_string (element (cursor).thermal_technology) &
 					" " & text_polygon_thermal_width & to_string (element (cursor).thermal_width) &
 					" " & text_polygon_thermal_gap & to_string (element (cursor).thermal_gap),
-					log_threshold);
+					level => log_threshold);
 
 			when SOLID =>
-				log (text_polygon_pad_technology & to_string (element (cursor).solid_technology),
-					log_threshold);
+				log (text => text_polygon_pad_technology & to_string (element (cursor).solid_technology),
+					level => log_threshold);
 				
 			when NONE =>
 				null;
 		end case;
 
 		-- corner points
-		log (text_polygon_corner_points, log_threshold);
+		log (text => text_polygon_corner_points, level => log_threshold);
 		points := element (cursor).corners;
 		point_cursor := points.first;
 		while point_cursor /= type_polygon_points.no_element loop
-			log (to_string (element (point_cursor)), log_threshold);
+			log (text => to_string (element (point_cursor)), level => log_threshold);
 			next (point_cursor);
 		end loop;
 		
@@ -625,21 +625,21 @@ package body et_pcb is
 		point_cursor : type_polygon_points.cursor;
 	begin
 		-- general stuff
-		log ("polygon" & 
+		log (text => "polygon" & 
 			 " " & text_polygon_signal_layer & to_string (element (cursor).layer) &
 			 " " & text_polygon_width_min & to_string (element (cursor).width_min) &
 			 " " & text_polygon_corner_easing & to_string (element (cursor).corner_easing) &
 			 " " & text_polygon_easing_radius & to_string (element (cursor).easing_radius),
-			 log_threshold);
+			 level => log_threshold);
 
 		log_indentation_up;
 		
 		-- corner points
-		log (text_polygon_corner_points, log_threshold);
+		log (text => text_polygon_corner_points, level => log_threshold);
 		points := element (cursor).corners;
 		point_cursor := points.first;
 		while point_cursor /= type_polygon_points.no_element loop
-			log (to_string (element (point_cursor)), log_threshold);
+			log (text => to_string (element (point_cursor)), level => log_threshold);
 			next (point_cursor);
 		end loop;
 		
@@ -657,9 +657,9 @@ package body et_pcb is
 		line : type_silk_line;
 	begin
 		line := element (cursor);
-		log ("silk screen line face" & to_string (face) & latin_1.space 
+		log (text => "silk screen line face" & to_string (face) & latin_1.space 
 			 & to_string (type_line_2d (line))
-			 & " width" & to_string (line.width), log_threshold);
+			 & " width" & to_string (line.width), level => log_threshold);
 	end line_silk_screen_properties;
 
 	procedure arc_silk_screen_properties (
@@ -671,9 +671,9 @@ package body et_pcb is
 		arc : type_silk_arc;
 	begin
 		arc := element (cursor);
-		log ("silk screen arc face" & to_string (face) & latin_1.space 
+		log (text => "silk screen arc face" & to_string (face) & latin_1.space 
 			 & to_string (type_arc_2d (arc))
-			 & " width" & to_string (arc.width), log_threshold);
+			 & " width" & to_string (arc.width), level => log_threshold);
 	end arc_silk_screen_properties;
 	
 	procedure circle_silk_screen_properties (
@@ -685,16 +685,16 @@ package body et_pcb is
 		circle : type_silk_circle;
 	begin
 		circle := element (cursor);
-		log ("silk screen circle face" & to_string (face) & latin_1.space 
+		log (text => "silk screen circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle_2d (circle))
 			 & " width" & to_string (circle.width)
 			 & " filled" & to_string (circle.filled)
-			 & " " & text_fill_style & to_string (circle.fill_style), log_threshold);
+			 & " " & text_fill_style & to_string (circle.fill_style), level => log_threshold);
 
 		-- if filled with a hatched pattern, output hatch line width and spacing
 		if circle.fill_style = HATCHED then
-			log (text_hatching_line_width & to_string (circle.hatching_line_width) & " "
-				& text_hatching_spacing & to_string (circle.hatching_spacing), log_threshold);
+			log (text => text_hatching_line_width & to_string (circle.hatching_line_width) & " "
+				& text_hatching_spacing & to_string (circle.hatching_spacing), level => log_threshold);
 		end if;
 	end circle_silk_screen_properties;
 
@@ -707,11 +707,11 @@ package body et_pcb is
 		placeholder : type_text_placeholder_package;
 	begin
 		placeholder := element (cursor);
-		log ("silk screen placeholder face" & to_string (face)
-			 & " for " & to_string (placeholder.meaning), log_threshold);
+		log (text => "silk screen placeholder face" & to_string (face)
+			 & " for " & to_string (placeholder.meaning), level => log_threshold);
 		
 		log_indentation_up;
-		log (text_properties (type_text (placeholder)), log_threshold + 1);
+		log (text => text_properties (type_text (placeholder)), level => log_threshold + 1);
 		log_indentation_down;
 	end placeholder_silk_screen_properties;
 	
@@ -725,11 +725,11 @@ package body et_pcb is
 		text : type_text_with_content;
 	begin
 		text := element (cursor);
-		log ("silk screen text face" & to_string (face) & latin_1.space
-			 & "content '" & to_string (text.content) & "'", log_threshold);
+		log (text => "silk screen text face" & to_string (face) & latin_1.space
+			 & "content '" & to_string (text.content) & "'", level => log_threshold);
 
 		log_indentation_up;
-		log (text_properties (type_text (text)), log_threshold + 1);
+		log (text => text_properties (type_text (text)), level => log_threshold + 1);
 		log_indentation_down;
 	end text_silk_screen_properties;
 
@@ -745,9 +745,9 @@ package body et_pcb is
 		line : type_doc_line;
 	begin
 		line := element (cursor);
-		log ("assembly doc line face" & to_string (face) & latin_1.space
+		log (text => "assembly doc line face" & to_string (face) & latin_1.space
 			 & to_string (type_line_2d (line))
-			 & " width" & to_string (line.width), log_threshold);
+			 & " width" & to_string (line.width), level => log_threshold);
 	end line_assy_doc_properties;
 
 	procedure arc_assy_doc_properties (
@@ -759,9 +759,9 @@ package body et_pcb is
 		arc : type_doc_arc;
 	begin
 		arc := element (cursor);
-		log ("assembly doc arc face" & to_string (face) & latin_1.space 
+		log (text => "assembly doc arc face" & to_string (face) & latin_1.space 
 			 & to_string (type_arc_2d (arc))
-			 & " width" & to_string (arc.width), log_threshold);
+			 & " width" & to_string (arc.width), level => log_threshold);
 	end arc_assy_doc_properties;
 
 	procedure circle_assy_doc_properties (
@@ -773,16 +773,16 @@ package body et_pcb is
 		circle : type_doc_circle;
 	begin
 		circle := element (cursor);
-		log ("assembly doc circle face" & to_string (face) & latin_1.space 
+		log (text => "assembly doc circle face" & to_string (face) & latin_1.space 
 			 & to_string (type_circle_2d (circle))
 			 & " width" & to_string (circle.width)
 			 & " filled" & to_string (circle.filled)
-			 & " " & text_fill_style & to_string (circle.fill_style), log_threshold);
+			 & " " & text_fill_style & to_string (circle.fill_style), level => log_threshold);
 
 		-- if filled with a hatched pattern, output hatch line width and spacing
 		if circle.fill_style = HATCHED then
-			log (text_hatching_line_width & to_string (circle.hatching_line_width) & " "
-				& text_hatching_spacing & to_string (circle.hatching_spacing), log_threshold);
+			log (text => text_hatching_line_width & to_string (circle.hatching_line_width) & " "
+				& text_hatching_spacing & to_string (circle.hatching_spacing), level => log_threshold);
 		end if;
 	end circle_assy_doc_properties;
 
@@ -795,11 +795,11 @@ package body et_pcb is
 		placeholder : type_text_placeholder_package;
 	begin
 		placeholder := element (cursor);
-		log ("assembly doc placeholder face" & to_string (face)
-			 & " for " & to_string (placeholder.meaning), log_threshold);
+		log (text => "assembly doc placeholder face" & to_string (face)
+			 & " for " & to_string (placeholder.meaning), level => log_threshold);
 
 		log_indentation_up;
-		log (text_properties (type_text (placeholder)), log_threshold + 1);
+		log (text => text_properties (type_text (placeholder)), level => log_threshold + 1);
 		log_indentation_down;
 	end placeholder_assy_doc_properties;
 
@@ -813,11 +813,11 @@ package body et_pcb is
 		text : type_text_with_content;
 	begin
 		text := element (cursor);
-		log ("assembly doc text face" & to_string (face) & latin_1.space
-			 & "content '" & to_string (text.content) & "'", log_threshold);
+		log (text => "assembly doc text face" & to_string (face) & latin_1.space
+			 & "content '" & to_string (text.content) & "'", level => log_threshold);
 
 		log_indentation_up;
-		log (text_properties (type_text (text)), log_threshold + 1);
+		log (text => text_properties (type_text (text)), level => log_threshold + 1);
 		log_indentation_down;
 	end text_assy_doc_properties;
 
@@ -834,8 +834,8 @@ package body et_pcb is
 		line : type_keepout_line;
 	begin
 		line := element (cursor);
-		log ("keepout (courtyard) line face" & to_string (face) & latin_1.space
-			 & to_string (type_line_2d (line)), log_threshold);
+		log (text => "keepout (courtyard) line face" & to_string (face) & latin_1.space
+			 & to_string (type_line_2d (line)), level => log_threshold);
 	end line_keepout_properties;
 
 	procedure arc_keepout_properties (
@@ -847,8 +847,8 @@ package body et_pcb is
 		arc : type_keepout_arc;
 	begin
 		arc := element (cursor);
-		log ("keepout (courtyard) arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc_2d (arc)), log_threshold);
+		log (text => "keepout (courtyard) arc face" & to_string (face) & latin_1.space 
+			 & to_string (type_arc_2d (arc)), level => log_threshold);
 	end arc_keepout_properties;
 
 	procedure circle_keepout_properties (
@@ -860,10 +860,10 @@ package body et_pcb is
 		circle : type_keepout_circle;
 	begin
 		circle := element (cursor);
-		log ("keepout (courtyard) circle face" & to_string (face) & latin_1.space 
+		log (text => "keepout (courtyard) circle face" & to_string (face) & latin_1.space 
 			& to_string (type_circle_2d (circle))
 			& " filled" & to_string (circle.filled)
-			& " " & text_fill_style & to_string (circle.fill_style), log_threshold);
+			& " " & text_fill_style & to_string (circle.fill_style), level => log_threshold);
 	end circle_keepout_properties;
 
 
@@ -877,10 +877,10 @@ package body et_pcb is
 		arc : type_stop_arc;
 	begin
 		arc := element (cursor);
-		log ("stop mask arc face" & to_string (face) & latin_1.space 
+		log (text => "stop mask arc face" & to_string (face) & latin_1.space 
 			 & to_string (type_arc_2d (arc))
 			 & " width" & to_string (arc.width),
-			 log_threshold);
+			 level => log_threshold);
 	end arc_stop_mask_properties;
 
 	procedure circle_stop_mask_properties (
@@ -892,16 +892,16 @@ package body et_pcb is
 		circle : type_stop_circle;
 	begin
 		circle := element (cursor);
-		log ("stop mask circle face" & to_string (face) & latin_1.space 
+		log (text => "stop mask circle face" & to_string (face) & latin_1.space 
 			& to_string (type_circle_2d (circle))
 			& " width" & to_string (circle.width)
 			& " filled" & to_string (circle.filled)
-			& " " & text_fill_style & to_string (circle.fill_style), log_threshold);
+			& " " & text_fill_style & to_string (circle.fill_style), level => log_threshold);
 
 		-- if filled with a hatched pattern, output hatch line width and spacing
 		if circle.fill_style = HATCHED then
-			log (text_hatching_line_width & to_string (circle.hatching_line_width) & " "
-				& text_hatching_spacing & to_string (circle.hatching_spacing), log_threshold);
+			log (text => text_hatching_line_width & to_string (circle.hatching_line_width) & " "
+				& text_hatching_spacing & to_string (circle.hatching_spacing), level => log_threshold);
 		end if;
 	end circle_stop_mask_properties;
 
@@ -914,10 +914,10 @@ package body et_pcb is
 		line : type_stop_line;
 	begin
 		line := element (cursor);
-		log ("stop mask line face" & to_string (face) & latin_1.space
+		log (text => "stop mask line face" & to_string (face) & latin_1.space
 			 & to_string (type_line_2d (line))
 			 & " width" & to_string (line.width),
-			 log_threshold);
+			 level => log_threshold);
 	end line_stop_mask_properties;
 
 	procedure text_stop_mask_properties (
@@ -930,11 +930,11 @@ package body et_pcb is
 		text : type_text_with_content;
 	begin
 		text := element (cursor);
-		log ("stop mask text face" & to_string (face) & latin_1.space
-			 & "content '" & to_string (text.content) & "'", log_threshold);
+		log (text => "stop mask text face" & to_string (face) & latin_1.space
+			 & "content '" & to_string (text.content) & "'", level => log_threshold);
 
 		log_indentation_up;
-		log (text_properties (type_text (text)), log_threshold + 1);
+		log (text => text_properties (type_text (text)), level => log_threshold + 1);
 		log_indentation_down;
 	end text_stop_mask_properties;
 
@@ -949,10 +949,10 @@ package body et_pcb is
 		arc : type_stencil_arc;
 	begin
 		arc := element (cursor);
-		log ("solder paste (stencil) arc face" & to_string (face) & latin_1.space 
+		log (text => "solder paste (stencil) arc face" & to_string (face) & latin_1.space 
 			 & to_string (type_arc_2d (arc))
 			 & " width" & to_string (arc.width),
-			 log_threshold);
+			 level => log_threshold);
 	end arc_stencil_properties;
 
 	procedure circle_stencil_properties (
@@ -964,11 +964,11 @@ package body et_pcb is
 		circle : type_stencil_circle;
 	begin
 		circle := element (cursor);
-		log ("solder paste (stencil) circle face" & to_string (face) & latin_1.space 
+		log (text => "solder paste (stencil) circle face" & to_string (face) & latin_1.space 
 			& to_string (type_circle_2d (circle))
 			& " width" & to_string (circle.width)
 			& " filled" & to_string (circle.filled)
-			& " " & text_fill_style & to_string (circle.fill_style), log_threshold);
+			& " " & text_fill_style & to_string (circle.fill_style), level => log_threshold);
 	end circle_stencil_properties;
 
 	procedure line_stencil_properties (
@@ -980,10 +980,10 @@ package body et_pcb is
 		line : type_stencil_line;
 	begin
 		line := element (cursor);
-		log ("solder paste (stencil) line face" & to_string (face) & latin_1.space
+		log (text => "solder paste (stencil) line face" & to_string (face) & latin_1.space
 			 & to_string (type_line_2d (line))
 			 & " width" & to_string (line.width),
-			 log_threshold);
+			 level => log_threshold);
 	end line_stencil_properties;
 	
 	
@@ -998,8 +998,8 @@ package body et_pcb is
 		line : type_route_restrict_line;
 	begin
 		line := element (cursor);
-		log ("route restrict line face" & to_string (face) & latin_1.space
-			 & to_string (type_line_2d (line)), log_threshold);
+		log (text => "route restrict line face" & to_string (face) & latin_1.space
+			 & to_string (type_line_2d (line)), level => log_threshold);
 	end line_route_restrict_properties;
 
 	procedure arc_route_restrict_properties (
@@ -1011,8 +1011,8 @@ package body et_pcb is
 		arc : type_route_restrict_arc;
 	begin
 		arc := element (cursor);
-		log ("route restrict arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc_2d (arc)), log_threshold);
+		log (text => "route restrict arc face" & to_string (face) & latin_1.space 
+			 & to_string (type_arc_2d (arc)), level => log_threshold);
 	end arc_route_restrict_properties;
 
 
@@ -1029,8 +1029,8 @@ package body et_pcb is
 		line : type_via_restrict_line;
 	begin
 		line := element (cursor);
-		log ("via restrict line face" & to_string (face) & latin_1.space
-			 & to_string (type_line_2d (line)), log_threshold);
+		log (text => "via restrict line face" & to_string (face) & latin_1.space
+			 & to_string (type_line_2d (line)), level => log_threshold);
 	end line_via_restrict_properties;
 
 	procedure arc_via_restrict_properties (
@@ -1042,8 +1042,8 @@ package body et_pcb is
 		arc : type_via_restrict_arc;
 	begin
 		arc := element (cursor);
-		log ("via restrict arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc_2d (arc)), log_threshold);
+		log (text => "via restrict arc face" & to_string (face) & latin_1.space 
+			 & to_string (type_arc_2d (arc)), level => log_threshold);
 	end arc_via_restrict_properties;
 
 	-- CS procedure circle_via_restrict_properties
@@ -1058,8 +1058,8 @@ package body et_pcb is
 		line : type_pcb_contour_line;
 	begin
 		line := element (cursor);
-		log ("PCB contour (edge cuts / outline) line face" & latin_1.space
-			 & to_string (type_line_2d (line)), log_threshold);
+		log (text => "PCB contour (edge cuts / outline) line face" & latin_1.space
+			 & to_string (type_line_2d (line)), level => log_threshold);
 	end line_pcb_contour_properties;
 
 	procedure arc_pcb_contour_properties (
@@ -1070,8 +1070,8 @@ package body et_pcb is
 		arc : type_pcb_contour_arc;
 	begin
 		arc := element (cursor);
-		log ("PCB contour (edge cuts / outline) arc" & latin_1.space 
-			 & to_string (type_arc_2d (arc)), log_threshold);
+		log (text => "PCB contour (edge cuts / outline) arc" & latin_1.space 
+			 & to_string (type_arc_2d (arc)), level => log_threshold);
 	end arc_pcb_contour_properties;
 
 	procedure circle_pcb_contour_properties (
@@ -1082,8 +1082,8 @@ package body et_pcb is
 		circle : type_pcb_contour_circle;
 	begin
 		circle := element (cursor);
-		log ("PCB contour (edge cuts / outline) circle face" & latin_1.space 
-			& to_string (type_circle_2d (circle)), log_threshold);
+		log (text => "PCB contour (edge cuts / outline) circle face" & latin_1.space 
+			& to_string (type_circle_2d (circle)), level => log_threshold);
 	end circle_pcb_contour_properties;
 
 
@@ -1107,15 +1107,15 @@ package body et_pcb is
 		use type_pad_polygons;		
 		
 		procedure line (cursor : in type_pad_lines.cursor) is begin
-			log (to_string (type_line_2d (element (cursor))), log_threshold + 1);
+			log (text => to_string (type_line_2d (element (cursor))), level => log_threshold + 1);
 		end line;
 
 		procedure arc (cursor : in type_pad_arcs.cursor) is begin
-			log (to_string (type_arc_2d (element (cursor))), log_threshold + 1);
+			log (text => to_string (type_arc_2d (element (cursor))), level => log_threshold + 1);
 		end arc;
 		
 		procedure circle (cursor : in type_pad_circles.cursor) is begin
-			log (to_string (type_circle_2d (element (cursor))), log_threshold + 1);
+			log (text => to_string (type_circle_2d (element (cursor))), level => log_threshold + 1);
 		end circle;
 
 		procedure polygon (cursor : in type_pad_polygons.cursor) is 
@@ -1123,11 +1123,11 @@ package body et_pcb is
 			points : type_polygon_points.set := element (cursor).corners;
 
 			procedure point (cursor : in type_polygon_points.cursor) is begin
-				log (et_pcb_coordinates.to_string (element (cursor)), log_threshold + 1);	
+				log (text => et_pcb_coordinates.to_string (element (cursor)), level => log_threshold + 1);	
 			end point;
 	
 		begin -- polygon
-			log ("polygon with corners", log_threshold + 1);
+			log (text => "polygon with corners", level => log_threshold + 1);
 			log_indentation_up;
 			iterate (points, point'access);
 			log_indentation_down;
@@ -1136,11 +1136,11 @@ package body et_pcb is
 		
 		
 	begin -- terminal_properties
-		log ("terminal name" & to_string (name)
+		log (text => "terminal name" & to_string (name)
 			& " technology" & to_string (terminal.technology)
 			& to_string (type_point_2d (terminal.position))
 			& to_string (angle => get_angle (terminal.position), preamble => true),
-			log_threshold);
+			level => log_threshold);
 
 		log_indentation_up;
 
@@ -1148,26 +1148,26 @@ package body et_pcb is
 			when THT => 
 				
 				-- log pad_shape_top/bottom
-				log ("pad contour top", log_threshold + 1);
+				log (text => "pad contour top", level => log_threshold + 1);
 				iterate (terminal.pad_shape_tht.top.lines, line'access);
 				iterate (terminal.pad_shape_tht.top.arcs, arc'access);
 				iterate (terminal.pad_shape_tht.top.circles, circle'access);
 				iterate (terminal.pad_shape_tht.top.polygons, polygon'access);
 
-				log ("pad contour bottom", log_threshold + 1);
+				log (text => "pad contour bottom", level => log_threshold + 1);
 				iterate (terminal.pad_shape_tht.bottom.lines, line'access);
 				iterate (terminal.pad_shape_tht.bottom.arcs, arc'access);
 				iterate (terminal.pad_shape_tht.bottom.circles, circle'access);
 				iterate (terminal.pad_shape_tht.bottom.polygons, polygon'access);
 				
-				log ("copper width of inner layers" & to_string (terminal.width_inner_layers), log_threshold_1);
+				log (text => "copper width of inner layers" & to_string (terminal.width_inner_layers), level => log_threshold_1);
 
 				case terminal.tht_hole is
 					when DRILLED =>
-						log ("drill" & to_string (terminal.drill_size), log_threshold_1); 
+						log (text => "drill" & to_string (terminal.drill_size), level => log_threshold_1); 
 					when MILLED =>
 						if log_level >= log_threshold_1 then
-							log ("plated milling contour ");
+							log (text => "plated milling contour ");
 							log_indentation_up;
 								log_plated_millings (terminal.millings, log_threshold_1);
 							log_indentation_down;
@@ -1177,15 +1177,15 @@ package body et_pcb is
 			when SMT => 
 				
 				-- log pad_shape
-				log ("pad contour", log_threshold + 1);
+				log (text => "pad contour", level => log_threshold + 1);
 				iterate (terminal.pad_shape.lines, line'access);
 				iterate (terminal.pad_shape.arcs, arc'access);
 				iterate (terminal.pad_shape.circles, circle'access);
 				iterate (terminal.pad_shape.polygons, polygon'access);
 				
-				log ("face" & to_string (terminal.face), log_threshold_1);
-				log ("stop mask" & to_string (terminal.stop_mask), log_threshold_1);
-				log ("solder paste" & to_string (terminal.solder_paste), log_threshold_1);
+				log (text => "face" & to_string (terminal.face), level => log_threshold_1);
+				log (text => "stop mask" & to_string (terminal.stop_mask), level => log_threshold_1);
+				log (text => "solder paste" & to_string (terminal.solder_paste), level => log_threshold_1);
 		end case;
 
 		log_indentation_down;

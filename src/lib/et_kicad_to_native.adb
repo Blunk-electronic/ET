@@ -220,7 +220,7 @@ package body et_kicad_to_native is
 			-- Fetch the paper size of the current layout design:
 			board_paper_size := element (module_cursor).board.paper_size;
 			
-			log ("layout paper size " & et_general.to_string (board_paper_size), log_threshold + 2);
+			log (text => "layout paper size " & et_general.to_string (board_paper_size), level => log_threshold + 2);
 			
 			-- get the paper height of the sheet
 			layout_sheet_height := paper_dimension (axis => Y, paper_size => board_paper_size);
@@ -249,21 +249,21 @@ package body et_kicad_to_native is
 				use et_coordinates;
 				use kicad_coordinates;
 			begin
-				log ("note '" & et_libraries.to_string (note.content) & "'", log_threshold + 3);
+				log (text => "note '" & et_libraries.to_string (note.content) & "'", level => log_threshold + 3);
 				log_indentation_up;
 				
-				log (before & et_coordinates.to_string (note.coordinates), log_threshold + 4);
+				log (text => before & et_coordinates.to_string (note.coordinates), level => log_threshold + 4);
 
 				-- Move position from negative to positive y.
 				move (note.coordinates);
 
-				log (now & et_coordinates.to_string (note.coordinates), log_threshold + 4);
+				log (text => now & et_coordinates.to_string (note.coordinates), level => log_threshold + 4);
 
 				log_indentation_down;
 			end change_path;
 				
 		begin -- flatten_notes
-			log ("text notes ...", log_threshold + 2);
+			log (text => "text notes ...", level => log_threshold + 2);
 			log_indentation_up;
 			
 			while note_cursor /= et_kicad.type_texts.no_element loop
@@ -292,19 +292,19 @@ package body et_kicad_to_native is
 				-- CS what should be logged here ?
 				log_indentation_up;
 				
-				log (before & kicad_coordinates.to_string (position => frame.coordinates, scope => kicad_coordinates.MODULE),
-					 log_threshold + 4);
+				log (text => before & kicad_coordinates.to_string (position => frame.coordinates, scope => kicad_coordinates.MODULE),
+					 level => log_threshold + 4);
 
 				kicad_coordinates.set_path (frame.coordinates, root);
 
-				log (now & kicad_coordinates.to_string (position => frame.coordinates, scope => kicad_coordinates.MODULE),
-					 log_threshold + 4);
+				log (text => now & kicad_coordinates.to_string (position => frame.coordinates, scope => kicad_coordinates.MODULE),
+					level => log_threshold + 4);
 
 				log_indentation_down;
 			end change_path;
 				
 		begin -- flatten_frames
-			log ("frames ...", log_threshold + 2);
+			log (text => "frames ...", level => log_threshold + 2);
 			log_indentation_up;
 			
 			while frame_cursor /= et_kicad.type_frames.no_element loop
@@ -340,18 +340,18 @@ package body et_kicad_to_native is
 					unit		: in out et_kicad.type_unit_schematic) is
 					use et_coordinates;
 				begin
-					log ("unit " & et_libraries.to_string (unit_name), log_threshold + 4);
+					log (text => "unit " & et_libraries.to_string (unit_name), level => log_threshold + 4);
 					log_indentation_up;
 					
-					log (before & kicad_coordinates.to_string (position => unit.position, scope => kicad_coordinates.MODULE),
-						log_threshold + 4);
+					log (text => before & kicad_coordinates.to_string (position => unit.position, scope => kicad_coordinates.MODULE),
+						level => log_threshold + 4);
 
 					kicad_coordinates.set_path (unit.position, root);
 
 					move (unit.position); -- Move position from negative to positive y.
 
-					log (now & kicad_coordinates.to_string (position => unit.position, scope => kicad_coordinates.MODULE),
-						log_threshold + 4);
+					log (text => now & kicad_coordinates.to_string (position => unit.position, scope => kicad_coordinates.MODULE),
+						level => log_threshold + 4);
 
 					log_indentation_down;
 				end change_path;
@@ -364,12 +364,12 @@ package body et_kicad_to_native is
 					if component.appearance = SCH_PCB then
 						log_indentation_up;
 						
-						log ("package", log_threshold + 4);
+						log (text => "package", level => log_threshold + 4);
 						
 						log_indentation_up;
-						log (before & to_string (type_point_2d (component.position)), log_threshold + 4);
+						log (text => before & to_string (type_point_2d (component.position)), level => log_threshold + 4);
 						move (point => component.position);
-						log (now & to_string (type_point_2d (component.position)), log_threshold + 4);
+						log (text => now & to_string (type_point_2d (component.position)), level => log_threshold + 4);
 						
 						log_indentation_down;
 						log_indentation_down;
@@ -377,7 +377,7 @@ package body et_kicad_to_native is
 				end move_package;
 				
 			begin -- query_units
-				log (et_libraries.to_string (key (component_cursor)), log_threshold + 3);
+				log (text => et_libraries.to_string (key (component_cursor)), level => log_threshold + 3);
 				log_indentation_up;
 
 				while unit_cursor /= et_kicad.type_units_schematic.no_element loop
@@ -399,7 +399,7 @@ package body et_kicad_to_native is
 			end query_units;
 				
 		begin -- flatten_components
-			log ("components ...", log_threshold + 2);
+			log (text => "components ...", level => log_threshold + 2);
 			log_indentation_up;
 			
 			while component_cursor /= et_kicad.type_components_schematic.no_element loop
@@ -444,13 +444,13 @@ package body et_kicad_to_native is
 						procedure move_simple_label (label : in out et_kicad.type_net_label_simple) is
 						-- Moves the given simple label from kicad frame to native frame.
 						begin
-							log ("simple label " & before & to_string (label.coordinates), log_threshold + 3);
+							log (text => "simple label " & before & to_string (label.coordinates), level => log_threshold + 3);
 							
 							-- As supportive point that provides the sheet number we pass the segment start position.
 							-- coordinates of net labels do not posess a sheet number.
 							move (point_actual => label.coordinates, point_help => segment.coordinates_start);
 
-							log ("simple label " & now & to_string (label.coordinates), log_threshold + 3);							
+							log (text => "simple label " & now & to_string (label.coordinates), level => log_threshold + 3);							
 						end move_simple_label;
 						
 						use et_kicad.type_tag_labels;
@@ -459,13 +459,13 @@ package body et_kicad_to_native is
 						procedure move_tag_label (label : in out et_kicad.type_net_label_tag) is
 						-- Moves the given tag label from kicad frame to native frame.
 						begin
-							log ("tag label " & before & to_string (label.coordinates), log_threshold + 3);
+							log (text => "tag label " & before & to_string (label.coordinates), level => log_threshold + 3);
 							
 							-- As supportive point that provides the sheet number we pass the segment start position.
 							-- coordinates of net labels do not posess a sheet number.
 							move (point_actual => label.coordinates, point_help => segment.coordinates_start);
 							
-							log ("tag label " & now & to_string (label.coordinates), log_threshold + 3);
+							log (text => "tag label " & now & to_string (label.coordinates), level => log_threshold + 3);
 						end move_tag_label;
 
 						use et_kicad.type_junctions;
@@ -475,48 +475,48 @@ package body et_kicad_to_native is
 						-- Moves the given net junction from kicad frame to native frame.
 							use kicad_coordinates;
 						begin
-							log ("junction " & before & kicad_coordinates.to_string (
+							log (text => "junction " & before & kicad_coordinates.to_string (
 								position => junction.coordinates, scope => kicad_coordinates.MODULE),
-								log_threshold + 3);
+								level => log_threshold + 3);
 
 							set_path (junction.coordinates, root);
 							move (junction.coordinates);
 
-							log ("junction " & now & to_string (
+							log (text => "junction " & now & to_string (
 								position => junction.coordinates, scope => kicad_coordinates.MODULE),
-								log_threshold + 3);
+								level => log_threshold + 3);
 								 
 						end change_path_of_junction;
 								 
 					begin -- change_path_of_segment
-						log ("schematic net segment", log_threshold + 3);
+						log (text => "schematic net segment", level => log_threshold + 3);
 						log_indentation_up;
 
 						-- start point of net segment
-						log ("start " & before & kicad_coordinates.to_string (
+						log (text => "start " & before & kicad_coordinates.to_string (
 							position => segment.coordinates_start, scope => kicad_coordinates.MODULE),
-							log_threshold + 3);
+							level => log_threshold + 3);
 
 						kicad_coordinates.set_path (segment.coordinates_start, root);
 
 						move (segment.coordinates_start); -- Move position from negative to positive y.
 						
-						log ("start " & now & kicad_coordinates.to_string (
+						log (text => "start " & now & kicad_coordinates.to_string (
 							position => segment.coordinates_start, scope => kicad_coordinates.MODULE),
-							log_threshold + 3);
+							level => log_threshold + 3);
 
 						-- end point of net segment
-						log ("end   " & before & kicad_coordinates.to_string (
+						log (text => "end   " & before & kicad_coordinates.to_string (
 							position => segment.coordinates_end, scope => kicad_coordinates.MODULE),
-							log_threshold + 3);
+							level => log_threshold + 3);
 
 						kicad_coordinates.set_path (segment.coordinates_end, root);
 
 						move (segment.coordinates_end); -- Move position from negative to positive y.
 						
-						log ("end   " & now & kicad_coordinates.to_string (
+						log (text => "end   " & now & kicad_coordinates.to_string (
 							position => segment.coordinates_end, scope => kicad_coordinates.MODULE),
-							log_threshold + 3);
+							level => log_threshold + 3);
 
 						-- Move y of simple net labels.
 						while simple_label_cursor /= et_kicad.type_simple_labels.no_element loop
@@ -552,9 +552,9 @@ package body et_kicad_to_native is
 				begin -- query_segments
 
 					-- Move the start coordinates of the strand from kicad frame to native frame:
-					log ("schematic strand start " & before & et_coordinates.to_string (point => strand.position), log_threshold + 3);
+					log (text => "schematic strand start " & before & et_coordinates.to_string (point => strand.position), level => log_threshold + 3);
 					move (strand.position); 
-					log ("schematic strand start " & now & et_coordinates.to_string (point => strand.position), log_threshold + 3);
+					log (text => "schematic strand start " & now & et_coordinates.to_string (point => strand.position), level => log_threshold + 3);
 
 					-- Change path of segments:
 					while segment_cursor /= et_kicad.type_net_segments.no_element loop
@@ -586,15 +586,15 @@ package body et_kicad_to_native is
 					procedure move_line (line : in out et_pcb.type_copper_line_pcb) is
 						use et_pcb;
 					begin
-						log (board_track & "line", log_threshold + 4);
+						log (text => board_track & "line", level => log_threshold + 4);
 						log_indentation_up;
 
-						log (before & to_string (line), log_threshold + 4);
+						log (text => before & to_string (line), level => log_threshold + 4);
 
 						move (line.start_point);
 						move (line.end_point);
 						
-						log (now & to_string (line), log_threshold + 4);
+						log (text => now & to_string (line), level => log_threshold + 4);
 						
 						log_indentation_down;
 					end move_line;
@@ -602,16 +602,16 @@ package body et_kicad_to_native is
 					procedure move_arc (arc : in out et_pcb.type_copper_arc_pcb) is
 						use et_pcb;
 					begin
-						log (board_track & "arc", log_threshold + 4);
+						log (text => board_track & "arc", level => log_threshold + 4);
 						log_indentation_up;
 
-						log (before & to_string (arc), log_threshold + 4);
+						log (text => before & to_string (arc), level => log_threshold + 4);
 
 						move (arc.center);
 						move (arc.start_point);
 						move (arc.end_point);
 
-						log (now & to_string (arc), log_threshold + 4);
+						log (text => now & to_string (arc), level => log_threshold + 4);
 						
 						log_indentation_down;
 					end move_arc;
@@ -619,14 +619,14 @@ package body et_kicad_to_native is
 					procedure move_via (via : in out et_pcb.type_via) is
 						use et_pcb_coordinates;
 					begin
-						log (board_track & "via", log_threshold + 4);
+						log (text => board_track & "via", level => log_threshold + 4);
 						log_indentation_up;
 
-						log (before & to_string (via.position), log_threshold + 4);
+						log (text => before & to_string (via.position), level => log_threshold + 4);
 
 						move (via.position);
 
-						log (now & to_string (via.position), log_threshold + 4);
+						log (text => now & to_string (via.position), level => log_threshold + 4);
 						
 						log_indentation_down;
 					end move_via;
@@ -643,9 +643,9 @@ package body et_kicad_to_native is
 						-- copy in a new set "new_points".
 							new_point : type_point_2d := point; -- copy given point
 						begin
-							log (before & to_string (new_point), log_threshold + 4);
+							log (text => before & to_string (new_point), level => log_threshold + 4);
 							move (new_point); -- move copied point
-							log (now & to_string (new_point), log_threshold + 4);
+							log (text => now & to_string (new_point), level => log_threshold + 4);
 
 							-- insert new point in new_points:
 							et_pcb.type_polygon_points.insert (
@@ -655,7 +655,7 @@ package body et_kicad_to_native is
 						end get_point;
 						
 					begin -- move_polygon
-						log ("board polygon corner points", log_threshold + 4);
+						log (text => "board polygon corner points", level => log_threshold + 4);
 						log_indentation_up;
 
 						-- loop through polygon corner points and read one after another:
@@ -740,11 +740,11 @@ package body et_kicad_to_native is
 			end query_strands;
 			
 		begin -- flatten_nets
-			log ("nets ...", log_threshold + 2);
+			log (text => "nets ...", level => log_threshold + 2);
 			log_indentation_up;
 			
 			while net_cursor /= et_kicad.type_nets.no_element loop
-				log (et_general.to_string (key (net_cursor)), log_threshold + 3);
+				log (text => et_general.to_string (key (net_cursor)), level => log_threshold + 3);
 
 				log_indentation_up;
 				
@@ -789,15 +789,15 @@ package body et_kicad_to_native is
 				procedure move_line (line : in out et_pcb.type_silk_line) is
 					use et_pcb;
 				begin
-					log (board_silk_screen & "line", log_threshold + log_threshold_add);
+					log (text => board_silk_screen & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (line), log_threshold + log_threshold_add);
+					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
 
 					move (line.start_point);
 					move (line.end_point);
 					
-					log (now & to_string (line), log_threshold + log_threshold_add);
+					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_line;
@@ -805,16 +805,16 @@ package body et_kicad_to_native is
 				procedure move_arc (arc : in out et_pcb.type_silk_arc) is
 					use et_pcb;
 				begin
-					log (board_silk_screen & "arc", log_threshold + log_threshold_add);
+					log (text => board_silk_screen & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (arc), log_threshold + log_threshold_add);
+					log (text => before & to_string (arc), level => log_threshold + log_threshold_add);
 
 					move (arc.center);
 					move (arc.start_point);
 					move (arc.end_point);
 					
-					log (now & to_string (arc), log_threshold + log_threshold_add);
+					log (text => now & to_string (arc), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_arc;
@@ -822,14 +822,14 @@ package body et_kicad_to_native is
 				procedure move_circle (circle : in out et_pcb.type_silk_circle) is
 					use et_pcb_coordinates;
 				begin
-					log (board_silk_screen & "circle", log_threshold + log_threshold_add);
+					log (text => board_silk_screen & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
 
 					move (circle.center);
 					
-					log (now & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_circle;
@@ -845,9 +845,9 @@ package body et_kicad_to_native is
 					-- copy in a new set "new_points".
 						new_point : type_point_2d := point; -- copy given point
 					begin
-						log (before & to_string (new_point), log_threshold + log_threshold_add);
+						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
 						move (new_point); -- move copied point
-						log (now & to_string (new_point), log_threshold + log_threshold_add);
+						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
 
 						-- insert new point in new_points:
 						et_pcb.type_polygon_points.insert (
@@ -857,7 +857,7 @@ package body et_kicad_to_native is
 					end get_point;
 					
 				begin -- move_polygon
-					log (board_silk_screen & "polygon corner points", log_threshold + log_threshold_add);
+					log (text => board_silk_screen & "polygon corner points", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					-- loop through polygon corner points and read one after another:
@@ -880,14 +880,14 @@ package body et_kicad_to_native is
 				procedure move_text (text : in out et_pcb.type_text_with_content) is
 					use et_pcb_coordinates;
 				begin
-					log (board_silk_screen & "text", log_threshold + log_threshold_add);
+					log (text => board_silk_screen & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (text.position), log_threshold + log_threshold_add);
+					log (text => before & to_string (text.position), level => log_threshold + log_threshold_add);
 
 					move (text.position);
 					
-					log (now & to_string (text.position), log_threshold + log_threshold_add);
+					log (text => now & to_string (text.position), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_text;
@@ -1028,15 +1028,15 @@ package body et_kicad_to_native is
 				procedure move_line (line : in out et_pcb.type_doc_line) is
 					use et_pcb;
 				begin
-					log (doc & "line", log_threshold + log_threshold_add);
+					log (text => doc & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (line), log_threshold + log_threshold_add);
+					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
 
 					move (line.start_point);
 					move (line.end_point);
 					
-					log (now & to_string (line), log_threshold + log_threshold_add);
+					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_line;
@@ -1044,16 +1044,16 @@ package body et_kicad_to_native is
 				procedure move_arc (arc : in out et_pcb.type_doc_arc) is
 					use et_pcb;
 				begin
-					log (doc & "arc", log_threshold + log_threshold_add);
+					log (text => doc & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (arc), log_threshold + log_threshold_add);
+					log (text => before & to_string (arc), level => log_threshold + log_threshold_add);
 
 					move (arc.center);
 					move (arc.start_point);
 					move (arc.end_point);
 					
-					log (now & to_string (arc), log_threshold + log_threshold_add);
+					log (text => now & to_string (arc), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_arc;
@@ -1061,14 +1061,14 @@ package body et_kicad_to_native is
 				procedure move_circle (circle : in out et_pcb.type_doc_circle) is
 					use et_pcb_coordinates;
 				begin
-					log (doc & "circle", log_threshold + log_threshold_add);
+					log (text => doc & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
 
 					move (circle.center);
 					
-					log (now & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_circle;
@@ -1084,9 +1084,9 @@ package body et_kicad_to_native is
 					-- copy in a new set "new_points".
 						new_point : type_point_2d := point; -- copy given point
 					begin
-						log (before & to_string (new_point), log_threshold + log_threshold_add);
+						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
 						move (new_point); -- move copied point
-						log (now & to_string (new_point), log_threshold + log_threshold_add);
+						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
 
 						-- insert new point in new_points:
 						et_pcb.type_polygon_points.insert (
@@ -1096,7 +1096,7 @@ package body et_kicad_to_native is
 					end get_point;
 					
 				begin -- move_polygon
-					log (doc & "polygon corner points", log_threshold + log_threshold_add);
+					log (text => doc & "polygon corner points", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					-- loop through polygon corner points and read one after another:
@@ -1119,14 +1119,14 @@ package body et_kicad_to_native is
 				procedure move_text (text : in out et_pcb.type_text_with_content) is
 					use et_pcb_coordinates;
 				begin
-					log (doc & "text", log_threshold + log_threshold_add);
+					log (text => doc & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (text.position), log_threshold + log_threshold_add);
+					log (text => before & to_string (text.position), level => log_threshold + log_threshold_add);
 
 					move (text.position);
 					
-					log (now & to_string (text.position), log_threshold + log_threshold_add);
+					log (text => now & to_string (text.position), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_text;
@@ -1264,15 +1264,15 @@ package body et_kicad_to_native is
 				procedure move_line (line : in out et_pcb.type_stencil_line) is
 					use et_pcb;
 				begin
-					log (stencil & "line", log_threshold + log_threshold_add);
+					log (text => stencil & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (line), log_threshold + log_threshold_add);
+					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
 
 					move (line.start_point);
 					move (line.end_point);
 					
-					log (now & to_string (line), log_threshold + log_threshold_add);
+					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_line;
@@ -1280,16 +1280,16 @@ package body et_kicad_to_native is
 				procedure move_arc (arc : in out et_pcb.type_stencil_arc) is
 					use et_pcb;
 				begin
-					log (stencil & "arc", log_threshold + log_threshold_add);
+					log (text => stencil & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (arc), log_threshold + log_threshold_add);
+					log (text => before & to_string (arc), level => log_threshold + log_threshold_add);
 
 					move (arc.center);
 					move (arc.start_point);
 					move (arc.end_point);
 					
-					log (now & to_string (arc), log_threshold + log_threshold_add);
+					log (text => now & to_string (arc), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_arc;
@@ -1297,14 +1297,14 @@ package body et_kicad_to_native is
 				procedure move_circle (circle : in out et_pcb.type_stencil_circle) is
 					use et_pcb_coordinates;
 				begin
-					log (stencil & "circle", log_threshold + log_threshold_add);
+					log (text => stencil & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
 
 					move (circle.center);
 					
-					log (now & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_circle;
@@ -1320,9 +1320,9 @@ package body et_kicad_to_native is
 					-- copy in a new set "new_points".
 						new_point : type_point_2d := point; -- copy given point
 					begin
-						log (before & to_string (new_point), log_threshold + log_threshold_add);
+						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
 						move (new_point); -- move copied point
-						log (now & to_string (new_point), log_threshold + log_threshold_add);
+						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
 
 						-- insert new point in new_points:
 						et_pcb.type_polygon_points.insert (
@@ -1332,7 +1332,7 @@ package body et_kicad_to_native is
 					end get_point;
 					
 				begin -- move_polygon
-					log (stencil & "polygon corner points", log_threshold + log_threshold_add);
+					log (text => stencil & "polygon corner points", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					-- loop through polygon corner points and read one after another:
@@ -1466,15 +1466,15 @@ package body et_kicad_to_native is
 				procedure move_line (line : in out et_pcb.type_stop_line) is
 					use et_pcb;
 				begin
-					log (stop & "line", log_threshold + log_threshold_add);
+					log (text => stop & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (line), log_threshold + log_threshold_add);
+					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
 
 					move (line.start_point);
 					move (line.end_point);
 					
-					log (now & to_string (line), log_threshold + log_threshold_add);
+					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_line;
@@ -1482,16 +1482,16 @@ package body et_kicad_to_native is
 				procedure move_arc (arc : in out et_pcb.type_stop_arc) is
 					use et_pcb;
 				begin
-					log (stop & "arc", log_threshold + log_threshold_add);
+					log (text => stop & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (arc), log_threshold + log_threshold_add);
+					log (text => before & to_string (arc), level => log_threshold + log_threshold_add);
 
 					move (arc.center);
 					move (arc.start_point);
 					move (arc.end_point);
 					
-					log (now & to_string (arc), log_threshold + log_threshold_add);
+					log (text => now & to_string (arc), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_arc;
@@ -1499,14 +1499,14 @@ package body et_kicad_to_native is
 				procedure move_circle (circle : in out et_pcb.type_stop_circle) is
 					use et_pcb_coordinates;
 				begin
-					log (stop & "circle", log_threshold + log_threshold_add);
+					log (text => stop & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
 
 					move (circle.center);
 					
-					log (now & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_circle;
@@ -1522,9 +1522,9 @@ package body et_kicad_to_native is
 					-- copy in a new set "new_points".
 						new_point : type_point_2d := point; -- copy given point
 					begin
-						log (before & to_string (new_point), log_threshold + log_threshold_add);
+						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
 						move (new_point); -- move copied point
-						log (now & to_string (new_point), log_threshold + log_threshold_add);
+						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
 
 						-- insert new point in new_points:
 						et_pcb.type_polygon_points.insert (
@@ -1534,7 +1534,7 @@ package body et_kicad_to_native is
 					end get_point;
 					
 				begin -- move_polygon
-					log (stop & "polygon corner points", log_threshold + log_threshold_add);
+					log (text => stop & "polygon corner points", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					-- loop through polygon corner points and read one after another:
@@ -1557,14 +1557,14 @@ package body et_kicad_to_native is
 				procedure move_text (text : in out et_pcb.type_text_with_content) is
 					use et_pcb_coordinates;
 				begin
-					log (stop & "text", log_threshold + log_threshold_add);
+					log (text => stop & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (text.position), log_threshold + log_threshold_add);
+					log (text => before & to_string (text.position), level => log_threshold + log_threshold_add);
 
 					move (text.position);
 					
-					log (now & to_string (text.position), log_threshold + log_threshold_add);
+					log (text => now & to_string (text.position), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_text;
@@ -1702,15 +1702,15 @@ package body et_kicad_to_native is
 				procedure move_line (line : in out et_pcb.type_keepout_line) is
 					use et_pcb;
 				begin
-					log (keepout & "line", log_threshold + log_threshold_add);
+					log (text => keepout & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (line), log_threshold + log_threshold_add);
+					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
 
 					move (line.start_point);
 					move (line.end_point);
 					
-					log (now & to_string (line), log_threshold + log_threshold_add);
+					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_line;
@@ -1718,16 +1718,16 @@ package body et_kicad_to_native is
 				procedure move_arc (arc : in out et_pcb.type_keepout_arc) is
 					use et_pcb;
 				begin
-					log (keepout & "arc", log_threshold + log_threshold_add);
+					log (text => keepout & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (arc), log_threshold + log_threshold_add);
+					log (text => before & to_string (arc), level => log_threshold + log_threshold_add);
 
 					move (arc.center);
 					move (arc.start_point);
 					move (arc.end_point);
 					
-					log (now & to_string (arc), log_threshold + log_threshold_add);
+					log (text => now & to_string (arc), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_arc;
@@ -1735,14 +1735,14 @@ package body et_kicad_to_native is
 				procedure move_circle (circle : in out et_pcb.type_keepout_circle) is
 					use et_pcb_coordinates;
 				begin
-					log (keepout & "circle", log_threshold + log_threshold_add);
+					log (text => keepout & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
 
 					move (circle.center);
 					
-					log (now & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_circle;
@@ -1758,9 +1758,9 @@ package body et_kicad_to_native is
 					-- copy in a new set "new_points".
 						new_point : type_point_2d := point; -- copy given point
 					begin
-						log (before & to_string (new_point), log_threshold + log_threshold_add);
+						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
 						move (new_point); -- move copied point
-						log (now & to_string (new_point), log_threshold + log_threshold_add);
+						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
 
 						-- insert new point in new_points:
 						et_pcb.type_polygon_points.insert (
@@ -1770,7 +1770,7 @@ package body et_kicad_to_native is
 					end get_point;
 					
 				begin -- move_polygon
-					log (keepout & "polygon corner points", log_threshold + log_threshold_add);
+					log (text => keepout & "polygon corner points", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					-- loop through polygon corner points and read one after another:
@@ -1897,15 +1897,15 @@ package body et_kicad_to_native is
 				procedure move_line (line : in out et_pcb.type_pcb_contour_line) is
 					use et_pcb;
 				begin
-					log (contour & "line", log_threshold + log_threshold_add);
+					log (text => contour & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (line), log_threshold + log_threshold_add);
+					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
 
 					move (line.start_point);
 					move (line.end_point);
 					
-					log (now & to_string (line), log_threshold + log_threshold_add);
+					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_line;
@@ -1913,16 +1913,16 @@ package body et_kicad_to_native is
 				procedure move_arc (arc : in out et_pcb.type_pcb_contour_arc) is
 					use et_pcb;
 				begin
-					log (contour & "arc", log_threshold + log_threshold_add);
+					log (text => contour & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (arc), log_threshold + log_threshold_add);
+					log (text => before & to_string (arc), level => log_threshold + log_threshold_add);
 
 					move (arc.center);
 					move (arc.start_point);
 					move (arc.end_point);
 					
-					log (now & to_string (arc), log_threshold + log_threshold_add);
+					log (text => now & to_string (arc), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_arc;
@@ -1930,14 +1930,14 @@ package body et_kicad_to_native is
 				procedure move_circle (circle : in out et_pcb.type_pcb_contour_circle) is
 					use et_pcb_coordinates;
 				begin
-					log (contour & "circle", log_threshold + log_threshold_add);
+					log (text => contour & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
 
 					move (circle.center);
 					
-					log (now & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_circle;
@@ -2004,15 +2004,15 @@ package body et_kicad_to_native is
 				procedure move_line (line : in out et_pcb.type_copper_line_pcb) is
 					use et_pcb;
 				begin
-					log (board_copper & "line", log_threshold + log_threshold_add);
+					log (text => board_copper & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (line), log_threshold + log_threshold_add);
+					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
 
 					move (line.start_point);
 					move (line.end_point);
 					
-					log (now & to_string (line), log_threshold + log_threshold_add);
+					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_line;
@@ -2020,16 +2020,16 @@ package body et_kicad_to_native is
 				procedure move_arc (arc : in out et_pcb.type_copper_arc_pcb) is
 					use et_pcb;
 				begin
-					log (board_copper & "arc", log_threshold + log_threshold_add);
+					log (text => board_copper & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (arc), log_threshold + log_threshold_add);
+					log (text => before & to_string (arc), level => log_threshold + log_threshold_add);
 
 					move (arc.center);
 					move (arc.start_point);
 					move (arc.end_point);
 					
-					log (now & to_string (arc), log_threshold + log_threshold_add);
+					log (text => now & to_string (arc), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_arc;
@@ -2037,14 +2037,14 @@ package body et_kicad_to_native is
 				procedure move_circle (circle : in out et_pcb.type_copper_circle_pcb) is
 					use et_pcb_coordinates;
 				begin
-					log (board_copper & "circle", log_threshold + log_threshold_add);
+					log (text => board_copper & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
 
 					move (circle.center);
 					
-					log (now & " center" & to_string (circle.center), log_threshold + log_threshold_add);
+					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_circle;
@@ -2060,9 +2060,9 @@ package body et_kicad_to_native is
 					-- copy in a new set "new_points".
 						new_point : type_point_2d := point; -- copy given point
 					begin
-						log (before & to_string (new_point), log_threshold + log_threshold_add);
+						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
 						move (new_point); -- move copied point
-						log (now & to_string (new_point), log_threshold + log_threshold_add);
+						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
 
 						-- insert new point in new_points:
 						et_pcb.type_polygon_points.insert (
@@ -2072,7 +2072,7 @@ package body et_kicad_to_native is
 					end get_point;
 					
 				begin -- move_polygon
-					log (board_copper & "polygon corner points", log_threshold + log_threshold_add);
+					log (text => board_copper & "polygon corner points", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					-- loop through polygon corner points and read one after another:
@@ -2095,14 +2095,14 @@ package body et_kicad_to_native is
 				procedure move_text (text : in out et_pcb.type_text_with_content_pcb) is
 					use et_pcb_coordinates;
 				begin
-					log (board_copper & "text", log_threshold + log_threshold_add);
+					log (text => board_copper & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (text.position), log_threshold + log_threshold_add);
+					log (text => before & to_string (text.position), level => log_threshold + log_threshold_add);
 
 					move (text.position);
 					
-					log (now & to_string (text.position), log_threshold + log_threshold_add);
+					log (text => now & to_string (text.position), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_text;
@@ -2110,14 +2110,14 @@ package body et_kicad_to_native is
 				procedure move_placeholder (text : in out et_pcb.type_text_placeholder_copper) is
 					use et_pcb_coordinates;
 				begin
-					log (board_copper & "text placeholder", log_threshold + log_threshold_add);
+					log (text => board_copper & "text placeholder", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (before & to_string (text.position), log_threshold + log_threshold_add);
+					log (text => before & to_string (text.position), level => log_threshold + log_threshold_add);
 
 					move (text.position);
 					
-					log (now & to_string (text.position), log_threshold + log_threshold_add);
+					log (text => now & to_string (text.position), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_placeholder;
@@ -2222,22 +2222,22 @@ package body et_kicad_to_native is
 				
 				use et_coordinates;
 			begin -- query_ports
-				log ("net " & et_general.to_string (net_name), log_threshold + 3);
+				log (text => "net " & et_general.to_string (net_name), level => log_threshold + 3);
 				log_indentation_up;
 
 				-- Loop in ports of given net and change path and y position.
 				while port_cursor /= et_kicad.type_ports_with_reference.no_element loop
 					port := element (port_cursor); -- load the port as it currently is
 					
-					log (et_libraries.to_string (port.reference)
+					log (text => et_libraries.to_string (port.reference)
 						& " port "
-						& et_libraries.to_string (port.name), log_threshold + 4);
+						& et_libraries.to_string (port.name), level => log_threshold + 4);
 					log_indentation_up;
 
 					-- show old position
-					log (before & kicad_coordinates.to_string (
+					log (text => before & kicad_coordinates.to_string (
 						position => port.coordinates, scope => kicad_coordinates.MODULE),
-						log_threshold + 5);
+						level => log_threshold + 5);
 
 					-- change path
 					kicad_coordinates.set_path (port.coordinates, root);
@@ -2246,9 +2246,9 @@ package body et_kicad_to_native is
 					move (port.coordinates);
 
 					-- show new position
-					log (now & kicad_coordinates.to_string (
+					log (text => now & kicad_coordinates.to_string (
 						position => port.coordinates, scope => kicad_coordinates.MODULE),
-						log_threshold + 5);
+						level => log_threshold + 5);
 
 					-- replace old port by new port
 					et_kicad.type_ports_with_reference.replace_element (
@@ -2264,7 +2264,7 @@ package body et_kicad_to_native is
 			end query_ports;
 			
 		begin -- flatten_netlist
-			log ("netlist ...", log_threshold + 2);
+			log (text => "netlist ...", level => log_threshold + 2);
 			log_indentation_up;
 
 			while net_cursor /= et_kicad.type_netlist.no_element loop
@@ -2281,14 +2281,14 @@ package body et_kicad_to_native is
 		end flatten_netlist;
 		
 	begin -- transpose
-		log ("transposing coordinates of KiCad modules ...", log_threshold);
+		log (text => "transposing coordinates of KiCad modules ...", level => log_threshold);
 		log_indentation_up;
 		
 		while module_cursor /= et_kicad.type_modules.no_element loop
-			log ("module " & kicad_coordinates.to_string (key (module_cursor)), log_threshold + 1);
+			log (text => "module " & kicad_coordinates.to_string (key (module_cursor)), level => log_threshold + 1);
 			log_indentation_up;
 
-			-- log ("schematic ...", log_threshold + 1);
+			-- log (text => "schematic ...", level => log_threshold + 1);
 			-- log_indentation_up;
 
 			-- As preparation for later moving the y positions of schematic objects,
@@ -2443,21 +2443,21 @@ package body et_kicad_to_native is
 		begin -- concatenate_lib_name_and_generic_name
 			dir := to_file_name (containing_directory (et_libraries.to_string (library)) & '#'); -- ../../lbr
 			translate (dir, characters); -- __#__#lbr
-			--log ("dir " & et_libraries.to_string (dir));
+			--log (text => "dir " & et_libraries.to_string (dir));
 			
 			name := to_file_name (base_name (et_libraries.to_string (library))); -- bel_logic
 			name := dir & name;
-			--log ("name " & et_libraries.to_string (name));
+			--log (text => "name " & et_libraries.to_string (name));
 
 			name := name & '_' & et_libraries.to_file_name (et_kicad.to_string (device));
-			--log ("name " & et_libraries.to_string (name));
+			--log (text => "name " & et_libraries.to_string (name));
 
 			name := et_libraries.to_file_name (compose (
 					containing_directory	=> et_libraries.to_string (prefix_devices_dir),
 					name					=> et_libraries.to_string (name),
 					extension				=> et_libraries.device_library_file_extension));
 
-			--log ("name " & et_libraries.to_string (name));
+			--log (text => "name " & et_libraries.to_string (name));
 			
 			return name;
 		end concatenate_lib_name_and_generic_name;
@@ -2518,7 +2518,7 @@ package body et_kicad_to_native is
 				log_indentation_up;
 				
 				while unit_cursor_kicad /= et_kicad.type_units_schematic.no_element loop
-					log ("unit " & et_libraries.to_string (key (unit_cursor_kicad)), log_threshold + 3);
+					log (text => "unit " & et_libraries.to_string (key (unit_cursor_kicad)), level => log_threshold + 3);
 
 					-- depending on the appearance of the kicad component, we create a virtual or real 
 					-- unit in the native schematic module:
@@ -2578,7 +2578,7 @@ package body et_kicad_to_native is
 			component_cursor_kicad := components_kicad.first;
 			while component_cursor_kicad /= et_kicad.type_components_schematic.no_element loop
 
-				log ("component " & et_libraries.to_string (key (component_cursor_kicad)), log_threshold + 2);
+				log (text => "component " & et_libraries.to_string (key (component_cursor_kicad)), level => log_threshold + 2);
 				
 				-- depending on the appearance of the kicad component, we create a virtual or real 
 				-- component in the native schematic module.
@@ -2701,9 +2701,9 @@ package body et_kicad_to_native is
 					-- simple labels
 					while simple_label_cursor /= et_kicad.type_simple_labels.no_element loop
 
-						log ("simple label" & et_kicad.to_string (
-							label => et_kicad.type_net_label (element (simple_label_cursor))),
-							log_threshold + 5);
+						log (text => "simple label" & et_kicad.to_string (
+								label => et_kicad.type_net_label (element (simple_label_cursor))),
+							level => log_threshold + 5);
 
 						-- Kicad label might be rotated by 180 or 270 degree. Translate into native label
 						-- rotation:
@@ -2730,9 +2730,9 @@ package body et_kicad_to_native is
 					-- tag labels
 					while tag_label_cursor /= et_kicad.type_tag_labels.no_element loop
 
-						log ("tag label" & et_kicad.to_string (
+						log (text => "tag label" & et_kicad.to_string (
 							label => et_kicad.type_net_label (element (tag_label_cursor))),
-							 log_threshold + 5);
+							 level => log_threshold + 5);
 
 						-- Kicad label might be rotated by 180 or 270 degree. Translate into native label
 						-- rotation:
@@ -2781,9 +2781,9 @@ package body et_kicad_to_native is
 					
 					while junction_cursor /= et_kicad.type_junctions.no_element loop
 
-						log ("junction" & et_coordinates.to_string (
+						log (text => "junction" & et_coordinates.to_string (
 							point => element (junction_cursor).coordinates),
-							log_threshold + 5);
+							level => log_threshold + 5);
 
 						-- Test if junction sits at start point of segment:
 						if element (junction_cursor).coordinates = segment.coordinates_start then
@@ -2847,13 +2847,13 @@ package body et_kicad_to_native is
 
 							-- If port sits on segment, append it to ports_of_segment.
 							if (not distance.out_of_range) and distance.distance = zero_distance then
-								log (et_libraries.to_string (element (port_cursor_kicad).reference) 
+								log (text => et_libraries.to_string (element (port_cursor_kicad).reference) 
 									 & " port "
 									 & et_libraries.to_string (element (port_cursor_kicad).name)
 									 & kicad_coordinates.to_string (
 											position	=> element (port_cursor_kicad).coordinates,
 											scope		=> kicad_coordinates.XY),
-									 log_threshold + 5);
+									 level => log_threshold + 5);
 
 								et_schematic.type_ports_device.insert (
 									container	=> ports_of_segment,
@@ -2875,10 +2875,10 @@ package body et_kicad_to_native is
 				
 				-- loop in strands of current kicad net
 				while kicad_strand_cursor /= et_kicad.type_strands.no_element loop
-					log ("strand" & kicad_coordinates.to_string (
+					log (text => "strand" & kicad_coordinates.to_string (
 						 position	=> element (kicad_strand_cursor).position,
 						 scope		=> kicad_coordinates.SHEET),
-						 log_threshold + 3);
+						 level => log_threshold + 3);
 					
 					-- load segments of current strand
 					kicad_segments := element (kicad_strand_cursor).segments;
@@ -2889,10 +2889,10 @@ package body et_kicad_to_native is
 					log_indentation_up;
 					while kicad_segment_cursor /= et_kicad.type_net_segments.no_element loop
 
-						log ("segment" & et_kicad.to_string (
+						log (text => "segment" & et_kicad.to_string (
 							segment		=> element (kicad_segment_cursor),
 							scope		=> kicad_coordinates.XY),
-							log_threshold + 4);
+							level => log_threshold + 4);
 						
 						-- get coordinates from current kicad net segment:
 						net_segment_native.coordinates_start := et_coordinates.type_point (element (kicad_segment_cursor).coordinates_start);
@@ -2947,10 +2947,10 @@ package body et_kicad_to_native is
 			begin -- copy_layout_stuff
 				log_indentation_up;
 
-				log ("class" & et_pcb.to_string (element (kicad_net_cursor).class), log_threshold + 3);
+				log (text => "class" & et_pcb.to_string (element (kicad_net_cursor).class), level => log_threshold + 3);
 				net.class := element (kicad_net_cursor).class;	
 				
-				log ("tracks, vias, polygons ...", log_threshold + 3);
+				log (text => "tracks, vias, polygons ...", level => log_threshold + 3);
 				net.route := element (kicad_net_cursor).route;
 				-- CS log details on tracks, vias, ...
 				
@@ -2960,7 +2960,7 @@ package body et_kicad_to_native is
 		begin -- copy_nets
 			-- loop in kicad nets
 			while kicad_net_cursor /= et_kicad.type_nets.no_element loop
-				log ("net " & et_general.to_string (key (kicad_net_cursor)), log_threshold + 2);
+				log (text => "net " & et_general.to_string (key (kicad_net_cursor)), level => log_threshold + 2);
 
 				et_schematic.type_nets.insert (
 					container	=> module.nets,
@@ -3534,9 +3534,9 @@ package body et_kicad_to_native is
 					begin -- rename
 						variant.package_model := (rename_package_model (variant.package_model)); -- ../../lbr/transistors.pretty/S_0805
 
-						log ("package variant " & et_libraries.to_string (variant_name) 
+						log (text => "package variant " & et_libraries.to_string (variant_name) 
 							 & " now uses package " 
-							 & et_libraries.to_string (variant.package_model), log_threshold + 4);
+							 & et_libraries.to_string (variant.package_model), level => log_threshold + 4);
 					end rename;
 					
 				begin -- rename_package_model_in_variants
@@ -3564,13 +3564,13 @@ package body et_kicad_to_native is
 			begin -- query_components
 				while component_cursor /= et_kicad.type_components_library.no_element loop
 					generic_name := et_kicad.strip_tilde (key (component_cursor));
-					--log ("device " & to_string (generic_name), log_threshold + 2);
+					--log (text => "device " & to_string (generic_name), level => log_threshold + 2);
 
 					-- Build the name of the device model from the component library name and generic name:
 					device_model := concatenate_lib_name_and_generic_name (component_library_name, generic_name); -- ../lbr/logic_ttl/7400.dev
 
 					-- Create a new device model in container et_libraries.devices:
-					log ("device model " & to_string (device_model), log_threshold + 3);
+					log (text => "device model " & to_string (device_model), level => log_threshold + 3);
 					log_indentation_up;
 
 					case element (component_cursor).appearance is
@@ -3635,7 +3635,7 @@ package body et_kicad_to_native is
 							position	=> device_cursor,
 							process		=> copy_units'access);
 					else
-						log ("already there -> skipped", log_threshold + 3);
+						log (text => "already there -> skipped", level => log_threshold + 3);
 					end if;
 					
 					log_indentation_down;
@@ -3662,7 +3662,7 @@ package body et_kicad_to_native is
 				-- Loop in kicad packages (footprints) of the current library.
 				while package_cursor_kicad /= et_kicad_pcb.type_packages_library.no_element loop
 					package_name := key (package_cursor_kicad); -- S_0805
-					--log ("package name " & et_libraries.to_string (package_name), log_threshold + 2);
+					--log (text => "package name " & et_libraries.to_string (package_name), level => log_threshold + 2);
 
 					-- build the new native package model name
 					package_model := et_libraries.to_file_name (compose (
@@ -3671,7 +3671,7 @@ package body et_kicad_to_native is
 
 					-- replace . and / in package_model 
 					package_model := rename_package_model (package_model);
-					log ("package model " & et_libraries.to_string (package_model), log_threshold + 3);
+					log (text => "package model " & et_libraries.to_string (package_model), level => log_threshold + 3);
 
 					-- Insert the new package model in et_pcb.packages. In case the package is already in the 
 					-- container (due to other project imports), the flag "inserted" will go false. The package
@@ -3699,7 +3699,7 @@ package body et_kicad_to_native is
 			-- Loop in kicad component libraries:
 			while component_library_cursor /= et_kicad.type_libraries.no_element loop
 				component_library_name := key (component_library_cursor);
-				log ("component library " & to_string (component_library_name), log_threshold + 2);
+				log (text => "component library " & to_string (component_library_name), level => log_threshold + 2);
 
 				log_indentation_up;
 				
@@ -3725,7 +3725,7 @@ package body et_kicad_to_native is
 
 						-- Loop in footprint libraries:
 						while package_library_cursor /= et_kicad_pcb.type_libraries.no_element loop
-							log ("package library " & to_string (key (package_library_cursor)), log_threshold + 2);
+							log (text => "package library " & to_string (key (package_library_cursor)), level => log_threshold + 2);
 
 							log_indentation_up;
 
@@ -3745,7 +3745,7 @@ package body et_kicad_to_native is
 
 					-- Loop in footprint libraries:
 					while package_library_cursor /= et_kicad_pcb.type_libraries.no_element loop
-						log ("package library " & to_string (key (package_library_cursor)), log_threshold + 2);
+						log (text => "package library " & to_string (key (package_library_cursor)), level => log_threshold + 2);
 
 						log_indentation_up;
 
@@ -3812,15 +3812,15 @@ package body et_kicad_to_native is
 			end save_package;
 			
 		begin -- save_libraries
-			log ("saving libraries ...", log_threshold);
+			log (text => "saving libraries ...", level => log_threshold);
 			log_indentation_up;
 
-			log ("devices (former KiCad components) ...", log_threshold + 1);
+			log (text => "devices (former KiCad components) ...", level => log_threshold + 1);
 			log_indentation_up;
 			iterate (et_libraries.devices, save_device'access);
 			log_indentation_down;
 			
-			log ("packages (former KiCad footprints) ...", log_threshold + 1);
+			log (text => "packages (former KiCad footprints) ...", level => log_threshold + 1);
 			log_indentation_up;
 			iterate (et_pcb.packages, save_package'access);
 			log_indentation_down;
@@ -3838,7 +3838,7 @@ package body et_kicad_to_native is
 		-- Kicad schematic has origin in upper left corner. ET has origin in lower left corder.
 		transpose (log_threshold);
 
-		log ("converting ...", log_threshold);
+		log (text => "converting ...", level => log_threshold);
 		log_indentation_up;
 
 		-- Now we copy content from the kicad module to the same named native module.
@@ -3849,7 +3849,7 @@ package body et_kicad_to_native is
 			-- The native project name and the module contained will have the same name.
 			project_name := et_project.to_project_name (kicad_coordinates.to_string (key (module_cursor_kicad)));
 			
-			log ("module " & to_string (project_name), log_threshold + 1);
+			log (text => "module " & to_string (project_name), level => log_threshold + 1);
 			log_indentation_up;
 
 			-- For each kicad design we create a native project:

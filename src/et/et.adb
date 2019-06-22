@@ -101,35 +101,35 @@ procedure et is
 						put_line ("help"); -- CS write helpful help
 
 					elsif full_switch = switch_import_project then
-						log (arg & full_switch & space & strip_directory_separator (parameter));
+						log (text => arg & full_switch & space & strip_directory_separator (parameter));
 						project_name_import := et_project.type_project_name.to_bounded_string (parameter);
 
 					elsif full_switch = switch_import_format then
-						log (arg & full_switch & space & parameter);
+						log (text => arg & full_switch & space & parameter);
 						et_import.cad_format := et_import.type_cad_format'value (parameter);
 
 					elsif full_switch = switch_make_default_conv then -- make conventions file
-						log (arg & full_switch & space & parameter);
+						log (text => arg & full_switch & space & parameter);
 						conv_file_name_create := conventions.type_conventions_file_name.to_bounded_string (parameter);
 
 					elsif full_switch = switch_conventions then -- use conventions file
-						log (arg & full_switch & space & parameter);
+						log (text => arg & full_switch & space & parameter);
 						conv_file_name_use := conventions.type_conventions_file_name.to_bounded_string (parameter);
 
 					elsif full_switch = switch_native_project_open then
-						log (arg & full_switch & space & parameter);
+						log (text => arg & full_switch & space & parameter);
 						project_name := et_project.to_project_name (remove_trailing_directory_separator (parameter));
 
 					elsif full_switch = switch_native_project_save_as then
-						log (arg & full_switch & space & parameter);
+						log (text => arg & full_switch & space & parameter);
 						project_name_save_as := et_project.to_project_name (remove_trailing_directory_separator (parameter));
 
 					elsif full_switch = switch_execute_script then
-						log (arg & full_switch & space & parameter);
+						log (text => arg & full_switch & space & parameter);
 						script_name := scripting.to_script_name (parameter);
 						
 					elsif full_switch = switch_log_level then
-						log (arg & full_switch & space & parameter);
+						log (text => arg & full_switch & space & parameter);
 						log_level := type_log_level_cmd_line'value (parameter);
 					end if;
 
@@ -213,15 +213,15 @@ procedure et is
 		if conventions.type_conventions_file_name.length (conv_file_name_use) > 0 then
 			conventions.read_conventions (conv_file_name_use, log_threshold => 0);
 		else
-			log (message_warning & "no conventions file specified !");
+			log (WARNING, "no conventions file specified !");
 		end if;
 		
 		-- The import requires changing of directories. So we backup the current directory.
 		-- After the import, we restore the directory.
 		backup_projects_root_directory;
 
-		log ("importing project " & et_project.to_string (project_name_import) & " ...", console => true);
-		log ("CAD format " & to_string (et_import.cad_format));
+		log (text => "importing project " & et_project.to_string (project_name_import) & " ...", console => true);
+		log (text => "CAD format " & to_string (et_import.cad_format));
 				
 		case et_import.cad_format is
 			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
@@ -231,8 +231,8 @@ procedure et is
 				restore_projects_root_directory;
 
 				-- convert to native project (with a default rig configuration file)
-				log (et_string_processing.row_separator_single);
-				log ("converting to " & et_general.system_name & " native project ...", console => true);
+				log (text => et_string_processing.row_separator_single);
+				log (text => "converting to " & et_general.system_name & " native project ...", console => true);
 				log_indentation_up;
 				et_kicad_to_native.to_native (log_threshold => 0);
 				log_indentation_down;
@@ -293,17 +293,16 @@ procedure et is
 					-- evaluate exit code
 					case exit_code_script is
 						when scripting.ERROR =>
-							log_indentation_reset;
-							log (message_error & " execution of script " & to_string (script_name) &
+							log (ERROR, " execution of script " & to_string (script_name) &
 								" failed !", console => true);
 							raise constraint_error;
 
 						when scripting.WARNINGS =>
-							log (message_warning & " execution of script " & to_string (script_name) &
+							log (WARNING, " execution of script " & to_string (script_name) &
 								 " produced warnings !", console => true);
 
 						when scripting.SUCCESSFUL =>
-							log ("execution of script " & to_string (script_name) & " successful");
+							log (text => "execution of script " & to_string (script_name) & " successful");
 							
 					end case;
 				end if;
@@ -334,7 +333,7 @@ begin -- main
 	exception
 		when event: others =>
 			log_indentation_reset;
-			log (ada.exceptions.exception_information (event), console => true);
+			log (text => ada.exceptions.exception_information (event), console => true);
 			close_report;
 			
 			put_line ("Read log file " & log_file_name & " for details !");

@@ -94,12 +94,12 @@ package body et_csv is
 
 		elsif column > field_count then -- column must not exceed field_count -> error
 			
-			log_indentation_reset;
-			log (message_error & " record length "
+			log (ERROR, "record length "
 				& to_string (field_count)
 				& " less than current column "
 				& to_string (column)
 				& " !");
+			
 			raise constraint_error;
 		end if;
 		

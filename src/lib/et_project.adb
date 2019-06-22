@@ -448,7 +448,7 @@ package body et_project is
 		end create_library_subdirs;
 
 	begin -- create_supplementary_directories
-		log ("creating subdirectories for supplementary stuff ...", log_threshold);
+		log (text => "creating subdirectories for supplementary stuff ...", level => log_threshold);
 		create_directory (compose (path, directory_libraries));
 		create_library_subdirs (compose (path, directory_libraries));
 		
@@ -506,7 +506,7 @@ package body et_project is
 			file_handle : ada.text_io.file_type;
 			rig_conf_file : type_rig_configuration_file_name.bounded_string; -- led_matrix.conf
 		begin
-			log ("creating the default rig configuration file ...", log_threshold + 1);
+			log (text => "creating the default rig configuration file ...", level => log_threshold + 1);
 
 			-- compose the full file name			
 			rig_conf_file := type_rig_configuration_file_name.to_bounded_string (compose (
@@ -562,7 +562,7 @@ package body et_project is
 		end create_rig_configuration;
 
 	begin -- create_project_directory
-		log ("creating native project " & to_string (path) & " ...", log_threshold);
+		log (text => "creating native project " & to_string (path) & " ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- delete previous project directory
@@ -581,7 +581,7 @@ package body et_project is
 		
 		exception when event:
 			others => 
-				log (ada.exceptions.exception_message (event), console => true);
+				log (text => ada.exceptions.exception_message (event), console => true);
 				raise;
 		
 	end create_project_directory;
@@ -610,7 +610,7 @@ package body et_project is
 		end create_library_subdirs;
 
 	begin -- create_project_directory_bare
-		log ("creating bare native project " & to_string (path) & " ...", log_threshold);
+		log (text => "creating bare native project " & to_string (path) & " ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- delete previous project directory
@@ -627,7 +627,7 @@ package body et_project is
 		
 		exception when event:
 			others => 
-				log (ada.exceptions.exception_message (event), console => true);
+				log (text => ada.exceptions.exception_message (event), console => true);
 				raise;
 		
 	end create_project_directory_bare;
@@ -1340,7 +1340,7 @@ package body et_project is
 		end;
 		
 	begin -- save_rig_configuration
-		log ("saving rig configuration ...", log_threshold);
+		log (text => "saving rig configuration ...", level => log_threshold);
 		reset_tab_depth;
 		log_indentation_up;
 
@@ -1381,7 +1381,7 @@ package body et_project is
 
 		exception when event:
 			others => 
-				log (ada.exceptions.exception_message (event), console => true);
+				log (text => ada.exceptions.exception_message (event), console => true);
 				close (file_handle);
 				raise;
 
@@ -1418,7 +1418,7 @@ package body et_project is
 			module_file_name : type_module_file_name.bounded_string; -- led_matrix
 			
 		begin -- write_module_header
-			log ("setting module file name ...", log_threshold + 1);
+			log (text => "setting module file name ...", level => log_threshold + 1);
 
 			-- If given module_name is empty (means it has not been passed), the module is named after the project.
 			-- Otherwise the module name is as given by module_name.
@@ -1440,7 +1440,7 @@ package body et_project is
 					);
 			end if;
 			
-			log (" module file name is now " & type_module_file_name.to_string (module_file_name), log_threshold + 2);
+			log (text => " module file name is now " & type_module_file_name.to_string (module_file_name), level => log_threshold + 2);
 
 			-- create module file and write in it a header
 			create (
@@ -1460,7 +1460,7 @@ package body et_project is
 		begin
 			new_line;
 			
-			log ("closing module file ...", log_threshold + 1);
+			log (text => "closing module file ...", level => log_threshold + 1);
 			
 			put_line (comment_mark & " " & row_separator_double);
 			put_line (comment_mark & " " & date);
@@ -1493,7 +1493,7 @@ package body et_project is
 			log_indentation_up;
 			section_mark (section_net_classes, HEADER);
 			while class_cursor /= type_net_classes.no_element loop
-				log ("net class " & to_string (key (class_cursor)), log_threshold + 1);
+				log (text => "net class " & to_string (key (class_cursor)), level => log_threshold + 1);
 				section_mark (section_net_class, HEADER);
 
 				write (keyword => keyword_name, space => true, parameters => to_string (key (class_cursor)));
@@ -1770,7 +1770,7 @@ package body et_project is
 			log_indentation_up;
 			section_mark (section_nets, HEADER);
 			while net_cursor /= type_nets.no_element loop
-				log ("net " & et_general.to_string (key (net_cursor)), log_threshold + 1);
+				log (text => "net " & et_general.to_string (key (net_cursor)), level => log_threshold + 1);
 				section_mark (section_net, HEADER);
 
 				write (keyword => keyword_name, parameters => et_general.to_string (key (net_cursor)), space => true);
@@ -2395,7 +2395,7 @@ package body et_project is
 		end query_board;
 	
 	begin -- save_module
-		log ("saving module ...", log_threshold);
+		log (text => "saving module ...", level => log_threshold);
 		reset_tab_depth;
 		log_indentation_up;
 		
@@ -2443,7 +2443,7 @@ package body et_project is
 
 		exception when event:
 			others => 
-				log (ada.exceptions.exception_message (event), console => true);
+				log (text => ada.exceptions.exception_message (event), console => true);
 				close (module_file_handle);
 				raise;
 
@@ -2696,7 +2696,7 @@ package body et_project is
 		end query_external_unit;
 		
 	begin -- save_device
-		log (name, log_threshold);
+		log (text => name, level => log_threshold);
 
 		create (
 			file 	=> file_handle,
@@ -2774,7 +2774,7 @@ package body et_project is
 		close (file_handle);
 
 		exception when event: others =>
-			log (ada.exceptions.exception_message (event));
+			log (text => ada.exceptions.exception_message (event));
 			if is_open (file_handle) then
 				close (file_handle);
 			end if;
@@ -4141,7 +4141,7 @@ package body et_project is
 				if f (line, 1) = section_keyword then -- section name detected in field 1
 					if f (line, 2) = section_begin then -- section header detected in field 2
 						stack.push (section);
-						log (write_enter_section & to_string (section), log_threshold + 3);
+						log (text => write_enter_section & to_string (section), level => log_threshold + 3);
 						return true;
 
 					elsif f (line, 2) = section_end then -- section footer detected in field 2
@@ -4159,9 +4159,9 @@ package body et_project is
 						
 						stack.pop;
 						if stack.empty then
-							log (write_top_level_reached, log_threshold + 3);
+							log (text => write_top_level_reached, level => log_threshold + 3);
 						else
-							log (write_return_to_section & to_string (stack.current), log_threshold + 3);
+							log (text => write_return_to_section & to_string (stack.current), level => log_threshold + 3);
 						end if;
 						return true;
 
@@ -4203,7 +4203,7 @@ package body et_project is
 				-- The line contains something else -> the payload data. 
 				-- Temporarily this data is stored in corresponding variables.
 
-				log ("package line --> " & to_string (line), log_threshold + 3);
+				log (text => "package line --> " & to_string (line), level => log_threshold + 3);
 		
 				case stack.current is
 
@@ -5165,7 +5165,7 @@ package body et_project is
 			end if;
 
 			exception when event: others =>
-				log ("file " & to_string (file_name) & latin_1.space 
+				log (text => "file " & to_string (file_name) & latin_1.space 
 					 & affected_line (line) & to_string (line), console => true);
 				raise;
 			
@@ -5175,13 +5175,13 @@ package body et_project is
 		
 	begin -- read_package
 		log_indentation_up;
-		log ("reading package " & to_string (file_name) & " ...", log_threshold);
+		log (text => "reading package " & to_string (file_name) & " ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- test if container et_pcb.packages already contains the package
 		-- named "file_name". If so, there would be no need to read the file_name again.
 		if et_pcb.type_packages.contains (et_pcb.packages, file_name) then
-			log ("already read -> skipped", log_threshold + 1);
+			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			
 			-- open package file
@@ -5569,7 +5569,7 @@ package body et_project is
 				if f (line, 1) = section_keyword then -- section name detected in field 1
 					if f (line, 2) = section_begin then -- section header detected in field 2
 						stack.push (section);
-						log (write_enter_section & to_string (section), log_threshold + 3);
+						log (text => write_enter_section & to_string (section), level => log_threshold + 3);
 						return true;
 
 					elsif f (line, 2) = section_end then -- section footer detected in field 2
@@ -5587,9 +5587,9 @@ package body et_project is
 						
 						stack.pop;
 						if stack.empty then
-							log (write_top_level_reached, log_threshold + 3);
+							log (text => write_top_level_reached, level => log_threshold + 3);
 						else
-							log (write_return_to_section & to_string (stack.current), log_threshold + 3);
+							log (text => write_return_to_section & to_string (stack.current), level => log_threshold + 3);
 						end if;
 						return true;
 
@@ -5618,7 +5618,7 @@ package body et_project is
 				-- The line contains something else -> the payload data. 
 				-- Temporarily this data is stored in corresponding variables.
 
-				log ("symbol line --> " & to_string (line), log_threshold + 3);
+				log (text => "symbol line --> " & to_string (line), level => log_threshold + 3);
 		
 				case stack.current is
 
@@ -5630,7 +5630,7 @@ package body et_project is
 							if kw = keyword_appearance then -- appearance sch_pcb
 								expect_field_count (line, 2);
 								appearance := et_libraries.to_appearance (f (line,2));
--- 								log ("appearance" & to_string (appearance), log_threshold + 1);								
+-- 								log (text => "appearance" & to_string (appearance), level => log_threshold + 1);								
 
 								-- Create a new symbol where pointer "symbol" is pointing at.
 								case appearance is
@@ -5936,7 +5936,7 @@ package body et_project is
 			end if;
 
 			exception when event: others =>
-				log ("file " & to_string (file_name) & latin_1.space 
+				log (text => "file " & to_string (file_name) & latin_1.space 
 					 & affected_line (line) & to_string (line), console => true);
 				raise;
 			
@@ -5946,13 +5946,13 @@ package body et_project is
 		
 	begin -- read_symbol
 		log_indentation_up;
-		log ("reading symbol " & to_string (file_name) & " ...", log_threshold);
+		log (text => "reading symbol " & to_string (file_name) & " ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- test if container et_libraries.symbols already contains the symbol
 		-- named "file_name". If so, there would be no need to read the file_name again.
 		if et_libraries.type_symbols.contains (et_libraries.symbols, file_name) then
-			log ("already read -> skipped", log_threshold + 1);
+			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			
 			-- open symbol file
@@ -6127,8 +6127,7 @@ package body et_project is
 
 			-- A particular variant must occur only once in the device model:
 			if not inserted then
-				log_indentation_reset;
-				log (message_error & "variant " & to_string (variant_name) & " already used !", console => true);
+				log (ERROR, "variant " & to_string (variant_name) & " already used !", console => true);
 				raise constraint_error;
 			end if;
 
@@ -6209,16 +6208,14 @@ package body et_project is
 			
 			-- Test occurence in internal units:
 			if not inserted then
-				log_indentation_reset;
-				log (message_error & "unit " & to_string (unit_name) 
+				log (ERROR, "unit " & to_string (unit_name) 
 					& " already used by another internal unit !", console => true);
 				raise constraint_error;
 			end if;
 
 			-- Make sure the unit name is not in use by any external unit:
 			if type_units_external.contains (units_external, unit_name) then
-				log_indentation_reset;
-				log (message_error & "unit name " & to_string (unit_name) 
+				log (ERROR, "unit name " & to_string (unit_name) 
 					& " already used by an external unit !", console => true);
 				raise constraint_error;
 			end if;
@@ -6249,16 +6246,14 @@ package body et_project is
 
 			-- Test occurence in external units:
 			if not inserted then
-				log_indentation_reset;
-				log (message_error & "unit name " & to_string (unit_name) 
+				log (ERROR, "unit name " & to_string (unit_name) 
 					& " already used by another external unit !", console => true);
 				raise constraint_error;
 			end if;
 
 			-- Make sure the unit name is not in use by any internal unit:
 			if type_units_internal.contains (units_internal, unit_name) then
-				log_indentation_reset;
-				log (message_error & "unit name " & to_string (unit_name) 
+				log (ERROR, "unit name " & to_string (unit_name) 
 					& " already used by an internal unit !", console => true);
 				raise constraint_error;
 			end if;
@@ -6383,8 +6378,7 @@ package body et_project is
 
 			-- abort if port name already used:
 			if not inserted then
-				log_indentation_reset;
-				log (message_error & "port " & to_string (port_name) & " already in use !", console => true);
+				log (ERROR, "port " & to_string (port_name) & " already in use !", console => true);
 				raise constraint_error;
 			end if;
 			
@@ -6567,8 +6561,7 @@ package body et_project is
 
 									-- Default meaning causes an error:
 									when others => 
-										log_indentation_reset;
-										log (message_error & "meaning of placeholder not specified !",
+										log (ERROR, "meaning of placeholder not specified !",
 											 console => true);
 										raise constraint_error;
 								end case;
@@ -6610,7 +6603,7 @@ package body et_project is
 				if f (line, 1) = section_keyword then -- section name detected in field 1
 					if f (line, 2) = section_begin then -- section header detected in field 2
 						stack.push (section);
-						log (write_enter_section & to_string (section), log_threshold + 3);
+						log (text => write_enter_section & to_string (section), level => log_threshold + 3);
 						return true;
 
 					elsif f (line, 2) = section_end then -- section footer detected in field 2
@@ -6628,15 +6621,14 @@ package body et_project is
 						
 						stack.pop;
 						if stack.empty then
-							log (write_top_level_reached, log_threshold + 3);
+							log (text => write_top_level_reached, level => log_threshold + 3);
 						else
-							log (write_return_to_section & to_string (stack.current), log_threshold + 3);
+							log (text => write_return_to_section & to_string (stack.current), level => log_threshold + 3);
 						end if;
 						return true;
 
 					else
-						log_indentation_reset;
-						log (message_error & write_missing_begin_end, console => true);
+						log (ERROR, write_missing_begin_end, console => true);
 						raise constraint_error;
 					end if;
 
@@ -6667,7 +6659,7 @@ package body et_project is
 				-- The line contains something else -> the payload data. 
 				-- Temporarily this data is stored in corresponding variables.
 
-				log ("device line --> " & to_string (line), log_threshold + 3);
+				log (text => "device line --> " & to_string (line), level => log_threshold + 3);
 		
 				case stack.current is
 
@@ -6681,7 +6673,7 @@ package body et_project is
 								et_libraries.check_prefix_length (f (line,2));
 								prefix := et_libraries.to_prefix (f (line,2));
 								et_libraries.check_prefix_characters (prefix);
-								log ("prefix " & to_string (prefix), log_threshold + 1);
+								log (text => "prefix " & to_string (prefix), level => log_threshold + 1);
 								
 								if not conventions.prefix_valid (prefix) then
 									--log (message_warning & "prefix of device model " &
@@ -6698,18 +6690,18 @@ package body et_project is
 										error_on_invalid_character	=> false);
 
 								if not et_libraries.value_characters_valid (value) then
-									log (message_warning & "default value in device model " &
+									log (WARNING, "default value in device model " &
 										 to_string (file_name) & " contains invalid characters !");
 									log_indentation_reset;
 									value_invalid (to_string (value));
 								end if;
 								
-								log ("value " & to_string (value), log_threshold + 1);
+								log (text => "value " & to_string (value), level => log_threshold + 1);
 
 							elsif kw = keyword_appearance then -- appearance sch_pcb
 								expect_field_count (line, 2);
 								appearance := et_libraries.to_appearance (f (line,2));
-								log ("appearance" & to_string (appearance), log_threshold + 1);								
+								log (text => "appearance" & to_string (appearance), level => log_threshold + 1);								
 
 							elsif kw = keyword_partcode then -- partcode IC_PAC_S_SO14_VAL_
 								expect_field_count (line, 2);
@@ -6717,7 +6709,7 @@ package body et_project is
 								-- validate partcode length
 								partcode := et_libraries.to_partcode (f (line,2));
 								
-								log ("partcode " & to_string (partcode), log_threshold + 1);
+								log (text => "partcode " & to_string (partcode), level => log_threshold + 1);
 							else
 								invalid_keyword (kw);
 							end if;
@@ -6740,7 +6732,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										et_libraries.check_variant_name_length (f (line, 2));
 										variant_name := et_libraries.to_component_variant_name (f (line,2));
-										log ("variant " & to_string (variant_name), log_threshold + 1);
+										log (text => "variant " & to_string (variant_name), level => log_threshold + 1);
 										
 									elsif kw = keyword_package_model then -- package_model libraries/packages/S_SO14.pac
 										expect_field_count (line, 2);
@@ -6751,7 +6743,7 @@ package body et_project is
 										check_package_name_characters (to_package_name (ada.directories.base_name (f (line, 2))));
 
 										variant.package_model := et_libraries.to_file_name (f (line,2));
-										log ("package model " & to_string (variant.package_model), log_threshold + 1);
+										log (text => "package model " & to_string (variant.package_model), level => log_threshold + 1);
 										
 									else
 										invalid_keyword (kw);
@@ -7169,7 +7161,7 @@ package body et_project is
 			end if;
 
 			exception when event: others =>
-				log ("file " & to_string (file_name) & latin_1.space 
+				log (text => "file " & to_string (file_name) & latin_1.space 
 					 & affected_line (line) & to_string (line), console => true);
 				raise;
 			
@@ -7179,13 +7171,13 @@ package body et_project is
 		
 	begin -- read_device_file
 		log_indentation_up;
-		log ("reading device model " & to_string (file_name) & " ...", log_threshold);
+		log (text => "reading device model " & to_string (file_name) & " ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- test if container et_libraries.devices already contains a model
 		-- named "file_name". If so, there would be no need to read the file_name again.
 		if et_libraries.type_devices.contains (et_libraries.devices, file_name) then
-			log ("already read -> skipped", log_threshold + 1);
+			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			-- If the model file is to be read, first check if the file exists.
 			declare
@@ -7200,7 +7192,7 @@ package body et_project is
 						name => file);
 
 				else
-					log (message_error & "device model " & file &
+					log (ERROR, "device model " & file &
 						 " not found !", console => true);
 					raise constraint_error;
 				end if;
@@ -7229,7 +7221,7 @@ package body et_project is
 
 			-- As a safety measure the top section must be reached finally.
 			if stack.depth > 1 then 
-				log (message_warning & write_section_stack_not_empty);
+				log (WARNING, write_section_stack_not_empty);
 			end if;
 
 			set_input (previous_input);
@@ -7244,7 +7236,7 @@ package body et_project is
 					-- The prefix gives information about the category of the device:
 					if et_libraries.type_value.length (value) > 0 then
 						if not conventions.value_valid (value, prefix) then
-							log (message_warning & "default value of device model " &
+							log (WARNING, "default value of device model " &
 								to_string (file_name) & 
 								" not conformant with conventions !");
 						end if;
@@ -7300,7 +7292,7 @@ package body et_project is
 		use et_string_processing;
 		file_handle : ada.text_io.file_type;
 	begin
-		log (name, log_threshold);
+		log (text => name, level => log_threshold);
 
 		create (
 			file 	=> file_handle,
@@ -7329,7 +7321,7 @@ package body et_project is
 		close (file_handle);
 
 		exception when event: others =>
-			log (ada.exceptions.exception_message (event));
+			log (text => ada.exceptions.exception_message (event));
 			if is_open (file_handle) then
 				close (file_handle);
 			end if;
@@ -7763,7 +7755,7 @@ package body et_project is
 		end write_terminals;
 		
 	begin -- save_package
-		log (name, log_threshold);
+		log (text => name, level => log_threshold);
 
 		create (
 			file 	=> file_handle,
@@ -7816,7 +7808,7 @@ package body et_project is
 		close (file_handle);
 
 		exception when event: others =>
-			log (ada.exceptions.exception_message (event));
+			log (text => ada.exceptions.exception_message (event));
 			if is_open (file_handle) then
 				close (file_handle);
 			end if;
@@ -8169,7 +8161,7 @@ package body et_project is
 					inserted : boolean;
 					cursor : type_net_classes.cursor;
 				begin -- insert_net_class
-					log ("net class " & to_string (net_class_name), log_threshold + 1);
+					log (text => "net class " & to_string (net_class_name), level => log_threshold + 1);
 
 					-- CS: notify about missing parameters (by reading the parameter-found-flags)
 					-- If a parameter is missing, the default is assumed. See type_net_class spec.
@@ -8182,8 +8174,7 @@ package body et_project is
 						position	=> cursor);
 
 					if not inserted then
-						log_indentation_reset;
-						log (message_error & "net class '" & et_pcb.to_string (net_class_name) 
+						log (ERROR, "net class '" & et_pcb.to_string (net_class_name) 
 								& "' already exists !", console => true);
 						raise constraint_error;
 					end if;
@@ -8199,7 +8190,7 @@ package body et_project is
 					inserted : boolean;
 					cursor : type_nets.cursor;
 				begin -- insert_net
-					log ("net " & et_general.to_string (net_name), log_threshold + 1);
+					log (text => "net " & et_general.to_string (net_name), level => log_threshold + 1);
 
 					-- CS: notify about missing parameters (by reading the parameter-found-flags)
 					-- If a parameter is missing, the default is assumed. See type_net spec.
@@ -8212,9 +8203,8 @@ package body et_project is
 						position	=> cursor);
 
 					if not inserted then
-						log_indentation_reset;
-						log (message_error & "net '" & et_general.to_string (net_name) 
-								& "' already exists !", console => true);
+						log (ERROR, "net '" & et_general.to_string (net_name) 
+							& "' already exists !", console => true);
 						raise constraint_error;
 					end if;
 
@@ -8233,7 +8223,7 @@ package body et_project is
 					use submodules.type_submodules;
 					cursor : submodules.type_submodules.cursor;
 				begin
-					log ("submodule " & et_general.to_string (submodule_name), log_threshold + 1);
+					log (text => "submodule " & et_general.to_string (submodule_name), level => log_threshold + 1);
 
 					-- CS: notify about missing parameters (by reading the parameter-found-flags)
 					-- If a parameter is missing, the default is assumed. See type_submodule spec.
@@ -8246,9 +8236,8 @@ package body et_project is
 						position	=> cursor);
 
 					if not inserted then
-						log_indentation_reset;
-						log (message_error & "submodule '" & et_general.to_string (submodule_name) 
-								& "' already exists !", console => true);
+						log (ERROR, "submodule '" & et_general.to_string (submodule_name) 
+							& "' already exists !", console => true);
 						raise constraint_error;
 					end if;
 
@@ -8265,7 +8254,7 @@ package body et_project is
 					module_name	: in type_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					log ("drawing frame schematic " & et_libraries.to_string (frame_template_schematic), log_threshold + 1);
+					log (text => "drawing frame schematic " & et_libraries.to_string (frame_template_schematic), level => log_threshold + 1);
 					module.frame_template_schematic := frame_template_schematic;
 				end set_frame_schematic;
 				
@@ -8273,7 +8262,7 @@ package body et_project is
 					module_name	: in type_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 				begin
-					log ("drawing frame board " & et_libraries.to_string (frame_template_board), log_threshold + 1);
+					log (text => "drawing frame board " & et_libraries.to_string (frame_template_board), level => log_threshold + 1);
 					module.frame_template_board := frame_template_board;
 				end set_frame_board;
 
@@ -8335,7 +8324,7 @@ package body et_project is
 					use et_libraries;
 				begin
 					log_indentation_up;
-					-- log ("unit " & to_string (device_unit_name), log_threshold + 1);
+					-- log (text => "unit " & to_string (device_unit_name), log_threshold + 1);
 					-- No good idea. Confuses operator because units are collected BEFORE the device is complete.
 					
 					-- Depending on the appearance of the device, a virtual or real unit
@@ -8399,8 +8388,7 @@ package body et_project is
 								position	=> unit_placeholder_position);
 
 						when others =>
-							log_indentation_reset;
-							log (message_error & "meaning of placeholder not supported !", console => true);
+							log (ERROR, "meaning of placeholder not supported !", console => true);
 							raise constraint_error;
 					end case;
 
@@ -8441,9 +8429,8 @@ package body et_project is
 
 							-- The variant should be there. Otherwise abort.
 							if variant_cursor = type_component_variants.no_element then
-								log_indentation_reset;
-								log (message_error & "variant " & to_string (device.variant) &
-										" not available in device model " & to_string (model) & " !", console => true);
+								log (ERROR, "variant " & to_string (device.variant) &
+									" not available in device model " & to_string (model) & " !", console => true);
 								raise constraint_error;
 							else
 								name := to_package_name (base_name (to_string (element (variant_cursor).package_model)));
@@ -8452,8 +8439,8 @@ package body et_project is
 						
 					begin -- get_package_name
 						log_indentation_up;
-						log ("verifying package variant " & to_string (device.variant) &
-								" in device model " & to_string (device.model) & " ... ", log_threshold + 2);
+						log (text => "verifying package variant " & to_string (device.variant) &
+								" in device model " & to_string (device.model) & " ... ", level => log_threshold + 2);
 
 						-- Locate the device in the library. CS: It should be there, otherwise exception arises here:
 						device_cursor := et_libraries.type_devices.find (
@@ -8470,7 +8457,7 @@ package body et_project is
 					end get_package_name;
 					
 				begin -- insert_device
-					log ("device " & et_libraries.to_string (device_name), log_threshold + 1);
+					log (text => "device " & et_libraries.to_string (device_name), level => log_threshold + 1);
 					log_indentation_up;
 
 					if not conventions.prefix_valid (device_name) then 
@@ -8486,20 +8473,20 @@ package body et_project is
 					if device.appearance = et_libraries.SCH_PCB then
 
 						if not et_libraries.value_characters_valid (device_value) then
-							log (message_warning & "value of " & et_libraries.to_string (device_name) &
+							log (WARNING, "value of " & et_libraries.to_string (device_name) &
 								 " contains invalid characters !");
 							log_indentation_reset;
 							value_invalid (to_string (device_value));
 						end if;
 						
-						log ("value " & et_libraries.to_string (device_value), log_threshold + 2);
+						log (text => "value " & et_libraries.to_string (device_value), level => log_threshold + 2);
 						device.value	:= device_value;
 						if not conventions.value_valid (device_value, prefix (device_name)) then
-							log (message_warning & "value of " & et_libraries.to_string (device_name) &
-									" not conformant with conventions !");
+							log (WARNING, "value of " & et_libraries.to_string (device_name) &
+								" not conformant with conventions !");
 						end if;
 
-						log ("partcode " & et_libraries.to_string (device_partcode), log_threshold + 2);
+						log (text => "partcode " & et_libraries.to_string (device_partcode), level => log_threshold + 2);
 						if et_libraries.partcode_characters_valid (device_partcode) then
 							device.partcode	:= device_partcode;
 						else
@@ -8507,7 +8494,7 @@ package body et_project is
 							partcode_invalid (to_string (device_partcode));
 						end if;
 
-						log ("purpose " & et_libraries.to_string (device_purpose), log_threshold + 2);
+						log (text => "purpose " & et_libraries.to_string (device_purpose), level => log_threshold + 2);
 						if et_libraries.purpose_characters_valid (device_purpose) then
 							device.purpose	:= device_purpose;
 						else
@@ -8515,7 +8502,7 @@ package body et_project is
 							purpose_invalid (to_string (device_purpose));
 						end if;
 
-						log ("variant " & et_libraries.to_string (device_variant), log_threshold + 2);
+						log (text => "variant " & et_libraries.to_string (device_variant), level => log_threshold + 2);
 						et_libraries.check_variant_name_characters (device_variant);
 						device.variant	:= device_variant;
 
@@ -8530,8 +8517,7 @@ package body et_project is
 						new_item	=> device.all);
 
 					if not inserted then
-						log_indentation_reset;
-						log (message_error & "device name " & et_libraries.to_string (device_name) & " already used !",
+						log (ERROR, "device name " & et_libraries.to_string (device_name) & " already used !",
 								console => true);
 						raise constraint_error;
 					end if;
@@ -9477,7 +9463,7 @@ package body et_project is
 					use type_netchangers;
 					cursor : type_netchangers.cursor;
 				begin
-					log ("netchanger " & to_string (netchanger_id), log_threshold + 2);
+					log (text => "netchanger " & to_string (netchanger_id), level => log_threshold + 2);
 
 					-- insert netchanger in container netchangers:
 					insert (
@@ -9489,9 +9475,8 @@ package body et_project is
 
 					-- A netchanger name must be unique:
 					if not inserted then
-						log_indentation_reset;
-						log (message_error & "netchanger id" & to_string (netchanger_id) 
-								& " already used !", console => true);
+						log (ERROR, "netchanger id" & to_string (netchanger_id) 
+							& " already used !", console => true);
 						raise constraint_error;
 					end if;
 					
@@ -9507,8 +9492,8 @@ package body et_project is
 					use assembly_variants;
 					cursor : type_variants.cursor;
 				begin
-					log ("assembly variant " & 
-						 enclose_in_quotes (to_variant (assembly_variant_name)), log_threshold + 2);
+					log (text => "assembly variant " & 
+						 enclose_in_quotes (to_variant (assembly_variant_name)), level => log_threshold + 2);
 
 					-- insert variant in container variants
 					type_variants.insert (
@@ -9523,8 +9508,7 @@ package body et_project is
 
 					-- An assembly variant must be unique:
 					if not inserted then
-						log_indentation_reset;
-						log (message_error & "assembly variant " & 
+						log (ERROR, "assembly variant " & 
 							 enclose_in_quotes (to_variant (assembly_variant_name)) 
 								& " already used !", console => true);
 						raise constraint_error;
@@ -9617,10 +9601,10 @@ package body et_project is
 
 									-- Issue warning about this mismatch:
 									if type_point (strand.position) /= position_found_in_module_file then
-										log (message_warning & affected_line (line) & "Net " &
+										log (WARNING, affected_line (line) & "Net " &
 											 et_general.to_string (net_name) & ": Lowest x/y position of strand invalid !");
-										log (" Found " & to_string (point => position_found_in_module_file));
-										log (" Will be overridden by calculated position" & 
+										log (text => " Found " & to_string (point => position_found_in_module_file));
+										log (text => " Will be overridden by calculated position" & 
 											 to_string (point => type_point (strand.position)));
 									end if;
 								end;
@@ -10190,8 +10174,7 @@ package body et_project is
 												);
 
 											if not inserted then
-												log_indentation_reset;
-												log (message_error & "port " & 
+												log (ERROR, "port " & 
 													 et_general.to_string (submodule_port_name) & " already used !",
 													 console => true
 													);
@@ -10519,7 +10502,7 @@ package body et_project is
 
 -- 				exception when event:
 -- 					others => 
--- 						log (ada.exceptions.exception_message (event), console => true);
+-- 						log (text => ada.exceptions.exception_message (event), console => true);
 -- 						raise;
 				
 			end execute_section;
@@ -10536,7 +10519,7 @@ package body et_project is
 				if f (line, 1) = section_keyword then -- section name detected in field 1
 					if f (line, 2) = section_begin then -- section header detected in field 2
 						stack.push (section);
-						log (write_enter_section & to_string (section), log_threshold + 5);
+						log (text => write_enter_section & to_string (section), level => log_threshold + 5);
 						return true;
 
 					elsif f (line, 2) = section_end then -- section footer detected in field 2
@@ -10554,15 +10537,14 @@ package body et_project is
 						
 						stack.pop;
 						if stack.empty then
-							log (write_top_level_reached, log_threshold + 5);
+							log (text => write_top_level_reached, level => log_threshold + 5);
 						else
-							log (write_return_to_section & to_string (stack.current), log_threshold + 5);
+							log (text => write_return_to_section & to_string (stack.current), level => log_threshold + 5);
 						end if;
 						return true;
 
 					else
-						log_indentation_reset;
-						log (message_error & write_missing_begin_end, console => true);
+						log (ERROR, write_missing_begin_end, console => true);
 						raise constraint_error;
 					end if;
 
@@ -10624,7 +10606,7 @@ package body et_project is
 				-- The line contains something else -> the payload data. 
 				-- Temporarily this data is stored in corresponding variables.
 
-				log ("module line --> " & to_string (line), log_threshold + 4);
+				log (text => "module line --> " & to_string (line), level => log_threshold + 4);
 		
 				case stack.current is
 
@@ -10683,8 +10665,7 @@ package body et_project is
 
 										-- test whether device exists
 										if not exists (module_cursor, device_name) then
-											log_indentation_reset;
-											log (message_error & "device " &
+											log (ERROR, "device " &
 												 enclose_in_quotes (et_libraries.to_string (device_name)) &
 												 " does not exist !", console => true);
 											raise constraint_error;
@@ -10715,8 +10696,7 @@ package body et_project is
 											if f (line, 5) = keyword_partcode then
 												device.partcode := et_libraries.to_partcode (f (line, 6));
 											else -- keyword partcode not found
-												log_indentation_reset;
-												log (message_error & "expect keyword " & enclose_in_quotes (keyword_partcode) &
+												log (ERROR, "expect keyword " & enclose_in_quotes (keyword_partcode) &
 													 " after value !", console => true);
 												raise constraint_error;
 											end if;
@@ -10731,16 +10711,14 @@ package body et_project is
 													device.purpose := et_libraries.to_purpose (f (line, 8));
 
 												else -- keyword purpose not found
-													log_indentation_reset;
-														log (message_error & "expect keyword " & enclose_in_quotes (keyword_purpose) &
-															" after partcode !", console => true);
+													log (ERROR, "expect keyword " & enclose_in_quotes (keyword_purpose) &
+														" after partcode !", console => true);
 													raise constraint_error;
 												end if;
 											end if;
 												
 										else -- keyword value not found
-											log_indentation_reset;
-											log (message_error & "expect keyword " & enclose_in_quotes (keyword_value) &
+											log (ERROR, "expect keyword " & enclose_in_quotes (keyword_value) &
 												 " or keyword " & enclose_in_quotes (keyword_not_mounted) &
 												 " after device name !", console => true);
 											raise constraint_error;
@@ -10756,8 +10734,7 @@ package body et_project is
 
 										-- Raise error if device occurs more than once:
 										if not inserted then
-											log_indentation_reset;
-											log (message_error & "device " &
+											log (ERROR, "device " &
 												 enclose_in_quotes (et_libraries.to_string (device_name)) &
 												 " already specified !", console => true);
 											raise constraint_error;
@@ -10774,8 +10751,7 @@ package body et_project is
 
 										-- test whether submodule instance exists
 										if not exists (module_cursor, submod_name) then
-											log_indentation_reset;
-											log (message_error & "submodule instance " &
+											log (ERROR, "submodule instance " &
 												 enclose_in_quotes (et_general.to_string (submod_name)) &
 												 " does not exist !", console => true);
 											raise constraint_error;
@@ -10801,16 +10777,14 @@ package body et_project is
 
 											-- Raise error if submodule occurs more than once:
 											if not inserted then
-												log_indentation_reset;
-												log (message_error & "submodule " &
+												log (ERROR, "submodule " &
 													enclose_in_quotes (et_general.to_string (submod_name)) &
 													" already specified !", console => true);
 												raise constraint_error;
 											end if;
 
 										else
-											log_indentation_reset;
-											log (message_error & "expect keyword " & enclose_in_quotes (keyword_variant) &
+											log (ERROR, "expect keyword " & enclose_in_quotes (keyword_variant) &
 												 " after instance name !", console => true);
 											raise constraint_error;
 										end if;
@@ -10951,7 +10925,7 @@ package body et_project is
 											net.class := et_pcb.to_net_class_name (f (line,2));
 										else
 											net.class := et_pcb.net_class_name_default;
-											log (message_warning & affected_line (line) & "No net class specified ! Assume default class !");
+											log (text => message_warning & affected_line (line) & "No net class specified ! Assume default class !");
 										end if;
 									elsif kw = keyword_scope then
 										expect_field_count (line, 2);
@@ -11036,8 +11010,7 @@ package body et_project is
 											-- Insert port in port collection of device ports. First make sure it is
 											-- not already in the net segment.
 											if et_schematic.type_ports_device.contains (net_device_ports, net_device_port) then
-												log_indentation_reset;
-												log (message_error & "device " & et_libraries.to_string (net_device_port.device_name) &
+												log (ERROR, "device " & et_libraries.to_string (net_device_port.device_name) &
 													" port " & et_libraries.to_string (net_device_port.port_name) & 
 													" already in net segment !", console => true);
 												raise constraint_error;
@@ -11060,8 +11033,7 @@ package body et_project is
 											-- Insert submodule port in collection of submodule ports. First make sure it is
 											-- not already in the net segment.
 											if et_schematic.type_ports_submodule.contains (net_submodule_ports, net_submodule_port) then
-												log_indentation_reset;
-												log (message_error & "submodule " & to_string (net_submodule_port.module_name) &
+												log (ERROR, "submodule " & to_string (net_submodule_port.module_name) &
 													" port " & et_general.to_string (net_submodule_port.port_name) & 
 													" already in net segment !", console => true);
 												raise constraint_error;
@@ -11087,8 +11059,7 @@ package body et_project is
 											-- Insert netchanger port in collection of netchanger ports. First make sure it is
 											-- not already in the net segment.
 											if et_schematic.type_ports_netchanger.contains (net_netchanger_ports, net_netchanger_port) then
-												log_indentation_reset;
-												log (message_error & "netchanger" & submodules.to_string (net_netchanger_port.index) &
+												log (ERROR, "netchanger" & submodules.to_string (net_netchanger_port.index) &
 													submodules.to_string (net_netchanger_port.port) & " port" & 
 													" already in net segment !", console => true);
 												raise constraint_error;
@@ -12579,7 +12550,7 @@ package body et_project is
 			end if;
 
 			exception when event: others =>
-				log ("file " & file_name & latin_1.space 
+				log (text => "file " & file_name & latin_1.space 
 					& affected_line (line) & to_string (line), console => true);
 				raise;
 			
@@ -12618,7 +12589,7 @@ package body et_project is
 				process		=> get_submodules'access);
 
 			if length (submods) > 0 then
-				log ("submodules/templates ...", log_threshold);
+				log (text => "submodules/templates ...", level => log_threshold);
 				log_indentation_up;
 			
 				-- Query submodules of the parent module (accessed by module_cursor):
@@ -12651,28 +12622,27 @@ package body et_project is
 					submod_variant : type_variant_name.bounded_string; -- fixed_frequency
 				begin -- query_submodules
 					if submod_cursor = type_submodules.no_element then
-						log ("no submodule variants specified", log_threshold + 1);
+						log (text => "no submodule variants specified", level => log_threshold + 1);
 					else
 						-- iterate variants of submodules
 						while submod_cursor /= type_submodules.no_element loop
 							submod_name := key (submod_cursor); -- CLK_GENERATOR
 							submod_variant := element (submod_cursor).variant;
 							
-							log ("submodule instance " & 
+							log (text => "submodule instance " & 
 								 enclose_in_quotes (to_string (submod_name)) &
 								 " variant " & 
 								 enclose_in_quotes (to_variant (submod_variant)),
-								 log_threshold + 2);
+								 level => log_threshold + 2);
 
 							if not exists (module_cursor, submod_name, submod_variant) then
-								log_indentation_reset;
-								log (message_error & "submodule " &
+								log (ERROR, "submodule " &
 									enclose_in_quotes (to_string (submod_name)) &
 									" does not provide assembly variant " &
 									enclose_in_quotes (to_variant (submod_variant)) & " !",
 									console => true);
 
-								log ("Look up section " & section_assembly_variants (2..section_assembly_variants'last) &
+								log (text => "Look up section " & section_assembly_variants (2..section_assembly_variants'last) &
 									 " to fix the issue !");
 								
 								raise constraint_error;
@@ -12685,14 +12655,14 @@ package body et_project is
 				
 			begin -- query_variants
 				if variant_cursor = type_variants.no_element then
-					log ("no variants specified", log_threshold);
+					log (text => "no variants specified", level => log_threshold);
 				else
 					-- iterate assembly variants of parent module
 					while variant_cursor /= type_variants.no_element loop
 						variant_name := key (variant_cursor);
 
 						-- show assembly variant of parent module
-						log ("variant " & enclose_in_quotes (to_variant (variant_name)), log_threshold + 1);
+						log (text => "variant " & enclose_in_quotes (to_variant (variant_name)), level => log_threshold + 1);
 						log_indentation_up;
 
 						-- look up the submodule variants
@@ -12708,7 +12678,7 @@ package body et_project is
 			end;
 			
 		begin -- test_assembly_variants_of_submodules
-			log ("verifying assembly variants of submodules ...", log_threshold);
+			log (text => "verifying assembly variants of submodules ...", level => log_threshold);
 			log_indentation_up;
 
 			query_element (
@@ -12722,14 +12692,14 @@ package body et_project is
 		use ada.directories;
 		
 	begin -- read_module_file
-		log (file_name, log_threshold);
+		log (text => file_name, level => log_threshold);
 		log_indentation_up;
 
 		-- Make sure the module file exists.
 		-- The file is identified by its full path and name.
 		if exists (full_file_name) then
 
-			log ("expanded name: " & full_name (full_file_name), log_threshold + 1);
+			log (text => "expanded name: " & full_name (full_file_name), level => log_threshold + 1);
 			
 			-- Create an empty module named after the module file (omitting extension *.mod).
 			-- So the module names are things like "motor_driver", "templates/clock_generator" or
@@ -12773,7 +12743,7 @@ package body et_project is
 
 				-- As a safety measure the top section must be reached finally.
 				if stack.depth > 1 then 
-					log (message_warning & write_section_stack_not_empty);
+					log (text => message_warning & write_section_stack_not_empty);
 				end if;
 
 				set_input (previous_input);
@@ -12788,13 +12758,12 @@ package body et_project is
 				test_assembly_variants_of_submodules;
 				
 			else
-				log ("module " & enclose_in_quotes (file_name) &
-					 " already loaded -> no need to load anew.", log_threshold);
+				log (text => "module " & enclose_in_quotes (file_name) &
+					 " already loaded -> no need to load anew.", level => log_threshold);
 			end if;
 			
 		else -- module file not found
-			log_indentation_reset;
-			log (message_error & "module file " & enclose_in_quotes (file_name) &
+			log (ERROR, "module file " & enclose_in_quotes (file_name) &
 				 " not found !", console => true);
 			raise constraint_error;
 		end if;
@@ -12902,9 +12871,8 @@ package body et_project is
 
 						-- An instance may exist only once:
 						if not instance_created then
-							log_indentation_reset;
-							log (message_error & "module instance '" 
-									& to_string (instance_name) & "' already exists !", console => true);
+							log (ERROR, "module instance '" 
+								& to_string (instance_name) & "' already exists !", console => true);
 							raise constraint_error;
 						end if;
 
@@ -12943,8 +12911,7 @@ package body et_project is
 
 								-- A module connection may exist only once:
 								if not connection_inserted then
-									log_indentation_reset;
-									log (message_error & "module connection already exists !", console => true);
+									log (ERROR, "module connection already exists !", console => true);
 									raise constraint_error;
 								end if;
 
@@ -12954,26 +12921,22 @@ package body et_project is
 							else
 								-- test length of instance_A/B and purpose A/B. must be greater zero
 								if length (instance_A) = 0 then
-									log_indentation_reset;
-									log (message_error & "instance A not specified !", console => true);
+									log (ERROR, "instance A not specified !", console => true);
 									raise constraint_error;
 								end if;
 
 								if length (purpose_A) = 0 then
-									log_indentation_reset;
-									log (message_error & "purpose A not specified !", console => true);
+									log (ERROR, "purpose A not specified !", console => true);
 									raise constraint_error;
 								end if;						
 
 								if length (instance_B) = 0 then
-									log_indentation_reset;
-									log (message_error & "instance B not specified !", console => true);
+									log (ERROR, "instance B not specified !", console => true);
 									raise constraint_error;
 								end if;
 
 								if length (purpose_B) = 0 then
-									log_indentation_reset;
-									log (message_error & "purpose B not specified !", console => true);
+									log (ERROR, "purpose B not specified !", console => true);
 									raise constraint_error;
 								end if;						
 							end if;
@@ -13027,7 +12990,7 @@ package body et_project is
 					if f (line, 1) = section_keyword then -- section name detected in field 1
 						if f (line, 2) = section_begin then -- section header detected in field 2
 							stack.push (section);
-							log (write_enter_section & to_string (section), log_threshold + 7);
+							log (text => write_enter_section & to_string (section), level => log_threshold + 7);
 							return true;
 							
 						elsif f (line, 2) = section_end then -- section footer detected in field 2
@@ -13045,15 +13008,14 @@ package body et_project is
 							
 							stack.pop;
 							if stack.empty then
-								log (write_top_level_reached, log_threshold + 7);
+								log (text => write_top_level_reached, level => log_threshold + 7);
 							else
-								log (write_return_to_section & to_string (stack.current), log_threshold + 7);
+								log (text => write_return_to_section & to_string (stack.current), level => log_threshold + 7);
 							end if;
 							return true;
 							
 						else
-							log_indentation_reset;
-							log (message_error & write_missing_begin_end, console => true);
+							log (ERROR, write_missing_begin_end, console => true);
 							raise constraint_error;
 						end if;
 						
@@ -13071,7 +13033,7 @@ package body et_project is
 					-- The line contains something else -> the payload data. 
 					-- Temporarily this data is to be stored in corresponding variables.
 
-					log ("line --> " & to_string (line), log_threshold + 7);
+					log (text => "line --> " & to_string (line), level => log_threshold + 7);
 					
 					case stack.current is
 
@@ -13171,7 +13133,7 @@ package body et_project is
 				end if;
 
 				exception when event: others =>
-					log ("file " & file_name & latin_1.space & affected_line (line) 
+					log (text => "file " & file_name & latin_1.space & affected_line (line) 
 						 & to_string (line), console => true);
 					raise;
 				
@@ -13179,7 +13141,7 @@ package body et_project is
 			
 		begin -- read_conf_file
 			-- write name of configuration file
-			log (file_name, log_threshold + 1);
+			log (text => file_name, level => log_threshold + 1);
 			log_indentation_up;
 
 			-- open rig configuration file
@@ -13218,7 +13180,7 @@ package body et_project is
 
 			-- As a safety measure the top section must be reached:
 			if stack.depth > 1 then 
-				log (message_warning & write_section_stack_not_empty);
+				log (WARNING, write_section_stack_not_empty);
 			end if;
 
 			log_indentation_down;
@@ -13232,8 +13194,8 @@ package body et_project is
 		end read_conf_file;
 		
 	begin -- open_project
-		log (row_separator_double, log_threshold);
-		log ("opening project " & to_string (project_name) & " ...", log_threshold, console => true);
+		log (text => row_separator_double, level => log_threshold);
+		log (text => "opening project " & to_string (project_name) & " ...", level => log_threshold, console => true);
 		log_indentation_up;
 		
 		-- If the given project directory exists, enter it. Otherwise error message and abort.
@@ -13242,35 +13204,34 @@ package body et_project is
 			-- enter the project directory
 			set_directory (to_string (project_name));
 
-			--log ("current dir " & current_directory, log_threshold + 1);
+			--log (text => "current dir " & current_directory, level => log_threshold + 1);
 			
-			log ("looking for module files ...", log_threshold + 1);
+			log (text => "looking for module files ...", level => log_threshold + 1);
 			log_indentation_up;
 			start_search (module_file_search, current_directory, module_file_name_extension_asterisk, module_file_filter);
 			if more_entries (module_file_search) then
 				search (current_directory, module_file_name_extension_asterisk, module_file_filter, read_module_file_pre'access);
 			else
-				log (message_warning & "No modules found !"); -- CS: write implications !
+				log (WARNING, "No modules found !"); -- CS: write implications !
 			end if;
 			end_search (module_file_search);
 			log_indentation_down;
 			
-			log ("looking for rig configuration files ...", log_threshold + 1);
+			log (text => "looking for rig configuration files ...", level => log_threshold + 1);
 			log_indentation_up;
 			start_search (conf_file_search, current_directory, rig_configuration_file_extension_asterisk, conf_file_filter);
 			if more_entries (conf_file_search) then
 				search (current_directory, rig_configuration_file_extension_asterisk, conf_file_filter, read_conf_file'access);
 			else
-				log (message_warning & "No rig configuration files found !"); -- CS: write implications !
+				log (WARNING, "No rig configuration files found !"); -- CS: write implications !
 			end if;
 			end_search (conf_file_search);
 			log_indentation_down;
 			
 		else -- project directory does not exist
-			log_indentation_reset;
-			log (message_error & "Native project " & to_string (project_name) 
+			log (ERROR, "Native project " & to_string (project_name) 
 				 & " does not exist !", console => true);
-			--log ("Example to open the native project by specifying the project directory:", console => true);			log ("Example to open the native project by specifying the project directory:", console => true);
+			--log (text => "Example to open the native project by specifying the project directory:", console => true);			log ("Example to open the native project by specifying the project directory:", console => true);
 			--log (system_name_cmd_line & "openetample to open the native project by specifying the project directory:", console => true);
 			raise constraint_error;
 		end if;
@@ -13338,15 +13299,15 @@ package body et_project is
 		end save_package;
 		
 	begin -- save_libraries
-		log ("saving libraries ...", log_threshold);
+		log (text => "saving libraries ...", level => log_threshold);
 		log_indentation_up;
 
-		log ("devices ...", log_threshold + 1);
+		log (text => "devices ...", level => log_threshold + 1);
 		log_indentation_up;
 		iterate (et_libraries.devices, save_device'access);
 		log_indentation_down;
 		
-		log ("packages ...", log_threshold + 1);
+		log (text => "packages ...", level => log_threshold + 1);
 		log_indentation_up;
 		iterate (et_pcb.packages, save_package'access);
 		log_indentation_down;
@@ -13394,7 +13355,7 @@ package body et_project is
 
 			-- Only those modules inside the project will be saved in the new project:
 			if in_project_directory then
-				log ("saving module " & to_string (module_name), log_threshold + 1);
+				log (text => "saving module " & to_string (module_name), level => log_threshold + 1);
 				
 				log_indentation_up;
 				
@@ -13423,7 +13384,7 @@ package body et_project is
 			rig_name : type_rig_configuration_file_name.bounded_string := key (rig_cursor);
 		begin
 			log_indentation_up;
-			log ("rig configuration " & to_string (rig_name), log_threshold + 1);
+			log (text => "rig configuration " & to_string (rig_name), level => log_threshold + 1);
 			log_indentation_up;
 			
 			save_rig_configuration (
@@ -13438,12 +13399,12 @@ package body et_project is
 		end query_rig_configuration;
 		
 	begin -- save_project
-		log (row_separator_double, log_threshold);
-		log ("saving project as " & to_string (destination) & " ...", log_threshold, console => true);
+		log (text => row_separator_double, level => log_threshold);
+		log (text => "saving project as " & to_string (destination) & " ...", level => log_threshold, console => true);
 		log_indentation_up;
 
-		log ("path " & to_string (path));
-		log ("name " & to_string (name));
+		log (text => "path " & to_string (path));
+		log (text => "name " & to_string (name));
 		
 		create_project_directory_bare (
 			project_name	=> name, -- blood_sample_analyzer
@@ -13527,7 +13488,7 @@ package body et_project is
 		exception
 			when event: others =>
 				log_indentation_reset;
-				log (ada.exceptions.exception_information (event), console => true);
+				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;
 		
 	end exists;
@@ -13631,7 +13592,7 @@ package body et_project is
 			-- convert the submodule path to a submodule name
 			submod_name := to_module_name (remove_extension (to_string (submod_path)));
 
-			--et_string_processing.log ("submod name " & to_string (submod_name));
+			--et_string_processing.log (text => "submod name " & to_string (submod_name));
 
 			-- get a cursor to the submodule file
 			submod_cursor := locate_module (submod_name);

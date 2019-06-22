@@ -97,7 +97,7 @@ package body et_kicad is
 		--use type_submodule_name;
 	begin
 		-- CS: limit path length !
--- 		log ("append path_to_submodule " 
+-- 		log (text => "append path_to_submodule " 
 -- 			& base_name (type_submodule_name.to_string (submodule)), level => 1);
 
 		type_path_to_submodule.append (path_to_sheet, sheet);
@@ -183,31 +183,31 @@ package body et_kicad is
 		log_indentation_up;
 		
 		-- unit name
-		log ("properties of unit " 
-			& et_libraries.to_string (type_units_schematic.key (unit)), log_threshold);
+		log (text => "properties of unit " 
+			& et_libraries.to_string (type_units_schematic.key (unit)), level => log_threshold);
 
 		log_indentation_up;
 		
 		--alternative representation
-		log ("alternative (deMorgan) representation " 
+		log (text => "alternative (deMorgan) representation " 
 			 & to_lower (type_de_morgan_representation'image (type_units_schematic.element (unit).alt_repres)),
-			 log_threshold);
+			 level => log_threshold);
 
 		-- timestamp
-		log ("timestamp " 
-			& string (type_units_schematic.element (unit).timestamp), log_threshold);
+		log (text => "timestamp " 
+			& string (type_units_schematic.element (unit).timestamp), level => log_threshold);
 
 		-- position
-		log (to_string (position => type_units_schematic.element (unit).position), log_threshold);
+		log (text => to_string (position => type_units_schematic.element (unit).position), level => log_threshold);
 
 		-- orientation or angle
-		log (to_string (type_units_schematic.element (unit).rotation), log_threshold);
+		log (text => to_string (type_units_schematic.element (unit).rotation), level => log_threshold);
 
 		-- mirror style
-		log (et_schematic.to_string (type_units_schematic.element (unit).mirror, verbose => true), log_threshold);
+		log (text => et_schematic.to_string (type_units_schematic.element (unit).mirror, verbose => true), level => log_threshold);
 
 		-- placeholders
-		log ("placeholders", log_threshold + 1);
+		log (text => "placeholders", level => log_threshold + 1);
 		log_indentation_up;
 
 			-- reference
@@ -430,33 +430,37 @@ package body et_kicad is
 		use et_libraries;
 	begin
 		-- reference (serves as key in list of components)
-		log ("component " & to_string (type_components_schematic.key (component)) & " properties", log_threshold);
+		log (text => "component " & to_string (type_components_schematic.key (component)) & " properties",
+			 level => log_threshold);
 
 		log_indentation_up;
 		
 		-- CS: library file name
 		-- name in library
-		log ("name in library "
-			& to_string (type_components_schematic.element (component).generic_name), log_threshold);
+		log (text => "name in library "
+			 & to_string (type_components_schematic.element (component).generic_name), 
+			level => log_threshold);
 		
 		-- value
-		log ("value "
-			& to_string (type_components_schematic.element (component).value), log_threshold);
+		log (text => "value "
+			& to_string (type_components_schematic.element (component).value), level => log_threshold);
 
 		-- appearance
-		log (to_string (type_components_schematic.element(component).appearance, verbose => true), log_threshold);
+		log (text => to_string (type_components_schematic.element(component).appearance, verbose => true),
+			 level => log_threshold);
 
 		-- depending on the component appearance there is more to report:
 		case type_components_schematic.element(component).appearance is
 			when sch_pcb =>
 
 -- 				-- package
--- 				log ("package " 
--- 					& to_string (type_components.element (component).packge), log_threshold);
+-- 				log (text => "package " 
+-- 					& to_string (type_components.element (component).packge), level => log_threshold);
 
 				-- datasheet
-				log ("datasheet "
-					& type_component_datasheet.to_string (type_components_schematic.element (component).datasheet), log_threshold);
+				log (text => "datasheet "
+					 & type_component_datasheet.to_string (type_components_schematic.element (component).datasheet),
+					level => log_threshold);
 
 			when others => null; -- CS should never happen as virtual components do not have a package
 		end case;
@@ -539,7 +543,7 @@ package body et_kicad is
 		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
 	begin
 		log_indentation_up;
-		log ("calculating the point nearest to drawing origin ...", log_threshold + 1);
+		log (text => "calculating the point nearest to drawing origin ...", level => log_threshold + 1);
 
 		-- init point_1 as the farest possible point from drawing origin
 		set_x (point_1, type_distance_xy'last);
@@ -553,7 +557,7 @@ package body et_kicad is
 			-- if closer to orign than point_1 keep start point
 			point_2	:= type_point (element (segment).coordinates_start);
 			if distance (point_2, zero) < distance (point_1, zero) then
-				log (" start", log_threshold + 2);
+				log (text => " start", level => log_threshold + 2);
 				point_1 := point_2;
 			end if;
 
@@ -561,7 +565,7 @@ package body et_kicad is
 			-- if closer to orign than point_1 keep end point
 			point_2	:= type_point (element (segment).coordinates_end);
 			if distance (point_2, zero) < distance (point_1, zero) then
-				log (" end", log_threshold + 2);
+				log (text => " end", level => log_threshold + 2);
 				point_1 := point_2;
 			end if;
 			
@@ -652,7 +656,7 @@ package body et_kicad is
 
 			-- In case the unit has no ports, abort.
 			if port_cursor = type_ports_library.no_element then
-				log (message_warning & "generic unit " 
+				log (WARNING, "generic unit " 
 						& et_libraries.to_string (unit_name => type_units_library.key (unit_cursor)) 
 						& " has no ports !");
 					--console => true);
@@ -737,9 +741,9 @@ package body et_kicad is
 	begin
 		log (ERROR, affected_line (line) & "invalid field !", console => true);
 
-		log (to_string (line), console => true);
+		log (text => to_string (line), console => true);
 
-		log ("Field indexes must be in range" 
+		log (text => "Field indexes must be in range" 
 			 & type_component_field_id'image (type_component_field_id'first)
 			 & " .." 
 			 & type_component_field_id'image (type_component_field_id'last)
@@ -1150,12 +1154,12 @@ package body et_kicad is
 		use et_libraries;
 		use type_device_name_prefix;
 	begin
-		--log (et_schematic.to_string (reference));
+		--log (text => et_schematic.to_string (reference));
 		if et_libraries.prefix (reference) = power_flag_prefix then
-			--log ("power flag on");
+			--log (text => "power flag on");
 			return YES;
 		else
-			--log ("power flag off");
+			--log (text => "power flag off");
 			return NO;
 		end if;
 	end to_power_flag;
@@ -1180,7 +1184,7 @@ package body et_kicad is
 				
 		-- Evaluate position of invalid character.
 		if invalid_character_position > 0 then
-			log (message_warning & "invalid character in generic component name '" 
+			log (WARNING, "invalid character in generic component name '" 
 				& to_string (name) & "' at position" & natural'image (invalid_character_position));
 		end if;
 	end check_generic_name_characters;
@@ -1350,17 +1354,17 @@ package body et_kicad is
 			begin
 				log_indentation_up;
 				
-				log ("units interchangeable", level => log_threshold + 2);
+				log (text => "units interchangeable", level => log_threshold + 2);
 				log_indentation_up;
 
 				i := type_symbol_interchangeable'value(swap_in);
 				
 				case i is
 					when L =>
-						log ("no", level => log_threshold + 2);
+						log (text => "no", level => log_threshold + 2);
 						s := 0; -- no swapping allowed
 					when F =>
-						log ("yes", level => log_threshold + 2);
+						log (text => "yes", level => log_threshold + 2);
 						s := 1; -- swapping allowed at this level
 				end case;
 
@@ -1379,18 +1383,18 @@ package body et_kicad is
 			begin
 				log_indentation_up;
 				
-				log ("pin/pad names", level => log_threshold + 2);
+				log (text => "pin/pad names", level => log_threshold + 2);
 				log_indentation_up;
 				
 				v_in := type_show_pin_number'value (vis_in);
 				
 				case v_in is 
 					when Y => 
-						log ("visible", level => log_threshold + 2);
+						log (text => "visible", level => log_threshold + 2);
 						v_out := YES;
 						
 					when N => 
-						log ("invisible", level => log_threshold + 2);
+						log (text => "invisible", level => log_threshold + 2);
 						v_out := NO;
 				end case;
 
@@ -1410,17 +1414,17 @@ package body et_kicad is
 			begin
 				log_indentation_up;
 				
-				log ("port names", level => log_threshold + 2);
+				log (text => "port names", level => log_threshold + 2);
 				log_indentation_up;
 				
 				v_in := type_show_pin_name'value (vis_in);
 				
 				case v_in is 
 					when Y => 
-						log ("visible", level => log_threshold + 2);
+						log (text => "visible", level => log_threshold + 2);
 						v_out := YES;
 					when N => 
-						log ("invisible", level => log_threshold + 2);
+						log (text => "invisible", level => log_threshold + 2);
 						v_out := NO;
 				end case;
 
@@ -1888,7 +1892,7 @@ package body et_kicad is
 				-- port name offset
 				port.port_name_offset := tmp_port_name_offset;
 
-				--log (text => et_coordinates.to_string (point => port.coordinates), level => 1);
+				--log (text => text => et_coordinates.to_string (point => port.coordinates), level => 1);
 
 				-- CS: log other port properties
 
@@ -2006,17 +2010,17 @@ package body et_kicad is
 				log_indentation_up;
 
 				-- write precheck preamble
-				log ("component " & to_string (tmp_component_name) & " prechecking fields ...", level => log_threshold);
+				log (text => "component " & to_string (tmp_component_name) & " prechecking fields ...", level => log_threshold);
 				log_indentation_up;
 
-				log ("value", level => log_threshold + 1);
+				log (text => "value", level => log_threshold + 1);
 				if not field_value_found then
 					missing_field (field_value.meaning);
 				else
 					-- KiCad insists that the value contains something.
 					-- So the first choice is to set value like the generic component name:
 					if content (field_value) /= to_string (strip_tilde (tmp_component_name)) then
-						log (message_warning & "default value " 
+						log (WARNING, "default value " 
 							& content (field_value) & " differs from name "
 							& to_string (tmp_component_name) & " !");
 					end if;
@@ -2033,7 +2037,7 @@ package body et_kicad is
 						-- against the default character set for prefixes as specified in et_libraries.
 						-- Afterward we validate the prefix. The prefixes for real components are specified
 						-- in the et configuration file (see conventions).						
-						log ("prefix", level => log_threshold + 1);
+						log (text => "prefix", level => log_threshold + 1);
 						if not field_prefix_found then
 							missing_field (field_reference.meaning);
 						else
@@ -2044,7 +2048,7 @@ package body et_kicad is
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_reference.size);
 						end if;
 
-						log ("package/footprint", level => log_threshold + 1);
+						log (text => "package/footprint", level => log_threshold + 1);
 						if not field_package_found then
 							missing_field (field_package.meaning);
 						else
@@ -2058,7 +2062,7 @@ package body et_kicad is
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_package.size);
 						end if;
 						
-						log ("datasheet", level => log_threshold + 1);
+						log (text => "datasheet", level => log_threshold + 1);
 						if not field_datasheet_found then
 							missing_field (field_datasheet.meaning);
 						else
@@ -2071,7 +2075,7 @@ package body et_kicad is
 						-- against the Kicad specific character set for prefixes. see et_kicad.ads.
 						-- Afterward we validate the prefix. The prefixes for virtual components
 						-- are KiCad specific.
-						log ("prefix", level => log_threshold + 1);
+						log (text => "prefix", level => log_threshold + 1);
 						if not field_prefix_found then
 							missing_field (field_reference.meaning);
 						else
@@ -2182,7 +2186,7 @@ package body et_kicad is
 						log (ERROR, "component " & to_string (tmp_component_name) & " invalid !",
 							 console => true);
 						-- CS: provide details about the problem (line number, ...)
-						log (ada.exceptions.exception_message (event));
+						log (text => ada.exceptions.exception_message (event));
 						raise;
 						
 			end insert_component;
@@ -2215,7 +2219,7 @@ package body et_kicad is
 				exception
 					when event:
 						others =>
-							log (ada.exceptions.exception_message (event));
+							log (text => ada.exceptions.exception_message (event));
 							raise;
 
 			end set_unit_cursor;
@@ -2275,7 +2279,7 @@ package body et_kicad is
 				exception
 					when event:
 						others =>
-							log (ada.exceptions.exception_message (event));
+							log (text => ada.exceptions.exception_message (event));
 							raise;
 
 			end add_unit;
@@ -2404,7 +2408,7 @@ package body et_kicad is
 				exception
 					when event:
 						others =>
-							log (ada.exceptions.exception_message (event));
+							log (text => ada.exceptions.exception_message (event));
 							raise;
 
 			end add_symbol_element;
@@ -2472,7 +2476,7 @@ package body et_kicad is
 				exception
 					when event:
 						others =>
-							log (ada.exceptions.exception_message (event));
+							log (text => ada.exceptions.exception_message (event));
 							raise;
 
 			end set_text_placeholder_properties;
@@ -2493,9 +2497,9 @@ package body et_kicad is
 					log_indentation_up;
 				
 					if unit = 0 then
-						log ("scope: common to all units", log_threshold + 1);
+						log (text => "scope: common to all units", level => log_threshold + 1);
 					else
-						log ("scope: unit" & type_unit_id'image (unit), log_threshold + 1);
+						log (text => "scope: unit" & type_unit_id'image (unit), level => log_threshold + 1);
 					end if;
 					
 					log_indentation_down;
@@ -2504,16 +2508,16 @@ package body et_kicad is
 				--draw_object : constant string (1..12) := "draw object ";
 				
 			begin -- read_draw_object
-				--log ("draw object", level => log_threshold + 1);
+				--log (text => "draw object", level => log_threshold + 1);
 				log_indentation_up;
 
 				-- At a certain log level we report the bare line of a draw object as it is:
-				--log (to_string (line), log_threshold + 2);
+				--log (text => to_string (line), level => log_threshold + 2);
 				
 				case type_library_draw'value (et_string_processing.field (line,1)) is
 					when P => -- polyline
-						--log (draw_object & "polyline", log_threshold);
-						log ("polyline", log_threshold);
+						--log (text => draw_object & "polyline", level => log_threshold);
+						log (text => "polyline", level => log_threshold);
 						-- A polyline is defined by a string like "P 3 0 1 10 0 0 100 50 70 0 N"
 						-- field meaning:
 						--  #2 : number of bends (incl. start and end points) (3)
@@ -2525,7 +2529,7 @@ package body et_kicad is
 						-- #10..11  : end point (x/y) (50/70)
 						-- last field : fill style N/F/f no fill/foreground/background
 
-						log (to_string (line), log_threshold);
+						log (text => to_string (line), level => log_threshold);
 						-- CS: output properties in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (et_string_processing.field (line,3));
@@ -2538,8 +2542,8 @@ package body et_kicad is
 						add_symbol_element (polyline);
 						
 					when S => -- rectangle
-						--log (draw_object & "rectangle", log_threshold);
-						log ("rectangle", log_threshold);
+						--log (text => draw_object & "rectangle", level => log_threshold);
+						log (text => "rectangle", level => log_threshold);
 						-- A rectangle is defined by a string like "S -40 -100 40 100 0 1 10 N"
 						-- field meaning;
 						-- #2..5 : start point -40/-100   end point 40/100
@@ -2548,7 +2552,7 @@ package body et_kicad is
 						-- #8 : line width
 						-- #9 : fill style N/F/f no fill/foreground/background
 
-						log (to_string (line), log_threshold);
+						log (text => to_string (line), level => log_threshold);
 						-- CS: output properites in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (et_string_processing.field (line,6));
@@ -2561,8 +2565,8 @@ package body et_kicad is
 						add_symbol_element (rectangle);
 						
 					when C => -- circle
-						--log (draw_object & "circle", log_threshold);
-						log ("circle", log_threshold);
+						--log (text => draw_object & "circle", level => log_threshold);
+						log (text => "circle", level => log_threshold);
 						-- A circle is defined by a string like "C 0 0 112 0 1 23 N"
 						-- field meaning:
 						--  #2..3 : center (x/y)
@@ -2572,7 +2576,7 @@ package body et_kicad is
 						--  #7 : line width (23)
 						--  #8 : fill style N/F/f no fill/foreground/background
 
-						log (to_string (line), log_threshold);
+						log (text => to_string (line), level => log_threshold);
 						-- CS: output properites in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (et_string_processing.field (line,5));
@@ -2585,8 +2589,8 @@ package body et_kicad is
 						add_symbol_element (circle);
 						
 					when A => -- arc
-						--log (draw_object & "arc", log_threshold);
-						log ("arc", log_threshold);
+						--log (text => draw_object & "arc", level => log_threshold);
+						log (text => "arc", level => log_threshold);
 						-- An arc is defined by a string like "A 150 0 150 1800 900 0 1 33 N 0 0 150 150"
 						-- NOTE: kicad bug: multiply all y values by -1
 						-- field meaning:
@@ -2601,7 +2605,7 @@ package body et_kicad is
 						-- #11..12 : start point (x/y)
 						-- #13..14 : end point (x/y)
 
-						log (to_string (line), log_threshold);
+						log (text => to_string (line), level => log_threshold);
 						-- CS: output properites in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (et_string_processing.field (line,7));
@@ -2614,8 +2618,8 @@ package body et_kicad is
 						add_symbol_element (arc);
 
 					when T => -- text
-						--log (draw_object & "text", log_threshold);
-						log ("text", log_threshold);
+						--log (text => draw_object & "text", level => log_threshold);
+						log (text => "text", level => log_threshold);
 						-- A text is defined by a string like "T 0 0 300 60 0 0 0 leuchtdiode Normal 0 C C"
 						-- Space characters whitin the actual text are replaced by tilde as in this example:
 						-- "T 0 -100 0 60 0 1 0 gate~C Normal 0 C C"
@@ -2632,7 +2636,7 @@ package body et_kicad is
 						-- #12 : alignment left/center/right L/C/R
 						-- #13 : alignment top/center/bottom T/C/B
 
-						log (to_string (line), log_threshold);
+						log (text => to_string (line), level => log_threshold);
 						-- CS: output properites in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (et_string_processing.field (line,7));
@@ -2645,8 +2649,8 @@ package body et_kicad is
 						add_symbol_element (text);
 						
 					when X => -- port
-						--log (draw_object & "port", log_threshold);
-						log ("port", log_threshold);
+						--log (text => draw_object & "port", level => log_threshold);
+						log (text => "port", level => log_threshold);
 						-- A port is defined by a string like "X ~ 1 0 150 52 D 51 50 1 1 P"
 						-- field meaning:
 						--  #2 : port name (~)
@@ -2661,7 +2665,7 @@ package body et_kicad is
 						-- #12 : electrical type (direction), see et_kicad.ads for more
 						-- #13 : optional field: pin style, see et_kicad.ads for more
 
-						log (to_string (line), log_threshold);
+						log (text => to_string (line), level => log_threshold);
 						-- CS: output properties in a human readable form instead.
 						
 						tmp_unit_id := to_unit_id (et_string_processing.field (line,10));
@@ -2677,7 +2681,7 @@ package body et_kicad is
 						-- When adding a port, tmp_unit_id is always greater zero.
 						if tmp_unit_id > 0 then
 							-- add unit specific port to unit
-							--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);
+							--log (text => "unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);
 							add_symbol_element (port);
 						else 
 							-- The unit id changes from 0 to tmp_units_total + 1 (one notch above the total number) :
@@ -2692,7 +2696,7 @@ package body et_kicad is
 								null;
 							end if;
 							-- insert the port in the extra unit
-							--log ("unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);						
+							--log (text => "unit id " & type_unit_id'image (tmp_unit_id) , level => log_threshold);						
 							add_symbol_element (port);
 						end if;
 				end case;
@@ -2726,17 +2730,17 @@ package body et_kicad is
 					exception
 						when event:
 							others =>
-								log (ada.exceptions.exception_message (event));
+								log (text => ada.exceptions.exception_message (event));
 								raise;
 
 				end do_it;
 				
 			begin -- add_footprint
-	-- 			log ("footpint/package filter", level => log_threshold + 1);
+	-- 			log (text => "footpint/package filter", level => log_threshold + 1);
 				log_indentation_up;
 
 				fp := type_package_proposal.to_bounded_string (et_string_processing.field (line,1));
-				log (type_package_proposal.to_string (fp), log_threshold);
+				log (text => type_package_proposal.to_string (fp), level => log_threshold);
 
 				do_it;
 				
@@ -2770,7 +2774,7 @@ package body et_kicad is
 						if strip_quotes (et_string_processing.field (line,2)) = type_device_name_prefix.to_string (tmp_prefix) then
 							null; -- fine
 						else
-							log (message_warning & affected_line (line) & ": prefix vs. reference mismatch !");
+							log (WARNING, affected_line (line) & ": prefix vs. reference mismatch !");
 							-- CS: better raise constraint_error
 						end if;
 
@@ -2873,7 +2877,7 @@ package body et_kicad is
 												-- to its final destination:
 												terminal_port_map => tmp_terminal_port_map)); -- H4/GPIO2
 
-										log (to_string (tmp_variant_name), log_threshold + 2); 
+										log (text => to_string (tmp_variant_name), level => log_threshold + 2); 
 									
 										-- Assign package variant to component
 										component.variants := tmp_variants;
@@ -2891,7 +2895,7 @@ package body et_kicad is
 				
 			begin -- build_package_variant
 				log_indentation_up;
-				log ("building default package variant ...", log_threshold + 1);
+				log (text => "building default package variant ...", level => log_threshold + 1);
 				log_indentation_up;
 				
 				type_libraries.update_element ( 
@@ -2905,7 +2909,7 @@ package body et_kicad is
 				exception
 					when event:
 						others =>
-							log (ada.exceptions.exception_message (event));
+							log (text => ada.exceptions.exception_message (event));
 							raise;
 
 			end build_package_variant;
@@ -2915,7 +2919,7 @@ package body et_kicad is
 		begin -- read_library
 			log_indentation_up;
 			
-			log ("components", log_threshold + 1);
+			log (text => "components", level => log_threshold + 1);
 			log_indentation_up;
 			
 			while not end_of_file loop
@@ -2964,8 +2968,8 @@ package body et_kicad is
 									characters	=> component_generic_name_characters_lib);
 								
 								-- for the log:
-								--log (field (line,2), log_threshold + 1); -- 74LS00
-								log (to_string (tmp_component_name), log_threshold + 1); -- 74LS00
+								--log (text => field (line,2), level => log_threshold + 1); -- 74LS00
+								log (text => to_string (tmp_component_name), level => log_threshold + 1); -- 74LS00
 
 								-- From the header we extract some basic information about the component:
 								
@@ -2991,7 +2995,7 @@ package body et_kicad is
 
 								-- The unknown field #4 is always a zero
 								if et_string_processing.field (line, 4) /= "0" then
-									log (message_warning & "expect 0 in field #4 !");
+									log (WARNING, "expect 0 in field #4 !");
 								end if;
 								
 								tmp_port_name_offset := mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false); -- relevant for supply pins only
@@ -3003,7 +3007,7 @@ package body et_kicad is
 								tmp_units_total := type_units_total'value (et_string_processing.field (line,8));
 								if tmp_units_total > 1 then
 									log_indentation_up;
-									log ("with" & type_units_total'image (tmp_units_total) & " units", log_threshold + 2);
+									log (text => "with" & type_units_total'image (tmp_units_total) & " units", level => log_threshold + 2);
 
 									-- From the "interchangeable" flag we set the component wide swap level. It applies for 
 									-- all units of the component (except extra units):
@@ -3072,8 +3076,8 @@ package body et_kicad is
 											create_units;
 											
 											active_section := footprints;
-											--log ("footprint/package filter begin", level => log_threshold + 1);
-											log ("footprint/package filter", level => log_threshold + 2);
+											--log (text => "footprint/package filter begin", level => log_threshold + 1);
+											log (text => "footprint/package filter", level => log_threshold + 2);
 
 										elsif et_string_processing.field (line,1) = et_kicad.draw then
 
@@ -3088,7 +3092,7 @@ package body et_kicad is
 											create_units;
 
 											active_section := draw;
-											log ("draw begin", level => log_threshold + 2);
+											log (text => "draw begin", level => log_threshold + 2);
 										else
 											-- Read the text fields in a set of temporarily variables field_prefix, field_value, ...
 											read_field (line, log_threshold + 2);
@@ -3112,7 +3116,7 @@ package body et_kicad is
 										-- that this subsection has been processed.
 										if et_string_processing.field (line,1) = et_kicad.endfplist then
 											active_section := none;
-											--log ("footprint/package filter end", level => log_threshold + 1);
+											--log (text => "footprint/package filter end", level => log_threshold + 1);
 										else
 											-- Process lines:
 											add_footprint (line, log_threshold + 2);
@@ -3127,7 +3131,7 @@ package body et_kicad is
 										-- thate this subsection has been processed.
 										if et_string_processing.field (line,1) = et_kicad.enddraw then
 											active_section := none;
-											log ("draw end", level => log_threshold + 2);
+											log (text => "draw end", level => log_threshold + 2);
 										else
 											-- Read draw objects
 											read_draw_object (line, log_threshold + 2);
@@ -3139,7 +3143,7 @@ package body et_kicad is
 										-- NOTE #2: the active section "fields" is not set here but when the fields are read (see NOTE #1)
 										if et_string_processing.field (line,1) = et_kicad.draw then
 											active_section := draw;
-											log ("draw begin", level => log_threshold + 2);
+											log (text => "draw begin", level => log_threshold + 2);
 										end if;
 
 								end case; -- active_section
@@ -3160,7 +3164,7 @@ package body et_kicad is
 				when event:
 					others =>
 						log (ERROR, affected_line (line) & to_string (line), console => true);
-						log (ada.exceptions.exception_message (event));
+						log (text => ada.exceptions.exception_message (event));
 						raise;
 		end read_library;
 
@@ -3168,7 +3172,7 @@ package body et_kicad is
 		library_handle : ada.text_io.file_type;
 		
 	begin -- read_components_libraries
-		log ("reading component libraries ...", log_threshold);
+		log (text => "reading component libraries ...", level => log_threshold);
 		log_indentation_up;
 
 		-- 	The tmp_component_libraries are empty (created on reading the project file) and must be filled.
@@ -3185,7 +3189,7 @@ package body et_kicad is
 					while type_libraries."/=" (lib_cursor, type_libraries.no_element) loop
 
 						-- log library file name
-						log (to_string (type_libraries.key (lib_cursor)), log_threshold + 1);
+						log (text => to_string (type_libraries.key (lib_cursor)), level => log_threshold + 1);
 						
 						-- open the same-named file and read it
 						open (
@@ -3204,7 +3208,7 @@ package body et_kicad is
 					end loop;
 					
 				else
-					log (message_warning & "no component libraries defined in project file !");
+					log (WARNING, "no component libraries defined in project file !");
 				end if;
 
 				
@@ -3219,7 +3223,7 @@ package body et_kicad is
 					while type_libraries."/=" (lib_cursor, type_libraries.no_element) loop
 
 						-- log library file name
-						log (to_string (type_libraries.key (lib_cursor)), log_threshold + 1);
+						log (text => to_string (type_libraries.key (lib_cursor)), level => log_threshold + 1);
 						
 						-- open the same-named file and read it
 						open (
@@ -3238,7 +3242,7 @@ package body et_kicad is
 					end loop;
 					
 				else
-					log (message_warning & "no component libraries defined !");
+					log (WARNING, "no component libraries defined !");
 				end if;
 
 				
@@ -3295,7 +3299,7 @@ package body et_kicad is
 				new_variant : type_component_variant;
 			
 			begin -- query_variants
-				log ("querying package variants ...", log_threshold + 2);
+				log (text => "querying package variants ...", level => log_threshold + 2);
 				log_indentation_up;
 
 				-- Loop through package variants:
@@ -3312,9 +3316,9 @@ package body et_kicad is
 							containing_directory	=> et_libraries.to_string (full_package_library_name),
 							name					=> et_libraries.to_string (package_name))) then
 						
-						log ("variant " 
+						log (text => "variant " 
 							& to_string (package_variant => key (variant_cursor)) 
-							& " used", log_threshold + 1);
+							& " used", level => log_threshold + 1);
 
 						variant := key (variant_cursor);
 						exit; -- no further search required
@@ -3329,7 +3333,7 @@ package body et_kicad is
 					-- Package variant not defined in library. Make sure
 					-- the terminal_port_map (there is only one) can be applied 
 					-- on this package variant.
-					log ("unknown variant found. validating ...", log_threshold + 3);
+					log (text => "unknown variant found. validating ...", level => log_threshold + 3);
 					log_indentation_up;
 
 					-- Set variant cursor to default variant. Later the terminal_port_map is 
@@ -3346,7 +3350,7 @@ package body et_kicad is
 						-- the given package name and the same terminal_port_map as the default variant.
 						-- A default package variant is always available.
 
-						log ("updating library ...", log_threshold + 4);
+						log (text => "updating library ...", level => log_threshold + 4);
 
 						-- build the new package variant
 						new_variant := (
@@ -3386,7 +3390,7 @@ package body et_kicad is
 			end query_variants;
 			
 		begin -- locate_component
-			log ("locating generic component in library ...", log_threshold + 1);
+			log (text => "locating generic component in library ...", level => log_threshold + 1);
 			log_indentation_up;
 
 			-- Locate the component in the library by its generic name.
@@ -3415,7 +3419,7 @@ package body et_kicad is
 		end locate_component;
 		
 	begin -- to_package_variant
-		log ("validating/making package variant ...", log_threshold);
+		log (text => "validating/making package variant ...", level => log_threshold);
 		log_indentation_up;
 
 		-- Compose the full name of the package library:
@@ -3475,7 +3479,7 @@ package body et_kicad is
 				name	: in type_net_name.bounded_string;
 				net		: in out type_net) is
 			begin
-				log ("strand of net " & et_general.to_string (name), level => log_threshold + 2);
+				log (text => "strand of net " & et_general.to_string (name), level => log_threshold + 2);
 				
 				if net_created then -- net has just been created
 					net.scope := element (strand).scope; -- set scope of net
@@ -3483,7 +3487,7 @@ package body et_kicad is
 
 				if log_level >= log_threshold + 2 then
 					log_indentation_up;
-					log ("strand at " & to_string (
+					log (text => "strand at " & to_string (
 						position => element (strand).position, scope => kicad_coordinates.MODULE));
 					log_indentation_down;
 				end if;
@@ -3519,7 +3523,7 @@ package body et_kicad is
 
 					-- Output a warning if strand has no name.
 					if anonymous (element (strand).name) then
-						log (message_warning & "net " & et_general.to_string (element (strand).name) 
+						log (WARNING, "net " & et_general.to_string (element (strand).name) 
 							& " at" & to_string (
 								position => element (strand).position, scope => kicad_coordinates.MODULE)
 							& " has no dedicated name !");
@@ -3857,9 +3861,9 @@ package body et_kicad is
 			if net.available then
 				log_indentation_up;
 
-				log ("probing hierarchic net " & et_general.to_string (net.name) 
+				log (text => "probing hierarchic net " & et_general.to_string (net.name) 
 						& " in sheet " & to_string (net.path) & " ...",
-					log_threshold + 2);
+					level => log_threshold + 2);
 				
 				while h_strand /= type_strands.no_element loop
 					--if et_schematic."=" (element (h_strand).scope, et_schematic.hierarchic) then
@@ -3868,16 +3872,18 @@ package body et_kicad is
 							if element (h_strand).name = net.name then
 								hierarchic_net_found := true;
 
-								log ("reaches down into sheet " 
+								log (text => "reaches down into sheet " 
 									& to_string (net.path) 
 									& " as net " & et_general.to_string (net.name),
-									log_threshold + 1
+									level => log_threshold + 1
 									);
 
 								log_indentation_up;
-								log ("strand " & to_string (lowest_xy (element (h_strand), log_threshold + 3)),
-									 log_threshold + 2
-									);
+								
+								log (text => "strand " & 
+										to_string (lowest_xy (element (h_strand), log_threshold + 3)),
+										level => log_threshold + 2);
+								
 								log_indentation_down;
 
 								-- append the strand to the temparily collection of hierarchic strands
@@ -3899,7 +3905,7 @@ package body et_kicad is
 
 				-- Raise warning if hierarchic net not found in submodule:
 				if not hierarchic_net_found then
-					log (message_warning & "hierarchic net " & et_general.to_string (net.name) 
+					log (WARNING, "hierarchic net " & et_general.to_string (net.name) 
 						& " in submodule " & to_string (net.path) 
 						& " not found ! "
 						& "Hierarchic sheet in parent module requires this net !");
@@ -4015,7 +4021,7 @@ package body et_kicad is
 		net := first_net;
 		log_indentation_up;
 		while net /= type_nets.no_element loop
-			log ("net " & et_general.to_string (key (net)), log_threshold + 1);
+			log (text => "net " & et_general.to_string (key (net)), level => log_threshold + 1);
 
 			-- Examine the global or local net for any hierarchical nets connected to it.
 			-- If there are any, they are collected in hierarchic_strands_tmp.
@@ -4055,22 +4061,22 @@ package body et_kicad is
 				
 				log_indentation_up;
 				while label_simple /= type_simple_labels.no_element loop
-					--log ("simple label at " & to_string (position => element (label_simple).coordinates, scope => xy));
-					log ("simple label at " & to_string (point => element (label_simple).coordinates));
+					--log (text => "simple label at " & to_string (position => element (label_simple).coordinates, scope => xy));
+					log (text => "simple label at " & to_string (point => element (label_simple).coordinates));
 					next (label_simple);
 				end loop;
 
 				while label_tag /= type_tag_labels.no_element loop
 					if element (label_tag).hierarchic then
-						--log ("hierarchic label at " 
+						--log (text => "hierarchic label at " 
 							   --	& to_string (position => element (label_tag).coordinates, scope => xy));
-						log ("hierarchic label at " & to_string (point => element (label_tag).coordinates));
+						log (text => "hierarchic label at " & to_string (point => element (label_tag).coordinates));
 					end if;
 
 					if element (label_tag).global then
-						--log ("global label at " 
+						--log (text => "global label at " 
 							   --	& to_string (position => element (label_tag).coordinates, scope => xy));
-						log ("global label at " & to_string (point => element (label_tag).coordinates));
+						log (text => "global label at " & to_string (point => element (label_tag).coordinates));
 					end if;
 					
 					next (label_tag);
@@ -4092,7 +4098,7 @@ package body et_kicad is
 			if log_level >= log_threshold + 2 then
 				log_indentation_up;
 				while segment /= type_net_segments.no_element loop
-					log ("segment #" 
+					log (text => "segment #" 
 						& count_type'image (segment_number) 
 						& latin_1.space
 						& et_kicad.to_string (
@@ -4124,7 +4130,7 @@ package body et_kicad is
 			if log_level >= log_threshold + 1 then
 				log_indentation_up;
 				while strand /= type_strands.no_element loop
-					log ("strand #" & trim (count_type'image (strand_number), left) &
+					log (text => "strand #" & trim (count_type'image (strand_number), left) &
 						 " at" & to_string (
 							position => element (strand).position, scope => kicad_coordinates.MODULE)
 						);
@@ -4148,7 +4154,7 @@ package body et_kicad is
 		begin
 			log_indentation_up;
 			while net /= type_nets.no_element loop
-				log ("net " & et_general.to_string (key (net)));
+				log (text => "net " & et_general.to_string (key (net)));
 
 				query_element (
 					position	=> net,
@@ -4164,13 +4170,13 @@ package body et_kicad is
 		
 	begin -- write_nets
 		if log_level >= log_threshold then
-			log ("net report");
+			log (text => "net report");
 			log_indentation_up;
 				
 			--first_module;
 			--while module_cursor /= type_modules.no_element loop
 					
-			--	log ("module " & to_string (key (module_cursor)));
+			--	log (text => "module " & to_string (key (module_cursor)));
 
 				query_element (
 					position	=> module_cursor,
@@ -4260,7 +4266,7 @@ package body et_kicad is
 					lib_dir_name 		: type_library_directory.bounded_string;
 					
 				begin -- locate_library_directories
-					log ("locating library directories ...", log_threshold);
+					log (text => "locating library directories ...", level => log_threshold);
 					log_indentation_up;
 					
 					-- If no library directory is specified then issue a warning, otherwise:
@@ -4279,7 +4285,7 @@ package body et_kicad is
 													position 	=> place,
 													ifs 		=> lib_dir_separator (1)));
 
-							log ("directory " & to_string (lib_dir_name), log_threshold + 1);
+							log (text => "directory " & to_string (lib_dir_name), level => log_threshold + 1);
 
 							-- Insert the library directory in the project_lib_dirs.
 							-- project_lib_dirs is a simple list where the directory names are kept in the
@@ -4288,7 +4294,7 @@ package body et_kicad is
 							if not type_project_lib_dirs.contains (search_list_project_lib_dirs, lib_dir_name) then
 								type_project_lib_dirs.append (search_list_project_lib_dirs, lib_dir_name);
 							else
-								log (message_warning & "multiple usage of directory " & to_string (lib_dir_name));
+								log (WARNING, "multiple usage of directory " & to_string (lib_dir_name));
 							end if;
 
 							-- Test if the library directory exists:
@@ -4299,7 +4305,7 @@ package body et_kicad is
 								
 						end loop;
 					else
-						log (message_warning & "no directory for libraries specified !");
+						log (WARNING, "no directory for libraries specified !");
 					end if;
 
 					log_indentation_down;
@@ -4318,7 +4324,7 @@ package body et_kicad is
 					search_list_lib_dir_cursor : type_project_lib_dirs.cursor;
 				
 				begin -- locate_libraries
-					log ("locating library directories ...", log_threshold);
+					log (text => "locating library directories ...", level => log_threshold);
 					log_indentation_up;
 
 					-- loop in project_libraries (specified in the kicad project file)
@@ -4326,7 +4332,7 @@ package body et_kicad is
 					while search_list_library_cursor /= type_library_names.no_element loop
 
 						-- library_cursor points to the current library
-						log ("library " & to_string (element (search_list_library_cursor)), log_threshold + 1);
+						log (text => "library " & to_string (element (search_list_library_cursor)), level => log_threshold + 1);
 						log_indentation_up;
 						
 						-- This flag goes true once the library has been found at file system level
@@ -4336,8 +4342,8 @@ package body et_kicad is
 						search_list_lib_dir_cursor := search_list_project_lib_dirs.first;
 						while search_list_lib_dir_cursor /= type_project_lib_dirs.no_element loop
 
-							log ("searching in " & to_string (element (search_list_lib_dir_cursor)), -- ../../lbr_dir_1; ../../lbr_dir_2; ...
-								log_threshold + 3); 
+							log (text => "searching in " & to_string (element (search_list_lib_dir_cursor)), -- ../../lbr_dir_1; ../../lbr_dir_2; ...
+								level => log_threshold + 3); 
 							
 							-- Test at file system level, whether the current project library exists
 							-- in the directory indicated by search_list_lib_dir_cursor.
@@ -4347,7 +4353,7 @@ package body et_kicad is
 								name					=> to_string (element (search_list_library_cursor)), -- connectors, active, ...
 								extension				=> file_extension_schematic_lib)) 
 								then
-									log (" found", log_threshold + 3);
+									log (text => " found", level => log_threshold + 3);
 									library_found := true;
 
 									-- create empty component library
@@ -4437,7 +4443,7 @@ package body et_kicad is
 
 								-- Get library directory names 
 								if et_string_processing.field (line,1) = project_keyword_library_directory then
-									log ("library directories " & et_string_processing.field (line,2), log_threshold + 2);
+									log (text => "library directories " & et_string_processing.field (line,2), level => log_threshold + 2);
 
 									-- The library directories must be
 									-- inserted in the search list of library directories (search_list_project_lib_dirs).
@@ -4473,7 +4479,7 @@ package body et_kicad is
 											-- is cleared as soon as another kicad project file is read.
 											
 											-- For the log write something like "LibName bel_connectors_and_jumpers"
-											log (et_string_processing.field (line,1) & " " & et_string_processing.field (line,2), log_threshold + 2);
+											log (text => et_string_processing.field (line,1) & " " & et_string_processing.field (line,2), level => log_threshold + 2);
 									end if;
 
 								end if;
@@ -4525,12 +4531,12 @@ package body et_kicad is
 					use type_lib_table;
 					uri : type_device_library_name.bounded_string;
 				begin -- locate_component_libraries
-					log ("locating libraries ...", log_threshold + 1);
+					log (text => "locating libraries ...", level => log_threshold + 1);
 					log_indentation_up;
 
 					while lib_cursor /= type_lib_table.no_element loop
 						uri := element (lib_cursor).lib_uri; -- get full name like /home/user/kicad_libs/bel_stm32.lib
-						log (to_string (uri), log_threshold + 2);
+						log (text => to_string (uri), level => log_threshold + 2);
 
 						-- Test if library file exists:
 						if ada.directories.exists (to_string (uri)) then
@@ -4567,12 +4573,12 @@ package body et_kicad is
 					-- CS: not really correct. see spec for type_lib_table_entry
 					
 				begin -- locate_package_libraries
-					log ("locating libraries ...", log_threshold + 1);
+					log (text => "locating libraries ...", level => log_threshold + 1);
 					log_indentation_up;
 
 					while lib_cursor /= type_lib_table.no_element loop
 						uri := element (lib_cursor).lib_uri; -- get full name like /home/user/kicad_libs/bel_ic.pretty
-						log (to_string (uri), log_threshold + 2);
+						log (text => to_string (uri), level => log_threshold + 2);
 
 						-- Test if library file exists:
 						if ada.directories.exists (to_string (uri)) then
@@ -4712,7 +4718,7 @@ package body et_kicad is
 							-- Since a single line in container "lines" (where line_cursor points to) is a list 
 							-- of strings itself, we convert them first to a fixed string and then to a bounded string.
 							current_line := type_current_line.to_bounded_string (to_string (element (line_cursor)));
-							--log ("line " & to_string (current_line), log_threshold);
+							--log (text => "line " & to_string (current_line), level => log_threshold);
 						else
 							-- This should never happen:
 							log (ERROR, "in " & to_string (lib_table_path), console => true);
@@ -4754,7 +4760,7 @@ package body et_kicad is
 						section.parent := section.name;
 
 						-- CS provide log info on current section
-						--log ("section " & to_string (section.name), log_threshold + 1);
+						--log ("section " & to_string (section.name), level => log_threshold + 1);
 						
 						section.arg_counter := 0;
 						
@@ -4791,7 +4797,7 @@ package body et_kicad is
 						-- update cursor
 						character_cursor := end_of_kw;
 
-						log (enter_section (section.name), log_threshold + 5);
+						log (text => enter_section (section.name), level => log_threshold + 5);
 
 						exception
 							when event:
@@ -4823,7 +4829,7 @@ package body et_kicad is
 
 						procedure too_many_arguments is begin
 							log (ERROR, "too many arguments in section " & to_string (section.name) & " !", console => true);
-							log ("excessive argument reads '" & to_string (arg) & "'", console => true);
+							log (text => "excessive argument reads '" & to_string (arg) & "'", console => true);
 							raise constraint_error;
 						end too_many_arguments;
 
@@ -4875,7 +4881,7 @@ package body et_kicad is
 						-- Argument complete. Increment argument counter of section.
 						section.arg_counter := section.arg_counter + 1;
 						
-						log ("arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), log_threshold + 5);
+						log (text => "arg" & to_string (section.arg_counter) & latin_1.space & to_string (arg), level => log_threshold + 5);
 
 						-- Validate arguments according to current section and the parent section.
 						-- Load variables. When a section closes, the variables are used to build an object. see exec_section.
@@ -4936,7 +4942,7 @@ package body et_kicad is
 									log (ERROR, "in " & to_string (lib_table_path), console => true);
 									log (ERROR, affected_line (element (line_cursor)) 
 										& to_string (element (line_cursor)), console => true);
-									log (ada.exceptions.exception_message (event));
+									log (text => ada.exceptions.exception_message (event));
 									raise;
 
 					end read_arg;
@@ -4948,7 +4954,7 @@ package body et_kicad is
 					-- Restores the previous section.
 						use type_lines;
 					begin -- exec_section
-						log (process_section (section.name), log_threshold + 3);
+						log (text => process_section (section.name), level => log_threshold + 3);
 						case section.parent is
 							when SEC_SYM_LIB_TABLE | SEC_FP_LIB_TABLE =>
 								case section.name is
@@ -4956,14 +4962,14 @@ package body et_kicad is
 									-- When this section closes, the entry is complete and 
 									-- can be appended to the sym-list-table.
 									when SEC_LIB =>
-										log ("library " 
+										log (text => "library " 
 											 & type_library_name.to_string (lib_name)
 											 & " type "
 											 & type_lib_type'image (lib_type)
 											 & " path "
 											 -- CS options and description
 											 & to_string (lib_uri), 
-											log_threshold + 2); 
+											level => log_threshold + 2); 
 
 										type_lib_table.append (
 											container	=> table,
@@ -4981,7 +4987,7 @@ package body et_kicad is
 
 						-- restore previous section from stack
 						section := sections_stack.pop;
-						log (return_to_section (section.name), log_threshold + 5);
+						log (text => return_to_section (section.name), level => log_threshold + 5);
 						
 						exception
 							when event:
@@ -4989,7 +4995,7 @@ package body et_kicad is
 									log (ERROR, "in " & to_string (lib_table_path), console => true);
 									log (ERROR, affected_line (element (line_cursor)) 
 										& to_string (element (line_cursor)), console => true);
-									log (ada.exceptions.exception_message (event));
+									log (text => ada.exceptions.exception_message (event));
 									raise;
 
 					end exec_section;
@@ -5000,7 +5006,7 @@ package body et_kicad is
 					-- Import the file in container "lines"
 					set_input (lib_table_handle);
 					while not end_of_file loop
-						-- log (get_line);
+						-- log (text => get_line);
 
 						-- Store a single line in variable "line" (see et_string_processing.ads)
 						line := et_string_processing.read_line (
@@ -5024,12 +5030,12 @@ package body et_kicad is
 
 					sections_stack.init;
 
-					--log ("test 1 section " & to_string (section.name), log_threshold + 1);
-					--log ("test 1 section " & type_keyword'image (section.name), log_threshold + 1);
+					--log (text => "test 1 section " & to_string (section.name), level => log_threshold + 1);
+					--log (text => "test 1 section " & type_keyword'image (section.name), level => log_threshold + 1);
 					
 					-- get first line
 					current_line := type_current_line.to_bounded_string (to_string (type_lines.element (line_cursor)));
-					--log ("line " & to_string (current_line), log_threshold + 4);
+					--log (text => "line " & to_string (current_line), level => log_threshold + 4);
 
 					-- get position of first opening bracket
 					character_cursor := type_current_line.index (current_line, 1 * opening_bracket);
@@ -5110,7 +5116,7 @@ package body et_kicad is
 
 				procedure warning_on_multiple_entry_in_lib_table (library : in string) is
 				begin
-					log (message_warning & "global library table: '" & library 
+					log (WARNING, "global library table: '" & library 
 						 & "' already in local library table -> skipped !");
 				end warning_on_multiple_entry_in_lib_table;
 				
@@ -5119,7 +5125,7 @@ package body et_kicad is
 					use type_lib_table;
 					cursor : type_lib_table.cursor := sym_table_global.first;
 				begin
-					log ("concatenating local and global symbol table ...", log_threshold + 1);
+					log (text => "concatenating local and global symbol table ...", level => log_threshold + 1);
 					
 					-- Append table_global to table_local so that global libraries come AFTER local libraries.
 					-- Loop in table_global and append element per element to table_local.
@@ -5154,7 +5160,7 @@ package body et_kicad is
 					use type_lib_table;
 					cursor : type_lib_table.cursor := fp_table_global.first;
 				begin
-					log ("concatenating local and global footprint table ...", log_threshold + 1);
+					log (text => "concatenating local and global footprint table ...", level => log_threshold + 1);
 					
 					-- Append table_global to table_local so that global libraries come AFTER local libraries.
 					-- Loop in table_global and append element per element to table_local.
@@ -5185,14 +5191,14 @@ package body et_kicad is
 				end concatenate_local_and_global_fp_tables;
 				
 			begin -- read_lib_tables
-				log ("reading sym-lib-tables", log_threshold);
+				log (text => "reading sym-lib-tables", level => log_threshold);
 
 				log_indentation_up;
 
 				-- local table
 				lib_table_path := to_bounded_string (file_sym_lib_table);
 				if ada.directories.exists (to_string (lib_table_path)) then
-					log ("local: " & to_string (lib_table_path), log_threshold + 1); -- show file path and name
+					log (text => "local: " & to_string (lib_table_path), level => log_threshold + 1); -- show file path and name
 
 					open (
 						file => lib_table_handle,
@@ -5207,7 +5213,7 @@ package body et_kicad is
 				-- global table
 				lib_table_path := to_bounded_string (value ("HOME") & file_sym_lib_table_global_linux);
 				if ada.directories.exists (to_string (lib_table_path)) then
-					log ("global: " & to_string (lib_table_path), log_threshold + 1); -- show file path and name
+					log (text => "global: " & to_string (lib_table_path), level => log_threshold + 1); -- show file path and name
 
 					open (
 						file => lib_table_handle,
@@ -5230,14 +5236,14 @@ package body et_kicad is
 
 				--------------
 
-				log ("reading fp-lib-tables", log_threshold);
+				log (text => "reading fp-lib-tables", level => log_threshold);
 
 				log_indentation_up;
 
 				-- local table
 				lib_table_path := to_bounded_string (file_fp_lib_table);
 				if ada.directories.exists (to_string (lib_table_path)) then
-					log ("local: " & to_string (lib_table_path), log_threshold + 1); -- show file path and name
+					log (text => "local: " & to_string (lib_table_path), level => log_threshold + 1); -- show file path and name
 
 					open (
 						file => lib_table_handle,
@@ -5252,7 +5258,7 @@ package body et_kicad is
 				-- global table
 				lib_table_path := to_bounded_string (value ("HOME") & file_fp_lib_table_global_linux);
 				if ada.directories.exists (to_string (lib_table_path)) then
-					log ("global: " & to_string (lib_table_path), log_threshold + 1); -- show file path and name
+					log (text => "global: " & to_string (lib_table_path), level => log_threshold + 1); -- show file path and name
 
 					open (
 						file => lib_table_handle,
@@ -5278,7 +5284,7 @@ package body et_kicad is
 			use et_import;
 			
 		begin -- read_project_file
-			log ("reading project file ...", log_threshold);
+			log (text => "reading project file ...", level => log_threshold);
 			log_indentation_up;
 
 			-- Clear tmp_component_libraries because it still contains librares of earlier project imports.
@@ -5422,11 +5428,11 @@ package body et_kicad is
 				-- Otherwise set the "picked" flag of that segment, output the coordinates of the segment, add it to anonymous net.
 				if type_wild_segments.element (segment_cursor).picked then
 					null;
-					-- log ("  picked");
+					-- log (text => "  picked");
 				else
-					-- log ("  segment" & positive'image(id) & ":");
-					-- log ("segment" & positive'image(id) & ":");
-					-- log ("  segment" & positive'image(id) & ":");
+					-- log (text => "  segment" & positive'image(id) & ":");
+					-- log (text => "segment" & positive'image(id) & ":");
+					-- log (text => "  segment" & positive'image(id) & ":");
 					
 					type_wild_segments.update_element (
 						container	=> wild_segments,
@@ -5436,10 +5442,10 @@ package body et_kicad is
 -- 					write_coordinates_of_segment (segment => 
 -- 						type_net_segment (type_wild_segments.element (segment_cursor)));
 					
-					log (to_string (
+					log (text => to_string (
 							segment	=> type_wild_segments.element (segment_cursor),
 							scope	=> kicad_coordinates.XY),
-						 log_threshold + 1);
+						 level => log_threshold + 1);
 
 					scratch := type_net_segment (type_wild_segments.element (segment_cursor));
 					type_net_segments.append (anonymous_strand.segments, scratch);
@@ -5472,7 +5478,7 @@ package body et_kicad is
 				case side is
 					when end_point =>
 						
--- 						log ("--> origin of search   (END): " 
+-- 						log (text => "--> origin of search   (END): " 
 -- 							 & type_grid'image(seg_in.coordinates_end.x) & "/" & type_grid'image(seg_in.coordinates_end.y),
 -- 							 level => 1);
 						
@@ -5483,7 +5489,7 @@ package body et_kicad is
 						
 					when start_point =>
 						
--- 						log ("--> origin of search (START): " 
+-- 						log (text => "--> origin of search (START): " 
 -- 							 & type_grid'image(seg_in.coordinates_start.x) & "/" & type_grid'image(seg_in.coordinates_start.y),
 -- 							 level => 1);
 						
@@ -5619,7 +5625,7 @@ package body et_kicad is
 				
 			<<matching_segment_coordinates_found>>
 				add_segment_to_anonymous_strand (sc.cursor);
-				--log ("match", level => 1);
+				--log (text => "match", level => 1);
 				
 				return sc;
 			end search_for_same_coordinates;
@@ -5666,7 +5672,7 @@ package body et_kicad is
 						line_end	=> type_point (segment.coordinates_end),
 						line_range	=> with_end_points);
 					
-					--log ("distance: " & type_grid'image(d.distance), level => 1);
+					--log (text => "distance: " & type_grid'image(d.distance), level => 1);
 					
 					if not d.out_of_range and d.distance = zero_distance then
 						sits_on_segment := true;
@@ -5699,7 +5705,7 @@ package body et_kicad is
 				
 				-- This does only make sense if there are strands at all:
 				if not is_empty (anonymous_strands) then
-					log ("associating net labels with strands ...", log_threshold);
+					log (text => "associating net labels with strands ...", level => log_threshold);
 					
 					-- Loop in list of anonymous strands, get a (non-processed-yet) strand, loop in list of segments and 
 					-- find a (non-processed-yet) net label that sits on the net segment. If label sits on segment:
@@ -5738,8 +5744,8 @@ package body et_kicad is
 
 												if log_level >= log_threshold + 1 then
 													log_indentation_up;
-													--log ("label at" & to_string (label => type_net_label (ls), scope => xy));
-													log ("label at" & to_string (label => type_net_label (ls)));
+													--log (text => "label at" & to_string (label => type_net_label (ls), scope => xy));
+													log (text => "label at" & to_string (label => type_net_label (ls)));
 													log_indentation_down;
 												end if;
 
@@ -5754,8 +5760,8 @@ package body et_kicad is
 
 													when hierarchic => -- strand has been marked as "hierarchic" already. no local label allowed !
 														output_net_label_conflict;
-														log (message_error
-															& "hierarchic net " & et_general.to_string (anon_strand_a.name) 
+														log (ERROR,
+															"hierarchic net " & et_general.to_string (anon_strand_a.name) 
 															& " has a local label at" 
 															--& to_string (position => ls.coordinates) & " !");
 															& to_string (point => ls.coordinates) & " !");
@@ -5763,8 +5769,8 @@ package body et_kicad is
 
 													when global => -- strand has been marked as "global" already. no local label allowed !
 														output_net_label_conflict;
-														log (message_error
-															& "global net " & et_general.to_string (anon_strand_a.name) 
+														log (ERROR,
+															"global net " & et_general.to_string (anon_strand_a.name) 
 															& " has a local label at" 
 															--& to_string (position => ls.coordinates) & " !");
 															& to_string (point => ls.coordinates) & " !");
@@ -5784,8 +5790,8 @@ package body et_kicad is
 														output_net_label_conflict;
 
 														-- for the log, some more information
-														log (message_error 
-															 & "Net " & et_general.to_string (anon_strand_a.name) & " has contradicting label " 
+														log (ERROR, 
+															 "Net " & et_general.to_string (anon_strand_a.name) & " has contradicting label " 
 															 --& "at" & to_string (position => ls.coordinates) & " !");
 															 & "at" & to_string (point => ls.coordinates) & " !");
 														raise constraint_error;
@@ -5842,8 +5848,8 @@ package body et_kicad is
 
 												if log_level >= log_threshold + 1 then
 													log_indentation_up;
-													--log ("label at" & to_string (label => type_net_label (lt), scope => xy));
-													log ("label at" & to_string (label => type_net_label (lt)));
+													--log (text => "label at" & to_string (label => type_net_label (lt), scope => xy));
+													log (text => "label at" & to_string (label => type_net_label (lt)));
 													log_indentation_down;
 												end if;
 
@@ -5861,8 +5867,8 @@ package body et_kicad is
 													when local => -- strand has been marked as "local" already. no hierarchic or global label allowed !
 														if lt.global or lt.hierarchic then
 															output_net_label_conflict;
-															log (message_error
-																& "local net " & et_general.to_string (anon_strand_a.name) 
+															log (ERROR,
+																"local net " & et_general.to_string (anon_strand_a.name) 
 																& " has a hierarchic or global label at" 
 																--& to_string (position => lt.coordinates) & " !");
 																& to_string (point => lt.coordinates) & " !");
@@ -5872,8 +5878,8 @@ package body et_kicad is
 													when hierarchic => -- strand has been marked as "hierarchic" already. no global label allowed !
 														if lt.global then
 															output_net_label_conflict;
-															log (message_error
-																& "hierarchic net " & et_general.to_string (anon_strand_a.name) 
+															log (ERROR,
+																"hierarchic net " & et_general.to_string (anon_strand_a.name) 
 																& " has a global label at" 
 																--& to_string (position => lt.coordinates) & " !");
 																& to_string (point => lt.coordinates) & " !");
@@ -5883,8 +5889,8 @@ package body et_kicad is
 													when global => -- strand has been marked as "global" already. no hierarchic label allowed !
 														if lt.hierarchic then
 															output_net_label_conflict;
-															log (message_error
-																& "global net " & et_general.to_string (anon_strand_a.name) 
+															log (ERROR,
+																"global net " & et_general.to_string (anon_strand_a.name) 
 																& " has a hierarchic label at" 
 																--& to_string (position => lt.coordinates) & " !");
 																& to_string (point => lt.coordinates) & " !");
@@ -5899,8 +5905,8 @@ package body et_kicad is
 												else
 													-- If label text is different from previously assigned net name:
 													if anon_strand_a.name /= lt.text then 
-														log (message_error 
-															 & "Net " & et_general.to_string (anon_strand_a.name) & " has contradicting label " 
+														log (ERROR, 
+															 "Net " & et_general.to_string (anon_strand_a.name) & " has contradicting label " 
 															 --& "at" & to_string (position => lt.coordinates) & " !");
 															 & "at" & to_string (point => lt.coordinates) & " !");
 														raise constraint_error;
@@ -5961,7 +5967,7 @@ package body et_kicad is
 					--
 					-- NOTE: Even if a strand has no name at this stage, it may get a dedicated name later.
 					-- Power-out ports may overwrite the strand name.
-					log ("building name-less strands ...", log_threshold);
+					log (text => "building name-less strands ...", level => log_threshold);
 					log_indentation_up;
 
 					strand_cursor := anonymous_strands.first; -- reset strand cursor
@@ -5975,13 +5981,13 @@ package body et_kicad is
 							net_name := to_net_name (
 								anonymous_net_name_prefix & trim (natural'image (net_id), left));
 
-							log (et_general.to_string (net_name), level => 2);
+							log (text => et_general.to_string (net_name), level => 2);
 							
 							strand.name := net_name;
 							strand.scope := local;
 
 							log_indentation_up;
-							log ("scope " & to_string (strand.scope) & " with segments", level => 2);
+							log (text => "scope " & to_string (strand.scope) & " with segments", level => 2);
 							
 							-- fetch net segments from anonymous strand and append them to the new name-less strand:
 							segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous net
@@ -5992,7 +5998,7 @@ package body et_kicad is
 								if log_level >= 2 then
 									--write_coordinates_of_segment (segment => segment);
 									log_indentation_up;
-									log (to_string (segment => segment, scope => xy));
+									log (text => to_string (segment => segment, scope => xy));
 									log_indentation_down;
 								end if;
 								
@@ -6009,7 +6015,7 @@ package body et_kicad is
 							set_xy (strand.position, lowest_xy (strand, log_threshold + 3));
                             
 							-- insert strand in module, then purge strand.segments for next spin
-							log ("inserting strand in module ...", log_threshold + 2);
+							log (text => "inserting strand in module ...", level => log_threshold + 2);
 							add_strand (strand);
 
 							type_net_segments.clear (strand.segments);
@@ -6023,7 +6029,7 @@ package body et_kicad is
 					-- Build named strands with label. Those strands have the "processed" flag set.
 					-- NOTE: Even if a strand has a dedicated name at this stage, it may get a dedicated name later on netlist generation.
 					-- Power-out ports may overwrite the strand name (which would be regarded as design error and is handled on netlist generation)
-					log ("building named strands ...", log_threshold);
+					log (text => "building named strands ...", level => log_threshold);
 					log_indentation_up;
 					
 					strand_cursor := anonymous_strands.first; -- reset strand cursor
@@ -6032,13 +6038,13 @@ package body et_kicad is
 
 						if anon_strand_a.processed then -- it must have a name
 
-							log (et_general.to_string (anon_strand_a.name), level => 2);
+							log (text => et_general.to_string (anon_strand_a.name), level => 2);
 							
 							strand.name := anon_strand_a.name;
 							strand.scope := anon_strand_a.scope;
 
 							log_indentation_up;
-							log ("scope " & to_string (strand.scope) & " with segments", level => 2);
+							log (text => "scope " & to_string (strand.scope) & " with segments", level => 2);
 
 							-- fetch net segments from anonymous strand and append them to the new named strand:
 							segment_cursor := anon_strand_a.segments.first; -- reset segment cursor to begin of segments of the current anonymous strand
@@ -6048,7 +6054,7 @@ package body et_kicad is
 								
 								if log_level >= 2 then
 									--write_coordinates_of_segment (segment => segment);
-									log (to_string (segment => segment, scope => xy));
+									log (text => to_string (segment => segment, scope => xy));
 								end if;
 								
 								next (segment_cursor);
@@ -6064,7 +6070,7 @@ package body et_kicad is
 							set_xy (strand.position, lowest_xy (strand, log_threshold + 3));
 							
 							-- insert strand in module, then purge strand.segments for next spin
-							log ("inserting strand in module ...", log_threshold + 2);
+							log (text => "inserting strand in module ...", level => log_threshold + 2);
 							add_strand (strand);
 							type_net_segments.clear (strand.segments);
 
@@ -6076,8 +6082,8 @@ package body et_kicad is
 					log_indentation_down;
 					
 				else
-					log (message_note 
-						 & "The schematic does not contain nets to associate net labels with !");
+					log (NOTE,
+						 "The schematic does not contain nets to associate net labels with !");
 				end if;
 
 				log_indentation_down;
@@ -6117,7 +6123,7 @@ package body et_kicad is
 				-- After breaking down net segments, the numbner of segments increases, so segment_count must be updated finally.
 				-- CS NOTE: In this process, segments may evolve, which have junctions not sitting at the segment. A clean up would be useful.
 				if not is_empty (wild_junctions) then 
-					log ("processing" & count_type'image (length (wild_junctions)) & " net junctions ...", log_threshold);
+					log (text => "processing" & count_type'image (length (wild_junctions)) & " net junctions ...", level => log_threshold);
 					log_indentation_up;
 					
 					-- We reason there are segments to be broken down. After smashing a segment, segment_count increases. If it
@@ -6129,7 +6135,7 @@ package body et_kicad is
 						while segment_cursor /= type_wild_segments.no_element loop
 						
 							segment := type_wild_segments.element (segment_cursor); -- get a segment
-							log ("probing segment" & to_string (segment => segment, scope => xy), log_threshold);
+							log (text => "probing segment" & to_string (segment => segment, scope => xy), level => log_threshold);
 
 							-- loop in wild junction list until a junction has been found that sits on the segment
 							junction_cursor := wild_junctions.first; -- reset junction cursor to begin of junction list
@@ -6142,7 +6148,7 @@ package body et_kicad is
 
 									if log_level >= log_threshold + 1 then
 										log_indentation_up;
-										log ("has junction" & to_string (position => junction.coordinates, scope => xy));
+										log (text => "has junction" & to_string (position => junction.coordinates, scope => xy));
 										log_indentation_down;
 									end if;
 									-- NOTE: junctions sitting on a net crossing may appear twice here.
@@ -6194,7 +6200,7 @@ package body et_kicad is
 					end loop;
 
 					log_indentation_down;
-					log ("update: net segments total" & count_type'image (segment_count), log_threshold);
+					log (text => "update: net segments total" & count_type'image (segment_count), level => log_threshold);
 				end if;
 
 				log_indentation_down;
@@ -6241,7 +6247,7 @@ package body et_kicad is
 				
 				segment_count := type_wild_segments.length (wild_segments); -- get number of segments on the current sheet
 
-				log ("processing" & count_type'image (segment_count) & " net segments ...", log_threshold);
+				log (text => "processing" & count_type'image (segment_count) & " net segments ...", level => log_threshold);
 
 				-- It may happen that a sheet has no nets, for example the top level sheet of a design.
 				-- If there are no net segments at all, nothing happens.
@@ -6274,7 +6280,7 @@ package body et_kicad is
 
 						    -- We initiate a new strand and start looking for a matching segment on the end_point:
 							--put_line(et_import.report_handle," anonymous net" & positive'image(seg) & ":"); 
-							log ("assembling strand with segments", log_threshold + 1);
+							log (text => "assembling strand with segments", level => log_threshold + 1);
 							log_indentation_up;
 
 							-- The first segment is to be added to the anonymous strand.
@@ -6449,8 +6455,8 @@ package body et_kicad is
 					if get_field_from_line (et_string_processing.field (et_kicad.line,1), 1, latin_1.colon) = schematic_library then
 
 						-- for the log: write library name
-						log ("uses library " & get_field_from_line (et_string_processing.field (et_kicad.line,1), 2, latin_1.colon),
-							log_threshold + 1);
+						log (text => "uses library " & get_field_from_line (et_string_processing.field (et_kicad.line,1), 2, latin_1.colon),
+							level => log_threshold + 1);
 
 						-- Store bare library name in the list sheet_header.libraries:
 						-- We use a doubly linked list because the order of the library names must be kept.
@@ -6525,7 +6531,7 @@ package body et_kicad is
 				use type_lines;
 			
 			begin -- make_drawing_frame
-				log ("making drawing frame ...", log_threshold);
+				log (text => "making drawing frame ...", level => log_threshold);
 				log_indentation_up;
 			
 				line_cursor := type_lines.first (lines);
@@ -6554,7 +6560,7 @@ package body et_kicad is
 				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_encoding then
 					-- CS test field count
 					if et_string_processing.field (et_kicad.line,2) /= encoding_default then
-						log (message_warning & "non-default endcoding '" 
+						log (WARNING, "non-default endcoding '" 
 							 & et_string_processing.field (et_kicad.line,2) & "' found !");
 					end if;
 				end if;
@@ -6571,7 +6577,7 @@ package body et_kicad is
 					-- The sheet number written here is meaningless:
 					--sheet_number_current := to_sheet_number (field (et_kicad.line,2));
 					-- Instead we log the global sheet_number:
-					log ("sheet number" & to_sheet (sheet_number), log_threshold + 1);
+					log (text => "sheet number" & to_sheet (sheet_number), level => log_threshold + 1);
 
 					-- Get the total number of sheet of this design. 
 					sheet_count_total := to_sheet (et_string_processing.field (et_kicad.line,3));
@@ -6594,7 +6600,7 @@ package body et_kicad is
 
 				-- read sheet title from a line like "Title "abc""
 				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_title then                        
-					log ("sheet title", log_threshold + 1);
+					log (text => "sheet title", level => log_threshold + 1);
 					
 					title_block_text.meaning := et_libraries.TITLE;
 
@@ -6609,7 +6615,7 @@ package body et_kicad is
 				
 				-- read date from a line like "Date "1981-01-23""
 				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_date then
-					log ("sheet date", log_threshold + 1);
+					log (text => "sheet date", level => log_threshold + 1);
 					
 					-- CS test field count					
 					title_block_text.meaning := et_libraries.DRAWN_DATE;
@@ -6623,7 +6629,7 @@ package body et_kicad is
 				
 				-- read revision from a line like "Rev "9.7.1"
 				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_revision then                        
-					log ("sheet revision", log_threshold + 1);
+					log (text => "sheet revision", level => log_threshold + 1);
 					
 					-- CS test field count					
 					title_block_text.meaning := et_libraries.REVISION;
@@ -6637,7 +6643,7 @@ package body et_kicad is
 
 				-- read company name
 				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_company then
-					log ("sheet company name", log_threshold + 1);
+					log (text => "sheet company name", level => log_threshold + 1);
 					
 					-- CS test field count					
 					title_block_text.meaning := et_libraries.COMPANY;
@@ -6655,7 +6661,7 @@ package body et_kicad is
 					et_string_processing.field (et_kicad.line,1) = schematic_keyword_comment_3 or 
 					et_string_processing.field (et_kicad.line,1) = schematic_keyword_comment_4 then
 
-					log ("sheet comment", log_threshold + 1);
+					log (text => "sheet comment", level => log_threshold + 1);
 					
 					-- CS test field count
 					title_block_text.meaning := et_libraries.MISC;
@@ -6683,7 +6689,7 @@ package body et_kicad is
 					when event:
 						others =>
 							log_indentation_reset;
-							log (ada.exceptions.exception_message (event));
+							log (text => ada.exceptions.exception_message (event));
 							raise;
 				
 			end make_drawing_frame;
@@ -6723,7 +6729,7 @@ package body et_kicad is
 					end case;
 
 					log_indentation_up;
-					log (to_string (result), log_threshold + 2);
+					log (text => to_string (result), level => log_threshold + 2);
 					log_indentation_down;
 					
 					return result;
@@ -6761,17 +6767,17 @@ package body et_kicad is
 				end to_orientation;
 					
 			begin -- make_gui_sheet
-				log ("making gui sheet ...", log_threshold);
+				log (text => "making gui sheet ...", level => log_threshold);
 				log_indentation_up;
 				
 				line_cursor := type_lines.first (lines);
--- 				log (to_string (et_kicad.line), log_threshold + 1);
+-- 				log (text => to_string (et_kicad.line), level => log_threshold + 1);
 
 				-- read GUI sheet position and size from a line like "S 4050 5750 1050 650"
 				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_sheet_pos_and_size then
 					-- CS test field count
 					set_path (sheet.coordinates, path_to_sheet);
-					--log ("path " & to_string (path (sheet.coordinates)));
+					--log (text => "path " & to_string (path (sheet.coordinates)));
 					set_sheet (sheet.coordinates, sheet_number);
 					set_x (sheet.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,2)));
 					set_y (sheet.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
@@ -6781,7 +6787,7 @@ package body et_kicad is
 				end if;
 
 				next (line_cursor);
--- 				log (to_string (et_kicad.line), log_threshold + 1);
+-- 				log (text => to_string (et_kicad.line), level => log_threshold + 1);
 				
 				-- read GUI submodule (sheet) timestamp from a line like "U 58A73B5D"
 				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_sheet_timestamp then 
@@ -6826,7 +6832,7 @@ package body et_kicad is
 										timestamp	=> sheet.timestamp)); -- B5D45A33
 				end if;
 
-				log ("hierarchic sheet " & to_string (submodule => sheet_name.name), log_threshold + 1);
+				log (text => "hierarchic sheet " & to_string (submodule => sheet_name.name), level => log_threshold + 1);
 				
 				-- Read sheet ports from a line like "F2 "SENSOR_GND" I R 2250 3100 60".
 				-- The index after the F is a successive number that increments on every port:
@@ -6845,7 +6851,7 @@ package body et_kicad is
 					
 					while line_cursor /= no_element loop
 						log_indentation_up;
-						log ("port " & strip_quotes (et_string_processing.field (et_kicad.line, 2)), log_threshold + 2);
+						log (text => "port " & strip_quotes (et_string_processing.field (et_kicad.line, 2)), level => log_threshold + 2);
 
 						-- add port
 						type_hierarchic_sheet_ports.insert (
@@ -6872,7 +6878,7 @@ package body et_kicad is
 					end loop;
 
 				else -- sheet has no ports -> warning
-					log (message_warning & "hierarchic sheet " & to_string (submodule => sheet_name.name) & " has no ports !");
+					log (WARNING, "hierarchic sheet " & to_string (submodule => sheet_name.name) & " has no ports !");
 				end if;
 
 				-- insert the hierarchical sheet in module (see type_module)
@@ -6885,7 +6891,7 @@ package body et_kicad is
 						others =>
 							log_indentation_reset;
 							--log (message_error , console => true);
-							log (ada.exceptions.exception_message (event));
+							log (text => ada.exceptions.exception_message (event));
 							raise;
 
 			end make_gui_sheet;
@@ -6917,7 +6923,7 @@ package body et_kicad is
 			
 				segment : type_wild_net_segment; -- the segment being built
 			begin
-				--log ("making net segment ...", log_threshold);
+				--log (text => "making net segment ...", level => log_threshold);
 				--log_indentation_up;
 
 				line_cursor := type_lines.first (lines);
@@ -6941,11 +6947,11 @@ package body et_kicad is
 				if length (segment) > zero_distance then 
 
 					-- The net segments are to be collected in a wild list of segments for later sorting.
-					log ("net segment" & to_string (segment => segment, scope => xy), log_threshold);
+					log (text => "net segment" & to_string (segment => segment, scope => xy), level => log_threshold);
 					
 					type_wild_segments.append (wild_segments, segment);
 				else -- segment has zero length
-					log (message_warning & affected_line (et_kicad.line) & "Net segment with zero length found -> ignored !");
+					log (WARNING, affected_line (et_kicad.line) & "Net segment with zero length found -> ignored !");
 				end if; -- length
 
 				--log_indentation_down;
@@ -6987,7 +6993,7 @@ package body et_kicad is
 				end append_junction;
 				
 			begin -- make_junction
-				--log ("making net junction ...", log_threshold);
+				--log (text => "making net junction ...", level => log_threshold);
 				--log_indentation_up;
 				
 				set_path (junction.coordinates, path_to_sheet);
@@ -6996,7 +7002,7 @@ package body et_kicad is
 				set_y (junction.coordinates, mil_to_distance (et_string_processing.field (line,4)));
 
 				-- for the log
-				log ("net junction" & to_string (junction => junction, scope => xy), log_threshold);
+				log (text => "net junction" & to_string (junction => junction, scope => xy), level => log_threshold);
 
 				-- add to wild list of junctions
 				type_junctions.append (wild_junctions, junction);
@@ -7036,7 +7042,7 @@ package body et_kicad is
 				
 				label : type_net_label_simple; -- the label being built
 			begin
-				--log ("simple label", log_threshold + 1);
+				--log (text => "simple label", level => log_threshold + 1);
 				--log_indentation_up;
 				
 				line_cursor := type_lines.first (lines);
@@ -7065,8 +7071,8 @@ package body et_kicad is
 				check_net_name_characters (label.text);
 				
 				-- for the log
-				--log ("simple label" & to_string (label => type_net_label (label), scope => xy), log_threshold);
-				log ("simple label" & to_string (label => type_net_label (label)), log_threshold);
+				--log (text => "simple label" & to_string (label => type_net_label (label), scope => xy), level => log_threshold);
+				log (text => "simple label" & to_string (label => type_net_label (label)), level => log_threshold);
 
 				check_schematic_text_size (category => net_label, size => label.size);
 				-- CS: check label style
@@ -7106,7 +7112,7 @@ package body et_kicad is
 				
 				label : type_net_label_tag; -- the label being built
 			begin
-				--log ("making tag label ...", log_threshold);
+				--log (text => "making tag label ...", level => log_threshold);
 				--log_indentation_up;
 
 				line_cursor := type_lines.first (lines);
@@ -7147,8 +7153,8 @@ package body et_kicad is
 				check_net_name_characters (label.text);
 
 				-- for the log
-				--log ("tag label" & to_string (label => type_net_label (label), scope => xy), log_threshold);
-				log ("tag label" & to_string (label => type_net_label (label)), log_threshold);
+				--log (text => "tag label" & to_string (label => type_net_label (label), scope => xy), level => log_threshold);
+				log (text => "tag label" & to_string (label => type_net_label (label)), level => log_threshold);
 
 				check_schematic_text_size (category => net_label, size => label.size);
 				-- CS: check style and line width
@@ -7186,12 +7192,12 @@ package body et_kicad is
 				rotation : et_coordinates.type_rotation;
 
 				procedure warn is begin 
-					log (message_warning & " text note at " & kicad_coordinates.to_string (note.coordinates) &
+					log (WARNING, " text note at " & kicad_coordinates.to_string (note.coordinates) &
 						 " might be misplaced !");
 				end;
 				
 			begin -- make_text_note
-				--log ("making text note ...", log_threshold);
+				--log (text => "making text note ...", level => log_threshold);
 				--log_indentation_up;
 				
 				line_cursor := type_lines.first (lines);
@@ -7426,8 +7432,9 @@ package body et_kicad is
 								field_reference.content := et_libraries.type_text_content.to_bounded_string (et_libraries.to_string (alt_ref.reference));
 								suitable_reference_found := true;
 
-								log ("update due to hierachic structure: " &
-									et_libraries.to_string (reference), make_component.log_threshold);
+								log (text => "update due to hierachic structure: " &
+									 et_libraries.to_string (reference), 
+									 level => make_component.log_threshold);
 							end if;
 						end query_path;
 							
@@ -7449,12 +7456,12 @@ package body et_kicad is
 					log_indentation_up;
 
 -- 					-- write precheck preamble
-					log ("prechecking fields ...", log_threshold);
+					log (text => "prechecking fields ...", level => log_threshold);
 					log_indentation_up;
 					
 					-- reference
 					-- NOTE: the reference prefix has been checked already in main of procedure make_component
-					log ("reference", level => log_threshold + 1);
+					log (text => "reference", level => log_threshold + 1);
 					if not field_reference_found then
 						missing_field (et_libraries.reference);
 						-- CS: use missing_field (text_reference.meaning); -- apply this to other calls of missing_field too
@@ -7470,7 +7477,7 @@ package body et_kicad is
 							-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- text_reference
 
 						if type_alternative_references.is_empty (alternative_references) then -- no alternative references
-							log ("reference " & et_libraries.to_string (reference), log_threshold + 1);
+							log (text => "reference " & et_libraries.to_string (reference), level => log_threshold + 1);
 							
 							if et_libraries.to_string (reference) /= et_libraries.content (field_reference) then
 								log (ERROR, "reference mismatch ! Header reads " 
@@ -7488,7 +7495,7 @@ package body et_kicad is
 					end if;
 
 					-- value
-					log ("value", level => log_threshold + 1);
+					log (text => "value", level => log_threshold + 1);
 					if not field_value_found then
 						missing_field (et_libraries.value);
 					else
@@ -7502,7 +7509,7 @@ package body et_kicad is
 						when sch_pcb =>
 								
 							-- package
-							log ("package/footprint", level => log_threshold + 1);
+							log (text => "package/footprint", level => log_threshold + 1);
 							if not field_package_found then
 								missing_field (et_libraries.packge);
 							else
@@ -7518,7 +7525,7 @@ package body et_kicad is
 							end if;
 
 							-- datasheet
-							log ("datasheet", level => log_threshold + 1);
+							log (text => "datasheet", level => log_threshold + 1);
 							if not field_datasheet_found then
 								missing_field (et_libraries.datasheet);
 							else
@@ -7539,7 +7546,7 @@ package body et_kicad is
 									"invalid field in component " & et_libraries.to_string (reference)
 									& to_string (position => position),
 									console => true);
-								log (ada.exceptions.exception_message (event), console => true);
+								log (text => ada.exceptions.exception_message (event), console => true);
 								-- CS: evaluate prog position and provided more detailled output
 								raise;
 
@@ -7575,7 +7582,7 @@ package body et_kicad is
 						log_indentation_up;
 						while component_cursor /= type_components_library.no_element loop
 							
-							log (to_string (key (component_cursor)), log_threshold + 2);
+							log (text => to_string (key (component_cursor)), level => log_threshold + 2);
 
 							-- Sometimes generic names in the library start with a tilde. it must
 							-- be removed before testing the name.
@@ -7591,14 +7598,14 @@ package body et_kicad is
 					
 				begin -- generic_name_to_library
 					log_indentation_up;
-					log ("locating library containing generic component " & to_string (component) & " ...", log_threshold);
+					log (text => "locating library containing generic component " & to_string (component) & " ...", level => log_threshold);
 					
 					-- loop in libraries and exit prematurely once a library with the given component was found
 					while lib_cursor /= type_libraries.no_element loop
 						log_indentation_up;
-						log ("probing " 
+						log (text => "probing " 
 							 & et_libraries.to_string (key (lib_cursor)) 
-							 & " ...", log_threshold + 1);
+							 & " ...", level => log_threshold + 1);
 
 						query_element (
 							position	=> lib_cursor,
@@ -7663,8 +7670,8 @@ package body et_kicad is
 					
 				begin -- full_name_of_component_library
 					log_indentation_up;
-					log ("locating library '" & et_kicad_general.to_string (component_library_name) & "' containing generic component '" 
-						 & to_string (component) & "' ...", log_threshold);
+					log (text => "locating library '" & et_kicad_general.to_string (component_library_name) & "' containing generic component '" 
+						 & to_string (component) & "' ...", level => log_threshold);
 
 					-- Search in the sym-lib-table for the first an entry having the component_library_name (uri)
 					while sym_lib_cursor /= type_lib_table.no_element loop
@@ -7715,11 +7722,11 @@ package body et_kicad is
 					use type_device_name_prefix;
 					reference_out : et_libraries.type_device_name := reference; -- to be returned -- like PWR04
 				begin
-					--log ("renaming " & to_string (reference_out));
-					--log ("length" & positive'image (length (reference_out.prefix)));
+					--log (text => "renaming " & to_string (reference_out));
+					--log (text => "length" & positive'image (length (reference_out.prefix)));
 					reference_out.prefix := to_bounded_string (slice (reference_out.prefix, 2, length (reference_out.prefix)));
-					--log ("prefix new '" & type_device_name_prefix.to_string (reference_out.prefix) & "'");
-					--log (" to " & to_string (reference_out));
+					--log (text => "prefix new '" & type_device_name_prefix.to_string (reference_out.prefix) & "'");
+					--log (text => " to " & to_string (reference_out));
 					return reference_out;
 				end remove_leading_hash;
 				
@@ -7836,8 +7843,7 @@ package body et_kicad is
 
 								-- Test if footprint has been associated with the component.
 								if content (field_package)'size = 0 then
-									log (
-										ERROR, "component " & to_string (reference) 
+									log (ERROR, "component " & to_string (reference) 
 											& " footprint not specified !",
 										console => true);
 									raise constraint_error;
@@ -7853,8 +7859,7 @@ package body et_kicad is
 					
 					exception
 						when constraint_error =>
-							log (
-								ERROR, "component " & et_libraries.to_string (reference)
+							log (ERROR, "component " & et_libraries.to_string (reference)
 									& " " & kicad_coordinates.to_string (position => position),
 								console => true);
 							raise constraint_error;
@@ -7943,7 +7948,7 @@ package body et_kicad is
 					end if;
 					
 					if distance_x (position) /= mil_to_distance (et_string_processing.field (line,2)) then
-	-- 					log ("position invalid. expected '" & to_string (position.x) 
+	-- 					log (text => "position invalid. expected '" & to_string (position.x) 
 	-- 						& "' found '" 
 	-- 						& field (line,2)
 	-- 						& "'");
@@ -8118,8 +8123,8 @@ package body et_kicad is
 					path_segment : type_timestamp;
 					alt_ref_path : type_alternative_reference_path.list;
 				begin
-					log ("alternative reference " & et_string_processing.to_string (line), log_threshold + 3); -- Path="/59F17F77/5A991798
-					--log (field (line, 2) (8 .. field (line, 2)'last), log_threshold + 1);
+					log (text => "alternative reference " & et_string_processing.to_string (line), level => log_threshold + 3); -- Path="/59F17F77/5A991798
+					--log (text => field (line, 2) (8 .. field (line, 2)'last), level => log_threshold + 1);
 					
 					-- extract the path segments from field 2: example: Path="/59F17F77/5A991798					
 					path := et_string_processing.read_line (
@@ -8129,7 +8134,7 @@ package body et_kicad is
 						comment_mark	=> "", -- no comment marks
 						ifs				=> hierarchy_separator (1)); -- hierarchy_separator is a string
 
-					--log (et_string_processing.to_string (path), log_threshold + 1);
+					--log (text => et_string_processing.to_string (path), level => log_threshold + 1);
 					
 					-- Transfer the path segments to alt_ref_path.
 					-- "path" contains a list of strings.
@@ -8145,7 +8150,7 @@ package body et_kicad is
 							new_item	=> path_segment);
 					end loop;
 
--- 					log ("new reference '" & field (line, 3) (6.. (field (line, 3)'last)) & "'", log_threshold + 1);  -- #PWR03
+-- 					log (text => "new reference '" & field (line, 3) (6.. (field (line, 3)'last)) & "'", level => log_threshold + 1);  -- #PWR03
 					
 					-- extract the reference from field 3: example: Ref="#PWR03
 					-- NOTE: the trailing double quote is already gone.
@@ -8153,8 +8158,8 @@ package body et_kicad is
 							text_in 		=> et_string_processing.field (line, 3) (6.. (et_string_processing.field (line, 3)'last)),  -- #PWR03
 							leading_hash	=> true);
 
--- 					log ("test", log_threshold + 1);
--- 					log ("new reference " & et_libraries.to_string (ref), log_threshold + 1);  -- #PWR03
+-- 					log (text => "test", level => log_threshold + 1);
+-- 					log (text => "new reference " & et_libraries.to_string (ref), level => log_threshold + 1);  -- #PWR03
 					
 					-- extract the part name (CS unit name ?) from field 4: example Part="1
 					-- NOTE: the trailing double quote is already gone.
@@ -8201,14 +8206,14 @@ package body et_kicad is
 				end extract_library_name;
 				
 			begin -- make_component (schematic)
-				log ("making component ...", log_threshold);
+				log (text => "making component ...", level => log_threshold);
 				log_indentation_up;
 
 				-- loop in lines provided by "lines"
 				line_cursor := type_lines.first (lines);
 				while line_cursor /= type_lines.no_element loop
 
-					log ("component line: " & to_string (et_kicad.line), log_threshold + 6);
+					log (text => "component line: " & to_string (et_kicad.line), level => log_threshold + 6);
 
 					-- V4: 
 					--	- Read component generic name and annotation from a line like "L NetChanger N1".
@@ -8232,7 +8237,7 @@ package body et_kicad is
 							when others => raise constraint_error;
 						end case;
 								
-						log ("generic name " & to_string (generic_name_in_lbr), log_threshold + 1);
+						log (text => "generic name " & to_string (generic_name_in_lbr), level => log_threshold + 1);
 						
 						check_generic_name_characters (
 							name => generic_name_in_lbr, -- "SN74LS00"
@@ -8240,7 +8245,7 @@ package body et_kicad is
 							characters => component_generic_name_characters); 
 
 						appearance := to_appearance (line => et_kicad.line, schematic => true);
-						log (to_string (appearance, verbose => true), log_threshold + 3);
+						log (text => to_string (appearance, verbose => true), level => log_threshold + 3);
 
 						-- Depending on the appearance of the component the reference is built and checked.
 						-- IMPORTANT: The reference is preliminary. Due to possible hierarchic design, it
@@ -8256,7 +8261,7 @@ package body et_kicad is
 									text_in			=> et_string_processing.field (et_kicad.line,3),
 									leading_hash	=> true); 
 
-								log ("reference " & to_string (reference) & " (preliminary)", log_threshold);
+								log (text => "reference " & to_string (reference) & " (preliminary)", level => log_threshold);
 								validate_prefix (reference);
 
 							when et_libraries.sch_pcb =>
@@ -8269,7 +8274,7 @@ package body et_kicad is
 									text_in			=> et_string_processing.field (et_kicad.line,3),
 									leading_hash	=> false);
 
-								log ("reference " & to_string (reference) & " (preliminary)", log_threshold);
+								log (text => "reference " & to_string (reference) & " (preliminary)", level => log_threshold);
 								
 							when others => -- CS: This should never happen. A subtype of type_device_appearance could be a solution.
 								null;
@@ -8318,7 +8323,7 @@ package body et_kicad is
 					-- Do some basic checks on the fields.
 					elsif et_string_processing.field (et_kicad.line,1) = component_field_identifier then -- "F"
 
-						--log ("unit field A: " & to_string (et_kicad.line));
+						--log (text => "unit field A: " & to_string (et_kicad.line));
 						
 						case type_component_field_id'value (et_string_processing.field (et_kicad.line,2)) is
 							
@@ -8362,7 +8367,7 @@ package body et_kicad is
 							when others => null; -- ignore other fields
 						end case;
 
-						--log ("unit field B: " & to_string (et_kicad.line));
+						--log (text => "unit field B: " & to_string (et_kicad.line));
 						
 					else
 						-- What is left is a strange repetition of the unit name and its x/y coordinates in a line like
@@ -8409,7 +8414,7 @@ package body et_kicad is
 								error_in_schematic_file (et_kicad.line);
 							end if;
 								
-							--log (ada.exceptions.exception_message (event), console => true);
+							--log (text => ada.exceptions.exception_message (event), console => true);
 							raise;
 				
 			end make_component;
@@ -8451,8 +8456,8 @@ package body et_kicad is
 				set_y (no_connection_flag.coordinates, mil_to_distance (et_string_processing.field (line,4)));
 
 				-- for the log
-				log ("no-connection-flag" & to_string (no_connection_flag => no_connection_flag, scope => xy),
-					 log_threshold + 1);
+				log (text => "no-connection-flag" & to_string (no_connection_flag => no_connection_flag, scope => xy),
+					 level => log_threshold + 1);
 
 				-- append the no-connect-flag to the list of no_connections of the current module
 				update_element (
@@ -8467,15 +8472,15 @@ package body et_kicad is
 			log_indentation_up;
 		
 			if exists (to_string (current_schematic.sheet.file)) then
-				log ("reading schematic file " & to_string (current_schematic.sheet.file) &
+				log (text => "reading schematic file " & to_string (current_schematic.sheet.file) &
 					" sheet name " & to_string (current_schematic.sheet.name) &
 					" with timestamp " & string (current_schematic.timestamp) & " ...",
-					 log_threshold,
+					 level => log_threshold,
 					 console => true);
 
 				-- log module path as recorded by parent unit
 				log_indentation_up;
-				log ("path " & to_string (path_to_sheet), log_threshold);
+				log (text => "path " & to_string (path_to_sheet), level => log_threshold);
 				
 				open (file => schematic_handle, mode => in_file, name => to_string (current_schematic.sheet.file));
 				set_input (schematic_handle);
@@ -8498,7 +8503,7 @@ package body et_kicad is
 						when others =>
 
 							-- At a certain log level we report the whole line as it is:
- 							log ("line ->" & to_string (line) & "<-", log_threshold + 7);
+ 							log (text => "line ->" & to_string (line) & "<-", level => log_threshold + 7);
 
 							-- The first line should be the headline with the schematic version:
 							-- READ SCHEMATIC HEADLINE:
@@ -8749,7 +8754,7 @@ package body et_kicad is
 
 				close (schematic_handle);
 				log_indentation_down;
-				--log ("reading complete. closing schematic file " &
+				--log (text => "reading complete. closing schematic file " &
 				--	 to_string (current_schematic.sheet.file) & " ...", log_threshold);
 
 				-- From the wild list of net segments, assemble net segments to anonymous strands.
@@ -8821,7 +8826,7 @@ package body et_kicad is
 	begin -- import_design
 
 		-- change to given project directory
-		log ("changing to project directory " & (et_project.to_string (project) & " ..."), log_threshold);
+		log (text => "changing to project directory " & (et_project.to_string (project) & " ..."), level => log_threshold);
 		set_directory (et_project.to_string (project));
 		
 		case et_import.cad_format is
@@ -8912,20 +8917,20 @@ package body et_kicad is
 				-- If read_schematic returns an empty list of hierachic sheets file names,
 				-- we are dealing with a flat design. Otherwise the design is hierarchic.
 				if type_hierarchic_sheet_file_names.is_empty (hierarchic_sheet_file_names.sheets) then -- flat design
-					log ("design structure FLAT");
+					log (text => "design structure FLAT");
 				else -- hierarchic design
 					-- In the following we dive into the sheets. Each time before a deeper level is entered,
 					-- the list of sheets (of the current level) is saved on a LIFO stack.
 					-- The top level schematic is at level 0. The level decreases (negative) each time a deeper
 					-- level is entered.
-					log ("design structure HIERARCHIC");
+					log (text => "design structure HIERARCHIC");
 					
 					stack_of_sheet_lists.init; -- stack init
 
 					log_indentation_up;
 					
 					-- output the number of sheets found at level 0:
-					log ("number of hierarchic sheets total" & natural'image (
+					log (text => "number of hierarchic sheets total" & natural'image (
 						natural (type_hierarchic_sheet_file_names.length (hierarchic_sheet_file_names.sheets)))); -- CS: use count_type
 
 					-- Initially set sheet pointer at first sheet of list:
@@ -9016,8 +9021,8 @@ package body et_kicad is
 
 				-- import layout(s)
 				log_indentation_reset;
-				log (row_separator_double);
-				log ("importing layouts/boards ...", console => true);
+				log (text => row_separator_double);
+				log (text => "importing layouts/boards ...", console => true);
 				log_indentation_up;
 				et_kicad_pcb.read_boards (log_threshold);
 				log_indentation_down;
@@ -9081,15 +9086,15 @@ package body et_kicad is
 		-- Only vitual components have the power flag property. 
 		-- For real components the return is always false;
 		if et_libraries."=" (type_components_library.element (cursor).appearance, et_libraries.SCH) then
-			--log ("virtual component");
+			--log (text => "virtual component");
 			--if type_components.element (cursor).power_flag then
-			--	log ("power flag on");
+			--	log (text => "power flag on");
 			--else
-			--	log ("power flag off");
+			--	log (text => "power flag off");
 			--end if;
 			return type_components_library.element (cursor).power_flag;
 		else
-			--log ("real component");
+			--log (text => "real component");
 			return NO;
 		end if;
 	end component_power_flag;
@@ -9117,7 +9122,7 @@ package body et_kicad is
 -- 			use type_components_schematic;
 -- 			component_cursor : type_components_schematic.cursor := module.components.first;
 -- 		begin
--- 			log ("querying components ...", log_threshold + 1);
+-- 			log (text => "querying components ...", level => log_threshold + 1);
 -- 			log_indentation_up;
 -- 
 -- 			while component_cursor /= type_components_schematic.no_element loop
@@ -9135,9 +9140,9 @@ package body et_kicad is
 -- 		end query_components;
 -- 			
 -- 	begin -- purpose
--- 		log ("module " & et_coordinates.to_string (module_name) 
+-- 		log (text => "module " & et_coordinates.to_string (module_name) 
 -- 			 & " looking up purpose of " 
--- 			 & et_libraries.to_string (reference) & " ...", log_threshold);
+-- 			 & et_libraries.to_string (reference) & " ...", level => log_threshold);
 -- 		log_indentation_up;
 -- 
 -- 		-- set module cursor
@@ -9154,9 +9159,9 @@ package body et_kicad is
 -- 
 -- 		-- Show purpose.
 -- 		if length (purpose) = 0 then
--- 			log ("no purpose specified", log_threshold + 1);
+-- 			log (text => "no purpose specified", level => log_threshold + 1);
 -- 		else
--- 			log ("purpose " & et_libraries.to_string (purpose), log_threshold + 1);
+-- 			log (text => "purpose " & et_libraries.to_string (purpose), level => log_threshold + 1);
 -- 		end if;
 -- 		
 -- 		log_indentation_down;
@@ -9174,7 +9179,7 @@ package body et_kicad is
 		begin
 			log_indentation_up;
 			log (text => "inserting strand " 
-				 & et_general.to_string (strand.name) & " in database ...", level => 3);
+				 & et_general.to_string (strand.name) & " in database ...", level => 3); -- CS log_threshold ?
 			log_indentation_down;
 
 			module.strands.append (strand);
@@ -9259,14 +9264,14 @@ package body et_kicad is
 
 					count := count + 1;
 					log_indentation_up;
--- 					log (
+-- 					log (text => 
 -- 						text => to_string (strand.name) 
 -- 							& " to "
 -- 							& to_string (name_after) & " ...",
 -- 							level => 2
 -- 						);
-					log (to_string (position => strand.position, scope => kicad_coordinates.MODULE),
-						log_threshold + 1);
+					log (text => to_string (position => strand.position, scope => kicad_coordinates.MODULE),
+						level => log_threshold + 1);
 
 					log_indentation_down;
 
@@ -9294,8 +9299,8 @@ package body et_kicad is
 		end rename;
 		
 	begin -- rename_strands
-		log ("renaming strands from " & et_general.to_string (name_before)
-			 & " to " & et_general.to_string (name_after) & " ...", log_threshold);
+		log (text => "renaming strands from " & et_general.to_string (name_before)
+			 & " to " & et_general.to_string (name_after) & " ...", level => log_threshold);
 		
 		modules.update_element (
 			position	=> module_cursor,
@@ -9303,7 +9308,7 @@ package body et_kicad is
 			);
 
 		if count > 0 then
-			log ("renamed" & natural'image (count) & " strands", log_threshold);
+			log (text => "renamed" & natural'image (count) & " strands", level => log_threshold);
 		else
 			-- CS: This should never happen
 			log (ERROR, "strand " 
@@ -9380,13 +9385,13 @@ package body et_kicad is
 						if not (element (segment_cursor).coordinates_start = segment.coordinates_start and
 							element (segment_cursor).coordinates_end = segment.coordinates_end) then
 
-							--log ("probing segment " & to_string (element (segment_cursor)));
+							--log (text => "probing segment " & to_string (element (segment_cursor)));
 							
 							-- If the inquired segment is placed with start or end point 
 							-- at the given port position, we exit prematurely:
 							if	element (segment_cursor).coordinates_start = port.coordinates or
 								element (segment_cursor).coordinates_end   = port.coordinates then
-									--log ("segment found");
+									--log (text => "segment found");
 									segment_found := true;
 									exit;
 							end if;
@@ -9411,7 +9416,7 @@ package body et_kicad is
 			end query_strands;
 		
 		begin -- another_segment_here
-			--log ("probing for other segment at " & to_string (port.coordinates, et_coordinates.module));
+			--log (text => "probing for other segment at " & to_string (port.coordinates, et_coordinates.module));
 		
 			type_modules.query_element (
 				position	=> module_cursor,
@@ -9463,7 +9468,7 @@ package body et_kicad is
 							-- no other segment here -> port is connected 
 							-- only with start or end point of given segment:
 							sits_on_segment := true;
-							--log ("port on segment", level => 5);
+							--log (text => "port on segment", level => 5);
 						end if;
 							
 					else 
@@ -9518,19 +9523,19 @@ package body et_kicad is
 		-- LOOP IN STRANDS OF MODULE
 		while strand /= type_strands.no_element loop
 			log_indentation_up;
-			log ("strand of net " & et_general.to_string (element (strand).name), log_threshold + 3);
+			log (text => "strand of net " & et_general.to_string (element (strand).name), level => log_threshold + 3);
 
 			-- LOOP IN SEGMENTS OF STRAND
 			segment := first_segment (strand);
 			while segment /= type_net_segments.no_element loop
 				log_indentation_up;
-				log ("probing segment " & to_string (element (segment)), log_threshold + 3);
+				log (text => "probing segment " & to_string (element (segment)), level => log_threshold + 3);
 
 				-- LOOP IN COMPONENTS (of portlists)
 				component := first (portlists);
 				while component /= type_portlists.no_element loop
 					log_indentation_up;
-					log ("probing component " & et_libraries.to_string (key (component)), log_threshold + 4);
+					log (text => "probing component " & et_libraries.to_string (key (component)), level => log_threshold + 4);
 
 					-- LOOP IN PORTLIST (of component)
 					port := first_port (component);
@@ -9539,12 +9544,12 @@ package body et_kicad is
 
 						-- CS: skip already processed ports to improve performance
 
-						log ("probing port " & to_string (position => element (port).coordinates), log_threshold + 4);
+						log (text => "probing port " & to_string (position => element (port).coordinates), level => log_threshold + 4);
 
 						-- test if port is connected with segment
 						if port_connected_with_segment (element (port), element (segment)) then
 							log_indentation_up;
-							-- log ("match", log_threshold + 2);
+							-- log (text => "match", level => log_threshold + 2);
 
 							-- We are interested in "power in" ports exclusively. Only such ports may enforce their
 							-- name on a strand.
@@ -9554,9 +9559,9 @@ package body et_kicad is
 								-- If strand has a name already, its scope must be global
 								-- because power-in ports are allowed in global strands exclusively !
 								if anonymous (element (strand).name) then
-									log ("component " & et_libraries.to_string (key (component)) 
+									log (text => "component " & et_libraries.to_string (key (component)) 
 										& " port name " & to_string (element (port).name) 
-										& " is a power input -> port name sets strand name", log_threshold + 2);
+										& " is a power input -> port name sets strand name", level => log_threshold + 2);
 
 									-- rename strand
 									rename_strands (
@@ -9567,7 +9572,7 @@ package body et_kicad is
 								-- If strand has been given a name already (for example by previous power-in ports) AND
 								-- if strand name differs from name of current power-in port -> warning
 								elsif et_general.to_string (element (strand).name) /= to_string (element (port).name) then
-									log (message_warning & "component " & et_libraries.to_string (key (component)) 
+									log (WARNING, "component " & et_libraries.to_string (key (component)) 
 										& " POWER IN port " & to_string (element (port).name) 
 										& " at" & to_string (element (port).coordinates, module)
 										& " conflicts with net " & et_general.to_string (element (strand).name) & " !");
@@ -9625,14 +9630,14 @@ package body et_kicad is
 			if log_level >= log_threshold + 2 then
 				log_indentation_up;
 				while label_simple /= type_simple_labels.no_element loop
-					--log ("simple label " & to_string (position => element (label_simple).coordinates));
-					log ("simple label " & to_string (point => element (label_simple).coordinates));
+					--log (text => "simple label " & to_string (position => element (label_simple).coordinates));
+					log (text => "simple label " & to_string (point => element (label_simple).coordinates));
 					next (label_simple);
 				end loop;
 
 				while label_tag /= type_tag_labels.no_element loop
-					--log ("tag label " & to_string (position => element (label_tag).coordinates));
-					log ("tag label " & to_string (point => element (label_tag).coordinates));
+					--log (text => "tag label " & to_string (position => element (label_tag).coordinates));
+					log (text => "tag label " & to_string (point => element (label_tag).coordinates));
 					next (label_tag);
 				end loop;
 
@@ -9648,7 +9653,7 @@ package body et_kicad is
 			if log_level >= log_threshold + 1 then
 				while segment /= type_net_segments.no_element loop
 					log_indentation_up;
-					log ("segment" & to_string (element (segment)));
+					log (text => "segment" & to_string (element (segment)));
 
 					type_net_segments.query_element (
 						position	=> segment,
@@ -9672,7 +9677,7 @@ package body et_kicad is
 				while strand /= type_strands.no_element loop
 					log_indentation_up;
 
-					log (et_general.to_string (element (strand).name) &
+					log (text => et_general.to_string (element (strand).name) &
 						 " scope " & to_string (element (strand).scope) &
 						 " in " & to_string (path (element (strand).position)));
 					
@@ -9688,7 +9693,7 @@ package body et_kicad is
 		
 	begin -- write_strands
 		if log_level >= log_threshold then
-			log ("strands report");
+			log (text => "strands report");
 			
 			type_modules.query_element (
 				position	=> module_cursor,
@@ -9739,7 +9744,7 @@ package body et_kicad is
 				position	=> lib_cursor,
 				process		=> locate'access);
 		else
-			log (message_warning & "library " & et_libraries.to_string (library) & " not found !");
+			log (WARNING, "library " & et_libraries.to_string (library) & " not found !");
 			-- CS: raise constraint_error ?
 		end if;
 
@@ -9865,16 +9870,16 @@ package body et_kicad is
 							-- and exit prematurely with "open" set to true.
 							while flag_cursor /= type_no_connection_flags.no_element loop
 
--- 								log ("probing port at         " & to_string (port_coordinates, et_coordinates.module));
--- 								log ("probing no-connect-flag " & to_string (element (flag_cursor), et_coordinates.module));
+-- 								log (text => "probing port at         " & to_string (port_coordinates, et_coordinates.module));
+-- 								log (text => "probing no-connect-flag " & to_string (element (flag_cursor), et_coordinates.module));
 
 								-- CS: to improve performance, test if flag has not been processed yet
 								-- But first implement a test that raises error if more than one port 
 								-- sits on the same position.
 								
  								if element (flag_cursor).coordinates = port_coordinates then
-									--log (" intentionally left open", log_threshold + 3);
-									log (" has no-connect-flag -> intentionally left open", log_threshold + 1);
+									--log (text => " intentionally left open", level => log_threshold + 3);
+									log (text => " has no-connect-flag -> intentionally left open", level => log_threshold + 1);
 									port_open := true;
 									exit;
 								end if;
@@ -9987,10 +9992,10 @@ package body et_kicad is
 
 					end case;
 							
-					log (to_string (type_ports.last_element (ports).direction), log_threshold + 3);
+					log (text => to_string (type_ports.last_element (ports).direction), level => log_threshold + 3);
 					log_indentation_up;
 					-- CS: other port properties
-					log (to_string (position => type_ports.last_element (ports).coordinates), log_threshold + 3);
+					log (text => to_string (position => type_ports.last_element (ports).coordinates), level => log_threshold + 3);
 					log_indentation_down;
 				end add;
 				
@@ -10016,7 +10021,7 @@ package body et_kicad is
 					log_indentation_up;
 
 					if element (unit_cursor).global then
-						--log ("global unit " & to_string (key (unit_cursor)));
+						--log (text => "global unit " & to_string (key (unit_cursor)));
 
 						-- NOTE: One could think of exiting the loop here once the global unit
 						-- has been found. If it were about KiCad only, this would make sense
@@ -10028,8 +10033,8 @@ package body et_kicad is
 						port_cursor := first_port (unit_cursor); -- port in library
 						while port_cursor /= type_ports_library.no_element loop
 
-							--log ("port " & type_port_name.to_string (key (port_cursor))
-							log ("port " & to_string (element (port_cursor).name),
+							--log (text => "port " & type_port_name.to_string (key (port_cursor))
+							log (text => "port " & to_string (element (port_cursor).name),
 									--& " pin/pad " & to_string (element (port_cursor).pin),
 								 level => log_threshold + 2);
 
@@ -10069,10 +10074,10 @@ package body et_kicad is
 				-- If the unit is deployed in the schematic, we load unit_position. 
 				-- unit_position holds the position of the unit in the schematic.
 				if unit_exists (name => unit_name_lib, units => units_sch) then -- if unit deployed in schematic
-					log ("unit " & to_string (unit_name_lib), log_threshold + 1);
+					log (text => "unit " & to_string (unit_name_lib), level => log_threshold + 1);
 					unit_position := position_of_unit (name => unit_name_lib, units => units_sch); -- pos. in schematic
 					log_indentation_up;
-					log (to_string (position => unit_position), log_threshold + 2);
+					log (text => to_string (position => unit_position), level => log_threshold + 2);
 
 					-- Get the ports of the current unit. Start with the first port of the unit.
 					-- The unit_position plus the relative port position (in library) yields the absolute
@@ -10084,8 +10089,8 @@ package body et_kicad is
 					-- Loop in port list of the unit:
 					while port_cursor /= type_ports_library.no_element loop
 						log_indentation_up;
-						--log ("port " & type_port_name.to_string (key (port_cursor))
-						log ("port " & to_string (element (port_cursor).name),
+						--log (text => "port " & type_port_name.to_string (key (port_cursor))
+						log (text => "port " & to_string (element (port_cursor).name),
 								--& " pin/pad " & to_string (element (port_cursor).pin),
 							 level => log_threshold + 2);
 						
@@ -10150,7 +10155,7 @@ package body et_kicad is
 			end save;
 			
 		begin -- save_portlists
-			log ("saving portlists ...", log_threshold + 1);
+			log (text => "saving portlists ...", level => log_threshold + 1);
 			update_element (
 				container	=> modules,
 				position	=> module_cursor,
@@ -10182,7 +10187,7 @@ package body et_kicad is
 		
 			-- log component by its reference		
 			component_reference := et_kicad.component_reference (component_cursor_sch);
-			log ("reference " & et_libraries.to_string (component_reference), log_threshold + 1);
+			log (text => "reference " & et_libraries.to_string (component_reference), level => log_threshold + 1);
 			
 			-- Insert component in portlists. for the moment the portlist of this component is empty.
 			-- After that the component_cursor_portlists points to the component. This cursor will
@@ -10201,10 +10206,10 @@ package body et_kicad is
 			log_indentation_up;			
 
 			-- log particular library to be searched in.
-			log ("generic name " 
+			log (text => "generic name " 
 					& to_string (element (component_cursor_sch).generic_name) 
 					& " in " & to_string (element (component_cursor_sch).library_name),
-					log_threshold + 2);
+					level => log_threshold + 2);
 
 			-- Set cursor of the generic model in library. If cursor is empty, the component
 			-- is not there -> error and abort.
@@ -10239,7 +10244,7 @@ package body et_kicad is
 		end loop;
 
 		log_indentation_down;
--- 		log (text => "portlists complete", level => log_threshold);
+-- 		log (text => text => "portlists complete", level => log_threshold);
 		log_indentation_down;
 
 		-- Save portlists in the module (indicated by module_cursor).
@@ -10281,13 +10286,13 @@ package body et_kicad is
 -- 						use type_no_connection_flags;
 -- 						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
 -- 					begin -- query_no_connect_flags
--- 						log ("quering no_connection_flags ...", log_threshold + 1);
+-- 						log (text => "quering no_connection_flags ...", log_threshold + 1);
 -- 						while no_connection_flag_cursor /= type_no_connection_flags.no_element loop
 -- 
 -- 							-- Compare coordinates of port and no_connection_flag. 
 -- 							-- On match exit prematurely.
 -- 							if element (port_cursor).coordinates = element (no_connection_flag_cursor).coordinates then
--- 								log ("match", log_threshold + 1);
+-- 								log (text => "match", log_threshold + 1);
 -- 								no_connection_flag_found := true;
 -- 								exit;
 -- 							end if;
@@ -10415,12 +10420,12 @@ package body et_kicad is
 									raise constraint_error;
 								end if;
 							else
-								log (message_warning & "port not connected at" 
+								log (WARNING, "port not connected at" 
 									& to_string (element (port_cursor).coordinates, kicad_coordinates.MODULE));
 							end if;
 
 						else
-							log (message_warning & "port not connected at" 
+							log (WARNING, "port not connected at" 
 								& to_string (element (port_cursor).coordinates, kicad_coordinates.MODULE));
 						end if;
 					end if;
@@ -10441,7 +10446,7 @@ package body et_kicad is
 		end query_portlists;
 
 	begin -- check_open_ports
-		log ("searching unintentionally left open ports ...", log_threshold);
+		log (text => "searching unintentionally left open ports ...", level => log_threshold);
 		log_indentation_up;
 
 		-- We start with the first module of the modules.
@@ -10450,7 +10455,7 @@ package body et_kicad is
 		-- Process one module after another.
 		-- module_cursor points to the module in the modules.
 		while module_cursor /= type_modules.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 			
 			-- query no_connection_flags of current module and test if any of them
@@ -10559,7 +10564,7 @@ package body et_kicad is
 -- 									null;
 -- 									
 -- 								when et_libraries.next | et_libraries.always =>
-									log (message_warning & unit_not_deployed
+									log (WARNING, unit_not_deployed
 										& et_schematic.show_danger (et_schematic.floating_input));
 -- 
 -- 								-- CS: special threatment for "always" ?
@@ -10571,9 +10576,9 @@ package body et_kicad is
 					
 				begin -- query_units_lib
 					while unit /= type_units_library.no_element loop
-						log ("unit " & et_libraries.to_string (key (unit)) 
-							 --& et_libraries.to_string (element (unit).add_level), log_threshold + 2);
-							 , log_threshold + 2);
+						log (text => "unit " & et_libraries.to_string (key (unit)) 
+							 --& et_libraries.to_string (element (unit).add_level), level => log_threshold + 2);
+							 , level => log_threshold + 2);
 
 						-- For each generic unit the units of the schematic component must be inquired
 						-- if any of them matches the current generic unit name:
@@ -10630,8 +10635,8 @@ package body et_kicad is
 		begin -- query_schematic_components
 			while component_sch /= type_components_schematic.no_element loop
 
-				log (et_libraries.to_string (key (component_sch)) & " in " 
-					& et_libraries.to_string (element (component_sch).library_name), log_threshold + 1);
+				log (text => et_libraries.to_string (key (component_sch)) & " in " 
+					& et_libraries.to_string (element (component_sch).library_name), level => log_threshold + 1);
 
 				-- Set library cursor so that it points to the library of the generic model.
 				library_cursor := type_libraries.find (
@@ -10648,7 +10653,7 @@ package body et_kicad is
 		end query_schematic_components;
 
 	begin -- check_non_deployed_units
-		log ("detecting non-deployed units ...", log_threshold);
+		log (text => "detecting non-deployed units ...", level => log_threshold);
 		log_indentation_up;
 
 		-- We start with the first module of the modules.
@@ -10657,7 +10662,7 @@ package body et_kicad is
 		-- Process one module after another.
 		-- module_cursor points to the module in the modules.
 		while module_cursor /= type_modules.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 			
 			-- query components in schematic
@@ -10783,7 +10788,7 @@ package body et_kicad is
 			if inserted then
 				if log_level >= 1 then
                     null; -- CS: write this procedure:
-                    --log ("hierachic sheet", console => true);
+                    --log (text => "hierachic sheet", console => true);
 					--et_schematic.write_gui_submodule_properties (gui_sub_mod => cursor);
 				end if;
 			else -- not inserted. net already in module -> abort
@@ -11043,12 +11048,12 @@ package body et_kicad is
 						use et_coordinates;
 					begin -- query_segments_sec
 						log_indentation_up;
-						log ("quering segments ...", log_threshold + 4);
+						log (text => "quering segments ...", level => log_threshold + 4);
 						log_indentation_up;
 						
 						while segment_cursor_sec /= type_net_segments.no_element loop
 						
-							log (to_string (type_net_segment_base (element (segment_cursor_sec))), log_threshold + 4);
+							log (text => to_string (type_net_segment_base (element (segment_cursor_sec))), level => log_threshold + 4);
 						
 							-- Test segments that are on the same path and sheet. It is sufficient
 							-- to compare the start coordinates of the segments.
@@ -11094,17 +11099,17 @@ package body et_kicad is
 
 				begin -- find_position_of_expected_junction
 					log_indentation_up;
-					log ("quering strands ...", log_threshold + 3);
+					log (text => "quering strands ...", level => log_threshold + 3);
 					log_indentation_up;
 
 					-- Query secondary net segments until a junction is expected or until all secondary segments 
 					-- are tested. If no junction is expected return junction_position.expected false.
 					while (not junction_position.expected) and strand_cursor_sec /= type_strands.no_element loop
 
-						log (et_general.to_string (element (strand_cursor_sec).name)
+						log (text => et_general.to_string (element (strand_cursor_sec).name)
 							& " at " 
 							& to_string (element (strand_cursor_sec).position, scope => kicad_coordinates.MODULE),
-							log_threshold + 3);
+							level => log_threshold + 3);
 					
 						query_element (
 							position	=> strand_cursor_sec,
@@ -11153,18 +11158,19 @@ package body et_kicad is
 				
 			begin -- query_segments_prim
 				log_indentation_up;
-				log ("quering segments ...", log_threshold + 2);
+				log (text => "quering segments ...", level => log_threshold + 2);
 				log_indentation_up;
 				
 				while segment_cursor_prim /= type_net_segments.no_element loop
-					log (to_string (
-						type_net_segment_base (element (segment_cursor_prim))), log_threshold + 2);
+					log (text => to_string (
+							type_net_segment_base (element (segment_cursor_prim))), 
+						 level => log_threshold + 2);
 				
 					junction := find_position_of_expected_junction;
 
 					if junction.expected then
 						if not junction_here then
-							log (message_warning & "missing net junction at " 
+							log (WARNING, "missing net junction at " 
 							 & to_string (junction.position, kicad_coordinates.MODULE));
 						end if;
 					end if;
@@ -11177,15 +11183,15 @@ package body et_kicad is
 			end query_segments_prim;
 			
 		begin -- query_strands_prim
-			log ("quering strands ...", log_threshold + 1);
+			log (text => "quering strands ...", level => log_threshold + 1);
 			log_indentation_up;
 			
 			while strand_cursor_prim /= type_strands.no_element loop
 			
-				log (et_general.to_string (element (strand_cursor_prim).name)
+				log (text => et_general.to_string (element (strand_cursor_prim).name)
 					& " at " 
 					& to_string (element (strand_cursor_prim).position, scope => kicad_coordinates.MODULE),
-					log_threshold + 1);
+					level => log_threshold + 1);
 			
 				-- query segments of current strand
 				query_element (
@@ -11199,7 +11205,7 @@ package body et_kicad is
 		end query_strands_prim;
 		
 	begin -- check_junctions
-		log ("detecting missing net junctions ...", log_threshold);
+		log (text => "detecting missing net junctions ...", level => log_threshold);
 		log_indentation_up;
 
 		-- We start with the first module of the modules.
@@ -11209,7 +11215,7 @@ package body et_kicad is
 		-- Process one module after another.
 		-- module_cursor points to the module.
 		while module_cursor /= type_modules.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 			
 			-- query strands of current module
@@ -11294,7 +11300,7 @@ package body et_kicad is
 				end query_strands;
 			
 			begin -- segment_here
-				--log ("probing for other segment at " & to_string (port.coordinates, et_coordinates.module));
+				--log (text => "probing for other segment at " & to_string (port.coordinates, et_coordinates.module));
 			
 				type_modules.query_element (
 					position	=> module_cursor,
@@ -11307,7 +11313,7 @@ package body et_kicad is
 			while junction_cursor /= type_junctions.no_element loop
 
 				if not segment_here then
-					log (message_warning & "orphaned net junction at " 
+					log (WARNING, "orphaned net junction at " 
 						 & to_string (element (junction_cursor).coordinates, kicad_coordinates.MODULE));
 				end if;
 					
@@ -11316,7 +11322,7 @@ package body et_kicad is
 		end query_junctions;
 	
 	begin -- check_orphaned_junctions
-		log ("detecting orphaned net junctions ...", log_threshold);
+		log (text => "detecting orphaned net junctions ...", level => log_threshold);
 		log_indentation_up;
 
 		-- We start with the first module of the modules.
@@ -11326,7 +11332,7 @@ package body et_kicad is
 		-- Process one module after another.
 		-- module_cursor points to the module.
 		while module_cursor /= type_modules.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 		
 			-- query strands of current module
 			query_element (
@@ -11469,7 +11475,7 @@ package body et_kicad is
 
 			procedure log_misplaced_junction is
 			begin
-				log (message_warning & "misplaced net junction at " 
+				log (WARNING, "misplaced net junction at " 
 					& to_string (element (junction_cursor).coordinates, kicad_coordinates.MODULE));
 			end log_misplaced_junction;
 			
@@ -11496,7 +11502,7 @@ package body et_kicad is
 		end query_junctions;
 		
 	begin -- check_misplaced_junctions
-		log ("detecting misplaced net junctions ...", log_threshold);
+		log (text => "detecting misplaced net junctions ...", level => log_threshold);
 		log_indentation_up;
 
 		-- We start with the first module of the modules.
@@ -11506,7 +11512,7 @@ package body et_kicad is
 		-- Process one module after another.
 		-- module_cursor points to the module.
 		while module_cursor /= type_modules.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 		
 			-- query strands of current module
 			query_element (
@@ -11549,13 +11555,14 @@ package body et_kicad is
 						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
 						distance : type_distance_point_from_line;
 					begin -- query_no_connect_flags
-						log ("quering no_connection_flags ...", log_threshold + 4);
+						log (text => "quering no_connection_flags ...", level => log_threshold + 4);
 						log_indentation_up;
 						
 						while no_connection_flag_cursor /= type_no_connection_flags.no_element loop
 
-							log (to_string (element (no_connection_flag_cursor).coordinates, scope => kicad_coordinates.MODULE),
-								log_threshold + 4);
+							log (text => to_string (element (no_connection_flag_cursor).coordinates, 
+													scope => kicad_coordinates.MODULE),
+								level => log_threshold + 4);
 						
 							-- now we have element (segment_cursor) 
 							-- and element (no_connection_flag_cursor) to work with
@@ -11573,7 +11580,7 @@ package body et_kicad is
 									line_range	=> with_end_points);
 
 								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
-									log (message_warning & "no-connection-flag misplaced on a net at " 
+									log (WARNING, "no-connection-flag misplaced on a net at " 
 										& to_string (element (no_connection_flag_cursor).coordinates, kicad_coordinates.MODULE));
 								end if;
 							end if;
@@ -11587,7 +11594,7 @@ package body et_kicad is
 				begin -- find_no_connection_flag
 					log_indentation_up;
 				
-					--log ("searching no_connection_flags ...", log_threshold + 3);
+					--log (text => "searching no_connection_flags ...", level => log_threshold + 3);
 					-- query no_connection_flags of the module
 					type_modules.query_element (
 						position	=> module_cursor,
@@ -11598,11 +11605,11 @@ package body et_kicad is
 				
 			begin -- query_segments
 				log_indentation_up;
-				log ("quering segments ...", log_threshold + 2);
+				log (text => "quering segments ...", level => log_threshold + 2);
 				log_indentation_up;
 				
 				while segment_cursor /= type_net_segments.no_element loop
-					log (to_string (type_net_segment_base (element (segment_cursor))), log_threshold + 2);
+					log (text => to_string (type_net_segment_base (element (segment_cursor))), level => log_threshold + 2);
 				
 					-- test if there are any no_connection_flags placed on the segment
 					find_no_connection_flag;
@@ -11615,15 +11622,15 @@ package body et_kicad is
 			end query_segments;
 			
 		begin -- query_strands
-			log ("quering strands ...", log_threshold + 1);
+			log (text => "quering strands ...", level => log_threshold + 1);
 			log_indentation_up;
 			
 			while strand_cursor /= type_strands.no_element loop
 
-				log (et_general.to_string (element (strand_cursor).name)
+				log (text => et_general.to_string (element (strand_cursor).name)
 					& " at " 
 					& to_string (element (strand_cursor).position, scope => kicad_coordinates.MODULE),
-					log_threshold + 1);
+					level => log_threshold + 1);
 			
 				-- query segments of current strand
 				query_element (
@@ -11637,7 +11644,7 @@ package body et_kicad is
 		end query_strands;
 
 	begin -- check_misplaced_no_connection_flags
-		log ("detecting misplaced no-connection-flags ...", log_threshold);
+		log (text => "detecting misplaced no-connection-flags ...", level => log_threshold);
 		log_indentation_up;
 
 		-- We start with the first module of the modules.
@@ -11647,7 +11654,7 @@ package body et_kicad is
 		-- Process one module after another.
 		-- module_cursor points to the module.
 		while module_cursor /= type_modules.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 			
 			-- query strands of current module and check of any misplaced no_connection_flags
@@ -11721,14 +11728,14 @@ package body et_kicad is
 				-- If the flag is still orphaned issue a warning.
 				if flag_orphaned then
 					-- no_connection_flag is not placed at any port
-					log (message_warning & "orphaned no_connection_flag found at " 
+					log (WARNING, "orphaned no_connection_flag found at " 
 						 & to_string (element (no_connection_flag_cursor).coordinates, kicad_coordinates.MODULE));
 				end if;
 					
 			end query_portlists;
 			
 		begin -- query_no_connect_flags
-			log ("quering no_connection_flags ...", log_threshold + 1);
+			log (text => "quering no_connection_flags ...", level => log_threshold + 1);
 			while no_connection_flag_cursor /= type_no_connection_flags.no_element loop
 
 				query_element (
@@ -11740,7 +11747,7 @@ package body et_kicad is
 		end query_no_connect_flags;
 
 	begin -- check_orphaned_no_connection_flags
-		log ("detecting orphaned no-connection-flags ...", log_threshold);
+		log (text => "detecting orphaned no-connection-flags ...", level => log_threshold);
 		log_indentation_up;
 
 		-- We start with the first module of the modules.
@@ -11750,7 +11757,7 @@ package body et_kicad is
 		-- Process one module after another.
 		-- module_cursor points to the module in the modules.
 		while module_cursor /= type_modules.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 			
 			-- query no_connection_flags of current module and test if any of them
@@ -11803,21 +11810,21 @@ package body et_kicad is
 		
 		case label.label_appearance is
 			when SIMPLE =>
-			log ("simple label " & 
+			log (text => "simple label " & 
 				 et_general.to_string (label.text) & " at " & 
 				 --to_string (position => label.coordinates)); -- CS log_threshold ?
 				 to_string (point => label.coordinates)); -- CS log_threshold ?
 				
 			when TAG =>
 				if label.hierarchic then
-					log ("hierarchic label " & 
+					log (text => "hierarchic label " & 
 					et_general.to_string (label.text) & " at " &
 					--to_string (position => label.coordinates));  -- CS log_threshold ?
 					to_string (point => label.coordinates));  -- CS log_threshold ?
 				end if;
 					
 				if label.global then
-					log ("global label " & et_general.to_string (label.text) & " at " &
+					log (text => "global label " & et_general.to_string (label.text) & " at " &
 					--to_string (position => label.coordinates));  -- CS log_threshold ?
 					to_string (point => label.coordinates));  -- CS log_threshold ?
 				end if;
@@ -11826,7 +11833,7 @@ package body et_kicad is
 		end case;
 
 		log_indentation_up;
-		log (to_string (label.rotation), level => log_threshold + 1);
+		log (text => to_string (label.rotation), level => log_threshold + 1);
 		
 		case label.label_appearance is
 			when simple =>
@@ -11955,10 +11962,10 @@ package body et_kicad is
 				while port_cursor /= type_ports_with_reference.no_element loop
 			
 					-- log reference, port and direction (all in one line)
-					log ("reference " & et_libraries.to_string (element (port_cursor).reference)
+					log (text => "reference " & et_libraries.to_string (element (port_cursor).reference)
 						& " port " & et_libraries.to_string (element (port_cursor).name)
 						& to_string (element (port_cursor).direction, preamble => true),
-						log_threshold + 3);
+						level => log_threshold + 3);
 
 					-- count ports by direction
 					case element (port_cursor).direction is
@@ -12007,17 +12014,17 @@ package body et_kicad is
 				-- Test if net has zero OR one single port. Warn about floating inputs:
 				case length (ports) is
 					when 0 =>
-						log (message_warning & "net " & et_general.to_string (key (net_cursor)) & " has no ports !"
+						log (WARNING, "net " & et_general.to_string (key (net_cursor)) & " has no ports !"
 							& " See import report for coordinates.");
 					
 					when 1 =>
-						log (message_warning & "net " & et_general.to_string (key (net_cursor)) 
+						log (WARNING, "net " & et_general.to_string (key (net_cursor)) 
 							& " has only one port at "
 							& to_string (element (ports.first).coordinates, scope => kicad_coordinates.MODULE));
 
 						-- warn about single inputs
 						if input_count = 1 then
-						log (message_warning & show_net & " has only one input !" & 
+							log (WARNING, show_net & " has only one input !" & 
 							 et_schematic.show_danger (et_schematic.floating_input));
 							-- CS: show affected ports and their coordinates. use a loop in ports and show inputs.
 						end if;
@@ -12026,7 +12033,7 @@ package body et_kicad is
 						if sum_drivers = 0 then -- no kind of driver
 							if input_count > 0 then -- one or more inputs
 								if others_count = 0 then
-									log (message_warning & show_net & " has no energy sources !" &
+									log (WARNING, show_net & " has no energy sources !" &
 										et_schematic.show_danger (et_schematic.floating_input));
 									-- CS: show affected ports and their coordinates. use a loop in ports and show inputs.
 								end if;
@@ -12036,7 +12043,7 @@ package body et_kicad is
 
 				-- Test if outputs drive against each other:
 				if output_count > 1 then
-					log (message_warning & show_net & " has more than one output !" &
+					log (WARNING, show_net & " has more than one output !" &
 						et_schematic.show_danger (et_schematic.contention));
 					-- CS: show affected ports and their coordinates. use a loop in ports and show outputs
 				end if;
@@ -12046,7 +12053,7 @@ package body et_kicad is
 					-- For the moment we warn if there are as many bidir as ports. this implies there is nothing that
 					-- could pull the net to a definite level:
 					if length (ports) = count_type (bidir_count) then
-						log (message_warning & show_net & " has no pull resistors !" &
+						log (WARNING, show_net & " has no pull resistors !" &
 							et_schematic.show_danger (et_schematic.floating_input));
 					end if;
 				end if;
@@ -12056,7 +12063,7 @@ package body et_kicad is
 					-- For the moment we warn if there are as many weak0 outputs as ports. this implies there is nothing that
 					-- could pull the net to a definite level:
 					if length (ports) = count_type (weak0_count) then
-						log (message_warning & show_net & " has no pull-down resistors !" & 
+						log (WARNING, show_net & " has no pull-down resistors !" & 
 							et_schematic.show_danger (et_schematic.floating_input));
 					end if;
 				end if;
@@ -12066,14 +12073,14 @@ package body et_kicad is
 					-- For the moment we warn if there are as many weak1 outputs as ports. this implies there is nothing that
 					-- could pull the net to a definite level:
 					if length (ports) = count_type (weak1_count) then
-						log (message_warning & show_net & " has no pull-up resistors !" &
+						log (WARNING, show_net & " has no pull-up resistors !" &
 							et_schematic.show_danger (et_schematic.floating_input));
 					end if;
 				end if;
 				
 				-- Test contending weak0 against weak1 outputs -- CS: verification required
 				if weak0_count > 0 and weak1_count > 0 then
-					log (message_warning & show_net & " has weak0 and weak1 outputs !" &
+					log (WARNING, show_net & " has weak0 and weak1 outputs !" &
 						et_schematic.show_danger (et_schematic.contention));
 				end if;
 				
@@ -12102,7 +12109,7 @@ package body et_kicad is
 			log_indentation_up;
 		
 			while net_cursor /= type_netlist.no_element loop
-				log (et_general.to_string (key (net_cursor)), log_threshold + 2);
+				log (text => et_general.to_string (key (net_cursor)), level => log_threshold + 2);
 
 				log_indentation_up;
 				
@@ -12119,7 +12126,7 @@ package body et_kicad is
 		end query_nets;
 		
 	begin -- net_test
-		log ("net test ...", log_threshold);
+		log (text => "net test ...", level => log_threshold);
 		log_indentation_up;
 
 		-- We start with the first module of the modules.
@@ -12129,7 +12136,7 @@ package body et_kicad is
 		-- Process one module after another.
 		-- module_cursor points to the module.
 		while module_cursor /= type_modules.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 		
 			-- query nets in netlist
 			query_element (
@@ -12174,7 +12181,7 @@ package body et_kicad is
 				use et_libraries.type_port_name;
 				use type_ports_with_reference;
 			begin -- query_ports
-				log ("querying ports ...", log_threshold + 2);
+				log (text => "querying ports ...", level => log_threshold + 2);
 				log_indentation_up;
 
 				-- If the net has any ports, search for the given port.
@@ -12183,7 +12190,7 @@ package body et_kicad is
 				if not type_ports_with_reference.is_empty (ports) then
 					port_cursor := ports.first;
 					while port_cursor /= type_ports_with_reference.no_element loop
-						log (to_string (element (port_cursor)), log_threshold + 3); -- show port name
+						log (text => to_string (element (port_cursor)), level => log_threshold + 3); -- show port name
 
 						--if element (port_cursor).reference = port.reference then
 						if et_libraries."=" (element (port_cursor).reference, port.reference) then
@@ -12202,7 +12209,7 @@ package body et_kicad is
 			end query_ports;
 			
 		begin -- query_nets
-			log ("querying nets ...", log_threshold + 1);
+			log (text => "querying nets ...", level => log_threshold + 1);
 			log_indentation_up;
 			
 			if not type_netlist.is_empty (module.netlist) then
@@ -12214,7 +12221,7 @@ package body et_kicad is
 				--while not net_found and net_cursor /= et_schematic.type_netlist.no_element loop
 				while not net_found and type_netlist."/=" (net_cursor, type_netlist.no_element) loop
 				--while not net_found and net_cursor /= type_netlist.no_element loop
-					log (et_general.to_string (type_netlist.key (net_cursor)), log_threshold + 2); -- show net name
+					log (text => et_general.to_string (type_netlist.key (net_cursor)), level => log_threshold + 2); -- show net name
 					log_indentation_up;
 					
 					type_netlist.query_element (
@@ -12227,21 +12234,21 @@ package body et_kicad is
 
 				-- If no port was found, issue warning.
 				if not net_found then
-					log (message_warning & "module " & to_string (module_name) 
+					log (WARNING, "module " & to_string (module_name) 
 						& " port " & et_libraries.to_string (port.name) & " is not connected with any net !");
 				end if;
 					
 			else
-				log (message_warning & "module " & to_string (module_name) & " does not have any nets !");
+				log (WARNING, "module " & to_string (module_name) & " does not have any nets !");
 			end if;
 
 			log_indentation_down;
 		end query_nets;
 		
 	begin -- connected_net
-		log ("locating in module " & to_string (port.module) & " net connected with " 
+		log (text => "locating in module " & to_string (port.module) & " net connected with " 
 			& et_libraries.to_string (port.reference) & " port " & et_libraries.to_string (port.name) & " ...",
-			 log_threshold);
+			level => log_threshold);
 		log_indentation_up;
 
 		module_cursor := find (modules, port.module); -- set the cursor to the module
@@ -12249,7 +12256,7 @@ package body et_kicad is
 		-- If module exists, locate the given net in the module.
 		-- Otherwise raise alarm and exit.
 		if module_cursor /= type_modules.no_element then
-			--log (to_string (key (module_cursor)), log_threshold + 1);
+			--log (text => to_string (key (module_cursor)), level => log_threshold + 1);
 			query_element (
 				position	=> module_cursor, 
 				process		=> query_nets'access);
@@ -12381,7 +12388,7 @@ package body et_kicad is
 
 								if not inserted then -- port already in net
 									log_indentation_up;
-									log ("already processed -> skipped", log_threshold + 3);
+									log (text => "already processed -> skipped", level => log_threshold + 3);
 									log_indentation_down;
 								end if;
 							end add_port;
@@ -12400,21 +12407,21 @@ package body et_kicad is
 									if element (port_cursor).connected = NO then
 									
 										log_indentation_up;
-										log ("probing " & et_libraries.to_string (component) 
+										log (text => "probing " & et_libraries.to_string (component) 
 											& " port " & et_libraries.to_string (element (port_cursor).name)
 											& latin_1.space
 											& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
-											log_threshold + 5);
+											level => log_threshold + 5);
 
 										-- test if port sits on segment
 										if port_connected_with_segment (element (port_cursor), element (segment)) then
 											log_indentation_up;
 										
-											log ("connected with " & et_libraries.to_string (component) 
+											log (text => "connected with " & et_libraries.to_string (component) 
 												& " port " & et_libraries.to_string (element (port_cursor).name)
 												& latin_1.space
 												& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
-												log_threshold + 3);
+												level => log_threshold + 3);
 											
 											log_indentation_down;
 
@@ -12444,8 +12451,9 @@ package body et_kicad is
 					
 						while segment /= type_net_segments.no_element loop
 
-							log ("segment " & to_string (
-								type_net_segment_base (element (segment))), log_threshold + 4);
+							log (text => "segment " & to_string (
+									type_net_segment_base (element (segment))), 
+								 level => log_threshold + 4);
 
 							-- reset the component cursor, then loop in the component list 
 							component_cursor := module.portlists.first;	-- points to the component being read
@@ -12471,8 +12479,9 @@ package body et_kicad is
 					while strand_cursor /= type_strands.no_element loop
 
 						-- log strand coordinates
-						log ("strand " & to_string (element (strand_cursor).position, scope => kicad_coordinates.MODULE),
-							 log_threshold + 3);
+						log (text => "strand " & to_string (element (strand_cursor).position, 
+									scope => kicad_coordinates.MODULE),
+							 level => log_threshold + 3);
 
 						query_element (
 							position	=> strand_cursor,
@@ -12490,7 +12499,7 @@ package body et_kicad is
 				while net_cursor /= type_nets.no_element loop
 
 					-- log the name of the net being built
-					log (et_general.to_string (key (net_cursor)), log_threshold + 2);
+					log (text => et_general.to_string (key (net_cursor)), level => log_threshold + 2);
 				
 					-- create net in netlist
 					type_netlist.insert (
@@ -12539,7 +12548,7 @@ package body et_kicad is
 		-- Process one module after another.
 		-- module_cursor points to the module.
 		while module_cursor /= type_modules.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 			
 			update_element (
@@ -12547,7 +12556,7 @@ package body et_kicad is
 				position	=> module_cursor,
 				process		=> add_netlist'access);
 
-			log ("net count total" & count_type'image (net_count), log_threshold + 1);
+			log (text => "net count total" & count_type'image (net_count), level => log_threshold + 1);
 			log_indentation_down;
 			
 			next (module_cursor);
@@ -12599,8 +12608,8 @@ package body et_kicad is
 
 					variant_cursor : et_libraries.type_component_variants.cursor;
 				begin -- query_variants
-					log ("locating variant " & et_libraries.type_component_variant_name.to_string (package_variant)
-						& " ...", log_threshold + 3);
+					log (text => "locating variant " & et_libraries.type_component_variant_name.to_string (package_variant)
+						& " ...", level => log_threshold + 3);
 					log_indentation_up;
 
 					-- The variant should be found (because the component has been inserted in the library earlier).
@@ -12630,15 +12639,15 @@ package body et_kicad is
 						when event:
 							others =>
 								log_indentation_reset;
-								log (ada.exceptions.exception_message (event), console => true);
+								log (text => ada.exceptions.exception_message (event), console => true);
 								raise;
 					
 				end query_variants;
 				
 			begin -- locate_component_in_library
-				log ("locating generic component " & to_string (generic_name) 
+				log (text => "locating generic component " & to_string (generic_name) 
 						& " in library " & et_libraries.to_string (library_name) 
-						& " ...", log_threshold + 2);
+						& " ...", level => log_threshold + 2);
 				log_indentation_up;
 
 				-- Set the component_cursor right away to the position of the generic component
@@ -12664,7 +12673,7 @@ package body et_kicad is
 			end locate_component_in_library;
 			
 		begin -- locate_component_in_schematic
-			log ("locating component in schematic ...", log_threshold + 1);
+			log (text => "locating component in schematic ...", level => log_threshold + 1);
 			log_indentation_up;
 
 			-- The component cursor is set according to the position of the reference:
@@ -12686,7 +12695,7 @@ package body et_kicad is
 		end locate_component_in_schematic;
 		
 	begin -- terminal_count
-		log ("fetching terminal count of " & et_libraries.to_string (reference) & " ...", log_threshold);
+		log (text => "fetching terminal count of " & et_libraries.to_string (reference) & " ...", level => log_threshold);
 		log_indentation_up;
 		
 		query_element (
@@ -12778,8 +12787,8 @@ package body et_kicad is
 					end locate_terminal;
 					
 				begin -- query_variants
-					log ("locating variant " & et_libraries.to_string (package_variant)
-						& " ...", log_threshold + 3);
+					log (text => "locating variant " & et_libraries.to_string (package_variant)
+						& " ...", level => log_threshold + 3);
 					log_indentation_up;
 
 					-- The variant should be found (because the component has been inserted in the library earlier).
@@ -12794,9 +12803,9 @@ package body et_kicad is
 				end query_variants;
 				
 			begin -- locate_component_in_library
-				log ("locating generic component " & to_string (generic_name) 
+				log (text => "locating generic component " & to_string (generic_name) 
 						& " in library " & et_libraries.to_string (library_name) 
-						& " ...", log_threshold + 2);
+						& " ...", level => log_threshold + 2);
 				log_indentation_up;
 
 				-- Set the component_cursor right away to the position of the generic component
@@ -12822,7 +12831,7 @@ package body et_kicad is
 			end locate_component_in_library;
 			
 		begin -- locate_component_in_schematic
-			log ("locating component in schematic ...", log_threshold + 1);
+			log (text => "locating component in schematic ...", level => log_threshold + 1);
 			log_indentation_up;
 
 			-- The component cursor is set according to the position of the reference:
@@ -12844,9 +12853,9 @@ package body et_kicad is
 		end locate_component_in_schematic;
 	
 	begin -- to_terminal
-		log ("locating in module " & to_string (module) & " terminal (according to package variant) for " 
+		log (text => "locating in module " & to_string (module) & " terminal (according to package variant) for " 
 			& et_libraries.to_string (port.reference) 
-			& " port " & et_libraries.to_string (port.name) & " ...", log_threshold);
+			& " port " & et_libraries.to_string (port.name) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		-- Abort if given port is not a real component.
@@ -12934,7 +12943,7 @@ package body et_kicad is
 							port.reference := reference; -- the given component reference
 							port.name := element (terminal_cursor).name; -- the port name
 							
-							log ("port name " & et_libraries.to_string (port.name), log_threshold + 4);
+							log (text => "port name " & et_libraries.to_string (port.name), level => log_threshold + 4);
 						else
 							log (ERROR, "terminal " & et_libraries.to_string (terminal) & " not found !",
 								 console => true);
@@ -12943,7 +12952,7 @@ package body et_kicad is
 					end locate_terminal;
 					
 				begin -- query_variants
-					log ("locating variant " & et_libraries.to_string (package_variant) & " ...", log_threshold + 3);
+					log (text => "locating variant " & et_libraries.to_string (package_variant) & " ...", level => log_threshold + 3);
 					log_indentation_up;
 
 					variant_cursor := component.variants.find (package_variant);
@@ -12966,8 +12975,8 @@ package body et_kicad is
 				end query_variants;
 				
 			begin -- locate_component_in_library
-				log ("locating generic component " & to_string (generic_name) 
-						& " in library " & et_libraries.to_string (library_name) & " ...", log_threshold + 2);
+				log (text => "locating generic component " & to_string (generic_name) 
+						& " in library " & et_libraries.to_string (library_name) & " ...", level => log_threshold + 2);
 				log_indentation_up;
 
 				-- Set the component_cursor right away to the position of the generic component
@@ -13000,7 +13009,7 @@ package body et_kicad is
 			end locate_component_in_library;
 				
 		begin -- query_components
-			log ("querying components in schematic ...", log_threshold + 1);
+			log (text => "querying components in schematic ...", level => log_threshold + 1);
 			log_indentation_up;
 
 			-- find component with given reference in schematic
@@ -13033,8 +13042,8 @@ package body et_kicad is
 		end query_components;
 
 	begin -- connected_net
-		log ("locating in module " & to_string (module) & " net connected with " 
-			& et_libraries.to_string (reference) & " terminal " & et_libraries.to_string (terminal) & " ...", log_threshold);
+		log (text => "locating in module " & to_string (module) & " net connected with " 
+			& et_libraries.to_string (reference) & " terminal " & et_libraries.to_string (terminal) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		module_cursor := find (modules, module); -- set the cursor to the module
@@ -13091,7 +13100,7 @@ package body et_kicad is
 
 			begin
 				log_indentation_up;
-				--log ("ports" & count_type'image (length (ports)), log_threshold + 3);
+				--log (text => "ports" & count_type'image (length (ports)), level => log_threshold + 3);
 
 				while type_ports_with_reference."/=" (port_cursor, type_ports_with_reference.no_element) loop
 
@@ -13105,12 +13114,12 @@ package body et_kicad is
 							log_threshold 	=> log_threshold + 4);
 					
 						-- log reference, unit, port, direction, terminal (all in one line)
-						log ("reference " & et_libraries.to_string (type_ports_with_reference.element (port_cursor).reference)
+						log (text => "reference " & et_libraries.to_string (type_ports_with_reference.element (port_cursor).reference)
 							& " unit " & et_libraries.to_string (unit_name => terminal.unit)
 							& " port " & et_libraries.to_string (port => terminal.port)
 							& to_string (type_ports_with_reference.element (port_cursor).direction)
 							& " terminal " & et_libraries.to_string (terminal => terminal.name),
-							log_threshold + 3);
+							level => log_threshold + 3);
 
 						-- write reference, port, direction, terminal in netlist (all in one line)
 						put_line (netlist_handle, 
@@ -13134,7 +13143,7 @@ package body et_kicad is
 			while type_netlist."/=" (net_cursor, type_netlist.no_element) loop
 
 				-- log and write net name in netlist
-				log (et_general.to_string (type_netlist.key (net_cursor)), log_threshold + 2);
+				log (text => et_general.to_string (type_netlist.key (net_cursor)), level => log_threshold + 2);
 				new_line (netlist_handle);
 				put_line (netlist_handle, et_general.to_string (type_netlist.key (net_cursor)));
 
@@ -13155,11 +13164,11 @@ package body et_kicad is
 		--first_module;
 		module_cursor := type_modules.first (modules);
 
-		log ("exporting netlists ...", log_threshold);
+		log (text => "exporting netlists ...", level => log_threshold);
 		log_indentation_up;
 		
 		while module_cursor /= type_modules.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 
 			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);			
@@ -13177,7 +13186,7 @@ package body et_kicad is
 				);
 
 			-- create the netlist (which inevitably and intentionally overwrites the previous file)
-			log ("creating netlist file " & et_schematic.type_netlist_file_name.to_string (netlist_file_name), log_threshold + 1);
+			log (text => "creating netlist file " & et_schematic.type_netlist_file_name.to_string (netlist_file_name), level => log_threshold + 1);
 			create (
 				file => netlist_handle,
 				mode => out_file, 
@@ -13242,14 +13251,14 @@ package body et_kicad is
 			terminal 	: et_libraries.type_terminal;
 			port_count 	: count_type;
 		begin
-			log ("locating net ... ", log_threshold + 1);
+			log (text => "locating net ... ", level => log_threshold + 1);
 			log_indentation_up;
 			net_cursor := type_netlist.find (module.netlist, net);
 
 			-- If net exists in module load ports with all the ports
 			-- connected with the net. Otherwise raise alarm and abort.
 			if type_netlist."/=" (net_cursor, type_netlist.no_element) then
-				--log (to_string (key (net_cursor)), log_threshold + 2);
+				--log (to_string (key (net_cursor)), level => log_threshold + 2);
 
 				-- copy ports of net to "ports" (which is returned to the caller)
 				ports := type_netlist.element (net_cursor);
@@ -13258,7 +13267,7 @@ package body et_kicad is
 				-- show component ports, units, coordinates and terminal names
 				if log_level > log_threshold + 2 then
 					log_indentation_up;
-					log ("listing of" & count_type'image (port_count) & " component ports");
+					log (text => "listing of" & count_type'image (port_count) & " component ports");
 					log_indentation_up;
 
 					-- If there are ports in the given net, set port cursor to first port in net
@@ -13275,17 +13284,17 @@ package body et_kicad is
 							case port.appearance is
 								when et_libraries.sch_pcb =>
 									terminal := to_terminal (port, module_name, log_threshold + 3); -- fetch the terminal
-									log (to_string (port => port) 
+									log (text => to_string (port => port) 
 										& et_libraries.to_string (terminal, show_unit => true, preamble => true));
 
 								when et_libraries.sch =>
-									log (to_string (port => port));
+									log (text => to_string (port => port));
 							end case;
 								
 							type_ports_with_reference.next (port_cursor);
 						end loop;
 					else
-						log (message_warning & "net " & et_general.to_string (net) & " is not connected with any ports !");
+						log (WARNING, "net " & et_general.to_string (net) & " is not connected with any ports !");
 					end if;
 
 					log_indentation_down;
@@ -13303,8 +13312,9 @@ package body et_kicad is
 		end locate_net;
 			
 	begin -- components_in_net
-		log ("locating components in module " & to_string (module) & " net " & et_general.to_string (net) & " ...",
-			 log_threshold);
+		log (text => "locating components in module " & to_string (module) & " net " &
+			 et_general.to_string (net) & " ...",
+			level => log_threshold);
 		log_indentation_up;
 
 		module_cursor := find (modules, module); -- set the cursor to the module
@@ -13352,7 +13362,7 @@ package body et_kicad is
 			port 		: type_port_with_reference;
 			terminal 	: et_libraries.type_terminal;
 		begin
-			log ("locating net ... ", log_threshold + 1);
+			log (text => "locating net ... ", level => log_threshold + 1);
 			log_indentation_up;
 			net_cursor := type_netlist.find (module.netlist, net);
 
@@ -13375,13 +13385,15 @@ package body et_kicad is
 
 							-- log terminal
 							terminal := to_terminal (port, module_name, log_threshold + 2); -- fetch the terminal
-							log (to_string (port) & et_libraries.to_string (terminal, show_unit => true, preamble => true), log_threshold + 2);
+							log (text => to_string (port) & et_libraries.to_string (
+									terminal, show_unit => true, preamble => true),
+								 level => log_threshold + 2);
 						end if;
 							
 						type_ports_with_reference.next (port_cursor);
 					end loop;
 				else
-					log (message_warning & "net " & et_general.to_string (net) & " is not connected with any ports !");
+					log (WARNING, "net " & et_general.to_string (net) & " is not connected with any ports !");
 				end if;
 					
 			else -- net does not exist -> abort
@@ -13395,8 +13407,9 @@ package body et_kicad is
 		end locate_net;
 			
 	begin -- real_components_in_net
-		log ("locating real components in module " & to_string (module) & " net " & et_general.to_string (net) & " ...",
-			 log_threshold);
+		log (text => "locating real components in module " & to_string (module) & " net " &
+			 et_general.to_string (net) & " ...",
+			 level => log_threshold);
 		log_indentation_up;
 
 		module_cursor := find (modules, module); -- set the cursor to the module
@@ -13459,7 +13472,7 @@ package body et_kicad is
 -- 				if et_libraries."=" (element (component).appearance, et_libraries.sch_pcb) then
 -- 
 -- 					if et_schematic."=" (bom (component), et_schematic.YES) then
--- 						log (et_libraries.to_string (key (component)), log_threshold + 2);
+-- 						log (text => et_libraries.to_string (key (component)), level => log_threshold + 2);
 -- 
 -- 						-- CS: warning if netchanger/net-ties occur here. they should have the bom flag set to NO.
 -- 						et_csv.reset_column;
@@ -13493,7 +13506,7 @@ package body et_kicad is
 -- 		end query_components;
 -- 		
 -- 	begin -- export_bom
--- 		log ("exporting BOM ...", log_threshold);
+-- 		log (text => "exporting BOM ...", log_threshold);
 -- 		log_indentation_up;
 -- 
 -- 		-- We start with the first module of the modules.		
@@ -13503,7 +13516,7 @@ package body et_kicad is
 -- 		-- Process one module after another.
 -- 		-- module_cursor points to the module.
 -- 		while module_cursor /= type_modules.no_element loop
--- 			log ("module " & et_coordinates.to_string (key (module_cursor)), log_threshold);
+-- 			log (text => "module " & et_coordinates.to_string (key (module_cursor)), level => log_threshold);
 -- 			log_indentation_up;
 -- 
 -- 			create_project_directory (et_coordinates.to_string (key (module_cursor)), log_threshold + 2);
@@ -13521,7 +13534,7 @@ package body et_kicad is
 -- 				);
 -- 
 -- 			-- create the BOM (which inevitably and intentionally overwrites the previous file)
--- 			log ("creating BOM file " & et_schematic.type_bom_file_name.to_string (bom_file_name), log_threshold + 1);
+-- 			log (text => "creating BOM file " & et_schematic.type_bom_file_name.to_string (bom_file_name), level => log_threshold + 1);
 -- 			create (
 -- 				file => bom_handle,
 -- 				mode => out_file, 
@@ -13580,14 +13593,14 @@ package body et_kicad is
 -- 			use type_component_purpose;
 -- 			component : et_kicad.type_components_schematic.cursor := module.components.first;
 -- 		begin
--- 			--log ("purpose already used by component");
+-- 			--log (text => "purpose already used by component");
 -- 			log_indentation_up;
 -- 
 -- 			while component /= et_kicad.type_components_schematic.no_element loop
 -- 				if element (component).appearance = sch_pcb then -- it must be a real component
 -- 					if conventions.category (key (component)) = category then -- category must match
 -- 						if element (component).purpose = purpose then -- purpose must match
--- 							log ("purpose already used by component " &
+-- 							log (text => "purpose already used by component " &
 -- 								 et_libraries.to_string (key (component)));
 -- 						end if;
 -- 					end if;
@@ -13646,14 +13659,14 @@ package body et_kicad is
 -- 			log ("detecting multiple usage of purpose " 
 -- 				 & enclose_in_quotes (et_libraries.to_string (purpose)) 
 -- 				 & " in component category " & to_string (category) 
--- 				 & " ...", log_threshold);
+-- 				 & " ...", level => log_threshold);
 -- 			log_indentation_up;
 -- 
 -- 			while component /= et_kicad.type_components_schematic.no_element loop
 -- 				if element (component).appearance = sch_pcb then -- it must be a real component
 -- 					if conventions.category (key (component)) = category then -- category must match
 -- 						if element (component).purpose = purpose then -- purpose must match
--- 							log (et_libraries.to_string (key (component)), log_threshold + 1);
+-- 							log (et_libraries.to_string (key (component)), level => log_threshold + 1);
 -- 							occurences := occurences + 1;
 -- 						end if;
 -- 					end if;
@@ -13674,7 +13687,7 @@ package body et_kicad is
 -- 		-- Show the result of the search:
 -- 		if occurences = 0 then
 -- 			log_indentation_up;
--- 			log ("none found. very good.", log_threshold + 1);
+-- 			log ("none found. very good.", level => log_threshold + 1);
 -- 			log_indentation_down;
 -- 		else
 -- 			log (message_warning & "for component category" 
@@ -13711,13 +13724,14 @@ package body et_kicad is
 			-- This is for logging mounted or not mounted components.
 			begin
 				if mounted then
-					log (et_libraries.to_string (key (component)) 
+					log (text => et_libraries.to_string (key (component)) 
 						& arrow & et_libraries.to_string (element (component).appearance, verbose => true),
-						log_threshold + 1);
+						level => log_threshold + 1);
 				else
-					log (et_libraries.to_string (key (component)) 
+					log (text => et_libraries.to_string (key (component)) 
 						& arrow & et_libraries.to_string (element (component).appearance, verbose => true) 
-						& arrow & not_mounted, log_threshold + 1);
+						& arrow & not_mounted,
+						level => log_threshold + 1);
 				end if;
 			end log_component;
 			
@@ -13847,11 +13861,11 @@ package body et_kicad is
 		--first_module;
 		module_cursor := first (modules);
 		
-		log ("writing statistics ...", log_threshold);
+		log (text => "writing statistics ...", level => log_threshold);
 		log_indentation_up;
 		
 		while module_cursor /= type_modules.no_element loop
-			log ("module " & to_string (key (module_cursor)), log_threshold);
+			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
 			log_indentation_up;
 
 			-- CAD
@@ -13866,8 +13880,8 @@ package body et_kicad is
 				);
 
 			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
-			log ("creating CAD statistics file " &
-				 et_schematic.type_statistic_file_name.to_string (statistics_file_name_cad), log_threshold + 1);
+			log (text => "creating CAD statistics file " &
+				 et_schematic.type_statistic_file_name.to_string (statistics_file_name_cad), level => log_threshold + 1);
 			
 			create (
 				file => statistics_handle_cad,
@@ -13937,8 +13951,8 @@ package body et_kicad is
 				);
 
 			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
-			log ("CAM statistics file " &
-				 et_schematic.type_statistic_file_name.to_string (statistics_file_name_cam), log_threshold + 2);
+			log (text => "CAM statistics file " &
+				 et_schematic.type_statistic_file_name.to_string (statistics_file_name_cam), level => log_threshold + 2);
 			
 			create (
 				file => statistics_handle_cam,
@@ -13988,8 +14002,8 @@ package body et_kicad is
 		use et_coordinates;
 		use et_libraries;
 	begin
-		log ("text note" & to_string (
-			position => note.coordinates, scope => kicad_coordinates.XY), log_threshold);
+		log (text => "text note" & to_string (
+			position => note.coordinates, scope => kicad_coordinates.XY), level => log_threshold);
 
 		log_indentation_up;
 
@@ -14003,22 +14017,22 @@ package body et_kicad is
 		if log_level >= log_threshold + 1 then
 			
 			-- size
-			log ("size" & et_libraries.type_text_size'image (note.size));
+			log (text => "size" & et_libraries.type_text_size'image (note.size));
 
 			-- style
-			log ("style " & to_lower(et_libraries.type_text_style'image (note.style)));
+			log (text => "style " & to_lower(et_libraries.type_text_style'image (note.style)));
 
 			-- line width
-			log ("line width" & et_libraries.type_text_line_width'image (note.line_width));
+			log (text => "line width" & et_libraries.type_text_line_width'image (note.line_width));
 
 			-- rotation
-			log (et_coordinates.to_string (note.rotation));
+			log (text => et_coordinates.to_string (note.rotation));
 
 			-- visible
-			--log ("visible " & to_lower (et_libraries.type_text_visible'image (note.visible)));
+			--log (text => "visible " & to_lower (et_libraries.type_text_visible'image (note.visible)));
 
 			-- alignment
-			log ("alignment (hor/vert) "
+			log (text => "alignment (hor/vert) "
 				& to_lower (et_libraries.type_text_alignment_horizontal'image (note.alignment.horizontal))
 				& "/"
 				& to_lower (et_libraries.type_text_alignment_vertical'image (note.alignment.vertical)));
