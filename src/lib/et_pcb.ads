@@ -1485,3 +1485,8 @@ package et_pcb is
 end et_pcb;
 
 -- Soli Deo Gloria
+
+-- For God so loved the world that he gave 
+-- his one and only Son, that whoever believes in him 
+-- shall not perish but have eternal life.
+-- The Bible, John 3.16
