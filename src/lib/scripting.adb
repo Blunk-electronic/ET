@@ -85,7 +85,7 @@ package body scripting is
 		return type_domain'value (domain_prefix & domain);
 
 		exception when event: others => 
-			log (message_error & "domain '" & domain & "' invalid !", console => true);
+			log (ERROR, "domain " & enclose_in_quotes (domain) & " invalid !", console => true);
 			raise;
 	end;
 
@@ -96,7 +96,7 @@ package body scripting is
 	function to_verb (verb : in string) return type_verb_board is begin
 		return type_verb_board'value (verb);
 		exception when event: others => 
-			log (message_error & "verb '" & verb & "' invalid !", console => true);
+			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
 			raise;
 	end;
 	
@@ -107,7 +107,7 @@ package body scripting is
 	function to_verb (verb : in string) return type_verb_schematic is begin
 		return type_verb_schematic'value (verb);
 		exception when event: others => 
-			log (message_error & "verb '" & verb & "' invalid !", console => true);
+			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
 			raise;
 	end;
 	
@@ -118,7 +118,7 @@ package body scripting is
 	function to_noun (noun : in string) return type_noun_schematic is begin
 		return type_noun_schematic'value (noun);
 		exception when event: others => 
-			log (message_error & "noun '" & noun & "' invalid !", console => true);
+			log (ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
 			raise;
 	end;
 
@@ -129,7 +129,7 @@ package body scripting is
 	function to_noun (noun : in string) return type_noun_board is begin
 		return type_noun_board'value (noun);
 		exception when event: others => 
-			log (message_error & "noun '" & noun & "' invalid !", console => true);
+			log (ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
 			raise;
 	end;
 	
@@ -160,26 +160,26 @@ package body scripting is
 
 		procedure validate_module_name is begin
 			if not exists (module) then
-				log (message_error & "module " & to_string (module) &
+				log (ERROR, "module " & to_string (module) &
 					" not found !", console => true);
 				raise constraint_error;
 			end if;
 		end;
 		
 		procedure invalid_noun (noun : in string) is begin
-			log (message_error & "invalid noun '" & noun & "' for this operation !",
+			log (ERROR, "invalid noun " & enclose_in_quotes (noun) & " for this operation !",
 				 console => true);
 			raise constraint_error;
 		end;
 
 		procedure command_incomplete is begin
-			log (message_error & "command " & enclose_in_quotes (to_string (cmd)) &
+			log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
 				" not complete !", console => true);
 			raise constraint_error;
 		end;
 
 		procedure command_too_long (from : in count_type) is begin
-			log (message_error & "command " & enclose_in_quotes (to_string (cmd)) &
+			log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
 				 " too long !");
 			log (" -> Excessive arguments after no." & count_type'image (from) & " !");
 			raise constraint_error;
@@ -1455,7 +1455,7 @@ package body scripting is
 		return exit_code;
 
 		exception when event: others => 
-			log (message_error & "script " & to_string (file_name) & latin_1.space &
+			log (ERROR, "script " & to_string (file_name) & latin_1.space &
 				affected_line (cmd) & "command '" &
 				to_string (cmd) & "' invalid !", console => true);
 			return ERROR;
@@ -1538,7 +1538,7 @@ package body scripting is
 			end loop;
 
 		else -- script file not found
-			log (message_error & "script file " & 
+			log (ERROR, "script file " & 
 				 enclose_in_quotes (simple_name (to_string (file_name))) &
 				 " not found !", console => true);
 			raise constraint_error;
