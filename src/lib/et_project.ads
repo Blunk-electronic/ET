@@ -47,7 +47,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_general;
+with et_general;				use et_general;
 with et_coordinates;			use et_coordinates;
 with et_libraries;
 with et_string_processing;
@@ -136,13 +136,6 @@ package et_project is
 	rig_configuration_file_extension : constant string := "conf";
 	rig_configuration_file_extension_asterisk : constant string := "*." & rig_configuration_file_extension;
 
-	-- In the rig configuration file modules are refered to by their base name (without extension):
-	module_name_length_max : constant := 100;
-	package type_module_name is new generic_bounded_length (module_name_length_max);
-
-	function to_string (name : in type_module_name.bounded_string) return string;
-	function to_module_name (name : in string) return type_module_name.bounded_string;
-	
 	type type_module_instance is record
 		generic_name		: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		assembly_variant	: assembly_variants.type_variant_name.bounded_string; -- low_cost

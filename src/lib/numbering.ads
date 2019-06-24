@@ -90,15 +90,15 @@ package numbering is
 
 	-- A collection of submodule names. like amplifier (without extension *.mod)
 	package type_submodules is new doubly_linked_lists (
-		element_type	=> et_project.type_module_name.bounded_string, -- amplifier
-		"="				=> et_project.type_module_name."=");
+		element_type	=> type_module_name.bounded_string, -- amplifier
+		"="				=> type_module_name."=");
 
 	use type_submodules;
 	
 	-- A collection of parent modules with their submodules:
 	package type_modules is new ordered_maps (
-		key_type		=> et_project.type_module_name.bounded_string, -- audio_mixer
-		"<"				=> et_project.type_module_name."<",
+		key_type		=> type_module_name.bounded_string, -- audio_mixer
+		"<"				=> type_module_name."<",
 		element_type	=> type_submodules.list); -- amplifier, power_supply, vu-meter
 
 	

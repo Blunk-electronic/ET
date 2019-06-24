@@ -136,14 +136,6 @@ package body et_project is
 		return type_module_file_name.to_string (name);
 	end;
 	
-	function to_string (name : in type_module_name.bounded_string) return string is begin
-		return type_module_name.to_string (name);
-	end;
-
-	function to_module_name (name : in string) return type_module_name.bounded_string is begin
-		return type_module_name.to_bounded_string (name);
-	end;
-
 	function exists (module : in type_module_name.bounded_string) return boolean is begin
 	-- Returns true if the module with the given name exists in container modules.
 		return type_modules.contains (modules, module);
