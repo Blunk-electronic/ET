@@ -62,7 +62,7 @@ with et_string_processing;
 with et_pcb;
 with et_pcb_coordinates;
 with submodules;
--- with numbering;
+with numbering;
 
 package et_schematic is
 	use et_general.type_net_name;
@@ -366,7 +366,8 @@ package et_schematic is
 		-- General non-component related board stuff (silk screen, documentation, ...):
 		board			: et_pcb.type_board;
 
--- 		submod_tree		: numbering.type_modules.map;
+		-- The tree of submodules is stored here:
+		submod_tree		: numbering.type_modules.map;
 	end record;
 
 

@@ -55,6 +55,7 @@ with et_schematic;				use et_schematic;
 with et_project;				use et_project;
 with submodules;
 with assembly_variants;
+with numbering;
 
 package schematic_ops is
 
@@ -551,6 +552,17 @@ package schematic_ops is
 		offset			: in et_libraries.type_device_name_index;
 		log_threshold	: in type_log_level);
 
+	function sort_by_coordinates (
+		module_cursor 	: in et_project.type_modules.cursor;
+		log_threshold	: in type_log_level)
+		return numbering.type_devices.map;
+
+	function unit_positions_valid (
+	-- Returns true if no unit sits on top of another.
+		module_cursor 	: in et_project.type_modules.cursor;
+		log_threshold	: in type_log_level)
+		return boolean;
+	
 	procedure renumber_devices (
 	-- Renumbers devices according to the sheet number.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)

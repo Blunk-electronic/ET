@@ -10428,6 +10428,109 @@ package body schematic_ops is
 			return false;
 
 	end rename_device;
+
+	function sort_by_coordinates (
+		module_cursor 	: in et_project.type_modules.cursor;
+		log_threshold	: in type_log_level) 
+		return numbering.type_devices.map is
+		use numbering;
+		devices : numbering.type_devices.map; -- to be returned
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+
+			procedure query_units (device_cursor : in et_schematic.type_devices.cursor) is
+				use et_schematic.type_units;
+				device_name : type_device_name := et_schematic.type_devices.key (device_cursor); -- R1
+
+				procedure sort (unit_cursor : in et_schematic.type_units.cursor) is 
+					unit_name : type_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
+					unit_position : et_coordinates.type_coordinates := element (unit_cursor).position;
+					inserted : boolean := false;
+					cursor_sort : numbering.type_devices.cursor;
+				begin -- sort
+					log (text => "unit " & to_string (unit_name) &
+						" at " & to_string (position => unit_position),
+						 level => log_threshold + 2);
+					
+					numbering.type_devices.insert 
+						(
+						container	=> devices,
+						key			=> unit_position, -- sheet/x/y
+						inserted	=> inserted,
+						position	=> cursor_sort,
+						new_item	=> (
+									name => device_name, -- R1, IC3
+									unit => unit_name, -- 1, C, IO_BANK1
+									done => false -- not renumbered yet
+									)
+						);
+
+					if not inserted then
+						log (ERROR, "device " & to_string (device_name) &
+							 " unit " & to_string (unit_name) &
+							 " at " & to_string (position => unit_position) &
+							 " sits on top of another unit !",
+							 console => true);
+						raise constraint_error;
+					end if;
+							 
+				end sort;
+				
+			begin -- query_units
+				
+				log (text => "device " & to_string (device_name), -- R1, IC3
+					 level => log_threshold + 1);
+				
+				log_indentation_up;
+				
+				et_schematic.type_units.iterate (
+					container	=> et_schematic.type_devices.element (device_cursor).units,
+					process		=> sort'access);
+
+				log_indentation_down;
+			end query_units;
+			
+		begin -- query_devices
+			et_schematic.type_devices.iterate (
+				container	=> module.devices,
+				process		=> query_units'access);
+		end query_devices;
+
+	begin -- sort_by_coordinates
+		log (text => "sorting devices/units by schematic coordinates ...", level => log_threshold);
+
+		log_indentation_up;
+		
+		et_project.type_modules.query_element (
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+
+		log_indentation_down;
+		
+		return devices;
+	end sort_by_coordinates;
+
+	function unit_positions_valid (
+	-- Returns true if no unit sits on top of another.
+		module_cursor 	: in et_project.type_modules.cursor;
+		log_threshold	: in type_log_level)
+		return boolean is
+		use numbering;
+		devices : numbering.type_devices.map;
+	begin
+		devices := sort_by_coordinates (module_cursor, log_threshold);
+		-- If a unit sits on top of another unit, sort_by_coordinates throws a
+		-- constraint_error which will be catched here.
+
+		return true;
+		
+		exception when event: others => 
+			return false;
+		
+	end unit_positions_valid;
 	
 	procedure renumber_devices (
 	-- Renumbers devices according to the sheet number.
@@ -10582,7 +10685,7 @@ package body schematic_ops is
 		module_cursor := locate_module (module_name);
 
 		-- Get a list of devices and units where they are sorted by their coordinates.
-		devices := numbering.sort_by_coordinates (module_cursor, log_threshold + 2);
+		devices := sort_by_coordinates (module_cursor, log_threshold + 2);
 
 		-- Renumber for each device category. If the first run fails, start another
 		-- iteration. If that fails too, issue error and abort.
@@ -11002,7 +11105,7 @@ package body schematic_ops is
 			process		=> query_nets'access);
 
 		-- check unit positions (units sitting on top of each other)
-		if not numbering.unit_positions_valid (module_cursor, log_threshold + 1) then
+		if not unit_positions_valid (module_cursor, log_threshold + 1) then
 			error;
 		end if;
 

@@ -51,15 +51,13 @@ with et_general;				use et_general;
 
 with et_coordinates;
 with et_libraries;				use et_libraries;
--- with assembly_variants;
 with et_string_processing;		use et_string_processing;
--- with et_pcb;
--- with et_pcb_coordinates;
--- with submodules;
-with et_project;
+
 
 package numbering is
 
+	procedure dummy;
+	
 	type type_device is record
 		name	: type_device_name; -- R56, IC4
 		unit	: type_unit_name.bounded_string; -- 1, A, B, ...
@@ -71,17 +69,6 @@ package numbering is
 		key_type		=> et_coordinates.type_coordinates, -- sheet/x/y
 		"<"				=> et_coordinates."<",
 		element_type	=> type_device);
-		
-	function sort_by_coordinates (
-		module_cursor 	: in et_project.type_modules.cursor;
-		log_threshold	: in type_log_level)
-		return type_devices.map;
-
-	function unit_positions_valid (
-	-- Returns true if no unit sits on top of another.
-		module_cursor 	: in et_project.type_modules.cursor;
-		log_threshold	: in type_log_level)
-		return boolean;
 
 	type type_index_range is record
 		lowest	: et_libraries.type_device_name_index := et_libraries.type_device_name_index'last;
