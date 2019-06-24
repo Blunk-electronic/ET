@@ -49,22 +49,34 @@ with gnat.directory_operations;
 with ada.containers;            use ada.containers;
 
 with et_general;				use et_general;
-with et_string_processing;		use et_string_processing;
-with et_project;				use et_project;
-
-with et_coordinates;			use et_coordinates;
-with et_libraries;				use et_libraries;
-with et_schematic;				use et_schematic;
--- with schematic_ops;
--- with submodules;
--- with assembly_variants;
--- with board_ops;
-with et_project;
+-- with et_string_processing;		use et_string_processing;
 
 package body numbering is
 
 	procedure dummy is begin null; end;
 
+	function "<" (left, right : in type_module) return boolean is
+		use type_module_name;
+		use type_module_instance_name;
+		result : boolean;
+	begin
+		if left.name < right.name then
+			result := true;
+		elsif left.name > right.name then
+			result := false;
+		else -- names equal
+			if left.instance < right.instance then
+				result := true;
+			elsif left.instance > right.instance then
+				result := false;
+			else -- instances equal
+				result := false;
+			end if;
+		end if;
+
+		return result;
+	end "<";
+			
 	
 end numbering;
 	

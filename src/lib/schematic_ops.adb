@@ -10438,7 +10438,7 @@ package body schematic_ops is
 
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in et_schematic.type_module) is
 
 			procedure query_units (device_cursor : in et_schematic.type_devices.cursor) is
 				use et_schematic.type_units;
@@ -10850,18 +10850,87 @@ package body schematic_ops is
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor;
+
+		submod_tree : numbering.type_modules.map;
 		
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out et_schematic.type_module) is
 			use submodules;
 			use submodules.type_submodules;
-			submod_cursor : submodules.type_submodules.cursor := module.submods.first;
-			file : type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
-		begin
+			submod_cursor	: submodules.type_submodules.cursor := module.submods.first;
+			submod_name		: type_module_name.bounded_string; -- $ET_TEMPLATES/motor_driver
+			submod_instance	: type_module_instance_name.bounded_string; -- OSC1
+
+			inserted : boolean;
+			submod_of_submod_cursor : numbering.type_modules.cursor;
+
+			procedure build (
+				module 		: in numbering.type_module;
+				submods	: in out numbering.type_submodules.list) is
+				--cursor : numbering.type_modules.cursor;
+				module_cursor : et_project.type_modules.cursor;
+
+				procedure query_submodules (
+					module_name	: in type_module_name.bounded_string;
+					module		: in et_schematic.type_module) is
+					submod_cursor	: submodules.type_submodules.cursor := module.submods.first;
+					submod_name		: type_module_name.bounded_string; -- $ET_TEMPLATES/motor_driver
+					submod_instance	: type_module_instance_name.bounded_string; -- OSC1
+
+					inserted : boolean;
+					submod_of_submod_cursor : numbering.type_submodules.cursor;
+				begin
+					while submod_cursor /= submodules.type_submodules.no_element loop
+						submod_name := to_module_name (remove_extension (to_string (element (submod_cursor).file)));
+						submod_instance := key (submod_cursor);
+						log (text => "submodule file " & to_string (submod_name), level => log_threshold + 1);
+						log (text => " instance " & to_string (submod_instance), level => log_threshold + 1);
+
+						numbering.type_submodules.append (
+							container	=> submods,
+							new_item	=> (submod_name, submod_instance) -- templates/CLOCK_GENERATOR OSC1
+-- 							position	=> submod_of_submod_cursor
+							);
+						
+-- 						numbering.type_modules.update_element (
+-- 							container	=> submods,
+-- 							position	=> numbering.type_mo last (submods),
+-- 							process		=> build'access);
+						
+						next (submod_cursor);
+					end loop;
+				end query_submodules;
+				
+			begin -- build
+				module_cursor := locate_module (module.name);
+				
+				query_element (
+					position	=> module_cursor,
+					process		=> query_submodules'access);
+			
+			end build;
+			
+		begin -- query_submodules
 			while submod_cursor /= submodules.type_submodules.no_element loop
-				file := element (submod_cursor).file;
-				log (text => "submodule file " & to_string (file), level => log_threshold + 1);
+				submod_name := to_module_name (remove_extension (to_string (element (submod_cursor).file)));
+				submod_instance := key (submod_cursor);
+				log (text => "submodule file " & to_string (submod_name), level => log_threshold + 1);
+				log (text => " instance " & to_string (submod_instance), level => log_threshold + 1);
+
+				numbering.type_modules.insert (
+					container	=> submod_tree,
+					key			=> (submod_name, submod_instance), -- templates/CLOCK_GENERATOR OSC1
+					new_item	=> numbering.type_submodules.empty_list,
+					inserted	=> inserted,
+					position	=> submod_of_submod_cursor
+					);
+
+				numbering.type_modules.update_element (
+					container	=> submod_tree,
+					position	=> submod_of_submod_cursor,
+					process		=> build'access);
+				
 				next (submod_cursor);
 			end loop;
 		end query_submodules;

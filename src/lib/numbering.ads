@@ -75,17 +75,22 @@ package numbering is
 		highest	: et_libraries.type_device_name_index := et_libraries.type_device_name_index'first;		
 	end record;
 
+	type type_module is record
+		name		: type_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
+		instance	: type_module_instance_name.bounded_string; -- AMP_2, DRV1
+	end record;
+
+	function "<" (left, right : in type_module) return boolean;
+	
 	-- A collection of submodule names. like amplifier (without extension *.mod)
 	package type_submodules is new doubly_linked_lists (
-		element_type	=> type_module_name.bounded_string, -- amplifier
-		"="				=> type_module_name."=");
+		element_type	=> type_module);
 
 	use type_submodules;
 	
 	-- A collection of parent modules with their submodules:
 	package type_modules is new ordered_maps (
-		key_type		=> type_module_name.bounded_string, -- audio_mixer
-		"<"				=> type_module_name."<",
+		key_type		=> type_module, -- audio_mixer
 		element_type	=> type_submodules.list); -- amplifier, power_supply, vu-meter
 
 	
