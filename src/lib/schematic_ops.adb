@@ -10696,6 +10696,8 @@ package body schematic_ops is
 
 		ranges : type_ranges.map;
 
+		-- modules : type_modules.map;
+		
 		procedure query_submodules (
 		-- Locates the targeted assembly variant of the parent module.
 			module_name	: in type_module_name.bounded_string;
