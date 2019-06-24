@@ -131,8 +131,8 @@ package et_general is
 	-- Returns true if the given net name is anonymous.
 
 
--- MODULE INSTANCE NAMES
-	-- In the rig configuration file modules are refered to by their base name (without extension):
+-- MODULES AND INSTANCE NAMES
+	-- Modules files are refered to by their base name (without extension):
 	module_name_length_max : constant := 100;
 	package type_module_name is new generic_bounded_length (module_name_length_max);
 
