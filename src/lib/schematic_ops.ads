@@ -574,6 +574,11 @@ package schematic_ops is
 	-- The given module_name is the top module.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
+
+	procedure build_submodules_tree (
+	-- Re(builds) the tree of submodules.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

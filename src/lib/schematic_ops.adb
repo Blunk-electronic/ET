@@ -10804,9 +10804,16 @@ package body schematic_ops is
 		procedure query_submodules (
 		-- Locates the targeted assembly variant of the parent module.
 			module_name	: in type_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out et_schematic.type_module) is
+			use submodules.type_submodules;
+			submod_cursor : submodules.type_submodules.cursor := module.submods.first;
 		begin
+			while submod_cursor /= submodules.type_submodules.no_element loop
 			null;
+			-- module.submods 
+			-- submods			: submodules.type_submodules.map;		-- submodules
+				next (submod_cursor);
+			end loop;
 		end query_submodules;
 		
 	begin -- calculate_device_index_ranges
@@ -10837,6 +10844,43 @@ package body schematic_ops is
 		log_indentation_down;
 	end calculate_device_index_ranges;
 	
+	procedure build_submodules_tree (
+	-- Re(builds) the tree of submodules.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor;
+		
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out et_schematic.type_module) is
+			use submodules;
+			use submodules.type_submodules;
+			submod_cursor : submodules.type_submodules.cursor := module.submods.first;
+			file : type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
+		begin
+			while submod_cursor /= submodules.type_submodules.no_element loop
+				file := element (submod_cursor).file;
+				log (text => "submodule file " & to_string (file), level => log_threshold + 1);
+				next (submod_cursor);
+			end loop;
+		end query_submodules;
+		
+	begin -- build_submodules_tree
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+			" building submodules tree ...", level => log_threshold);
+		log_indentation_up;
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> et_project.modules,
+			position	=> module_cursor,
+			process		=> query_submodules'access);
+
+		log_indentation_down;
+	end build_submodules_tree;
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.

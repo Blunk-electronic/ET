@@ -81,6 +81,7 @@ package scripting is
 
 	type type_verb_schematic is (
 		ADD,
+		BUILD,
 		CALCULATE,
 		CHECK,
 		COPY,
@@ -125,6 +126,7 @@ package scripting is
 		SEGMENT, -- net segment
 		SUBMODULE,
 		SUBMODULE_FILE,		
+		SUBMODULES_TREE,
 		TEXT,
 		TEXT_SIZE,
 		UNIT,
