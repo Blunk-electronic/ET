@@ -10849,6 +10849,7 @@ package body schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level) is
 
+		-- the cursor to the given top module
 		module_cursor : type_modules.cursor;
 
 		submod_tree : numbering.type_modules.map;
@@ -10866,13 +10867,13 @@ package body schematic_ops is
 			submod_of_submod_cursor : numbering.type_modules.cursor;
 
 			procedure build (
-				module 		: in numbering.type_module;
+				module 	: in numbering.type_module;
 				submods	: in out numbering.type_submodules.list) is
 				--cursor : numbering.type_modules.cursor;
 				module_cursor : et_project.type_modules.cursor;
 
 				procedure query_submodules (
-					module_name	: in type_module_name.bounded_string;
+					module_name	: in type_module_name.bounded_string; -- M1
 					module		: in et_schematic.type_module) is
 					submod_cursor	: submodules.type_submodules.cursor := module.submods.first;
 					submod_name		: type_module_name.bounded_string; -- $ET_TEMPLATES/motor_driver
@@ -10895,7 +10896,7 @@ package body schematic_ops is
 						
 -- 						numbering.type_modules.update_element (
 -- 							container	=> submods,
--- 							position	=> numbering.type_mo last (submods),
+-- 							position	=> numbering.type_submodules.last (submods),
 -- 							process		=> build'access);
 						
 						next (submod_cursor);
@@ -10903,7 +10904,7 @@ package body schematic_ops is
 				end query_submodules;
 				
 			begin -- build
-				module_cursor := locate_module (module.name);
+				module_cursor := locate_module (module.name); -- M1
 				
 				query_element (
 					position	=> module_cursor,
@@ -10911,7 +10912,7 @@ package body schematic_ops is
 			
 			end build;
 			
-		begin -- query_submodules
+		begin -- query_submodules in given top module
 			while submod_cursor /= submodules.type_submodules.no_element loop
 				submod_name := to_module_name (remove_extension (to_string (element (submod_cursor).file)));
 				submod_instance := key (submod_cursor);
@@ -10940,7 +10941,7 @@ package body schematic_ops is
 			" building submodules tree ...", level => log_threshold);
 		log_indentation_up;
 
-		-- locate module
+		-- locate the given top module
 		module_cursor := locate_module (module_name);
 		
 		update_element (
