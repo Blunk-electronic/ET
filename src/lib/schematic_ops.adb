@@ -10853,7 +10853,13 @@ package body schematic_ops is
 		module_cursor : type_modules.cursor;
 		
 		submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
-		child_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
+		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
+
+		max_section_depth : constant positive := 10;
+		package stack is new et_general.stack_lifo (
+			item	=> numbering.type_modules.cursor,
+			max 	=> max_section_depth);
+
 		
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
@@ -10863,8 +10869,12 @@ package body schematic_ops is
 			submod_cursor	: submodules.type_submodules.cursor := module.submods.first;
 			submod_name		: type_module_name.bounded_string; -- $ET_TEMPLATES/motor_driver
 			submod_instance	: type_module_instance_name.bounded_string; -- OSC1
-			
+
+-- 			parent_cursor : numbering.type_modules.cursor;
 		begin -- query_submodules in given top module
+			
+				-- function Parent(Position: Cursor) return Cursor;
+			
 			while submod_cursor /= submodules.type_submodules.no_element loop
 				submod_name := to_module_name (remove_extension (to_string (element (submod_cursor).file)));
 				submod_instance := key (submod_cursor);
@@ -10873,13 +10883,11 @@ package body schematic_ops is
 
 				numbering.type_modules.insert_child (
 					container	=> submod_tree,
-					parent		=> child_cursor,
+					parent		=> tree_cursor,
 					before		=> numbering.type_modules.no_element,
 					new_item	=> (submod_name, submod_instance), -- templates/CLOCK_GENERATOR OSC1
-					position	=> child_cursor
+					position	=> tree_cursor
 					);
-
-				-- function Parent(Position: Cursor) return Cursor;
 				
 				-- locate the submodule
 				module_cursor := locate_module (submod_name);
@@ -10897,6 +10905,9 @@ package body schematic_ops is
 			" building submodules tree ...", level => log_threshold);
 		log_indentation_up;
 
+		stack.init;
+		stack.push (tree_cursor);
+		
 		-- locate the given top module
 		module_cursor := locate_module (module_name);
 		
@@ -10904,6 +10915,8 @@ package body schematic_ops is
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 
+		tree_cursor := stack.pop;
+		
 		log_indentation_down;
 	end build_submodules_tree;
 	
