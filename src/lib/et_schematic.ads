@@ -367,7 +367,7 @@ package et_schematic is
 		board			: et_pcb.type_board;
 
 		-- The tree of submodules is stored here:
-		submod_tree		: numbering.type_modules.map;
+		submod_tree		: numbering.type_modules.tree;
 	end record;
 
 

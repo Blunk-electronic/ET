@@ -44,6 +44,7 @@ with ada.containers;            use ada.containers;
 with ada.containers.doubly_linked_lists;
 -- with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
+with ada.containers.multiway_trees;
 -- with ada.containers.indefinite_ordered_maps;
 -- with ada.containers.ordered_sets;
 
@@ -52,7 +53,6 @@ with et_general;				use et_general;
 with et_coordinates;
 with et_libraries;				use et_libraries;
 with et_string_processing;		use et_string_processing;
-
 
 package numbering is
 
@@ -81,18 +81,9 @@ package numbering is
 	end record;
 
 	function "<" (left, right : in type_module) return boolean;
-	
-	-- A collection of submodule names. like amplifier (without extension *.mod)
-	package type_submodules is new doubly_linked_lists (
-		element_type	=> type_module);
 
-	use type_submodules;
-	
-	-- A collection of parent modules with their submodules:
-	package type_modules is new ordered_maps (
-		key_type		=> type_module, -- audio_mixer
-		element_type	=> type_submodules.list); -- amplifier, power_supply, vu-meter
 
+	package type_modules is new multiway_trees (type_module);
 	
 	
 end numbering;
