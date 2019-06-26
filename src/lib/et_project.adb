@@ -7815,16 +7815,6 @@ package body et_project is
 		return to_lower (type_section_name_module'image (section) (5..len));
 	end to_string;
 
-	function remove_extension (file_name : in string) return string is
-	-- Removes from a string like templates/clock_generator.mod the extension so that
-	-- the return would be templates/clock_generator .
-		name_length : positive := file_name'length;
-		pos_last_character : positive;
-	begin
-		pos_last_character := name_length - module_file_name_extension'length - 1;
-		return file_name (file_name'first .. pos_last_character);
-	end remove_extension;
-	
 	procedure read_module_file (
 		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
 		log_threshold	: in et_string_processing.type_log_level) 

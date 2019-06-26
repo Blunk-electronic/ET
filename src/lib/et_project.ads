@@ -116,15 +116,13 @@ package et_project is
 	function to_project_path (path : in string) return type_et_project_path.bounded_string;
 	
 
-	-- The module file name:
+	-- The module file name: -- CS move to et_general
 	module_file_name_length_max : constant positive := 100;
 	package type_module_file_name is new generic_bounded_length (module_file_name_length_max);
 
 	function to_module_file_name (name : in string) return type_module_file_name.bounded_string;
 	function to_string (name : in type_module_file_name.bounded_string) return string;
 	
-	module_file_name_extension : constant string := "mod";
-	module_file_name_extension_asterisk : constant string := "*." & module_file_name_extension;
 
 
 
@@ -594,10 +592,6 @@ package et_project is
 
 	function to_string (section : in type_section_name_module) return string;
 	-- Converts a section like SEC_NET to a string "net".
-
-	function remove_extension (file_name : in string) return string;
-	-- Removes from a string like templates/clock_generator.mod the extension so that
-	-- the return would be templates/clock_generator .
 	
 	procedure read_module_file (
 		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod

@@ -81,7 +81,11 @@ package submodules is
 	-- The full name of a submodule like $ET_TEMPLATES/motor_driver.mod
 	package type_submodule_path is new generic_bounded_length (submodule_path_length_max);
 	function to_submodule_path (path : in string) return type_submodule_path.bounded_string;
-	function to_string (path : in submodules.type_submodule_path.bounded_string) return string;
+	function to_string (path : in type_submodule_path.bounded_string) return string;
+
+	function to_module_name (path : in type_submodule_path.bounded_string) 
+		return et_general.type_module_name.bounded_string;
+	-- Removes the file extension from given path and returns the module name.
 	
 	type type_submodule_port is record
 		-- the position somewhere at the edge of the box

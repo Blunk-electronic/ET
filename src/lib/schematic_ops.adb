@@ -7715,9 +7715,11 @@ package body schematic_ops is
 				raise constraint_error;
 			end if;
 		end add;
+
+		use et_general.type_module_name;
 		
 	begin -- add_submodule
-		log (text => "module " & to_string (module_name) &
+		log (text => "module " & et_general.to_string (module_name) &
 			" adding submodule " & to_string (file) & 
 			" instance " & enclose_in_quotes (to_string (instance)),
 			level => log_threshold);
@@ -7725,6 +7727,11 @@ package body schematic_ops is
 		log (text => " at" & to_string (position => position) &
 			to_submodule_size (size),
 			level => log_threshold);
+
+		-- Make sure the parent module does not use itself as submodule:
+		if module_name = to_module_name (file) then
+			log (ERROR, "Circular dependency: A module can not have itself as submodule !", console => true);
+		end if;
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -10870,16 +10877,15 @@ package body schematic_ops is
 			submod_name		: type_module_name.bounded_string; -- $ET_TEMPLATES/motor_driver
 			submod_instance	: type_module_instance_name.bounded_string; -- OSC1
 
--- 			parent_cursor : numbering.type_modules.cursor;
 		begin -- query_submodules in given top module
-			
-				-- function Parent(Position: Cursor) return Cursor;
 			
 			while submod_cursor /= submodules.type_submodules.no_element loop
 				submod_name := to_module_name (remove_extension (to_string (element (submod_cursor).file)));
 				submod_instance := key (submod_cursor);
-				log (text => "submodule " & to_string (submod_name), level => log_threshold + 1);
-				log (text => " instance " & to_string (submod_instance), level => log_threshold + 1);
+				log (text => "submodule " & enclose_in_quotes (to_string (submod_name)) &
+					 " instance " & to_string (submod_instance), level => log_threshold + 1);
+				
+				stack.push (tree_cursor);
 
 				numbering.type_modules.insert_child (
 					container	=> submod_tree,
@@ -10888,6 +10894,8 @@ package body schematic_ops is
 					new_item	=> (submod_name, submod_instance), -- templates/CLOCK_GENERATOR OSC1
 					position	=> tree_cursor
 					);
+
+				log_indentation_up;
 				
 				-- locate the submodule
 				module_cursor := locate_module (submod_name);
@@ -10895,7 +10903,11 @@ package body schematic_ops is
 				query_element (
 					position	=> module_cursor,
 					process		=> query_submodules'access);
-					
+
+				log_indentation_down;
+				
+				tree_cursor := stack.pop;
+				
 				next (submod_cursor);
 			end loop;
 		end query_submodules;
@@ -10906,7 +10918,6 @@ package body schematic_ops is
 		log_indentation_up;
 
 		stack.init;
-		stack.push (tree_cursor);
 		
 		-- locate the given top module
 		module_cursor := locate_module (module_name);
@@ -10915,7 +10926,6 @@ package body schematic_ops is
 			position	=> module_cursor,
 			process		=> query_submodules'access);
 
-		tree_cursor := stack.pop;
 		
 		log_indentation_down;
 	end build_submodules_tree;

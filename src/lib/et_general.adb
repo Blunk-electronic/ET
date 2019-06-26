@@ -40,6 +40,16 @@ with ada.directories;
 with et_string_processing;
 
 package body et_general is
+	
+	function remove_extension (file_name : in string) return string is
+	-- Removes from a string like templates/clock_generator.mod the extension so that
+	-- the return would be templates/clock_generator .
+		name_length : positive := file_name'length;
+		pos_last_character : positive;
+	begin
+		pos_last_character := name_length - module_file_name_extension'length - 1;
+		return file_name (file_name'first .. pos_last_character);
+	end remove_extension;
 
 	function directory_entries (
 	-- Returns the entries of the given directory. Parameter category determines whether to

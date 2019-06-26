@@ -60,10 +60,17 @@ package et_general is
 	work_directory			: constant string (1..2)	:= "ET";
 
 
+	module_file_name_extension : constant string := "mod";
+	module_file_name_extension_asterisk : constant string := "*." & module_file_name_extension;
+	
+	function remove_extension (file_name : in string) return string;
+	-- Removes from a string like templates/clock_generator.mod the extension so that
+	-- the return would be templates/clock_generator .
+	
 	-- When directories content is searched, the entries (files, directories) are collected
 	-- in a simple list.
 	package type_directory_entries is new indefinite_doubly_linked_lists (element_type => string);
-
+	
 	function directory_entries (
 	-- Returns the entries of the given directory. Parameter category determines whether to
 	-- search for directories, ordinary files or special files.
