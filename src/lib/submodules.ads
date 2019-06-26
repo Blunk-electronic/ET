@@ -56,6 +56,8 @@ with et_pcb_coordinates;
 
 package submodules is
 
+	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
+	
 	type type_submodule_size is record
 		x, y : et_coordinates.type_distance; -- size x/y of the box
 	end record;

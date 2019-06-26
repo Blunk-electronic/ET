@@ -10862,11 +10862,10 @@ package body schematic_ops is
 		submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
 		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
 
-		max_section_depth : constant positive := 10;
+		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
 		package stack is new et_general.stack_lifo (
 			item	=> numbering.type_modules.cursor,
-			max 	=> max_section_depth);
-
+			max 	=> submodules.nesting_depth_max);
 		
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
@@ -10878,13 +10877,14 @@ package body schematic_ops is
 			submod_instance	: type_module_instance_name.bounded_string; -- OSC1
 
 		begin -- query_submodules in given top module
-			
 			while submod_cursor /= submodules.type_submodules.no_element loop
 				submod_name := to_module_name (remove_extension (to_string (element (submod_cursor).file)));
 				submod_instance := key (submod_cursor);
 				log (text => "submodule " & enclose_in_quotes (to_string (submod_name)) &
 					 " instance " & to_string (submod_instance), level => log_threshold + 1);
-				
+
+				-- Before inserting the submodule in the tree, the current tree cursor
+				-- at this level must be saved on the stack:
 				stack.push (tree_cursor);
 
 				numbering.type_modules.insert_child (
@@ -10895,17 +10895,22 @@ package body schematic_ops is
 					position	=> tree_cursor
 					);
 
+				-- tree_cursor points now to the submodule that has been inserted last.
+				-- Submodules of this submodule will be inserted as childs.
 				log_indentation_up;
 				
-				-- locate the submodule
+				-- locate the current submodule
 				module_cursor := locate_module (submod_name);
-				
+
+				-- search for submodules at deeper levels. Here the procedure query_submodules
+				-- calls itself (recursive).
 				query_element (
 					position	=> module_cursor,
 					process		=> query_submodules'access);
 
 				log_indentation_down;
-				
+
+				-- Restore the tree cursor. See stack.push statement above.
 				tree_cursor := stack.pop;
 				
 				next (submod_cursor);
@@ -10925,7 +10930,6 @@ package body schematic_ops is
 		query_element (
 			position	=> module_cursor,
 			process		=> query_submodules'access);
-
 		
 		log_indentation_down;
 	end build_submodules_tree;
