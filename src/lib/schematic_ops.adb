@@ -10846,7 +10846,6 @@ package body schematic_ops is
 			container	=> et_project.modules,
 			position	=> module_cursor,
 			process		=> query_submodules'access);
-		
 
 		log_indentation_down;
 	end calculate_device_index_ranges;
@@ -10916,6 +10915,13 @@ package body schematic_ops is
 				next (submod_cursor);
 			end loop;
 		end query_submodules;
+
+		procedure assign_tree (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out et_schematic.type_module) is
+		begin
+			module.submod_tree := submod_tree;
+		end assign_tree;
 		
 	begin -- build_submodules_tree
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
@@ -10926,10 +10932,17 @@ package body schematic_ops is
 		
 		-- locate the given top module
 		module_cursor := locate_module (module_name);
-		
+
+		-- build the submodule tree in container submod_tree:
 		query_element (
 			position	=> module_cursor,
 			process		=> query_submodules'access);
+
+		-- assign the submod_tree to the given top module
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> assign_tree'access);
 		
 		log_indentation_down;
 	end build_submodules_tree;
