@@ -84,7 +84,7 @@ package numbering is
 
 
 	package type_modules is new multiway_trees (type_module);
-	
+
 	
 end numbering;
 

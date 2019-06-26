@@ -10806,22 +10806,49 @@ package body schematic_ops is
 
 		ranges : type_ranges.map;
 
-		-- modules : type_modules.map;
+		submod_tree : numbering.type_modules.tree;
+		tree_cursor : numbering.type_modules.cursor;
+
+		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
+		package stack is new et_general.stack_lifo (
+			item	=> numbering.type_modules.cursor,
+			max 	=> submodules.nesting_depth_max);
 		
-		procedure query_submodules (
-		-- Locates the targeted assembly variant of the parent module.
-			module_name	: in type_module_name.bounded_string;
-			module		: in out et_schematic.type_module) is
-			use submodules.type_submodules;
-			submod_cursor : submodules.type_submodules.cursor := module.submods.first;
+		procedure set_offset is 
+			use numbering.type_modules;
 		begin
-			while submod_cursor /= submodules.type_submodules.no_element loop
-			null;
-			-- module.submods 
-			-- submods			: submodules.type_submodules.map;		-- submodules
-				next (submod_cursor);
-			end loop;
-		end query_submodules;
+			log_indentation_up;
+			tree_cursor := first_child (tree_cursor);
+
+			if tree_cursor = numbering.type_modules.no_element then
+				log (text => "no submodules here -> bottom reached", level => log_threshold + 1);
+			else
+				
+				while tree_cursor /= numbering.type_modules.no_element loop
+					log (text => "submodule " & enclose_in_quotes (to_string (element (tree_cursor).name)) &
+						" instance " & enclose_in_quotes (to_string (element (tree_cursor).instance)),
+						level => log_threshold + 1);
+					
+					stack.push (tree_cursor);
+
+					set_offset;
+					
+					tree_cursor := stack.pop;
+
+					next_sibling (tree_cursor);
+				end loop;
+
+			end if;
+			
+			log_indentation_down;
+
+			exception
+				when event: others =>
+					log_indentation_reset;
+					log (text => ada.exceptions.exception_information (event), console => true);
+					raise;
+			
+		end set_offset;
 		
 	begin -- calculate_device_index_ranges
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
@@ -10842,12 +10869,29 @@ package body schematic_ops is
 			next (module_cursor);
 		end loop;
 
-		update_element (
-			container	=> et_project.modules,
-			position	=> module_cursor,
-			process		=> query_submodules'access);
-
 		log_indentation_down;
+
+		log (text => "setting device name offsets ...", level => log_threshold + 1);
+		-- log_indentation_up;
+		
+		-- locate the given top module
+		module_cursor := locate_module (module_name);
+		
+		submod_tree := element (module_cursor).submod_tree;
+		tree_cursor := numbering.type_modules.root (submod_tree);
+
+		stack.init;
+
+		set_offset;
+		
+		-- log_indentation_down;
+
+		exception
+			when event: others =>
+				log_indentation_reset;
+				log (text => ada.exceptions.exception_information (event), console => true);
+				raise;
+
 	end calculate_device_index_ranges;
 	
 	procedure build_submodules_tree (
@@ -10874,7 +10918,6 @@ package body schematic_ops is
 			submod_cursor	: submodules.type_submodules.cursor := module.submods.first;
 			submod_name		: type_module_name.bounded_string; -- $ET_TEMPLATES/motor_driver
 			submod_instance	: type_module_instance_name.bounded_string; -- OSC1
-
 		begin -- query_submodules in given top module
 			while submod_cursor /= submodules.type_submodules.no_element loop
 				submod_name := to_module_name (remove_extension (to_string (element (submod_cursor).file)));
@@ -10921,6 +10964,10 @@ package body schematic_ops is
 			module		: in out et_schematic.type_module) is
 		begin
 			module.submod_tree := submod_tree;
+			log (text => "submodules total" & 
+				 count_type'image (numbering.type_modules.node_count (module.submod_tree) - 1),
+				 level => log_threshold + 1
+				);
 		end assign_tree;
 		
 	begin -- build_submodules_tree
@@ -10937,14 +10984,18 @@ package body schematic_ops is
 		query_element (
 			position	=> module_cursor,
 			process		=> query_submodules'access);
+		
+		log_indentation_down;
 
+		-- relocate the given top module
+		module_cursor := locate_module (module_name);
+		
 		-- assign the submod_tree to the given top module
 		update_element (
 			container	=> modules,
 			position	=> module_cursor,
 			process		=> assign_tree'access);
-		
-		log_indentation_down;
+	
 	end build_submodules_tree;
 	
 	procedure check_integrity (
