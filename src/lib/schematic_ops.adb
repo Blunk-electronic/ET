@@ -10815,24 +10815,30 @@ package body schematic_ops is
 			max 	=> submodules.nesting_depth_max);
 		
 		procedure set_offset is 
+		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself.			
 			use numbering.type_modules;
 		begin
 			log_indentation_up;
+
+			-- start with the first submodule on the current hierarchy level
 			tree_cursor := first_child (tree_cursor);
 
-			if tree_cursor = numbering.type_modules.no_element then
+			if tree_cursor = numbering.type_modules.no_element then -- no submodules on this level
 				log (text => "no submodules here -> bottom reached", level => log_threshold + 1);
 			else
-				
+				-- iterate through the submodules on this level
 				while tree_cursor /= numbering.type_modules.no_element loop
 					log (text => "submodule " & enclose_in_quotes (to_string (element (tree_cursor).name)) &
 						" instance " & enclose_in_quotes (to_string (element (tree_cursor).instance)),
 						level => log_threshold + 1);
-					
+
+					-- backup the cursor to the current submodule on this level
 					stack.push (tree_cursor);
 
+					-- iterate through submodules on the level below
 					set_offset;
-					
+
+					-- restore cursor to submodule (see stack.push above)
 					tree_cursor := stack.pop;
 
 					next_sibling (tree_cursor);
@@ -10876,12 +10882,16 @@ package body schematic_ops is
 		
 		-- locate the given top module
 		module_cursor := locate_module (module_name);
-		
-		submod_tree := element (module_cursor).submod_tree;
-		tree_cursor := numbering.type_modules.root (submod_tree);
 
+		-- take a copy of the submodule tree of the given top module:
+		submod_tree := element (module_cursor).submod_tree;
+
+		-- set the cursor inside the tree at root position:
+		tree_cursor := numbering.type_modules.root (submod_tree);
+		
 		stack.init;
 
+		-- start reading the submodule tree. set_offset is recursive.
 		set_offset;
 		
 		-- log_indentation_down;
