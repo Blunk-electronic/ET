@@ -77,6 +77,14 @@ package body numbering is
 		return result;
 	end "<";
 			
+	function to_index_range (
+		module_name	: in type_module_name.bounded_string;
+		index_range	: in type_index_range) return string is
+	begin
+		return ("module " & enclose_in_quotes (to_string (module_name)) &
+			" range" & et_libraries.to_string (index_range.lowest) &
+			" .." & et_libraries.to_string (index_range.highest));
+	end to_index_range;
 	
 end numbering;
 	

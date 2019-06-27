@@ -75,6 +75,11 @@ package numbering is
 		highest	: et_libraries.type_device_name_index := et_libraries.type_device_name_index'first;		
 	end record;
 
+	function to_index_range (
+		module_name	: in type_module_name.bounded_string;
+		index_range	: in type_index_range) return string;
+
+	
 	type type_module is record
 		name		: type_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
 		instance	: type_module_instance_name.bounded_string; -- AMP_2, DRV1

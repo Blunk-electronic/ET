@@ -10729,7 +10729,7 @@ package body schematic_ops is
 
 		log_indentation_down;
 	end renumber_devices;
-
+		
 	function device_index_range (
 	-- Renames the lowest and highest device index of the given module.
 		module_cursor		: in type_modules.cursor; -- the cursor to the module
@@ -10806,6 +10806,15 @@ package body schematic_ops is
 
 		ranges : type_ranges.map;
 
+		function query_range (module : in type_module_name.bounded_string)
+		-- Returns the index range of the given module.
+			return numbering.type_index_range is
+			cursor : type_ranges.cursor;
+		begin
+			cursor := type_ranges.find (ranges, module);
+			return type_ranges.element (cursor);
+		end query_range;
+		
 		submod_tree : numbering.type_modules.tree;
 		tree_cursor : numbering.type_modules.cursor;
 
@@ -10817,21 +10826,48 @@ package body schematic_ops is
 		procedure set_offset is 
 		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself.			
 			use numbering.type_modules;
+			module_name : type_module_name.bounded_string;
+			parent_name : type_module_name.bounded_string;
+			module_range : type_index_range;
+			parent_range : type_index_range;
 		begin
 			log_indentation_up;
 
 			-- start with the first submodule on the current hierarchy level
 			tree_cursor := first_child (tree_cursor);
 
-			if tree_cursor = numbering.type_modules.no_element then -- no submodules on this level
-				log (text => "no submodules here -> bottom reached", level => log_threshold + 1);
-			else
-				-- iterate through the submodules on this level
-				while tree_cursor /= numbering.type_modules.no_element loop
-					log (text => "submodule " & enclose_in_quotes (to_string (element (tree_cursor).name)) &
-						" instance " & enclose_in_quotes (to_string (element (tree_cursor).instance)),
-						level => log_threshold + 1);
+			-- iterate through the submodules on this level
+			while tree_cursor /= numbering.type_modules.no_element loop
+				module_name := element (tree_cursor).name;
+				
+				log (text => "submodule " & enclose_in_quotes (to_string (module_name)) &
+					" instance " & enclose_in_quotes (to_string (element (tree_cursor).instance)),
+					level => log_threshold + 1);
 
+				if first_child (tree_cursor) = numbering.type_modules.no_element then 
+					-- no submodules on the current level
+					
+					log_indentation_up;
+					log (text => "no submodules here -> bottom reached", level => log_threshold + 1);
+
+					-- Get the index ranges of the current module and of its parent module.
+					-- In case we are on the first level, the parent module is the given top module.
+					if parent (tree_cursor) = root (submod_tree) then
+						parent_name := calculate_device_index_ranges.module_name;
+					else
+						parent_name := element (parent (tree_cursor)).name;
+					end if;
+					
+					module_range := query_range (module_name);
+					log (text => to_index_range (module_name, module_range), level => log_threshold + 1);
+					
+					parent_range := query_range (parent_name);
+					log (text => "parent " & to_index_range (parent_name, parent_range), level => log_threshold + 1);
+					
+					log_indentation_down;
+				else
+					-- there are submodules on the current level
+					
 					-- backup the cursor to the current submodule on this level
 					stack.push (tree_cursor);
 
@@ -10841,10 +10877,10 @@ package body schematic_ops is
 					-- restore cursor to submodule (see stack.push above)
 					tree_cursor := stack.pop;
 
-					next_sibling (tree_cursor);
-				end loop;
-
-			end if;
+				end if;
+				
+				next_sibling (tree_cursor);
+			end loop;
 			
 			log_indentation_down;
 
