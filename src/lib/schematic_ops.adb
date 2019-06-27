@@ -10731,7 +10731,8 @@ package body schematic_ops is
 	end renumber_devices;
 		
 	function device_index_range (
-	-- Renames the lowest and highest device index of the given module.
+	-- Returns the lowest and highest device index of the given module.
+	-- NOTE: This is about the indexes used by the generic module.
 		module_cursor		: in type_modules.cursor; -- the cursor to the module
 		log_threshold		: in type_log_level) 
 		return numbering.type_index_range is
@@ -10762,8 +10763,7 @@ package body schematic_ops is
 			end loop;
 
 			if length (module.devices) > 0 then
-				log (text => "lowest" & et_libraries.to_string (index_range.lowest) &
-					 " highest" & et_libraries.to_string (index_range.highest),
+				log (text => numbering.to_index_range (module_name, index_range),
 					 level => log_threshold + 1);
 			else
 				log (WARNING, "no devices found !");
@@ -10807,7 +10807,8 @@ package body schematic_ops is
 		ranges : type_ranges.map;
 
 		function query_range (module : in type_module_name.bounded_string)
-		-- Returns the index range of the given module.
+		-- Returns the index range of the given generic module.
+		-- NOTE: This is about the indexes used by the generic module.			
 			return numbering.type_index_range is
 			cursor : type_ranges.cursor;
 		begin
@@ -10899,6 +10900,7 @@ package body schematic_ops is
 
 		-- Calculate the index range per module and store it in 
 		-- container "ranges":
+		-- NOTE: This is about the indexes used by the generic module.
 		while module_cursor /= et_project.type_modules.no_element loop
 
 			index_range := device_index_range (module_cursor, log_threshold + 1);
