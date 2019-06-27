@@ -10915,7 +10915,7 @@ package body schematic_ops is
 
 		log_indentation_down;
 
-		log (text => "setting device name offsets ...", level => log_threshold + 1);
+		log (text => "setting device name offset of submodules instances ...", level => log_threshold + 1);
 		-- log_indentation_up;
 		
 		-- locate the given top module
