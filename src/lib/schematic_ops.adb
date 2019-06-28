@@ -7707,7 +7707,7 @@ package body schematic_ops is
 				new_item	=> submodule,
 				position	=> submod_cursor,
 				inserted	=> inserted);
-				
+
 			if not inserted then
 				log (ERROR, "submodule instance " &
 					enclose_in_quotes (to_string (instance)) &
@@ -7719,7 +7719,7 @@ package body schematic_ops is
 		use et_general.type_module_name;
 		
 	begin -- add_submodule
-		log (text => "module " & et_general.to_string (module_name) &
+		log (text => "module " & enclose_in_quotes (et_general.to_string (module_name)) &
 			" adding submodule " & to_string (file) & 
 			" instance " & enclose_in_quotes (to_string (instance)),
 			level => log_threshold);
@@ -7757,7 +7757,7 @@ package body schematic_ops is
 		-- THIS IS ABOUT THE ACTUAL SCHEMATIC AND LAYOUT STUFF OF THE SUBMODULE:
 		-- Read the submodule file and store its content in container et_project.modules:
 		et_project.read_module_file (to_string (file), log_threshold + 1);		
-		
+
 	end add_submodule;
 
 	procedure insert_port (
@@ -10330,7 +10330,7 @@ package body schematic_ops is
 		end query_submodules;
 		
 	begin -- set_offset
-		log (text => "module " & to_string (module_name) &
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 			" submodule instance " & enclose_in_quotes (to_string (instance)) &
 			" setting device name offset to" & et_libraries.to_string (offset),
 			level => log_threshold);
@@ -10349,6 +10349,12 @@ package body schematic_ops is
 		else
 			submodule_not_found (instance);
 		end if;
+
+-- 		exception
+-- 			when event: others =>
+-- 				log_indentation_reset;
+-- 				log (text => ada.exceptions.exception_information (event), console => true);
+-- 				raise;
 		
 	end set_offset;
 
@@ -10823,14 +10829,23 @@ package body schematic_ops is
 		package stack is new et_general.stack_lifo (
 			item	=> numbering.type_modules.cursor,
 			max 	=> submodules.nesting_depth_max);
+
+		index_max : et_libraries.type_device_name_index := 0;
+
+		procedure raise_total_range (index : in et_libraries.type_device_name_index) is begin
+			index_max := index_max + index;
+		end;
 		
 		procedure set_offset is 
-		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself.			
+		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
+		-- until the deepest submodule (the bottom of the design structure) has been reached.
 			use numbering.type_modules;
-			module_name : type_module_name.bounded_string;
-			parent_name : type_module_name.bounded_string;
-			module_range : type_index_range;
-			parent_range : type_index_range;
+			module_name 	: type_module_name.bounded_string; -- motor_driver
+			parent_name 	: type_module_name.bounded_string; -- water_pump
+			module_range 	: type_index_range;
+			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+			parent_range 	: type_index_range;
+
 		begin
 			log_indentation_up;
 
@@ -10840,9 +10855,10 @@ package body schematic_ops is
 			-- iterate through the submodules on this level
 			while tree_cursor /= numbering.type_modules.no_element loop
 				module_name := element (tree_cursor).name;
+				module_instance := element (tree_cursor).instance;
 				
 				log (text => "submodule " & enclose_in_quotes (to_string (module_name)) &
-					" instance " & enclose_in_quotes (to_string (element (tree_cursor).instance)),
+					" instance " & enclose_in_quotes (to_string (module_instance)),
 					level => log_threshold + 1);
 
 				if first_child (tree_cursor) = numbering.type_modules.no_element then 
@@ -10865,6 +10881,21 @@ package body schematic_ops is
 					parent_range := query_range (parent_name);
 					log (text => "parent " & to_index_range (parent_name, parent_range), level => log_threshold + 1);
 					
+					if below (module_range, parent_range) then -- 3..5, 16..80
+						schematic_ops.set_offset (parent_name, module_instance, index_max + parent_range.highest + 1, log_threshold + 2);
+						raise_total_range (module_range.highest);
+						
+					elsif above (module_range, parent_range) then -- 100..160, 16..80
+						schematic_ops.set_offset (parent_name, module_instance, index_max, log_threshold + 2);
+						raise_total_range (module_range.highest);
+
+					else -- overlapping ranges like 
+						-- case A: 40..100, 16..80  
+						-- case B:  5.. 20, 16..80
+						schematic_ops.set_offset (parent_name, module_instance, index_max + parent_range.highest + 1, log_threshold + 2);
+						raise_total_range (module_range.highest); -- in case B irrelevant
+					end if;
+					
 					log_indentation_down;
 				else
 					-- there are submodules on the current level
@@ -10878,6 +10909,9 @@ package body schematic_ops is
 					-- restore cursor to submodule (see stack.push above)
 					tree_cursor := stack.pop;
 
+					
+					--schematic_ops.set_offset (parent_name, module_instance, index_max + 1, log_threshold + 2);
+					
 				end if;
 				
 				next_sibling (tree_cursor);
@@ -10897,7 +10931,7 @@ package body schematic_ops is
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 			" calculating ranges of device indexes ...", level => log_threshold);
 		log_indentation_up;
-
+		
 		-- Calculate the index range per module and store it in 
 		-- container "ranges":
 		-- NOTE: This is about the indexes used by the generic module.
@@ -11022,7 +11056,7 @@ package body schematic_ops is
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 			" building submodules tree ...", level => log_threshold);
 		log_indentation_up;
-
+		
 		stack.init;
 		
 		-- locate the given top module

@@ -85,6 +85,25 @@ package body numbering is
 			" range" & et_libraries.to_string (index_range.lowest) &
 			" .." & et_libraries.to_string (index_range.highest));
 	end to_index_range;
+
+	function below (left, right : in type_index_range) return boolean is begin
+	-- Returns true if left index range is below right index range.
+		if left.highest < right.lowest then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+		
+	function above (left, right : in type_index_range) return boolean is begin
+	-- Returns true if left index range is above right index range.		
+		if left.lowest > right.highest then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
 	
 end numbering;
 	

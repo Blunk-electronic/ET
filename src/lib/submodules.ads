@@ -115,7 +115,7 @@ package submodules is
 		size				: type_submodule_size; -- CS default ?
 		position_in_board	: et_pcb_coordinates.type_point_2d_with_angle := et_pcb_coordinates.submodule_position_default;
 		view_mode			: type_submodule_view_mode := ORIGIN;
-		device_names_offset	: et_libraries.type_device_name_index := 1000;	-- R88 turns to R1088
+		device_names_offset	: et_libraries.type_device_name_index := 0;	-- R88 turns to R1088
 		ports				: type_submodule_ports.map;
 	end record;
 

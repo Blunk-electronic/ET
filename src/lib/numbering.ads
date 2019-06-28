@@ -79,6 +79,11 @@ package numbering is
 		module_name	: in type_module_name.bounded_string;
 		index_range	: in type_index_range) return string;
 
+	function below (left, right : in type_index_range) return boolean;
+	-- Returns true if left index range is below right index range.
+		
+	function above (left, right : in type_index_range) return boolean;
+	-- Returns true if left index range is above right index range.		
 	
 	type type_module is record
 		name		: type_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
