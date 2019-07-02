@@ -3,6 +3,7 @@ TARGET = et
 VPATH = include
 
 OBJS = $(TARGET).o \
+	material.o \
 	numbering.o \
 	assembly_variants.o \
 	schematic_ops.o \

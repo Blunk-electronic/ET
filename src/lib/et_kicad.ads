@@ -1414,10 +1414,6 @@ package et_kicad is
 	-- Writes the statistics on components and nets of the modules.
 	-- Distinguishes between CAD and CAM related things.
 
--- 	procedure export_bom (log_threshold : in et_string_processing.type_log_level);  -- CS this is general and should be in et_schematic
--- 	-- Generates a bom file. This file is csv formatted and is to be processed by
--- 	-- other ERP tools (like stock_manager, see <https://github.com/Blunk-electronic/stock_manager>)
-
 	-- This is general board stuff:
 	type type_board is new et_pcb.type_board with record
 		paper_size	: et_general.type_paper_size;

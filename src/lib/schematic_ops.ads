@@ -56,6 +56,7 @@ with et_project;				use et_project;
 with submodules;
 with assembly_variants;
 with numbering;
+with material;
 
 package schematic_ops is
 
@@ -578,6 +579,13 @@ package schematic_ops is
 	procedure build_submodules_tree (
 	-- Re(builds) the tree of submodules.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		log_threshold	: in type_log_level);
+
+	procedure make_bom (
+	-- Exports a BOM file from the given top module and assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		variant			: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		bom_file		: in material.type_file_name.bounded_string; -- CAM/motor_driver_bom.csv
 		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (

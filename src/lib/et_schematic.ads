@@ -39,7 +39,6 @@
 --		   should be collected in ordered sets instead of doubly_linked_lists
 --			- the benefits: placing identical objects at the same position would be impossible
 --			- the cons: ordering subprograms required
---		2. Assembly variants
 --		3. device accessories
 
 with ada.text_io;				use ada.text_io;

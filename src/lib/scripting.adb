@@ -58,6 +58,7 @@ with et_schematic;
 with schematic_ops;
 with submodules;
 with assembly_variants;
+with material;
 -- with board_ops;
 
 
@@ -925,6 +926,29 @@ package body scripting is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+				when MAKE =>
+					case noun is
+						when BOM => 
+							case fields is
+								when 6 =>
+									schematic_ops.make_bom 
+										(
+										module_name 	=> module,
+										variant			=> assembly_variants.to_variant (f (5)),
+										bom_file		=> material.to_file_name (f (6)),
+										
+										log_threshold	=> log_threshold + 1);
+
+								when 7 .. count_type'last =>
+									command_too_long (6);
+									
+								when others =>
+									command_incomplete;
+							end case;
+								
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
 				when MOUNT =>
 					case noun is
 						when DEVICE => 

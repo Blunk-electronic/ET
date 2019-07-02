@@ -62,6 +62,7 @@ with et_project;				use et_project;
 with submodules;
 with numbering;
 with conventions;
+with material;
 with et_geometry;
 
 package body schematic_ops is
@@ -11076,7 +11077,59 @@ package body schematic_ops is
 			process		=> assign_tree'access);
 	
 	end build_submodules_tree;
+
+	procedure make_bom (
+	-- Exports a BOM file from the given top module and assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		variant			: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		bom_file		: in material.type_file_name.bounded_string; -- CAM/motor_driver_bom.csv
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use assembly_variants;
+		use material;
+
+		bom_handle : ada.text_io.file_type;
+		
+	begin -- make_bom
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+			" variant " & enclose_in_quotes (to_variant (variant)) &
+			" exporting BOM in file " & to_string (bom_file),
+			level => log_threshold);
+		log_indentation_up;
+		
 	
+		-- locate the given top module
+		module_cursor := locate_module (module_name);
+
+		if exists (module_cursor, variant) then
+
+			-- create the BOM (which inevitably and intentionally overwrites the previous file)
+			create (
+				file => bom_handle,
+				mode => out_file, 
+				name => to_string (bom_file));
+
+			close (bom_handle);
+		else
+			assembly_variant_not_found (variant);
+		end if;
+		
+		log_indentation_down;
+
+		exception
+			when event: others =>
+				if is_open (bom_handle) then
+					close (bom_handle);
+				end if;
+				
+				log_indentation_reset;
+				log (text => ada.exceptions.exception_information (event), console => true);
+				raise;
+	
+	end make_bom;
+		
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
 	-- Tests:

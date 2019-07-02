@@ -90,6 +90,7 @@ package scripting is
 		DRAG,
 		DRAW,
 		INVOKE,
+		MAKE,
 		MOVE,
 		MOUNT,
 		PLACE,
@@ -106,6 +107,7 @@ package scripting is
 	function to_verb (verb : in string) return type_verb_schematic;
 
 	type type_noun_schematic is (
+		BOM,
 		DEVICE,
 		DEVICES,
 		DEVICE_NAME_OFFSET,
