@@ -66,6 +66,10 @@ package et_general is
 	function remove_extension (file_name : in string) return string;
 	-- Removes from a string like templates/clock_generator.mod the extension so that
 	-- the return would be templates/clock_generator .
+
+	function append_extension (file_name : in string) return string;
+	-- Appends to a string like templates/clock_generator the extension "mod" so that
+	-- the return would be templates/clock_generator.mod .
 	
 	-- When directories content is searched, the entries (files, directories) are collected
 	-- in a simple list.

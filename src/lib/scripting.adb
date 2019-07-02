@@ -1448,8 +1448,10 @@ package body scripting is
 			when DOM_SCHEMATIC =>
 				module := to_module_name (f (2));
 				-- CS character and length check
-				
-				validate_module_name; -- test if module exists
+
+				et_project.read_module_file (
+					file_name		=> append_extension (to_string (module)), 
+					log_threshold	=> log_threshold + 1); 
 
 				verb_schematic := to_verb (f (3));
 				noun_schematic := to_noun (f (4));
@@ -1461,7 +1463,9 @@ package body scripting is
 				module := to_module_name (f (2));
 				-- CS character and length check
 				
-				validate_module_name; -- test if module exists
+				et_project.read_module_file (
+					file_name		=> append_extension (to_string (module)), 
+					log_threshold	=> log_threshold + 1); 
 
 				verb_board := to_verb (f (3));
 				noun_board := to_noun (f (4));
@@ -1475,10 +1479,14 @@ package body scripting is
 		return exit_code;
 
 		exception when event: others => 
+		
 			log (ERROR, "script " & to_string (file_name) & latin_1.space &
 				affected_line (cmd) & "command '" &
 				to_string (cmd) & "' invalid !", console => true);
-			return ERROR;
+
+			log (text => ada.exceptions.exception_information (event), console => true);		
+
+		return ERROR;
 
 	end execute_command;
 

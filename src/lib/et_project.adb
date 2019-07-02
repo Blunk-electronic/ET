@@ -12674,7 +12674,7 @@ package body et_project is
 		use ada.directories;
 		
 	begin -- read_module_file
-		log (text => file_name, level => log_threshold);
+		log (text => "opening file " & file_name & " ...", level => log_threshold);
 		log_indentation_up;
 
 		-- Make sure the module file exists.
@@ -12741,7 +12741,7 @@ package body et_project is
 				
 			else
 				log (text => "module " & enclose_in_quotes (file_name) &
-					 " already loaded -> no need to load anew.", level => log_threshold);
+					 " already loaded -> no need to load anew.", level => log_threshold + 1);
 			end if;
 			
 		else -- module file not found

@@ -51,6 +51,13 @@ package body et_general is
 		return file_name (file_name'first .. pos_last_character);
 	end remove_extension;
 
+	function append_extension (file_name : in string) return string is
+	-- Appends to a string like templates/clock_generator the extension "mod" so that
+	-- the return would be templates/clock_generator.mod .
+	begin
+		return file_name & '.' & module_file_name_extension;
+	end;
+	
 	function directory_entries (
 	-- Returns the entries of the given directory. Parameter category determines whether to
 	-- search for directories, ordinary files or special files.
