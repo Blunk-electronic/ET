@@ -310,6 +310,12 @@ package body scripting is
 										log_threshold	=> log_threshold + 1
 										);
 
+									-- after adding a submodule, the submodule tree must be updated
+									schematic_ops.build_submodules_tree (
+										module_name 	=> module,
+										log_threshold	=> log_threshold + 2
+										);
+									
 								when 12 .. count_type'last =>
 									command_too_long (11);
 									
@@ -418,6 +424,13 @@ package body scripting is
 											),
 										log_threshold	=> log_threshold + 1
 										);
+
+									-- after copying a submodule, the submodule tree must be updated
+									schematic_ops.build_submodules_tree (
+										module_name 	=> module,
+										log_threshold	=> log_threshold + 2
+										);
+
 
 								when 10 .. count_type'last =>
 									command_too_long (9);
@@ -593,6 +606,12 @@ package body scripting is
 										log_threshold	=> log_threshold + 1
 										);
 
+									-- after deleting a submodule, the submodule tree must be updated
+									schematic_ops.build_submodules_tree (
+										module_name 	=> module,
+										log_threshold	=> log_threshold + 2
+										);
+									
 								when 6 .. count_type'last =>
 									command_too_long (5);
 									
