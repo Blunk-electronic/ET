@@ -848,7 +848,7 @@ package body et_libraries is
 	end check_prefix_characters;
 
 	function to_string (index : in type_device_name_index) return string is begin
-		return latin_1.space & type_device_name_index'image (index);
+		return latin_1.space & trim (type_device_name_index'image (index), left);
 	end to_string;
 
 	function to_device_name_index (index : in string) return type_device_name_index is begin
