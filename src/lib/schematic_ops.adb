@@ -10795,9 +10795,9 @@ package body schematic_ops is
 	end device_index_range;
 
 	procedure calculate_device_index_ranges (
-	-- Calculates the device index ranges of all modules.
-	-- The given module_name is the top module.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+	-- Calculates the device index ranges of the given top module and all its submodules.
+	-- Assigns the device names offset of the instantiated submodules.
+		module_name		: in type_module_name.bounded_string; -- the top module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor := modules.first;
@@ -10806,10 +10806,11 @@ package body schematic_ops is
 		use numbering;
 		
 		package type_ranges is new ordered_maps (
-			key_type		=> type_module_name.bounded_string,
+			key_type		=> type_module_name.bounded_string, -- motor_driver
 			"<"				=> type_module_name."<",
-			element_type	=> numbering.type_index_range);
+			element_type	=> numbering.type_index_range); -- 3..190
 
+		-- The device name indexes of all (sub)modules are stored here:
 		ranges : type_ranges.map;
 
 		function query_range (module : in type_module_name.bounded_string)
@@ -10830,9 +10831,14 @@ package body schematic_ops is
 			item	=> numbering.type_modules.cursor,
 			max 	=> submodules.nesting_depth_max);
 
+		-- For calculating the device index offset of submodule instances:
+		-- The highest used device name index across the module is stored here.
+		-- It increases each time a submodule is entered by procedure set_offset.
+		-- The increase is the highest index used by that submodule.
+		-- The next submodule will then get an offset of index_max + 1.
 		index_max : et_libraries.type_device_name_index := 0;
 
-		procedure raise_total_range (index : in et_libraries.type_device_name_index) is begin
+		procedure increase_index_max (index : in et_libraries.type_device_name_index) is begin
 			index_max := index_max + index;
 		end;
 		
@@ -10866,46 +10872,22 @@ package body schematic_ops is
 					parent_name := element (parent (tree_cursor)).name;
 				end if;
 
+				-- assign the device name offset to the current submodule according to the lates index_max.
+				-- NOTE: the assigment takes place in the PARENT module where the affected submodule
+				-- has been instantiated.
 				schematic_ops.set_offset (parent_name, module_instance, index_max + 1, log_threshold + 2);
 
-				raise_total_range (module_range.highest);
+				-- For the next submodule (wherever it is) the index_max must be increased the the highest
+				-- index used by the current submodule:
+				increase_index_max (module_range.highest);
 				
-				log (text => "index max " & et_libraries.to_string (index_max), level => log_threshold + 1);
+				log (text => "index max" & et_libraries.to_string (index_max), level => log_threshold + 1);
 				
 				if first_child (tree_cursor) = numbering.type_modules.no_element then 
-					-- no submodules on the current level
+					-- no submodules on the current level. means we can't go deeper.
 					
 					log_indentation_up;
 					log (text => "no submodules here -> bottom reached", level => log_threshold + 1);
-
--- 					-- Get the index ranges of the current module and of its parent module.
--- 					-- In case we are on the first level, the parent module is the given top module.
--- 					if parent (tree_cursor) = root (submod_tree) then
--- 						parent_name := calculate_device_index_ranges.module_name;
--- 					else
--- 						parent_name := element (parent (tree_cursor)).name;
--- 					end if;
--- 					
--- 					parent_range := query_range (parent_name);
--- 					log (text => "parent " & to_index_range (parent_name, parent_range), level => log_threshold + 1);
--- 					
--- 					if below (module_range, parent_range) then -- 3..5, 16..80
--- 						--schematic_ops.set_offset (parent_name, module_instance, index_max + parent_range.highest + 1, log_threshold + 2);
--- 						schematic_ops.set_offset (parent_name, module_instance, index_max + 1, log_threshold + 2);
--- 						raise_total_range (module_range.highest);
--- 						
--- 					elsif above (module_range, parent_range) then -- 100..160, 16..80
--- 						schematic_ops.set_offset (parent_name, module_instance, index_max, log_threshold + 2);
--- 						--raise_total_range (module_range.highest);
--- 						index_max := module_range.highest;
--- 
--- 					else -- overlapping ranges like 
--- 						-- case A: 40..100, 16..80  
--- 						-- case B:  5.. 20, 16..80
--- 						schematic_ops.set_offset (parent_name, module_instance, index_max + parent_range.highest + 1, log_threshold + 2);
--- 						raise_total_range (module_range.highest); -- in case B irrelevant
--- 					end if;
-					
 					log_indentation_down;
 				else
 					-- there are submodules on the current level
@@ -10914,14 +10896,10 @@ package body schematic_ops is
 					stack.push (tree_cursor);
 
 					-- iterate through submodules on the level below
-					set_offset;
+					set_offset; -- this is recursive !
 
 					-- restore cursor to submodule (see stack.push above)
 					tree_cursor := stack.pop;
-
--- 					schematic_ops.set_offset (parent_name, module_instance, index_max + parent_range.highest + 1, log_threshold + 2);
-					--schematic_ops.set_offset (parent_name, module_instance, index_max + 1, log_threshold + 2);
-					
 				end if;
 
 				next_sibling (tree_cursor);
@@ -10967,12 +10945,12 @@ package body schematic_ops is
 
 		-- The first module being processed now is the given top module.
 		-- Its highest used device index extends the total index range.
-		raise_total_range (query_range (module_name).highest);
+		increase_index_max (query_range (module_name).highest);
 
 		-- Show the index range used by the top module:
 		log (text => "top" & to_index_range (module_name, query_range (module_name)), level => log_threshold + 1);
 
-		log (text => "index max " & et_libraries.to_string (index_max), level => log_threshold + 1);
+		log (text => "index max" & et_libraries.to_string (index_max), level => log_threshold + 1);
 		
 		-- take a copy of the submodule tree of the given top module:
 		submod_tree := element (module_cursor).submod_tree;
