@@ -10794,7 +10794,7 @@ package body schematic_ops is
 		
 	end device_index_range;
 
-	procedure calculate_device_index_ranges (
+	procedure autoset_device_name_offsets (
 	-- Calculates the device index ranges of the given top module and all its submodules.
 	-- Assigns the device names offset of the instantiated submodules.
 		module_name		: in type_module_name.bounded_string; -- the top module like motor_driver (without extension *.mod)
@@ -10867,7 +10867,7 @@ package body schematic_ops is
 
 				-- In case we are on the first level, the parent module is the given top module.				
 				if parent (tree_cursor) = root (submod_tree) then
-					parent_name := calculate_device_index_ranges.module_name;
+					parent_name := autoset_device_name_offsets.module_name;
 				else
 					parent_name := element (parent (tree_cursor)).name;
 				end if;
@@ -10915,7 +10915,7 @@ package body schematic_ops is
 			
 		end set_offset;
 		
-	begin -- calculate_device_index_ranges
+	begin -- autoset_device_name_offsets
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 			" calculating ranges of device indexes ...", level => log_threshold);
 		log_indentation_up;
@@ -10937,7 +10937,7 @@ package body schematic_ops is
 
 		log_indentation_down;
 
-		log (text => "setting device name offset of submodules instances ...", level => log_threshold + 1);
+		log (text => "autosetting device name offset of submodules instances ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- locate the given top module
@@ -10971,7 +10971,7 @@ package body schematic_ops is
 				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;
 
-	end calculate_device_index_ranges;
+	end autoset_device_name_offsets;
 	
 	procedure build_submodules_tree (
 	-- Re(builds) the tree of submodules.

@@ -569,10 +569,10 @@ package schematic_ops is
 		step_width		: in et_libraries.type_device_name_index;
 		log_threshold	: in type_log_level);
 
-	procedure calculate_device_index_ranges (
-	-- Calculates the device index ranges of all modules.
-	-- The given module_name is the top module.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+	procedure autoset_device_name_offsets (
+	-- Calculates the device index ranges of the given top module and all its submodules.
+	-- Assigns the device names offset of the instantiated submodules.
+		module_name		: in type_module_name.bounded_string; -- the top module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 
 	procedure build_submodules_tree (
