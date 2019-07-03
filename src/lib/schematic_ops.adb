@@ -10798,6 +10798,7 @@ package body schematic_ops is
 	procedure autoset_device_name_offsets (
 	-- Calculates the device index ranges of the given top module and all its submodules.
 	-- Assigns the device names offset of the instantiated submodules.
+	-- Assumes that all devices of the modules are mounted -> assembly variants ignored.
 		module_name		: in type_module_name.bounded_string; -- the top module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level) is
 
@@ -11091,11 +11092,151 @@ package body schematic_ops is
 		use material;
 
 		bom_handle : ada.text_io.file_type;
+		bill_of_material : material.type_devices.map;
+
+		procedure collect (
+		-- Collects devices of the given module and its variant in container bill_of_material.
+			module_cursor	: in type_modules.cursor;
+			variant			: in assembly_variants.type_variant_name.bounded_string)
+		is
+
+			procedure query_devices (
+				module_name	: in type_module_name.bounded_string;
+				module		: in et_schematic.type_module) is
+				
+				procedure query_properties (cursor_schematic : in et_schematic.type_devices.cursor) is 
+					inserted : boolean;
+					cursor_bom : material.type_devices.cursor;
+
+					use et_schematic.type_devices;
+					device_name : et_libraries.type_device_name := et_schematic.type_devices.key (cursor_schematic);
+					--device_cursor_assy_variant : assembly_variants.type_devices.cursor;
+				begin -- query_properties
+					if exists (module_cursor, variant, device_name) then
+						log (text => to_string (device_name), level => log_threshold + 2);
+						
+						material.type_devices.insert (
+							container	=> bill_of_material,
+							key			=> device_name, -- IC4, R3
+							new_item	=> (
+										value	=> element (cursor_schematic).value,
+										--packge		=> element (cursor_schematic).	
+											others => <>), -- CS
+							position	=> cursor_bom,
+							inserted	=> inserted);
+
+						if not inserted then
+							log (ERROR, "multiple occurence of device " & to_string (device_name),
+								 console => true);
+							raise constraint_error;
+						end if;
+						
+					else
+						log (text => to_string (device_name) & " not mounted -> skipped",
+							 level => log_threshold + 2);
+					end if;
+				end query_properties;
+				
+			begin -- query_devices
+				log (text => "collecting devices from module " & enclose_in_quotes (to_string (module_name)),
+					level => log_threshold + 1);
+				log_indentation_up;
+				
+				et_schematic.type_devices.iterate (
+					container	=> module.devices,
+					process		=> query_properties'access);
+
+				log_indentation_down;
+			end query_devices;
+
+		begin -- collect
+			et_project.type_modules.query_element (
+				position	=> module_cursor,
+				process		=> query_devices'access);
+			
+		end collect;
+			
+		submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
+		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
+
+		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
+		package stack is new et_general.stack_lifo (
+			item	=> numbering.type_modules.cursor,
+			max 	=> submodules.nesting_depth_max);
+		
+		procedure query_submodules is 
+		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
+		-- until the deepest submodule (the bottom of the design structure) has been reached.
+			use numbering.type_modules;
+			module_name 	: type_module_name.bounded_string; -- motor_driver
+			parent_name 	: type_module_name.bounded_string; -- water_pump
+			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+			offset			: et_libraries.type_device_name_index;
+		begin
+			log_indentation_up;
+
+			-- start with the first submodule on the current hierarchy level
+			tree_cursor := first_child (tree_cursor);
+
+			-- iterate through the submodules on this level
+			while tree_cursor /= numbering.type_modules.no_element loop
+				module_name := element (tree_cursor).name;
+				module_instance := element (tree_cursor).instance;
+
+				log (text => "instance " & enclose_in_quotes (to_string (module_instance)) &
+					" of generic module " & to_string (module_name), level => log_threshold + 1);
+
+				-- In case we are on the first level, the parent module is the given top module.				
+				if parent (tree_cursor) = root (submod_tree) then
+					parent_name := make_bom.module_name;
+				else
+					parent_name := element (parent (tree_cursor)).name;
+				end if;
+
+				-- assign the device name offset to the current submodule according to the lates index_max.
+				-- NOTE: the assigment takes place in the PARENT module where the affected submodule
+				-- has been instantiated.
+				--offset := (parent_name, module_instance, index_max + 1, log_threshold + 2);
+
+				
+-- 				log (text => "index max" & et_libraries.to_string (index_max), level => log_threshold + 1);
+				
+				if first_child (tree_cursor) = numbering.type_modules.no_element then 
+					-- no submodules on the current level. means we can't go deeper.
+					
+					log_indentation_up;
+					log (text => "no submodules here -> bottom reached", level => log_threshold + 1);
+					log_indentation_down;
+				else
+					-- there are submodules on the current level
+					
+					-- backup the cursor to the current submodule on this level
+					stack.push (tree_cursor);
+
+					-- iterate through submodules on the level below
+					query_submodules; -- this is recursive !
+
+					-- restore cursor to submodule (see stack.push above)
+					tree_cursor := stack.pop;
+				end if;
+
+				next_sibling (tree_cursor);
+			end loop;
+			
+			log_indentation_down;
+
+			exception
+				when event: others =>
+					log_indentation_reset;
+					log (text => ada.exceptions.exception_information (event), console => true);
+					raise;
+			
+		end query_submodules;
 		
 	begin -- make_bom
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 			" variant " & enclose_in_quotes (to_variant (variant)) &
-			" exporting BOM in file " & to_string (bom_file),
+			" exporting BOM to file " & to_string (bom_file),
 			level => log_threshold);
 		log_indentation_up;
 		
@@ -11105,6 +11246,22 @@ package body schematic_ops is
 
 		if exists (module_cursor, variant) then
 
+			-- collect devices of the given top module
+			collect (module_cursor, variant);
+
+			-- take a copy of the submodule tree of the given top module:
+			submod_tree := element (module_cursor).submod_tree;
+
+			-- set the cursor inside the tree at root position:
+			tree_cursor := numbering.type_modules.root (submod_tree);
+			
+			stack.init;
+
+			-- collect devices of the submodules
+			--query_submodules;
+			
+
+			
 			-- create the BOM (which inevitably and intentionally overwrites the previous file)
 			create (
 				file => bom_handle,

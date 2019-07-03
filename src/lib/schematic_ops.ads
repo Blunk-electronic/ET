@@ -515,15 +515,14 @@ package schematic_ops is
 		log_threshold	: in type_log_level);
 
 	procedure unmount_device (
-	-- Sets the gvien device as not mounted in 
-	-- the given assembly variant.
+	-- Sets the given device as not mounted in the given assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
 		log_threshold	: in type_log_level);
 
 	procedure remove_device (
-	-- Removes the gvien device from the given assembly variant.
+	-- Removes the given device from the given assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
@@ -573,6 +572,7 @@ package schematic_ops is
 	procedure autoset_device_name_offsets (
 	-- Calculates the device index ranges of the given top module and all its submodules.
 	-- Assigns the device names offset of the instantiated submodules.
+	-- Assumes that all devices of the modules are mounted -> assembly variants ignored.
 		module_name		: in type_module_name.bounded_string; -- the top module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 

@@ -393,13 +393,6 @@ package et_schematic is
 
 	extension_netlist : constant string (1..3) := "net";
 
-	
--- BOM
-	-- Whenever we deal with BOM files this type should be used:
-	bom_file_name_length : constant positive := 100; -- CS: should suffice for now
-	package type_bom_file_name is new generic_bounded_length (bom_file_name_length); 
-
-	extension_bom : constant string (1..3) := "csv";
 
 
 -- STATISTICS

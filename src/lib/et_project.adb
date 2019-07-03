@@ -13621,7 +13621,115 @@ package body et_project is
 		return result;
 	end exists;
 
+	function exists (
+	-- Returns true if the given module and variant provides the given device.
+	-- Assumptions: 
+	-- - The module being searched in must be in the rig already.
+	-- - The assembly variant must exist in the module.
+	-- - The device must exist in the module.
+		module	: in type_modules.cursor; -- the module like motor_driver
+		variant	: in assembly_variants.type_variant_name.bounded_string; -- low_cost				
+		device	: in et_libraries.type_device_name)
+		return boolean is
 
+		result : boolean := false; -- to be returned
+
+		procedure query_variants (
+			module_name	: in type_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use assembly_variants;
+			use type_variants;
+			variant_cursor : type_variants.cursor;
+
+			procedure query_devices (
+				variant_name	: in type_variant_name.bounded_string;
+				variant			: in type_variant) is
+				use assembly_variants.type_devices;
+				device_cursor : assembly_variants.type_devices.cursor;
+			begin
+				device_cursor := find (variant.devices, device);
+
+				-- The device may be listed in the assembly variant:
+				if device_cursor /= assembly_variants.type_devices.no_element then
+					case element (device_cursor).mounted is
+						when YES => result := true; -- mounted with alternative value, partcode or purpose
+						when NO  => result := false; -- not mounted
+					end case;
+				else
+				-- The device may be NOT listed in the assembly variant. Means it is mounted always.
+					result := true;
+				end if;
+					
+			end query_devices;
+				
+		begin -- query_variants
+			variant_cursor := find (module.variants, variant);
+
+			query_element (
+				position	=> variant_cursor,
+				process		=> query_devices'access);
+		end;
+		
+	begin -- exists
+-- 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+-- 			" variant " & enclose_in_quotes (assembly_variants.to_variant (variant)) &
+-- 			" querying device " & to_string (device),
+-- 			level => log_threshold);
+
+		type_modules.query_element (
+			position	=> module,
+			process		=> query_variants'access);
+		
+		return result;
+	end exists;
+
+	function alternative_device (
+	-- Returns a cursor to the alternative device in the given module
+	-- and given assembly variant.
+	-- Assumptions: 
+	-- - The module being searched in must be in the rig already.
+	-- - The assembly variant must exist in the module.
+	-- - The device must exist in the module.
+	-- - The device must have an entry in the given assembly variant,
+	--   otherwise the return is no_element.
+		module	: in type_modules.cursor; -- the module like motor_driver
+		variant	: in assembly_variants.type_variant_name.bounded_string; -- low_cost				
+		device	: in et_libraries.type_device_name)
+		return assembly_variants.type_devices.cursor is
+
+		cursor : assembly_variants.type_devices.cursor; -- to be returned;
+		
+		procedure query_variants (
+			module_name	: in type_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use assembly_variants;
+			use type_variants;
+			variant_cursor : type_variants.cursor;
+
+			procedure query_devices (
+				variant_name	: in type_variant_name.bounded_string;
+				variant			: in type_variant) is
+				use assembly_variants.type_devices;
+			begin
+				cursor := find (variant.devices, device);
+			end query_devices;
+				
+		begin -- query_variants
+			variant_cursor := find (module.variants, variant);
+
+			query_element (
+				position	=> variant_cursor,
+				process		=> query_devices'access);
+		end;
+		
+	begin -- alternative_device
+
+		type_modules.query_element (
+			position	=> module,
+			process		=> query_variants'access);
+		
+		return cursor;
+	end alternative_device;
 
 	
 -- GENERICS

@@ -706,6 +706,32 @@ package et_project is
 		module		: in type_modules.cursor;
 		variant		: in assembly_variants.type_variant_name.bounded_string) -- low_cost
 		return boolean;	
+
+	function exists (
+	-- Returns true if the given module and variant provides the given device.
+	-- Assumptions: 
+	-- - The module being searched in must be in the rig already.
+	-- - The assembly variant must exist in the module.
+	-- - The device must exist in the module.
+		module	: in type_modules.cursor; -- the module like motor_driver
+		variant	: in assembly_variants.type_variant_name.bounded_string; -- low_cost				
+		device	: in et_libraries.type_device_name)
+		return boolean;
+
+	function alternative_device (
+	-- Returns a cursor to the alternative device in the given module
+	-- and given assembly variant.
+	-- Assumptions: 
+	-- - The module being searched in must be in the rig already.
+	-- - The assembly variant must exist in the module.
+	-- - The device must exist in the module.
+	-- - The device must have an entry in the given assembly variant,
+	--   otherwise the return is no_element.
+		module	: in type_modules.cursor; -- the module like motor_driver
+		variant	: in assembly_variants.type_variant_name.bounded_string; -- low_cost				
+		device	: in et_libraries.type_device_name)
+		return assembly_variants.type_devices.cursor;
+
 	
 -- GENERICS
 	
