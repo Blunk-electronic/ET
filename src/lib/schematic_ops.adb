@@ -11106,34 +11106,67 @@ package body schematic_ops is
 				
 				procedure query_properties (cursor_schematic : in et_schematic.type_devices.cursor) is 
 					inserted : boolean;
+					device_name : et_libraries.type_device_name := et_schematic.type_devices.key (cursor_schematic);
+
+					procedure test_inserted is begin
+						if not inserted then
+							log (ERROR, "multiple occurence of device " & to_string (device_name),
+								 console => true);
+							raise constraint_error;
+						end if;
+					end;
+					
 					cursor_bom : material.type_devices.cursor;
 
 					use et_schematic.type_devices;
-					device_name : et_libraries.type_device_name := et_schematic.type_devices.key (cursor_schematic);
-					--device_cursor_assy_variant : assembly_variants.type_devices.cursor;
+					alt_dev_cursor : assembly_variants.type_devices.cursor;
+					use assembly_variants.type_devices;
 				begin -- query_properties
-					if exists (module_cursor, variant, device_name) then
+					
+					-- Get a cursor to the alternative device as specified in the assembly variant:
+					alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
+					
+					if alt_dev_cursor = assembly_variants.type_devices.no_element then
+					-- Device has no entry in the assembly variant. -> It is to be stored in bill_of_material as it is:
 						log (text => to_string (device_name), level => log_threshold + 2);
 						
 						material.type_devices.insert (
 							container	=> bill_of_material,
 							key			=> device_name, -- IC4, R3
 							new_item	=> (
-										value	=> element (cursor_schematic).value,
-										--packge		=> element (cursor_schematic).	
-											others => <>), -- CS
+									value		=> element (cursor_schematic).value,
+									partcode	=> element (cursor_schematic).partcode,	
+									others		=> <>), -- CS package
 							position	=> cursor_bom,
 							inserted	=> inserted);
 
-						if not inserted then
-							log (ERROR, "multiple occurence of device " & to_string (device_name),
-								 console => true);
-							raise constraint_error;
-						end if;
+						test_inserted;
 						
 					else
-						log (text => to_string (device_name) & " not mounted -> skipped",
-							 level => log_threshold + 2);
+					-- Device has an entry in the assembly variant. Depending on the mounted-flag
+					-- it is to be skipped or inserted in bill_of_material with alternative properties.
+						case element (alt_dev_cursor).mounted is
+							when NO =>
+								log (text => to_string (device_name) & " not mounted -> skipped",
+									 level => log_threshold + 2);
+								
+							when YES =>
+
+								-- Insert the device in bill with alternative properties as defined
+								-- in the assembly variant:
+								material.type_devices.insert (
+									container	=> bill_of_material,
+									key			=> device_name, -- IC4, R3
+									new_item	=> (
+											value		=> element (alt_dev_cursor).value,
+											partcode	=> element (alt_dev_cursor).partcode,
+											others		=> <>), -- CS package
+									position	=> cursor_bom,
+									inserted	=> inserted);
+
+								test_inserted;
+
+						end case;
 					end if;
 				end query_properties;
 				
