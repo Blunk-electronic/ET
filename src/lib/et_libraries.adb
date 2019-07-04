@@ -1166,7 +1166,21 @@ package body et_libraries is
 		end if;
 		
 		return device_name;
-	end;
+	end; -- to_device_name
+
+	procedure offset_device_name (
+	-- Adds to the device index the given offset. 
+	-- Example: given name is R4, given offset is 100. Result R104.
+		name	: in out type_device_name;
+		offset	: in type_device_name_index) is
+	begin
+		name := to_device_name (
+			prefix	=> prefix (name),
+			index	=> name.id + offset);
+		-- the width of the index is calculated automatically by to_device_name.
+		
+	end offset_device_name;
+
 	
 end et_libraries;
 

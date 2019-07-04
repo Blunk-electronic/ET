@@ -11132,11 +11132,11 @@ package body schematic_ops is
 		procedure collect (
 		-- Collects devices of the given module and its variant in container bill_of_material.
 		-- Adds to the device index the given offset.
+		-- If offset is zero, we are dealing with the top module.
 			module_cursor	: in type_modules.cursor;
 			variant			: in assembly_variants.type_variant_name.bounded_string;
 			offset			: in et_libraries.type_device_name_index)
 		is
-
 			procedure query_devices (
 				module_name	: in type_module_name.bounded_string;
 				module		: in et_schematic.type_module) is
@@ -11152,6 +11152,30 @@ package body schematic_ops is
 							raise constraint_error;
 						end if;
 					end;
+
+					procedure apply_offset is
+						device_name_instance : type_device_name;
+					begin
+						-- apply offset if it is greater zero. If offset is zero, we
+						-- are dealing with the top module.
+						if offset > 0 then
+							device_name_instance := device_name; -- take copy of original name
+							
+							-- apply device name offset
+							offset_device_name (device_name_instance, offset);
+
+							-- log original name and name in instanciated submodule
+							log (text => "device name origin " & to_string (device_name) &
+								" -> instance " & to_string (device_name_instance),
+								level => log_threshold + 2);
+
+							device_name := device_name_instance; -- overwrite orignial name
+						else
+							-- no offet to apply:
+							log (text => "device name " & to_string (device_name),
+								level => log_threshold + 2);
+						end if;
+					end;
 					
 					cursor_bom : material.type_devices.cursor;
 
@@ -11165,7 +11189,8 @@ package body schematic_ops is
 					
 					if alt_dev_cursor = assembly_variants.type_devices.no_element then
 					-- Device has no entry in the assembly variant. -> It is to be stored in bill_of_material as it is:
-						log (text => to_string (device_name), level => log_threshold + 2);
+
+						apply_offset;
 						
 						material.type_devices.insert (
 							container	=> bill_of_material,
@@ -11188,7 +11213,8 @@ package body schematic_ops is
 									 level => log_threshold + 2);
 								
 							when YES =>
-
+								apply_offset;
+								
 								-- Insert the device in bill with alternative properties as defined
 								-- in the assembly variant:
 								material.type_devices.insert (
@@ -11208,8 +11234,12 @@ package body schematic_ops is
 				end query_properties;
 				
 			begin -- query_devices
-				log (text => "collecting devices from module " & enclose_in_quotes (to_string (module_name)),
-					level => log_threshold + 1);
+				log (text => "collecting devices from module " &
+						enclose_in_quotes (to_string (module_name)) &
+						" by applying device index offset" & 
+						et_libraries.to_string (offset), -- 100
+					 level => log_threshold + 1);
+				
 				log_indentation_up;
 				
 				et_schematic.type_devices.iterate (

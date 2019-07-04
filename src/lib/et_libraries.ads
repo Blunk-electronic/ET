@@ -490,6 +490,13 @@ package et_libraries is
 		index	: in type_device_name_index;					-- 1, 20, ..
 		width	: in type_device_name_index_width := type_device_name_index_width'first) -- the number of digits
 		return type_device_name;
+
+	procedure offset_device_name (
+	-- Adds to the device index the given offset. 
+	-- Example: given name is R4, given offset is 100. Result R104.
+		name	: in out type_device_name;
+		offset	: in type_device_name_index);
+	
 	
 -- DEVICE APPEARANCE	
 	type type_device_appearance is ( 
