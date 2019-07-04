@@ -11272,6 +11272,10 @@ package body schematic_ops is
 			parent_name 	: type_module_name.bounded_string; -- water_pump
 			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 			offset			: et_libraries.type_device_name_index;
+
+			parent_variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
+			
+			alt_submod : assembly_variants.type_submodules.cursor;
 		begin
 			log_indentation_up;
 
@@ -11289,6 +11293,7 @@ package body schematic_ops is
 				-- In case we are on the first level, the parent module is the given top module.				
 				if parent (tree_cursor) = root (submod_tree) then
 					parent_name := make_bom.module_name;
+					parent_variant := variant;
 				else
 					parent_name := element (parent (tree_cursor)).name;
 				end if;
@@ -11299,6 +11304,11 @@ package body schematic_ops is
 				offset := get_offset (parent_name, module_instance);
 				log (text => "offset" & et_libraries.to_string (offset), level => log_threshold + 1);
 
+				alt_submod := alternative_submodule (
+							module	=> locate_module (parent_name),
+							variant	=> parent_variant,
+							submod	=> module_instance);
+				
 -- 				collect (
 -- 					module_cursor	=> find (module_name),
 -- 					variant			=> 
