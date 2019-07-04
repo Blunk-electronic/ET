@@ -11079,6 +11079,41 @@ package body schematic_ops is
 	
 	end build_submodules_tree;
 
+	function get_offset (
+	-- Returns the device numbering offset of a submodule instance.
+	-- Assumptions:
+	--  - The module to be searched in must be in the rig already.
+	--  - The submodule instance must exist in the module.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string) -- OSC1
+		return et_libraries.type_device_name_index is
+		
+		offset : et_libraries.type_device_name_index := 0; -- to be returned
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use submodules.type_submodules;
+			submod_cursor : submodules.type_submodules.cursor;
+		begin
+			submod_cursor := find (module.submods, instance);
+			offset := element (submod_cursor).device_names_offset;
+		end;
+		
+	begin -- get_offset
+		-- locate the given module
+		module_cursor := locate_module (module_name);
+
+		query_element (
+			position	=> module_cursor,
+			process		=> query_submodules'access);
+
+		return offset;
+	end get_offset;
+
+	
 	procedure make_bom (
 	-- Exports a BOM file from the given top module and assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
@@ -11096,8 +11131,10 @@ package body schematic_ops is
 
 		procedure collect (
 		-- Collects devices of the given module and its variant in container bill_of_material.
+		-- Adds to the device index the given offset.
 			module_cursor	: in type_modules.cursor;
-			variant			: in assembly_variants.type_variant_name.bounded_string)
+			variant			: in assembly_variants.type_variant_name.bounded_string;
+			offset			: in et_libraries.type_device_name_index)
 		is
 
 			procedure query_devices (
@@ -11226,13 +11263,17 @@ package body schematic_ops is
 					parent_name := element (parent (tree_cursor)).name;
 				end if;
 
-				-- assign the device name offset to the current submodule according to the lates index_max.
-				-- NOTE: the assigment takes place in the PARENT module where the affected submodule
+				-- Get the device name offset of the current submodule.
+				-- NOTE: The offset has been assigned in the PARENT module where the affected submodule
 				-- has been instantiated.
-				--offset := (parent_name, module_instance, index_max + 1, log_threshold + 2);
+				offset := get_offset (parent_name, module_instance);
+				log (text => "offset" & et_libraries.to_string (offset), level => log_threshold + 1);
 
-				
--- 				log (text => "index max" & et_libraries.to_string (index_max), level => log_threshold + 1);
+-- 				collect (
+-- 					module_cursor	=> find (module_name),
+-- 					variant			=> 
+-- 					offset			=> offset);
+						 
 				
 				if first_child (tree_cursor) = numbering.type_modules.no_element then 
 					-- no submodules on the current level. means we can't go deeper.
@@ -11279,8 +11320,8 @@ package body schematic_ops is
 
 		if exists (module_cursor, variant) then
 
-			-- collect devices of the given top module
-			collect (module_cursor, variant);
+			-- collect devices of the given top module. the top module has no device index offset
+			collect (module_cursor, variant, 0); 
 
 			-- take a copy of the submodule tree of the given top module:
 			submod_tree := element (module_cursor).submod_tree;
@@ -11291,9 +11332,7 @@ package body schematic_ops is
 			stack.init;
 
 			-- collect devices of the submodules
-			--query_submodules;
-			
-
+			query_submodules;
 			
 			-- create the BOM (which inevitably and intentionally overwrites the previous file)
 			create (

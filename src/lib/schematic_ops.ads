@@ -551,7 +551,7 @@ package schematic_ops is
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		offset			: in et_libraries.type_device_name_index;
 		log_threshold	: in type_log_level);
-
+	
 	function sort_by_coordinates (
 		module_cursor 	: in et_project.type_modules.cursor;
 		log_threshold	: in type_log_level)

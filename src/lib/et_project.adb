@@ -13731,6 +13731,53 @@ package body et_project is
 		return cursor;
 	end alternative_device;
 
+	function alternative_submodule (
+	-- Returns a cursor to the alternative submodule variant in the given module
+	-- and given assembly variant.
+	-- Assumptions: 
+	-- - The module being searched in must be in the rig already.
+	-- - The assembly variant must exist in the module.
+	-- - The suubmodule must have been instantiated in the module.
+	-- - The submodule must have an entry in the given assembly variant,
+	--   otherwise the return is no_element.
+		module	: in type_modules.cursor; -- the module like motor_driver
+		variant	: in assembly_variants.type_variant_name.bounded_string; -- low_cost				
+		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1
+		return assembly_variants.type_submodules.cursor is
+		
+		cursor : assembly_variants.type_submodules.cursor; -- to be returned;
+		
+		procedure query_variants (
+			module_name	: in type_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use assembly_variants;
+			use type_variants;
+			variant_cursor : type_variants.cursor;
+
+			procedure query_submodules (
+				variant_name	: in type_variant_name.bounded_string;
+				variant			: in type_variant) is
+				use assembly_variants.type_submodules;
+			begin
+				cursor := find (variant.submodules, submod);
+			end query_submodules;
+				
+		begin -- query_variants
+			variant_cursor := find (module.variants, variant);
+
+			query_element (
+				position	=> variant_cursor,
+				process		=> query_submodules'access);
+		end;
+		
+	begin -- alternative_submodule
+
+		type_modules.query_element (
+			position	=> module,
+			process		=> query_variants'access);
+		
+		return cursor;
+	end alternative_submodule;
 	
 -- GENERICS
 	
