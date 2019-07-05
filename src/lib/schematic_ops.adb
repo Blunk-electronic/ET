@@ -11141,7 +11141,7 @@ package body schematic_ops is
 				module_name	: in type_module_name.bounded_string;
 				module		: in et_schematic.type_module) is
 				
-				procedure query_properties (cursor_schematic : in et_schematic.type_devices.cursor) is 
+				procedure query_properties_default (cursor_schematic : in et_schematic.type_devices.cursor) is 
 					inserted : boolean;
 					device_name : et_libraries.type_device_name := et_schematic.type_devices.key (cursor_schematic);
 
@@ -11182,7 +11182,67 @@ package body schematic_ops is
 					use et_schematic.type_devices;
 					alt_dev_cursor : assembly_variants.type_devices.cursor;
 					use assembly_variants.type_devices;
-				begin -- query_properties
+				begin -- query_properties_default
+					-- Store device in bill_of_material as it is:
+
+					apply_offset;
+					
+					material.type_devices.insert (
+						container	=> bill_of_material,
+						key			=> device_name, -- IC4, R3
+						new_item	=> (
+								value		=> element (cursor_schematic).value,
+								partcode	=> element (cursor_schematic).partcode,	
+								others		=> <>), -- CS package
+						position	=> cursor_bom,
+						inserted	=> inserted);
+
+					test_inserted;
+						
+				end query_properties_default;
+
+				procedure query_properties_variants (cursor_schematic : in et_schematic.type_devices.cursor) is 
+					inserted : boolean;
+					device_name : et_libraries.type_device_name := et_schematic.type_devices.key (cursor_schematic);
+
+					procedure test_inserted is begin
+						if not inserted then
+							log (ERROR, "multiple occurence of device " & to_string (device_name),
+								 console => true);
+							raise constraint_error;
+						end if;
+					end;
+
+					procedure apply_offset is
+						device_name_instance : type_device_name;
+					begin
+						-- apply offset if it is greater zero. If offset is zero, we
+						-- are dealing with the top module.
+						if offset > 0 then
+							device_name_instance := device_name; -- take copy of original name
+							
+							-- apply device name offset
+							offset_device_name (device_name_instance, offset);
+
+							-- log original name and name in instanciated submodule
+							log (text => "device name origin " & to_string (device_name) &
+								" -> instance " & to_string (device_name_instance),
+								level => log_threshold + 2);
+
+							device_name := device_name_instance; -- overwrite orignial name
+						else
+							-- no offet to apply:
+							log (text => "device name " & to_string (device_name),
+								level => log_threshold + 2);
+						end if;
+					end;
+					
+					cursor_bom : material.type_devices.cursor;
+
+					use et_schematic.type_devices;
+					alt_dev_cursor : assembly_variants.type_devices.cursor;
+					use assembly_variants.type_devices;
+				begin -- query_properties_variants
 					
 					-- Get a cursor to the alternative device as specified in the assembly variant:
 					alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
@@ -11231,7 +11291,7 @@ package body schematic_ops is
 
 						end case;
 					end if;
-				end query_properties;
+				end query_properties_variants;
 				
 			begin -- query_devices
 				log (text => "collecting devices from module " &
@@ -11241,11 +11301,23 @@ package body schematic_ops is
 					 level => log_threshold + 1);
 				
 				log_indentation_up;
-				
-				et_schematic.type_devices.iterate (
-					container	=> module.devices,
-					process		=> query_properties'access);
 
+				-- if default variant given, then assembly variants are irrelevant:
+				if assembly_variants.type_variant_name.length (variant) = 0 then
+						
+					et_schematic.type_devices.iterate (
+						container	=> module.devices,
+						process		=> query_properties_default'access);
+
+				-- if a particular variant given, then collect devices accordingly:
+				else
+				
+					et_schematic.type_devices.iterate (
+						container	=> module.devices,
+						process		=> query_properties_variants'access);
+
+				end if;
+				
 				log_indentation_down;
 			end query_devices;
 
@@ -11260,9 +11332,15 @@ package body schematic_ops is
 		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
 
 		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
-		package stack is new et_general.stack_lifo (
+		package stack_level is new et_general.stack_lifo (
 			item	=> numbering.type_modules.cursor,
 			max 	=> submodules.nesting_depth_max);
+
+		package stack_variant is new et_general.stack_lifo (
+			item	=> assembly_variants.type_variant_name.bounded_string,
+			max 	=> submodules.nesting_depth_max);
+		
+		parent_variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
 		
 		procedure query_submodules is 
 		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
@@ -11273,8 +11351,7 @@ package body schematic_ops is
 			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 			offset			: et_libraries.type_device_name_index;
 
-			parent_variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
-			
+			use assembly_variants.type_submodules;
 			alt_submod : assembly_variants.type_submodules.cursor;
 		begin
 			log_indentation_up;
@@ -11290,7 +11367,8 @@ package body schematic_ops is
 				log (text => "instance " & enclose_in_quotes (to_string (module_instance)) &
 					" of generic module " & to_string (module_name), level => log_threshold + 1);
 
-				-- In case we are on the first level, the parent module is the given top module.				
+				-- In case we are on the first level, the parent module is the given top module.
+				-- In that case the parent variant is the given variant of the top module.
 				if parent (tree_cursor) = root (submod_tree) then
 					parent_name := make_bom.module_name;
 					parent_variant := variant;
@@ -11303,38 +11381,60 @@ package body schematic_ops is
 				-- has been instantiated.
 				offset := get_offset (parent_name, module_instance);
 				log (text => "offset" & et_libraries.to_string (offset), level => log_threshold + 1);
-
+				log (text => "parent variant " & 
+					 enclose_in_quotes (assembly_variants.to_variant (parent_variant)), level => log_threshold + 1);
+				
+				-- Query in parent module: Is there any assembly variant specified for this submodule ?
 				alt_submod := alternative_submodule (
 							module	=> locate_module (parent_name),
 							variant	=> parent_variant,
 							submod	=> module_instance);
+
+-- 				log (text => "A", level => log_threshold + 1);
 				
--- 				collect (
--- 					module_cursor	=> find (module_name),
--- 					variant			=> 
--- 					offset			=> offset);
-						 
+				if alt_submod = assembly_variants.type_submodules.no_element then
+				-- no variant specified for this submodule -> collect devices of default variant
+
+					parent_variant := assembly_variants.to_variant (""); -- default variant
+				else
+					parent_variant := element (alt_submod).variant;
+				end if;
+
+				log (text => "variant " & 
+					enclose_in_quotes (assembly_variants.to_variant (parent_variant)), level => log_threshold + 1);
+				
+				collect (
+					module_cursor	=> locate_module (module_name),
+					variant			=> parent_variant,
+					offset			=> offset);
+
 				
 				if first_child (tree_cursor) = numbering.type_modules.no_element then 
-					-- no submodules on the current level. means we can't go deeper.
+				-- No submodules on the current level. means we can't go deeper:
 					
 					log_indentation_up;
 					log (text => "no submodules here -> bottom reached", level => log_threshold + 1);
 					log_indentation_down;
 				else
-					-- there are submodules on the current level
+				-- There are submodules on the current level:
 					
 					-- backup the cursor to the current submodule on this level
-					stack.push (tree_cursor);
+					stack_level.push (tree_cursor);
+
+					-- backup the parent assembly variant
+					stack_variant.push (parent_variant);
 
 					-- iterate through submodules on the level below
 					query_submodules; -- this is recursive !
 
-					-- restore cursor to submodule (see stack.push above)
-					tree_cursor := stack.pop;
+					-- restore cursor to submodule (see stack_level.push above)
+					tree_cursor := stack_level.pop;
+
+					-- restore the parent assembly variant (see stack_variant.push above)
+					parent_variant := stack_variant.pop;
 				end if;
 
-				next_sibling (tree_cursor);
+				next_sibling (tree_cursor); -- next submodule on this level
 			end loop;
 			
 			log_indentation_down;
@@ -11377,7 +11477,8 @@ package body schematic_ops is
 			-- set the cursor inside the tree at root position:
 			tree_cursor := numbering.type_modules.root (submod_tree);
 			
-			stack.init;
+			stack_level.init;
+			stack_variant.init;
 
 			-- collect devices of the submodules
 			query_submodules;

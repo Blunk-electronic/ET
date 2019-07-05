@@ -743,6 +743,8 @@ package et_project is
 	-- - The suubmodule must have been instantiated in the module.
 	-- - The submodule must have an entry in the given assembly variant,
 	--   otherwise the return is no_element.
+	-- If the given variant is an emtpy string (means default variant) the return
+	-- is no_element.
 		module	: in type_modules.cursor; -- the module like motor_driver
 		variant	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1

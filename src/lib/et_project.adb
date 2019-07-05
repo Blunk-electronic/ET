@@ -13748,6 +13748,8 @@ package body et_project is
 	-- - The suubmodule must have been instantiated in the module.
 	-- - The submodule must have an entry in the given assembly variant,
 	--   otherwise the return is no_element.
+	-- If the given variant is an emtpy string (means default variant) the return
+	-- is no_element.
 		module	: in type_modules.cursor; -- the module like motor_driver
 		variant	: in assembly_variants.type_variant_name.bounded_string; -- low_cost				
 		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1
@@ -13779,10 +13781,13 @@ package body et_project is
 		end;
 		
 	begin -- alternative_submodule
-
-		type_modules.query_element (
-			position	=> module,
-			process		=> query_variants'access);
+		if assembly_variants.type_variant_name.length (variant) = 0 then
+			cursor := assembly_variants.type_submodules.no_element;
+		else
+			type_modules.query_element (
+				position	=> module,
+				process		=> query_variants'access);
+		end if;
 		
 		return cursor;
 	end alternative_submodule;
