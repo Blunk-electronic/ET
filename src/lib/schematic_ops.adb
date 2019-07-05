@@ -11383,25 +11383,31 @@ package body schematic_ops is
 				log (text => "offset" & et_libraries.to_string (offset), level => log_threshold + 1);
 				log (text => "parent variant " & 
 					 enclose_in_quotes (assembly_variants.to_variant (parent_variant)), level => log_threshold + 1);
-				
-				-- Query in parent module: Is there any assembly variant specified for this submodule ?
-				alt_submod := alternative_submodule (
-							module	=> locate_module (parent_name),
-							variant	=> parent_variant,
-							submod	=> module_instance);
 
--- 				log (text => "A", level => log_threshold + 1);
-				
-				if alt_submod = assembly_variants.type_submodules.no_element then
-				-- no variant specified for this submodule -> collect devices of default variant
-
-					parent_variant := assembly_variants.to_variant (""); -- default variant
+				if assembly_variants.is_default (parent_variant) then
+					null;
 				else
-					parent_variant := element (alt_submod).variant;
-				end if;
+					
+					-- Query in parent module: Is there any assembly variant specified for this submodule ?
+					alt_submod := alternative_submodule (
+								module	=> locate_module (parent_name),
+								variant	=> parent_variant,
+								submod	=> module_instance);
 
-				log (text => "variant " & 
-					enclose_in_quotes (assembly_variants.to_variant (parent_variant)), level => log_threshold + 1);
+	-- 				log (text => "A", level => log_threshold + 1);
+					
+					if alt_submod = assembly_variants.type_submodules.no_element then
+					-- no variant specified for this submodule -> collect devices of default variant
+
+						parent_variant := assembly_variants.to_variant (""); -- default variant
+					else
+						parent_variant := element (alt_submod).variant;
+					end if;
+
+					log (text => "variant " & 
+						 enclose_in_quotes (assembly_variants.to_variant (parent_variant)), level => log_threshold + 1);
+
+				end if;
 				
 				collect (
 					module_cursor	=> locate_module (module_name),
