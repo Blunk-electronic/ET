@@ -11303,7 +11303,7 @@ package body schematic_ops is
 				log_indentation_up;
 
 				-- if default variant given, then assembly variants are irrelevant:
-				if assembly_variants.type_variant_name.length (variant) = 0 then
+				if assembly_variants.is_default (variant) then
 						
 					et_schematic.type_devices.iterate (
 						container	=> module.devices,
@@ -11449,7 +11449,7 @@ package body schematic_ops is
 		
 	begin -- make_bom
 		-- The variant name is optional. If not provided, the default variant will be exported.
-		if type_variant_name.length (variant) = 0 then
+		if assembly_variants.is_default (variant) then
 			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 				" default variant" &
 				" exporting BOM to file " & to_string (bom_file),

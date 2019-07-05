@@ -13754,7 +13754,7 @@ package body et_project is
 		variant	: in assembly_variants.type_variant_name.bounded_string; -- low_cost				
 		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1
 		return assembly_variants.type_submodules.cursor is
-		
+
 		cursor : assembly_variants.type_submodules.cursor; -- to be returned;
 		
 		procedure query_variants (
@@ -13781,7 +13781,7 @@ package body et_project is
 		end;
 		
 	begin -- alternative_submodule
-		if assembly_variants.type_variant_name.length (variant) = 0 then
+		if assembly_variants.is_default (variant) then
 			cursor := assembly_variants.type_submodules.no_element;
 		else
 			type_modules.query_element (

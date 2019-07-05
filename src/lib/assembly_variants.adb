@@ -65,6 +65,15 @@ with et_geometry;
 
 package body assembly_variants is
 
+	function is_default (variant : in type_variant_name.bounded_string) return boolean is begin
+	-- Returns true if the given variant name is empty.
+		if type_variant_name.length (variant) = 0 then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+	
 	function to_mounted (mounted : in string) return type_mounted is begin
 		return type_mounted'value (mounted);
 	end;

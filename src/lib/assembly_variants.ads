@@ -57,6 +57,9 @@ package assembly_variants is
 	package type_variant_name is new generic_bounded_length (variant_name_length_max);
 	use type_variant_name;
 
+	function is_default (variant : in type_variant_name.bounded_string) return boolean;
+	-- Returns true if the given variant name is empty.
+	
 	function to_variant (variant : in type_variant_name.bounded_string) return string;
 	function to_variant (variant : in string) return type_variant_name.bounded_string;
 
