@@ -703,6 +703,8 @@ package et_project is
 
 	function exists (
 	-- Returns true if the given module provides the given assembly variant.
+	-- If the variant is an empty string then it is about the default variant
+	-- which is always provided. The return is true in that case.
 		module		: in type_modules.cursor;
 		variant		: in assembly_variants.type_variant_name.bounded_string) -- low_cost
 		return boolean;	

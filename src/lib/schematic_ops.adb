@@ -11348,13 +11348,21 @@ package body schematic_ops is
 		end query_submodules;
 		
 	begin -- make_bom
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
-			" variant " & enclose_in_quotes (to_variant (variant)) &
-			" exporting BOM to file " & to_string (bom_file),
-			level => log_threshold);
-		log_indentation_up;
+		-- The variant name is optional. If not provided, the default variant will be exported.
+		if type_variant_name.length (variant) = 0 then
+			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+				" default variant" &
+				" exporting BOM to file " & to_string (bom_file),
+				level => log_threshold);
+		else
+			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+				" variant " & enclose_in_quotes (to_variant (variant)) &
+				" exporting BOM to file " & to_string (bom_file),
+				level => log_threshold);
+		end if;
 		
-	
+		log_indentation_up;
+			
 		-- locate the given top module
 		module_cursor := locate_module (module_name);
 

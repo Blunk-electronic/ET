@@ -930,12 +930,23 @@ package body scripting is
 					case noun is
 						when BOM => 
 							case fields is
+								when 5 =>
+									-- The variant name is optional. If not specified,
+									-- an empty string will be passed:
+									schematic_ops.make_bom 
+										(
+										module_name 	=> module,
+										bom_file		=> material.to_file_name (f (5)),
+										variant			=> assembly_variants.to_variant (""),
+										
+										log_threshold	=> log_threshold + 1);
+
 								when 6 =>
 									schematic_ops.make_bom 
 										(
 										module_name 	=> module,
-										variant			=> assembly_variants.to_variant (f (5)),
-										bom_file		=> material.to_file_name (f (6)),
+										bom_file		=> material.to_file_name (f (5)),
+										variant			=> assembly_variants.to_variant (f (6)),
 										
 										log_threshold	=> log_threshold + 1);
 

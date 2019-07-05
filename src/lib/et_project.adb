@@ -13597,6 +13597,8 @@ package body et_project is
 
 	function exists (
 	-- Returns true if the given module provides the given assembly variant.
+	-- If the variant is an empty string then it is about the default variant
+	-- which is always provided. The return is true in that case.
 		module		: in type_modules.cursor;
 		variant		: in assembly_variants.type_variant_name.bounded_string) -- low_cost
 		return boolean is
@@ -13614,10 +13616,16 @@ package body et_project is
 		end;
 		
 	begin -- exists
-		type_modules.query_element (
-			position	=> module,
-			process		=> query_variants'access);
+		if type_variant_name.length (variant) = 0 then
+			result := true;
+		else
+			
+			type_modules.query_element (
+				position	=> module,
+				process		=> query_variants'access);
 
+		end if;
+					
 		return result;
 	end exists;
 
