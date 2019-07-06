@@ -11140,49 +11140,51 @@ package body schematic_ops is
 			procedure query_devices (
 				module_name	: in type_module_name.bounded_string;
 				module		: in et_schematic.type_module) is
+
+				device_name : et_libraries.type_device_name;
+				inserted : boolean;
+				
+				procedure test_inserted is begin
+					if not inserted then
+						log (ERROR, "multiple occurence of device " & to_string (device_name),
+								console => true);
+						raise constraint_error;
+					end if;
+				end;
+
+				procedure apply_offset is
+					device_name_instance : type_device_name;
+				begin
+					-- apply offset if it is greater zero. If offset is zero, we
+					-- are dealing with the top module.
+					if offset > 0 then
+						device_name_instance := device_name; -- take copy of original name
+						
+						-- apply device name offset
+						offset_device_name (device_name_instance, offset);
+
+						-- log original name and name in instanciated submodule
+						log (text => "device name origin " & to_string (device_name) &
+							" -> instance " & to_string (device_name_instance),
+							level => log_threshold + 2);
+
+						device_name := device_name_instance; -- overwrite orignial name
+					else
+						-- no offset to apply:
+						log (text => "device name " & to_string (device_name),
+							level => log_threshold + 2);
+					end if;
+				end;
 				
 				procedure query_properties_default (cursor_schematic : in et_schematic.type_devices.cursor) is 
-					inserted : boolean;
-					device_name : et_libraries.type_device_name := et_schematic.type_devices.key (cursor_schematic);
-
-					procedure test_inserted is begin
-						if not inserted then
-							log (ERROR, "multiple occurence of device " & to_string (device_name),
-								 console => true);
-							raise constraint_error;
-						end if;
-					end;
-
-					procedure apply_offset is
-						device_name_instance : type_device_name;
-					begin
-						-- apply offset if it is greater zero. If offset is zero, we
-						-- are dealing with the top module.
-						if offset > 0 then
-							device_name_instance := device_name; -- take copy of original name
-							
-							-- apply device name offset
-							offset_device_name (device_name_instance, offset);
-
-							-- log original name and name in instanciated submodule
-							log (text => "device name origin " & to_string (device_name) &
-								" -> instance " & to_string (device_name_instance),
-								level => log_threshold + 2);
-
-							device_name := device_name_instance; -- overwrite orignial name
-						else
-							-- no offet to apply:
-							log (text => "device name " & to_string (device_name),
-								level => log_threshold + 2);
-						end if;
-					end;
-					
 					cursor_bom : material.type_devices.cursor;
 
 					use et_schematic.type_devices;
 					alt_dev_cursor : assembly_variants.type_devices.cursor;
 					use assembly_variants.type_devices;
 				begin -- query_properties_default
+					device_name := et_schematic.type_devices.key (cursor_schematic);
+
 					-- Store device in bill_of_material as it is:
 
 					apply_offset;
@@ -11202,47 +11204,13 @@ package body schematic_ops is
 				end query_properties_default;
 
 				procedure query_properties_variants (cursor_schematic : in et_schematic.type_devices.cursor) is 
-					inserted : boolean;
-					device_name : et_libraries.type_device_name := et_schematic.type_devices.key (cursor_schematic);
-
-					procedure test_inserted is begin
-						if not inserted then
-							log (ERROR, "multiple occurence of device " & to_string (device_name),
-								 console => true);
-							raise constraint_error;
-						end if;
-					end;
-
-					procedure apply_offset is
-						device_name_instance : type_device_name;
-					begin
-						-- apply offset if it is greater zero. If offset is zero, we
-						-- are dealing with the top module.
-						if offset > 0 then
-							device_name_instance := device_name; -- take copy of original name
-							
-							-- apply device name offset
-							offset_device_name (device_name_instance, offset);
-
-							-- log original name and name in instanciated submodule
-							log (text => "device name origin " & to_string (device_name) &
-								" -> instance " & to_string (device_name_instance),
-								level => log_threshold + 2);
-
-							device_name := device_name_instance; -- overwrite orignial name
-						else
-							-- no offet to apply:
-							log (text => "device name " & to_string (device_name),
-								level => log_threshold + 2);
-						end if;
-					end;
-					
 					cursor_bom : material.type_devices.cursor;
 
 					use et_schematic.type_devices;
 					alt_dev_cursor : assembly_variants.type_devices.cursor;
 					use assembly_variants.type_devices;
 				begin -- query_properties_variants
+					device_name := et_schematic.type_devices.key (cursor_schematic);
 					
 					-- Get a cursor to the alternative device as specified in the assembly variant:
 					alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
@@ -11294,24 +11262,31 @@ package body schematic_ops is
 				end query_properties_variants;
 				
 			begin -- query_devices
-				log (text => "collecting devices from module " &
-						enclose_in_quotes (to_string (module_name)) &
-						" variant " & enclose_in_quotes (to_variant (variant)) &
-						" by applying device index offset" & 
-						et_libraries.to_string (offset), -- 100
-					 level => log_threshold + 1);
-				
-				log_indentation_up;
-
 				-- if default variant given, then assembly variants are irrelevant:
 				if assembly_variants.is_default (variant) then
-						
+
+					log (text => "collecting devices from module " &
+							enclose_in_quotes (to_string (module_name)) &
+							" default variant by applying device index offset" & 
+							et_libraries.to_string (offset), -- 100
+						level => log_threshold + 1);
+					
+					log_indentation_up;
+					
 					et_schematic.type_devices.iterate (
 						container	=> module.devices,
 						process		=> query_properties_default'access);
 
 				-- if a particular variant given, then collect devices accordingly:
 				else
+					log (text => "collecting devices from module " &
+							enclose_in_quotes (to_string (module_name)) &
+							" variant " & enclose_in_quotes (to_variant (variant)) &
+							" by applying device index offset" & 
+							et_libraries.to_string (offset), -- 100
+						level => log_threshold + 1);
+					
+					log_indentation_up;
 				
 					et_schematic.type_devices.iterate (
 						container	=> module.devices,
