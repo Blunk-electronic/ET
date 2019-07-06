@@ -11117,7 +11117,7 @@ package body schematic_ops is
 	procedure make_bom (
 	-- Exports a BOM file from the given top module and assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant			: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant_top		: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		bom_file		: in material.type_file_name.bounded_string; -- CAM/motor_driver_bom.csv
 		log_threshold	: in type_log_level) is
 
@@ -11341,7 +11341,7 @@ package body schematic_ops is
 			item	=> assembly_variants.type_variant_name.bounded_string,
 			max 	=> submodules.nesting_depth_max);
 		
-		parent_variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
 		
 		procedure query_submodules is 
 		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
@@ -11375,7 +11375,7 @@ package body schematic_ops is
 				-- assume default variant too.
 				if parent (tree_cursor) = root (submod_tree) then
 					parent_name := make_bom.module_name;
-					parent_variant := variant;
+					variant := variant_top; -- argument of make_bom
 				else
 					parent_name := element (parent (tree_cursor)).name;
 				end if;
@@ -11385,21 +11385,21 @@ package body schematic_ops is
 				-- has been instantiated.
 				offset := get_offset (parent_name, module_instance);
 
-				if not assembly_variants.is_default (parent_variant) then
+				if not assembly_variants.is_default (variant) then
 					-- Query in parent module: Is there any assembly variant specified for this submodule ?
 
 					alt_submod := alternative_submodule (
 								module	=> locate_module (parent_name),
-								variant	=> parent_variant,
+								variant	=> variant,
 								submod	=> module_instance);
 
 					if alt_submod = assembly_variants.type_submodules.no_element then
 					-- no variant specified for this submodule -> collect devices of default variant
 
-						parent_variant := assembly_variants.default;
+						variant := assembly_variants.default;
 					else
 					-- alternative variant specified for this submodule
-						parent_variant := element (alt_submod).variant;
+						variant := element (alt_submod).variant;
 					end if;
 
 				end if;
@@ -11407,7 +11407,7 @@ package body schematic_ops is
 				-- collect devices from current module
 				collect (
 					module_cursor	=> locate_module (module_name),
-					variant			=> parent_variant,
+					variant			=> variant,
 					offset			=> offset);
 
 				
@@ -11424,7 +11424,7 @@ package body schematic_ops is
 					stack_level.push (tree_cursor);
 
 					-- backup the parent assembly variant
-					stack_variant.push (parent_variant);
+					stack_variant.push (variant);
 
 					-- iterate through submodules on the level below
 					query_submodules; -- this is recursive !
@@ -11433,7 +11433,7 @@ package body schematic_ops is
 					tree_cursor := stack_level.pop;
 
 					-- restore the parent assembly variant (see stack_variant.push above)
-					parent_variant := stack_variant.pop;
+					variant := stack_variant.pop;
 				end if;
 
 				next_sibling (tree_cursor); -- next submodule on this level
@@ -11451,14 +11451,14 @@ package body schematic_ops is
 		
 	begin -- make_bom
 		-- The variant name is optional. If not provided, the default variant will be exported.
-		if assembly_variants.is_default (variant) then
+		if assembly_variants.is_default (variant_top) then
 			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 				" default variant" &
 				" exporting BOM to file " & to_string (bom_file),
 				level => log_threshold);
 		else
 			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
-				" variant " & enclose_in_quotes (to_variant (variant)) &
+				" variant " & enclose_in_quotes (to_variant (variant_top)) &
 				" exporting BOM to file " & to_string (bom_file),
 				level => log_threshold);
 		end if;
@@ -11468,10 +11468,10 @@ package body schematic_ops is
 		-- locate the given top module
 		module_cursor := locate_module (module_name);
 
-		if exists (module_cursor, variant) then
+		if exists (module_cursor, variant_top) then
 
 			-- collect devices of the given top module. the top module has no device index offset
-			collect (module_cursor, variant, 0); 
+			collect (module_cursor, variant_top, 0); 
 
 			-- take a copy of the submodule tree of the given top module:
 			submod_tree := element (module_cursor).submod_tree;
@@ -11493,7 +11493,7 @@ package body schematic_ops is
 
 			close (bom_handle);
 		else
-			assembly_variant_not_found (variant);
+			assembly_variant_not_found (variant_top);
 		end if;
 		
 		log_indentation_down;

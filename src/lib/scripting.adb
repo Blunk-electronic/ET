@@ -937,7 +937,7 @@ package body scripting is
 										(
 										module_name 	=> module,
 										bom_file		=> material.to_file_name (f (5)),
-										variant			=> assembly_variants.to_variant (""),
+										variant_top		=> assembly_variants.to_variant (""),
 										
 										log_threshold	=> log_threshold + 1);
 
@@ -946,7 +946,7 @@ package body scripting is
 										(
 										module_name 	=> module,
 										bom_file		=> material.to_file_name (f (5)),
-										variant			=> assembly_variants.to_variant (f (6)),
+										variant_top		=> assembly_variants.to_variant (f (6)),
 										
 										log_threshold	=> log_threshold + 1);
 
