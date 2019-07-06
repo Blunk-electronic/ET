@@ -63,6 +63,8 @@ package assembly_variants is
 	function to_variant (variant : in type_variant_name.bounded_string) return string;
 	function to_variant (variant : in string) return type_variant_name.bounded_string;
 
+	default : constant type_variant_name.bounded_string := type_variant_name.to_bounded_string ("");
+	
 	-- An assembly variant should be described more or less detailled by the operator:
 	type type_description is new unbounded_string;
 	

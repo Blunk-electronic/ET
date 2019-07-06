@@ -11296,6 +11296,7 @@ package body schematic_ops is
 			begin -- query_devices
 				log (text => "collecting devices from module " &
 						enclose_in_quotes (to_string (module_name)) &
+						" variant " & enclose_in_quotes (to_variant (variant)) &
 						" by applying device index offset" & 
 						et_libraries.to_string (offset), -- 100
 					 level => log_threshold + 1);
@@ -11365,10 +11366,13 @@ package body schematic_ops is
 				module_instance := element (tree_cursor).instance;
 
 				log (text => "instance " & enclose_in_quotes (to_string (module_instance)) &
-					" of generic module " & to_string (module_name), level => log_threshold + 1);
+					 " of generic module " & enclose_in_quotes (to_string (module_name)),
+					 level => log_threshold + 1);
 
 				-- In case we are on the first level, the parent module is the given top module.
 				-- In that case the parent variant is the given variant of the top module.
+				-- If the top module has the default variant, all submodules in all levels
+				-- assume default variant too.
 				if parent (tree_cursor) = root (submod_tree) then
 					parent_name := make_bom.module_name;
 					parent_variant := variant;
@@ -11377,38 +11381,30 @@ package body schematic_ops is
 				end if;
 
 				-- Get the device name offset of the current submodule.
-				-- NOTE: The offset has been assigned in the PARENT module where the affected submodule
+				-- NOTE: The offset has been assigned in the PARENT module where the submodule
 				-- has been instantiated.
 				offset := get_offset (parent_name, module_instance);
-				log (text => "offset" & et_libraries.to_string (offset), level => log_threshold + 1);
-				log (text => "parent variant " & 
-					 enclose_in_quotes (assembly_variants.to_variant (parent_variant)), level => log_threshold + 1);
 
-				if assembly_variants.is_default (parent_variant) then
-					null;
-				else
-					
+				if not assembly_variants.is_default (parent_variant) then
 					-- Query in parent module: Is there any assembly variant specified for this submodule ?
+
 					alt_submod := alternative_submodule (
 								module	=> locate_module (parent_name),
 								variant	=> parent_variant,
 								submod	=> module_instance);
 
-	-- 				log (text => "A", level => log_threshold + 1);
-					
 					if alt_submod = assembly_variants.type_submodules.no_element then
 					-- no variant specified for this submodule -> collect devices of default variant
 
-						parent_variant := assembly_variants.to_variant (""); -- default variant
+						parent_variant := assembly_variants.default;
 					else
+					-- alternative variant specified for this submodule
 						parent_variant := element (alt_submod).variant;
 					end if;
 
-					log (text => "variant " & 
-						 enclose_in_quotes (assembly_variants.to_variant (parent_variant)), level => log_threshold + 1);
-
 				end if;
-				
+
+				-- collect devices from current module
 				collect (
 					module_cursor	=> locate_module (module_name),
 					variant			=> parent_variant,
