@@ -11151,6 +11151,14 @@ package body schematic_ops is
 					end if;
 				end;
 
+				procedure test_partcode (partcode : in material.type_partcode.bounded_string) is
+				begin
+					if type_partcode.length (partcode) = 0 then
+						log (WARNING, text => "device " & enclose_in_quotes (to_string (device_name)) &
+							 " has no partcode !");
+					end if;
+				end;
+				
 				procedure apply_offset is
 					device_name_instance : type_device_name;
 				begin
@@ -11185,6 +11193,9 @@ package body schematic_ops is
 					if element (cursor_schematic).appearance = SCH_PCB then -- skip virtual devices
 						device_name := et_schematic.type_devices.key (cursor_schematic);
 
+						-- issue warning if device has no partcode
+						test_partcode (element (cursor_schematic).partcode);
+						
 						-- Store device in bill_of_material as it is:
 
 						apply_offset;
@@ -11199,8 +11210,9 @@ package body schematic_ops is
 								packge		=> et_schematic.package_model (cursor_schematic)),
 							position	=> cursor_bom,
 							inserted	=> inserted);
-
+						
 						test_inserted;
+
 					end if;
 				end query_properties_default;
 
@@ -11220,6 +11232,9 @@ package body schematic_ops is
 						if alt_dev_cursor = assembly_variants.type_devices.no_element then
 						-- Device has no entry in the assembly variant. -> It is to be stored in bill_of_material as it is:
 
+							-- issue warning if device has no partcode
+							test_partcode (element (cursor_schematic).partcode);
+							
 							apply_offset;
 							
 							material.type_devices.insert (
@@ -11234,7 +11249,7 @@ package body schematic_ops is
 								inserted	=> inserted);
 
 							test_inserted;
-							
+
 						else
 						-- Device has an entry in the assembly variant. Depending on the mounted-flag
 						-- it is to be skipped or inserted in bill_of_material with alternative properties.
@@ -11245,6 +11260,9 @@ package body schematic_ops is
 										level => log_threshold + 2);
 									
 								when YES =>
+									-- issue warning if device has no partcode
+									test_partcode (element (alt_dev_cursor).partcode);
+
 									apply_offset;
 									
 									-- Insert the device in bill with alternative properties as defined
