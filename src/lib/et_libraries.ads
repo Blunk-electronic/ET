@@ -560,35 +560,6 @@ package et_libraries is
 
 
 
--- PARTCODES
-	-- The component part code is THE key into the ERP system of the user. It can be a crytic SAP number
-	-- or something human readable like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5".
-	-- The keywords for the latter can be specified via the conventions file. See package "convention".
-	partcode_characters : character_set := to_set
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ('_'); 
-	partcode_length_max : constant positive := 100;
-	package type_partcode is new generic_bounded_length (partcode_length_max);
-	partcode_default : constant string := "dummy";
-	
-	function to_string (partcode : in type_partcode.bounded_string) return string;
-
-	function partcode_length_valid (partcode : in string) return boolean;
-	-- Returns true if length of given partcode is ok. Issues warning if not.
-	
-	function partcode_characters_valid (
-		partcode	: in type_partcode.bounded_string;
-		characters	: in character_set := partcode_characters) return boolean;
-	-- Tests if the given partcode contains only valid characters as specified
-	-- by given character set. Returns false if not. Issues warning.
-
-	procedure partcode_invalid (partcode : in string);
-	-- Issues error message and raises constraint error.
-
-	function to_partcode (
-	-- Tests the given value for length and invalid characters.							 
-		partcode 					: in string;
-		error_on_invalid_character	: in boolean := true) 
-		return type_partcode.bounded_string;
 
 	-- lines
 	type type_line is record

@@ -63,7 +63,7 @@ with et_string_processing;		use et_string_processing;
 with et_export;
 with et_import;
 with et_csv;
-
+with material;
 
 package body conventions is
 
@@ -2123,13 +2123,13 @@ package body conventions is
 		prefix		: in et_libraries.type_device_name_prefix.bounded_string;			-- R
 		packge		: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
 		value 		: in et_libraries.type_value.bounded_string := et_libraries.type_value.to_bounded_string ("")) -- 100R
-		return et_libraries.type_partcode.bounded_string is
+		return material.type_partcode.bounded_string is
 
 		use et_libraries;
 		use type_device_name_prefix;
 		use type_component_package_name;
 		use type_value;
-		use type_partcode;
+		use material.type_partcode;
 
 	begin
 		return to_bounded_string (
@@ -2148,12 +2148,13 @@ package body conventions is
 	procedure validate_other_partcode_keywords (
 	-- Validates optional keywords as specified in configuration file.
 	-- Starts the validation from the given character position.
-		partcode		: in et_libraries.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R_TOL_5_PMAX_0W125
+		partcode		: in material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R_TOL_5_PMAX_0W125
 		from			: in positive; -- the character position to start from
 		log_threshold	: in et_string_processing.type_log_level) is
 
+		use material;
+		use material.type_partcode;
 		use type_partcode_keywords;
-		use et_libraries.type_partcode;
 		use type_partcode_keyword_argument;
 		use et_string_processing;
 		
@@ -2204,7 +2205,7 @@ package body conventions is
 				
 				if element (partcode, place) = partcode_keyword_separator then
 					place := place + 1;
-					keyword_end := index (partcode, (1 => partcode_keyword_separator), from => place) - 1;
+					keyword_end := type_partcode.index (partcode, (1 => partcode_keyword_separator), from => place) - 1;
 					
 					keyword := to_partcode_keyword (slice (partcode, place, keyword_end));
 					log (text => "keyword " & to_string (keyword), level => log_threshold + 2);
@@ -2216,7 +2217,7 @@ package body conventions is
 					validate_partcode_keyword (keyword);
 					
 					-- A keyword must occur only once:
-					if et_libraries.type_partcode.count (partcode, to_string (keyword)) > 1 then
+					if type_partcode.count (partcode, to_string (keyword)) > 1 then
 						log (WARNING, "keyword " & to_string (keyword) & " can be used only once !");
 					end if;
 				else
@@ -2240,13 +2241,13 @@ package body conventions is
 					keyword_follows := true;
 
 					-- The argument can now be sliced from argument_start to the place before the separator:
-					argument := to_partcode_keyword_argument (slice (partcode, argument_start, place - 1));
+					argument := to_partcode_keyword_argument (material.type_partcode.slice (partcode, argument_start, place - 1));
 					validate_argument (keyword, argument);
 					
 				elsif place = len then -- last argument in partcode
 					
 					-- The argument can now be sliced from argument_start to the end of the partcode:
-					argument := to_partcode_keyword_argument (slice (partcode, argument_start, place));
+					argument := to_partcode_keyword_argument (material.type_partcode.slice (partcode, argument_start, place));
 					validate_argument (keyword, argument);
 				end if;
 
@@ -2259,34 +2260,34 @@ package body conventions is
 		exception
 			when event:
 				others =>
-					log (WARNING, "partcode " & to_string (partcode) & " invalid !");
+					log (WARNING, "partcode " & material.to_string (partcode) & " invalid !");
 					log (text => ada.exceptions.exception_message (event));
 		
 	end validate_other_partcode_keywords;
 
 	procedure validate_partcode (
-	-- Tests if the given partcode of a schematic component is correct.
-	-- The given properties are assumed to be those of a real component.
+	-- Tests if the given partcode of a device is correct.
+	-- The given properties are assumed to be those of a real device.
 	--  - If partcode keywords are not specified in the 
 	--    configuration file, nothing is validated. It is the users responsibility 
 	--    to specify a correct partcode.
 	--  - If partcode keywords are specified in the configuration file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
-		partcode		: in et_libraries.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-		reference		: in et_libraries.type_device_name;						-- R45
+		partcode		: in material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		device_name		: in et_libraries.type_device_name;						-- R45
 		packge			: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
 		value 			: in et_libraries.type_value.bounded_string;			-- 100R
 		log_threshold	: in et_string_processing.type_log_level)
 		is
 
 		use et_string_processing;
-		use et_libraries.type_partcode;
+		use material.type_partcode;
 
 		place : natural;
-		partcode_root : et_libraries.type_partcode.bounded_string;
+		partcode_root : material.type_partcode.bounded_string;
 		
 		procedure partcode_invalid is begin
-			log (WARNING, "device " & et_libraries.to_string (reference)
+			log (WARNING, "device " & et_libraries.to_string (device_name)
 				 & " partcode invalid ! Found " & to_string (partcode) &
 				" . Expected " & to_string (partcode_root) & " !");
 		end partcode_invalid;
@@ -2301,7 +2302,7 @@ package body conventions is
 			-- The root is usually something like R_PAC_S_0805_VAL_100R which contains
 			-- the given prefix, package name and - if provided - the value.
 			partcode_root := compose_partcode_root (
-				prefix	=> reference.prefix,
+				prefix	=> device_name.prefix,
 				packge	=> packge,
 				value	=> value);
 

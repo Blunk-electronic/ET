@@ -965,14 +965,14 @@ package body scripting is
 						when DEVICE => 
 							declare
 								value : type_value.bounded_string; -- 470R
-								partcode : type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+								partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 								purpose : type_device_purpose.bounded_string; -- brightness_control
 							begin
 								-- validate value
 								value := et_libraries.to_value (f (7));
 
 								-- validate partcode
-								partcode := to_partcode (f (8));
+								partcode := material.to_partcode (f (8));
 								
 								case fields is
 									when 8 =>
@@ -1376,9 +1376,9 @@ package body scripting is
 							
 						when PARTCODE =>
 							declare
-								partcode : type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+								partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 							begin
-								partcode := to_partcode (f (6));
+								partcode := material.to_partcode (f (6));
 
 								-- set the purpose
 								schematic_ops.set_partcode

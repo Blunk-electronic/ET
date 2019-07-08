@@ -73,6 +73,7 @@ with et_kicad_pcb;
 with et_import;
 with et_export;
 with et_csv;
+with material;
 
 package body et_kicad_to_native is
 
@@ -2618,7 +2619,7 @@ package body et_kicad_to_native is
 														device	=> element (component_cursor_kicad).generic_name),
 
 								value				=> element (component_cursor_kicad).value,
-								partcode			=> et_libraries.to_partcode (et_libraries.partcode_default), -- not provided by kicad
+								partcode			=> material.to_partcode (material.partcode_default), -- not provided by kicad
 								purpose				=> et_libraries.to_purpose (et_libraries.purpose_default), -- not provided by kicad
 								variant				=> element (component_cursor_kicad).variant,
 

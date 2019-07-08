@@ -63,6 +63,7 @@ with et_pcb_coordinates;
 with conventions;
 with submodules;
 with assembly_variants;
+with material;
 
 package body et_project is
 
@@ -1877,7 +1878,7 @@ package body et_project is
 					when et_libraries.SCH_PCB =>
 						write (keyword => keyword_value   , parameters => et_libraries.to_string (element (device_cursor).value), space => true);
 						write (keyword => keyword_variant , parameters => et_libraries.to_string (element (device_cursor).variant), space => true);
-						write (keyword => keyword_partcode, parameters => et_libraries.to_string (element (device_cursor).partcode), space => true);
+						write (keyword => keyword_partcode, parameters => material.to_string (element (device_cursor).partcode), space => true);
 						write (keyword => keyword_purpose , parameters => et_libraries.to_string (element (device_cursor).purpose), space => true, wrap => true);
 						
 						section_mark (section_package, HEADER);
@@ -1942,12 +1943,12 @@ package body et_project is
 							write (
 								keyword		=> keyword_device,
 								parameters	=> et_libraries.to_string (key (device_cursor)) & 
-												latin_1.space &
-												keyword_value & latin_1.space &
-												et_libraries.to_string (element (device_cursor).value) &
-												latin_1.space & keyword_partcode & latin_1.space &
-												et_libraries.to_string (element (device_cursor).partcode) &
-												purpose,
+									latin_1.space &
+									keyword_value & latin_1.space &
+									et_libraries.to_string (element (device_cursor).value) &
+									latin_1.space & keyword_partcode & latin_1.space &
+									material.to_string (element (device_cursor).partcode) &
+									purpose,
 								space 		=> true);
 
 					end case;
@@ -6038,7 +6039,7 @@ package body et_project is
 		prefix				: type_device_name_prefix.bounded_string; -- T, IC
 		value				: type_value.bounded_string; -- BC548
 		appearance			: type_device_appearance; -- sch, sch_pcb
-		partcode			: type_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
+		partcode			: material.type_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
 		variant				: type_component_variant;
 		variant_name		: type_component_variant_name.bounded_string; -- N, D
 		variants			: type_component_variants.map;
@@ -6699,9 +6700,9 @@ package body et_project is
 								expect_field_count (line, 2);
 
 								-- validate partcode length
-								partcode := et_libraries.to_partcode (f (line,2));
+								partcode := material.to_partcode (f (line,2));
 								
-								log (text => "partcode " & to_string (partcode), level => log_threshold + 1);
+								log (text => "partcode " & material.to_string (partcode), level => log_threshold + 1);
 							else
 								invalid_keyword (kw);
 							end if;
@@ -8056,7 +8057,7 @@ package body et_project is
 		-- temporarily collection of units:
 		device_units			: et_schematic.type_units.map; -- PWR, A, B, ...
 		
-		device_partcode			: et_libraries.type_partcode.bounded_string;
+		device_partcode			: material.type_partcode.bounded_string;
 		device_purpose			: et_libraries.type_device_purpose.bounded_string;
 		device_variant			: et_libraries.type_component_variant_name.bounded_string; -- D, N
 		device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
@@ -8468,12 +8469,12 @@ package body et_project is
 								" not conformant with conventions !");
 						end if;
 
-						log (text => "partcode " & et_libraries.to_string (device_partcode), level => log_threshold + 2);
-						if et_libraries.partcode_characters_valid (device_partcode) then
+						log (text => "partcode " & material.to_string (device_partcode), level => log_threshold + 2);
+						if material.partcode_characters_valid (device_partcode) then
 							device.partcode	:= device_partcode;
 						else
 							log_indentation_reset;
-							partcode_invalid (to_string (device_partcode));
+							material.partcode_invalid (material.to_string (device_partcode));
 						end if;
 
 						log (text => "purpose " & et_libraries.to_string (device_purpose), level => log_threshold + 2);
@@ -8510,7 +8511,7 @@ package body et_project is
 					if device.appearance = et_libraries.SCH_PCB then
 						conventions.validate_partcode (
 							partcode		=> device.partcode,
-							reference		=> device_name,
+							device_name		=> device_name,
 
 							-- Derive package name from device.model and device.variant.
 							-- Check if variant specified in device.model.
@@ -8527,7 +8528,7 @@ package body et_project is
 					device_model	:= to_file_name ("");
 					device_value	:= type_value.to_bounded_string ("");
 					device_purpose	:= type_device_purpose.to_bounded_string ("");
-					device_partcode := type_partcode.to_bounded_string ("");
+					device_partcode := material.type_partcode.to_bounded_string ("");
 					device_variant	:= to_component_variant_name ("");
 
 					log_indentation_down;
@@ -10676,7 +10677,7 @@ package body et_project is
 
 											-- read partcode
 											if f (line, 5) = keyword_partcode then
-												device.partcode := et_libraries.to_partcode (f (line, 6));
+												device.partcode := material.to_partcode (f (line, 6));
 											else -- keyword partcode not found
 												log (ERROR, "expect keyword " & enclose_in_quotes (keyword_partcode) &
 													 " after value !", console => true);
@@ -12206,7 +12207,7 @@ package body et_project is
 										expect_field_count (line, 2);
 
 										-- validate partcode
-										device_partcode := et_libraries.to_partcode (f (line, 2));
+										device_partcode := material.to_partcode (f (line, 2));
 
 									elsif kw = keyword_purpose then -- purpose power_out
 										expect_field_count (line, 2);

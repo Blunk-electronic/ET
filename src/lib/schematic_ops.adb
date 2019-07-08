@@ -2611,7 +2611,7 @@ package body schematic_ops is
 	-- Sets the partcode of a device.
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
-		partcode			: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+		partcode			: in material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		log_threshold		: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module being modified
@@ -2657,7 +2657,7 @@ package body schematic_ops is
 	begin -- set_partcode
 		log (text => "module " & to_string (module_name) &
 			" setting " & to_string (device_name) & " partcode to " &
-			enclose_in_quotes (to_string (partcode)),
+			enclose_in_quotes (material.to_string (partcode)),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -9851,7 +9851,7 @@ package body schematic_ops is
 		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
 		value			: in type_value.bounded_string; -- 220R
-		partcode		: in type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
+		partcode		: in material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
 		purpose			: in type_device_purpose.bounded_string := type_device_purpose.to_bounded_string (""); -- set temperature
 		log_threshold	: in type_log_level) is
 
@@ -9927,7 +9927,7 @@ package body schematic_ops is
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
 			 " mount device " & to_string (device) &
 			 " value " & to_string (value) &
-			 " partcode " & to_string (partcode) &
+			 " partcode " & material.to_string (partcode) &
 			 write_purpose,
 			level => log_threshold);
 
