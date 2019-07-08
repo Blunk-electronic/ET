@@ -4,7 +4,7 @@
 --                                                                          --
 --                              MATERIAL                                    --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 --         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
@@ -93,7 +93,7 @@ package body material is
 			column_bom			: constant string := "BOM";
 			column_commissioned	: constant string := "COMMISSIONED";
 			column_function		: constant string := "FUNCTION";
-			column_partcode		: constant string := "PART_CODE"; -- CS: make sure stock_manager can handle it. former PART_CODE_BEL
+			column_partcode		: constant string := "PART_CODE_BEL"; -- CS: should be PART_CODE in the future. requires changing stock_manager
 			column_partcode_ext	: constant string := "PART_CODE_EXT"; -- not used
 			column_updated		: constant string := "UPDATED";
 
@@ -104,7 +104,8 @@ package body material is
 				put_field (file => bom_handle, text => to_string (key (cursor))); -- R4
 				put_field (file => bom_handle, text => to_string (element (cursor).value)); -- 100R
 				put_field (file => bom_handle); -- empty generic device name, doesn't matter any more
-				put_field (file => bom_handle, text => to_string (element (cursor).packge)); -- S_0805
+				put_field (file => bom_handle, text =>
+					ada.directories.base_name (to_string (element (cursor).packge))); -- S_0805
 				put_field (file => bom_handle); -- empty description
 				put_field (file => bom_handle, text => "YES"); -- BOM status
 				put_field (file => bom_handle); -- empty commission date, doesn't matter any more

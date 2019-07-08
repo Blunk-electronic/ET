@@ -11471,7 +11471,8 @@ package body schematic_ops is
 			material.write_bom (
 				bom				=> bill_of_material,	-- the container that holds the bom
 				file_name		=> bom_file, 			-- tmp/my_project_bom.csv
-				format			=> NATIVE,				-- CS should be an argument in the future
+				--format			=> NATIVE,				-- CS should be an argument in the future
+				format			=> EAGLE,				-- CS should be an argument in the future
 				log_threshold	=> log_threshold + 1);
 			
 		else
