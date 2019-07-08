@@ -2288,8 +2288,8 @@ package body conventions is
 		
 		procedure partcode_invalid is begin
 			log (WARNING, "device " & et_libraries.to_string (device_name)
-				 & " partcode invalid ! Found " & to_string (partcode) &
-				" . Expected " & to_string (partcode_root) & " !");
+				 & " partcode invalid ! Found " & enclose_in_quotes (to_string (partcode)) &
+				". Expected " & enclose_in_quotes (to_string (partcode_root)) & " !");
 		end partcode_invalid;
 
 	begin -- validate_partcode

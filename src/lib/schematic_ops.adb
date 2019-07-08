@@ -11154,7 +11154,7 @@ package body schematic_ops is
 				procedure test_partcode (partcode : in material.type_partcode.bounded_string) is
 				begin
 					if type_partcode.length (partcode) = 0 then
-						log (WARNING, text => "device " & enclose_in_quotes (to_string (device_name)) &
+						log (WARNING, text => "device " & to_string (device_name) &
 							 " has no partcode !");
 					end if;
 				end;
@@ -11279,6 +11279,14 @@ package body schematic_ops is
 										inserted	=> inserted);
 
 									test_inserted;
+
+									-- check partcode content
+									conventions.validate_partcode (
+										partcode		=> material.type_devices.element (cursor_bom).partcode,
+										device_name		=> device_name,
+										packge			=> to_package_name (ada.directories.base_name (to_string (material.type_devices.element (cursor_bom).packge))),
+										value			=> material.type_devices.element (cursor_bom).value,
+										log_threshold	=> log_threshold + 3);
 
 							end case;
 						end if;
