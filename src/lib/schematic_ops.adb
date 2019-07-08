@@ -11126,7 +11126,6 @@ package body schematic_ops is
 		use assembly_variants;
 		use material;
 
-		bom_handle : ada.text_io.file_type;
 		bill_of_material : material.type_devices.map;
 
 		procedure collect (
@@ -11194,7 +11193,8 @@ package body schematic_ops is
 						key			=> device_name, -- IC4, R3
 						new_item	=> (
 								value		=> element (cursor_schematic).value,
-								partcode	=> element (cursor_schematic).partcode,	
+								partcode	=> element (cursor_schematic).partcode,
+								purpose		=> element (cursor_schematic).purpose,
 								others		=> <>), -- CS package
 						position	=> cursor_bom,
 						inserted	=> inserted);
@@ -11226,6 +11226,7 @@ package body schematic_ops is
 							new_item	=> (
 									value		=> element (cursor_schematic).value,
 									partcode	=> element (cursor_schematic).partcode,	
+									purpose		=> element (cursor_schematic).purpose,
 									others		=> <>), -- CS package
 							position	=> cursor_bom,
 							inserted	=> inserted);
@@ -11251,6 +11252,7 @@ package body schematic_ops is
 									new_item	=> (
 											value		=> element (alt_dev_cursor).value,
 											partcode	=> element (alt_dev_cursor).partcode,
+											purpose		=> element (alt_dev_cursor).purpose,
 											others		=> <>), -- CS package
 									position	=> cursor_bom,
 									inserted	=> inserted);
@@ -11459,14 +11461,14 @@ package body schematic_ops is
 
 			-- collect devices of the submodules
 			query_submodules;
-			
-			-- create the BOM (which inevitably and intentionally overwrites the previous file)
-			create (
-				file => bom_handle,
-				mode => out_file, 
-				name => to_string (bom_file));
 
-			close (bom_handle);
+			-- write the bom
+			material.write_bom (
+				bom				=> bill_of_material,	-- the container that holds the bom
+				file_name		=> bom_file, 			-- tmp/my_project_bom.csv
+				format			=> EAGLE,				-- CS should be an argument in the future
+				log_threshold	=> log_threshold + 1);
+			
 		else
 			assembly_variant_not_found (variant_top);
 		end if;
@@ -11475,10 +11477,6 @@ package body schematic_ops is
 
 		exception
 			when event: others =>
-				if is_open (bom_handle) then
-					close (bom_handle);
-				end if;
-				
 				log_indentation_reset;
 				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;

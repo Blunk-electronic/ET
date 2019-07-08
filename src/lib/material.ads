@@ -53,7 +53,7 @@ with ada.containers.ordered_sets;
 -- with et_coordinates;
 with et_libraries;
 -- with assembly_variants;
--- with et_string_processing;
+with et_string_processing;		use et_string_processing;
 -- with et_pcb;
 -- with et_pcb_coordinates;
 -- with submodules;
@@ -73,14 +73,30 @@ package material is
 	type type_device is record
 		value		: et_libraries.type_value.bounded_string;			-- 7400
 		packge		: et_libraries.type_component_package_name.bounded_string;	-- SO14
-		partcode	: et_libraries.type_partcode.bounded_string; 	-- IC_PAC_S_SO16_VAL7400
+		partcode	: et_libraries.type_partcode.bounded_string; 		-- IC_PAC_S_SO16_VAL7400
+		purpose		: et_libraries.type_device_purpose.bounded_string; 	-- brightness_control
 	end record;
 
 	package type_devices is new ordered_maps (
 		key_type		=> et_libraries.type_device_name, -- IC4
 		"<"				=> et_libraries.compare_name,
 		element_type	=> type_device);
-		
+
+	type type_bom_format is (
+		NATIVE,
+		EAGLE,
+		KICAD
+		-- CS others ?
+		);		
+	
+	procedure write_bom (
+	-- Creates the BOM (which inevitably and intentionally overwrites the previous file).
+	-- Writes the content of the given container bom in the file.
+		bom				: in type_devices.map;
+		file_name		: in type_file_name.bounded_string;
+		format			: in type_bom_format;		
+		log_threshold	: in type_log_level);
+	
 end material;
 
 -- Soli Deo Gloria

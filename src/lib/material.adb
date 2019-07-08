@@ -47,14 +47,16 @@ with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
+with ada.directories;
+with ada.exceptions;
 
 -- with et_general;				use et_general;
 -- 
 -- with et_coordinates;
 -- with et_libraries;
 -- with assembly_variants;
--- with et_string_processing;
--- with et_pcb;
+with et_string_processing;		use et_string_processing;
+with et_csv;					use et_csv;
 -- with et_pcb_coordinates;
 -- with submodules;
 -- with numbering;
@@ -69,101 +71,106 @@ package body material is
 		return type_file_name.to_bounded_string (name);
 	end;
 
+	procedure write_bom (
+	-- Creates the BOM (which inevitably and intentionally overwrites the previous file).
+	-- Writes the content of the given container bom in the file.
+		bom				: in type_devices.map;
+		file_name		: in type_file_name.bounded_string;
+		format			: in type_bom_format;
+		log_threshold	: in type_log_level) is		
 
--- 		column_component	: constant string (1 .. 9) := "COMPONENT";
--- 		column_value		: constant string (1 .. 5) := "VALUE";
--- 		column_generic_name	: constant string (1 ..12) := "GENERIC_NAME";
--- 		column_package		: constant string (1 .. 7) := "PACKAGE";
--- 		column_author		: constant string (1 .. 6) := "AUTHOR";
--- 		column_bom			: constant string (1 .. 3) := "BOM";
--- 		column_commissioned	: constant string (1 ..12) := "COMMISSIONED";
--- 		column_purpose		: constant string (1 .. 7) := "PURPOSE";
--- 		column_part_code	: constant string (1 .. 9) := "PART_CODE"; -- CS: make sure stock_manager can handle it. former PART_CODE_BEL
--- 		column_part_code_ext: constant string (1 ..13) := "PART_CODE_EXT"; -- not used
--- 		column_updated		: constant string (1 .. 7) := "UPDATED";
--- 
--- 		procedure query_components (
--- 			module_name : in et_coordinates.type_submodule_name.bounded_string;
--- 			module		: in type_module) is
--- 		
--- 			component : type_components_schematic.cursor := module.components.first;
--- 
--- 		begin -- query_components
--- 			log_indentation_up;
--- 			while component /= type_components_schematic.no_element loop
--- 
--- 				-- We ignore all virtual components like power flags, power symbols, ...
--- 				--if component_appearance (component) = sch_pcb then
--- 				if et_libraries."=" (element (component).appearance, et_libraries.sch_pcb) then
--- 
--- 					if et_schematic."=" (bom (component), et_schematic.YES) then
--- 						log (text => et_libraries.to_string (key (component)), level => log_threshold + 2);
--- 
--- 						-- CS: warning if netchanger/net-ties occur here. they should have the bom flag set to NO.
--- 						et_csv.reset_column;
--- 						
--- 						put_field (file => bom_handle, text => et_libraries.to_string (key (component))); -- R6
--- 						put_field (file => bom_handle, text => et_libraries.to_string (element (component).value)); -- 100R
--- 						put_field (file => bom_handle, text => et_libraries.to_string (element (component).generic_name)); -- RESISTOR
--- 						put_field (file => bom_handle, text => et_libraries.to_string (to_package_name (
--- 																library_name => element (component).library_name,
--- 																generic_name => element (component).generic_name,
--- 																package_variant => element (component).variant)));
--- 						put_field (file => bom_handle, text => et_libraries.to_string (element (component).author));
--- 						put_field (file => bom_handle, text => to_string (element (component).commissioned));
--- 						put_field (file => bom_handle, text => et_libraries.to_string (element (component).purpose));
--- 						put_field (file => bom_handle, text => et_libraries.to_string (element (component).partcode));
--- 
--- 						-- CS: This is an empty field. it is reserved for the attribute "PART_CODE_EXT" 
--- 						-- which is currently not supported:
--- 						put_field (file => bom_handle, text => "");
--- 
--- 						put_field (file => bom_handle, text => to_string (element (component).updated));
--- 						put_lf    (file => bom_handle, field_count => et_csv.column);
--- 
--- 					end if;
--- 				end if;
--- 
--- 				next (component);
--- 			end loop;
--- 				
--- 			log_indentation_down;
--- 		end query_components;
--- 		
--- 	begin -- export_bom
--- 
--- 
--- 			-- CS: A nice header should be placed. First make sure stock_manager can handle it.
--- 
--- 			-- write the BOM table header
--- 			et_csv.reset_column;
--- 			put_field (file => bom_handle, text => column_component);
--- 			put_field (file => bom_handle, text => column_value);
--- 			put_field (file => bom_handle, text => column_generic_name);
--- 			put_field (file => bom_handle, text => column_package);
--- 			put_field (file => bom_handle, text => column_author);
--- 			put_field (file => bom_handle, text => column_bom);
--- 			put_field (file => bom_handle, text => column_commissioned);
--- 			put_field (file => bom_handle, text => column_purpose);
--- 			put_field (file => bom_handle, text => column_part_code);
--- 			put_field (file => bom_handle, text => column_part_code_ext);
--- 			put_field (file => bom_handle, text => column_updated);
--- 			put_lf    (file => bom_handle, field_count => et_csv.column);
--- 
--- 			query_element (
--- 				position	=> module_cursor,
--- 				process		=> query_components'access);
--- 
--- 			-- CS: A list end mark should be placed. First make sure stock_manager can handle it.
--- 			-- put_line (bom_handle, comment_mark & " end of list");
--- 			
+		bom_handle : ada.text_io.file_type;
+		device_cursor : type_devices.cursor := bom.first;
 
--- 			log_indentation_down;
--- 			next (module_cursor);
--- 		end loop;
--- 
--- 		log_indentation_down;
--- 	end export_bom;
+		procedure eagle is
+			use et_csv;
+			
+			column_part			: constant string := "Part";
+			column_value		: constant string := "Value";
+			column_device		: constant string := "Device";
+			column_package		: constant string := "Package";
+			column_description	: constant string := "Description";
+			column_bom			: constant string := "BOM";
+			column_commissioned	: constant string := "COMMISSIONED";
+			column_function		: constant string := "FUNCTION";
+			column_part_code	: constant string := "PART_CODE"; -- CS: make sure stock_manager can handle it. former PART_CODE_BEL
+			column_part_code_ext: constant string := "PART_CODE_EXT"; -- not used
+			column_updated		: constant string := "UPDATED";
+
+			procedure query_device (cursor : in type_devices.cursor) is
+				use type_devices;
+				use et_libraries;
+			begin
+				put_field (file => bom_handle, text => to_string (key (cursor))); -- R4
+				put_field (file => bom_handle, text => to_string (element (cursor).value)); -- 100R
+				put_field (file => bom_handle); -- empty generic device name, doesn't matter any more
+				put_field (file => bom_handle, text => to_string (element (cursor).packge)); -- S_0805
+				put_field (file => bom_handle); -- empty description
+				put_field (file => bom_handle, text => "YES"); -- BOM status
+				put_field (file => bom_handle); -- empty commission date, doesn't matter any more
+				put_field (file => bom_handle, text => to_string (element (cursor).purpose)); -- purpose/function
+				put_field (file => bom_handle, text => to_string (element (cursor).partcode));
+				put_field (file => bom_handle); -- empty external partcode, never used
+				put_field (file => bom_handle); -- empty update date, doesn't matter any more
+
+				put_lf (file => bom_handle, field_count => et_csv.column);
+			end query_device;
+			
+		begin -- eagle
+			-- CS: A nice header should be placed. First make sure stock_manager can handle it.
+			
+			-- write the BOM table header
+			et_csv.reset_column;
+			put_field (file => bom_handle, text => column_part);
+			put_field (file => bom_handle, text => column_value);
+			put_field (file => bom_handle, text => column_device);
+			put_field (file => bom_handle, text => column_package);
+			put_field (file => bom_handle, text => column_description);
+			put_field (file => bom_handle, text => column_bom);
+			put_field (file => bom_handle, text => column_commissioned);
+			put_field (file => bom_handle, text => column_function);
+			put_field (file => bom_handle, text => column_part_code);
+			put_field (file => bom_handle, text => column_part_code_ext);
+			put_field (file => bom_handle, text => column_updated);
+			put_lf    (file => bom_handle, field_count => et_csv.column);
+
+			type_devices.iterate (
+				container	=> bom,
+				process		=> query_device'access);
+			
+			-- CS: A list end mark should be placed. First make sure stock_manager can handle it.
+			-- put_line (bom_handle, comment_mark & " end of list");
+			
+		end;
+		
+	begin -- write_bom
+		if ada.directories.exists (to_string (file_name)) then
+			log (importance => NOTE, text => "overwriting " & to_string (file_name) & " ...", level => log_threshold);
+		end if;
+		
+		create (
+			file => bom_handle,
+			mode => out_file, 
+			name => to_string (file_name));
+
+		case format is
+			when EAGLE => eagle;
+			when others => raise constraint_error;
+		end case;
+				
+		close (bom_handle);
+
+		exception
+			when event: others =>
+				if is_open (bom_handle) then
+					close (bom_handle);
+				end if;
+				
+				log_indentation_reset;
+				log (text => ada.exceptions.exception_information (event), console => true);
+				raise;
+				
+	end write_bom;
 
 	
 end material;

@@ -142,8 +142,8 @@ package et_schematic is
 			-- If a device appears in both schematic and layout it has got:
 			when et_libraries.sch_pcb => 
 				value		: et_libraries.type_value.bounded_string; -- 470R
-				partcode	: et_libraries.type_partcode.bounded_string;
-				purpose		: et_libraries.type_device_purpose.bounded_string;
+				partcode	: et_libraries.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+				purpose		: et_libraries.type_device_purpose.bounded_string; -- brightness_control
 				variant		: et_libraries.type_component_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position
