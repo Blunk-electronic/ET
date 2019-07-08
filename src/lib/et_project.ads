@@ -750,6 +750,11 @@ package et_project is
 		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1
 		return assembly_variants.type_submodules.cursor;
 
+-- 	function package_model (
+-- 		module	: in type_modules.cursor; -- the module like motor_driver
+-- 		device	: in et_libraries.type_device_name; -- IC40
+-- 		return et_libraries.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+							   
 	
 -- GENERICS
 	

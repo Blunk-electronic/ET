@@ -519,7 +519,8 @@ package et_libraries is
 
 
 	
--- PACKAGES
+-- PACKAGES -- CS probably only kicad related -> move there
+	
 	-- A package is something like "SOT32" or "NDIP14". It is a more or less standardized (JEDEC)
 	-- designator for the housing or the case of an electronical component. The package name is independed of
 	-- the actual purpose of a device. An LED can have an SOT23 package and a transistor can also come in an SOT23.
@@ -885,10 +886,22 @@ package et_libraries is
 
 	function variant_available (
 	-- Returns true if given device provides the given package variant.								   
+	-- The given device must be real. Means appearance SCH_PCB.
 		device_cursor	: in type_devices.cursor;
-		variant			: in type_component_variant_name.bounded_string)
+		variant			: in type_component_variant_name.bounded_string)  -- D, N
 		return boolean;
 
+	function locate_device (model : in type_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
+	-- Locates the given generic device in container "devices".
+		return type_devices.cursor;
+	
+	function package_model (
+	-- Returns the name of the package model of the given device according to the given variant.
+	-- The given device must be real. Means appearance SCH_PCB.							  
+		device_cursor	: in type_devices.cursor;
+		variant			: in type_component_variant_name.bounded_string) -- D, N
+		return type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+		
 	
 -- DRAWING FRAME
 

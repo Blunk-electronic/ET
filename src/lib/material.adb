@@ -93,8 +93,8 @@ package body material is
 			column_bom			: constant string := "BOM";
 			column_commissioned	: constant string := "COMMISSIONED";
 			column_function		: constant string := "FUNCTION";
-			column_part_code	: constant string := "PART_CODE"; -- CS: make sure stock_manager can handle it. former PART_CODE_BEL
-			column_part_code_ext: constant string := "PART_CODE_EXT"; -- not used
+			column_partcode		: constant string := "PART_CODE"; -- CS: make sure stock_manager can handle it. former PART_CODE_BEL
+			column_partcode_ext	: constant string := "PART_CODE_EXT"; -- not used
 			column_updated		: constant string := "UPDATED";
 
 			procedure query_device (cursor : in type_devices.cursor) is
@@ -129,8 +129,8 @@ package body material is
 			put_field (file => bom_handle, text => column_bom);
 			put_field (file => bom_handle, text => column_commissioned);
 			put_field (file => bom_handle, text => column_function);
-			put_field (file => bom_handle, text => column_part_code);
-			put_field (file => bom_handle, text => column_part_code_ext);
+			put_field (file => bom_handle, text => column_partcode);
+			put_field (file => bom_handle, text => column_partcode_ext);
 			put_field (file => bom_handle, text => column_updated);
 			put_lf    (file => bom_handle, field_count => et_csv.column);
 
@@ -142,6 +142,53 @@ package body material is
 			-- put_line (bom_handle, comment_mark & " end of list");
 			
 		end;
+
+		procedure native is
+			use et_csv;
+
+			column_item			: constant string := "ITEM";
+			column_device		: constant string := "DEVICE";			
+			column_value		: constant string := "VALUE";
+			column_package		: constant string := "PACKAGE";
+			column_partcode		: constant string := "PARTCODE";
+			column_purpose		: constant string := "PURPOSE";
+
+			procedure query_device (cursor : in type_devices.cursor) is
+				use type_devices;
+				use et_libraries;
+			begin
+				put_field (file => bom_handle); -- CS item number
+				put_field (file => bom_handle, text => to_string (key (cursor))); -- R4
+				put_field (file => bom_handle, text => to_string (element (cursor).value)); -- 100R
+				put_field (file => bom_handle, text => to_string (element (cursor).packge)); -- S_0805.pac
+				put_field (file => bom_handle, text => to_string (element (cursor).partcode)); -- R_PAC_S_0805_VAL_100R
+				put_field (file => bom_handle, text => to_string (element (cursor).purpose)); -- purpose
+
+				put_lf (file => bom_handle, field_count => et_csv.column);
+			end query_device;
+			
+		begin -- native
+			-- CS: A nice header should be placed. First make sure stock_manager can handle it.
+			
+			-- write the BOM table header
+			et_csv.reset_column;
+			put_field (file => bom_handle, text => column_item);
+			put_field (file => bom_handle, text => column_device);
+			put_field (file => bom_handle, text => column_value);
+			put_field (file => bom_handle, text => column_package);
+			put_field (file => bom_handle, text => column_partcode);
+			put_field (file => bom_handle, text => column_purpose);
+			put_lf    (file => bom_handle, field_count => et_csv.column);
+
+			type_devices.iterate (
+				container	=> bom,
+				process		=> query_device'access);
+			
+			-- CS: A list end mark should be placed. First make sure stock_manager can handle it.
+			-- put_line (bom_handle, comment_mark & " end of list");
+			
+		end;
+
 		
 	begin -- write_bom
 		if ada.directories.exists (to_string (file_name)) then
@@ -154,6 +201,7 @@ package body material is
 			name => to_string (file_name));
 
 		case format is
+			when NATIVE => native;
 			when EAGLE => eagle;
 			when others => raise constraint_error;
 		end case;

@@ -11193,10 +11193,10 @@ package body schematic_ops is
 							container	=> bill_of_material,
 							key			=> device_name, -- IC4, R3
 							new_item	=> (
-									value		=> element (cursor_schematic).value,
-									partcode	=> element (cursor_schematic).partcode,
-									purpose		=> element (cursor_schematic).purpose,
-									others		=> <>), -- CS package
+								value		=> element (cursor_schematic).value,
+								partcode	=> element (cursor_schematic).partcode,
+								purpose		=> element (cursor_schematic).purpose,
+								packge		=> et_schematic.package_model (cursor_schematic)),
 							position	=> cursor_bom,
 							inserted	=> inserted);
 
@@ -11226,10 +11226,10 @@ package body schematic_ops is
 								container	=> bill_of_material,
 								key			=> device_name, -- IC4, R3
 								new_item	=> (
-										value		=> element (cursor_schematic).value,
-										partcode	=> element (cursor_schematic).partcode,	
-										purpose		=> element (cursor_schematic).purpose,
-										others		=> <>), -- CS package
+									value		=> element (cursor_schematic).value,
+									partcode	=> element (cursor_schematic).partcode,	
+									purpose		=> element (cursor_schematic).purpose,
+									packge		=> et_schematic.package_model (cursor_schematic)),
 								position	=> cursor_bom,
 								inserted	=> inserted);
 
@@ -11238,6 +11238,7 @@ package body schematic_ops is
 						else
 						-- Device has an entry in the assembly variant. Depending on the mounted-flag
 						-- it is to be skipped or inserted in bill_of_material with alternative properties.
+						-- NOTE: The package model is not affected by the assembly variant.
 							case element (alt_dev_cursor).mounted is
 								when NO =>
 									log (text => to_string (device_name) & " not mounted -> skipped",
@@ -11252,10 +11253,10 @@ package body schematic_ops is
 										container	=> bill_of_material,
 										key			=> device_name, -- IC4, R3
 										new_item	=> (
-												value		=> element (alt_dev_cursor).value,
-												partcode	=> element (alt_dev_cursor).partcode,
-												purpose		=> element (alt_dev_cursor).purpose,
-												others		=> <>), -- CS package
+											value		=> element (alt_dev_cursor).value,
+											partcode	=> element (alt_dev_cursor).partcode,
+											purpose		=> element (alt_dev_cursor).purpose,
+											packge		=> et_schematic.package_model (cursor_schematic)),
 										position	=> cursor_bom,
 										inserted	=> inserted);
 
@@ -11470,7 +11471,7 @@ package body schematic_ops is
 			material.write_bom (
 				bom				=> bill_of_material,	-- the container that holds the bom
 				file_name		=> bom_file, 			-- tmp/my_project_bom.csv
-				format			=> EAGLE,				-- CS should be an argument in the future
+				format			=> NATIVE,				-- CS should be an argument in the future
 				log_threshold	=> log_threshold + 1);
 			
 		else

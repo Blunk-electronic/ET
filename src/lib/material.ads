@@ -72,7 +72,7 @@ package material is
 
 	type type_device is record
 		value		: et_libraries.type_value.bounded_string;			-- 7400
-		packge		: et_libraries.type_component_package_name.bounded_string;	-- SO14
+		packge		: et_libraries.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		partcode	: et_libraries.type_partcode.bounded_string; 		-- IC_PAC_S_SO16_VAL7400
 		purpose		: et_libraries.type_device_purpose.bounded_string; 	-- brightness_control
 	end record;

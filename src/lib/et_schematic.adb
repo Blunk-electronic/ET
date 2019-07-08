@@ -346,6 +346,25 @@ package body et_schematic is
 			id_width	=> 1));
 	end default_component_reference;
 
+	function package_model (device : in type_devices.cursor)
+		return et_libraries.type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac
+	-- Returns the name of the package model of the given device.
+		device_model : et_libraries.type_device_model_file.bounded_string;
+		device_cursor_lib : et_libraries.type_devices.cursor;
+		device_variant : et_libraries.type_component_variant_name.bounded_string; -- N, D
+	begin
+		-- load package variant of given device
+		device_variant := type_devices.element (device).variant;
+		
+		-- load the name of the generic device model
+		device_model := type_devices.element (device).model;
+
+		-- locate the generic device model in the device library
+		device_cursor_lib := et_libraries.locate_device (device_model);
+		
+		return et_libraries.package_model (device_cursor_lib, device_variant);
+	end package_model;
+	
 	function to_string (
 		mirror	: in type_mirror;
 		verbose : in boolean)

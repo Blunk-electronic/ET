@@ -333,6 +333,10 @@ package et_schematic is
 		"<"				=> et_libraries.compare_name,
  		element_type	=> type_device);
 
+	function package_model (device : in type_devices.cursor)
+		return et_libraries.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+	-- Returns the name of the package model of the given device.
+	
 	-- For designs which have only a schematic, this flag goes false.
 	type type_board_available is new boolean;
 

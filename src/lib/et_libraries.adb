@@ -372,8 +372,9 @@ package body et_libraries is
 
 	function variant_available (
 	-- Returns true if given device provides the given package variant.
+	-- The given device must be real. Means appearance SCH_PCB.
 		device_cursor	: in type_devices.cursor;
-		variant			: in type_component_variant_name.bounded_string)
+		variant			: in type_component_variant_name.bounded_string)  -- D, N
 		return boolean is
 		
 		result : boolean := false; -- to be returned
@@ -395,6 +396,40 @@ package body et_libraries is
 		return result;
 	end variant_available;
 
+	function locate_device (model : in type_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
+	-- Locates the given generic device in container "devices".
+		return type_devices.cursor is
+		use type_devices;
+		cursor : type_devices.cursor := type_devices.find (devices, model);
+	begin
+		return cursor;
+	end;
+	
+	function package_model (
+	-- Returns the name of the package model of the given device according to the given variant.
+	-- The given device must be real. Means appearance SCH_PCB.
+		device_cursor	: in type_devices.cursor;
+		variant			: in type_component_variant_name.bounded_string) -- D, N
+		return type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac
+		package_model : type_package_model_file.bounded_string; -- to be returned (packages/smd/SOT23.pac)
+
+		procedure query_variants (
+			device_name	: in type_device_model_file.bounded_string;
+			device		: in type_device) is
+			use type_component_variants;
+			variant_cursor : type_component_variants.cursor;
+		begin
+			variant_cursor := type_component_variants.find (device.variants, variant);
+			package_model := element (variant_cursor).package_model;
+		end;
+
+	begin
+		type_devices.query_element (
+			position	=> device_cursor,
+			process		=> query_variants'access);
+
+		return package_model;
+	end package_model;
 	
 	function to_string (name : in type_frame_template_name.bounded_string) return string is begin
 		return type_frame_template_name.to_string (name);
