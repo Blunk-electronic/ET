@@ -224,7 +224,7 @@ package body material is
 			
 		end;
 
-		procedure native is
+		procedure native is -- CS not complete. accessories ?
 			use et_csv;
 
 			column_item			: constant string := "ITEM";
@@ -275,6 +275,13 @@ package body material is
 		if ada.directories.exists (to_string (file_name)) then
 			log (importance => NOTE, text => "overwriting " & to_string (file_name) & " ...", level => log_threshold);
 		end if;
+
+		if ada.directories.extension (to_string (file_name)) /= extension_bom then
+			log (importance => WARNING, text => "targeted BOM file has no extension " &
+				 enclose_in_quotes (extension_bom) & " !");
+		end if;
+
+		log (text => "writing BOM file " & enclose_in_quotes (to_string (file_name)) & " ...", level => log_threshold);
 		
 		create (
 			file => bom_handle,

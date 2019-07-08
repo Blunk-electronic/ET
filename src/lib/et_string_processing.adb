@@ -143,10 +143,12 @@ package body et_string_processing is
 					end if;
 
 				when WARNING =>
-					put_line (report_handle, write_text);
+					increment_warning_counter;
+					
+					put_line (report_handle, write_text (false)); -- indentation off
 
 					if console then
-						put_line (standard_output, write_text);
+						put_line (standard_output, write_text (false)); -- indentation off
 					end if;
 
 				when ERROR =>
