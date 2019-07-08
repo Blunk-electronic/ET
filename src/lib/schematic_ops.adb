@@ -11182,25 +11182,26 @@ package body schematic_ops is
 					alt_dev_cursor : assembly_variants.type_devices.cursor;
 					use assembly_variants.type_devices;
 				begin -- query_properties_default
-					device_name := et_schematic.type_devices.key (cursor_schematic);
+					if element (cursor_schematic).appearance = SCH_PCB then -- skip virtual devices
+						device_name := et_schematic.type_devices.key (cursor_schematic);
 
-					-- Store device in bill_of_material as it is:
+						-- Store device in bill_of_material as it is:
 
-					apply_offset;
-					
-					material.type_devices.insert (
-						container	=> bill_of_material,
-						key			=> device_name, -- IC4, R3
-						new_item	=> (
-								value		=> element (cursor_schematic).value,
-								partcode	=> element (cursor_schematic).partcode,
-								purpose		=> element (cursor_schematic).purpose,
-								others		=> <>), -- CS package
-						position	=> cursor_bom,
-						inserted	=> inserted);
-
-					test_inserted;
+						apply_offset;
 						
+						material.type_devices.insert (
+							container	=> bill_of_material,
+							key			=> device_name, -- IC4, R3
+							new_item	=> (
+									value		=> element (cursor_schematic).value,
+									partcode	=> element (cursor_schematic).partcode,
+									purpose		=> element (cursor_schematic).purpose,
+									others		=> <>), -- CS package
+							position	=> cursor_bom,
+							inserted	=> inserted);
+
+						test_inserted;
+					end if;
 				end query_properties_default;
 
 				procedure query_properties_variants (cursor_schematic : in et_schematic.type_devices.cursor) is 
@@ -11210,56 +11211,59 @@ package body schematic_ops is
 					alt_dev_cursor : assembly_variants.type_devices.cursor;
 					use assembly_variants.type_devices;
 				begin -- query_properties_variants
-					device_name := et_schematic.type_devices.key (cursor_schematic);
-					
-					-- Get a cursor to the alternative device as specified in the assembly variant:
-					alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
-					
-					if alt_dev_cursor = assembly_variants.type_devices.no_element then
-					-- Device has no entry in the assembly variant. -> It is to be stored in bill_of_material as it is:
-
-						apply_offset;
+					if element (cursor_schematic).appearance = SCH_PCB then -- skip virtual devices
+						device_name := et_schematic.type_devices.key (cursor_schematic);
 						
-						material.type_devices.insert (
-							container	=> bill_of_material,
-							key			=> device_name, -- IC4, R3
-							new_item	=> (
-									value		=> element (cursor_schematic).value,
-									partcode	=> element (cursor_schematic).partcode,	
-									purpose		=> element (cursor_schematic).purpose,
-									others		=> <>), -- CS package
-							position	=> cursor_bom,
-							inserted	=> inserted);
-
-						test_inserted;
+						-- Get a cursor to the alternative device as specified in the assembly variant:
+						alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
 						
-					else
-					-- Device has an entry in the assembly variant. Depending on the mounted-flag
-					-- it is to be skipped or inserted in bill_of_material with alternative properties.
-						case element (alt_dev_cursor).mounted is
-							when NO =>
-								log (text => to_string (device_name) & " not mounted -> skipped",
-									 level => log_threshold + 2);
-								
-							when YES =>
-								apply_offset;
-								
-								-- Insert the device in bill with alternative properties as defined
-								-- in the assembly variant:
-								material.type_devices.insert (
-									container	=> bill_of_material,
-									key			=> device_name, -- IC4, R3
-									new_item	=> (
-											value		=> element (alt_dev_cursor).value,
-											partcode	=> element (alt_dev_cursor).partcode,
-											purpose		=> element (alt_dev_cursor).purpose,
-											others		=> <>), -- CS package
-									position	=> cursor_bom,
-									inserted	=> inserted);
+						if alt_dev_cursor = assembly_variants.type_devices.no_element then
+						-- Device has no entry in the assembly variant. -> It is to be stored in bill_of_material as it is:
 
-								test_inserted;
+							apply_offset;
+							
+							material.type_devices.insert (
+								container	=> bill_of_material,
+								key			=> device_name, -- IC4, R3
+								new_item	=> (
+										value		=> element (cursor_schematic).value,
+										partcode	=> element (cursor_schematic).partcode,	
+										purpose		=> element (cursor_schematic).purpose,
+										others		=> <>), -- CS package
+								position	=> cursor_bom,
+								inserted	=> inserted);
 
-						end case;
+							test_inserted;
+							
+						else
+						-- Device has an entry in the assembly variant. Depending on the mounted-flag
+						-- it is to be skipped or inserted in bill_of_material with alternative properties.
+							case element (alt_dev_cursor).mounted is
+								when NO =>
+									log (text => to_string (device_name) & " not mounted -> skipped",
+										level => log_threshold + 2);
+									
+								when YES =>
+									apply_offset;
+									
+									-- Insert the device in bill with alternative properties as defined
+									-- in the assembly variant:
+									material.type_devices.insert (
+										container	=> bill_of_material,
+										key			=> device_name, -- IC4, R3
+										new_item	=> (
+												value		=> element (alt_dev_cursor).value,
+												partcode	=> element (alt_dev_cursor).partcode,
+												purpose		=> element (alt_dev_cursor).purpose,
+												others		=> <>), -- CS package
+										position	=> cursor_bom,
+										inserted	=> inserted);
+
+									test_inserted;
+
+							end case;
+						end if;
+						
 					end if;
 				end query_properties_variants;
 				
