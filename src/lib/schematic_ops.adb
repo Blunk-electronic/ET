@@ -11532,7 +11532,60 @@ package body schematic_ops is
 		use netlists;
 
 		netlist : netlists.type_netlist.map;
+
+		procedure collect_nets (
+		-- Collects net names of the given module and its variant in container netlist.
+		-- Adds to the device index the given offset.
+		-- If offset is zero, we are dealing with the top module.
+			module_cursor	: in type_modules.cursor;
+			variant			: in assembly_variants.type_variant_name.bounded_string;
+			offset			: in et_libraries.type_device_name_index) is
+
+			procedure query_nets (
+				module_name	: in type_module_name.bounded_string;
+				module		: in et_schematic.type_module) is
+
+				use et_schematic.type_nets;
+				--device_name : et_libraries.type_device_name;
+				net_cursor_sch : type_nets.cursor := module.nets.first;
+
+				net_cursor_netlist : type_netlist.cursor;
+				inserted : boolean;
+
+				net_name : type_net_name.bounded_string;
+				nodes : type_nodes.set;
+				
+-- 				procedure insert_net (
+-- 					net_name	: in type_net_name.bounded_string;
+-- 					node		: in type_node) is
+-- 				begin
+-- 					null;
+-- 				end insert_net;
+				
+			begin -- query_nets
+				while net_cursor_sch /= type_nets.no_element loop
+
+					net_name := type_nets.key (net_cursor_sch); -- CS prefix 
+-- 					nodes := collect_nodes (net_cursor_sch);
+								
+					type_netlist.insert (
+						container	=> netlist,
+						key			=> net_name,
+						new_item	=> nodes,
+						position	=> net_cursor_netlist,
+						inserted	=> inserted);
+					
+					next (net_cursor_sch);
+				end loop;
+			end query_nets;
 			
+		begin -- collect_nets
+			et_project.type_modules.query_element (
+				position	=> module_cursor,
+				process		=> query_nets'access);
+
+		end collect_nets;
+		
 		submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
 		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
 
@@ -11674,9 +11727,6 @@ package body schematic_ops is
 
 		if exists (module_cursor, variant_top) then
 
--- 			-- collect devices of the given top module. the top module has no device index offset
--- 			collect (module_cursor, variant_top, 0); 
--- 
 			-- take a copy of the submodule tree of the given top module:
 			submod_tree := element (module_cursor).submod_tree;
 
@@ -11685,6 +11735,9 @@ package body schematic_ops is
 			
 			stack_level.init;
 			stack_variant.init;
+
+			-- collect nets of the given top module. the top module has no device index offset
+			collect_nets (module_cursor, variant_top, 0); 
 
 -- 			-- collect devices of the submodules
 -- 			query_submodules;
