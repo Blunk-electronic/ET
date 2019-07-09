@@ -57,6 +57,7 @@ with submodules;
 with assembly_variants;
 with numbering;
 with material;
+with netlists;
 
 package schematic_ops is
 

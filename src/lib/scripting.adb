@@ -59,6 +59,7 @@ with schematic_ops;
 with submodules;
 with assembly_variants;
 with material;
+with netlists;
 -- with board_ops;
 
 

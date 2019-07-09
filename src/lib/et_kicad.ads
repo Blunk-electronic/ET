@@ -1403,13 +1403,6 @@ package et_kicad is
 		log_threshold	: in et_string_processing.type_log_level)		
 		return et_general.type_net_name.bounded_string;
 
-	procedure export_netlists (log_threshold : in et_string_processing.type_log_level); -- CS this is general and should be in et_schematic
-	-- Exports/Writes the netlists of the modules in separate files.
-	-- Netlists are exported in individual project directories in the work directory of ET.
-	-- These project directories have the same name as the module indicated by module_cursor.
-	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
-	-- Call this procedure after executing procedure make_netlist !
-
 	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);  -- CS this is general and should be in et_schematic
 	-- Writes the statistics on components and nets of the modules.
 	-- Distinguishes between CAD and CAM related things.

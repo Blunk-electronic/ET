@@ -63,6 +63,7 @@ with submodules;
 with numbering;
 with conventions;
 with material;
+with netlists;
 with et_geometry;
 
 package body schematic_ops is
@@ -11113,6 +11114,33 @@ package body schematic_ops is
 		return offset;
 	end get_offset;
 
+	procedure apply_offset (
+	-- Adds the offset to the device index of the given device_name.
+		device_name		: in out type_device_name; -- IC3
+		offset			: in et_libraries.type_device_name_index; -- 100
+		log_threshold	: in et_string_processing.type_log_level) is
+		device_name_instance : type_device_name;
+	begin
+		-- apply offset if it is greater zero. If offset is zero, we
+		-- are dealing with the top module.
+		if offset > 0 then
+			device_name_instance := device_name; -- take copy of original name
+			
+			-- apply device name offset
+			offset_device_name (device_name_instance, offset);
+
+			-- log original name and name in instanciated submodule
+			log (text => "device name origin " & to_string (device_name) &
+				" -> instance " & to_string (device_name_instance),
+				level => log_threshold);
+
+			device_name := device_name_instance; -- overwrite orignial name
+		else
+			-- no offset to apply:
+			log (text => "device name " & to_string (device_name),
+				level => log_threshold);
+		end if;
+	end;
 	
 	procedure make_bom (
 	-- Exports a BOM file from the given top module and assembly variant.
@@ -11134,8 +11162,8 @@ package body schematic_ops is
 		-- If offset is zero, we are dealing with the top module.
 			module_cursor	: in type_modules.cursor;
 			variant			: in assembly_variants.type_variant_name.bounded_string;
-			offset			: in et_libraries.type_device_name_index)
-		is
+			offset			: in et_libraries.type_device_name_index) is
+			
 			procedure query_devices (
 				module_name	: in type_module_name.bounded_string;
 				module		: in et_schematic.type_module) is
@@ -11159,30 +11187,6 @@ package body schematic_ops is
 					end if;
 				end;
 				
-				procedure apply_offset is
-					device_name_instance : type_device_name;
-				begin
-					-- apply offset if it is greater zero. If offset is zero, we
-					-- are dealing with the top module.
-					if offset > 0 then
-						device_name_instance := device_name; -- take copy of original name
-						
-						-- apply device name offset
-						offset_device_name (device_name_instance, offset);
-
-						-- log original name and name in instanciated submodule
-						log (text => "device name origin " & to_string (device_name) &
-							" -> instance " & to_string (device_name_instance),
-							level => log_threshold + 2);
-
-						device_name := device_name_instance; -- overwrite orignial name
-					else
-						-- no offset to apply:
-						log (text => "device name " & to_string (device_name),
-							level => log_threshold + 2);
-					end if;
-				end;
-				
 				procedure query_properties_default (cursor_schematic : in et_schematic.type_devices.cursor) is 
 					cursor_bom : material.type_devices.cursor;
 
@@ -11198,7 +11202,7 @@ package body schematic_ops is
 						
 						-- Store device in bill_of_material as it is:
 
-						apply_offset;
+						apply_offset (device_name, offset, log_threshold + 2);
 						
 						material.type_devices.insert (
 							container	=> bill_of_material,
@@ -11235,7 +11239,7 @@ package body schematic_ops is
 							-- issue warning if device has no partcode
 							test_partcode (element (cursor_schematic).partcode);
 							
-							apply_offset;
+							apply_offset (device_name, offset, log_threshold + 2);
 							
 							material.type_devices.insert (
 								container	=> bill_of_material,
@@ -11263,7 +11267,7 @@ package body schematic_ops is
 									-- issue warning if device has no partcode
 									test_partcode (element (alt_dev_cursor).partcode);
 
-									apply_offset;
+									apply_offset (device_name, offset, log_threshold + 2);
 									
 									-- Insert the device in bill with alternative properties as defined
 									-- in the assembly variant:
@@ -11514,7 +11518,199 @@ package body schematic_ops is
 				raise;
 	
 	end make_bom;
+
+	procedure make_netlist (
+	-- Exports the netlist from the given top module and assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		variant_top		: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		netlist_file	: in netlists.type_file_name.bounded_string; -- CAM/motor_driver_netlist.net
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use assembly_variants;
+		use netlists;
+
+-- 		netlist : netlists.type_netlist.map;
+			
+-- 		submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
+-- 		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
+-- 
+-- 		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
+-- 		package stack_level is new et_general.stack_lifo (
+-- 			item	=> numbering.type_modules.cursor,
+-- 			max 	=> submodules.nesting_depth_max);
+-- 
+-- 		package stack_variant is new et_general.stack_lifo (
+-- 			item	=> assembly_variants.type_variant_name.bounded_string,
+-- 			max 	=> submodules.nesting_depth_max);
+-- 		
+-- 		variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
+-- 		
+-- 		procedure query_submodules is 
+-- 		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
+-- 		-- until the deepest submodule (the bottom of the design structure) has been reached.
+-- 			use numbering.type_modules;
+-- 			module_name 	: type_module_name.bounded_string; -- motor_driver
+-- 			parent_name 	: type_module_name.bounded_string; -- water_pump
+-- 			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+-- 			offset			: et_libraries.type_device_name_index;
+-- 
+-- 			use assembly_variants.type_submodules;
+-- 			alt_submod : assembly_variants.type_submodules.cursor;
+-- 		begin
+-- 			log_indentation_up;
+-- 
+-- 			-- start with the first submodule on the current hierarchy level
+-- 			tree_cursor := first_child (tree_cursor);
+-- 
+-- 			-- iterate through the submodules on this level
+-- 			while tree_cursor /= numbering.type_modules.no_element loop
+-- 				module_name := element (tree_cursor).name;
+-- 				module_instance := element (tree_cursor).instance;
+-- 
+-- 				log (text => "instance " & enclose_in_quotes (to_string (module_instance)) &
+-- 					 " of generic module " & enclose_in_quotes (to_string (module_name)),
+-- 					 level => log_threshold + 1);
+-- 
+-- 				-- In case we are on the first level, the parent module is the given top module.
+-- 				-- In that case the parent variant is the given variant of the top module.
+-- 				-- If the top module has the default variant, all submodules in all levels
+-- 				-- assume default variant too.
+-- 				if parent (tree_cursor) = root (submod_tree) then
+-- 					parent_name := make_bom.module_name;
+-- 					variant := variant_top; -- argument of make_bom
+-- 				else
+-- 					parent_name := element (parent (tree_cursor)).name;
+-- 				end if;
+-- 
+-- 				-- Get the device name offset of the current submodule.
+-- 				-- NOTE: The offset has been assigned in the PARENT module where the submodule
+-- 				-- has been instantiated.
+-- 				offset := get_offset (parent_name, module_instance);
+-- 
+-- 				if not assembly_variants.is_default (variant) then
+-- 					-- Query in parent module: Is there any assembly variant specified for this submodule ?
+-- 
+-- 					alt_submod := alternative_submodule (
+-- 								module	=> locate_module (parent_name),
+-- 								variant	=> variant,
+-- 								submod	=> module_instance);
+-- 
+-- 					if alt_submod = assembly_variants.type_submodules.no_element then
+-- 					-- no variant specified for this submodule -> collect devices of default variant
+-- 
+-- 						variant := assembly_variants.default;
+-- 					else
+-- 					-- alternative variant specified for this submodule
+-- 						variant := element (alt_submod).variant;
+-- 					end if;
+-- 
+-- 				end if;
+-- 
+-- 				-- collect devices from current module
+-- 				collect (
+-- 					module_cursor	=> locate_module (module_name),
+-- 					variant			=> variant,
+-- 					offset			=> offset);
+-- 
+-- 				
+-- 				if first_child (tree_cursor) = numbering.type_modules.no_element then 
+-- 				-- No submodules on the current level. means we can't go deeper:
+-- 					
+-- 					log_indentation_up;
+-- 					log (text => "no submodules here -> bottom reached", level => log_threshold + 1);
+-- 					log_indentation_down;
+-- 				else
+-- 				-- There are submodules on the current level:
+-- 					
+-- 					-- backup the cursor to the current submodule on this level
+-- 					stack_level.push (tree_cursor);
+-- 
+-- 					-- backup the parent assembly variant
+-- 					stack_variant.push (variant);
+-- 
+-- 					-- iterate through submodules on the level below
+-- 					query_submodules; -- this is recursive !
+-- 
+-- 					-- restore cursor to submodule (see stack_level.push above)
+-- 					tree_cursor := stack_level.pop;
+-- 
+-- 					-- restore the parent assembly variant (see stack_variant.push above)
+-- 					variant := stack_variant.pop;
+-- 				end if;
+-- 
+-- 				next_sibling (tree_cursor); -- next submodule on this level
+-- 			end loop;
+-- 			
+-- 			log_indentation_down;
+-- 
+-- 			exception
+-- 				when event: others =>
+-- 					log_indentation_reset;
+-- 					log (text => ada.exceptions.exception_information (event), console => true);
+-- 					raise;
+-- 			
+-- 		end query_submodules;
 		
+	begin -- make_netlist
+		-- The variant name is optional. If not provided, the default variant will be exported.
+		if assembly_variants.is_default (variant_top) then
+			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+				" default variant" &
+				" exporting netlist to file " & to_string (netlist_file),
+				level => log_threshold);
+		else
+			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+				" variant " & enclose_in_quotes (to_variant (variant_top)) &
+				" exporting netlist to file " & to_string (netlist_file),
+				level => log_threshold);
+		end if;
+		
+		log_indentation_up;
+			
+		-- locate the given top module
+		module_cursor := locate_module (module_name);
+
+		if exists (module_cursor, variant_top) then
+
+-- 			-- collect devices of the given top module. the top module has no device index offset
+-- 			collect (module_cursor, variant_top, 0); 
+-- 
+-- 			-- take a copy of the submodule tree of the given top module:
+-- 			submod_tree := element (module_cursor).submod_tree;
+-- 
+-- 			-- set the cursor inside the tree at root position:
+-- 			tree_cursor := numbering.type_modules.root (submod_tree);
+-- 			
+-- 			stack_level.init;
+-- 			stack_variant.init;
+-- 
+-- 			-- collect devices of the submodules
+-- 			query_submodules;
+-- 
+-- 			-- write the bom
+-- 			material.write_bom (
+-- 				bom				=> bill_of_material,	-- the container that holds the bom
+-- 				file_name		=> bom_file, 			-- tmp/my_project_bom.csv
+-- 				--format			=> NATIVE,				-- CS should be an argument in the future
+-- 				format			=> EAGLE,				-- CS should be an argument in the future
+-- 				log_threshold	=> log_threshold + 1);
+null;			
+		else
+			assembly_variant_not_found (variant_top);
+		end if;
+		
+		log_indentation_down;
+
+		exception
+			when event: others =>
+				log_indentation_reset;
+				log (text => ada.exceptions.exception_information (event), console => true);
+				raise;
+	
+	end make_netlist;
+	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
 	-- Tests:
