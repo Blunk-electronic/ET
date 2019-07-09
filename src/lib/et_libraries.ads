@@ -468,7 +468,7 @@ package et_libraries is
 		text_in : in string)
 		return type_device_name;
 
-	function compare_name (left, right : in type_device_name) return boolean;
+	function "<" (left, right : in type_device_name) return boolean;
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.	
 

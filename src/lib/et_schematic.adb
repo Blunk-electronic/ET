@@ -69,12 +69,17 @@ package body et_schematic is
 		use et_libraries;
 		use et_libraries.type_port_name;
 	begin
-		if compare_name (right.device_name, left.device_name) then
+		if left.device_name < right.device_name then
 			return true;
-		elsif compare_name (left.device_name, right.device_name) then
-			return false;
-		elsif left.port_name < right.port_name then
-			return true;
+			
+		elsif left.device_name = right.device_name then
+			
+			if left.port_name < right.port_name then
+				return true;
+			else
+				return false;
+			end if;
+
 		else
 			return false;
 		end if;

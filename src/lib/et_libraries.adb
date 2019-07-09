@@ -900,7 +900,7 @@ package body et_libraries is
 		return r;
 	end to_device_name;
 
-	function compare_name (left, right : in type_device_name) return boolean is
+	function "<" (left, right : in type_device_name) return boolean is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.
 	-- CS: needs verification !

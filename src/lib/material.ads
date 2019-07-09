@@ -111,7 +111,7 @@ package material is
 
 	package type_devices is new ordered_maps (
 		key_type		=> et_libraries.type_device_name, -- IC4
-		"<"				=> et_libraries.compare_name,
+		"<"				=> et_libraries."<",
 		element_type	=> type_device);
 
 	type type_bom_format is (

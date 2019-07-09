@@ -655,7 +655,7 @@ package et_kicad_pcb is
 	package type_packages_board is new indefinite_ordered_maps (
 		key_type 		=> et_libraries.type_device_name, -- IC46
 		element_type 	=> type_package_board,
-		"<"				=> et_libraries.compare_name
+		"<"				=> et_libraries."<"
 		);
 
 

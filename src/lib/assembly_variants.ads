@@ -92,7 +92,7 @@ package assembly_variants is
 	-- Variants of devices are collected in a map.
 	package type_devices is new indefinite_ordered_maps (
 		key_type		=> et_libraries.type_device_name, -- something like "IC43"
-		"<"				=> et_libraries.compare_name,
+		"<"				=> et_libraries."<",
  		element_type	=> type_device);
 
 	use type_devices;

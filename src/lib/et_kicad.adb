@@ -511,7 +511,7 @@ package body et_kicad is
 	begin
 		-- First we compare the component reference.
 		-- Examples: C56 comes before R4, LED5 comes before LED7
-		if compare_name (left.reference, right.reference) then
+		if left.reference < right.reference then
 			result := true;
 
 		-- If equal pin names, compare port names -- CS: should never happen. raise alarm ?

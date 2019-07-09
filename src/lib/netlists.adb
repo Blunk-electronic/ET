@@ -76,9 +76,10 @@ package body netlists is
 	end;
 
 	function "<" (left, right : in type_node) return boolean is
+		use et_libraries;
 		result : boolean := false;
 	begin
-		if et_libraries.compare_name (left.device, right.device) then
+		if left.device < right.device then
 			null;
 		end if;
 		return result;
