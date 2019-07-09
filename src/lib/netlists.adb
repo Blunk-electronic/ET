@@ -77,87 +77,37 @@ package body netlists is
 
 	function "<" (left, right : in type_node) return boolean is
 		use et_libraries;
+		use type_port_name;
 		result : boolean := false;
 	begin
 		if left.device < right.device then
-			null;
+			result := true;
+			
+		elsif left.device = right.device then
+
+			if left.port < right.port then
+				result := true;
+			else
+				result := false;
+			end if;
+			
+		else
+			result := false;
 		end if;
+		
 		return result;
 	end;
 	
--- 	procedure write_bom (
--- 	-- Creates the BOM (which inevitably and intentionally overwrites the previous file).
--- 	-- Writes the content of the given container bom in the file.
--- 		bom				: in type_devices.map;
--- 		file_name		: in type_file_name.bounded_string;
--- 		format			: in type_bom_format;
--- 		log_threshold	: in type_log_level) is		
--- 
--- 		bom_handle : ada.text_io.file_type;
--- 		device_cursor : type_devices.cursor := bom.first;
--- 
--- 		procedure eagle is
--- 			use et_csv;
--- 			
--- 			column_part			: constant string := "Part";
--- 			column_value		: constant string := "Value";
--- 			column_device		: constant string := "Device";
--- 			column_package		: constant string := "Package";
--- 			column_description	: constant string := "Description";
--- 			column_bom			: constant string := "BOM";
--- 			column_commissioned	: constant string := "COMMISSIONED";
--- 			column_function		: constant string := "FUNCTION";
--- 			column_partcode		: constant string := "PART_CODE_BEL"; -- CS: should be PART_CODE in the future. requires changing stock_manager
--- 			column_partcode_ext	: constant string := "PART_CODE_EXT"; -- not used
--- 			column_updated		: constant string := "UPDATED";
--- 
--- 			procedure query_device (cursor : in type_devices.cursor) is
--- 				use type_devices;
--- 				use et_libraries;
--- 			begin
--- 				put_field (file => bom_handle, text => to_string (key (cursor))); -- R4
--- 				put_field (file => bom_handle, text => to_string (element (cursor).value)); -- 100R
--- 				put_field (file => bom_handle); -- empty generic device name, doesn't matter any more
--- 				put_field (file => bom_handle, text =>
--- 					ada.directories.base_name (to_string (element (cursor).packge))); -- S_0805
--- 				put_field (file => bom_handle); -- empty description
--- 				put_field (file => bom_handle, text => "YES"); -- BOM status
--- 				put_field (file => bom_handle); -- empty commission date, doesn't matter any more
--- 				put_field (file => bom_handle, text => to_string (element (cursor).purpose)); -- purpose/function
--- 				put_field (file => bom_handle, text => to_string (element (cursor).partcode));
--- 				put_field (file => bom_handle); -- empty external partcode, never used
--- 				put_field (file => bom_handle); -- empty update date, doesn't matter any more
--- 
--- 				put_lf (file => bom_handle, field_count => et_csv.column);
--- 			end query_device;
--- 			
--- 		begin -- eagle
--- 			-- CS: A nice header should be placed. First make sure stock_manager can handle it.
--- 			
--- 			-- write the BOM table header
--- 			et_csv.reset_column;
--- 			put_field (file => bom_handle, text => column_part);
--- 			put_field (file => bom_handle, text => column_value);
--- 			put_field (file => bom_handle, text => column_device);
--- 			put_field (file => bom_handle, text => column_package);
--- 			put_field (file => bom_handle, text => column_description);
--- 			put_field (file => bom_handle, text => column_bom);
--- 			put_field (file => bom_handle, text => column_commissioned);
--- 			put_field (file => bom_handle, text => column_function);
--- 			put_field (file => bom_handle, text => column_partcode);
--- 			put_field (file => bom_handle, text => column_partcode_ext);
--- 			put_field (file => bom_handle, text => column_updated);
--- 			put_lf    (file => bom_handle, field_count => et_csv.column);
--- 
--- 			type_devices.iterate (
--- 				container	=> bom,
--- 				process		=> query_device'access);
--- 			
--- 			-- CS: A list end mark should be placed. First make sure stock_manager can handle it.
--- 			-- put_line (bom_handle, comment_mark & " end of list");
--- 			
--- 		end;
--- 
+	procedure write_netlist (
+	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).
+	-- Writes the content of the given container netlist in the file.
+		netlist			: in type_netlist.map;
+		file_name		: in type_file_name.bounded_string;
+		log_threshold	: in type_log_level) is		
+
+		netlist_handle : ada.text_io.file_type;
+		net_cursor : type_netlist.cursor := netlist.first;
+
 -- 		procedure native is -- CS not complete. accessories ?
 -- 			use et_csv;
 -- 
@@ -204,43 +154,36 @@ package body netlists is
 -- 			
 -- 		end;
 -- 
--- 		
--- 	begin -- write_bom
--- 		if ada.directories.exists (to_string (file_name)) then
--- 			log (importance => NOTE, text => "overwriting " & to_string (file_name) & " ...", level => log_threshold);
--- 		end if;
--- 
--- 		if ada.directories.extension (to_string (file_name)) /= extension_bom then
--- 			log (importance => WARNING, text => "targeted BOM file has no extension " &
--- 				 enclose_in_quotes (extension_bom) & " !");
--- 		end if;
--- 
--- 		log (text => "writing BOM file " & enclose_in_quotes (to_string (file_name)) & " ...", level => log_threshold);
--- 		
--- 		create (
--- 			file => bom_handle,
--- 			mode => out_file, 
--- 			name => to_string (file_name));
--- 
--- 		case format is
--- 			when NATIVE => native;
--- 			when EAGLE => eagle;
--- 			when others => raise constraint_error;
--- 		end case;
--- 				
--- 		close (bom_handle);
--- 
--- 		exception
--- 			when event: others =>
--- 				if is_open (bom_handle) then
--- 					close (bom_handle);
--- 				end if;
--- 				
--- 				log_indentation_reset;
--- 				log (text => ada.exceptions.exception_information (event), console => true);
--- 				raise;
--- 				
--- 	end write_bom;
+	begin -- write_netlist
+		if ada.directories.exists (to_string (file_name)) then
+			log (importance => NOTE, text => "overwriting " & to_string (file_name) & " ...", level => log_threshold);
+		end if;
+
+		if ada.directories.extension (to_string (file_name)) /= extension_netlist then
+			log (importance => WARNING, text => "targeted netlist file has no extension " &
+				 enclose_in_quotes (extension_netlist) & " !");
+		end if;
+
+		log (text => "writing netlist file " & enclose_in_quotes (to_string (file_name)) & " ...", level => log_threshold);
+		
+		create (
+			file => netlist_handle,
+			mode => out_file, 
+			name => to_string (file_name));
+
+		close (netlist_handle);
+
+		exception
+			when event: others =>
+				if is_open (netlist_handle) then
+					close (netlist_handle);
+				end if;
+				
+				log_indentation_reset;
+				log (text => ada.exceptions.exception_information (event), console => true);
+				raise;
+				
+	end write_netlist;
 
 
 -- 	procedure export_netlists (log_threshold : in et_string_processing.type_log_level) is

@@ -11531,22 +11531,22 @@ package body schematic_ops is
 		use assembly_variants;
 		use netlists;
 
--- 		netlist : netlists.type_netlist.map;
+		netlist : netlists.type_netlist.map;
 			
--- 		submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
--- 		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
--- 
--- 		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
--- 		package stack_level is new et_general.stack_lifo (
--- 			item	=> numbering.type_modules.cursor,
--- 			max 	=> submodules.nesting_depth_max);
--- 
--- 		package stack_variant is new et_general.stack_lifo (
--- 			item	=> assembly_variants.type_variant_name.bounded_string,
--- 			max 	=> submodules.nesting_depth_max);
--- 		
--- 		variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
--- 		
+		submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
+		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
+
+		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
+		package stack_level is new et_general.stack_lifo (
+			item	=> numbering.type_modules.cursor,
+			max 	=> submodules.nesting_depth_max);
+
+		package stack_variant is new et_general.stack_lifo (
+			item	=> assembly_variants.type_variant_name.bounded_string,
+			max 	=> submodules.nesting_depth_max);
+		
+		variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
+		
 -- 		procedure query_submodules is 
 -- 		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 -- 		-- until the deepest submodule (the bottom of the design structure) has been reached.
@@ -11677,26 +11677,24 @@ package body schematic_ops is
 -- 			-- collect devices of the given top module. the top module has no device index offset
 -- 			collect (module_cursor, variant_top, 0); 
 -- 
--- 			-- take a copy of the submodule tree of the given top module:
--- 			submod_tree := element (module_cursor).submod_tree;
--- 
--- 			-- set the cursor inside the tree at root position:
--- 			tree_cursor := numbering.type_modules.root (submod_tree);
--- 			
--- 			stack_level.init;
--- 			stack_variant.init;
--- 
+			-- take a copy of the submodule tree of the given top module:
+			submod_tree := element (module_cursor).submod_tree;
+
+			-- set the cursor inside the tree at root position:
+			tree_cursor := numbering.type_modules.root (submod_tree);
+			
+			stack_level.init;
+			stack_variant.init;
+
 -- 			-- collect devices of the submodules
 -- 			query_submodules;
--- 
--- 			-- write the bom
--- 			material.write_bom (
--- 				bom				=> bill_of_material,	-- the container that holds the bom
--- 				file_name		=> bom_file, 			-- tmp/my_project_bom.csv
--- 				--format			=> NATIVE,				-- CS should be an argument in the future
--- 				format			=> EAGLE,				-- CS should be an argument in the future
--- 				log_threshold	=> log_threshold + 1);
-null;			
+
+			-- write the bom
+			netlists.write_netlist (
+				netlist			=> netlist,			-- the container that holds the netlist
+				file_name		=> netlist_file, 	-- tmp/my_project.net
+				log_threshold	=> log_threshold + 1);
+			
 		else
 			assembly_variant_not_found (variant_top);
 		end if;

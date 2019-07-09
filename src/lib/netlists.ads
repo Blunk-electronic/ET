@@ -41,24 +41,19 @@ with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
-with ada.containers.vectors;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
+-- with ada.containers.vectors;
+-- with ada.containers.doubly_linked_lists;
+-- with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
+-- with ada.containers.indefinite_ordered_maps;
+-- with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_sets;
 
--- with et_general;				use et_general;
--- 
--- with et_coordinates;
+with et_general;				use et_general;
+
 with et_libraries;
--- with assembly_variants;
 with et_string_processing;		use et_string_processing;
--- with et_pcb;
--- with et_pcb_coordinates;
--- with submodules;
--- with numbering;
+
 
 package netlists is
 
@@ -72,30 +67,30 @@ package netlists is
 	function to_file_name (name : in string) return type_file_name.bounded_string;
 
 	type type_node (direction : et_libraries.type_port_direction) is record
-		device		: et_libraries.type_device_name; -- IC4		
-		port		: et_libraries.type_port (direction); -- CE (incl. direction, sensitivity, ...)
-		terminal	: et_libraries.type_terminal_name.bounded_string; -- H4, 1, 16
+		device			: et_libraries.type_device_name; -- IC4		
+		port			: et_libraries.type_port_name.bounded_string; -- CLOCK, CE, VDD, GND
+		characteristics	: et_libraries.type_port (direction); -- direction, sensitivity, ...
+		terminal		: et_libraries.type_terminal_name.bounded_string; -- H4, 1, 16
 	end record;
 
 	function "<" (left, right : in type_node) return boolean;
 	
-	package type_netlist is new indefinite_ordered_sets (
+	package type_nodes is new indefinite_ordered_sets (
 		element_type	=> type_node);
 
--- 	type type_bom_format is (
--- 		NATIVE,
--- 		EAGLE,
--- 		KICAD
--- 		-- CS others ?
--- 		);		
--- 	
--- 	procedure write_bom (
--- 	-- Creates the BOM (which inevitably and intentionally overwrites the previous file).
--- 	-- Writes the content of the given container bom in the file.
--- 		bom				: in type_devices.map;
--- 		file_name		: in type_file_name.bounded_string;
--- 		format			: in type_bom_format;		
--- 		log_threshold	: in type_log_level);
+	use type_nodes;
+
+	package type_netlist is new ordered_maps (
+		key_type		=> type_net_name.bounded_string,
+		"<"				=> type_net_name."<",
+		element_type	=> type_nodes.set);
+		
+	procedure write_netlist (
+	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).
+	-- Writes the content of the given container netlist in the file.
+		netlist			: in type_netlist.map;
+		file_name		: in type_file_name.bounded_string;
+		log_threshold	: in type_log_level);
 	
 end netlists;
 

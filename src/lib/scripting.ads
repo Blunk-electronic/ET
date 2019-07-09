@@ -121,6 +121,7 @@ package scripting is
 		NAME,
 		NET,
 		NETCHANGER,
+		NETLIST,
 		PARTCODE,
 		PORT, -- of a submodule instance
 		PURPOSE,
