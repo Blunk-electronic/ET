@@ -2985,6 +2985,17 @@ package body et_kicad_pcb is
 		return type_layer_meaning'value (meaning);
 	end to_layer_meaning;
 
+	function default_component_reference return et_libraries.type_device_name is
+	-- Returns a default device name with an empty prefix and and id 0.
+	-- Used to initialize a component reference.	
+		use et_libraries;
+	begin
+		return ((
+			prefix		=> type_device_name_prefix.to_bounded_string (""),
+			id			=> device_name_index_default,
+			id_width	=> 1));
+	end default_component_reference;
+	
 	function to_board (
 		file_name		: in string; -- pwr_supply.kicad_pcb
 		lines			: in et_pcb.type_lines.list;
@@ -3251,7 +3262,7 @@ package body et_kicad_pcb is
 		package_appearance 	: type_package_appearance := REAL;
 
 		package_text 		: type_text_package;
-		package_reference 	: et_libraries.type_device_name := et_schematic.default_component_reference;
+		package_reference 	: et_libraries.type_device_name := default_component_reference;
 		package_value 		: et_libraries.type_value.bounded_string;
 
 		package_time_stamp	: type_timestamp; -- temporarily storage of package timestamp
@@ -5901,7 +5912,7 @@ package body et_kicad_pcb is
 					package_appearance := REAL;
 
 					-- reset reference and value
-					package_reference := et_schematic.default_component_reference;
+					package_reference := default_component_reference;
 					package_value := to_value ("");
 
 					-- delete list of terminals

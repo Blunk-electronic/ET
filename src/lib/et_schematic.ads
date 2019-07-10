@@ -322,9 +322,6 @@ package et_schematic is
 		key_type		=> type_net_name.bounded_string,
 		element_type	=> type_net);
 	
-	function default_component_reference return et_libraries.type_device_name;
-	-- Returns a default component reference with an empty prefix and and id 0.
-	-- Used to initialize a component reference.
 
 -- MODULE
 
@@ -390,14 +387,6 @@ package et_schematic is
 	function show_danger (danger : in type_danger) return string;
 	
 	
--- NETLISTS
-	-- Whenever we deal with netlist files this type should be used:
-	netlist_file_name_length : constant positive := 100; -- CS: should suffice for now
-	package type_netlist_file_name is new generic_bounded_length (netlist_file_name_length); 
-	--use type_netlist_file_name;
-
-	extension_netlist : constant string (1..3) := "net";
-
 
 
 -- STATISTICS

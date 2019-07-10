@@ -340,17 +340,6 @@ package body et_schematic is
 		return type_net_scope'value (scope);
 	end to_net_scope;
 	
-	function default_component_reference return et_libraries.type_device_name is
-	-- Returns a default device name with an empty prefix and and id 0.
-	-- Used to initialize a component reference.	
-		use et_libraries;
-	begin
-		return ((
-			prefix		=> type_device_name_prefix.to_bounded_string (""),
-			id			=> device_name_index_default,
-			id_width	=> 1));
-	end default_component_reference;
-
 	function package_model (device : in type_devices.cursor)
 		return et_libraries.type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac
 	-- Returns the name of the package model of the given device.
