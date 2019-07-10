@@ -321,7 +321,17 @@ package et_schematic is
 	package type_nets is new ordered_maps (
 		key_type		=> type_net_name.bounded_string,
 		element_type	=> type_net);
+
+
+	type type_ports is record
+		devices		: type_ports_device.set;
+		submodules	: type_ports_submodule.set;
+		netchangers	: type_ports_netchanger.set;
+	end record;
 	
+	function ports (net : in type_nets.cursor) return type_ports;
+	-- Returns the ports of devices, submodules and netchangers in
+	-- the given net.
 
 -- MODULE
 

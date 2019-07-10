@@ -339,6 +339,35 @@ package body et_schematic is
 	begin
 		return type_net_scope'value (scope);
 	end to_net_scope;
+
+	function ports (net : in type_nets.cursor) return type_ports is
+	-- Returns the ports of devices, submodules and netchangers in
+	-- the given net.
+		result : type_ports; -- to be returned
+
+		use type_nets;
+		use type_strands;
+		use type_net_segments;
+
+		procedure query_segments (segment_cursor : in type_net_segments.cursor) is
+			use type_ports_device;
+			use type_ports_netchanger;
+			use type_ports_submodule;
+		begin
+			union (result.devices, element (segment_cursor).ports_devices);
+			union (result.netchangers, element (segment_cursor).ports_netchangers);
+			union (result.submodules, element (segment_cursor).ports_submodules);
+		end query_segments;
+		
+		procedure query_strands (strand_cursor : in type_strands.cursor) is 
+		begin
+			iterate (element (strand_cursor).segments, query_segments'access);
+		end query_strands;
+	
+	begin -- ports
+		iterate (element (net).strands, query_strands'access);
+		return result;
+	end ports;
 	
 	function package_model (device : in type_devices.cursor)
 		return et_libraries.type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac
