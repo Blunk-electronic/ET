@@ -66,24 +66,24 @@ package netlists is
 	function to_string (name : in type_file_name.bounded_string) return string;
 	function to_file_name (name : in string) return type_file_name.bounded_string;
 
-	type type_node (direction : et_libraries.type_port_direction) is record
+	type type_port (direction : et_libraries.type_port_direction) is record
 		device			: et_libraries.type_device_name; -- IC4		
 		port			: et_libraries.type_port_name.bounded_string; -- CLOCK, CE, VDD, GND
 		characteristics	: et_libraries.type_port (direction); -- direction, sensitivity, ...
 		terminal		: et_libraries.type_terminal_name.bounded_string; -- H4, 1, 16
 	end record;
 
-	function "<" (left, right : in type_node) return boolean;
+	function "<" (left, right : in type_port) return boolean;
 	
-	package type_nodes is new indefinite_ordered_sets (
-		element_type	=> type_node);
+	package type_ports is new indefinite_ordered_sets (
+		element_type	=> type_port);
 
-	use type_nodes;
+	use type_ports;
 
 	package type_netlist is new ordered_maps (
 		key_type		=> type_net_name.bounded_string,
 		"<"				=> type_net_name."<",
-		element_type	=> type_nodes.set);
+		element_type	=> type_ports.set);
 		
 	procedure write_netlist (
 	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).

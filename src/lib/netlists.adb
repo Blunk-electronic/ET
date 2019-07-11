@@ -75,7 +75,7 @@ package body netlists is
 		return type_file_name.to_bounded_string (name);
 	end;
 
-	function "<" (left, right : in type_node) return boolean is
+	function "<" (left, right : in type_port) return boolean is
 		use et_libraries;
 		use type_port_name;
 		result : boolean := false;

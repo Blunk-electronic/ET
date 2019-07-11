@@ -11541,6 +11541,9 @@ package body schematic_ops is
 			variant			: in assembly_variants.type_variant_name.bounded_string;
 			offset			: in et_libraries.type_device_name_index) is
 
+			use assembly_variants.type_variants;
+			variant_cursor : assembly_variants.type_variants.cursor;
+			
 			procedure query_nets (
 				module_name	: in type_module_name.bounded_string;
 				module		: in et_schematic.type_module) is
@@ -11553,7 +11556,7 @@ package body schematic_ops is
 				inserted : boolean;
 
 				net_name : type_net_name.bounded_string;
-				nodes : type_nodes.set;
+				ports : et_schematic.type_ports;
 				
 -- 				procedure insert_net (
 -- 					net_name	: in type_net_name.bounded_string;
@@ -11566,20 +11569,24 @@ package body schematic_ops is
 				while net_cursor_sch /= type_nets.no_element loop
 
 					net_name := type_nets.key (net_cursor_sch); -- CS prefix 
--- 					nodes := collect_nodes (net_cursor_sch);
-								
-					type_netlist.insert (
-						container	=> netlist,
-						key			=> net_name,
-						new_item	=> nodes,
-						position	=> net_cursor_netlist,
-						inserted	=> inserted);
+
+					ports := et_schematic.ports (net_cursor_sch, variant_cursor);
+
+-- 					
+-- 					type_netlist.insert (
+-- 						container	=> netlist,
+-- 						key			=> net_name,
+-- 						new_item	=> nodes,
+-- 						position	=> net_cursor_netlist,
+-- 						inserted	=> inserted);
 					
 					next (net_cursor_sch);
 				end loop;
 			end query_nets;
 			
 		begin -- collect_nets
+			variant_cursor := find (element (module_cursor).variants, variant);
+				
 			et_project.type_modules.query_element (
 				position	=> module_cursor,
 				process		=> query_nets'access);
@@ -11742,6 +11749,7 @@ package body schematic_ops is
 -- 			-- collect devices of the submodules
 -- 			query_submodules;
 
+			
 			-- write the bom
 			netlists.write_netlist (
 				netlist			=> netlist,			-- the container that holds the netlist
