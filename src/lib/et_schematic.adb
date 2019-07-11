@@ -340,9 +340,13 @@ package body et_schematic is
 		return type_net_scope'value (scope);
 	end to_net_scope;
 
-	function ports (net : in type_nets.cursor) return type_ports is
+	function ports (
+		net		: in type_nets.cursor;
+		variant	: in assembly_variants.type_variants.cursor)
+		return type_ports is
 	-- Returns the ports of devices, submodules and netchangers in
-	-- the given net.
+	-- the given net. The given assembly variant determines whether
+	-- a device should be excluded.
 		result : type_ports; -- to be returned
 
 		use type_nets;
@@ -353,8 +357,27 @@ package body et_schematic is
 			use type_ports_device;
 			use type_ports_netchanger;
 			use type_ports_submodule;
-		begin
-			union (result.devices, element (segment_cursor).ports_devices);
+
+			procedure query_devices (device_cursor : in type_ports_device.cursor) is
+			-- Inserts the device/port in result.devices. Skips the device/port
+			-- according to the given assembly variant.
+			begin
+				if assembly_variants.is_mounted (
+					device		=> element (device_cursor).device_name, -- IC4, R101
+					variant		=> variant) 
+				then
+					insert (
+						container	=> result.devices,
+						new_item	=> element (device_cursor));
+				end if;
+			end query_devices;
+			
+		begin -- query_segments
+			-- Collect device ports of segment according to given assembly variant.
+			iterate (element (segment_cursor).ports_devices, query_devices'access);
+
+			-- Ports of netchangers and submodules go into the result right away
+			-- because they are not affected by any assembly variants.
 			union (result.netchangers, element (segment_cursor).ports_netchangers);
 			union (result.submodules, element (segment_cursor).ports_submodules);
 		end query_segments;

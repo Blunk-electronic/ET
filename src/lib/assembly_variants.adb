@@ -90,7 +90,32 @@ package body assembly_variants is
 		-- CS lenght and character check
 		return type_variant_name.to_bounded_string (variant);
 	end;
-		
+
+	function is_mounted (
+		device	: in et_libraries.type_device_name; -- IC1
+		variant	: in type_variants.cursor)
+		return boolean is
+		-- Returns true if the given device is to be mounted according to given assembly variant.
+		use type_variants;
+		use type_devices;
+		cursor : type_devices.cursor := find (element (variant).devices, device);
+	begin
+		if cursor = type_devices.no_element then
+			-- Device has no entry in assembly variant and thus is to be mounted
+			-- as it is in the default variant:
+			return true;
+		else
+			-- Device has an entry in assembly variant. The question now
+			-- is whether the entry requests the device mounted or not.
+			if element (cursor).mounted = YES then
+				return true;
+			else
+				return false;
+			end if;
+			
+		end if;
+	end is_mounted;
+	
 end assembly_variants;
 	
 -- Soli Deo Gloria

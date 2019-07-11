@@ -329,9 +329,13 @@ package et_schematic is
 		netchangers	: type_ports_netchanger.set;
 	end record;
 	
-	function ports (net : in type_nets.cursor) return type_ports;
+	function ports (
+		net		: in type_nets.cursor;
+		variant	: in assembly_variants.type_variants.cursor)
+		return type_ports;
 	-- Returns the ports of devices, submodules and netchangers in
-	-- the given net.
+	-- the given net. The given assembly variant determines whether
+	-- a device should be excluded.
 
 -- MODULE
 

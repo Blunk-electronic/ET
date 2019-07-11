@@ -121,6 +121,12 @@ package assembly_variants is
 	package type_variants is new ordered_maps (
 		key_type		=> type_variant_name.bounded_string, -- "low_cost"
 		element_type	=> type_variant);
+
+	function is_mounted (
+		device	: in et_libraries.type_device_name; -- IC1
+		variant	: in type_variants.cursor)
+		return boolean;
+	-- Returns true if the given device is to be mounted according to given assembly variant.
 	
 end assembly_variants;
 
