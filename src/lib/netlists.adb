@@ -98,34 +98,34 @@ package body netlists is
 		return result;
 	end;
 
-	function extend_ports (
-	-- Adds further properties to the given ports (characteristics, terminal name).
-		ports : in et_schematic.type_ports_device.set)
-		return netlists.type_ports.set is
-
-		ports_ext : type_ports.set; -- to be returned
-
-		use et_schematic.type_ports_device;
-		
-		procedure query_ports (port_cursor : in et_schematic.type_ports_device.cursor) is
-			port_sch : et_schematic.type_port_device := element (port_cursor);
-		begin
-
-			insert (
-				container	=> ports_ext,
-				new_item	=> (
-					direction	=> et_libraries.PASSIVE, -- CS
-					device		=> port_sch.device_name, -- IC1
-					port		=> port_sch.port_name, -- CE
-					others		=> <>) -- CS
-				   );
-			
-		end query_ports;
-		
-	begin -- extend_ports
-		iterate (ports, query_ports'access);
-		return ports_ext;
-	end extend_ports;
+-- 	function extend_ports (
+-- 	-- Adds further properties to the given ports (characteristics, terminal name).
+-- 		ports : in et_schematic.type_ports_device.set)
+-- 		return netlists.type_ports.set is
+-- 
+-- 		ports_ext : type_ports.set; -- to be returned
+-- 
+-- 		use et_schematic.type_ports_device;
+-- 		
+-- 		procedure query_ports (port_cursor : in et_schematic.type_ports_device.cursor) is
+-- 			port_sch : et_schematic.type_port_device := element (port_cursor);
+-- 		begin
+-- 
+-- 			insert (
+-- 				container	=> ports_ext,
+-- 				new_item	=> (
+-- 					direction	=> et_libraries.PASSIVE, -- CS
+-- 					device		=> port_sch.device_name, -- IC1
+-- 					port		=> port_sch.port_name, -- CE
+-- 					others		=> <>) -- CS
+-- 				   );
+-- 			
+-- 		end query_ports;
+-- 		
+-- 	begin -- extend_ports
+-- 		iterate (ports, query_ports'access);
+-- 		return ports_ext;
+-- 	end extend_ports;
 	
 	procedure write_netlist (
 	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).

@@ -82,10 +82,10 @@ package netlists is
 
 	use type_ports;
 
-	function extend_ports (
-	-- Adds further properties to the given ports (characteristics, terminal name).
-		ports : in et_schematic.type_ports_device.set)
-		return netlists.type_ports.set;
+-- 	function extend_ports (
+-- 	-- Adds further properties to the given ports (characteristics, terminal name).
+-- 		ports : in et_schematic.type_ports_device.set)
+-- 		return netlists.type_ports.set;
 
 	
 	package type_netlist is new ordered_maps (
