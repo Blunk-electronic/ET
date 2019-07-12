@@ -50,9 +50,11 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_sets;
 
 with et_general;				use et_general;
-
+with et_schematic;
 with et_libraries;
+
 with et_string_processing;		use et_string_processing;
+
 
 
 package netlists is
@@ -80,6 +82,12 @@ package netlists is
 
 	use type_ports;
 
+	function extend_ports (
+	-- Adds further properties to the given ports (characteristics, terminal name).
+		ports : in et_schematic.type_ports_device.set)
+		return netlists.type_ports.set;
+
+	
 	package type_netlist is new ordered_maps (
 		key_type		=> type_net_name.bounded_string,
 		"<"				=> type_net_name."<",
@@ -89,7 +97,8 @@ package netlists is
 	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).
 	-- Writes the content of the given container netlist in the file.
 		netlist			: in type_netlist.map;
-		file_name		: in type_file_name.bounded_string;
+		module_name		: in type_module_name.bounded_string; -- motor_driver
+		file_name		: in type_file_name.bounded_string; -- netlist.net
 		log_threshold	: in type_log_level);
 	
 end netlists;

@@ -97,63 +97,101 @@ package body netlists is
 		
 		return result;
 	end;
+
+	function extend_ports (
+	-- Adds further properties to the given ports (characteristics, terminal name).
+		ports : in et_schematic.type_ports_device.set)
+		return netlists.type_ports.set is
+
+		ports_ext : type_ports.set; -- to be returned
+
+		use et_schematic.type_ports_device;
+		
+		procedure query_ports (port_cursor : in et_schematic.type_ports_device.cursor) is
+			port_sch : et_schematic.type_port_device := element (port_cursor);
+		begin
+
+			insert (
+				container	=> ports_ext,
+				new_item	=> (
+					direction	=> et_libraries.PASSIVE, -- CS
+					device		=> port_sch.device_name, -- IC1
+					port		=> port_sch.port_name, -- CE
+					others		=> <>) -- CS
+				   );
+			
+		end query_ports;
+		
+	begin -- extend_ports
+		iterate (ports, query_ports'access);
+		return ports_ext;
+	end extend_ports;
 	
 	procedure write_netlist (
 	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).
 	-- Writes the content of the given container netlist in the file.
 		netlist			: in type_netlist.map;
-		file_name		: in type_file_name.bounded_string;
+		module_name		: in type_module_name.bounded_string; -- motor_driver
+		file_name		: in type_file_name.bounded_string; -- netlist.net
 		log_threshold	: in type_log_level) is		
 
+		use type_netlist;
 		netlist_handle : ada.text_io.file_type;
-		net_cursor : type_netlist.cursor := netlist.first;
 
--- 		procedure native is -- CS not complete. accessories ?
--- 			use et_csv;
--- 
--- 			column_item			: constant string := "ITEM";
--- 			column_device		: constant string := "DEVICE";			
--- 			column_value		: constant string := "VALUE";
--- 			column_package		: constant string := "PACKAGE";
--- 			column_partcode		: constant string := "PARTCODE";
--- 			column_purpose		: constant string := "PURPOSE";
--- 
--- 			procedure query_device (cursor : in type_devices.cursor) is
--- 				use type_devices;
--- 				use et_libraries;
--- 			begin
--- 				put_field (file => bom_handle); -- CS item number
--- 				put_field (file => bom_handle, text => to_string (key (cursor))); -- R4
--- 				put_field (file => bom_handle, text => to_string (element (cursor).value)); -- 100R
--- 				put_field (file => bom_handle, text => to_string (element (cursor).packge)); -- S_0805.pac
--- 				put_field (file => bom_handle, text => to_string (element (cursor).partcode)); -- R_PAC_S_0805_VAL_100R
--- 				put_field (file => bom_handle, text => to_string (element (cursor).purpose)); -- purpose
--- 
--- 				put_lf (file => bom_handle, field_count => et_csv.column);
--- 			end query_device;
--- 			
--- 		begin -- native
--- 			-- CS: A nice header should be placed. First make sure stock_manager can handle it.
--- 			
--- 			-- write the BOM table header
--- 			et_csv.reset_column;
--- 			put_field (file => bom_handle, text => column_item);
--- 			put_field (file => bom_handle, text => column_device);
--- 			put_field (file => bom_handle, text => column_value);
--- 			put_field (file => bom_handle, text => column_package);
--- 			put_field (file => bom_handle, text => column_partcode);
--- 			put_field (file => bom_handle, text => column_purpose);
--- 			put_lf    (file => bom_handle, field_count => et_csv.column);
--- 
--- 			type_devices.iterate (
--- 				container	=> bom,
--- 				process		=> query_device'access);
--- 			
--- 			-- CS: A list end mark should be placed. First make sure stock_manager can handle it.
--- 			-- put_line (bom_handle, comment_mark & " end of list");
--- 			
--- 		end;
--- 
+		procedure write_header is begin
+		-- writes a nice header in the netlist file
+			put_line (netlist_handle, comment_mark & " " & et_general.system_name & " " & et_general.version & " netlist");
+			put_line (netlist_handle, comment_mark & " " & date);
+			put_line (netlist_handle, comment_mark & " module " & enclose_in_quotes (to_string (module_name)));
+			put_line (netlist_handle, comment_mark & " " & row_separator_double);
+			put_line (netlist_handle, comment_mark & " net count total" & count_type'image (length (netlist)));
+			-- CS: statistics about pin count ?
+			
+			put_line (netlist_handle, comment_mark);
+			put_line (netlist_handle, comment_mark & " legend:");
+			put_line (netlist_handle, comment_mark & "  net_name");
+			put_line (netlist_handle, comment_mark & "  device port direction terminal/pin/pad");
+			put_line (netlist_handle, comment_mark & " " & row_separator_single);
+		end write_header;
+		
+		procedure write_nets is
+		-- writes the actual nets in the netlist file
+
+			procedure query_ports (port : in type_ports.cursor) is
+				use type_ports;
+			begin
+				put_line (netlist_handle, -- IC1 CE input H5
+					et_libraries.to_string (element (port).device) & latin_1.space &
+					et_libraries.to_string (element (port).port) & latin_1.space &
+					et_libraries.to_string (element (port).direction) & latin_1.space &
+					et_libraries.to_string (element (port).terminal) & latin_1.space);
+
+					-- CS .characteristics
+			end query_ports;
+			
+			procedure query_nets (net : in type_netlist.cursor) is begin
+				new_line (netlist_handle);
+
+				-- write the net name
+				put_line (netlist_handle, to_string (key (net))); -- clock_out
+
+				-- write the device ports
+				iterate (element (net), query_ports'access);
+
+			end query_nets;
+
+			
+		begin -- write_nets
+			iterate (netlist, query_nets'access);
+		end write_nets;
+
+		procedure write_footer is begin
+		-- writes a nice footer in the netlist file
+			new_line (netlist_handle);
+			put_line (netlist_handle, comment_mark & " " & row_separator_double);
+			put_line (netlist_handle, comment_mark & " end of list");
+		end write_footer;
+		
 	begin -- write_netlist
 		if ada.directories.exists (to_string (file_name)) then
 			log (importance => NOTE, text => "overwriting " & to_string (file_name) & " ...", level => log_threshold);
@@ -171,6 +209,10 @@ package body netlists is
 			mode => out_file, 
 			name => to_string (file_name));
 
+		write_header;
+		write_nets;
+		write_footer;
+		
 		close (netlist_handle);
 
 		exception
@@ -184,162 +226,6 @@ package body netlists is
 				raise;
 				
 	end write_netlist;
-
-
--- 	procedure export_netlists (log_threshold : in et_string_processing.type_log_level) is
--- 	-- Exports/Writes the netlists in separate files.
--- 	-- Netlists are exported in individual project directories in the work directory of ET.
--- 	-- These project directories have the same name as the module indicated by module_cursor.
--- 	-- Addresses real components exclusively. Virtual things like GND symbols are not exported.
--- 	-- Call this procedure after executing procedure make_netlist !
--- 		use type_modules;
--- 		use ada.directories;
--- 		use et_general;
--- 		use et_string_processing;
--- 		use et_export;
--- 		use et_coordinates;
--- 		
--- 		netlist_handle 		: ada.text_io.file_type;
--- 		netlist_file_name	: et_schematic.type_netlist_file_name.bounded_string;
--- 		
--- 		procedure query_nets (
--- 			module_name	: in type_submodule_name.bounded_string;
--- 			module		: in type_module) is
--- 			net_cursor	: type_netlist.cursor := module.netlist.first;
--- 
--- 			procedure query_ports (
--- 				net_name	: in type_net_name.bounded_string;
--- 				ports		: in type_ports_with_reference.set) is
--- 				port_cursor : type_ports_with_reference.cursor := ports.first;
--- 		
--- 				terminal : et_libraries.type_terminal;
--- 
--- 			begin
--- 				log_indentation_up;
--- 				--log (text => "ports" & count_type'image (length (ports)), level => log_threshold + 3);
--- 
--- 				while type_ports_with_reference."/=" (port_cursor, type_ports_with_reference.no_element) loop
--- 
--- 					-- we export only ports of real components
--- 					if et_libraries."=" (type_ports_with_reference.element (port_cursor).appearance, et_libraries.sch_pcb) then
--- 
--- 						-- fetch the terminal from the port in the current module
--- 						terminal := to_terminal (
--- 							port 			=> type_ports_with_reference.element (port_cursor),
--- 							module 			=> key (module_cursor),	-- nucleo_core
--- 							log_threshold 	=> log_threshold + 4);
--- 					
--- 						-- log reference, unit, port, direction, terminal (all in one line)
--- 						log (text => "reference " & et_libraries.to_string (type_ports_with_reference.element (port_cursor).reference)
--- 							& " unit " & et_libraries.to_string (unit_name => terminal.unit)
--- 							& " port " & et_libraries.to_string (port => terminal.port)
--- 							& to_string (type_ports_with_reference.element (port_cursor).direction)
--- 							& " terminal " & et_libraries.to_string (terminal => terminal.name),
--- 							level => log_threshold + 3);
--- 
--- 						-- write reference, port, direction, terminal in netlist (all in one line)
--- 						put_line (netlist_handle, 
--- 							et_libraries.to_string (type_ports_with_reference.element (port_cursor).reference) & latin_1.space
--- 							& et_libraries.to_string (port => terminal.port)
--- 							& to_string (type_ports_with_reference.element (port_cursor).direction, preamble => false) & latin_1.space
--- 							& et_libraries.to_string (terminal => terminal.name)); 
--- 
--- 					end if;
--- 						
--- 					type_ports_with_reference.next (port_cursor);
--- 				end loop;
--- 
--- 				log_indentation_down;
--- 			end query_ports;
--- 			
--- 		begin -- query_nets
--- 			log_indentation_up;
--- 
--- 			-- output the net names. then query the ports/pins of the net
--- 			while type_netlist."/=" (net_cursor, type_netlist.no_element) loop
--- 
--- 				-- log and write net name in netlist
--- 				log (text => et_general.to_string (type_netlist.key (net_cursor)), level => log_threshold + 2);
--- 				new_line (netlist_handle);
--- 				put_line (netlist_handle, et_general.to_string (type_netlist.key (net_cursor)));
--- 
--- 				-- query ports of net
--- 				type_netlist.query_element (
--- 					position	=> net_cursor,
--- 					process		=> query_ports'access);
--- 				
--- 				type_netlist.next (net_cursor);
--- 			end loop;
--- 				
--- 			log_indentation_down;	
--- 		end query_nets;
--- 
--- 	begin -- export_netlists
--- 
--- 		-- We start with the first module of the modules.
--- 		--first_module;
--- 		module_cursor := type_modules.first (modules);
--- 
--- 		log (text => "exporting netlists ...", level => log_threshold);
--- 		log_indentation_up;
--- 		
--- 		while module_cursor /= type_modules.no_element loop
--- 			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
--- 			log_indentation_up;
--- 
--- 			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);			
--- 			-- compose the netlist file name and its path like "../ET/motor_driver/CAM/motor_driver.net"
--- 			netlist_file_name := et_schematic.type_netlist_file_name.to_bounded_string 
--- 				(
--- 				compose (
--- 					containing_directory => compose 
--- 						(
--- 						containing_directory => compose (work_directory, to_string (key (module_cursor))),
--- 						name => et_export.directory_cam
--- 						),
--- 					name => to_string (key (module_cursor)),
--- 					extension => et_schematic.extension_netlist)
--- 				);
--- 
--- 			-- create the netlist (which inevitably and intentionally overwrites the previous file)
--- 			log (text => "creating netlist file " & et_schematic.type_netlist_file_name.to_string (netlist_file_name), level => log_threshold + 1);
--- 			create (
--- 				file => netlist_handle,
--- 				mode => out_file, 
--- 				name => et_schematic.type_netlist_file_name.to_string (netlist_file_name));
--- 
--- 			put_line (netlist_handle, comment_mark & " " & et_general.system_name & " " & et_general.version & " netlist");
--- 			put_line (netlist_handle, comment_mark & " " & date);
--- 			put_line (netlist_handle, comment_mark & " module " & to_string (key (module_cursor)));
--- 			put_line (netlist_handle, comment_mark & " " & row_separator_double);
--- 			put_line (netlist_handle, comment_mark & " net count total" & count_type'image (net_count));
--- 			-- CS: statistics about pin count ?
--- 			
--- 			put_line (netlist_handle, comment_mark);
--- 			put_line (netlist_handle, comment_mark & " legend:");
--- 			put_line (netlist_handle, comment_mark & "  net_name");
--- 			put_line (netlist_handle, comment_mark & "  reference/component port direction terminal/pin/pad");
--- 			put_line (netlist_handle, comment_mark & " " & row_separator_single);
--- 
--- 			-- do the export
--- 			query_element (
--- 				position	=> module_cursor,
--- 				process		=> query_nets'access);
--- 
--- 			new_line (netlist_handle);
--- 			put_line (netlist_handle, comment_mark & " " & row_separator_double);
--- 			put_line (netlist_handle, comment_mark & " end of list");
--- 			
--- 			close (netlist_handle);
--- 			log_indentation_down;
--- 			
--- 			next (module_cursor);
--- 			
--- 		end loop;
--- 			
--- 		log_indentation_down;
--- 		
--- 	end export_netlists;
 
 	
 end netlists;

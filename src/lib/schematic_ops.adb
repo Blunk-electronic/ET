@@ -11549,43 +11549,47 @@ package body schematic_ops is
 				module		: in et_schematic.type_module) is
 
 				use et_schematic.type_nets;
-				--device_name : et_libraries.type_device_name;
 				net_cursor_sch : type_nets.cursor := module.nets.first;
 
-				net_cursor_netlist : type_netlist.cursor;
-				inserted : boolean;
+				--net_cursor_netlist : type_netlist.cursor;
+				--inserted : boolean;
 
 				net_name : type_net_name.bounded_string;
-				ports : et_schematic.type_ports;
-				
--- 				procedure insert_net (
--- 					net_name	: in type_net_name.bounded_string;
--- 					node		: in type_node) is
--- 				begin
--- 					null;
--- 				end insert_net;
+				all_ports : et_schematic.type_ports;
+				device_ports_extended : netlists.type_ports.set;
 				
 			begin -- query_nets
+				variant_cursor := find (module.variants, variant);
+
+				-- loop in nets of given module
 				while net_cursor_sch /= type_nets.no_element loop
 
 					net_name := type_nets.key (net_cursor_sch); -- CS prefix 
 
-					ports := et_schematic.ports (net_cursor_sch, variant_cursor);
+					-- get all device, netchanger and submodule ports of this net
+					all_ports := et_schematic.ports (net_cursor_sch, variant_cursor);
 
--- 					
--- 					type_netlist.insert (
--- 						container	=> netlist,
--- 						key			=> net_name,
--- 						new_item	=> nodes,
--- 						position	=> net_cursor_netlist,
--- 						inserted	=> inserted);
+					-- CS test existence of netchanger and submodule ports.
+
+					-- extend the device ports by further properties like (direction, terminal name):
+					device_ports_extended := extend_ports (all_ports.devices);
+
+					-- insert the net with its device ports in the netlist:
+					type_netlist.insert (
+						container	=> netlist,
+						key			=> net_name, -- clock_out
+						new_item	=> device_ports_extended
+						--position	=> net_cursor_netlist,
+						--inserted	=> inserted
+						);
+
+					-- CS constraint_error arises here if net_name already used
 					
 					next (net_cursor_sch);
 				end loop;
 			end query_nets;
 			
 		begin -- collect_nets
-			variant_cursor := find (element (module_cursor).variants, variant);
 				
 			et_project.type_modules.query_element (
 				position	=> module_cursor,
@@ -11753,6 +11757,7 @@ package body schematic_ops is
 			-- write the bom
 			netlists.write_netlist (
 				netlist			=> netlist,			-- the container that holds the netlist
+				module_name		=> module_name,		-- motor_driver
 				file_name		=> netlist_file, 	-- tmp/my_project.net
 				log_threshold	=> log_threshold + 1);
 			

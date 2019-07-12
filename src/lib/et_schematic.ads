@@ -64,6 +64,7 @@ with submodules;
 with numbering;
 with material;
 
+
 package et_schematic is
 	use et_general.type_net_name;
 	
@@ -337,6 +338,9 @@ package et_schematic is
 	-- the given net. The given assembly variant determines whether
 	-- a device should be excluded.
 
+
+
+	
 -- MODULE
 
 	-- The devices of a module are collected in a map.

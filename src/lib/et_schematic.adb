@@ -352,6 +352,7 @@ package body et_schematic is
 		use type_nets;
 		use type_strands;
 		use type_net_segments;
+		use et_string_processing;
 
 		procedure query_segments (segment_cursor : in type_net_segments.cursor) is
 			use type_ports_device;
