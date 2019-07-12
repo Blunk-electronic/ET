@@ -95,11 +95,25 @@ package body assembly_variants is
 		device	: in et_libraries.type_device_name; -- IC1
 		variant	: in type_variants.cursor)
 		return boolean is
-		-- Returns true if the given device is to be mounted according to given assembly variant.
+	-- Returns true if the given device is to be mounted according to given assembly variant.
+		
 		use type_variants;
 		use type_devices;
-		cursor : type_devices.cursor := find (element (variant).devices, device);
-	begin
+		
+		cursor : type_devices.cursor;
+		
+		procedure query_devices (
+			variant_name	: in type_variant_name.bounded_string; -- low_cost
+			variant			: in type_variant) is
+		begin
+			cursor := find (variant.devices, device);
+		end query_devices;
+		
+	begin -- is_mounted
+		query_element (
+			position	=> variant,
+			process		=> query_devices'access);
+
 		if cursor = type_devices.no_element then
 			-- Device has no entry in assembly variant and thus is to be mounted
 			-- as it is in the default variant:
@@ -114,6 +128,13 @@ package body assembly_variants is
 			end if;
 			
 		end if;
+
+-- 		exception
+-- 			when event: others =>
+-- 				log_indentation_reset;
+-- 				log (text => "B " & ada.exceptions.exception_information (event), console => true);
+-- 				raise;
+		
 	end is_mounted;
 	
 end assembly_variants;
