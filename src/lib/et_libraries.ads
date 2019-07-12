@@ -519,7 +519,7 @@ package et_libraries is
 
 
 	
--- PACKAGES -- CS probably only kicad related -> move there
+-- PACKAGES
 	
 	-- A package is something like "SOT32" or "NDIP14". It is a more or less standardized (JEDEC)
 	-- designator for the housing or the case of an electronical component. The package name is independed of
@@ -873,6 +873,14 @@ package et_libraries is
 		variant			: in type_component_variant_name.bounded_string) -- D, N
 		return type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		
+-- 	function terminal_name (
+-- 	-- Returns the name of the terminal name of the given device according to the given variant.
+-- 	-- The given device must be real. Means appearance SCH_PCB.							  
+-- 		device_cursor	: in type_devices.cursor;
+-- 		port_name		: in type_port_name.bounded_string;
+-- 		variant			: in type_component_variant_name.bounded_string) -- D, N
+-- 		return type_terminal_name.bounded_string; -- 14, H4
+
 	
 -- DRAWING FRAME
 
