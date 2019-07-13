@@ -436,9 +436,61 @@ package body et_libraries is
 		device_cursor	: in type_devices.cursor;
 		port_name		: in type_port_name.bounded_string)
 		return type_ports.cursor is
+
 		port_cursor : type_ports.cursor; -- to be returned
-	begin
-		-- CS
+
+		use type_devices;
+
+		procedure query_units (
+			model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
+			device	: in type_device) is
+
+			use type_units_internal;
+			unit_internal_cursor : type_units_internal.cursor := device.units_internal.first;
+			
+			use type_units_external;
+			unit_external_cursor : type_units_external.cursor := device.units_external.first;
+
+			use type_ports;
+
+			procedure query_ports (
+				unit_name	: in type_unit_name.bounded_string;
+				unit		: in type_unit_internal) is
+			begin				
+				port_cursor := find (unit.symbol.ports, port_name);
+			end query_ports;
+			
+		begin -- query_units
+			-- search the port among the internal units first
+			while unit_internal_cursor /= type_units_internal.no_element loop
+
+				query_element (
+					position	=> unit_internal_cursor,
+					process		=> query_ports'access);
+
+				if port_cursor /= type_ports.no_element then
+					exit;
+				end if;
+				
+				next (unit_internal_cursor);
+			end loop;
+
+			-- if port not found among the internal units, search in external units:
+			if port_cursor = type_ports.no_element then
+				while unit_external_cursor /= type_units_external.no_element loop
+
+					next (unit_external_cursor);
+				end loop;
+			end if;
+
+		end query_units;
+		
+	begin -- properties
+
+		query_element (
+			position	=> device_cursor,
+			process		=> query_units'access);
+		
 		return port_cursor;
 	end properties;
 	
