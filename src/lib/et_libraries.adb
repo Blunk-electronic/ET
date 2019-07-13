@@ -430,6 +430,17 @@ package body et_libraries is
 
 		return package_model;
 	end package_model;
+
+	function properties (
+	-- Returns the poperties of the given port of the given device.
+		device_cursor	: in type_devices.cursor;
+		port_name		: in type_port_name.bounded_string)
+		return type_ports.cursor is
+		port_cursor : type_ports.cursor; -- to be returned
+	begin
+		-- CS
+		return port_cursor;
+	end properties;
 	
 	function to_string (name : in type_frame_template_name.bounded_string) return string is begin
 		return type_frame_template_name.to_string (name);

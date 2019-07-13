@@ -11532,10 +11532,11 @@ package body schematic_ops is
 -- 		type type_port is access et_libraries.type_port;
 -- 		port : type_port;
 		
-		properties : type_port_properties_access;
+		properties : type_port_properties_access; -- to be returned
 		
 		terminal_name : et_libraries.type_terminal_name.bounded_string;
 		port_direction : et_libraries.type_port_direction := et_libraries.PASSIVE;
+		port_properties_cursor : et_libraries.type_ports.cursor;
 
 		procedure create_port is
 			
@@ -11598,6 +11599,8 @@ package body schematic_ops is
 					process		=> query_ports'access);
 				
 			end query_variants;
+
+			use et_libraries.type_ports;
 			
 		begin -- query_devices
 			-- locate device in schematic
@@ -11608,12 +11611,25 @@ package body schematic_ops is
 			-- get the name of the device model (or the generic name)
 			device_cursor_lib := et_libraries.locate_device (element (device_cursor_sch).model);
 
-			-- get the name of the terminal (the pin or pad) according to the device variant:
+			-- Get the name of the terminal (the pin or pad) according to the device variant.
+			-- Store it in variable terminal_name:
 			et_libraries.type_devices.query_element (
 				position	=> device_cursor_lib,
 				process		=> query_variants'access);
 
-			create_port;
+			-- Get the electrical properties of the port of the current device:
+			port_properties_cursor := et_libraries.properties (device_cursor_lib, port_name);
+
+			-- Create the port where pointer "properties" is pointing at.
+			-- It is created with the direction obtained from port_properties_cursor:
+			properties := new type_port_properties (
+				direction 	=> element (port_properties_cursor).direction);
+
+			-- Assign the terminal name:
+			properties.terminal := terminal_name;
+
+			-- Assign electrical properties provided by port_properties_cursor:
+			properties.properties := element (port_properties_cursor);
 			
 		end query_devices;
 

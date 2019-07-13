@@ -887,6 +887,12 @@ package et_libraries is
 		properties	: type_port (direction);
 	end record;
 
+	function properties (
+	-- Returns the poperties of the given port of the given device.
+		device_cursor	: in type_devices.cursor;
+		port_name		: in type_port_name.bounded_string)
+		return type_ports.cursor;
+
 	type type_port_properties_access is access type_port_properties;	
 	
 -- DRAWING FRAME
