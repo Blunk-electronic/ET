@@ -11519,14 +11519,17 @@ package body schematic_ops is
 	
 	end make_bom;
 
-	function terminal_name (
-	-- Returns the terminal name of the given device port in module indicated by module_cursor.
+	function port_properties (
+	-- Returns properties of the given device port in module indicated by module_cursor.
+	-- Properties are things like: terminal name, direction, sensitivity, power level, ...
+	-- See et_libraries.type_port for detail.
 	-- The device must exist in the module and must be real.
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		port_name		: in type_port_name.bounded_string) -- CE
-		return et_libraries.type_terminal_name.bounded_string is
-		terminal : et_libraries.type_terminal_name.bounded_string; -- to be returned
+		return type_port_properties is
+		
+		properties : type_port_properties; -- to be returned
 
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
@@ -11550,7 +11553,7 @@ package body schematic_ops is
 				begin
 					while terminal_cursor /= type_terminal_port_map.no_element loop
 						if element (terminal_cursor).name = port_name then
-							terminal := key (terminal_cursor);
+							properties.terminal := key (terminal_cursor);
 							exit;
 						end if;
 						next (terminal_cursor);
@@ -11576,19 +11579,20 @@ package body schematic_ops is
 			-- get the name of the device model (or the generic name)
 			device_cursor_lib := et_libraries.locate_device (element (device_cursor_sch).model);
 
+			-- get the name of the terminal (the pin or pad) according to the device variant:
 			et_libraries.type_devices.query_element (
 				position	=> device_cursor_lib,
 				process		=> query_variants'access);
 			
 		end query_devices;
 
-	begin -- terminal_name 
+	begin -- port_properties 
 		query_element (
 			position	=> module_cursor,
 			process		=> query_devices'access);
 		
-		return terminal;
-	end terminal_name;
+		return properties;
+	end port_properties;
 
 	
 	function extend_ports (
@@ -11604,15 +11608,17 @@ package body schematic_ops is
 		
 		procedure query_ports (port_cursor : in et_schematic.type_ports_device.cursor) is
 			port_sch : et_schematic.type_port_device := element (port_cursor);
+			more_properties : type_port_properties;
 		begin
-
+			more_properties := port_properties (module_cursor, port_sch.device_name, port_sch.port_name);
+			
 			netlists.type_ports.insert (
 				container	=> ports_ext,
 				new_item	=> (
 					direction	=> et_libraries.PASSIVE, -- CS
 					device		=> port_sch.device_name, -- IC1
 					port		=> port_sch.port_name, -- CE
-					terminal	=> terminal_name (module_cursor, port_sch.device_name, port_sch.port_name),
+					terminal	=> more_properties.terminal,
 					others		=> <>) -- CS
 				   );
 			
