@@ -270,6 +270,7 @@ package et_libraries is
 		FALLING,	-- digital
 		ANY			-- digtial
 		);
+	
 	sensitivity_edge_default : constant type_sensitivity_edge := NONE;
 	function to_string (sensitivity : in type_sensitivity_edge) return string;
 	function to_sensitivity_edge (sensitivity : in string) return type_sensitivity_edge;
@@ -351,7 +352,6 @@ package et_libraries is
 	package type_ports is new indefinite_ordered_maps (
 		key_type		=> type_port_name.bounded_string, -- CLOCK, CE, VDD, GND
 		element_type	=> type_port);
-
 
 	
 -- DEVICE VALUES
@@ -881,6 +881,13 @@ package et_libraries is
 -- 		variant			: in type_component_variant_name.bounded_string) -- D, N
 -- 		return type_terminal_name.bounded_string; -- 14, H4
 
+	-- Used for netlists:
+	type type_port_properties (direction : type_port_direction) is record
+		terminal	: type_terminal_name.bounded_string; -- H4, 1, 16
+		properties	: type_port (direction);
+	end record;
+
+	type type_port_properties_access is access type_port_properties;	
 	
 -- DRAWING FRAME
 

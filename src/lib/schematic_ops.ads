@@ -589,10 +589,6 @@ package schematic_ops is
 		bom_file		: in material.type_file_name.bounded_string; -- CAM/motor_driver_bom.csv
 		log_threshold	: in type_log_level);
 
-	type type_port_properties is record
-		terminal	: et_libraries.type_terminal_name.bounded_string; -- H4, 1, 16
-	end record;
-
 	function port_properties (
 	-- Returns properties of the given device port in module indicated by module_cursor.
 	-- Properties are things like: terminal name, direction, sensitivity, power level, ...
@@ -601,7 +597,7 @@ package schematic_ops is
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		port_name		: in type_port_name.bounded_string) -- CE
-		return type_port_properties;
+		return et_libraries.type_port_properties_access;
 	
 	procedure make_netlist (
 	-- Exports the netlist from the given top module and assembly variant.

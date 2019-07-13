@@ -75,6 +75,7 @@ package netlists is
 		terminal		: et_libraries.type_terminal_name.bounded_string; -- H4, 1, 16
 	end record;
 
+	
 	function "<" (left, right : in type_port) return boolean;
 	
 	package type_ports is new indefinite_ordered_sets (
@@ -82,12 +83,7 @@ package netlists is
 
 	use type_ports;
 
--- 	function extend_ports (
--- 	-- Adds further properties to the given ports (characteristics, terminal name).
--- 		ports : in et_schematic.type_ports_device.set)
--- 		return netlists.type_ports.set;
 
-	
 	package type_netlist is new ordered_maps (
 		key_type		=> type_net_name.bounded_string,
 		"<"				=> type_net_name."<",

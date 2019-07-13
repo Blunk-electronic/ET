@@ -11527,10 +11527,39 @@ package body schematic_ops is
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		port_name		: in type_port_name.bounded_string) -- CE
-		return type_port_properties is
-		
-		properties : type_port_properties; -- to be returned
+		return et_libraries.type_port_properties_access is
 
+-- 		type type_port is access et_libraries.type_port;
+-- 		port : type_port;
+		
+		properties : type_port_properties_access;
+		
+		terminal_name : et_libraries.type_terminal_name.bounded_string;
+		port_direction : et_libraries.type_port_direction := et_libraries.PASSIVE;
+
+		procedure create_port is
+			
+		begin
+-- 			properties := new type_port_properties'(
+-- 				direction 	=> et_libraries.INPUT_DIGITAL,
+-- 				terminal	=> terminal_name,
+-- 				properties	=> (
+-- 					direction	=> et_libraries.INPUT_DIGITAL,
+-- 					others => <>)												   
+-- 					);
+
+			properties := new type_port_properties (
+				direction 	=> port_direction);
+
+			properties.terminal := terminal_name;
+			--properties.properties.sensitivity_edge := et_libraries.ANY;
+			
+			-- port := new et_libraries.type_port (
+			--			direction	=> port_direction);
+			-- 						others => <>);
+			--port.sensitivity_edge := et_libraries.ANY;
+		end;
+		
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
 			module		: in type_module) is
@@ -11553,7 +11582,7 @@ package body schematic_ops is
 				begin
 					while terminal_cursor /= type_terminal_port_map.no_element loop
 						if element (terminal_cursor).name = port_name then
-							properties.terminal := key (terminal_cursor);
+							terminal_name := key (terminal_cursor);
 							exit;
 						end if;
 						next (terminal_cursor);
@@ -11583,6 +11612,8 @@ package body schematic_ops is
 			et_libraries.type_devices.query_element (
 				position	=> device_cursor_lib,
 				process		=> query_variants'access);
+
+			create_port;
 			
 		end query_devices;
 
@@ -11596,37 +11627,41 @@ package body schematic_ops is
 
 	
 	function extend_ports (
-	-- Adds further properties to the given ports (characteristics, terminal name).
+	-- Adds further properties to the given ports.
+	-- Additional properties are electrical characteristics (see et_libraries.type_port)
+	-- and the terminal name).
 		module_cursor	: in type_modules.cursor;
 		ports 			: in et_schematic.type_ports_device.set)
 		return netlists.type_ports.set is
 
 		use netlists;
-		ports_ext : netlists.type_ports.set; -- to be returned
+		ports_extended : netlists.type_ports.set; -- to be returned
 
 		use et_schematic.type_ports_device;
 		
 		procedure query_ports (port_cursor : in et_schematic.type_ports_device.cursor) is
 			port_sch : et_schematic.type_port_device := element (port_cursor);
-			more_properties : type_port_properties;
+			more_properties : et_libraries.type_port_properties_access;
 		begin
+			-- get further properties of the current port
 			more_properties := port_properties (module_cursor, port_sch.device_name, port_sch.port_name);
 			
 			netlists.type_ports.insert (
-				container	=> ports_ext,
-				new_item	=> (
-					direction	=> et_libraries.PASSIVE, -- CS
-					device		=> port_sch.device_name, -- IC1
-					port		=> port_sch.port_name, -- CE
-					terminal	=> more_properties.terminal,
-					others		=> <>) -- CS
-				   );
+				container	=> ports_extended,
+				new_item	=> 
+					(
+					direction		=> more_properties.direction, -- CS
+					device			=> port_sch.device_name, -- IC1
+					port			=> port_sch.port_name, -- CE
+					terminal		=> more_properties.terminal,
+					characteristics => more_properties.properties)
+					);
 			
 		end query_ports;
 		
 	begin -- extend_ports
 		iterate (ports, query_ports'access);
-		return ports_ext;
+		return ports_extended;
 	end extend_ports;
 
 	
@@ -11682,7 +11717,7 @@ package body schematic_ops is
 
 					-- CS test existence of netchanger and submodule ports.
 
-					-- extend the device ports by further properties like (direction, terminal name):
+					-- extend the device ports by further properties:
 					device_ports_extended := extend_ports (module_cursor, all_ports.devices);
 
 					-- insert the net with its device ports in the netlist:
