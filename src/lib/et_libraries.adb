@@ -55,6 +55,12 @@ with et_import;
 
 package body et_libraries is
 
+	function locate (symbol : in type_symbol_model_file.bounded_string) -- ../libraries/symbols/NAND.sym
+		return type_symbols.cursor is
+	begin
+		return type_symbols.find (symbols, symbol);
+	end locate;
+	
 -- DEVICES
 	function to_string (name : in type_device_model_file.bounded_string) 
 		return string is
@@ -454,11 +460,32 @@ package body et_libraries is
 			use type_ports;
 
 			procedure query_ports (
+			-- Query ports of internal unit.
 				unit_name	: in type_unit_name.bounded_string;
 				unit		: in type_unit_internal) is
 			begin				
 				port_cursor := find (unit.symbol.ports, port_name);
 			end query_ports;
+
+			procedure query_symbols (
+			-- Query ports of external unit.
+				unit_name	: in type_unit_name.bounded_string;
+				unit		: in type_unit_external) is
+				use type_symbols;
+				symbol_cursor : type_symbols.cursor := locate (unit.file);
+
+				procedure query_ports (
+					file	: in type_symbol_model_file.bounded_string; -- ../libraries/symbols/NAND.sym
+					symbol	: in type_symbol) is
+				begin
+					port_cursor := find (symbol.ports, port_name);
+				end;
+				
+			begin -- query_symbols
+				query_element (
+					position	=> symbol_cursor,
+					process		=> query_ports'access);
+			end query_symbols;
 			
 		begin -- query_units
 			-- search the port among the internal units first
@@ -468,6 +495,7 @@ package body et_libraries is
 					position	=> unit_internal_cursor,
 					process		=> query_ports'access);
 
+				-- The search ends when the given port has been found.
 				if port_cursor /= type_ports.no_element then
 					exit;
 				end if;
@@ -479,6 +507,15 @@ package body et_libraries is
 			if port_cursor = type_ports.no_element then
 				while unit_external_cursor /= type_units_external.no_element loop
 
+					query_element (
+						position	=> unit_external_cursor,
+						process		=> query_symbols'access);
+
+					-- The search ends when the given port has been found.
+					if port_cursor /= type_ports.no_element then
+						exit;
+					end if;
+										
 					next (unit_external_cursor);
 				end loop;
 			end if;
@@ -486,7 +523,6 @@ package body et_libraries is
 		end query_units;
 		
 	begin -- properties
-
 		query_element (
 			position	=> device_cursor,
 			process		=> query_units'access);

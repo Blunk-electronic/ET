@@ -11529,38 +11529,12 @@ package body schematic_ops is
 		port_name		: in type_port_name.bounded_string) -- CE
 		return et_libraries.type_port_properties_access is
 
--- 		type type_port is access et_libraries.type_port;
--- 		port : type_port;
-		
 		properties : type_port_properties_access; -- to be returned
 		
 		terminal_name : et_libraries.type_terminal_name.bounded_string;
 		port_direction : et_libraries.type_port_direction := et_libraries.PASSIVE;
 		port_properties_cursor : et_libraries.type_ports.cursor;
 
-		procedure create_port is
-			
-		begin
--- 			properties := new type_port_properties'(
--- 				direction 	=> et_libraries.INPUT_DIGITAL,
--- 				terminal	=> terminal_name,
--- 				properties	=> (
--- 					direction	=> et_libraries.INPUT_DIGITAL,
--- 					others => <>)												   
--- 					);
-
-			properties := new type_port_properties (
-				direction 	=> port_direction);
-
-			properties.terminal := terminal_name;
-			--properties.properties.sensitivity_edge := et_libraries.ANY;
-			
-			-- port := new et_libraries.type_port (
-			--			direction	=> port_direction);
-			-- 						others => <>);
-			--port.sensitivity_edge := et_libraries.ANY;
-		end;
-		
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
 			module		: in type_module) is
@@ -11640,7 +11614,6 @@ package body schematic_ops is
 		
 		return properties;
 	end port_properties;
-
 	
 	function extend_ports (
 	-- Adds further properties to the given ports.

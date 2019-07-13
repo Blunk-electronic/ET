@@ -695,7 +695,7 @@ package et_libraries is
 	
 	-- An external unit has a reference and a swap level.
     type type_unit_external is record
-        -- file is the link to the symbol in container symbols:
+        -- file is the link to the symbol in container "symbols":
         file		: type_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym -- CS rename to model
         
 		position	: type_point := zero; -- the position within the device editor
@@ -839,6 +839,9 @@ package et_libraries is
 
 	-- HERE RIG WIDE SYMBOLS ARE KEPT:	
 	symbols : type_symbols.map;
+
+	function locate (symbol : in type_symbol_model_file.bounded_string) -- ../libraries/symbols/NAND.sym
+		return type_symbols.cursor;
 
 -- DEVICES
 	package type_device_model_file is new generic_bounded_length (path_length_max); -- ../lbr/logic_ttl/7400.dev
