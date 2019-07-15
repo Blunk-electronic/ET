@@ -98,6 +98,14 @@ package body netlists is
 		return result;
 	end;
 
+	function to_prefix (instance : in type_module_instance_name.bounded_string) -- OSC1
+	-- Converts an instance name to a net prefix with a trailing level separator.
+		return type_net_name.bounded_string is
+	begin
+		return to_net_name (to_string (instance) & level_separator);
+	end;
+
+	
 	procedure write_netlist (
 	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).
 	-- Writes the content of the given container netlist in the file.

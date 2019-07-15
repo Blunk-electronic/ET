@@ -83,7 +83,12 @@ package netlists is
 
 	use type_ports;
 
+	level_separator : constant character := '/';
 
+	function to_prefix (instance : in type_module_instance_name.bounded_string) -- OSC1
+	-- Converts an instance name to a net prefix with a trailing level separator.		
+		return type_net_name.bounded_string;
+	
 	package type_netlist is new ordered_maps (
 		key_type		=> type_net_name.bounded_string,
 		"<"				=> type_net_name."<",
