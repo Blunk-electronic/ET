@@ -11700,69 +11700,30 @@ package body schematic_ops is
 				procedure apply_offsets is
 				-- Applies the given offset to the devices in device_ports_extended.
 					use netlists.type_ports;
-					cursor : netlists.type_ports.cursor := device_ports_extended.first;
+					-- temporarily the ports will be stored here. Once all ports of
+					-- device_ports_extended have been offset, the list
+					-- ports_with_offset overwrites device_ports_extended:
+					ports_with_offset : netlists.type_ports.set;
 					
 					procedure query_ports (cursor : in netlists.type_ports.cursor) is 
 						-- take a copy of the port as it is:
-
-						procedure do_it (port : in out netlists.type_port) is
-						begin
-							null;
-						end do_it;
-						
+						port : netlists.type_port := element (cursor);
 					begin -- query_ports
-						-- apply offset to port
-						apply_offset (device, offset, log_threshold + 1);
+						-- apply offset to device name of port
+						apply_offset (port.device, offset, log_threshold + 1);
 
-
-						
-						-- replace the given port by the modified port:
-						
--- 							--new_item	=> port); -- the modified port
--- 							new_item	=> (
--- 								direction	=> element (cursor).direction,
--- 								device		=> device,
--- 								port		=> element (cursor).port,
--- 								characteristics	=> element (cursor).characteristics,
--- 								terminal	=> element (cursor).terminal)
--- 								);
-					end;
-
-					--port : netlists.type_port;
-					device : type_device_name;
+						-- insert the modified port in the container ports_with_offset
+						netlists.type_ports.insert (
+							container	=> ports_with_offset,
+							new_item	=> port);
+					end; -- query_ports
 					
 				begin -- apply_offsets
-					--iterate (device_ports_extended, query_ports'access);
-					while cursor /= netlists.type_ports.no_element loop
+					iterate (device_ports_extended, query_ports'access);
 
-						--port : netlists.type_port := element (cursor);
-						device : type_device_name := element (cursor).device;
-						
-						netlists.type_ports.delete (
-							container	=> device_ports_extended,
-							position	=> cursor);
-						
--- 						netlists.type_ports.update_element_preserving_key (
--- 							container	=> device_ports_extended,
--- 							position	=> cursor,
--- 							process		=> do_it'access);
-
-						netlists.type_ports.insert (
-							container	=> device_ports_extended,
--- 							position	=> cursor,
--- 							process		=> 'access);
-							new_item	=> (
-								direction	=> element (cursor).direction,
-								device		=> device,
-								port		=> element (cursor).port,
-								characteristics	=> element (cursor).characteristics,
-								terminal	=> element (cursor).terminal)
-								);
-
-						
-						next (cursor);
-					end loop;
-				end;
+					-- overwrite by ports_with_offset
+					device_ports_extended := ports_with_offset;
+				end; -- apply_offsets
 				
 			begin -- query_nets
 				variant_cursor := find (module.variants, variant);
