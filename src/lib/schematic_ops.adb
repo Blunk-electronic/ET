@@ -11654,7 +11654,6 @@ package body schematic_ops is
 		iterate (ports, query_ports'access);
 		return ports_extended;
 	end extend_ports;
-
 	
 	procedure make_netlist (
 	-- Exports the netlist from the given top module and assembly variant.
@@ -11769,19 +11768,28 @@ package body schematic_ops is
 		
 		submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
 		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
--- 
--- 		function Ancestor_Find (Position : Cursor;
---                     Item     : Element_Type)
-		-- 		return Cursor;
 
 		function make_prefix return type_net_name.bounded_string is
+		-- Builds a string like CLK_GENERATOR/FLT1/ from the parent submodule instances.
+		-- Starts at the position of the current tree_cursor and goes up to the first submodule level.
+		-- NOTE: The nets in the top module do not have prefixes.
 			prefix : type_net_name.bounded_string;
 			use numbering.type_modules;
 			cursor : numbering.type_modules.cursor := tree_cursor;
 		begin
-			prefix := to_prefix (element (cursor).instance);
--- 			while ancestor_find /= numbering.type_modules.no_element loop
+			-- The first prefix to PREPEND is the name of the current submodule instance:
+			prefix := netlists.to_prefix (element (cursor).instance);
 
+			-- look for the overlying parent submodule
+			cursor := parent (cursor);
+
+			-- travel upwards toward other overlying submodules. The search ends as
+			-- soon as the top module has been reached.
+			while not is_root (cursor) loop
+				-- prepend instance name of parent submodule
+				prefix := netlists.to_prefix (element (cursor).instance) & prefix;
+				cursor := parent (cursor);
+			end loop;
 				
 			return prefix;
 		end make_prefix;
