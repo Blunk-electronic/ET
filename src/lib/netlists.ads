@@ -45,6 +45,7 @@ with ada.containers;            use ada.containers;
 -- with ada.containers.doubly_linked_lists;
 -- with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
+-- with ada.containers.multiway_trees;
 -- with ada.containers.indefinite_ordered_maps;
 -- with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_sets;
@@ -87,17 +88,30 @@ package netlists is
 
 	function to_prefix (instance : in type_module_instance_name.bounded_string) -- OSC1
 	-- Converts an instance name to a net prefix with a trailing level separator.		
-		return type_net_name.bounded_string;
-	
-	package type_netlist is new ordered_maps (
-		key_type		=> type_net_name.bounded_string,
-		"<"				=> type_net_name."<",
-		element_type	=> type_ports.set);
+		return et_general.type_net_name.bounded_string;
+
+	type type_net is record
+		devices		: type_ports.set;
+		submodules	: et_schematic.type_ports_submodule.set;
+		netchangers	: et_schematic.type_ports_netchanger.set;
+		scope		: et_schematic.type_net_scope;
+	end record;
+
+	type type_net_name is record
+		base_name	: et_general.type_net_name.bounded_string; -- output
+		prefix		: et_general.type_net_name.bounded_string; -- CLK_GENERATOR/FLT1/
+	end record;
 		
+	function "<" (left, right : in type_net_name) return boolean;
+	
+	package type_nets is new ordered_maps (
+		key_type		=> type_net_name, 
+		element_type	=> type_net);
+
+	
 	procedure write_netlist (
 	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).
-	-- Writes the content of the given container netlist in the file.
-		netlist			: in type_netlist.map;
+		nets			: in type_nets.map;
 		module_name		: in type_module_name.bounded_string; -- motor_driver
 		file_name		: in type_file_name.bounded_string; -- netlist.net
 		log_threshold	: in type_log_level);

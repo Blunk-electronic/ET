@@ -100,21 +100,42 @@ package body netlists is
 
 	function to_prefix (instance : in type_module_instance_name.bounded_string) -- OSC1
 	-- Converts an instance name to a net prefix with a trailing level separator.
-		return type_net_name.bounded_string is
+		return et_general.type_net_name.bounded_string is
 	begin
 		return to_net_name (to_string (instance) & level_separator);
 	end;
 
+	function "<" (left, right : in type_net_name) return boolean is
+		result : boolean := false;
+		use et_general.type_net_name;
+	begin
+		if left.prefix < right.prefix then
+			result := true;
+
+		elsif left.prefix = right.prefix then
+
+			if left.base_name < right.base_name then
+				result := true;
+			else
+				result := false;
+			end if;
+
+		else
+			result := false;
+		end if;
+
+		return result;
+	end;
+	
 	
 	procedure write_netlist (
 	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).
-	-- Writes the content of the given container netlist in the file.
-		netlist			: in type_netlist.map;
+		nets			: in type_nets.map;
 		module_name		: in type_module_name.bounded_string; -- motor_driver
 		file_name		: in type_file_name.bounded_string; -- netlist.net
 		log_threshold	: in type_log_level) is		
 
-		use type_netlist;
+		use type_nets;
 		netlist_handle : ada.text_io.file_type;
 
 		procedure write_header is begin
@@ -123,7 +144,7 @@ package body netlists is
 			put_line (netlist_handle, comment_mark & " " & date);
 			put_line (netlist_handle, comment_mark & " module " & enclose_in_quotes (to_string (module_name)));
 			put_line (netlist_handle, comment_mark & " " & row_separator_double);
-			put_line (netlist_handle, comment_mark & " net count total" & count_type'image (length (netlist)));
+-- 			put_line (netlist_handle, comment_mark & " net count total" & count_type'image (length (netlist)));
 			-- CS: statistics about pin count ?
 			
 			put_line (netlist_handle, comment_mark);
@@ -133,36 +154,36 @@ package body netlists is
 			put_line (netlist_handle, comment_mark & " " & row_separator_single);
 		end write_header;
 		
-		procedure write_nets is
-		-- writes the actual nets in the netlist file
-
-			procedure query_ports (port : in type_ports.cursor) is
-				use type_ports;
-			begin
-				put_line (netlist_handle, -- IC1 CE input H5
-					et_libraries.to_string (element (port).device) & latin_1.space &
-					et_libraries.to_string (element (port).port) & latin_1.space &
-					et_libraries.to_string (element (port).direction) & latin_1.space &
-					et_libraries.to_string (element (port).terminal) & latin_1.space);
-
-					-- CS .characteristics
-			end query_ports;
-			
-			procedure query_nets (net : in type_netlist.cursor) is begin
-				new_line (netlist_handle);
-
-				-- write the net name
-				put_line (netlist_handle, to_string (key (net))); -- clock_out
-
-				-- write the device ports
-				iterate (element (net), query_ports'access);
-
-			end query_nets;
-
-			
-		begin -- write_nets
-			iterate (netlist, query_nets'access);
-		end write_nets;
+-- 		procedure write_nets is
+-- 		-- writes the actual nets in the netlist file
+-- 
+-- 			procedure query_ports (port : in type_ports.cursor) is
+-- 				use type_ports;
+-- 			begin
+-- 				put_line (netlist_handle, -- IC1 CE input H5
+-- 					et_libraries.to_string (element (port).device) & latin_1.space &
+-- 					et_libraries.to_string (element (port).port) & latin_1.space &
+-- 					et_libraries.to_string (element (port).direction) & latin_1.space &
+-- 					et_libraries.to_string (element (port).terminal) & latin_1.space);
+-- 
+-- 					-- CS .characteristics
+-- 			end query_ports;
+-- 			
+-- 			procedure query_nets (net : in type_netlist.cursor) is begin
+-- 				new_line (netlist_handle);
+-- 
+-- 				-- write the net name
+-- 				put_line (netlist_handle, to_string (key (net))); -- clock_out
+-- 
+-- 				-- write the device ports
+-- 				iterate (element (net), query_ports'access);
+-- 
+-- 			end query_nets;
+-- 
+-- 			
+-- 		begin -- write_nets
+-- 			iterate (netlist, query_nets'access);
+-- 		end write_nets;
 
 		procedure write_footer is begin
 		-- writes a nice footer in the netlist file
@@ -189,7 +210,7 @@ package body netlists is
 			name => to_string (file_name));
 
 		write_header;
-		write_nets;
+-- 		write_nets;
 		write_footer;
 		
 		close (netlist_handle);

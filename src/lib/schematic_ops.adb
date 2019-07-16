@@ -11666,9 +11666,9 @@ package body schematic_ops is
 
 		use assembly_variants;
 		use netlists;
-		use type_net_name;
+		use et_general.type_net_name;
 
-		netlist : netlists.type_netlist.map;
+		nets : netlists.type_nets.map;
 
 		procedure collect_nets (
 		-- Collects net names of the given module and its variant in container netlist.
@@ -11676,7 +11676,7 @@ package body schematic_ops is
 		-- If offset is zero, we are dealing with the top module.
 			module_cursor	: in type_modules.cursor;
 			variant			: in assembly_variants.type_variant_name.bounded_string;
-			prefix			: in type_net_name.bounded_string; -- DRV3/OSC1/
+			prefix			: in et_general.type_net_name.bounded_string; -- DRV3/OSC1/
 			offset			: in et_libraries.type_device_name_index) is
 
 			use assembly_variants.type_variants;
@@ -11687,12 +11687,12 @@ package body schematic_ops is
 				module		: in et_schematic.type_module) is
 
 				use et_schematic.type_nets;
-				net_cursor_sch : type_nets.cursor := module.nets.first;
+				net_cursor_sch : et_schematic.type_nets.cursor := module.nets.first;
 
 				--net_cursor_netlist : type_netlist.cursor;
 				--inserted : boolean;
 
-				net_name : type_net_name.bounded_string;
+				net_name : et_general.type_net_name.bounded_string;
 				all_ports : et_schematic.type_ports;
 				device_ports_extended : netlists.type_ports.set;
 
@@ -11728,10 +11728,11 @@ package body schematic_ops is
 				variant_cursor := find (module.variants, variant);
 
 				-- loop in nets of given module
-				while net_cursor_sch /= type_nets.no_element loop
+				while net_cursor_sch /= et_schematic.type_nets.no_element loop
 
 					-- prepend the given net prefix
-					net_name := prefix & type_nets.key (net_cursor_sch);
+					--net_name := prefix & et_schematic.type_nets.key (net_cursor_sch);
+					net_name := et_schematic.type_nets.key (net_cursor_sch);
 
 					-- get all device, netchanger and submodule ports of this net
 					all_ports := et_schematic.ports (net_cursor_sch, variant_cursor);
@@ -11743,11 +11744,15 @@ package body schematic_ops is
 					-- to be changed according to the given offset:
 					apply_offsets;
 					
-					-- insert the net with its device ports in the netlist:
-					type_netlist.insert (
-						container	=> netlist,
-						key			=> net_name, -- clock_out
-						new_item	=> device_ports_extended
+					-- insert the net with its ports in the list of nets
+					netlists.type_nets.insert (
+						container	=> nets,
+						key			=> (prefix => prefix, base_name => net_name), -- CLK_GENERATOR/FLT1/ , clock_out
+						new_item	=> (
+								devices		=> device_ports_extended,
+								submodules	=> all_ports.submodules,
+								netchangers	=> all_ports.netchangers,
+								scope		=> element (net_cursor_sch).scope)
 						--position	=> net_cursor_netlist,
 						--inserted	=> inserted
 						);
@@ -11769,11 +11774,11 @@ package body schematic_ops is
 		submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
 		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
 
-		function make_prefix return type_net_name.bounded_string is
+		function make_prefix return et_general.type_net_name.bounded_string is
 		-- Builds a string like CLK_GENERATOR/FLT1/ from the parent submodule instances.
 		-- Starts at the position of the current tree_cursor and goes up to the first submodule level.
 		-- NOTE: The nets in the top module do not have prefixes.
-			prefix : type_net_name.bounded_string;
+			prefix : et_general.type_net_name.bounded_string;
 			use numbering.type_modules;
 			cursor : numbering.type_modules.cursor := tree_cursor;
 		begin
@@ -11952,11 +11957,10 @@ package body schematic_ops is
 
 			-- collect devices of the submodules
 			query_submodules;
-
 			
 			-- write the bom
 			netlists.write_netlist (
-				netlist			=> netlist,			-- the container that holds the netlist
+				nets			=> nets,			-- the container that holds the nets we have got collected
 				module_name		=> module_name,		-- motor_driver
 				file_name		=> netlist_file, 	-- tmp/my_project.net
 				log_threshold	=> log_threshold + 1);
