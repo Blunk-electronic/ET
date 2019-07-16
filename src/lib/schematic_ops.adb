@@ -11132,13 +11132,13 @@ package body schematic_ops is
 
 			-- log original name and name in instanciated submodule
 			log (text => "device name origin " & to_string (device_name) &
-				" -> instance " & to_string (device_name_instance),
+				" -> in submodule instance " & to_string (device_name_instance),
 				level => log_threshold);
 
 			device_name := device_name_instance; -- overwrite orignial name
 		else
 			-- no offset to apply:
-			log (text => "device name " & to_string (device_name),
+			log (text => "device name " & to_string (device_name) & " -> no offset",
 				level => log_threshold);
 		end if;
 	end;
@@ -11709,7 +11709,7 @@ package body schematic_ops is
 						port : netlists.type_port := element (cursor);
 					begin -- query_ports
 						-- apply offset to device name of port
-						apply_offset (port.device, offset, log_threshold + 1);
+						apply_offset (port.device, offset, log_threshold + 2);
 
 						-- insert the modified port in the container ports_with_offset
 						netlists.type_ports.insert (
