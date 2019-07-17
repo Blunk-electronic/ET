@@ -62,7 +62,7 @@ with ada.exceptions;
 with et_string_processing;		use et_string_processing;
 with et_csv;					use et_csv;
 -- with et_pcb_coordinates;
--- with submodules;
+with submodules;
 -- with numbering;
 
 package body netlists is
@@ -130,13 +130,19 @@ package body netlists is
 	
 	procedure write_netlist (
 	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).
-		nets			: in type_nets.map;
+		nets			: in type_modules.tree;
 		module_name		: in type_module_name.bounded_string; -- motor_driver
 		file_name		: in type_file_name.bounded_string; -- netlist.net
 		log_threshold	: in type_log_level) is		
 
-		use type_nets;
+		use type_modules;
 		netlist_handle : ada.text_io.file_type;
+
+		netlist_cursor : netlists.type_modules.cursor := netlists.type_modules.root (nets);
+
+		package stack is new et_general.stack_lifo (
+			item	=> netlists.type_modules.cursor,
+			max 	=> submodules.nesting_depth_max);
 
 		procedure write_header is begin
 		-- writes a nice header in the netlist file
@@ -153,6 +159,44 @@ package body netlists is
 			put_line (netlist_handle, comment_mark & "  device port direction terminal/pin/pad");
 			put_line (netlist_handle, comment_mark & " " & row_separator_single);
 		end write_header;
+
+		procedure write_nets is -- CS for testing only
+
+			procedure query_nets (module_cursor : in type_modules.cursor) is 
+
+				procedure query_ports (net_cursor : in type_nets.cursor) is
+					use type_nets;
+
+					procedure query_ports (port_cursor : in type_ports.cursor) is
+						use type_ports;
+					begin
+						-- write the device ports
+						put_line (netlist_handle, -- IC1 CE input H5
+							et_libraries.to_string (element (port_cursor).device) & latin_1.space &
+							et_libraries.to_string (element (port_cursor).port) & latin_1.space &
+							et_libraries.to_string (element (port_cursor).direction) & latin_1.space &
+							et_libraries.to_string (element (port_cursor).terminal) & latin_1.space);
+							-- CS .characteristics
+					end query_ports;
+					
+				begin -- query_ports
+					-- write the net name
+					new_line (netlist_handle);
+					
+					put_line (netlist_handle, to_string (key (net_cursor).prefix) & 
+						to_string (key (net_cursor).base_name)); -- CLK_GENERATOR/FLT1/ & clock_out
+
+					type_ports.iterate (element (net_cursor).devices, query_ports'access);
+				end query_ports;
+				
+			begin -- query_nets
+				type_nets.iterate (element (module_cursor).nets, query_ports'access);
+			end query_nets;
+			 
+		begin -- write_nets
+			stack.init;
+			iterate (nets, query_nets'access);
+		end write_nets;
 		
 -- 		procedure write_nets is
 -- 		-- writes the actual nets in the netlist file
@@ -210,7 +254,7 @@ package body netlists is
 			name => to_string (file_name));
 
 		write_header;
--- 		write_nets;
+		write_nets;
 		write_footer;
 		
 		close (netlist_handle);

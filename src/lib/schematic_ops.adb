@@ -11668,13 +11668,22 @@ package body schematic_ops is
 		use netlists;
 		use et_general.type_net_name;
 
-		nets : netlists.type_nets.map;
+		-- Since we are dealing with hierarchic designs, a tree of modules with their 
+		-- netlists is required. In the course of this procedure the netlist_tree is built
+		-- and finally passed to netlists.write_netlist for further processing.
+		netlist_tree : netlists.type_modules.tree := netlists.type_modules.empty_tree;
+		netlist_cursor : netlists.type_modules.cursor := netlists.type_modules.root (netlist_tree);
 
+		-- This stack keeps record of the netlist_cursor as we go trough the design structure.
+		package stack_netlist is new et_general.stack_lifo (
+			item	=> netlists.type_modules.cursor,
+			max 	=> submodules.nesting_depth_max);
+		
 		procedure collect_nets (
 		-- Collects net names of the given module and its variant in container netlist.
 		-- Adds to the device index the given offset.
 		-- If offset is zero, we are dealing with the top module.
-			module_cursor	: in type_modules.cursor;
+			module_cursor	: in et_project.type_modules.cursor;
 			variant			: in assembly_variants.type_variant_name.bounded_string;
 			prefix			: in et_general.type_net_name.bounded_string; -- DRV3/OSC1/
 			offset			: in et_libraries.type_device_name_index) is
@@ -11688,9 +11697,6 @@ package body schematic_ops is
 
 				use et_schematic.type_nets;
 				net_cursor_sch : et_schematic.type_nets.cursor := module.nets.first;
-
-				--net_cursor_netlist : type_netlist.cursor;
-				--inserted : boolean;
 
 				net_name : et_general.type_net_name.bounded_string;
 				all_ports : et_schematic.type_ports;
@@ -11723,6 +11729,22 @@ package body schematic_ops is
 					-- overwrite by ports_with_offset
 					device_ports_extended := ports_with_offset;
 				end; -- apply_offsets
+
+				procedure insert_net (module : in out netlists.type_module) is begin
+					-- insert the net with its ports in the netlist of the submodule
+					netlists.type_nets.insert (
+						container	=> module.nets,
+						key			=> (prefix => prefix, base_name => net_name), -- CLK_GENERATOR/FLT1/ , clock_out
+						new_item	=> (
+								devices		=> device_ports_extended,
+								submodules	=> all_ports.submodules,
+								netchangers	=> all_ports.netchangers,
+								scope		=> element (net_cursor_sch).scope)
+						--position	=> net_cursor_netlist,
+						--inserted	=> inserted
+						);
+						-- CS: constraint_error arises here if net already in list. should never happen.
+				end insert_net;
 				
 			begin -- query_nets
 				variant_cursor := find (module.variants, variant);
@@ -11731,7 +11753,6 @@ package body schematic_ops is
 				while net_cursor_sch /= et_schematic.type_nets.no_element loop
 
 					-- prepend the given net prefix
-					--net_name := prefix & et_schematic.type_nets.key (net_cursor_sch);
 					net_name := et_schematic.type_nets.key (net_cursor_sch);
 
 					-- get all device, netchanger and submodule ports of this net
@@ -11745,19 +11766,10 @@ package body schematic_ops is
 					apply_offsets;
 					
 					-- insert the net with its ports in the list of nets
-					netlists.type_nets.insert (
-						container	=> nets,
-						key			=> (prefix => prefix, base_name => net_name), -- CLK_GENERATOR/FLT1/ , clock_out
-						new_item	=> (
-								devices		=> device_ports_extended,
-								submodules	=> all_ports.submodules,
-								netchangers	=> all_ports.netchangers,
-								scope		=> element (net_cursor_sch).scope)
-						--position	=> net_cursor_netlist,
-						--inserted	=> inserted
-						);
-
-					-- CS constraint_error arises here if net_name already used
+					netlists.type_modules.update_element (
+						container	=> netlist_tree,
+						position	=> netlist_cursor,
+						process		=> insert_net'access);
 					
 					next (net_cursor_sch);
 				end loop;
@@ -11773,7 +11785,7 @@ package body schematic_ops is
 		
 		submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
 		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
-
+		
 		function make_prefix return et_general.type_net_name.bounded_string is
 		-- Builds a string like CLK_GENERATOR/FLT1/ from the parent submodule instances.
 		-- Starts at the position of the current tree_cursor and goes up to the first submodule level.
@@ -11822,7 +11834,36 @@ package body schematic_ops is
 
 			use assembly_variants.type_submodules;
 			alt_submod : assembly_variants.type_submodules.cursor;
-		begin
+
+			procedure insert_submodule is begin
+			-- Insert a submodule in netlist_tree. Whever procedure query_submodules is
+			-- called, cursor netlist_cursor is pointing at the latest parent module. The
+			-- submodules detected here must be inserted as children of that parent module.
+
+				-- backup netlist_cursor
+				stack_netlist.push (netlist_cursor);
+				
+				netlists.type_modules.insert_child (
+					container	=> netlist_tree,
+					parent		=> netlist_cursor,
+					before		=> netlists.type_modules.no_element,
+					position	=> netlist_cursor, -- points afterwards to the child that has just been inserted
+					new_item	=> (name => module_instance, others => <>)
+					);
+				
+				-- Collect nets from current module. inserts the nets in
+				-- the submodule indicated by netlist_cursor:
+				collect_nets (
+					module_cursor	=> locate_module (module_name),
+					variant			=> variant,
+					prefix			=> make_prefix,
+					offset			=> offset);
+
+				-- restore netlist_cursor
+				netlist_cursor := stack_netlist.pop;
+			end insert_submodule;
+			
+		begin -- query_submodules
 			log_indentation_up;
 
 			-- start with the first submodule on the current hierarchy level
@@ -11872,13 +11913,8 @@ package body schematic_ops is
 
 				end if;
 
-				-- collect devices from current module
-				collect_nets (
-					module_cursor	=> locate_module (module_name),
-					variant			=> variant,
-					prefix			=> make_prefix,
-					offset			=> offset);
-
+				-- Insert submodule in netlist_tree.
+				insert_submodule;
 				
 				if first_child (tree_cursor) = numbering.type_modules.no_element then 
 				-- No submodules on the current level. means we can't go deeper:
@@ -11947,8 +11983,22 @@ package body schematic_ops is
 			
 			stack_level.init;
 			stack_variant.init;
+			stack_netlist.init;
 
-			-- collect nets of the given top module. the top module has no device index offset
+			-- Insert the top module in the netlist_tree. It is the only node on this level.
+			-- Submodules will be inserted as children of the top module (where netlist_cursor) 
+			-- points at AFTER this statement:
+			netlists.type_modules.insert_child (
+				container	=> netlist_tree,
+				parent		=> netlists.type_modules.root (netlist_tree),
+				before		=> netlists.type_modules.no_element,
+				position	=> netlist_cursor,
+				new_item	=> (name => to_instance_name (""), others => <>)
+				);
+			-- netlist_cursor now points at the top module in netlist_tree.
+			
+			-- Collect nets of the given top module. the top module has no device index offset.
+			-- The nets will be inserted where netlist_cursor points at.
 			collect_nets (
 				module_cursor	=> module_cursor,
 				variant			=> variant_top,
@@ -11960,7 +12010,7 @@ package body schematic_ops is
 			
 			-- write the bom
 			netlists.write_netlist (
-				nets			=> nets,			-- the container that holds the nets we have got collected
+				nets			=> netlist_tree,	-- the container that holds the nets we have got collected
 				module_name		=> module_name,		-- motor_driver
 				file_name		=> netlist_file, 	-- tmp/my_project.net
 				log_threshold	=> log_threshold + 1);

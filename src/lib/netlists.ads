@@ -45,7 +45,7 @@ with ada.containers;            use ada.containers;
 -- with ada.containers.doubly_linked_lists;
 -- with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
--- with ada.containers.multiway_trees;
+with ada.containers.multiway_trees;
 -- with ada.containers.indefinite_ordered_maps;
 -- with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_sets;
@@ -96,7 +96,7 @@ package netlists is
 		netchangers	: et_schematic.type_ports_netchanger.set;
 		scope		: et_schematic.type_net_scope;
 	end record;
-
+	
 	type type_net_name is record
 		base_name	: et_general.type_net_name.bounded_string; -- output
 		prefix		: et_general.type_net_name.bounded_string; -- CLK_GENERATOR/FLT1/
@@ -108,10 +108,18 @@ package netlists is
 		key_type		=> type_net_name, 
 		element_type	=> type_net);
 
+
+	type type_module is record
+		name		: type_module_instance_name.bounded_string; -- OSC1
+		nets		: type_nets.map;
+	end record;
+	
+	package type_modules is new ada.containers.multiway_trees (type_module);
+	
 	
 	procedure write_netlist (
 	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).
-		nets			: in type_nets.map;
+		nets			: in type_modules.tree;
 		module_name		: in type_module_name.bounded_string; -- motor_driver
 		file_name		: in type_file_name.bounded_string; -- netlist.net
 		log_threshold	: in type_log_level);
