@@ -53,7 +53,7 @@ with ada.containers.indefinite_ordered_sets;
 with et_general;				use et_general;
 with et_schematic;
 with et_libraries;
-
+with submodules;
 with et_string_processing;		use et_string_processing;
 
 
@@ -115,7 +115,34 @@ package netlists is
 	end record;
 	
 	package type_modules is new ada.containers.multiway_trees (type_module);
-	
+
+	type type_netchanger_count is new natural;
+	type type_submodule_count is new natural;
+
+	type type_netchanger_ports is record
+		masters	: type_netchanger_count := 0;
+		slaves	: type_netchanger_count := 0;
+		total	: type_netchanger_count := 0;
+	end record;
+		
+	type type_port_count is record
+		netchangers	: type_netchanger_ports;
+		submodules	: type_submodule_count := 0;
+	end record;
+
+	function port_count (net_cursor : in type_nets.cursor)
+		return type_port_count;
+	-- Returns the number of netchanger and submodule ports in the given net.
+
+	function net_on_netchanger (
+	-- Returns a cursor to the net connected with the given netchanger.
+	-- If the given port is as master, then the net connected with the
+	-- slave is returned (and vice versa).
+	-- If the netchanger is not connected then the return is no_element.
+		module_cursor	: in type_modules.cursor;
+		index			: in submodules.type_netchanger_id;
+		port			: in submodules.type_netchanger_port_name)
+		return type_nets.cursor;
 	
 	procedure write_netlist (
 	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).

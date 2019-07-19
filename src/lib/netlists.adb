@@ -126,7 +126,110 @@ package body netlists is
 
 		return result;
 	end;
-	
+
+	function port_count (net_cursor : in type_nets.cursor)
+		return type_port_count is
+	-- Returns the number of netchanger and submodule ports in the given net.
+
+		port_count : type_port_count; -- to be returned
+
+		procedure query_ports (
+			net_name	: in type_net_name;
+			net			: in type_net) is
+			use et_schematic.type_ports_submodule;
+			use et_schematic.type_ports_netchanger;
+
+			procedure count_netchanger_ports (cursor : in et_schematic.type_ports_netchanger.cursor) is
+				use submodules;
+			begin
+				case element (cursor).port is
+					when MASTER => port_count.netchangers.masters := port_count.netchangers.masters + 1;
+					when SLAVE => port_count.netchangers.slaves := port_count.netchangers.slaves + 1;
+				end case;
+			end count_netchanger_ports;
+			
+		begin -- query_ports
+			-- The number of submodule ports is just the length of the 
+			-- list of submodule ports:
+			port_count.submodules := type_submodule_count (length (net.submodules));
+
+			-- The number of master or slave ports of netchangers
+			-- requires iterating and dividing them:
+			iterate (net.netchangers, count_netchanger_ports'access);
+
+			port_count.netchangers.total := port_count.netchangers.masters +
+											port_count.netchangers.slaves;
+			
+		end query_ports;
+			
+	begin -- port_count
+		type_nets.query_element (
+			position	=> net_cursor,
+			process		=> query_ports'access);
+		
+		return port_count;
+	end port_count;
+
+	function net_on_netchanger (
+	-- Returns a cursor to the net connected with the given netchanger.
+	-- If the given port is as master, then the net connected with the
+	-- slave is returned (and vice versa).
+	-- If the netchanger is not connected then the return is no_element.
+		module_cursor	: in type_modules.cursor;
+		index			: in submodules.type_netchanger_id;
+		port			: in submodules.type_netchanger_port_name)
+		return type_nets.cursor is
+
+		net_cursor : type_nets.cursor;
+
+		procedure query_nets (module : in type_module) is
+			use type_nets;
+
+			ports : type_port_count;
+			net_cursor : type_nets.cursor := module.nets.first;
+			
+			procedure query_netchangers (
+				net_name	: in type_net_name;
+				net			: in type_net) is
+			begin
+				null;
+			end query_netchangers;
+
+			use submodules;
+			
+		begin -- query_nets
+			while net_cursor /= type_nets.no_element loop
+				ports := port_count (net_cursor);
+				
+				case port is
+					when MASTER =>
+						if ports.netchangers.slaves > 0 then
+					
+							type_nets.query_element (
+								position	=> net_cursor,
+								process		=> query_netchangers'access);
+
+						end if;
+
+					when SLAVE =>
+						if ports.netchangers.masters > 0 then
+					
+							type_nets.query_element (
+								position	=> net_cursor,
+								process		=> query_netchangers'access);
+
+						end if;
+				end case;
+						
+				next (net_cursor);
+			end loop;
+		end query_nets;
+		
+	begin -- net_on_netchanger
+		type_modules.query_element (module_cursor, query_nets'access);
+		return net_cursor;
+	end net_on_netchanger;
+		
 	
 	procedure write_netlist (
 	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).
