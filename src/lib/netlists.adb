@@ -171,7 +171,8 @@ package body netlists is
 	end port_count;
 
 	function net_on_netchanger (
-	-- Returns a cursor to the net connected with the given netchanger.
+	-- Returns a cursor to the net connected with the given netchanger
+	-- port opposide to the given port.
 	-- If the given port is as master, then the net connected with the
 	-- slave is returned (and vice versa).
 	-- If the netchanger is not connected then the return is no_element.
@@ -187,12 +188,27 @@ package body netlists is
 
 			ports : type_port_count;
 			net_cursor : type_nets.cursor := module.nets.first;
+
+			use et_schematic.type_ports_netchanger;
+			netchanger_cursor : et_schematic.type_ports_netchanger.cursor;
 			
 			procedure query_netchangers (
+			-- Search the net for a netchanger with given index and port
+			-- opposide the given port. If netchanger found then netchanger_cursor
+			-- points to an element (means it points no longer to no_element).
 				net_name	: in type_net_name;
 				net			: in type_net) is
+				use submodules;
 			begin
-				null;
+				netchanger_cursor := find 
+					(
+					container	=> net.netchangers,
+					item		=> 
+							(
+							index	=> index, 
+							port	=> opposide_port (port)
+							)
+					);
 			end query_netchangers;
 
 			use submodules;
@@ -200,27 +216,22 @@ package body netlists is
 		begin -- query_nets
 			while net_cursor /= type_nets.no_element loop
 				ports := port_count (net_cursor);
+
+				-- search in the net if it contains netchangers:
+				if ports.netchangers.total > 0 then
+					
+					type_nets.query_element (
+						position	=> net_cursor,
+						process		=> query_netchangers'access);
+
+				end if;
+
+				-- The search ends once a net containing the opposide port
+				-- has been found:
+				if netchanger_cursor /= et_schematic.type_ports_netchanger.no_element then
+					exit;
+				end if;
 				
-				case port is
-					when MASTER =>
-						if ports.netchangers.slaves > 0 then
-					
-							type_nets.query_element (
-								position	=> net_cursor,
-								process		=> query_netchangers'access);
-
-						end if;
-
-					when SLAVE =>
-						if ports.netchangers.masters > 0 then
-					
-							type_nets.query_element (
-								position	=> net_cursor,
-								process		=> query_netchangers'access);
-
-						end if;
-				end case;
-						
 				next (net_cursor);
 			end loop;
 		end query_nets;

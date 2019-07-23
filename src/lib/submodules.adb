@@ -162,6 +162,13 @@ package body submodules is
 		return type_netchanger_id'image (id);
 	end;
 
+	function opposide_port (port : in type_netchanger_port_name) return type_netchanger_port_name is begin
+		case port is
+			when MASTER => return SLAVE;
+			when SLAVE  => return MASTER;
+		end case;
+	end;
+	
 	function to_port_name (name : in string) return type_netchanger_port_name is begin
 		return type_netchanger_port_name'value (name);
 	end;

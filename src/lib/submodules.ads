@@ -132,6 +132,8 @@ package submodules is
 	
 	type type_netchanger_port_name is (MASTER, SLAVE);
 
+	function opposide_port (port : in type_netchanger_port_name) return type_netchanger_port_name;
+	
 	function to_port_name (name : in string) return type_netchanger_port_name;
 	function to_string (name : in type_netchanger_port_name) return string;	
 	

@@ -135,7 +135,8 @@ package netlists is
 	-- Returns the number of netchanger and submodule ports in the given net.
 
 	function net_on_netchanger (
-	-- Returns a cursor to the net connected with the given netchanger.
+	-- Returns a cursor to the net connected with the given netchanger
+	-- port opposide to the given port.
 	-- If the given port is as master, then the net connected with the
 	-- slave is returned (and vice versa).
 	-- If the netchanger is not connected then the return is no_element.
