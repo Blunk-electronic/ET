@@ -173,15 +173,14 @@ package body netlists is
 	function net_on_netchanger (
 	-- Returns a cursor to the net connected with the given netchanger
 	-- port opposide to the given port.
-	-- If the given port is as master, then the net connected with the
+	-- If the given port is a master, then the net connected with the
 	-- slave is returned (and vice versa).
 	-- If the netchanger is not connected then the return is no_element.
 		module_cursor	: in type_modules.cursor;
-		index			: in submodules.type_netchanger_id;
-		port			: in submodules.type_netchanger_port_name)
+		port			: in et_schematic.type_port_netchanger)
 		return type_nets.cursor is
 
-		net_cursor : type_nets.cursor;
+		net_cursor : type_nets.cursor; -- to be returned
 
 		procedure query_nets (module : in type_module) is
 			use type_nets;
@@ -205,10 +204,11 @@ package body netlists is
 					container	=> net.netchangers,
 					item		=> 
 							(
-							index	=> index, 
-							port	=> opposide_port (port)
+							index	=> port.index, 
+							port	=> opposide_port (port.port)
 							)
 					);
+					-- the given port is a composite of index and port name (master/slave)
 			end query_netchangers;
 
 			use submodules;
@@ -240,8 +240,65 @@ package body netlists is
 		type_modules.query_element (module_cursor, query_nets'access);
 		return net_cursor;
 	end net_on_netchanger;
+
+	function net_in_submodule (
+	-- Returns a cursor to the submodule net connected with the given
+	-- submodule port.
+	-- If the port is not connected inside the submodule then the return is no_element.
+		module_cursor	: in type_modules.cursor;
+		port			: in et_schematic.type_port_submodule)
+		return type_nets.cursor is
+
+		use type_modules;
+		net_cursor : type_nets.cursor; -- to be returned
+
+		procedure query_submodules (submodule_cursor : in type_modules.cursor) is
+			use et_general.type_module_instance_name;
+
+			procedure query_nets (module : in type_module) is
+			-- Search for the net specified by port.port_name. The search ends
+			-- once the net has been found. The search is conducted by comparing
+			-- with the base names of the nets in the module. The prefix does not matter.
+			-- See specs of type_net_name. The base name is something like "output".
+			-- The prefix is something like "CLK_GENERATOR/FLT1/". 
+			-- But as said above the prefix does not matter here.
+				use type_nets;
+				use et_general.type_net_name;
+			begin
+				-- iterate the nets of the module
+				net_cursor := module.nets.first;
+
+				while net_cursor /= type_nets.no_element loop
+
+					-- test against the base name:
+					if key (net_cursor).base_name = port.port_name then
+						exit; -- cancel search with the current net_cursor
+					end if;
+
+					next (net_cursor);
+				end loop;
+
+				-- If no net found, net_cursor points to no_element.
+			end query_nets;
+			
+		begin -- query_submodules
+			if element (submodule_cursor).name = port.module_name then -- submodule found
+
+				-- search in submodule for the net specified by port.port_name:
+				query_element (submodule_cursor, query_nets'access);
+			end if;
+		end query_submodules;
 		
-	
+	begin -- net_in_submodule
+		-- Search among the submodules (one level deeper) for the submodule specified
+		-- by port.module_name:
+		iterate_children (parent => module_cursor, process => query_submodules'access);
+		-- CS: the iteration does not stop after finding the submodule. It is slightly 
+		-- a waste of time to query remaining submodules.
+		
+		return net_cursor;
+	end net_in_submodule;
+								  
 	procedure write_netlist (
 	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).
 		nets			: in type_modules.tree;

@@ -108,7 +108,7 @@ package netlists is
 		key_type		=> type_net_name, 
 		element_type	=> type_net);
 
-
+	-- In the tree of modules, each module has a name and a list of nets:
 	type type_module is record
 		name		: type_module_instance_name.bounded_string; -- OSC1
 		nets		: type_nets.map;
@@ -137,12 +137,19 @@ package netlists is
 	function net_on_netchanger (
 	-- Returns a cursor to the net connected with the given netchanger
 	-- port opposide to the given port.
-	-- If the given port is as master, then the net connected with the
+	-- If the given port is a master, then the net connected with the
 	-- slave is returned (and vice versa).
 	-- If the netchanger is not connected then the return is no_element.
 		module_cursor	: in type_modules.cursor;
-		index			: in submodules.type_netchanger_id;
-		port			: in submodules.type_netchanger_port_name)
+		port			: in et_schematic.type_port_netchanger)
+		return type_nets.cursor;
+
+	function net_in_submodule (
+	-- Returns a cursor to the submodule net connected with the given
+	-- submodule port.
+	-- If the port is not connected inside the submodule then the return is no_element.
+		module_cursor	: in type_modules.cursor;
+		port			: in et_schematic.type_port_submodule)
 		return type_nets.cursor;
 	
 	procedure write_netlist (
