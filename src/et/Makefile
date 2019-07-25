@@ -3,6 +3,7 @@ TARGET = et
 VPATH = include
 
 OBJS = $(TARGET).o \
+	board_ops.o \
 	netlists.o \
 	material.o \
 	numbering.o \
