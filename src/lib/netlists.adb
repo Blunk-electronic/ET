@@ -332,7 +332,7 @@ package body netlists is
 		end write_header;
 
 		procedure write_nets is -- CS for testing only
-
+			
 			procedure query_nets (module_cursor : in type_modules.cursor) is 
 
 				procedure query_ports (net_cursor : in type_nets.cursor) is

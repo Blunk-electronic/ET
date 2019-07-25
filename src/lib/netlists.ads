@@ -90,7 +90,7 @@ package netlists is
 	-- Converts an instance name to a net prefix with a trailing level separator.		
 		return et_general.type_net_name.bounded_string;
 
-	type type_net is record
+	type type_net is tagged record
 		devices		: type_ports.set;
 		submodules	: et_schematic.type_ports_submodule.set;
 		netchangers	: et_schematic.type_ports_netchanger.set;
@@ -151,6 +151,22 @@ package netlists is
 		module_cursor	: in type_modules.cursor;
 		port			: in et_schematic.type_port_submodule)
 		return type_nets.cursor;
+
+	-- The final netlist is a tree that reflects primary nets with their subordinated
+	-- secondary nets. A primary net enforces its name on all subordinated secondary nets.
+	-- Primary nets are those which fulfil ALL follwing criteria:
+	--  1. have no netchanger slave ports. Reason: Nets with slave ports always inherit the 
+	--     name of the net on the master port. 
+	--  2. are in a submodule and are not connected with a net in the parent module.
+	--     Reason: Nets connected with a parent module always inherit the name of the 
+	--     superordinated net in the parent module.
+	-- If a net does not fulfil any of those criteria it is a secondary net.
+	type type_netlist_net is new type_net with record
+		name	: type_net_name; -- base_name and prefix
+	end record;
+
+	package type_netlist is new ada.containers.multiway_trees (type_netlist_net);
+
 	
 	procedure write_netlist (
 	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).

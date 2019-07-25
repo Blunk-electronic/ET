@@ -11668,8 +11668,8 @@ package body schematic_ops is
 		use netlists;
 		use et_general.type_net_name;
 
-		-- Since we are dealing with hierarchic designs, a tree of modules with their 
-		-- netlists is required. In the course of this procedure the netlist_tree is built
+		-- Since we are dealing with hierarchic designs, a tree of modules (each of them having its
+		-- own netlist) is required. In the course of this procedure the netlist_tree is built
 		-- and finally passed to netlists.write_netlist for further processing.
 		netlist_tree : netlists.type_modules.tree := netlists.type_modules.empty_tree;
 		netlist_cursor : netlists.type_modules.cursor := netlists.type_modules.root (netlist_tree);
