@@ -62,7 +62,7 @@ with et_string_processing;		use et_string_processing;
 package material is
 
 
-	-- The part code is THE key into the ERP system of the user. It can be a crytic SAP number
+	-- The part code is THE key into the ERP system of the user. It can be a cryptic SAP number
 	-- or something human readable like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5".
 	-- The keywords for the latter can be specified via the conventions file. See package "convention".
 	partcode_characters : character_set := to_set

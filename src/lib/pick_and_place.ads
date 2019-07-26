@@ -55,7 +55,7 @@ with et_libraries;
 -- with assembly_variants;
 with et_string_processing;		use et_string_processing;
 -- with et_pcb;
--- with et_pcb_coordinates;
+with et_pcb_coordinates;		use et_pcb_coordinates;
 -- with submodules;
 -- with numbering;
 
@@ -71,6 +71,30 @@ package pick_and_place is
 	function to_string (name : in type_file_name.bounded_string) return string;
 	function to_file_name (name : in string) return type_file_name.bounded_string;
 
+	type type_device is record
+		position : et_pcb_coordinates.type_package_position; -- x/y, rotation and face
+		-- CS value and partcode ?
+	end record;
+
+	package type_devices is new ordered_maps (
+		key_type		=> et_libraries.type_device_name, -- IC4
+		"<"				=> et_libraries."<",
+		element_type	=> type_device);
+
+	type type_pnp_format is (
+		NATIVE,
+		EAGLE,
+		KICAD
+		-- CS others ?
+		);		
+	
+	procedure write_pnp (
+	-- Creates the pick & place file (which inevitably and intentionally overwrites the previous file).
+	-- Writes the content of the given container pnp in the file.
+		pnp				: in type_devices.map;
+		file_name		: in type_file_name.bounded_string;
+		format			: in type_pnp_format;
+		log_threshold	: in type_log_level);
 
 	
 end pick_and_place;
