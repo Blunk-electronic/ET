@@ -61,7 +61,9 @@ with et_pcb;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_project;				use et_project;
 with schematic_ops;				use schematic_ops;
--- with submodules;
+with assembly_variants;
+with pick_and_place;
+--with submodules;
 -- with numbering;
 -- with conventions;
 -- with material;
@@ -266,6 +268,42 @@ package body board_ops is
 
 	end flip_device;
 
+	procedure make_pick_and_place (
+	-- Exports a pick & place file from the given top module and assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		variant_top		: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		pnp_file		: in pick_and_place.type_file_name.bounded_string; -- CAM/motor_driver_bom.pnp
+		log_threshold	: in type_log_level) is
+		use pick_and_place;
+		use assembly_variants;
+	begin
+		-- The variant name is optional. If not provided, the default variant will be exported.
+		if assembly_variants.is_default (variant_top) then
+			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+				" default variant" &
+				" exporting pick & place data to file " & to_string (pnp_file),
+				level => log_threshold);
+		else
+			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+				" variant " & enclose_in_quotes (to_variant (variant_top)) &
+				" exporting pick & place data to file " & to_string (pnp_file),
+				level => log_threshold);
+		end if;
+		
+	end make_pick_and_place;
+
+	
+	function terminal_position (
+	-- Returns the coordinates of a terminal.
+		module_cursor	: in et_project.type_modules.cursor;
+		device_cursor	: in et_schematic.type_devices.cursor; -- IC45
+		terminal_cursor	: in et_pcb.type_terminals.cursor) -- H7, 14
+		return type_terminal_position is
+		use et_pcb;
+		pos : type_terminal_position (SMT); -- to be returned
+	begin
+		return pos;
+	end terminal_position;
 	
 end board_ops;
 	

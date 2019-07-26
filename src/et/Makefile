@@ -4,6 +4,7 @@ VPATH = include
 
 OBJS = $(TARGET).o \
 	board_ops.o \
+	pick_and_place.o \
 	netlists.o \
 	material.o \
 	numbering.o \

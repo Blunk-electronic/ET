@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                           BOARD OPERATIONS                               --
+--                            PICK AND PLACE                                --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 --         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
@@ -36,65 +36,47 @@
 --
 --   ToDo: 
 
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
+
 with ada.text_io;				use ada.text_io;
-with ada.characters.latin_1;
+with ada.strings; 				use ada.strings;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
+with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
+with ada.directories;
+with ada.exceptions;
 
-with et_general;				use et_general;
-with et_libraries;				use et_libraries;
-with et_string_processing;		use et_string_processing;
-with et_project;				use et_project;
-with schematic_ops;				use schematic_ops;
-with et_pcb;
-with et_pcb_coordinates;		use et_pcb_coordinates;
--- with submodules;
+-- with et_general;				use et_general;
+-- 
+-- with et_coordinates;
+-- with et_libraries;
 -- with assembly_variants;
+with et_string_processing;		use et_string_processing;
+with et_csv;					use et_csv;
+-- with et_pcb_coordinates;
+-- with submodules;
 -- with numbering;
--- with material;
--- with netlists;
 
-package board_ops is
-
-	procedure move_device (
-	-- Moves a device in the board layout in x/y direction.
-	-- Leaves rotation and face (top/bottom) as it is.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC45
-		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in et_pcb_coordinates.type_point_2d; -- x/y
-		log_threshold	: in type_log_level);
-
-	procedure rotate_device (
-	-- Rotates a device in the board layout.
-	-- Leaves x/y and face (top/bottom) as it is.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC45
-		coordinates		: in type_coordinates; -- relative/absolute		
-		rotation		: in et_pcb_coordinates.type_angle; -- 90
-		log_threshold	: in type_log_level);
+package body pick_and_place is
 	
-	procedure flip_device (
-	-- Flips a device in the board layout from top to bottom or vice versa.
-	-- Leaves x/y and rotation as it is.
-		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC45
-		face			: in type_face; -- top/bottom
-		log_threshold	: in type_log_level);
-
-	-- For laying out traces we need a type that provides for a terminal information about
-	-- x/y/rotation/technology and optionally the face.
-	type type_terminal_position (technology	: et_pcb.type_assembly_technology) is new type_point_2d_with_angle with record
-		face : type_face;
-	end record;
+	function to_string (name : in type_file_name.bounded_string) return string is begin
+		return type_file_name.to_string (name);
+	end;
 	
-end board_ops;
+	function to_file_name (name : in string) return type_file_name.bounded_string is begin
+		return type_file_name.to_bounded_string (name);
+	end;
+
+	
+end pick_and_place;
 
 -- Soli Deo Gloria
 
