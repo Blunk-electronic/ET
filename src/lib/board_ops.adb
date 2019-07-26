@@ -56,7 +56,7 @@ with et_general;				use et_general;
 -- with et_coordinates;
 with et_string_processing;		use et_string_processing;
 -- with et_libraries;				use et_libraries;
--- with et_schematic;				use et_schematic;
+with et_schematic;				use et_schematic;
 with et_pcb;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_project;				use et_project;
@@ -71,17 +71,200 @@ with schematic_ops;				use schematic_ops;
 package body board_ops is
 
 	procedure move_device (
-	-- Moves a device in the board layout.
+	-- Moves a device in the board layout in x/y direction.
+	-- Leaves rotation and face (top/bottom) as it is.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in et_pcb_coordinates.type_point_2d; -- x/y
 		log_threshold	: in type_log_level) is
 
+		use et_project.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
-	begin
-		null;
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+
+			procedure set_position (
+				device_name	: in type_device_name;
+				device		: in out et_schematic.type_device) is
+			begin
+				case coordinates is
+					when ABSOLUTE =>
+						set_xy (point => device.position, position => point); -- preserve angle and face
+
+					when RELATIVE =>
+						move_point (point => device.position, offset => point); -- preserve angle and face
+						
+				end case;
+			end;
+			
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+
+				device_cursor := find (module.devices, device_name); -- the device should be there
+
+				-- set new position
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor,
+					process		=> set_position'access);
+
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- move_device
+		case coordinates is
+			when ABSOLUTE =>
+				log (text => "module " & to_string (module_name) &
+					" moving " & to_string (device_name) &
+					" to" & to_string (point), level => log_threshold);
+
+			when RELATIVE =>
+				log (text => "module " & to_string (module_name) &
+					" moving " & to_string (device_name) &
+					" by" & to_string (point), level => log_threshold);
+		end case;
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
 	end move_device;
+
+	procedure rotate_device (
+	-- Rotates a device in the board layout.
+	-- Leaves x/y and face (top/bottom) as it is.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		coordinates		: in type_coordinates; -- relative/absolute		
+		rotation		: in et_pcb_coordinates.type_angle; -- 90
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+
+			procedure set_rotation (
+				device_name	: in type_device_name;
+				device		: in out et_schematic.type_device) is
+			begin
+				case coordinates is
+					when ABSOLUTE =>
+						set_angle (point => device.position, value => rotation); -- preserve x/y and face
+
+					when RELATIVE =>
+						rotate (point => device.position, rotation => rotation); -- preserve x/y and face
+				end case;
+			end;
+			
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+
+				device_cursor := find (module.devices, device_name); -- the device should be there
+
+				-- set new position
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor,
+					process		=> set_rotation'access);
+
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- rotate_device
+		case coordinates is
+			when ABSOLUTE =>
+				log (text => "module " & to_string (module_name) &
+					" rotating " & to_string (device_name) &
+					" to" & to_string (rotation), level => log_threshold);
+
+			when RELATIVE =>
+				log (text => "module " & to_string (module_name) &
+					" rotating " & to_string (device_name) &
+					" by" & to_string (rotation), level => log_threshold);
+		end case;
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+	end rotate_device;
+
+	procedure flip_device (
+	-- Flips a device in the board layout from top to bottom or vice versa.
+	-- Leaves x/y and rotation as it is.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		face			: in type_face; -- top/bottom
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+
+			procedure flip (
+				device_name	: in type_device_name;
+				device		: in out et_schematic.type_device) is
+			begin
+				set_face (position => device.position, face => face); -- preserve x/y and rotation
+			end;
+			
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+
+				device_cursor := find (module.devices, device_name); -- the device should be there
+
+				-- set new position
+				update_element (
+					container	=> module.devices,
+					position	=> device_cursor,
+					process		=> flip'access);
+
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+		
+	begin -- flip_device
+		log (text => "module " & to_string (module_name) &
+			" flipping " & to_string (device_name) &
+			" to" & to_string (face), level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+	end flip_device;
 
 	
 end board_ops;

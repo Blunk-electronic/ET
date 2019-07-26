@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                     SYSTEM ET SCHEMATIC OPERATIONS                       --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                                 ET                                       --
+--                         SCHEMATIC OPERATIONS                             --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -61,6 +61,12 @@ with netlists;
 
 package schematic_ops is
 
+	procedure device_not_found (name : in type_device_name);
+	procedure netchanger_not_found (index : in submodules.type_netchanger_id);
+	procedure submodule_not_found (name : in et_general.type_module_instance_name.bounded_string);	
+	procedure net_not_found (name : in et_general.type_net_name.bounded_string);
+	
+	
 	procedure delete_device (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45

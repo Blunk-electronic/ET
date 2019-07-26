@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                          SYSTEM ET SCRIPTING                             --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                                 ET                                       --
+--                             SCRIPTING                                    --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -165,14 +165,14 @@ package scripting is
 
 	type type_noun_board is (
 		DEVICE,
-		DEVICE_NAME,
-		DEVICE_PARTCODE,
-		DEVICE_PURPOSE,
-		DEVICE_VALUE,
+		NAME,
 		NET,
+		PARTCODE,
+		PURPOSE,
 		TEXT,
 		TEXT_SIZE,
 		TEXT_LINE_WIDTH,
+		VALUE,
 		VIA,
 		VIA_DRILL
 		);

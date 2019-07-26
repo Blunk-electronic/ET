@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                         SYSTEM ET SCRIPTING                              --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                                 ET                                       --
+--                             SCRIPTING                                    --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -52,15 +52,17 @@ with et_general;				use et_general;
 with et_string_processing;
 with et_project;
 
-with et_coordinates;			use et_coordinates;
+with et_coordinates;
+with et_pcb_coordinates;
 with et_libraries;				use et_libraries;
 with et_schematic;
 with schematic_ops;
+with board_ops;
+
 with submodules;
 with assembly_variants;
 with material;
 with netlists;
--- with board_ops;
 
 
 package body scripting is
@@ -190,6 +192,7 @@ package body scripting is
 		procedure schematic_cmd (verb : in type_verb_schematic; noun : in type_noun_schematic) is
 			use et_project;
 			use schematic_ops;
+			use et_coordinates;
 		-- CS: test field count for all commands
 		begin
 			case verb is
@@ -1512,8 +1515,84 @@ package body scripting is
 		end schematic_cmd;
 
 		procedure board_cmd (verb : in type_verb_board; noun : in type_noun_board) is
+			use et_pcb_coordinates;
 		begin
-			null; -- CS
+			case verb is
+				when ROTATE =>
+					case noun is
+						when DEVICE =>
+							case fields is
+								when 7 =>
+									board_ops.rotate_device (
+										module_name 	=> module,
+										device_name		=> to_device_name (f (5)), -- IC1
+										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+										rotation		=> to_angle (f (7)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 8 .. count_type'last =>
+									command_too_long (7);
+									
+								when others =>
+									command_incomplete;
+							end case;
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when MOVE =>
+					case noun is
+						when DEVICE =>
+							case fields is
+								when 8 =>
+									board_ops.move_device (
+										module_name 	=> module,
+										device_name		=> to_device_name (f (5)), -- IC1
+										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+										point			=> type_point_2d (set_point (
+															x => to_distance (f (7)),
+															y => to_distance (f (8)))),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last =>
+									command_too_long (8);
+									
+								when others =>
+									command_incomplete;
+							end case;
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when FLIP =>
+					case noun is
+						when DEVICE =>
+							case fields is
+								when 6 =>
+									board_ops.flip_device (
+										module_name 	=> module,
+										device_name		=> to_device_name (f (5)), -- IC1
+										face			=> to_face  (f (6)),  -- top/bottom
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 7 .. count_type'last =>
+									command_too_long (6);
+									
+								when others =>
+									command_incomplete;
+							end case;
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+					
+				when others => 
+					null; -- CS
+							
+			end case;
 		end board_cmd;
 		
 	begin -- execute_command

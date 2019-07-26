@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                     SYSTEM ET SCHEMATIC OPERATIONS                       --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                                 ET                                       --
+--                         SCHEMATIC OPERATIONS                             --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --

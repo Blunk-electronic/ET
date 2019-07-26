@@ -62,13 +62,31 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 package board_ops is
 
 	procedure move_device (
-	-- Moves a device in the board layout.
+	-- Moves a device in the board layout in x/y direction.
+	-- Leaves rotation and face (top/bottom) as it is.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in et_pcb_coordinates.type_point_2d; -- x/y
 		log_threshold	: in type_log_level);
 
+	procedure rotate_device (
+	-- Rotates a device in the board layout.
+	-- Leaves x/y and face (top/bottom) as it is.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		coordinates		: in type_coordinates; -- relative/absolute		
+		rotation		: in et_pcb_coordinates.type_angle; -- 90
+		log_threshold	: in type_log_level);
+	
+	procedure flip_device (
+	-- Flips a device in the board layout from top to bottom or vice versa.
+	-- Leaves x/y and rotation as it is.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		face			: in type_face; -- top/bottom
+		log_threshold	: in type_log_level);
+	
 	
 end board_ops;
 

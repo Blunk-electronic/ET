@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                      SYSTEM ET PCB COORDINATES                           --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                            PCB COORDINATES                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -164,6 +164,10 @@ package et_pcb_coordinates is
 		value	: in type_distance;					 
 		point	: in out type_point_2d'class);
 
+	procedure set_xy (
+		point	: in out type_point_2d'class;
+		position: in type_point_2d);
+	
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
 		point	: in out type_point_2d;
@@ -175,9 +179,15 @@ package et_pcb_coordinates is
 		return type_distance_total;
 	
 	procedure set_angle (
+	-- Sets the rotation of a point at the given angle.					
 		value	: in type_angle;
 		point	: in out type_point_2d_with_angle'class);
 
+	procedure rotate (
+	-- Changes the rotation of a point by the given angle.
+		point	: in out type_point_2d_with_angle'class;
+		rotation: in type_angle);
+	
 	function get_angle (point : in type_point_2d_with_angle'class)
 		return type_angle;
 

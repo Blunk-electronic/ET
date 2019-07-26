@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                      SYSTEM ET PCB COORDINATES                           --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                            PCB COORDINATES                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -272,6 +272,14 @@ package body et_pcb_coordinates is
 			when Y => point.y := value;
 		end case;
 	end set_point;
+
+	procedure set_xy (
+		point	: in out type_point_2d'class;
+		position: in type_point_2d) is
+	begin
+		point.x := position.x;
+		point.y := position.y;
+	end;
 	
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
@@ -372,12 +380,21 @@ package body et_pcb_coordinates is
 	end get_axis;
 	
 	procedure set_angle (
+	-- Sets the rotation of a point at the given angle.
 		value	: in type_angle;
 		point	: in out type_point_2d_with_angle'class) is
 	begin
 		point.angle := value;
 	end set_angle;
 
+	procedure rotate (
+	-- Changes the rotation of a point by the given angle.
+		point	: in out type_point_2d_with_angle'class;
+		rotation: in type_angle) is
+	begin
+		point.angle := point.angle + rotation;
+	end;
+	
 	function get_angle (point : in type_point_2d_with_angle'class) return type_angle is
 	begin
 		return point.angle;
