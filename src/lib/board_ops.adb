@@ -63,8 +63,8 @@ with et_project;				use et_project;
 with schematic_ops;				use schematic_ops;
 with assembly_variants;
 with pick_and_place;
---with submodules;
--- with numbering;
+with submodules;
+with numbering;
 -- with conventions;
 -- with material;
 -- with netlists;
@@ -274,52 +274,351 @@ package body board_ops is
 		variant_top		: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		pnp_file		: in pick_and_place.type_file_name.bounded_string; -- CAM/motor_driver_bom.pnp
 		log_threshold	: in type_log_level) is
-		use pick_and_place;
-		use assembly_variants;
 
-		-- Here we collect the pick and place data in the first step. It will then
-		-- be passed to procedure pick_and_place.write_pnp.
-		pnp : pick_and_place.type_devices.map;
+		use assembly_variants;
 
 		use et_project.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
-		procedure query_devices (
-		-- Collects devices which are of appearance SCH_PCB. Virtual devices of
-		-- appearance SCH are skipped (like GND symbols).
-		-- If the package is virtual, then the device will also be skipped.
-			module_name	: in type_module_name.bounded_string;
-			module		: in type_module) is
-			use et_schematic.type_devices;
-			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
-		
-		begin -- query_devices
-			while device_cursor /= et_schematic.type_devices.no_element loop
+		-- Here we collect the pick and place data in the first step. It will then
+		-- be passed to procedure pick_and_place.write_pnp.
+		use pick_and_place;
+		pnp : pick_and_place.type_devices.map;
 
-				-- the device must be real (appearance SCH_PCB)
-				if element (device_cursor).appearance = SCH_PCB then
+		procedure collect (
+		-- Collects devices of the given module and its variant in container pnp.
+		-- Adds to the device index the given offset.
+		-- If offset is zero, we are dealing with the top module.
+			module_cursor	: in type_modules.cursor;
+			variant			: in assembly_variants.type_variant_name.bounded_string;
+			offset			: in et_libraries.type_device_name_index) is
+			
+			procedure query_devices (
+				module_name	: in type_module_name.bounded_string;
+				module		: in et_schematic.type_module) is
 
-					-- the package must be real
-					if has_real_package (device_cursor) then
-						
-						pick_and_place.type_devices.insert 
-							(
-							container	=> pnp,
-							key			=> key (device_cursor),
-							new_item	=> (
-									position => element (device_cursor).position
-									-- CS value, package, partcode ?
-									)
-							);
-						
+				device_name : et_libraries.type_device_name;
+				inserted : boolean;
+				
+				procedure test_inserted is begin
+					if not inserted then
+						log (ERROR, "multiple occurence of device " & to_string (device_name),
+								console => true);
+						raise constraint_error;
 					end if;
+				end;
+
+				procedure query_properties_default (cursor_schematic : in et_schematic.type_devices.cursor) is 
+					cursor_pnp : pick_and_place.type_devices.cursor;
+
+					use et_schematic.type_devices;
+					use assembly_variants.type_devices;
+				begin -- query_properties_default
+
+					-- the device must be real (appearance SCH_PCB)
+					if element (cursor_schematic).appearance = SCH_PCB then -- skip virtual devices
+
+						-- the package of the device must be real
+						if has_real_package (cursor_schematic) then
 						
+							device_name := et_schematic.type_devices.key (cursor_schematic);
+
+							-- Store device in pnp list as it is:
+							apply_offset (device_name, offset, log_threshold + 2);
+							
+							pick_and_place.type_devices.insert (
+								container	=> pnp,
+								key			=> device_name, -- IC4, R3
+								new_item	=> (
+									position	=> element (cursor_schematic).position),
+	-- 								value		=> element (cursor_schematic).value,
+	-- 								partcode	=> element (cursor_schematic).partcode,
+	-- 								purpose		=> element (cursor_schematic).purpose,
+	-- 								packge		=> et_schematic.package_model (cursor_schematic)),
+								position	=> cursor_pnp,
+								inserted	=> inserted);
+							
+							test_inserted;
+
+						end if;
+					end if;
+				end query_properties_default;
+
+				procedure query_properties_variants (cursor_schematic : in et_schematic.type_devices.cursor) is 
+					cursor_pnp : pick_and_place.type_devices.cursor;
+
+					use et_schematic.type_devices;
+					alt_dev_cursor : assembly_variants.type_devices.cursor;
+					use assembly_variants.type_devices;
+				begin -- query_properties_variants
+
+					-- the device must be real (appearance SCH_PCB)
+					if element (cursor_schematic).appearance = SCH_PCB then -- skip virtual devices
+
+						-- the package of the device must be real
+						if has_real_package (cursor_schematic) then
+												
+							device_name := et_schematic.type_devices.key (cursor_schematic);
+							
+							-- Get a cursor to the alternative device as specified in the assembly variant:
+							alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
+							
+							if alt_dev_cursor = assembly_variants.type_devices.no_element then
+							-- Device has no entry in the assembly variant. -> It is to be stored in pnp list as it is:
+							
+								apply_offset (device_name, offset, log_threshold + 2);
+								
+								pick_and_place.type_devices.insert (
+									container	=> pnp,
+									key			=> device_name, -- IC4, R3
+									new_item	=> (
+										position	=> element (cursor_schematic).position),
+-- 										value		=> element (cursor_schematic).value,
+-- 										partcode	=> element (cursor_schematic).partcode,	
+-- 										purpose		=> element (cursor_schematic).purpose,
+-- 										packge		=> et_schematic.package_model (cursor_schematic)),
+									position	=> cursor_pnp,
+									inserted	=> inserted);
+
+								test_inserted;
+
+							else
+							-- Device has an entry in the assembly variant. Depending on the mounted-flag
+							-- it is to be skipped or inserted in pnp list with alternative properties.
+							-- NOTE: The package model is not affected by the assembly variant.
+								case element (alt_dev_cursor).mounted is
+									when NO =>
+										log (text => to_string (device_name) & " not mounted -> skipped",
+											level => log_threshold + 2);
+										
+									when YES =>
+										apply_offset (device_name, offset, log_threshold + 2);
+										
+										-- Insert the device in pnp list with alternative properties as defined
+										-- in the assembly variant:
+										pick_and_place.type_devices.insert (
+											container	=> pnp,
+											key			=> device_name, -- IC4, R3
+											new_item	=> (
+												position	=> element (cursor_schematic).position),
+-- 												value		=> element (alt_dev_cursor).value,
+-- 												partcode	=> element (alt_dev_cursor).partcode,
+-- 												purpose		=> element (alt_dev_cursor).purpose,
+-- 												packge		=> et_schematic.package_model (cursor_schematic)),
+											position	=> cursor_pnp,
+											inserted	=> inserted);
+
+										test_inserted;
+
+								end case;
+							end if;
+
+						end if;
+					end if;
+				end query_properties_variants;
+				
+			begin -- query_devices
+				-- if default variant given, then assembly variants are irrelevant:
+				if assembly_variants.is_default (variant) then
+
+					log (text => "collecting devices from module " &
+							enclose_in_quotes (to_string (module_name)) &
+							" default variant by applying device index offset" & 
+							et_libraries.to_string (offset), -- 100
+						level => log_threshold + 1);
+					
+					log_indentation_up;
+					
+					et_schematic.type_devices.iterate (
+						container	=> module.devices,
+						process		=> query_properties_default'access);
+
+				-- if a particular variant given, then collect devices accordingly:
+				else
+					log (text => "collecting devices from module " &
+							enclose_in_quotes (to_string (module_name)) &
+							" variant " & enclose_in_quotes (to_variant (variant)) &
+							" by applying device index offset" & 
+							et_libraries.to_string (offset), -- 100
+						level => log_threshold + 1);
+					
+					log_indentation_up;
+				
+					et_schematic.type_devices.iterate (
+						container	=> module.devices,
+						process		=> query_properties_variants'access);
+
 				end if;
 				
-				next (device_cursor);
+				log_indentation_down;
+			end query_devices;
+
+		begin -- collect
+			et_project.type_modules.query_element (
+				position	=> module_cursor,
+				process		=> query_devices'access);
+			
+		end collect;
+		
+
+		submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
+		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
+
+		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
+		package stack_level is new et_general.stack_lifo (
+			item	=> numbering.type_modules.cursor,
+			max 	=> submodules.nesting_depth_max);
+
+		-- Another stack keeps record of the assembly variant at the submodule level.
+		package stack_variant is new et_general.stack_lifo (
+			item	=> assembly_variants.type_variant_name.bounded_string,
+			max 	=> submodules.nesting_depth_max);
+		
+		variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
+
+		procedure query_submodules is 
+		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
+		-- until the deepest submodule (the bottom of the design structure) has been reached.
+			use numbering.type_modules;
+			module_name 	: type_module_name.bounded_string; -- motor_driver
+			parent_name 	: type_module_name.bounded_string; -- water_pump
+			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+			offset			: et_libraries.type_device_name_index;
+
+			use assembly_variants.type_submodules;
+			alt_submod : assembly_variants.type_submodules.cursor;
+		begin
+			log_indentation_up;
+
+			-- start with the first submodule on the current hierarchy level
+			tree_cursor := first_child (tree_cursor);
+
+			-- iterate through the submodules on this level
+			while tree_cursor /= numbering.type_modules.no_element loop
+				module_name := element (tree_cursor).name;
+				module_instance := element (tree_cursor).instance;
+
+				log (text => "instance " & enclose_in_quotes (to_string (module_instance)) &
+					 " of generic module " & enclose_in_quotes (to_string (module_name)),
+					 level => log_threshold + 1);
+
+				-- In case we are on the first level, the parent module is the given top module.
+				-- In that case the parent variant is the given variant of the top module.
+				-- If the top module has the default variant, all submodules in all levels
+				-- assume default variant too.
+				if parent (tree_cursor) = root (submod_tree) then
+					parent_name := make_pick_and_place.module_name;
+					variant := variant_top; -- argument of make_bom
+				else
+					parent_name := element (parent (tree_cursor)).name;
+				end if;
+
+				-- Get the device name offset of the current submodule.
+				-- NOTE: The offset has been assigned in the PARENT module where the submodule
+				-- has been instantiated.
+				offset := get_offset (parent_name, module_instance);
+
+				if not assembly_variants.is_default (variant) then
+					-- Query in parent module: Is there any assembly variant specified for this submodule ?
+
+					alt_submod := alternative_submodule (
+								module	=> locate_module (parent_name),
+								variant	=> variant,
+								submod	=> module_instance);
+
+					if alt_submod = assembly_variants.type_submodules.no_element then
+					-- no variant specified for this submodule -> collect devices of default variant
+
+						variant := assembly_variants.default;
+					else
+					-- alternative variant specified for this submodule
+						variant := element (alt_submod).variant;
+					end if;
+
+				end if;
+
+				-- collect devices from current module
+				collect (
+					module_cursor	=> locate_module (module_name),
+					variant			=> variant,
+					offset			=> offset);
+
+				
+				if first_child (tree_cursor) = numbering.type_modules.no_element then 
+				-- No submodules on the current level. means we can't go deeper:
+					
+					log_indentation_up;
+					log (text => "no submodules here -> bottom reached", level => log_threshold + 1);
+					log_indentation_down;
+				else
+				-- There are submodules on the current level:
+					
+					-- backup the cursor to the current submodule on this level
+					stack_level.push (tree_cursor);
+
+					-- backup the parent assembly variant
+					stack_variant.push (variant);
+
+					-- iterate through submodules on the level below
+					query_submodules; -- this is recursive !
+
+					-- restore cursor to submodule (see stack_level.push above)
+					tree_cursor := stack_level.pop;
+
+					-- restore the parent assembly variant (see stack_variant.push above)
+					variant := stack_variant.pop;
+				end if;
+
+				next_sibling (tree_cursor); -- next submodule on this level
 			end loop;
 			
-		end query_devices;
+			log_indentation_down;
+
+			exception
+				when event: others =>
+					log_indentation_reset;
+					log (text => ada.exceptions.exception_information (event), console => true);
+					raise;
+			
+		end query_submodules;
+		
+-- 		
+-- 		procedure query_devices (
+-- 		-- Collects devices which are of appearance SCH_PCB. Virtual devices of
+-- 		-- appearance SCH are skipped (like GND symbols).
+-- 		-- If the package is virtual, then the device will also be skipped.
+-- 			module_name	: in type_module_name.bounded_string;
+-- 			module		: in type_module) is
+-- 			use et_schematic.type_devices;
+-- 			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
+-- 		
+-- 		begin -- query_devices
+-- 			while device_cursor /= et_schematic.type_devices.no_element loop
+-- 
+-- 				-- the device must be real (appearance SCH_PCB)
+-- 				if element (device_cursor).appearance = SCH_PCB then
+-- 
+-- 					-- the package must be real
+-- 					if has_real_package (device_cursor) then
+-- 						
+-- 						pick_and_place.type_devices.insert 
+-- 							(
+-- 							container	=> pnp,
+-- 							key			=> key (device_cursor),
+-- 							new_item	=> (
+-- 									position => element (device_cursor).position
+-- 									-- CS value, package, partcode ?
+-- 									)
+-- 							);
+-- 						
+-- 					end if;
+-- 						
+-- 				end if;
+-- 				
+-- 				next (device_cursor);
+-- 			end loop;
+-- 			
+-- 		end query_devices;
 
 		
 	begin -- make_pick_and_place
@@ -336,17 +635,46 @@ package body board_ops is
 				level => log_threshold);
 		end if;
 
-		-- locate module
+		log_indentation_up;
+		
+		-- locate the given top module
 		module_cursor := locate_module (module_name);
+
+		if exists (module_cursor, variant_top) then
+
+			-- collect devices of the given top module. the top module has no device index offset
+			collect (module_cursor, variant_top, 0); 
+
+			-- take a copy of the submodule tree of the given top module:
+			submod_tree := element (module_cursor).submod_tree;
+
+			-- set the cursor inside the tree at root position:
+			tree_cursor := numbering.type_modules.root (submod_tree);
+			
+			stack_level.init;
+			stack_variant.init;
+
+			-- collect devices of the submodules
+			query_submodules;
+
+			-- write the pick and place file
+			pick_and_place.write_pnp (
+				pnp				=> pnp,			-- the container that holds the pick and place list
+				file_name		=> pnp_file,	-- tmp/pick_and_place.pnp
+				-- format	=> NATIVE			-- CS: should be an argument in the future
+				log_threshold	=> log_threshold + 1);
+
+		else
+			assembly_variant_not_found (variant_top);
+		end if;
 		
-		query_element (
-			position	=> module_cursor,
-			process		=> query_devices'access);
-		
-		pick_and_place.write_pnp (
-			pnp				=> pnp,
-			file_name		=> pnp_file,
-			log_threshold	=> log_threshold + 1);
+		log_indentation_down;
+
+		exception
+			when event: others =>
+				log_indentation_reset;
+				log (text => ada.exceptions.exception_information (event), console => true);
+				raise;
 		
 	end make_pick_and_place;
 

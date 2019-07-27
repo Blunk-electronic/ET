@@ -65,6 +65,7 @@ package schematic_ops is
 	procedure netchanger_not_found (index : in submodules.type_netchanger_id);
 	procedure submodule_not_found (name : in et_general.type_module_instance_name.bounded_string);	
 	procedure net_not_found (name : in et_general.type_net_name.bounded_string);
+	procedure assembly_variant_not_found (variant : in assembly_variants.type_variant_name.bounded_string);
 	
 	
 	procedure delete_device (
@@ -588,6 +589,21 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 
+	function get_offset (
+	-- Returns the device numbering offset of a submodule instance.
+	-- Assumptions:
+	--  - The module to be searched in must be in the rig already.
+	--  - The submodule instance must exist in the module.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string) -- OSC1
+		return et_libraries.type_device_name_index;
+	
+	procedure apply_offset (
+	-- Adds the offset to the device index of the given device_name.
+		device_name		: in out type_device_name; -- IC3
+		offset			: in et_libraries.type_device_name_index; -- 100
+		log_threshold	: in et_string_processing.type_log_level);
+	
 	procedure make_bom (
 	-- Exports a BOM file from the given top module and assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
