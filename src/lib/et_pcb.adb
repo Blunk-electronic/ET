@@ -465,7 +465,19 @@ package body et_pcb is
 			& " face" & to_string (get_face (position)));
 	end package_position;
 
-	
+	function is_real (package_name : in et_libraries.type_package_model_file.bounded_string) return boolean is
+	-- Returns true if the given package is real (means it has a height).
+		use type_packages;
+		cursor : type_packages.cursor;
+	begin
+		cursor := find (packages, package_name);
+
+		if element (cursor).appearance = REAL then
+			return true;
+		else
+			return false;
+		end if;
+	end is_real;
 	
 -- PROPERTIES OF OBJECTS IN COPPER (NON ELECTRIC !!)
 	procedure line_copper_properties (

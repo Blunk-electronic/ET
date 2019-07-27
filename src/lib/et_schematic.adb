@@ -396,6 +396,7 @@ package body et_schematic is
 	function package_model (device : in type_devices.cursor)
 		return et_libraries.type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac
 	-- Returns the name of the package model of the given device.
+	-- The given device must have appearance SCH_PCB. Otherwise constraint error arises here.
 		device_model : et_libraries.type_device_model_file.bounded_string;
 		device_cursor_lib : et_libraries.type_devices.cursor;
 		device_variant : et_libraries.type_component_variant_name.bounded_string; -- N, D
@@ -411,6 +412,18 @@ package body et_schematic is
 		
 		return et_libraries.package_model (device_cursor_lib, device_variant);
 	end package_model;
+
+	function has_real_package (device : in type_devices.cursor) return boolean is
+	-- Returns true if the given device has a real package.
+	-- The given device must have appearance SCH_PCB. Otherwise constraint error arises here.
+		package_name : et_libraries.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+	begin
+		-- get the package name of the given device:
+		package_name := package_model (device);
+
+		-- ask for the package status (real or virtual) and return the result right away:
+		return et_pcb.is_real (package_name);
+	end has_real_package;
 	
 	function to_string (
 		mirror	: in type_mirror;

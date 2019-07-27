@@ -352,6 +352,11 @@ package et_schematic is
 	function package_model (device : in type_devices.cursor)
 		return et_libraries.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 	-- Returns the name of the package model of the given device.
+	-- The given device must have appearance SCH_PCB. Otherwise constraint error arises here.	
+
+	function has_real_package (device : in type_devices.cursor) return boolean;
+	-- Returns true if the given device has a real package.
+	-- The given device must have appearance SCH_PCB. Otherwise constraint error arises here.	
 	
 	-- For designs which have only a schematic, this flag goes false.
 	type type_board_available is new boolean;

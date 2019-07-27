@@ -287,6 +287,7 @@ package body board_ops is
 		procedure query_devices (
 		-- Collects devices which are of appearance SCH_PCB. Virtual devices of
 		-- appearance SCH are skipped (like GND symbols).
+		-- If the package is virtual, then the device will also be skipped.
 			module_name	: in type_module_name.bounded_string;
 			module		: in type_module) is
 			use et_schematic.type_devices;
@@ -294,17 +295,25 @@ package body board_ops is
 		
 		begin -- query_devices
 			while device_cursor /= et_schematic.type_devices.no_element loop
+
+				-- the device must be real (appearance SCH_PCB)
 				if element (device_cursor).appearance = SCH_PCB then
 
-					pick_and_place.type_devices.insert (
-						container	=> pnp,
-						key			=> key (device_cursor),
-						new_item	=> (
-								position => element (device_cursor).position
-								-- CS value, package, partcode ?
-								)
-						);
-
+					-- the package must be real
+					if has_real_package (device_cursor) then
+						
+						pick_and_place.type_devices.insert 
+							(
+							container	=> pnp,
+							key			=> key (device_cursor),
+							new_item	=> (
+									position => element (device_cursor).position
+									-- CS value, package, partcode ?
+									)
+							);
+						
+					end if;
+						
 				end if;
 				
 				next (device_cursor);

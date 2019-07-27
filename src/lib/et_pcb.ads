@@ -1228,7 +1228,9 @@ package et_pcb is
 
 	-- HERE RIG WIDE PACKAGES ARE KEPT:
 	packages : type_packages.map;
-	
+
+	function is_real (package_name : in et_libraries.type_package_model_file.bounded_string) return boolean;
+	-- Returns true if the given package is real (means it has a height).
 	
 -- PROPERTIES OF OBJECTS IN COPPER (NON ELECTRIC !!)
 	procedure line_copper_properties (
