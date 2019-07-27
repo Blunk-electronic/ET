@@ -61,6 +61,7 @@ with board_ops;
 
 with submodules;
 with assembly_variants;
+with pick_and_place;
 with material;
 with netlists;
 
@@ -1541,6 +1542,40 @@ package body scripting is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+				when MAKE =>
+					case noun is
+						when PNP =>
+							case fields is
+								when 5 =>
+									-- The variant name is optional. If not specified,
+									-- an empty string will be passed:
+									board_ops.make_pick_and_place 
+										(
+										module_name 	=> module,
+										pnp_file		=> pick_and_place.to_file_name (f (5)),
+										variant_top		=> assembly_variants.to_variant (""),
+										
+										log_threshold	=> log_threshold + 1);
+
+								when 6 =>
+									board_ops.make_pick_and_place 
+										(
+										module_name 	=> module,
+										pnp_file		=> pick_and_place.to_file_name (f (5)),
+										variant_top		=> assembly_variants.to_variant (f (6)),
+										
+										log_threshold	=> log_threshold + 1);
+
+								when 7 .. count_type'last =>
+									command_too_long (6);
+									
+								when others =>
+									command_incomplete;
+							end case;
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
 				when MOVE =>
 					case noun is
 						when DEVICE =>

@@ -55,7 +55,8 @@ with schematic_ops;				use schematic_ops;
 with et_pcb;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 -- with submodules;
--- with assembly_variants;
+with assembly_variants;
+with pick_and_place;
 -- with numbering;
 -- with material;
 -- with netlists;
@@ -88,6 +89,13 @@ package board_ops is
 		face			: in type_face; -- top/bottom
 		log_threshold	: in type_log_level);
 
+	procedure make_pick_and_place (
+	-- Exports a pick & place file from the given top module and assembly variant.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		variant_top		: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		pnp_file		: in pick_and_place.type_file_name.bounded_string; -- CAM/motor_driver_bom.pnp
+		log_threshold	: in type_log_level);
+	
 	-- For laying out traces we need a type that provides for a terminal information about
 	-- x/y/rotation/technology and optionally the face.
 	type type_terminal_position (technology	: et_pcb.type_assembly_technology) is new type_point_2d_with_angle with record

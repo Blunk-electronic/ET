@@ -150,6 +150,7 @@ package scripting is
 		--DRAG,
 		DRAW,		
 		FLIP,
+		MAKE,
 		MOVE,
 		PLACE,
 		ROTATE,
@@ -168,6 +169,7 @@ package scripting is
 		NAME,
 		NET,
 		PARTCODE,
+		PNP, -- pick & place
 		PURPOSE,
 		TEXT,
 		TEXT_SIZE,

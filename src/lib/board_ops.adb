@@ -276,7 +276,44 @@ package body board_ops is
 		log_threshold	: in type_log_level) is
 		use pick_and_place;
 		use assembly_variants;
-	begin
+
+		-- Here we collect the pick and place data in the first step. It will then
+		-- be passed to procedure pick_and_place.write_pnp.
+		pnp : pick_and_place.type_devices.map;
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_devices (
+		-- Collects devices which are of appearance SCH_PCB. Virtual devices of
+		-- appearance SCH are skipped (like GND symbols).
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
+		
+		begin -- query_devices
+			while device_cursor /= et_schematic.type_devices.no_element loop
+				if element (device_cursor).appearance = SCH_PCB then
+
+					pick_and_place.type_devices.insert (
+						container	=> pnp,
+						key			=> key (device_cursor),
+						new_item	=> (
+								position => element (device_cursor).position
+								-- CS value, package, partcode ?
+								)
+						);
+
+				end if;
+				
+				next (device_cursor);
+			end loop;
+			
+		end query_devices;
+
+		
+	begin -- make_pick_and_place
 		-- The variant name is optional. If not provided, the default variant will be exported.
 		if assembly_variants.is_default (variant_top) then
 			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
@@ -289,6 +326,18 @@ package body board_ops is
 				" exporting pick & place data to file " & to_string (pnp_file),
 				level => log_threshold);
 		end if;
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_devices'access);
+		
+		pick_and_place.write_pnp (
+			pnp				=> pnp,
+			file_name		=> pnp_file,
+			log_threshold	=> log_threshold + 1);
 		
 	end make_pick_and_place;
 
@@ -302,7 +351,7 @@ package body board_ops is
 		use et_pcb;
 		pos : type_terminal_position (SMT); -- to be returned
 	begin
-		return pos;
+		return pos; -- CS
 	end terminal_position;
 	
 end board_ops;

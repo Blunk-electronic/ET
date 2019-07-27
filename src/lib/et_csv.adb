@@ -69,7 +69,7 @@ package body et_csv is
 		ifs		: in character := ascii.semicolon; -- field separator
 		delim 	: in character := ascii.quotation) is  -- text delimiter
 	begin
-		put (file, delim & text & delim & ifs);
+		put (file, delim & trim (text, both) & delim & ifs);
 		next_column;
 	end put_field;
 

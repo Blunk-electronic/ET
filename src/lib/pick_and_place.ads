@@ -93,7 +93,7 @@ package pick_and_place is
 	-- Writes the content of the given container pnp in the file.
 		pnp				: in type_devices.map;
 		file_name		: in type_file_name.bounded_string;
-		format			: in type_pnp_format;
+		format			: in type_pnp_format := NATIVE;
 		log_threshold	: in type_log_level);
 
 	

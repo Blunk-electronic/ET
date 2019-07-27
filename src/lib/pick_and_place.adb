@@ -80,7 +80,7 @@ package body pick_and_place is
 	-- Writes the content of the given container pnp in the file.
 		pnp				: in type_devices.map;
 		file_name		: in type_file_name.bounded_string;
-		format			: in type_pnp_format;
+		format			: in type_pnp_format := NATIVE;
 		log_threshold	: in type_log_level) is		
 
 		pnp_handle : ada.text_io.file_type;
@@ -107,6 +107,9 @@ package body pick_and_place is
 				put_field (file => pnp_handle); -- CS item number
 				put_field (file => pnp_handle, text => to_string (key (cursor))); -- R4
 				put_field (file => pnp_handle, text => to_string (get_face (element (cursor).position))); -- top/bottom
+				put_field (file => pnp_handle, text => to_string (get_axis (X, element (cursor).position))); -- X
+				put_field (file => pnp_handle, text => to_string (get_axis (Y, element (cursor).position))); -- Y
+				put_field (file => pnp_handle, text => to_string (get_angle (element (cursor).position))); -- rotation
 -- 				put_field (file => pnp_handle, text => to_string (element (cursor).value)); -- 100R
 -- 				put_field (file => pnp_handle, text => to_string (element (cursor).packge)); -- S_0805.pac
 -- 				put_field (file => pnp_handle, text => to_string (element (cursor).partcode)); -- R_PAC_S_0805_VAL_100R

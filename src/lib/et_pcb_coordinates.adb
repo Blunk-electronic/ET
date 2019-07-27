@@ -370,7 +370,7 @@ package body et_pcb_coordinates is
 	
 	function get_axis (
 		axis	: in type_axis_2d;
-		point	: in type_point_2d)
+		point	: in type_point_2d'class)
 		return type_distance_total is
 	begin
 		case axis is
