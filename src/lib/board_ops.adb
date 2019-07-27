@@ -291,7 +291,9 @@ package body board_ops is
 		-- If offset is zero, we are dealing with the top module.
 			module_cursor	: in type_modules.cursor;
 			variant			: in assembly_variants.type_variant_name.bounded_string;
-			offset			: in et_libraries.type_device_name_index) is
+			offset			: in et_libraries.type_device_name_index;
+			position		: in et_pcb_coordinates.type_point_2d_with_angle) -- CS not applied yet
+		is
 			
 			procedure query_devices (
 				module_name	: in type_module_name.bounded_string;
@@ -485,6 +487,9 @@ package body board_ops is
 			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 			offset			: et_libraries.type_device_name_index;
 
+			-- This is the position of the submodule in the board (the lower left corner):
+			position_in_board : et_pcb_coordinates.type_point_2d_with_angle := submodule_position_default;
+			
 			use assembly_variants.type_submodules;
 			alt_submod : assembly_variants.type_submodules.cursor;
 		begin
@@ -537,11 +542,15 @@ package body board_ops is
 
 				end if;
 
+				-- CS calculate position_in_board
+				
 				-- collect devices from current module
 				collect (
 					module_cursor	=> locate_module (module_name),
 					variant			=> variant,
-					offset			=> offset);
+					offset			=> offset,
+					position		=> position_in_board -- the position of the submodule inside the parent module
+					);
 
 				
 				if first_child (tree_cursor) = numbering.type_modules.no_element then 
@@ -603,8 +612,16 @@ package body board_ops is
 
 		if exists (module_cursor, variant_top) then
 
-			-- collect devices of the given top module. the top module has no device index offset
-			collect (module_cursor, variant_top, 0); 
+			-- Collect devices of the given top module.
+			-- NOTE: The top module has no device index offset and
+			-- zero relative position to anywhere because it is not
+			-- encapsulated in any parent module.
+			collect (
+				module_cursor	=> module_cursor,
+				variant			=> variant_top,
+				offset			=> 0,
+				position		=> submodule_position_default -- zero x/x/rotation
+				); 
 
 			-- take a copy of the submodule tree of the given top module:
 			submod_tree := element (module_cursor).submod_tree;
