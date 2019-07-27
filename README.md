@@ -1,5 +1,5 @@
-# ET - ECAD Electronic Modeling Tool
-## An approach to model and develop complex schematics and layouts
+# SYSTEM ET
+## An ECAD-Tool for complex schematics and layouts
 
 ### The Idea behind
 - Most ECAD tools do not allow opening, checking and editing of multiple designs simultaneously.
