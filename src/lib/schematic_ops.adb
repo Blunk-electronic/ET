@@ -11192,32 +11192,38 @@ package body schematic_ops is
 					cursor_bom : material.type_devices.cursor;
 
 					use et_schematic.type_devices;
-					alt_dev_cursor : assembly_variants.type_devices.cursor;
 					use assembly_variants.type_devices;
 				begin -- query_properties_default
+
+					-- the device must be real (appearance SCH_PCB)
 					if element (cursor_schematic).appearance = SCH_PCB then -- skip virtual devices
-						device_name := et_schematic.type_devices.key (cursor_schematic);
 
-						-- issue warning if device has no partcode
-						test_partcode (element (cursor_schematic).partcode);
-						
-						-- Store device in bill_of_material as it is:
+						-- the package must be real
+						if has_real_package (cursor_schematic) then
 
-						apply_offset (device_name, offset, log_threshold + 2);
-						
-						material.type_devices.insert (
-							container	=> bill_of_material,
-							key			=> device_name, -- IC4, R3
-							new_item	=> (
-								value		=> element (cursor_schematic).value,
-								partcode	=> element (cursor_schematic).partcode,
-								purpose		=> element (cursor_schematic).purpose,
-								packge		=> et_schematic.package_model (cursor_schematic)),
-							position	=> cursor_bom,
-							inserted	=> inserted);
-						
-						test_inserted;
+							device_name := et_schematic.type_devices.key (cursor_schematic);
 
+							-- issue warning if device has no partcode
+							test_partcode (element (cursor_schematic).partcode);
+							
+							-- Store device in bill_of_material as it is:
+
+							apply_offset (device_name, offset, log_threshold + 2);
+							
+							material.type_devices.insert (
+								container	=> bill_of_material,
+								key			=> device_name, -- IC4, R3
+								new_item	=> (
+									value		=> element (cursor_schematic).value,
+									partcode	=> element (cursor_schematic).partcode,
+									purpose		=> element (cursor_schematic).purpose,
+									packge		=> et_schematic.package_model (cursor_schematic)),
+								position	=> cursor_bom,
+								inserted	=> inserted);
+							
+							test_inserted;
+							
+						end if;
 					end if;
 				end query_properties_default;
 
@@ -11228,74 +11234,81 @@ package body schematic_ops is
 					alt_dev_cursor : assembly_variants.type_devices.cursor;
 					use assembly_variants.type_devices;
 				begin -- query_properties_variants
+
+					-- the device must be real (appearance SCH_PCB)
 					if element (cursor_schematic).appearance = SCH_PCB then -- skip virtual devices
-						device_name := et_schematic.type_devices.key (cursor_schematic);
+
+						-- the package must be real
+						if has_real_package (cursor_schematic) then
 						
-						-- Get a cursor to the alternative device as specified in the assembly variant:
-						alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
-						
-						if alt_dev_cursor = assembly_variants.type_devices.no_element then
-						-- Device has no entry in the assembly variant. -> It is to be stored in bill_of_material as it is:
-
-							-- issue warning if device has no partcode
-							test_partcode (element (cursor_schematic).partcode);
+							device_name := et_schematic.type_devices.key (cursor_schematic);
 							
-							apply_offset (device_name, offset, log_threshold + 2);
+							-- Get a cursor to the alternative device as specified in the assembly variant:
+							alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
 							
-							material.type_devices.insert (
-								container	=> bill_of_material,
-								key			=> device_name, -- IC4, R3
-								new_item	=> (
-									value		=> element (cursor_schematic).value,
-									partcode	=> element (cursor_schematic).partcode,	
-									purpose		=> element (cursor_schematic).purpose,
-									packge		=> et_schematic.package_model (cursor_schematic)),
-								position	=> cursor_bom,
-								inserted	=> inserted);
+							if alt_dev_cursor = assembly_variants.type_devices.no_element then
+							-- Device has no entry in the assembly variant. -> It is to be stored in bill_of_material as it is:
 
-							test_inserted;
+								-- issue warning if device has no partcode
+								test_partcode (element (cursor_schematic).partcode);
+								
+								apply_offset (device_name, offset, log_threshold + 2);
+								
+								material.type_devices.insert (
+									container	=> bill_of_material,
+									key			=> device_name, -- IC4, R3
+									new_item	=> (
+										value		=> element (cursor_schematic).value,
+										partcode	=> element (cursor_schematic).partcode,	
+										purpose		=> element (cursor_schematic).purpose,
+										packge		=> et_schematic.package_model (cursor_schematic)),
+									position	=> cursor_bom,
+									inserted	=> inserted);
 
-						else
-						-- Device has an entry in the assembly variant. Depending on the mounted-flag
-						-- it is to be skipped or inserted in bill_of_material with alternative properties.
-						-- NOTE: The package model is not affected by the assembly variant.
-							case element (alt_dev_cursor).mounted is
-								when NO =>
-									log (text => to_string (device_name) & " not mounted -> skipped",
-										level => log_threshold + 2);
-									
-								when YES =>
-									-- issue warning if device has no partcode
-									test_partcode (element (alt_dev_cursor).partcode);
+								test_inserted;
 
-									apply_offset (device_name, offset, log_threshold + 2);
-									
-									-- Insert the device in bill with alternative properties as defined
-									-- in the assembly variant:
-									material.type_devices.insert (
-										container	=> bill_of_material,
-										key			=> device_name, -- IC4, R3
-										new_item	=> (
-											value		=> element (alt_dev_cursor).value,
-											partcode	=> element (alt_dev_cursor).partcode,
-											purpose		=> element (alt_dev_cursor).purpose,
-											packge		=> et_schematic.package_model (cursor_schematic)),
-										position	=> cursor_bom,
-										inserted	=> inserted);
+							else
+							-- Device has an entry in the assembly variant. Depending on the mounted-flag
+							-- it is to be skipped or inserted in bill_of_material with alternative properties.
+							-- NOTE: The package model is not affected by the assembly variant.
+								case element (alt_dev_cursor).mounted is
+									when NO =>
+										log (text => to_string (device_name) & " not mounted -> skipped",
+											level => log_threshold + 2);
+										
+									when YES =>
+										-- issue warning if device has no partcode
+										test_partcode (element (alt_dev_cursor).partcode);
 
-									test_inserted;
+										apply_offset (device_name, offset, log_threshold + 2);
+										
+										-- Insert the device in bill with alternative properties as defined
+										-- in the assembly variant:
+										material.type_devices.insert (
+											container	=> bill_of_material,
+											key			=> device_name, -- IC4, R3
+											new_item	=> (
+												value		=> element (alt_dev_cursor).value,
+												partcode	=> element (alt_dev_cursor).partcode,
+												purpose		=> element (alt_dev_cursor).purpose,
+												packge		=> et_schematic.package_model (cursor_schematic)),
+											position	=> cursor_bom,
+											inserted	=> inserted);
 
-									-- check partcode content
-									conventions.validate_partcode (
-										partcode		=> material.type_devices.element (cursor_bom).partcode,
-										device_name		=> device_name,
-										packge			=> to_package_name (ada.directories.base_name (to_string (material.type_devices.element (cursor_bom).packge))),
-										value			=> material.type_devices.element (cursor_bom).value,
-										log_threshold	=> log_threshold + 3);
+										test_inserted;
 
-							end case;
+										-- check partcode content
+										conventions.validate_partcode (
+											partcode		=> material.type_devices.element (cursor_bom).partcode,
+											device_name		=> device_name,
+											packge			=> to_package_name (ada.directories.base_name (to_string (material.type_devices.element (cursor_bom).packge))),
+											value			=> material.type_devices.element (cursor_bom).value,
+											log_threshold	=> log_threshold + 3);
+
+								end case;
+							end if;
+
 						end if;
-						
 					end if;
 				end query_properties_variants;
 				
