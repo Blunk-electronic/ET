@@ -18,13 +18,14 @@
 - ASCII / text based design and device model files - optimized for version control with GIT
 - human readable and editable design and model files
 - multi-schematic/board/layout support
-- true hierarchic and modular design
+- true hierarchic and modular design with interfaces at the module boundaries
 - submodules instantiated in parent module by reference
 - extensive design rule checking (device prefixes, purpose of user-interactive devices, partcodes, pinout of board-to-board connections ...)
 - interfacing with system modelling tools
 
 ### Examples of design and component models
 - A module file (containing schematic and layout stuff) looks like this <https://github.com/Blunk-electronic/ET/blob/master/examples/dummy/dummy.mod>
+- There is a strict separation between symbol, package/footprint and device:
 - Device model <https://github.com/Blunk-electronic/ET/blob/master/examples/device.dev>
 - Symbol model <https://github.com/Blunk-electronic/ET/blob/master/examples/symbol.sym>
 - Package model <https://github.com/Blunk-electronic/ET/blob/master/examples/package.pac>
@@ -141,7 +142,6 @@ $ sh install.sh
 - Ada is beautiful :-)
 
 ### Roadmap, things to do and issues
-- assembly variants
 - zero-Ohms resistors
 - accessories of components (screws, washers, clamps, ...)
 - import EAGLE projects and libraries
