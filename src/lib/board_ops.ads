@@ -89,6 +89,15 @@ package board_ops is
 		face			: in type_face; -- top/bottom
 		log_threshold	: in type_log_level);
 
+	procedure move_submodule (
+	-- Moves a submodule instance withing the parent module layout in x/y direction.
+	-- Leaves rotation and face (top/bottom) as it is.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		instance		: in type_module_instance_name.bounded_string; -- OSC1
+		coordinates		: in type_coordinates; -- relative/absolute		
+		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		log_threshold	: in type_log_level);
+	
 	procedure make_pick_and_place (
 	-- Exports a pick & place file from the given top module and assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)

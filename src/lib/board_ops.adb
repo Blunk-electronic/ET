@@ -71,7 +71,7 @@ with numbering;
 -- with et_geometry;
 
 package body board_ops is
-
+	
 	procedure move_device (
 	-- Moves a device in the board layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
@@ -124,12 +124,12 @@ package body board_ops is
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_name) &
-					" moving " & to_string (device_name) &
+					" moving device " & to_string (device_name) &
 					" to" & to_string (point), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
-					" moving " & to_string (device_name) &
+					" moving device " & to_string (device_name) &
 					" by" & to_string (point), level => log_threshold);
 		end case;
 
@@ -194,12 +194,12 @@ package body board_ops is
 		case coordinates is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_name) &
-					" rotating " & to_string (device_name) &
+					" rotating device " & to_string (device_name) &
 					" to" & to_string (rotation), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
-					" rotating " & to_string (device_name) &
+					" rotating device " & to_string (device_name) &
 					" by" & to_string (rotation), level => log_threshold);
 		end case;
 
@@ -255,7 +255,7 @@ package body board_ops is
 		
 	begin -- flip_device
 		log (text => "module " & to_string (module_name) &
-			" flipping " & to_string (device_name) &
+			" flipping device " & to_string (device_name) &
 			" to" & to_string (face), level => log_threshold);
 
 		-- locate module
@@ -301,6 +301,83 @@ package body board_ops is
 
 		return position;
 	end get_position;
+
+	procedure move_submodule (
+	-- Moves a submodule instance withing the parent module layout in x/y direction.
+	-- Leaves rotation and face (top/bottom) as it is.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		instance		: in type_module_instance_name.bounded_string; -- OSC1
+		coordinates		: in type_coordinates; -- relative/absolute		
+		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out et_schematic.type_module) is
+			use submodules.type_submodules;
+			submod_cursor : submodules.type_submodules.cursor;
+
+			procedure move (
+				instance	: in et_general.type_module_instance_name.bounded_string;
+				submodule	: in out submodules.type_submodule) is
+			begin
+				case coordinates is
+					when ABSOLUTE =>
+						set_xy (submodule.position_in_board, point);
+
+					when RELATIVE =>
+						move_point (submodule.position_in_board, point);
+				end case;
+
+				exception
+					when event: others =>
+						log (ERROR, "coordinates invalid !", console => true); -- CS required more details
+						log (text => ada.exceptions.exception_information (event), console => true);
+						raise;
+				
+			end move;
+
+		begin -- query_submodules
+			if contains (module.submods, instance) then
+
+				submod_cursor := find (module.submods, instance); -- the submodule should be there
+
+				update_element (
+					container	=> module.submods,
+					position	=> submod_cursor,
+					process		=> move'access);
+
+			else
+				submodule_not_found (instance);
+			end if;
+
+		end;
+		
+	begin -- move_submodule
+		case coordinates is
+			when ABSOLUTE =>
+				log (text => "module " & to_string (module_name) &
+					" moving submodule instance " & to_string (instance) &
+					" to" & to_string (point), level => log_threshold);
+
+			when RELATIVE =>
+				log (text => "module " & to_string (module_name) &
+					" moving submodule instance " & to_string (instance) &
+					" by" & to_string (point), level => log_threshold);
+		end case;
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> query_submodules'access);
+
+	end move_submodule;
 	
 	procedure make_pick_and_place (
 	-- Exports a pick & place file from the given top module and assembly variant.

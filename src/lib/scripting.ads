@@ -171,6 +171,7 @@ package scripting is
 		PARTCODE,
 		PNP, -- pick & place
 		PURPOSE,
+		SUBMODULE,
 		TEXT,
 		TEXT_SIZE,
 		TEXT_LINE_WIDTH,

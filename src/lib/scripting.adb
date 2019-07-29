@@ -1598,6 +1598,26 @@ package body scripting is
 									command_incomplete;
 							end case;
 
+						when SUBMODULE =>
+							case fields is
+								when 8 =>
+									board_ops.move_submodule (
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)), -- OSC1
+										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+										point			=> type_point_2d (set_point (
+															x => to_distance (f (7)),
+															y => to_distance (f (8)))),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last =>
+									command_too_long (8);
+									
+								when others =>
+									command_incomplete;
+							end case;
+							
 						when others => invalid_noun (to_string (noun));
 					end case;
 
