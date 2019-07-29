@@ -11363,7 +11363,7 @@ package body schematic_ops is
 			item	=> numbering.type_modules.cursor,
 			max 	=> submodules.nesting_depth_max);
 
-		-- Another stack keeps record of the assembly variant at the submodule level.
+		-- Another stack keeps record of the assembly variant on submodule levels.
 		package stack_variant is new et_general.stack_lifo (
 			item	=> assembly_variants.type_variant_name.bounded_string,
 			max 	=> submodules.nesting_depth_max);

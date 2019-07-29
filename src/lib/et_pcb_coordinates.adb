@@ -237,7 +237,7 @@ package body et_pcb_coordinates is
 
 	function to_string (point : in type_point_2d_with_angle) return string is
 	begin
-		return position_preamble_2d
+		return position_preamble_2d_with_rotation
 			& to_string (point.x)
 			& latin_1.space
 			& et_coordinates.axis_separator

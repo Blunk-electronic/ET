@@ -101,11 +101,17 @@ package et_pcb_coordinates is
 		return type_distance;
 	-- Converts a mil number (given as a string) to millimeters.	
 
-	position_preamble_2d : constant string (1..10) := " pos "
+	position_preamble_2d : constant string := " pos "
 		& "(x"
 		& et_coordinates.axis_separator
 		& "y)";
 
+	position_preamble_2d_with_rotation : constant string := " pos "
+		& "(x"
+		& et_coordinates.axis_separator
+		& "y"
+		& et_coordinates.axis_separator
+		& "rotation)";
 	
 	position_preamble_3d : constant string (1..12) := " pos "
 		& "(x"

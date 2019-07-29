@@ -323,11 +323,19 @@ package body board_ops is
 		-- Collects devices of the given module and its variant in container pnp.
 		-- Adds to the device index the given offset.
 		-- If offset is zero, we are dealing with the top module.
-			module_cursor	: in type_modules.cursor;
-			variant			: in assembly_variants.type_variant_name.bounded_string;
-			offset			: in et_libraries.type_device_name_index;
-			position		: in et_pcb_coordinates.type_point_2d_with_angle) -- CS not applied yet
+		-- The submodule position in the parent module is added to the device position.
+			module_cursor		: in type_modules.cursor;
+			variant				: in assembly_variants.type_variant_name.bounded_string;
+			offset				: in et_libraries.type_device_name_index;
+			position_in_board	: in et_pcb_coordinates.type_point_2d_with_angle) -- submod pos. in parent
 		is
+
+			procedure log_position_in_board is begin
+				if position_in_board /= submodule_position_default then
+					log (text => "and applying submodule" & to_string (position_in_board),
+						 level => log_threshold + 1);
+				end if;
+			end;
 			
 			procedure query_devices (
 				module_name	: in type_module_name.bounded_string;
@@ -335,6 +343,22 @@ package body board_ops is
 
 				device_name : et_libraries.type_device_name;
 				inserted : boolean;
+
+				function apply_position_in_board (position_generic : in type_package_position) return
+					et_pcb_coordinates.type_package_position is 
+					device_position : et_pcb_coordinates.type_package_position := position_generic;
+				begin
+					-- Get the device position in the generic submodule.
+					-- Then move it according
+					-- to the position of the submodule instance in the parent module:
+					move_point (device_position, type_point_2d (position_in_board));
+
+					log (text => "generic" & to_string (type_point_2d_with_angle (position_generic)) &
+						 " -> " & "in instance" & to_string (type_point_2d_with_angle (device_position)),
+						 level => log_threshold + 2);
+
+					return device_position;
+				end;
 				
 				procedure test_inserted is begin
 					if not inserted then
@@ -350,7 +374,6 @@ package body board_ops is
 					use et_schematic.type_devices;
 					use assembly_variants.type_devices;
 
-					device_position_generic : et_pcb_coordinates.type_package_position;
 				begin -- query_properties_default
 
 					-- the device must be real (appearance SCH_PCB)
@@ -363,18 +386,12 @@ package body board_ops is
 
 							-- Store device in pnp list as it is:
 							apply_offset (device_name, offset, log_threshold + 2);
-
-							-- Get the device position in the generic submodule.
-							-- Then move it according
-							-- to the position of the submodule instance in the parent module:
-							device_position_generic := element (cursor_schematic).position;
-							move_point (device_position_generic, type_point_2d (position));
 							
 							pick_and_place.type_devices.insert (
 								container	=> pnp,
 								key			=> device_name, -- IC4, R3
 								new_item	=> (
-									position	=> device_position_generic),
+									position	=> apply_position_in_board (element (cursor_schematic).position)),
 	-- 								value		=> element (cursor_schematic).value,
 	-- 								partcode	=> element (cursor_schematic).partcode,
 	-- 								purpose		=> element (cursor_schematic).purpose,
@@ -411,12 +428,12 @@ package body board_ops is
 							-- Device has no entry in the assembly variant. -> It is to be stored in pnp list as it is:
 							
 								apply_offset (device_name, offset, log_threshold + 2);
-								
+
 								pick_and_place.type_devices.insert (
 									container	=> pnp,
 									key			=> device_name, -- IC4, R3
 									new_item	=> (
-										position	=> element (cursor_schematic).position),
+										position	=> apply_position_in_board (element (cursor_schematic).position)),
 -- 										value		=> element (cursor_schematic).value,
 -- 										partcode	=> element (cursor_schematic).partcode,	
 -- 										purpose		=> element (cursor_schematic).purpose,
@@ -437,14 +454,14 @@ package body board_ops is
 										
 									when YES =>
 										apply_offset (device_name, offset, log_threshold + 2);
-										
+
 										-- Insert the device in pnp list with alternative properties as defined
 										-- in the assembly variant:
 										pick_and_place.type_devices.insert (
 											container	=> pnp,
 											key			=> device_name, -- IC4, R3
 											new_item	=> (
-												position	=> element (cursor_schematic).position),
+												position	=> apply_position_in_board (element (cursor_schematic).position)),
 -- 												value		=> element (alt_dev_cursor).value,
 -- 												partcode	=> element (alt_dev_cursor).partcode,
 -- 												purpose		=> element (alt_dev_cursor).purpose,
@@ -470,7 +487,9 @@ package body board_ops is
 							" default variant by applying device index offset" & 
 							et_libraries.to_string (offset), -- 100
 						level => log_threshold + 1);
-					
+
+					log_position_in_board;
+
 					log_indentation_up;
 					
 					et_schematic.type_devices.iterate (
@@ -485,9 +504,11 @@ package body board_ops is
 							" by applying device index offset" & 
 							et_libraries.to_string (offset), -- 100
 						level => log_threshold + 1);
-					
+
+					log_position_in_board;
+
 					log_indentation_up;
-				
+					
 					et_schematic.type_devices.iterate (
 						container	=> module.devices,
 						process		=> query_properties_variants'access);
@@ -513,13 +534,18 @@ package body board_ops is
 			item	=> numbering.type_modules.cursor,
 			max 	=> submodules.nesting_depth_max);
 
-		-- Another stack keeps record of the assembly variant at the submodule level.
+		-- Another stack keeps record of the assembly variant on submodule levels.
 		package stack_variant is new et_general.stack_lifo (
 			item	=> assembly_variants.type_variant_name.bounded_string,
 			max 	=> submodules.nesting_depth_max);
 		
 		variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
 
+		-- Another stack keeps record of the submodule position (inside the parent module) on submodule levels.
+		package stack_position_in_board is new et_general.stack_lifo (
+			item	=> et_pcb_coordinates.type_point_2d_with_angle,
+			max 	=> submodules.nesting_depth_max);
+		
 		procedure query_submodules is 
 		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 		-- until the deepest submodule (the bottom of the design structure) has been reached.
@@ -591,10 +617,10 @@ package body board_ops is
 				
 				-- collect devices from current module
 				collect (
-					module_cursor	=> locate_module (module_name),
-					variant			=> variant,
-					offset			=> offset,
-					position		=> position_in_board -- the position of the submodule inside the parent module
+					module_cursor		=> locate_module (module_name),
+					variant				=> variant,
+					offset				=> offset,
+					position_in_board	=> position_in_board -- the position of the submodule inside the parent module
 					);
 				
 				if first_child (tree_cursor) = numbering.type_modules.no_element then 
@@ -612,6 +638,9 @@ package body board_ops is
 					-- backup the parent assembly variant
 					stack_variant.push (variant);
 
+					-- backup the position_in_board of this submodule
+					stack_position_in_board.push (position_in_board);
+					
 					-- iterate through submodules on the level below
 					query_submodules; -- this is recursive !
 
@@ -620,6 +649,9 @@ package body board_ops is
 
 					-- restore the parent assembly variant (see stack_variant.push above)
 					variant := stack_variant.pop;
+
+					-- restore the position_in_board of this submodule
+					position_in_board := stack_position_in_board.pop;
 				end if;
 
 				next_sibling (tree_cursor); -- next submodule on this level
@@ -667,10 +699,10 @@ package body board_ops is
 			-- zero relative position to anywhere because it is not
 			-- encapsulated in any parent module.
 			collect (
-				module_cursor	=> module_cursor,
-				variant			=> variant_top,
-				offset			=> 0,
-				position		=> submodule_position_default -- zero x/x/rotation
+				module_cursor		=> module_cursor,
+				variant				=> variant_top,
+				offset				=> 0,
+				position_in_board	=> submodule_position_default -- zero x/x/rotation
 				); 
 
 			-- take a copy of the submodule tree of the given top module:
@@ -681,6 +713,7 @@ package body board_ops is
 			
 			stack_level.init;
 			stack_variant.init;
+			stack_position_in_board.init;
 
 			-- collect devices of the submodules
 			query_submodules;
