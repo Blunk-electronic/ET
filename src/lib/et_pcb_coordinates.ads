@@ -159,6 +159,11 @@ package et_pcb_coordinates is
 		point	: in out type_point_2d'class;
 		offset	: in type_point_2d);
 
+-- 	function move (
+-- 		point	: in type_point_2d'class;
+-- 		offset	: in type_point_2d) 
+-- 		return type_point_2d'class;
+
 	procedure set_point (
 		axis 	: in type_axis_2d;
 		value	: in type_distance;					 

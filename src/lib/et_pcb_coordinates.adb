@@ -262,6 +262,16 @@ package body et_pcb_coordinates is
 		point.y := point.y + offset.y;
 	end move_point;
 
+-- 	function move (
+-- 		point	: in type_point_2d'class;
+-- 		offset	: in type_point_2d) 
+-- 		return type_point_2d'class is 
+-- 		point_out : type_point_2d'class := point;
+-- 	begin
+-- 		move_point (point_out, offset);
+-- 		return point_out;
+-- 	end;
+	
 	procedure set_point (
 		axis 	: in type_axis_2d;
 		value	: in type_distance;

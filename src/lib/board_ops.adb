@@ -268,6 +268,40 @@ package body board_ops is
 
 	end flip_device;
 
+	function get_position (
+	-- Returns the position of a submodule instance.
+	-- Assumptions:
+	--  - The module to be searched in must be in the rig already.
+	--  - The submodule instance must exist in the module.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		instance		: in et_general.type_module_instance_name.bounded_string) -- OSC1
+		return et_pcb_coordinates.type_point_2d_with_angle is
+		
+		position : et_pcb_coordinates.type_point_2d_with_angle := submodule_position_default; -- to be returned
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use submodules.type_submodules;
+			submod_cursor : submodules.type_submodules.cursor;
+		begin
+			submod_cursor := find (module.submods, instance);
+			position := element (submod_cursor).position_in_board;
+		end;
+		
+	begin -- get_position
+		-- locate the given module
+		module_cursor := locate_module (module_name);
+
+		type_modules.query_element (
+			position	=> module_cursor,
+			process		=> query_submodules'access);
+
+		return position;
+	end get_position;
+	
 	procedure make_pick_and_place (
 	-- Exports a pick & place file from the given top module and assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
@@ -315,6 +349,8 @@ package body board_ops is
 
 					use et_schematic.type_devices;
 					use assembly_variants.type_devices;
+
+					device_position_generic : et_pcb_coordinates.type_package_position;
 				begin -- query_properties_default
 
 					-- the device must be real (appearance SCH_PCB)
@@ -327,12 +363,18 @@ package body board_ops is
 
 							-- Store device in pnp list as it is:
 							apply_offset (device_name, offset, log_threshold + 2);
+
+							-- Get the device position in the generic submodule.
+							-- Then move it according
+							-- to the position of the submodule instance in the parent module:
+							device_position_generic := element (cursor_schematic).position;
+							move_point (device_position_generic, type_point_2d (position));
 							
 							pick_and_place.type_devices.insert (
 								container	=> pnp,
 								key			=> device_name, -- IC4, R3
 								new_item	=> (
-									position	=> element (cursor_schematic).position),
+									position	=> device_position_generic),
 	-- 								value		=> element (cursor_schematic).value,
 	-- 								partcode	=> element (cursor_schematic).partcode,
 	-- 								purpose		=> element (cursor_schematic).purpose,
@@ -542,7 +584,10 @@ package body board_ops is
 
 				end if;
 
-				-- CS calculate position_in_board
+				-- Get the submodule position within the parent module.
+				-- NOTE: The position has been assigned in the PARENT module where the submodule
+				-- has been instantiated.
+				position_in_board := get_position (parent_name, module_instance);
 				
 				-- collect devices from current module
 				collect (
@@ -551,7 +596,6 @@ package body board_ops is
 					offset			=> offset,
 					position		=> position_in_board -- the position of the submodule inside the parent module
 					);
-
 				
 				if first_child (tree_cursor) = numbering.type_modules.no_element then 
 				-- No submodules on the current level. means we can't go deeper:
@@ -610,6 +654,12 @@ package body board_ops is
 		-- locate the given top module
 		module_cursor := locate_module (module_name);
 
+		-- Build the submodule tree of the module according to the current design structure.
+		-- All further operations rely on this tree:
+		schematic_ops.build_submodules_tree (
+			module_name 	=> module_name,
+			log_threshold	=> log_threshold + 1);
+		
 		if exists (module_cursor, variant_top) then
 
 			-- Collect devices of the given top module.

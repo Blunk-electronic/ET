@@ -2070,12 +2070,8 @@ package body et_project is
 					space & keyword_pos_x & to_string (element (submodule_cursor).size.x) &
 					space & keyword_pos_y & to_string (element (submodule_cursor).size.y)); -- size x 50 y 70
 				
--- 				write (keyword => keyword_position_in_board, parameters => position (element (submodule_cursor).position_in_board));
--- 				write (keyword => keyword_rotation, parameters => rotation (element (submodule_cursor).position_in_board));
-				
 				write (keyword => keyword_position_in_board, parameters => -- position_in_board x 23 y 0.2 rotation 90.0
-					position (element (submodule_cursor).position_in_board) & space -- x 23 y 0.2
-					& keyword_rotation & space & rotation (element (submodule_cursor).position_in_board)); -- rotation 90.0
+					position (element (submodule_cursor).position_in_board));
 
 				write (keyword => keyword_view_mode, parameters => to_string (element (submodule_cursor).view_mode));
 				write (keyword => keyword_device_names_offset, parameters => et_libraries.to_string (element (submodule_cursor).device_names_offset));
