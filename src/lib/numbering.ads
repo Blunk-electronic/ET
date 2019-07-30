@@ -71,11 +71,12 @@ package numbering is
 		element_type	=> type_device);
 
 	type type_index_range is record
-		lowest	: et_libraries.type_device_name_index := et_libraries.type_device_name_index'last;
-		highest	: et_libraries.type_device_name_index := et_libraries.type_device_name_index'first;		
+		lowest	: et_libraries.type_device_name_index := et_libraries.type_device_name_index'last; -- "last" is not a bug
+		highest	: et_libraries.type_device_name_index := et_libraries.type_device_name_index'first; -- "first" is not a bug	
 	end record;
 
 	function to_index_range (
+	-- Returns a string like "module 'templates/clock_generator' range 78 .. 133"
 		module_name	: in type_module_name.bounded_string;
 		index_range	: in type_index_range) return string;
 

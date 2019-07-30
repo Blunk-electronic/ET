@@ -585,7 +585,7 @@ package schematic_ops is
 		log_threshold	: in type_log_level);
 
 	procedure build_submodules_tree (
-	-- Re(builds) the tree of submodules.
+	-- Re(builds) the submodule tree of the given parent module.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 

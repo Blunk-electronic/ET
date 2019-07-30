@@ -78,6 +78,7 @@ package body numbering is
 	end "<";
 			
 	function to_index_range (
+	-- Returns a string like "module 'templates/clock_generator' range 78 .. 133"
 		module_name	: in type_module_name.bounded_string;
 		index_range	: in type_index_range) return string is
 	begin

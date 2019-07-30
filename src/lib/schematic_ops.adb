@@ -10760,11 +10760,11 @@ package body schematic_ops is
 
 				index_current := index (key (device_cursor));
 				
-				if index_current < index_range.lowest then
+				if index_current < index_range.lowest then -- see specs of type_index_range for defaults
 					index_range.lowest := index_current;
 				end if;
 
-				if index_current > index_range.highest then
+				if index_current > index_range.highest then -- see specs of type_index_range for defaults
 					index_range.highest := index_current;
 				end if;
 				
@@ -10775,7 +10775,12 @@ package body schematic_ops is
 				log (text => numbering.to_index_range (module_name, index_range),
 					 level => log_threshold + 1);
 			else
-				log (WARNING, "no devices found !");
+				log (WARNING, "no devices found in module " &
+					 enclose_in_quotes (to_string (module_name)) & " !");
+
+				index_range.lowest := et_libraries.type_device_name_index'first;
+				index_range.highest := et_libraries.type_device_name_index'first;
+
 			end if;
 
 		end query_devices;
@@ -10784,7 +10789,7 @@ package body schematic_ops is
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))),
 			--" obtaining device index range ...",
 			level => log_threshold);
-
+		
 		log_indentation_up;
 		
 		query_element (
@@ -10921,7 +10926,7 @@ package body schematic_ops is
 		
 	begin -- autoset_device_name_offsets
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
-			" calculating ranges of device indexes ...", level => log_threshold);
+			" exploring current ranges of device indexes ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- Calculate the index range per module and store it in 
@@ -10978,7 +10983,7 @@ package body schematic_ops is
 	end autoset_device_name_offsets;
 	
 	procedure build_submodules_tree (
-	-- Re(builds) the tree of submodules.
+	-- Re(builds) the submodule tree of the given parent module.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level) is
 
@@ -11047,10 +11052,15 @@ package body schematic_ops is
 			module		: in out et_schematic.type_module) is
 		begin
 			module.submod_tree := submod_tree;
+
+			log_indentation_up;
+			
 			log (text => "submodules total" & 
 				 count_type'image (numbering.type_modules.node_count (module.submod_tree) - 1),
 				 level => log_threshold + 1
 				);
+
+			log_indentation_down;
 		end assign_tree;
 		
 	begin -- build_submodules_tree

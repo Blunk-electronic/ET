@@ -297,9 +297,9 @@ package body scripting is
 							case fields is
 								when 11 =>
 									schematic_ops.add_submodule (
-										module_name 	=> module,
+										module_name 	=> module, -- parent module (where the submodule is to be inserted)
 										file			=> submodules.to_submodule_path (f (5)),
-										instance		=> et_general.to_instance_name (f (6)),
+										instance		=> et_general.to_instance_name (f (6)), -- submodule instance name
 										position		=> to_coordinates 
 											(
 											sheet => to_sheet (f (7)),
@@ -316,7 +316,8 @@ package body scripting is
 										log_threshold	=> log_threshold + 1
 										);
 
-									-- after adding a submodule, the submodule tree must be updated
+									-- After adding the submodule, 
+									-- the submodule tree of the parent must be updated:
 									schematic_ops.build_submodules_tree (
 										module_name 	=> module,
 										log_threshold	=> log_threshold + 2
@@ -395,9 +396,9 @@ package body scripting is
 							case fields is
 								when 9 =>
 									schematic_ops.copy_submodule (
-										module_name 	=> module,
-										instance_origin	=> et_general.to_instance_name (f (5)),
-										instance_new	=> et_general.to_instance_name (f (6)),
+										module_name 	=> module, -- parent module (where the submodule is to be copied)
+										instance_origin	=> et_general.to_instance_name (f (5)), -- submodule instance name
+										instance_new	=> et_general.to_instance_name (f (6)), -- submodule instance name
 										destination		=> to_coordinates 
 											(
 											sheet => to_sheet (f (7)),
@@ -410,7 +411,8 @@ package body scripting is
 										log_threshold	=> log_threshold + 1
 										);
 
-									-- after copying a submodule, the submodule tree must be updated
+									-- After copying the submodule, 
+									-- the submodule tree of the parent must be updated:
 									schematic_ops.build_submodules_tree (
 										module_name 	=> module,
 										log_threshold	=> log_threshold + 2
@@ -586,12 +588,13 @@ package body scripting is
 							case fields is
 								when 5 =>
 									schematic_ops.delete_submodule (
-										module_name 	=> module,
-										instance		=> et_general.to_instance_name (f (5)),
+										module_name 	=> module, -- parent module (where the submodule is to be deleted)
+										instance		=> et_general.to_instance_name (f (5)), -- submodule instance name
 										log_threshold	=> log_threshold + 1
 										);
 
-									-- after deleting a submodule, the submodule tree must be updated
+									-- After deleting the submodule, 
+									-- the submodule tree of the parent must be updated:
 									schematic_ops.build_submodules_tree (
 										module_name 	=> module,
 										log_threshold	=> log_threshold + 2

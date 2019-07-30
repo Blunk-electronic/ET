@@ -622,6 +622,9 @@ package body board_ops is
 		package stack_position_in_board is new et_general.stack_lifo (
 			item	=> et_pcb_coordinates.type_point_2d_with_angle,
 			max 	=> submodules.nesting_depth_max);
+
+		-- This is the position of the submodule in the board (usually its lower left corner):
+		position_in_board : et_pcb_coordinates.type_point_2d_with_angle := submodule_position_default;
 		
 		procedure query_submodules is 
 		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
@@ -631,9 +634,6 @@ package body board_ops is
 			parent_name 	: type_module_name.bounded_string; -- water_pump
 			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 			offset			: et_libraries.type_device_name_index;
-
-			-- This is the position of the submodule in the board (the lower left corner):
-			position_in_board : et_pcb_coordinates.type_point_2d_with_angle := submodule_position_default;
 			
 			use assembly_variants.type_submodules;
 			alt_submod : assembly_variants.type_submodules.cursor;
@@ -687,10 +687,11 @@ package body board_ops is
 
 				end if;
 
-				-- Get the submodule position within the parent module.
+				-- Get the submodule position inside the parent module.
 				-- NOTE: The position has been assigned in the PARENT module where the submodule
 				-- has been instantiated.
-				position_in_board := get_position (parent_name, module_instance);
+				--position_in_board := get_position (parent_name, module_instance);
+				move_point (position_in_board, type_point_2d (get_position (parent_name, module_instance)));
 				
 				-- collect devices from current module
 				collect (
