@@ -635,8 +635,6 @@ package body board_ops is
 			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 			offset			: et_libraries.type_device_name_index;
 
--- 			position_in_board_bak : et_pcb_coordinates.type_point_2d_with_angle;
-			
 			use assembly_variants.type_submodules;
 			alt_submod : assembly_variants.type_submodules.cursor;
 		begin
@@ -687,12 +685,6 @@ package body board_ops is
 
 				end if;
 
-				-- Get the submodule position inside the parent module.
-				-- NOTE: The position has been assigned in the PARENT module where the submodule
-				-- has been instantiated.
-				--position_in_board := get_position (parent_name, module_instance);
--- 				position_in_board_bak := position_in_board;
-
 				-- backup the position_in_board of this submodule
 				stack_position_in_board.push (position_in_board);
 				
@@ -721,9 +713,6 @@ package body board_ops is
 					-- backup the parent assembly variant
 					stack_variant.push (variant);
 
--- 					-- backup the position_in_board of this submodule
--- 					stack_position_in_board.push (position_in_board);
-					
 					-- iterate through submodules on the level below
 					query_submodules; -- this is recursive !
 
@@ -732,12 +721,7 @@ package body board_ops is
 
 					-- restore the parent assembly variant (see stack_variant.push above)
 					variant := stack_variant.pop;
-
--- 					-- restore the position_in_board of this submodule
--- 					position_in_board := stack_position_in_board.pop;
 				end if;
-
--- 				position_in_board := position_in_board_bak;
 
 				-- restore the position_in_board of this submodule
 				position_in_board := stack_position_in_board.pop;
