@@ -1,600 +1,245 @@
 -- SYSTEM ET module
--- date 2018-11-06T09:31:48
--- ======================================================================================================================================================
+-- date 2019-02-21T09:50:36
+-- ====================================================================================================
 
 [NET_CLASSES BEGIN]
 	[NET_CLASS BEGIN]
-		name hi-voltage
-		description "bla"
-		clearance 0.3
-		track_width_min 0.15
-		via_drill_min 0.3
-		via_restring_min 0.15
-		micro_via_drill_min 0.2
-		micro_via_restring_min 0.1
+		name default
+		description "This is the default net class."
+		clearance 0.200
+		track_width_min 0.250
+		via_drill_min 0.400
+		via_restring_min 0.100
+		micro_via_drill_min 0.100
+		micro_via_restring_min 0.100
 	[NET_CLASS END]
-[NET_CLASSES END]	
+[NET_CLASSES END]
 
 [NETS BEGIN]
 	[NET BEGIN]
-		name MASTER_RESET_N
-		class HV
-		scope local/global
+		name motor_on
+		class default
+		scope local
 		[STRANDS BEGIN]
 			[STRAND BEGIN]
-				position sheet 12 x 4 y 6 
+				position sheet 1 x 100.00 y 100.00
 				[SEGMENTS BEGIN]
 					[SEGMENT BEGIN]
-						start x 3 y 4
-						end x 5 y 4
-						
-						[LABELS BEGIN]
-							[LABEL BEGIN]
-								position x 3 y 4
-								rotation 0
-								size 2
-								style normal
-								line_width 0.2
-								appearance simple/tag
-								direction input
-							[LABEL END]
-						[LABELS END]
-			
-						[JUNCTIONS BEGIN]
-							position x 4 y 4
-						[JUNCTIONS END]
-
+						start x 100 y 100
+						end x 200 y 100
+						junction end
 						[PORTS BEGIN]
-							device R3 port 1 #reference and port							
+							device R1 port 1
 						[PORTS END]
-						
-						[SUBMODULE_PORTS BEGIN]
-							[PORT BEGIN]
-								module DRV_1
-								name clock_generator_out
-							[PORT END]
-						[SUBMODULE_PORTS END]
-						
 					[SEGMENT END]
+
+					[SEGMENT BEGIN]
+						start x 200 y 100
+						end x 200 y 150
+					[SEGMENT END]
+					
 				[SEGMENTS END]
 			[STRAND END]
+
+			[STRAND BEGIN]
+				position sheet 3 x 100.00 y 100.00
+				[SEGMENTS BEGIN]
+					[SEGMENT BEGIN]
+						start x 100 y 100
+						end x 200 y 100
+					[SEGMENT END]
+
+					[SEGMENT BEGIN]
+						start x 200 y 100
+						end x 200 y 150
+					[SEGMENT END]
+					
+				[SEGMENTS END]
+			[STRAND END]
+			
 		[STRANDS END]
-
-		[ROUTE BEGIN]
-			[LINE BEGIN]
-				start x 22.3 y 23.3
-				end x 133.2 y 32.5 
-				layer 2
-				width 0.2
-			[LINE END]
-
-			[ARC BEGIN]
-				center x 45 y 4.2
-				start x 42 y 54
-				end x 45 y 65
-				layer 2
-				width 0.5
-			[ARC END]
-
-			[POLYGON BEGIN]
-				priority 2
-				isolation 1.2
-				corner_easing none/chamfer/fillet
-				easing_radius 0.3
-				fill_style solid,hatched,cutout
-				hatching_line_width 0.3
-				hatching_line_spacing 1
-				pad_connection thermal/solid/none
-				layer 2
-				min_width 0.3
-				pad_technology smt_only/tht_only/smt_and_tht # use for both THERMAL and SOLID pad_connection
-				thermal_width 0.3
-				thermal_gap 0.8
-				[CORNERS BEGIN]
-					position x 123.54 y 2.7
-					position x 133.54 y 335.3
-					position x 523.54 y 6.7
-				[CORNERS END]
-			[POLYGON END]
-
-			[VIA BEGIN]
-				position x 56 y 44.5
-				diameter 0.25
-				restring_outer_layers 0.3
-				restring_inner_layers 0.35
-				layer_start 1
-				layer_end 15
-			[VIA END]
-		[ROUTE END]
 	[NET END]
+
+	[NET BEGIN]
+		name motor_on_res
+		class default
+		scope local
+		[STRANDS BEGIN]
+			[STRAND BEGIN]
+				position sheet 1 x 220.00 y 100.00
+				[SEGMENTS BEGIN]
+					[SEGMENT BEGIN]
+						start x 220 y 100
+						end x 300 y 100
+						[PORTS BEGIN]
+							device R1 port 2
+						[PORTS END]
+					[SEGMENT END]
+				[SEGMENTS END]
+			[STRAND END]			
+		[STRANDS END]
+	[NET END]
+
 [NETS END]
+
+[DRAWING_FRAMES BEGIN]
+	[SCHEMATIC BEGIN]
+		template dummy_frame
+	[SCHEMATIC END]
+	[BOARD BEGIN]
+		template dummy_frame
+	[BOARD END]
+[DRAWING_FRAMES END]
+
+[TEXTS BEGIN]
+	[TEXT BEGIN]
+		position sheet 1 x 100 y 200
+		content "ET Test Circuit"
+		size 1.70
+		line_width 0.33
+		rotation 0
+		style italic
+		alignment horizontal center vertical center
+	[TEXT END]
+[TEXTS END]
 
 [SUBMODULES BEGIN]
 	[SUBMODULE BEGIN]
-		name DRV_1
-		file $ET_TEMPLATES/motor_driver.mod
-		position sheet 3 x 130 y 210
-		size x 50 y 60
-		position_in_board x 23 y 0.2 rotation 90.0
-		view_mode origin/instance
-		reference_offset 100, 1000 -> CS
+		name CLK_GENERATOR
+
+		file templates/clock_generator.mod
+		--file ../templates/clock_generator.mod
+		--file /home/user/tmp/templates/clock_generator.mod
+		--file $TEMPLATES/clock_generator.mod
+		position sheet 1 x 150 y 85
+		size x 20 y 20
+		position_in_board x 200 y 200 rotation 0
+		view_mode origin
 		[PORTS BEGIN]
 			[PORT BEGIN]
-				name clock_generator_out
-				position x 10 y 20
-				rotation 90.0
-				length 5.0
+				name out
+				position x 0 y 10
 			[PORT END]
 		[PORTS END]
 	[SUBMODULE END]
 [SUBMODULES END]
 
-[DRAWING_FRAMES BEGIN]
-	[SCHEMATIC BEGIN] 
-		template $ET_FRAMES/drawing_frame_version_1.frm 
-		#count 8
-		#description 1 "bla"
-		#description 2 "blabl"
-	[SCHEMATIC END] 
+[NETCHANGERS BEGIN]
+	[NETCHANGER BEGIN]
+		name 1
+		position_in_schematic sheet 1 x 215 y 100
+		rotation_in_schematic 0
+		position_in_board x 234.4 y 99.0
+		layer 3
+	[NETCHANGER END]
+
+	[NETCHANGER BEGIN]
+		name 12
+		position_in_schematic sheet 2 x 215 y 100
+		rotation_in_schematic 0
+		position_in_board x 234.4 y 99.0
+		layer 3
+	[NETCHANGER END]	
 	
-	[BOARD BEGIN] 
-		template $ET_FRAMES/drawing_frame_version_2.frm
-	[BOARD END]
-[DRAWING_FRAMES END]
-	
-	
+[NETCHANGERS END]
+
 [DEVICES BEGIN]
 	[DEVICE BEGIN]
 		name R1
 		appearance sch_pcb
+		model $HOME/git/BEL/ET_component_library/devices/passive/resistors/R.dev
 		value 100R
-		model $ET_LIB_DIR/resistors/single.dev
-		bom no/yes
-		partcode BEL_R_PAC_S_0805_VAL_100R
-		purpose brightness_adjustment
-		variant N
-		
+		variant S_0805
+		partcode R_PAC_S_0805_VAL_100R
+		purpose "dummy"
+		[PACKAGE BEGIN]
+			position x 0 y 0 rotation 0.0 face top
+			[PLACEHOLDERS BEGIN]
+				[PLACEHOLDER BEGIN]
+					layer silk_screen
+					meaning reference
+					position x 0 y 2 rotation 0.00 face top
+					size width 1.000 height 1.000
+					line_width 0.150
+					alignment horizontal center vertical bottom
+				[PLACEHOLDER END]
+				[PLACEHOLDER BEGIN]
+					layer assembly_documentation
+					meaning value
+					position x 0 y 3 rotation 0.00 face top
+					size width 1.000 height 1.000
+					line_width 0.150
+					alignment horizontal center vertical bottom
+				[PLACEHOLDER END]
+			[PLACEHOLDERS END]
+		[PACKAGE END]
 		[UNITS BEGIN]
 			[UNIT BEGIN]
 				name 1
-				position sheet 2 x 130 y 210 
-				rotation 45 
-				mirrored no/x_axis/y_axis
-				[PLACEHOLDERS BEGIN] 
-					[PLACEHOLDER BEGIN] 
-						meaning reference,value
-						position x 135 y 205
-						size 2.5
-						style
-						line_width 0.15
-						alignment horizontal center vertical bottom
-					[PLACEHOLDER END] 
-				[PLACEHOLDERS END] 
+				position sheet 1 x 210 y 100
+				rotation 0
+				mirrored no
+				[PLACEHOLDERS BEGIN]
+					[PLACEHOLDER BEGIN]
+						meaning reference
+						position x 0 y 3
+						size 1.30
+						line_width 0.00
+						rotation 0
+						style normal
+						alignment horizontal center vertical center
+					[PLACEHOLDER END]
+					[PLACEHOLDER BEGIN]
+						meaning value
+						position x 0 y -3
+						size 1.30
+						line_width 0.00
+						rotation 0
+						style normal
+						alignment horizontal center vertical center
+					[PLACEHOLDER END]
+				[PLACEHOLDERS END]
 			[UNIT END]
 		[UNITS END]
-
-		[PACKAGE BEGIN]
-			position x 34.5 y 60.1 rotation 180 face top/bottom
-
-			[PLACEHOLDERS BEGIN] 
-				[PLACEHOLDER BEGIN] 
-					meaning reference/value/purpose
-					layer assembly_documentation/silk_screen
-					position x 135 y 205 rotation 270 face top/bottom
-					alignment horizontal center vertical bottom
-					size width 2 heigth 2 
-					line_width 0.15
-				[PLACEHOLDER END] 
-			[PLACEHOLDERS END] 
-		[PACKAGE END]
 	[DEVICE END]
 [DEVICES END]
 
-[TEXTS BEGIN]
-	[TEXT BEGIN]	
-		position sheet 1 x 180.34 y 39.82
-		content "ET Test Circuit"
-		size 1.70
-		line_width 0.33
-		rotation 180.0
-		style italic
-		alignment horizontal center vertical center
-	[TEXT END]
-[TEXTS END]	
+[ASSEMBLY_VARIANTS BEGIN]
+	[VARIANT BEGIN]
+		name low_cost
+		description "Assembly variant without temperature sensor."
+		--device R1 not_mounted
+		device R1 value 270R partcode R_PAC_S_0805_VAL_270R purpose "set temperature"
+	[VARIANT END]
+
+	[VARIANT BEGIN]
+		name comfortable
+		description "Assembly variant with all features."
+		--device R1 not_mounted
+		device R1 value 270R partcode R_PAC_S_0805_VAL_270R purpose "set temperature"
+		submodule CLK_GENERATOR variant fixed_frequency
+	[VARIANT END]
+	
+[ASSEMBLY_VARIANTS END]
 
 [BOARD BEGIN]
-	[SILK_SCREEN BEGIN]
-		[TOP BEGIN]
-			[LINE BEGIN]
-				start x 22.3 y 455
-				end x 32.5 y 455
-				width 0.2
-			[LINE END]
-
-			[ARC BEGIN]
-				center x 45 y 4.2
-				start x 42 y 54
-				end x 45 y 65
-				width 0.5
-			[ARC END]
-
-			[CIRCLE BEGIN]
-				center x 45 y 4.2
-				radius 10
-				width 0.5
-				filled yes/no
-				fill_style solid/hatched/cutout
-				hatching_line_width 0.3
-				hatching_line_spacing 1
-			[CIRCLE END]
-			
-			[POLYGON BEGIN]
-				fill_style solid,hatched,cutout
-				corner_easing none/chamfer/fillet
-				easing_radius 0.3
-				hatching_line_width 0.3
-				hatching_line_spacing 1
-				[CORNERS BEGIN]
-					position x 123.54 y 2.7
-					position x 133.54 y 335.3
-					position x 523.54 y 6.7
-				[CORNERS END]
-			[POLYGON END]
-			
-			[TEXT BEGIN]
-				position x 40 y 20 rotation 0
-				size width 3.0 height 3.0
-				line_width 0.2
-				content "bla"
-				alignment horizontal center vertical center
-			[TEXT END]
-			
-			[PLACEHOLDER BEGIN]
-				position x 40 y 20 rotation 10
-				size width 3.0 height 3.0
-				line_width 0.2
-				meaning project_name
-				alignment horizontal center vertical center
-			[PLACEHOLDER END]			
-		[TOP END]
-		
-		[BOTTOM BEGIN]
-		
-		[BOTTOM END]
-	[SILK_SCREEN END]
-	
-	[ASSEMBLY_DOCUMENTATION BEGIN]
-		same as in SILK_SCREEN
-	[ASSEMBLY_DOCUMENTATION END]	
-
-	[STENCIL BEGIN]
-		[TOP BEGIN]
-			[LINE BEGIN]
-				start x 22.3
-				end y 32.5
-				width 0.2
-			[LINE END]
-
-			[ARC BEGIN]
-				center x 45 y 4.2
-				start x 42 y 54
-				end x 45 y 65
-				width 0.5
-			[ARC END]
-
-			[CIRCLE BEGIN]
-				center x 45 y 4.2
-				radius 10
-				width 0.5
-				filled yes/no
-				fill_style solid/hatched/cutout
-				hatching_line_width 0.3
-				hatching_line_spacing 1
-			[CIRCLE END]
-			
-			[POLYGON BEGIN]
-				fill_style solid,hatched,cutout
-				corner_easing none/chamfer/fillet
-				easing_radius 0.3
-				hatching_line_width 0.3
-				hatching_line_spacing 1
-				[CORNERS BEGIN]
-					x 123.54 y 2.7
-					x 133.54 y 335.3
-					x 523.54 y 6.7
-				[CORNERS END]
-			[POLYGON END]
-			
-		[TOP END]
-		
-		[BOTTOM BEGIN]
-			same as in top
-		[BOTTOM END]
-	[STENCIL END]
-	
-	[STOP_MASK BEGIN]
-		[TOP BEGIN]
-			[LINE BEGIN]
-				start x 22.3
-				end y 32.5
-				width 0.2
-			[LINE END]
-
-			[ARC BEGIN]
-				center x 45 y 4.2
-				start x 42 y 54
-				end x 45 y 65
-				width 0.5
-			[ARC END]
-
-			[CIRCLE BEGIN]
-				center x 45 y 4.2
-				radius 10
-				width 0.5
-				filled yes/no
-				fill_style solid/hatched/cutout
-				hatching_line_width 0.3
-				hatching_line_spacing 1
-			[CIRCLE END]
-
-			[POLYGON BEGIN]
-				fill_style solid,hatched,cutout
-				corner_easing none/chamfer/fillet
-				easing_radius 0.3
-				hatching_line_width 0.3
-				hatching_line_spacing 1
-				[CORNERS BEGIN]
-					x 123.54 y 2.7
-					x 133.54 y 335.3
-					x 523.54 y 6.7
-				[CORNERS END]
-			[POLYGON END]
-			
-			[TEXT BEGIN]
-				position x 40 y 20
-				size x 3.0 y 3.0
-				line_width 0.2
-				rotation 0
-				content "bla"
-				alignment center
-			[TEXT END]
-
-			[PLACEHOLDER BEGIN]
-				position x 40 y 20
-				size x 3.0 y 3.0
-				line_width 0.2
-				rotation 0
-				meaning project_name
-				alignment center
-			[PLACEHOLDER END]
-			
-		[TOP END]
-		
-		[BOTTOM BEGIN]
-			same as in top
-		[BOTTOM END]
-	[STOP_MASK END]		
-
-	[KEEPOUT BEGIN]
-		[TOP BEGIN]
-			[LINE BEGIN]
-				start x 22.3
-				end y 32.5
-				width 0.2
-			[LINE END]
-
-			[ARC BEGIN]
-				center x 45 y 4.2
-				start x 42 y 54
-				end x 45 y 65
-				width 0.5
-			[ARC END]
-
-			[CIRCLE BEGIN]
-				center x 45 y 4.2
-				radius 10
-				width 0.5
-				filled yes/no
-				fill_style solid/hatched/cutout
-				hatching_line_width 0.3
-				hatching_line_spacing 1
-			[CIRCLE END]
-
-			[POLYGON BEGIN]
-				fill_style solid,hatched,cutout
-				corner_easing none/chamfer/fillet
-				easing_radius 0.3
-				hatching_line_width 0.3
-				hatching_line_spacing 1
-				[CORNERS BEGIN]
-					x 123.54 y 2.7
-					x 133.54 y 335.3
-					x 523.54 y 6.7
-				[CORNERS END]
-			[POLYGON END]
-		[TOP END]
-
-		[BOTTOM BEGIN]
-			same as in top
-		[BOTTOM END]
-		
-	[KEEPOUT END]
-
-	[ROUTE_RESTRICT BEGIN]
-		[LINE BEGIN]
-			start x 22.3 y 34
-			end x 10 y 32.5 
-			width 0.2
-			layers 2 3 15
-		[LINE END]
-
+	[PCB_CONTOURS_NON_PLATED BEGIN]
 		[ARC BEGIN]
-			center x 140.000 y 160.000
-			start x 140.000 y 155.000
+			center x 150.000 y 75.000
+			start x 155.000 y 70.000
 			end x 0.000 y 210.000
-			width 0.200
-			layers 1 2 12
+			locked no
 		[ARC END]
-		
-		[CIRCLE BEGIN]
-			center x 250.000 y 125.000
-			radius 5.000
-			width 0.200
-			filled no
-			fill_style solid
-			hatching_line_width 0.300
-			hatching_line_spacing 2.000
-			layers 1 2 12			
-		[CIRCLE END]
-		
-		[POLYGON BEGIN]
-			fill_style solid
-			corner_easing none
-			easing_radius 0.3
-			hatching_line_width 0.3
-			hatching_line_spacing 1
-			layers 1 2 11
-			width 0.200
-			[CORNERS BEGIN]
-				position x 123.54 y 2.7
-				position x 133.54 y 335.3
-				position x 523.54 y 6.7
-			[CORNERS END]
-		[POLYGON END]
-	[ROUTE_RESTRICT END]
-
-	[VIA_RESTRICT BEGIN]
-		[LINE BEGIN]
-			start x 22.3 y 34
-			end x 10 y 32.5 
-			width 0.2
-			layers 2 3 15
-		[LINE END]
-
 		[ARC BEGIN]
-			center x 140.000 y 160.000
-			start x 140.000 y 155.000
+			center x 145.000 y 110.000
+			start x 150.000 y 115.000
 			end x 0.000 y 210.000
-			width 0.200
-			layers 1 2 12
+			locked no
 		[ARC END]
-		
-		[CIRCLE BEGIN]
-			center x 250.000 y 125.000
-			radius 5.000
-			width 0.200
-			filled no
-			fill_style solid
-			hatching_line_width 0.300
-			hatching_line_spacing 2.000
-			layers 1 2 12			
-		[CIRCLE END]
-		
-		[POLYGON BEGIN]
-			fill_style solid
-			corner_easing none
-			easing_radius 0.3
-			hatching_line_width 0.3
-			hatching_line_spacing 1
-			layers 1 2 11
-			width 0.200
-			[CORNERS BEGIN]
-				position x 123.54 y 2.7
-				position x 133.54 y 335.3
-				position x 523.54 y 6.7
-			[CORNERS END]
-		[POLYGON END]
+	[PCB_CONTOURS_NON_PLATED END]
+[BOARD END]
 
-	[VIA_RESTRICT END]
-	
-	[COPPER BEGIN]
-
-		[LINE BEGIN]
-			start x 22.3 y 334.0
-			end x 24.3 y 32.5
-			layer 2
-			width 0.2
-		[LINE END]
-
-		[ARC BEGIN]
-			center x 45 y 4.2
-			start x 42 y 54
-			end x 45 y 65
-			layer 2
-			width 0.5
-		[ARC END]
-
-		[CIRCLE BEGIN]
-			center x 45 y 4.2
-			radius 10
-			layer 2
-			width 0.5
-			filled yes/no
-			fill_style solid/hatched/cutout
-			hatching_line_width 0.3
-			hatching_line_spacing 1
-		[CIRCLE END]
-		
-		[POLYGON BEGIN]
-			priority 2
-			isolation 1.2
-			corner_easing none/chamfer/fillet
-			easing_radius 0.3
-			fill_style solid,hatched,cutout
-			hatching_line_width 0.3
-			hatching_line_spacing 1
-			layer 2
-			min_width 0.3
-			[CORNERS BEGIN]
-				x 123.54 y 2.7
-				x 133.54 y 335.3
-				x 523.54 y 6.7
-			[CORNERS END]
-		[POLYGON END]
-
-		[TEXT BEGIN]
-			position x 40 y 20 rotation 0
-			size width 3.0 height 3.0
-			layer 2
-			line_width 0.2
-			content "bla"
-			alignment horizontal center vertical center
-		[TEXT END]
-
-		[PLACEHOLDER BEGIN]
-			position x 40 y 20 rotation 0
-			size width 3.0 height 3.0
-			layer 2
-			line_width 0.2
-			meaning project_name
-			alignment horizontal center vertical center
-		[PLACEHOLDER END]
-		
-	[COPPER END]
-	
-	[PCB_CONTOUR_NON_PLATED BEGIN]
-		[LINE BEGIN]
-			start x 22.3 y 45
-			end x 35 y 32.5
-			locked yes/no
-		[LINE END]
-
-		[ARC BEGIN]
-			center x 45 y 4.2
-			start x 42 y 54
-			end x 45 y 65
-			locked yes/no
-		[ARC END]
-
-		[CIRCLE BEGIN]
-			center x 45 y 4.2
-			radius 10
-			locked yes/no
-		[CIRCLE END]
-	[PCB_CONTOUR_NON_PLATED END]
-[BOARD_END]
-	
-
--- ======================================================================================================================================================
--- date 2018-11-06T09:31:48
+-- ====================================================================================================
+-- date 2019-02-21T09:50:36
 -- module file end
+
