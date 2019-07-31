@@ -269,7 +269,7 @@ package body board_ops is
 	end flip_device;
 
 	function get_position (
-	-- Returns the position of a submodule instance.
+	-- Returns the position (x/y/rotation) of a submodule instance.
 	-- Assumptions:
 	--  - The module to be searched in must be in the rig already.
 	--  - The submodule instance must exist in the module.
@@ -381,6 +381,8 @@ package body board_ops is
 	
 	procedure make_pick_and_place (
 	-- Exports a pick & place file from the given top module and assembly variant.
+	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
+	--     See comment in procedure query_submodules.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_top		: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		pnp_file		: in pick_and_place.type_file_name.bounded_string; -- CAM/motor_driver_bom.pnp
@@ -687,8 +689,13 @@ package body board_ops is
 
 				-- backup the position_in_board of this submodule
 				stack_position_in_board.push (position_in_board);
-				
+
+				-- The new position_in_board is a vector sum of the position_in_board of the parent module
+				-- and the position_in_board of the current submodule:
 				move_point (position_in_board, type_point_2d (get_position (parent_name, module_instance)));
+
+				-- CS position_in_board must be rotated according to rotation specified where
+				-- the submodule has been instanciated. 
 				
 				-- collect devices from current module
 				collect (

@@ -100,6 +100,7 @@ package board_ops is
 	
 	procedure make_pick_and_place (
 	-- Exports a pick & place file from the given top module and assembly variant.
+	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_top		: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		pnp_file		: in pick_and_place.type_file_name.bounded_string; -- CAM/motor_driver_bom.pnp
