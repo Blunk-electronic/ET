@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                          SYSTEM ET SCHEMATIC                             --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                              SCHEMATIC                                   --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -390,7 +390,9 @@ package et_schematic is
 		-- General non-component related board stuff (silk screen, documentation, ...):
 		board			: et_pcb.type_board;
 
-		-- The tree of submodules is stored here:
+		-- The tree of submodules is stored here. 
+		-- NOTE: This container is exclusively used if the module is a top module.
+		-- In submodules it is not used (should always be empty):
 		submod_tree		: numbering.type_modules.tree;
 	end record;
 
