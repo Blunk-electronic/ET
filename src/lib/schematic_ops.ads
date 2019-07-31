@@ -553,13 +553,6 @@ package schematic_ops is
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level);
 
-	procedure set_offset (
-	-- Sets the device numbering offset of a submodule instance.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		offset			: in et_libraries.type_device_name_index;
-		log_threshold	: in type_log_level);
-	
 	function sort_by_coordinates (
 		module_cursor 	: in et_project.type_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -584,19 +577,16 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- the top module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 
+	procedure dump_tree (
+	-- Dumps submodule names, instances and device name offsets:
+		module_name		: in type_module_name.bounded_string;
+		log_threshold	: in type_log_level);
+
+	
 	procedure build_submodules_tree (
 	-- Re(builds) the submodule tree of the given parent module.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
-
-	function get_offset (
-	-- Returns the device numbering offset of a submodule instance.
-	-- Assumptions:
-	--  - The module to be searched in must be in the rig already.
-	--  - The submodule instance must exist in the module.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in et_general.type_module_instance_name.bounded_string) -- OSC1
-		return et_libraries.type_device_name_index;
 	
 	procedure apply_offset (
 	-- Adds the offset to the device index of the given device_name.

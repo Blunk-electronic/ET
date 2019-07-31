@@ -665,10 +665,8 @@ package body board_ops is
 					parent_name := element (parent (tree_cursor)).name;
 				end if;
 
-				-- Get the device name offset of the current submodule.
-				-- NOTE: The offset has been assigned in the PARENT module where the submodule
-				-- has been instantiated.
-				offset := get_offset (parent_name, module_instance);
+				-- Get the device name offset of the current submodule;
+				offset := element (tree_cursor).device_names_offset;
 
 				if not assembly_variants.is_default (variant) then
 					-- Query in parent module: Is there any assembly variant specified for this submodule ?
@@ -758,6 +756,7 @@ package body board_ops is
 		end query_submodules;
 		
 	begin -- make_pick_and_place
+		
 		-- The variant name is optional. If not provided, the default variant will be exported.
 		if assembly_variants.is_default (variant_top) then
 			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
@@ -794,7 +793,7 @@ package body board_ops is
 				offset				=> 0,
 				position_in_board	=> submodule_position_default -- zero x/x/rotation
 				); 
-
+			
 			-- take a copy of the submodule tree of the given top module:
 			submod_tree := element (module_cursor).submod_tree;
 
@@ -804,7 +803,7 @@ package body board_ops is
 			stack_level.init;
 			stack_variant.init;
 			stack_position_in_board.init;
-
+			
 			-- collect devices of the submodules
 			query_submodules;
 

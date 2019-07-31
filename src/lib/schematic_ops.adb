@@ -10290,77 +10290,6 @@ package body schematic_ops is
 		
 	end remove_submodule;
 
-	procedure set_offset (
-	-- Sets the device numbering offset of a submodule instance.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		offset			: in et_libraries.type_device_name_index;
-		log_threshold	: in type_log_level) is
-
-		module_cursor : type_modules.cursor; -- points to the module
-
-		procedure query_submodules (
-		-- Locates the targeted assembly variant of the parent module.
-			module_name	: in type_module_name.bounded_string;
-			module		: in out type_module) is
-
-			use submodules;
-			use type_submodules;
-			submod_cursor : type_submodules.cursor;
-
-			procedure assign_offset (
-				submod_name	: in et_general.type_module_instance_name.bounded_string;
-				submodule	: in out type_submodule) is
-			begin
-				submodule.device_names_offset := offset;
-			end;
-			
-		begin -- query_submodules
-			if contains (module.submods, instance) then
-
-				submod_cursor := find (module.submods, instance); -- the submodule should be there
-
-				-- assign the given offset to the submodule
-				update_element (
-					container	=> module.submods,
-					position	=> submod_cursor,
-					process		=> assign_offset'access);
-				
-			else
-				submodule_not_found (instance);
-			end if;
-
-		end query_submodules;
-		
-	begin -- set_offset
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
-			" submodule instance " & enclose_in_quotes (to_string (instance)) &
-			" setting device name offset to" & et_libraries.to_string (offset),
-			level => log_threshold);
-
-		-- locate module
-		module_cursor := locate_module (module_name);
-
-		-- Test whether the given parent module contains the given submodule instance (OSC1)
-		if exists (module_cursor, instance) then
-
-			update_element (
-				container	=> modules,
-				position	=> module_cursor,
-				process		=> query_submodules'access);
-
-		else
-			submodule_not_found (instance);
-		end if;
-
--- 		exception
--- 			when event: others =>
--- 				log_indentation_reset;
--- 				log (text => ada.exceptions.exception_information (event), console => true);
--- 				raise;
-		
-	end set_offset;
-
 	function rename_device (
 	-- Renames the given device. Returns true if device has been renamed.
 	-- Assumes that the device with name device_name_before exists.
@@ -10859,7 +10788,19 @@ package body schematic_ops is
 			parent_name 	: type_module_name.bounded_string; -- water_pump
 			module_range 	: type_index_range;
 			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-		begin
+
+			procedure assign_offset (module : in out numbering.type_module) is begin
+			-- assign the device name offset to the current submodule according to the latest index_max.
+				module.device_names_offset := index_max + 1;
+				
+				log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+					" submodule instance " & enclose_in_quotes (to_string (module_instance)) &
+					" setting device names offset to" &
+					et_libraries.to_string (module.device_names_offset),
+					level => log_threshold + 2);
+			end;
+			
+		begin -- set_offset
 			log_indentation_up;
 
 			-- start with the first submodule on the current hierarchy level
@@ -10881,10 +10822,8 @@ package body schematic_ops is
 					parent_name := element (parent (tree_cursor)).name;
 				end if;
 
-				-- assign the device name offset to the current submodule according to the lates index_max.
-				-- NOTE: the assigment takes place in the PARENT module where the affected submodule
-				-- has been instantiated.
-				schematic_ops.set_offset (parent_name, module_instance, index_max + 1, log_threshold + 2);
+				-- assign the offset to the submodule
+				update_element (submod_tree, tree_cursor, assign_offset'access);
 
 				-- For the next submodule (wherever it is) the index_max must be increased the the highest
 				-- index used by the current submodule:
@@ -10923,6 +10862,13 @@ package body schematic_ops is
 					raise;
 			
 		end set_offset;
+
+		procedure replace_tree (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out et_schematic.type_module) is
+		begin
+			module.submod_tree := submod_tree;
+		end;
 		
 	begin -- autoset_device_name_offsets
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
@@ -10971,6 +10917,10 @@ package body schematic_ops is
 
 		-- start reading the submodule tree. set_offset is recursive.
 		set_offset;
+
+		-- Replace the old submodule tree by the new submod_tree. The new submod_tree now
+		-- contains the device name offsets for the instantiated submodules.
+		et_project.type_modules.update_element (modules, module_cursor, replace_tree'access);
 		
 		log_indentation_down;
 
@@ -10981,6 +10931,41 @@ package body schematic_ops is
 				raise;
 
 	end autoset_device_name_offsets;
+
+	procedure dump_tree (
+	-- Dumps submodule names, instances and device name offsets:
+		module_name		: in type_module_name.bounded_string;
+		log_threshold	: in type_log_level) is
+		
+		module_cursor : type_modules.cursor;
+
+		procedure query_submodules (
+   			module_name	: in type_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use numbering;
+
+			procedure query (cursor : in numbering.type_modules.cursor) is
+				use numbering.type_modules;
+			begin
+				log (text => "instance " & to_string (element (cursor).instance) &
+					 " offset " & et_libraries.to_string (element (cursor).device_names_offset),
+					 level => log_threshold
+					);
+			end query;
+			
+		begin
+			numbering.type_modules.iterate (module.submod_tree, query'access);
+		end query_submodules;
+
+	begin
+		log (text => "SUBMODULES TREE DUMP", level => log_threshold);
+		log_indentation_up;
+		
+		module_cursor := locate_module (module_name);
+		et_project.type_modules.query_element (module_cursor, query_submodules'access);
+
+		log_indentation_down;
+	end dump_tree;
 	
 	procedure build_submodules_tree (
 	-- Re(builds) the submodule tree of the given parent module.
@@ -11021,7 +11006,11 @@ package body schematic_ops is
 					container	=> submod_tree,
 					parent		=> tree_cursor,
 					before		=> numbering.type_modules.no_element,
-					new_item	=> (submod_name, submod_instance), -- templates/CLOCK_GENERATOR OSC1
+					new_item	=> (
+							name				=> submod_name,
+							instance			=> submod_instance,
+							device_names_offset	=> et_libraries.type_device_name_index'first
+							), -- templates/CLOCK_GENERATOR OSC1 100
 					position	=> tree_cursor
 					);
 
@@ -11088,42 +11077,11 @@ package body schematic_ops is
 			container	=> modules,
 			position	=> module_cursor,
 			process		=> assign_tree'access);
-	
+
+		-- update device name offsets of submodules
+		autoset_device_name_offsets (module_name, log_threshold + 1);
+		
 	end build_submodules_tree;
-
-	function get_offset (
-	-- Returns the device numbering offset of a submodule instance.
-	-- Assumptions:
-	--  - The module to be searched in must be in the rig already.
-	--  - The submodule instance must exist in the module.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in et_general.type_module_instance_name.bounded_string) -- OSC1
-		return et_libraries.type_device_name_index is
-		
-		offset : et_libraries.type_device_name_index := 0; -- to be returned
-
-		module_cursor : type_modules.cursor; -- points to the module
-
-		procedure query_submodules (
-			module_name	: in type_module_name.bounded_string;
-			module		: in et_schematic.type_module) is
-			use submodules.type_submodules;
-			submod_cursor : submodules.type_submodules.cursor;
-		begin
-			submod_cursor := find (module.submods, instance);
-			offset := element (submod_cursor).device_names_offset;
-		end;
-		
-	begin -- get_offset
-		-- locate the given module
-		module_cursor := locate_module (module_name);
-
-		query_element (
-			position	=> module_cursor,
-			process		=> query_submodules'access);
-
-		return offset;
-	end get_offset;
 
 	procedure apply_offset (
 	-- Adds the offset to the device index of the given device_name.
@@ -11417,10 +11375,8 @@ package body schematic_ops is
 					parent_name := element (parent (tree_cursor)).name;
 				end if;
 
-				-- Get the device name offset of the current submodule.
-				-- NOTE: The offset has been assigned in the PARENT module where the submodule
-				-- has been instantiated.
-				offset := get_offset (parent_name, module_instance);
+				-- Get the device name offset of the current submodule;
+				offset := element (tree_cursor).device_names_offset;
 
 				if not assembly_variants.is_default (variant) then
 					-- Query in parent module: Is there any assembly variant specified for this submodule ?
@@ -11918,10 +11874,8 @@ package body schematic_ops is
 					parent_name := element (parent (tree_cursor)).name;
 				end if;
 
-				-- Get the device name offset of the current submodule.
-				-- NOTE: The offset has been assigned in the PARENT module where the submodule
-				-- has been instantiated.
-				offset := get_offset (parent_name, module_instance);
+				-- Get the device name offset of the current submodule;
+				offset := element (tree_cursor).device_names_offset;
 
 				if not assembly_variants.is_default (variant) then
 					-- Query in parent module: Is there any assembly variant specified for this submodule ?
