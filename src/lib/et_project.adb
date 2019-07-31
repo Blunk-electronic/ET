@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                         SYSTEM ET PROJECT                                --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                               PROJECT                                    --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -2074,7 +2074,6 @@ package body et_project is
 					position (element (submodule_cursor).position_in_board));
 
 				write (keyword => keyword_view_mode, parameters => to_string (element (submodule_cursor).view_mode));
-				write (keyword => keyword_device_names_offset, parameters => et_libraries.to_string (element (submodule_cursor).device_names_offset));
 
 				section_mark (section_ports, HEADER);
 				type_submodule_ports.iterate (element (submodule_cursor).ports, query_ports'access);
@@ -11947,10 +11946,6 @@ package body et_project is
 									elsif kw = keyword_view_mode then -- view_mode origin/instance
 										expect_field_count (line, 2);
 										submodule.view_mode := submodules.to_view_mode (f (line, 2));
-
-									elsif kw = keyword_device_names_offset then -- device_names_offset 1000
-										expect_field_count (line, 2);
-										submodule.device_names_offset := et_libraries.to_device_name_index (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
