@@ -828,7 +828,16 @@ package body board_ops is
 		return type_terminal_position is
 		use et_pcb;
 		pos : type_terminal_position (SMT); -- to be returned
+
+		model : type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+		model_cursor : type_packages.cursor;
 	begin
+		-- get the package model of the given device:
+		model := package_model (device_cursor);
+
+		-- set cursor to package model:
+		model_cursor := locate_package_model (model);
+		
 		return pos; -- CS
 	end terminal_position;
 	

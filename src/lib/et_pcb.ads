@@ -1229,6 +1229,10 @@ package et_pcb is
 	-- HERE RIG WIDE PACKAGES ARE KEPT:
 	packages : type_packages.map;
 
+	function locate_package_model (model_name : in et_libraries.type_package_model_file.bounded_string) -- ../lbr/smd/SO15.pac
+	-- Returns a cursor to the given package model.
+		return type_packages.cursor;
+	
 	function is_real (package_name : in et_libraries.type_package_model_file.bounded_string) return boolean;
 	-- Returns true if the given package is real (means it has a height).
 	

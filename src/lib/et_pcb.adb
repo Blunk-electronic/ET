@@ -465,6 +465,13 @@ package body et_pcb is
 			& " face" & to_string (get_face (position)));
 	end package_position;
 
+	function locate_package_model (model_name : in et_libraries.type_package_model_file.bounded_string) -- ../lbr/smd/SO15.pac
+	-- Returns a cursor to the given package model.		
+		return type_packages.cursor is
+	begin
+		return type_packages.find (packages, model_name);
+	end;
+	
 	function is_real (package_name : in et_libraries.type_package_model_file.bounded_string) return boolean is
 	-- Returns true if the given package is real (means it has a height).
 		use type_packages;
