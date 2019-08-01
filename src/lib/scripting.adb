@@ -273,7 +273,7 @@ package body scripting is
 
 						when PORT =>
 							case fields is
-								when 8 =>
+								when 9 =>
 									schematic_ops.add_port (
 										module_name 	=> module,
 										instance		=> et_general.to_instance_name (f (5)),
@@ -283,11 +283,12 @@ package body scripting is
 													x => to_distance (f (7)),
 													y => to_distance (f (8))
 													)),
+										direction		=> submodules.to_port_name (f (9)),
 										log_threshold	=> log_threshold + 1
 										);
 
-								when 9 .. count_type'last =>
-									command_too_long (8);
+								when 10 .. count_type'last =>
+									command_too_long (9);
 									
 								when others =>
 									command_incomplete;

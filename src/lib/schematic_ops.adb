@@ -7906,6 +7906,11 @@ package body schematic_ops is
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		port_name		: in type_net_name.bounded_string; -- clk_out
 		position		: in et_coordinates.type_point; -- x/y along the edge of the box
+		
+		direction		: in submodules.type_netchanger_port_name; -- master/slave. 
+		-- NOTE: has nothing to do with direction of energy flow. It is relevant when 
+		-- a netlist is exported. See specification submodules.type_submodule_port.
+		
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -7944,6 +7949,9 @@ package body schematic_ops is
 						port_not_at_edge (port_name);
 					end if;
 
+					-- set the naming direction of the port:
+					port.direction := direction; -- master/slave 
+					
 					-- Insert the new port in the submodule:
 					insert (
 						container	=> submodule.ports,

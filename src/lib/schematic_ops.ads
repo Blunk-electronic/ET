@@ -408,6 +408,11 @@ package schematic_ops is
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		port_name		: in et_general.type_net_name.bounded_string; -- clk_out
 		position		: in et_coordinates.type_point; -- x/y along the edge of the box
+
+		direction		: in submodules.type_netchanger_port_name; -- master/slave. 
+		-- NOTE: has nothing to do with direction of energy flow. It is relevant when 
+		-- a netlist is exported. See specification submodules.type_submodule_port.
+		
 		log_threshold	: in type_log_level);
 
 	procedure delete_port (

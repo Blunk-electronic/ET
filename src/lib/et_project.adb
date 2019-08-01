@@ -2055,6 +2055,7 @@ package body et_project is
 				section_mark (section_port, HEADER);
 				write (keyword => keyword_name, space => true, parameters => et_general.to_string (key (port_cursor))); -- name clk_out
 				write (keyword => keyword_position, parameters => position (element (port_cursor).position)); -- position x 0 y 10
+				write (keyword => keyword_direction, parameters => to_string (element (port_cursor).direction)); -- direction master/slave
 				section_mark (section_port, FOOTER);
 			end;
 			
@@ -11946,7 +11947,7 @@ package body et_project is
 									elsif kw = keyword_view_mode then -- view_mode origin/instance
 										expect_field_count (line, 2);
 										submodule.view_mode := submodules.to_view_mode (f (line, 2));
-										
+
 									else
 										invalid_keyword (kw);
 									end if;
@@ -11973,6 +11974,11 @@ package body et_project is
 
 												-- extract port position starting at field 2
 												submodule_port.position := to_position (line, 2);
+
+											elsif kw = keyword_direction then -- direction master/slave
+												expect_field_count (line, 2);
+
+												submodule_port.direction := submodules.to_port_name (f (line, 2));
 											else
 												invalid_keyword (kw);
 											end if;

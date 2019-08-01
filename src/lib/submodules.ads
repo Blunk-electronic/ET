@@ -88,10 +88,22 @@ package submodules is
 	function to_module_name (path : in type_submodule_path.bounded_string) 
 		return et_general.type_module_name.bounded_string;
 	-- Removes the file extension from given path and returns the module name.
+
+	type type_netchanger_port_name is (MASTER, SLAVE);
+
+	function to_port_name (name : in string) return type_netchanger_port_name;
+	function to_string (name : in type_netchanger_port_name) return string;	
 	
 	type type_submodule_port is record
 		-- the position somewhere at the edge of the box
-		position : et_coordinates.type_point;
+		position	: et_coordinates.type_point;
+
+		-- The direction of inheriting net names when a netlist is exported:
+		-- Slave means: The net inside the submodule enforces its name onto the
+		-- net in the parent module.
+		-- Master means: The net in the parent module enforces its name onto the
+		-- net in the submodule:
+		direction	: type_netchanger_port_name;
 		
 		-- CS symbol : type_module_connector_symbol;
 	end record;
@@ -128,13 +140,8 @@ package submodules is
 
 	function to_netchanger_id (id : in string) return type_netchanger_id;
 	function to_string (id : in type_netchanger_id) return string;		
-	
-	type type_netchanger_port_name is (MASTER, SLAVE);
 
 	function opposide_port (port : in type_netchanger_port_name) return type_netchanger_port_name;
-	
-	function to_port_name (name : in string) return type_netchanger_port_name;
-	function to_string (name : in type_netchanger_port_name) return string;	
 	
 	type type_netchanger_port is record
 		position	: type_point;
