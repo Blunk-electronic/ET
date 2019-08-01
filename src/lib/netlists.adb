@@ -300,16 +300,19 @@ package body netlists is
 	end net_in_submodule;
 								  
 	procedure write_netlist (
-	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).
-		nets			: in type_modules.tree;
-		module_name		: in type_module_name.bounded_string; -- motor_driver
+	-- Creates the netlist file (which inevitably and intentionally overwrites the previous file).
+	-- - modules contains the modules and their nets ordered in a tree structure.
+	-- - module_name is the name of the top module. to be written in the header of the netlist file.
+	-- - file_name is the name of the actual netlist file.
+		modules		: in type_modules.tree;
+		module_name		: in type_module_name.bounded_string; -- motor_driver 
 		file_name		: in type_file_name.bounded_string; -- netlist.net
 		log_threshold	: in type_log_level) is		
 
 		use type_modules;
 		netlist_handle : ada.text_io.file_type;
 
-		netlist_cursor : netlists.type_modules.cursor := netlists.type_modules.root (nets);
+		netlist_cursor : netlists.type_modules.cursor := netlists.type_modules.root (modules);
 
 		package stack is new et_general.stack_lifo (
 			item	=> netlists.type_modules.cursor,
@@ -331,7 +334,12 @@ package body netlists is
 			put_line (netlist_handle, comment_mark & " " & row_separator_single);
 		end write_header;
 
-		procedure write_nets is -- CS for testing only
+		procedure find_dependencies is
+		begin
+			null;
+		end;
+			
+		procedure write_nets is -- CS for testing only. writes all nets
 			
 			procedure query_nets (module_cursor : in type_modules.cursor) is 
 
@@ -366,7 +374,7 @@ package body netlists is
 			 
 		begin -- write_nets
 			stack.init;
-			iterate (nets, query_nets'access);
+			iterate (modules, query_nets'access);
 		end write_nets;
 		
 -- 		procedure write_nets is

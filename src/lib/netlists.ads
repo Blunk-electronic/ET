@@ -169,8 +169,11 @@ package netlists is
 
 	
 	procedure write_netlist (
-	-- Creates the netlist (which inevitably and intentionally overwrites the previous file).
-		nets			: in type_modules.tree;
+	-- Creates the netlist file (which inevitably and intentionally overwrites the previous file).
+	-- - modules contains the modules and their nets ordered in a tree structure.
+	-- - module_name is the name of the top module. to be written in the header of the netlist file.
+	-- - file_name is the name of the actual netlist file.
+		modules			: in type_modules.tree;
 		module_name		: in type_module_name.bounded_string; -- motor_driver
 		file_name		: in type_file_name.bounded_string; -- netlist.net
 		log_threshold	: in type_log_level);

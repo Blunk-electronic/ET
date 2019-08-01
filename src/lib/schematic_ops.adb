@@ -11740,7 +11740,8 @@ package body schematic_ops is
 					-- prepend the given net prefix
 					net_name := et_schematic.type_nets.key (net_cursor_sch);
 
-					-- get all device, netchanger and submodule ports of this net
+					-- Get all device, netchanger and submodule ports of this net
+					-- according to the given assembly variant:
 					all_ports := et_schematic.ports (net_cursor_sch, variant_cursor);
 
 					-- extend the device ports by further properties:
@@ -11969,8 +11970,8 @@ package body schematic_ops is
 			stack_netlist.init;
 
 			-- Insert the top module in the netlist_tree. It is the only node on this level.
-			-- Submodules will be inserted as children of the top module (where netlist_cursor) 
-			-- points at AFTER this statement:
+			-- Submodules will be inserted as children of the top module (where netlist_cursor 
+			-- points at AFTER this statement):
 			netlists.type_modules.insert_child (
 				container	=> netlist_tree,
 				parent		=> netlists.type_modules.root (netlist_tree),
@@ -11991,10 +11992,15 @@ package body schematic_ops is
 			-- collect devices of the submodules
 			query_submodules;
 			
-			-- write the bom
+			-- write the bom:
+
+			-- Container netlist_tree is now ready for further processing.
+			-- It contains the modules and their nets ordered in a tree structure.
+			-- But the connections between nets are
+			-- still unknown and will be analyzed now:
 			netlists.write_netlist (
-				nets			=> netlist_tree,	-- the container that holds the nets we have got collected
-				module_name		=> module_name,		-- motor_driver
+				modules			=> netlist_tree,	
+				module_name		=> module_name,		-- motor_driver (to be written in the netlist file header)
 				file_name		=> netlist_file, 	-- tmp/my_project.net
 				log_threshold	=> log_threshold + 1);
 			
