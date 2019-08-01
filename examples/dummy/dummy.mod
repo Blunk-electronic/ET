@@ -119,6 +119,7 @@
 			[PORT BEGIN]
 				name out
 				position x 0 y 10
+				direction master -- slave
 			[PORT END]
 		[PORTS END]
 	[SUBMODULE END]

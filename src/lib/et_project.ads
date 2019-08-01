@@ -212,8 +212,9 @@ package et_project is
 	function netchanger_as_port_available (
 	-- Returns true if the given net provides a netchanger that may serve as port
 	-- to a parent module.
-		module	: in type_modules.cursor;
-		net		: in et_schematic.type_nets.cursor) 
+		module		: in type_modules.cursor;
+		net			: in et_schematic.type_nets.cursor;
+		direction	: in submodules.type_netchanger_port_name) -- master/slave 		
 		return boolean;
 	
 	type type_section_name_rig_configuration is (
@@ -673,7 +674,8 @@ package et_project is
 	-- Returns true if the given module provides the given port.
 	-- The module being searched in must be in the rig already.						
 		module			: in submodules.type_submodules.cursor;
-		port			: in et_general.type_net_name.bounded_string)
+		port			: in et_general.type_net_name.bounded_string;
+		direction		: in submodules.type_netchanger_port_name) -- master/slave		
 		return boolean;
 
 	function exists (

@@ -138,7 +138,7 @@ package body schematic_ops is
 
 	procedure port_not_provided (port_name : in et_general.type_net_name.bounded_string) is begin
 		log (ERROR, "submodule does not provide a port named " &
-			 enclose_in_quotes (to_string (port_name)) & " !", console => true);
+			 enclose_in_quotes (to_string (port_name)) & " with the desired direction (master/slave) !", console => true);
 		raise constraint_error;
 	end;
 	
@@ -7938,7 +7938,11 @@ package body schematic_ops is
 				port : type_submodule_port;
 			begin
 				-- Test whether the submodule provides the given port.
-				if exists (module => submod_cursor, port => port_name) then
+				if exists (
+					module		=> submod_cursor,
+					port 		=> port_name, -- clock_output
+					direction	=> direction -- master/slave
+					) then
 				
 					-- The given port position must be somewhere at the edge
 					-- of the submodule. position is relative to the lower left
@@ -8000,7 +8004,8 @@ package body schematic_ops is
 		log (text => "module " & to_string (module_name) &
 			" submodule instance " & enclose_in_quotes (to_string (instance)) & 
 			" adding port " & enclose_in_quotes (to_string (port_name)) &
-			" at" & to_string (position),
+			" at" & to_string (position) &
+			" direction" & to_string (direction),
 			level => log_threshold);
 
 		-- locate parent module
@@ -9633,7 +9638,12 @@ package body schematic_ops is
 				while port_cursor /= type_submodule_ports.no_element loop
 					log (text => to_string (key (port_cursor)), level => log_threshold + 2);
 
-					if not exists (module => test_mod_cursor, port => key (port_cursor)) then
+					if not exists (
+						module		=> test_mod_cursor,
+						port 		=> key (port_cursor), -- clock_output
+						direction	=> element (port_cursor).direction -- master/slave
+						) then
+						
  						port_not_provided (key (port_cursor));
 					end if;
 					

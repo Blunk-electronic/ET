@@ -236,13 +236,14 @@ package body et_project is
 	function netchanger_as_port_available (
 	-- Returns true if the given net provides a netchanger that may serve as port
 	-- to a parent module.
-		module	: in type_modules.cursor;
-		net		: in et_schematic.type_nets.cursor) 
+		module		: in type_modules.cursor;
+		net			: in et_schematic.type_nets.cursor;
+		direction	: in submodules.type_netchanger_port_name) -- master/slave 
 		return boolean is
 		
 		result : boolean := false; -- to be returned. goes true on the first
 		-- suitable netchanger found.
-		
+
 		use et_schematic;
 		
 		procedure query_strands (
@@ -262,30 +263,22 @@ package body et_project is
 				begin
 					while port_cursor /= type_ports_netchanger.no_element loop
 
-						-- The opposide port must be not connected. So if the current port
-						-- is a master, then check whether the slave port is not connected.
-						-- If the current port is a slave port, check the master port.
-						case element (port_cursor).port is
-							when MASTER =>
-								if not port_connected (
-									module	=> module,
-									port	=> (index	=> element (port_cursor).index,
-												port	=> SLAVE)) then
-									
-									result := true;
-									exit; -- no more searching for netchanger ports required
-								end if;
+						-- If the given direction is MASTER, then we must look for a SLAVE netchanger
+						-- port (and vice versa) in the net segment.
+						if element (port_cursor).port = opposide_port (direction) then 
+
+							-- The opposide port must be not connected. In that case 
+							-- suitable netchanger has been found:
+							if not port_connected (
+								module	=> module,
+								port	=> (index	=> element (port_cursor).index,
+											port	=> direction)) then
 								
-							when SLAVE =>
-								if not port_connected (
-									module	=> module,
-									port	=> (index	=> element (port_cursor).index,
-												port	=> MASTER)) then
-									
-									result := true;
-									exit; -- no more searching for netchanger ports required
-								end if;
-						end case;
+								result := true;
+								exit; -- no more searching for netchanger ports required
+							end if;
+
+						end if;
 						
 						next (port_cursor);
 					end loop;
@@ -13405,7 +13398,8 @@ package body et_project is
 	-- Returns true if the given module provides the given port.
 	-- The module being searched in must be in the rig already.
 		module			: in submodules.type_submodules.cursor;
-		port			: in et_general.type_net_name.bounded_string)
+		port			: in et_general.type_net_name.bounded_string; -- clock_output
+		direction		: in submodules.type_netchanger_port_name) -- master/slave
 		return boolean is
 
 		result : boolean := false; -- to be returned
@@ -13440,7 +13434,7 @@ package body et_project is
 						result := true;
 
 					when LOCAL =>
-						if netchanger_as_port_available (module_cursor, net_cursor) then
+						if netchanger_as_port_available (module_cursor, net_cursor, direction) then
 							result := true;
 						else
 							result := false;
