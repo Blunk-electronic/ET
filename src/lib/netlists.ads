@@ -144,16 +144,38 @@ package netlists is
 		slaves	: type_netchanger_count := 0;
 		total	: type_netchanger_count := 0;
 	end record;
-		
+
+	type type_submodule_ports is record
+		masters	: type_submodule_count := 0;
+		slaves	: type_submodule_count := 0;
+		total	: type_submodule_count := 0;
+	end record;
+	
 	type type_port_count is record
 		netchangers	: type_netchanger_ports;
-		submodules	: type_submodule_count := 0;
+		submodules	: type_submodule_ports;
 	end record;
 
 	function port_count (net_cursor : in type_nets.cursor)
 		return type_port_count;
 	-- Returns the number of netchanger and submodule ports in the given net.
 
+	-- A primary net enforces its name on all subordinated secondary nets.
+	-- Primary nets are those which fulfil ALL follwing criteria:
+	--  1. have no netchanger slave ports. Reason: Nets with slave ports always inherit the 
+	--     name of the net on the master port. 
+	--  2. have no submodule ports with direction "slave". Reason: The net inside the submdule
+	--     enforces its name on the net in the parent module.
+	-- If a net does not fulfil any of those criteria it is a secondary net.
+
+	-- The number of master ports in a net (of submodules or netchangers) is not limited as
+	-- such a net may extend into numerous secondary nets.
+	-- It is ILLEGAL for a net to have more than one slave port. Reason: The net names
+	-- of primary nets would contend here.
+	function is_primary (net_cursor : in type_nets.cursor) return boolean;
+	-- Returns true if given net is a primary net.
+	-- Performs some other important checks on slave ports of netchangers and submodules.
+	
 	function net_on_netchanger (
 	-- Returns a cursor to the net connected with the given netchanger
 	-- port opposide to the given port.
@@ -173,13 +195,7 @@ package netlists is
 		return type_nets.cursor;
 
 	-- The final netlist is a tree that reflects primary nets with their subordinated
-	-- secondary nets. A primary net enforces its name on all subordinated secondary nets.
-	-- Primary nets are those which fulfil ALL follwing criteria:
-	--  1. have no netchanger slave ports. Reason: Nets with slave ports always inherit the 
-	--     name of the net on the master port. 
-	--  2. have no submodule ports with direction "slave". Reason: The net inside the submdule
-	--     enforces its name on the net in the parent module.
-	-- If a net does not fulfil any of those criteria it is a secondary net.
+	-- secondary nets.
 	type type_netlist_net is new type_net with record
 		name	: type_net_name; -- base_name and prefix
 	end record;

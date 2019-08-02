@@ -169,15 +169,29 @@ package body netlists is
 					when MASTER => port_count.netchangers.masters := port_count.netchangers.masters + 1;
 					when SLAVE => port_count.netchangers.slaves := port_count.netchangers.slaves + 1;
 				end case;
-			end count_netchanger_ports;
+			end;
+
+			procedure count_submodule_ports (cursor : in type_submodule_ports_extended.cursor) is
+				use submodules;
+			begin
+				case element (cursor).direction is
+					when MASTER => port_count.submodules.masters := port_count.submodules.masters + 1;
+					when SLAVE => port_count.submodules.slaves := port_count.submodules.slaves + 1;
+				end case;
+			end;
 			
 		begin -- query_ports
-			-- The number of submodule ports is just the length of the 
-			-- list of submodule ports:
-			port_count.submodules := type_submodule_count (length (net.submodules));
+			-- The number of master or slave ports
+			-- requires iterating and dividing masters from slaves:
 
-			-- The number of master or slave ports of netchangers
-			-- requires iterating and dividing them:
+			-- submodules
+			iterate (net.submodules, count_submodule_ports'access);
+
+			port_count.submodules.total := port_count.submodules.masters +
+											port_count.submodules.slaves;
+
+			
+			-- netchangers
 			iterate (net.netchangers, count_netchanger_ports'access);
 
 			port_count.netchangers.total := port_count.netchangers.masters +
@@ -193,6 +207,69 @@ package body netlists is
 		return port_count;
 	end port_count;
 
+	function is_primary (net_cursor : in type_nets.cursor) return boolean is
+	-- Returns true if given net is a primary net.
+	-- Performs some other important checks on slave ports of netchangers and submodules.
+	-- CS Currently these test are very simple and should be refined.
+		ports : type_port_count;
+		
+		result : boolean := false; -- CS is this a good safety measure ?
+		
+-- 		result_on_netchangers : boolean;
+-- 		result_on_submodules : boolean;
+
+-- 		procedure contention_by_netchangers is begin
+-- 			log (importance => ERROR, text => "net name contention caused by multiple netchanger slave ports !");
+-- 			raise constraint_error;
+-- 		end;
+-- 
+-- 		procedure contention_by_submodules is begin
+-- 			log (importance => ERROR, text => "net name contention caused by multiple submodule slave ports !");
+-- 			raise constraint_error;
+-- 		end;
+
+		procedure contention_by_both is begin
+			log (importance => ERROR, text => "net name contention caused by multiple netchanger or submodule slave ports !");
+
+			-- CS: list affected ports
+			raise constraint_error;
+		end;
+		
+	begin
+		ports := port_count (net_cursor);
+
+-- 		-- Test the number of netchanger slave ports:
+-- 		
+-- 		-- Zero slave ports means: it is a primary net.
+-- 		-- One slave port means: it is not a primary net.
+-- 		-- More slave ports means: contention -> error.
+-- 		case ports.netchangers.slaves is
+-- 			when 0 => result_on_netchangers := true;
+-- 			when 1 => result_on_netchangers := false;
+-- 			when others => contention_by_netchangers;
+-- 		end case;
+-- 
+-- 		-- Test the number of submodule slave ports:
+-- 		
+-- 		-- Zero slave ports means: it is a primary net.
+-- 		-- One slave port means: it is not a primary net.
+-- 		-- More slave ports means: contention -> error.
+-- 		case ports.submodules.slaves is
+-- 			when 0 => result_on_submodules := true;
+-- 			when 1 => result_on_submodules := false;
+-- 			when others => contention_by_submodules;
+-- 		end case;
+		
+		-- Test the sum of netchanger and submodule slave ports:
+		case natural (ports.netchangers.slaves) + natural (ports.submodules.slaves) is
+			when 0 => result := true;
+			when 1 => result := false;
+			when others => contention_by_both;
+		end case;
+		
+		return result;
+	end is_primary;
+	
 	function net_on_netchanger (
 	-- Returns a cursor to the net connected with the given netchanger
 	-- port opposide to the given port.
@@ -327,7 +404,7 @@ package body netlists is
 	-- - modules contains the modules and their nets ordered in a tree structure.
 	-- - module_name is the name of the top module. to be written in the header of the netlist file.
 	-- - file_name is the name of the actual netlist file.
-		modules		: in type_modules.tree;
+		modules			: in type_modules.tree;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
 		file_name		: in type_file_name.bounded_string; -- netlist.net
 		log_threshold	: in type_log_level) is		
@@ -384,11 +461,15 @@ package body netlists is
 				begin -- query_ports
 					-- write the net name
 					new_line (netlist_handle);
-					
-					put_line (netlist_handle, to_string (key (net_cursor).prefix) & 
-						to_string (key (net_cursor).base_name)); -- CLK_GENERATOR/FLT1/ & clock_out
 
-					type_device_ports_extended.iterate (element (net_cursor).devices, query_ports'access);
+					-- Write primary nets only in netlist file:
+					if is_primary (net_cursor) then
+						put_line (netlist_handle, to_string (key (net_cursor).prefix) & 
+							to_string (key (net_cursor).base_name)); -- CLK_GENERATOR/FLT1/ & clock_out
+
+						type_device_ports_extended.iterate (element (net_cursor).devices, query_ports'access);
+					end if;
+					
 				end query_ports;
 				
 			begin -- query_nets
@@ -399,37 +480,6 @@ package body netlists is
 			stack.init;
 			iterate (modules, query_nets'access);
 		end write_nets;
-		
--- 		procedure write_nets is
--- 		-- writes the actual nets in the netlist file
--- 
--- 			procedure query_ports (port : in type_ports.cursor) is
--- 				use type_ports;
--- 			begin
--- 				put_line (netlist_handle, -- IC1 CE input H5
--- 					et_libraries.to_string (element (port).device) & latin_1.space &
--- 					et_libraries.to_string (element (port).port) & latin_1.space &
--- 					et_libraries.to_string (element (port).direction) & latin_1.space &
--- 					et_libraries.to_string (element (port).terminal) & latin_1.space);
--- 
--- 					-- CS .characteristics
--- 			end query_ports;
--- 			
--- 			procedure query_nets (net : in type_netlist.cursor) is begin
--- 				new_line (netlist_handle);
--- 
--- 				-- write the net name
--- 				put_line (netlist_handle, to_string (key (net))); -- clock_out
--- 
--- 				-- write the device ports
--- 				iterate (element (net), query_ports'access);
--- 
--- 			end query_nets;
--- 
--- 			
--- 		begin -- write_nets
--- 			iterate (netlist, query_nets'access);
--- 		end write_nets;
 
 		procedure write_footer is begin
 		-- writes a nice footer in the netlist file
