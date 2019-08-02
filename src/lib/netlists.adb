@@ -54,7 +54,7 @@ with ada.containers.ordered_sets;
 with ada.directories;
 with ada.exceptions;
 
--- with et_general;				use et_general;
+with et_general;				use et_general;
 -- 
 -- with et_coordinates;
 -- with et_libraries;
@@ -75,7 +75,7 @@ package body netlists is
 		return type_file_name.to_bounded_string (name);
 	end;
 
-	function "<" (left, right : in type_port) return boolean is
+	function "<" (left, right : in type_device_port_extended) return boolean is
 		use et_libraries;
 		use type_port_name;
 		result : boolean := false;
@@ -98,6 +98,29 @@ package body netlists is
 		return result;
 	end;
 
+	function "<" (left, right : in type_submodule_port_extended) return boolean is
+		use type_module_instance_name;
+		use et_general.type_net_name;
+		result : boolean := false;
+	begin
+		if left.module < right.module then
+			result := true;
+			
+		elsif left.module = right.module then
+
+			if left.port < right.port then
+				result := true;
+			else
+				result := false;
+			end if;
+			
+		else
+			result := false;
+		end if;
+		
+		return result;
+	end;
+	
 	function to_prefix (instance : in type_module_instance_name.bounded_string) -- OSC1
 	-- Converts an instance name to a net prefix with a trailing level separator.
 		return et_general.type_net_name.bounded_string is
@@ -136,7 +159,7 @@ package body netlists is
 		procedure query_ports (
 			net_name	: in type_net_name;
 			net			: in type_net) is
-			use et_schematic.type_ports_submodule;
+			use type_submodule_ports_extended;
 			use et_schematic.type_ports_netchanger;
 
 			procedure count_netchanger_ports (cursor : in et_schematic.type_ports_netchanger.cursor) is
@@ -346,8 +369,8 @@ package body netlists is
 				procedure query_ports (net_cursor : in type_nets.cursor) is
 					use type_nets;
 
-					procedure query_ports (port_cursor : in type_ports.cursor) is
-						use type_ports;
+					procedure query_ports (port_cursor : in type_device_ports_extended.cursor) is
+						use type_device_ports_extended;
 					begin
 						-- write the device ports
 						put_line (netlist_handle, -- IC1 CE input H5
@@ -365,7 +388,7 @@ package body netlists is
 					put_line (netlist_handle, to_string (key (net_cursor).prefix) & 
 						to_string (key (net_cursor).base_name)); -- CLK_GENERATOR/FLT1/ & clock_out
 
-					type_ports.iterate (element (net_cursor).devices, query_ports'access);
+					type_device_ports_extended.iterate (element (net_cursor).devices, query_ports'access);
 				end query_ports;
 				
 			begin -- query_nets

@@ -7764,7 +7764,7 @@ package body schematic_ops is
 	end add_submodule;
 
 	procedure insert_port (
-	-- Inserts the given submmdule port in the net segments.
+	-- Inserts the given submodule port in the net segments.
 	-- If the port lands on either the start or end point of a segment, it will
 	-- be regarded as "connected" with the segment.
 	-- If the port lands between start or end point of a segment, nothing happens
@@ -11621,15 +11621,15 @@ package body schematic_ops is
 	end port_properties;
 	
 	function extend_ports (
-	-- Adds further properties to the given ports.
+	-- Adds further properties to the given device ports.
 	-- Additional properties are electrical characteristics (see et_libraries.type_port)
 	-- and the terminal name).
 		module_cursor	: in type_modules.cursor;
 		ports 			: in et_schematic.type_ports_device.set)
-		return netlists.type_ports.set is
+		return netlists.type_device_ports_extended.set is
 
 		use netlists;
-		ports_extended : netlists.type_ports.set; -- to be returned
+		ports_extended : netlists.type_device_ports_extended.set; -- to be returned
 
 		use et_schematic.type_ports_device;
 		
@@ -11640,7 +11640,7 @@ package body schematic_ops is
 			-- get further properties of the current port
 			more_properties := port_properties (module_cursor, port_sch.device_name, port_sch.port_name);
 			
-			netlists.type_ports.insert (
+			netlists.type_device_ports_extended.insert (
 				container	=> ports_extended,
 				new_item	=> 
 					(
@@ -11650,6 +11650,85 @@ package body schematic_ops is
 					terminal		=> more_properties.terminal,
 					characteristics => more_properties.properties)
 					);
+			
+		end query_ports;
+		
+	begin -- extend_ports
+		iterate (ports, query_ports'access);
+		return ports_extended;
+	end extend_ports;
+
+	function port_direction (
+	-- Returns the direction (master/slave) of the given submodule port in module indicated by module_cursor.
+	-- The submodule must exist in the module.
+		module_cursor	: in type_modules.cursor; -- motor_driver
+		submod_instance	: in type_module_instance_name.bounded_string; -- OSC1
+		port_name		: in type_net_name.bounded_string) -- clock_out
+		return submodules.type_netchanger_port_name is
+
+		use submodules;
+		direction : type_netchanger_port_name; -- to be returned
+
+		procedure query_submodules (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+			use type_submodules;
+			submod_cursor : type_submodules.cursor;
+
+			procedure query_ports (
+				submod_name	: in type_module_instance_name.bounded_string;
+				submod		: in type_submodule) is
+				use type_submodule_ports;
+				port_cursor : type_submodule_ports.cursor;
+			begin
+				port_cursor := find (submod.ports, port_name);
+
+				direction := element (port_cursor).direction;
+			end query_ports;
+			
+		begin -- query_submodules
+			-- locate submodule in schematic
+			submod_cursor := find (module.submods, submod_instance);
+
+			query_element (submod_cursor, query_ports'access);
+		end query_submodules;
+
+	begin -- port_properties 
+		query_element (
+			position	=> module_cursor,
+			process		=> query_submodules'access);
+		
+		return direction;
+	end port_direction;
+	
+	function extend_ports (
+	-- Adds the port direction (master/slave) to the given submodule ports.
+		module_cursor	: in type_modules.cursor;
+		ports 			: in et_schematic.type_ports_submodule.set)
+		return netlists.type_submodule_ports_extended.set is
+
+		use netlists;
+		ports_extended : type_submodule_ports_extended.set; -- to be returned
+
+		use et_schematic.type_ports_submodule;
+
+		procedure query_ports (port_cursor : in et_schematic.type_ports_submodule.cursor) is
+			port : et_schematic.type_port_submodule := element (port_cursor);
+			direction : submodules.type_netchanger_port_name; -- master/slave
+		begin
+ 			-- get the direction of the current submodule port
+			direction := port_direction (module_cursor, port.module_name, port.port_name);
+
+			netlists.type_submodule_ports_extended.insert 
+				(
+				container	=> ports_extended,
+				new_item	=> 
+					(
+					module		=> port.module_name, -- OSC1
+					port		=> port.port_name, -- clock_out
+					direction	=> direction -- master/slave
+					)
+				);
 			
 		end query_ports;
 		
@@ -11703,25 +11782,26 @@ package body schematic_ops is
 
 				net_name : et_general.type_net_name.bounded_string;
 				all_ports : et_schematic.type_ports;
-				device_ports_extended : netlists.type_ports.set;
+				device_ports_extended : netlists.type_device_ports_extended.set;
+				submodule_ports_extended : netlists.type_submodule_ports_extended.set;
 
 				procedure apply_offsets is
 				-- Applies the given offset to the devices in device_ports_extended.
-					use netlists.type_ports;
+					use netlists.type_device_ports_extended;
 					-- temporarily the ports will be stored here. Once all ports of
 					-- device_ports_extended have been offset, the list
 					-- ports_with_offset overwrites device_ports_extended:
-					ports_with_offset : netlists.type_ports.set;
+					ports_with_offset : netlists.type_device_ports_extended.set;
 					
-					procedure query_ports (cursor : in netlists.type_ports.cursor) is 
+					procedure query_ports (cursor : in netlists.type_device_ports_extended.cursor) is 
 						-- take a copy of the port as it is:
-						port : netlists.type_port := element (cursor);
+						port : netlists.type_device_port_extended := element (cursor);
 					begin -- query_ports
 						-- apply offset to device name of port
 						apply_offset (port.device, offset, log_threshold + 2);
 
 						-- insert the modified port in the container ports_with_offset
-						netlists.type_ports.insert (
+						netlists.type_device_ports_extended.insert (
 							container	=> ports_with_offset,
 							new_item	=> port);
 					end; -- query_ports
@@ -11740,7 +11820,7 @@ package body schematic_ops is
 						key			=> (prefix => prefix, base_name => net_name), -- CLK_GENERATOR/FLT1/ , clock_out
 						new_item	=> (
 								devices		=> device_ports_extended,
-								submodules	=> all_ports.submodules,
+								submodules	=> submodule_ports_extended,
 								netchangers	=> all_ports.netchangers,
 								scope		=> element (net_cursor_sch).scope)
 						--position	=> net_cursor_netlist,
@@ -11762,7 +11842,10 @@ package body schematic_ops is
 					-- according to the given assembly variant:
 					all_ports := et_schematic.ports (net_cursor_sch, variant_cursor);
 
-					-- extend the device ports by further properties:
+					-- extend the submodule ports by their directions (master/slave):
+					submodule_ports_extended := extend_ports (module_cursor, all_ports.submodules);
+					
+					-- extend the device ports by further properties (direction, terminal name, ...):
 					device_ports_extended := extend_ports (module_cursor, all_ports.devices);
 
 					-- The portlist device_ports_extended now requires the device indexes 

@@ -47,7 +47,7 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.multiway_trees;
 -- with ada.containers.indefinite_ordered_maps;
--- with ada.containers.ordered_sets;
+with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_sets;
 
 with et_general;				use et_general;
@@ -69,21 +69,41 @@ package netlists is
 	function to_string (name : in type_file_name.bounded_string) return string;
 	function to_file_name (name : in string) return type_file_name.bounded_string;
 
-	type type_port (direction : et_libraries.type_port_direction) is record
+
+	-- For ERC of netlists the connected devices are modelled by this type:
+	type type_device_port_extended (direction : et_libraries.type_port_direction) is record
 		device			: et_libraries.type_device_name; -- IC4		
 		port			: et_libraries.type_port_name.bounded_string; -- CLOCK, CE, VDD, GND
 		characteristics	: et_libraries.type_port (direction); -- direction, sensitivity, ...
 		terminal		: et_libraries.type_terminal_name.bounded_string; -- H4, 1, 16
 	end record;
+	
+	function "<" (left, right : in type_device_port_extended) return boolean;
+	
+	package type_device_ports_extended is new indefinite_ordered_sets (
+		element_type	=> type_device_port_extended);
+
+	use type_device_ports_extended;
 
 	
-	function "<" (left, right : in type_port) return boolean;
+	-- For inheriting net names from one module to another the ports
+	-- of submodules are modelled by this type.
+	-- NOTE: The selector "direction" has nothing to do with direction of
+	-- energy flow. It determines whether a signal coming out of a submodule
+	-- enforces its name on the net in the parent module or vice versa:
+	type type_submodule_port_extended is record
+		module		: type_module_instance_name.bounded_string; -- MOT_DRV_3
+		port		: type_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
+		direction	: submodules.type_netchanger_port_name; -- master/slave
+	end record;
+
+	function "<" (left, right : in type_submodule_port_extended) return boolean;
 	
-	package type_ports is new indefinite_ordered_sets (
-		element_type	=> type_port);
-
-	use type_ports;
-
+	package type_submodule_ports_extended is new ordered_sets (
+		element_type	=> type_submodule_port_extended);
+	
+	
+	
 	level_separator : constant character := '/';
 
 	function to_prefix (instance : in type_module_instance_name.bounded_string) -- OSC1
@@ -91,8 +111,8 @@ package netlists is
 		return et_general.type_net_name.bounded_string;
 
 	type type_net is tagged record
-		devices		: type_ports.set;
-		submodules	: et_schematic.type_ports_submodule.set;
+		devices		: type_device_ports_extended.set;
+		submodules	: type_submodule_ports_extended.set;
 		netchangers	: et_schematic.type_ports_netchanger.set;
 		scope		: et_schematic.type_net_scope;
 	end record;
@@ -157,9 +177,8 @@ package netlists is
 	-- Primary nets are those which fulfil ALL follwing criteria:
 	--  1. have no netchanger slave ports. Reason: Nets with slave ports always inherit the 
 	--     name of the net on the master port. 
-	--  2. are in a submodule and are not connected with a net in the parent module.
-	--     Reason: Nets connected with a parent module always inherit the name of the 
-	--     superordinated net in the parent module.
+	--  2. have no submodule ports with direction "slave". Reason: The net inside the submdule
+	--     enforces its name on the net in the parent module.
 	-- If a net does not fulfil any of those criteria it is a secondary net.
 	type type_netlist_net is new type_net with record
 		name	: type_net_name; -- base_name and prefix
