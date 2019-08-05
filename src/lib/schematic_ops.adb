@@ -12067,6 +12067,12 @@ package body schematic_ops is
 		-- locate the given top module
 		module_cursor := locate_module (module_name);
 
+		-- Build the submodule tree of the module according to the current design structure.
+		-- All further operations rely on this tree:
+		build_submodules_tree (
+			module_name 	=> module_name,
+			log_threshold	=> log_threshold + 1);
+		
 		if exists (module_cursor, variant_top) then
 
 			-- take a copy of the submodule tree of the given top module:

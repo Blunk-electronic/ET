@@ -459,11 +459,11 @@ package body netlists is
 					end query_ports;
 					
 				begin -- query_ports
-					-- write the net name
-					new_line (netlist_handle);
-
 					-- Write primary nets only in netlist file:
 					if is_primary (net_cursor) then
+						-- write the net name
+						new_line (netlist_handle);
+
 						put_line (netlist_handle, to_string (key (net_cursor).prefix) & 
 							to_string (key (net_cursor).base_name)); -- CLK_GENERATOR/FLT1/ & clock_out
 
