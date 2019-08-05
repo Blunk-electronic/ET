@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your editor to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -57,9 +57,11 @@ with et_pcb_coordinates;
 package submodules is
 
 	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
+
+	subtype type_submodule_edge_length is type_distance range 10.0 .. 1000.0;
 	
 	type type_submodule_size is record
-		x, y : et_coordinates.type_distance; -- size x/y of the box
+		x, y : type_submodule_edge_length; -- size x/y of the box
 	end record;
 
 	function to_submodule_size (size : in type_submodule_size) return string;

@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                       SYSTEM ET ASSEMBLY VARIANTS                        --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                          ASSEMBLY VARIANTS                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your editor to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -117,7 +117,8 @@ package assembly_variants is
 		submodules	: type_submodules.map;
 	end record;
 
-	-- Since a board may have lots of variants, we keep them in a map:
+	-- Since a board may have lots of variants, we keep them in a map.
+	-- NOTE: The default variant ("") is never inserted here.
 	package type_variants is new ordered_maps (
 		key_type		=> type_variant_name.bounded_string, -- "low_cost"
 		element_type	=> type_variant);
@@ -127,6 +128,7 @@ package assembly_variants is
 		variant	: in type_variants.cursor)
 		return boolean;
 	-- Returns true if the given device is to be mounted according to given assembly variant.
+	-- If variant points to no element the default variant is assumed and the device regarded as mounted.
 	
 end assembly_variants;
 

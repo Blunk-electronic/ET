@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your editor to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -337,7 +337,8 @@ package et_schematic is
 	-- Returns the ports of devices, submodules and netchangers in
 	-- the given net. The given assembly variant determines whether
 	-- a device should be excluded.
-
+	-- NOTE: If variant points to no element, then the default variant is assumend
+	-- and ALL devices are returned.
 
 
 	

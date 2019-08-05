@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab with in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -11830,7 +11830,16 @@ package body schematic_ops is
 				end insert_net;
 				
 			begin -- query_nets
-				variant_cursor := find (module.variants, variant);
+				if assembly_variants.is_default (variant) then
+					variant_cursor := type_variants.no_element;
+				else
+					variant_cursor := find (module.variants, variant);
+					if variant_cursor = type_variants.no_element then
+						assembly_variant_not_found (variant);
+					end if;
+				end if;
+				-- Now variant_cursor points to the given assembly variant. If it points to
+				-- no element then it is about the default variant.
 
 				-- loop in nets of given module
 				while net_cursor_sch /= et_schematic.type_nets.no_element loop
@@ -11841,7 +11850,7 @@ package body schematic_ops is
 					-- Get all device, netchanger and submodule ports of this net
 					-- according to the given assembly variant:
 					all_ports := et_schematic.ports (net_cursor_sch, variant_cursor);
-
+					
 					-- extend the submodule ports by their directions (master/slave):
 					submodule_ports_extended := extend_ports (module_cursor, all_ports.submodules);
 					
@@ -12081,7 +12090,7 @@ package body schematic_ops is
 				new_item	=> (name => to_instance_name (""), others => <>)
 				);
 			-- netlist_cursor now points at the top module in netlist_tree.
-			
+
 			-- Collect nets of the given top module. the top module has no device index offset.
 			-- The nets will be inserted where netlist_cursor points at.
 			collect_nets (

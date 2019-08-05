@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                       SYSTEM ET ASSEMBLY VARIANTS                        --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                          ASSEMBLY VARIANTS                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab with in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -96,6 +96,7 @@ package body assembly_variants is
 		variant	: in type_variants.cursor)
 		return boolean is
 	-- Returns true if the given device is to be mounted according to given assembly variant.
+	-- If variant points to no element the default variant is assumed and the device regarded as mounted.
 		
 		use type_variants;
 		use type_devices;
@@ -110,25 +111,31 @@ package body assembly_variants is
 		end query_devices;
 		
 	begin -- is_mounted
-		query_element (
-			position	=> variant,
-			process		=> query_devices'access);
-
-		if cursor = type_devices.no_element then
-			-- Device has no entry in assembly variant and thus is to be mounted
-			-- as it is in the default variant:
-			return true;
+		if variant = type_variants.no_element then -- assume default variant
+			return true; -- device is to be mounted
 		else
-			-- Device has an entry in assembly variant. The question now
-			-- is whether the entry requests the device mounted or not.
-			if element (cursor).mounted = YES then
+			
+			query_element (
+				position	=> variant,
+				process		=> query_devices'access);
+
+			if cursor = type_devices.no_element then
+				-- Device has no entry in assembly variant and thus is to be mounted
+				-- as it is in the default variant:
 				return true;
 			else
-				return false;
+				-- Device has an entry in assembly variant. The question now
+				-- is whether the entry requests the device mounted or not.
+				if element (cursor).mounted = YES then
+					return true;
+				else
+					return false;
+				end if;
+				
 			end if;
-			
-		end if;
 
+		end if;
+		
 -- 		exception
 -- 			when event: others =>
 -- 				log_indentation_reset;
