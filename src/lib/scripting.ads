@@ -68,17 +68,39 @@ package scripting is
 	domain_prefix : constant string := ("DOM_");
 	
 	type type_domain is (
--- 		DOM_RIG,
+		DOM_PROJECT,
+--		DOM_RIG,
 		DOM_SCHEMATIC,
 		DOM_BOARD
 -- 		DOM_DEVICE,
 -- 		DOM_SYMBOL,
 -- 		DOM_PACKAGE
 		);
-
+	
 	function to_string (domain : in type_domain) return string;
 	function to_domain (domain : in string) return type_domain;
 
+
+
+	
+	type type_verb_project is (
+		CREATE,
+		DELETE,
+		OPEN
+		);
+
+	function to_string (verb : in type_verb_project) return string;
+	function to_verb (verb : in string) return type_verb_project;
+	
+	type type_noun_project is (
+		MODULE
+		);
+
+	function to_string (noun : in type_noun_project) return string;
+	function to_noun (noun : in string) return type_noun_project;
+
+	
+	
 	type type_verb_schematic is (
 		ADD,
 		BUILD,

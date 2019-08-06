@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab with in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -94,6 +94,28 @@ package body scripting is
 			raise;
 	end;
 
+	function to_string (verb : in type_verb_project) return string is begin
+		return type_verb_project'image (verb);
+	end;
+
+	function to_verb (verb : in string) return type_verb_project is begin
+		return type_verb_project'value (verb);
+		exception when event: others => 
+			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
+			raise;
+	end;
+	
+	function to_string (noun : in type_noun_project) return string is begin
+		return type_noun_project'image (noun);
+	end;
+
+	function to_noun (noun : in string) return type_noun_project is begin
+		return type_noun_project'value (noun);
+		exception when event: others => 
+			log (ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
+			raise;
+	end;
+	
 	function to_string (verb : in type_verb_board) return string is begin
 		return type_verb_board'image (verb);
 	end;
@@ -157,11 +179,17 @@ package body scripting is
 		exit_code : type_exit_code := SUCCESSFUL;
 		domain	: type_domain; -- DOM_SCHEMATIC
 		module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+
+		verb_project	: type_verb_project;
+		noun_project	: type_noun_project;
 		
 		verb_schematic	: type_verb_schematic;
 		noun_schematic	: type_noun_schematic;
+		
 		verb_board		: type_verb_board;
 		noun_board		: type_noun_board;
+
+		
 
 		procedure validate_module_name is begin
 			if not exists (module) then
@@ -189,8 +217,84 @@ package body scripting is
 			log (text => " -> Excessive arguments after no." & count_type'image (from) & " !");
 			raise constraint_error;
 		end;
+
+		procedure project_cmd (
+			verb : in type_verb_project;
+			noun : in type_noun_project) 
+		is
+			use et_project;
+		begin
+			case verb is
+				when OPEN =>
+					case noun is
+						when scripting.MODULE =>
+							case fields is
+								when 4 =>
+									-- The script command provides the module name only.
+									-- The extension must be added here:
+									et_project.read_module_file (
+										file_name		=> ada.directories.compose (
+														name		=> f (4),
+														extension	=> module_file_name_extension),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 5 .. count_type'last =>
+									command_too_long (4);
+									
+								when others => 
+									command_incomplete;
+							end case;							
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when CREATE =>
+					case noun is
+						when scripting.MODULE =>
+							case fields is
+								when 4 =>
+
+									et_project.create_module (
+										module_name		=> to_module_name (f (4)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 5 .. count_type'last =>
+									command_too_long (4);
+									
+								when others => 
+									command_incomplete;
+							end case;							
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when DELETE =>
+					case noun is
+						when scripting.MODULE =>
+							case fields is
+								when 4 =>
+
+									et_project.delete_module (
+										module_name		=> to_module_name (f (4)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 5 .. count_type'last =>
+									command_too_long (4);
+									
+								when others => 
+									command_incomplete;
+							end case;							
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
+			end case;
+		end project_cmd;
 		
-		procedure schematic_cmd (verb : in type_verb_schematic; noun : in type_noun_schematic) is
+		procedure schematic_cmd (
+			verb : in type_verb_schematic;
+			noun : in type_noun_schematic) 
+		is
 			use et_project;
 			use schematic_ops;
 			use et_coordinates;
@@ -1635,6 +1739,14 @@ package body scripting is
 
 				-- execute board command
 				board_cmd (verb_board, noun_board);
+
+			when DOM_PROJECT =>
+
+				verb_project := to_verb (f (2));
+				noun_project := to_noun (f (3));
+				
+				-- execute rig command
+				project_cmd (verb_project, noun_project);
 		end case;
 
 		log_indentation_down;

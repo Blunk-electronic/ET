@@ -7806,6 +7806,7 @@ package body et_project is
 	end to_string;
 
 	procedure read_module_file (
+	-- Reads a module file and stores its content as generic module in container modules.
 		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
 		log_threshold	: in et_string_processing.type_log_level) 
 		is
@@ -12749,6 +12750,80 @@ package body et_project is
 			raise;
 		
 	end read_module_file;
+
+	procedure create_module (
+	-- Creates an empty generic module in container modules.								   
+		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		log_threshold	: in et_string_processing.type_log_level) is
+
+		use type_modules;
+		module_cursor : type_modules.cursor;
+		inserted : boolean;
+		use et_string_processing;
+	begin
+		log (
+			text	=> "creating module " & enclose_in_quotes (to_string (module_name)) & " ...",
+			level	=> log_threshold);
+
+		-- We create the new module only if does not exist already:
+
+		-- Create an empty module named after the given module name.
+		-- So the module names are things like "motor_driver", "templates/clock_generator".
+	
+		-- CS: make sure the module is inside the current project directory.
+		
+		type_modules.insert (
+			container	=> modules,
+			key			=> module_name,
+			position	=> module_cursor,
+			inserted	=> inserted);
+
+		if not inserted then
+			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+					" already exists -> not created.", level => log_threshold + 1);
+		end if;
+
+	end create_module;
+
+	procedure delete_module (
+	-- Deletes a generic module in container modules. 
+	-- Deletes the module file of the generic module.
+		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		log_threshold	: in et_string_processing.type_log_level) is
+
+		use type_modules;
+		module_cursor : type_modules.cursor := locate_module (module_name);
+
+		use et_string_processing;
+		use ada.directories;
+
+		file_name : constant string := to_string (module_name) & latin_1.full_stop & module_file_name_extension;
+		-- motor_driver.mod or templates/clock_generator.mod
+	begin
+		log (
+			text	=> "deleting module " & enclose_in_quotes (to_string (module_name)) & " ...",
+			level	=> log_threshold);
+
+		-- We deletee the module only if exist:
+		if module_cursor /= type_modules.no_element then
+	
+			-- CS: make sure the module is inside the current project directory.
+		
+			type_modules.delete (
+				container	=> modules,
+				position	=> module_cursor);
+			
+		else
+			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+					" does not exist !", level => log_threshold + 1);
+		end if;
+
+		-- Delete the module file in case it exists already:
+		if exists (file_name) then
+			delete_file (file_name);
+		end if;
+		
+	end delete_module;
 
 	
 	procedure open_project (log_threshold : in et_string_processing.type_log_level) is

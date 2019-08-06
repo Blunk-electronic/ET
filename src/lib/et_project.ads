@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your editor to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -594,7 +594,19 @@ package et_project is
 	-- Converts a section like SEC_NET to a string "net".
 	
 	procedure read_module_file (
+	-- Reads a module file and stores its content as generic module in container modules.								   
 		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
+		log_threshold	: in et_string_processing.type_log_level);
+
+	procedure create_module (
+	-- Creates an empty generic module in container modules.								   
+		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		log_threshold	: in et_string_processing.type_log_level);
+
+	procedure delete_module (
+	-- Deletes a generic module in container modules.
+	-- Deletes the module file of the generic module.								
+		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure open_project (log_threshold : in et_string_processing.type_log_level);
