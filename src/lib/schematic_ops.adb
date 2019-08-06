@@ -10887,34 +10887,57 @@ package body schematic_ops is
 		begin
 			module.submod_tree := submod_tree;
 		end;
-		
-	begin -- autoset_device_name_offsets
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
-			" exploring current ranges of device indexes ...", level => log_threshold);
-		log_indentation_up;
-		
-		-- Calculate the index range per module and store it in 
-		-- container "ranges":
-		-- NOTE: This is about the indexes used by the generic module.
-		while module_cursor /= et_project.type_modules.no_element loop
 
+		procedure query_submodules (submod_cursor : in numbering.type_modules.cursor) is
+			use numbering.type_modules;
+			-- map from submodule_cursor to module in et_project.modules:
+			module_name	: type_module_name.bounded_string := element (submod_cursor).name;
+			module_cursor : et_project.type_modules.cursor := locate_module (module_name);
+			-- module_cursor now points to the generic module
+		begin
 			index_range := device_index_range (module_cursor, log_threshold + 1);
 
 			type_ranges.insert (
 				container	=> ranges,
 				key			=> key (module_cursor),
 				new_item	=> index_range);
-			
-			next (module_cursor);
-		end loop;
 
+		end query_submodules;
+									   
+	begin -- autoset_device_name_offsets
+		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+			" exploring current ranges of device indexes ...", level => log_threshold);
+		log_indentation_up;
+
+		-- locate the given top module
+		module_cursor := locate_module (module_name);
+
+		-----------------
+		-- Calculate the index range per module and store it in 
+		-- container "ranges":
+		-- NOTE: This is about the indexes used by the generic module.
+
+		-- top module:
+		index_range := device_index_range (module_cursor, log_threshold + 1);
+
+		type_ranges.insert (
+			container	=> ranges,
+			key			=> module_name,
+			new_item	=> index_range);
+
+		-- submodules:		
+		numbering.type_modules.iterate (element (module_cursor).submod_tree, query_submodules'access);
+		
+		-- calculation of index ranges complete
+		----------------
+		
 		log_indentation_down;
 
 		log (text => "autosetting device name offset of submodules instances ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- locate the given top module
-		module_cursor := locate_module (module_name);
+-- 		module_cursor := locate_module (module_name);
 
 		-- The first module being processed now is the given top module.
 		-- Its highest used device index extends the total index range.
