@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab with in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -13178,7 +13178,11 @@ package body et_project is
 			set_directory (to_string (project_name));
 
 			--log (text => "current dir " & current_directory, level => log_threshold + 1);
-			
+
+			-- CS: It requires discussion whether loading all modules files at this time is reasonable.
+			-- Even if a module will not be used it is going to be loaded. This causes more log information than required.
+			-- A solution could be to load a module on reading the rig configuration file. The drawback is that the user
+			-- would be required to setup a rig configuration even if she wants to design only one board.
 			log (text => "looking for module files ...", level => log_threshold + 1);
 			log_indentation_up;
 			start_search (module_file_search, current_directory, module_file_name_extension_asterisk, module_file_filter);

@@ -10915,7 +10915,7 @@ package body schematic_ops is
 		-----------------
 		-- Calculate the index range per module and store it in 
 		-- container "ranges":
-		-- NOTE: This is about the indexes used by the generic module.
+		-- NOTE: This is about the indexes used by the generic modules.
 
 		-- top module:
 		index_range := device_index_range (module_cursor, log_threshold + 1);
