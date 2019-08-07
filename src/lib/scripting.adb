@@ -268,6 +268,26 @@ package body scripting is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+				when SAVE =>
+					case noun is
+						when scripting.MODULE =>
+							case fields is
+								when 4 =>
+
+									et_project.save_module (
+										module_name		=> to_module_name (f (4)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 5 .. count_type'last =>
+									command_too_long (4);
+									
+								when others => 
+									command_incomplete;
+							end case;							
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
 				when DELETE =>
 					case noun is
 						when scripting.MODULE =>

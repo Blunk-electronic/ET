@@ -86,7 +86,8 @@ package scripting is
 	type type_verb_project is (
 		CREATE,
 		DELETE,
-		OPEN
+		OPEN,
+		SAVE
 		);
 
 	function to_string (verb : in type_verb_project) return string;

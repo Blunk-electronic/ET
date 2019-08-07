@@ -12785,6 +12785,44 @@ package body et_project is
 
 	end create_module;
 
+	procedure save_module (
+	-- Saves a generic module (from container modules) in a file inside the current project directory. 
+		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		log_threshold	: in et_string_processing.type_log_level) is
+
+		use type_modules;
+		module_cursor : type_modules.cursor := locate_module (module_name);
+
+		use et_string_processing;
+		use ada.directories;
+
+		file_name : constant string := to_string (module_name) & latin_1.full_stop & module_file_name_extension;
+		-- motor_driver.mod or templates/clock_generator.mod
+	begin
+		log (
+			text	=> "saving module " & enclose_in_quotes (to_string (module_name)) & " ...",
+			level	=> log_threshold);
+
+		-- We save the module only if it exists:
+		if module_cursor /= type_modules.no_element then
+	
+			-- CS: make sure the module is inside the current project directory.
+
+			log (text => "current directory " & current_directory);
+-- 			save_module (
+-- 				module			=> element (module_cursor),				-- the module
+-- 				project_name	=> to_project_name (current_directory),	-- blood_sample_analyzer
+-- 				module_name		=> module_name,							-- motor_driver
+-- 				project_path	=> to_project_path (""),				-- inside the current directory
+-- 				log_threshold 	=> log_threshold + 1);
+			
+		else
+			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+					" does not exist !", level => log_threshold + 1);
+		end if;
+		
+	end save_module;
+	
 	procedure delete_module (
 	-- Deletes a generic module in container modules. 
 	-- Deletes the module file of the generic module.
@@ -12804,7 +12842,7 @@ package body et_project is
 			text	=> "deleting module " & enclose_in_quotes (to_string (module_name)) & " ...",
 			level	=> log_threshold);
 
-		-- We deletee the module only if exist:
+		-- We delete the module only if it exists:
 		if module_cursor /= type_modules.no_element then
 	
 			-- CS: make sure the module is inside the current project directory.
@@ -12824,7 +12862,6 @@ package body et_project is
 		end if;
 		
 	end delete_module;
-
 	
 	procedure open_project (log_threshold : in et_string_processing.type_log_level) is
 	-- Enters the project directory specified by project_name.
