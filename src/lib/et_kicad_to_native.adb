@@ -3881,14 +3881,29 @@ package body et_kicad_to_native is
 			query_element (
 				position	=> module_cursor_kicad,
 				process		=> copy_libraries'access);
-			
-			-- save module in file *.mod
-			et_project.save_module (
-				module			=> module, -- the module it is about
-				project_name	=> project_name, -- blood_sample_analyzer
-				project_path	=> project_path, -- /home/user/et_projects/imported_from_kicad
-				log_threshold	=> log_threshold);
 
+			-- Since procedure save_module requires a cursor to the module we set up a list
+			-- that contains only the scratch module.
+			-- CS: It would be more efficient if the scratch module were in such a list from the
+			-- beginning and procedures copy_general_stuff, copy_components, copy_nets, copy_frames
+			-- and copy_libraries would update the scratch module inside the list.
+			declare 
+				module_list : et_project.type_modules.map; -- set up the list
+			begin
+				-- insert the scratch module in the list
+				et_project.type_modules.insert (
+					container 	=> module_list,
+					key			=> to_module_name (to_string (project_name)), -- blood_sample_analyzer
+					new_item	=> module);
+			
+				-- save module (the first an only one in module_list) in file *.mod
+				et_project.save_module (
+					module_cursor	=> et_project.type_modules.first (module_list), -- the module it is about
+					project_name	=> project_name, -- blood_sample_analyzer
+					project_path	=> project_path, -- /home/user/et_projects/imported_from_kicad
+					log_threshold	=> log_threshold);
+			end;
+		
 			-- save libraries (from et_libraries.devices and et_pcb.packages 
 			-- to native project directory libraries/devices and libraries/packages)
 			save_libraries (

@@ -2389,7 +2389,7 @@ package body et_project is
 	end save_module_content;
 	
 	procedure save_module (
-		module			: in et_schematic.type_module;				-- the module -- CS use a cursor instead
+		module_cursor	: in type_modules.cursor;					-- the module
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		module_name		: in type_module_name.bounded_string := to_module_name ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
@@ -2449,7 +2449,7 @@ package body et_project is
 		reset_tab_depth;
 		log_indentation_up;
 
-		save_module_content (module, make_module_file_name, log_threshold); -- CS use a module cursor
+		save_module_content (type_modules.element (module_cursor), make_module_file_name, log_threshold); -- CS use a module cursor
 	
 		log_indentation_down;
 
@@ -13478,7 +13478,7 @@ package body et_project is
 				log_indentation_up;
 				
 				save_module (
-					module			=> element (module_cursor), -- the module it is about
+					module_cursor	=> module_cursor, -- the module it is about
 					project_name	=> name, -- blood_sample_analyzer
 					module_name		=> module_name,	-- motor_driver
 					project_path	=> path, -- /home/user/ecad

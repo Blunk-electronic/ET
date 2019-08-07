@@ -277,7 +277,7 @@ package et_project is
 	-- Saves the rig configuration in the file with the given name rig_conf_file.	
 	
 	procedure save_module (
-		module			: in et_schematic.type_module;				-- the module
+		module_cursor	: in type_modules.cursor;				-- the module
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		module_name		: in type_module_name.bounded_string := to_module_name ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
