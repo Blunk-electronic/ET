@@ -1372,61 +1372,24 @@ package body et_project is
 				raise;
 
 	end save_rig_configuration;
-		
-	procedure save_module (
-		module			: in et_schematic.type_module;				-- the module
-		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
-		module_name		: in type_module_name.bounded_string := to_module_name ("");	-- motor_driver
-		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
-		log_threshold 	: in et_string_processing.type_log_level) is
-	-- Saves the given module (incl. schematic and layout data) in the module file
-	-- of the given project.
-	-- If module_name not provided, the module will be named after the given project_name.
-	-- CS: improve log messages !!
-		
+
+	procedure save_module_content (
+		module				: in et_schematic.type_module;
+		module_file_name	: in type_module_file_name.bounded_string; -- led_matrix
+		log_threshold		: in et_string_processing.type_log_level) is 
 		use et_string_processing;
-		use et_schematic;
 
 		module_file_handle : ada.text_io.file_type;
-		
-		procedure write_module_header is 
+
+		procedure write_header is 
 		-- Creates the module/submodule file and writes a nice header in it.
 			use ada.directories;
 			use gnat.directory_operations;
 			use type_project_name;
 			use type_et_project_path;
 			use et_general;
-
-			package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
-			use type_path;
-			path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
-
-			module_file_name : type_module_file_name.bounded_string; -- led_matrix
-			
+		
 		begin -- write_module_header
-			log (text => "setting module file name ...", level => log_threshold + 1);
-
-			-- If given module_name is empty (means it has not been passed), the module is named after the project.
-			-- Otherwise the module name is as given by module_name.
-			if type_module_name.length (module_name) = 0 then
-				module_file_name := type_module_file_name.to_bounded_string (compose (
-					containing_directory	=> to_string (path),
-					name 					=> to_string (project_name),
-					extension 				=> module_file_name_extension));
-			else
-				-- Compose the full path of the module file. 
-				-- NOTE: The function "compose" in ada.directories does not work here
-				-- because it does not accept directory separators in a module_name.
-				module_file_name := to_module_file_name (
-					to_string (path) &			-- ./project_abc
-					dir_separator &				-- /
-					to_string (module_name) &	-- motor_driver, templates/clock_generator
-					latin_1.full_stop &			-- .
-					module_file_name_extension	-- mod
-					);
-			end if;
-			
-			log (text => " module file name is now " & type_module_file_name.to_string (module_file_name), level => log_threshold + 2);
 
 			-- create module file and write in it a header
 			create (
@@ -1439,9 +1402,9 @@ package body et_project is
 			put_line (comment_mark & " " & date);
 			put_line (comment_mark & " " & row_separator_double);
 			new_line;
-		end write_module_header;
-		
-		procedure write_module_footer is
+		end write_header;		
+
+		procedure write_footer is
 		-- writes a nice footer in the module file and closes it.
 		begin
 			new_line;
@@ -1455,7 +1418,7 @@ package body et_project is
 
 			set_output (standard_output);		
 			close (module_file_handle);
-		end write_module_footer;
+		end write_footer;
 		
 		function rotation (pos : in et_pcb_coordinates.type_point_2d_with_angle'class) return string is
 			use et_pcb_coordinates;
@@ -2375,13 +2338,9 @@ package body et_project is
 			---BOARD END-----
 			section_mark (section_board, FOOTER);
 		end query_board;
-	
-	begin -- save_module
-		log (text => "saving module ...", level => log_threshold);
-		reset_tab_depth;
-		log_indentation_up;
-		
-		write_module_header;
+
+	begin
+		write_header;
 		
 		-- net classes
 		query_net_classes;
@@ -2418,15 +2377,85 @@ package body et_project is
 		-- board
 		query_board;
 		put_line (row_separator_single);	
-	
-		write_module_footer;
-		
-		log_indentation_down;
+
+		write_footer;
 
 		exception when event:
 			others => 
 				log (text => ada.exceptions.exception_message (event), console => true);
 				close (module_file_handle);
+				raise;
+		
+	end save_module_content;
+	
+	procedure save_module (
+		module			: in et_schematic.type_module;				-- the module -- CS use a cursor instead
+		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
+		module_name		: in type_module_name.bounded_string := to_module_name ("");	-- motor_driver
+		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
+		log_threshold 	: in et_string_processing.type_log_level) is
+	-- Saves the given module (incl. schematic and layout data) in the module file
+	-- of the given project.
+	-- If module_name not provided, the module will be named after the given project_name.
+	-- CS: improve log messages !!
+		
+		use et_string_processing;
+		use et_schematic;
+		
+		function make_module_file_name return type_module_file_name.bounded_string is 
+		-- Creates the module/submodule file and writes a nice header in it.
+			use ada.directories;
+			use gnat.directory_operations;
+			use type_project_name;
+			use type_et_project_path;
+			use et_general;
+
+			package type_path is new generic_bounded_length (project_name_max + project_path_max + 1); -- incl. directory separator
+			use type_path;
+			path : type_path.bounded_string := to_bounded_string (compose (to_string (project_path), to_string (project_name)));
+
+			module_file_name : type_module_file_name.bounded_string; -- led_matrix -- to be returned
+			
+		begin -- write_module_header
+			log (text => "setting module file name ...", level => log_threshold + 1);
+
+			-- If given module_name is empty (means it has not been passed), the module is named after the project.
+			-- Otherwise the module name is as given by module_name.
+			if type_module_name.length (module_name) = 0 then
+				module_file_name := type_module_file_name.to_bounded_string (compose (
+					containing_directory	=> to_string (path),
+					name 					=> to_string (project_name),
+					extension 				=> module_file_name_extension));
+			else
+				-- Compose the full path of the module file. 
+				-- NOTE: The function "compose" in ada.directories does not work here
+				-- because it does not accept directory separators in a module_name.
+				module_file_name := to_module_file_name (
+					to_string (path) &			-- ./project_abc
+					dir_separator &				-- /
+					to_string (module_name) &	-- motor_driver, templates/clock_generator
+					latin_1.full_stop &			-- .
+					module_file_name_extension	-- mod
+					);
+			end if;
+			
+			log (text => " module file name is now " & type_module_file_name.to_string (module_file_name), level => log_threshold + 2);
+
+			return module_file_name;
+		end make_module_file_name;
+		
+	begin -- save_module
+		log (text => "saving module ...", level => log_threshold);
+		reset_tab_depth;
+		log_indentation_up;
+
+		save_module_content (module, make_module_file_name, log_threshold); -- CS use a module cursor
+	
+		log_indentation_down;
+
+		exception when event:
+			others => 
+				log (text => ada.exceptions.exception_message (event), console => true);
 				raise;
 
 	end save_module;
