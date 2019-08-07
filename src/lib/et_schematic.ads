@@ -371,12 +371,14 @@ package et_schematic is
 		submods			: submodules.type_submodules.map;		-- submodules
 		netchangers		: submodules.type_netchangers.map;		-- netchangers
 		
-		frame_template_schematic	: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frm
+		frame_template_schematic	: et_libraries.type_frame_template_name.bounded_string :=
+			et_libraries.frame_template_name_dummy;	-- $ET_FRAMES/drawing_frame_version_1.frm
 		
 		-- CS frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
 		-- should be part of statistics
 		
-		frame_template_board		: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frm
+		frame_template_board		: et_libraries.type_frame_template_name.bounded_string :=	-- $ET_FRAMES/drawing_frame_version_2.frm
+			et_libraries.frame_template_name_dummy;
 		-- CS: handle sheet description via a composite type consisting of template name and a bounded string
 		
 		texts       	: type_texts.list; -- general notes, not related to drawing frames !

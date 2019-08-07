@@ -275,6 +275,12 @@ package et_project is
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level);
 	-- Saves the rig configuration in the file with the given name rig_conf_file.	
+
+	procedure save_module (
+	-- Saves the given generic module in the given file.
+		module_cursor		: in type_modules.cursor;
+		module_file_name	: in type_module_file_name.bounded_string; -- led_matrix.mod
+		log_threshold		: in et_string_processing.type_log_level);
 	
 	procedure save_module (
 		module_cursor	: in type_modules.cursor;				-- the module
@@ -282,10 +288,8 @@ package et_project is
 		module_name		: in type_module_name.bounded_string := to_module_name ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level);
-	-- Saves the given module (incl. schematic and layout data) in the module file
-	-- of the given project.
+	-- Saves the given module in the module file of the given project.
 	-- If module_name not provided, the module will be named after the given project_name.
-
 
 	procedure save_device (
 		name			: in string; -- libraries/devices/resistor.dev

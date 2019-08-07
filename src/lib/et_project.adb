@@ -1373,12 +1373,14 @@ package body et_project is
 
 	end save_rig_configuration;
 
-	procedure save_module_content (
-		module				: in et_schematic.type_module;
-		module_file_name	: in type_module_file_name.bounded_string; -- led_matrix
+	procedure save_module (
+	-- Saves the given generic module in the given file.
+		module_cursor		: in type_modules.cursor;
+		module_file_name	: in type_module_file_name.bounded_string; -- led_matrix.mod
 		log_threshold		: in et_string_processing.type_log_level) is 
 		use et_string_processing;
-
+		use type_modules;
+		
 		module_file_handle : ada.text_io.file_type;
 
 		procedure write_header is 
@@ -1435,13 +1437,9 @@ package body et_project is
 		procedure query_net_classes is
 			use et_pcb;
 			use et_pcb.type_net_classes;
-			class_cursor : et_pcb.type_net_classes.cursor := module.net_classes.first;
-
 			use et_pcb_coordinates;
-		begin
-			log_indentation_up;
-			section_mark (section_net_classes, HEADER);
-			while class_cursor /= type_net_classes.no_element loop
+
+			procedure write (class_cursor : in type_net_classes.cursor) is begin
 				log (text => "net class " & to_string (key (class_cursor)), level => log_threshold + 1);
 				section_mark (section_net_class, HEADER);
 
@@ -1455,17 +1453,21 @@ package body et_project is
 				write (keyword => keyword_micro_via_restring_min, parameters => to_string (element (class_cursor).micro_via_restring_min));
 
 				section_mark (section_net_class, FOOTER);
-				next (class_cursor);
-			end loop;
+			end write;
+		
+		begin -- query_net_classes
+			log_indentation_up;
+			
+			section_mark (section_net_classes, HEADER);
+			iterate (element (module_cursor).net_classes, write'access);
 			section_mark (section_net_classes, FOOTER);
+
 			log_indentation_down;
 		end query_net_classes;
 
 		procedure query_nets is
 			use et_schematic;
 			use et_schematic.type_nets;
-			net_cursor : et_schematic.type_nets.cursor := module.nets.first;
-
 			use et_pcb;
 
 			procedure query_strands (net_name : in type_net_name.bounded_string; net : in type_net) is
@@ -1714,11 +1716,8 @@ package body et_project is
 				
 				section_mark (section_route, FOOTER);
 			end query_route;
-			
-		begin -- query_nets
-			log_indentation_up;
-			section_mark (section_nets, HEADER);
-			while net_cursor /= type_nets.no_element loop
+
+			procedure write (net_cursor : in et_schematic.type_nets.cursor) is begin
 				log (text => "net " & et_general.to_string (key (net_cursor)), level => log_threshold + 1);
 				section_mark (section_net, HEADER);
 
@@ -1731,8 +1730,13 @@ package body et_project is
 				
 				section_mark (section_net, FOOTER);
 				new_line;
-				next (net_cursor);
-			end loop;
+			end write;
+			
+		begin -- query_nets
+			log_indentation_up;
+
+			section_mark (section_nets, HEADER);
+			iterate (element (module_cursor).nets, write'access);
 			section_mark (section_nets, FOOTER);
 			
 			log_indentation_down;
@@ -1741,7 +1745,6 @@ package body et_project is
 		procedure query_devices is		
 			use et_schematic;
 			use type_devices;
-			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
 
 			procedure query_units (device_name : in et_libraries.type_device_name; device : in et_schematic.type_device) is
 				use et_schematic.type_units;
@@ -1821,10 +1824,8 @@ package body et_project is
 				
 				section_mark (section_placeholders, FOOTER);				
 			end query_placeholders;
-			
-		begin -- query_devices
-			section_mark (section_devices, HEADER);			
-			while device_cursor /= type_devices.no_element loop
+
+			procedure write (device_cursor : in type_devices.cursor) is begin
 				section_mark (section_device, HEADER);
 				write (keyword => keyword_name, parameters => et_libraries.to_string (key (device_cursor)), space => true);
 				write (keyword => keyword_appearance, parameters => et_libraries.to_string (element (device_cursor).appearance));
@@ -1853,9 +1854,11 @@ package body et_project is
 				
 				section_mark (section_device, FOOTER);
 				new_line;
-				
-				next (device_cursor);
-			end loop;
+			end write;
+			
+		begin -- query_devices
+			section_mark (section_devices, HEADER);
+			iterate (element (module_cursor).devices, write'access);
 			section_mark (section_devices, FOOTER);
 		end query_devices;
 
@@ -1863,7 +1866,6 @@ package body et_project is
 		-- writes the assembly variants in the module file
 			use assembly_variants;
 			use type_variants;
-			variant_cursor : type_variants.cursor := module.variants.first;
 
 			procedure query_devices (
 				variant_name	: in type_variant_name.bounded_string;
@@ -1931,11 +1933,8 @@ package body et_project is
 					next (submodule_cursor);
 				end loop;
 			end query_submodules;
-			
-		begin -- query_assembly_variants
-			section_mark (section_assembly_variants, HEADER);			
 
-			while variant_cursor /= type_variants.no_element loop
+			procedure write (variant_cursor : in type_variants.cursor) is begin
 				section_mark (section_assembly_variant, HEADER);
 				write (keyword => keyword_name, parameters => to_variant (key (variant_cursor)), space => true);
 				write (keyword => keyword_description, wrap => true, parameters => to_string (element (variant_cursor).description));
@@ -1952,10 +1951,11 @@ package body et_project is
 				
 				section_mark (section_assembly_variant, FOOTER);
 				new_line;
-				
-				next (variant_cursor);
-			end loop;
+			end write;
 			
+		begin -- query_assembly_variants
+			section_mark (section_assembly_variants, HEADER);			
+			iterate (element (module_cursor).variants, write'access);
 			section_mark (section_assembly_variants, FOOTER);
 		end query_assembly_variants;
 		
@@ -1977,7 +1977,7 @@ package body et_project is
 			
 		begin
 			section_mark (section_netchangers, HEADER);
-			iterate (module.netchangers, query_netchanger'access);
+			iterate (element (module_cursor).netchangers, query_netchanger'access);
 			section_mark (section_netchangers, FOOTER);
 		end query_netchangers;
 		
@@ -1987,14 +1987,23 @@ package body et_project is
 		begin
 			section_mark (section_drawing_frames, HEADER);
 			section_mark (section_schematic, HEADER);			
-			write (keyword => keyword_template, space => true, parameters => et_libraries.to_string (module.frame_template_schematic));
+			write (
+				keyword 	=> keyword_template, 
+				space 		=> true, 
+				parameters	=> et_libraries.to_string (element (module_cursor).frame_template_schematic));
+			
 			-- CS frame count ?
 			-- CS description ?
+			
 			section_mark (section_schematic, FOOTER);			
 
 			section_mark (section_board, HEADER);			
-			write (keyword => keyword_template, space => true, parameters => et_libraries.to_string (module.frame_template_board));
+			write (
+				keyword		=> keyword_template, 
+				space 		=> true, 
+				parameters	=> et_libraries.to_string (element (module_cursor).frame_template_board));
 			section_mark (section_board, FOOTER);			
+			
 			section_mark (section_drawing_frames, FOOTER);
 		end query_frames;
 
@@ -2002,8 +2011,6 @@ package body et_project is
 			use et_schematic;
 			use submodules;
 			use type_submodules;
-			
-			submodule_cursor : type_submodules.cursor := module.submods.first;
 
 			procedure query_ports (port_cursor : in submodules.type_submodule_ports.cursor) is
 				use type_submodule_ports;
@@ -2014,10 +2021,8 @@ package body et_project is
 				write (keyword => keyword_direction, parameters => to_string (element (port_cursor).direction)); -- direction master/slave
 				section_mark (section_port, FOOTER);
 			end;
-			
-		begin -- query_submodules
-			section_mark (section_submodules, HEADER);
-			while submodule_cursor /= type_submodules.no_element loop
+
+			procedure write (submodule_cursor : in type_submodules.cursor) is begin
 				section_mark (section_submodule, HEADER);
 				write (keyword => keyword_name, space => true, parameters => et_general.to_string (key (submodule_cursor))); -- name stepper_driver_1
 				write (keyword => keyword_file, space => true, parameters => type_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
@@ -2037,26 +2042,30 @@ package body et_project is
 				section_mark (section_ports, FOOTER);
 				
 				section_mark (section_submodule, FOOTER);				
-				next (submodule_cursor);
-			end loop;
+			end write;
+			
+		begin -- query_submodules
+			section_mark (section_submodules, HEADER);
+			iterate (element (module_cursor).submods, write'access);
 			section_mark (section_submodules, FOOTER);
 		end query_submodules;
 
 		procedure query_texts is		
 			use et_schematic;
 			use type_texts;
-			text_cursor : type_texts.cursor := module.texts.first;
-		begin
-			section_mark (section_texts, HEADER);
-			while text_cursor /= type_texts.no_element loop
+
+			procedure write (text_cursor : in type_texts.cursor) is begin
 				section_mark (section_text, HEADER);
 				write (keyword => keyword_position, parameters => position (element (text_cursor).coordinates));
 				write (keyword => keyword_content, space => true, wrap => true,
 					   parameters => et_libraries.to_string (element (text_cursor).content));
 				write_text_properties (element (text_cursor));
 				section_mark (section_text, FOOTER);
-				next (text_cursor);
-			end loop;
+			end write;
+		
+		begin
+			section_mark (section_texts, HEADER);
+			iterate (element (module_cursor).texts, write'access);
 			section_mark (section_texts, FOOTER);
 		end query_texts;
 
@@ -2197,21 +2206,21 @@ package body et_project is
 			section_mark (section_silk_screen, HEADER);
 
 				section_mark (section_top, HEADER);
-				iterate (module.board.silk_screen.top.lines, write_line'access);
-				iterate (module.board.silk_screen.top.arcs, write_arc'access);
-				iterate (module.board.silk_screen.top.circles, write_circle'access);
-				iterate (module.board.silk_screen.top.polygons, write_polygon'access);
-				iterate (module.board.silk_screen.top.texts, write_text'access);
-				iterate (module.board.silk_screen.top.placeholders, write_placeholder'access);
+				iterate (element (module_cursor).board.silk_screen.top.lines, write_line'access);
+				iterate (element (module_cursor).board.silk_screen.top.arcs, write_arc'access);
+				iterate (element (module_cursor).board.silk_screen.top.circles, write_circle'access);
+				iterate (element (module_cursor).board.silk_screen.top.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.silk_screen.top.texts, write_text'access);
+				iterate (element (module_cursor).board.silk_screen.top.placeholders, write_placeholder'access);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (module.board.silk_screen.bottom.lines, write_line'access);
-				iterate (module.board.silk_screen.bottom.arcs, write_arc'access);
-				iterate (module.board.silk_screen.bottom.circles, write_circle'access);
-				iterate (module.board.silk_screen.bottom.polygons, write_polygon'access);
-				iterate (module.board.silk_screen.bottom.texts, write_text'access);
-				iterate (module.board.silk_screen.bottom.placeholders, write_placeholder'access);
+				iterate (element (module_cursor).board.silk_screen.bottom.lines, write_line'access);
+				iterate (element (module_cursor).board.silk_screen.bottom.arcs, write_arc'access);
+				iterate (element (module_cursor).board.silk_screen.bottom.circles, write_circle'access);
+				iterate (element (module_cursor).board.silk_screen.bottom.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.silk_screen.bottom.texts, write_text'access);
+				iterate (element (module_cursor).board.silk_screen.bottom.placeholders, write_placeholder'access);
 				section_mark (section_bottom, FOOTER);
 			
 			section_mark (section_silk_screen, FOOTER);
@@ -2220,21 +2229,21 @@ package body et_project is
 			section_mark (section_assembly_doc, HEADER);
 
 			section_mark (section_top, HEADER);
-				iterate (module.board.assy_doc.top.lines, write_line'access);
-				iterate (module.board.assy_doc.top.arcs, write_arc'access);
-				iterate (module.board.assy_doc.top.circles, write_circle'access);
-				iterate (module.board.assy_doc.top.polygons, write_polygon'access);
-				iterate (module.board.assy_doc.top.texts, write_text'access);
-				iterate (module.board.assy_doc.top.placeholders, write_placeholder'access);
+				iterate (element (module_cursor).board.assy_doc.top.lines, write_line'access);
+				iterate (element (module_cursor).board.assy_doc.top.arcs, write_arc'access);
+				iterate (element (module_cursor).board.assy_doc.top.circles, write_circle'access);
+				iterate (element (module_cursor).board.assy_doc.top.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.assy_doc.top.texts, write_text'access);
+				iterate (element (module_cursor).board.assy_doc.top.placeholders, write_placeholder'access);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (module.board.assy_doc.bottom.lines, write_line'access);
-				iterate (module.board.assy_doc.bottom.arcs, write_arc'access);
-				iterate (module.board.assy_doc.bottom.circles, write_circle'access);
-				iterate (module.board.assy_doc.bottom.polygons, write_polygon'access);
-				iterate (module.board.assy_doc.bottom.texts, write_text'access);
-				iterate (module.board.assy_doc.bottom.placeholders, write_placeholder'access);
+				iterate (element (module_cursor).board.assy_doc.bottom.lines, write_line'access);
+				iterate (element (module_cursor).board.assy_doc.bottom.arcs, write_arc'access);
+				iterate (element (module_cursor).board.assy_doc.bottom.circles, write_circle'access);
+				iterate (element (module_cursor).board.assy_doc.bottom.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.assy_doc.bottom.texts, write_text'access);
+				iterate (element (module_cursor).board.assy_doc.bottom.placeholders, write_placeholder'access);
 				section_mark (section_bottom, FOOTER);
 
 			section_mark (section_assembly_doc, FOOTER);
@@ -2243,17 +2252,17 @@ package body et_project is
 			section_mark (section_stencil, HEADER);
 
 			section_mark (section_top, HEADER);
-				iterate (module.board.stencil.top.lines, write_line'access);
-				iterate (module.board.stencil.top.arcs, write_arc'access);
-				iterate (module.board.stencil.top.circles, write_circle'access);
-				iterate (module.board.stencil.top.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.stencil.top.lines, write_line'access);
+				iterate (element (module_cursor).board.stencil.top.arcs, write_arc'access);
+				iterate (element (module_cursor).board.stencil.top.circles, write_circle'access);
+				iterate (element (module_cursor).board.stencil.top.polygons, write_polygon'access);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (module.board.stencil.bottom.lines, write_line'access);
-				iterate (module.board.stencil.bottom.arcs, write_arc'access);
-				iterate (module.board.stencil.bottom.circles, write_circle'access);
-				iterate (module.board.stencil.bottom.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.stencil.bottom.lines, write_line'access);
+				iterate (element (module_cursor).board.stencil.bottom.arcs, write_arc'access);
+				iterate (element (module_cursor).board.stencil.bottom.circles, write_circle'access);
+				iterate (element (module_cursor).board.stencil.bottom.polygons, write_polygon'access);
 				section_mark (section_bottom, FOOTER);
 
 			section_mark (section_stencil, FOOTER);
@@ -2262,19 +2271,19 @@ package body et_project is
 			section_mark (section_stop_mask, HEADER);
 
 			section_mark (section_top, HEADER);
-				iterate (module.board.stop_mask.top.lines, write_line'access);
-				iterate (module.board.stop_mask.top.arcs, write_arc'access);
-				iterate (module.board.stop_mask.top.circles, write_circle'access);
-				iterate (module.board.stop_mask.top.polygons, write_polygon'access);
-				iterate (module.board.stop_mask.top.texts, write_text'access);			
+				iterate (element (module_cursor).board.stop_mask.top.lines, write_line'access);
+				iterate (element (module_cursor).board.stop_mask.top.arcs, write_arc'access);
+				iterate (element (module_cursor).board.stop_mask.top.circles, write_circle'access);
+				iterate (element (module_cursor).board.stop_mask.top.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.stop_mask.top.texts, write_text'access);			
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (module.board.stop_mask.bottom.lines, write_line'access);
-				iterate (module.board.stop_mask.bottom.arcs, write_arc'access);
-				iterate (module.board.stop_mask.bottom.circles, write_circle'access);
-				iterate (module.board.stop_mask.bottom.polygons, write_polygon'access);
-				iterate (module.board.stop_mask.bottom.texts, write_text'access);
+				iterate (element (module_cursor).board.stop_mask.bottom.lines, write_line'access);
+				iterate (element (module_cursor).board.stop_mask.bottom.arcs, write_arc'access);
+				iterate (element (module_cursor).board.stop_mask.bottom.circles, write_circle'access);
+				iterate (element (module_cursor).board.stop_mask.bottom.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.stop_mask.bottom.texts, write_text'access);
 				section_mark (section_bottom, FOOTER);
 
 			section_mark (section_stop_mask, FOOTER);
@@ -2283,63 +2292,63 @@ package body et_project is
 			section_mark (section_keepout, HEADER);
 
 			section_mark (section_top, HEADER);
-				iterate (module.board.keepout.top.lines, write_line'access);
-				iterate (module.board.keepout.top.arcs, write_arc'access);
-				iterate (module.board.keepout.top.circles, write_circle'access);
-				iterate (module.board.keepout.top.polygons, write_polygon'access);
-				-- CS iterate (et_schematic.module.board.keepout.top.texts, write_text'access);
+				iterate (element (module_cursor).board.keepout.top.lines, write_line'access);
+				iterate (element (module_cursor).board.keepout.top.arcs, write_arc'access);
+				iterate (element (module_cursor).board.keepout.top.circles, write_circle'access);
+				iterate (element (module_cursor).board.keepout.top.polygons, write_polygon'access);
+				-- CS iterate (et_schematic.element (module_cursor).board.keepout.top.texts, write_text'access);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
-				iterate (module.board.keepout.bottom.lines, write_line'access);
-				iterate (module.board.keepout.bottom.arcs, write_arc'access);
-				iterate (module.board.keepout.bottom.circles, write_circle'access);
-				iterate (module.board.keepout.bottom.polygons, write_polygon'access);
-				-- CS iterate (et_schematic.module.board.keepout.bottom.texts, write_text'access);
+				iterate (element (module_cursor).board.keepout.bottom.lines, write_line'access);
+				iterate (element (module_cursor).board.keepout.bottom.arcs, write_arc'access);
+				iterate (element (module_cursor).board.keepout.bottom.circles, write_circle'access);
+				iterate (element (module_cursor).board.keepout.bottom.polygons, write_polygon'access);
+				-- CS iterate (et_schematic.element (module_cursor).board.keepout.bottom.texts, write_text'access);
 				section_mark (section_bottom, FOOTER);
 
 			section_mark (section_keepout, FOOTER);
 
 			-- ROUTE RESTRICT
 			section_mark (section_route_restrict, HEADER);
-				iterate (module.board.route_restrict.lines, write_line'access);
-				iterate (module.board.route_restrict.arcs, write_arc'access);
-				iterate (module.board.route_restrict.circles, write_circle'access);
-				iterate (module.board.route_restrict.polygons, write_polygon'access);
-				-- CS iterate (et_schematic.module.board.route_restrict.texts, write_text'access);
+				iterate (element (module_cursor).board.route_restrict.lines, write_line'access);
+				iterate (element (module_cursor).board.route_restrict.arcs, write_arc'access);
+				iterate (element (module_cursor).board.route_restrict.circles, write_circle'access);
+				iterate (element (module_cursor).board.route_restrict.polygons, write_polygon'access);
+				-- CS iterate (et_schematic.element (module_cursor).board.route_restrict.texts, write_text'access);
 			section_mark (section_route_restrict, FOOTER);
 
 			-- VIA RESTRICT
 			section_mark (section_via_restrict, HEADER);
-				iterate (module.board.via_restrict.lines, write_line'access);
-				iterate (module.board.via_restrict.arcs, write_arc'access);
-				iterate (module.board.via_restrict.circles, write_circle'access);
-				iterate (module.board.via_restrict.polygons, write_polygon'access);
-				-- CS iterate (et_schematic.module.board.via_restrict.texts, write_text'access);
+				iterate (element (module_cursor).board.via_restrict.lines, write_line'access);
+				iterate (element (module_cursor).board.via_restrict.arcs, write_arc'access);
+				iterate (element (module_cursor).board.via_restrict.circles, write_circle'access);
+				iterate (element (module_cursor).board.via_restrict.polygons, write_polygon'access);
+				-- CS iterate (et_schematic.element (module_cursor).board.via_restrict.texts, write_text'access);
 			section_mark (section_via_restrict, FOOTER);
 
 			-- COPPER (NON-ELECTRIC)
 			section_mark (section_copper, HEADER);
-				iterate (module.board.copper.lines, write_line'access);
-				iterate (module.board.copper.arcs, write_arc'access);
-				iterate (module.board.copper.circles, write_circle'access);
-				iterate (module.board.copper.polygons, write_polygon'access);
-				iterate (module.board.copper.texts, write_text'access);
-				iterate (module.board.copper.placeholders, write_placeholder'access);
+				iterate (element (module_cursor).board.copper.lines, write_line'access);
+				iterate (element (module_cursor).board.copper.arcs, write_arc'access);
+				iterate (element (module_cursor).board.copper.circles, write_circle'access);
+				iterate (element (module_cursor).board.copper.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.copper.texts, write_text'access);
+				iterate (element (module_cursor).board.copper.placeholders, write_placeholder'access);
 			section_mark (section_copper, FOOTER);
 
 			-- BOARD CONTOUR
 			section_mark (section_pcb_contours, HEADER);
-				iterate (module.board.contour.lines, write_line'access);
-				iterate (module.board.contour.arcs, write_arc'access);
-				iterate (module.board.contour.circles, write_circle'access);
+				iterate (element (module_cursor).board.contour.lines, write_line'access);
+				iterate (element (module_cursor).board.contour.arcs, write_arc'access);
+				iterate (element (module_cursor).board.contour.circles, write_circle'access);
 			section_mark (section_pcb_contours, FOOTER);
 			
 			---BOARD END-----
 			section_mark (section_board, FOOTER);
 		end query_board;
 
-	begin
+	begin -- save_module
 		write_header;
 		
 		-- net classes
@@ -2386,7 +2395,7 @@ package body et_project is
 				close (module_file_handle);
 				raise;
 		
-	end save_module_content;
+	end save_module;
 	
 	procedure save_module (
 		module_cursor	: in type_modules.cursor;					-- the module
@@ -2394,8 +2403,7 @@ package body et_project is
 		module_name		: in type_module_name.bounded_string := to_module_name ("");	-- motor_driver
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold 	: in et_string_processing.type_log_level) is
-	-- Saves the given module (incl. schematic and layout data) in the module file
-	-- of the given project.
+	-- Saves the given module in the module file of the given project.
 	-- If module_name not provided, the module will be named after the given project_name.
 	-- CS: improve log messages !!
 		
@@ -2449,7 +2457,7 @@ package body et_project is
 		reset_tab_depth;
 		log_indentation_up;
 
-		save_module_content (type_modules.element (module_cursor), make_module_file_name, log_threshold); -- CS use a module cursor
+		save_module (module_cursor, make_module_file_name, log_threshold);
 	
 		log_indentation_down;
 
@@ -12836,14 +12844,13 @@ package body et_project is
 		if module_cursor /= type_modules.no_element then
 	
 			-- CS: make sure the module is inside the current project directory.
+			-- This test is probably not required since module cursor points to a module 
+			-- inside the project anyway. Module names are like file paths like "templates/motor_driver".
 
-			log (text => "current directory " & current_directory);
--- 			save_module (
--- 				module			=> element (module_cursor),				-- the module
--- 				project_name	=> to_project_name (current_directory),	-- blood_sample_analyzer
--- 				module_name		=> module_name,							-- motor_driver
--- 				project_path	=> to_project_path (""),				-- inside the current directory
--- 				log_threshold 	=> log_threshold + 1);
+			save_module (
+				module_cursor		=> module_cursor,					-- the module
+				module_file_name	=> to_module_file_name (file_name),	-- blood_sample_analyzer
+				log_threshold 		=> log_threshold + 1);
 			
 		else
 			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
@@ -12875,7 +12882,9 @@ package body et_project is
 		if module_cursor /= type_modules.no_element then
 	
 			-- CS: make sure the module is inside the current project directory.
-		
+			-- This test is probably not required since module cursor points to a module 
+			-- inside the project anyway. Module names are like file paths like "templates/motor_driver".
+			
 			type_modules.delete (
 				container	=> modules,
 				position	=> module_cursor);
