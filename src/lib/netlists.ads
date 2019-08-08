@@ -173,7 +173,7 @@ package netlists is
 	-- It is ILLEGAL for a net to have more than one slave port. Reason: The net names
 	-- of primary nets would contend here.
 	function is_primary (net_cursor : in type_nets.cursor) return boolean;
-	-- Returns true if given net is a primary net.
+	-- Returns true if given net is a primary net according to the terms above.
 	-- Performs some other important checks on slave ports of netchangers and submodules.
 	
 	function net_on_netchanger (
@@ -194,12 +194,13 @@ package netlists is
 		port			: in type_submodule_port_extended)
 		return type_nets.cursor;
 
-	function net_in_parentmodule (
+	function net_in_parent_module (
 	-- Returns a cursor to the net in the parent module connected with the given net.
+	-- If the net is in the top module, then the return is no_element.									  
 	-- If the net is not connected in the parent module (via the port in the box representing
 	-- the submodule instance) then the return is no_element.
 		module_cursor	: in type_modules.cursor; -- the module that contains the net
-		net				: in et_general.type_net_name.bounded_string)
+		net_cursor		: in type_nets.cursor)
 		return type_nets.cursor;
 	
 	-- The final netlist is a tree that reflects primary nets with their subordinated
