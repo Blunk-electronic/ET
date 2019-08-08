@@ -447,9 +447,9 @@ package body netlists is
 					use type_nets;
 
 					procedure query_ports (port_cursor : in type_device_ports_extended.cursor) is
+					-- Writes the device port in the netlist file.
 						use type_device_ports_extended;
 					begin
-						-- write the device ports
 						put_line (netlist_handle, -- IC1 CE input H5
 							et_libraries.to_string (element (port_cursor).device) & latin_1.space &
 							et_libraries.to_string (element (port_cursor).port) & latin_1.space &
@@ -457,6 +457,23 @@ package body netlists is
 							et_libraries.to_string (element (port_cursor).terminal) & latin_1.space);
 							-- CS .characteristics
 					end query_ports;
+
+					procedure query_ports (port_cursor : in et_schematic.type_ports_netchanger.cursor) is
+						use et_schematic.type_ports_netchanger;
+						net_cursor : type_nets.cursor;
+					begin
+						net_cursor := net_on_netchanger (module_cursor, element (port_cursor));
+					end query_ports;
+
+					procedure query_ports (port_cursor : in type_submodule_ports_extended.cursor) is
+						use type_submodule_ports_extended;
+						net_cursor : type_nets.cursor;
+-- 						port : et_schematic.type_port_submodule
+					begin
+						null;
+-- 						net_cursor := net_in_submodule (module_cursor, element (port_cursor));
+					end query_ports;
+
 					
 				begin -- query_ports
 					-- Write primary nets only in netlist file:
@@ -467,7 +484,15 @@ package body netlists is
 						put_line (netlist_handle, to_string (key (net_cursor).prefix) & 
 							to_string (key (net_cursor).base_name)); -- CLK_GENERATOR/FLT1/ & clock_out
 
+						-- extract the ports of devices
 						type_device_ports_extended.iterate (element (net_cursor).devices, query_ports'access);
+
+						-- If there are netchangers connected with the net, look at their ports and the nets connected
+						et_schematic.type_ports_netchanger.iterate (element (net_cursor).netchangers, query_ports'access);
+
+						-- If there are submodules connected with the net, look at their ports and the nets connected:
+						type_submodule_ports_extended.iterate (element (net_cursor).submodules, query_ports'access);
+						
 					end if;
 					
 				end query_ports;
