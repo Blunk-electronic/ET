@@ -382,7 +382,7 @@ package body netlists is
 			end query_nets;
 			
 		begin -- query_submodules
-			if element (submodule_cursor).name = port.module then -- submodule found
+			if element (submodule_cursor).instance_name = port.module then -- submodule found
 
 				-- search in submodule for the net specified by port.port_name:
 				query_element (submodule_cursor, query_nets'access);
@@ -411,7 +411,9 @@ package body netlists is
 		use type_modules;
 		net_cursor_parent : type_nets.cursor; -- to be returned
 
--- 		parent_module_name : 
+		parent_module_name : type_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
+-- 		parent_module_cursor : et_project.type_modules.cursor;
+		
 -- 		procedure query_submodules (submodule_cursor : in type_modules.cursor) is
 -- 			use et_general.type_module_instance_name;
 -- 
@@ -450,9 +452,9 @@ package body netlists is
 -- 		end query_submodules;
 		
 	begin -- net_in_parent_module
-		-- Search in the parent module (one level higher) for the submodule instance:
-
--- 		iterate_children (parent => module_cursor, process => query_submodules'access);
+		-- Get the name of the parent module (one level higher):
+		parent_module_name := element (parent (module_cursor)).generic_name;
+-- 		parent_module_cursor := locate_module (parent_module_name);
 		
 		return net_cursor_parent;
 	end net_in_parent_module;

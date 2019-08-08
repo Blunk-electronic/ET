@@ -128,10 +128,12 @@ package netlists is
 		key_type		=> type_net_name, 
 		element_type	=> type_net);
 
-	-- In the tree of modules, each module has a name and a list of nets:
+	-- In the tree of modules, each module provides its
+	-- generic name, instance name and a list of its nets:
 	type type_module is record
-		name		: type_module_instance_name.bounded_string; -- OSC1
-		nets		: type_nets.map;
+		generic_name	: type_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver		
+		instance_name	: type_module_instance_name.bounded_string; -- OSC1
+		nets			: type_nets.map;
 	end record;
 	
 	package type_modules is new ada.containers.multiway_trees (type_module);

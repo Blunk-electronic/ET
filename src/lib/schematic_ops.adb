@@ -11957,7 +11957,7 @@ package body schematic_ops is
 			alt_submod : assembly_variants.type_submodules.cursor;
 
 			procedure insert_submodule is begin
-			-- Insert a submodule in netlist_tree. Whever procedure query_submodules is
+			-- Insert a submodule in netlist_tree. Wherever procedure query_submodules is
 			-- called, cursor netlist_cursor is pointing at the latest parent module. The
 			-- submodules detected here must be inserted as children of that parent module.
 
@@ -11969,7 +11969,10 @@ package body schematic_ops is
 					parent		=> netlist_cursor,
 					before		=> netlists.type_modules.no_element,
 					position	=> netlist_cursor, -- points afterwards to the child that has just been inserted
-					new_item	=> (name => module_instance, others => <>)
+					new_item	=> (
+						generic_name	=> module_name,
+						instance_name	=> module_instance,
+						others			=> <>)
 					);
 				
 				-- Collect nets from current module. inserts the nets in
@@ -12118,7 +12121,10 @@ package body schematic_ops is
 				parent		=> netlists.type_modules.root (netlist_tree),
 				before		=> netlists.type_modules.no_element,
 				position	=> netlist_cursor,
-				new_item	=> (name => to_instance_name (""), others => <>)
+				new_item	=> (
+					generic_name	=> module_name,
+					instance_name	=> to_instance_name (""), -- the top module has no instance name
+					others 			=> <>)
 				);
 			-- netlist_cursor now points at the top module in netlist_tree.
 
