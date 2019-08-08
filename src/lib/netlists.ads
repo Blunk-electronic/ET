@@ -182,7 +182,7 @@ package netlists is
 	-- If the given port is a master, then the net connected with the
 	-- slave is returned (and vice versa).
 	-- If the netchanger is not connected then the return is no_element.
-		module_cursor	: in type_modules.cursor;
+		module_cursor	: in type_modules.cursor; -- the module that contains the port
 		port			: in et_schematic.type_port_netchanger)
 		return type_nets.cursor;
 
@@ -190,10 +190,18 @@ package netlists is
 	-- Returns a cursor to the submodule net connected with the given
 	-- submodule port.
 	-- If the port is not connected inside the submodule then the return is no_element.
-		module_cursor	: in type_modules.cursor;
-		port			: in et_schematic.type_port_submodule)
+		module_cursor	: in type_modules.cursor; -- the module that contains the port
+		port			: in type_submodule_port_extended)
 		return type_nets.cursor;
 
+	function net_in_parentmodule (
+	-- Returns a cursor to the net in the parent module connected with the given net.
+	-- If the net is not connected in the parent module (via the port in the box representing
+	-- the submodule instance) then the return is no_element.
+		module_cursor	: in type_modules.cursor; -- the module that contains the net
+		net				: in et_general.type_net_name.bounded_string)
+		return type_nets.cursor;
+	
 	-- The final netlist is a tree that reflects primary nets with their subordinated
 	-- secondary nets.
 	type type_netlist_net is new type_net with record
