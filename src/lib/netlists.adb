@@ -401,6 +401,9 @@ package body netlists is
 
 	function net_in_parent_module (
 	-- Returns a cursor to the net in the parent module connected with the given net.
+	-- Searches for a net in the parent module that is connected to the submodule instance
+	-- given by element (module_cursor).instance_name, a port named after key (net_cursor).base_name
+	-- and port direction "slave".
 	-- If the net is in the top module, then the return is no_element.
 	-- If the net is not connected in the parent module (via the port in the box representing
 	-- the submodule instance) then the return is no_element.
@@ -411,50 +414,59 @@ package body netlists is
 		use type_modules;
 		net_cursor_parent : type_nets.cursor; -- to be returned
 
-		parent_module_name : type_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
--- 		parent_module_cursor : et_project.type_modules.cursor;
+		-- parent_module_name : type_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
+
+		-- Get the cursor to the parent module. If module_cursor points to the top
+		-- module, then parent_module_cursor will point to root.
+		parent_module_cursor : type_modules.cursor := parent (module_cursor);
+
+		port_to_search_for : type_submodule_port_extended; -- the submodule port we are looking for
+		port_found : boolean := false; -- signals loop in procedure query_nets to cancel the search
 		
--- 		procedure query_submodules (submodule_cursor : in type_modules.cursor) is
--- 			use et_general.type_module_instance_name;
--- 
--- 			procedure query_nets (module : in type_module) is
--- 			-- Search for the net specified by "port.port". The search ends
--- 			-- once the net has been found. The search is conducted by comparing
--- 			-- with the base names of the nets in the module. The prefix does not matter.
--- 			-- See specs of type_net_name. The base name is something like "output".
--- 			-- The prefix is something like "CLK_GENERATOR/FLT1/". 
--- 			-- But as said above the prefix does not matter here.
--- 				use type_nets;
--- 				use et_general.type_net_name;
--- 			begin
--- 				-- iterate the nets of the module
--- 				net_cursor := module.nets.first;
--- 
--- 				while net_cursor /= type_nets.no_element loop
--- 
--- 					-- test against the base name:
--- 					if key (net_cursor).base_name = port.port then
--- 						exit; -- cancel search with the current net_cursor
--- 					end if;
--- 
--- 					next (net_cursor);
--- 				end loop;
--- 
--- 				-- If no net found, net_cursor points to no_element.
--- 			end query_nets;
--- 			
--- 		begin -- query_submodules
--- 			if element (submodule_cursor).name = port.module then -- submodule found
--- 
--- 				-- search in submodule for the net specified by port.port_name:
--- 				query_element (submodule_cursor, query_nets'access);
--- 			end if;
--- 		end query_submodules;
+		procedure query_submodules (
+			net_name	: in type_net_name;
+			net			: in type_net) is
+			use type_submodule_ports_extended;
+			port_cursor : type_submodule_ports_extended.cursor;
+		begin
+			-- Locate the submodule port in the current net.
+			-- If found, the search ends prematurely.
+			port_cursor := find (net.submodules, port_to_search_for);
+			if port_cursor /= type_submodule_ports_extended.no_element then
+				port_found := true;
+			end if;
+		end query_submodules;
+		
+		procedure query_nets (module : in type_module) is
+			use type_nets;
+			net_cursor : type_nets.cursor := module.nets.first;
+		begin
+			-- iterate nets of module. cancel search once the desired port has been found
+			while not port_found and net_cursor /= type_nets.no_element loop
+
+				type_nets.query_element (
+					position	=> net_cursor,
+					process		=> query_submodules'access);
+				
+				next (net_cursor);
+			end loop;
+		end query_nets;
 		
 	begin -- net_in_parent_module
-		-- Get the name of the parent module (one level higher):
-		parent_module_name := element (parent (module_cursor)).generic_name;
--- 		parent_module_cursor := locate_module (parent_module_name);
+
+		if is_root (parent_module_cursor) then -- this is the top module
+			-- there is no net
+			net_cursor_parent := type_nets.no_element;
+		else
+			-- Build the submodule port to be searched for.
+			port_to_search_for := (
+				module		=> element (module_cursor).instance_name, -- MOT_DRV_2
+				port		=> type_nets.key (net_cursor).base_name,  -- clock_out
+				direction	=> submodules.SLAVE);
+
+			-- iterate in nets of parent module
+			query_element (parent_module_cursor, query_nets'access);
+		end if;
 		
 		return net_cursor_parent;
 	end net_in_parent_module;

@@ -198,7 +198,10 @@ package netlists is
 
 	function net_in_parent_module (
 	-- Returns a cursor to the net in the parent module connected with the given net.
-	-- If the net is in the top module, then the return is no_element.									  
+	-- Searches for a net in the parent module that is connected to the submodule instance
+	-- given by element (module_cursor).instance_name, a port named after key (net_cursor).base_name
+	-- and port direction "slave".
+	-- If the net is in the top module, then the return is no_element.
 	-- If the net is not connected in the parent module (via the port in the box representing
 	-- the submodule instance) then the return is no_element.
 		module_cursor	: in type_modules.cursor; -- the module that contains the net
