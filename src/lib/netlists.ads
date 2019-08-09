@@ -205,7 +205,8 @@ package netlists is
 	-- If the net is not connected in the parent module (via the port in the box representing
 	-- the submodule instance) then the return is no_element.
 		module_cursor	: in type_modules.cursor; -- the module that contains the net
-		net_cursor		: in type_nets.cursor)
+		net_cursor		: in type_nets.cursor;
+		log_threshold	: in type_log_level)
 		return type_nets.cursor;
 	
 	-- The final netlist is a tree that reflects primary nets with their subordinated
