@@ -506,7 +506,9 @@ package body netlists is
 			put_line (netlist_handle, comment_mark & " " & row_separator_single);
 		end write_header;
 
-		procedure find_dependencies is
+		procedure find_dependencies (
+			module_cursor	: in type_modules.cursor;
+			net_cursor		: in type_nets.cursor) is
 		begin
 			null;
 		end;
@@ -557,7 +559,7 @@ package body netlists is
 						use type_submodule_ports_extended;
 						net_cursor : type_nets.cursor;
 					begin
-						net_cursor := net_in_parent_module (module_cursor, net_cursor);
+						net_cursor := net_in_parent_module (module_cursor, query_ports.net_cursor);
 
 						if net_cursor /= type_nets.no_element then
 							null;
@@ -575,6 +577,8 @@ package body netlists is
 						put_line (netlist_handle, to_string (key (net_cursor).prefix) & 
 							to_string (key (net_cursor).base_name)); -- CLK_GENERATOR/FLT1/ & clock_out
 
+						find_dependencies (module_cursor, net_cursor);
+						
 						-- Extract the ports of devices from the primary net:
 						type_device_ports_extended.iterate (element (net_cursor).devices, query_device'access);
 
