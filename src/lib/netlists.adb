@@ -277,16 +277,16 @@ package body netlists is
 	-- slave is returned (and vice versa).
 	-- If the netchanger is not connected then the return is no_element.
 		module_cursor	: in type_modules.cursor; -- the module that contains the port
-		port			: in et_schematic.type_port_netchanger)
+		port			: in et_schematic.type_port_netchanger;
+		log_threshold	: in type_log_level)
 		return type_nets.cursor is
 
+		use type_nets;
 		net_cursor : type_nets.cursor; -- to be returned
 
 		procedure query_nets (module : in type_module) is
-			use type_nets;
 
 			ports : type_port_count;
-			net_cursor : type_nets.cursor := module.nets.first;
 
 			use et_schematic.type_ports_netchanger;
 			netchanger_cursor : et_schematic.type_ports_netchanger.cursor;
@@ -314,11 +314,16 @@ package body netlists is
 			use submodules;
 			
 		begin -- query_nets
+			log_indentation_up;
+
+			net_cursor := module.nets.first;
 			while net_cursor /= type_nets.no_element loop
 				ports := port_count (net_cursor);
 
 				-- search in the net if it contains netchangers:
 				if ports.netchangers.total > 0 then
+
+					--log (text => to_string (key (net_cursor).base_name), level => log_threshold + 1);
 					
 					type_nets.query_element (
 						position	=> net_cursor,
@@ -334,10 +339,28 @@ package body netlists is
 				
 				next (net_cursor);
 			end loop;
+
+			log_indentation_down;
 		end query_nets;
 		
 	begin -- net_on_netchanger
+		log_indentation_up;
+		
+		log (text => "searching secondary net in module " &
+			enclose_in_quotes (to_string (type_modules.element (module_cursor).generic_name)),
+				level => log_threshold);
+
+		-- iterate nets inside the given module
 		type_modules.query_element (module_cursor, query_nets'access);
+
+		if net_cursor = type_nets.no_element then
+			log (text => " none found", level => log_threshold);
+		else
+			log (text => " secondary net " & enclose_in_quotes (to_string (key (net_cursor).base_name)),
+				level => log_threshold);
+		end if;
+		
+		log_indentation_down;
 		return net_cursor;
 	end net_on_netchanger;
 
@@ -346,10 +369,12 @@ package body netlists is
 	-- submodule port.
 	-- If the port is not connected inside the submodule then the return is no_element.
 		module_cursor	: in type_modules.cursor; -- the module that contains the port
-		port			: in type_submodule_port_extended)
+		port			: in type_submodule_port_extended;
+		log_threshold	: in type_log_level)
 		return type_nets.cursor is
 
 		use type_modules;
+		use type_nets;
 		net_cursor : type_nets.cursor; -- to be returned
 
 		procedure query_submodules (submodule_cursor : in type_modules.cursor) is
@@ -362,7 +387,6 @@ package body netlists is
 			-- See specs of type_net_name. The base name is something like "output".
 			-- The prefix is something like "CLK_GENERATOR/FLT1/". 
 			-- But as said above the prefix does not matter here.
-				use type_nets;
 				use et_general.type_net_name;
 			begin
 				-- iterate the nets of the module
@@ -383,19 +407,34 @@ package body netlists is
 			
 		begin -- query_submodules
 			if element (submodule_cursor).instance_name = port.module then -- submodule found
-
+				
+				log (text => "searching secondary net in submodule " &
+					enclose_in_quotes (to_string (type_modules.element (submodule_cursor).generic_name)),
+						level => log_threshold);
+				
 				-- search in submodule for the net specified by port.port_name:
 				query_element (submodule_cursor, query_nets'access);
+
 			end if;
 		end query_submodules;
 		
 	begin -- net_in_submodule
+		log_indentation_up;
+		
 		-- Search among the submodules (one level deeper) for the submodule specified
 		-- by port.module_name:
 		iterate_children (parent => module_cursor, process => query_submodules'access);
 		-- CS: the iteration does not stop after finding the submodule. It is slightly 
 		-- a waste of time to query remaining submodules.
-		
+
+		if net_cursor = type_nets.no_element then
+			log (text => " none found -> not connected", level => log_threshold);
+		else
+			log (text => " secondary net " & enclose_in_quotes (to_string (key (net_cursor).base_name)),
+				level => log_threshold);
+		end if;
+
+		log_indentation_down;
 		return net_cursor;
 	end net_in_submodule;
 
@@ -415,8 +454,6 @@ package body netlists is
 		use type_modules;
 		use type_nets;
 		net_cursor_parent : type_nets.cursor; -- to be returned
-
-		-- parent_module_name : type_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
 
 		-- Get the cursor to the parent module. If module_cursor points to the top
 		-- module, then parent_module_cursor will point to root.
@@ -528,13 +565,19 @@ package body netlists is
 		end write_header;
 
 		procedure find_dependencies (
+		-- Explores secondary nets starting with the given net in the given module.
+		-- NOTE: This procedure is recursive, means it calls itself until all
+		--       secondary nets have been found.
+
 			module_cursor	: in type_modules.cursor; -- the module we are in
 			net_cursor		: in type_nets.cursor) is -- the net we are in
 
 			use type_nets;
 			
-			-- get number of netchanger and submodule ports of this net
+			-- In order to save computing time, get number of netchanger and submodule 
+			-- ports of this net before exploring the net.
 			ports : type_port_count := port_count (net_cursor);
+			-- ports now provides the number of submodule and netchanger ports
 
 -- 			procedure log_net_name (cursor : in type_nets.cursor) is begin
 -- 				log_indentation_up;
@@ -557,36 +600,60 @@ package body netlists is
 
 			procedure query_netchanger (port_cursor : in et_schematic.type_ports_netchanger.cursor) is
 				use et_schematic.type_ports_netchanger;
+				use submodules;
 				net_cursor : type_nets.cursor;
 			begin
-				net_cursor := net_on_netchanger (module_cursor, element (port_cursor));
-				if net_cursor /= type_nets.no_element then
-					-- net_cursor now points to the secondary net in the same module
-					find_dependencies (module_cursor, net_cursor);
+				if element (port_cursor).port = MASTER then
+
+					-- Find the secondary net connected with the slave port:
+					net_cursor := net_on_netchanger (module_cursor, element (port_cursor), log_threshold + 1);
+
+					-- If there is a secondary net, dive into it and find further 
+					-- secondary nets in this module. Otherwise the netchanger is not connected
+					-- on its slave end:
+					if net_cursor /= type_nets.no_element then
+						
+						-- net_cursor now points to the secondary net in the same module
+						find_dependencies (module_cursor, net_cursor);
+					end if;
 				end if;
 			end query_netchanger;
 
 			procedure query_submodule (port_cursor : in type_submodule_ports_extended.cursor) is
 				use type_submodule_ports_extended;
+				use submodules;
 				net_cursor : type_nets.cursor;
 			begin
-				net_cursor := net_in_submodule (module_cursor, element (port_cursor));
+				if element (port_cursor).direction = MASTER then
 
-				if net_cursor /= type_nets.no_element then
-					-- net_cursor now points to the secondary net in the submodule
-					find_dependencies (module_cursor, net_cursor);
+					-- Find the secondary net in the submodule:
+					net_cursor := net_in_submodule (module_cursor, element (port_cursor), log_threshold + 1);
+
+					-- If there is a secondary net, dive into it and find further 
+					-- secondary nets in the submodule. Otherwise the port is not connected
+					-- inside the submodule:
+					if net_cursor /= type_nets.no_element then
+						
+						-- net_cursor now points to the secondary net in the submodule
+						find_dependencies (module_cursor, net_cursor);
+					end if;
 				end if;
 			end query_submodule;
 
 			procedure query_parent is
 				use type_submodule_ports_extended;
-				net_cursor : type_nets.cursor;
+				cursor : type_nets.cursor;
 			begin
-				net_cursor := net_in_parent_module (module_cursor, find_dependencies.net_cursor, log_threshold + 1);
+				-- Find the secondary net in the parent module.
+				cursor := net_in_parent_module (module_cursor, net_cursor, log_threshold + 1);
 
-				if net_cursor /= type_nets.no_element then
+				-- If there is a secondary net, dive into it and find furhter secondary nets
+				-- in the parent module. Otherwise the port is not connected in the parent module
+				-- or there is no parent module at all (because module_cursor is pointing at the top module):
+				if cursor /= type_nets.no_element then
+					
 					-- net_cursor now points to the secondary net in the parent module
-					find_dependencies (module_cursor, net_cursor);
+					find_dependencies (module_cursor, cursor);
 				end if;
 			end query_parent;
 			
@@ -594,25 +661,33 @@ package body netlists is
 			-- Extract the ports of devices from the net:
 			type_device_ports_extended.iterate (element (net_cursor).devices, query_device'access);
 
-			-- Now we must extract the ports of devices in the net. This requires
-			-- investigation of netchanger ports and submodule ports.
-			-- Further-on the parent module must be searched for submodule instances (the boxes) where
-			-- the net surfaces as a port. Even in a parent module the name of a secondary net may be
-			-- dictated by the primary net in a submodule:
+			-- Now we must extract the ports of netchangers and submodules in the net. Since we
+			-- want to explore secondary nets, the next steps are required if there are netchangers
+			-- with master ports. A netchanger master port is THE bridge to a secondary net. The secondary
+			-- net is connected with the slave port, regardless whether the secondary net is in the
+			-- same module, in the parent module or in a submodule.
 			
-			-- If there are netchangers connected with the net, look at their ports and the nets connected.
-			-- Since this is a primary net, all the netchanger ports here are of direction "master".
-			et_schematic.type_ports_netchanger.iterate (element (net_cursor).netchangers, query_netchanger'access);
-
-			-- If there are submodules connected with the net, look at their ports and the nets connected.
-			-- Since this is a primary net, all the submodule ports here are of direction "master".
-			type_submodule_ports_extended.iterate (element (net_cursor).submodules, query_submodule'access);
-
-			-- Probe the net whether it is connected with a secondary net in the parent module:
-			-- Do that if there if there are netchanger master ports. Otherwise this step can be skipped:
 			if ports.netchangers.masters > 0 then
+				-- If there are netchangers connected with the net, look at their ports and the nets connected.
+				-- Since we want to explore secondary nets, this step addresses netchanger ports of direction "master".
+				-- This search REMAINS on the CURRENT level of design hierarchy:
+				et_schematic.type_ports_netchanger.iterate (element (net_cursor).netchangers, query_netchanger'access);
+
+				-- The parent module must be searched for submodule instances (the boxes) where
+				-- the net surfaces as a port. Even in a parent module the name of a secondary net may be
+				-- dictated by the primary net in a submodule.
+				-- Probe the net whether it is connected with a secondary net in the parent module.
+				-- This search goes UP in the design hierarchy towards the parent module:
 				query_parent;
 			end if;
+
+			if ports.submodules.masters > 0 then
+				-- If there are submodules connected with the net, look at their ports and the nets connected.
+				-- Since we want to explore secondary nets, this step adresses submodue ports of direction "master".
+				-- This search goes DOWN in the design hierarchy towards the submodule:
+				type_submodule_ports_extended.iterate (element (net_cursor).submodules, query_submodule'access);
+			end if;
+			
 		end find_dependencies;
 			
 		procedure write_nets is

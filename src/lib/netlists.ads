@@ -185,7 +185,8 @@ package netlists is
 	-- slave is returned (and vice versa).
 	-- If the netchanger is not connected then the return is no_element.
 		module_cursor	: in type_modules.cursor; -- the module that contains the port
-		port			: in et_schematic.type_port_netchanger)
+		port			: in et_schematic.type_port_netchanger;
+		log_threshold	: in type_log_level)
 		return type_nets.cursor;
 
 	function net_in_submodule (
@@ -193,7 +194,8 @@ package netlists is
 	-- submodule port.
 	-- If the port is not connected inside the submodule then the return is no_element.
 		module_cursor	: in type_modules.cursor; -- the module that contains the port
-		port			: in type_submodule_port_extended)
+		port			: in type_submodule_port_extended;
+		log_threshold	: in type_log_level)		
 		return type_nets.cursor;
 
 	function net_in_parent_module (
