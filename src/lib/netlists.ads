@@ -184,6 +184,7 @@ package netlists is
 	-- When searching global nets in submodules we need a type for a global net of a submodule
 	-- and a list thereof:
 	type type_global_net is record
+		--submodule	: type_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver		
 		submodule	: type_modules.cursor;
 		net			: type_nets.cursor;
 	end record;

@@ -291,6 +291,8 @@ package body netlists is
 		return type_global_nets.list is
 
 		use type_modules;
+		use type_nets;
+		
 		global_nets : type_global_nets.list; -- to be returned
 
 		procedure query_submodules (submodule_cursor : in type_modules.cursor) is
@@ -299,10 +301,10 @@ package body netlists is
 			procedure query_nets (module : in type_module) is
 			-- Search for a global net named after the given net (via net_cursor).
 			-- The serach ends once the net has been found. The search is conducted by comparing
-			-- with the base names of the nets in the module. The cursor to the net is
+			-- with the base names of the nets in the module. The cursor to the net and 
+			-- the name of the generic module is then
 			-- appended to the list net_cursors (to be returned).
 				use et_general.type_net_name;
-				use type_nets;
 				use et_schematic;
 				cursor : type_nets.cursor := module.nets.first;
 			begin
@@ -320,7 +322,8 @@ package body netlists is
 								(
 								container	=> global_nets,
 								new_item	=> (
-									submodule 	=> submodule_cursor, -- the submodule
+									--submodule 	=> element (submodule_cursor).generic_name, -- the submodule name
+									submodule	=> submodule_cursor,
 									net			=> cursor)			-- the global net within the submodule
 								);
 							
@@ -345,7 +348,10 @@ package body netlists is
 		end query_submodules;
 		
 	begin -- global_nets_in_submodules
-		log (text => "searching global secondary nets in submodules ...",
+		log_indentation_up;
+		
+		log (text => "searching global secondary nets of net " &
+			  enclose_in_quotes (to_string (key (net_cursor).base_name)) & " in submodules ...",
 			level => log_threshold);
 		
 		log_indentation_up;
@@ -354,6 +360,7 @@ package body netlists is
 		iterate_children (parent => module_cursor, process => query_submodules'access);
 
 		log_indentation_down;
+		log_indentation_down;		
 		return global_nets;
 	end global_nets_in_submodules;
 	
@@ -433,7 +440,7 @@ package body netlists is
 	begin -- net_on_netchanger
 		log_indentation_up;
 		
-		log (text => "searching secondary net in module " &
+		log (text => "searching secondary net connected via netchanger in module " &
 			enclose_in_quotes (to_string (type_modules.element (module_cursor).generic_name)),
 				level => log_threshold);
 
@@ -495,7 +502,7 @@ package body netlists is
 		begin -- query_submodules
 			if element (submodule_cursor).instance_name = port.module then -- submodule found
 				
-				log (text => "searching secondary net in submodule " &
+				log (text => "searching local secondary net in submodule " &
 					enclose_in_quotes (to_string (type_modules.element (submodule_cursor).generic_name)),
 						level => log_threshold);
 				
@@ -734,15 +741,52 @@ package body netlists is
 				-- Find the secondary net in the parent module.
 				cursor := net_in_parent_module (module_cursor, net_cursor, log_threshold + 1);
 
-				-- If there is a secondary net, dive into it and find furhter secondary nets
+				-- If there is a secondary net, dive into it and find further secondary nets
 				-- in the parent module. Otherwise the port is not connected in the parent module
 				-- or there is no parent module at all (because module_cursor is pointing at the top module):
 				if cursor /= type_nets.no_element then
 					
-					-- net_cursor now points to the secondary net in the parent module
+					-- cursor now points to the secondary net in the parent module
 					find_dependencies (module_cursor, cursor);
 				end if;
 			end query_parent;
+
+			procedure query_submodules is 
+				use type_global_nets;
+				global_nets : type_global_nets.list;
+				
+				procedure query_nets (cursor : in type_global_nets.cursor) is
+					use type_nets;
+					glob_net : type_global_net := element (cursor);
+				begin
+-- 					log (text => "submodule " & enclose_in_quotes (to_string (glob_net.submodule)) &
+-- 						 " net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)),
+-- 						 level => log_threshold + 2);
+
+					log (text => "submodule " &
+						 enclose_in_quotes (to_string (type_modules.element (glob_net.submodule).generic_name)) &
+						 " net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)),
+						 level => log_threshold + 2);
+					
+					--find_dependencies (
+				end query_nets;
+				
+			begin -- query_submodules
+				-- Get all global secondary nets of submodules:
+				global_nets := global_nets_in_submodules (module_cursor, net_cursor, log_threshold + 2);
+
+				log_indentation_up;
+				log_indentation_up;
+				
+				if is_empty (global_nets) then
+					log (text => "no global secondary nets found", level => log_threshold + 2);
+				else
+					iterate (global_nets, query_nets'access);
+				end if;
+
+				log_indentation_down;
+				log_indentation_down;
+			end query_submodules;
 			
 		begin -- find_dependencies
 			-- Extract the ports of devices from the net:
@@ -773,6 +817,12 @@ package body netlists is
 				-- Since we want to explore secondary nets, this step adresses submodue ports of direction "master".
 				-- This search goes DOWN in the design hierarchy towards the submodule:
 				type_submodule_ports_extended.iterate (element (net_cursor).submodules, query_submodule'access);
+			end if;
+
+			-- There may be submodules containing global nets. These nets are secondary nets of the current net.
+			-- Locate those nets if the current module has submodules (children):
+			if child_count (module_cursor) > 0 then
+				query_submodules;
 			end if;
 			
 		end find_dependencies;
