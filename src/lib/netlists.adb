@@ -214,6 +214,8 @@ package body netlists is
 		ports : type_port_count;
 		
 		result : boolean := false; -- CS is this a good safety measure ?
+
+		use type_nets;
 		
 -- 		result_on_netchangers : boolean;
 -- 		result_on_submodules : boolean;
@@ -258,17 +260,102 @@ package body netlists is
 -- 			when 0 => result_on_submodules := true;
 -- 			when 1 => result_on_submodules := false;
 -- 			when others => contention_by_submodules;
--- 		end case;
+		-- 		end case;
+
+		case element (net_cursor).scope is
+			when et_schematic.LOCAL =>
 		
-		-- Test the sum of netchanger and submodule slave ports:
-		case natural (ports.netchangers.slaves) + natural (ports.submodules.slaves) is
-			when 0 => result := true;
-			when 1 => result := false;
-			when others => contention_by_both;
+				-- Test the sum of netchanger and submodule slave ports:
+				case natural (ports.netchangers.slaves) + natural (ports.submodules.slaves) is
+					when 0 => result := true;
+					when 1 => result := false;
+					when others => contention_by_both;
+				end case;
+
+			when et_schematic.GLOBAL =>
+
+				-- If the net is global, means it can be connected with a same named net
+				-- in the parent module without any netchangers, it is secondary:
+				result := false;
+
 		end case;
 		
 		return result;
 	end is_primary;
+
+	function global_nets_in_submodules (
+	-- Returns a list of cursors to same named nets in submodules.
+		module_cursor	: in type_modules.cursor; -- the module that contains the port
+		net_cursor		: in type_nets.cursor;
+		log_threshold	: in type_log_level)
+		return type_global_nets.list is
+
+		use type_modules;
+		global_nets : type_global_nets.list; -- to be returned
+
+		procedure query_submodules (submodule_cursor : in type_modules.cursor) is
+			use et_general.type_module_instance_name;
+
+			procedure query_nets (module : in type_module) is
+			-- Search for a global net named after the given net (via net_cursor).
+			-- The serach ends once the net has been found. The search is conducted by comparing
+			-- with the base names of the nets in the module. The cursor to the net is
+			-- appended to the list net_cursors (to be returned).
+				use et_general.type_net_name;
+				use type_nets;
+				use et_schematic;
+				cursor : type_nets.cursor := module.nets.first;
+			begin
+				-- iterate the nets of the module
+				while cursor /= type_nets.no_element loop
+
+					-- the net must be a global net:
+					if element (cursor).scope = GLOBAL then
+						
+						-- test against the base name:
+						if key (cursor).base_name = key (net_cursor).base_name then
+
+							-- Append the global net to the global_nets:
+							type_global_nets.append 
+								(
+								container	=> global_nets,
+								new_item	=> (
+									submodule 	=> submodule_cursor, -- the submodule
+									net			=> cursor)			-- the global net within the submodule
+								);
+							
+							exit; -- no need for more searching (module.nets is a map and the net occurs in it only once)
+						end if;
+					end if;
+					
+					next (cursor);
+				end loop;
+
+				-- If no net found, net_cursor points to no_element.
+			end query_nets;
+			
+		begin -- query_submodules
+			log (text => "submodule " &
+					enclose_in_quotes (to_string (type_modules.element (submodule_cursor).generic_name)),
+				level => log_threshold);
+				
+			-- search in submodule for a net named after the given net (via net_cursor):
+			query_element (submodule_cursor, query_nets'access);
+
+		end query_submodules;
+		
+	begin -- global_nets_in_submodules
+		log (text => "searching global secondary nets in submodules ...",
+			level => log_threshold);
+		
+		log_indentation_up;
+		
+		-- Iterate the submodules (one level deeper):
+		iterate_children (parent => module_cursor, process => query_submodules'access);
+
+		log_indentation_down;
+		return global_nets;
+	end global_nets_in_submodules;
 	
 	function net_on_netchanger (
 	-- Returns a cursor to the net connected with the given netchanger

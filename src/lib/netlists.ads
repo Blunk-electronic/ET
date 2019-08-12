@@ -42,7 +42,7 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
 -- with ada.containers.vectors;
--- with ada.containers.doubly_linked_lists;
+with ada.containers.doubly_linked_lists;
 -- with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.multiway_trees;
@@ -127,7 +127,7 @@ package netlists is
 	package type_nets is new ordered_maps (
 		key_type		=> type_net_name, 
 		element_type	=> type_net);
-
+	
 	-- In the tree of modules, each module provides its
 	-- generic name, instance name and a list of its nets:
 	type type_module is record
@@ -164,9 +164,10 @@ package netlists is
 
 	-- A primary net enforces its name on all subordinated secondary nets.
 	-- Primary nets are those which fulfil ALL follwing criteria:
-	--  1. have no netchanger slave ports. Reason: Nets with slave ports always inherit the 
+	--  1. scope of net is LOCAL.
+	--  2. have no netchanger slave ports. Reason: Nets with slave ports always inherit the 
 	--     name of the net on the master port. 
-	--  2. have no submodule ports with direction "slave". Reason: The net inside the submdule
+	--  3. have no submodule ports with direction "slave". Reason: The net inside the submdule
 	--     enforces its name on the net in the parent module.
 	-- If a net does not fulfil any of those criteria it is a secondary net.
 
@@ -177,6 +178,28 @@ package netlists is
 	function is_primary (net_cursor : in type_nets.cursor) return boolean;
 	-- Returns true if given net is a primary net according to the terms above.
 	-- Performs some other important checks on slave ports of netchangers and submodules.
+
+
+	
+	-- When searching global nets in submodules we need a type for a global net of a submodule
+	-- and a list thereof:
+	type type_global_net is record
+		submodule	: type_modules.cursor;
+		net			: type_nets.cursor;
+	end record;
+	
+	package type_global_nets is new doubly_linked_lists (
+		element_type	=> type_global_net);
+
+	function global_nets_in_submodules (
+	-- Returns a list of cursors to same named nets in submodules.
+		module_cursor	: in type_modules.cursor; -- the module that contains the port
+		net_cursor		: in type_nets.cursor;
+		log_threshold	: in type_log_level)
+		return type_global_nets.list;
+
+
+
 	
 	function net_on_netchanger (
 	-- Returns a cursor to the net connected with the given netchanger
