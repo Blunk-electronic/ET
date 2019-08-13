@@ -337,9 +337,9 @@ package body netlists is
 			end query_nets;
 			
 		begin -- query_submodules
-			log (text => "submodule " &
-					enclose_in_quotes (to_string (type_modules.element (submodule_cursor).generic_name)),
-				level => log_threshold);
+-- 			log (text => "submodule " &
+-- 					enclose_in_quotes (to_string (type_modules.element (submodule_cursor).generic_name)),
+-- 				level => log_threshold);
 				
 			-- search in submodule for a net named after the given net (via net_cursor):
 			query_element (submodule_cursor, query_nets'access);

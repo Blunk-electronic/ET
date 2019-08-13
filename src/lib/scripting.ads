@@ -146,6 +146,7 @@ package scripting is
 		PARTCODE,
 		PORT, -- of a submodule instance
 		PURPOSE,
+		SCOPE,
 		SEGMENT, -- net segment
 		SUBMODULE,
 		SUBMODULE_FILE,		

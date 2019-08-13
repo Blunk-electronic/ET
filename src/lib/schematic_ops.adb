@@ -112,7 +112,7 @@ package body schematic_ops is
 	end;
 
 	procedure net_not_found (name : in et_general.type_net_name.bounded_string) is begin
-		log (ERROR, "net " & to_string (name) & " not found !", console => true);
+		log (ERROR, "net " & enclose_in_quotes (to_string (name)) & " not found !", console => true);
 		raise constraint_error;
 	end;
 
@@ -7396,6 +7396,62 @@ package body schematic_ops is
 		log_indentation_down;		
 	end draw_net;
 
+	procedure set_scope (
+	-- Sets the scope of a net.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		scope			: in et_schematic.type_net_scope; -- local/global
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+
+		use et_schematic.type_nets;
+		net_cursor : type_nets.cursor; -- points to the net
+
+		procedure query_nets (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			procedure set (
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+			begin
+				net.scope := scope;
+			end set;
+			
+		begin -- query_nets
+			type_nets.update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> set'access);
+
+		end query_nets;
+		
+	begin -- set_scope
+		log (text => "module " & to_string (module_name) &
+			" setting scope of net " & to_string (net_name) &
+			" to" & to_string (scope),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- locate the net
+		net_cursor := locate_net (module_cursor, net_name);
+
+		if net_cursor /= type_nets.no_element then
+
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> query_nets'access);
+
+		else
+			net_not_found (net_name);
+		end if;
+	end set_scope;
+
+	
 	procedure place_net_label (
 	-- Places a label next to a segment at position.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

@@ -1515,6 +1515,23 @@ package body scripting is
 									);
 							end;
 
+						when SCOPE =>
+							case fields is
+								when 6 =>
+									schematic_ops.set_scope (
+										module_name 	=> module,
+										net_name		=> et_general.to_net_name (f (5)),
+										scope			=> et_schematic.to_net_scope (f (6)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 7 .. count_type'last =>
+									command_too_long (6);
+									
+								when others =>
+									command_incomplete;
+							end case;
+							
 						when SUBMODULE_FILE =>
 							case fields is
 								when 6 =>

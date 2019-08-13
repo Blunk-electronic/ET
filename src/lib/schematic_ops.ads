@@ -377,6 +377,13 @@ package schematic_ops is
 		end_point		: in et_coordinates.type_point; -- x/y
 		log_threshold	: in type_log_level);
 
+	procedure set_scope (
+	-- Sets the scope of a net.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		scope			: in et_schematic.type_net_scope; -- local/global
+		log_threshold	: in type_log_level);
+	
 	procedure place_net_label (
 	-- Places a label next to a segment at position.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
