@@ -379,6 +379,8 @@ package schematic_ops is
 
 	procedure set_scope (
 	-- Sets the scope of a net.
+	-- CS: Permit setting the scope if net is in a submodule and already
+	-- connected via a submodule port to the parent module.							
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in et_schematic.type_net_scope; -- local/global

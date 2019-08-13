@@ -850,15 +850,11 @@ package body netlists is
 				procedure query_ports (net_cursor : in type_nets.cursor) is
 					use type_nets;
 				begin -- query_ports
-					log_indentation_up;
-					
-					-- Explore global secondary nets of given net in submodules.
-					-- If the top module does not have submodules, nothing happens.
--- 					query_global_nets_in_submodules (module_cursor, net_cursor, log_threshold + 1);
-					
 					-- Extract primary nets only:
 					if is_primary (net_cursor) then
 
+						log_indentation_up;
+						
 						log (text => "primary net " & enclose_in_quotes (
 							to_string (key (net_cursor).prefix) & 
 							to_string (key (net_cursor).base_name)), -- CLK_GENERATOR/FLT1/ & clock_out
@@ -871,9 +867,10 @@ package body netlists is
 
 						-- write device ports and dive into secondary nets
 						find_dependencies (module_cursor, net_cursor, log_threshold + 2);
+
+						log_indentation_down;
 					end if;
 
-					log_indentation_down;
 				end query_ports;
 				
 			begin -- query_nets
