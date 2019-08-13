@@ -283,6 +283,46 @@ package body netlists is
 		return result;
 	end is_primary;
 
+	function contains (
+	-- Returns true if net (indicated by net_cursor) is connected with the
+	-- given port of a submodule instance.
+		net_cursor		: in type_nets.cursor;
+		submodule		: in type_module_instance_name.bounded_string; -- OSC1
+		port			: in et_general.type_net_name.bounded_string) -- clock_out
+		return boolean is
+
+		result : boolean := false;
+		
+		use type_nets;
+
+		procedure query_submod_ports (
+			net_name	: in type_net_name;
+			net			: in type_net) is
+			use type_submodule_ports_extended;
+			port_cursor : type_submodule_ports_extended.cursor := net.submodules.first;
+			use et_general.type_net_name;
+			use et_general.type_module_instance_name;
+		begin
+			while port_cursor /= type_submodule_ports_extended.no_element loop
+				
+				if element (port_cursor).module = submodule -- OSC1
+				and element (port_cursor).port = port then -- clock_out
+					result := true;
+					exit;
+				end if;
+				
+				next (port_cursor);
+			end loop;
+		end query_submod_ports;
+										 
+	begin -- contains
+		query_element (
+			position	=> net_cursor,
+			process		=> query_submod_ports'access);
+
+		return result;
+	end contains;
+	
 	function global_nets_in_submodules (
 	-- Returns a list of cursors to same named nets in submodules.
 		module_cursor	: in type_modules.cursor; -- the module that contains the port
@@ -681,13 +721,26 @@ package body netlists is
 					-- glob_net is a record providing a cursor to a submodule and
 					-- a cursor to a net therein.
 
-					log (text => "submodule " &
-						enclose_in_quotes (to_string (type_modules.element (glob_net.submodule).generic_name)) &
-						" net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)),
-						level => log_threshold);
+					-- Make sure the net is not connected via a port with the parent module.
+					if not contains (
+						net_cursor		=> net_cursor,
+						submodule		=> element (glob_net.submodule).instance_name, -- OSC1
+						port			=> key (glob_net.net).base_name) then -- clock_out
 
-					-- Start exploring the net indicated by glob_net:
-					find_dependencies (glob_net.submodule, glob_net.net, log_threshold);
+						log (text => "submodule " &
+							enclose_in_quotes (to_string (type_modules.element (glob_net.submodule).generic_name)) &
+							" net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)),
+							level => log_threshold);
+
+						-- Start exploring the net indicated by glob_net:
+						find_dependencies (glob_net.submodule, glob_net.net, log_threshold);
+						
+					else
+						log (ERROR, "net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)) &
+							 " is already connected with its parent module via a port. Remove port in " &
+							 "parent module or set scope of this net to local !");
+						raise constraint_error;
+					end if;
 				end query_nets;
 				
 			begin -- query_submodules
