@@ -322,7 +322,6 @@ package body netlists is
 								(
 								container	=> global_nets,
 								new_item	=> (
-									--submodule 	=> element (submodule_cursor).generic_name, -- the submodule name
 									submodule	=> submodule_cursor,
 									net			=> cursor)			-- the global net within the submodule
 								);
@@ -759,16 +758,16 @@ package body netlists is
 					use type_nets;
 					glob_net : type_global_net := element (cursor);
 				begin
--- 					log (text => "submodule " & enclose_in_quotes (to_string (glob_net.submodule)) &
--- 						 " net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)),
--- 						 level => log_threshold + 2);
+					-- glob_net is a record providing a cursor to a submodule and
+					-- a cursor to a net therein.
 
 					log (text => "submodule " &
 						 enclose_in_quotes (to_string (type_modules.element (glob_net.submodule).generic_name)) &
 						 " net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)),
 						 level => log_threshold + 2);
-					
-					--find_dependencies (
+
+					-- Start exploring the net indicated by glob_net:
+					find_dependencies (glob_net.submodule, glob_net.net);
 				end query_nets;
 				
 			begin -- query_submodules
