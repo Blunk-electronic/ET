@@ -657,14 +657,70 @@ package body netlists is
 			put_line (netlist_handle, comment_mark & " " & row_separator_single);
 		end write_header;
 
+		procedure find_dependencies ( -- prespecification only. see body below.
+			module_cursor	: in type_modules.cursor;
+			net_cursor		: in type_nets.cursor;
+			log_threshold	: in type_log_level);
+		
+		procedure query_global_nets_in_submodules (
+		-- Explores global secondary nets of given net in given submodules.
+		-- If the given module does not have submodules, nothing happens.
+		-- Calls find_dependencies.
+			module_cursor	: in type_modules.cursor;
+			net_cursor		: in type_nets.cursor;
+			log_threshold	: in type_log_level) is
+
+			procedure query_submodules is 
+				use type_global_nets;
+				global_nets : type_global_nets.list;
+				
+				procedure query_nets (cursor : in type_global_nets.cursor) is
+					use type_nets;
+					glob_net : type_global_net := element (cursor);
+				begin
+					-- glob_net is a record providing a cursor to a submodule and
+					-- a cursor to a net therein.
+
+					log (text => "submodule " &
+						enclose_in_quotes (to_string (type_modules.element (glob_net.submodule).generic_name)) &
+						" net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)),
+						level => log_threshold);
+
+					-- Start exploring the net indicated by glob_net:
+					find_dependencies (glob_net.submodule, glob_net.net, log_threshold);
+				end query_nets;
+				
+			begin -- query_submodules
+				-- Get all global secondary nets of submodules:
+				global_nets := global_nets_in_submodules (module_cursor, net_cursor, log_threshold);
+
+				log_indentation_up;
+				log_indentation_up;
+				
+				if is_empty (global_nets) then
+					log (text => "no global secondary nets found", level => log_threshold);
+				else
+					iterate (global_nets, query_nets'access);
+				end if;
+
+				log_indentation_down;
+				log_indentation_down;
+			end query_submodules;
+
+		begin -- query_global_nets_in_submodules
+			if child_count (module_cursor) > 0 then
+				query_submodules;
+			end if;
+		end query_global_nets_in_submodules;
+		
 		procedure find_dependencies (
 		-- Explores secondary nets starting with the given net in the given module.
 		-- NOTE: This procedure is recursive, means it calls itself until all
 		--       secondary nets have been found.
-
 			module_cursor	: in type_modules.cursor; -- the module we are in
-			net_cursor		: in type_nets.cursor) is -- the net we are in
-
+			net_cursor		: in type_nets.cursor; -- the net we are in
+			log_threshold	: in type_log_level) is
+			
 			use type_nets;
 			
 			-- In order to save computing time, get number of netchanger and submodule 
@@ -707,7 +763,7 @@ package body netlists is
 					if net_cursor /= type_nets.no_element then
 						
 						-- net_cursor now points to the secondary net in the same module
-						find_dependencies (module_cursor, net_cursor);
+						find_dependencies (module_cursor, net_cursor, log_threshold + 1);
 					end if;
 				end if;
 			end query_netchanger;
@@ -728,7 +784,7 @@ package body netlists is
 					if net_cursor /= type_nets.no_element then
 						
 						-- net_cursor now points to the secondary net in the submodule
-						find_dependencies (module_cursor, net_cursor);
+						find_dependencies (module_cursor, net_cursor, log_threshold + 1);
 					end if;
 				end if;
 			end query_submodule;
@@ -746,47 +802,10 @@ package body netlists is
 				if cursor /= type_nets.no_element then
 					
 					-- cursor now points to the secondary net in the parent module
-					find_dependencies (module_cursor, cursor);
+					find_dependencies (module_cursor, cursor, log_threshold + 1);
 				end if;
 			end query_parent;
 
-			procedure query_submodules is 
-				use type_global_nets;
-				global_nets : type_global_nets.list;
-				
-				procedure query_nets (cursor : in type_global_nets.cursor) is
-					use type_nets;
-					glob_net : type_global_net := element (cursor);
-				begin
-					-- glob_net is a record providing a cursor to a submodule and
-					-- a cursor to a net therein.
-
-					log (text => "submodule " &
-						 enclose_in_quotes (to_string (type_modules.element (glob_net.submodule).generic_name)) &
-						 " net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)),
-						 level => log_threshold + 2);
-
-					-- Start exploring the net indicated by glob_net:
-					find_dependencies (glob_net.submodule, glob_net.net);
-				end query_nets;
-				
-			begin -- query_submodules
-				-- Get all global secondary nets of submodules:
-				global_nets := global_nets_in_submodules (module_cursor, net_cursor, log_threshold + 2);
-
-				log_indentation_up;
-				log_indentation_up;
-				
-				if is_empty (global_nets) then
-					log (text => "no global secondary nets found", level => log_threshold + 2);
-				else
-					iterate (global_nets, query_nets'access);
-				end if;
-
-				log_indentation_down;
-				log_indentation_down;
-			end query_submodules;
-			
 		begin -- find_dependencies
 			-- Extract the ports of devices from the net:
 			type_device_ports_extended.iterate (element (net_cursor).devices, query_device'access);
@@ -820,9 +839,7 @@ package body netlists is
 
 			-- There may be submodules containing global nets. These nets are secondary nets of the current net.
 			-- Locate those nets if the current module has submodules (children):
-			if child_count (module_cursor) > 0 then
-				query_submodules;
-			end if;
+			query_global_nets_in_submodules (module_cursor, net_cursor, log_threshold + 1);
 			
 		end find_dependencies;
 			
@@ -833,11 +850,15 @@ package body netlists is
 				procedure query_ports (net_cursor : in type_nets.cursor) is
 					use type_nets;
 				begin -- query_ports
+					log_indentation_up;
+					
+					-- Explore global secondary nets of given net in submodules.
+					-- If the top module does not have submodules, nothing happens.
+-- 					query_global_nets_in_submodules (module_cursor, net_cursor, log_threshold + 1);
 					
 					-- Extract primary nets only:
 					if is_primary (net_cursor) then
 
-						log_indentation_up;
 						log (text => "primary net " & enclose_in_quotes (
 							to_string (key (net_cursor).prefix) & 
 							to_string (key (net_cursor).base_name)), -- CLK_GENERATOR/FLT1/ & clock_out
@@ -849,11 +870,10 @@ package body netlists is
 							to_string (key (net_cursor).base_name)); -- CLK_GENERATOR/FLT1/ & clock_out
 
 						-- write device ports and dive into secondary nets
-						find_dependencies (module_cursor, net_cursor);
-
-						log_indentation_down;
+						find_dependencies (module_cursor, net_cursor, log_threshold + 2);
 					end if;
-					
+
+					log_indentation_down;
 				end query_ports;
 				
 			begin -- query_nets
