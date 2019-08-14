@@ -142,7 +142,7 @@ package scripting is
 		NAME,
 		NET,
 		NETCHANGER,
-		NETLIST,
+		NETLISTS,
 		PARTCODE,
 		PORT, -- of a submodule instance
 		PURPOSE,

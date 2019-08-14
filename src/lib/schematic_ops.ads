@@ -623,11 +623,18 @@ package schematic_ops is
 		port_name		: in type_port_name.bounded_string) -- CE
 		return et_libraries.type_port_properties_access;
 	
-	procedure make_netlist (
-	-- Exports the netlist from the given top module and assembly variant.
+-- 	procedure make_netlist ( -- CS now obsolete
+-- 	-- Exports the netlist from the given top module and assembly variant.
+-- 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+-- 		variant_top		: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+-- 		netlist_file	: in netlists.type_file_name.bounded_string; -- CAM/motor_driver_netlist.net
+-- 		log_threshold	: in type_log_level);
+
+	procedure make_netlists (
+	-- Generates the netlist files of all assembly variants from the given top module.
+	-- Exports the netlist files in directory CAM. 
+	-- The netlist files are named after the module name and the variant name.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_top		: in assembly_variants.type_variant_name.bounded_string; -- low_cost
-		netlist_file	: in netlists.type_file_name.bounded_string; -- CAM/motor_driver_netlist.net
 		log_threshold	: in type_log_level);
 	
 	procedure check_integrity (

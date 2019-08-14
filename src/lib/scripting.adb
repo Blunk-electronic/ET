@@ -1068,30 +1068,16 @@ package body scripting is
 									command_incomplete;
 							end case;
 
-						when NETLIST => 
+						when NETLISTS => 
 							case fields is
-								when 5 =>
-									-- The variant name is optional. If not specified,
-									-- an empty string will be passed:
-									schematic_ops.make_netlist 
+								when 4 =>
+									schematic_ops.make_netlists 
 										(
 										module_name 	=> module,
-										netlist_file	=> netlists.to_file_name (f (5)),
-										variant_top		=> assembly_variants.to_variant (""),
-										
 										log_threshold	=> log_threshold + 1);
 
-								when 6 =>
-									schematic_ops.make_netlist 
-										(
-										module_name 	=> module,
-										netlist_file	=> netlists.to_file_name (f (5)),
-										variant_top		=> assembly_variants.to_variant (f (6)),
-										
-										log_threshold	=> log_threshold + 1);
-
-								when 7 .. count_type'last =>
-									command_too_long (6);
+								when 5 .. count_type'last =>
+									command_too_long (4);
 									
 								when others =>
 									command_incomplete;

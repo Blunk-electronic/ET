@@ -11816,7 +11816,7 @@ package body schematic_ops is
 		return ports_extended;
 	end extend_ports;
 	
-	procedure make_netlist (
+	procedure make_netlist ( -- CS now obsolete
 	-- Exports the netlist from the given top module and assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_top		: in assembly_variants.type_variant_name.bounded_string; -- low_cost
@@ -12220,6 +12220,431 @@ package body schematic_ops is
 				raise;
 	
 	end make_netlist;
+
+	procedure make_netlists (
+	-- Generates the netlists of all assembly variants from the given top module.
+	-- If parameter "write_files" is true, then exports the netlists in directory CAM. 
+	-- The netlist files are named after the module name and the variant name.
+		module_cursor 	: in type_modules.cursor;
+		write_files		: in boolean := false;
+		log_threshold	: in type_log_level) is
+
+		use netlists;
+		use et_general.type_net_name;
+		use assembly_variants;
+		use assembly_variants.type_variants;
+		use assembly_variants.type_variant_name;
+
+		procedure make_for_variant (variant_name : in type_variant_name.bounded_string) is
+
+			-- Since we are dealing with hierarchic designs, a tree of modules (each of them having its
+			-- own netlist) is required. In the course of this procedure the netlist_tree is built
+			-- and finally passed to netlists.write_netlist for further processing.
+			-- The netlist_tree does not provide information on dependencies between nets (such
+			-- as primary or secondary nets. see netlist specs).
+			netlist_tree : netlists.type_modules.tree := netlists.type_modules.empty_tree;
+			netlist_cursor : netlists.type_modules.cursor := netlists.type_modules.root (netlist_tree);
+
+			-- This stack keeps record of the netlist_cursor as we go trough the design structure.
+			package stack_netlist is new et_general.stack_lifo (
+				item	=> netlists.type_modules.cursor,
+				max 	=> submodules.nesting_depth_max);
+			
+			procedure collect_nets (
+			-- Collects net names of the given module and its variant in container netlist.
+			-- Adds to the device index the given offset.
+			-- If offset is zero, we are dealing with the top module.
+				module_cursor	: in et_project.type_modules.cursor;
+				variant			: in assembly_variants.type_variant_name.bounded_string;
+				prefix			: in et_general.type_net_name.bounded_string; -- DRV3/OSC1/
+				offset			: in et_libraries.type_device_name_index) is
+
+				use assembly_variants.type_variants;
+				variant_cursor : assembly_variants.type_variants.cursor;
+				
+				procedure query_nets (
+					module_name	: in type_module_name.bounded_string;
+					module		: in et_schematic.type_module) is
+
+					use et_schematic.type_nets;
+					net_cursor_sch : et_schematic.type_nets.cursor := module.nets.first;
+
+					net_name : et_general.type_net_name.bounded_string;
+					all_ports : et_schematic.type_ports;
+					device_ports_extended : netlists.type_device_ports_extended.set;
+					submodule_ports_extended : netlists.type_submodule_ports_extended.set;
+
+					procedure apply_offsets is
+					-- Applies the given offset to the devices in device_ports_extended.
+						use netlists.type_device_ports_extended;
+						-- temporarily the ports will be stored here. Once all ports of
+						-- device_ports_extended have been offset, the list
+						-- ports_with_offset overwrites device_ports_extended:
+						ports_with_offset : netlists.type_device_ports_extended.set;
+						
+						procedure query_ports (cursor : in netlists.type_device_ports_extended.cursor) is 
+							-- take a copy of the port as it is:
+							port : netlists.type_device_port_extended := element (cursor);
+						begin -- query_ports
+							-- apply offset to device name of port
+							apply_offset (port.device, offset, log_threshold + 2);
+
+							-- insert the modified port in the container ports_with_offset
+							netlists.type_device_ports_extended.insert (
+								container	=> ports_with_offset,
+								new_item	=> port);
+						end; -- query_ports
+						
+					begin -- apply_offsets
+						iterate (device_ports_extended, query_ports'access);
+
+						-- overwrite by ports_with_offset
+						device_ports_extended := ports_with_offset;
+					end; -- apply_offsets
+
+					procedure insert_net (module : in out netlists.type_module) is begin
+						-- insert the net with its ports in the netlist of the submodule
+						netlists.type_nets.insert (
+							container	=> module.nets,
+							key			=> (prefix => prefix, base_name => net_name), -- CLK_GENERATOR/FLT1/ , clock_out
+							new_item	=> (
+									devices		=> device_ports_extended,
+									submodules	=> submodule_ports_extended,
+									netchangers	=> all_ports.netchangers,
+									scope		=> element (net_cursor_sch).scope)
+							--position	=> net_cursor_netlist,
+							--inserted	=> inserted
+							);
+							-- CS: constraint_error arises here if net already in list. should never happen.
+					end insert_net;
+					
+				begin -- query_nets
+					if assembly_variants.is_default (variant) then
+						variant_cursor := type_variants.no_element;
+					else
+						variant_cursor := find (module.variants, variant);
+						if variant_cursor = type_variants.no_element then
+							assembly_variant_not_found (variant);
+						end if;
+					end if;
+					-- Now variant_cursor points to the given assembly variant. If it points to
+					-- no element then it is about the default variant.
+
+					-- loop in nets of given module
+					while net_cursor_sch /= et_schematic.type_nets.no_element loop
+
+						-- prepend the given net prefix
+						net_name := et_schematic.type_nets.key (net_cursor_sch);
+
+						-- Get all device, netchanger and submodule ports of this net
+						-- according to the given assembly variant:
+						all_ports := et_schematic.ports (net_cursor_sch, variant_cursor);
+						
+						-- extend the submodule ports by their directions (master/slave):
+						submodule_ports_extended := extend_ports (module_cursor, all_ports.submodules);
+						
+						-- extend the device ports by further properties (direction, terminal name, ...):
+						device_ports_extended := extend_ports (module_cursor, all_ports.devices);
+
+						-- The portlist device_ports_extended now requires the device indexes 
+						-- to be changed according to the given offset:
+						apply_offsets;
+						
+						-- insert the net with its ports in the list of nets
+						netlists.type_modules.update_element (
+							container	=> netlist_tree,
+							position	=> netlist_cursor,
+							process		=> insert_net'access);
+						
+						next (net_cursor_sch);
+					end loop;
+				end query_nets;
+				
+			begin -- collect_nets
+					
+				et_project.type_modules.query_element (
+					position	=> module_cursor,
+					process		=> query_nets'access);
+
+			end collect_nets;
+			
+			submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
+			tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
+			
+			function make_prefix return et_general.type_net_name.bounded_string is
+			-- Builds a string like CLK_GENERATOR/FLT1/ from the parent submodule instances.
+			-- Starts at the position of the current tree_cursor and goes up to the first submodule level.
+			-- NOTE: The nets in the top module do not have prefixes.
+				prefix : et_general.type_net_name.bounded_string;
+				use numbering.type_modules;
+				cursor : numbering.type_modules.cursor := tree_cursor;
+			begin
+				-- The first prefix to PREPEND is the name of the current submodule instance:
+				prefix := netlists.to_prefix (element (cursor).instance);
+
+				-- look for the overlying parent submodule
+				cursor := parent (cursor);
+
+				-- travel upwards toward other overlying submodules. The search ends as
+				-- soon as the top module has been reached.
+				while not is_root (cursor) loop
+					-- prepend instance name of parent submodule
+					prefix := netlists.to_prefix (element (cursor).instance) & prefix;
+					cursor := parent (cursor);
+				end loop;
+					
+				return prefix;
+			end make_prefix;
+			
+			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
+			package stack_level is new et_general.stack_lifo (
+				item	=> numbering.type_modules.cursor,
+				max 	=> submodules.nesting_depth_max);
+
+			-- Another stack keeps record of the assembly variant at the submodule level.
+			package stack_variant is new et_general.stack_lifo (
+				item	=> assembly_variants.type_variant_name.bounded_string,
+				max 	=> submodules.nesting_depth_max);
+			
+			variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
+			
+			procedure query_submodules is 
+			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
+			-- until the deepest submodule (the bottom of the design structure) has been reached.
+				use numbering.type_modules;
+				module_name 	: type_module_name.bounded_string; -- motor_driver
+				parent_name 	: type_module_name.bounded_string; -- water_pump
+				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+				offset			: et_libraries.type_device_name_index;
+
+				use assembly_variants.type_submodules;
+				alt_submod : assembly_variants.type_submodules.cursor;
+
+				procedure insert_submodule is begin
+				-- Insert a submodule in netlist_tree. Wherever procedure query_submodules is
+				-- called, cursor netlist_cursor is pointing at the latest parent module. The
+				-- submodules detected here must be inserted as children of that parent module.
+
+					-- backup netlist_cursor
+					stack_netlist.push (netlist_cursor);
+					
+					netlists.type_modules.insert_child (
+						container	=> netlist_tree,
+						parent		=> netlist_cursor,
+						before		=> netlists.type_modules.no_element,
+						position	=> netlist_cursor, -- points afterwards to the child that has just been inserted
+						new_item	=> (
+							generic_name	=> module_name,
+							instance_name	=> module_instance,
+							others			=> <>)
+						);
+					
+					-- Collect nets from current module. inserts the nets in
+					-- the submodule indicated by netlist_cursor:
+					collect_nets (
+						module_cursor	=> locate_module (module_name),
+						variant			=> variant,
+						prefix			=> make_prefix,
+						offset			=> offset);
+
+					-- restore netlist_cursor
+					netlist_cursor := stack_netlist.pop;
+				end insert_submodule;
+				
+			begin -- query_submodules
+				log_indentation_up;
+
+				-- start with the first submodule on the current hierarchy level
+				tree_cursor := first_child (tree_cursor);
+
+				-- iterate through the submodules on this level
+				while tree_cursor /= numbering.type_modules.no_element loop
+					module_name := element (tree_cursor).name;
+					module_instance := element (tree_cursor).instance;
+
+					log (text => "instance " & enclose_in_quotes (to_string (module_instance)) &
+						" of generic module " & enclose_in_quotes (to_string (module_name)),
+						level => log_threshold + 1);
+
+					-- In case we are on the first level, the parent module is the given top module.
+					-- In that case the parent variant is the given variant of the top module.
+					-- If the top module has the default variant, all submodules in all levels
+					-- assume default variant too.
+					if parent (tree_cursor) = root (submod_tree) then
+						parent_name := key (make_netlists.module_cursor);
+						variant := variant_name; -- argument of make_for_variant
+					else
+						parent_name := element (parent (tree_cursor)).name;
+					end if;
+
+					-- Get the device name offset of the current submodule;
+					offset := element (tree_cursor).device_names_offset;
+
+					if not assembly_variants.is_default (variant) then
+						-- Query in parent module: Is there any assembly variant specified for this submodule ?
+
+						alt_submod := alternative_submodule (
+									module	=> locate_module (parent_name),
+									variant	=> variant,
+									submod	=> module_instance);
+
+						if alt_submod = assembly_variants.type_submodules.no_element then
+						-- no variant specified for this submodule -> collect devices of default variant
+
+							variant := assembly_variants.default;
+						else
+						-- alternative variant specified for this submodule
+							variant := element (alt_submod).variant;
+						end if;
+
+					end if;
+
+					-- Insert submodule in netlist_tree.
+					insert_submodule;
+					
+					if first_child (tree_cursor) = numbering.type_modules.no_element then 
+					-- No submodules on the current level. means we can't go deeper:
+						
+						log_indentation_up;
+						log (text => "no submodules here -> bottom reached", level => log_threshold + 1);
+						log_indentation_down;
+					else
+					-- There are submodules on the current level:
+						
+						-- backup the cursor to the current submodule on this level
+						stack_level.push (tree_cursor);
+
+						-- backup the parent assembly variant
+						stack_variant.push (variant);
+
+						-- iterate through submodules on the level below
+						query_submodules; -- this is recursive !
+
+						-- restore cursor to submodule (see stack_level.push above)
+						tree_cursor := stack_level.pop;
+
+						-- restore the parent assembly variant (see stack_variant.push above)
+						variant := stack_variant.pop;
+					end if;
+
+					next_sibling (tree_cursor); -- next submodule on this level
+				end loop;
+				
+				log_indentation_down;
+
+				exception
+					when event: others =>
+						log_indentation_reset;
+						log (text => ada.exceptions.exception_information (event), console => true);
+						raise;
+				
+			end query_submodules;
+			
+		begin -- make_for_variant
+			if assembly_variants.is_default (variant_name) then
+				log (text => "default assembly variant ", level => log_threshold + 1);
+			else
+				log (text => "assembly variant " &
+					enclose_in_quotes (to_string (variant_name)), level => log_threshold + 1);
+			end if;
+
+			log_indentation_up;
+
+			
+			-- take a copy of the submodule tree of the given top module:
+			submod_tree := element (module_cursor).submod_tree;
+
+			-- set the cursor inside the tree at root position:
+			tree_cursor := numbering.type_modules.root (submod_tree);
+			
+			stack_level.init;
+			stack_variant.init;
+			stack_netlist.init;
+
+			-- Insert the top module in the netlist_tree. It is the only node on this level.
+			-- Submodules will be inserted as children of the top module (where netlist_cursor 
+			-- points at AFTER this statement):
+			netlists.type_modules.insert_child (
+				container	=> netlist_tree,
+				parent		=> netlists.type_modules.root (netlist_tree),
+				before		=> netlists.type_modules.no_element,
+				position	=> netlist_cursor,
+				new_item	=> (
+					generic_name	=> key (make_netlists.module_cursor),
+					instance_name	=> to_instance_name (""), -- the top module has no instance name
+					others 			=> <>)
+				);
+			-- netlist_cursor now points at the top module in netlist_tree.
+
+			-- Collect nets of the given top module. the top module has no device index offset.
+			-- The nets will be inserted where netlist_cursor points at.
+			collect_nets (
+				module_cursor	=> module_cursor,
+				variant			=> variant_name,
+				prefix			=> to_net_name (""), -- no net prefix in top module
+				offset			=> 0); 
+
+			-- collect devices of the submodules
+			query_submodules;
+			
+			-- write the bom:
+
+			-- Container netlist_tree is now ready for further processing.
+			-- It contains the modules and their nets ordered in a tree structure.
+			-- But the connections between nets are
+			-- still unknown and will be analyzed now:
+-- 			netlists.write_netlist (
+-- 				modules			=> netlist_tree,	
+-- 				module_name		=> module_name,		-- motor_driver (to be written in the netlist file header)
+-- 				file_name		=> netlist_file, 	-- tmp/my_project.net
+-- 				log_threshold	=> log_threshold + 1);
+
+			log_indentation_down;
+		end make_for_variant;
+		
+		procedure query_variant (variant_cursor : in type_variants.cursor) is
+			use assembly_variants.type_variant_name;
+		begin
+			make_for_variant (key (variant_cursor));
+		end query_variant;
+			
+	begin -- make_netlists
+		log (text => "generating netlists of assembly variants ...", level => log_threshold);
+		log_indentation_up;
+
+		-- Build the submodule tree of the module according to the current design structure in
+		-- et_schematic.type_module.submod_tree.
+		-- All further operations rely on this tree:
+		build_submodules_tree (
+			module_name 	=> key (module_cursor),
+			log_threshold	=> log_threshold + 1);
+
+		-- make netlist of default variant
+		make_for_variant (default);
+
+		-- make netlists of other variants
+		iterate (element (module_cursor).variants, query_variant'access);
+		
+		log_indentation_down;
+	end make_netlists;
+
+	procedure make_netlists (
+	-- Generates the netlist files of all assembly variants from the given top module.
+	-- Exports the netlist files in directory CAM. 
+	-- The netlist files are named after the module name and the variant name.
+		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		log_threshold	: in type_log_level) is
+
+		module_cursor : type_modules.cursor; -- points to the module
+	begin
+		-- locate the given top module
+		module_cursor := locate_module (module_name);
+
+		make_netlists (
+			module_cursor	=> module_cursor,
+			write_files		=> true,
+			log_threshold	=> log_threshold);
+	end;
 	
 	procedure check_integrity (
 	-- Performs an in depth check on the schematic of the given module.
@@ -12492,6 +12917,13 @@ package body schematic_ops is
 			error;
 		end if;
 
+		-- netlist checks
+		make_netlists (
+			module_cursor	=> module_cursor,
+			write_files		=> false,
+			log_threshold	=> log_threshold + 1);
+
+		
 		if errors > 0 then
 			log (WARNING, "integrity check found errors !");
 			log (text => "errors   :" & natural'image (errors));
