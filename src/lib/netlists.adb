@@ -721,11 +721,11 @@ package body netlists is
 					-- glob_net is a record providing a cursor to a submodule and
 					-- a cursor to a net therein.
 
-					-- Make sure the net is not connected via a port with the parent module.
-					if not contains (
-						net_cursor		=> net_cursor,
-						submodule		=> element (glob_net.submodule).instance_name, -- OSC1
-						port			=> key (glob_net.net).base_name) then -- clock_out
+					-- CS: Make sure the net is not connected via a port with the parent module.
+-- 					if not contains (
+-- 						net_cursor		=> net_cursor,
+-- 						submodule		=> element (glob_net.submodule).instance_name, -- OSC1
+-- 						port			=> key (glob_net.net).base_name) then -- clock_out
 
 						log (text => "submodule " &
 							enclose_in_quotes (to_string (type_modules.element (glob_net.submodule).generic_name)) &
@@ -735,12 +735,12 @@ package body netlists is
 						-- Start exploring the net indicated by glob_net:
 						find_dependencies (glob_net.submodule, glob_net.net, log_threshold);
 						
-					else
-						log (ERROR, "net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)) &
-							 " is already connected with its parent module via a port. Remove port in " &
-							 "parent module or set scope of this net to local !");
-						raise constraint_error;
-					end if;
+-- 					else
+-- 						log (ERROR, "net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)) &
+-- 							 " is already connected with its parent module via a port. Remove port in " &
+-- 							 "parent module or set scope of this net to local !");
+-- 						raise constraint_error;
+-- 					end if;
 				end query_nets;
 				
 			begin -- query_submodules
