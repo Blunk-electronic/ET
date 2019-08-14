@@ -12201,11 +12201,11 @@ package body schematic_ops is
 			-- It contains the modules and their nets ordered in a tree structure.
 			-- But the connections between nets are
 			-- still unknown and will be analyzed now:
-			netlists.write_netlist (
-				modules			=> netlist_tree,	
-				module_name		=> module_name,		-- motor_driver (to be written in the netlist file header)
-				file_name		=> netlist_file, 	-- tmp/my_project.net
-				log_threshold	=> log_threshold + 1);
+-- 			netlists.make_netlists (
+-- 				modules			=> netlist_tree,	
+-- 				module_name		=> module_name,		-- motor_driver (to be written in the netlist file header)
+-- 				file_name		=> netlist_file, 	-- tmp/my_project.net
+-- 				log_threshold	=> log_threshold + 1);
 			
 		else
 			assembly_variant_not_found (variant_top);
@@ -12587,17 +12587,16 @@ package body schematic_ops is
 			-- collect devices of the submodules
 			query_submodules;
 			
-			-- write the bom:
-
 			-- Container netlist_tree is now ready for further processing.
 			-- It contains the modules and their nets ordered in a tree structure.
 			-- But the connections between nets are
 			-- still unknown and will be analyzed now:
--- 			netlists.write_netlist (
--- 				modules			=> netlist_tree,	
--- 				module_name		=> module_name,		-- motor_driver (to be written in the netlist file header)
--- 				file_name		=> netlist_file, 	-- tmp/my_project.net
--- 				log_threshold	=> log_threshold + 1);
+			netlists.make_netlist (
+				modules			=> netlist_tree,	
+				module_name		=> key (module_cursor), -- motor_driver (to be written in the netlist file header)
+				variant_name	=> variant_name, 	-- low_cost
+				write_file		=> write_files,
+				log_threshold	=> log_threshold + 1);
 
 			log_indentation_down;
 		end make_for_variant;

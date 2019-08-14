@@ -608,6 +608,8 @@ package schematic_ops is
 	
 	procedure make_bom (
 	-- Exports a BOM file from the given top module and assembly variant.
+	-- CS: Similar to make_netlists BOM files of all assembly variants could be exported right away.
+	--     The parameters variant_top and bom_file would be no longer required.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_top		: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		bom_file		: in material.type_file_name.bounded_string; -- CAM/motor_driver_bom.csv

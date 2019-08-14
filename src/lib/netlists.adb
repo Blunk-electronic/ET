@@ -58,7 +58,7 @@ with et_general;				use et_general;
 -- 
 -- with et_coordinates;
 -- with et_libraries;
--- with assembly_variants;
+with assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_csv;					use et_csv;
 -- with et_pcb_coordinates;
@@ -662,17 +662,48 @@ package body netlists is
 		return net_cursor_parent;
 	end net_in_parent_module;
 	
-	procedure write_netlist (
-	-- Creates the netlist file (which inevitably and intentionally overwrites the previous file).
+	procedure make_netlist (
+	-- If write_file ist true, creates the netlist file (which inevitably and intentionally 
+	-- overwrites the previous file).
 	-- - modules contains the modules and their nets ordered in a tree structure.
 	-- - module_name is the name of the top module. to be written in the header of the netlist file.
-	-- - file_name is the name of the actual netlist file.
 		modules			: in type_modules.tree;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
-		file_name		: in type_file_name.bounded_string; -- netlist.net
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		write_file		: in boolean;
 		log_threshold	: in type_log_level) is		
 
 		use type_modules;
+
+		file_name : type_file_name.bounded_string;
+		
+		procedure set_file_name is 
+			use ada.directories;
+			use type_module_name;
+			use assembly_variants;
+			use assembly_variants.type_variant_name;
+		begin
+			if is_default (variant_name) then
+				file_name := to_file_name (
+							compose 
+							(
+								containing_directory	=> "CAM", -- CS define in dedicated package for CAM stuff
+								name					=> et_general.to_string (module_name),
+								extension				=> extension_netlist
+							));
+
+			else
+				file_name := to_file_name (
+							compose 
+							(
+								containing_directory	=> "CAM", -- CS define in dedicated package for CAM stuff
+								name					=> et_general.to_string (module_name) & "_" & 
+															assembly_variants.to_variant (variant_name),
+								extension				=> extension_netlist
+							));
+			end if;
+		end;	
+		
 		netlist_handle : ada.text_io.file_type;
 
 		netlist_cursor : netlists.type_modules.cursor := netlists.type_modules.root (modules);
@@ -942,29 +973,35 @@ package body netlists is
 			put_line (netlist_handle, comment_mark & " end of list");
 		end write_footer;
 		
-	begin -- write_netlist
-		if ada.directories.exists (to_string (file_name)) then
-			log (importance => NOTE, text => "overwriting " & to_string (file_name) & " ...", level => log_threshold);
+	begin -- make_netlist
+		if write_file then
+			set_file_name;
+		
+			if ada.directories.exists (to_string (file_name)) then
+				log (importance => NOTE, text => "overwriting " & to_string (file_name) & " ...", level => log_threshold);
+			end if;
+
+			if ada.directories.extension (to_string (file_name)) /= extension_netlist then
+				log (importance => WARNING, text => "targeted netlist file has no extension " &
+					enclose_in_quotes (extension_netlist) & " !");
+			end if;
+
+			log (text => "writing netlist file " & enclose_in_quotes (to_string (file_name)) & " ...", level => log_threshold);
+			
+			create (
+				file => netlist_handle,
+				mode => out_file, 
+				name => to_string (file_name));
+
+			write_header;
+			write_nets;
+			write_footer;
+			
+			close (netlist_handle);
+
 		end if;
 
-		if ada.directories.extension (to_string (file_name)) /= extension_netlist then
-			log (importance => WARNING, text => "targeted netlist file has no extension " &
-				 enclose_in_quotes (extension_netlist) & " !");
-		end if;
-
-		log (text => "writing netlist file " & enclose_in_quotes (to_string (file_name)) & " ...", level => log_threshold);
 		
-		create (
-			file => netlist_handle,
-			mode => out_file, 
-			name => to_string (file_name));
-
-		write_header;
-		write_nets;
-		write_footer;
-		
-		close (netlist_handle);
-
 		exception
 			when event: others =>
 				if is_open (netlist_handle) then
@@ -975,7 +1012,7 @@ package body netlists is
 				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;
 				
-	end write_netlist;
+	end make_netlist;
 
 	
 end netlists;

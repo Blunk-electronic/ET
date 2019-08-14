@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your editor to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -101,6 +101,8 @@ package board_ops is
 	procedure make_pick_and_place (
 	-- Exports a pick & place file from the given top module and assembly variant.
 	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
+	-- CS: Similar to schematic_ops.make_netlists p&p files of all assembly variants could be exported right away.
+	--     The parameters variant_top and pnp_file would be no longer required.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		variant_top		: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		pnp_file		: in pick_and_place.type_file_name.bounded_string; -- CAM/motor_driver_bom.pnp
