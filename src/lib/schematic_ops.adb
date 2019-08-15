@@ -12232,7 +12232,7 @@ package body schematic_ops is
 
 	procedure make_netlists (
 	-- Generates the netlists of all assembly variants from the given top module.
-	-- If parameter "write_files" is true, then exports the netlists in directory CAM. 
+	-- If parameter "write_files" is true, then exports the netlists in files.
 	-- The netlist files are named after the module name and the variant name.
 		module_cursor 	: in type_modules.cursor;
 		write_files		: in boolean := false;
@@ -12549,7 +12549,48 @@ package body schematic_ops is
 				
 			end query_submodules;
 
+			-- before updating the netlist of the module we keep the new netlist here temporarily:
 			netlist : netlists.type_netlist.tree;
+
+			procedure update_netlist (
+			-- Updates the netlist of the module. The netlist is indicated by the variant_name.
+				module_name		: in type_module_name.bounded_string;
+				module			: in out et_schematic.type_module) is
+
+				procedure assign_netlist (
+					variant		: in assembly_variants.type_variant_name.bounded_string;
+					netlist		: in out netlists.type_netlist.tree) is
+				begin
+					-- overwrite the current netlist by the new netlist:
+					netlist := make_for_variant.netlist;
+				end assign_netlist;
+
+				use et_schematic.type_netlists;
+				netlist_cursor : et_schematic.type_netlists.cursor;
+				
+			begin -- update_netlist
+				log (text => "updating netlist ...", level => log_threshold + 2);
+				
+				-- Locate the netlist within the module.
+				-- If the netlist does not exist yet, insert it in module.netlists.
+				-- If the netlist does exist, overwrite it by the new netlist.
+				netlist_cursor := find (module.netlists, variant_name);
+
+				if netlist_cursor = type_netlists.no_element then
+
+					type_netlists.insert (
+						container	=> module.netlists,
+						key			=> variant_name,
+						new_item	=> make_for_variant.netlist); -- the new netlist
+
+				else
+					type_netlists.update_element (
+						container	=> module.netlists,
+						position	=> netlist_cursor,
+						process		=> assign_netlist'access);
+
+				end if;
+			end update_netlist;
 			
 		begin -- make_for_variant
 			if assembly_variants.is_default (variant_name) then
@@ -12605,10 +12646,20 @@ package body schematic_ops is
 			netlist := netlists.make_netlist (
 				modules			=> netlist_tree,	
 				module_name		=> key (module_cursor), -- motor_driver (to be written in the netlist file header)
-				variant_name	=> variant_name, 	-- low_cost
+				variant_name	=> variant_name, 	-- low_cost, empty if default variant
 				write_file		=> write_files,
 				log_threshold	=> log_threshold + 1);
 
+			-- Now netlist provides information on primary nets and their subordinated secondary nets.
+			
+			-- Update the netlist (indicated by variant_name) in the module by variable "netlist".
+			-- NOTE: This is about the internal netlist (module.netlists) and has nothing to do
+			-- with netlist files:
+			et_project.type_modules.update_element (
+				container		=> et_project.modules,
+				position		=> module_cursor,
+				process			=> update_netlist'access);
+			
 			log_indentation_down;
 		end make_for_variant;
 		

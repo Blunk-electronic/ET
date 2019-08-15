@@ -634,7 +634,7 @@ package schematic_ops is
 
 	procedure make_netlists (
 	-- Generates the netlist files of all assembly variants from the given top module.
-	-- Exports the netlist files in directory CAM. 
+	-- Exports the netlist files.
 	-- The netlist files are named after the module name and the variant name.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);

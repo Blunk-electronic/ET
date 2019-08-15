@@ -343,7 +343,15 @@ package et_schematic is
 	-- For designs which have only a schematic, this flag goes false.
 	type type_board_available is new boolean;
 
+	-- As there are assembly variants, for each of them a dedicated netlist must be generated.
+	package type_netlists is new ordered_maps (
+		key_type		=> assembly_variants.type_variant_name.bounded_string, -- low_cost, empty if default variant
+		"<"				=> assembly_variants.type_variant_name."<",
+		element_type	=> netlists.type_netlist.tree, -- provides info on primary and secondary net dependencies
+		"="				=> netlists.type_netlist."=");
 
+
+	
 	type type_module is record
 		board_available	: type_board_available := FALSE;
 		
@@ -379,8 +387,10 @@ package et_schematic is
 		-- In submodules it is not used (should always be empty):
 		submod_tree		: numbering.type_modules.tree;
 
-		-- The netlist containing nets of top module and submodule instances:
-		netlist			: netlists.type_netlist.tree;
+		-- The netlists containing nets of top module and submodule instances:
+		-- Provide information on primary nets and their subordinated secondary nets per 
+		-- assembly variant.
+		netlists		: type_netlists.map; -- variant name and netlist
 	end record;
 
 
