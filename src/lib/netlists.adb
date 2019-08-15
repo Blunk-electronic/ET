@@ -736,12 +736,13 @@ package body netlists is
 		end;	
 		
 		netlist_handle : ada.text_io.file_type;
-
 		netlist_cursor : netlists.type_modules.cursor := netlists.type_modules.root (modules);
 
+		-- When exploring secondary nets, the cursor to the primary net must be backup.
+		-- This must be done each time a secondary net is discovered.
 		package stack is new et_general.stack_lifo (
-			item	=> netlists.type_modules.cursor,
-			max 	=> submodules.nesting_depth_max);
+			item	=> type_netlist.cursor,
+			max 	=> nesting_depth_max);
 
 		procedure write_header is begin
 		-- writes a nice header in the netlist file
@@ -854,12 +855,14 @@ package body netlists is
 			-- Writes the device port in the netlist file.
 				use type_device_ports_extended;
 			begin
-				put_line (netlist_handle, -- IC1 CE input H5
-					et_libraries.to_string (element (port_cursor).device) & latin_1.space &
-					et_libraries.to_string (element (port_cursor).port) & latin_1.space &
-					et_libraries.to_string (element (port_cursor).direction) & latin_1.space &
-					et_libraries.to_string (element (port_cursor).terminal) & latin_1.space);
-					-- CS .characteristics
+				if write_file then
+					put_line (netlist_handle, -- IC1 CE input H5
+						et_libraries.to_string (element (port_cursor).device) & latin_1.space &
+						et_libraries.to_string (element (port_cursor).port) & latin_1.space &
+						et_libraries.to_string (element (port_cursor).direction) & latin_1.space &
+						et_libraries.to_string (element (port_cursor).terminal) & latin_1.space);
+						-- CS .characteristics
+				end if;
 			end query_device;
 
 			procedure query_netchanger (port_cursor : in type_ports_netchanger.cursor) is
@@ -958,7 +961,7 @@ package body netlists is
 			
 		end find_dependencies;
 			
-		procedure write_nets is
+		procedure explore_nets is
 			
 			procedure query_nets (module_cursor : in type_modules.cursor) is 
 
@@ -973,13 +976,21 @@ package body netlists is
 						log (text => "primary net " & enclose_in_quotes (
 							to_string (key (net_cursor).prefix) & 
 							to_string (key (net_cursor).base_name)), -- CLK_GENERATOR/FLT1/ & clock_out
-							level => log_threshold + 1);
-						
-						-- write the primary net name
-						new_line (netlist_handle);
-						put_line (netlist_handle, to_string (key (net_cursor).prefix) & 
-							to_string (key (net_cursor).base_name)); -- CLK_GENERATOR/FLT1/ & clock_out
+							 level => log_threshold + 1);
 
+-- 						type_netlist.insert_child (
+-- 							container	=> netlist,
+-- 							position	=> root,
+-- 							new_item	=> (others => <>));
+							
+
+						if write_file then
+							-- write the primary net name
+							new_line (netlist_handle);
+							put_line (netlist_handle, to_string (key (net_cursor).prefix) & 
+								to_string (key (net_cursor).base_name)); -- CLK_GENERATOR/FLT1/ & clock_out
+						end if;
+						
 						-- write device ports and dive into secondary nets
 						find_dependencies (module_cursor, net_cursor, log_threshold + 2);
 
@@ -992,10 +1003,10 @@ package body netlists is
 				type_nets.iterate (element (module_cursor).nets, query_ports'access);
 			end query_nets;
 			 
-		begin -- write_nets
+		begin -- explore_nets
 			stack.init;
 			iterate (modules, query_nets'access);
-		end write_nets;
+		end explore_nets;
 
 		procedure write_footer is begin
 		-- writes a nice footer in the netlist file
@@ -1025,13 +1036,15 @@ package body netlists is
 				name => to_string (file_name));
 
 			write_header;
-			write_nets;
+			explore_nets;
 			write_footer;
 			
 			close (netlist_handle);
 
+		else
+			explore_nets;
 		end if;
-
+		
 		return netlist;
 		
 		exception

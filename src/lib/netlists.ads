@@ -267,8 +267,11 @@ package netlists is
 		name	: type_net_name; -- base_name and prefix
 	end record;
 
+	-- The netlist is a tree containing primary nets as top level nodes and
+	-- lots of subordinated secondary nets. A secondary net itself may have lots 
+	-- of further secondary nets. We limit the nesting depth to a reasonable value.
+	nesting_depth_max : constant positive := 100; -- CS increase if nessecary
 	package type_netlist is new ada.containers.multiway_trees (type_netlist_net);
-
 	
 	function make_netlist (
 	-- If write_file ist true, creates the netlist file (which inevitably and intentionally 
