@@ -93,6 +93,8 @@ package scripting is
 
 	function to_string (verb : in type_verb_project) return string;
 	function to_verb (verb : in string) return type_verb_project;
+
+	noun_prefix : constant string := ("NOUN_");
 	
 	type type_noun_project is (
 		MODULE
@@ -129,38 +131,38 @@ package scripting is
 
 	function to_string (verb : in type_verb_schematic) return string;
 	function to_verb (verb : in string) return type_verb_schematic;
-
+	
 	type type_noun_schematic is (
-		BOM,
-		DEVICE,
-		DEVICES,
+		NOUN_BOM,
+		NOUN_DEVICE,
+		NOUN_DEVICES,
 		--DEVICE_PARTCODE,
 		--DEVICE_PURPOSE,
 		--DEVICE_VALUE,
-		INTEGRITY,
-		JUNCTION,
-		LABEL,
-		NAME,
-		NET,
-		NETCHANGER,
-		CS_NETLISTS, -- CS
-		PARTCODE,
-		PORT, -- of a submodule instance
-		PURPOSE,
-		SCOPE,
-		SEGMENT, -- net segment
-		SUBMODULE,
-		SUBMODULE_FILE,		
-		SUBMODULES_TREE,
-		TEXT,
-		TEXT_SIZE,
-		UNIT,
+		NOUN_INTEGRITY,
+		NOUN_JUNCTION,
+		NOUN_LABEL,
+		NOUN_NAME,
+		NOUN_NET,
+		NOUN_NETCHANGER,
+		NOUN_NETLISTS,
+		NOUN_PARTCODE,
+		NOUN_PORT, -- of a submodule instance
+		NOUN_PURPOSE,
+		NOUN_SCOPE,
+		NOUN_SEGMENT, -- net segment
+		NOUN_SUBMODULE,
+		NOUN_SUBMODULE_FILE,		
+		NOUN_SUBMODULES_TREE,
+		NOUN_TEXT,
+		NOUN_TEXT_SIZE,
+		NOUN_UNIT,
 -- 		UNIT_NAME,
 -- 		UNIT_PARTCODE,
 -- 		UNIT_PURPOSE,
 		-- 		UNIT_VALUE
-		VARIANT,
-		VALUE
+		NOUN_VARIANT,
+		NOUN_VALUE
 		);
 
 	function to_string (noun : in type_noun_schematic) return string;

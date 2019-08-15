@@ -380,7 +380,7 @@ package et_schematic is
 		submod_tree		: numbering.type_modules.tree;
 
 		-- The netlist containing nets of top module and submodule instances:
--- 		netlist			: netlists.type_netlist.tree;
+		netlist			: netlists.type_netlist.tree;
 	end record;
 
 

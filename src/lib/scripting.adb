@@ -138,12 +138,14 @@ package body scripting is
 			raise;
 	end;
 	
-	function to_string (noun : in type_noun_schematic) return string is begin
-		return type_noun_schematic'image (noun);
+	function to_string (noun : in type_noun_schematic) return string is 
+		s : string := type_noun_schematic'image (noun);
+	begin
+		return s (noun_prefix'length + 1 .. s'last);
 	end;
 
 	function to_noun (noun : in string) return type_noun_schematic is begin
-		return type_noun_schematic'value (noun);
+		return type_noun_schematic'value (noun_prefix & noun);
 		exception when event: others => 
 			log (ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
 			raise;
@@ -323,7 +325,7 @@ package body scripting is
 			case verb is
 				when ADD =>
 					case noun is
-						when DEVICE =>
+						when NOUN_DEVICE =>
 							case fields is
 								when 9 =>
 									-- If a virtual device is added, then no variant is required.
@@ -370,7 +372,7 @@ package body scripting is
 									command_incomplete;
 							end case;
 
-						when NETCHANGER =>
+						when NOUN_NETCHANGER =>
 							case fields is
 								when 8 =>
 									schematic_ops.add_netchanger (
@@ -395,7 +397,7 @@ package body scripting is
 									command_incomplete;
 							end case;
 
-						when PORT =>
+						when NOUN_PORT =>
 							case fields is
 								when 9 =>
 									schematic_ops.add_port (
@@ -418,7 +420,7 @@ package body scripting is
 									command_incomplete;
 							end case;
 							
-						when SUBMODULE =>
+						when NOUN_SUBMODULE =>
 							case fields is
 								when 11 =>
 									schematic_ops.add_submodule (
@@ -453,7 +455,7 @@ package body scripting is
 
 				when BUILD =>
 					case noun is
-						when SUBMODULES_TREE =>
+						when NOUN_SUBMODULES_TREE =>
 							case fields is
 								when 4 =>
 									schematic_ops.build_submodules_tree (
@@ -473,7 +475,7 @@ package body scripting is
 					
 				when CHECK =>
 					case noun is
-						when INTEGRITY =>
+						when NOUN_INTEGRITY =>
 							schematic_ops.check_integrity (
 								module_name 	=> module,
 								log_threshold	=> log_threshold + 1);
@@ -483,7 +485,7 @@ package body scripting is
 
 				when COPY =>
 					case noun is
-						when DEVICE =>
+						when NOUN_DEVICE =>
 							case fields is
 								when 9 =>
 									schematic_ops.copy_device (
@@ -510,7 +512,7 @@ package body scripting is
 
 							end case;
 
-						when SUBMODULE =>
+						when NOUN_SUBMODULE =>
 							case fields is
 								when 9 =>
 									schematic_ops.copy_submodule (
@@ -542,7 +544,7 @@ package body scripting is
 
 				when CREATE =>
 					case noun is
-						when VARIANT => 
+						when NOUN_VARIANT => 
 							case fields is
 								when 5 =>
 									schematic_ops.create_assembly_variant
@@ -564,13 +566,13 @@ package body scripting is
 																	  
 				when DELETE =>
 					case noun is
-						when DEVICE =>
+						when NOUN_DEVICE =>
 							schematic_ops.delete_device (
 								module_name 	=> module,
 								device_name		=> to_device_name (f (5)),
 								log_threshold	=> log_threshold + 1);
 
-						when LABEL =>
+						when NOUN_LABEL =>
 							case fields is
 								when 7 =>
 									schematic_ops.delete_net_label
@@ -593,7 +595,7 @@ package body scripting is
 
 							end case;
 							
-						when NET =>
+						when NOUN_NET =>
 							case fields is
 
 								-- If the statement has only 6 fields, the net scope is EVERYWHERE.
@@ -648,7 +650,7 @@ package body scripting is
 
 							end case;
 
-						when NETCHANGER =>
+						when NOUN_NETCHANGER =>
 							case fields is
 								when 5 =>
 									schematic_ops.delete_netchanger
@@ -664,7 +666,7 @@ package body scripting is
 									command_incomplete;
 							end case;
 
-						when PORT =>
+						when NOUN_PORT =>
 							case fields is
 								when 6 =>
 									schematic_ops.delete_port
@@ -682,7 +684,7 @@ package body scripting is
 									command_incomplete;
 							end case;
 							
-						when SEGMENT =>
+						when NOUN_SEGMENT =>
 							schematic_ops.delete_segment
 								(
 								module_name			=> module,
@@ -694,7 +696,7 @@ package body scripting is
 														sheet => to_sheet (f (6))), -- sheet number
 								log_threshold		=> log_threshold + 1);
 
-						when SUBMODULE =>
+						when NOUN_SUBMODULE =>
 							case fields is
 								when 5 =>
 									schematic_ops.delete_submodule (
@@ -710,17 +712,17 @@ package body scripting is
 									command_incomplete;
 							end case;
 							
-						when TEXT =>
+						when NOUN_TEXT =>
 							NULL; -- CS
 							
-						when UNIT =>
+						when NOUN_UNIT =>
 							schematic_ops.delete_unit (
 								module_name 	=> module,
 								device_name		=> to_device_name (f (5)),
 								unit_name		=> to_unit_name (f (6)),
 								log_threshold	=> log_threshold + 1);
 
-						when VARIANT => 
+						when NOUN_VARIANT => 
 							case fields is
 								when 5 =>
 									schematic_ops.delete_assembly_variant
@@ -742,7 +744,7 @@ package body scripting is
 
 				when DESCRIBE =>
 					case noun is
-						when VARIANT => 
+						when NOUN_VARIANT => 
 							case fields is
 								when 6 =>
 									schematic_ops.describe_assembly_variant
@@ -765,7 +767,7 @@ package body scripting is
 					
 				when DRAG =>
 					case noun is
-						when UNIT =>
+						when NOUN_UNIT =>
 							schematic_ops.drag_unit
 								(
 								module_name 	=> module,
@@ -778,7 +780,7 @@ package body scripting is
 								log_threshold	=> log_threshold + 1
 								);
 
-						when NETCHANGER =>
+						when NOUN_NETCHANGER =>
 							case fields is
 								when 8 =>
 									schematic_ops.drag_netchanger (
@@ -798,7 +800,7 @@ package body scripting is
 									command_incomplete;
 							end case;
 
-						when PORT =>
+						when NOUN_PORT =>
 							case fields is
 								when 9 =>
 									schematic_ops.drag_port (
@@ -819,7 +821,7 @@ package body scripting is
 									command_incomplete;
 							end case;
 							
-						when SEGMENT =>
+						when NOUN_SEGMENT =>
 							schematic_ops.drag_segment
 								(
 								module_name		=> module,
@@ -838,7 +840,7 @@ package body scripting is
 								
 								log_threshold	=> log_threshold + 1);
 
-						when SUBMODULE =>
+						when NOUN_SUBMODULE =>
 							case fields is
 								when 8 =>
 									schematic_ops.drag_submodule (
@@ -863,7 +865,7 @@ package body scripting is
 					
 				when DRAW =>
 					case noun is
-						when NET =>
+						when NOUN_NET =>
 							schematic_ops.draw_net
 								(
 								module_name		=> module,
@@ -886,7 +888,7 @@ package body scripting is
 
 				when INVOKE =>
 					case noun is
-						when UNIT =>
+						when NOUN_UNIT =>
 							case fields is
 								when 10 =>
 									schematic_ops.invoke_unit (
@@ -918,7 +920,7 @@ package body scripting is
 
 				when MOVE =>
 					case noun is
-						when NAME =>
+						when NOUN_NAME =>
 							schematic_ops.move_unit_placeholder
 								(
 								module_name 	=> module,
@@ -932,7 +934,7 @@ package body scripting is
 								log_threshold	=> log_threshold + 1
 								);
 
-						when VALUE =>
+						when NOUN_VALUE =>
 							schematic_ops.move_unit_placeholder
 								(
 								module_name 	=> module,
@@ -946,7 +948,7 @@ package body scripting is
 								log_threshold	=> log_threshold + 1
 								);
 
-						when PORT =>
+						when NOUN_PORT =>
 							case fields is
 								when 9 =>
 									schematic_ops.move_port (
@@ -967,7 +969,7 @@ package body scripting is
 									command_incomplete;
 							end case;
 									
-						when PURPOSE =>
+						when NOUN_PURPOSE =>
 							schematic_ops.move_unit_placeholder
 								(
 								module_name 	=> module,
@@ -981,7 +983,7 @@ package body scripting is
 								log_threshold	=> log_threshold + 1
 								);
 
-						when NETCHANGER =>
+						when NOUN_NETCHANGER =>
 							schematic_ops.move_netchanger
 								(
 								module_name 	=> module,
@@ -995,10 +997,10 @@ package body scripting is
 								log_threshold	=> log_threshold + 1
 								);
 
-						when TEXT =>
+						when NOUN_TEXT =>
 							NULL; -- CS
 
-						when SUBMODULE =>
+						when NOUN_SUBMODULE =>
 							case fields is
 								when 9 =>
 									schematic_ops.move_submodule (
@@ -1019,7 +1021,7 @@ package body scripting is
 									command_incomplete;
 							end case;
 							
-						when UNIT =>
+						when NOUN_UNIT =>
 							schematic_ops.move_unit
 								(
 								module_name 	=> module,
@@ -1039,7 +1041,7 @@ package body scripting is
 
 				when MAKE =>
 					case noun is
-						when BOM => 
+						when NOUN_BOM => 
 							case fields is
 								when 5 =>
 									-- The variant name is optional. If not specified,
@@ -1068,7 +1070,7 @@ package body scripting is
 									command_incomplete;
 							end case;
 
-						when CS_NETLISTS => 
+						when NOUN_NETLISTS => 
 							case fields is
 								when 4 =>
 									schematic_ops.make_netlists 
@@ -1088,7 +1090,7 @@ package body scripting is
 					
 				when MOUNT =>
 					case noun is
-						when DEVICE => 
+						when NOUN_DEVICE => 
 							declare
 								value : type_value.bounded_string; -- 470R
 								partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
@@ -1136,7 +1138,7 @@ package body scripting is
 
 							end; -- declare
 
-						when SUBMODULE =>
+						when NOUN_SUBMODULE =>
 							case fields is
 								when 7 =>
 									schematic_ops.mount_submodule
@@ -1160,7 +1162,7 @@ package body scripting is
 					
 				when PLACE =>
 					case noun is
-						when JUNCTION =>
+						when NOUN_JUNCTION =>
 							schematic_ops.place_junction 
 								(
 								module_name 	=> module,
@@ -1177,7 +1179,7 @@ package body scripting is
 								log_threshold	=> log_threshold + 1
 								);
 
-						when LABEL =>
+						when NOUN_LABEL =>
 							case fields is
 								when 10 =>
 									schematic_ops.place_net_label
@@ -1243,7 +1245,7 @@ package body scripting is
 
 				when REMOVE =>
 					case noun is
-						when DEVICE => 
+						when NOUN_DEVICE => 
 							case fields is
 								when 6 =>
 									schematic_ops.remove_device -- from assembly variant
@@ -1261,7 +1263,7 @@ package body scripting is
 
 							end case;
 
-						when SUBMODULE =>
+						when NOUN_SUBMODULE =>
 							case fields is
 								when 6 =>
 									schematic_ops.remove_submodule
@@ -1284,7 +1286,7 @@ package body scripting is
 					
 				when RENAME =>
 					case noun is
-						when DEVICE =>
+						when NOUN_DEVICE =>
 							schematic_ops.rename_device
 								(
 								module_name 		=> module,
@@ -1293,7 +1295,7 @@ package body scripting is
 								log_threshold		=> log_threshold + 1
 								);
 
-						when SUBMODULE =>
+						when NOUN_SUBMODULE =>
 							case fields is
 								when 6 =>
 									schematic_ops.rename_submodule
@@ -1311,7 +1313,7 @@ package body scripting is
 
 							end case;
 							
-						when NET =>
+						when NOUN_NET =>
 							case fields is
 
 								-- If the statement has only 6 fields, the net scope is EVERYWHERE.
@@ -1374,7 +1376,7 @@ package body scripting is
 
 				when RENUMBER =>
 					case noun is
-						when DEVICES =>
+						when NOUN_DEVICES =>
 							case fields is
 								when 5 =>
 									schematic_ops.renumber_devices
@@ -1397,10 +1399,10 @@ package body scripting is
 					
 				when ROTATE =>
 					case noun is
-						when TEXT =>
+						when NOUN_TEXT =>
 							NULL; -- CS
 
-						when UNIT =>
+						when NOUN_UNIT =>
 							schematic_ops.rotate_unit
 								(
 								module_name 	=> module,
@@ -1411,7 +1413,7 @@ package body scripting is
 								log_threshold	=> log_threshold + 1
 								);
 
-						when NAME =>
+						when NOUN_NAME =>
 							schematic_ops.rotate_unit_placeholder
 								(
 								module_name 	=> module,
@@ -1422,7 +1424,7 @@ package body scripting is
 								log_threshold	=> log_threshold + 1
 								);
 
-						when VALUE =>
+						when NOUN_VALUE =>
 							schematic_ops.rotate_unit_placeholder
 								(
 								module_name 	=> module,
@@ -1433,7 +1435,7 @@ package body scripting is
 								log_threshold	=> log_threshold + 1
 								);
 
-						when PURPOSE =>
+						when NOUN_PURPOSE =>
 							schematic_ops.rotate_unit_placeholder
 								(
 								module_name 	=> module,
@@ -1444,7 +1446,7 @@ package body scripting is
 								log_threshold	=> log_threshold + 1
 								);
 
-						when NETCHANGER =>
+						when NOUN_NETCHANGER =>
 							case fields is
 								when 7 =>
 									schematic_ops.rotate_netchanger (
@@ -1468,7 +1470,7 @@ package body scripting is
 				when SET =>
 					case noun is
 				
-						when PARTCODE =>
+						when NOUN_PARTCODE =>
 							declare
 								partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 							begin
@@ -1484,7 +1486,7 @@ package body scripting is
 									);
 							end;
 
-						when PURPOSE =>
+						when NOUN_PURPOSE =>
 							declare
 								use et_schematic;
 								purpose : type_device_purpose.bounded_string; -- brightness_control
@@ -1501,7 +1503,7 @@ package body scripting is
 									);
 							end;
 
-						when SCOPE =>
+						when NOUN_SCOPE =>
 							case fields is
 								when 6 =>
 									schematic_ops.set_scope (
@@ -1518,7 +1520,7 @@ package body scripting is
 									command_incomplete;
 							end case;
 							
-						when SUBMODULE_FILE =>
+						when NOUN_SUBMODULE_FILE =>
 							case fields is
 								when 6 =>
 									schematic_ops.set_submodule_file (
@@ -1535,7 +1537,7 @@ package body scripting is
 									command_incomplete;
 							end case;
 							
-						when VALUE =>
+						when NOUN_VALUE =>
 							declare
 								value : type_value.bounded_string; -- 470R
 							begin
@@ -1552,7 +1554,7 @@ package body scripting is
 									);
 							end;
 							
-						when TEXT_SIZE =>
+						when NOUN_TEXT_SIZE =>
 							NULL; -- CS
 							
 						when others => invalid_noun (to_string (noun));
@@ -1560,7 +1562,7 @@ package body scripting is
 
 				when UNMOUNT =>
 					case noun is
-						when DEVICE => 
+						when NOUN_DEVICE => 
 							case fields is
 								when 6 =>
 									schematic_ops.unmount_device
@@ -1583,7 +1585,7 @@ package body scripting is
 					
 				when WRITE =>
 					case noun is
-						when TEXT =>
+						when NOUN_TEXT =>
 							NULL; -- CS
 
 						when others => invalid_noun (to_string (noun));
