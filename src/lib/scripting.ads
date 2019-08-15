@@ -45,6 +45,7 @@ with et_general;
 with et_string_processing;		use et_string_processing;
 with schematic_ops;
 -- with board_ops;
+with netlists;
 
 package scripting is
 	comment_mark : constant string := ("#");
@@ -142,7 +143,7 @@ package scripting is
 		NAME,
 		NET,
 		NETCHANGER,
-		NETLISTS,
+		CS_NETLISTS, -- CS
 		PARTCODE,
 		PORT, -- of a submodule instance
 		PURPOSE,

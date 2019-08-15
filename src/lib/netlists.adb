@@ -128,6 +128,34 @@ package body netlists is
 		return to_net_name (to_string (instance) & level_separator);
 	end;
 
+	function "<" (left, right : in type_port_netchanger) return boolean is
+		use submodules;
+	begin
+		if left.index < right.index then
+			return true;
+		elsif left.index > right.index then
+			return false;
+		elsif left.port < right.port then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+	
+	function to_string (net_scope : in type_net_scope) return string is
+	begin
+		return " " & to_lower (type_net_scope'image (net_scope));
+	end to_string;
+
+	function to_net_scope (scope : in string) return type_net_scope is
+	begin
+		return type_net_scope'value (scope);
+	end to_net_scope;
+
+	
+
+	
 	function "<" (left, right : in type_net_name) return boolean is
 		result : boolean := false;
 		use et_general.type_net_name;
@@ -160,9 +188,9 @@ package body netlists is
 			net_name	: in type_net_name;
 			net			: in type_net) is
 			use type_submodule_ports_extended;
-			use et_schematic.type_ports_netchanger;
+			use type_ports_netchanger;
 
-			procedure count_netchanger_ports (cursor : in et_schematic.type_ports_netchanger.cursor) is
+			procedure count_netchanger_ports (cursor : in type_ports_netchanger.cursor) is
 				use submodules;
 			begin
 				case element (cursor).port is
@@ -263,7 +291,7 @@ package body netlists is
 		-- 		end case;
 
 		case element (net_cursor).scope is
-			when et_schematic.LOCAL =>
+			when LOCAL =>
 		
 				-- Test the sum of netchanger and submodule slave ports:
 				case natural (ports.netchangers.slaves) + natural (ports.submodules.slaves) is
@@ -272,7 +300,7 @@ package body netlists is
 					when others => contention_by_both;
 				end case;
 
-			when et_schematic.GLOBAL =>
+			when GLOBAL =>
 
 				-- If the net is global, means it can be connected with a same named net
 				-- in the parent module without any netchangers, it is secondary:
@@ -345,7 +373,6 @@ package body netlists is
 			-- the name of the generic module is then
 			-- appended to the list net_cursors (to be returned).
 				use et_general.type_net_name;
-				use et_schematic;
 				cursor : type_nets.cursor := module.nets.first;
 			begin
 				-- iterate the nets of the module
@@ -410,7 +437,7 @@ package body netlists is
 	-- slave is returned (and vice versa).
 	-- If the netchanger is not connected then the return is no_element.
 		module_cursor	: in type_modules.cursor; -- the module that contains the port
-		port			: in et_schematic.type_port_netchanger;
+		port			: in type_port_netchanger;
 		log_threshold	: in type_log_level)
 		return type_nets.cursor is
 
@@ -421,8 +448,8 @@ package body netlists is
 
 			ports : type_port_count;
 
-			use et_schematic.type_ports_netchanger;
-			netchanger_cursor : et_schematic.type_ports_netchanger.cursor;
+			use type_ports_netchanger;
+			netchanger_cursor : type_ports_netchanger.cursor;
 			
 			procedure query_netchangers (
 			-- Search the net for a netchanger with given index and port
@@ -466,7 +493,7 @@ package body netlists is
 
 				-- The search ends once a net containing the opposide port
 				-- has been found:
-				if netchanger_cursor /= et_schematic.type_ports_netchanger.no_element then
+				if netchanger_cursor /= type_ports_netchanger.no_element then
 					exit;
 				end if;
 				
@@ -835,8 +862,8 @@ package body netlists is
 					-- CS .characteristics
 			end query_device;
 
-			procedure query_netchanger (port_cursor : in et_schematic.type_ports_netchanger.cursor) is
-				use et_schematic.type_ports_netchanger;
+			procedure query_netchanger (port_cursor : in type_ports_netchanger.cursor) is
+				use type_ports_netchanger;
 				use submodules;
 				net_cursor : type_nets.cursor;
 			begin
@@ -908,7 +935,7 @@ package body netlists is
 				-- If there are netchangers connected with the net, look at their ports and the nets connected.
 				-- Since we want to explore secondary nets, this step addresses netchanger ports of direction "master".
 				-- This search REMAINS on the CURRENT level of design hierarchy:
-				et_schematic.type_ports_netchanger.iterate (element (net_cursor).netchangers, query_netchanger'access);
+				type_ports_netchanger.iterate (element (net_cursor).netchangers, query_netchanger'access);
 
 				-- The parent module must be searched for submodule instances (the boxes) where
 				-- the net surfaces as a port. Even in a parent module the name of a secondary net may be

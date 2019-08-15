@@ -74,6 +74,7 @@ with et_import;
 with et_export;
 with et_csv;
 with material;
+with netlists;
 
 package body et_kicad_to_native is
 
@@ -2970,7 +2971,7 @@ package body et_kicad_to_native is
 					key			=> key (kicad_net_cursor), -- net name
 					new_item	=> (
 							-- convert the kicad net scope to native net scope
-							scope	=> et_schematic.type_net_scope'value (et_kicad.to_string (element (kicad_net_cursor).scope)),
+							scope	=> netlists.to_net_scope (et_kicad.to_string (element (kicad_net_cursor).scope)),
 							others 	=> <>)
 					);
 

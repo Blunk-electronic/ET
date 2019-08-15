@@ -1068,7 +1068,7 @@ package body scripting is
 									command_incomplete;
 							end case;
 
-						when NETLISTS => 
+						when CS_NETLISTS => 
 							case fields is
 								when 4 =>
 									schematic_ops.make_netlists 
@@ -1507,7 +1507,7 @@ package body scripting is
 									schematic_ops.set_scope (
 										module_name 	=> module,
 										net_name		=> et_general.to_net_name (f (5)),
-										scope			=> et_schematic.to_net_scope (f (6)),
+										scope			=> netlists.to_net_scope (f (6)),
 										log_threshold	=> log_threshold + 1
 										);
 

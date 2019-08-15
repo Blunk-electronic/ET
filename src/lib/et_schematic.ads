@@ -63,7 +63,7 @@ with et_pcb_coordinates;
 with submodules;
 with numbering;
 with material;
--- with netlists;
+with netlists;
 
 package et_schematic is
 	use et_general.type_net_name;
@@ -199,15 +199,6 @@ package et_schematic is
 	package type_ports_submodule is new ordered_sets (type_port_submodule);
 	
 
-	-- This is the port of a netchanger as it appears in a net segment:
-	type type_port_netchanger is record
-		index	: submodules.type_netchanger_id := submodules.type_netchanger_id'first;
-		port	: submodules.type_netchanger_port_name := submodules.SLAVE; -- CS reasonable default ?
-	end record;
-
-	function "<" (left, right : in type_port_netchanger) return boolean;	
-	package type_ports_netchanger is new ordered_sets (type_port_netchanger);
-	
 	
 	
 	type type_net_label_appearance is (
@@ -263,7 +254,7 @@ package et_schematic is
 		junctions			: type_junctions;
 		ports_devices		: type_ports_device.set;
 		ports_submodules	: type_ports_submodule.set;
-		ports_netchangers	: type_ports_netchanger.set;
+		ports_netchangers	: netlists.type_ports_netchanger.set;
 	end record;
 
 	package type_net_segments is new doubly_linked_lists (type_net_segment);
@@ -304,19 +295,9 @@ package et_schematic is
 
 	package type_strands is new doubly_linked_lists (type_strand);
 
-	-- If a net exists in a (sub)module exclusively or whether it can be
-	-- seen from the parent module. For example power nets like GND are global.
-	type type_net_scope is (
-		LOCAL,	-- parent module can connect to it via netchanger only
-		GLOBAL	-- parent module can connect to it directly
-		);
-
-	function to_string (net_scope : in type_net_scope) return string;
-	function to_net_scope (scope : in string) return type_net_scope;
-	
 	type type_net is new type_net_base with record
 		strands		: type_strands.list;
-		scope		: type_net_scope := LOCAL;
+		scope		: netlists.type_net_scope := netlists.LOCAL;
 	end record;
 	
 	package type_nets is new ordered_maps (
@@ -327,7 +308,7 @@ package et_schematic is
 	type type_ports is record
 		devices		: type_ports_device.set;
 		submodules	: type_ports_submodule.set;
-		netchangers	: type_ports_netchanger.set;
+		netchangers	: netlists.type_ports_netchanger.set;
 	end record;
 	
 	function ports (

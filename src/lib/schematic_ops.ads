@@ -338,7 +338,7 @@ package schematic_ops is
 	type type_ports is record
 		devices		: type_ports_device.set;
 		submodules	: type_ports_submodule.set;
-		netchangers	: type_ports_netchanger.set;
+		netchangers	: netlists.type_ports_netchanger.set;
 	end record;
 
 	function ports_at_place (
@@ -381,7 +381,7 @@ package schematic_ops is
 	-- Sets the scope of a net.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		scope			: in et_schematic.type_net_scope; -- local/global
+		scope			: in netlists.type_net_scope; -- local/global
 		log_threshold	: in type_log_level);
 	
 	procedure place_net_label (

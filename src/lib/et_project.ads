@@ -53,8 +53,10 @@ with et_libraries;
 with et_string_processing;
 with et_schematic;
 with submodules;
+with netlists;
 with assembly_variants;
 with et_pcb;
+
 
 package et_project is
 	comment_mark : constant string := ("--");
@@ -206,7 +208,7 @@ package et_project is
 	function port_connected (
 	-- Returns true if given port of netchanger is connected with any net.
 		module	: in type_modules.cursor;	
-		port	: in et_schematic.type_port_netchanger)
+		port	: in netlists.type_port_netchanger)
 		return boolean;
 	
 	function netchanger_as_port_available (

@@ -51,7 +51,6 @@ with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_sets;
 
 with et_general;				use et_general;
-with et_schematic;
 with et_libraries;
 with submodules;
 with assembly_variants;
@@ -111,11 +110,37 @@ package netlists is
 	-- Converts an instance name to a net prefix with a trailing level separator.		
 		return et_general.type_net_name.bounded_string;
 
+
+	
+	-- This is the port of a netchanger as it appears in a net segment:
+	type type_port_netchanger is record
+		index	: submodules.type_netchanger_id := submodules.type_netchanger_id'first;
+		port	: submodules.type_netchanger_port_name := submodules.SLAVE; -- CS reasonable default ?
+	end record;
+
+	function "<" (left, right : in type_port_netchanger) return boolean;	
+	package type_ports_netchanger is new ordered_sets (type_port_netchanger);
+
+	
+
+	-- If a net exists in a (sub)module exclusively or whether it can be
+	-- seen from the parent module. For example power nets like GND are global.
+	type type_net_scope is (
+		LOCAL,	-- parent module can connect to it via netchanger only
+		GLOBAL	-- parent module can connect to it directly
+		);
+
+	function to_string (net_scope : in type_net_scope) return string;
+	function to_net_scope (scope : in string) return type_net_scope;
+
+
+	
+	
 	type type_net is tagged record
 		devices		: type_device_ports_extended.set;
 		submodules	: type_submodule_ports_extended.set;
-		netchangers	: et_schematic.type_ports_netchanger.set;
-		scope		: et_schematic.type_net_scope;
+		netchangers	: type_ports_netchanger.set;
+		scope		: type_net_scope;
 	end record;
 	
 	type type_net_name is record
@@ -210,7 +235,7 @@ package netlists is
 	-- slave is returned (and vice versa).
 	-- If the netchanger is not connected then the return is no_element.
 		module_cursor	: in type_modules.cursor; -- the module that contains the port
-		port			: in et_schematic.type_port_netchanger;
+		port			: in type_port_netchanger;
 		log_threshold	: in type_log_level)
 		return type_nets.cursor;
 

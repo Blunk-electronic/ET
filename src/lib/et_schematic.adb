@@ -99,20 +99,6 @@ package body et_schematic is
 		end if;
 	end;
 
-	function "<" (left, right : in type_port_netchanger) return boolean is
-		use submodules;
-	begin
-		if left.index < right.index then
-			return true;
-		elsif left.index > right.index then
-			return false;
-		elsif left.port < right.port then
-			return true;
-		else
-			return false;
-		end if;
-	end;
-	
 	function to_string (appearance : in type_net_label_appearance) return string is begin
 		return latin_1.space & to_lower (type_net_label_appearance'image (appearance));
 	end to_string;
@@ -330,16 +316,6 @@ package body et_schematic is
 
 	end set_strand_position;
 	
-	function to_string (net_scope : in type_net_scope) return string is
-	begin
-		return " " & to_lower (type_net_scope'image (net_scope));
-	end to_string;
-
-	function to_net_scope (scope : in string) return type_net_scope is
-	begin
-		return type_net_scope'value (scope);
-	end to_net_scope;
-
 	function ports (
 		net		: in type_nets.cursor;
 		variant	: in assembly_variants.type_variants.cursor)
@@ -358,7 +334,10 @@ package body et_schematic is
 
 		procedure query_segments (segment_cursor : in type_net_segments.cursor) is
 			use type_ports_device;
+
+			use netlists;
 			use type_ports_netchanger;
+			
 			use type_ports_submodule;
 
 			procedure query_devices (device_cursor : in type_ports_device.cursor) is

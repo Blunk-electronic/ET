@@ -64,6 +64,7 @@ with conventions;
 with submodules;
 with assembly_variants;
 with material;
+with netlists;
 
 package body et_project is
 
@@ -153,7 +154,7 @@ package body et_project is
 	function port_connected (
 	-- Returns true if given port of netchanger is connected with any net.
 		module	: in type_modules.cursor;
-		port	: in et_schematic.type_port_netchanger)
+		port	: in netlists.type_port_netchanger)
 		return boolean is
 		result : boolean := false; -- to be returned. goes true on the first (and only) match.
 
@@ -177,6 +178,8 @@ package body et_project is
 
 					procedure query_ports (segment : in type_net_segment) is 
 						use submodules;
+
+						use netlists;
 						use type_ports_netchanger;
 						port_cursor : type_ports_netchanger.cursor := segment.ports_netchangers.first;
 					begin
@@ -258,6 +261,8 @@ package body et_project is
 
 				procedure query_ports (segment : in type_net_segment) is 
 					use submodules;
+
+					use netlists;
 					use type_ports_netchanger;
 					port_cursor : type_ports_netchanger.cursor := segment.ports_netchangers.first;
 				begin
@@ -1480,6 +1485,8 @@ package body et_project is
 
 					use type_ports_device;
 					use type_ports_submodule;
+
+					use netlists;
 					use type_ports_netchanger;
 					
 					procedure query_labels (segment : in type_net_segment) is
@@ -1723,7 +1730,7 @@ package body et_project is
 
 				write (keyword => keyword_name, parameters => et_general.to_string (key (net_cursor)), space => true);
 				write (keyword => keyword_class, parameters => to_string (element (net_cursor).class), space => true);
-				write (keyword => keyword_scope, parameters => to_string (element (net_cursor).scope));
+				write (keyword => keyword_scope, parameters => netlists.to_string (element (net_cursor).scope));
 
 				query_element (net_cursor, query_strands'access);
 				query_element (net_cursor, query_route'access);
@@ -8015,8 +8022,8 @@ package body et_project is
 		net_submodule_port : et_schematic.type_port_submodule;
 		net_submodule_ports : et_schematic.type_ports_submodule.set;
 
-		net_netchanger_port : et_schematic.type_port_netchanger;
-		net_netchanger_ports : et_schematic.type_ports_netchanger.set;
+		net_netchanger_port : netlists.type_port_netchanger;
+		net_netchanger_ports : netlists.type_ports_netchanger.set;
 
 		route			: et_pcb.type_route;
 		route_line 		: et_pcb.type_copper_line_pcb;
@@ -9701,7 +9708,7 @@ package body et_project is
 								-- clean up for next port collections (of another net segment)
 								et_schematic.type_ports_device.clear (net_device_ports);
 								et_schematic.type_ports_submodule.clear (net_submodule_ports);
-								et_schematic.type_ports_netchanger.clear (net_netchanger_ports);
+								netlists.type_ports_netchanger.clear (net_netchanger_ports);
 
 							when SEC_SUBMODULE =>
 								-- copy collection of ports to submodule
@@ -10939,7 +10946,7 @@ package body et_project is
 										end if;
 									elsif kw = keyword_scope then
 										expect_field_count (line, 2);
-										net.scope := et_schematic.to_net_scope (f (line,2));
+										net.scope := netlists.to_net_scope (f (line,2));
 										
 									else
 										invalid_keyword (kw);
@@ -11068,14 +11075,14 @@ package body et_project is
 
 											-- Insert netchanger port in collection of netchanger ports. First make sure it is
 											-- not already in the net segment.
-											if et_schematic.type_ports_netchanger.contains (net_netchanger_ports, net_netchanger_port) then
+											if netlists.type_ports_netchanger.contains (net_netchanger_ports, net_netchanger_port) then
 												log (ERROR, "netchanger" & submodules.to_string (net_netchanger_port.index) &
 													submodules.to_string (net_netchanger_port.port) & " port" & 
 													" already in net segment !", console => true);
 												raise constraint_error;
 											end if;
 											
-											et_schematic.type_ports_netchanger.insert (net_netchanger_ports, net_netchanger_port);
+											netlists.type_ports_netchanger.insert (net_netchanger_ports, net_netchanger_port);
 
 											-- clean up for next netchanger port
 											net_netchanger_port := (others => <>);
@@ -13584,10 +13591,10 @@ package body et_project is
 			if net_cursor /= type_nets.no_element then -- net found
 
 				case element (net_cursor).scope is
-					when GLOBAL => 
+					when netlists.GLOBAL => 
 						result := true;
 
-					when LOCAL =>
+					when netlists.LOCAL =>
 						if netchanger_as_port_available (module_cursor, net_cursor, direction) then
 							result := true;
 						else

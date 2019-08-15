@@ -2009,7 +2009,7 @@ package body schematic_ops is
 				port : et_schematic.type_port_device;
 				use type_ports_submodule;
 				use type_ports_device;
-				use type_ports_netchanger;
+				use netlists.type_ports_netchanger;
 			begin
 				-- assemble the point to be probed
 				point := to_coordinates (
@@ -3023,7 +3023,8 @@ package body schematic_ops is
 						procedure update_netchanger_ports is 
 						-- Queries the positions of the netchanger ports in the old_segment. 
 						-- By the position assigns the ports to the new segments. 
-							use type_ports_netchanger;
+							use netlists;
+							use netlists.type_ports_netchanger;
 							use submodules;
 
 							procedure query_ports (cursor : in type_ports_netchanger.cursor) is
@@ -4374,6 +4375,7 @@ package body schematic_ops is
 						segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 						procedure change_segment (segment : in out type_net_segment) is
+							use netlists;
 						begin
 							-- If port sits on start OR end point of segment AND if it
 							-- is not already in the segment then append it to the 
@@ -4597,6 +4599,7 @@ package body schematic_ops is
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 					procedure query_ports (segment : in out type_net_segment) is
+						use netlists;
 						use type_ports_netchanger;
 						use submodules;
 						port_cursor : type_ports_netchanger.cursor;
@@ -5097,8 +5100,9 @@ package body schematic_ops is
 				point		: in et_coordinates.type_coordinates; -- sheet/x/y -- the point to be probed
 				port_name	: in submodules.type_netchanger_port_name) -- master/slave
 				is 
+				use netlists;
 				ports : type_ports;
-				port : et_schematic.type_port_netchanger;
+				port : type_port_netchanger;
 
 				use type_ports_submodule;
 				use type_ports_device;
@@ -6157,6 +6161,7 @@ package body schematic_ops is
 			procedure query_netchangers (netchanger_cursor : in submodules.type_netchangers.cursor) is
 				netchanger_position : et_coordinates.type_coordinates;
 				ports : submodules.type_netchanger_ports;
+				use netlists;
 			begin -- query_netchangers
 				netchanger_position := element (netchanger_cursor).position_sch;
 
@@ -6180,7 +6185,7 @@ package body schematic_ops is
 							level => log_threshold + 2);
 						
 						-- Insert the port in the portlist to be returned:
-						et_schematic.type_ports_netchanger.insert 
+						type_ports_netchanger.insert 
 							(
 							container	=> ports_at_place.ports.netchangers,
 							new_item	=> 
@@ -6198,7 +6203,7 @@ package body schematic_ops is
 							level => log_threshold + 2);
 						
 						-- Insert the port in the portlist to be returned:
-						et_schematic.type_ports_netchanger.insert 
+						type_ports_netchanger.insert 
 							(
 							container	=> ports_at_place.ports.netchangers,
 							new_item	=> 
@@ -6276,6 +6281,8 @@ package body schematic_ops is
 			-- finding, result remains true.	
 				use type_ports_device;
 				use type_ports_submodule;
+
+				use netlists;
 				use type_ports_netchanger;
 
 				device : type_ports_device.cursor := segment.ports_devices.first;
@@ -6522,7 +6529,7 @@ package body schematic_ops is
 						begin
 							type_ports_device.union (segment.ports_devices, ports.devices);
 							type_ports_submodule.union (segment.ports_submodules, ports.submodules);
-							type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
+							netlists.type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
 						end append_portlists;
 						
 					begin -- connect_ports
@@ -6874,7 +6881,7 @@ package body schematic_ops is
 		procedure assign_ports_to_segment is begin
 			type_ports_device.union (segment.ports_devices, ports.devices);
 			type_ports_submodule.union (segment.ports_submodules, ports.submodules);
-			type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
+			netlists.type_ports_netchanger.union (segment.ports_netchangers, ports.netchangers);
 		end;
 		
 		procedure create_net (
@@ -7400,7 +7407,7 @@ package body schematic_ops is
 	-- Sets the scope of a net.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		scope			: in et_schematic.type_net_scope; -- local/global
+		scope			: in netlists.type_net_scope; -- local/global
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -7430,7 +7437,7 @@ package body schematic_ops is
 	begin -- set_scope
 		log (text => "module " & to_string (module_name) &
 			" setting scope of net " & to_string (net_name) &
-			" to" & to_string (scope),
+			" to" & netlists.to_string (scope),
 			level => log_threshold);
 
 		-- locate module
@@ -8653,6 +8660,8 @@ package body schematic_ops is
 
 		use type_ports_submodule;
 		use type_ports_device;
+
+		use netlists;
 		use type_ports_netchanger;
 		
 	begin -- movable_test
@@ -12732,11 +12741,11 @@ package body schematic_ops is
 			-- Since netchanger_ports_collector is an ordered set, an exception will be raised if
 			-- a port is to be inserted more than once. Something like "netchanger port master" must
 			-- occur only ONCE throughout the module.
-			use type_ports_netchanger;
-			netchanger_ports_collector : type_ports_netchanger.set;
+			use netlists.type_ports_netchanger;
+			netchanger_ports_collector : netlists.type_ports_netchanger.set;
 
 			procedure collect_netchanger_port (
-				port	: in type_port_netchanger;
+				port	: in netlists.type_port_netchanger;
 				net		: in type_net_name.bounded_string)
 			is begin
 			-- Collect netchanger ports. exception will be raised of port occurs more than once.
@@ -12821,6 +12830,8 @@ package body schematic_ops is
 								end query_ports_submodules;
 
 								procedure query_ports_netchangers (segment : in type_net_segment) is
+									use netlists;
+									
 									procedure query_port (port_cursor : in type_ports_netchanger.cursor) is begin
 										log (text => "netchanger " & submodules.to_string (element (port_cursor).index) &
 											 " port " & submodules.to_string (element (port_cursor).port), level => log_threshold + 4);
