@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your editor to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -65,8 +65,10 @@ package scripting is
 		ERROR
 		);
 
-	-- This is a workaround in order not to use reserved GNAT keywords:
+	-- Prefixes before enumeration types prevent using gnat keywords and package names:
 	domain_prefix : constant string := ("DOM_");
+	verb_prefix : constant string := ("VERB_");
+	noun_prefix : constant string := ("NOUN_");
 	
 	type type_domain is (
 		DOM_PROJECT,
@@ -80,11 +82,8 @@ package scripting is
 	
 	function to_string (domain : in type_domain) return string;
 	function to_domain (domain : in string) return type_domain;
-
-
-
 	
-	type type_verb_project is (
+	type type_verb_project is ( -- CS prepend prefix VERB_
 		CREATE,
 		DELETE,
 		OPEN,
@@ -94,9 +93,9 @@ package scripting is
 	function to_string (verb : in type_verb_project) return string;
 	function to_verb (verb : in string) return type_verb_project;
 
-	noun_prefix : constant string := ("NOUN_");
+
 	
-	type type_noun_project is (
+	type type_noun_project is ( -- CS prepend prefix NOUN_
 		MODULE
 		);
 
@@ -105,7 +104,7 @@ package scripting is
 
 	
 	
-	type type_verb_schematic is (
+	type type_verb_schematic is ( -- CS prepend prefix VERB_
 		ADD,
 		BUILD,
 		CHECK,
@@ -169,7 +168,7 @@ package scripting is
 	function to_noun (noun : in string) return type_noun_schematic;
 
 	
-	type type_verb_board is (
+	type type_verb_board is ( -- CS prepend prefix VERB_
 		ADD,
 		DELETE,
 		--DRAG,
@@ -189,7 +188,7 @@ package scripting is
 	function to_verb (verb : in string) return type_verb_board;
 	
 
-	type type_noun_board is (
+	type type_noun_board is ( -- CS prepend prefix NOUN_
 		DEVICE,
 		NAME,
 		NET,
