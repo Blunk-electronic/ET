@@ -245,16 +245,18 @@ package netlists is
 	package type_netlist is new ada.containers.multiway_trees (type_netlist_net);
 
 	
-	procedure make_netlist (
+	function make_netlist (
 	-- If write_file ist true, creates the netlist file (which inevitably and intentionally 
 	-- overwrites the previous file).
 	-- - modules contains the modules and their nets ordered in a tree structure.
 	-- - module_name is the name of the top module. to be written in the header of the netlist file.
+	-- - The netlist file will be named after the module name.
 		modules			: in type_modules.tree;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
 		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		write_file		: in boolean;
-		log_threshold	: in type_log_level);
+		log_threshold	: in type_log_level)
+		return type_netlist.tree;
 	
 end netlists;
 

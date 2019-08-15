@@ -63,7 +63,7 @@ with et_pcb_coordinates;
 with submodules;
 with numbering;
 with material;
-
+-- with netlists;
 
 package et_schematic is
 	use et_general.type_net_name;
@@ -368,7 +368,7 @@ package et_schematic is
 		
 		devices			: type_devices.map;						-- the devices of the module
 		net_classes		: et_pcb.type_net_classes.map;			-- the net classes
-		submods			: submodules.type_submodules.map;		-- submodules
+		submods			: submodules.type_submodules.map;		-- instances of submodules (boxes)
 		netchangers		: submodules.type_netchangers.map;		-- netchangers
 		
 		frame_template_schematic	: et_libraries.type_frame_template_name.bounded_string :=
@@ -397,6 +397,9 @@ package et_schematic is
 		-- NOTE: This container is exclusively used if the module is a top module.
 		-- In submodules it is not used (should always be empty):
 		submod_tree		: numbering.type_modules.tree;
+
+		-- The netlist containing nets of top module and submodule instances:
+-- 		netlist			: netlists.type_netlist.tree;
 	end record;
 
 

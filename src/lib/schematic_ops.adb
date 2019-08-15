@@ -12539,6 +12539,8 @@ package body schematic_ops is
 						raise;
 				
 			end query_submodules;
+
+			netlist : netlists.type_netlist.tree;
 			
 		begin -- make_for_variant
 			if assembly_variants.is_default (variant_name) then
@@ -12591,7 +12593,7 @@ package body schematic_ops is
 			-- It contains the modules and their nets ordered in a tree structure.
 			-- But the connections between nets are
 			-- still unknown and will be analyzed now:
-			netlists.make_netlist (
+			netlist := netlists.make_netlist (
 				modules			=> netlist_tree,	
 				module_name		=> key (module_cursor), -- motor_driver (to be written in the netlist file header)
 				variant_name	=> variant_name, 	-- low_cost

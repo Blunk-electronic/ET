@@ -662,17 +662,21 @@ package body netlists is
 		return net_cursor_parent;
 	end net_in_parent_module;
 	
-	procedure make_netlist (
+	function make_netlist (
 	-- If write_file ist true, creates the netlist file (which inevitably and intentionally 
 	-- overwrites the previous file).
 	-- - modules contains the modules and their nets ordered in a tree structure.
 	-- - module_name is the name of the top module. to be written in the header of the netlist file.
+	-- - The netlist file will be named after the module name.
 		modules			: in type_modules.tree;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
 		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		write_file		: in boolean;
-		log_threshold	: in type_log_level) is		
+		log_threshold	: in type_log_level)
+		return type_netlist.tree is
 
+		netlist : type_netlist.tree; -- to be returned
+		
 		use type_modules;
 
 		file_name : type_file_name.bounded_string;
@@ -1001,6 +1005,7 @@ package body netlists is
 
 		end if;
 
+		return netlist;
 		
 		exception
 			when event: others =>
