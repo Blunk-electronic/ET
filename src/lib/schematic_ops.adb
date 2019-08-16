@@ -12648,7 +12648,7 @@ package body schematic_ops is
 				module_name		=> key (module_cursor), -- motor_driver (to be written in the netlist file header)
 				variant_name	=> variant_name, 	-- low_cost, empty if default variant
 				write_file		=> write_files,
-				log_threshold	=> log_threshold + 1);
+				log_threshold	=> log_threshold);
 
 			-- Now netlist provides information on primary nets and their subordinated secondary nets.
 			
