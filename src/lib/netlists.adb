@@ -702,7 +702,9 @@ package body netlists is
 		log_threshold	: in type_log_level)
 		return type_netlist.tree is
 
+		use type_netlist;
 		netlist : type_netlist.tree; -- to be returned
+		netlist_cursor : type_netlist.cursor := type_netlist.root (netlist);
 		
 		use type_modules;
 
@@ -736,7 +738,6 @@ package body netlists is
 		end;	
 		
 		netlist_handle : ada.text_io.file_type;
-		netlist_cursor : netlists.type_modules.cursor := netlists.type_modules.root (modules);
 
 		-- When exploring secondary nets, the cursor to the primary net must be backup.
 		-- This must be done each time a secondary net is discovered.
@@ -881,7 +882,22 @@ package body netlists is
 					if net_cursor /= type_nets.no_element then
 						
 						-- net_cursor now points to the secondary net in the same module
+
+						-- backup netlist cursor before diving into secondary nets
+						stack.push (netlist_cursor);
+						
+						type_netlist.insert_child (
+							container	=> netlist,
+							parent		=> netlist_cursor,
+							before		=> type_netlist.no_element,
+							position	=> netlist_cursor,
+							new_item	=> (element (net_cursor) with key (net_cursor)));
+
+						-- dive into secondary nets
 						find_dependencies (module_cursor, net_cursor, log_threshold + 1);
+
+						-- restore netlist cursor as it was before diving into the secondary net
+						netlist_cursor := stack.pop;
 					end if;
 				end if;
 			end query_netchanger;
@@ -902,7 +918,23 @@ package body netlists is
 					if net_cursor /= type_nets.no_element then
 						
 						-- net_cursor now points to the secondary net in the submodule
+
+						-- backup netlist cursor before diving into secondary nets
+						stack.push (netlist_cursor);
+						
+						type_netlist.insert_child (
+							container	=> netlist,
+							parent		=> netlist_cursor,
+							before		=> type_netlist.no_element,
+							position	=> netlist_cursor,
+							new_item	=> (element (net_cursor) with key (net_cursor)));
+
+						-- dive into secondary nets
 						find_dependencies (module_cursor, net_cursor, log_threshold + 1);
+
+						-- restore netlist cursor as it was before diving into the secondary net
+						netlist_cursor := stack.pop;
+
 					end if;
 				end if;
 			end query_submodule;
@@ -920,15 +952,31 @@ package body netlists is
 				if cursor /= type_nets.no_element then
 					
 					-- cursor now points to the secondary net in the parent module
+
+					-- backup netlist cursor before diving into secondary nets
+					stack.push (netlist_cursor);
+
+					type_netlist.insert_child (
+						container	=> netlist,
+						parent		=> netlist_cursor,
+						before		=> type_netlist.no_element,
+						position	=> netlist_cursor,
+						new_item	=> (element (net_cursor) with key (net_cursor)));
+
+					-- dive into secondary nets
 					find_dependencies (module_cursor, cursor, log_threshold + 1);
+
+					-- restore netlist cursor as it was before diving into the secondary net
+					netlist_cursor := stack.pop;
+
 				end if;
 			end query_parent;
 
 		begin -- find_dependencies
-			-- Extract the ports of devices from the net:
+			-- Extract the ports of devices of the parent net:
 			type_device_ports_extended.iterate (element (net_cursor).devices, query_device'access);
 
-			-- Now we must extract the ports of netchangers and submodules in the net. Since we
+			-- Now we must extract the ports of netchangers and submodules in the given parent net. Since we
 			-- want to explore secondary nets, the next steps are required if there are netchangers
 			-- with master ports. A netchanger master port is THE bridge to a secondary net. The secondary
 			-- net is connected with the slave port, regardless whether the secondary net is in the
@@ -978,22 +1026,29 @@ package body netlists is
 							to_string (key (net_cursor).base_name)), -- CLK_GENERATOR/FLT1/ & clock_out
 							 level => log_threshold + 1);
 
--- 						type_netlist.insert_child (
--- 							container	=> netlist,
--- 							position	=> root,
--- 							new_item	=> (others => <>));
-							
-
 						if write_file then
 							-- write the primary net name
 							new_line (netlist_handle);
 							put_line (netlist_handle, to_string (key (net_cursor).prefix) & 
 								to_string (key (net_cursor).base_name)); -- CLK_GENERATOR/FLT1/ & clock_out
 						end if;
+
+						-- backup netlist cursor before diving into secondary nets
+						stack.push (netlist_cursor);
+						
+						type_netlist.insert_child (
+							container	=> netlist,
+							parent		=> root (netlist),
+							before		=> type_netlist.no_element,
+							position	=> netlist_cursor,
+							new_item	=> (element (net_cursor) with key (net_cursor)));
 						
 						-- write device ports and dive into secondary nets
 						find_dependencies (module_cursor, net_cursor, log_threshold + 2);
 
+						-- restore netlist cursor as it was before diving into the secondary net
+						netlist_cursor := stack.pop;
+						
 						log_indentation_down;
 					end if;
 
