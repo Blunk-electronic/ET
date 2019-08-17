@@ -889,7 +889,7 @@ package body netlists is
 			log_threshold	: in type_log_level);
 		
 		procedure query_global_nets_in_submodules (
-		-- Explores global secondary nets of given net in given submodules.
+		-- Explores global secondary nets of given net in submodules of given module.
 		-- If the given module does not have submodules, nothing happens.
 		-- Calls find_dependencies.
 			module_cursor	: in type_modules.cursor;
@@ -907,19 +907,32 @@ package body netlists is
 					-- glob_net is a record providing a cursor to a submodule and
 					-- a cursor to a net therein.
 
+					-- backup netlist cursor before diving into secondary nets
+					stack.push (netlist_cursor);
+
+					type_netlist.insert_child (
+						container	=> netlist,
+						parent		=> netlist_cursor,
+						before		=> type_netlist.no_element,
+						position	=> netlist_cursor,
+						new_item	=> (element (glob_net.net) with key (glob_net.net)));
+					
 					-- CS: Make sure the net is not connected via a port with the parent module.
 -- 					if not contains (
 -- 						net_cursor		=> net_cursor,
 -- 						submodule		=> element (glob_net.submodule).instance_name, -- OSC1
 -- 						port			=> key (glob_net.net).base_name) then -- clock_out
 
-						log (text => "submodule " &
-							enclose_in_quotes (to_string (type_modules.element (glob_net.submodule).generic_name)) &
-							" net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)),
-							level => log_threshold);
+					log (text => "submodule " &
+						enclose_in_quotes (to_string (type_modules.element (glob_net.submodule).generic_name)) &
+						" net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)),
+						level => log_threshold);
 
-						-- Start exploring the net indicated by glob_net:
-						find_dependencies (glob_net.submodule, glob_net.net, log_threshold);
+					-- Start exploring the net indicated by glob_net:
+					find_dependencies (glob_net.submodule, glob_net.net, log_threshold);
+
+					-- restore netlist cursor as it was before diving into the secondary net
+					netlist_cursor := stack.pop;
 						
 -- 					else
 -- 						log (ERROR, "net " & enclose_in_quotes (to_string (key (glob_net.net).base_name)) &
