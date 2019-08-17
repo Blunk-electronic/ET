@@ -760,6 +760,8 @@ package body netlists is
 			put_line (netlist_handle, comment_mark & " legend:");
 			put_line (netlist_handle, comment_mark & "  net_name");
 			put_line (netlist_handle, comment_mark & "  device port direction terminal/pin/pad");
+			put_line (netlist_handle, comment_mark);
+			put_line (netlist_handle, comment_mark & "  Names of secondary nets are comments.");
 			put_line (netlist_handle, comment_mark & " " & row_separator_single);
 		end write_header;
 		
@@ -791,6 +793,12 @@ package body netlists is
 				log_indentation_up;
 				log_net_name (element (net_cursor).name, false, log_threshold + 1);
 
+				-- write the secondary net name as comment:
+				new_line (netlist_handle);
+				put_line (netlist_handle, comment_mark & latin_1.space &
+					to_string (element (net_cursor).name.prefix) & 
+					to_string (element (net_cursor).name.base_name)); -- CLK_GENERATOR/FLT1/ & clock_out
+				
 				type_device_ports_extended.iterate (element (net_cursor).devices, query_device'access);
 
 				-- Iterate secondary nets:
@@ -805,6 +813,7 @@ package body netlists is
 				
 				-- write the primary net name:
 				new_line (netlist_handle);
+				put_line (netlist_handle, comment_mark & " -------");
 				put_line (netlist_handle, to_string (element (net_cursor).name.prefix) & 
 					to_string (element (net_cursor).name.base_name)); -- CLK_GENERATOR/FLT1/ & clock_out
 
@@ -871,13 +880,17 @@ package body netlists is
 		log_threshold	: in type_log_level)
 		return type_netlist.tree is
 
-		use type_netlist;
-		netlist : type_netlist.tree; -- to be returned
-		netlist_cursor : type_netlist.cursor := type_netlist.root (netlist);
-		
 		use type_modules;
 		
-		-- When exploring secondary nets, the cursor to the primary net must be backup.
+		use type_netlist;
+		netlist : type_netlist.tree; -- to be returned
+
+		-- While exploring the tree of modules (with their individual netlists) the
+		-- cursor in container "netlist" points to a certain net. This cursor must be 
+		-- backup on a stack (see below) each time we dive into secondary nets.
+		netlist_cursor : type_netlist.cursor := type_netlist.root (netlist);
+			
+		-- When exploring secondary nets, the cursor to a net must be backup.
 		-- This must be done each time a secondary net is discovered.
 		package stack is new et_general.stack_lifo (
 			item	=> type_netlist.cursor,
@@ -1073,9 +1086,7 @@ package body netlists is
 				if cursor /= type_nets.no_element then
 					
 					-- cursor now points to the secondary net in the parent module
--- 					log_indentation_up;
--- 					log_net_name (key (cursor), false, log_threshold + 1);
-					
+
 					-- backup netlist cursor before diving into secondary nets
 					stack.push (netlist_cursor);
 
@@ -1091,8 +1102,6 @@ package body netlists is
 
 					-- restore netlist cursor as it was before diving into the secondary net
 					netlist_cursor := stack.pop;
-
--- 					log_indentation_down;
 				end if;
 			end query_parent;
 
