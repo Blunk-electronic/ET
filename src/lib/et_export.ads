@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                           SYSTEM ET EXPORT                               --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                               EXPORT                                     --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -46,16 +46,18 @@ package et_export is
 
 	-- CAD FORMATS
 	type type_cad_format is (et_v1, kicad_v4);
+	
 	-- If no format specified via cmd line, a default applies so that the operator can be 
 	-- notified about missing cad format.
 	cad_format : type_cad_format := type_cad_format'first; 
 
-	directory_cam			: constant string (1 ..  3) := "CAM";
-	directory_statistics	: constant string (1 .. 10) := "statistics";
+	directory_export		: constant string := "export";
+	directory_cam			: constant string := "CAM";
+	-- directory_cad			: constant string := "CAD";	
+	directory_statistics	: constant string := "statistics";
 	
 	procedure create_project_directory (
 	-- Creates given project directory in work_directory of ET.
-	-- Creates subdirectory for CAM
 		project			: in string;
 		log_threshold	: in et_string_processing.type_log_level);
 

@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                         SYSTEM ET EXPORT                                 --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                               EXPORT                                     --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -43,7 +43,6 @@ package body et_export is
 
 	procedure create_project_directory (
 	-- Creates given project directory in work_directory of ET.
-	-- Creates subdirectory for CAM
 		project			: in string;
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_general;
@@ -54,6 +53,8 @@ package body et_export is
 				level => log_threshold);
 
 			create_directory (compose (work_directory, project));
+
+			create_path (compose (compose (compose (work_directory, project), directory_export), directory_cam));
 			create_path (compose (compose (work_directory, project), directory_cam));
 		end if;
 	end create_project_directory;
