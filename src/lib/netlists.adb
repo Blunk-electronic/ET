@@ -747,13 +747,16 @@ package body netlists is
 		
 		netlist_handle : ada.text_io.file_type;
 
-		procedure write_header is begin
+		procedure write_header is 
+			use type_netlist;
+			netlist_cursor : type_netlist.cursor := root (netlist);
+		begin
 		-- writes a nice header in the netlist file
 			put_line (netlist_handle, comment_mark & " " & et_general.system_name & " " & et_general.version & " netlist");
 			put_line (netlist_handle, comment_mark & " " & date);
 			put_line (netlist_handle, comment_mark & " module " & enclose_in_quotes (to_string (module_name)));
 			put_line (netlist_handle, comment_mark & " " & row_separator_double);
--- 			put_line (netlist_handle, comment_mark & " net count total" & count_type'image (length (netlist)));
+			put_line (netlist_handle, comment_mark & " net count total" & count_type'image (child_count (netlist_cursor)));
 			-- CS: statistics about pin count ?
 			
 			put_line (netlist_handle, comment_mark);
