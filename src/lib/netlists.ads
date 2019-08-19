@@ -278,7 +278,8 @@ package netlists is
 	-- overwrites the previous file).
 	-- - modules contains the modules and their nets ordered in a tree structure.
 	-- - module_name is the name of the top module. to be written in the header of the netlist file.
-	-- - The netlist file will be named after the module name.
+	-- - The netlist file will be named after the module name and assembly variant.	
+	-- - Exports the netlist of the given module to the export/CAM directory.
 		modules			: in type_modules.tree;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
 		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost

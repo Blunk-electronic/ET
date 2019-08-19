@@ -52,9 +52,11 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 with ada.directories;
+with gnat.directory_operations;
 with ada.exceptions;
 
 with et_general;				use et_general;
+with et_export;
 -- 
 -- with et_coordinates;
 -- with et_libraries;
@@ -711,6 +713,7 @@ package body netlists is
 	end net_in_parent_module;
 
 	procedure write_netlist (
+	-- Exports the netlist of the given module to the export/CAM directory.
 		netlist			: in type_netlist.tree;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
 		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
@@ -720,15 +723,17 @@ package body netlists is
 		
 		procedure set_file_name is 
 			use ada.directories;
+			use gnat.directory_operations;
 			use type_module_name;
 			use assembly_variants;
 			use assembly_variants.type_variant_name;
+			use et_export;
 		begin
 			if is_default (variant_name) then
 				file_name := to_file_name (
 							compose 
 							(
-								containing_directory	=> "CAM", -- CS define in dedicated package for CAM stuff
+								containing_directory	=> directory_export & dir_separator & directory_cam,
 								name					=> et_general.to_string (module_name),
 								extension				=> extension_netlist
 							));
@@ -737,7 +742,7 @@ package body netlists is
 				file_name := to_file_name (
 							compose 
 							(
-								containing_directory	=> "CAM", -- CS define in dedicated package for CAM stuff
+								containing_directory	=> directory_export & dir_separator & directory_cam,
 								name					=> et_general.to_string (module_name) & "_" & 
 															assembly_variants.to_variant (variant_name),
 								extension				=> extension_netlist
@@ -875,7 +880,8 @@ package body netlists is
 	-- overwrites the previous file).
 	-- - modules contains the modules and their nets ordered in a tree structure.
 	-- - module_name is the name of the top module. to be written in the header of the netlist file.
-	-- - The netlist file will be named after the module name.
+	-- - The netlist file will be named after the module name and the assembly variant.
+	-- - Exports the netlist of the given module to the export/CAM directory.							  
 		modules			: in type_modules.tree;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
 		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost

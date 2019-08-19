@@ -48,11 +48,11 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
--- with et_general;				use et_general;
+with et_general;				use et_general;
 -- 
 -- with et_coordinates;
 with et_libraries;
--- with assembly_variants;
+--with assembly_variants;
 with et_string_processing;		use et_string_processing;
 -- with et_pcb;
 -- with et_pcb_coordinates;
@@ -122,11 +122,14 @@ package material is
 		);		
 	
 	procedure write_bom (
-	-- Creates the BOM (which inevitably and intentionally overwrites the previous file).
+	-- Creates the BOM file (which inevitably and intentionally overwrites the previous file).
 	-- Writes the content of the given container bom in the file.
+	-- - The BOM file will be named after the module name and the assembly variant.
+	-- - Exports the BOM of the given module to the export/CAM directory.
 		bom				: in type_devices.map;
-		file_name		: in type_file_name.bounded_string;
-		format			: in type_bom_format;		
+		module_name		: in type_module_name.bounded_string; -- motor_driver 
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		format			: in type_bom_format;
 		log_threshold	: in type_log_level);
 	
 end material;

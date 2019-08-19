@@ -52,14 +52,16 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 with ada.directories;
+with gnat.directory_operations;
 with ada.exceptions;
 
--- with et_general;				use et_general;
+with et_general;				use et_general;
 -- 
 -- with et_coordinates;
 -- with et_libraries;
--- with assembly_variants;
+with assembly_variants;
 with et_string_processing;		use et_string_processing;
+with et_export;
 with et_csv;					use et_csv;
 -- with et_pcb_coordinates;
 -- with submodules;
@@ -152,13 +154,47 @@ package body material is
 	end;
 
 	procedure write_bom (
-	-- Creates the BOM (which inevitably and intentionally overwrites the previous file).
+	-- Creates the BOM file (which inevitably and intentionally overwrites the previous file).
 	-- Writes the content of the given container bom in the file.
+	-- - The BOM file will be named after the module name and the assembly variant.
+	-- - Exports the BOM of the given module to the export/CAM directory.
 		bom				: in type_devices.map;
-		file_name		: in type_file_name.bounded_string;
+		module_name		: in type_module_name.bounded_string; -- motor_driver 
+		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
 		format			: in type_bom_format;
 		log_threshold	: in type_log_level) is		
 
+		file_name : type_file_name.bounded_string;
+		
+-- 		procedure set_file_name is 
+-- 			use ada.directories;
+-- 			use gnat.directory_operations;
+-- 			use type_module_name;
+-- -- 			use assembly_variants;
+-- 			use assembly_variants.type_variant_name;
+-- 			use et_export;
+-- 		begin
+-- 			if is_default (variant_name) then
+-- 				file_name := to_file_name (
+-- 							compose 
+-- 							(
+-- 								containing_directory	=> directory_export & dir_separator & directory_cam,
+-- 								name					=> et_general.to_string (module_name),
+-- 								extension				=> extension_bom
+-- 							));
+-- 
+-- 			else
+-- 				file_name := to_file_name (
+-- 							compose 
+-- 							(
+-- 								containing_directory	=> directory_export & dir_separator & directory_cam,
+-- 								name					=> et_general.to_string (module_name) & "_" & 
+-- 															assembly_variants.to_variant (variant_name),
+-- 								extension				=> extension_bom
+-- 							));
+-- 			end if;
+-- 		end;	
+		
 		bom_handle : ada.text_io.file_type;
 		device_cursor : type_devices.cursor := bom.first;
 
