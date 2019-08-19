@@ -157,7 +157,7 @@ package body material is
 	-- Creates the BOM file (which inevitably and intentionally overwrites the previous file).
 	-- Writes the content of the given container bom in the file.
 	-- - The BOM file will be named after the module name and the assembly variant.
-	-- - Exports the BOM of the given module to the export/CAM directory.
+	-- - Exports the BOM of the given module to the export/CAM/BOM directory.
 		bom				: in type_devices.map;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
 		variant_name	: in type_variant_name.bounded_string; -- low_cost

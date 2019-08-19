@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your editor to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -48,7 +48,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
--- with et_general;				use et_general;
+with et_general;				use et_general;
 -- 
 -- with et_coordinates;
 with et_libraries;
@@ -89,13 +89,15 @@ package pick_and_place is
 		);		
 	
 	procedure write_pnp (
-	-- Creates the pick & place file (which inevitably and intentionally overwrites the previous file).
+	-- Creates the P&P file (which inevitably and intentionally overwrites the previous file).
 	-- Writes the content of the given container pnp in the file.
+	-- - The P&P file will be named after the module name and the assembly variant.
+	-- - Exports the P&P data of the given module to the export/CAM/pick_and_place directory.
 		pnp				: in type_devices.map;
-		file_name		: in type_file_name.bounded_string;
+		module_name		: in type_module_name.bounded_string; -- motor_driver 
+		variant_name	: in type_variant_name.bounded_string; -- low_cost
 		format			: in type_pnp_format := NATIVE;
 		log_threshold	: in type_log_level);
-
 	
 end pick_and_place;
 

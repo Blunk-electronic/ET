@@ -101,11 +101,7 @@ package board_ops is
 	procedure make_pick_and_place (
 	-- Exports a pick & place file from the given top module and assembly variant.
 	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
-	-- CS: Similar to schematic_ops.make_netlists p&p files of all assembly variants could be exported right away.
-	--     The parameters variant_top and pnp_file would be no longer required.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_top		: in type_variant_name.bounded_string; -- low_cost
-		pnp_file		: in pick_and_place.type_file_name.bounded_string; -- CAM/motor_driver_bom.pnp
 		log_threshold	: in type_log_level);
 	
 	-- For laying out traces we need a type that provides for a terminal information about

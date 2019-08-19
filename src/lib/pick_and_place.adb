@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your editor to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -52,14 +52,16 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 with ada.directories;
+with gnat.directory_operations;
 with ada.exceptions;
 
--- with et_general;				use et_general;
+with et_general;				use et_general;
 -- 
 -- with et_coordinates;
 -- with et_libraries;
 -- with assembly_variants;
 with et_string_processing;		use et_string_processing;
+with et_export;
 with et_csv;					use et_csv;
 -- with et_pcb_coordinates;
 -- with submodules;
@@ -76,16 +78,53 @@ package body pick_and_place is
 	end;
 
 	procedure write_pnp (
-	-- Creates the pick & place file (which inevitably and intentionally overwrites the previous file).
+	-- Creates the P&P file (which inevitably and intentionally overwrites the previous file).
 	-- Writes the content of the given container pnp in the file.
+	-- - The P&P file will be named after the module name and the assembly variant.
+	-- - Exports the P&P data of the given module to the export/CAM/pick_and_place directory.
 		pnp				: in type_devices.map;
-		file_name		: in type_file_name.bounded_string;
+		module_name		: in type_module_name.bounded_string; -- motor_driver 
+		variant_name	: in type_variant_name.bounded_string; -- low_cost
 		format			: in type_pnp_format := NATIVE;
 		log_threshold	: in type_log_level) is		
 
+		file_name : type_file_name.bounded_string;
+		
 		pnp_handle : ada.text_io.file_type;
 		device_cursor : type_devices.cursor := pnp.first;
 
+		procedure set_file_name is 
+			use ada.directories;
+			use gnat.directory_operations;
+			use type_module_name;
+			use et_general.type_variant_name;
+			use et_export;
+		begin
+			if is_default (variant_name) then
+				file_name := to_file_name (
+							compose 
+							(
+								containing_directory	=> directory_export & dir_separator & directory_cam &
+															dir_separator & directory_pick_and_place,
+
+								name					=> et_general.to_string (module_name),
+								extension				=> extension_pnp
+							));
+
+			else
+				file_name := to_file_name (
+							compose 
+							(
+								containing_directory	=> directory_export & dir_separator & directory_cam &
+															dir_separator & directory_pick_and_place,
+
+								name					=> et_general.to_string (module_name) & "_" & 
+															to_variant (variant_name),
+								extension				=> extension_pnp
+							));
+			end if;
+		end;	
+		
 		procedure native is
 			use et_csv;
 
@@ -141,14 +180,8 @@ package body pick_and_place is
 		end;
 		
 	begin -- write_pnp
-		if ada.directories.exists (to_string (file_name)) then
-			log (importance => NOTE, text => "overwriting " & to_string (file_name) & " ...", level => log_threshold);
-		end if;
-
-		if ada.directories.extension (to_string (file_name)) /= extension_pnp then
-			log (importance => WARNING, text => "targeted pick & place file has no extension " &
-				 enclose_in_quotes (extension_pnp) & " !");
-		end if;
+		-- build the file name
+		set_file_name;
 
 		log (text => "writing pick & place file " & enclose_in_quotes (to_string (file_name)) & " ...", level => log_threshold);
 		

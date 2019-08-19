@@ -11989,7 +11989,7 @@ package body schematic_ops is
 		end query_variant;
 		
 	begin -- make_boms
-		log (text => "generating BOM of assembly variants ...", level => log_threshold);
+		log (text => "generating BOM ...", level => log_threshold);
 		log_indentation_up;
 
 		-- locate the given top module
@@ -12663,7 +12663,7 @@ package body schematic_ops is
 		end query_variant;
 			
 	begin -- make_netlists
-		log (text => "generating netlists of assembly variants ...", level => log_threshold);
+		log (text => "generating netlists ...", level => log_threshold);
 		log_indentation_up;
 
 		-- Build the submodule tree of the module according to the current design structure in
