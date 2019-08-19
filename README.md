@@ -40,6 +40,7 @@
 - An ET native format as shown above.
 
 ### Usage
+For everything ET does you will find in the current working directory a folder named "ET/reports" for log messages.
 
 #### Importing a KiCad project
 To import a single KiCad V5 design into a native project 'my_et_project' run this command: 
@@ -71,8 +72,16 @@ $ et --make_conventions conventions.txt
 This file can now be found in the root directory of your projects. Edit it according to your customs.
 
 
+#### Creating an ET native project
+To create a new project like 'my_new_et_project' run this command. CAUTION: An already existing project
+of the same name will be deleted without warning !
+
+```sh
+$ et --create my_new_et_project/
+```
+
+
 #### Opening an ET native project
-ET creates in the current working directory a folder named "ET/reports" for log messages.
 To open a native project like 'my_et_project' run this command: 
 
 ```sh

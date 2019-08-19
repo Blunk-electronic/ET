@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                            SYSTEM ET BASE                                --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 M-1                                      --
+--                                BASE                                      --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your editor to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -67,6 +67,7 @@ procedure et is
 	conv_file_name_create	: conventions.type_conventions_file_name.bounded_string;
 	conv_file_name_use		: conventions.type_conventions_file_name.bounded_string;
 
+	project_name_create		: et_project.type_project_name.bounded_string; -- the project to be created
 	project_name_import		: et_project.type_project_name.bounded_string; -- the project to be imported
 	project_name_save_as	: et_project.type_project_name.bounded_string; -- the "save as" name of the project
 
@@ -88,6 +89,7 @@ procedure et is
 						& latin_1.space & switch_import_project & latin_1.equals_sign
 						& latin_1.space & switch_import_format & latin_1.equals_sign
 						& latin_1.space & switch_conventions & latin_1.equals_sign
+						& latin_1.space & switch_native_project_create & latin_1.equals_sign
 						& latin_1.space & switch_native_project_open & latin_1.equals_sign
 						& latin_1.space & switch_native_project_save_as & latin_1.equals_sign
 						& latin_1.space & switch_execute_script & latin_1.equals_sign
@@ -116,6 +118,10 @@ procedure et is
 						log (text => arg & full_switch & space & parameter);
 						conv_file_name_use := conventions.type_conventions_file_name.to_bounded_string (parameter);
 
+					elsif full_switch = switch_native_project_create then
+						log (text => arg & full_switch & space & parameter);
+						project_name_create := et_project.to_project_name (remove_trailing_directory_separator (parameter));
+						
 					elsif full_switch = switch_native_project_open then
 						log (text => arg & full_switch & space & parameter);
 						project_name := et_project.to_project_name (remove_trailing_directory_separator (parameter));
@@ -276,8 +282,15 @@ procedure et is
 		if length (conv_file_name_create) > 0 then
 			conventions.make_default_conventions (conv_file_name_create, log_threshold => 0);
 		else
+			-- If operator wants to create a new project it will be created in the current directory:
+			if length (project_name_create) > 0 then
+				et_project.create_project_directory (
+					project_name	=> project_name_create,
+					project_path	=> et_project.to_project_path (""),
+					log_threshold	=> 0);
+				
 			-- If operator wants to import a project it will be done here.
-			if length (project_name_import) > 0 then
+			elsif length (project_name_import) > 0 then
 				read_configuration_file;
 				import_project;
 
@@ -319,8 +332,12 @@ procedure et is
 
 	
 begin -- main
+	-- create a directory where imported projects live:
 	create_work_directory;
+
+	-- create inside the word directory another directory for reports and log messages:
 	create_report_directory;
+
 	create_report;
 	
 	get_commandline_arguments;
