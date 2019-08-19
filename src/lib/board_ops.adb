@@ -384,7 +384,7 @@ package body board_ops is
 	-- CS: The rotation of submodules is currently ignored. The rotation defaults to zero degree.
 	--     See comment in procedure query_submodules.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_top		: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant_top		: in type_variant_name.bounded_string; -- low_cost
 		pnp_file		: in pick_and_place.type_file_name.bounded_string; -- CAM/motor_driver_bom.pnp
 		log_threshold	: in type_log_level) is
 
@@ -404,7 +404,7 @@ package body board_ops is
 		-- If offset is zero, we are dealing with the top module.
 		-- The submodule position in the parent module is added to the device position.
 			module_cursor		: in type_modules.cursor;
-			variant				: in assembly_variants.type_variant_name.bounded_string;
+			variant				: in type_variant_name.bounded_string;
 			offset				: in et_libraries.type_device_name_index;
 			position_in_board	: in et_pcb_coordinates.type_point_2d_with_angle) -- submod pos. in parent
 		is
@@ -559,7 +559,7 @@ package body board_ops is
 				
 			begin -- query_devices
 				-- if default variant given, then assembly variants are irrelevant:
-				if assembly_variants.is_default (variant) then
+				if is_default (variant) then
 
 					log (text => "collecting devices from module " &
 							enclose_in_quotes (to_string (module_name)) &
@@ -615,10 +615,10 @@ package body board_ops is
 
 		-- Another stack keeps record of the assembly variant on submodule levels.
 		package stack_variant is new et_general.stack_lifo (
-			item	=> assembly_variants.type_variant_name.bounded_string,
+			item	=> type_variant_name.bounded_string,
 			max 	=> submodules.nesting_depth_max);
 		
-		variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant : type_variant_name.bounded_string; -- low_cost
 
 		-- Another stack keeps record of the submodule position (inside the parent module) on submodule levels.
 		package stack_position_in_board is new et_general.stack_lifo (
@@ -668,7 +668,7 @@ package body board_ops is
 				-- Get the device name offset of the current submodule;
 				offset := element (tree_cursor).device_names_offset;
 
-				if not assembly_variants.is_default (variant) then
+				if not is_default (variant) then
 					-- Query in parent module: Is there any assembly variant specified for this submodule ?
 
 					alt_submod := alternative_submodule (
@@ -679,7 +679,7 @@ package body board_ops is
 					if alt_submod = assembly_variants.type_submodules.no_element then
 					-- no variant specified for this submodule -> collect devices of default variant
 
-						variant := assembly_variants.default;
+						variant := default;
 					else
 					-- alternative variant specified for this submodule
 						variant := element (alt_submod).variant;
@@ -749,7 +749,7 @@ package body board_ops is
 	begin -- make_pick_and_place
 		
 		-- The variant name is optional. If not provided, the default variant will be exported.
-		if assembly_variants.is_default (variant_top) then
+		if is_default (variant_top) then
 			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 				" default variant" &
 				" exporting pick & place data to file " & to_string (pnp_file),

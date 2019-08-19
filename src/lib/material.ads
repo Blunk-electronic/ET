@@ -52,7 +52,6 @@ with et_general;				use et_general;
 -- 
 -- with et_coordinates;
 with et_libraries;
---with assembly_variants;
 with et_string_processing;		use et_string_processing;
 -- with et_pcb;
 -- with et_pcb_coordinates;
@@ -128,7 +127,7 @@ package material is
 	-- - Exports the BOM of the given module to the export/CAM directory.
 		bom				: in type_devices.map;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
-		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_variant_name.bounded_string; -- low_cost
 		format			: in type_bom_format;
 		log_threshold	: in type_log_level);
 	

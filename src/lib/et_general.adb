@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                    SYSTEM ET GENERAL DECLARATIONS                        --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                               GENERAL                                    --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -203,6 +203,27 @@ package body et_general is
 	
 
 
+	
+	function is_default (variant : in type_variant_name.bounded_string) return boolean is begin
+	-- Returns true if the given variant name is empty.
+		if type_variant_name.length (variant) = 0 then -- CS better compare with constant "default"
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+	function to_variant (variant : in type_variant_name.bounded_string) return string is begin
+		return type_variant_name.to_string (variant);
+	end;
+
+	function to_variant (variant : in string) return type_variant_name.bounded_string is begin
+		-- CS lenght and character check
+		return type_variant_name.to_bounded_string (variant);
+	end;
+
+
+	
 	
 -- GENERICS
 	

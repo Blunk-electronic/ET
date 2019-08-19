@@ -345,8 +345,8 @@ package et_schematic is
 
 	-- As there are assembly variants, for each of them a dedicated netlist must be generated.
 	package type_netlists is new ordered_maps (
-		key_type		=> assembly_variants.type_variant_name.bounded_string, -- low_cost, empty if default variant
-		"<"				=> assembly_variants.type_variant_name."<",
+		key_type		=> et_general.type_variant_name.bounded_string, -- low_cost, empty if default variant
+		"<"				=> et_general.type_variant_name."<",
 		element_type	=> netlists.type_netlist.tree, -- provides info on primary and secondary net dependencies
 		"="				=> netlists.type_netlist."=");
 

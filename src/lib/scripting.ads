@@ -132,7 +132,7 @@ package scripting is
 	function to_verb (verb : in string) return type_verb_schematic;
 	
 	type type_noun_schematic is (
-		NOUN_BOM,
+		NOUN_BOMS,
 		NOUN_DEVICE,
 		NOUN_DEVICES,
 		--DEVICE_PARTCODE,

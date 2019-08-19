@@ -122,8 +122,7 @@ package body schematic_ops is
 		raise constraint_error;
 	end;
 
-	procedure assembly_variant_not_found (variant : in assembly_variants.type_variant_name.bounded_string) is 
-		use assembly_variants;
+	procedure assembly_variant_not_found (variant : in type_variant_name.bounded_string) is 
 	begin
 		log (ERROR, "assembly variant " &
 			 enclose_in_quotes (to_variant (variant)) & " not found !", console => true);
@@ -9784,7 +9783,7 @@ package body schematic_ops is
 	procedure create_assembly_variant (
 	-- Creates a new assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -9829,7 +9828,7 @@ package body schematic_ops is
 	procedure delete_assembly_variant (
 	-- Deletes an assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -9874,7 +9873,7 @@ package body schematic_ops is
 	procedure describe_assembly_variant (
 	-- Describes an assembly variant. Overwrites the previous description.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost											
+		variant_name	: in type_variant_name.bounded_string; -- low_cost											
 		description		: in assembly_variants.type_description; -- "this is the low budget variant"
 		log_threshold	: in type_log_level) is
 
@@ -9933,7 +9932,7 @@ package body schematic_ops is
 	-- the given assembly variant. An already existing device will be overwritten
 	-- without warning.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
 		value			: in type_value.bounded_string; -- 220R
 		partcode		: in material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
@@ -10037,7 +10036,7 @@ package body schematic_ops is
 	-- the given assembly variant. An already existing device will be overwritten
 	-- without warning.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
 		log_threshold	: in type_log_level) is
 
@@ -10120,7 +10119,7 @@ package body schematic_ops is
 	procedure remove_device (
 	-- Removes the gvien device from the given assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_variant_name.bounded_string; -- low_cost
 		device			: in type_device_name; -- R1
 		log_threshold	: in type_log_level) is
 
@@ -10200,9 +10199,9 @@ package body schematic_ops is
 	-- Sets the assembly variant of a submodule instance. An already existing submodule
 	-- will be overwritten without warning.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in assembly_variants.type_variant_name.bounded_string; -- low_cost								  
+		variant_parent	: in type_variant_name.bounded_string; -- low_cost								  
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		variant_submod	: in assembly_variants.type_variant_name.bounded_string; -- fixed_frequency
+		variant_submod	: in type_variant_name.bounded_string; -- fixed_frequency
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -10296,7 +10295,7 @@ package body schematic_ops is
 	-- Removes the assembly variant of a submodule. This results in all devices
 	-- of the submodule being mounted.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant_parent	: in type_variant_name.bounded_string; -- low_cost
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level) is
 
@@ -11217,10 +11216,10 @@ package body schematic_ops is
 		end if;
 	end;
 	
-	procedure make_bom (
+	procedure make_bom ( -- CS obsolete
 	-- Exports a BOM file from the given top module and assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_top		: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant_top		: in type_variant_name.bounded_string; -- low_cost
 		bom_file		: in material.type_file_name.bounded_string; -- CAM/motor_driver_bom.csv
 		log_threshold	: in type_log_level) is
 
@@ -11236,7 +11235,7 @@ package body schematic_ops is
 		-- Adds to the device index the given offset.
 		-- If offset is zero, we are dealing with the top module.
 			module_cursor	: in type_modules.cursor;
-			variant			: in assembly_variants.type_variant_name.bounded_string;
+			variant			: in type_variant_name.bounded_string;
 			offset			: in et_libraries.type_device_name_index) is
 			
 			procedure query_devices (
@@ -11388,7 +11387,7 @@ package body schematic_ops is
 				
 			begin -- query_devices
 				-- if default variant given, then assembly variants are irrelevant:
-				if assembly_variants.is_default (variant) then
+				if is_default (variant) then
 
 					log (text => "collecting devices from module " &
 							enclose_in_quotes (to_string (module_name)) &
@@ -11439,10 +11438,10 @@ package body schematic_ops is
 
 		-- Another stack keeps record of the assembly variant on submodule levels.
 		package stack_variant is new et_general.stack_lifo (
-			item	=> assembly_variants.type_variant_name.bounded_string,
+			item	=> type_variant_name.bounded_string,
 			max 	=> submodules.nesting_depth_max);
 		
-		variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant : type_variant_name.bounded_string; -- low_cost
 		
 		procedure query_submodules is 
 		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
@@ -11484,7 +11483,7 @@ package body schematic_ops is
 				-- Get the device name offset of the current submodule;
 				offset := element (tree_cursor).device_names_offset;
 
-				if not assembly_variants.is_default (variant) then
+				if not is_default (variant) then
 					-- Query in parent module: Is there any assembly variant specified for this submodule ?
 
 					alt_submod := alternative_submodule (
@@ -11495,7 +11494,7 @@ package body schematic_ops is
 					if alt_submod = assembly_variants.type_submodules.no_element then
 					-- no variant specified for this submodule -> collect devices of default variant
 
-						variant := assembly_variants.default;
+						variant := default;
 					else
 					-- alternative variant specified for this submodule
 						variant := element (alt_submod).variant;
@@ -11550,7 +11549,7 @@ package body schematic_ops is
 		
 	begin -- make_bom
 		-- The variant name is optional. If not provided, the default variant will be exported.
-		if assembly_variants.is_default (variant_top) then
+		if is_default (variant_top) then
 			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 				" default variant" &
 				" exporting BOM to file " & to_string (bom_file),
@@ -11622,7 +11621,7 @@ package body schematic_ops is
 
 		use assembly_variants;
 		use assembly_variants.type_variants;
-		use assembly_variants.type_variant_name;
+		use et_general.type_variant_name;
 
 		procedure make_for_variant (variant_name : in type_variant_name.bounded_string) is
 
@@ -11634,7 +11633,7 @@ package body schematic_ops is
 			-- Adds to the device index the given offset.
 			-- If offset is zero, we are dealing with the top module.
 				module_cursor	: in type_modules.cursor;
-				variant			: in assembly_variants.type_variant_name.bounded_string;
+				variant			: in type_variant_name.bounded_string;
 				offset			: in et_libraries.type_device_name_index) is
 				
 				procedure query_devices (
@@ -11786,7 +11785,7 @@ package body schematic_ops is
 					
 				begin -- query_devices
 					-- if default variant given, then assembly variants are irrelevant:
-					if assembly_variants.is_default (variant) then
+					if is_default (variant) then
 
 						log (text => "collecting devices from module " &
 								enclose_in_quotes (to_string (module_name)) &
@@ -11837,10 +11836,10 @@ package body schematic_ops is
 
 			-- Another stack keeps record of the assembly variant on submodule levels.
 			package stack_variant is new et_general.stack_lifo (
-				item	=> assembly_variants.type_variant_name.bounded_string,
+				item	=> type_variant_name.bounded_string,
 				max 	=> submodules.nesting_depth_max);
 			
-			variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
+			variant : type_variant_name.bounded_string; -- low_cost
 			
 			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
@@ -11882,7 +11881,7 @@ package body schematic_ops is
 					-- Get the device name offset of the current submodule;
 					offset := element (tree_cursor).device_names_offset;
 
-					if not assembly_variants.is_default (variant) then
+					if not is_default (variant) then
 						-- Query in parent module: Is there any assembly variant specified for this submodule ?
 
 						alt_submod := alternative_submodule (
@@ -11893,7 +11892,7 @@ package body schematic_ops is
 						if alt_submod = assembly_variants.type_submodules.no_element then
 						-- no variant specified for this submodule -> collect devices of default variant
 
-							variant := assembly_variants.default;
+							variant := default;
 						else
 						-- alternative variant specified for this submodule
 							variant := element (alt_submod).variant;
@@ -11947,7 +11946,7 @@ package body schematic_ops is
 			end query_submodules;
 			
 		begin -- make_for_variant
-			if assembly_variants.is_default (variant_name) then
+			if is_default (variant_name) then
 				log (text => "default assembly variant ", level => log_threshold + 1);
 			else
 				log (text => "assembly variant " &
@@ -11974,7 +11973,7 @@ package body schematic_ops is
 			-- write the bom
 			material.write_bom (
 				bom				=> bill_of_material,	-- the container that holds the bom
-				module_name		=> module_name,			-- tmp/my_project_bom.csv
+				module_name		=> module_name,			-- motor_driver
 				variant_name	=> variant_name,		-- low_cost
 				--format			=> NATIVE,				-- CS should be an argument in the future
 				format			=> EAGLE,				-- CS should be an argument in the future
@@ -11984,7 +11983,7 @@ package body schematic_ops is
 		end make_for_variant;
 		
 		procedure query_variant (variant_cursor : in type_variants.cursor) is
-			use assembly_variants.type_variant_name;
+			use et_general.type_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
 		end query_variant;
@@ -12236,7 +12235,7 @@ package body schematic_ops is
 		use et_general.type_net_name;
 		use assembly_variants;
 		use assembly_variants.type_variants;
-		use assembly_variants.type_variant_name;
+		use et_general.type_variant_name;
 
 		procedure make_for_variant (variant_name : in type_variant_name.bounded_string) is
 
@@ -12258,7 +12257,7 @@ package body schematic_ops is
 			-- Adds to the device index the given offset.
 			-- If offset is zero, we are dealing with the top module.
 				module_cursor	: in et_project.type_modules.cursor;
-				variant			: in assembly_variants.type_variant_name.bounded_string;
+				variant			: in type_variant_name.bounded_string;
 				prefix			: in et_general.type_net_name.bounded_string; -- DRV3/OSC1/
 				offset			: in et_libraries.type_device_name_index) is
 
@@ -12322,7 +12321,7 @@ package body schematic_ops is
 					end insert_net;
 					
 				begin -- query_nets
-					if assembly_variants.is_default (variant) then
+					if is_default (variant) then
 						variant_cursor := type_variants.no_element;
 					else
 						variant_cursor := find (module.variants, variant);
@@ -12406,10 +12405,10 @@ package body schematic_ops is
 
 			-- Another stack keeps record of the assembly variant at the submodule level.
 			package stack_variant is new et_general.stack_lifo (
-				item	=> assembly_variants.type_variant_name.bounded_string,
+				item	=> type_variant_name.bounded_string,
 				max 	=> submodules.nesting_depth_max);
 			
-			variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
+			variant : type_variant_name.bounded_string; -- low_cost
 			
 			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
@@ -12483,7 +12482,7 @@ package body schematic_ops is
 					-- Get the device name offset of the current submodule;
 					offset := element (tree_cursor).device_names_offset;
 
-					if not assembly_variants.is_default (variant) then
+					if not is_default (variant) then
 						-- Query in parent module: Is there any assembly variant specified for this submodule ?
 
 						alt_submod := alternative_submodule (
@@ -12494,7 +12493,7 @@ package body schematic_ops is
 						if alt_submod = assembly_variants.type_submodules.no_element then
 						-- no variant specified for this submodule -> collect devices of default variant
 
-							variant := assembly_variants.default;
+							variant := default;
 						else
 						-- alternative variant specified for this submodule
 							variant := element (alt_submod).variant;
@@ -12552,7 +12551,7 @@ package body schematic_ops is
 				module			: in out et_schematic.type_module) is
 
 				procedure assign_netlist (
-					variant		: in assembly_variants.type_variant_name.bounded_string;
+					variant		: in type_variant_name.bounded_string;
 					netlist		: in out netlists.type_netlist.tree) is
 				begin
 					-- overwrite the current netlist by the new netlist:
@@ -12587,7 +12586,7 @@ package body schematic_ops is
 			end update_netlist;
 			
 		begin -- make_for_variant
-			if assembly_variants.is_default (variant_name) then
+			if is_default (variant_name) then
 				log (text => "default assembly variant ", level => log_threshold + 1);
 			else
 				log (text => "assembly variant " &
@@ -12658,7 +12657,7 @@ package body schematic_ops is
 		end make_for_variant;
 		
 		procedure query_variant (variant_cursor : in type_variants.cursor) is
-			use assembly_variants.type_variant_name;
+			use et_general.type_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
 		end query_variant;

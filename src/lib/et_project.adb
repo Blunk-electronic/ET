@@ -8090,7 +8090,7 @@ package body et_project is
 		device_unit_position	: et_coordinates.type_coordinates; -- x,y,sheet
 
 		-- assembly variants
-		assembly_variant_name			: assembly_variants.type_variant_name.bounded_string; -- low_cost
+		assembly_variant_name			: et_general.type_variant_name.bounded_string; -- low_cost
 		assembly_variant_description	: assembly_variants.type_description; -- "variant without temp. sensor"
 		assembly_variant_devices		: assembly_variants.type_devices.map;
 		assembly_variant_submodules		: assembly_variants.type_submodules.map;
@@ -10662,14 +10662,14 @@ package body et_project is
 									device_cursor	: assembly_variants.type_devices.cursor;
 									
 									submod_name		: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-									submod_var		: assembly_variants.type_variant_name.bounded_string; -- low_cost
+									submod_var		: et_general.type_variant_name.bounded_string; -- low_cost
 									submod_cursor	: assembly_variants.type_submodules.cursor;
 									inserted		: boolean;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then -- name low_cost
 										expect_field_count (line, 2);
-										assembly_variant_name := assembly_variants.to_variant (f (line, 2));
+										assembly_variant_name := et_general.to_variant (f (line, 2));
 
 									elsif kw = keyword_description then -- description "variant without temperature sensor"
 										expect_field_count (line, 2);
@@ -10784,7 +10784,7 @@ package body et_project is
 										-- After the instance name (like OSC1) must come the keyword "variant"
 										-- followed by the variant name:
 										if f (line, 3) = keyword_variant then
-											submod_var := assembly_variants.to_variant (f (line, 4));
+											submod_var := et_general.to_variant (f (line, 4));
 											
 											-- NOTE: A test whether the submodule does provide the variant can
 											-- not be executed at this stage because the submodules have not 
@@ -12967,7 +12967,7 @@ package body et_project is
 			-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 			generic_name : type_module_name.bounded_string; -- motor_driver
 			instance_name : type_module_instance_name.bounded_string; -- DRV_1
-			assembly_variant : assembly_variants.type_variant_name.bounded_string; -- low_cost
+			assembly_variant : et_general.type_variant_name.bounded_string; -- low_cost
 
 			procedure clear_module_instance is begin
 				generic_name := to_module_name ("");
@@ -13212,14 +13212,14 @@ package body et_project is
 
 										elsif kw = keyword_assembly_variant then
 											expect_field_count (line, 2);
-											assembly_variant := assembly_variants.to_variant (f (line,2));
+											assembly_variant := et_general.to_variant (f (line,2));
 
 											-- test whether module provides the assembly variant
 											module_cursor := locate_module (generic_name);
 											if not exists (module_cursor, assembly_variant) then
 												log (ERROR, "module " & enclose_in_quotes (to_string (generic_name)) &
 													 " does not provide assembly variant " &
-													 enclose_in_quotes (assembly_variants.to_variant (assembly_variant)) & " !",
+													 enclose_in_quotes (et_general.to_variant (assembly_variant)) & " !",
 													console => true);
 												raise constraint_error;
 											end if;
@@ -13697,7 +13697,7 @@ package body et_project is
 	-- The module being searched in must be in the rig already.												
 		module		: in type_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		variant		: in assembly_variants.type_variant_name.bounded_string) -- low_cost				
+		variant		: in et_general.type_variant_name.bounded_string) -- low_cost				
 		return boolean is
 
 		variant_found : boolean := false; -- to be returned
@@ -13760,7 +13760,7 @@ package body et_project is
 	-- If the variant is an empty string then it is about the default variant
 	-- which is always provided. The return is true in that case.
 		module		: in type_modules.cursor;
-		variant		: in assembly_variants.type_variant_name.bounded_string) -- low_cost
+		variant		: in et_general.type_variant_name.bounded_string) -- low_cost
 		return boolean is
 
 		use assembly_variants;
@@ -13796,7 +13796,7 @@ package body et_project is
 	-- - The assembly variant must exist in the module.
 	-- - The device must exist in the module.
 		module	: in type_modules.cursor; -- the module like motor_driver
-		variant	: in assembly_variants.type_variant_name.bounded_string; -- low_cost				
+		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
 		device	: in et_libraries.type_device_name)
 		return boolean is
 
@@ -13840,7 +13840,7 @@ package body et_project is
 		
 	begin -- exists
 -- 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
--- 			" variant " & enclose_in_quotes (assembly_variants.to_variant (variant)) &
+-- 			" variant " & enclose_in_quotes (et_general.to_variant (variant)) &
 -- 			" querying device " & to_string (device),
 -- 			level => log_threshold);
 
@@ -13861,7 +13861,7 @@ package body et_project is
 	-- - The device must have an entry in the given assembly variant,
 	--   otherwise the return is no_element.
 		module	: in type_modules.cursor; -- the module like motor_driver
-		variant	: in assembly_variants.type_variant_name.bounded_string; -- low_cost				
+		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
 		device	: in et_libraries.type_device_name)
 		return assembly_variants.type_devices.cursor is
 
@@ -13911,7 +13911,7 @@ package body et_project is
 	-- If the given variant is an emtpy string (means default variant) the return
 	-- is no_element.
 		module	: in type_modules.cursor; -- the module like motor_driver
-		variant	: in assembly_variants.type_variant_name.bounded_string; -- low_cost				
+		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
 		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1
 		return assembly_variants.type_submodules.cursor is
 
@@ -13941,7 +13941,7 @@ package body et_project is
 		end;
 		
 	begin -- alternative_submodule
-		if assembly_variants.is_default (variant) then
+		if et_general.is_default (variant) then
 			cursor := assembly_variants.type_submodules.no_element;
 		else
 			type_modules.query_element (

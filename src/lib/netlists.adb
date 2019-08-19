@@ -716,7 +716,7 @@ package body netlists is
 	-- Exports the netlist of the given module to the export/CAM directory.
 		netlist			: in type_netlist.tree;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
-		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level) is
 
 		file_name : type_file_name.bounded_string;
@@ -725,8 +725,7 @@ package body netlists is
 			use ada.directories;
 			use gnat.directory_operations;
 			use type_module_name;
-			use assembly_variants;
-			use assembly_variants.type_variant_name;
+			use et_general.type_variant_name;
 			use et_export;
 		begin
 			if is_default (variant_name) then
@@ -744,7 +743,7 @@ package body netlists is
 							(
 								containing_directory	=> directory_export & dir_separator & directory_cam,
 								name					=> et_general.to_string (module_name) & "_" & 
-															assembly_variants.to_variant (variant_name),
+															to_variant (variant_name),
 								extension				=> extension_netlist
 							));
 			end if;
@@ -884,7 +883,7 @@ package body netlists is
 	-- - Exports the netlist of the given module to the export/CAM directory.							  
 		modules			: in type_modules.tree;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
-		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		write_file		: in boolean;
 		log_threshold	: in type_log_level)
 		return type_netlist.tree is

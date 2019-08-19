@@ -160,6 +160,19 @@ package et_general is
 	function to_instance_name (name : in string) return type_module_instance_name.bounded_string;
 
 
+	-- The name of an assembly variant is a text like "low_cost" or "with temperature sensor" or just a number like V345:
+	variant_name_length_max : constant positive := 100;
+	package type_variant_name is new generic_bounded_length (variant_name_length_max);
+	use type_variant_name;
+
+	default : constant type_variant_name.bounded_string := type_variant_name.to_bounded_string ("");
+	
+	function is_default (variant : in type_variant_name.bounded_string) return boolean;
+	-- Returns true if the given variant name is empty.
+	
+	function to_variant (variant : in type_variant_name.bounded_string) return string;
+	function to_variant (variant : in string) return type_variant_name.bounded_string;
+
 
 	
 -- GENERICS

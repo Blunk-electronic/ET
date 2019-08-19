@@ -138,7 +138,7 @@ package et_project is
 
 	type type_module_instance is record
 		generic_name		: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		assembly_variant	: assembly_variants.type_variant_name.bounded_string; -- low_cost
+		assembly_variant	: et_general.type_variant_name.bounded_string; -- low_cost
 		-- CS other properties ?
 	end record;
 
@@ -722,7 +722,7 @@ package et_project is
 	-- The module being searched in must be in the rig already.						
 		module		: in type_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		variant		: in assembly_variants.type_variant_name.bounded_string) -- low_cost				
+		variant		: in et_general.type_variant_name.bounded_string) -- low_cost				
 		return boolean;
 
 	function exists (
@@ -730,7 +730,7 @@ package et_project is
 	-- If the variant is an empty string then it is about the default variant
 	-- which is always provided. The return is true in that case.
 		module		: in type_modules.cursor;
-		variant		: in assembly_variants.type_variant_name.bounded_string) -- low_cost
+		variant		: in et_general.type_variant_name.bounded_string) -- low_cost
 		return boolean;	
 
 	function exists (
@@ -740,7 +740,7 @@ package et_project is
 	-- - The assembly variant must exist in the module.
 	-- - The device must exist in the module.
 		module	: in type_modules.cursor; -- the module like motor_driver
-		variant	: in assembly_variants.type_variant_name.bounded_string; -- low_cost				
+		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
 		device	: in et_libraries.type_device_name)
 		return boolean;
 
@@ -754,7 +754,7 @@ package et_project is
 	-- - The device must have an entry in the given assembly variant,
 	--   otherwise the return is no_element.
 		module	: in type_modules.cursor; -- the module like motor_driver
-		variant	: in assembly_variants.type_variant_name.bounded_string; -- low_cost				
+		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
 		device	: in et_libraries.type_device_name)
 		return assembly_variants.type_devices.cursor;
 
@@ -770,7 +770,7 @@ package et_project is
 	-- If the given variant is an emtpy string (means default variant) the return
 	-- is no_element.
 		module	: in type_modules.cursor; -- the module like motor_driver
-		variant	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant	: in et_general.type_variant_name.bounded_string; -- low_cost
 		submod	: in et_general.type_module_instance_name.bounded_string) -- OSC1
 		return assembly_variants.type_submodules.cursor;
 

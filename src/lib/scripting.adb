@@ -550,7 +550,7 @@ package body scripting is
 									schematic_ops.create_assembly_variant
 										(
 										module_name		=> module,
-										variant_name	=> assembly_variants.to_variant (f (5)),
+										variant_name	=> to_variant (f (5)),
 										log_threshold	=> log_threshold + 1);
 									
 								when 6 .. count_type'last =>
@@ -728,7 +728,7 @@ package body scripting is
 									schematic_ops.delete_assembly_variant
 										(
 										module_name		=> module,
-										variant_name	=> assembly_variants.to_variant (f (5)),
+										variant_name	=> to_variant (f (5)),
 										log_threshold	=> log_threshold + 1);
 									
 								when 6 .. count_type'last =>
@@ -750,7 +750,7 @@ package body scripting is
 									schematic_ops.describe_assembly_variant
 										(
 										module_name		=> module,
-										variant_name	=> assembly_variants.to_variant (f (5)), -- low_cost
+										variant_name	=> to_variant (f (5)), -- low_cost
 										description		=> assembly_variants.to_unbounded_string (f (6)), -- "the cheap version"
 										log_threshold	=> log_threshold + 1);
 									
@@ -1041,30 +1041,16 @@ package body scripting is
 
 				when MAKE =>
 					case noun is
-						when NOUN_BOM => 
+						when NOUN_BOMS => 
 							case fields is
-								when 5 =>
-									-- The variant name is optional. If not specified,
-									-- an empty string will be passed:
-									schematic_ops.make_bom 
+								when 4 =>
+									schematic_ops.make_boms 
 										(
 										module_name 	=> module,
-										bom_file		=> material.to_file_name (f (5)),
-										variant_top		=> assembly_variants.to_variant (""),
-										
 										log_threshold	=> log_threshold + 1);
 
-								when 6 =>
-									schematic_ops.make_bom 
-										(
-										module_name 	=> module,
-										bom_file		=> material.to_file_name (f (5)),
-										variant_top		=> assembly_variants.to_variant (f (6)),
-										
-										log_threshold	=> log_threshold + 1);
-
-								when 7 .. count_type'last =>
-									command_too_long (6);
+								when 5 .. count_type'last =>
+									command_too_long (4);
 									
 								when others =>
 									command_incomplete;
@@ -1108,7 +1094,7 @@ package body scripting is
 										schematic_ops.mount_device
 											(
 											module_name		=> module,
-											variant_name	=> assembly_variants.to_variant (f (5)), -- low_cost
+											variant_name	=> to_variant (f (5)), -- low_cost
 											device			=> to_device_name (f (6)), -- R1
 											value			=> value, -- 220R
 											partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
@@ -1121,7 +1107,7 @@ package body scripting is
 										schematic_ops.mount_device
 											(
 											module_name		=> module,
-											variant_name	=> assembly_variants.to_variant (f (5)), -- low_cost
+											variant_name	=> to_variant (f (5)), -- low_cost
 											device			=> to_device_name (f (6)), -- R1
 											value			=> value, -- 220R
 											partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
@@ -1144,9 +1130,9 @@ package body scripting is
 									schematic_ops.mount_submodule
 										(
 										module_name		=> module,
-										variant_parent	=> assembly_variants.to_variant (f (5)), -- low_cost
+										variant_parent	=> to_variant (f (5)), -- low_cost
 										instance		=> et_general.to_instance_name (f (6)), -- OSC1
-										variant_submod	=> assembly_variants.to_variant (f (7)), -- fixed_frequency
+										variant_submod	=> to_variant (f (7)), -- fixed_frequency
 										log_threshold	=> log_threshold + 1);
 
 								when 8 .. count_type'last =>
@@ -1251,7 +1237,7 @@ package body scripting is
 									schematic_ops.remove_device -- from assembly variant
 										(
 										module_name		=> module,
-										variant_name	=> assembly_variants.to_variant (f (5)), -- low_cost
+										variant_name	=> to_variant (f (5)), -- low_cost
 										device			=> to_device_name (f (6)), -- R1
 										log_threshold	=> log_threshold + 1);
 
@@ -1269,7 +1255,7 @@ package body scripting is
 									schematic_ops.remove_submodule
 										(
 										module_name		=> module,
-										variant_parent	=> assembly_variants.to_variant (f (5)),
+										variant_parent	=> to_variant (f (5)),
 										instance		=> et_general.to_instance_name (f (6)), -- OSC1
 										log_threshold	=> log_threshold + 1);
 
@@ -1568,7 +1554,7 @@ package body scripting is
 									schematic_ops.unmount_device
 										(
 										module_name		=> module,
-										variant_name	=> assembly_variants.to_variant (f (5)), -- low_cost
+										variant_name	=> to_variant (f (5)), -- low_cost
 										device			=> to_device_name (f (6)), -- R1
 										log_threshold	=> log_threshold + 1);
 
@@ -1632,7 +1618,7 @@ package body scripting is
 										(
 										module_name 	=> module,
 										pnp_file		=> pick_and_place.to_file_name (f (5)),
-										variant_top		=> assembly_variants.to_variant (""),
+										variant_top		=> to_variant (""),
 										
 										log_threshold	=> log_threshold + 1);
 
@@ -1641,7 +1627,7 @@ package body scripting is
 										(
 										module_name 	=> module,
 										pnp_file		=> pick_and_place.to_file_name (f (5)),
-										variant_top		=> assembly_variants.to_variant (f (6)),
+										variant_top		=> to_variant (f (6)),
 										
 										log_threshold	=> log_threshold + 1);
 

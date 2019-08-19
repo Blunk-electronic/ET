@@ -65,14 +65,14 @@ with et_geometry;
 
 package body assembly_variants is
 
-	function is_default (variant : in type_variant_name.bounded_string) return boolean is begin
-	-- Returns true if the given variant name is empty.
-		if type_variant_name.length (variant) = 0 then
-			return true;
-		else
-			return false;
-		end if;
-	end;
+-- 	function is_default (variant : in type_variant_name.bounded_string) return boolean is begin
+-- 	-- Returns true if the given variant name is empty.
+-- 		if type_variant_name.length (variant) = 0 then
+-- 			return true;
+-- 		else
+-- 			return false;
+-- 		end if;
+-- 	end;
 	
 	function to_mounted (mounted : in string) return type_mounted is begin
 		return type_mounted'value (mounted);
@@ -82,14 +82,14 @@ package body assembly_variants is
 		return latin_1.space & to_lower (type_mounted'image (mounted));
 	end;
 
-	function to_variant (variant : in type_variant_name.bounded_string) return string is begin
-		return type_variant_name.to_string (variant);
-	end;
-
-	function to_variant (variant : in string) return type_variant_name.bounded_string is begin
-		-- CS lenght and character check
-		return type_variant_name.to_bounded_string (variant);
-	end;
+-- 	function to_variant (variant : in type_variant_name.bounded_string) return string is begin
+-- 		return type_variant_name.to_string (variant);
+-- 	end;
+-- 
+-- 	function to_variant (variant : in string) return type_variant_name.bounded_string is begin
+-- 		-- CS lenght and character check
+-- 		return type_variant_name.to_bounded_string (variant);
+-- 	end;
 
 	function is_mounted (
 		device	: in et_libraries.type_device_name; -- IC1

@@ -160,40 +160,39 @@ package body material is
 	-- - Exports the BOM of the given module to the export/CAM directory.
 		bom				: in type_devices.map;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
-		variant_name	: in assembly_variants.type_variant_name.bounded_string; -- low_cost
+		variant_name	: in type_variant_name.bounded_string; -- low_cost
 		format			: in type_bom_format;
 		log_threshold	: in type_log_level) is		
 
 		file_name : type_file_name.bounded_string;
 		
--- 		procedure set_file_name is 
--- 			use ada.directories;
--- 			use gnat.directory_operations;
--- 			use type_module_name;
--- -- 			use assembly_variants;
--- 			use assembly_variants.type_variant_name;
--- 			use et_export;
--- 		begin
--- 			if is_default (variant_name) then
--- 				file_name := to_file_name (
--- 							compose 
--- 							(
--- 								containing_directory	=> directory_export & dir_separator & directory_cam,
--- 								name					=> et_general.to_string (module_name),
--- 								extension				=> extension_bom
--- 							));
--- 
--- 			else
--- 				file_name := to_file_name (
--- 							compose 
--- 							(
--- 								containing_directory	=> directory_export & dir_separator & directory_cam,
--- 								name					=> et_general.to_string (module_name) & "_" & 
--- 															assembly_variants.to_variant (variant_name),
--- 								extension				=> extension_bom
--- 							));
--- 			end if;
--- 		end;	
+		procedure set_file_name is 
+			use ada.directories;
+			use gnat.directory_operations;
+			use type_module_name;
+			use et_general.type_variant_name;
+			use et_export;
+		begin
+			if is_default (variant_name) then
+				file_name := to_file_name (
+							compose 
+							(
+								containing_directory	=> directory_export & dir_separator & directory_cam,
+								name					=> et_general.to_string (module_name),
+								extension				=> extension_bom
+							));
+
+			else
+				file_name := to_file_name (
+							compose 
+							(
+								containing_directory	=> directory_export & dir_separator & directory_cam,
+								name					=> et_general.to_string (module_name) & "_" & 
+															to_variant (variant_name),
+								extension				=> extension_bom
+							));
+			end if;
+		end;	
 		
 		bom_handle : ada.text_io.file_type;
 		device_cursor : type_devices.cursor := bom.first;
@@ -308,14 +307,17 @@ package body material is
 
 		
 	begin -- write_bom
-		if ada.directories.exists (to_string (file_name)) then
-			log (importance => NOTE, text => "overwriting " & to_string (file_name) & " ...", level => log_threshold);
-		end if;
-
-		if ada.directories.extension (to_string (file_name)) /= extension_bom then
-			log (importance => WARNING, text => "targeted BOM file has no extension " &
-				 enclose_in_quotes (extension_bom) & " !");
-		end if;
+		-- build the name of the BOM file
+		set_file_name;
+		
+-- 		if ada.directories.exists (to_string (file_name)) then
+-- 			log (importance => NOTE, text => "overwriting " & to_string (file_name) & " ...", level => log_threshold);
+-- 		end if;
+-- 
+-- 		if ada.directories.extension (to_string (file_name)) /= extension_bom then
+-- 			log (importance => WARNING, text => "targeted BOM file has no extension " &
+-- 				 enclose_in_quotes (extension_bom) & " !");
+-- 		end if;
 
 		log (text => "writing BOM file " & enclose_in_quotes (to_string (file_name)) & " ...", level => log_threshold);
 		
