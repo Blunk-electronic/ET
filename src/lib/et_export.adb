@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2018 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -41,23 +41,25 @@ with et_string_processing;			use et_string_processing;
 
 package body et_export is
 
-	procedure create_project_directory (
-	-- Creates given project directory in work_directory of ET.
-		project			: in string;
-		log_threshold	: in et_string_processing.type_log_level) is
-		use et_general;
-	begin
-		if not exists (compose (work_directory, project)) then
-			log (text => "creating project directory " 
-					& compose (work_directory, project) & " ...",
-				level => log_threshold);
-
-			create_directory (compose (work_directory, project));
-
-			create_path (compose (compose (compose (work_directory, project), directory_export), directory_cam));
-			create_path (compose (compose (work_directory, project), directory_cam));
-		end if;
-	end create_project_directory;
+	procedure dummy is begin null; end;
+	
+-- 	procedure create_project_directory (
+-- 	-- Creates given project directory in work_directory of ET.
+-- 		project			: in string;
+-- 		log_threshold	: in et_string_processing.type_log_level) is
+-- 		use et_general;
+-- 	begin
+-- 		if not exists (compose (work_directory, project)) then
+-- 			log (text => "creating project directory " 
+-- 					& compose (work_directory, project) & " ...",
+-- 				level => log_threshold);
+-- 
+-- 			create_directory (compose (work_directory, project));
+-- 
+-- 			create_path (compose (compose (compose (work_directory, project), directory_export), directory_cam));
+-- 			create_path (compose (compose (work_directory, project), directory_cam));
+-- 		end if;
+-- 	end create_project_directory;
 
 end et_export;
 

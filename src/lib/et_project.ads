@@ -76,11 +76,11 @@ package et_project is
 	directory_libraries_schemlets		: constant string (1..9) 	:= "schemlets";
 	
 	-- supplementary stuff of a project
-	directory_dru			: constant string := "design_rules";
-	directory_cam			: constant string := "CAM";
-	directory_net_classes	: constant string := "net_classes";
+-- 	directory_dru			: constant string := "design_rules";
+-- 	directory_cam			: constant string := "CAM";
+-- 	directory_net_classes	: constant string := "net_classes";
 	directory_templates		: constant string := "templates";		
-	directory_settings		: constant string := "settings";
+-- 	directory_settings		: constant string := "settings";
 	directory_reports		: constant string := "reports";
 	directory_documentation	: constant string := "documentation";
 	directory_miscellaneous	: constant string := "miscellaneous";		

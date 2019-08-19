@@ -429,6 +429,7 @@ package body et_project is
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use ada.directories;
+		use gnat.directory_operations;
 
 		procedure create_library_subdirs (path : in string) is
 		begin
@@ -438,16 +439,21 @@ package body et_project is
 			--log ("subdir " & compose (path, directory_libraries_devices));
 		end create_library_subdirs;
 
+		use et_export;
+		
 	begin -- create_supplementary_directories
 		log (text => "creating subdirectories for supplementary stuff ...", level => log_threshold);
 		create_directory (compose (path, directory_libraries));
 		create_library_subdirs (compose (path, directory_libraries));
 		
-		create_directory (compose (path, directory_dru));
-		create_directory (compose (path, directory_cam));
+		--create_directory (compose (path, directory_dru));
+		--create_directory (compose (path, directory_cam));
 		--create_directory (compose (path, directory_net_classes));
 		create_directory (compose (path, directory_templates));
-		create_directory (compose (path, directory_settings));
+		create_directory (compose (path, directory_export));
+		make_dir (path & dir_separator & directory_export & dir_separator & directory_cam);
+		
+		--create_directory (compose (path, directory_settings));
 		create_directory (compose (path, directory_reports));
 		create_directory (compose (path, directory_documentation));
 		create_directory (compose (path, directory_miscellaneous));
@@ -553,7 +559,8 @@ package body et_project is
 		end create_rig_configuration;
 
 	begin -- create_project_directory
-		log (text => "creating native project " & to_string (path) & " ...", level => log_threshold);
+		log (text => "creating native project " & enclose_in_quotes (to_string (path)) &
+			 " ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- delete previous project directory

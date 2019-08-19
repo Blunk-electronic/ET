@@ -55,11 +55,13 @@ package et_export is
 	directory_cam			: constant string := "CAM";
 	-- directory_cad			: constant string := "CAD";	
 	directory_statistics	: constant string := "statistics";
+
+	procedure dummy;
 	
-	procedure create_project_directory (
-	-- Creates given project directory in work_directory of ET.
-		project			: in string;
-		log_threshold	: in et_string_processing.type_log_level);
+-- 	procedure create_project_directory (
+-- 	-- Creates given project directory in work_directory of ET.
+-- 		project			: in string;
+-- 		log_threshold	: in et_string_processing.type_log_level);
 
 end et_export;
 

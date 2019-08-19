@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                           SYSTEM ET KICAD                                --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                                KICAD                                     --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -13406,295 +13406,295 @@ package body et_kicad is
 	
 -- STATISTICS
 
-	procedure make_statistics (log_threshold : in et_string_processing.type_log_level) is
-	
-		arrow : constant string (1..4) := " -> ";
-
-		use et_string_processing;		
-		use et_coordinates;
-		
-		procedure count_components (
-			name	: in type_submodule_name.bounded_string;
-			module	: in type_module) is
-
-			use type_components_schematic;		
-			component : type_components_schematic.cursor := module.components.first;
-			
-			use conventions;
-
-			procedure log_component (mounted : in boolean := true) is
-			-- This is for logging mounted or not mounted components.
-			begin
-				if mounted then
-					log (text => et_libraries.to_string (key (component)) 
-						& arrow & et_libraries.to_string (element (component).appearance, verbose => true),
-						level => log_threshold + 1);
-				else
-					log (text => et_libraries.to_string (key (component)) 
-						& arrow & et_libraries.to_string (element (component).appearance, verbose => true) 
-						& arrow & not_mounted,
-						level => log_threshold + 1);
-				end if;
-			end log_component;
-			
-		begin -- count_components
-			-- total number of components
-			et_schematic.statistics_set (cat => et_schematic.COMPONENTS_TOTAL, increment => false, number => module.components.length);
-
-			-- count virtual and real components. real components are separated by
-			-- the fact if they are mounted or not.
-			while component /= type_components_schematic.no_element loop
-
-				case type_components_schematic.element (component).appearance is
-					when et_libraries.sch => -- virtual
-						log_component;
-						et_schematic.statistics_set (et_schematic.COMPONENTS_VIRTUAL);
-
-					when et_libraries.sch_pcb => -- real
-						et_schematic.statistics_set (et_schematic.COMPONENTS_REAL);
-
-						-- count components by category
-						case category (key (component)) is
-							when CAPACITOR | CAPACITOR_ADJUSTABLE 	=> et_schematic.statistics_set (et_schematic.CAPACITORS);
-							when CONNECTOR 							=> et_schematic.statistics_set (et_schematic.CONNECTORS);
-							when DIODE | DIODE_PHOTO 				=> et_schematic.statistics_set (et_schematic.DIODES);
-							when INDUCTOR | INDUCTOR_ADJUSTABLE 	=> et_schematic.statistics_set (et_schematic.INDUCTORS);
-							when INTEGRATED_CIRCUIT 				=> et_schematic.statistics_set (et_schematic.INTEGRATED_CIRCUITS);
-							when JUMPER 							=> et_schematic.statistics_set (et_schematic.JUMPERS);
-							when LIGHT_EMMITTING_DIODE | LIGHT_EMMITTING_DIODE_ARRAY 
-																	=> et_schematic.statistics_set (et_schematic.LEDS);
--- 							when NETCHANGER 						=> et_schematic.statistics_set (et_schematic.NETCHANGERS);
-							when RELAY 								=> et_schematic.statistics_set (et_schematic.RELAYS);
-							when RESISTOR | RESISTOR_ADJUSTABLE | RESISTOR_NETWORK | RESISTOR_PHOTO | POTENTIOMETER 
-																	=> et_schematic.statistics_set (et_schematic.RESISTORS);
-							when TESTPOINT 							=> et_schematic.statistics_set (et_schematic.TESTPOINTS);
-							when TRANSISTOR | TRANSISTOR_PHOTO 		=> et_schematic.statistics_set (et_schematic.TRANSISTORS);
-							
-							when others => null;
-						end case;
-
-						-- count mounted components
-						log_component;
-						et_schematic.statistics_set (et_schematic.COMPONENTS_MOUNTED);
-				end case;
-
-				next (component);
-			end loop;
-				
-		end count_components;
-
-		procedure count_ports (
-			name	: in type_submodule_name.bounded_string;
-			module	: in type_module) is
-
-			use type_portlists;
-			portlist : type_portlists.cursor := module.portlists.first;
-
-			procedure count (
-				component	: in et_libraries.type_device_name;
-				ports		: in type_ports.list) is
-				port : type_ports.cursor := ports.first;
-				use type_ports;
-			begin
-				-- loop through the ports of the given component
-				-- and count those which are connected.
-				while port /= type_ports.no_element loop
-					--if et_schematic."=" (element (port).connected, et_schematic.YES) then
-					if element (port).connected = YES then
-						et_schematic.statistics_set (et_schematic.PORTS_TOTAL);
-						-- CS: log port
-					end if;
-					next (port);
-				end loop;
-			end count;
-				
-		begin -- count_ports
-			while portlist /= type_portlists.no_element loop
-				query_element (
-					position	=> portlist,
-					process		=> count'access);
-				
-				next (portlist);
-			end loop;
-		end count_ports;
-
-	begin -- make_statistics
-
-		-- count components
-		type_modules.query_element (
-			position	=> module_cursor,
-			process		=> count_components'access
-			);
-
-		-- count ports
-		type_modules.query_element (
-			position	=> module_cursor,
-			process		=> count_ports'access
-			);
-
-		-- count nets
-		et_schematic.statistics_set (cat => et_schematic.NETS_TOTAL, number => net_count, increment => false);
-
-		-- count junctions
-		et_schematic.statistics_set (cat => et_schematic.JUNCTIONS, number => junction_count, increment => false);
-		
-		--return statistics;
-	end make_statistics;
-
-
-	procedure write_statistics (log_threshold : in et_string_processing.type_log_level) is
-	-- Generates the statistics on components and nets of the modules.
-	-- Distinguishes between CAD and CAM related things.
-		statistics_file_name_cad	: et_schematic.type_statistic_file_name.bounded_string;
-		statistics_file_name_cam	: et_schematic.type_statistic_file_name.bounded_string;
-		
-		statistics_handle_cad	: ada.text_io.file_type;
-		statistics_handle_cam	: ada.text_io.file_type;
-
-		--statistics : type_statistics;
-		
-		use ada.directories;
-		use et_general;
-		use type_modules;
-		use et_string_processing;
-		use et_export;
-
-	begin -- write_statistics
-		--first_module;
-		module_cursor := first (modules);
-		
-		log (text => "writing statistics ...", level => log_threshold);
-		log_indentation_up;
-		
-		while module_cursor /= type_modules.no_element loop
-			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
-			log_indentation_up;
-
-			-- CAD
-			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);			
-			-- compose the CAD statistics file name and its path like "../ET/motor_driver/motor_driver.stat"
-			statistics_file_name_cad := et_schematic.type_statistic_file_name.to_bounded_string 
-				(
-				compose (
-					containing_directory	=> compose (work_directory, to_string (key (module_cursor))),
-					name 					=> to_string (key (module_cursor)),
-					extension 				=> et_schematic.extension_statistics)
-				);
-
-			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
-			log (text => "creating CAD statistics file " &
-				 et_schematic.type_statistic_file_name.to_string (statistics_file_name_cad), level => log_threshold + 1);
-			
-			create (
-				file => statistics_handle_cad,
-				mode => out_file, 
-				name => et_schematic.type_statistic_file_name.to_string (statistics_file_name_cad));
-
-			log_indentation_up;
-			put_line (statistics_handle_cad, comment_mark & " " & et_general.system_name & " CAD statistics");
-			put_line (statistics_handle_cad, comment_mark & " " & date);
-			put_line (statistics_handle_cad, comment_mark & " module " & to_string (key (module_cursor)));
-			put_line (statistics_handle_cad, comment_mark & " " & row_separator_double);
-
-			make_statistics (log_threshold + 1);
-			
-			-- components
-			put_line (statistics_handle_cad, "components");
-			put_line (statistics_handle_cad, " total      " & et_schematic.statistics_query (et_schematic.COMPONENTS_TOTAL));
-			put_line (statistics_handle_cad, " real       " & et_schematic.statistics_query (et_schematic.COMPONENTS_REAL)); 
-			put_line (statistics_handle_cad, " mounted    " & et_schematic.statistics_query (et_schematic.COMPONENTS_MOUNTED));
-			put_line (statistics_handle_cad, " virtual    " & et_schematic.statistics_query (et_schematic.COMPONENTS_VIRTUAL));
-
-			-- As for the total number of ports, we take all ports into account (inc. virtual ports 
-			-- of virtual components like GND symbols).
-			new_line (statistics_handle_cad);
-			put_line (statistics_handle_cad, "ports       " & et_schematic.statistics_query (et_schematic.PORTS_TOTAL));
-			-- nets
-			put_line (statistics_handle_cad, "nets        " & et_schematic.statistics_query (et_schematic.NETS_TOTAL));
-			put_line (statistics_handle_cad, "junctions   " & et_schematic.statistics_query (et_schematic.JUNCTIONS));
-			new_line (statistics_handle_cad);
-			
-			-- components by category
-			put_line (statistics_handle_cad, "capacitors  " & et_schematic.statistics_query (et_schematic.CAPACITORS));
-			put_line (statistics_handle_cad, "connectors  " & et_schematic.statistics_query (et_schematic.CONNECTORS));
-			put_line (statistics_handle_cad, "diodes      " & et_schematic.statistics_query (et_schematic.DIODES));
-			put_line (statistics_handle_cad, "inductors   " & et_schematic.statistics_query (et_schematic.INDUCTORS));
-			put_line (statistics_handle_cad, "ICs         " & et_schematic.statistics_query (et_schematic.INTEGRATED_CIRCUITS));
-			put_line (statistics_handle_cad, "jumpers     " & et_schematic.statistics_query (et_schematic.JUMPERS));
-			put_line (statistics_handle_cad, "LEDs        " & et_schematic.statistics_query (et_schematic.LEDS));
--- 			put_line (statistics_handle_cad, "netchangers " & et_schematic.statistics_query (et_schematic.NETCHANGERS));
-			put_line (statistics_handle_cad, "relays      " & et_schematic.statistics_query (et_schematic.RELAYS));
-			put_line (statistics_handle_cad, "resistors   " & et_schematic.statistics_query (et_schematic.RESISTORS));
-			put_line (statistics_handle_cad, "testpoints  " & et_schematic.statistics_query (et_schematic.TESTPOINTS));
-			put_line (statistics_handle_cad, "transistors " & et_schematic.statistics_query (et_schematic.TRANSISTORS));
-			
-
-			-- finish statistics			
-			new_line (statistics_handle_cad);
-			put_line (statistics_handle_cad, comment_mark & " " & row_separator_single);
-			put_line (statistics_handle_cad, comment_mark & " end of list");
-			log_indentation_down;
-			close (statistics_handle_cad);
+-- 	procedure make_statistics (log_threshold : in et_string_processing.type_log_level) is
+-- 	
+-- 		arrow : constant string (1..4) := " -> ";
+-- 
+-- 		use et_string_processing;		
+-- 		use et_coordinates;
+-- 		
+-- 		procedure count_components (
+-- 			name	: in type_submodule_name.bounded_string;
+-- 			module	: in type_module) is
+-- 
+-- 			use type_components_schematic;		
+-- 			component : type_components_schematic.cursor := module.components.first;
+-- 			
+-- 			use conventions;
+-- 
+-- 			procedure log_component (mounted : in boolean := true) is
+-- 			-- This is for logging mounted or not mounted components.
+-- 			begin
+-- 				if mounted then
+-- 					log (text => et_libraries.to_string (key (component)) 
+-- 						& arrow & et_libraries.to_string (element (component).appearance, verbose => true),
+-- 						level => log_threshold + 1);
+-- 				else
+-- 					log (text => et_libraries.to_string (key (component)) 
+-- 						& arrow & et_libraries.to_string (element (component).appearance, verbose => true) 
+-- 						& arrow & not_mounted,
+-- 						level => log_threshold + 1);
+-- 				end if;
+-- 			end log_component;
+-- 			
+-- 		begin -- count_components
+-- 			-- total number of components
+-- 			et_schematic.statistics_set (cat => et_schematic.COMPONENTS_TOTAL, increment => false, number => module.components.length);
+-- 
+-- 			-- count virtual and real components. real components are separated by
+-- 			-- the fact if they are mounted or not.
+-- 			while component /= type_components_schematic.no_element loop
+-- 
+-- 				case type_components_schematic.element (component).appearance is
+-- 					when et_libraries.sch => -- virtual
+-- 						log_component;
+-- 						et_schematic.statistics_set (et_schematic.COMPONENTS_VIRTUAL);
+-- 
+-- 					when et_libraries.sch_pcb => -- real
+-- 						et_schematic.statistics_set (et_schematic.COMPONENTS_REAL);
+-- 
+-- 						-- count components by category
+-- 						case category (key (component)) is
+-- 							when CAPACITOR | CAPACITOR_ADJUSTABLE 	=> et_schematic.statistics_set (et_schematic.CAPACITORS);
+-- 							when CONNECTOR 							=> et_schematic.statistics_set (et_schematic.CONNECTORS);
+-- 							when DIODE | DIODE_PHOTO 				=> et_schematic.statistics_set (et_schematic.DIODES);
+-- 							when INDUCTOR | INDUCTOR_ADJUSTABLE 	=> et_schematic.statistics_set (et_schematic.INDUCTORS);
+-- 							when INTEGRATED_CIRCUIT 				=> et_schematic.statistics_set (et_schematic.INTEGRATED_CIRCUITS);
+-- 							when JUMPER 							=> et_schematic.statistics_set (et_schematic.JUMPERS);
+-- 							when LIGHT_EMMITTING_DIODE | LIGHT_EMMITTING_DIODE_ARRAY 
+-- 																	=> et_schematic.statistics_set (et_schematic.LEDS);
+-- -- 							when NETCHANGER 						=> et_schematic.statistics_set (et_schematic.NETCHANGERS);
+-- 							when RELAY 								=> et_schematic.statistics_set (et_schematic.RELAYS);
+-- 							when RESISTOR | RESISTOR_ADJUSTABLE | RESISTOR_NETWORK | RESISTOR_PHOTO | POTENTIOMETER 
+-- 																	=> et_schematic.statistics_set (et_schematic.RESISTORS);
+-- 							when TESTPOINT 							=> et_schematic.statistics_set (et_schematic.TESTPOINTS);
+-- 							when TRANSISTOR | TRANSISTOR_PHOTO 		=> et_schematic.statistics_set (et_schematic.TRANSISTORS);
+-- 							
+-- 							when others => null;
+-- 						end case;
+-- 
+-- 						-- count mounted components
+-- 						log_component;
+-- 						et_schematic.statistics_set (et_schematic.COMPONENTS_MOUNTED);
+-- 				end case;
+-- 
+-- 				next (component);
+-- 			end loop;
+-- 				
+-- 		end count_components;
+-- 
+-- 		procedure count_ports (
+-- 			name	: in type_submodule_name.bounded_string;
+-- 			module	: in type_module) is
+-- 
+-- 			use type_portlists;
+-- 			portlist : type_portlists.cursor := module.portlists.first;
+-- 
+-- 			procedure count (
+-- 				component	: in et_libraries.type_device_name;
+-- 				ports		: in type_ports.list) is
+-- 				port : type_ports.cursor := ports.first;
+-- 				use type_ports;
+-- 			begin
+-- 				-- loop through the ports of the given component
+-- 				-- and count those which are connected.
+-- 				while port /= type_ports.no_element loop
+-- 					--if et_schematic."=" (element (port).connected, et_schematic.YES) then
+-- 					if element (port).connected = YES then
+-- 						et_schematic.statistics_set (et_schematic.PORTS_TOTAL);
+-- 						-- CS: log port
+-- 					end if;
+-- 					next (port);
+-- 				end loop;
+-- 			end count;
+-- 				
+-- 		begin -- count_ports
+-- 			while portlist /= type_portlists.no_element loop
+-- 				query_element (
+-- 					position	=> portlist,
+-- 					process		=> count'access);
+-- 				
+-- 				next (portlist);
+-- 			end loop;
+-- 		end count_ports;
+-- 
+-- 	begin -- make_statistics
+-- 
+-- 		-- count components
+-- 		type_modules.query_element (
+-- 			position	=> module_cursor,
+-- 			process		=> count_components'access
+-- 			);
+-- 
+-- 		-- count ports
+-- 		type_modules.query_element (
+-- 			position	=> module_cursor,
+-- 			process		=> count_ports'access
+-- 			);
+-- 
+-- 		-- count nets
+-- 		et_schematic.statistics_set (cat => et_schematic.NETS_TOTAL, number => net_count, increment => false);
+-- 
+-- 		-- count junctions
+-- 		et_schematic.statistics_set (cat => et_schematic.JUNCTIONS, number => junction_count, increment => false);
+-- 		
+-- 		--return statistics;
+-- 	end make_statistics;
 
 
-
-			-- CAM
-			-- compose the CAM statistics file name and its path like "../ET/motor_driver/CAM/motor_driver.stat"
-			statistics_file_name_cam := et_schematic.type_statistic_file_name.to_bounded_string 
-				(
-				compose (
-					containing_directory => compose 
-						(
-						containing_directory	=> compose (work_directory, to_string (key (module_cursor))),
-						name					=> et_export.directory_cam
-						),
-					name				=> to_string (key (module_cursor)),
-					extension			=> et_schematic.extension_statistics)
-				);
-
-			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
-			log (text => "CAM statistics file " &
-				 et_schematic.type_statistic_file_name.to_string (statistics_file_name_cam), level => log_threshold + 2);
-			
-			create (
-				file => statistics_handle_cam,
-				mode => out_file, 
-				name => et_schematic.type_statistic_file_name.to_string (statistics_file_name_cam));
-
-			log_indentation_up;
-			put_line (statistics_handle_cam, comment_mark & " " & et_general.system_name & " CAM statistics");
-			put_line (statistics_handle_cam, comment_mark & " " & date);
-			put_line (statistics_handle_cam, comment_mark & " module " & to_string (key (module_cursor)));
-			put_line (statistics_handle_cam, comment_mark & " " & row_separator_double);
-
-			-- components
-			put_line (statistics_handle_cam, "components");
-			put_line (statistics_handle_cam, " total   " & et_schematic.statistics_query (et_schematic.COMPONENTS_MOUNTED));
-
-			-- As for the total number of real component ports, we take all ports into account for which a physical
-			-- pad must be manufactured. Here it does not matter if a component is to be mounted or not, if a pin is connected or not.
-			-- CS: THT/SMD
-			-- CS: THT/SMD/pins/pads
-			-- CS: ressitors, leds, transitors, ...
-			new_line (statistics_handle_cam);
-
-			-- nets
-			put_line (statistics_handle_cam, "nets");
-			put_line (statistics_handle_cam, " total   " & et_schematic.statistics_query (et_schematic.NETS_TOTAL));
-			-- CS: ports of mounted components ? Could be useful for test generation like FPT, ICT, BST, ...
-
-			-- finish statistics
-			put_line (statistics_handle_cam, comment_mark & " " & row_separator_single);
-			put_line (statistics_handle_cam, comment_mark & " end of list");
-			log_indentation_down;
-			close (statistics_handle_cam);
-			
-			log_indentation_down;
-			next (module_cursor);
-		end loop;
-		
-		log_indentation_down;
-	end write_statistics;
+-- 	procedure write_statistics (log_threshold : in et_string_processing.type_log_level) is
+-- 	-- Generates the statistics on components and nets of the modules.
+-- 	-- Distinguishes between CAD and CAM related things.
+-- 		statistics_file_name_cad	: et_schematic.type_statistic_file_name.bounded_string;
+-- 		statistics_file_name_cam	: et_schematic.type_statistic_file_name.bounded_string;
+-- 		
+-- 		statistics_handle_cad	: ada.text_io.file_type;
+-- 		statistics_handle_cam	: ada.text_io.file_type;
+-- 
+-- 		--statistics : type_statistics;
+-- 		
+-- 		use ada.directories;
+-- 		use et_general;
+-- 		use type_modules;
+-- 		use et_string_processing;
+-- 		use et_export;
+-- 
+-- 	begin -- write_statistics
+-- 		--first_module;
+-- 		module_cursor := first (modules);
+-- 		
+-- 		log (text => "writing statistics ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 		
+-- 		while module_cursor /= type_modules.no_element loop
+-- 			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
+-- 			log_indentation_up;
+-- 
+-- 			-- CAD
+-- 			create_project_directory (to_string (key (module_cursor)), log_threshold + 2);			
+-- 			-- compose the CAD statistics file name and its path like "../ET/motor_driver/motor_driver.stat"
+-- 			statistics_file_name_cad := et_schematic.type_statistic_file_name.to_bounded_string 
+-- 				(
+-- 				compose (
+-- 					containing_directory	=> compose (work_directory, to_string (key (module_cursor))),
+-- 					name 					=> to_string (key (module_cursor)),
+-- 					extension 				=> et_schematic.extension_statistics)
+-- 				);
+-- 
+-- 			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
+-- 			log (text => "creating CAD statistics file " &
+-- 				 et_schematic.type_statistic_file_name.to_string (statistics_file_name_cad), level => log_threshold + 1);
+-- 			
+-- 			create (
+-- 				file => statistics_handle_cad,
+-- 				mode => out_file, 
+-- 				name => et_schematic.type_statistic_file_name.to_string (statistics_file_name_cad));
+-- 
+-- 			log_indentation_up;
+-- 			put_line (statistics_handle_cad, comment_mark & " " & et_general.system_name & " CAD statistics");
+-- 			put_line (statistics_handle_cad, comment_mark & " " & date);
+-- 			put_line (statistics_handle_cad, comment_mark & " module " & to_string (key (module_cursor)));
+-- 			put_line (statistics_handle_cad, comment_mark & " " & row_separator_double);
+-- 
+-- 			make_statistics (log_threshold + 1);
+-- 			
+-- 			-- components
+-- 			put_line (statistics_handle_cad, "components");
+-- 			put_line (statistics_handle_cad, " total      " & et_schematic.statistics_query (et_schematic.COMPONENTS_TOTAL));
+-- 			put_line (statistics_handle_cad, " real       " & et_schematic.statistics_query (et_schematic.COMPONENTS_REAL)); 
+-- 			put_line (statistics_handle_cad, " mounted    " & et_schematic.statistics_query (et_schematic.COMPONENTS_MOUNTED));
+-- 			put_line (statistics_handle_cad, " virtual    " & et_schematic.statistics_query (et_schematic.COMPONENTS_VIRTUAL));
+-- 
+-- 			-- As for the total number of ports, we take all ports into account (inc. virtual ports 
+-- 			-- of virtual components like GND symbols).
+-- 			new_line (statistics_handle_cad);
+-- 			put_line (statistics_handle_cad, "ports       " & et_schematic.statistics_query (et_schematic.PORTS_TOTAL));
+-- 			-- nets
+-- 			put_line (statistics_handle_cad, "nets        " & et_schematic.statistics_query (et_schematic.NETS_TOTAL));
+-- 			put_line (statistics_handle_cad, "junctions   " & et_schematic.statistics_query (et_schematic.JUNCTIONS));
+-- 			new_line (statistics_handle_cad);
+-- 			
+-- 			-- components by category
+-- 			put_line (statistics_handle_cad, "capacitors  " & et_schematic.statistics_query (et_schematic.CAPACITORS));
+-- 			put_line (statistics_handle_cad, "connectors  " & et_schematic.statistics_query (et_schematic.CONNECTORS));
+-- 			put_line (statistics_handle_cad, "diodes      " & et_schematic.statistics_query (et_schematic.DIODES));
+-- 			put_line (statistics_handle_cad, "inductors   " & et_schematic.statistics_query (et_schematic.INDUCTORS));
+-- 			put_line (statistics_handle_cad, "ICs         " & et_schematic.statistics_query (et_schematic.INTEGRATED_CIRCUITS));
+-- 			put_line (statistics_handle_cad, "jumpers     " & et_schematic.statistics_query (et_schematic.JUMPERS));
+-- 			put_line (statistics_handle_cad, "LEDs        " & et_schematic.statistics_query (et_schematic.LEDS));
+-- -- 			put_line (statistics_handle_cad, "netchangers " & et_schematic.statistics_query (et_schematic.NETCHANGERS));
+-- 			put_line (statistics_handle_cad, "relays      " & et_schematic.statistics_query (et_schematic.RELAYS));
+-- 			put_line (statistics_handle_cad, "resistors   " & et_schematic.statistics_query (et_schematic.RESISTORS));
+-- 			put_line (statistics_handle_cad, "testpoints  " & et_schematic.statistics_query (et_schematic.TESTPOINTS));
+-- 			put_line (statistics_handle_cad, "transistors " & et_schematic.statistics_query (et_schematic.TRANSISTORS));
+-- 			
+-- 
+-- 			-- finish statistics			
+-- 			new_line (statistics_handle_cad);
+-- 			put_line (statistics_handle_cad, comment_mark & " " & row_separator_single);
+-- 			put_line (statistics_handle_cad, comment_mark & " end of list");
+-- 			log_indentation_down;
+-- 			close (statistics_handle_cad);
+-- 
+-- 
+-- 
+-- 			-- CAM
+-- 			-- compose the CAM statistics file name and its path like "../ET/motor_driver/CAM/motor_driver.stat"
+-- 			statistics_file_name_cam := et_schematic.type_statistic_file_name.to_bounded_string 
+-- 				(
+-- 				compose (
+-- 					containing_directory => compose 
+-- 						(
+-- 						containing_directory	=> compose (work_directory, to_string (key (module_cursor))),
+-- 						name					=> et_export.directory_cam
+-- 						),
+-- 					name				=> to_string (key (module_cursor)),
+-- 					extension			=> et_schematic.extension_statistics)
+-- 				);
+-- 
+-- 			-- create the statistics file (which inevitably and intentionally overwrites the previous file)
+-- 			log (text => "CAM statistics file " &
+-- 				 et_schematic.type_statistic_file_name.to_string (statistics_file_name_cam), level => log_threshold + 2);
+-- 			
+-- 			create (
+-- 				file => statistics_handle_cam,
+-- 				mode => out_file, 
+-- 				name => et_schematic.type_statistic_file_name.to_string (statistics_file_name_cam));
+-- 
+-- 			log_indentation_up;
+-- 			put_line (statistics_handle_cam, comment_mark & " " & et_general.system_name & " CAM statistics");
+-- 			put_line (statistics_handle_cam, comment_mark & " " & date);
+-- 			put_line (statistics_handle_cam, comment_mark & " module " & to_string (key (module_cursor)));
+-- 			put_line (statistics_handle_cam, comment_mark & " " & row_separator_double);
+-- 
+-- 			-- components
+-- 			put_line (statistics_handle_cam, "components");
+-- 			put_line (statistics_handle_cam, " total   " & et_schematic.statistics_query (et_schematic.COMPONENTS_MOUNTED));
+-- 
+-- 			-- As for the total number of real component ports, we take all ports into account for which a physical
+-- 			-- pad must be manufactured. Here it does not matter if a component is to be mounted or not, if a pin is connected or not.
+-- 			-- CS: THT/SMD
+-- 			-- CS: THT/SMD/pins/pads
+-- 			-- CS: ressitors, leds, transitors, ...
+-- 			new_line (statistics_handle_cam);
+-- 
+-- 			-- nets
+-- 			put_line (statistics_handle_cam, "nets");
+-- 			put_line (statistics_handle_cam, " total   " & et_schematic.statistics_query (et_schematic.NETS_TOTAL));
+-- 			-- CS: ports of mounted components ? Could be useful for test generation like FPT, ICT, BST, ...
+-- 
+-- 			-- finish statistics
+-- 			put_line (statistics_handle_cam, comment_mark & " " & row_separator_single);
+-- 			put_line (statistics_handle_cam, comment_mark & " end of list");
+-- 			log_indentation_down;
+-- 			close (statistics_handle_cam);
+-- 			
+-- 			log_indentation_down;
+-- 			next (module_cursor);
+-- 		end loop;
+-- 		
+-- 		log_indentation_down;
+-- 	end write_statistics;
 
 	procedure write_note_properties (
 		note 			: in type_text;

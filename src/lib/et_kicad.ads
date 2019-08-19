@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                           SYSTEM ET KICAD                                --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                                KICAD                                     --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -1403,9 +1403,9 @@ package et_kicad is
 		log_threshold	: in et_string_processing.type_log_level)		
 		return et_general.type_net_name.bounded_string;
 
-	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);  -- CS this is general and should be in et_schematic
-	-- Writes the statistics on components and nets of the modules.
-	-- Distinguishes between CAD and CAM related things.
+-- 	procedure write_statistics (log_threshold : in et_string_processing.type_log_level);  -- CS this is general and should be in et_schematic
+-- 	-- Writes the statistics on components and nets of the modules.
+-- 	-- Distinguishes between CAD and CAM related things.
 
 	-- This is general board stuff:
 	type type_board is new et_pcb.type_board with record
