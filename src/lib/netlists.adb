@@ -732,7 +732,9 @@ package body netlists is
 				file_name := to_file_name (
 							compose 
 							(
-								containing_directory	=> directory_export & dir_separator & directory_cam,
+								containing_directory	=> directory_export & dir_separator & directory_cam &
+															dir_separator & directory_netlists,
+
 								name					=> et_general.to_string (module_name),
 								extension				=> extension_netlist
 							));
@@ -741,7 +743,9 @@ package body netlists is
 				file_name := to_file_name (
 							compose 
 							(
-								containing_directory	=> directory_export & dir_separator & directory_cam,
+								containing_directory	=> directory_export & dir_separator & directory_cam &
+															dir_separator & directory_netlists,
+
 								name					=> et_general.to_string (module_name) & "_" & 
 															to_variant (variant_name),
 								extension				=> extension_netlist

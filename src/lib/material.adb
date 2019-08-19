@@ -177,7 +177,9 @@ package body material is
 				file_name := to_file_name (
 							compose 
 							(
-								containing_directory	=> directory_export & dir_separator & directory_cam,
+								containing_directory	=> directory_export & dir_separator & directory_cam &
+															dir_separator & directory_bom,
+
 								name					=> et_general.to_string (module_name),
 								extension				=> extension_bom
 							));
@@ -186,7 +188,9 @@ package body material is
 				file_name := to_file_name (
 							compose 
 							(
-								containing_directory	=> directory_export & dir_separator & directory_cam,
+								containing_directory	=> directory_export & dir_separator & directory_cam &
+															dir_separator & directory_bom,
+
 								name					=> et_general.to_string (module_name) & "_" & 
 															to_variant (variant_name),
 								extension				=> extension_bom
@@ -309,15 +313,6 @@ package body material is
 	begin -- write_bom
 		-- build the name of the BOM file
 		set_file_name;
-		
--- 		if ada.directories.exists (to_string (file_name)) then
--- 			log (importance => NOTE, text => "overwriting " & to_string (file_name) & " ...", level => log_threshold);
--- 		end if;
--- 
--- 		if ada.directories.extension (to_string (file_name)) /= extension_bom then
--- 			log (importance => WARNING, text => "targeted BOM file has no extension " &
--- 				 enclose_in_quotes (extension_bom) & " !");
--- 		end if;
 
 		log (text => "writing BOM file " & enclose_in_quotes (to_string (file_name)) & " ...", level => log_threshold);
 		

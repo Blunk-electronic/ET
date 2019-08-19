@@ -59,7 +59,7 @@ with et_string_processing;		use et_string_processing;
 
 
 package netlists is
-
+	
 	-- Whenever we deal with netlist files this type should be used:
 	file_name_length_max : constant positive := 100; -- CS: should suffice for now
 	package type_file_name is new generic_bounded_length (file_name_length_max); 

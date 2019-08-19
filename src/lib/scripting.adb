@@ -1041,10 +1041,10 @@ package body scripting is
 
 				when MAKE =>
 					case noun is
-						when NOUN_BOMS => 
+						when NOUN_BOM => 
 							case fields is
 								when 4 =>
-									schematic_ops.make_boms 
+									schematic_ops.make_boms -- a BOM for each variant
 										(
 										module_name 	=> module,
 										log_threshold	=> log_threshold + 1);
@@ -1611,28 +1611,14 @@ package body scripting is
 					case noun is
 						when PNP =>
 							case fields is
-								when 5 =>
-									-- The variant name is optional. If not specified,
-									-- an empty string will be passed:
+								when 4 =>
 									board_ops.make_pick_and_place 
 										(
 										module_name 	=> module,
-										pnp_file		=> pick_and_place.to_file_name (f (5)),
-										variant_top		=> to_variant (""),
-										
 										log_threshold	=> log_threshold + 1);
 
-								when 6 =>
-									board_ops.make_pick_and_place 
-										(
-										module_name 	=> module,
-										pnp_file		=> pick_and_place.to_file_name (f (5)),
-										variant_top		=> to_variant (f (6)),
-										
-										log_threshold	=> log_threshold + 1);
-
-								when 7 .. count_type'last =>
-									command_too_long (6);
+								when 5 .. count_type'last =>
+									command_too_long (4);
 									
 								when others =>
 									command_incomplete;

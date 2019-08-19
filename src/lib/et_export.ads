@@ -44,7 +44,14 @@ with et_string_processing;		--use et_string_processing;
 package et_export is
 
 	directory_export		: constant string := "export";
+
 	directory_cam			: constant string := "CAM";
+	directory_bom 			: constant string := "BOM";	
+	directory_pick_and_place: constant string := "pick_and_place";
+	directory_netlists 		: constant string := "netlists";
+	
+
+
 	-- directory_cad			: constant string := "CAD";	
 	directory_statistics	: constant string := "statistics";
 

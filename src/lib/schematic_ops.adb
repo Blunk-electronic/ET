@@ -11216,400 +11216,400 @@ package body schematic_ops is
 		end if;
 	end;
 	
-	procedure make_bom ( -- CS obsolete
-	-- Exports a BOM file from the given top module and assembly variant.
-		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_top		: in type_variant_name.bounded_string; -- low_cost
-		bom_file		: in material.type_file_name.bounded_string; -- CAM/motor_driver_bom.csv
-		log_threshold	: in type_log_level) is
-
-		module_cursor : type_modules.cursor; -- points to the module
-
-		use assembly_variants;
-		use material;
-
-		bill_of_material : material.type_devices.map;
-
-		procedure collect (
-		-- Collects devices of the given module and its variant in container bill_of_material.
-		-- Adds to the device index the given offset.
-		-- If offset is zero, we are dealing with the top module.
-			module_cursor	: in type_modules.cursor;
-			variant			: in type_variant_name.bounded_string;
-			offset			: in et_libraries.type_device_name_index) is
-			
-			procedure query_devices (
-				module_name	: in type_module_name.bounded_string;
-				module		: in et_schematic.type_module) is
-
-				device_name : et_libraries.type_device_name;
-				inserted : boolean;
-				
-				procedure test_inserted is begin
-					if not inserted then
-						log (ERROR, "multiple occurence of device " & to_string (device_name),
-								console => true);
-						raise constraint_error;
-					end if;
-				end;
-
-				procedure test_partcode (partcode : in material.type_partcode.bounded_string) is
-				begin
-					if type_partcode.length (partcode) = 0 then
-						log (WARNING, text => "device " & to_string (device_name) &
-							 " has no partcode !");
-					end if;
-				end;
-				
-				procedure query_properties_default (cursor_schematic : in et_schematic.type_devices.cursor) is 
-					cursor_bom : material.type_devices.cursor;
-
-					use et_schematic.type_devices;
-					use assembly_variants.type_devices;
-				begin -- query_properties_default
-
-					-- the device must be real (appearance SCH_PCB)
-					if element (cursor_schematic).appearance = SCH_PCB then -- skip virtual devices
-
-						-- the package must be real
-						if has_real_package (cursor_schematic) then
-
-							device_name := et_schematic.type_devices.key (cursor_schematic);
-
-							-- issue warning if device has no partcode
-							test_partcode (element (cursor_schematic).partcode);
-							
-							-- Store device in bill_of_material as it is:
-
-							apply_offset (device_name, offset, log_threshold + 2);
-							
-							material.type_devices.insert (
-								container	=> bill_of_material,
-								key			=> device_name, -- IC4, R3
-								new_item	=> (
-									value		=> element (cursor_schematic).value,
-									partcode	=> element (cursor_schematic).partcode,
-									purpose		=> element (cursor_schematic).purpose,
-									packge		=> et_schematic.package_model (cursor_schematic)),
-								position	=> cursor_bom,
-								inserted	=> inserted);
-							
-							test_inserted;
-							
-						end if;
-					end if;
-				end query_properties_default;
-
-				procedure query_properties_variants (cursor_schematic : in et_schematic.type_devices.cursor) is 
-					cursor_bom : material.type_devices.cursor;
-
-					use et_schematic.type_devices;
-					alt_dev_cursor : assembly_variants.type_devices.cursor;
-					use assembly_variants.type_devices;
-				begin -- query_properties_variants
-
-					-- the device must be real (appearance SCH_PCB)
-					if element (cursor_schematic).appearance = SCH_PCB then -- skip virtual devices
-
-						-- the package must be real
-						if has_real_package (cursor_schematic) then
-						
-							device_name := et_schematic.type_devices.key (cursor_schematic);
-							
-							-- Get a cursor to the alternative device as specified in the assembly variant:
-							alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
-							
-							if alt_dev_cursor = assembly_variants.type_devices.no_element then
-							-- Device has no entry in the assembly variant. -> It is to be stored in bill_of_material as it is:
-
-								-- issue warning if device has no partcode
-								test_partcode (element (cursor_schematic).partcode);
-								
-								apply_offset (device_name, offset, log_threshold + 2);
-								
-								material.type_devices.insert (
-									container	=> bill_of_material,
-									key			=> device_name, -- IC4, R3
-									new_item	=> (
-										value		=> element (cursor_schematic).value,
-										partcode	=> element (cursor_schematic).partcode,	
-										purpose		=> element (cursor_schematic).purpose,
-										packge		=> et_schematic.package_model (cursor_schematic)),
-									position	=> cursor_bom,
-									inserted	=> inserted);
-
-								test_inserted;
-
-							else
-							-- Device has an entry in the assembly variant. Depending on the mounted-flag
-							-- it is to be skipped or inserted in bill_of_material with alternative properties.
-							-- NOTE: The package model is not affected by the assembly variant.
-								case element (alt_dev_cursor).mounted is
-									when NO =>
-										log (text => to_string (device_name) & " not mounted -> skipped",
-											level => log_threshold + 2);
-										
-									when YES =>
-										-- issue warning if device has no partcode
-										test_partcode (element (alt_dev_cursor).partcode);
-
-										apply_offset (device_name, offset, log_threshold + 2);
-										
-										-- Insert the device in bill with alternative properties as defined
-										-- in the assembly variant:
-										material.type_devices.insert (
-											container	=> bill_of_material,
-											key			=> device_name, -- IC4, R3
-											new_item	=> (
-												value		=> element (alt_dev_cursor).value,
-												partcode	=> element (alt_dev_cursor).partcode,
-												purpose		=> element (alt_dev_cursor).purpose,
-												packge		=> et_schematic.package_model (cursor_schematic)),
-											position	=> cursor_bom,
-											inserted	=> inserted);
-
-										test_inserted;
-
-										-- check partcode content
-										conventions.validate_partcode (
-											partcode		=> material.type_devices.element (cursor_bom).partcode,
-											device_name		=> device_name,
-											packge			=> to_package_name (ada.directories.base_name (to_string (material.type_devices.element (cursor_bom).packge))),
-											value			=> material.type_devices.element (cursor_bom).value,
-											log_threshold	=> log_threshold + 3);
-
-								end case;
-							end if;
-
-						end if;
-					end if;
-				end query_properties_variants;
-				
-			begin -- query_devices
-				-- if default variant given, then assembly variants are irrelevant:
-				if is_default (variant) then
-
-					log (text => "collecting devices from module " &
-							enclose_in_quotes (to_string (module_name)) &
-							" default variant by applying device index offset" & 
-							et_libraries.to_string (offset), -- 100
-						level => log_threshold + 1);
-					
-					log_indentation_up;
-					
-					et_schematic.type_devices.iterate (
-						container	=> module.devices,
-						process		=> query_properties_default'access);
-
-				-- if a particular variant given, then collect devices accordingly:
-				else
-					log (text => "collecting devices from module " &
-							enclose_in_quotes (to_string (module_name)) &
-							" variant " & enclose_in_quotes (to_variant (variant)) &
-							" by applying device index offset" & 
-							et_libraries.to_string (offset), -- 100
-						level => log_threshold + 1);
-					
-					log_indentation_up;
-				
-					et_schematic.type_devices.iterate (
-						container	=> module.devices,
-						process		=> query_properties_variants'access);
-
-				end if;
-				
-				log_indentation_down;
-			end query_devices;
-
-		begin -- collect
-			et_project.type_modules.query_element (
-				position	=> module_cursor,
-				process		=> query_devices'access);
-			
-		end collect;
-			
-		submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
-		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
-
-		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
-		package stack_level is new et_general.stack_lifo (
-			item	=> numbering.type_modules.cursor,
-			max 	=> submodules.nesting_depth_max);
-
-		-- Another stack keeps record of the assembly variant on submodule levels.
-		package stack_variant is new et_general.stack_lifo (
-			item	=> type_variant_name.bounded_string,
-			max 	=> submodules.nesting_depth_max);
-		
-		variant : type_variant_name.bounded_string; -- low_cost
-		
-		procedure query_submodules is 
-		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
-		-- until the deepest submodule (the bottom of the design structure) has been reached.
-			use numbering.type_modules;
-			module_name 	: type_module_name.bounded_string; -- motor_driver
-			parent_name 	: type_module_name.bounded_string; -- water_pump
-			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-			offset			: et_libraries.type_device_name_index;
-
-			use assembly_variants.type_submodules;
-			alt_submod : assembly_variants.type_submodules.cursor;
-		begin
-			log_indentation_up;
-
-			-- start with the first submodule on the current hierarchy level
-			tree_cursor := first_child (tree_cursor);
-
-			-- iterate through the submodules on this level
-			while tree_cursor /= numbering.type_modules.no_element loop
-				module_name := element (tree_cursor).name;
-				module_instance := element (tree_cursor).instance;
-
-				log (text => "instance " & enclose_in_quotes (to_string (module_instance)) &
-					 " of generic module " & enclose_in_quotes (to_string (module_name)),
-					 level => log_threshold + 1);
-
-				-- In case we are on the first level, the parent module is the given top module.
-				-- In that case the parent variant is the given variant of the top module.
-				-- If the top module has the default variant, all submodules in all levels
-				-- assume default variant too.
-				if parent (tree_cursor) = root (submod_tree) then
-					parent_name := make_bom.module_name;
-					variant := variant_top; -- argument of make_bom
-				else
-					parent_name := element (parent (tree_cursor)).name;
-				end if;
-
-				-- Get the device name offset of the current submodule;
-				offset := element (tree_cursor).device_names_offset;
-
-				if not is_default (variant) then
-					-- Query in parent module: Is there any assembly variant specified for this submodule ?
-
-					alt_submod := alternative_submodule (
-								module	=> locate_module (parent_name),
-								variant	=> variant,
-								submod	=> module_instance);
-
-					if alt_submod = assembly_variants.type_submodules.no_element then
-					-- no variant specified for this submodule -> collect devices of default variant
-
-						variant := default;
-					else
-					-- alternative variant specified for this submodule
-						variant := element (alt_submod).variant;
-					end if;
-
-				end if;
-
-				-- collect devices from current module
-				collect (
-					module_cursor	=> locate_module (module_name),
-					variant			=> variant,
-					offset			=> offset);
-
-				
-				if first_child (tree_cursor) = numbering.type_modules.no_element then 
-				-- No submodules on the current level. means we can't go deeper:
-					
-					log_indentation_up;
-					log (text => "no submodules here -> bottom reached", level => log_threshold + 1);
-					log_indentation_down;
-				else
-				-- There are submodules on the current level:
-					
-					-- backup the cursor to the current submodule on this level
-					stack_level.push (tree_cursor);
-
-					-- backup the parent assembly variant
-					stack_variant.push (variant);
-
-					-- iterate through submodules on the level below
-					query_submodules; -- this is recursive !
-
-					-- restore cursor to submodule (see stack_level.push above)
-					tree_cursor := stack_level.pop;
-
-					-- restore the parent assembly variant (see stack_variant.push above)
-					variant := stack_variant.pop;
-				end if;
-
-				next_sibling (tree_cursor); -- next submodule on this level
-			end loop;
-			
-			log_indentation_down;
-
-			exception
-				when event: others =>
-					log_indentation_reset;
-					log (text => ada.exceptions.exception_information (event), console => true);
-					raise;
-			
-		end query_submodules;
-		
-	begin -- make_bom
-		-- The variant name is optional. If not provided, the default variant will be exported.
-		if is_default (variant_top) then
-			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
-				" default variant" &
-				" exporting BOM to file " & to_string (bom_file),
-				level => log_threshold);
-		else
-			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
-				" variant " & enclose_in_quotes (to_variant (variant_top)) &
-				" exporting BOM to file " & to_string (bom_file),
-				level => log_threshold);
-		end if;
-		
-		log_indentation_up;
-			
-		-- locate the given top module
-		module_cursor := locate_module (module_name);
-
-		-- Build the submodule tree of the module according to the current design structure.
-		-- All further operations rely on this tree:
-		schematic_ops.build_submodules_tree (
-			module_name 	=> module_name,
-			log_threshold	=> log_threshold + 1);
-		
-		if exists (module_cursor, variant_top) then
-
-			-- collect devices of the given top module. the top module has no device index offset
-			collect (module_cursor, variant_top, 0); 
-
-			-- take a copy of the submodule tree of the given top module:
-			submod_tree := element (module_cursor).submod_tree;
-
-			-- set the cursor inside the tree at root position:
-			tree_cursor := numbering.type_modules.root (submod_tree);
-			
-			stack_level.init;
-			stack_variant.init;
-
-			-- collect devices of the submodules
-			query_submodules;
-
-			-- write the bom
--- 			material.write_bom (
--- 				bom				=> bill_of_material,	-- the container that holds the bom
--- 				file_name		=> bom_file, 			-- tmp/my_project_bom.csv
--- 				--format			=> NATIVE,				-- CS should be an argument in the future
--- 				format			=> EAGLE,				-- CS should be an argument in the future
--- 				log_threshold	=> log_threshold + 1);
-			
-		else
-			assembly_variant_not_found (variant_top);
-		end if;
-		
-		log_indentation_down;
-
-		exception
-			when event: others =>
-				log_indentation_reset;
-				log (text => ada.exceptions.exception_information (event), console => true);
-				raise;
-	
-	end make_bom;
+-- 	procedure make_bom ( -- CS obsolete
+-- 	-- Exports a BOM file from the given top module and assembly variant.
+-- 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+-- 		variant_top		: in type_variant_name.bounded_string; -- low_cost
+-- 		bom_file		: in material.type_file_name.bounded_string; -- CAM/motor_driver_bom.csv
+-- 		log_threshold	: in type_log_level) is
+-- 
+-- 		module_cursor : type_modules.cursor; -- points to the module
+-- 
+-- 		use assembly_variants;
+-- 		use material;
+-- 
+-- 		bill_of_material : material.type_devices.map;
+-- 
+-- 		procedure collect (
+-- 		-- Collects devices of the given module and its variant in container bill_of_material.
+-- 		-- Adds to the device index the given offset.
+-- 		-- If offset is zero, we are dealing with the top module.
+-- 			module_cursor	: in type_modules.cursor;
+-- 			variant			: in type_variant_name.bounded_string;
+-- 			offset			: in et_libraries.type_device_name_index) is
+-- 			
+-- 			procedure query_devices (
+-- 				module_name	: in type_module_name.bounded_string;
+-- 				module		: in et_schematic.type_module) is
+-- 
+-- 				device_name : et_libraries.type_device_name;
+-- 				inserted : boolean;
+-- 				
+-- 				procedure test_inserted is begin
+-- 					if not inserted then
+-- 						log (ERROR, "multiple occurence of device " & to_string (device_name),
+-- 								console => true);
+-- 						raise constraint_error;
+-- 					end if;
+-- 				end;
+-- 
+-- 				procedure test_partcode (partcode : in material.type_partcode.bounded_string) is
+-- 				begin
+-- 					if type_partcode.length (partcode) = 0 then
+-- 						log (WARNING, text => "device " & to_string (device_name) &
+-- 							 " has no partcode !");
+-- 					end if;
+-- 				end;
+-- 				
+-- 				procedure query_properties_default (cursor_schematic : in et_schematic.type_devices.cursor) is 
+-- 					cursor_bom : material.type_devices.cursor;
+-- 
+-- 					use et_schematic.type_devices;
+-- 					use assembly_variants.type_devices;
+-- 				begin -- query_properties_default
+-- 
+-- 					-- the device must be real (appearance SCH_PCB)
+-- 					if element (cursor_schematic).appearance = SCH_PCB then -- skip virtual devices
+-- 
+-- 						-- the package must be real
+-- 						if has_real_package (cursor_schematic) then
+-- 
+-- 							device_name := et_schematic.type_devices.key (cursor_schematic);
+-- 
+-- 							-- issue warning if device has no partcode
+-- 							test_partcode (element (cursor_schematic).partcode);
+-- 							
+-- 							-- Store device in bill_of_material as it is:
+-- 
+-- 							apply_offset (device_name, offset, log_threshold + 2);
+-- 							
+-- 							material.type_devices.insert (
+-- 								container	=> bill_of_material,
+-- 								key			=> device_name, -- IC4, R3
+-- 								new_item	=> (
+-- 									value		=> element (cursor_schematic).value,
+-- 									partcode	=> element (cursor_schematic).partcode,
+-- 									purpose		=> element (cursor_schematic).purpose,
+-- 									packge		=> et_schematic.package_model (cursor_schematic)),
+-- 								position	=> cursor_bom,
+-- 								inserted	=> inserted);
+-- 							
+-- 							test_inserted;
+-- 							
+-- 						end if;
+-- 					end if;
+-- 				end query_properties_default;
+-- 
+-- 				procedure query_properties_variants (cursor_schematic : in et_schematic.type_devices.cursor) is 
+-- 					cursor_bom : material.type_devices.cursor;
+-- 
+-- 					use et_schematic.type_devices;
+-- 					alt_dev_cursor : assembly_variants.type_devices.cursor;
+-- 					use assembly_variants.type_devices;
+-- 				begin -- query_properties_variants
+-- 
+-- 					-- the device must be real (appearance SCH_PCB)
+-- 					if element (cursor_schematic).appearance = SCH_PCB then -- skip virtual devices
+-- 
+-- 						-- the package must be real
+-- 						if has_real_package (cursor_schematic) then
+-- 						
+-- 							device_name := et_schematic.type_devices.key (cursor_schematic);
+-- 							
+-- 							-- Get a cursor to the alternative device as specified in the assembly variant:
+-- 							alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
+-- 							
+-- 							if alt_dev_cursor = assembly_variants.type_devices.no_element then
+-- 							-- Device has no entry in the assembly variant. -> It is to be stored in bill_of_material as it is:
+-- 
+-- 								-- issue warning if device has no partcode
+-- 								test_partcode (element (cursor_schematic).partcode);
+-- 								
+-- 								apply_offset (device_name, offset, log_threshold + 2);
+-- 								
+-- 								material.type_devices.insert (
+-- 									container	=> bill_of_material,
+-- 									key			=> device_name, -- IC4, R3
+-- 									new_item	=> (
+-- 										value		=> element (cursor_schematic).value,
+-- 										partcode	=> element (cursor_schematic).partcode,	
+-- 										purpose		=> element (cursor_schematic).purpose,
+-- 										packge		=> et_schematic.package_model (cursor_schematic)),
+-- 									position	=> cursor_bom,
+-- 									inserted	=> inserted);
+-- 
+-- 								test_inserted;
+-- 
+-- 							else
+-- 							-- Device has an entry in the assembly variant. Depending on the mounted-flag
+-- 							-- it is to be skipped or inserted in bill_of_material with alternative properties.
+-- 							-- NOTE: The package model is not affected by the assembly variant.
+-- 								case element (alt_dev_cursor).mounted is
+-- 									when NO =>
+-- 										log (text => to_string (device_name) & " not mounted -> skipped",
+-- 											level => log_threshold + 2);
+-- 										
+-- 									when YES =>
+-- 										-- issue warning if device has no partcode
+-- 										test_partcode (element (alt_dev_cursor).partcode);
+-- 
+-- 										apply_offset (device_name, offset, log_threshold + 2);
+-- 										
+-- 										-- Insert the device in bill with alternative properties as defined
+-- 										-- in the assembly variant:
+-- 										material.type_devices.insert (
+-- 											container	=> bill_of_material,
+-- 											key			=> device_name, -- IC4, R3
+-- 											new_item	=> (
+-- 												value		=> element (alt_dev_cursor).value,
+-- 												partcode	=> element (alt_dev_cursor).partcode,
+-- 												purpose		=> element (alt_dev_cursor).purpose,
+-- 												packge		=> et_schematic.package_model (cursor_schematic)),
+-- 											position	=> cursor_bom,
+-- 											inserted	=> inserted);
+-- 
+-- 										test_inserted;
+-- 
+-- 										-- check partcode content
+-- 										conventions.validate_partcode (
+-- 											partcode		=> material.type_devices.element (cursor_bom).partcode,
+-- 											device_name		=> device_name,
+-- 											packge			=> to_package_name (ada.directories.base_name (to_string (material.type_devices.element (cursor_bom).packge))),
+-- 											value			=> material.type_devices.element (cursor_bom).value,
+-- 											log_threshold	=> log_threshold + 3);
+-- 
+-- 								end case;
+-- 							end if;
+-- 
+-- 						end if;
+-- 					end if;
+-- 				end query_properties_variants;
+-- 				
+-- 			begin -- query_devices
+-- 				-- if default variant given, then assembly variants are irrelevant:
+-- 				if is_default (variant) then
+-- 
+-- 					log (text => "collecting devices from module " &
+-- 							enclose_in_quotes (to_string (module_name)) &
+-- 							" default variant by applying device index offset" & 
+-- 							et_libraries.to_string (offset), -- 100
+-- 						level => log_threshold + 1);
+-- 					
+-- 					log_indentation_up;
+-- 					
+-- 					et_schematic.type_devices.iterate (
+-- 						container	=> module.devices,
+-- 						process		=> query_properties_default'access);
+-- 
+-- 				-- if a particular variant given, then collect devices accordingly:
+-- 				else
+-- 					log (text => "collecting devices from module " &
+-- 							enclose_in_quotes (to_string (module_name)) &
+-- 							" variant " & enclose_in_quotes (to_variant (variant)) &
+-- 							" by applying device index offset" & 
+-- 							et_libraries.to_string (offset), -- 100
+-- 						level => log_threshold + 1);
+-- 					
+-- 					log_indentation_up;
+-- 				
+-- 					et_schematic.type_devices.iterate (
+-- 						container	=> module.devices,
+-- 						process		=> query_properties_variants'access);
+-- 
+-- 				end if;
+-- 				
+-- 				log_indentation_down;
+-- 			end query_devices;
+-- 
+-- 		begin -- collect
+-- 			et_project.type_modules.query_element (
+-- 				position	=> module_cursor,
+-- 				process		=> query_devices'access);
+-- 			
+-- 		end collect;
+-- 			
+-- 		submod_tree : numbering.type_modules.tree := numbering.type_modules.empty_tree;
+-- 		tree_cursor : numbering.type_modules.cursor := numbering.type_modules.root (submod_tree);
+-- 
+-- 		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
+-- 		package stack_level is new et_general.stack_lifo (
+-- 			item	=> numbering.type_modules.cursor,
+-- 			max 	=> submodules.nesting_depth_max);
+-- 
+-- 		-- Another stack keeps record of the assembly variant on submodule levels.
+-- 		package stack_variant is new et_general.stack_lifo (
+-- 			item	=> type_variant_name.bounded_string,
+-- 			max 	=> submodules.nesting_depth_max);
+-- 		
+-- 		variant : type_variant_name.bounded_string; -- low_cost
+-- 		
+-- 		procedure query_submodules is 
+-- 		-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
+-- 		-- until the deepest submodule (the bottom of the design structure) has been reached.
+-- 			use numbering.type_modules;
+-- 			module_name 	: type_module_name.bounded_string; -- motor_driver
+-- 			parent_name 	: type_module_name.bounded_string; -- water_pump
+-- 			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
+-- 			offset			: et_libraries.type_device_name_index;
+-- 
+-- 			use assembly_variants.type_submodules;
+-- 			alt_submod : assembly_variants.type_submodules.cursor;
+-- 		begin
+-- 			log_indentation_up;
+-- 
+-- 			-- start with the first submodule on the current hierarchy level
+-- 			tree_cursor := first_child (tree_cursor);
+-- 
+-- 			-- iterate through the submodules on this level
+-- 			while tree_cursor /= numbering.type_modules.no_element loop
+-- 				module_name := element (tree_cursor).name;
+-- 				module_instance := element (tree_cursor).instance;
+-- 
+-- 				log (text => "instance " & enclose_in_quotes (to_string (module_instance)) &
+-- 					 " of generic module " & enclose_in_quotes (to_string (module_name)),
+-- 					 level => log_threshold + 1);
+-- 
+-- 				-- In case we are on the first level, the parent module is the given top module.
+-- 				-- In that case the parent variant is the given variant of the top module.
+-- 				-- If the top module has the default variant, all submodules in all levels
+-- 				-- assume default variant too.
+-- 				if parent (tree_cursor) = root (submod_tree) then
+-- 					parent_name := make_bom.module_name;
+-- 					variant := variant_top; -- argument of make_bom
+-- 				else
+-- 					parent_name := element (parent (tree_cursor)).name;
+-- 				end if;
+-- 
+-- 				-- Get the device name offset of the current submodule;
+-- 				offset := element (tree_cursor).device_names_offset;
+-- 
+-- 				if not is_default (variant) then
+-- 					-- Query in parent module: Is there any assembly variant specified for this submodule ?
+-- 
+-- 					alt_submod := alternative_submodule (
+-- 								module	=> locate_module (parent_name),
+-- 								variant	=> variant,
+-- 								submod	=> module_instance);
+-- 
+-- 					if alt_submod = assembly_variants.type_submodules.no_element then
+-- 					-- no variant specified for this submodule -> collect devices of default variant
+-- 
+-- 						variant := default;
+-- 					else
+-- 					-- alternative variant specified for this submodule
+-- 						variant := element (alt_submod).variant;
+-- 					end if;
+-- 
+-- 				end if;
+-- 
+-- 				-- collect devices from current module
+-- 				collect (
+-- 					module_cursor	=> locate_module (module_name),
+-- 					variant			=> variant,
+-- 					offset			=> offset);
+-- 
+-- 				
+-- 				if first_child (tree_cursor) = numbering.type_modules.no_element then 
+-- 				-- No submodules on the current level. means we can't go deeper:
+-- 					
+-- 					log_indentation_up;
+-- 					log (text => "no submodules here -> bottom reached", level => log_threshold + 1);
+-- 					log_indentation_down;
+-- 				else
+-- 				-- There are submodules on the current level:
+-- 					
+-- 					-- backup the cursor to the current submodule on this level
+-- 					stack_level.push (tree_cursor);
+-- 
+-- 					-- backup the parent assembly variant
+-- 					stack_variant.push (variant);
+-- 
+-- 					-- iterate through submodules on the level below
+-- 					query_submodules; -- this is recursive !
+-- 
+-- 					-- restore cursor to submodule (see stack_level.push above)
+-- 					tree_cursor := stack_level.pop;
+-- 
+-- 					-- restore the parent assembly variant (see stack_variant.push above)
+-- 					variant := stack_variant.pop;
+-- 				end if;
+-- 
+-- 				next_sibling (tree_cursor); -- next submodule on this level
+-- 			end loop;
+-- 			
+-- 			log_indentation_down;
+-- 
+-- 			exception
+-- 				when event: others =>
+-- 					log_indentation_reset;
+-- 					log (text => ada.exceptions.exception_information (event), console => true);
+-- 					raise;
+-- 			
+-- 		end query_submodules;
+-- 		
+-- 	begin -- make_bom
+-- 		-- The variant name is optional. If not provided, the default variant will be exported.
+-- 		if is_default (variant_top) then
+-- 			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+-- 				" default variant" &
+-- 				" exporting BOM to file " & to_string (bom_file),
+-- 				level => log_threshold);
+-- 		else
+-- 			log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+-- 				" variant " & enclose_in_quotes (to_variant (variant_top)) &
+-- 				" exporting BOM to file " & to_string (bom_file),
+-- 				level => log_threshold);
+-- 		end if;
+-- 		
+-- 		log_indentation_up;
+-- 			
+-- 		-- locate the given top module
+-- 		module_cursor := locate_module (module_name);
+-- 
+-- 		-- Build the submodule tree of the module according to the current design structure.
+-- 		-- All further operations rely on this tree:
+-- 		schematic_ops.build_submodules_tree (
+-- 			module_name 	=> module_name,
+-- 			log_threshold	=> log_threshold + 1);
+-- 		
+-- 		if exists (module_cursor, variant_top) then
+-- 
+-- 			-- collect devices of the given top module. the top module has no device index offset
+-- 			collect (module_cursor, variant_top, 0); 
+-- 
+-- 			-- take a copy of the submodule tree of the given top module:
+-- 			submod_tree := element (module_cursor).submod_tree;
+-- 
+-- 			-- set the cursor inside the tree at root position:
+-- 			tree_cursor := numbering.type_modules.root (submod_tree);
+-- 			
+-- 			stack_level.init;
+-- 			stack_variant.init;
+-- 
+-- 			-- collect devices of the submodules
+-- 			query_submodules;
+-- 
+-- 			-- write the bom
+-- -- 			material.write_bom (
+-- -- 				bom				=> bill_of_material,	-- the container that holds the bom
+-- -- 				file_name		=> bom_file, 			-- tmp/my_project_bom.csv
+-- -- 				--format			=> NATIVE,				-- CS should be an argument in the future
+-- -- 				format			=> EAGLE,				-- CS should be an argument in the future
+-- -- 				log_threshold	=> log_threshold + 1);
+-- 			
+-- 		else
+-- 			assembly_variant_not_found (variant_top);
+-- 		end if;
+-- 		
+-- 		log_indentation_down;
+-- 
+-- 		exception
+-- 			when event: others =>
+-- 				log_indentation_reset;
+-- 				log (text => ada.exceptions.exception_information (event), console => true);
+-- 				raise;
+-- 	
+-- 	end make_bom;
 
 	procedure make_boms (
 	-- Generates the BOM files of all assembly variants from the given top module.

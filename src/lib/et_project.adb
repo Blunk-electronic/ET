@@ -452,6 +452,9 @@ package body et_project is
 		create_directory (compose (path, directory_templates));
 		create_directory (compose (path, directory_export));
 		make_dir (path & dir_separator & directory_export & dir_separator & directory_cam);
+		make_dir (path & dir_separator & directory_export & dir_separator & directory_cam & dir_separator & directory_bom);
+		make_dir (path & dir_separator & directory_export & dir_separator & directory_cam & dir_separator & directory_netlists);
+		make_dir (path & dir_separator & directory_export & dir_separator & directory_cam & dir_separator & directory_pick_and_place);
 		
 		--create_directory (compose (path, directory_settings));
 		create_directory (compose (path, directory_reports));

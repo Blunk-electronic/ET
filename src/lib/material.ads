@@ -91,6 +91,7 @@ package material is
 		return type_partcode.bounded_string;
 
 
+
 	
 	-- Whenever we deal with BOM files this type should be used:
 	file_name_length_max : constant positive := 100; -- CS: should suffice for now
