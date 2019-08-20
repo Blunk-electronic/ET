@@ -35,7 +35,10 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
 with ada.strings; 				use ada.strings;
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.directories;
 with et_string_processing;
 
@@ -98,6 +101,20 @@ package body et_general is
 		return entries;
 	end directory_entries;
 
+	procedure show_cdl_switches is
+	-- Outputs the command line switches that initiate something.
+		dash : constant character := latin_1.hyphen;
+	begin
+		put_line ("available commandline switches:");
+		put_line (dash & switch_version);
+		put_line (dash & switch_native_project_create);
+		put_line (dash & switch_native_project_open);
+		put_line (dash & switch_execute_script);
+		put_line (dash & switch_native_project_save_as);
+		put_line (dash & switch_make_default_conv);
+		put_line (dash & switch_import_project);
+		put_line ("For additional switches and examples see <https://github.com/Blunk-electronic/ET>");
+	end show_cdl_switches;
 
 	function to_paper_size (paper_size : in string) return type_paper_size is
 	-- converts a string to type_paper_size

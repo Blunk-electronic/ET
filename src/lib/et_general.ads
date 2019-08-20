@@ -104,6 +104,9 @@ package et_general is
 	switch_native_project_save_as	: constant string := "-save_as";		
 	switch_execute_script			: constant string := "-script";
 
+
+	procedure show_cdl_switches;
+	-- Outputs the command line switches that initiate something.
 	
 -- PAPER SIZES
     type type_paper_size is (A3, A4); -- CS: others ?

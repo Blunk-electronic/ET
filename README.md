@@ -112,16 +112,17 @@ The project can also be saved under a different name at a different place:
 $ et --conventions conventions.txt --open /home/user/ecad/my_et_project/ --save_as /home/user/tmp/eval --log_level 2
 ```
 
+#### Executing scripts
 ET has an internal script processor that reads and executes a script file. The scripting feature allows manipulating designs without GUI:
 
 ```sh
 $ et --open my_et_project/ --script my_et_project/my_script.scr --save_as modified_project --log_level 2
 ```
 
-#### Executing scripts
-An example of a script that modifies things in a dummy module (named "submoduletest") can be seen here:
+Find the script processor command set here <https://github.com/Blunk-electronic/ET/blob/master/script_command_set.md>.
+<!--An example of a script that modifies things in a dummy module (named "submoduletest") can be seen here:
 <https://github.com/Blunk-electronic/ET_training/blob/master/submoduletest/test.scr>
-As the script processor is evolving more an more commands are moving up from section "not supported" to "supported".
+As the script processor is evolving more an more commands are moving up from section "not supported" to "supported".-->
 
 ### Installation
 - Currently there is no proper install script.

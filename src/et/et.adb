@@ -140,7 +140,8 @@ procedure et is
 					end if;
 
 					
-				when others => exit; -- CS: produce useful message
+				when others => 
+					raise constraint_error;
 
 			end case;
 		end loop;
@@ -148,8 +149,7 @@ procedure et is
 		exception
 			when others =>
 				put_line (message_error & "command line argument error !");
-				null;
-				-- CS: show help and command line switches
+				show_cdl_switches;
 				raise;
 				
 	end get_commandline_arguments;
