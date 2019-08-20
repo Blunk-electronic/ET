@@ -616,7 +616,8 @@ package schematic_ops is
 	-- Returns properties of the given device port in module indicated by module_cursor.
 	-- Properties are things like: terminal name, direction, sensitivity, power level, ...
 	-- See et_libraries.type_port for detail.
-	-- The device must exist in the module and must be real.
+	-- The device must exist in the module and must be real. Run intergrity check
+	-- in case exception occurs here.
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		port_name		: in type_port_name.bounded_string) -- CE

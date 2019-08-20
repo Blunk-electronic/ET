@@ -12023,7 +12023,8 @@ package body schematic_ops is
 	-- Returns properties of the given device port in module indicated by module_cursor.
 	-- Properties are things like: terminal name, direction, sensitivity, power level, ...
 	-- See et_libraries.type_port for detail.
-	-- The device must exist in the module and must be real.
+	-- The device must exist in the module and must be real. Run intergrity check
+	-- in case exception occurs here.
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		port_name		: in type_port_name.bounded_string) -- CE
@@ -12079,31 +12080,39 @@ package body schematic_ops is
 		begin -- query_devices
 			-- locate device in schematic
 			device_cursor_sch := find (module.devices, device_name);
+
+-- 			if device_cursor_sch /= et_schematic.type_devices.no_element then
 			
-			variant := element (device_cursor_sch).variant;
+				variant := element (device_cursor_sch).variant;
 
-			-- get the name of the device model (or the generic name)
-			device_cursor_lib := et_libraries.locate_device (element (device_cursor_sch).model);
+				-- get the name of the device model (or the generic name)
+				device_cursor_lib := et_libraries.locate_device (element (device_cursor_sch).model);
 
-			-- Get the name of the terminal (the pin or pad) according to the device variant.
-			-- Store it in variable terminal_name:
-			et_libraries.type_devices.query_element (
-				position	=> device_cursor_lib,
-				process		=> query_variants'access);
+				-- Get the name of the terminal (the pin or pad) according to the device variant.
+				-- Store it in variable terminal_name:
+				et_libraries.type_devices.query_element (
+					position	=> device_cursor_lib,
+					process		=> query_variants'access);
 
-			-- Get the electrical properties of the port of the current device:
-			port_properties_cursor := et_libraries.properties (device_cursor_lib, port_name);
+				-- Get the electrical properties of the port of the current device:
+				port_properties_cursor := et_libraries.properties (device_cursor_lib, port_name);
 
-			-- Create the port where pointer "properties" is pointing at.
-			-- It is created with the direction obtained from port_properties_cursor:
-			properties := new type_port_properties (
-				direction 	=> element (port_properties_cursor).direction);
+				-- Create the port where pointer "properties" is pointing at.
+				-- It is created with the direction obtained from port_properties_cursor:
+				properties := new type_port_properties (
+					direction 	=> element (port_properties_cursor).direction);
 
-			-- Assign the terminal name:
-			properties.terminal := terminal_name;
+				-- Assign the terminal name:
+				properties.terminal := terminal_name;
 
-			-- Assign electrical properties provided by port_properties_cursor:
-			properties.properties := element (port_properties_cursor);
+				-- Assign electrical properties provided by port_properties_cursor:
+				properties.properties := element (port_properties_cursor);
+
+-- 			else
+-- 				log (importance => ERROR, text => "Found terminal of device " & enclose_in_quotes (to_string (device_name)) &
+-- 					 " , but this device does not exist !");
+-- 				raise constraint_error;
+-- 			end if;
 			
 		end query_devices;
 
@@ -12314,7 +12323,8 @@ package body schematic_ops is
 					end; -- apply_offsets
 
 					procedure insert_net (module : in out netlists.type_module) is begin
-						-- insert the net with its ports in the netlist of the submodule
+						-- Prepend the given net prefix to the net name.
+						-- Insert the net with its ports in the netlist of the submodule.
 						netlists.type_nets.insert (
 							container	=> module.nets,
 							key			=> (prefix => prefix, base_name => net_name), -- CLK_GENERATOR/FLT1/ , clock_out
@@ -12340,23 +12350,25 @@ package body schematic_ops is
 					end if;
 					-- Now variant_cursor points to the given assembly variant. If it points to
 					-- no element then it is about the default variant.
-
+					
 					-- loop in nets of given module
 					while net_cursor_sch /= et_schematic.type_nets.no_element loop
 
-						-- prepend the given net prefix
 						net_name := et_schematic.type_nets.key (net_cursor_sch);
+						
+						log (text => "net " & et_general.to_string (prefix) & et_general.to_string (net_name),
+							 level => log_threshold + 2);
 
 						-- Get all device, netchanger and submodule ports of this net
 						-- according to the given assembly variant:
 						all_ports := et_schematic.ports (net_cursor_sch, variant_cursor);
-						
+					
 						-- extend the submodule ports by their directions (master/slave):
 						submodule_ports_extended := extend_ports (module_cursor, all_ports.submodules);
 						
 						-- extend the device ports by further properties (direction, terminal name, ...):
 						device_ports_extended := extend_ports (module_cursor, all_ports.devices);
-
+						
 						-- The portlist device_ports_extended now requires the device indexes 
 						-- to be changed according to the given offset:
 						apply_offsets;
@@ -12449,7 +12461,7 @@ package body schematic_ops is
 							instance_name	=> module_instance,
 							others			=> <>)
 						);
-					
+
 					-- Collect nets from current module. inserts the nets in
 					-- the submodule indicated by netlist_cursor:
 					collect_nets (
@@ -12457,7 +12469,7 @@ package body schematic_ops is
 						variant			=> variant,
 						prefix			=> make_prefix,
 						offset			=> offset);
-
+					
 					-- restore netlist_cursor
 					netlist_cursor := stack_netlist.pop;
 				end insert_submodule;
