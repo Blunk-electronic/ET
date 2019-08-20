@@ -460,6 +460,11 @@ schematic led_driver build submodules_tree
 ```
 
 ## CAM DATA
+The data required for manufacturing is always exported in the subdirectory "export/CAM".
+There we have further separation between BOM, netlists and pick & place data.
+On exporting these information ALL assembly variants are taken into account.
+So you get BOM, netlists and p&p for each assembly variant defined. <br/>
+
 Bill of material (BOM):
 ```
 schematic led_driver make bom
@@ -476,6 +481,8 @@ board led_driver make pnp
 ```
 
 ## BOARD OUTLINE
+Board outlines (or contours) are milled in the PCB factory. For this reason there is
+no line width parameter.
 ```
 board led_driver draw outline line 0 0 160 0 # from 0/0 to 160/0
 ```
