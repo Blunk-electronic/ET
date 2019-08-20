@@ -1700,11 +1700,52 @@ package body scripting is
 											when others =>
 												command_incomplete;
 										end case;
+										
 									when ARC =>
-										null;
+										case fields is
+											when 11 =>
+												board_ops.draw_outline_arc (
+													module_name 	=> module,
+													center			=> type_point_2d (set_point (
+															x => to_distance (f (6)),
+															y => to_distance (f (7)))),
+													from			=> type_point_2d (set_point (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+													to				=> type_point_2d (set_point (
+															x => to_distance (f (10)),
+															y => to_distance (f (11)))),
+
+													log_threshold	=> log_threshold + 1
+													);
+
+											when 12 .. count_type'last =>
+												command_too_long (11);
+												
+											when others =>
+												command_incomplete;
+										end case;
 
 									when CIRCLE =>
-										NULL;
+										case fields is
+											when 8 =>
+												board_ops.draw_outline_circle (
+													module_name 	=> module,
+													center			=> type_point_2d (set_point (
+															x => to_distance (f (6)),
+															y => to_distance (f (7)))),
+													radius			=> to_distance (f (8)),
+
+													log_threshold	=> log_threshold + 1
+													);
+
+											when 9 .. count_type'last =>
+												command_too_long (8);
+												
+											when others =>
+												command_incomplete;
+										end case;
+
 								end case;
 							end;
 							

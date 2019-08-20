@@ -935,6 +935,46 @@ package body board_ops is
 
 	end draw_outline_arc;
 
+	procedure draw_outline_circle (
+	-- Draws a circle in the PCB outline.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		center			: in et_pcb_coordinates.type_point_2d; -- x/y
+		radius			: in et_pcb_coordinates.type_distance;
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure add (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_pcb;
+			use et_pcb.type_pcb_contour_circles;
+		begin
+			append (
+				container	=> module.board.contour.circles,
+				new_item	=> (
+						center		=> center,
+						radius		=> radius,
+						locked		=> NO));
+		end;
+							   
+	begin -- draw_outline_circle
+		log (text => "module " & to_string (module_name) &
+				" drawing outline circle" &
+				" center" & to_string (center) &
+				" radius" & to_string (radius),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> add'access);
+
+	end draw_outline_circle;
 	
 end board_ops;
 	

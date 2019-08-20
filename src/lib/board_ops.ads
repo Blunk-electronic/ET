@@ -124,6 +124,13 @@ package board_ops is
 		from			: in et_pcb_coordinates.type_point_2d; -- x/y		
 		to				: in et_pcb_coordinates.type_point_2d; -- x/y		
 		log_threshold	: in type_log_level);
+
+	procedure draw_outline_circle (
+	-- Draws a circle in the PCB outline.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		center			: in et_pcb_coordinates.type_point_2d; -- x/y
+		radius			: in et_pcb_coordinates.type_distance;
+		log_threshold	: in type_log_level);
 	
 end board_ops;
 
