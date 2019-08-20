@@ -359,7 +359,8 @@ schematic led_driver delete netchanger 1
 
 ## SUBMODULES
 Submodules are always instantiated from a generic module. On instantiation the submodule
-is given an instance name. 
+is given an instance name. To edit a submodule the generic module (the file with extension *.mod)
+must be edited.
 
 ### ADDING
 ```
