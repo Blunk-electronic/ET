@@ -90,7 +90,7 @@ package board_ops is
 		log_threshold	: in type_log_level);
 
 	procedure move_submodule (
-	-- Moves a submodule instance withing the parent module layout in x/y direction.
+	-- Moves a submodule instance within the parent module layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in type_module_instance_name.bounded_string; -- OSC1
@@ -109,6 +109,21 @@ package board_ops is
 	type type_terminal_position (technology	: et_pcb.type_assembly_technology) is new type_point_2d_with_angle with record
 		face : type_face;
 	end record;
+
+	procedure draw_outline_line (
+	-- Draws a line in the PCB outline.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		from			: in et_pcb_coordinates.type_point_2d; -- x/y
+		to				: in et_pcb_coordinates.type_point_2d; -- x/y		
+		log_threshold	: in type_log_level);
+
+	procedure draw_outline_arc (
+	-- Draws an arc in the PCB outline.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		center			: in et_pcb_coordinates.type_point_2d; -- x/y
+		from			: in et_pcb_coordinates.type_point_2d; -- x/y		
+		to				: in et_pcb_coordinates.type_point_2d; -- x/y		
+		log_threshold	: in type_log_level);
 	
 end board_ops;
 

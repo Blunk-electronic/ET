@@ -1672,6 +1672,45 @@ package body scripting is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+				when DRAW =>
+					case noun is
+						when OUTLINE =>
+							declare
+								shape : type_shape := to_shape (f (5));
+							begin
+								case shape is
+									when LINE =>
+										case fields is
+											when 9 =>
+												board_ops.draw_outline_line (
+													module_name 	=> module,
+													from			=> type_point_2d (set_point (
+															x => to_distance (f (6)),
+															y => to_distance (f (7)))),
+													to				=> type_point_2d (set_point (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+
+													log_threshold	=> log_threshold + 1
+													);
+
+											when 10 .. count_type'last =>
+												command_too_long (9);
+												
+											when others =>
+												command_incomplete;
+										end case;
+									when ARC =>
+										null;
+
+									when CIRCLE =>
+										NULL;
+								end case;
+							end;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
 				when FLIP =>
 					case noun is
 						when DEVICE =>

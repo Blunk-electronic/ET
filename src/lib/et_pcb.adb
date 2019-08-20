@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                           SYSTEM ET PCB                                  --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                                 ET                                       --
+--                                PCB                                       --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:

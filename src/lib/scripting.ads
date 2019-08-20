@@ -192,6 +192,7 @@ package scripting is
 		DEVICE,
 		NAME,
 		NET,
+		OUTLINE,
 		PARTCODE,
 		PNP, -- pick & place
 		PURPOSE,

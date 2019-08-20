@@ -141,7 +141,9 @@ procedure et is
 
 					
 				when others => 
-					raise constraint_error;
+-- 					show_cdl_switches; -- CS
+					exit;
+-- 					raise constraint_error;
 
 			end case;
 		end loop;

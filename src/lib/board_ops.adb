@@ -303,7 +303,7 @@ package body board_ops is
 	end get_position;
 
 	procedure move_submodule (
-	-- Moves a submodule instance withing the parent module layout in x/y direction.
+	-- Moves a submodule instance within the parent module layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in type_module_instance_name.bounded_string; -- OSC1
@@ -849,6 +849,92 @@ package body board_ops is
 		
 		return pos; -- CS
 	end terminal_position;
+
+
+	procedure draw_outline_line (
+	-- Draws a line in the PCB outline.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		from			: in et_pcb_coordinates.type_point_2d; -- x/y
+		to				: in et_pcb_coordinates.type_point_2d; -- x/y		
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure add (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_pcb;
+			use et_pcb.type_pcb_contour_lines;
+		begin
+			append (
+				container	=> module.board.contour.lines,
+				new_item	=> (start_point	=> from,
+								end_point	=> to,
+								locked		=> NO));
+		end;
+							   
+	begin -- draw_outline_line
+		log (text => "module " & to_string (module_name) &
+					" drawing outline line" &
+					" from" & to_string (from) &
+					" to" & to_string (to),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> add'access);
+
+	end draw_outline_line;
+
+	procedure draw_outline_arc (
+	-- Draws an arc in the PCB outline.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		center			: in et_pcb_coordinates.type_point_2d; -- x/y
+		from			: in et_pcb_coordinates.type_point_2d; -- x/y		
+		to				: in et_pcb_coordinates.type_point_2d; -- x/y		
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure add (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_pcb;
+			use et_pcb.type_pcb_contour_arcs;
+		begin
+			append (
+				container	=> module.board.contour.arcs,
+				new_item	=> (
+						center		=> center,
+						start_point	=> from,
+						end_point	=> to,
+						locked		=> NO));
+		end;
+							   
+	begin -- draw_outline_arc
+		log (text => "module " & to_string (module_name) &
+				" drawing outline arc" &
+				" center" & to_string (center) &
+				" from" & to_string (from) &
+				" to" & to_string (to),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> add'access);
+
+	end draw_outline_arc;
+
 	
 end board_ops;
 	

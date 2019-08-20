@@ -39,6 +39,7 @@ with ada.text_io;				use ada.text_io;
 with ada.strings; 				use ada.strings;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
 with ada.directories;
 with et_string_processing;
 
@@ -239,6 +240,14 @@ package body et_general is
 		return type_variant_name.to_bounded_string (variant);
 	end;
 
+
+	function to_shape (shape : in string) return type_shape is begin
+		return type_shape'value (shape);
+	end;
+
+	function to_shape (shape : in type_shape) return string is begin
+		return to_lower (type_shape'image (shape));
+	end;
 
 	
 	

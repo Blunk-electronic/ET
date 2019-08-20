@@ -475,4 +475,14 @@ Pick and place:
 board led_driver make pnp
 ```
 
+## BOARD OUTLINE
+```
+board led_driver draw outline line 0 0 160 0 # from 0/0 to 160/0
+```
+```
+board led_driver draw outline arc 50 50 50 0 50 100 # center 50/50 from 50/0 to 50/100
+```
+```
+board led_driver draw outline circle 50 50 50 # center 50/50 radius 50
+```
 

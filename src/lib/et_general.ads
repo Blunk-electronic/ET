@@ -176,7 +176,11 @@ package et_general is
 	function to_variant (variant : in type_variant_name.bounded_string) return string;
 	function to_variant (variant : in string) return type_variant_name.bounded_string;
 
+-- SHAPES
+	type type_shape is (LINE, ARC, CIRCLE);
 
+	function to_shape (shape : in string) return type_shape;
+	function to_shape (shape : in type_shape) return string;
 	
 -- GENERICS
 	
