@@ -1,4 +1,4 @@
-# SYSTEM ET SCRIPT COMMAND SET
+# SYSTEM ET SCRIPT PROCESSOR COMMAND SET
 
 ## BASICS
 Scripting is an important feature of advanced CAE tools. It allows:
@@ -7,14 +7,36 @@ Scripting is an important feature of advanced CAE tools. It allows:
 - generating schematics, layouts and device models via third party software
 
 A script in general is just a list of things to do by the CAE system. This list
-is a plain ASCII file. Comments start with #. The script commands have a domain-verb-noun structure.
+is a plain ASCII file. Comments start with #. 
+The two letters "CS" indicate a "construction site" where things are not finished yet or intended for the future.
+The script commands have a domain-verb-noun structure.
 Their meaning should be obvious in most cases. Additional explanation is provided in comments
 if required. The domain-verb-noun structure is: DOMAIN MODULE VERB NOUN PARAMETER[S]
 
-The two letters "CS" indicate a "construction site" where things are not finished yet or intended for the future.
+The domain tells where the operation is to take place. Domains are:
+- project
+- schematic
+- board (or layout)
+- symbol, package, device (CS)
 
+The measurement system is METRIC. All dimensions are in millimeters (mm).
+All angles and rotations are in degrees (1/360).
 
-The concept is easy to understand by examples. The module to be designed or edited is named "led_driver":
+The concept is most easily to understand by examples. The module to be designed or edited is named "led_driver":
+
+## MODULES
+```
+project create module led_driver
+```
+```
+project create module templates/filter
+```
+```
+project save module led_driver
+```
+```
+project delete module led_driver
+```
 
 ## DEVICES AND UNITS
 A device is something like a resistor (consisting of a schematic symbol and a package drawing).
@@ -80,6 +102,7 @@ schematic led_driver delete device IC1 C
 ```
 
 ### MOVING
+#### in the schematic
 Moving a unit disconnects it from net old segments and places it at the given position.
 If the units ports end up where a net segment is, they become connected with the net.
 ```
@@ -95,6 +118,29 @@ schematic led_driver rotate unit R1 1 absolute -270
 ```
 schematic led_driver rotate unit R1 1 relative 90
 ```
+
+#### in the board
+```
+board led_driver move device R1 absolute 140 45.2
+```
+```
+board led_driver move device R1 relative 4.5 0
+```
+
+```
+board led_driver rotate device R1 absolute 70
+```
+```
+board led_driver rotate device R1 relative -4
+```
+
+```
+board led_driver flip device R1 top
+```
+```
+board led_driver flip device R1 bottom
+```
+
 
 ### DRAGGING
 Dragging a unit drags the connected net segments along.
@@ -197,10 +243,10 @@ schematic led_driver draw net reset_n 1 200 140 10 40 # net segment on sheet 1 f
 ```
 schematic led_driver place junction 1 230 100 # sheet x y
 ```
-CS:
+<!--CS:
 ```
 schematic led_driver delete junction 1 230 100 # sheet x y
-```
+```-->
 
 ### SIMPLE LABELS
 ```
@@ -216,6 +262,16 @@ schematic led_driver place label 1 120 100 0 -5 90 output # sheet 1 120/100 rela
 ```
 schematic led_driver delete label 1 120 105 # sheet 1 x 120 y 105
 ```
+
+### SCOPE
+```
+schematic templates/filter set scope GND global
+```
+
+```
+schematic templates/adc set scope AGND local
+```
+
 
 ### DRAGGING
 Dragging a net segment requires the net name, sheet and point of attack.
@@ -309,6 +365,9 @@ is given an instance name.
 ```
 schematic led_driver add submodule templates/filter.mod FLT1 1 300 90 30 30 # pos 300/90 size 30/30
 ```
+```
+schematic templates/filter add submodule templates/bypass.mod BY1 1 300 90 30 30
+```
 
 ### RENAMING
 ```
@@ -326,6 +385,13 @@ schematic led_driver move submodule FLT1 absolute 4 210 100
 ```
 ```
 schematic led_driver move submodule FLT1 relative 2 10 5
+```
+
+```
+board led_driver move submodule FLT1 relative 10 -34.3 # dx/dy
+```
+```
+board led_driver move submodule FLT1 absolute 34 90.5 # x/y
 ```
 
 ### ASSIGNING NAME OF GENERIC MODULE
@@ -387,3 +453,26 @@ schematic led_driver drag port FLT1 RF_OUT relative 10 -2
 ```
 schematic led_driver check integrity
 ```
+
+## MISC
+```
+schematic led_driver build submodules_tree
+```
+
+## CAM DATA
+Bill of material (BOM):
+```
+schematic led_driver make bom
+```
+
+Netlists:
+```
+schematic led_driver make netlists
+```
+
+Pick and place:
+```
+board led_driver make pnp
+```
+
+
