@@ -10826,7 +10826,7 @@ package body schematic_ops is
 		use numbering;
 		
 		package type_ranges is new ordered_maps (
-			key_type		=> type_module_name.bounded_string, -- motor_driver
+			key_type		=> type_module_name.bounded_string, -- motor_driver (generic module name)
 			"<"				=> type_module_name."<",
 			element_type	=> numbering.type_index_range); -- 3..190
 
@@ -10954,18 +10954,27 @@ package body schematic_ops is
 
 		procedure query_submodules (submod_cursor : in numbering.type_modules.cursor) is
 			use numbering.type_modules;
-			-- map from submodule_cursor to module in et_project.modules:
-			module_name	: type_module_name.bounded_string := element (submod_cursor).name;
+			-- Map from submodule_cursor to module in et_project.modules:
+
+			-- submod_cursor points to a submodule in the submod_tree:
+			module_name	: type_module_name.bounded_string := element (submod_cursor).name; -- motor_driver
+			-- module_name now contains the generic module name like motor_driver
+			
 			module_cursor : et_project.type_modules.cursor := locate_module (module_name);
 			-- module_cursor now points to the generic module
 		begin
-			index_range := device_index_range (module_cursor, log_threshold + 1);
+			-- If the range for this generic module has not been computed already, then do
+			-- it now. Otherwise there is no need to do that all over:
+			if not type_ranges.contains (ranges, module_name) then
+				
+				index_range := device_index_range (module_cursor, log_threshold + 1);
 
-			type_ranges.insert (
-				container	=> ranges,
-				key			=> key (module_cursor),
-				new_item	=> index_range);
-
+				type_ranges.insert (
+					container	=> ranges,
+					key			=> key (module_cursor), -- generic name
+					new_item	=> index_range);
+				
+			end if;
 		end query_submodules;
 									   
 	begin -- autoset_device_name_offsets
