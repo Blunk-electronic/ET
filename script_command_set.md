@@ -7,9 +7,9 @@ Scripting is an important feature of advanced CAE tools. It allows:
 - generating schematics, layouts and device models via third party software
 
 A script in general is just a list of things to do by the CAE system. This list
-is a plain ASCII file. Comments start with #. The script commands have a verb-noun structure.
+is a plain ASCII file. Comments start with #. The script commands have a domain-verb-noun structure.
 Their meaning should be obvious in most cases. Additional explanation is provided in comments
-if required. The verb-noun structure is: DOMAIN MODULE VERB NOUN PARAMETER[S]
+if required. The domain-verb-noun structure is: DOMAIN MODULE VERB NOUN PARAMETER[S]
 
 The two letters "CS" indicate a "construction site" where things are not finished yet or intended for the future.
 
@@ -48,6 +48,11 @@ schematic led_driver copy device R1 2 210 100 0
 ```
 schematic led_driver rename device R1 R9
 ```
+
+```
+schematic led_driver renumber devices 100
+```
+
 
 ### SETTING VALUE, PURPOSE, PARTCODE
 ```
@@ -137,6 +142,48 @@ schematic led_driver set purpose R1 "brightnesss_control"
 ```
 ```
 schematic led_driver set partcode R1 R_PAC_S_0805_VAL_100R
+```
+
+## ASSEMBLY VARIANTS
+```
+schematic led_driver create variant low_cost
+```
+
+```
+schematic led_driver describe variant low_cost "This is the low budget version."
+```
+
+```
+schematic led_driver delete variant low_cost
+```
+
+```
+schematic led_driver mount device low_cost R1 270R R_PAC_S_0805_VAL_270R
+```
+
+```
+schematic led_driver mount device low_cost R1 270R R_PAC_S_0805_VAL_270R brightnesss_control
+```
+
+If a device is not to be mounted in a certain variant:
+```
+schematic led_driver unmount device low_cost R2
+```
+
+If a device is to be removed from the assembly variant:
+```
+schematic led_driver remove device low_cost R2
+```
+
+### VARIANTS OF SUBMODULES
+If a submodule is to be instantiated with a certain assembly variant:
+```
+schematic led_driver mount submodule low_cost FLT1 fixed_frequency # variant parent, submod instance, submod variant
+```
+
+If a submodule is to be removed from the assembly variant:
+```
+schematic led_driver remove submodule low_cost FLT1
 ```
 
 ## NETS, NET SEGMENTS, STRANDS, LABELS
@@ -334,4 +381,9 @@ schematic led_driver drag port FLT1 RF_OUT absolute 110 260
 
 ```
 schematic led_driver drag port FLT1 RF_OUT relative 10 -2
+```
+
+## DATABASE INTEGRITY CHECK AND ERC
+```
+schematic led_driver check integrity
 ```
