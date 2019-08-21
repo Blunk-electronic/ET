@@ -1753,6 +1753,7 @@ package body scripting is
 
 						when TRACK =>
 							declare
+								-- CS circular tracks are currently not supported
 								subtype type_track_shape is type_shape range LINE..ARC;
 								shape : type_track_shape := to_shape (f (5));
 							begin

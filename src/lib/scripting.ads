@@ -179,7 +179,6 @@ package scripting is
 		PLACE,
 		ROTATE,
 		ROUTE,
-		RIPUP,
 		SET,
 		WRITE
 		);
