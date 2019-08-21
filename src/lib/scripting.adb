@@ -57,6 +57,7 @@ with et_pcb_coordinates;
 with et_libraries;				use et_libraries;
 with et_schematic;
 with schematic_ops;
+with et_pcb;
 with board_ops;
 
 with submodules;
@@ -1581,6 +1582,7 @@ package body scripting is
 		end schematic_cmd;
 
 		procedure board_cmd (verb : in type_verb_board; noun : in type_noun_board) is
+			use et_pcb;
 			use et_pcb_coordinates;
 		begin
 			case verb is
@@ -1741,6 +1743,107 @@ package body scripting is
 
 											when 9 .. count_type'last =>
 												command_too_long (8);
+												
+											when others =>
+												command_incomplete;
+										end case;
+
+								end case;
+							end;
+
+						when TRACK =>
+							declare
+								subtype type_track_shape is type_shape range LINE..ARC;
+								shape : type_track_shape := to_shape (f (5));
+							begin
+								case shape is
+									when LINE =>
+										case fields is
+											when 11 =>
+												-- draw a freetrack
+												board_ops.draw_track_line (
+													module_name 	=> module,
+													from			=> type_point_2d (set_point (
+															x => to_distance (f (6)),
+															y => to_distance (f (7)))),
+													to				=> type_point_2d (set_point (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+													layer			=> to_signal_layer (f (10)),
+													width			=> to_distance (f (11)),
+													net_name		=> to_net_name (""),
+													log_threshold	=> log_threshold + 1
+													);
+
+											when 12 =>
+												-- draw a named track belonging to a net
+												board_ops.draw_track_line (
+													module_name 	=> module,
+													from			=> type_point_2d (set_point (
+															x => to_distance (f (6)),
+															y => to_distance (f (7)))),
+													to				=> type_point_2d (set_point (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+													layer			=> to_signal_layer (f (10)),
+													width			=> to_distance (f (11)),
+													net_name		=> to_net_name (f (12)), -- reset_n
+													
+													log_threshold	=> log_threshold + 1
+													);
+
+											when 13 .. count_type'last =>
+												command_too_long (12);
+												
+											when others =>
+												command_incomplete;
+										end case;
+										
+									when ARC =>
+										case fields is
+											when 13 =>
+												-- draw a freetrack
+												board_ops.draw_track_arc (
+													module_name 	=> module,
+													center			=> type_point_2d (set_point (
+															x => to_distance (f (6)),
+															y => to_distance (f (7)))),
+													from			=> type_point_2d (set_point (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+													to				=> type_point_2d (set_point (
+															x => to_distance (f (10)),
+															y => to_distance (f (11)))),
+													layer			=> to_signal_layer (f (12)),
+													width			=> to_distance (f (13)),
+													net_name		=> to_net_name (""),
+
+													log_threshold	=> log_threshold + 1
+													);
+
+											when 14 =>
+												-- draw a named track belonging to a net
+												board_ops.draw_track_arc (
+													module_name 	=> module,
+													center			=> type_point_2d (set_point (
+															x => to_distance (f (6)),
+															y => to_distance (f (7)))),
+													from			=> type_point_2d (set_point (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+													to				=> type_point_2d (set_point (
+															x => to_distance (f (10)),
+															y => to_distance (f (11)))),
+													layer			=> to_signal_layer (f (12)),
+													width			=> to_distance (f (13)),
+													net_name		=> to_net_name (f (14)), -- reset_n
+
+													log_threshold	=> log_threshold + 1
+													);
+
+												
+											when 15 .. count_type'last =>
+												command_too_long (14);
 												
 											when others =>
 												command_incomplete;

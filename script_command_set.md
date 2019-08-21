@@ -272,6 +272,17 @@ schematic templates/filter set scope GND global
 schematic templates/adc set scope AGND local
 ```
 
+## ROUTING TRACKS
+```
+board led_driver draw track line 10 10 16 13 1 0.25 # from 10/10 to 16/13, layer 1, width 0.25, freetrack
+```
+```
+board led_driver draw track line 10 10 16 13 1 0.25 reset_n # from 10/10 to 16/13, layer 1, width 0.25, net reset_n
+```
+```
+board led_driver draw track arc 50 50 50 0 50 100 1 0.25 reset_n # center 50/50 from 50/0 to 50/100, layer 1, width 0.25, net reset_n
+```
+
 
 ### DRAGGING
 Dragging a net segment requires the net name, sheet and point of attack.

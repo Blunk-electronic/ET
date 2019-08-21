@@ -235,6 +235,18 @@ package body et_project is
 		return result;
 	end port_connected;
 
+	function locate_net (
+	-- Returns a cursor to the given net in the given module.
+		module_cursor	: in type_modules.cursor;
+		net_name		: in type_net_name.bounded_string)
+		return et_schematic.type_nets.cursor is
+		use type_modules;
+		use et_schematic.type_nets;
+	begin
+		return find (element (module_cursor).nets, net_name);
+	end locate_net;
+
+	
 	
 	function netchanger_as_port_available (
 	-- Returns true if the given net provides a netchanger that may serve as port

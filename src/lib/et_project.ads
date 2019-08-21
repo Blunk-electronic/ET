@@ -210,6 +210,12 @@ package et_project is
 		module	: in type_modules.cursor;	
 		port	: in netlists.type_port_netchanger)
 		return boolean;
+
+	function locate_net (
+	-- Returns a cursor to the given net in the given module.
+		module_cursor	: in type_modules.cursor;
+		net_name		: in type_net_name.bounded_string)
+		return et_schematic.type_nets.cursor;
 	
 	function netchanger_as_port_available (
 	-- Returns true if the given net provides a netchanger that may serve as port

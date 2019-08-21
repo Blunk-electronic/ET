@@ -200,6 +200,7 @@ package scripting is
 		TEXT,
 		TEXT_SIZE,
 		TEXT_LINE_WIDTH,
+		TRACK,
 		VALUE,
 		VIA,
 		VIA_DRILL

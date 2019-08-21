@@ -51,8 +51,9 @@ with et_general;				use et_general;
 with et_libraries;				use et_libraries;
 with et_string_processing;		use et_string_processing;
 with et_project;				use et_project;
+with et_schematic;
 with schematic_ops;				use schematic_ops;
-with et_pcb;
+with et_pcb;					use et_pcb;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 -- with submodules;
 with assembly_variants;
@@ -110,6 +111,38 @@ package board_ops is
 		face : type_face;
 	end record;
 
+	procedure draw_track_line (
+	-- Draws track line. If net_name is empty a freetrack will be drawn.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		from			: in et_pcb_coordinates.type_point_2d; -- x/y
+		to				: in et_pcb_coordinates.type_point_2d; -- x/y
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		log_threshold	: in type_log_level);
+
+	procedure draw_track_line (
+	-- Draws a named track line.
+	-- Assumes that module_cursor and net_cursor point to existing objects.
+		module_cursor	: in type_modules.cursor;
+		from			: in et_pcb_coordinates.type_point_2d; -- x/y
+		to				: in et_pcb_coordinates.type_point_2d; -- x/y
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
+		net_cursor		: in et_schematic.type_nets.cursor; -- reset_n
+		log_threshold	: in type_log_level);
+	
+	procedure draw_track_arc (
+	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		center			: in et_pcb_coordinates.type_point_2d; -- x/y
+		from			: in et_pcb_coordinates.type_point_2d; -- x/y		
+		to				: in et_pcb_coordinates.type_point_2d; -- x/y
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		log_threshold	: in type_log_level);
+	
 	procedure draw_outline_line (
 	-- Draws a line in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

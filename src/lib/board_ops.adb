@@ -57,7 +57,7 @@ with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 -- with et_libraries;				use et_libraries;
 with et_schematic;				use et_schematic;
-with et_pcb;
+with et_pcb;					use et_pcb;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_project;				use et_project;
 with schematic_ops;				use schematic_ops;
@@ -850,7 +850,282 @@ package body board_ops is
 		return pos; -- CS
 	end terminal_position;
 
+	function freetrack (net_name : in type_net_name.bounded_string) return string is 
+		use type_net_name;
+	begin
+		if length (net_name) = 0 then
+			return " freetrack";
+		else
+			return " net " & enclose_in_quotes (et_general.to_string (net_name));
+		end if;
+	end freetrack;
 
+	function is_freetrack (net_name : in type_net_name.bounded_string) return boolean is 
+		use type_net_name;
+	begin
+		if length (net_name) = 0 then
+			return true;
+		else
+			return false;
+		end if;
+	end is_freetrack;
+
+	function net_exists (net_cursor : in type_nets.cursor) return boolean is 
+		use et_schematic.type_nets;
+	begin
+		if net_cursor = type_nets.no_element then
+			return false;
+		else 
+			return true;
+		end if;
+	end;
+
+	procedure draw_track_line (
+	-- Draws a track line. If net_name is empty a freetrack will be drawn.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		from			: in et_pcb_coordinates.type_point_2d; -- x/y
+		to				: in et_pcb_coordinates.type_point_2d; -- x/y
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		use et_pcb;
+		use et_pcb.type_copper_lines_pcb;
+		
+		procedure add_freetrack (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+		begin
+			append (
+				container	=> module.board.copper.lines,
+				new_item	=> (start_point	=> from,
+								end_point	=> to,
+								width		=> width,
+								layer		=> layer)
+								--locked		=> NO)
+			);
+		end;
+		
+		procedure add_named_track (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			-- A track belonging to a net requires the net to be located in the given module:
+			use et_schematic.type_nets;
+			net_cursor : et_schematic.type_nets.cursor := find (module.nets, net_name);
+
+			procedure add (
+			-- Appends the track to the net.
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+			begin
+				append (
+					container	=> net.route.lines,
+					new_item	=> (start_point	=> from,
+									end_point	=> to,
+									width		=> width,
+									layer		=> layer)
+									--locked		=> NO)
+				);
+			end add;
+
+		begin -- add_named_track
+			if net_exists (net_cursor) then
+				
+				type_nets.update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> add'access);
+				
+			else
+				net_not_found (net_name);
+			end if;
+
+		end add_named_track;
+		
+	begin -- draw_track_line
+		log (text => "module " & to_string (module_name) &
+					" drawing track line" &
+					" from" & to_string (from) &
+					" to" & to_string (to) &
+					freetrack (net_name),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		if is_freetrack (net_name) then
+			
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> add_freetrack'access);
+
+		else
+
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> add_named_track'access);
+
+		end if;
+
+	end draw_track_line;
+
+	procedure draw_track_line (
+	-- Draws a named track line.
+	-- Assumes that module_cursor and net_cursor point to a existing objects.
+		module_cursor	: in type_modules.cursor;
+		from			: in et_pcb_coordinates.type_point_2d; -- x/y
+		to				: in et_pcb_coordinates.type_point_2d; -- x/y
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
+		net_cursor		: in et_schematic.type_nets.cursor; -- reset_n
+		log_threshold	: in type_log_level) is
+
+		procedure add_named_track (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			use et_schematic.type_nets;
+
+			procedure add (
+			-- Appends the track to the net.
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+				use et_pcb.type_copper_lines_pcb;
+			begin
+				append (
+					container	=> net.route.lines,
+					new_item	=> (start_point	=> from,
+									end_point	=> to,
+									width		=> width,
+									layer		=> layer)
+									--locked		=> NO)
+				);
+			end add;
+
+		begin -- add_named_track
+			type_nets.update_element (
+				container	=> module.nets,
+				position	=> net_cursor,
+				process		=> add'access);
+		end add_named_track;
+
+		use et_project.type_modules;
+	begin -- draw_track_line
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> add_named_track'access);
+
+	end draw_track_line;
+
+	
+	procedure draw_track_arc (
+	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		center			: in et_pcb_coordinates.type_point_2d; -- x/y
+		from			: in et_pcb_coordinates.type_point_2d; -- x/y		
+		to				: in et_pcb_coordinates.type_point_2d; -- x/y
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		use et_pcb;
+		use et_pcb.type_copper_arcs_pcb;
+		
+		procedure add_freetrack (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+		begin
+			append (
+				container	=> module.board.copper.arcs,
+				new_item	=> (center		=> center,
+								start_point	=> from,
+								end_point	=> to,
+								width		=> width,
+								layer		=> layer)
+								--locked		=> NO)
+			);
+		end;
+		
+		procedure add_named_track (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			-- A track belonging to a net requires the net to be located in the given module:
+			use et_schematic.type_nets;
+			net_cursor : et_schematic.type_nets.cursor := find (module.nets, net_name);
+
+			procedure add (
+			-- Appends the track to the net.
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+			begin
+				append (
+					container	=> net.route.arcs,
+					new_item	=> (center		=> center,
+									start_point	=> from,
+									end_point	=> to,
+									width		=> width,
+									layer		=> layer)
+									--locked		=> NO)
+				);
+			end add;
+
+		begin -- add_named_track
+			if net_exists (net_cursor) then
+
+				type_nets.update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> add'access);
+				
+			else
+				net_not_found (net_name);
+			end if;
+
+		end add_named_track;
+		
+	begin -- draw_track_arc
+		log (text => "module " & to_string (module_name) &
+				" drawing track arc" &
+				" center" & to_string (center) &			 
+				" from" & to_string (from) &
+				" to" & to_string (to) &
+				freetrack (net_name),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		if is_freetrack (net_name) then
+			
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> add_freetrack'access);
+
+		else
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> add_named_track'access);
+
+		end if;
+
+	end draw_track_arc;
+
+	
 	procedure draw_outline_line (
 	-- Draws a line in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
