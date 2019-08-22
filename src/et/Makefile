@@ -3,6 +3,7 @@ TARGET = et
 VPATH = include
 
 OBJS = $(TARGET).o \
+	et_geometry.o \
 	board_ops.o \
 	pick_and_place.o \
 	netlists.o \
@@ -20,7 +21,6 @@ OBJS = $(TARGET).o \
 	et_pcb.o \
 	conventions.o \
 	et_pcb_math.o \
-	et_geometry.o \
 	et_csv.o \
 	et_general.o \
 	et_operations.o \

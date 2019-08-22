@@ -239,6 +239,18 @@ package body et_geometry is
 	end distance_of_point_from_line;
 
 
+	function distance (
+		point		: in type_point; 
+		line_start	: in type_point;
+		line_end 	: in type_point;
+		line_range	: in type_line_range) 
+		return type_distance is
+		result : type_distance; -- to be returned
+	begin
+
+		return result;
+	end distance;
+
 	
 end et_geometry;
 

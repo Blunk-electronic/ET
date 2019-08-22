@@ -59,7 +59,19 @@ package et_geometry is
 		point, line_start, line_end: in et_coordinates.type_point;
 		line_range : in type_line_range) return type_distance_point_from_line;
 
--- 	function sits_on_segment
+	generic
+-- 		line_range : type_line_range;
+		type type_point is private;
+		type type_end_point is private;
+		type type_distance is digits <>;
+		with function distance_x (p : type_point) return type_distance;
+	function distance (
+		point		: in type_point; 
+		line_start	: in type_point;
+		line_end 	: in type_point;
+		line_range	: in type_line_range) 
+		return type_distance;
+	
 end et_geometry;
 
 -- Soli Deo Gloria
