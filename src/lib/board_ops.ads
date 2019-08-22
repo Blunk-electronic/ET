@@ -111,6 +111,7 @@ package board_ops is
 		face : type_face;
 	end record;
 
+-- TRACKS
 	procedure draw_track_line (
 	-- Draws track line. If net_name is empty a freetrack will be drawn.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -142,7 +143,19 @@ package board_ops is
 		from			: in et_pcb_coordinates.type_point_2d; -- x/y		
 		to				: in et_pcb_coordinates.type_point_2d; -- x/y
 		log_threshold	: in type_log_level);
-	
+
+	procedure ripup_track_segment (
+	-- Rips up the track segment of a net that crosses the given point in given layer.
+	-- CS currently rips up the first segment found. Leaves other segments untouched.
+	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		layer			: in type_signal_layer;
+		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		accuracy		: in type_distance;
+		log_threshold	: in type_log_level);
+
+-- BOARD OUTLINE	
 	procedure draw_outline_line (
 	-- Draws a line in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

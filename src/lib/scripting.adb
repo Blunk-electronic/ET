@@ -1719,6 +1719,58 @@ package body scripting is
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
+
+				when RIPUP =>
+					case noun is
+						when FREETRACK =>
+							case fields is
+								when 8 =>
+									-- ripup a segment of a freetrack
+									board_ops.ripup_track_segment (
+										module_name 	=> module,
+										net_name		=> to_net_name (""),
+										layer			=> to_signal_layer (f (5)),
+										point			=> type_point_2d (set_point (
+												x => to_distance (f (6)),
+												y => to_distance (f (7)))),
+										accuracy		=> to_distance (f (8)),
+										
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last =>
+									command_too_long (8);
+									
+								when others =>
+									command_incomplete;
+							end case;
+
+						when NET =>
+							case fields is
+								when 9 =>
+									-- ripup a segment of a named track
+									board_ops.ripup_track_segment (
+										module_name 	=> module,
+										net_name		=> to_net_name (f (5)),
+										layer			=> to_signal_layer (f (6)),
+										point			=> type_point_2d (set_point (
+												x => to_distance (f (7)),
+												y => to_distance (f (8)))),
+										accuracy		=> to_distance (f (9)),
+										
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last =>
+									command_too_long (9);
+									
+								when others =>
+									command_incomplete;
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+
+					end case;
 					
 				when ROTATE =>
 					case noun is

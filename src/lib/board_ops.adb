@@ -71,7 +71,18 @@ with numbering;
 -- with et_geometry;
 
 package body board_ops is
-	
+
+	procedure no_net_segment_found (
+		layer		: in type_signal_layer;
+		point		: in type_point_2d; 
+		accuracy	: in type_distance) is
+	begin
+		log (importance => WARNING, 
+			 text => "no net segment found in layer" & to_string (layer) &
+			 " at" & to_string (point) &
+			 " in vicinity of" & to_string (accuracy));
+	end no_net_segment_found;
+			 
 	procedure move_device (
 	-- Moves a device in the board layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
@@ -850,6 +861,8 @@ package body board_ops is
 		return pos; -- CS
 	end terminal_position;
 
+-- TRACKS
+	
 	function freetrack (net_name : in type_net_name.bounded_string) return string is 
 		use type_net_name;
 	begin
@@ -949,10 +962,11 @@ package body board_ops is
 		
 	begin -- draw_track_line
 		log (text => "module " & to_string (module_name) &
-					" drawing track line" &
-					" from" & to_string (from) &
-					" to" & to_string (to) &
-					freetrack (net_name),
+			freetrack (net_name) &
+			" drawing line" &
+			" in layer" & to_string (layer) &
+			" from" & to_string (from) &
+			" to" & to_string (to),
 			level => log_threshold);
 
 		-- locate module
@@ -1024,7 +1038,6 @@ package body board_ops is
 			process		=> add_named_track'access);
 
 	end draw_track_line;
-
 	
 	procedure draw_track_arc (
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
@@ -1098,11 +1111,12 @@ package body board_ops is
 		
 	begin -- draw_track_arc
 		log (text => "module " & to_string (module_name) &
-				" drawing track arc" &
-				" center" & to_string (center) &			 
-				" from" & to_string (from) &
-				" to" & to_string (to) &
-				freetrack (net_name),
+			 freetrack (net_name) &
+			" drawing arc" &
+			" in layer" & to_string (layer) &
+			" center" & to_string (center) &			 
+			" from" & to_string (from) &
+			" to" & to_string (to),
 			level => log_threshold);
 
 		-- locate module
@@ -1125,7 +1139,200 @@ package body board_ops is
 
 	end draw_track_arc;
 
+	function on_segment (
+	-- Returns true if the given point sits on the given line segment.
+		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		layer			: in type_signal_layer;
+		line			: in type_copper_lines_pcb.cursor;
+		accuracy		: in type_distance)
+		return boolean is
+		result : boolean := false; -- to be returned
+		use type_copper_lines_pcb;
+	begin -- on_segment
+		if element (line).layer = layer then
+			null;
+		else
+			result := false;
+		end if;
+		
+		return result;
+	end on_segment;
+
+	function on_segment (
+	-- Returns true if the given point sits on the given arc segment.
+		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		layer			: in type_signal_layer;
+		arc				: in type_copper_arcs_pcb.cursor;
+		accuracy		: in type_distance)
+		return boolean is
+		result : boolean := false; -- to be returned
+		use type_copper_arcs_pcb;
+	begin -- on_segment
+		if element (arc).layer = layer then
+			null;
+		else
+			result := false;
+		end if;
+
+		return result;
+	end on_segment;
 	
+	procedure ripup_track_segment (
+	-- Rips up the track segment of a net that crosses the given point in given layer.
+	-- CS currently rips up the first segment found. Leaves other segments untouched.
+	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		layer			: in type_signal_layer;
+		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		accuracy		: in type_distance;
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		use et_pcb;
+		use type_copper_lines_pcb;
+		use type_copper_arcs_pcb;
+
+		deleted : boolean := false; -- goes true if at least one segment has been ripup
+		
+		procedure ripup_freetrack (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			line_cursor : type_copper_lines_pcb.cursor := module.board.copper.lines.first;
+			arc_cursor  : type_copper_arcs_pcb.cursor := module.board.copper.arcs.first;
+		begin
+			-- first probe the lines. If a matching line found, delete it 
+			-- and abort iteration.
+			while line_cursor /= type_copper_lines_pcb.no_element loop
+
+				if on_segment (point, layer, line_cursor, accuracy) then
+					delete (module.board.copper.lines, line_cursor);
+					deleted := true;
+					exit;
+				end if;
+
+				next (line_cursor);
+			end loop;
+
+			-- probe arcs if no line found.
+			-- If a matching arc found, delete it and abort iteration.
+			if not deleted then
+				while arc_cursor /= type_copper_arcs_pcb.no_element loop
+
+					if on_segment (point, layer, arc_cursor, accuracy) then
+						delete (module.board.copper.arcs, arc_cursor);
+						deleted := true;
+						exit;
+					end if;
+					
+					next (arc_cursor);
+				end loop;
+			end if;
+
+			-- if no line and no arc found, issue warning:
+			if not deleted then
+				no_net_segment_found (layer, point, accuracy);
+			end if;
+			
+		end ripup_freetrack;
+		
+		procedure ripup_named_track (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			-- A net belonging to a net requires the net to be located in the given module:
+			use et_schematic.type_nets;
+			net_cursor : et_schematic.type_nets.cursor := find (module.nets, net_name);
+
+			procedure ripup (
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+				line_cursor : type_copper_lines_pcb.cursor := net.route.lines.first;
+				arc_cursor  : type_copper_arcs_pcb.cursor := net.route.arcs.first;
+			begin
+				-- first probe the lines. If a matching line found, delete it 
+				-- and abort iteration.
+				while line_cursor /= type_copper_lines_pcb.no_element loop
+
+					if on_segment (point, layer, line_cursor, accuracy) then
+						delete (net.route.lines, line_cursor);
+						deleted := true;
+						exit;
+					end if;
+
+					next (line_cursor);
+				end loop;
+
+				-- probe arcs if no line found.
+				-- If a matching arc found, delete it and abort iteration.
+				if not deleted then
+					while arc_cursor /= type_copper_arcs_pcb.no_element loop
+
+						if on_segment (point, layer, arc_cursor, accuracy) then
+							delete (net.route.arcs, arc_cursor);
+							deleted := true;
+							exit;
+						end if;
+						
+						next (arc_cursor);
+					end loop;
+				end if;
+
+				-- if no line and no arc found, issue warning:
+				if not deleted then
+					no_net_segment_found (layer, point, accuracy);
+				end if;
+
+			end ripup;
+
+		begin -- ripup_named_track
+			if net_exists (net_cursor) then
+
+				type_nets.update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> ripup'access);
+
+			else
+				net_not_found (net_name);
+			end if;
+
+		end ripup_named_track;
+		
+	begin -- ripup_track_segment
+		log (text => "module " & to_string (module_name) &
+				freetrack (net_name) &
+				" ripping up segment" &
+				" in layer" & to_string (layer) &
+				" at" & to_string (point) &
+				" accuracy" & to_string (accuracy),
+				
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		if is_freetrack (net_name) then
+			
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> ripup_freetrack'access);
+
+		else
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> ripup_named_track'access);
+
+		end if;
+		
+	end ripup_track_segment;
+	
+-- BOARD OUTLINE
+
 	procedure draw_outline_line (
 	-- Draws a line in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

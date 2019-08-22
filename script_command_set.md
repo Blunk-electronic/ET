@@ -273,39 +273,46 @@ schematic templates/adc set scope AGND local
 ```
 
 ## ROUTING TRACKS
+### FREETRACKS
+Laying out:
 ```
 board led_driver route freetrack 1 line 0.25 10 10 16 13 # layer 1, line, width 0.25, from 10/10 to 16/13
 ```
 ```
 board led_driver route freetrack 1 arc 0.25 50 50 50 0 50 100 # layer 1, arc, width 0.25, center 50/50, from 50/0 to 50/100
 ```
+
+Ripping up:
 ```
-board led_driver ripup freetrack 1 12 10 # layer 1, crossing point 12/10
+board led_driver ripup freetrack 1 12 10 2 # layer 1, crossing point 12/10, accuracy 2
 ```
 
 
-
+### NETS
+Laying out:
 ```
 board led_driver route net reset_n 1 line 0.25 10 10 16 13 # net reset_n, layer 1, line, width 0.25, line from 10/10 to 16/13
 ```
 ```
-board led_driver ripup net reset_n 1 12 10 # net reset_n, layer 1, crossing point 12/10
+board led_driver route net reset_n 1 arc 0.25 50 50 50 0 50 100 # net reset_n, layer 1, arc, width 0.25, center 50/50, from 50/0 to 50/100
 ```
+
+Ripping up:
 ```
+board led_driver ripup net reset_n 1 12 10 2 # net reset_n, layer 1, crossing point 12/10, accuracy 2
+```
+<!--```
 board led_driver ripup net reset_n 1 # net reset_n, all in layer 1
 ```
 ```
 board led_driver ripup net reset_n # everything in net reset_n
-```
+```-->
 <!--```
 board led_driver ripup net # everything in all nets
 ```-->
 
-
-
-```
-board led_driver route net reset_n 1 arc 0.25 50 50 50 0 50 100 # net reset_n, layer 1, arc, width 0.25, center 50/50, from 50/0 to 50/100
-```
+<!--CS board led_driver ripup net reset_n line last
+CS board led_driver ripup net reset_n arc last-->
 
 
 <!--```
