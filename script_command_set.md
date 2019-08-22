@@ -550,4 +550,7 @@ board led_driver draw outline arc 50 50 50 0 50 100 # center 50/50 from 50/0 to 
 ```
 board led_driver draw outline circle 50 50 50 # center 50/50 radius 50
 ```
+```
+board led_driver delete outline 40 50 1 # crossing 40/50, accuracy 1
+```
 

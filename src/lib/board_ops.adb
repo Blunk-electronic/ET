@@ -81,8 +81,18 @@ package body board_ops is
 			 text => "no net segment found in layer" & to_string (layer) &
 			 " at" & to_string (point) &
 			 " in vicinity of" & to_string (accuracy));
-	end no_net_segment_found;
-			 
+	end;
+
+	procedure no_outline_segment_found (
+		point		: in type_point_2d; 
+		accuracy	: in type_distance) is
+	begin
+		log (importance => WARNING, 
+			 text => "no outline segment found at" & to_string (point) &
+			 " in vicinity of" & to_string (accuracy));
+	end;
+
+	
 	procedure move_device (
 	-- Moves a device in the board layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
@@ -1150,7 +1160,7 @@ package body board_ops is
 		use type_copper_lines_pcb;
 	begin -- on_segment
 		if element (line).layer = layer then
-			null;
+			result := true; -- CS
 		else
 			result := false;
 		end if;
@@ -1169,7 +1179,7 @@ package body board_ops is
 		use type_copper_arcs_pcb;
 	begin -- on_segment
 		if element (arc).layer = layer then
-			null;
+			result := true; -- CS
 		else
 			result := false;
 		end if;
@@ -1457,6 +1467,133 @@ package body board_ops is
 			process		=> add'access);
 
 	end draw_outline_circle;
+
+	function on_segment (
+	-- Returns true if the given point sits on the given line segment.
+		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		line			: in type_pcb_contour_lines.cursor;
+		accuracy		: in type_distance)
+		return boolean is
+		result : boolean := false; -- to be returned
+		use type_pcb_contour_lines;
+	begin -- on_segment
+		-- CS
+		return result;
+	end on_segment;
+
+	function on_segment (
+	-- Returns true if the given point sits on the given arc segment.
+		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		arc				: in type_pcb_contour_arcs.cursor;
+		accuracy		: in type_distance)
+		return boolean is
+		result : boolean := false; -- to be returned
+		use type_pcb_contour_lines;
+	begin -- on_segment
+		-- CS
+		return result;
+	end on_segment;
+
+	function on_segment (
+	-- Returns true if the given point sits on the given circle segment.
+		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		circle			: in type_pcb_contour_circles.cursor;
+		accuracy		: in type_distance)
+		return boolean is
+		result : boolean := false; -- to be returned
+		use type_pcb_contour_lines;
+	begin -- on_segment
+		-- CS
+		return result;
+	end on_segment;
+
+	
+	procedure delete_outline (
+	-- Deletes the segment of the outline that crosses the given point.
+	-- CS currently rips up the first segment found. Leaves other segments untouched.
+	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		accuracy		: in type_distance;
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure delete (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_pcb;
+			use type_pcb_contour_lines;
+			use type_pcb_contour_arcs;
+			use type_pcb_contour_circles;
+			line_cursor   : type_pcb_contour_lines.cursor   := module.board.contour.lines.first;
+			arc_cursor    : type_pcb_contour_arcs.cursor    := module.board.contour.arcs.first;
+			circle_cursor : type_pcb_contour_circles.cursor := module.board.contour.circles.first;
+
+			deleted : boolean := false; -- goes true if at least one segment has been deleted
+		begin
+			-- first search for a matching segment among the lines
+			while line_cursor /= type_pcb_contour_lines.no_element loop
+				if on_segment (point, line_cursor, accuracy) then
+					delete (module.board.contour.lines, line_cursor);
+					deleted := true;
+					exit;
+				end if;
+				next (line_cursor);
+			end loop;
+
+			-- if no line found, search among arcs
+			if not deleted then
+				while arc_cursor /= type_pcb_contour_arcs.no_element loop
+					
+					if on_segment (point, arc_cursor, accuracy) then
+						delete (module.board.contour.arcs, arc_cursor);
+						deleted := true;
+						exit;
+					end if;
+					
+					next (arc_cursor);
+				end loop;
+			end if;
+
+			-- if no arc found, search among circles
+			if not deleted then
+				while circle_cursor /= type_pcb_contour_circles.no_element loop
+					
+					if on_segment (point, circle_cursor, accuracy) then
+						delete (module.board.contour.circles, circle_cursor);
+						deleted := true;
+						exit;
+					end if;
+					
+					next (circle_cursor);
+				end loop;
+			end if;
+
+			if not deleted then
+				no_outline_segment_found (point, accuracy);
+			end if;
+			
+		end delete;
+		
+	begin -- delete_outline
+		log (text => "module " & to_string (module_name) &
+			" deleting outline segment" &
+			" at" & to_string (point) &
+			" accuracy" & to_string (accuracy),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> delete'access);
+		
+	end delete_outline;
+
 	
 end board_ops;
 	

@@ -177,6 +177,16 @@ package board_ops is
 		center			: in et_pcb_coordinates.type_point_2d; -- x/y
 		radius			: in et_pcb_coordinates.type_distance;
 		log_threshold	: in type_log_level);
+
+	procedure delete_outline (
+	-- Deletes the segment of the outline that crosses the given point.
+	-- CS currently rips up the first segment found. Leaves other segments untouched.
+	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		accuracy		: in type_distance;
+		log_threshold	: in type_log_level);
+
 	
 end board_ops;
 
