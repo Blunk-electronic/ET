@@ -274,30 +274,38 @@ schematic templates/adc set scope AGND local
 
 ## ROUTING TRACKS
 ```
-board led_driver draw track line 10 10 16 13 1 0.25 # from 10/10 to 16/13, layer 1, width 0.25, freetrack
+board led_driver route freetrack 1 line 0.25 10 10 16 13 # layer 1, line, width 0.25, from 10/10 to 16/13
 ```
 ```
-board led_driver draw track line 10 10 16 13 1 0.25 reset_n # from 10/10 to 16/13, layer 1, width 0.25, net reset_n
+board led_driver route freetrack 1 arc 0.25 50 50 50 0 50 100 # layer 1, arc, width 0.25, center 50/50, from 50/0 to 50/100
 ```
 ```
-board led_driver draw track arc 50 50 50 0 50 100 1 0.25 reset_n # center 50/50 from 50/0 to 50/100, layer 1, width 0.25, net reset_n
+board led_driver ripup freetrack 1 12 10 # layer 1, crossing point 12/10
 ```
 
+
+
+```
+board led_driver route net reset_n 1 line 0.25 10 10 16 13 # net reset_n, layer 1, line, width 0.25, line from 10/10 to 16/13
+```
+```
+board led_driver ripup net reset_n 1 12 10 # net reset_n, layer 1, crossing point 12/10
+```
+```
+board led_driver ripup net reset_n 1 # net reset_n, all in layer 1
+```
+```
+board led_driver ripup net reset_n # everything in net reset_n
+```
 <!--```
-board led_driver delete track 12 10 1 # crossing point 12/10 in layer 1
+board led_driver ripup net # everything in all nets
 ```-->
 
-<!--```
-board led_driver delete tracks 1 reset_n
-```-->
 
-<!--```
-board led_driver delete tracks 1
-```-->
 
-<!--```
-board led_driver delete tracks
-```-->
+```
+board led_driver route net reset_n 1 arc 0.25 50 50 50 0 50 100 # net reset_n, layer 1, arc, width 0.25, center 50/50, from 50/0 to 50/100
+```
 
 
 <!--```

@@ -177,6 +177,7 @@ package scripting is
 		MAKE,
 		MOVE,
 		PLACE,
+		RIPUP,
 		ROTATE,
 		ROUTE,
 		SET,
@@ -189,6 +190,7 @@ package scripting is
 
 	type type_noun_board is ( -- CS prepend prefix NOUN_
 		DEVICE,
+		FREETRACK,
 		NAME,
 		NET,
 		OUTLINE,
@@ -199,7 +201,7 @@ package scripting is
 		TEXT,
 		TEXT_SIZE,
 		TEXT_LINE_WIDTH,
-		TRACK,
+-- 		TRACK,
 		VALUE,
 		VIA,
 		VIA_DRILL

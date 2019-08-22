@@ -883,11 +883,11 @@ package body board_ops is
 	procedure draw_track_line (
 	-- Draws a track line. If net_name is empty a freetrack will be drawn.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		from			: in et_pcb_coordinates.type_point_2d; -- x/y
-		to				: in et_pcb_coordinates.type_point_2d; -- x/y
+		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
-		net_name		: in type_net_name.bounded_string; -- reset_n
+		from			: in et_pcb_coordinates.type_point_2d; -- x/y
+		to				: in et_pcb_coordinates.type_point_2d; -- x/y
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -980,11 +980,11 @@ package body board_ops is
 	-- Draws a named track line.
 	-- Assumes that module_cursor and net_cursor point to a existing objects.
 		module_cursor	: in type_modules.cursor;
-		from			: in et_pcb_coordinates.type_point_2d; -- x/y
-		to				: in et_pcb_coordinates.type_point_2d; -- x/y
+		net_cursor		: in et_schematic.type_nets.cursor; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
-		net_cursor		: in et_schematic.type_nets.cursor; -- reset_n
+		from			: in et_pcb_coordinates.type_point_2d; -- x/y
+		to				: in et_pcb_coordinates.type_point_2d; -- x/y
 		log_threshold	: in type_log_level) is
 
 		procedure add_named_track (
@@ -1029,12 +1029,12 @@ package body board_ops is
 	procedure draw_track_arc (
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
 		center			: in et_pcb_coordinates.type_point_2d; -- x/y
 		from			: in et_pcb_coordinates.type_point_2d; -- x/y		
 		to				: in et_pcb_coordinates.type_point_2d; -- x/y
-		layer			: in type_signal_layer;
-		width			: in type_track_width;
-		net_name		: in type_net_name.bounded_string; -- reset_n
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
