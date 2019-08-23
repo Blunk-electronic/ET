@@ -95,6 +95,7 @@ package et_geometry is
 			point	: in out type_point'class;
 			offset	: in type_point);
 
+
 		
 -- 		with function x (p : type_point) return type_distance;
 -- 		with function y (p : type_point) return type_distance;

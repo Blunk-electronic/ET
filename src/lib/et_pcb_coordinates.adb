@@ -370,11 +370,11 @@ package body et_pcb_coordinates is
 
 			-- compute new x   -- (cos angle_out) * distance_to_origin
 			scratch := cos (type_float_distance (angle_out), type_float_distance (units_per_cycle));
-			set_point (axis => X, point => point, value => type_distance (scratch * distance_to_origin));
+			set (axis => X, point => point, value => type_distance (scratch * distance_to_origin));
 
 			-- compute new y   -- (sin angle_out) * distance_to_origin
 			scratch := sin (type_float_distance (angle_out), type_float_distance (units_per_cycle));
-			set_point (axis => Y, point => point, value => type_distance (scratch * distance_to_origin));
+			set (axis => Y, point => point, value => type_distance (scratch * distance_to_origin));
 	
 		end if; -- if angle not zero
 		

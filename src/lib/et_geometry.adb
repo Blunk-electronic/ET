@@ -289,7 +289,7 @@ package body et_geometry is
 			point.x := point.x + offset.x;
 			point.y := point.y + offset.y;
 		end;
-
+		
 		
 -- 		function distance (
 -- 			point		: in type_point; 
