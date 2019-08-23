@@ -142,12 +142,13 @@ package body pick_and_place is
 			procedure query_device (cursor : in type_devices.cursor) is
 				use type_devices;
 				use et_libraries;
+				use et_pcb_coordinates.geometry;
 			begin
 				put_field (file => pnp_handle); -- CS item number
 				put_field (file => pnp_handle, text => to_string (key (cursor))); -- R4
 				put_field (file => pnp_handle, text => to_string (get_face (element (cursor).position))); -- top/bottom
-				put_field (file => pnp_handle, text => to_string (get_axis (X, element (cursor).position))); -- X
-				put_field (file => pnp_handle, text => to_string (get_axis (Y, element (cursor).position))); -- Y
+				put_field (file => pnp_handle, text => to_string (x (element (cursor).position))); -- X
+				put_field (file => pnp_handle, text => to_string (y (element (cursor).position))); -- Y
 				put_field (file => pnp_handle, text => to_string (get_angle (element (cursor).position))); -- rotation
 -- 				put_field (file => pnp_handle, text => to_string (element (cursor).value)); -- 100R
 -- 				put_field (file => pnp_handle, text => to_string (element (cursor).packge)); -- S_0805.pac

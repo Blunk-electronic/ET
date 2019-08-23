@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                          SYSTEM ET GEOMETRY                              --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                              GEOMETRY                                    --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab with in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -238,19 +238,80 @@ package body et_geometry is
 
 	end distance_of_point_from_line;
 
+	package body geometry_operations_2d is
 
-	function distance (
-		point		: in type_point; 
-		line_start	: in type_point;
-		line_end 	: in type_point;
-		line_range	: in type_line_range) 
-		return type_distance is
-		result : type_distance; -- to be returned
-	begin
+		function x (point : in type_point'class) return type_distance is begin
+			return point.x;
+		end;
 
-		return result;
-	end distance;
+		function y (point : in type_point'class) return type_distance is begin
+			return point.y;
+		end;
 
+		function set (x, y : in type_distance) return type_point'class is
+			point : type_point;
+		begin
+			point.x := x;
+			point.y := y;
+			return point;
+		end;
+
+		procedure set (
+			axis 	: in type_axis_2d;
+			value	: in type_distance;					 
+			point	: in out type_point'class) is
+		begin
+			case axis is
+				when X => point.x := value;
+				when Y => point.y := value;
+			end case;
+		end;
+		
+		procedure reset (point : in out type_point'class) is begin
+		-- Moves the given point to the origin (0/0).
+			point.x := zero;
+			point.y := zero;
+		end;
+
+		procedure move (
+			point	: in out type_point'class;
+			offset	: in type_point) 
+		is begin
+			point.x := point.x + offset.x;
+			point.y := point.y + offset.y;
+		end;
+
+		
+-- 		function distance (
+-- 			point		: in type_point; 
+-- 			line_start	: in type_point;
+-- 			line_end 	: in type_point;
+-- 			line_range	: in type_line_range) 
+-- 			return type_distance_point_line is
+-- 			result : type_distance_point_line; -- to be returned
+	-- 
+	-- 		type type_float is digits 11 range -100000000.0 .. 100000000.0; -- CS: probably way too much
+	-- 		package functions is new ada.numerics.generic_elementary_functions (type_float);
+
+	-- 		s : type_point := line_start;
+	-- 		e : type_point := line_end;		
+
+	-- 		delta_x : type_distance := x (e) - x (s);
+	-- 		delta_y : type_distance := y (e) - y (s);
+			
+	-- 		line_scratch : type_point;
+			
+	-- 		result : type_distance_point_from_line;
+	-- 		s1,s2,s3,s4,s5,s6,s7,s8 : type_float;
+			
+-- 		begin
+-- 
+-- 			return result;
+-- 		end distance;
+
+		procedure dummy is begin null; end;
+		
+	end geometry_operations_2d;
 	
 end et_geometry;
 

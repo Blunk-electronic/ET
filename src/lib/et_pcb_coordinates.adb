@@ -206,24 +206,24 @@ package body et_pcb_coordinates is
 		return type_angle'value (angle);
 	end to_angle;
 
-	function set_point (x, y : in type_distance) 
-		return type_point_2d'class is
-		point : type_point_2d;
-	begin
-		point.x := x;
-		point.y := y;
-		return point;
-	end set_point;
+-- 	function set_point (x, y : in type_distance) 
+-- 		return type_point_2d'class is
+-- 		point : type_point_2d;
+-- 	begin
+-- 		point.x := x;
+-- 		point.y := y;
+-- 		return point;
+-- 	end set_point;
 
-	function set_point (x, y, z : in type_distance) 
-		return type_point_3d'class is
-		point : type_point_3d;
-	begin
-		point.x := x;
-		point.y := y;
-		point.z := z;
-		return point;
-	end set_point;
+-- 	function set_point (x, y, z : in type_distance) 
+-- 		return type_point_3d'class is
+-- 		point : type_point_3d;
+-- 	begin
+-- 		point.x := x;
+-- 		point.y := y;
+-- 		point.z := z;
+-- 		return point;
+-- 	end set_point;
 
 	
 	function to_string (point : in type_point_2d) return string is
@@ -246,21 +246,21 @@ package body et_pcb_coordinates is
 			& to_string (point.angle);
 	end to_string;
 	
-	procedure reset_point (
-	-- Moves the given point to the origin (0/0).
-		point	: in out type_point_2d'class)
-	is begin
-		point.x := zero_distance;
-		point.y := zero_distance;
-	end reset_point;
+-- 	procedure reset_point (
+-- 	-- Moves the given point to the origin (0/0).
+-- 		point	: in out type_point_2d'class)
+-- 	is begin
+-- 		point.x := zero_distance;
+-- 		point.y := zero_distance;
+-- 	end reset_point;
 	
-	procedure move_point (
-		point	: in out type_point_2d'class;
-		offset	: in type_point_2d) 
-	is begin
-		point.x := point.x + offset.x;
-		point.y := point.y + offset.y;
-	end move_point;
+-- 	procedure move_point (
+-- 		point	: in out type_point_2d'class;
+-- 		offset	: in type_point_2d) 
+-- 	is begin
+-- 		point.x := point.x + offset.x;
+-- 		point.y := point.y + offset.y;
+-- 	end move_point;
 
 -- 	function move (
 -- 		point	: in type_point_2d'class;
@@ -272,16 +272,16 @@ package body et_pcb_coordinates is
 -- 		return point_out;
 -- 	end;
 	
-	procedure set_point (
-		axis 	: in type_axis_2d;
-		value	: in type_distance;
-		point	: in out type_point_2d'class) is
-	begin
-		case axis is
-			when X => point.x := value;
-			when Y => point.y := value;
-		end case;
-	end set_point;
+-- 	procedure set_point (
+-- 		axis 	: in type_axis_2d;
+-- 		value	: in type_distance;
+-- 		point	: in out type_point_2d'class) is
+-- 	begin
+-- 		case axis is
+-- 			when X => point.x := value;
+-- 			when Y => point.y := value;
+-- 		end case;
+-- 	end set_point;
 
 	procedure set_xy (
 		point	: in out type_point_2d'class;
@@ -378,16 +378,16 @@ package body et_pcb_coordinates is
 		
 	end rotate;
 	
-	function get_axis (
-		axis	: in type_axis_2d;
-		point	: in type_point_2d'class)
-		return type_distance_total is
-	begin
-		case axis is
-			when X => return point.x;
-			when Y => return point.y;
-		end case;
-	end get_axis;
+-- 	function get_axis (
+-- 		axis	: in type_axis_2d;
+-- 		point	: in type_point_2d'class)
+-- 		return type_distance_total is
+-- 	begin
+-- 		case axis is
+-- 			when X => return point.x;
+-- 			when Y => return point.y;
+-- 		end case;
+-- 	end get_axis;
 	
 	procedure set_angle (
 	-- Sets the rotation of a point at the given angle.

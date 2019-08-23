@@ -59,6 +59,7 @@ with et_export;
 with et_import;
 with et_schematic;
 with et_pcb;
+with et_geometry;
 with et_pcb_coordinates;
 with conventions;
 with submodules;
@@ -678,9 +679,10 @@ package body et_project is
 	function position (point : et_pcb_coordinates.type_point_2d'class) return string is
 		use et_pcb_coordinates;
 		use ada.tags;
-		
-		xy : constant string := space & keyword_pos_x & to_string (get_axis (X, point)) 
-				& space & keyword_pos_y & to_string (get_axis (Y, point));
+
+		use et_pcb_coordinates.geometry;
+		xy : constant string := space & keyword_pos_x & to_string (x (point)) 
+				& space & keyword_pos_y & to_string (y (point));
 	begin
 		if point'tag = type_point_2d'tag then
 			return xy;
@@ -2934,6 +2936,8 @@ package body et_project is
 		from : in positive)
 		return et_pcb_coordinates.type_point_2d is
 		use et_pcb_coordinates;
+		use et_geometry;
+		use et_pcb_coordinates.geometry;
 		use et_string_processing;
 
 		function f (line : in type_fields_of_line; position : in positive) return string 
@@ -2948,11 +2952,17 @@ package body et_project is
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_pos_x then
-				set_point (point => point, axis => X, value => to_distance (f (line, place + 1)));
+				set (
+					point	=> point,
+					axis	=> X,
+					value 	=> to_distance (f (line, place + 1)));
 
 			-- We expect after the y the corresponding value for y
 			elsif f (line, place) = keyword_pos_y then
-				set_point (point => point, axis => Y, value => to_distance (f (line, place + 1)));
+				set (
+					point	=> point,
+					axis 	=> Y,
+					value 	=> to_distance (f (line, place + 1)));
 
 			else
 				invalid_keyword (f (line, place));
@@ -2969,7 +2979,10 @@ package body et_project is
 		line : in et_string_processing.type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
 		from : in positive)
 		return et_pcb_coordinates.type_point_2d_with_angle is
+
+		use et_geometry;
 		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 		use et_string_processing;
 		
 		function f (line : in type_fields_of_line; position : in positive) return string 
@@ -2984,11 +2997,11 @@ package body et_project is
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_pos_x then
-				set_point (point => point, axis => X, value => to_distance (f (line, place + 1)));
+				set (point => point, axis => X, value => to_distance (f (line, place + 1)));
 
 			-- We expect after the y the corresponding value for y
 			elsif f (line, place) = keyword_pos_y then
-				set_point (point => point, axis => Y, value => to_distance (f (line, place + 1)));
+				set (point => point, axis => Y, value => to_distance (f (line, place + 1)));
 
 			-- We expect after "rotation" the corresponding value for the rotation
 			elsif f (line, place) = keyword_rotation then
@@ -7974,6 +7987,8 @@ package body et_project is
 			from : in positive)
 			return et_pcb_coordinates.type_package_position is
 			use et_pcb_coordinates;
+			use et_geometry;
+			use et_pcb_coordinates.geometry;
 			
 			point : type_package_position; -- to be returned
 			place : positive := from; -- the field being read from given line
@@ -7984,11 +7999,11 @@ package body et_project is
 
 				-- We expect after the x the corresponding value for x
 				if f (line, place) = keyword_pos_x then
-					set_point (point => point, axis => X, value => to_distance (f (line, place + 1)));
+					set (point => point, axis => X, value => to_distance (f (line, place + 1)));
 
 				-- We expect after the y the corresponding value for y
 				elsif f (line, place) = keyword_pos_y then
-					set_point (point => point, axis => Y, value => to_distance (f (line, place + 1)));
+					set (point => point, axis => Y, value => to_distance (f (line, place + 1)));
 
 				-- We expect after "rotation" the corresponding value for the rotation
 				elsif f (line, place) = keyword_rotation then

@@ -59,6 +59,7 @@ with et_string_processing;		use et_string_processing;
 with et_schematic;				use et_schematic;
 with et_pcb;					use et_pcb;
 with et_pcb_coordinates;		use et_pcb_coordinates;
+
 with et_project;				use et_project;
 with schematic_ops;				use schematic_ops;
 with assembly_variants;
@@ -72,6 +73,8 @@ with numbering;
 
 package body board_ops is
 
+	use et_pcb_coordinates.geometry;
+	
 	procedure no_net_segment_found (
 		layer		: in type_signal_layer;
 		point		: in type_point_2d; 
@@ -120,7 +123,7 @@ package body board_ops is
 						set_xy (point => device.position, position => point); -- preserve angle and face
 
 					when RELATIVE =>
-						move_point (point => device.position, offset => point); -- preserve angle and face
+						move (point => device.position, offset => point); -- preserve angle and face
 						
 				end case;
 			end;
@@ -350,7 +353,7 @@ package body board_ops is
 						set_xy (submodule.position_in_board, point);
 
 					when RELATIVE =>
-						move_point (submodule.position_in_board, point);
+						move (submodule.position_in_board, point);
 				end case;
 
 				exception
@@ -454,7 +457,7 @@ package body board_ops is
 						-- Get the device position in the generic submodule.
 						-- Then move it according
 						-- to the position of the submodule instance in the parent module:
-						move_point (device_position, type_point_2d (position_in_board));
+						move (device_position, type_point_2d (position_in_board));
 
 						log (text => "generic" & to_string (type_point_2d_with_angle (position_generic)) &
 							" -> " & "in instance" & to_string (type_point_2d_with_angle (device_position)),
@@ -715,7 +718,7 @@ package body board_ops is
 
 					-- The new position_in_board is a vector sum of the position_in_board of the parent module
 					-- and the position_in_board of the current submodule:
-					move_point (position_in_board, type_point_2d (get_position (parent_name, module_instance)));
+					move (position_in_board, type_point_2d (get_position (parent_name, module_instance)));
 
 					-- CS position_in_board must be rotated according to rotation specified where
 					-- the submodule has been instanciated. 
