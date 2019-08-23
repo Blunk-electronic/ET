@@ -283,13 +283,13 @@ package body et_pcb_coordinates is
 -- 		end case;
 -- 	end set_point;
 
-	procedure set_xy (
-		point	: in out type_point_2d'class;
-		position: in type_point_2d) is
-	begin
-		point.x := position.x;
-		point.y := position.y;
-	end;
+-- 	procedure set_xy (
+-- 		point	: in out type_point_2d'class;
+-- 		position: in type_point_2d) is
+-- 	begin
+-- 		point.x := position.x;
+-- 		point.y := position.y;
+-- 	end;
 	
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
@@ -309,40 +309,42 @@ package body et_pcb_coordinates is
 		scratch				: type_float_distance;
 
 		use et_coordinates;
+		use et_geometry;
+		use geometry;
 	begin
 		-- Do nothing if the given rotation is zero.
 		if angle /= 0.0 then
 
 			-- compute distance of given point to origin
-			if get_axis (X, point) = zero_distance and get_axis (Y, point) = zero_distance then
+			if x (point) = zero_distance and y (point) = zero_distance then
 				distance_to_origin := type_float_distance (zero_distance);
-			elsif get_axis (X, point) = zero_distance then
-				distance_to_origin := type_float_distance (abs (get_axis (Y, point)));
-			elsif get_axis (Y, point) = zero_distance then
-				distance_to_origin := type_float_distance (abs (get_axis (X, point)));
+			elsif x (point) = zero_distance then
+				distance_to_origin := type_float_distance (abs (y (point)));
+			elsif y (point) = zero_distance then
+				distance_to_origin := type_float_distance (abs (x (point)));
 			else
 				distance_to_origin := sqrt (
-					type_float_distance (abs (get_axis (X, point))) ** type_float_distance (2) 
+					type_float_distance (abs (x (point))) ** type_float_distance (2) 
 					+
-					type_float_distance (abs (get_axis (Y, point))) ** type_float_distance (2)
+					type_float_distance (abs (y (point))) ** type_float_distance (2)
 					);
 			end if;
 			
 			-- compute the current angle of the given point (in degrees)
 
-			if get_axis (X, point) = zero_distance then
-				if get_axis (Y, point) > zero_distance then
+			if x (point) = zero_distance then
+				if y (point) > zero_distance then
 					angle_out := 90.0;
-				elsif get_axis (Y, point) < zero_distance then
+				elsif y (point) < zero_distance then
 					angle_out := -90.0;
 				else
 					angle_out := 0.0;
 				end if;
 
-			elsif get_axis (Y, point) = zero_distance then
-				if get_axis (X, point) > zero_distance then
+			elsif y (point) = zero_distance then
+				if x (point) > zero_distance then
 					angle_out := 0.0;
-				elsif get_axis (X, point) < zero_distance then
+				elsif x (point) < zero_distance then
 					angle_out := 180.0;
 				else
 					angle_out := 0.0;
@@ -350,8 +352,8 @@ package body et_pcb_coordinates is
 
 			else
 				angle_out := type_float_angle (arctan (
-					x => type_float_distance (get_axis (X, point)),
-					y => type_float_distance (get_axis (Y, point)),
+					x => type_float_distance (x (point)),
+					y => type_float_distance (y (point)),
 					cycle => type_float_distance (units_per_cycle))
 					);
 			end if;

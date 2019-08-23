@@ -266,6 +266,15 @@ package body et_geometry is
 				when Y => point.y := value;
 			end case;
 		end;
+
+		procedure set (
+			point	: in out type_point'class;
+			position: in type_point) is
+		begin
+			point.x := position.x;
+			point.y := position.y;
+		end;
+
 		
 		procedure reset (point : in out type_point'class) is begin
 		-- Moves the given point to the origin (0/0).

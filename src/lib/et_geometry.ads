@@ -83,6 +83,10 @@ package et_geometry is
 			value	: in type_distance;					 
 			point	: in out type_point'class);
 
+		procedure set (
+			point	: in out type_point'class;
+			position: in type_point);
+
 		
 		procedure reset (point : in out type_point'class);
 		-- Moves the given point to the origin (0/0).

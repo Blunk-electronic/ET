@@ -59,6 +59,7 @@ with et_string_processing;		use et_string_processing;
 with et_schematic;				use et_schematic;
 with et_pcb;					use et_pcb;
 with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_geometry;
 
 with et_project;				use et_project;
 with schematic_ops;				use schematic_ops;
@@ -117,10 +118,11 @@ package body board_ops is
 			procedure set_position (
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
+				use geometry;
 			begin
 				case coordinates is
 					when ABSOLUTE =>
-						set_xy (point => device.position, position => point); -- preserve angle and face
+						set (point => device.position, position => point); -- preserve angle and face
 
 					when RELATIVE =>
 						move (point => device.position, offset => point); -- preserve angle and face
@@ -347,10 +349,11 @@ package body board_ops is
 			procedure move (
 				instance	: in et_general.type_module_instance_name.bounded_string;
 				submodule	: in out submodules.type_submodule) is
+				use geometry;
 			begin
 				case coordinates is
 					when ABSOLUTE =>
-						set_xy (submodule.position_in_board, point);
+						set (submodule.position_in_board, point);
 
 					when RELATIVE =>
 						move (submodule.position_in_board, point);

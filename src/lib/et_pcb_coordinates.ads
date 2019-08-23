@@ -184,9 +184,9 @@ package et_pcb_coordinates is
 -- 		value	: in type_distance;					 
 -- 		point	: in out type_point_2d'class);
 
-	procedure set_xy (
-		point	: in out type_point_2d'class;
-		position: in type_point_2d);
+-- 	procedure set_xy (
+-- 		point	: in out type_point_2d'class;
+-- 		position: in type_point_2d);
 	
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
