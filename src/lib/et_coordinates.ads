@@ -156,7 +156,7 @@ package et_coordinates is
 -- 		point	 : in out type_point;
 -- 		position : in type_point'class);
 
-	function set_point (x, y : in type_distance_xy) return type_point'class;
+-- 	function set_point (x, y : in type_distance_xy) return type_point'class;
 	
 	procedure mirror (
 		point	: in out type_point;

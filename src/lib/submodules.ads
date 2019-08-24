@@ -56,6 +56,8 @@ with et_pcb_coordinates;
 
 package submodules is
 
+-- 	use geometry;
+	
 	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
 
 	subtype type_submodule_edge_length is type_distance range 10.0 .. 1000.0;
@@ -151,8 +153,8 @@ package submodules is
 		rotation	: et_coordinates.type_rotation;
 	end record;
 
-	position_master_port_default : constant type_point := type_point (set_point (x =>  10.0, y => 0.0));
-	position_slave_port_default  : constant type_point := type_point (set_point (x => -10.0, y => 0.0));	
+	position_master_port_default : constant type_point := type_point (geometry.set (x =>  10.0, y => 0.0));
+	position_slave_port_default  : constant type_point := type_point (geometry.set (x => -10.0, y => 0.0));	
 	
 	type type_netchanger_symbol is record
 		master_port	: type_netchanger_port := (
@@ -167,10 +169,10 @@ package submodules is
 
 		-- the arc that connects the ports
 		arc	: et_libraries.type_arc := (
-						center		=> type_point (set_point (x => 0.0, y => 0.0)),
+						center		=> type_point (geometry.set (x => 0.0, y => 0.0)),
 						radius		=> 5.0,
-						start_point	=> type_point (set_point (x => -5.0, y => 0.0)),
-						end_point	=> type_point (set_point (x =>  5.0, y => 0.0)),
+						start_point	=> type_point (geometry.set (x => -5.0, y => 0.0)),
+						end_point	=> type_point (geometry.set (x =>  5.0, y => 0.0)),
 						width		=> line_width_port_default);
 	end record;
 

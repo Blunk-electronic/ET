@@ -201,13 +201,13 @@ package body et_coordinates is
 -- 		point.y := position.y;
 -- 	end set_xy;
 
-	function set_point (x, y : in type_distance_xy) return type_point'class is 
-		point : type_point;
-	begin
-		point.x := x;
-		point.y := y;
-		return point;
-	end set_point;
+-- 	function set_point (x, y : in type_distance_xy) return type_point'class is 
+-- 		point : type_point;
+-- 	begin
+-- 		point.x := x;
+-- 		point.y := y;
+-- 		return point;
+-- 	end set_point;
 	
 	procedure mirror (
 		point	: in out type_point;
