@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                           SYSTEM ET COORDINATES                          --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                        SCHEMATIC COORDINATES                             --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -170,7 +170,7 @@ package body et_coordinates is
 
 	function distance (
 	-- Returns the distance of the point in x or y from the origin.
-		axis	: in type_axis;
+		axis	: in type_axis_2d;
 		point	: in type_point'class)
 		return type_distance_xy is
 	begin
@@ -211,7 +211,7 @@ package body et_coordinates is
 	
 	procedure mirror (
 		point	: in out type_point;
-		axis	: in type_axis)
+		axis	: in type_axis_2d)
 		is
 	begin
 		case axis is
@@ -357,7 +357,7 @@ package body et_coordinates is
 	-- Returns the absolute distance on the given axis between the given points.
 		point_1	: in type_point;
 		point_2	: in type_point;
-		axis	: in type_axis) 
+		axis	: in type_axis_2d) 
 		return type_distance is
 		dis : type_distance;
 	begin
@@ -484,7 +484,7 @@ package body et_coordinates is
 	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
 		paper_size	: in et_general.type_paper_size;
 		orientation	: in et_general.type_paper_orientation := et_general.LANDSCAPE;
-		axis		: in type_axis)
+		axis		: in type_axis_2d)
 		return type_distance_xy is
 
 		dimension : type_distance;

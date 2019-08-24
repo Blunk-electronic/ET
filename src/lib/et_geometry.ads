@@ -36,22 +36,21 @@
 --
 
 with et_general;				use et_general;
-with et_coordinates;
 
 package et_geometry is
 
-	type type_distance_point_from_line is record -- CS: should be private
-		distance		: et_coordinates.type_distance := et_coordinates.zero_distance;
-		sits_on_start	: boolean := false;
-		sits_on_end		: boolean := false;
-		out_of_range	: boolean := false;
-	end record;
+-- 	type type_distance_point_from_line is record -- CS: should be private
+-- 		distance		: et_coordinates.type_distance := et_coordinates.zero_distance;
+-- 		sits_on_start	: boolean := false;
+-- 		sits_on_end		: boolean := false;
+-- 		out_of_range	: boolean := false;
+-- 	end record;
 
-	type type_line_range is (
-		inside_end_points,	-- start and end point excluded -- CS rename to between_end_points ?
-		with_end_points,	-- start and end point included
-		beyond_end_points	-- unlimited line assumed. extends beyond both start and end point into infinity
-		);
+-- 	type type_line_range is (
+-- 		inside_end_points,	-- start and end point excluded -- CS rename to between_end_points ?
+-- 		with_end_points,	-- start and end point included
+-- 		beyond_end_points	-- unlimited line assumed. extends beyond both start and end point into infinity
+-- 		);
 	
 -- 	function distance_of_point_from_line (
 -- 	-- Computes the shortest distance (perpendicular) of a given point from the given line.
@@ -96,24 +95,25 @@ package et_geometry is
 		function distance (point_one, point_two : in type_point) return type_distance;
 		-- Computes the total distance between point_one and point_two.	
 
-		
--- 		with function x (p : type_point) return type_distance;
--- 		with function y (p : type_point) return type_distance;
-
 		type type_distance_point_line is record
 			distance		: type_distance := zero;
 			sits_on_start	: boolean := false;
 			sits_on_end		: boolean := false;
 			out_of_range	: boolean := false;
 		end record;
+
+		type type_line_range is (
+			INSIDE_END_POINTS,	-- start and end point excluded -- CS rename to between_end_points ?
+			WITH_END_POINTS,	-- start and end point included
+			BEYOND_END_POINTS	-- unlimited line assumed. extends beyond both start and end point into infinity
+			);
 		
-		
--- 		function distance (
--- 			point		: in type_point; 
--- 			line_start	: in type_point;
--- 			line_end 	: in type_point;
--- 			line_range	: in type_line_range) 
--- 			return type_distance_point_line;
+		function distance (
+			point		: in type_point; 
+			line_start	: in type_point;
+			line_end 	: in type_point;
+			line_range	: in type_line_range) 
+			return type_distance_point_line;
 
 
 		

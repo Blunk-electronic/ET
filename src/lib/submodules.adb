@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                          SYSTEM ET SUBMODULES                            --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                              SUBMODULES                                  --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your editor to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -50,7 +50,7 @@ with ada.strings.bounded;       use ada.strings.bounded;
 -- with ada.containers.indefinite_ordered_maps;
 -- with ada.containers.ordered_sets;
 
-with et_general;
+with et_general;				use et_general;
 with et_coordinates;
 with et_libraries;
 with et_pcb;

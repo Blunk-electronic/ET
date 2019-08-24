@@ -73,8 +73,9 @@ package et_pcb_coordinates is
 	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
 	zero_distance : constant type_distance := 0.0;
 
+	-- instantiation of the 2d geometry package:	
 	package geometry is new et_geometry.geometry_operations_2d (type_distance_total);
--- 	use geometry;
+
 	
 	
 	-- PAPER SIZES

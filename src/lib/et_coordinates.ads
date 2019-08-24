@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                           SYSTEM ET COORDINATES                          --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                        SCHEMATIC COORDINATES                             --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your editor to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -46,15 +46,14 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_string_processing;
-with et_general;
+with et_general;				use et_general;
+with et_geometry;
 
 -- with system.assertions;
 
 package et_coordinates is
 	pragma assertion_policy (check);
 	
-	type type_axis is (X, Y);
-
 	-- There are drawings with the origin at the upper left corner (used by KiCad, ...).
 	-- There are also drawings the the origin at the lower left corner (used by EAGLE, ...)
 	type type_Y_axis_positive is (UPWARDS, DOWNWARDS);
@@ -65,14 +64,18 @@ package et_coordinates is
 	
 	-- The total distance between two objects:
 	--	type type_distance is digits 9 range -100_000_000.0 .. 100_000_000.0; -- unit is metric millimeter
-	type type_distance is delta 0.01 range -100_000_000.00 .. 100_000_000.00;
+	type type_distance is delta 0.01 range -100_000_000.00 .. 100_000_000.00; -- CS rename to type_distance_total
 	for type_distance'small use 0.01; -- this is the accuracy required for schematic
 
 
 	-- The x and y position of an object:
-	subtype type_distance_xy is type_distance range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
+	subtype type_distance_xy is type_distance range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter, CS rename to type_distance
 	zero_distance : constant type_distance := 0.0;
 
+	-- instantiation of the 2d geometry package:
+	package geometry is new et_geometry.geometry_operations_2d (type_distance);
+	
+	
 	subtype type_catch_zone is type_distance range 0.0 .. 10.0;
 	catch_zone : type_catch_zone := 2.0; -- CS: should be a system setting in the future
 	
@@ -115,7 +118,8 @@ package et_coordinates is
 
 	
 	
-	type type_point is tagged private;
+	--type type_point is tagged private;
+	type type_point is new geometry.type_point with private;
 
 	zero : constant type_point;
 
@@ -139,7 +143,7 @@ package et_coordinates is
 
 	function distance (
 	-- Returns the distance of the point in x or y from the origin.
-		axis	: in type_axis;
+		axis	: in type_axis_2d;
 		point	: in type_point'class)
 		return type_distance_xy;
 	
@@ -156,7 +160,7 @@ package et_coordinates is
 	
 	procedure mirror (
 		point	: in out type_point;
-		axis	: in type_axis);	
+		axis	: in type_axis_2d);	
 
 	procedure move (
 	-- moves x/y of given point by x/y of given offset
@@ -175,7 +179,7 @@ package et_coordinates is
 	-- Returns the absolute distance on the given axis between the given points.
 		point_1	: in type_point;
 		point_2	: in type_point;
-		axis	: in type_axis) 
+		axis	: in type_axis_2d) 
 		return type_distance;
 	
 
@@ -265,17 +269,20 @@ package et_coordinates is
 	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
 		paper_size	: in et_general.type_paper_size;
 		orientation	: in et_general.type_paper_orientation := et_general.LANDSCAPE;
-		axis		: in type_axis)
+		axis		: in type_axis_2d)
 		return type_distance_xy;
 
 	
 	private 
 		-- In general every object has at least x,y coordinates.
-		type type_point is tagged record
-			x, y : type_distance_xy := zero_distance;
-		end record;
+-- 		type type_point is tagged record
+-- 			x, y : type_distance_xy := zero_distance;
+-- 		end record;
+
+		type type_point is new geometry.type_point with null record;
 		
-		zero : constant type_point := (x => zero_distance, y => zero_distance);
+		--zero : constant type_point := (x => zero_distance, y => zero_distance);
+		zero : constant type_point := (geometry.origin with others => <>);
 
 	
 		type type_coordinates is new type_point with record
@@ -286,10 +293,13 @@ package et_coordinates is
 			sheet : type_sheet_relative := 0;
 		end record;
 		
+-- 		zero_position : constant type_coordinates := (
+-- 			sheet	=> type_sheet'first,
+-- 			x		=> 0.0,
+-- 			y		=> 0.0 );
+
 		zero_position : constant type_coordinates := (
-			sheet	=> type_sheet'first,
-			x		=> 0.0,
-			y		=> 0.0 );
+			zero with sheet	=> type_sheet'first);
 		
 end et_coordinates;
 
