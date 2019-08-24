@@ -233,10 +233,11 @@ package body et_kicad_to_native is
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 			use et_pcb_coordinates;
+			use geometry;
 			new_y : et_pcb_coordinates.type_distance;
 		begin -- move
-			new_y := layout_sheet_height - get_axis (Y, point);
-			set_point (Y, new_y, point);
+			new_y := layout_sheet_height - y (point);
+			set (Y, new_y, point);
 		end move;
 		
 		procedure flatten_notes (

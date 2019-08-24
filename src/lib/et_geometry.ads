@@ -35,6 +35,7 @@
 --   history of changes:
 --
 
+with et_general;				use et_general;
 with et_coordinates;
 
 package et_geometry is
@@ -59,16 +60,13 @@ package et_geometry is
 		point, line_start, line_end: in et_coordinates.type_point;
 		line_range : in type_line_range) return type_distance_point_from_line;
 
-	type type_axis is (X, Y, Z);
+
 	
 	generic
--- 		type type_point is private;
 		type type_distance is delta <>;
 	package geometry_operations_2d is
 		zero : constant type_distance := 0.0;
 		
-		subtype type_axis_2d is type_axis range X .. Y;
-
 		type type_point is tagged private;
 
 		origin : constant type_point;

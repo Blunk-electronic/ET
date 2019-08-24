@@ -119,6 +119,9 @@ package et_general is
 
 	type type_paper_orientation is (PORTRAIT, LANDSCAPE);
 
+-- AXIS
+	type type_axis is (X, Y, Z);
+	subtype type_axis_2d is type_axis range X .. Y;
 
 -- NET NAMES
     -- If the name of a strand can not be identified, we default to the well proved "N$" notation:

@@ -366,7 +366,7 @@ package body et_kicad_pcb is
 	begin
 		circle.center := type_point_2d (position);
 		circle.radius := diameter / 2.0;
-		move_point (circle.center, offset);
+		move (circle.center, offset);
 		append (shape.circles, circle);
 		return shape;
 	end to_pad_shape_circle;
@@ -383,6 +383,7 @@ package body et_kicad_pcb is
 
 		use et_pcb;
 		use et_pcb_coordinates;
+		use geometry;
 		use et_pcb.type_pad_lines;
 
 		shape : type_pad_outline; -- to be returned
@@ -407,11 +408,11 @@ package body et_kicad_pcb is
 
 	begin -- to_pad_shape_rectangle
 		-- set supportive cornert points
-		p11 := type_point_2d (set_point (x => xn, y => yp));
-		p12 := type_point_2d (set_point (x => xn, y => yn));
+		p11 := type_point_2d (set (x => xn, y => yp));
+		p12 := type_point_2d (set (x => xn, y => yn));
 
-		p21 := type_point_2d (set_point (x => xp, y => yp));
-		p22 := type_point_2d (set_point (x => xp, y => yn));
+		p21 := type_point_2d (set (x => xp, y => yp));
+		p22 := type_point_2d (set (x => xp, y => yn));
 
 		-- rotate supportive points
 		rotate (p11, angle);
@@ -421,11 +422,11 @@ package body et_kicad_pcb is
 		rotate (p21, angle);
 
 		-- move supportive points by given offset
-		move_point (p11, offset);
-		move_point (p12, offset);
+		move (p11, offset);
+		move (p12, offset);
 		
-		move_point (p21, offset);
-		move_point (p22, offset);
+		move (p21, offset);
+		move (p22, offset);
 
 		-- set left line
 		line_1.start_point := p11;
@@ -463,6 +464,7 @@ package body et_kicad_pcb is
 
 		use et_pcb;
 		use et_pcb_coordinates;
+		use geometry;
 		use et_pcb.type_pad_lines;
 		use et_pcb.type_pad_arcs;		
 
@@ -493,14 +495,14 @@ package body et_kicad_pcb is
 	begin -- to_pad_shape_oval
 
 		-- set supportive points
-		p11 := type_point_2d (set_point (x => x1n, y => y2p));
-		p12 := type_point_2d (set_point (x => x1n, y => y2n));
+		p11 := type_point_2d (set (x => x1n, y => y2p));
+		p12 := type_point_2d (set (x => x1n, y => y2n));
 
-		p21 := type_point_2d (set_point (x => x1p, y => y2p));
-		p22 := type_point_2d (set_point (x => x1p, y => y2n));
+		p21 := type_point_2d (set (x => x1p, y => y2p));
+		p22 := type_point_2d (set (x => x1p, y => y2n));
 
-		p41 := type_point_2d (set_point (x => zero_distance, y => y2p));
-		p42 := type_point_2d (set_point (x => zero_distance, y => y2n));			
+		p41 := type_point_2d (set (x => zero_distance, y => y2p));
+		p42 := type_point_2d (set (x => zero_distance, y => y2n));			
 
 		-- rotate supportive points 
 		rotate (p11, angle);
@@ -513,14 +515,14 @@ package body et_kicad_pcb is
 		rotate (p42, angle);		
 
 		-- move supportive points by given offset
-		move_point (p11, offset);
-		move_point (p12, offset);
+		move (p11, offset);
+		move (p12, offset);
 		
-		move_point (p21, offset);
-		move_point (p22, offset);
+		move (p21, offset);
+		move (p22, offset);
 		
-		move_point (p41, offset);
-		move_point (p42, offset);		
+		move (p41, offset);
+		move (p42, offset);		
 		
 		-- set left line
 		line_1.start_point := p11;
@@ -562,6 +564,7 @@ package body et_kicad_pcb is
 
 		use et_pcb;
 		use et_pcb_coordinates;
+		use geometry;
 
 		lines : type_pcb_contour_lines.list; -- to be returned
 
@@ -585,11 +588,11 @@ package body et_kicad_pcb is
 
 	begin -- to_pad_milling_contour
 		-- set supportive cornert points
-		p11 := type_point_2d (set_point (x => xn, y => yp));
-		p12 := type_point_2d (set_point (x => xn, y => yn));
+		p11 := type_point_2d (set (x => xn, y => yp));
+		p12 := type_point_2d (set (x => xn, y => yn));
 
-		p21 := type_point_2d (set_point (x => xp, y => yp));
-		p22 := type_point_2d (set_point (x => xp, y => yn));
+		p21 := type_point_2d (set (x => xp, y => yp));
+		p22 := type_point_2d (set (x => xp, y => yn));
 
 		-- rotate supportive points
 		rotate (p11, angle);
@@ -599,11 +602,11 @@ package body et_kicad_pcb is
 		rotate (p21, angle);
 
 		-- move supportive points by given offset
-		move_point (p11, offset);
-		move_point (p12, offset);
+		move (p11, offset);
+		move (p12, offset);
 		
-		move_point (p21, offset);
-		move_point (p22, offset);
+		move (p21, offset);
+		move (p22, offset);
 
 		-- set left line
 		line_1.start_point := p11;
@@ -1089,6 +1092,7 @@ package body et_kicad_pcb is
 			use et_libraries;
 			use et_libraries.type_text_content;
 			use et_pcb_coordinates;
+			use geometry;
 		
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
 
@@ -1338,9 +1342,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => circle.center, value => to_distance (to_string (arg)));
+									set (axis => X, point => circle.center, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => circle.center, value => to_distance (to_string (arg)));
+									set (axis => Y, point => circle.center, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1353,9 +1357,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => line.start_point, value => to_distance (to_string (arg)));
+									set (axis => X, point => line.start_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => line.start_point, value => to_distance (to_string (arg)));
+									set (axis => Y, point => line.start_point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1363,9 +1367,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => arc.center, value => to_distance (to_string (arg)));
+									set (axis => X, point => arc.center, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => arc.center, value => to_distance (to_string (arg)));
+									set (axis => Y, point => arc.center, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 							
@@ -1378,9 +1382,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => line.end_point, value => to_distance (to_string (arg)));
+									set (axis => X, point => line.end_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => line.end_point, value => to_distance (to_string (arg)));
+									set (axis => Y, point => line.end_point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1388,9 +1392,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => arc.start_point, value => to_distance (to_string (arg)));
+									set (axis => X, point => arc.start_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => arc.start_point, value => to_distance (to_string (arg)));
+									set (axis => Y, point => arc.start_point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1398,9 +1402,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => circle.point, value => to_distance (to_string (arg)));
+									set (axis => X, point => circle.point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => circle.point, value => to_distance (to_string (arg)));
+									set (axis => Y, point => circle.point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1655,9 +1659,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => terminal_position, value => to_distance (to_string (arg)));
+									set (axis => X, point => terminal_position, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => terminal_position, value => to_distance (to_string (arg)));
+									set (axis => Y, point => terminal_position, value => to_distance (to_string (arg)));
 								when 3 => 
 									set_angle (point => terminal_position, value => to_angle (to_string (arg)));
 								when others => too_many_arguments;
@@ -1669,9 +1673,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => text.position, value => to_distance (to_string (arg)));
+									set (axis => X, point => text.position, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => text.position, value => to_distance (to_string (arg)));
+									set (axis => Y, point => text.position, value => to_distance (to_string (arg)));
 								when 3 => 
 									--text.angle := to_angle (to_string (arg));
 									set_angle (point => text.position, value => to_angle (to_string (arg)));
@@ -1716,8 +1720,8 @@ package body et_kicad_pcb is
 						when SEC_DRILL =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => set_point (axis => X, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
-								when 2 => set_point (axis => Y, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
+								when 1 => set (axis => X, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
+								when 2 => set (axis => Y, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 						when others => invalid_section;
@@ -1784,7 +1788,7 @@ package body et_kicad_pcb is
 
 									-- Reset pad-drill offset (in case there is no offset given).
 									-- This serves as initialize measure.
-									reset_point (terminal_pad_drill_offset); 
+									reset (terminal_pad_drill_offset); 
 
 								when 2 =>
 									terminal_technology := to_assembly_technology (to_string (arg));
@@ -3727,7 +3731,8 @@ package body et_kicad_pcb is
 			use et_libraries;
 			use et_libraries.type_text_content;
 			use et_pcb_coordinates;
-		
+			use geometry;
+			
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
 
 			procedure invalid_layer is begin
@@ -4130,9 +4135,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									set_point (axis => X, point => package_position, value => to_distance (to_string (arg)));
+									set (axis => X, point => package_position, value => to_distance (to_string (arg)));
 								when 2 =>
-									set_point (axis => Y, point => package_position, value => to_distance (to_string (arg)));
+									set (axis => Y, point => package_position, value => to_distance (to_string (arg)));
 								when 3 =>
 									set_angle (point => package_position, value => to_angle (to_string (arg)));
 								when others => too_many_arguments;
@@ -4230,7 +4235,7 @@ package body et_kicad_pcb is
 
 									-- Reset pad-drill offset (in case there is no offset given).
 									-- This serves as initialize measure.
-									reset_point (terminal_pad_drill_offset); 
+									reset (terminal_pad_drill_offset); 
 
 								when 2 =>
 									terminal_technology := to_assembly_technology (to_string (arg));
@@ -4261,9 +4266,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => package_text.position, value => to_distance (to_string (arg)));
+									set (axis => X, point => package_text.position, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => package_text.position, value => to_distance (to_string (arg)));
+									set (axis => Y, point => package_text.position, value => to_distance (to_string (arg)));
 								when 3 => 
 									--package_text.angle := to_angle (to_string (arg));
 									set_angle (point => package_text.position, value => to_angle (to_string (arg)));
@@ -4305,9 +4310,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => board_text.position, value => to_distance (to_string (arg)));
+									set (axis => X, point => board_text.position, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => board_text.position, value => to_distance (to_string (arg)));
+									set (axis => Y, point => board_text.position, value => to_distance (to_string (arg)));
 								when 3 => 
 									--board_text.angle := to_angle (to_string (arg));
 									set_angle (point => board_text.position, value => to_angle (to_string (arg)));
@@ -4381,9 +4386,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => package_line.start_point, value => to_distance (to_string (arg)));
+									set (axis => X, point => package_line.start_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => package_line.start_point, value => to_distance (to_string (arg)));
+									set (axis => Y, point => package_line.start_point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -4391,9 +4396,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => package_line.end_point, value => to_distance (to_string (arg)));
+									set (axis => X, point => package_line.end_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => package_line.end_point, value => to_distance (to_string (arg)));
+									set (axis => Y, point => package_line.end_point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -4457,9 +4462,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => package_circle.center, value => to_distance (to_string (arg)));
+									set (axis => X, point => package_circle.center, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => package_circle.center, value => to_distance (to_string (arg)));
+									set (axis => Y, point => package_circle.center, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -4467,9 +4472,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => package_circle.point, value => to_distance (to_string (arg)));
+									set (axis => X, point => package_circle.point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => package_circle.point, value => to_distance (to_string (arg)));
+									set (axis => Y, point => package_circle.point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -4533,9 +4538,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => package_arc.center, value => to_distance (to_string (arg)));
+									set (axis => X, point => package_arc.center, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => package_arc.center, value => to_distance (to_string (arg)));
+									set (axis => Y, point => package_arc.center, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -4543,9 +4548,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => package_arc.start_point, value => to_distance (to_string (arg)));
+									set (axis => X, point => package_arc.start_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => package_arc.start_point, value => to_distance (to_string (arg)));
+									set (axis => Y, point => package_arc.start_point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -4630,9 +4635,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => terminal_position, value => to_distance (to_string (arg)));
+									set (axis => X, point => terminal_position, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => terminal_position, value => to_distance (to_string (arg)));
+									set (axis => Y, point => terminal_position, value => to_distance (to_string (arg)));
 								when 3 => 
 									set_angle (point => terminal_position, value => to_angle (to_string (arg)));
 								when others => too_many_arguments;
@@ -4723,8 +4728,8 @@ package body et_kicad_pcb is
 						when SEC_OFFSET =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => set_point (axis => X, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
-								when 2 => set_point (axis => Y, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
+								when 1 => set (axis => X, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
+								when 2 => set (axis => Y, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 						when others => invalid_section;
@@ -5210,9 +5215,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => board_arc.center, value => to_distance (to_string (arg)));
+									set (axis => X, point => board_arc.center, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => board_arc.center, value => to_distance (to_string (arg)));
+									set (axis => Y, point => board_arc.center, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -5220,9 +5225,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => board_arc.start_point, value => to_distance (to_string (arg)));
+									set (axis => X, point => board_arc.start_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => board_arc.start_point, value => to_distance (to_string (arg)));
+									set (axis => Y, point => board_arc.start_point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -5293,9 +5298,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => board_circle.center, value => to_distance (to_string (arg)));
+									set (axis => X, point => board_circle.center, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => board_circle.center, value => to_distance (to_string (arg)));
+									set (axis => Y, point => board_circle.center, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -5303,9 +5308,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => board_circle.point, value => to_distance (to_string (arg)));
+									set (axis => X, point => board_circle.point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => board_circle.point, value => to_distance (to_string (arg)));
+									set (axis => Y, point => board_circle.point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -5368,9 +5373,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => board_line.start_point, value => to_distance (to_string (arg)));
+									set (axis => X, point => board_line.start_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => board_line.start_point, value => to_distance (to_string (arg)));
+									set (axis => Y, point => board_line.start_point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -5378,9 +5383,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => board_line.end_point, value => to_distance (to_string (arg)));
+									set (axis => X, point => board_line.end_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => board_line.end_point, value => to_distance (to_string (arg)));
+									set (axis => Y, point => board_line.end_point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -5451,9 +5456,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									set_point (axis => X, point => via.position, value => to_distance (to_string (arg)));
+									set (axis => X, point => via.position, value => to_distance (to_string (arg)));
 								when 2 =>
-									set_point (axis => Y, point => via.position, value => to_distance (to_string (arg)));
+									set (axis => Y, point => via.position, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -5512,9 +5517,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => segment.start_point, value => to_distance (to_string (arg)));
+									set (axis => X, point => segment.start_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => segment.start_point, value => to_distance (to_string (arg)));
+									set (axis => Y, point => segment.start_point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 					
@@ -5522,9 +5527,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => segment.end_point, value => to_distance (to_string (arg)));
+									set (axis => X, point => segment.end_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set_point (axis => Y, point => segment.end_point, value => to_distance (to_string (arg)));
+									set (axis => Y, point => segment.end_point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -5729,9 +5734,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set_point (axis => X, point => polygon_point, value => to_distance (to_string (arg)));
+									set (axis => X, point => polygon_point, value => to_distance (to_string (arg)));
 								when 2 =>
-									set_point (axis => Y, point => polygon_point, value => to_distance (to_string (arg)));
+									set (axis => Y, point => polygon_point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 

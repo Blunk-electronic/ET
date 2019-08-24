@@ -49,7 +49,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_general;
+with et_general;				use et_general;
 with et_coordinates;
 with et_string_processing;
 
@@ -57,8 +57,8 @@ with et_geometry;
 
 package et_pcb_coordinates is
 	
-	type type_axis is (X, Y, Z);
-	subtype type_axis_2d is type_axis range X .. Y; -- CS use this type for all kinds of 2d ops
+-- 	type type_axis is (X, Y, Z);
+-- 	subtype type_axis_2d is type_axis range X .. Y; -- CS use this type for all kinds of 2d ops
 
 	type type_face is (TOP, BOTTOM);
 
@@ -88,7 +88,7 @@ package et_pcb_coordinates is
 	paper_size_A4_x : constant type_distance := 297.0;
 	paper_size_A4_y : constant type_distance := 210.0;
 
-	function paper_dimension (
+	function paper_dimension ( -- CS make generic
 	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
 		paper_size	: in et_general.type_paper_size;
 		orientation	: in et_general.type_paper_orientation := et_general.LANDSCAPE;

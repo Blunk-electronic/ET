@@ -36,6 +36,7 @@
 --
 --   ToDo: 
 
+with et_general;				use et_general;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with ada.numerics.generic_elementary_functions;
 
@@ -49,13 +50,14 @@ package body et_pcb_math is
 	
 	function distance (point_one, point_two : in type_point_2d) return type_distance_total is
 	-- Computes the total distance between point_one and point_two.	
+		use geometry;
+		
 		distance : type_distance_total; -- to be returned
 		--delta_x, delta_y, delta_z : type_float := 0.0;
 		delta_x, delta_y : type_float := 0.0;
 	begin
-		delta_x := type_float (get_axis (X, point_one) - get_axis (X, point_two));
-		delta_y := type_float (get_axis (Y, point_one) - get_axis (Y, point_two));
-		--delta_z := type_float (get_axis (Z, point_one) - get_axis (Z, point_two));
+		delta_x := type_float (x (point_one) - x (point_two));
+		delta_y := type_float (y (point_one) - y (point_two));
 
 		--distance := type_distance_total (functions.sqrt (delta_x ** 2) + (delta_y ** 2) + (delta_z ** 2));
 		distance := type_distance_total (functions.sqrt (delta_x ** 2) + (delta_y ** 2));
@@ -70,11 +72,12 @@ package body et_pcb_math is
 		start_point	: in type_point_2d;	
 		angle 		: in type_angle)
 		return type_point_2d is
+		use geometry;
 		end_point : type_point_2d; -- to be returned
 	begin
 		-- CS
-		set_point (X, zero_distance, end_point);
-		set_point (Y, zero_distance, end_point);
+		set (X, zero_distance, end_point);
+		set (Y, zero_distance, end_point);
 		
 		return end_point;
 	end arc_end_point;

@@ -57,6 +57,7 @@ with ada.exceptions;
 with ada.numerics;
 with ada.numerics.generic_elementary_functions;
 
+with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 
 package body et_pcb_coordinates is
