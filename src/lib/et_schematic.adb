@@ -52,7 +52,6 @@ with ada.containers.ordered_maps;
 with et_general;
 with et_coordinates;
 with et_string_processing;
-with et_geometry;
 with et_export;
 with et_import;
 with et_csv;
@@ -310,7 +309,7 @@ package body et_schematic is
 		iterate (strand.segments, query_strand'access);
 
 		-- build and assign the final strand position from point_1
-		set_xy (
+		set (
 			point	 => strand.position,
 			position => point_1);
 

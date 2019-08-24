@@ -193,13 +193,13 @@ package body et_coordinates is
 -- 		point.y := y;
 -- 	end set_y;
 
-	procedure set_xy (
-		point 		: in out type_point;
-		position	: in type_point'class) is
-	begin
-		point.x := position.x;
-		point.y := position.y;
-	end set_xy;
+-- 	procedure set_xy (
+-- 		point 		: in out type_point;
+-- 		position	: in type_point'class) is
+-- 	begin
+-- 		point.x := position.x;
+-- 		point.y := position.y;
+-- 	end set_xy;
 
 	function set_point (x, y : in type_distance_xy) return type_point'class is 
 		point : type_point;

@@ -5211,7 +5211,7 @@ package body schematic_ops is
 					when ABSOLUTE =>
 						-- The absolute position is defined by the given point (x/y).
 						-- The sheet number does not change.
-						set_xy (location, point);
+						set (location, point);
 
 					when RELATIVE =>
 						-- The new relative position is the netchanger position BEFORE 
@@ -8085,7 +8085,7 @@ package body schematic_ops is
 		-- Build the absoltue port_position:
 
 		-- 1. assume x/y as given by position (which is the relative position):
-		set_xy (
+		set (
 			point		=> port_position,
 			position	=> position); -- the relative port position
 
@@ -9322,7 +9322,7 @@ package body schematic_ops is
 				-- NOTE: The sheet number does not change in drag operations.
 				case coordinates is
 					when ABSOLUTE =>
-						set_xy (submodule.position, point);
+						set (submodule.position, point);
 
 					when RELATIVE =>
 						et_coordinates.move (

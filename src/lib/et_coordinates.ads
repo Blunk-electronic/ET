@@ -152,9 +152,9 @@ package et_coordinates is
 -- 	
 -- 	procedure set_y (point : in out type_point'class; y : in type_distance_xy);
 	
-	procedure set_xy (
-		point	 : in out type_point;
-		position : in type_point'class);
+-- 	procedure set_xy (
+-- 		point	 : in out type_point;
+-- 		position : in type_point'class);
 
 	function set_point (x, y : in type_distance_xy) return type_point'class;
 	
