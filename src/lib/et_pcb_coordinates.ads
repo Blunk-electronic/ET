@@ -56,9 +56,6 @@ with et_string_processing;
 with et_geometry;
 
 package et_pcb_coordinates is
-	
--- 	type type_axis is (X, Y, Z);
--- 	subtype type_axis_2d is type_axis range X .. Y; -- CS use this type for all kinds of 2d ops
 
 	type type_face is (TOP, BOTTOM);
 
@@ -140,20 +137,14 @@ package et_pcb_coordinates is
 
 	function to_angle (angle : in string) return type_angle;
 
-	-- 	type type_point_2d is tagged private;
 	type type_point_2d is new geometry.type_point with private;
--- 	type type_point_2d is tagged private;
 	type type_point_3d is tagged private;
-
--- 	function set_point (x, y : in type_distance) return type_point_2d'class;
--- 	function set_point (x, y, z : in type_distance) return type_point_3d'class;
 	
 	function right_point_before_left_2d (right, left : in type_point_2d) return boolean;
 	-- Returns true if right point comes before left point.
 	-- Compares axis is this order: x, y
 	-- If right point equals left point, returns false.
 
--- 	type type_point_2d_with_angle is new type_point_2d with private;
 	type type_point_2d_with_angle is new type_point_2d with private;
 	--type type_submodule_position is new type_point_2d_with_angle with private;
 	type type_package_position is new type_point_2d_with_angle with private;
@@ -166,37 +157,10 @@ package et_pcb_coordinates is
 	placeholder_position_default : constant type_package_position;	
 	submodule_position_default : constant type_point_2d_with_angle; 
 	
--- 	procedure reset_point (
--- 	-- Moves the given point to the origin (0/0).
--- 		point	: in out type_point_2d'class);					
-	
--- 	procedure move_point (
--- 		point	: in out type_point_2d'class;
--- 		offset	: in type_point_2d);
-
--- 	function move (
--- 		point	: in type_point_2d'class;
--- 		offset	: in type_point_2d) 
--- 		return type_point_2d'class;
-
--- 	procedure set_point (
--- 		axis 	: in type_axis_2d;
--- 		value	: in type_distance;					 
--- 		point	: in out type_point_2d'class);
-
--- 	procedure set_xy (
--- 		point	: in out type_point_2d'class;
--- 		position: in type_point_2d);
-	
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
 		point	: in out type_point_2d;
 		angle	: in type_angle);
-	
--- 	function get_axis ( -- CS rename to distance
--- 		axis	: in type_axis_2d;
--- 		point	: in type_point_2d'class)
--- 		return type_distance_total;
 	
 	procedure set_angle (
 	-- Sets the rotation of a point at the given angle.					
@@ -229,21 +193,12 @@ package et_pcb_coordinates is
 	private
 		type type_point_2d is new geometry.type_point with null record;
 		
--- 		type type_point_2d is tagged record
--- 			x, y : type_distance := zero_distance;
--- 		end record;
-
 		type type_point_3d is new type_point_2d with record
 			z : type_distance := zero_distance;
 		end record;
 
-		--zero_2d : constant type_point_2d := (others => zero_distance);
 		zero_2d : constant type_point_2d := (geometry.origin with others => <>);
 		zero_3d : constant type_point_3d := (zero_2d with zero_distance);
-
--- 		type type_point_2d_with_angle is new type_point_2d with record
--- 			angle	: type_angle := zero_angle;
--- 		end record;
 
 		type type_point_2d_with_angle is new type_point_2d with record
 			angle	: type_angle := zero_angle;
@@ -254,8 +209,6 @@ package et_pcb_coordinates is
 
 		submodule_position_default : constant type_point_2d_with_angle := (
 			geometry.origin with angle => zero_angle);
-		
-		--type type_submodule_position is new type_point_2d_with_angle with null record;
 		
 		type type_package_position is new type_point_2d_with_angle with record
 			face	: type_face := TOP;
