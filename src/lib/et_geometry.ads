@@ -112,13 +112,17 @@ package et_geometry is
 			BEYOND_END_POINTS	-- unlimited line assumed. extends beyond both start and end point into infinity
 			);
 		
-		function distance (
+		function distance_point_line (
 			point		: in type_point; 
 			line_start	: in type_point;
 			line_end 	: in type_point;
 			line_range	: in type_line_range) 
 			return type_distance_point_line;
 
+		units_per_cycle : constant float := 360.0;
+		type type_rotation is delta 0.01 range -359.9 .. 359.9;
+		for type_rotation'small use 0.01;
+		zero_rotation : constant type_rotation := 0.0;
 
 		
 	private

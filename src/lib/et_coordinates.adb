@@ -250,6 +250,8 @@ package body et_coordinates is
 		scratch				: type_float_distance;
 
 		units_per_cycle : constant float := 360.0; -- CS type_float_angle ?
+
+		use geometry;
 	begin -- rotate
 		-- Do nothing if the given rotation is zero.
 		if angle /= 0 then
@@ -312,12 +314,14 @@ package body et_coordinates is
 			
 			-- compute new x   -- (cos angle_out) * distance_to_origin
 			scratch := cos (type_float_distance (angle_out), type_float_distance (units_per_cycle));
-			point.x := type_distance (scratch * distance_to_origin);
+			--point.x := type_distance (scratch * distance_to_origin);
+			set (X, type_distance (scratch * distance_to_origin), point);
 			--log ("x in sch. " & to_string (point.x), log_threshold);
 
 			-- compute new y   -- (sin angle_out) * distance_to_origin
 			scratch := sin (type_float_distance (angle_out), type_float_distance (units_per_cycle));
-			point.y := type_distance (scratch * distance_to_origin);
+			--point.y := type_distance (scratch * distance_to_origin);
+			set (Y, type_distance (scratch * distance_to_origin), point);
 -- 			log ("point out " & to_string (point), log_threshold);
 -- 			log_indentation_down;
 	
@@ -426,9 +430,13 @@ package body et_coordinates is
 		position	: in out type_coordinates'class;
 		offset		: in type_coordinates_relative) is
 		use et_string_processing;
+		use geometry;
 	begin
-		position.x := position.x + offset.x;
-		position.y := position.y + offset.y;
+-- 		position.x := position.x + offset.x;
+		set (X, x (position) + x (offset), position);
+		
+-- 		position.y := position.y + offset.y;
+		set (Y, y (position) + y (offset), position);
 
 		-- Constraint error will arise here if resulting sheet number is less than 1.
 		position.sheet := type_sheet (type_sheet_relative (position.sheet) + offset.sheet);
@@ -439,11 +447,12 @@ package body et_coordinates is
 		sheet	: in type_sheet)
 		return type_coordinates is
 	begin
-		return (
-			x		=> point.x,
-			y		=> point.y,
-			sheet	=> sheet
-			);
+-- 		return (
+-- 			x		=> point.x,
+-- 			y		=> point.y,
+-- 			sheet	=> sheet
+-- 			);
+		return (type_point (point) with sheet);
 	end;
 
 	function to_coordinates_relative (
@@ -451,11 +460,12 @@ package body et_coordinates is
 		sheet	: in type_sheet_relative)
 		return type_coordinates_relative is
 	begin
-		return (
-			x		=> point.x,
-			y		=> point.y,
-			sheet	=> sheet
-			);
+-- 		return (
+-- 			x		=> point.x,
+-- 			y		=> point.y,
+-- 			sheet	=> sheet
+-- 			);
+		return (type_point (point) with sheet);
 	end;
 	
 	function to_string (position : in type_coordinates) return string is

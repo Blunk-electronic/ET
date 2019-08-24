@@ -941,7 +941,7 @@ package body schematic_ops is
 		dist : type_distance_point_line;
 		use type_net_segments;
 	begin
-		dist := distance (
+		dist := distance_point_line (
 			point 		=> point,
 			line_start	=> element (segment).coordinates_start,
 			line_end	=> element (segment).coordinates_end,
@@ -968,7 +968,7 @@ package body schematic_ops is
 		dist : type_distance_point_line;
 		use type_net_segments;
 	begin
-		dist := distance (
+		dist := distance_point_line (
 			point 		=> point,
 			line_start	=> element (segment).coordinates_start,
 			line_end	=> element (segment).coordinates_end,

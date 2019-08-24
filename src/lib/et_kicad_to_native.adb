@@ -59,7 +59,6 @@ with gnat.source_info;
 with et_coordinates;
 with et_libraries;
 with et_schematic;
-with et_geometry;
 
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
@@ -179,7 +178,8 @@ package body et_kicad_to_native is
 			new_y				:= sheet_height - distance (axis => Y, point => point);
 
 			-- assign the new y position to the given point
-			set_y (point, new_y);
+			--set_y (point, new_y);
+			geometry.set (Y, new_y, point);
 		end move;
 
 		procedure move (
@@ -210,7 +210,8 @@ package body et_kicad_to_native is
 			new_y				:= sheet_height - distance (axis => Y, point => point_actual);			
 
 			-- assign the new y position to the given point
-			set_y (point_actual, new_y);
+			--set_y (point_actual, new_y);
+			geometry.set (Y, new_y, point_actual);
 		end move;
 
 		procedure prepare_layout_y_movements is
@@ -2820,8 +2821,8 @@ package body et_kicad_to_native is
 					ports_of_segment : et_schematic.type_ports_device.set; -- to be returned
 
 					use et_coordinates;
-					use et_geometry;
-					distance : et_geometry.type_distance_point_from_line;
+					use geometry;
+					distance : geometry.type_distance_point_line;
 				begin -- read_ports
 					log_indentation_up;
 					
@@ -2841,13 +2842,19 @@ package body et_kicad_to_native is
 						if 	kicad_coordinates.sheet (element (port_cursor_kicad).coordinates) = 
 							kicad_coordinates.sheet (element (kicad_strand_cursor).position) then
 
-							-- calculate distance of port from segment
-							distance := distance_of_point_from_line (
-								point 		=> type_point (element (port_cursor_kicad).coordinates),
-								line_start	=> type_point (segment.coordinates_start),
-								line_end	=> type_point (segment.coordinates_end),
-								line_range	=> with_end_points);
+-- 							-- calculate distance of port from segment
+-- 							distance := geometry.distance_point_line (
+-- 								point 		=> et_coordinates.type_point (element (port_cursor_kicad).coordinates),
+-- 								line_start	=> et_coordinates.type_point (segment.coordinates_start),
+-- 								line_end	=> et_coordinates.type_point (segment.coordinates_end),
+-- 								line_range	=> WITH_END_POINTS);
 
+							distance := geometry.distance_point_line (
+								point 		=> geometry.type_point (element (port_cursor_kicad).coordinates),
+								line_start	=> geometry.type_point (segment.coordinates_start),
+								line_end	=> geometry.type_point (segment.coordinates_end),
+								line_range	=> WITH_END_POINTS);
+								
 							-- If port sits on segment, append it to ports_of_segment.
 							if (not distance.out_of_range) and distance.distance = zero_distance then
 								log (text => et_libraries.to_string (element (port_cursor_kicad).reference) 

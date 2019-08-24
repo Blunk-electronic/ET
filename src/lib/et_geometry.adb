@@ -37,7 +37,7 @@
 
 with ada.numerics.generic_elementary_functions;
 with et_string_processing;		use et_string_processing;
-with et_coordinates;
+--with et_coordinates;
 
 
 package body et_geometry is
@@ -322,7 +322,7 @@ package body et_geometry is
 			return distance;
 		end distance;
 				
-		function distance (
+		function distance_point_line (
 		-- Computes the shortest distance (perpendicular) of a given point from the given line. If the point outside the
 		-- range of the x coordinate, the corresponding flag in the return value is set.
 
@@ -491,7 +491,7 @@ package body et_geometry is
 			end case;
 			
 			return result;
-		end distance;
+		end distance_point_line;
 
 
 		
