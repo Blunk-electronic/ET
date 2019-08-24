@@ -209,18 +209,18 @@ package body et_coordinates is
 -- 		return point;
 -- 	end set_point;
 	
-	procedure mirror (
-		point	: in out type_point;
-		axis	: in type_axis_2d)
-		is
-	begin
-		case axis is
-			when X =>
-				point.y := point.y * (-1.0);
-			when Y =>
-				point.x := point.x * (-1.0);
-		end case;
-	end mirror;
+-- 	procedure mirror (
+-- 		point	: in out type_point;
+-- 		axis	: in type_axis_2d)
+-- 		is
+-- 	begin
+-- 		case axis is
+-- 			when X =>
+-- 				point.y := point.y * (-1.0);
+-- 			when Y =>
+-- 				point.x := point.x * (-1.0);
+-- 		end case;
+-- 	end mirror;
 
 -- 	procedure move (
 -- 	-- moves x/y of given point by x/y of given offset

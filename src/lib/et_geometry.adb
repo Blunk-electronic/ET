@@ -274,7 +274,6 @@ package body et_geometry is
 			point.x := position.x;
 			point.y := position.y;
 		end;
-
 		
 		procedure reset (point : in out type_point'class) is begin
 		-- Moves the given point to the origin (0/0).
@@ -290,6 +289,18 @@ package body et_geometry is
 			point.y := point.y + offset.y;
 		end;
 
+		procedure mirror (
+			point	: in out type_point;
+			axis	: in type_axis_2d) is
+		begin
+			case axis is
+				when X =>
+					point.y := point.y * (-1.0);
+				when Y =>
+					point.x := point.x * (-1.0);
+			end case;
+		end mirror;
+		
 		function distance (point_one, point_two : in type_point) return type_distance is
 		-- Computes the total distance between point_one and point_two.	
 

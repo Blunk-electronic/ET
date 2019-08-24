@@ -158,9 +158,9 @@ package et_coordinates is
 
 -- 	function set_point (x, y : in type_distance_xy) return type_point'class;
 	
-	procedure mirror (
-		point	: in out type_point;
-		axis	: in type_axis_2d);	
+-- 	procedure mirror (
+-- 		point	: in out type_point;
+-- 		axis	: in type_axis_2d);	
 
 -- 	procedure move (
 -- 	-- moves x/y of given point by x/y of given offset
