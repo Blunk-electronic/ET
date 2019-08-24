@@ -45,27 +45,6 @@ with et_string_processing;
 
 package body et_pcb_math is
 
-	type type_float is digits 11 range type_distance_total'first .. type_distance_total'last; -- CS adjust accuracy ?
-	package functions is new ada.numerics.generic_elementary_functions (type_float);
-	
-	function distance (point_one, point_two : in type_point_2d) return type_distance_total is
-	-- Computes the total distance between point_one and point_two.	
-		use geometry;
-		
-		distance : type_distance_total; -- to be returned
-		--delta_x, delta_y, delta_z : type_float := 0.0;
-		delta_x, delta_y : type_float := 0.0;
-	begin
-		delta_x := type_float (x (point_one) - x (point_two));
-		delta_y := type_float (y (point_one) - y (point_two));
-
-		--distance := type_distance_total (functions.sqrt (delta_x ** 2) + (delta_y ** 2) + (delta_z ** 2));
-		distance := type_distance_total (functions.sqrt (delta_x ** 2) + (delta_y ** 2));
-		
-		return distance;
-	end distance;
-
-
 	function arc_end_point (
 	-- Computes the end point of an arc.
 		center		: in type_point_2d;

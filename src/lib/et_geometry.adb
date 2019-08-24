@@ -290,6 +290,26 @@ package body et_geometry is
 			point.y := point.y + offset.y;
 		end;
 
+		function distance (point_one, point_two : in type_point) return type_distance is
+		-- Computes the total distance between point_one and point_two.	
+
+			--type type_float is digits 11 range type_distance'first .. type_distance'last; -- CS adjust accuracy ?
+			--package functions is new ada.numerics.generic_elementary_functions (type_float);
+			package functions is new ada.numerics.generic_elementary_functions (float);
+			
+			distance : type_distance; -- to be returned
+			--delta_x, delta_y : type_float := 0.0;
+			delta_x, delta_y : float := 0.0;
+		begin
+			-- delta_x := type_float (x (point_one) - x (point_two));
+			-- delta_y := type_float (y (point_one) - y (point_two));
+			delta_x := float (x (point_one) - x (point_two));
+			delta_y := float (y (point_one) - y (point_two));
+			
+			distance := type_distance (functions.sqrt (delta_x ** 2) + (delta_y ** 2));
+			
+			return distance;
+		end distance;
 		
 		
 -- 		function distance (

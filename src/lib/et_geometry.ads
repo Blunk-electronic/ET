@@ -93,6 +93,8 @@ package et_geometry is
 			point	: in out type_point'class;
 			offset	: in type_point);
 
+		function distance (point_one, point_two : in type_point) return type_distance;
+		-- Computes the total distance between point_one and point_two.	
 
 		
 -- 		with function x (p : type_point) return type_distance;

@@ -1966,7 +1966,7 @@ package body et_kicad_pcb is
 			-- Append the circle to the container corresponding to the layer. Then log the circle properties.
 				
 				-- Compute the circle radius from its center and point at circle:
-				circle.radius := et_pcb_math.distance (circle.center, circle.point);
+				circle.radius := distance (circle.center, circle.point);
 
 				-- The point at the circle and its layer are now discarded
 				-- as the circle is converted back to its anchestor
@@ -6142,7 +6142,7 @@ package body et_kicad_pcb is
 			procedure insert_board_circle is begin
 				-- Compute the circle radius from its center and point at circle.
 				-- Later the angle is discarded.
-				board_circle.radius := et_pcb_math.distance (board_circle.center, board_circle.point);
+				board_circle.radius := distance (board_circle.center, board_circle.point);
 
 				-- The board_circle is converted back to its anchestor and
 				-- depending on the layer extended with specific properties.
@@ -6424,7 +6424,7 @@ package body et_kicad_pcb is
 
 				-- Compute the circle radius from its center and point at circle:
 				package_circle.radius := 
-					et_pcb_math.distance (package_circle.center, package_circle.point);
+					distance (package_circle.center, package_circle.point);
 
 				-- The point at the circle and its layer are now discarded
 				-- as the package_circle is converted back to its anchestor
