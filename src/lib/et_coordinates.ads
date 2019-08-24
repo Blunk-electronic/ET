@@ -147,10 +147,10 @@ package et_coordinates is
 		point	: in type_point'class)
 		return type_distance_xy;
 	
-	procedure set_x (point : in out type_point; x : in type_distance_xy);
-	-- Assigns a point the given x position.
-	
-	procedure set_y (point : in out type_point'class; y : in type_distance_xy);
+-- 	procedure set_x (point : in out type_point; x : in type_distance_xy);
+-- 	-- Assigns a point the given x position.
+-- 	
+-- 	procedure set_y (point : in out type_point'class; y : in type_distance_xy);
 	
 	procedure set_xy (
 		point	 : in out type_point;
@@ -162,10 +162,10 @@ package et_coordinates is
 		point	: in out type_point;
 		axis	: in type_axis_2d);	
 
-	procedure move (
-	-- moves x/y of given point by x/y of given offset
-		point	: in out type_point;
-		offset	: in type_point'class);
+-- 	procedure move (
+-- 	-- moves x/y of given point by x/y of given offset
+-- 		point	: in out type_point;
+-- 		offset	: in type_point'class);
 
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.

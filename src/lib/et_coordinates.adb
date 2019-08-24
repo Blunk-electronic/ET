@@ -180,18 +180,18 @@ package body et_coordinates is
 		end case;
 	end distance;
 	
-	procedure set_x (point : in out type_point; x : in type_distance_xy) is
-	-- Assigns a point the given x position.
-		use et_string_processing;
-	begin
-		point.x := x;
-	end set_x;
+-- 	procedure set_x (point : in out type_point; x : in type_distance_xy) is
+-- 	-- Assigns a point the given x position.
+-- 		use et_string_processing;
+-- 	begin
+-- 		point.x := x;
+-- 	end set_x;
 	
-	procedure set_y (point : in out type_point'class; y : in type_distance_xy) is
-	-- Assigns a point the given y position.
-	begin
-		point.y := y;
-	end set_y;
+-- 	procedure set_y (point : in out type_point'class; y : in type_distance_xy) is
+-- 	-- Assigns a point the given y position.
+-- 	begin
+-- 		point.y := y;
+-- 	end set_y;
 
 	procedure set_xy (
 		point 		: in out type_point;
@@ -222,15 +222,15 @@ package body et_coordinates is
 		end case;
 	end mirror;
 
-	procedure move (
-	-- moves x/y of given point by x/y of given offset
-		point	: in out type_point;
-		offset	: in type_point'class)
-		is
-	begin
-		point.x := point.x + offset.x;
-		point.y := point.y + offset.y;
-	end move;
+-- 	procedure move (
+-- 	-- moves x/y of given point by x/y of given offset
+-- 		point	: in out type_point;
+-- 		offset	: in type_point'class)
+-- 		is
+-- 	begin
+-- 		point.x := point.x + offset.x;
+-- 		point.y := point.y + offset.y;
+-- 	end move;
 
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.

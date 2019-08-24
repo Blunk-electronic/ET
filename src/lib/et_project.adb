@@ -59,7 +59,6 @@ with et_export;
 with et_import;
 with et_schematic;
 with et_pcb;
-with et_geometry;
 with et_pcb_coordinates;
 with conventions;
 with submodules;
@@ -2862,13 +2861,14 @@ package body et_project is
 		line : in et_string_processing.type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
 		from : in positive)
 		return et_coordinates.type_point is
+
 		use et_string_processing;
-		use et_coordinates;
+		use geometry;
 
 		function f (line : in type_fields_of_line; position : in positive) return string 
 			renames et_string_processing.field;
 		
-		point : type_point; -- to be returned
+		point : et_coordinates.type_point; -- to be returned
 
 		place : positive := from; -- the field being read from given line
 
@@ -2878,11 +2878,13 @@ package body et_project is
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_pos_x then
-				set_x (point, to_distance (f (line, place + 1)));
+				--set_x (point, to_distance (f (line, place + 1)));
+				set (X, to_distance (f (line, place + 1)), point);
 
 			-- We expect after the y the corresponding value for y
 			elsif f (line, place) = keyword_pos_y then
-				set_y (point, to_distance (f (line, place + 1)));
+				--set_y (point, to_distance (f (line, place + 1)));
+				set (Y, to_distance (f (line, place + 1)),point);
 
 			else
 				invalid_keyword (f (line, place));
@@ -2936,7 +2938,6 @@ package body et_project is
 		from : in positive)
 		return et_pcb_coordinates.type_point_2d is
 		use et_pcb_coordinates;
-		use et_geometry;
 		use et_pcb_coordinates.geometry;
 		use et_string_processing;
 
@@ -2980,7 +2981,6 @@ package body et_project is
 		from : in positive)
 		return et_pcb_coordinates.type_point_2d_with_angle is
 
-		use et_geometry;
 		use et_pcb_coordinates;
 		use et_pcb_coordinates.geometry;
 		use et_string_processing;
@@ -7919,7 +7919,9 @@ package body et_project is
 			line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
 			from : in positive)
 			return et_coordinates.type_coordinates is
+			
 			use et_coordinates;
+			use geometry;
 			
 			point : type_coordinates; -- to be returned
 			place : positive := from; -- the field being read from given line
@@ -7934,11 +7936,13 @@ package body et_project is
 					
 				-- We expect after the x the corresponding value for x
 				elsif f (line, place) = keyword_pos_x then
-					set_x (point, to_distance (f (line, place + 1)));
+					--set_x (point, to_distance (f (line, place + 1)));
+					set (X, to_distance (f (line, place + 1)), point);
 
 				-- We expect after the y the corresponding value for y
 				elsif f (line, place) = keyword_pos_y then
-					set_y (point, to_distance (f (line, place + 1)));
+					--set_y (point, to_distance (f (line, place + 1)));
+					set (Y, to_distance (f (line, place + 1)), point);
 
 				else
 					invalid_keyword (f (line, place));
@@ -7987,7 +7991,6 @@ package body et_project is
 			from : in positive)
 			return et_pcb_coordinates.type_package_position is
 			use et_pcb_coordinates;
-			use et_geometry;
 			use et_pcb_coordinates.geometry;
 			
 			point : type_package_position; -- to be returned
