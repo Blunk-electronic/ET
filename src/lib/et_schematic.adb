@@ -282,28 +282,31 @@ package body et_schematic is
 		use type_net_segments;
 		use et_string_processing;
 		use et_coordinates;
+		use geometry;
 
 		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
 
 		procedure query_strand (cursor : in type_net_segments.cursor) is begin
 			-- Test start point of segment. 
 			-- if closer to orign than point_1 keep start point
-			point_2	:= type_point (element (cursor).coordinates_start);
-			if distance (point_2, zero) < distance (point_1, zero) then
+			point_2	:= et_coordinates.type_point (element (cursor).coordinates_start);
+			if distance (point_2, et_coordinates.zero) < distance (point_1, et_coordinates.zero) then
 				point_1 := point_2;
 			end if;
 
 			-- Test start point of segment.
 			-- if closer to orign than point_1 keep end point
-			point_2	:= type_point (element (cursor).coordinates_end);
-			if distance (point_2, zero) < distance (point_1, zero) then
+			point_2	:= et_coordinates.type_point (element (cursor).coordinates_end);
+			if distance (point_2, et_coordinates.zero) < distance (point_1, et_coordinates.zero) then
 				point_1 := point_2;
 			end if;
 		end query_strand;
 	
 	begin
 		-- init point_1 as the farest possible point from drawing origin
-		point_1 := type_point (set_point (x => type_distance_xy'last, y => type_distance_xy'last));
+		point_1 := et_coordinates.type_point (set (
+					x => type_distance_xy'last,
+					y => type_distance_xy'last));
 
 		-- loop through segments and keep the nearest point to origin
 		iterate (strand.segments, query_strand'access);
