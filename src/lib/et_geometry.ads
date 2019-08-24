@@ -53,12 +53,12 @@ package et_geometry is
 		beyond_end_points	-- unlimited line assumed. extends beyond both start and end point into infinity
 		);
 	
-	function distance_of_point_from_line (
-	-- Computes the shortest distance (perpendicular) of a given point from the given line.
-	-- If the point is outside the
-	-- range of the x coordinate, the corresponding flag in the return value is set.
-		point, line_start, line_end: in et_coordinates.type_point;
-		line_range : in type_line_range) return type_distance_point_from_line;
+-- 	function distance_of_point_from_line (
+-- 	-- Computes the shortest distance (perpendicular) of a given point from the given line.
+-- 	-- If the point is outside the
+-- 	-- range of the x coordinate, the corresponding flag in the return value is set.
+-- 		point, line_start, line_end: in et_coordinates.type_point;
+-- 		line_range : in type_line_range) return type_distance_point_from_line;
 
 
 	
@@ -100,12 +100,12 @@ package et_geometry is
 -- 		with function x (p : type_point) return type_distance;
 -- 		with function y (p : type_point) return type_distance;
 
--- 		type type_distance_point_line is record
--- 			distance		: type_distance; -- CS := et_coordinates.zero_distance;
--- 			sits_on_start	: boolean := false;
--- 			sits_on_end		: boolean := false;
--- 			out_of_range	: boolean := false;
--- 		end record;
+		type type_distance_point_line is record
+			distance		: type_distance := zero;
+			sits_on_start	: boolean := false;
+			sits_on_end		: boolean := false;
+			out_of_range	: boolean := false;
+		end record;
 		
 		
 -- 		function distance (
@@ -115,7 +115,7 @@ package et_geometry is
 -- 			line_range	: in type_line_range) 
 -- 			return type_distance_point_line;
 
-		procedure dummy;
+
 		
 	private
 

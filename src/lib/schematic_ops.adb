@@ -938,18 +938,18 @@ package body schematic_ops is
 		return boolean is
 	-- Returns true if given point sits on given segment.
 		use et_geometry;
-		distance : type_distance_point_from_line;
+		dist : type_distance_point_from_line;
 		use et_coordinates;
 		use type_net_segments;
 	begin
-		distance := distance_of_point_from_line (
+		dist := distance (
 			point 		=> point,
 			line_start	=> element (segment).coordinates_start,
 			line_end	=> element (segment).coordinates_end,
 			line_range	=> with_end_points);
 
 		-- start and end points of the segment are inclued in the test
-		if not distance.out_of_range and distance.distance = zero_distance then
+		if not dist.out_of_range and dist.distance = zero_distance then
 			return true;
 		else
 			return false;
