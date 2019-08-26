@@ -60,7 +60,8 @@ with material;
 with netlists;
 
 package schematic_ops is
-
+	use geometry;
+	
 	procedure device_not_found (name : in type_device_name);
 	procedure netchanger_not_found (index : in submodules.type_netchanger_id);
 	procedure submodule_not_found (name : in et_general.type_module_instance_name.bounded_string);	
@@ -94,7 +95,7 @@ package schematic_ops is
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
-		point			: in et_coordinates.type_point; -- x/y
+		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
 	procedure move_unit_placeholder (
@@ -103,7 +104,7 @@ package schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in et_coordinates.type_point; -- x/y
+		point			: in type_point; -- x/y
 		meaning			: in et_libraries.type_text_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level);
 
@@ -130,8 +131,8 @@ package schematic_ops is
 
 	-- CS move to et_schematic ?
 	type type_drag is record
-		before		: et_coordinates.type_point;
-		after		: et_coordinates.type_point;
+		before		: type_point;
+		after		: type_point;
 	end record;
 
 	-- CS move to et_schematic ?	
@@ -148,7 +149,7 @@ package schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in et_coordinates.type_point; -- x/y
+		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
 	procedure rename_device (
@@ -272,7 +273,7 @@ package schematic_ops is
 		index			: in submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
-		point			: in et_coordinates.type_point; -- x/y
+		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
 	procedure drag_netchanger (
@@ -284,7 +285,7 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in et_coordinates.type_point; -- x/y
+		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
 	procedure rotate_netchanger (
@@ -355,7 +356,7 @@ package schematic_ops is
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		place			: in et_coordinates.type_coordinates; -- sheet/x/y, this addresses the segment
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in et_coordinates.type_point; -- x/y, the new position 
+		point			: in type_point; -- x/y, the new position 
 		log_threshold	: in type_log_level);
 
 	package type_net_names is new doubly_linked_lists (
@@ -374,7 +375,7 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		start_point		: in et_coordinates.type_coordinates; -- sheet/x/y
-		end_point		: in et_coordinates.type_point; -- x/y
+		end_point		: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
 	procedure set_scope (
@@ -388,7 +389,7 @@ package schematic_ops is
 	-- Places a label next to a segment at position.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		segment_position: in et_coordinates.type_coordinates; -- sheet/x/y
-		label_position	: in et_coordinates.type_point; -- x/y
+		label_position	: in type_point; -- x/y
 		rotation		: in et_coordinates.type_rotation; -- 0 / 90 degree
 		appearance 		: in type_net_label_appearance; -- simple/tag label		
 		direction		: in et_schematic.type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
@@ -414,7 +415,7 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		port_name		: in et_general.type_net_name.bounded_string; -- clk_out
-		position		: in et_coordinates.type_point; -- x/y along the edge of the box
+		position		: in type_point; -- x/y along the edge of the box
 
 		direction		: in submodules.type_netchanger_port_name; -- master/slave. 
 		-- NOTE: has nothing to do with direction of energy flow. It is relevant when 
@@ -437,7 +438,7 @@ package schematic_ops is
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
 		port_name		: in et_general.type_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in et_coordinates.type_point; -- x/y
+		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
 	procedure drag_port (
@@ -450,7 +451,7 @@ package schematic_ops is
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
 		port_name		: in et_general.type_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in et_coordinates.type_point; -- x/y
+		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
 	procedure delete_submodule (
@@ -467,7 +468,7 @@ package schematic_ops is
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
-		point			: in et_coordinates.type_point; -- x/y
+		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
 	procedure drag_submodule (
@@ -479,7 +480,7 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in et_coordinates.type_point; -- x/y
+		point			: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
 	procedure copy_submodule (
