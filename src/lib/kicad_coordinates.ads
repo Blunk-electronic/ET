@@ -99,7 +99,7 @@ package kicad_coordinates is
 
 	
 	type type_coordinates is new et_coordinates.geometry.type_point with private;
-
+	
 
 	function path (position : in type_coordinates) return type_path_to_submodule.list;
 

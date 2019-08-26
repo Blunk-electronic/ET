@@ -9129,7 +9129,7 @@ package body et_kicad is
 
 		-- CS: clean up as in port_connected_with_segment
 		
-		zero : constant et_coordinates.type_distance := et_coordinates.zero_distance;
+-- 		zero : constant et_coordinates.type_distance := et_coordinates.zero_distance;
 		sits_on_segment : boolean := false;
 
 		use et_coordinates;
@@ -9138,7 +9138,7 @@ package body et_kicad is
 
 	begin
 		-- calculate the shortes distance of point from line.
-		d := distance_of_point_from_line (
+		d := distance_point_line (
 			point 		=> type_point (junction.coordinates),
 			line_start	=> type_point (segment.coordinates_start),
 			line_end	=> type_point (segment.coordinates_end),
@@ -9401,11 +9401,12 @@ package body et_kicad is
 		-- memory location. So forget this idea.
 		return boolean is
 
-		use et_geometry;
 		use et_string_processing;
 		
 		sits_on_segment : boolean := false;
-		distance : type_distance_point_from_line;
+
+		use et_coordinates.geometry;
+		distance : type_distance_point_line;
 
 		function junction_here return boolean is
 		-- Returns true if a junction sits at the coordinates of the given port.
@@ -9524,7 +9525,7 @@ package body et_kicad is
 			if same_path_and_sheet (port.coordinates, segment.coordinates_start) then
 
 				-- calculate the shortes distance of point from line.
-				distance := distance_of_point_from_line (
+				distance := distance_point_line (
 					point 		=> type_point (port.coordinates),
 					line_start	=> type_point (segment.coordinates_start),
 					line_end	=> type_point (segment.coordinates_end),
@@ -9926,6 +9927,7 @@ package body et_kicad is
 					use type_modules;
 					
 					port_coordinates : kicad_coordinates.type_coordinates;
+					use et_coordinates.geometry;
 
 					function left_open return type_port_open is
 					-- Returns true if a no-connect-flag sits at the port_coordinates.
@@ -9976,14 +9978,14 @@ package body et_kicad is
 				begin -- add
 					-- Init port coordinates with the coordinates of the port found in the library.
 					-- The port position is a type_point and must be converted to type_coordinates.
-					set_xy (
+					set (
 						point		=> port_coordinates,
 						position	=> element (port_cursor).position);
 
 					-- rotate port coordinates
-					rotate (
-						point => port_coordinates,
-						angle => orientation_of_unit (unit_name_lib, units_sch)
+					et_coordinates.rotate (
+						point	=> port_coordinates,
+						angle	=> orientation_of_unit (unit_name_lib, units_sch)
 						);
 
 					-- Mirror port coordinates if required.
