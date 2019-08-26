@@ -531,14 +531,15 @@ package body et_kicad is
 	-- Returns the lowest x/y position of the given strand.
 		strand			: in type_strand;
 		log_threshold	: in et_string_processing.type_log_level
-		) return et_coordinates.type_point is
+		) return et_coordinates.geometry.type_point is
 		
-		point_1, point_2 : et_coordinates.type_point;
+		point_1, point_2 : et_coordinates.geometry.type_point;
 		segment : type_net_segments.cursor;
 	
 		use type_net_segments;
 		use et_string_processing;
 		use et_coordinates;
+		use geometry;
 
 		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
 	begin
@@ -546,8 +547,10 @@ package body et_kicad is
 		log (text => "calculating the point nearest to drawing origin ...", level => log_threshold + 1);
 
 		-- init point_1 as the farest possible point from drawing origin
-		set_x (point_1, type_distance_xy'last);
-		set_y (point_1, type_distance_xy'last);
+		-- set_x (point_1, type_distance_xy'last);
+		set (X, type_distance_xy'last, point_1);
+		-- set_y (point_1, type_distance_xy'last);
+		set (Y, type_distance_xy'last, point_1);
 		
 		-- loop through segments and keep the nearest point to origin
 		segment := strand.segments.first;
@@ -556,7 +559,7 @@ package body et_kicad is
 			-- check start point of segment
 			-- if closer to orign than point_1 keep start point
 			point_2	:= type_point (element (segment).coordinates_start);
-			if distance (point_2, zero) < distance (point_1, zero) then
+			if distance (point_2, origin) < distance (point_1, origin) then
 				log (text => " start", level => log_threshold + 2);
 				point_1 := point_2;
 			end if;
@@ -564,7 +567,7 @@ package body et_kicad is
 			-- check start point of segment
 			-- if closer to orign than point_1 keep end point
 			point_2	:= type_point (element (segment).coordinates_end);
-			if distance (point_2, zero) < distance (point_1, zero) then
+			if distance (point_2, origin) < distance (point_1, origin) then
 				log (text => " end", level => log_threshold + 2);
 				point_1 := point_2;
 			end if;
@@ -792,17 +795,21 @@ package body et_kicad is
 		end if;
 	end validate_prefix;
 			
-	function to_point (x_in, y_in : in string) return et_coordinates.type_point is
-		point : et_coordinates.type_point;
+	function to_point (x_in, y_in : in string) return et_coordinates.geometry.type_point is
+		point : et_coordinates.geometry.type_point;
 		x, y : et_coordinates.type_distance_xy;
 
 		use et_coordinates;
+		use geometry;
 	begin
 		x := mil_to_distance (x_in);
 		y := mil_to_distance (y_in);
 
-		set_x (point, x);
-		set_y (point, y);
+		--set_x (point, x);
+		set (et_general.X, x, point);
+		--set_y (point, y);
+		set (et_general.Y, y, point);
+		
 		return point;
 	end to_point;
 
@@ -1480,9 +1487,10 @@ package body et_kicad is
 				end_point	: positive := positive (et_string_processing.field_count (line)) - 2;
 
 				-- temporarily we store coordinates of a point here
-				point		: et_coordinates.type_point;
+				point		: et_coordinates.geometry.type_point;
 
 				use et_coordinates;
+				use geometry;
 			begin -- to_polyline
 
 				-- read total number of points
@@ -1496,8 +1504,11 @@ package body et_kicad is
 				-- start point, the bend point(s) and the end point:
 				pos := 6;
 				loop exit when pos > end_point;
-					set_x (point, mil_to_distance (mil => et_string_processing.field (line, pos), warn_on_negative => false)); -- set x
-					set_y (point, mil_to_distance (mil => et_string_processing.field (line, pos+1), warn_on_negative => false)); -- set y (right after the x-field)
+					--set_x (point, mil_to_distance (mil => et_string_processing.field (line, pos), warn_on_negative => false)); -- set x
+					set (X, mil_to_distance (mil => et_string_processing.field (line, pos), warn_on_negative => false), point); -- set x
+				
+					--set_y (point, mil_to_distance (mil => et_string_processing.field (line, pos+1), warn_on_negative => false)); -- set y (right after the x-field)
+					set (Y, mil_to_distance (mil => et_string_processing.field (line, pos + 1), warn_on_negative => false), point); -- set y (right after the x-field)
 
 					-- For some unknown reason, kicad saves the y position of library objects inverted.
 					-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1528,16 +1539,23 @@ package body et_kicad is
 				-- #9 : fill style N/F/f no fill/foreground/background
 
 				use et_coordinates;
+				use geometry;
 			begin -- to_rectangle
-				set_x (rectangle.corner_A, mil_to_distance (mil => et_string_processing.field (line,2), warn_on_negative => false));
-				set_y (rectangle.corner_A, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
+				--set_x (rectangle.corner_A, mil_to_distance (mil => et_string_processing.field (line,2), warn_on_negative => false));
+				set (X, mil_to_distance (mil => et_string_processing.field (line,2), warn_on_negative => false), rectangle.corner_A);
+				
+				--set_y (rectangle.corner_A, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
+				set (Y, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false), rectangle.corner_A);
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => rectangle.corner_A, axis => x);
 				
-				set_x (rectangle.corner_B, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
-				set_y (rectangle.corner_B, mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false));
+				--set_x (rectangle.corner_B, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
+				set (X, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false), rectangle.corner_B);
+
+				--set_y (rectangle.corner_B, mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false));
+				set (Y, mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false), rectangle.corner_B);
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1565,9 +1583,13 @@ package body et_kicad is
 				--  #8 : fill style N/F/f no fill/foreground/background
 
 				use et_coordinates;
+				use geometry;
 			begin -- to_circle
-				set_x (circle.center, mil_to_distance (mil => et_string_processing.field (line,2), warn_on_negative => false));
-				set_y (circle.center, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
+				--set_x (circle.center, mil_to_distance (mil => et_string_processing.field (line,2), warn_on_negative => false));
+				set (X, mil_to_distance (mil => et_string_processing.field (line,2), warn_on_negative => false), circle.center);
+				
+				--set_y (circle.center, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
+				set (Y, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false), circle.center);
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1601,9 +1623,13 @@ package body et_kicad is
 				-- #13..14 : end point (x/y)
 
 				use et_coordinates;
+				use geometry;
 			begin -- to_arc
-				set_x (arc.center, mil_to_distance (mil => et_string_processing.field (line,2), warn_on_negative => false));
-				set_y (arc.center, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
+				--set_x (arc.center, mil_to_distance (mil => et_string_processing.field (line,2), warn_on_negative => false));
+				set (X, mil_to_distance (mil => et_string_processing.field (line,2), warn_on_negative => false), arc.center);
+				
+				--set_y (arc.center, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
+				set (Y, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false), arc.center);
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1617,15 +1643,21 @@ package body et_kicad is
 				arc.width		:= type_line_width'value (et_string_processing.field (line,9));
 				arc.fill		:= to_fill (et_string_processing.field (line,10));
 				
-				set_x (arc.start_point, mil_to_distance (mil => et_string_processing.field (line,11), warn_on_negative => false));
-				set_y (arc.start_point, mil_to_distance (mil => et_string_processing.field (line,12), warn_on_negative => false));
+				--set_x (arc.start_point, mil_to_distance (mil => et_string_processing.field (line,11), warn_on_negative => false));
+				set (X, mil_to_distance (mil => et_string_processing.field (line,11), warn_on_negative => false), arc.start_point);
+				
+				--set_y (arc.start_point, mil_to_distance (mil => et_string_processing.field (line,12), warn_on_negative => false));
+				set (Y, mil_to_distance (mil => et_string_processing.field (line,12), warn_on_negative => false), arc.start_point);
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
 				mirror (point => arc.start_point, axis => x);
 
-				set_x (arc.end_point, mil_to_distance (mil => et_string_processing.field (line,13), warn_on_negative => false));
-				set_y (arc.end_point, mil_to_distance (mil => et_string_processing.field (line,14), warn_on_negative => false));
+				--set_x (arc.end_point, mil_to_distance (mil => et_string_processing.field (line,13), warn_on_negative => false));
+				set (X, mil_to_distance (mil => et_string_processing.field (line,13), warn_on_negative => false), arc.end_point);
+				
+				--set_y (arc.end_point, mil_to_distance (mil => et_string_processing.field (line,14), warn_on_negative => false));
+				set (Y, mil_to_distance (mil => et_string_processing.field (line,14), warn_on_negative => false), arc.end_point);
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1702,14 +1734,18 @@ package body et_kicad is
 				end to_content;
 
 				use et_coordinates;
+				use geometry;
 			begin -- to_text
 				text.rotation := to_degrees (et_string_processing.field (line,2));
 				if text.rotation not in type_rotation_text then
 					warning_angle_greater_90_degrees;
 				end if;
 				
-				set_x (text.position, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
-				set_y (text.position, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
+				--set_x (text.position, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
+				set (X, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false), text.position);
+				
+				--set_y (text.position, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
+				set (Y, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false), text.position);
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
@@ -1849,6 +1885,7 @@ package body et_kicad is
 				end to_rotation;
 				
 				use et_coordinates;
+				use geometry;
 				
 			begin -- to_port
 				log_indentation_up;
@@ -1860,8 +1897,11 @@ package body et_kicad is
 				tmp_terminal_name := type_terminal_name.to_bounded_string (et_string_processing.field (line,3)); -- H5, 14
 
 				-- compose position
-				set_x (port.position, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
-				set_y (port.position, mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false));
+				--set_x (port.position, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
+				set (X, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false), port.position);
+				
+				--set_y (port.position, mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false));
+				set (Y, mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false), port.position);
 				mirror (point => port.position, axis => x);
 
 				-- compose length
@@ -1912,6 +1952,7 @@ package body et_kicad is
 			-- Checks basic properties of text fields (allowed charactes, text size, aligment, ...)
 			-- NOTE: The contextual validation takes place in procedure check_text_fields.
 				use et_coordinates;
+				use geometry;
 				use et_libraries.type_text_content;
 
 				-- instantiate a text field as speficied by given parameter meaning
@@ -1965,8 +2006,12 @@ package body et_kicad is
 
 				end case;
 				
-				set_x (text.position, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
-				set_y (text.position, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
+				--set_x (text.position, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false));
+				set (X, mil_to_distance (mil => et_string_processing.field (line,3), warn_on_negative => false), text.position);
+
+				--set_y (text.position, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false));
+				set (Y, mil_to_distance (mil => et_string_processing.field (line,4), warn_on_negative => false), text.position);
+				
 				text.size := mil_to_distance (mil => et_string_processing.field (line,5), warn_on_negative => false);
 
 				text.rotation := to_field_orientation (et_string_processing.field  (line,6));
@@ -3655,11 +3700,13 @@ package body et_kicad is
 			segment : in type_net_segment_base)
 			return boolean is
 		-- Returns true if given port sits on given segment.
-			use et_geometry;
-			distance : type_distance_point_from_line;
+
 			use et_coordinates;
+			use geometry;
+			distance : type_distance_point_line;
+			
 		begin
-			distance := distance_of_point_from_line (
+			distance := distance_point_line (
 				point 		=> port.coordinates,
 				line_start	=> type_point (segment.coordinates_start),
 				line_end	=> type_point (segment.coordinates_end),
@@ -5378,6 +5425,7 @@ package body et_kicad is
 			return type_hierarchic_sheet_file_names_extended is
 
 			use et_coordinates;
+			use geometry;
 
 			hierarchic_sheet_file_names : type_hierarchic_sheet_file_names_extended; -- list to be returned
 			name_of_submodule_scratch : type_submodule_name.bounded_string; -- temporarily used before appended to hierarchic_sheet_file_names
@@ -5519,7 +5567,7 @@ package body et_kicad is
 								-- If the search starts from the end_point of the given net, find a segment whose start or end point matches.
 								when end_point =>
 									--if line_start.x = seg_in.coordinates_end.x and line_start.y = seg_in.coordinates_end.y then
-									if distance_x (line_start) = distance_x (seg_in.coordinates_end) and distance_y (line_start) = distance_y (seg_in.coordinates_end) then
+									if x (line_start) = x (seg_in.coordinates_end) and y (line_start) = y (seg_in.coordinates_end) then
 										sc.valid := true;
 										sc.side := start_point;
 										sc.cursor := cursor;
@@ -5527,7 +5575,7 @@ package body et_kicad is
 									end if;
 
 									--if line_end.x = seg_in.coordinates_end.x and line_end.y = seg_in.coordinates_end.y then
-									if distance_x (line_end) = distance_x (seg_in.coordinates_end) and distance_y (line_end) = distance_y (seg_in.coordinates_end) then
+									if x (line_end) = x (seg_in.coordinates_end) and y (line_end) = y (seg_in.coordinates_end) then
 										sc.valid := true;
 										sc.side := end_point;
 										sc.cursor := cursor;
@@ -5537,7 +5585,7 @@ package body et_kicad is
 								-- If the search starts from the start_point of the given net, find a segment whose start or end point matches.									
 								when start_point =>
 									--if line_start.x = seg_in.coordinates_start.x and line_start.y = seg_in.coordinates_start.y then
-									if distance_x (line_start) = distance_x (seg_in.coordinates_start) and distance_y (line_start) = distance_y (seg_in.coordinates_start) then
+									if x (line_start) = x (seg_in.coordinates_start) and y (line_start) = y (seg_in.coordinates_start) then
 										sc.valid := true;
 										sc.side := start_point;
 										sc.cursor := cursor;
@@ -5545,7 +5593,7 @@ package body et_kicad is
 									end if;
 
 									--if line_end.x = seg_in.coordinates_start.x and line_end.y = seg_in.coordinates_start.y then
-									if distance_x (line_end) = distance_x (seg_in.coordinates_start) and distance_y (line_end) = distance_y (seg_in.coordinates_start) then
+									if x (line_end) = x (seg_in.coordinates_start) and y (line_end) = y (seg_in.coordinates_start) then
 										sc.valid := true;
 										sc.side := end_point;
 										sc.cursor := cursor;
@@ -5580,7 +5628,7 @@ package body et_kicad is
 								-- If the search starts from the end_point of the given net, find a segment whose start or end point matches.
 								when end_point =>
 									--if line_start.x = seg_in.coordinates_end.x and line_start.y = seg_in.coordinates_end.y then
-									if distance_x (line_start) = distance_x (seg_in.coordinates_end) and distance_y (line_start) = distance_y (seg_in.coordinates_end) then
+									if x (line_start) = x (seg_in.coordinates_end) and y (line_start) = y (seg_in.coordinates_end) then
 										sc.valid := true;
 										sc.side := start_point;
 										sc.cursor := cursor;
@@ -5588,7 +5636,7 @@ package body et_kicad is
 									end if;
 
 									--if line_end.x = seg_in.coordinates_end.x and line_end.y = seg_in.coordinates_end.y then
-									if distance_x (line_end) = distance_x (seg_in.coordinates_end) and distance_y (line_end) = distance_y (seg_in.coordinates_end) then
+									if x (line_end) = x (seg_in.coordinates_end) and y (line_end) = y (seg_in.coordinates_end) then
 										sc.valid := true;
 										sc.side := end_point;
 										sc.cursor := cursor;
@@ -5598,7 +5646,7 @@ package body et_kicad is
 								-- If the search starts from the start_point of the given net, find a segment whose start or end point matches.
 								when start_point =>
 									--if line_start.x = seg_in.coordinates_start.x and line_start.y = seg_in.coordinates_start.y then
-									if distance_x (line_start) = distance_x (seg_in.coordinates_start) and distance_y (line_start) = distance_y (seg_in.coordinates_start) then
+									if x (line_start) = x (seg_in.coordinates_start) and y (line_start) = y (seg_in.coordinates_start) then
 										sc.valid := true;
 										sc.side := start_point;
 										sc.cursor := cursor;
@@ -5606,7 +5654,7 @@ package body et_kicad is
 									end if;
 
 									--if line_end.x = seg_in.coordinates_start.x and line_end.y = seg_in.coordinates_start.y then
-									if distance_x (line_end) = distance_x (seg_in.coordinates_start) and distance_y (line_end) = distance_y (seg_in.coordinates_start) then
+									if x (line_end) = x (seg_in.coordinates_start) and y (line_end) = y (seg_in.coordinates_start) then
 										sc.valid := true;
 										sc.side := end_point;
 										sc.cursor := cursor;
@@ -5661,11 +5709,11 @@ package body et_kicad is
 					label	: in type_net_label;
 					segment	: in type_net_segment) return boolean is
 					sits_on_segment : boolean := false;
-					d : et_geometry.type_distance_point_from_line;
-					use et_geometry;
+					use geometry;
+					d : type_distance_point_line;
 				begin
 					-- calculate the shortes distance of point from line.
-					d := distance_of_point_from_line (
+					d := distance_point_line (
 						--point		=> et_libraries.type_coordinates(point),
 						point		=> type_point (label.coordinates),
 						line_start	=> type_point (segment.coordinates_start),
@@ -6012,7 +6060,8 @@ package body et_kicad is
 							set_sheet (strand.position, sheet_number);
 
 							-- set x,y coordinates (lowest available on the sheet)
-							set_xy (strand.position, lowest_xy (strand, log_threshold + 3));
+							--set_xy (strand.position, lowest_xy (strand, log_threshold + 3));
+							set (strand.position, lowest_xy (strand, log_threshold + 3));
                             
 							-- insert strand in module, then purge strand.segments for next spin
 							log (text => "inserting strand in module ...", level => log_threshold + 2);
@@ -6067,7 +6116,8 @@ package body et_kicad is
 							set_sheet (strand.position, sheet_number);
 
 							-- set x,y coordinates (lowest available on the sheet)
-							set_xy (strand.position, lowest_xy (strand, log_threshold + 3));
+							--set_xy (strand.position, lowest_xy (strand, log_threshold + 3));
+							set (strand.position, lowest_xy (strand, log_threshold + 3));
 							
 							-- insert strand in module, then purge strand.segments for next spin
 							log (text => "inserting strand in module ...", level => log_threshold + 2);
@@ -6779,8 +6829,11 @@ package body et_kicad is
 					set_path (sheet.coordinates, path_to_sheet);
 					--log (text => "path " & to_string (path (sheet.coordinates)));
 					set_sheet (sheet.coordinates, sheet_number);
-					set_x (sheet.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,2)));
-					set_y (sheet.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
+					
+					--set_x (sheet.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,2)));
+					set (X, mil_to_distance (et_string_processing.field (et_kicad.line,2)), sheet.coordinates);
+					--set_y (sheet.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
+					set (Y, mil_to_distance (et_string_processing.field (et_kicad.line,3)), sheet.coordinates);
 
 					sheet.size_x := mil_to_distance (et_string_processing.field (et_kicad.line,4));
 					sheet.size_y := mil_to_distance (et_string_processing.field (et_kicad.line,5));                                
@@ -6937,10 +6990,14 @@ package body et_kicad is
 				set_sheet (segment.coordinates_end, sheet_number);
 
 				-- the x/y position
-				set_x (segment.coordinates_start, mil_to_distance (et_string_processing.field (et_kicad.line,1)));
-				set_y (segment.coordinates_start, mil_to_distance (et_string_processing.field (et_kicad.line,2)));
-				set_x (segment.coordinates_end, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
-				set_y (segment.coordinates_end, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
+				--set_x (segment.coordinates_start, mil_to_distance (et_string_processing.field (et_kicad.line,1)));
+				set (X, mil_to_distance (et_string_processing.field (et_kicad.line,1)), segment.coordinates_start);
+				--set_y (segment.coordinates_start, mil_to_distance (et_string_processing.field (et_kicad.line,2)));
+				set (Y, mil_to_distance (et_string_processing.field (et_kicad.line,2)), segment.coordinates_start);
+				--set_x (segment.coordinates_end, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
+				set (X, mil_to_distance (et_string_processing.field (et_kicad.line,3)), segment.coordinates_end);
+				--set_y (segment.coordinates_end, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
+				set (Y, mil_to_distance (et_string_processing.field (et_kicad.line,4)), segment.coordinates_end);
 
 				-- Ignore net segments with zero length (CS: for some reason they may exist. could be a kicad bug)
 				-- If a net segment has zero length, issue a warning.
@@ -6998,8 +7055,12 @@ package body et_kicad is
 				
 				set_path (junction.coordinates, path_to_sheet);
 				set_sheet (junction.coordinates, sheet_number);
-				set_x (junction.coordinates, mil_to_distance (et_string_processing.field (line,3)));
-				set_y (junction.coordinates, mil_to_distance (et_string_processing.field (line,4)));
+				
+				--set_x (junction.coordinates, mil_to_distance (et_string_processing.field (line,3)));
+				set (X, mil_to_distance (et_string_processing.field (line,3)), junction.coordinates);
+				
+				--set_y (junction.coordinates, mil_to_distance (et_string_processing.field (line,4)));
+				set (Y, mil_to_distance (et_string_processing.field (line,4)), junction.coordinates);
 
 				-- for the log
 				log (text => "net junction" & to_string (junction => junction, scope => xy), level => log_threshold);
@@ -7050,8 +7111,10 @@ package body et_kicad is
 				-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
 				--set_path (label.coordinates, path_to_sheet);
 				--set_sheet (label.coordinates, sheet_number);
-				set_x (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
-				set_y (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
+				--set_x (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
+				set (X, mil_to_distance (et_string_processing.field (et_kicad.line,3)), label.coordinates);
+				--set_y (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
+				set (Y, mil_to_distance (et_string_processing.field (et_kicad.line,4)), label.coordinates);
 
 				label.rotation := to_angle (et_string_processing.field (et_kicad.line,5));
 				label.size := mil_to_distance (et_string_processing.field (et_kicad.line,6));
@@ -7129,8 +7192,10 @@ package body et_kicad is
 
 				--set_path (label.coordinates, path_to_sheet);
 				--set_sheet (label.coordinates, sheet_number);
-				set_x (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
-				set_y (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
+				--set_x (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
+				set (X, mil_to_distance (et_string_processing.field (et_kicad.line,3)), label.coordinates);
+				--set_y (label.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
+				set (Y, mil_to_distance (et_string_processing.field (et_kicad.line,4)), label.coordinates);
 
 				label.rotation := to_angle (et_string_processing.field (et_kicad.line,5));
 				label.direction := to_direction (et_string_processing.field (et_kicad.line,7));
@@ -7205,8 +7270,10 @@ package body et_kicad is
 				-- set coordinates
 				set_path (note.coordinates, path_to_sheet);
 				set_sheet (note.coordinates, sheet_number);
-				set_x (note.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
-				set_y (note.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
+				--set_x (note.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
+				set (X, mil_to_distance (et_string_processing.field (et_kicad.line,3)), note.coordinates);
+				--set_y (note.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
+				set (Y, mil_to_distance (et_string_processing.field (et_kicad.line,4)), note.coordinates);
 				
 				--note.rotation := to_angle (et_string_processing.field (et_kicad.line,5));
 				rotation := to_angle (et_string_processing.field (et_kicad.line,5));
@@ -7354,8 +7421,10 @@ package body et_kicad is
 					-- test if the field content is longer than allowed:
 					check_text_content_length (et_string_processing.field (et_kicad.line,3));
 					
-					set_x (text_position, mil_to_distance (et_string_processing.field (et_kicad.line,5)));
-					set_y (text_position, mil_to_distance (et_string_processing.field (et_kicad.line,6)));
+					--set_x (text_position, mil_to_distance (et_string_processing.field (et_kicad.line,5)));
+					set (X, mil_to_distance (et_string_processing.field (et_kicad.line,5)), text_position);
+					--set_y (text_position, mil_to_distance (et_string_processing.field (et_kicad.line,6)));
+					set (Y, mil_to_distance (et_string_processing.field (et_kicad.line,6)), text_position);
 
 					size := mil_to_distance (et_string_processing.field (et_kicad.line,7));
 
@@ -7947,7 +8016,7 @@ package body et_kicad is
 						raise constraint_error;
 					end if;
 					
-					if distance_x (position) /= mil_to_distance (et_string_processing.field (line,2)) then
+					if x (position) /= mil_to_distance (et_string_processing.field (line,2)) then
 	-- 					log (text => "position invalid. expected '" & to_string (position.x) 
 	-- 						& "' found '" 
 	-- 						& field (line,2)
@@ -7955,7 +8024,7 @@ package body et_kicad is
 						raise constraint_error; -- CS: write useful message
 					end if;
 
-					if distance_y (position) /= mil_to_distance (et_string_processing.field (line,3)) then
+					if y (position) /= mil_to_distance (et_string_processing.field (line,3)) then
 						raise constraint_error; -- CS: write useful message
 					end if;
 
@@ -8303,8 +8372,10 @@ package body et_kicad is
 					-- Read unit coordinates from a line like "P 3200 4500".
 					elsif et_string_processing.field (et_kicad.line,1) = schematic_component_identifier_coord then -- "P"
 					
-						set_x (position, mil_to_distance (et_string_processing.field (et_kicad.line,2))); -- "3200"
-						set_y (position, mil_to_distance (et_string_processing.field (et_kicad.line,3))); -- "4500"
+						--set_x (position, mil_to_distance (et_string_processing.field (et_kicad.line,2))); -- "3200"
+						set (X, mil_to_distance (et_string_processing.field (et_kicad.line,2)), position); -- "3200"
+						--set_y (position, mil_to_distance (et_string_processing.field (et_kicad.line,3))); -- "4500"
+						set (Y, mil_to_distance (et_string_processing.field (et_kicad.line,3)), position); -- "4500"
 
 						-- The unit coordinates is more than just x/y :
 						set_path (position, path_to_sheet);
@@ -8452,9 +8523,12 @@ package body et_kicad is
 			begin -- make_no_connection
 				set_path (no_connection_flag.coordinates, path_to_sheet);
 				set_sheet (no_connection_flag.coordinates, sheet_number);
-				set_x (no_connection_flag.coordinates, mil_to_distance (et_string_processing.field (line,3)));
-				set_y (no_connection_flag.coordinates, mil_to_distance (et_string_processing.field (line,4)));
-
+				
+				--set_x (no_connection_flag.coordinates, mil_to_distance (et_string_processing.field (line,3)));
+				set (X, mil_to_distance (et_string_processing.field (line,3)), no_connection_flag.coordinates);
+				--set_y (no_connection_flag.coordinates, mil_to_distance (et_string_processing.field (line,4)));
+				set (Y, mil_to_distance (et_string_processing.field (line,4)), no_connection_flag.coordinates);
+				
 				-- for the log
 				log (text => "no-connection-flag" & to_string (no_connection_flag => no_connection_flag, scope => xy),
 					 level => log_threshold + 1);
@@ -9057,10 +9131,10 @@ package body et_kicad is
 		
 		zero : constant et_coordinates.type_distance := et_coordinates.zero_distance;
 		sits_on_segment : boolean := false;
-		d : et_geometry.type_distance_point_from_line;
 
-		use et_geometry;
 		use et_coordinates;
+		use geometry;
+		d : type_distance_point_line;
 
 	begin
 		-- calculate the shortes distance of point from line.

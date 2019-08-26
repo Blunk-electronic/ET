@@ -91,7 +91,7 @@ package et_geometry is
 		procedure move (
 			point	: in out type_point'class;
 			offset	: in type_point);
-
+		
 		procedure mirror (
 			point	: in out type_point;
 			axis	: in type_axis_2d);	
@@ -119,10 +119,10 @@ package et_geometry is
 			line_range	: in type_line_range) 
 			return type_distance_point_line;
 
-		units_per_cycle : constant float := 360.0;
-		type type_rotation is delta 0.01 range -359.9 .. 359.9;
-		for type_rotation'small use 0.01;
-		zero_rotation : constant type_rotation := 0.0;
+-- 		units_per_cycle : constant float := 360.0;
+-- 		type type_rotation is delta 0.01 range -359.9 .. 359.9;
+-- 		for type_rotation'small use 0.01;
+-- 		zero_rotation : constant type_rotation := 0.0;
 
 		
 	private

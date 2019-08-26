@@ -74,7 +74,7 @@ package et_coordinates is
 
 	-- instantiation of the 2d geometry package:
 	package geometry is new et_geometry.geometry_operations_2d (type_distance);
-	
+	use geometry;
 	
 	subtype type_catch_zone is type_distance range 0.0 .. 10.0;
 	catch_zone : type_catch_zone := 2.0; -- CS: should be a system setting in the future
@@ -119,9 +119,9 @@ package et_coordinates is
 	
 	
 	--type type_point is tagged private;
-	type type_point is new geometry.type_point with private;
+-- 	type type_point is new geometry.type_point with private;
 
-	zero : constant type_point;
+-- 	zero : constant type_point;
 
 	function "<" (left, right : in type_point) return boolean;
 	
@@ -133,19 +133,19 @@ package et_coordinates is
 	function to_string (point : in type_point'class) return string;
 	-- Returns the given point coordinates to a string.
 
-	function distance_x (point : in type_point) return type_distance_xy;
-	-- Returns the x distance of point from the drawing origin.
-	-- CS remove and use function distance instead.	
-	
-	function distance_y (point : in type_point) return type_distance_xy;
-	-- Returns the y distance of point from the drawing origin.
-	-- CS remove and use function distance instead.	
+-- 	function distance_x (point : in type_point) return type_distance_xy;
+-- 	-- Returns the x distance of point from the drawing origin.
+-- 	-- CS remove and use function distance instead.	
+-- 	
+-- 	function distance_y (point : in type_point) return type_distance_xy;
+-- 	-- Returns the y distance of point from the drawing origin.
+-- 	-- CS remove and use function distance instead.	
 
-	function distance (
-	-- Returns the distance of the point in x or y from the origin.
-		axis	: in type_axis_2d;
-		point	: in type_point'class)
-		return type_distance_xy;
+-- 	function distance (
+-- 	-- Returns the distance of the point in x or y from the origin.
+-- 		axis	: in type_axis_2d;
+-- 		point	: in type_point'class)
+-- 		return type_distance_xy;
 	
 -- 	procedure set_x (point : in out type_point; x : in type_distance_xy);
 -- 	-- Assigns a point the given x position.
@@ -172,8 +172,8 @@ package et_coordinates is
 		point	: in out type_point;
 		angle	: in type_rotation);
 
-	function distance (point_1, point_2 : in type_point) return type_distance;
-	-- Returns the total distance between the given points.
+-- 	function distance (point_1, point_2 : in type_point) return type_distance;
+-- 	-- Returns the total distance between the given points.
 
 	function distance (
 	-- Returns the absolute distance on the given axis between the given points.
@@ -279,10 +279,10 @@ package et_coordinates is
 -- 			x, y : type_distance_xy := zero_distance;
 -- 		end record;
 
-		type type_point is new geometry.type_point with null record;
+-- 		type type_point is new geometry.type_point with null record;
 		
 		--zero : constant type_point := (x => zero_distance, y => zero_distance);
-		zero : constant type_point := (geometry.origin with others => <>);
+-- 		zero : constant type_point := (geometry.origin with others => <>);
 
 	
 		type type_coordinates is new type_point with record
@@ -299,7 +299,7 @@ package et_coordinates is
 -- 			y		=> 0.0 );
 
 		zero_position : constant type_coordinates := (
-			zero with sheet	=> type_sheet'first);
+			origin with sheet => type_sheet'first);
 		
 end et_coordinates;
 

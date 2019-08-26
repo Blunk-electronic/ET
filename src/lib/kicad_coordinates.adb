@@ -278,6 +278,7 @@ package body kicad_coordinates is
 		scope		: in type_scope := SHEET)
 		return string is
 
+		use geometry;
 		use et_string_processing;
 	begin
 		case scope is
@@ -286,23 +287,23 @@ package body kicad_coordinates is
 					& to_string (position.path) & latin_1.space & hierarchy_separator & latin_1.space
 					& to_sheet (position.sheet_number) 
 					& latin_1.space & axis_separator & latin_1.space
-					& to_string (distance_x (position))
+					& to_string (x (position))
 					& latin_1.space & axis_separator & latin_1.space
-					& to_string (distance_y (position));
+					& to_string (y (position));
 				
 			when SHEET =>
 				return coordinates_preamble_sheet
 					& to_sheet (position.sheet_number) 
 					& latin_1.space & axis_separator & latin_1.space
-					& to_string (distance_x (position))
+					& to_string (x (position))
 					& latin_1.space & axis_separator & latin_1.space
-					& to_string (distance_y (position));
+					& to_string (y (position));
 
 			when XY =>
 				return coordinates_preamble_xy
-					& to_string (distance_x (position))
+					& to_string (x (position))
 					& latin_1.space & axis_separator & latin_1.space
-					& to_string (distance_y (position));
+					& to_string (y (position));
 
 		end case;
 	end to_string;

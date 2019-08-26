@@ -152,33 +152,33 @@ package body et_coordinates is
 	
 	end to_string;
 
-	function distance_x (point : in type_point) return type_distance_xy is
-	-- Returns the x distance of point from the drawing origin.		
-	-- CS remove and use function distance instead.
-	begin
-		--return et_math.round (point.x, accuracy_schematic);
-		return point.x;
-	end distance_x;
+-- 	function distance_x (point : in type_point) return type_distance_xy is
+-- 	-- Returns the x distance of point from the drawing origin.		
+-- 	-- CS remove and use function distance instead.
+-- 	begin
+-- 		--return et_math.round (point.x, accuracy_schematic);
+-- 		return point.x;
+-- 	end distance_x;
 
-	function distance_y (point : in type_point) return type_distance_xy is
-	-- Returns the y distance of point from the drawing origin.
-	-- CS remove and use function distance instead.
-	begin
-		--return et_math.round (point.y, accuracy_schematic);
-		return point.y;
-	end distance_y;
+-- 	function distance_y (point : in type_point) return type_distance_xy is
+-- 	-- Returns the y distance of point from the drawing origin.
+-- 	-- CS remove and use function distance instead.
+-- 	begin
+-- 		--return et_math.round (point.y, accuracy_schematic);
+-- 		return point.y;
+-- 	end distance_y;
 
-	function distance (
-	-- Returns the distance of the point in x or y from the origin.
-		axis	: in type_axis_2d;
-		point	: in type_point'class)
-		return type_distance_xy is
-	begin
-		case axis is
-			when X => return point.x;
-			when Y => return point.y;
-		end case;
-	end distance;
+-- 	function distance (
+-- 	-- Returns the distance of the point in x or y from the origin.
+-- 		axis	: in type_axis_2d;
+-- 		point	: in type_point'class)
+-- 		return type_distance_xy is
+-- 	begin
+-- 		case axis is
+-- 			when X => return point.x;
+-- 			when Y => return point.y;
+-- 		end case;
+-- 	end distance;
 	
 -- 	procedure set_x (point : in out type_point; x : in type_distance_xy) is
 -- 	-- Assigns a point the given x position.
@@ -328,34 +328,34 @@ package body et_coordinates is
 		end if; -- if angle not zero
 	end rotate;
 
-	function distance (point_1, point_2 : in type_point) return type_distance is
-	-- Returns the total distance between the given points.
-		dis : float;
-		package functions_distance is new ada.numerics.generic_elementary_functions (float);
-		use functions_distance;
-	begin
-		-- To save computing time a few simple checks:
-		
-		if point_1 = point_2 then -- points have same x/y position -> zero difference
-			dis := float (zero_distance);
-			
-		elsif point_1.x = point_2.x then -- points are in a vertical line
-			dis := float (abs (point_2.y - point_1.y));
-			
-		elsif point_1.y = point_2.y then -- points are in a horizontal line
-			dis := float (abs (point_2.x - point_1.x));
-
-		else -- distance = sqrt (delta_x^2 + delta_y^2)
-			dis := sqrt (
-					(float (abs (point_2.x - point_1.x))) ** 2
-					+
-					(float (abs (point_2.y - point_1.y))) ** 2 
-					);
-
-		end if;
-
-		return type_distance (dis);
-	end distance;
+-- 	function distance (point_1, point_2 : in type_point) return type_distance is
+-- 	-- Returns the total distance between the given points.
+-- 		dis : float;
+-- 		package functions_distance is new ada.numerics.generic_elementary_functions (float);
+-- 		use functions_distance;
+-- 	begin
+-- 		-- To save computing time a few simple checks:
+-- 		
+-- 		if point_1 = point_2 then -- points have same x/y position -> zero difference
+-- 			dis := float (zero_distance);
+-- 			
+-- 		elsif point_1.x = point_2.x then -- points are in a vertical line
+-- 			dis := float (abs (point_2.y - point_1.y));
+-- 			
+-- 		elsif point_1.y = point_2.y then -- points are in a horizontal line
+-- 			dis := float (abs (point_2.x - point_1.x));
+-- 
+-- 		else -- distance = sqrt (delta_x^2 + delta_y^2)
+-- 			dis := sqrt (
+-- 					(float (abs (point_2.x - point_1.x))) ** 2
+-- 					+
+-- 					(float (abs (point_2.y - point_1.y))) ** 2 
+-- 					);
+-- 
+-- 		end if;
+-- 
+-- 		return type_distance (dis);
+-- 	end distance;
 
 	function distance (
 	-- Returns the absolute distance on the given axis between the given points.
@@ -472,11 +472,11 @@ package body et_coordinates is
 		use et_string_processing;
 	begin
 		return coordinates_preamble_sheet
-				& to_sheet (position.sheet) 
-				& latin_1.space & axis_separator & latin_1.space
-				& to_string (distance_x (position))
-				& latin_1.space & axis_separator & latin_1.space
-				& to_string (distance_y (position));
+			& to_sheet (position.sheet) 
+			& latin_1.space & axis_separator & latin_1.space
+			& to_string (x (position))
+			& latin_1.space & axis_separator & latin_1.space
+			& to_string (y (position));
 	end to_string;
 
 	function sheet (position : in type_coordinates) return type_sheet is

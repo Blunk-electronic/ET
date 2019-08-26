@@ -214,7 +214,7 @@ package et_schematic is
 	function to_direction (direction : in string) return type_net_label_direction;
 
 	type type_net_label_base is tagged record
-		position	: et_coordinates.type_point;
+		position	: et_coordinates.geometry.type_point;
 		rotation	: et_coordinates.type_rotation_text := 0;
         size		: et_libraries.type_text_size := et_libraries.text_size_default;
         style		: et_libraries.type_text_style := et_libraries.type_text_style'first;
@@ -248,8 +248,8 @@ package et_schematic is
 	end record;
 
 	type type_net_segment is record
-		coordinates_start 	: et_coordinates.type_point;
-		coordinates_end   	: et_coordinates.type_point;
+		coordinates_start 	: et_coordinates.geometry.type_point;
+		coordinates_end   	: et_coordinates.geometry.type_point;
 		labels				: type_net_labels.list;
 		junctions			: type_junctions;
 		ports_devices		: type_ports_device.set;
@@ -271,7 +271,7 @@ package et_schematic is
 	
 	function which_zone (
 	-- Calculates the zone on the segment where point is nearest.
-		point	: in et_coordinates.type_point;
+		point	: in et_coordinates.geometry.type_point;
 		segment	: in type_net_segments.cursor) 
 		return type_zone;
 

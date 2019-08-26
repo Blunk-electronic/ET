@@ -56,6 +56,7 @@ with et_general;
 
 package et_libraries is
 
+	use geometry;
 
 	path_length_max : constant natural := 500; -- CS: increase if necessary
 	
@@ -698,7 +699,7 @@ package et_libraries is
         -- file is the link to the symbol in container "symbols":
         file		: type_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym -- CS rename to model
         
-		position	: type_point := zero; -- the position within the device editor
+		position	: type_point := origin; -- the position within the device editor
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
 		add_level	: type_unit_add_level := type_unit_add_level'first;
 	end record;
@@ -911,8 +912,8 @@ package et_libraries is
 	function to_template_name (name : in string) return type_frame_template_name.bounded_string;
 	
     type type_title_block_line is record
-		coordinates_start : et_coordinates.type_point;
-		coordinates_end   : et_coordinates.type_point;
+		coordinates_start : type_point;
+		coordinates_end   : type_point;
     end record;
 
 	package type_title_block_lines is new doubly_linked_lists (type_title_block_line);
@@ -929,7 +930,7 @@ package et_libraries is
 	
 	type type_title_block_text is record
 		meaning			: type_title_block_text_meaning;
- 		coordinates		: et_coordinates.type_point;
+ 		coordinates		: type_point;
 		text			: type_title_block_text_content.bounded_string; -- CS: rename to content
  		size			: et_libraries.type_text_size;
  		rotation		: et_coordinates.type_rotation;
@@ -940,7 +941,7 @@ package et_libraries is
 
     -- the final title block
     type type_title_block is record
-        coordinates     : et_coordinates.type_point; -- CS rename to position
+        coordinates     : type_point; -- CS rename to position
         lines           : type_title_block_lines.list;
         texts           : type_title_block_texts.list;
     end record;
@@ -948,14 +949,14 @@ package et_libraries is
     -- A drawing frame consists of straight lines and texts.
     -- The text is a character at the x/y border that helps to locate objects.
     type type_frame_line is record
-		coordinates_start : et_coordinates.type_point;
-        coordinates_end   : et_coordinates.type_point;
+		coordinates_start : type_point;
+        coordinates_end   : type_point;
 	end record;
 	
 	package type_frame_lines is new doubly_linked_lists (type_frame_line);
 
 	type type_frame_text is record
-		coordinates		: et_coordinates.type_point; -- CS rename to position
+		coordinates		: type_point; -- CS rename to position
 		text			: character_set := et_string_processing.general_characters; -- CS rename to content
 		size			: et_libraries.type_text_size;
 		rotation		: et_coordinates.type_rotation;

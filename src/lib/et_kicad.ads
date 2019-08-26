@@ -325,8 +325,8 @@ package et_kicad is
 	-- is "invented" that connects start and end point.
 	-- Finally the polylines are collected in a simple list.
 	package type_symbol_points is new doubly_linked_lists (
-		element_type	=> et_coordinates.type_point,
-		"="				=> et_coordinates."=");
+		element_type	=> et_coordinates.geometry.type_point,
+		"="				=> et_coordinates.geometry."=");
 
 	type type_symbol_polyline is record
 		width	: et_libraries.type_line_width;
@@ -338,8 +338,8 @@ package et_kicad is
 	-- rectangles of a symbol:
 	-- It is sufficient to specifiy the diagonal of the rectangle.
 	type type_symbol_rectangle is record
-		corner_A	: et_coordinates.type_point;
-		corner_B	: et_coordinates.type_point;
+		corner_A	: et_coordinates.geometry.type_point;
+		corner_B	: et_coordinates.geometry.type_point;
 		width		: et_libraries.type_line_width;
 		fill		: type_fill;
 	end record;
@@ -393,7 +393,7 @@ package et_kicad is
 	-- a component unit in the library
 	type type_unit_library (appearance : et_libraries.type_device_appearance) is record
 		symbol		: type_symbol (appearance);
-		coordinates	: et_coordinates.type_point;
+		coordinates	: et_coordinates.geometry.type_point;
 		-- Units that harbor component wide pins have this flag set.
 		-- Usually units with power supply pins exclusively.
 		-- When building portlists this flag is important.
@@ -692,7 +692,7 @@ package et_kicad is
 	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
 
 	type type_net_label (label_appearance : et_schematic.type_net_label_appearance) is record
-		coordinates	: et_coordinates.type_point;
+		coordinates	: et_coordinates.geometry.type_point;
 		rotation	: et_coordinates.type_rotation;
         text		: et_general.type_net_name.bounded_string;
         size		: et_libraries.type_text_size;
@@ -736,7 +736,7 @@ package et_kicad is
 
 	type type_net_segment_base is tagged record
 		coordinates_start 	: kicad_coordinates.type_coordinates;
-		coordinates_end   	: kicad_coordinates.type_coordinates; -- CS et_coordinates.type_point ?
+		coordinates_end   	: kicad_coordinates.type_coordinates; -- CS et_coordinates.geometry.type_point ?
 	end record;
 
 	function length (segment : in type_net_segment_base) 
@@ -784,7 +784,7 @@ package et_kicad is
 	-- Returns the lowest x/y position of the given strand.
 		strand 			: in type_strand;
 		log_threshold	: in et_string_processing.type_log_level
-		) return et_coordinates.type_point;
+		) return et_coordinates.geometry.type_point;
 
 	procedure add_strand (
 	-- Adds a strand into the module (indicated by module_cursor).
@@ -1187,7 +1187,7 @@ package et_kicad is
 	type type_hierarchic_sheet_port is record
 		direction	: type_port_direction;
 		text_size	: et_libraries.type_text_size;
-		coordinates	: et_coordinates.type_point;
+		coordinates	: et_coordinates.geometry.type_point;
         orientation	: et_coordinates.type_rotation;
         processed   : boolean; -- used when linking hierarchic nets
 	end record;

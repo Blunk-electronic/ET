@@ -183,7 +183,7 @@ package body et_kicad_to_native is
 		end move;
 
 		procedure move (
-			point_actual	: in out et_coordinates.type_point;	-- the point it is about
+			point_actual	: in out et_coordinates.geometry.type_point;	-- the point it is about
 			point_help		: in kicad_coordinates.type_coordinates	-- supportive point that proviedes the sheet number
 			) is
 		-- Transposes the schematic point_actual from the kicad frame to the ET native frame.
@@ -2844,13 +2844,13 @@ package body et_kicad_to_native is
 
 -- 							-- calculate distance of port from segment
 -- 							distance := geometry.distance_point_line (
--- 								point 		=> et_coordinates.type_point (element (port_cursor_kicad).coordinates),
--- 								line_start	=> et_coordinates.type_point (segment.coordinates_start),
--- 								line_end	=> et_coordinates.type_point (segment.coordinates_end),
+-- 								point 		=> et_coordinates.geometry.type_point (element (port_cursor_kicad).coordinates),
+-- 								line_start	=> et_coordinates.geometry.type_point (segment.coordinates_start),
+-- 								line_end	=> et_coordinates.geometry.type_point (segment.coordinates_end),
 -- 								line_range	=> WITH_END_POINTS);
-
+-- CS
 							distance := geometry.distance_point_line (
-								point 		=> geometry.type_point (element (port_cursor_kicad).coordinates),
+								point 		=> type_point (element (port_cursor_kicad).coordinates),
 								line_start	=> geometry.type_point (segment.coordinates_start),
 								line_end	=> geometry.type_point (segment.coordinates_end),
 								line_range	=> WITH_END_POINTS);
@@ -2905,8 +2905,8 @@ package body et_kicad_to_native is
 							level => log_threshold + 4);
 						
 						-- get coordinates from current kicad net segment:
-						net_segment_native.coordinates_start := et_coordinates.type_point (element (kicad_segment_cursor).coordinates_start);
-						net_segment_native.coordinates_end   := et_coordinates.type_point (element (kicad_segment_cursor).coordinates_end);
+						net_segment_native.coordinates_start := et_coordinates.geometry.type_point (element (kicad_segment_cursor).coordinates_start);
+						net_segment_native.coordinates_end   := et_coordinates.geometry.type_point (element (kicad_segment_cursor).coordinates_end);
 
 						-- get labels from current kicad net segment
 						net_segment_native.labels := tag_and_simple_labels (element (kicad_segment_cursor));
@@ -3392,21 +3392,23 @@ package body et_kicad_to_native is
 							use et_kicad;
 							use type_symbol_rectangles;
 							use et_coordinates;
-
+							
 							-- This is the given kicad rectangle:
 							rectangle : type_symbol_rectangle := type_symbol_rectangles.element (cursor);
 
 							-- This is the native line that will be appended to native_shapes.lines:
 							line : et_libraries.type_line := (width => rectangle.width, others => <>);
 							width, height : et_coordinates.type_distance;
-							corner_C, corner_D : type_point;
+							corner_C, corner_D : geometry.type_point;
 							
 							procedure append_line is begin
 								et_libraries.type_lines.append (
 									container	=> native_shapes.lines,
 									new_item	=> line);
 							end;
-								
+
+							use geometry;
+							
 						begin -- copy_rectangle
 							-- compute width and height of the rectangle:
 							width  := distance (axis => X, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
@@ -3417,13 +3419,13 @@ package body et_kicad_to_native is
 							-- corner_B is the upper right corner of the rectangle -> already known by the given rectangle
 
 							-- corner_C is the lower right corner:
-							corner_C := type_point (set_point (
+							corner_C := type_point (set (
 								x => distance (X, rectangle.corner_A) + width,
 								y => distance (Y, rectangle.corner_A)
 								));
 
 							-- corner_D is the upper left corner:
-							corner_D := type_point (set_point (
+							corner_D := type_point (set (
 								x => distance (X, rectangle.corner_A),
 								y => distance (Y, rectangle.corner_A) + height
 								));

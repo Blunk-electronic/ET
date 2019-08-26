@@ -320,6 +320,38 @@ package body et_geometry is
 			distance := type_distance (functions.sqrt (delta_x ** 2) + (delta_y ** 2));
 			
 			return distance;
+
+			-- CS optimize by using this stuff:
+
+			-- 		function distance (point_1, point_2 : in type_point) return type_distance is
+			-- 		-- Returns the total distance between the given points.
+			-- 			dis : float;
+			-- 			package functions_distance is new ada.numerics.generic_elementary_functions (float);
+			-- 			use functions_distance;
+			-- 		begin
+			-- 			-- To save computing time a few simple checks:
+			-- 			
+			-- 			if point_1 = point_2 then -- points have same x/y position -> zero difference
+			-- 				dis := float (zero);
+			-- 				
+			-- 			elsif point_1.x = point_2.x then -- points are in a vertical line
+			-- 				dis := float (abs (point_2.y - point_1.y));
+			-- 				
+			-- 			elsif point_1.y = point_2.y then -- points are in a horizontal line
+			-- 				dis := float (abs (point_2.x - point_1.x));
+			-- 
+			-- 			else -- distance = sqrt (delta_x^2 + delta_y^2)
+			-- 				dis := sqrt (
+			-- 						(float (abs (point_2.x - point_1.x))) ** 2
+			-- 						+
+			-- 						(float (abs (point_2.y - point_1.y))) ** 2 
+			-- 						);
+			-- 
+			-- 			end if;
+			-- 
+			-- 			return type_distance (dis);
+			-- 		end distance;
+			
 		end distance;
 				
 		function distance_point_line (
