@@ -70,7 +70,6 @@ package et_coordinates is
 
 	-- The x and y position of an object:
 	subtype type_distance_xy is type_distance range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter, CS rename to type_distance
-	--zero_distance : constant type_distance := 0.0;
 
 	-- instantiation of the 2d geometry package:
 	package geometry is new et_geometry.geometry_operations_2d (type_distance);
@@ -116,11 +115,6 @@ package et_coordinates is
 	-- If result less or equal 360 degree then 360 degree is added to the result.
 
 	
-	
-	--type type_point is tagged private;
--- 	type type_point is new geometry.type_point with private;
-
--- 	zero : constant type_point;
 
 	function "<" (left, right : in type_point) return boolean;
 	
@@ -132,55 +126,11 @@ package et_coordinates is
 	function to_string (point : in type_point'class) return string;
 	-- Returns the given point coordinates to a string.
 
--- 	function distance_x (point : in type_point) return type_distance_xy;
--- 	-- Returns the x distance of point from the drawing origin.
--- 	-- CS remove and use function distance instead.	
--- 	
--- 	function distance_y (point : in type_point) return type_distance_xy;
--- 	-- Returns the y distance of point from the drawing origin.
--- 	-- CS remove and use function distance instead.	
-
--- 	function distance (
--- 	-- Returns the distance of the point in x or y from the origin.
--- 		axis	: in type_axis_2d;
--- 		point	: in type_point'class)
--- 		return type_distance_xy;
-	
--- 	procedure set_x (point : in out type_point; x : in type_distance_xy);
--- 	-- Assigns a point the given x position.
--- 	
--- 	procedure set_y (point : in out type_point'class; y : in type_distance_xy);
-	
--- 	procedure set_xy (
--- 		point	 : in out type_point;
--- 		position : in type_point'class);
-
--- 	function set_point (x, y : in type_distance_xy) return type_point'class;
-	
--- 	procedure mirror (
--- 		point	: in out type_point;
--- 		axis	: in type_axis_2d);	
-
--- 	procedure move (
--- 	-- moves x/y of given point by x/y of given offset
--- 		point	: in out type_point;
--- 		offset	: in type_point'class);
-
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
 		point	: in out type_point'class;
 		angle	: in type_rotation);
 
--- 	function distance (point_1, point_2 : in type_point) return type_distance;
--- 	-- Returns the total distance between the given points.
-
--- 	function distance (
--- 	-- Returns the absolute distance on the given axis between the given points.
--- 		point_1	: in type_point;
--- 		point_2	: in type_point;
--- 		axis	: in type_axis_2d) 
--- 		return type_distance;
-	
 
 	-- When handling hierachic structures we use a separator.
 	-- Example: net name "HEATER_CONTROL/DRIVER/CLK"
@@ -273,16 +223,6 @@ package et_coordinates is
 
 	
 	private 
-		-- In general every object has at least x,y coordinates.
--- 		type type_point is tagged record
--- 			x, y : type_distance_xy := zero_distance;
--- 		end record;
-
--- 		type type_point is new geometry.type_point with null record;
-		
-		--zero : constant type_point := (x => zero_distance, y => zero_distance);
--- 		zero : constant type_point := (geometry.origin with others => <>);
-
 	
 		type type_coordinates is new type_point with record
 			sheet : type_sheet := type_sheet'first;
@@ -291,11 +231,6 @@ package et_coordinates is
 		type type_coordinates_relative is new type_point with record
 			sheet : type_sheet_relative := 0;
 		end record;
-		
--- 		zero_position : constant type_coordinates := (
--- 			sheet	=> type_sheet'first,
--- 			x		=> 0.0,
--- 			y		=> 0.0 );
 
 		zero_position : constant type_coordinates := (
 			origin with sheet => type_sheet'first);

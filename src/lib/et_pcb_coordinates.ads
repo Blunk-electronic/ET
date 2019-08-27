@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -71,7 +71,6 @@ package et_pcb_coordinates is
 	
 	-- The x and y position of an object:
 	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
-	--zero_distance : constant type_distance := 0.0;
 
 	-- instantiation of the 2d geometry package:	
 	package geometry is new et_geometry.geometry_operations_2d (type_distance_total);
@@ -138,8 +137,7 @@ package et_pcb_coordinates is
 
 	function to_angle (angle : in string) return type_angle;
 
-	--type type_point_2d is new geometry.type_point with private;
-	subtype type_point_2d is type_point;
+	subtype type_point_2d is type_point; -- this is just a renaming
 	type type_point_3d is tagged private;
 	
 	function right_point_before_left_2d (right, left : in type_point_2d) return boolean;
@@ -148,7 +146,6 @@ package et_pcb_coordinates is
 	-- If right point equals left point, returns false.
 
 	type type_point_2d_with_angle is new type_point_2d with private;
-	--type type_submodule_position is new type_point_2d_with_angle with private;
 	type type_package_position is new type_point_2d_with_angle with private;
 
 	function to_string (point : in type_point_2d) return string;
@@ -193,14 +190,9 @@ package et_pcb_coordinates is
 
 	
 	private
-		--type type_point_2d is new geometry.type_point with null record;
-		
 		type type_point_3d is new type_point with record
 			z : type_distance := zero;
 		end record;
-
--- 		zero_2d : constant type_point_2d := (geometry.origin with others => <>);
--- 		zero_3d : constant type_point_3d := (zero_2d with zero_distance);
 
 		type type_point_2d_with_angle is new type_point_2d with record
 			angle	: type_angle := zero_angle;

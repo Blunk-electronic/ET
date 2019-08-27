@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                           SYSTEM ET KICAD PCB                            --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                              KICAD PCB                                   --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -46,7 +46,6 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
---with ada.containers.vectors;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 

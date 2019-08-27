@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                           SYSTEM ET LIBRARIES                            --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                                 ET                                       --
+--                        COMPONENT LIBRARIES                               --
 --                                                                          --
---                               S p e c                                    --
+--                             S p e c                                      --
 --                                                                          --
 --         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:

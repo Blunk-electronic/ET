@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                       SYSTEM ET KICAD_TO_NATIVE                          --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                            KICAD TO NATIVE                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -34,15 +34,6 @@
 --
 --   history of changes:
 --
---   ToDo:
---		1. Warning if virtual component pins apply for all units. Usually 
---			virtual components (such as power flags) have only one unit. If the
---			check "common to all units in component" is set, ET generates an
---			extra unit. Why ? ET assumes the affeced pin is a power pin. Power pins
---			in turn are assigned to an extra unit (in EAGLE we speak of "supply symbols").
---		2. Warning if virtual component with one power pin has pin direction differing from power_out
---			Example: Power symbol "P3V3" must have pin direction power_out.	
---		3. Make sure ports of netchangers are named like 1 or 2.
 
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;

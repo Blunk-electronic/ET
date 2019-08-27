@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                       SYSTEM ET KICAD_TO_NATIVE                          --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                            KICAD TO NATIVE                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your editor to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -34,13 +34,6 @@
 --
 --   history of changes:
 --
---   ToDo: 
---		1. Objects like net segments, net labels, junctions, notes ... 
---		   should be collected in ordered sets instead of doubly_linked_lists
---			- the benefits: placing identical objects at the same position would be impossible
---			- the cons: ordering subprograms required
---		2. Templates via copy and via reference
---		3. Assembly variants
 
 with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;

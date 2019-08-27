@@ -42,7 +42,6 @@
 --			in turn are assigned to an extra unit (in EAGLE we speak of "supply symbols").
 --		2. Warning if virtual component with one power pin has pin direction differing from power_out
 --			Example: Power symbol "P3V3" must have pin direction power_out.	
---		3. Make sure ports of netchangers are named like 1 or 2.
 
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;

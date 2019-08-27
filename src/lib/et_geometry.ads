@@ -39,28 +39,6 @@ with et_general;				use et_general;
 
 package et_geometry is
 
--- 	type type_distance_point_from_line is record -- CS: should be private
--- 		distance		: et_coordinates.type_distance := et_coordinates.zero_distance;
--- 		sits_on_start	: boolean := false;
--- 		sits_on_end		: boolean := false;
--- 		out_of_range	: boolean := false;
--- 	end record;
-
--- 	type type_line_range is (
--- 		inside_end_points,	-- start and end point excluded -- CS rename to between_end_points ?
--- 		with_end_points,	-- start and end point included
--- 		beyond_end_points	-- unlimited line assumed. extends beyond both start and end point into infinity
--- 		);
-	
--- 	function distance_of_point_from_line (
--- 	-- Computes the shortest distance (perpendicular) of a given point from the given line.
--- 	-- If the point is outside the
--- 	-- range of the x coordinate, the corresponding flag in the return value is set.
--- 		point, line_start, line_end: in et_coordinates.type_point;
--- 		line_range : in type_line_range) return type_distance_point_from_line;
-
-
-	
 	generic
 		type type_distance is delta <>;
 	package geometry_operations_2d is
