@@ -645,16 +645,16 @@ package body et_project is
 		
 	end create_project_directory_bare;
 
-	function position (pos : in et_coordinates.type_point'class) return string is
+	function position (pos : in et_coordinates.geometry.type_point'class) return string is
 	-- Returns something like "x 12.34 y 45.0" or "sheet 3 x 12.34 y 45.0".
 	-- This kind of output depends on the tag of the given object.
-		use et_coordinates;
+		use et_coordinates.geometry;
 		use ada.tags;
 
 		-- This function returns the basic text with x and y coordinates.
 		function text return string is begin return 
-			space & keyword_pos_x & to_string (distance_x (pos)) 
-			& space & keyword_pos_y & to_string (distance_y (pos));
+			space & keyword_pos_x & to_string (x (pos)) 
+			& space & keyword_pos_y & to_string (y (pos));
 		end text;
 		
 	begin -- position
@@ -2860,7 +2860,7 @@ package body et_project is
 	function to_position (
 		line : in et_string_processing.type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
 		from : in positive)
-		return et_coordinates.type_point is
+		return et_coordinates.geometry.type_point is
 
 		use et_string_processing;
 		use geometry;
@@ -2868,7 +2868,7 @@ package body et_project is
 		function f (line : in type_fields_of_line; position : in positive) return string 
 			renames et_string_processing.field;
 		
-		point : et_coordinates.type_point; -- to be returned
+		point : et_coordinates.geometry.type_point; -- to be returned
 
 		place : positive := from; -- the field being read from given line
 
@@ -5342,7 +5342,7 @@ package body et_project is
 		symbol_arc			: et_libraries.type_arc;
 		symbol_circle		: et_libraries.type_circle;
 		symbol_text_base	: et_libraries.type_text_basic;
-		symbol_text_position: et_coordinates.type_point;
+		symbol_text_position: et_coordinates.geometry.type_point;
 		symbol_text_content	: et_libraries.type_text_content.bounded_string;
 		symbol_placeholder_meaning : et_libraries.type_text_meaning := text_meaning_default;
 		
@@ -5558,7 +5558,7 @@ package body et_project is
 								-- clean up for next symbol text
 								symbol_text_base := (others => <>);
 								symbol_text_content := to_content ("");
-								symbol_text_position := zero;
+								symbol_text_position := geometry.origin;
 								
 							when others => invalid_section;
 						end case;
@@ -5601,7 +5601,7 @@ package body et_project is
 
 								-- clean up for next symbol text placeholder
 								symbol_text_base := (others => <>);
-								symbol_text_position := zero;
+								symbol_text_position := geometry.origin;
 								symbol_placeholder_meaning := text_meaning_default;
 							
 							when others => invalid_section;
@@ -6081,6 +6081,7 @@ package body et_project is
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_libraries;
+		use geometry;
 		file_handle : ada.text_io.file_type;
 
 		line : et_string_processing.type_fields_of_line;
@@ -6200,7 +6201,7 @@ package body et_project is
 		end insert_variant;
 
 		unit_name			: type_unit_name.bounded_string; -- IO_BANK_2
-		unit_position		: type_point := zero; -- the position of the unit inside the device editor
+		unit_position		: type_point := origin; -- the position of the unit inside the device editor
 		unit_swap_level		: type_unit_swap_level := unit_swap_level_default;
 		unit_add_level		: type_unit_add_level := unit_add_level_default;
 		unit_symbol			: access type_symbol;
@@ -6210,7 +6211,7 @@ package body et_project is
 		symbol_arc			: et_libraries.type_arc;
 		symbol_circle		: et_libraries.type_circle;
 		symbol_text_base	: et_libraries.type_text_basic;
-		symbol_text_position: et_coordinates.type_point;
+		symbol_text_position: et_coordinates.geometry.type_point;
 		symbol_text_content	: et_libraries.type_text_content.bounded_string;
 		symbol_placeholder_meaning : et_libraries.type_text_meaning := text_meaning_default;
 		
@@ -6283,7 +6284,7 @@ package body et_project is
 			
 			-- clean up for next unit
 			unit_name := to_unit_name ("");
-			unit_position := zero;
+			unit_position := origin;
 			unit_swap_level := unit_swap_level_default;
 			unit_add_level := unit_add_level_default;
 			unit_symbol := null;
@@ -6580,7 +6581,7 @@ package body et_project is
 								-- clean up for next symbol text
 								symbol_text_base := (others => <>);
 								symbol_text_content := to_content ("");
-								symbol_text_position := zero;
+								symbol_text_position := origin;
 								
 							when others => invalid_section;
 						end case;
@@ -6629,7 +6630,7 @@ package body et_project is
 
 								-- clean up for next symbol text placeholder
 								symbol_text_base := (others => <>);
-								symbol_text_position := zero;
+								symbol_text_position := origin;
 								symbol_placeholder_meaning := text_meaning_default;
 							
 							when others => invalid_section;
@@ -8149,7 +8150,7 @@ package body et_project is
 
 		-- temporarily placeholders of unit reference (IC12), value (7400) and purpose (clock buffer)
 		unit_placeholder			: et_libraries.type_text_basic;
-		unit_placeholder_position	: et_coordinates.type_point;
+		unit_placeholder_position	: et_coordinates.geometry.type_point;
 		unit_placeholder_meaning	: et_libraries.type_text_meaning := et_libraries.type_text_meaning'first;
 		unit_placeholder_reference	: et_libraries.type_text_placeholder (meaning => et_libraries.REFERENCE);
 		unit_placeholder_value		: et_libraries.type_text_placeholder (meaning => et_libraries.VALUE);
@@ -8452,7 +8453,7 @@ package body et_project is
 					-- clean up for next placeholder
 					unit_placeholder := (others => <>);
 					unit_placeholder_meaning := et_libraries.type_text_meaning'first;
-					unit_placeholder_position := et_coordinates.zero;
+					unit_placeholder_position := geometry.origin;
 					
 				end build_unit_placeholder;
 
@@ -9648,6 +9649,7 @@ package body et_project is
 
 								declare
 									use et_coordinates;
+									use geometry;
 									position_found_in_module_file : type_point := type_point (strand.position);
 								begin
 									-- Calculate the lowest x/y position and set sheet number of the strand

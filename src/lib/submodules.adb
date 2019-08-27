@@ -69,7 +69,7 @@ package body submodules is
 
 	function at_edge (
 	-- Returns true if the given point sits at the edge of a submodule box.
-		point	: in et_coordinates.type_point; -- P
+		point	: in et_coordinates.geometry.type_point; -- P
 		size	: in submodules.type_submodule_size) -- sx, sy
 		return boolean is
 		-- O--------O
@@ -79,22 +79,23 @@ package body submodules is
 		-- |        |
 		-- O---sx---O
 
+		use geometry;
 		result : boolean := false;
 	begin
 		-- If P is at the left or right edge:
-		if distance (X, point) = zero_distance or distance (X, point) = size.x then
+		if x (point) = zero or x (point) = size.x then
 
 			-- If P is within y extension of box:
-			if distance (Y, point) >= zero_distance and distance (Y, point) <= size.y then
+			if y (point) >= zero and y (point) <= size.y then
 				result := true;
 			end if;
 		
 		else
 			-- If P is at the lower or upper edge:
-			if distance (Y, point) = zero_distance or distance (Y, point) = size.y  then
+			if y (point) = zero or y (point) = size.y  then
 
 				-- If P is within x extension of box:
-				if distance (X, point) >= zero_distance and distance (X, point) <= size.x then
+				if x (point) >= zero and x (point) <= size.x then
 					result := true;
 				end if;
 			end if;

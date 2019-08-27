@@ -160,6 +160,7 @@ package body et_kicad_to_native is
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 			use et_coordinates;
+			use geometry;
 			sheet_number 		: et_coordinates.type_sheet;
 			sheet_paper_size	: et_general.type_paper_size;
 			sheet_height		: et_coordinates.type_distance_xy;
@@ -175,7 +176,8 @@ package body et_kicad_to_native is
 			sheet_height		:= paper_dimension (axis => Y, paper_size => sheet_paper_size);
 
 			-- calculate the new y position
-			new_y				:= sheet_height - distance (axis => Y, point => point);
+			--new_y				:= sheet_height - distance (axis => Y, point => point);
+			new_y				:= sheet_height - y (point);
 
 			-- assign the new y position to the given point
 			--set_y (point, new_y);
@@ -184,13 +186,14 @@ package body et_kicad_to_native is
 
 		procedure move (
 			point_actual	: in out et_coordinates.geometry.type_point;	-- the point it is about
-			point_help		: in kicad_coordinates.type_coordinates	-- supportive point that proviedes the sheet number
+			point_help		: in kicad_coordinates.type_coordinates	-- supportive point that provides the sheet number
 			) is
 		-- Transposes the schematic point_actual from the kicad frame to the ET native frame.
 		-- point_help has supporting purpose: it provides the sheet number where point_actual sits.
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 			use et_coordinates;
+			use geometry;
 			sheet_number 		: et_coordinates.type_sheet;
 			sheet_paper_size	: et_general.type_paper_size;
 			sheet_height		: et_coordinates.type_distance_xy;
@@ -207,7 +210,8 @@ package body et_kicad_to_native is
 
 			-- calculate the new y position
 			--new_y				:= sheet_height - distance_y (point_actual);
-			new_y				:= sheet_height - distance (axis => Y, point => point_actual);			
+			--new_y				:= sheet_height - distance (axis => Y, point => point_actual);
+			new_y				:= sheet_height - y (point_actual);
 
 			-- assign the new y position to the given point
 			--set_y (point_actual, new_y);
@@ -3420,14 +3424,14 @@ package body et_kicad_to_native is
 
 							-- corner_C is the lower right corner:
 							corner_C := type_point (set (
-								x => distance (X, rectangle.corner_A) + width,
-								y => distance (Y, rectangle.corner_A)
+								x => x (rectangle.corner_A) + width,
+								y => y (rectangle.corner_A)
 								));
 
 							-- corner_D is the upper left corner:
 							corner_D := type_point (set (
-								x => distance (X, rectangle.corner_A),
-								y => distance (Y, rectangle.corner_A) + height
+								x => x (rectangle.corner_A),
+								y => y (rectangle.corner_A) + height
 								));
 							
 							-- lower horizontal line

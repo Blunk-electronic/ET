@@ -169,7 +169,7 @@ package et_coordinates is
 
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
-		point	: in out type_point;
+		point	: in out type_point'class;
 		angle	: in type_rotation);
 
 -- 	function distance (point_1, point_2 : in type_point) return type_distance;

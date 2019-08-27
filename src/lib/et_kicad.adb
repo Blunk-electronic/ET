@@ -9991,8 +9991,8 @@ package body et_kicad is
 					-- Mirror port coordinates if required.
 					case mirror_style_of_unit (unit_name_lib, units_sch) is
 						when NO => null; -- unit not mirrored in schematic
-						when X_AXIS => mirror (point => port_coordinates, axis => et_coordinates.X);
-						when Y_AXIS => mirror (point => port_coordinates, axis => et_coordinates.Y);
+						when X_AXIS => mirror (point => port_coordinates, axis => X);
+						when Y_AXIS => mirror (point => port_coordinates, axis => Y);
 					end case;
 
 					-- offset port coordinates by the coordinates of the unit found in the schematic
@@ -11119,9 +11119,9 @@ package body et_kicad is
 					procedure query_segments_sec (
 						strand : in type_strand) is
 						segment_cursor_sec : type_net_segments.cursor := strand.segments.first;
-						use et_geometry;
-						distance : type_distance_point_from_line;
 						use et_coordinates;
+						use geometry;
+						distance : type_distance_point_line;
 					begin -- query_segments_sec
 						log_indentation_up;
 						log (text => "quering segments ...", level => log_threshold + 4);
@@ -11139,7 +11139,7 @@ package body et_kicad is
 
 								-- If START point of primary segment sits BETWEEN start and end point of secondary segment,
 								-- exit prematurely and return the coordinates of the expected junction.
-								distance := distance_of_point_from_line (
+								distance := distance_point_line (
 									point 		=> type_point (element (segment_cursor_prim).coordinates_start),
 									line_start	=> type_point (element (segment_cursor_sec).coordinates_start),
 									line_end	=> type_point (element (segment_cursor_sec).coordinates_end),
@@ -11153,7 +11153,7 @@ package body et_kicad is
 
 								-- If END point of primary segment sits BETWEEN start and end point of secondary segment,
 								-- exit prematurely and return the coordinates of the expected junction.
-								distance := distance_of_point_from_line (
+								distance := distance_point_line (
 									point 		=> type_point (element (segment_cursor_prim).coordinates_end),
 									line_start	=> type_point (element (segment_cursor_sec).coordinates_start),
 									line_end	=> type_point (element (segment_cursor_sec).coordinates_end),
@@ -11336,9 +11336,9 @@ package body et_kicad is
 						strand : in type_strand) is
 						use type_net_segments;
 						segment_cursor : type_net_segments.cursor := strand.segments.first;
-						use et_geometry;
-						distance : type_distance_point_from_line;
 						use et_coordinates;
+						use geometry;
+						distance : type_distance_point_line;
 					begin
 						while segment_cursor /= type_net_segments.no_element loop
 
@@ -11346,7 +11346,7 @@ package body et_kicad is
 							-- It is sufficient to check against the segment start coordinates.
 							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
 
-								distance := distance_of_point_from_line (
+								distance := distance_point_line (
 									point 		=> type_point (element (junction_cursor).coordinates),
 									line_start	=> type_point (element (segment_cursor).coordinates_start),
 									line_end	=> type_point (element (segment_cursor).coordinates_end),
@@ -11454,9 +11454,9 @@ package body et_kicad is
 						strand : in type_strand) is
 						use type_net_segments;
 						segment_cursor : type_net_segments.cursor := strand.segments.first;
-						use et_geometry;
-						distance : type_distance_point_from_line;
 						use et_coordinates;
+						use geometry;
+						distance : type_distance_point_line;
 					begin
 						while segment_cursor /= type_net_segments.no_element loop
 
@@ -11464,7 +11464,7 @@ package body et_kicad is
 							-- It is sufficient to check against the segment start coordinates.
 							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
 
-								distance := distance_of_point_from_line (
+								distance := distance_point_line (
 									point 		=> type_point (element (junction_cursor).coordinates),
 									line_start	=> type_point (element (segment_cursor).coordinates_start),
 									line_end	=> type_point (element (segment_cursor).coordinates_end),
@@ -11626,10 +11626,10 @@ package body et_kicad is
 						module_name : in type_submodule_name.bounded_string;
 						module 		: in type_module) is
 						use type_no_connection_flags;
-						use et_geometry;
 						use et_coordinates;
+						use geometry;
+						distance : type_distance_point_line;
 						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
-						distance : type_distance_point_from_line;
 					begin -- query_no_connect_flags
 						log (text => "quering no_connection_flags ...", level => log_threshold + 4);
 						log_indentation_up;
@@ -11649,7 +11649,7 @@ package body et_kicad is
 								element (no_connection_flag_cursor).coordinates,
 								element (segment_cursor).coordinates_start) then
 															
-								distance := distance_of_point_from_line (
+								distance := distance_point_line (
 									point 		=> type_point (element (no_connection_flag_cursor).coordinates),
 									line_start	=> type_point (element (segment_cursor).coordinates_start),
 									line_end	=> type_point (element (segment_cursor).coordinates_end),

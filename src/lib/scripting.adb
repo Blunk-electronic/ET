@@ -337,7 +337,7 @@ package body scripting is
 										place			=> to_coordinates 
 											(
 											sheet => to_sheet (f (6)),
-											point => et_coordinates.type_point (set 
+											point => type_point (set 
 														(
 														x => to_distance (f (7)),
 														y => to_distance (f (8))
@@ -356,7 +356,7 @@ package body scripting is
 										place			=> to_coordinates 
 											(
 											sheet => to_sheet (f (6)),
-											point => et_coordinates.type_point (set 
+											point => type_point (set 
 														(
 														x => to_distance (f (7)),
 														y => to_distance (f (8))
@@ -382,7 +382,7 @@ package body scripting is
 										place			=> to_coordinates 
 											(
 											sheet => to_sheet (f (5)),
-											point => et_coordinates.type_point (set 
+											point => type_point (set 
 														(
 														x => to_distance (f (6)),
 														y => to_distance (f (7))
@@ -406,7 +406,7 @@ package body scripting is
 										module_name 	=> module,
 										instance		=> et_general.to_instance_name (f (5)),
 										port_name		=> et_general.to_net_name (f (6)),
-										position		=> et_coordinates.type_point (set 
+										position		=> type_point (set 
 													(
 													x => to_distance (f (7)),
 													y => to_distance (f (8))
@@ -432,7 +432,7 @@ package body scripting is
 										position		=> to_coordinates 
 											(
 											sheet => to_sheet (f (7)),
-											point => et_coordinates.type_point (set 
+											point => type_point (set 
 														(
 														x => to_distance (f (8)),
 														y => to_distance (f (9))
@@ -496,7 +496,7 @@ package body scripting is
 										destination		=> to_coordinates 
 											(
 											sheet => to_sheet (f (6)),
-											point => et_coordinates.type_point (set
+											point => type_point (set
 														(
 														x => to_distance (f (7)),
 														y => to_distance (f (8))
@@ -524,7 +524,7 @@ package body scripting is
 										destination		=> to_coordinates 
 											(
 											sheet => to_sheet (f (7)),
-											point => et_coordinates.type_point (set
+											point => type_point (set
 														(
 														x => to_distance (f (8)),
 														y => to_distance (f (9))
@@ -582,7 +582,7 @@ package body scripting is
 										module_name		=> module,
 
 										position		=> to_coordinates (
-															point => et_coordinates.type_point (set (
+															point => type_point (set (
 																x => to_distance (f (6)),
 																y => to_distance (f (7)))),
 															sheet => to_sheet (f (5))), -- sheet number
@@ -610,7 +610,7 @@ package body scripting is
 										net_name			=> to_net_name (f (5)), -- RESET
 										scope				=> EVERYWHERE,
 										place				=> to_coordinates (
-																point => et_coordinates.zero,
+																point => origin,
 																sheet => 1),
 										log_threshold		=> log_threshold + 1);
 
@@ -624,7 +624,7 @@ package body scripting is
 										net_name			=> to_net_name (f (5)), -- RESET
 										scope				=> SHEET,
 										place				=> to_coordinates (
-																point => et_coordinates.zero,
+																point => origin,
 																sheet => to_sheet (f (6))), -- sheet number
 										log_threshold		=> log_threshold + 1);
 
@@ -637,7 +637,7 @@ package body scripting is
 										net_name			=> to_net_name (f (5)), -- RESET
 										scope				=> STRAND,
 										place				=> to_coordinates (
-																point => et_coordinates.type_point (set (
+																point => type_point (set (
 																	x => to_distance (f (7)),
 																	y => to_distance (f (8)))),
 																sheet => to_sheet (f (6))), -- sheet number
@@ -692,7 +692,7 @@ package body scripting is
 								module_name			=> module,
 								net_name			=> to_net_name (f (5)), -- RESET
 								place				=> to_coordinates (
-														point => et_coordinates.type_point (set (
+														point => type_point (set (
 															x => to_distance (f (7)),
 															y => to_distance (f (8)))),
 														sheet => to_sheet (f (6))), -- sheet number
@@ -776,7 +776,7 @@ package body scripting is
 								device_name		=> to_device_name (f (5)),
 								unit_name		=> to_unit_name (f (6)),
 								coordinates		=> schematic_ops.to_coordinates (f (7)), -- relative/absolute
-								point			=> et_coordinates.type_point (set (
+								point			=> type_point (set (
 													x => to_distance (f (8)),
 													y => to_distance (f (9)))),
 								log_threshold	=> log_threshold + 1
@@ -789,7 +789,7 @@ package body scripting is
 										module_name 	=> module,
 										index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
 										coordinates		=> schematic_ops.to_coordinates (f (6)), -- relative/absolute
-										point			=> et_coordinates.type_point (set (
+										point			=> type_point (set (
 															x => to_distance (f (7)),
 															y => to_distance (f (8)))),
 										log_threshold	=> log_threshold + 1
@@ -810,7 +810,7 @@ package body scripting is
 										instance		=> et_general.to_instance_name (f (5)),
 										port_name		=> et_general.to_net_name (f (6)),
 										coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-										point			=> et_coordinates.type_point (set (
+										point			=> type_point (set (
 													x => to_distance (f (8)),
 													y => to_distance (f (9)))),
 										log_threshold	=> log_threshold + 1
@@ -829,14 +829,14 @@ package body scripting is
 								module_name		=> module,
 								net_name		=> to_net_name (f (5)), -- RESET
 								place			=> to_coordinates (
-													point => et_coordinates.type_point (set (
+													point => type_point (set (
 														x => to_distance (f (7)),
 														y => to_distance (f (8)))),
 													sheet => to_sheet (f (6))), -- sheet number
 								
 								coordinates		=> schematic_ops.to_coordinates (f (9)), -- relative/absolute
 								
-								point			=> et_coordinates.type_point (set (
+								point			=> type_point (set (
 													x => to_distance (f (10)),
 													y => to_distance (f (11)))),
 								
@@ -849,7 +849,7 @@ package body scripting is
 										module_name 	=> module,
 										instance		=> et_general.to_instance_name (f (5)),
 										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
-										point			=> et_coordinates.type_point (set (
+										point			=> type_point (set (
 													x => to_distance (f (7)),
 													y => to_distance (f (8)))),
 										log_threshold	=> log_threshold + 1
@@ -873,12 +873,12 @@ package body scripting is
 								module_name		=> module,
 								net_name		=> to_net_name (f (5)), -- RESET
 								start_point		=> to_coordinates (
-														point => et_coordinates.type_point (set (
+														point => type_point (set (
 															x => to_distance (f (7)),
 															y => to_distance (f (8)))),
 														sheet => to_sheet (f (6))), -- sheet number
 								
-								end_point		=> et_coordinates.type_point (set (
+								end_point		=> type_point (set (
 													x => to_distance (f (9)),
 													y => to_distance (f (10)))),
 								
@@ -900,7 +900,7 @@ package body scripting is
 										place			=> to_coordinates 
 											(
 											sheet => to_sheet (f (7)),
-											point => et_coordinates.type_point (set
+											point => type_point (set
 														(
 														x => to_distance (f (8)),
 														y => to_distance (f (9))
@@ -929,7 +929,7 @@ package body scripting is
 								device_name		=> to_device_name (f (5)), -- IC1
 								unit_name		=> to_unit_name (f (6)), -- A
 								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-								point			=> et_coordinates.type_point (set (
+								point			=> type_point (set (
 													x => to_distance (f (8)),
 													y => to_distance (f (9)))),
 								meaning			=> et_libraries.REFERENCE,
@@ -943,7 +943,7 @@ package body scripting is
 								device_name		=> to_device_name (f (5)), -- IC1
 								unit_name		=> to_unit_name (f (6)), -- A
 								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-								point			=> et_coordinates.type_point (set (
+								point			=> type_point (set (
 													x => to_distance (f (8)),
 													y => to_distance (f (9)))),
 								meaning			=> et_libraries.VALUE,
@@ -958,7 +958,7 @@ package body scripting is
 										instance		=> et_general.to_instance_name (f (5)),
 										port_name		=> et_general.to_net_name (f (6)),
 										coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-										point			=> et_coordinates.type_point (set (
+										point			=> type_point (set (
 													x => to_distance (f (8)),
 													y => to_distance (f (9)))),
 										log_threshold	=> log_threshold + 1
@@ -978,7 +978,7 @@ package body scripting is
 								device_name		=> to_device_name (f (5)), -- IC1
 								unit_name		=> to_unit_name (f (6)), -- A
 								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-								point			=> et_coordinates.type_point (set (
+								point			=> type_point (set (
 													x => to_distance (f (8)),
 													y => to_distance (f (9)))),
 								meaning			=> et_libraries.PURPOSE,
@@ -992,7 +992,7 @@ package body scripting is
 								index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
 								coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
 								sheet			=> to_sheet_relative (f (7)),
-								point			=> et_coordinates.type_point (set (
+								point			=> type_point (set (
 													x => to_distance (f (8)),
 													y => to_distance (f (9)))),
 									
@@ -1010,7 +1010,7 @@ package body scripting is
 										instance		=> et_general.to_instance_name (f (5)),
 										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
 										sheet			=> to_sheet_relative (f (7)),
-										point			=> et_coordinates.type_point (set (
+										point			=> type_point (set (
 													x => to_distance (f (8)),
 													y => to_distance (f (9)))),
 										log_threshold	=> log_threshold + 1
@@ -1031,7 +1031,7 @@ package body scripting is
 								unit_name		=> to_unit_name (f (6)), -- A
 								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
 								sheet			=> to_sheet_relative (f (8)),
-								point			=> et_coordinates.type_point (set (
+								point			=> type_point (set (
 													x => to_distance (f (9)),
 													y => to_distance (f (10)))),
 									
@@ -1157,7 +1157,7 @@ package body scripting is
 								place			=> to_coordinates 
 													(
 													sheet => to_sheet (f (5)),
-													point => et_coordinates.type_point (set (
+													point => type_point (set (
 																x => to_distance (f (6)),
 																y => to_distance (f (7))
 																))
@@ -1174,12 +1174,12 @@ package body scripting is
 										module_name			=> module,
 
 										segment_position	=> to_coordinates (
-																point => et_coordinates.type_point (set (
+																point => type_point (set (
 																	x => to_distance (f (6)),
 																	y => to_distance (f (7)))),
 																sheet => to_sheet (f (5))), -- sheet number
 
-										label_position		=> et_coordinates.type_point (set (
+										label_position		=> type_point (set (
 																	x => to_distance (f (8)),
 																	y => to_distance (f (9)))),
 
@@ -1200,12 +1200,12 @@ package body scripting is
 										module_name			=> module,
 
 										segment_position	=> to_coordinates (
-																point => et_coordinates.type_point (set (
+																point => type_point (set (
 																	x => to_distance (f (6)),
 																	y => to_distance (f (7)))),
 																sheet => to_sheet (f (5))), -- sheet number
 
-										label_position		=> et_coordinates.type_point (set (
+										label_position		=> type_point (set (
 																	x => to_distance (f (8)),
 																	y => to_distance (f (9)))),
 
@@ -1314,7 +1314,7 @@ package body scripting is
 										net_name_after		=> to_net_name (f (6)), -- RESET_N
 										scope				=> EVERYWHERE,
 										place				=> to_coordinates (
-																point => et_coordinates.zero,
+																point => origin,
 																sheet => 1),
 										log_threshold		=> log_threshold + 1);
 
@@ -1329,7 +1329,7 @@ package body scripting is
 										net_name_after		=> to_net_name (f (6)), -- RESET_N
 										scope				=> SHEET,
 										place				=> to_coordinates (
-																point => et_coordinates.zero,
+																point => origin,
 																sheet => to_sheet (f (7))), -- sheet number
 										log_threshold		=> log_threshold + 1);
 
@@ -1343,7 +1343,7 @@ package body scripting is
 										net_name_after		=> to_net_name (f (6)), -- RESET_N
 										scope				=> STRAND,
 										place				=> to_coordinates (
-																point => et_coordinates.type_point (set (
+																point => type_point (set (
 																	x => to_distance (f (8)),
 																	y => to_distance (f (9)))),
 																sheet => to_sheet (f (7))), -- sheet number

@@ -57,7 +57,8 @@ with et_import;
 with et_csv;
 
 package body et_schematic is
-
+	use et_coordinates.geometry;
+	
 	function to_net_label_text_size (text : in string) return type_net_label_text_size is
 	-- Converts a string to type_net_label_text_size.
 	begin
@@ -117,7 +118,7 @@ package body et_schematic is
 	function which_zone (
 	-- Calculates the zone on the segment where point is in.
 	-- See specs for type_zone for details.
-		point	: in et_coordinates.type_point;
+		point	: in type_point;
 		segment	: in type_net_segments.cursor) 
 		return type_zone is
 
@@ -203,11 +204,11 @@ package body et_schematic is
 				segment_length := distance (start_point, end_point, X);
 				zone_border := segment_length / type_distance (zone_division_factor);
 
-				if distance (X, start_point) < distance (X, end_point) then 
+				if x (start_point) < x (end_point) then 
 				-- DRAWN FROM LEFT TO THE RIGHT
-					if distance (X, point) < distance (X, start_point) + zone_border then
+					if x (point) < x (start_point) + zone_border then
 						zone := et_schematic.START_POINT; -- point is in the zone of start_point
-					elsif distance (X, point) > distance (X, end_point) - zone_border then
+					elsif x (point) > x (end_point) - zone_border then
 						zone := et_schematic.END_POINT; -- point is in the zone of end_point
 					else
 						zone := et_schematic.CENTER;
@@ -215,9 +216,9 @@ package body et_schematic is
 
 				else 
 				-- DRAWN FROM RIGHT TO THE LEFT
-					if distance (X, point) > distance (X, start_point) - zone_border then
+					if x (point) > x (start_point) - zone_border then
 						zone := et_schematic.START_POINT; -- point is in the zone of start_point
-					elsif distance (X, point) < distance (X, end_point) + zone_border then
+					elsif x (point) < x (end_point) + zone_border then
 						zone := et_schematic.END_POINT; -- point is in the zone of end_point
 					else
 						zone := et_schematic.CENTER;
@@ -234,11 +235,11 @@ package body et_schematic is
 				segment_length := distance (start_point, end_point, Y);
 				zone_border := segment_length / type_distance (zone_division_factor);
 
-				if distance (Y, start_point) < distance (Y, end_point) then 
+				if y (start_point) < y (end_point) then 
 				-- DRAWN UPWARDS
-					if distance (Y, point) < distance (Y, start_point) + zone_border then
+					if y (point) < y (start_point) + zone_border then
 						zone := et_schematic.START_POINT; -- point is in the zone of start_point
-					elsif distance (Y, point) > distance (Y, end_point) - zone_border then
+					elsif y (point) > y (end_point) - zone_border then
 						zone := et_schematic.END_POINT; -- point is in the zone of end_point
 					else
 						zone := et_schematic.CENTER;
@@ -246,9 +247,9 @@ package body et_schematic is
 						
 				else 
 				-- DRAWN DOWNWARDS
-					if distance (Y, point) > distance (Y, start_point) - zone_border then
+					if y (point) > y (start_point) - zone_border then
 						zone := et_schematic.START_POINT; -- point is in the zone of start_point
-					elsif distance (Y, point) < distance (Y, end_point) + zone_border then
+					elsif y (point) < y (end_point) + zone_border then
 						zone := et_schematic.END_POINT; -- point is in the zone of end_point
 					else
 						zone := et_schematic.CENTER;
@@ -277,7 +278,7 @@ package body et_schematic is
 	procedure set_strand_position (strand : in out type_strand) is
 	-- Calculates and sets the lowest x/y position of the given strand.
 	-- Leaves the sheet number of the strand as it is.
-		point_1, point_2 : et_coordinates.type_point;
+		point_1, point_2 : type_point;
 	
 		use type_net_segments;
 		use et_string_processing;
@@ -289,22 +290,22 @@ package body et_schematic is
 		procedure query_strand (cursor : in type_net_segments.cursor) is begin
 			-- Test start point of segment. 
 			-- if closer to orign than point_1 keep start point
-			point_2	:= et_coordinates.type_point (element (cursor).coordinates_start);
-			if distance (point_2, et_coordinates.zero) < distance (point_1, et_coordinates.zero) then
+			point_2	:= type_point (element (cursor).coordinates_start);
+			if distance (point_2, origin) < distance (point_1, origin) then
 				point_1 := point_2;
 			end if;
 
 			-- Test start point of segment.
 			-- if closer to orign than point_1 keep end point
-			point_2	:= et_coordinates.type_point (element (cursor).coordinates_end);
-			if distance (point_2, et_coordinates.zero) < distance (point_1, et_coordinates.zero) then
+			point_2	:= type_point (element (cursor).coordinates_end);
+			if distance (point_2, origin) < distance (point_1, origin) then
 				point_1 := point_2;
 			end if;
 		end query_strand;
 	
 	begin
 		-- init point_1 as the farest possible point from drawing origin
-		point_1 := et_coordinates.type_point (set (
+		point_1 := type_point (set (
 					x => type_distance_xy'last,
 					y => type_distance_xy'last));
 

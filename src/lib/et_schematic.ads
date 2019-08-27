@@ -67,6 +67,7 @@ with netlists;
 
 package et_schematic is
 	use et_general.type_net_name;
+	use et_coordinates.geometry;
 	
 -- TEXT FIELD
 
@@ -271,7 +272,7 @@ package et_schematic is
 	
 	function which_zone (
 	-- Calculates the zone on the segment where point is nearest.
-		point	: in et_coordinates.geometry.type_point;
+		point	: in type_point;
 		segment	: in type_net_segments.cursor) 
 		return type_zone;
 

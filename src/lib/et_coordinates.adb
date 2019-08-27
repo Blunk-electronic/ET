@@ -234,7 +234,7 @@ package body et_coordinates is
 
 	procedure rotate (
 	-- Rotates the given point by the given angle with the origin as center.
-		point	: in out type_point;
+		point	: in out type_point'class;
 		angle	: in type_rotation) is
 
 		type type_float_distance is digits 7 range -1000.0 .. 1000.0; -- CS: refine

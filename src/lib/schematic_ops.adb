@@ -5218,7 +5218,7 @@ package body schematic_ops is
 						-- The new relative position is the netchanger position BEFORE 
 						-- the move operation shifted by the given point (x/y).
 						-- The sheet number does not change.
-						et_coordinates.move (
+						move (
 							point		=> location,
 							offset		=> point);
 				end case;
@@ -9326,7 +9326,7 @@ package body schematic_ops is
 						set (submodule.position, point);
 
 					when RELATIVE =>
-						et_coordinates.move (
+						move (
 							point	=> submodule.position,
 							offset	=> point
 							);
