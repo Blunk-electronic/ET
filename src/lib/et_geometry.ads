@@ -95,6 +95,13 @@ package et_geometry is
 		procedure mirror (
 			point	: in out type_point;
 			axis	: in type_axis_2d);	
+
+		function distance (
+		-- Returns the absolute distance on the given axis between the given points.
+			point_1	: in type_point;
+			point_2	: in type_point;
+			axis	: in type_axis_2d) 
+			return type_distance;
 		
 		function distance (point_one, point_two : in type_point) return type_distance;
 		-- Computes the total distance between point_one and point_two.	

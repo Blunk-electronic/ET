@@ -300,6 +300,25 @@ package body et_geometry is
 					point.x := point.x * (-1.0);
 			end case;
 		end mirror;
+
+		function distance (
+		-- Returns the absolute distance on the given axis between the given points.
+			point_1	: in type_point;
+			point_2	: in type_point;
+			axis	: in type_axis_2d) 
+			return type_distance is
+			dis : type_distance;
+		begin
+			case axis is
+				when X =>
+					dis := abs (point_2.x - point_1.x);
+
+				when Y =>
+					dis := abs (point_2.y - point_1.y);
+			end case;
+					
+			return type_distance (dis);
+		end distance;
 		
 		function distance (point_one, point_two : in type_point) return type_distance is
 		-- Computes the total distance between point_one and point_two.	

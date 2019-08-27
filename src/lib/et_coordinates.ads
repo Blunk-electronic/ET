@@ -175,12 +175,12 @@ package et_coordinates is
 -- 	function distance (point_1, point_2 : in type_point) return type_distance;
 -- 	-- Returns the total distance between the given points.
 
-	function distance (
-	-- Returns the absolute distance on the given axis between the given points.
-		point_1	: in type_point;
-		point_2	: in type_point;
-		axis	: in type_axis_2d) 
-		return type_distance;
+-- 	function distance (
+-- 	-- Returns the absolute distance on the given axis between the given points.
+-- 		point_1	: in type_point;
+-- 		point_2	: in type_point;
+-- 		axis	: in type_axis_2d) 
+-- 		return type_distance;
 	
 
 	-- When handling hierachic structures we use a separator.

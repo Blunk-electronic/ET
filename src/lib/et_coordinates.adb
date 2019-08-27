@@ -357,24 +357,24 @@ package body et_coordinates is
 -- 		return type_distance (dis);
 -- 	end distance;
 
-	function distance (
-	-- Returns the absolute distance on the given axis between the given points.
-		point_1	: in type_point;
-		point_2	: in type_point;
-		axis	: in type_axis_2d) 
-		return type_distance is
-		dis : type_distance;
-	begin
-		case axis is
-			when X =>
-				dis := abs (point_2.x - point_1.x);
-
-			when Y =>
-				dis := abs (point_2.y - point_1.y);
-		end case;
-				
-		return type_distance (dis);
-	end distance;
+-- 	function distance (
+-- 	-- Returns the absolute distance on the given axis between the given points.
+-- 		point_1	: in type_point;
+-- 		point_2	: in type_point;
+-- 		axis	: in type_axis_2d) 
+-- 		return type_distance is
+-- 		dis : type_distance;
+-- 	begin
+-- 		case axis is
+-- 			when X =>
+-- 				dis := abs (point_2.x - point_1.x);
+-- 
+-- 			when Y =>
+-- 				dis := abs (point_2.y - point_1.y);
+-- 		end case;
+-- 				
+-- 		return type_distance (dis);
+-- 	end distance;
 	
 	function to_sheet (sheet : in type_sheet) return string is begin
 		return type_sheet'image (sheet);
