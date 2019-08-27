@@ -35,6 +35,7 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
 with ada.numerics.generic_elementary_functions;
 with et_string_processing;		use et_string_processing;
 --with et_coordinates;
@@ -328,16 +329,23 @@ package body et_geometry is
 			package functions is new ada.numerics.generic_elementary_functions (float);
 			
 			distance : type_distance; -- to be returned
-			--delta_x, delta_y : type_float := 0.0;
 			delta_x, delta_y : float := 0.0;
 		begin
-			-- delta_x := type_float (x (point_one) - x (point_two));
-			-- delta_y := type_float (y (point_one) - y (point_two));
-			delta_x := float (x (point_one) - x (point_two));
-			delta_y := float (y (point_one) - y (point_two));
-			
-			distance := type_distance (functions.sqrt (delta_x ** 2) + (delta_y ** 2));
-			
+			if point_one = point_two then
+				distance := zero;
+			elsif x (point_one) = x (point_two) then -- points are in a vertical line
+				distance := abs (y (point_two) - y (point_one));
+			elsif y (point_one) = y (point_two) then -- points are in a horizontal line
+				distance := abs (x (point_two) - x (point_one));
+			else
+				delta_x := float (x (point_one) - x (point_two));
+				delta_y := float (y (point_one) - y (point_two));
+
+				-- put_line (float'image (delta_x) & " " & float'image (delta_y));
+				
+				distance := type_distance (functions.sqrt ((delta_x ** 2) + (delta_y ** 2)));
+			end if;
+				
 			return distance;
 
 			-- CS optimize by using this stuff:

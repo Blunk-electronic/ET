@@ -3101,6 +3101,8 @@ package body et_project is
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_pcb;
+-- 		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 		use et_libraries;
 		
 		file_handle : ada.text_io.file_type;
@@ -3175,7 +3177,7 @@ package body et_project is
 		pad_shape_polygon		: type_pad_polygon; -- for polygons that outline a pad
 		terminal_position		: et_pcb_coordinates.type_point_2d_with_angle := et_pcb_coordinates.terminal_position_default;
 		tht_pad_shape			: et_pcb.type_pad_outline_tht;
-		tht_width_inner_layers	: et_pcb_coordinates.type_distance := et_pcb_coordinates.zero_distance;
+		tht_width_inner_layers	: et_pcb_coordinates.type_distance := zero;
 		tht_hole				: et_pcb.type_terminal_tht_hole := et_pcb.terminal_tht_hole_default;
 		tht_drill_size			: et_pcb.type_drill_size := et_pcb.type_drill_size'first;
 		tht_millings			: et_pcb.type_package_pcb_contour_plated;
@@ -3253,7 +3255,7 @@ package body et_project is
 			smt_solder_paste := et_pcb.solder_paste_status_default;
 			tht_pad_shape := (others => <>);
 			tht_hole := terminal_tht_hole_default;
-			tht_width_inner_layers := et_pcb_coordinates.zero_distance;
+			tht_width_inner_layers := zero;
 			tht_drill_size := et_pcb.type_drill_size'first;
 			
 		end build_terminal;

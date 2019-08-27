@@ -59,7 +59,8 @@ with et_pcb_coordinates;
 with et_kicad_general;			use et_kicad_general;
 
 package et_kicad_pcb is
-
+	use et_pcb_coordinates.geometry;
+	
 	-- V4:
 	pcb_new_version_4_0_7		: constant string (1..5)	:= "4.0.7";
 	pcb_file_format_version_4	: constant string (1..1)	:= "4";
@@ -380,7 +381,7 @@ package et_kicad_pcb is
 		 );
 
 	-- CS it is not fully clear what aux_axis_origin is good for:
-	aux_axis_origin_min : constant et_pcb_coordinates.type_distance := et_pcb_coordinates.zero_distance;
+	aux_axis_origin_min : constant et_pcb_coordinates.type_distance := zero;
 	aux_axis_origin_max : constant et_pcb_coordinates.type_distance := 500.0;
 	subtype type_aux_axis_origin is et_pcb_coordinates.type_distance 
 		range aux_axis_origin_min .. aux_axis_origin_max;

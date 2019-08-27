@@ -115,7 +115,7 @@ package body et_pcb_coordinates is
 		distance := type_distance (d_in * (25.4 * 0.001));
 
 		if warn_on_negative then
-			if distance < zero_distance then
+			if distance < zero then
 				log (WARNING, "negative coordinates found !");
 			end if;
 		end if;
@@ -252,11 +252,11 @@ package body et_pcb_coordinates is
 		if angle /= 0.0 then
 
 			-- compute distance of given point to origin
-			if x (point) = zero_distance and y (point) = zero_distance then
-				distance_to_origin := type_float_distance (zero_distance);
-			elsif x (point) = zero_distance then
+			if x (point) = zero and y (point) = zero then
+				distance_to_origin := type_float_distance (zero);
+			elsif x (point) = zero then
 				distance_to_origin := type_float_distance (abs (y (point)));
-			elsif y (point) = zero_distance then
+			elsif y (point) = zero then
 				distance_to_origin := type_float_distance (abs (x (point)));
 			else
 				distance_to_origin := sqrt (
@@ -268,19 +268,19 @@ package body et_pcb_coordinates is
 			
 			-- compute the current angle of the given point (in degrees)
 
-			if x (point) = zero_distance then
-				if y (point) > zero_distance then
+			if x (point) = zero then
+				if y (point) > zero then
 					angle_out := 90.0;
-				elsif y (point) < zero_distance then
+				elsif y (point) < zero then
 					angle_out := -90.0;
 				else
 					angle_out := 0.0;
 				end if;
 
-			elsif y (point) = zero_distance then
-				if x (point) > zero_distance then
+			elsif y (point) = zero then
+				if x (point) > zero then
 					angle_out := 0.0;
-				elsif x (point) < zero_distance then
+				elsif x (point) < zero then
 					angle_out := 180.0;
 				else
 					angle_out := 0.0;

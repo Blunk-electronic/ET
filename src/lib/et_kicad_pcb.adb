@@ -68,7 +68,9 @@ with et_string_processing;		use et_string_processing;
 with et_kicad;
 
 package body et_kicad_pcb is
-
+	
+	use et_pcb_coordinates.geometry;
+	
 	use et_general.type_net_name;
 
 	function full_library_name (
@@ -501,8 +503,8 @@ package body et_kicad_pcb is
 		p21 := type_point_2d (set (x => x1p, y => y2p));
 		p22 := type_point_2d (set (x => x1p, y => y2n));
 
-		p41 := type_point_2d (set (x => zero_distance, y => y2p));
-		p42 := type_point_2d (set (x => zero_distance, y => y2n));			
+		p41 := type_point_2d (set (x => zero, y => y2p));
+		p42 := type_point_2d (set (x => zero, y => y2n));			
 
 		-- rotate supportive points 
 		rotate (p11, angle);

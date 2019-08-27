@@ -56,7 +56,8 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 
 
 package et_pcb is
-
+	use geometry;
+	
 	-- If lines of a file are to be collected we use this simple list:
 	package type_lines is new doubly_linked_lists (
 		element_type => et_string_processing.type_fields_of_line,
@@ -136,7 +137,7 @@ package et_pcb is
 	-- Checks whether given pad size is in range of type_pad_size
 
 
-	pad_drill_offset_min : constant type_distance := zero_distance;
+	pad_drill_offset_min : constant type_distance := zero;
 	pad_drill_offset_max : constant type_distance := pad_size_max * 0.5;
 	subtype type_pad_drill_offset is type_distance range pad_drill_offset_min .. pad_drill_offset_max;
 	
@@ -372,7 +373,7 @@ package et_pcb is
 	-- CIRCLE
 	type type_circle_2d is abstract tagged record
 		center			: type_point_2d;
-		radius  		: type_distance := zero_distance;
+		radius  		: type_distance := zero;
 		-- CS locked : type_locked;
 	end record;
 
@@ -404,7 +405,7 @@ package et_pcb is
 		hatching_line_width	: type_track_width := fill_style_hatching_line_width_default; -- the with of the lines
 		hatching_spacing	: type_track_clearance := fill_style_hatching_spacing_default; -- the space between the lines
 		corner_easing		: type_corner_easing := NONE;
-		easing_radius		: type_polygon_easing_radius := zero_distance; -- center of circle at corner point
+		easing_radius		: type_polygon_easing_radius := zero; -- center of circle at corner point
 		-- CS locked : type_locked;
 	end record;
 

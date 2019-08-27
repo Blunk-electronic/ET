@@ -70,7 +70,7 @@ package et_coordinates is
 
 	-- The x and y position of an object:
 	subtype type_distance_xy is type_distance range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter, CS rename to type_distance
-	zero_distance : constant type_distance := 0.0;
+	--zero_distance : constant type_distance := 0.0;
 
 	-- instantiation of the 2d geometry package:
 	package geometry is new et_geometry.geometry_operations_2d (type_distance);
@@ -82,7 +82,6 @@ package et_coordinates is
 	function to_distance (distance : in string) return type_distance_xy;	
 
 	function to_string (distance : in type_distance) return string;
-	-- Returns the given distance as a string.
 
 
 

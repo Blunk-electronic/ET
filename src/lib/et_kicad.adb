@@ -3713,7 +3713,7 @@ package body et_kicad is
 				line_range	=> with_end_points);
 
 			-- start and end points of the segment are inclued in the test
-			if not distance.out_of_range and distance.distance = zero_distance then
+			if not distance.out_of_range and distance.distance = zero then
 				return true;
 			else
 				return false;
@@ -5722,7 +5722,7 @@ package body et_kicad is
 					
 					--log (text => "distance: " & type_grid'image(d.distance), level => 1);
 					
-					if not d.out_of_range and d.distance = zero_distance then
+					if not d.out_of_range and d.distance = zero then
 						sits_on_segment := true;
 					end if;
 					return sits_on_segment;
@@ -7001,7 +7001,7 @@ package body et_kicad is
 
 				-- Ignore net segments with zero length (CS: for some reason they may exist. could be a kicad bug)
 				-- If a net segment has zero length, issue a warning.
-				if length (segment) > zero_distance then 
+				if length (segment) > zero then 
 
 					-- The net segments are to be collected in a wild list of segments for later sorting.
 					log (text => "net segment" & to_string (segment => segment, scope => xy), level => log_threshold);
@@ -9129,7 +9129,7 @@ package body et_kicad is
 
 		-- CS: clean up as in port_connected_with_segment
 		
--- 		zero : constant et_coordinates.type_distance := et_coordinates.zero_distance;
+-- 		zero : constant et_coordinates.type_distance := et_coordinates.zero;
 		sits_on_segment : boolean := false;
 
 		use et_coordinates;
@@ -9531,7 +9531,7 @@ package body et_kicad is
 					line_end	=> type_point (segment.coordinates_end),
 					line_range	=> with_end_points);
 
-				if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+				if (not distance.out_of_range) and distance.distance = zero then
 
 					-- If point sits on either start or end point of given line
 					if distance.sits_on_start or distance.sits_on_end then
@@ -11145,7 +11145,7 @@ package body et_kicad is
 									line_end	=> type_point (element (segment_cursor_sec).coordinates_end),
 									line_range	=> inside_end_points);
 
-								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+								if (not distance.out_of_range) and distance.distance = zero then
 									junction_position.expected := true;
 									junction_position.position := element (segment_cursor_prim).coordinates_start;
 									exit;
@@ -11159,7 +11159,7 @@ package body et_kicad is
 									line_end	=> type_point (element (segment_cursor_sec).coordinates_end),
 									line_range	=> inside_end_points);
 
-								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+								if (not distance.out_of_range) and distance.distance = zero then
 									junction_position.expected := true;
 									junction_position.position := element (segment_cursor_prim).coordinates_end;
 									exit;
@@ -11352,7 +11352,7 @@ package body et_kicad is
 									line_end	=> type_point (element (segment_cursor).coordinates_end),
 									line_range	=> with_end_points);
 
-								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+								if (not distance.out_of_range) and distance.distance = zero then
 									segment_found := true;
 									exit;
 								end if;
@@ -11471,7 +11471,7 @@ package body et_kicad is
 									line_range	=> with_end_points);
 
 								-- count segments
-								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+								if (not distance.out_of_range) and distance.distance = zero then
 									segment_counter := segment_counter + 1;
 								end if;
 
@@ -11655,7 +11655,7 @@ package body et_kicad is
 									line_end	=> type_point (element (segment_cursor).coordinates_end),
 									line_range	=> with_end_points);
 
-								if (not distance.out_of_range) and distance.distance = et_coordinates.zero_distance then
+								if (not distance.out_of_range) and distance.distance = zero then
 									log (WARNING, "no-connection-flag misplaced on a net at " 
 										& to_string (element (no_connection_flag_cursor).coordinates, kicad_coordinates.MODULE));
 								end if;

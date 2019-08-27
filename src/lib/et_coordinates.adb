@@ -57,10 +57,8 @@ package body et_coordinates is
 		return type_distance'value (distance);
 	end to_distance;
 	
-	function to_string (distance : in type_distance) return string is
-	-- Returns the given distance to a string.
-	begin
-		if distance < zero_distance then
+	function to_string (distance : in type_distance) return string is begin
+		if distance < zero then
 			return latin_1.space & type_distance'image (distance);
 		else
 			return type_distance'image (distance);
@@ -257,11 +255,11 @@ package body et_coordinates is
 		if angle /= 0 then
 
 			-- compute distance of given point to origin
-			if point.x = zero_distance and point.y = zero_distance then
-				distance_to_origin := type_float_distance (zero_distance);
-			elsif point.x = zero_distance then
+			if point.x = zero and point.y = zero then
+				distance_to_origin := type_float_distance (zero);
+			elsif point.x = zero then
 				distance_to_origin := type_float_distance (abs (point.y));
-			elsif point.y = zero_distance then
+			elsif point.y = zero then
 				distance_to_origin := type_float_distance (abs (point.x));
 			else
 				distance_to_origin := sqrt (
@@ -273,19 +271,19 @@ package body et_coordinates is
 			
 			-- compute the current angle of the given point (in degrees):
 
-			if point.x = zero_distance then
-				if point.y > zero_distance then
+			if point.x = zero then
+				if point.y > zero then
 					angle_out := 90.0;
-				elsif point.y < zero_distance then
+				elsif point.y < zero then
 					angle_out := -90.0;
 				else
 					angle_out := 0.0;
 				end if;
 
-			elsif point.y = zero_distance then
-				if point.x > zero_distance then
+			elsif point.y = zero then
+				if point.x > zero then
 					angle_out := 0.0;
-				elsif point.x < zero_distance then
+				elsif point.x < zero then
 					angle_out := 180.0;
 				else
 					angle_out := 0.0;
@@ -337,7 +335,7 @@ package body et_coordinates is
 -- 		-- To save computing time a few simple checks:
 -- 		
 -- 		if point_1 = point_2 then -- points have same x/y position -> zero difference
--- 			dis := float (zero_distance);
+-- 			dis := float (zero);
 -- 			
 -- 		elsif point_1.x = point_2.x then -- points are in a vertical line
 -- 			dis := float (abs (point_2.y - point_1.y));

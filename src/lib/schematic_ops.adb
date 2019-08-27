@@ -949,7 +949,7 @@ package body schematic_ops is
 			line_range	=> with_end_points);
 
 		-- start and end points of the segment are inclued in the test
-		if not dist.out_of_range and dist.distance = zero_distance then
+		if not dist.out_of_range and dist.distance = zero then
 			return true;
 		else
 			return false;
@@ -962,7 +962,7 @@ package body schematic_ops is
 	-- the greater can be the distance of point from the segment.
 		point 		: in type_point;
 		segment 	: in type_net_segments.cursor;
-		catch_zone	: in et_coordinates.type_catch_zone := zero_distance
+		catch_zone	: in et_coordinates.type_catch_zone := zero
 		)
 		return boolean is
 		use geometry;
@@ -975,7 +975,7 @@ package body schematic_ops is
 			line_end	=> element (segment).coordinates_end,
 			line_range	=> inside_end_points);
 
-		--if not distance.out_of_range and distance.distance = zero_distance then
+		--if not distance.out_of_range and distance.distance = zero then
 		if not dist.out_of_range and dist.distance <= catch_zone then
 			return true;
 		else

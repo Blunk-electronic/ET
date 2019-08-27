@@ -2860,7 +2860,7 @@ package body et_kicad_to_native is
 								line_range	=> WITH_END_POINTS);
 								
 							-- If port sits on segment, append it to ports_of_segment.
-							if (not distance.out_of_range) and distance.distance = zero_distance then
+							if (not distance.out_of_range) and distance.distance = zero then
 								log (text => et_libraries.to_string (element (port_cursor_kicad).reference) 
 									 & " port "
 									 & et_libraries.to_string (element (port_cursor_kicad).name)

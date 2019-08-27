@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                    SYSTEM ET KICAD COORDINATES                           --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                      KICAD SCHEMATIC COORDINATES                         --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -51,7 +51,8 @@ with et_general;
 with et_coordinates;			use et_coordinates;
 
 package body kicad_coordinates is
-
+	use geometry;
+	
 	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) return type_distance_xy is
 	-- Returns the given mils as type_distance_xy.
 		use et_string_processing;
@@ -66,7 +67,7 @@ package body kicad_coordinates is
 		distance := type_distance (d_in * (25.4 * 0.001));
 
 		if warn_on_negative then
-			if distance < zero_distance then
+			if distance < zero then
 				log (text => message_warning & "negative coordinates found !");
 			end if;
 		end if;

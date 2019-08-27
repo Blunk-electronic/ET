@@ -304,6 +304,8 @@ package body et_schematic is
 		end query_strand;
 	
 	begin
+		--log (text => "set strand position");
+		
 		-- init point_1 as the farest possible point from drawing origin
 		point_1 := type_point (set (
 					x => type_distance_xy'last,

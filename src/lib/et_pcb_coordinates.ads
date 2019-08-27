@@ -71,11 +71,11 @@ package et_pcb_coordinates is
 	
 	-- The x and y position of an object:
 	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
-	zero_distance : constant type_distance := 0.0;
+	--zero_distance : constant type_distance := 0.0;
 
 	-- instantiation of the 2d geometry package:	
 	package geometry is new et_geometry.geometry_operations_2d (type_distance_total);
-
+	use geometry;
 	
 	
 	-- PAPER SIZES
@@ -138,7 +138,8 @@ package et_pcb_coordinates is
 
 	function to_angle (angle : in string) return type_angle;
 
-	type type_point_2d is new geometry.type_point with private;
+	--type type_point_2d is new geometry.type_point with private;
+	subtype type_point_2d is type_point;
 	type type_point_3d is tagged private;
 	
 	function right_point_before_left_2d (right, left : in type_point_2d) return boolean;
@@ -192,24 +193,24 @@ package et_pcb_coordinates is
 
 	
 	private
-		type type_point_2d is new geometry.type_point with null record;
+		--type type_point_2d is new geometry.type_point with null record;
 		
-		type type_point_3d is new type_point_2d with record
-			z : type_distance := zero_distance;
+		type type_point_3d is new type_point with record
+			z : type_distance := zero;
 		end record;
 
-		zero_2d : constant type_point_2d := (geometry.origin with others => <>);
-		zero_3d : constant type_point_3d := (zero_2d with zero_distance);
+-- 		zero_2d : constant type_point_2d := (geometry.origin with others => <>);
+-- 		zero_3d : constant type_point_3d := (zero_2d with zero_distance);
 
 		type type_point_2d_with_angle is new type_point_2d with record
 			angle	: type_angle := zero_angle;
 		end record;
 
 		terminal_position_default : constant type_point_2d_with_angle := (
-			geometry.origin with angle => zero_angle);
+			origin with angle => zero_angle);
 
 		submodule_position_default : constant type_point_2d_with_angle := (
-			geometry.origin with angle => zero_angle);
+			origin with angle => zero_angle);
 		
 		type type_package_position is new type_point_2d_with_angle with record
 			face	: type_face := TOP;

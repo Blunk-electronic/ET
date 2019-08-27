@@ -55,8 +55,8 @@ package body et_pcb_math is
 		end_point : type_point_2d; -- to be returned
 	begin
 		-- CS
-		set (X, zero_distance, end_point);
-		set (Y, zero_distance, end_point);
+		set (X, zero, end_point);
+		set (Y, zero, end_point);
 		
 		return end_point;
 	end arc_end_point;
