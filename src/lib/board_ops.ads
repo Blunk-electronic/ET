@@ -79,7 +79,7 @@ package board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
-		rotation		: in et_pcb_coordinates.type_angle; -- 90
+		rotation		: in et_pcb_coordinates.type_rotation; -- 90
 		log_threshold	: in type_log_level);
 	
 	procedure flip_device (
@@ -107,7 +107,7 @@ package board_ops is
 	
 	-- For laying out traces we need a type that provides for a terminal information about
 	-- x/y/rotation/technology and optionally the face.
-	type type_terminal_position (technology	: et_pcb.type_assembly_technology) is new type_point_2d_with_angle with record
+	type type_terminal_position (technology	: et_pcb.type_assembly_technology) is new geometry.type_point_with_rotation with record
 		face : type_face;
 	end record;
 

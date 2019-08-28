@@ -129,7 +129,7 @@ package submodules is
 		file				: type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
 		position		    : et_coordinates.type_coordinates; -- the lower left corner
 		size				: type_submodule_size; -- CS default ?
-		position_in_board	: et_pcb_coordinates.type_point_2d_with_angle := et_pcb_coordinates.submodule_position_default;
+		position_in_board	: et_pcb_coordinates.geometry.type_point_with_rotation := et_pcb_coordinates.geometry.origin_zero_rotation;
 		view_mode			: type_submodule_view_mode := ORIGIN;
 		ports				: type_submodule_ports.map;
 	end record;

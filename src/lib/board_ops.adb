@@ -175,7 +175,7 @@ package body board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
-		rotation		: in et_pcb_coordinates.type_angle; -- 90
+		rotation		: in et_pcb_coordinates.type_rotation; -- 90
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -193,10 +193,10 @@ package body board_ops is
 			begin
 				case coordinates is
 					when ABSOLUTE =>
-						set_angle (point => device.position, value => rotation); -- preserve x/y and face
+						set (device.position, rotation); -- preserve x/y and face
 
 					when RELATIVE =>
-						rotate (point => device.position, rotation => rotation); -- preserve x/y and face
+						rotate (device.position, rotation); -- preserve x/y and face
 				end case;
 			end;
 			
@@ -301,9 +301,9 @@ package body board_ops is
 	--  - The submodule instance must exist in the module.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string) -- OSC1
-		return et_pcb_coordinates.type_point_2d_with_angle is
+		return type_point_with_rotation is
 		
-		position : et_pcb_coordinates.type_point_2d_with_angle := submodule_position_default; -- to be returned
+		position : type_point_with_rotation := origin_zero_rotation; -- to be returned
 
 		module_cursor : type_modules.cursor; -- points to the module
 
@@ -436,7 +436,7 @@ package body board_ops is
 				module_cursor		: in type_modules.cursor;
 				variant				: in type_variant_name.bounded_string;
 				offset				: in et_libraries.type_device_name_index;
-				position_in_board	: in et_pcb_coordinates.type_point_2d_with_angle) -- submod pos. in parent
+				position_in_board	: in type_point_with_rotation) -- submod pos. in parent
 			is
 
 				procedure log_position_in_board is begin
@@ -462,8 +462,8 @@ package body board_ops is
 						-- to the position of the submodule instance in the parent module:
 						move (device_position, type_point_2d (position_in_board));
 
-						log (text => "generic" & to_string (type_point_2d_with_angle (position_generic)) &
-							" -> " & "in instance" & to_string (type_point_2d_with_angle (device_position)),
+						log (text => "generic" & to_string (type_point_with_rotation (position_generic)) &
+							" -> " & "in instance" & to_string (type_point_with_rotation (device_position)),
 							level => log_threshold + 2);
 
 						return device_position;
@@ -651,11 +651,11 @@ package body board_ops is
 
 			-- Another stack keeps record of the submodule position (inside the parent module) on submodule levels.
 			package stack_position_in_board is new et_general.stack_lifo (
-				item	=> et_pcb_coordinates.type_point_2d_with_angle,
+				item	=> type_point_with_rotation,
 				max 	=> submodules.nesting_depth_max);
 
 			-- This is the position of the submodule in the board (usually its lower left corner):
-			position_in_board : et_pcb_coordinates.type_point_2d_with_angle := submodule_position_default;
+			position_in_board : type_point_with_rotation := submodule_position_default;
 			
 			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself

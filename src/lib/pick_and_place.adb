@@ -149,7 +149,7 @@ package body pick_and_place is
 				put_field (file => pnp_handle, text => to_string (get_face (element (cursor).position))); -- top/bottom
 				put_field (file => pnp_handle, text => to_string (x (element (cursor).position))); -- X
 				put_field (file => pnp_handle, text => to_string (y (element (cursor).position))); -- Y
-				put_field (file => pnp_handle, text => to_string (get_angle (element (cursor).position))); -- rotation
+				put_field (file => pnp_handle, text => to_string (rot (element (cursor).position))); -- rotation
 -- 				put_field (file => pnp_handle, text => to_string (element (cursor).value)); -- 100R
 -- 				put_field (file => pnp_handle, text => to_string (element (cursor).packge)); -- S_0805.pac
 -- 				put_field (file => pnp_handle, text => to_string (element (cursor).partcode)); -- R_PAC_S_0805_VAL_100R

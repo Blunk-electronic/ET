@@ -41,6 +41,8 @@ package et_geometry is
 
 	generic
 		type type_distance is delta <>;
+		type type_rotation is delta <>;
+		
 	package geometry_operations_2d is
 		zero : constant type_distance := 0.0;
 		
@@ -84,7 +86,7 @@ package et_geometry is
 		function distance (point_one, point_two : in type_point) return type_distance;
 		-- Computes the total distance between point_one and point_two.	
 
-		type type_distance_point_line is record
+		type type_distance_point_line is record -- CS private ?
 			distance		: type_distance := zero;
 			sits_on_start	: boolean := false;
 			sits_on_end		: boolean := false;
@@ -104,10 +106,32 @@ package et_geometry is
 			line_range	: in type_line_range) 
 			return type_distance_point_line;
 
--- 		units_per_cycle : constant float := 360.0;
--- 		type type_rotation is delta 0.01 range -359.9 .. 359.9;
--- 		for type_rotation'small use 0.01;
--- 		zero_rotation : constant type_rotation := 0.0;
+		type type_point_with_rotation is new type_point with private;
+
+		origin_zero_rotation : constant type_point_with_rotation;
+		
+		units_per_cycle : constant float := 360.0;
+-- 		type type_rotation2 is delta 0.01 range -359.9 .. 359.9;
+-- 		for type_rotation2'small use 0.01;
+		zero_rotation : constant type_rotation := 0.0;
+
+		procedure set (
+		-- Sets the rotation of a point.					
+			point		: in out type_point_with_rotation;
+			rotation	: in type_rotation);
+		
+		function rot (point : in type_point_with_rotation) return type_rotation;
+		-- Returns the rotation of the given point.
+
+		procedure rotate (
+		-- Rotates a point by the given offset.
+			point	: in out type_point_with_rotation'class;
+			offset	: in type_rotation);
+		
+		procedure rotate (
+		-- Rotates the given point by the given angle around the origin.
+			point		: in out type_point;
+			rotation	: in type_rotation);
 
 		
 	private
@@ -118,13 +142,11 @@ package et_geometry is
 
 		origin : constant type_point := (others => zero);
 		
--- 		type type_distance_point_from_line2 is record
--- 			distance		: type_distance; -- CS := et_coordinates.zero_distance;
--- 			sits_on_start	: boolean;
--- 			sits_on_end		: boolean;
--- 			out_of_range	: boolean;
--- 		end record;
+		type type_point_with_rotation is new type_point with record
+			rotation	: type_rotation := zero_rotation;
+		end record;
 
+		origin_zero_rotation : constant type_point_with_rotation := (others => <>);
 
 	end geometry_operations_2d;
 

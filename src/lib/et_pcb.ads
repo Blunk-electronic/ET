@@ -214,7 +214,7 @@ package et_pcb is
 	
 	-- TEXT IN GENERAL
 	type type_text is abstract tagged record
-		position	: type_point_2d_with_angle;
+		position	: type_point_with_rotation;
 		dimensions	: type_text_dimensions;
 		line_width	: type_text_line_width := type_text_line_width'first;
 		alignment	: et_libraries.type_text_alignment;
@@ -1112,7 +1112,7 @@ package et_pcb is
 		tht_hole	: type_terminal_tht_hole) -- drilled/milled, without meaning if technology is SMT
 		is tagged record
 
-			position : type_point_2d_with_angle; -- drill position or center of pad
+			position : type_point_with_rotation; -- drill position or center of pad
 			-- The angle is useful for exotic pad contours. The operator would be drawing the 
 			-- contour with zero rotation first (which is easier). Then by applying an angle,
 			-- the countour would be rotated to its final position.

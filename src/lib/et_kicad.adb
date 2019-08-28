@@ -8906,7 +8906,7 @@ package body et_kicad is
 			when et_import.KICAD_V4 | et_import.KICAD_V5 =>
 
 				-- Kicad uses Y axis positive downwards style (in both schematic and board)
-				et_coordinates.Y_axis_positive := et_coordinates.downwards;
+-- 				et_coordinates.Y_axis_positive := et_coordinates.downwards;
 				
 				-- Derive top level schematic file name from project name.
 				-- Clears tmp_component_libraries (which is a temparily storage).

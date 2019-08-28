@@ -56,11 +56,11 @@ package et_coordinates is
 	
 	-- There are drawings with the origin at the upper left corner (used by KiCad, ...).
 	-- There are also drawings the the origin at the lower left corner (used by EAGLE, ...)
-	type type_Y_axis_positive is (UPWARDS, DOWNWARDS);
+-- 	type type_Y_axis_positive is (UPWARDS, DOWNWARDS);
 
 	-- This flag is set on import or export of designs in accordance to the desired CAD format.
 	-- Geometric operations like rotating require this flag.
-	Y_axis_positive : type_Y_axis_positive := UPWARDS;
+-- 	Y_axis_positive : type_Y_axis_positive := UPWARDS;
 	
 	-- The total distance between two objects:
 	--	type type_distance is digits 9 range -100_000_000.0 .. 100_000_000.0; -- unit is metric millimeter
@@ -71,8 +71,12 @@ package et_coordinates is
 	-- The x and y position of an object:
 	subtype type_distance_xy is type_distance range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter, CS rename to type_distance
 
+
+	type type_rotation_new is delta 1.0 range -270.0 .. 270.0;
+	for type_rotation_new'small use 1.0;
+	
 	-- instantiation of the 2d geometry package:
-	package geometry is new et_geometry.geometry_operations_2d (type_distance);
+	package geometry is new et_geometry.geometry_operations_2d (type_distance, type_rotation_new);
 	use geometry;
 	
 	subtype type_catch_zone is type_distance range 0.0 .. 10.0;
@@ -94,7 +98,9 @@ package et_coordinates is
 	pragma assertion_policy (check);		
 	subtype type_rotation is integer range rotation_min .. rotation_max 
 		with dynamic_predicate => type_rotation mod rotation_delta = 0;
+	
 
+	
     rotation_zero : type_rotation := 0;
     
 	rotation_relative_min : constant type_rotation := -90;

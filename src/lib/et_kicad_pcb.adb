@@ -353,7 +353,7 @@ package body et_kicad_pcb is
 
 
 	function to_pad_shape_circle (
-		position	: in et_pcb_coordinates.type_point_2d_with_angle;
+		position	: in type_point_with_rotation;
 		diameter	: in et_pcb.type_pad_size;
 		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
 		return et_pcb.type_pad_outline is
@@ -377,7 +377,7 @@ package body et_kicad_pcb is
 	-- Converts the given position and dimensions of a rectangular pad
 	-- to a list with four lines (top, bottom, right, left).
 	-- CS: rework as in to_pad_shape_oval
-		center		: in et_pcb_coordinates.type_point_2d_with_angle; -- the pad center position (incl. angle)
+		center		: in type_point_with_rotation; -- the pad center position (incl. angle)
 		size_x		: in et_pcb.type_pad_size;	-- the size in x of the pad
 		size_y		: in et_pcb.type_pad_size;	-- the size in y of the pad
 		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
@@ -391,7 +391,8 @@ package body et_kicad_pcb is
 		shape : type_pad_outline; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
-		angle : constant type_angle := get_angle (center);
+		--angle : constant type_angle := get_angle (center);
+		angle : constant type_rotation := rot (center);
 
 		-- supportive frequently used values
 		xp : constant type_distance := size_x / 2;
@@ -458,7 +459,7 @@ package body et_kicad_pcb is
 	function to_pad_shape_oval (
 	-- Converts the given position and dimensions of an oval pad
 	-- to a list with two vertical lines and two arcs (rotation assumed zero).
-		center		: in et_pcb_coordinates.type_point_2d_with_angle; -- the pad center position (incl. angle)
+		center		: in type_point_with_rotation; -- the pad center position (incl. angle)
 		size_x		: in et_pcb.type_pad_size;	-- the size in x of the pad
 		size_y		: in et_pcb.type_pad_size;	-- the size in y of the pad
 		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
@@ -473,7 +474,7 @@ package body et_kicad_pcb is
 		shape : type_pad_outline; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
-		angle : constant type_angle := get_angle (center);
+		angle : constant type_rotation := rot (center);
 		
 		-- supportive frequently used values
 		x1p : constant type_distance := size_x / 2;
@@ -552,13 +553,11 @@ package body et_kicad_pcb is
 		
 		return shape;
 	end to_pad_shape_oval;
-
-
 	
 	function to_pad_milling_contour (
 	-- Converts the given position and dimensions of a rectangular slotted hole
 	-- to a list with four lines (top, bottom, right, left).
-		center		: in et_pcb_coordinates.type_point_2d_with_angle; -- the terminal position (incl. angle, (z axis ignored))
+		center		: in type_point_with_rotation; -- the terminal position (incl. angle, (z axis ignored))
 		size_x		: in et_pcb.type_pad_size;	-- the size in x of the hole
 		size_y		: in et_pcb.type_pad_size;	-- the size in y of the hole
 		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
@@ -571,7 +570,7 @@ package body et_kicad_pcb is
 		lines : type_pcb_contour_lines.list; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
-		angle : constant type_angle := get_angle (center);
+		angle : constant type_rotation := rot (center);
 		
 		-- supportive frequently used values
 		xp : constant type_distance := size_x / 2;
@@ -799,7 +798,7 @@ package body et_kicad_pcb is
 		terminal_pad_drill_offset : et_pcb_coordinates.type_point_2d;
 
 		-- The center of an smt pad or the position of the drill of a tht pad:
-		terminal_position	: et_pcb_coordinates.type_point_2d_with_angle; 
+		terminal_position	: type_point_with_rotation; 
 		
 		pad_size_x : type_pad_size;  -- CS use a composite instead ?
 		pad_size_y : type_pad_size;
@@ -1657,7 +1656,7 @@ package body et_kicad_pcb is
 				when SEC_AT =>
 					case section.parent is
 						when SEC_PAD =>
-							set_angle (point => terminal_position, value => zero_angle); -- angle is optionally provided as last argument. if not provided default to zero.
+							set (terminal_position, zero_rotation); -- angle is optionally provided as last argument. if not provided default to zero.
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -1665,7 +1664,7 @@ package body et_kicad_pcb is
 								when 2 => 
 									set (axis => Y, point => terminal_position, value => to_distance (to_string (arg)));
 								when 3 => 
-									set_angle (point => terminal_position, value => to_angle (to_string (arg)));
+									set (terminal_position, to_angle (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 

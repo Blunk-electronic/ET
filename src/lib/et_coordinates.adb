@@ -223,11 +223,11 @@ package body et_coordinates is
 			-- we subtract the given angle from the current angle.
 -- 			log_indentation_up;
 -- 			log ("angle in  " & to_string (type_rotation (angle_out)), log_threshold);
-			if Y_axis_positive = upwards then
+-- 			if Y_axis_positive = upwards then
 				angle_out := angle_out + type_float_angle (angle);
-			else
-				angle_out := angle_out - type_float_angle (angle);
-			end if;
+-- 			else
+-- 				angle_out := angle_out - type_float_angle (angle);
+-- 			end if;
 -- 			log ("angle out " & type_float_angle'image (angle_out), log_threshold);
 			
 			-- compute new x   -- (cos angle_out) * distance_to_origin
