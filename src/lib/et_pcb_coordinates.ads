@@ -129,10 +129,10 @@ package et_pcb_coordinates is
 	
 	function to_distance (distance : in string) return type_distance;
 
-	units_per_cycle : constant float := 360.0;
-	type type_angle is delta 0.01 range -359.9 .. 359.9;
-	for type_angle'small use 0.01;
-	zero_angle : constant type_angle := 0.0;
+-- 	units_per_cycle : constant float := 360.0;
+-- 	type type_angle is delta 0.01 range -359.9 .. 359.9;
+-- 	for type_angle'small use 0.01;
+-- 	zero_angle : constant type_angle := 0.0;
 
 	function to_string (
 		angle 		: in type_rotation;
@@ -156,10 +156,10 @@ package et_pcb_coordinates is
 	function to_string (point : in type_point_2d) return string;
 	function to_string (point : in type_point_with_rotation) return string;	
 	
-	terminal_position_default : constant type_point_with_rotation := origin_zero_rotation;
+	terminal_position_default : constant type_point_with_rotation := origin_zero_rotation; -- CS remove ?
 	package_position_default : constant type_package_position;
 	placeholder_position_default : constant type_package_position;	
-	submodule_position_default : constant type_point_with_rotation := origin_zero_rotation; 
+	submodule_position_default : constant type_point_with_rotation := origin_zero_rotation; -- CS remove ?
 	
 -- 	procedure rotate (
 -- 	-- Rotates the given point by the given angle with the origin as center.

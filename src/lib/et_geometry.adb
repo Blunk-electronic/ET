@@ -319,6 +319,14 @@ package body et_geometry is
 			return result;
 		end distance_point_line;
 
+-- 		function create (
+-- 			point		: in type_point'class;
+-- 			rotation	: in type_rotation) 
+-- 			return type_point_with_rotation is
+-- 		begin
+-- 			return (point with rotation);
+-- 		end;
+		
 		procedure set (
 		-- Sets the rotation of a point.					
 			point		: in out type_point_with_rotation;
@@ -327,7 +335,7 @@ package body et_geometry is
 			point.rotation := rotation;
 		end;
 					
-		function rot (point : in type_point_with_rotation) return type_rotation is begin
+		function rot (point : in type_point_with_rotation'class) return type_rotation is begin
 		-- Returns the rotation of the given point.
 			return point.rotation;
 		end;

@@ -358,7 +358,9 @@ package body et_pcb_coordinates is
 		return type_point_with_rotation'class is
 		pos : type_point_with_rotation;
 	begin
-		pos := (point with rotation);
+		--pos := (point with rotation);
+		set (pos, point);
+		set (pos, rotation);
 		return pos;
 	end to_terminal_position;
 	

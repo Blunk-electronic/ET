@@ -1453,7 +1453,7 @@ package body et_project is
 		function rotation (pos : in et_pcb_coordinates.geometry.type_point_with_rotation'class) return string is
 			use et_pcb_coordinates;
 		begin
-			return to_string (rot (pos));
+			return to_string (et_pcb_coordinates.geometry.rot (pos));
 		end rotation;
 		
 		function face (point : et_pcb_coordinates.type_package_position) return string is
@@ -2979,7 +2979,7 @@ package body et_project is
 	-- Returns a type_point_with_rotation in the layout.
 		line : in et_string_processing.type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
 		from : in positive)
-		return et_pcb_coordinates.type_point_with_rotation is
+		return et_pcb_coordinates.geometry.type_point_with_rotation is
 
 		use et_pcb_coordinates;
 		use et_pcb_coordinates.geometry;
@@ -3005,7 +3005,7 @@ package body et_project is
 
 			-- We expect after "rotation" the corresponding value for the rotation
 			elsif f (line, place) = keyword_rotation then
-				set_angle (point => point, value => to_angle (f (line, place + 1)));
+				set (point, to_angle (f (line, place + 1)));
 				
 			else
 				invalid_keyword (f (line, place));
@@ -3175,7 +3175,7 @@ package body et_project is
 		terminal_name			: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology		: et_pcb.type_assembly_technology := et_pcb.assembly_technology_default;
 		pad_shape_polygon		: type_pad_polygon; -- for polygons that outline a pad
-		terminal_position		: et_pcb_coordinates.type_point_with_rotation := et_pcb_coordinates.terminal_position_default;
+		terminal_position		: et_pcb_coordinates.geometry.type_point_with_rotation := origin_zero_rotation;
 		tht_pad_shape			: et_pcb.type_pad_outline_tht;
 		tht_width_inner_layers	: et_pcb_coordinates.type_distance := zero;
 		tht_hole				: et_pcb.type_terminal_tht_hole := et_pcb.terminal_tht_hole_default;
@@ -8013,7 +8013,7 @@ package body et_project is
 
 				-- We expect after "rotation" the corresponding value for the rotation
 				elsif f (line, place) = keyword_rotation then
-					set_angle (point => point, value => to_angle (f (line, place + 1)));
+					set (point, to_angle (f (line, place + 1)));
 
 				-- We expect after "face" the actual face (top/bottom)
 				elsif f (line, place) = keyword_face then
@@ -8341,7 +8341,7 @@ package body et_project is
 					use et_pcb;
 					use et_pcb_coordinates;
 				begin
-					device_text_placeholder.position := type_point_with_rotation (device_text_placeholder_position);
+					device_text_placeholder.position := et_pcb_coordinates.geometry.type_point_with_rotation (device_text_placeholder_position);
 					
 					case device_text_placeholder_layer is
 						when SILK_SCREEN => 

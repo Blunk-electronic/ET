@@ -108,6 +108,11 @@ package et_geometry is
 
 		type type_point_with_rotation is new type_point with private;
 
+-- 		function create (
+-- 			point		: in type_point'class;
+-- 			rotation	: in type_rotation) 
+-- 			return type_point_with_rotation;
+		
 		origin_zero_rotation : constant type_point_with_rotation;
 		
 		units_per_cycle : constant float := 360.0;
@@ -120,7 +125,7 @@ package et_geometry is
 			point		: in out type_point_with_rotation;
 			rotation	: in type_rotation);
 		
-		function rot (point : in type_point_with_rotation) return type_rotation;
+		function rot (point : in type_point_with_rotation'class) return type_rotation;
 		-- Returns the rotation of the given point.
 
 		procedure rotate (
