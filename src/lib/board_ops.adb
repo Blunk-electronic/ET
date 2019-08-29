@@ -440,7 +440,7 @@ package body board_ops is
 			is
 
 				procedure log_position_in_board is begin
-					if position_in_board /= submodule_position_default then
+					if position_in_board /= origin_zero_rotation then
 						log (text => "and applying submodule" & to_string (position_in_board),
 							level => log_threshold + 1);
 					end if;
@@ -655,7 +655,7 @@ package body board_ops is
 				max 	=> submodules.nesting_depth_max);
 
 			-- This is the position of the submodule in the board (usually its lower left corner):
-			position_in_board : type_point_with_rotation := submodule_position_default;
+			position_in_board : type_point_with_rotation := origin_zero_rotation;
 			
 			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
@@ -793,7 +793,7 @@ package body board_ops is
 				module_cursor		=> module_cursor,
 				variant				=> variant_name,
 				offset				=> 0,
-				position_in_board	=> submodule_position_default -- zero x/x/rotation
+				position_in_board	=> origin_zero_rotation -- zero x/x/rotation
 				); 
 			
 			-- take a copy of the submodule tree of the given top module:

@@ -9480,7 +9480,7 @@ package body schematic_ops is
 
 				-- Overwrite position in schematic by zero so that the new instance sits at 
 				-- the lower left corner of the layout drawing:
-				submodule.position_in_board := et_pcb_coordinates.submodule_position_default;
+				submodule.position_in_board := et_pcb_coordinates.geometry.origin_zero_rotation;
 
 				insert (
 					container	=> module.submods,

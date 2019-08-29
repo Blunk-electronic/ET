@@ -3249,7 +3249,7 @@ package body et_project is
 			end if;
 
 			-- clean up for next terminal
-			terminal_position := et_pcb_coordinates.terminal_position_default;
+			terminal_position := origin_zero_rotation;
  			smt_pad_shape := (others => <>);
 			smt_stop_mask := et_pcb.stop_mask_status_default;
 			smt_solder_paste := et_pcb.solder_paste_status_default;

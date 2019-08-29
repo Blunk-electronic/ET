@@ -1670,7 +1670,7 @@ package body et_kicad_pcb is
 
 						when SEC_FP_TEXT =>
 							--text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
-							set_angle (point => text.position, value => zero_angle);
+							set (text.position, zero_rotation);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -1679,7 +1679,7 @@ package body et_kicad_pcb is
 									set (axis => Y, point => text.position, value => to_distance (to_string (arg)));
 								when 3 => 
 									--text.angle := to_angle (to_string (arg));
-									set_angle (point => text.position, value => to_angle (to_string (arg)));
+									set (text.position, to_angle (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 							
@@ -3311,7 +3311,7 @@ package body et_kicad_pcb is
 		terminal_pad_drill_offset : et_pcb_coordinates.type_point_2d;
 		
 		-- The center of an smt pad or the position of the drill of a tht pad:		
-		terminal_position	: et_pcb_coordinates.type_point_2d_with_angle;
+		terminal_position	: type_point_with_rotation;
 		
 		pad_size_x : type_pad_size;
 		pad_size_y : type_pad_size;		
@@ -4140,7 +4140,7 @@ package body et_kicad_pcb is
 								when 2 =>
 									set (axis => Y, point => package_position, value => to_distance (to_string (arg)));
 								when 3 =>
-									set_angle (point => package_position, value => to_angle (to_string (arg)));
+									set (package_position, to_angle (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -4263,7 +4263,7 @@ package body et_kicad_pcb is
 					case section.name is
 						when SEC_AT =>
 							--package_text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
-							set_angle (point => package_text.position, value => zero_angle);
+							set (package_text.position, zero_rotation);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -4272,7 +4272,7 @@ package body et_kicad_pcb is
 									set (axis => Y, point => package_text.position, value => to_distance (to_string (arg)));
 								when 3 => 
 									--package_text.angle := to_angle (to_string (arg));
-									set_angle (point => package_text.position, value => to_angle (to_string (arg)));
+									set (package_text.position, to_angle (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -4307,7 +4307,7 @@ package body et_kicad_pcb is
 					case section.name is
 						when SEC_AT =>
 							--board_text.angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
-							set_angle (point => board_text.position, value => zero_angle);
+							set (board_text.position, zero_rotation);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -4316,7 +4316,7 @@ package body et_kicad_pcb is
 									set (axis => Y, point => board_text.position, value => to_distance (to_string (arg)));
 								when 3 => 
 									--board_text.angle := to_angle (to_string (arg));
-									set_angle (point => board_text.position, value => to_angle (to_string (arg)));
+									set (board_text.position, to_angle (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -4632,7 +4632,7 @@ package body et_kicad_pcb is
 							
 						when SEC_AT =>
 							--terminal_angle := zero_angle; -- angle is optionally provided as last argument. if not provided default to zero.
-							set_angle (point => terminal_position, value => zero_angle);
+							set (terminal_position, zero_rotation);
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
@@ -4640,7 +4640,7 @@ package body et_kicad_pcb is
 								when 2 => 
 									set (axis => Y, point => terminal_position, value => to_distance (to_string (arg)));
 								when 3 => 
-									set_angle (point => terminal_position, value => to_angle (to_string (arg)));
+									set (terminal_position, to_angle (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 							

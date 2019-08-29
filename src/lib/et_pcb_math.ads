@@ -45,7 +45,7 @@ package et_pcb_math is
 	-- Computes the end point of an arc.
 		center		: in type_point_2d;
 		start_point	: in type_point_2d;	
-		angle 		: in type_angle)
+		angle 		: in type_rotation)
 		return type_point_2d;
 		
 	

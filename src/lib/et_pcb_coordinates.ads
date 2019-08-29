@@ -156,10 +156,10 @@ package et_pcb_coordinates is
 	function to_string (point : in type_point_2d) return string;
 	function to_string (point : in type_point_with_rotation) return string;	
 	
-	terminal_position_default : constant type_point_with_rotation := origin_zero_rotation; -- CS remove ?
+-- 	terminal_position_default : constant type_point_with_rotation := origin_zero_rotation; -- CS remove ?
 	package_position_default : constant type_package_position;
 	placeholder_position_default : constant type_package_position;	
-	submodule_position_default : constant type_point_with_rotation := origin_zero_rotation; -- CS remove ?
+-- 	submodule_position_default : constant type_point_with_rotation := origin_zero_rotation; -- CS remove ?
 	
 -- 	procedure rotate (
 -- 	-- Rotates the given point by the given angle with the origin as center.
@@ -215,10 +215,10 @@ package et_pcb_coordinates is
 		end record;
 
 		package_position_default : constant type_package_position := (
-			terminal_position_default with face => TOP);
+			origin_zero_rotation with face => TOP);
 
 		placeholder_position_default : constant type_package_position := (
-			terminal_position_default with face => TOP);
+			origin_zero_rotation with face => TOP);
 
 		
 end et_pcb_coordinates;
