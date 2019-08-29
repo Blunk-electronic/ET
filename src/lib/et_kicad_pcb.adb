@@ -62,7 +62,6 @@ with et_schematic;
 with et_kicad_general;			use et_kicad_general;
 with et_pcb;
 with et_pcb_coordinates;
-with et_pcb_math;
 with et_string_processing;		use et_string_processing;
 
 with et_kicad;
@@ -1890,7 +1889,7 @@ package body et_kicad_pcb is
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 				
 				-- compute end point of arc from center, start_point and angle
-				arc.end_point := et_pcb_math.arc_end_point (arc.center, arc.start_point, arc.angle);
+				arc.end_point := type_point_2d (arc_end_point (arc.center, arc.start_point, arc.angle));
 
 				-- The angle of the arc and its layer are now discarded
 				-- as the arc is converted back to its anchestor
@@ -6074,8 +6073,8 @@ package body et_kicad_pcb is
 			procedure insert_board_arc is begin
 				-- Compute the arc end point from its center, start point and angle.
 				-- Later the angle is discarded.
-				board_arc.end_point := et_pcb_math.arc_end_point (
-					board_arc.center, board_arc.start_point, board_arc.angle);
+				board_arc.end_point := type_point_2d (arc_end_point (
+					board_arc.center, board_arc.start_point, board_arc.angle));
 
 				-- The board_arc is converted back to its anchestor and
 				-- depending on the layer extended with specific properties.
@@ -6346,8 +6345,8 @@ package body et_kicad_pcb is
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 
 				-- compute end point of arc from center, start_point and angle
-				package_arc.end_point := 
-					et_pcb_math.arc_end_point (package_arc.center, package_arc.start_point, package_arc.angle);
+				package_arc.end_point := type_point_2d (
+					arc_end_point (package_arc.center, package_arc.start_point, package_arc.angle));
 
 				-- The angle of the arc and its layer are now discarded
 				-- as the package_arc is converted back to its anchestor

@@ -138,6 +138,13 @@ package et_geometry is
 			point		: in out type_point;
 			rotation	: in type_rotation);
 
+		function arc_end_point (
+		-- Computes the end point of an arc.
+			center		: in type_point;
+			start_point	: in type_point;	
+			angle 		: in type_rotation)
+			return type_point'class;
+
 		
 	private
 

@@ -20,7 +20,6 @@ OBJS = $(TARGET).o \
 	et_pcb_coordinates.o \
 	et_pcb.o \
 	conventions.o \
-	et_pcb_math.o \
 	et_csv.o \
 	et_general.o \
 	et_operations.o \

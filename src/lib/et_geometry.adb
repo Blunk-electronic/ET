@@ -435,6 +435,21 @@ package body et_geometry is
 			
 		end rotate;
 
+		function arc_end_point (
+		-- Computes the end point of an arc.
+			center		: in type_point;
+			start_point	: in type_point;	
+			angle 		: in type_rotation)
+			return type_point'class is
+			end_point : type_point; -- to be returned			
+		begin
+			-- CS
+			set (X, zero, end_point);
+			set (Y, zero, end_point);
+			
+			return end_point;
+		end arc_end_point;
+
 		
 		
 	end geometry_operations_2d;
