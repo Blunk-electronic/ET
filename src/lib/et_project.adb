@@ -704,7 +704,7 @@ package body et_project is
 	end position;
 	
 	procedure write_text_properties (text : in et_libraries.type_text_basic'class) is
-		use et_coordinates;
+		use et_coordinates.geometry;
 	begin
 		write (keyword => keyword_size, parameters => et_libraries.to_string (text.size, preamble => false));
 		write (keyword => keyword_line_width, parameters => to_string (text.line_width));
@@ -718,7 +718,7 @@ package body et_project is
 	end write_text_properties;
 
 	procedure write_text_properties (text : in et_pcb.type_text'class) is
-		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 	begin
 -- 		write (keyword => keyword_position, parameters => position (text.position) & 
 -- 			space & keyword_rotation & to_string (get_angle (text.position))
@@ -743,6 +743,7 @@ package body et_project is
 		face	: in et_pcb_coordinates.type_face) 
 		is
 		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 	begin
 		write (keyword => keyword_position, parameters => position (text.position) & 
 			space & keyword_face & to_string (face)); -- position x 0.000 y 5.555 rotation 0.00 face top
@@ -798,7 +799,7 @@ package body et_project is
 -- KEEPOUT
 	procedure write_line (cursor : in et_pcb.type_keepout_lines.cursor) is
 		use et_pcb.type_keepout_lines;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
 		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
@@ -809,7 +810,7 @@ package body et_project is
 
 	procedure write_arc (cursor : in et_pcb.type_keepout_arcs.cursor) is 
 		use et_pcb.type_keepout_arcs;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -822,7 +823,7 @@ package body et_project is
 	procedure write_circle (cursor : in et_pcb.type_keepout_circles.cursor) is 
 		use et_pcb;
 		use type_keepout_circles;
-		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 	begin
 		circle_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -839,7 +840,7 @@ package body et_project is
 		use et_pcb;		
 		use type_keepout_polygons;
 		use type_polygon_points;
-		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 		
 		procedure query_points (polygon : in type_keepout_polygon) is begin
 			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
@@ -862,7 +863,7 @@ package body et_project is
 	procedure write_line (cursor : in et_pcb.type_stop_lines.cursor) is 
 		use et_pcb;
 		use type_stop_lines;
-		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 	begin
 		line_begin;
 		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
@@ -874,7 +875,7 @@ package body et_project is
 	procedure write_arc (cursor : in et_pcb.type_stop_arcs.cursor) is 
 		use et_pcb;
 		use type_stop_arcs;
-		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 	begin
 		arc_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -887,7 +888,7 @@ package body et_project is
 	procedure write_circle (cursor : in et_pcb.type_stop_circles.cursor) is 
 		use et_pcb;
 		use type_stop_circles;
-		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 	begin
 		circle_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -903,7 +904,7 @@ package body et_project is
 	procedure write_polygon (cursor : in et_pcb.type_stop_polygons.cursor) is 
 		use et_pcb;
 		use type_stop_polygons;
-		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 		use type_polygon_points;
 		
 		procedure query_points (polygon : in type_stop_polygon) is begin
@@ -927,7 +928,7 @@ package body et_project is
 	procedure write_line (cursor : in et_pcb.type_stencil_lines.cursor) is 
 		use et_pcb;
 		use type_stencil_lines;
-		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 	begin
 		line_begin;
 		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
@@ -939,7 +940,7 @@ package body et_project is
 	procedure write_arc (cursor : in et_pcb.type_stencil_arcs.cursor) is 
 		use et_pcb;
 		use type_stencil_arcs;
-		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 	begin
 		arc_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -952,7 +953,7 @@ package body et_project is
 	procedure write_circle (cursor : in et_pcb.type_stencil_circles.cursor) is 
 		use et_pcb;
 		use type_stencil_circles;
-		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 	begin
 		circle_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -968,7 +969,7 @@ package body et_project is
 	procedure write_polygon (cursor : in et_pcb.type_stencil_polygons.cursor) is 
 		use et_pcb;
 		use type_stencil_polygons;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 		use type_polygon_points;
 		
 		procedure query_points (polygon : in type_stencil_polygon) is begin
@@ -1015,7 +1016,7 @@ package body et_project is
 	procedure write_line (cursor : in et_pcb.type_route_restrict_lines.cursor) is 
 		use et_pcb;
 		use type_route_restrict_lines;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
 		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
@@ -1028,7 +1029,7 @@ package body et_project is
 	procedure write_arc (cursor : in et_pcb.type_route_restrict_arcs.cursor) is 
 		use et_pcb;
 		use type_route_restrict_arcs;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -1042,7 +1043,7 @@ package body et_project is
 	procedure write_circle (cursor : in et_pcb.type_route_restrict_circles.cursor) is 
 		use et_pcb;
 		use type_route_restrict_circles;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -1055,7 +1056,7 @@ package body et_project is
 	procedure write_polygon (cursor : in et_pcb.type_route_restrict_polygons.cursor) is 
 		use et_pcb;
 		use type_route_restrict_polygons;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 		use type_polygon_points;
 		
 		procedure query_points (polygon : in type_route_restrict_polygon) is begin
@@ -1080,7 +1081,7 @@ package body et_project is
 	procedure write_line (cursor : in et_pcb.type_via_restrict_lines.cursor) is 
 		use et_pcb;
 		use type_via_restrict_lines;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
 		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
@@ -1093,7 +1094,7 @@ package body et_project is
 	procedure write_arc (cursor : in et_pcb.type_via_restrict_arcs.cursor) is 
 		use et_pcb;
 		use type_via_restrict_arcs;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -1107,7 +1108,7 @@ package body et_project is
 	procedure write_circle (cursor : in et_pcb.type_via_restrict_circles.cursor) is 
 		use et_pcb;
 		use type_via_restrict_circles;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -1120,7 +1121,7 @@ package body et_project is
 	procedure write_polygon (cursor : in et_pcb.type_via_restrict_polygons.cursor) is 
 		use et_pcb;
 		use type_via_restrict_polygons;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 		use type_polygon_points;
 		
 		procedure query_points (polygon : in type_via_restrict_polygon) is begin
@@ -1146,7 +1147,7 @@ package body et_project is
 	procedure write_line (cursor : in et_pcb.type_pcb_contour_lines.cursor) is 
 		use et_pcb;
 		use type_pcb_contour_lines;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
 		write (keyword => keyword_start , parameters => position (element (cursor).start_point));
@@ -1158,7 +1159,7 @@ package body et_project is
 	procedure write_arc (cursor : in et_pcb.type_pcb_contour_arcs.cursor) is 
 		use et_pcb;
 		use type_pcb_contour_arcs;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -1171,7 +1172,7 @@ package body et_project is
 	procedure write_circle (cursor : in et_pcb.type_pcb_contour_circles.cursor) is 
 		use et_pcb;
 		use type_pcb_contour_circles;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -1184,7 +1185,7 @@ package body et_project is
 	procedure write_line (cursor : in et_pcb.type_silk_lines.cursor) is 
 		use et_pcb;
 		use type_silk_lines;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
 		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
@@ -1196,7 +1197,7 @@ package body et_project is
 	procedure write_arc (cursor : in et_pcb.type_silk_arcs.cursor) is 
 		use et_pcb;
 		use type_silk_arcs;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -1209,7 +1210,7 @@ package body et_project is
 	procedure write_circle (cursor : in et_pcb.type_silk_circles.cursor) is 
 		use et_pcb;
 		use type_silk_circles;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -1225,7 +1226,7 @@ package body et_project is
 	procedure write_polygon (cursor : in et_pcb.type_silk_polygons.cursor) is 
 		use et_pcb;
 		use type_silk_polygons;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 		use type_polygon_points;
 		
 		procedure query_points (polygon : in type_silk_polygon) is begin
@@ -1249,7 +1250,7 @@ package body et_project is
 	procedure write_line (cursor : in et_pcb.type_doc_lines.cursor) is 
 		use et_pcb;
 		use type_doc_lines;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
 		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
@@ -1261,7 +1262,7 @@ package body et_project is
 	procedure write_arc (cursor : in et_pcb.type_doc_arcs.cursor) is 
 		use et_pcb;
 		use type_doc_arcs;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -1274,7 +1275,7 @@ package body et_project is
 	procedure write_circle (cursor : in et_pcb.type_doc_circles.cursor) is
 		use et_pcb;
 		use type_doc_circles;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -1290,7 +1291,7 @@ package body et_project is
 	procedure write_polygon (cursor : in et_pcb.type_doc_polygons.cursor) is 
 		use et_pcb;
 		use type_doc_polygons;
-		use et_pcb_coordinates;		
+		use et_pcb_coordinates.geometry;
 		use type_polygon_points;
 		
 		procedure query_points (polygon : in type_doc_polygon) is begin
@@ -1465,7 +1466,7 @@ package body et_project is
 		procedure query_net_classes is
 			use et_pcb;
 			use et_pcb.type_net_classes;
-			use et_pcb_coordinates;
+			use et_pcb_coordinates.geometry;
 
 			procedure write (class_cursor : in type_net_classes.cursor) is begin
 				log (text => "net class " & to_string (key (class_cursor)), level => log_threshold + 1);
@@ -1647,6 +1648,8 @@ package body et_project is
 
 			procedure query_route (net_name : in type_net_name.bounded_string; net : in type_net) is
 				use et_pcb;
+				use et_pcb_coordinates.geometry;
+				
 				use type_copper_lines_pcb;
 				line_cursor : type_copper_lines_pcb.cursor := net.route.lines.first;
 
@@ -1680,7 +1683,7 @@ package body et_project is
 					write (keyword => keyword_start, parameters => position (element (line_cursor).start_point));
 					write (keyword => keyword_end  , parameters => position (element (line_cursor).end_point));
 					write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
-					write (keyword => keyword_width, parameters => et_pcb_coordinates.to_string (element (line_cursor).width));
+					write (keyword => keyword_width, parameters => to_string (element (line_cursor).width));
 
 					section_mark (section_line, FOOTER);
 					next (line_cursor);
@@ -1692,7 +1695,7 @@ package body et_project is
 					write (keyword => keyword_center, parameters => position (element (arc_cursor).center));
 					write (keyword => keyword_start , parameters => position (element (arc_cursor).start_point));
 					write (keyword => keyword_end   , parameters => position (element (arc_cursor).end_point));
-					write (keyword => keyword_width , parameters => et_pcb_coordinates.to_string (element (arc_cursor).width));
+					write (keyword => keyword_width , parameters => to_string (element (arc_cursor).width));
 					write (keyword => keyword_layer , parameters => to_string (element (arc_cursor).layer));
 					
 					section_mark (section_arc, FOOTER);
@@ -1703,11 +1706,11 @@ package body et_project is
 					section_mark (section_via, HEADER);
 
 					write (keyword => keyword_position, parameters => position (element (via_cursor).position));
-					write (keyword => keyword_diameter, parameters => et_pcb_coordinates.to_string (element (via_cursor).diameter));
+					write (keyword => keyword_diameter, parameters => to_string (element (via_cursor).diameter));
 					write (keyword => keyword_layer_start, parameters => to_string (element (via_cursor).layer_start));
 					write (keyword => keyword_layer_end  , parameters => to_string (element (via_cursor).layer_end));
-					write (keyword => keyword_restring_outer_layers, parameters => et_pcb_coordinates.to_string (element (via_cursor).restring_outer));
-					write (keyword => keyword_restring_inner_layers, parameters => et_pcb_coordinates.to_string (element (via_cursor).restring_inner));
+					write (keyword => keyword_restring_outer_layers, parameters => to_string (element (via_cursor).restring_outer));
+					write (keyword => keyword_restring_inner_layers, parameters => to_string (element (via_cursor).restring_inner));
 					
 					section_mark (section_via, FOOTER);
 					next (via_cursor);
@@ -1718,20 +1721,20 @@ package body et_project is
 
 					write (keyword => keyword_priority , parameters => et_pcb.to_string (element (polygon_cursor).priority_level));
 					write (keyword => keyword_layer , parameters => to_string (element (polygon_cursor).layer));
-					write (keyword => keyword_min_width , parameters => et_pcb_coordinates.to_string (element (polygon_cursor).width_min));
-					write (keyword => keyword_isolation, parameters => et_pcb_coordinates.to_string (element (polygon_cursor).isolation_gap));
+					write (keyword => keyword_min_width , parameters => to_string (element (polygon_cursor).width_min));
+					write (keyword => keyword_isolation, parameters => to_string (element (polygon_cursor).isolation_gap));
 					write (keyword => keyword_fill_style, parameters => to_string (element (polygon_cursor).fill_style));
-					write (keyword => keyword_hatching_line_width  , parameters => et_pcb_coordinates.to_string (element (polygon_cursor).hatching_line_width));
-					write (keyword => keyword_hatching_line_spacing, parameters => et_pcb_coordinates.to_string (element (polygon_cursor).hatching_spacing));
+					write (keyword => keyword_hatching_line_width  , parameters => to_string (element (polygon_cursor).hatching_line_width));
+					write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (polygon_cursor).hatching_spacing));
 					write (keyword => keyword_corner_easing, parameters => to_string (element (polygon_cursor).corner_easing));
-					write (keyword => keyword_easing_radius, parameters => et_pcb_coordinates.to_string (element (polygon_cursor).easing_radius));
+					write (keyword => keyword_easing_radius, parameters => to_string (element (polygon_cursor).easing_radius));
 
 					case element (polygon_cursor).pad_connection is
 						when THERMAL => 
 							write (keyword => keyword_pad_connection, parameters => et_pcb.to_string (element (polygon_cursor).pad_connection));
 							write (keyword => keyword_pad_technology, parameters => et_pcb.to_string (element (polygon_cursor).thermal_technology));
-							write (keyword => keyword_thermal_width , parameters => et_pcb_coordinates.to_string (element (polygon_cursor).thermal_width));
-							write (keyword => keyword_thermal_gap   , parameters => et_pcb_coordinates.to_string (element (polygon_cursor).thermal_gap));	
+							write (keyword => keyword_thermal_width , parameters => to_string (element (polygon_cursor).thermal_width));
+							write (keyword => keyword_thermal_gap   , parameters => to_string (element (polygon_cursor).thermal_gap));	
 							
 						when SOLID =>
 							write (keyword => keyword_pad_technology, parameters => et_pcb.to_string (element (polygon_cursor).solid_technology));	
@@ -2052,7 +2055,9 @@ package body et_project is
 				section_mark (section_port, FOOTER);
 			end;
 
-			procedure write (submodule_cursor : in type_submodules.cursor) is begin
+			procedure write (submodule_cursor : in type_submodules.cursor) is 
+				use et_coordinates.geometry;
+			begin
 				section_mark (section_submodule, HEADER);
 				write (keyword => keyword_name, space => true, parameters => et_general.to_string (key (submodule_cursor))); -- name stepper_driver_1
 				write (keyword => keyword_file, space => true, parameters => type_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
@@ -2101,7 +2106,7 @@ package body et_project is
 
 		procedure query_board is
 			use et_pcb;
-			use et_pcb_coordinates;
+			use et_pcb_coordinates.geometry;
 
 			use type_texts_with_content;
 			use type_text_placeholders_pcb;
@@ -2512,7 +2517,7 @@ package body et_project is
 			section_mark (section_line, HEADER);
 			write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 			write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-			write (keyword => keyword_width, parameters => et_coordinates.to_string (element (cursor).width));
+			write (keyword => keyword_width, parameters => geometry.to_string (element (cursor).width));
 			section_mark (section_line, FOOTER);
 		end write_line;
 
@@ -2521,16 +2526,16 @@ package body et_project is
 			write (keyword => keyword_center, parameters => position (element (cursor).center));
 			write (keyword => keyword_start , parameters => position (element (cursor).start_point));
 			write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
-			write (keyword => keyword_radius, parameters => et_coordinates.to_string (element (cursor).radius));			
-			write (keyword => keyword_width , parameters => et_coordinates.to_string (element (cursor).width));
+			write (keyword => keyword_radius, parameters => geometry.to_string (element (cursor).radius));			
+			write (keyword => keyword_width , parameters => geometry.to_string (element (cursor).width));
 			section_mark (section_arc, FOOTER);
 		end write_arc;
 
 		procedure write_circle (cursor : in type_circles.cursor) is begin
 			section_mark (section_circle, HEADER);
 			write (keyword => keyword_center, parameters => position (element (cursor).center));
-			write (keyword => keyword_radius, parameters => et_coordinates.to_string (element (cursor).radius));
-			write (keyword => keyword_width , parameters => et_coordinates.to_string (element (cursor).width));
+			write (keyword => keyword_radius, parameters => geometry.to_string (element (cursor).radius));
+			write (keyword => keyword_width , parameters => geometry.to_string (element (cursor).width));
 			write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
 			section_mark (section_circle, FOOTER);
 		end write_circle;
@@ -2543,8 +2548,7 @@ package body et_project is
 			section_mark (section_text, FOOTER);
 		end write_text;
 
-		procedure write_placeholders is
-		begin
+		procedure write_placeholders is begin
 			case symbol.appearance is
 				when et_libraries.SCH_PCB =>
 
@@ -2608,12 +2612,12 @@ package body et_project is
 				when others => null; -- PASSIVE, INPUT_ANALOG, NOT_CONNECTED
 			end case;
 			
-			write (keyword => keyword_length, parameters => et_coordinates.to_string (element (cursor).length));
+			write (keyword => keyword_length, parameters => geometry.to_string (element (cursor).length));
 			write (keyword => keyword_rotation, parameters => rotation (element (cursor).rotation));
 			write (keyword => keyword_port_name_visible, parameters => to_string (element (cursor).port_name_visible));
-			write (keyword => keyword_port_name_size, parameters => et_coordinates.to_string (element (cursor).port_name_size));
+			write (keyword => keyword_port_name_size, parameters => geometry.to_string (element (cursor).port_name_size));
 			write (keyword => keyword_terminal_name_visible, parameters => to_string (element (cursor).terminal_name_visible));
-			write (keyword => keyword_terminal_name_size, parameters => et_coordinates.to_string (element (cursor).terminal_name_size));
+			write (keyword => keyword_terminal_name_size, parameters => geometry.to_string (element (cursor).terminal_name_size));
 			section_mark (section_port, FOOTER);			
 		end write_port;
 		
@@ -7401,6 +7405,7 @@ package body et_project is
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_pcb;
+		use et_pcb_coordinates.geometry;
 		
 		file_handle : ada.text_io.file_type;
 
@@ -7458,7 +7463,7 @@ package body et_project is
 				line_begin;
 				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-				write (keyword => keyword_width, parameters => et_pcb_coordinates.to_string (element (cursor).width));
+				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 				line_end;
 			end write_line;
 
@@ -7467,15 +7472,15 @@ package body et_project is
 				write (keyword => keyword_center, parameters => position (element (cursor).center));				
 				write (keyword => keyword_start , parameters => position (element (cursor).start_point));
 				write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
-				write (keyword => keyword_width , parameters => et_pcb_coordinates.to_string (element (cursor).width));
+				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
 				arc_end;
 			end write_arc;
 
 			procedure write_circle (cursor : in type_copper_circles.cursor) is begin
 				circle_begin;
 				write (keyword => keyword_center, parameters => position (element (cursor).center));				
-				write (keyword => keyword_radius, parameters => et_pcb_coordinates.to_string (element (cursor).radius));
-				write (keyword => keyword_width , parameters => et_pcb_coordinates.to_string (element (cursor).width));
+				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
 				circle_end;
 			end write_circle;
 
@@ -7492,10 +7497,10 @@ package body et_project is
 				write (keyword => keyword_priority, parameters => et_pcb.to_string (element (cursor).priority_level));
 				write (keyword => keyword_isolation, parameters => to_string (element (cursor).isolation_gap));
 				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-				write (keyword => keyword_hatching_line_width  , parameters => et_pcb_coordinates.to_string (element (cursor).hatching_line_width));
-				write (keyword => keyword_hatching_line_spacing, parameters => et_pcb_coordinates.to_string (element (cursor).hatching_spacing));
+				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
 				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
-				write (keyword => keyword_easing_radius, parameters => et_pcb_coordinates.to_string (element (cursor).easing_radius));
+				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
 				corners_begin;
 				query_element (cursor, query_points'access);
 				corners_end;
@@ -7727,7 +7732,7 @@ package body et_project is
 				procedure write_circle (cursor : in type_pad_circles.cursor) is begin
 					circle_begin;
 					write (keyword => keyword_center, parameters => position (element (cursor).center));
-					write (keyword => keyword_radius, parameters => et_pcb_coordinates.to_string (element (cursor).radius));
+					write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
 					circle_end;
 				end write_circle;
 
@@ -7786,14 +7791,14 @@ package body et_project is
 
 						-- copper width in inner layers
 						write (keyword => keyword_width_inner_layers, 
-							   parameters => et_pcb_coordinates.to_string (element (terminal_cursor).width_inner_layers));
+							   parameters => to_string (element (terminal_cursor).width_inner_layers));
 						
 						-- A THT terminal can have a drilled or a milled hole:
 						write (keyword => keyword_tht_hole, parameters => to_string (element (terminal_cursor).tht_hole));
 
 						case element (terminal_cursor).tht_hole is
 							when DRILLED => 
-								write (keyword_drill_size, parameters => et_pcb_coordinates.to_string (element (terminal_cursor).drill_size));
+								write (keyword_drill_size, parameters => to_string (element (terminal_cursor).drill_size));
 								
 							when MILLED => 
 								write_plated_millings (element (terminal_cursor).millings);

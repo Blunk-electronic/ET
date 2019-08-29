@@ -133,16 +133,16 @@ package body et_libraries is
 	-- Returns the given text size as string.
 	begin
 		if preamble then
-			return "size " & et_coordinates.to_string (size);
+			return "size " & geometry.to_string (size);
 		else
-			return et_coordinates.to_string (size);
+			return geometry.to_string (size);
 		end if;
 	end to_string;
 
 	function to_string (width : in type_text_line_width) return string is
 	-- Returns the given line width as string.
 	begin
-		return latin_1.space & et_coordinates.to_string (width);
+		return geometry.to_string (width);
 	end to_string;
 
 	function to_string (style : in type_text_style) return string is begin
@@ -650,14 +650,14 @@ package body et_libraries is
 		log (text => to_string (text.position), level => log_threshold + 1);
 		
 		-- size
-		log (text => "size" & et_coordinates.to_string (text.size), level => log_threshold + 1);
+		log (text => "size" & geometry.to_string (text.size), level => log_threshold + 1);
 
 		-- style
-		log (text => "style " & to_lower(et_libraries.type_text_style'image (text.style)),
+		log (text => "style " & to_lower (et_libraries.type_text_style'image (text.style)),
 			 level => log_threshold + 1);
 
 		-- line width
-		log (text => "line width" & et_coordinates.to_string (text.line_width),
+		log (text => "line width" & geometry.to_string (text.line_width),
 			level => log_threshold + 1);
 
 		-- rotation

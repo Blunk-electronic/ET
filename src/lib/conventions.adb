@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                        SYSTEM ET CONVENTIONS                             --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                             CONVENTIONS                                  --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -1947,6 +1947,7 @@ package body conventions is
 	-- specified in configuration file in section TEXT_SIZES_SCHEMATIC.
 		use et_string_processing;
 		use et_coordinates;
+		use et_coordinates.geometry;
 		use type_text_sizes_schematic;
 		cursor : type_text_sizes_schematic.cursor; -- points to a text size 
 	

@@ -36,12 +36,26 @@
 --
 
 -- with ada.text_io;				use ada.text_io;
+with ada.strings;				use ada.strings;
+with ada.strings.fixed;			use ada.strings.fixed;
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
+
 with ada.numerics.generic_elementary_functions;
 
 package body et_geometry is
 
 	package body geometry_operations_2d is
 
+		function to_string (distance : in type_distance) return string is begin
+			if distance < zero then
+				return latin_1.space & type_distance'image (distance);
+			else
+				return type_distance'image (distance);
+			end if;
+		end;
+		
 		function x (point : in type_point'class) return type_distance is begin
 			return point.x;
 		end;

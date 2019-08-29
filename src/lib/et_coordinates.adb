@@ -57,13 +57,13 @@ package body et_coordinates is
 		return type_distance'value (distance);
 	end to_distance;
 	
-	function to_string (distance : in type_distance) return string is begin
-		if distance < zero then
-			return latin_1.space & type_distance'image (distance);
-		else
-			return type_distance'image (distance);
-		end if;
-	end to_string;
+-- 	function to_string (distance : in type_distance) return string is begin
+-- 		if distance < zero then
+-- 			return latin_1.space & type_distance'image (distance);
+-- 		else
+-- 			return type_distance'image (distance);
+-- 		end if;
+-- 	end to_string;
 
 
 	function to_string (angle : in type_rotation) return string is

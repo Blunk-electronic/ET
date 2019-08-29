@@ -67,7 +67,7 @@ package et_pcb_coordinates is
 	type type_distance_total is delta 0.001 range -100_000_000.00 .. 100_000_000.00; -- unit is metric millimeter
 	for type_distance_total'small use 0.001; -- this is the accuracy required for layout
 
-	function to_string (distance : in type_distance_total) return string;
+-- 	function to_string (distance : in type_distance_total) return string;
 	
 	-- The x and y position of an object:
 	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter

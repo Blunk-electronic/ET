@@ -84,7 +84,7 @@ package et_coordinates is
 	
 	function to_distance (distance : in string) return type_distance_xy;	
 
-	function to_string (distance : in type_distance) return string;
+-- 	function to_string (distance : in type_distance) return string;
 
 
 

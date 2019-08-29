@@ -50,6 +50,8 @@ package et_geometry is
 
 		origin : constant type_point;
 
+		function to_string (distance : in type_distance) return string;
+		
 		function x (point : in type_point'class) return type_distance; -- CS class attr. not required ?
 		function y (point : in type_point'class) return type_distance;		
 

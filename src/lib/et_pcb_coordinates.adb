@@ -136,10 +136,10 @@ package body et_pcb_coordinates is
 
 	end mil_to_distance;
 	
-	function to_string (distance : in type_distance_total) return string is
-	begin
-		return latin_1.space & trim (type_distance_total'image (distance), left);
-	end to_string;
+-- 	function to_string (distance : in type_distance_total) return string is
+-- 	begin
+-- 		return latin_1.space & trim (type_distance_total'image (distance), left);
+-- 	end to_string;
 
 	function to_string (
 		angle 		: in type_rotation;

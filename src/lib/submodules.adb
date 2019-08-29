@@ -59,12 +59,12 @@ with et_pcb_coordinates;
 package body submodules is
 
 	function to_submodule_size (size : in type_submodule_size) return string is 
-		use et_coordinates;
+		use et_coordinates.geometry;
 	begin
 		return " size (x/y)" &
-			et_coordinates.to_string (size.x) &
+			geometry.to_string (size.x) &
 			axis_separator &
-			et_coordinates.to_string (size.y);
+			geometry.to_string (size.y);
 	end;
 
 	function at_edge (
