@@ -48,6 +48,10 @@ package body et_geometry is
 
 	package body geometry_operations_2d is
 
+		function to_distance (distance : in string) return type_distance is begin
+			return type_distance'value (distance);
+		end;
+		
 		function to_string (distance : in type_distance) return string is begin
 			if distance < zero then
 				return latin_1.space & type_distance'image (distance);

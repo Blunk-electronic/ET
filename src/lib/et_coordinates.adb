@@ -53,9 +53,9 @@ with et_general;
 package body et_coordinates is
 	pragma assertion_policy (check);
 	
-	function to_distance (distance : in string) return type_distance_xy is begin
-		return type_distance'value (distance);
-	end to_distance;
+-- 	function to_distance (distance : in string) return type_distance_xy is begin
+-- 		return type_distance'value (distance);
+-- 	end to_distance;
 	
 -- 	function to_string (distance : in type_distance) return string is begin
 -- 		if distance < zero then

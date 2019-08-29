@@ -127,7 +127,7 @@ package et_pcb_coordinates is
 		& et_coordinates.axis_separator
 		& "z)";
 	
-	function to_distance (distance : in string) return type_distance;
+-- 	function to_distance (distance : in string) return type_distance;
 
 -- 	units_per_cycle : constant float := 360.0;
 -- 	type type_angle is delta 0.01 range -359.9 .. 359.9;

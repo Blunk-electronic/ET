@@ -70,10 +70,10 @@ package body et_pcb_coordinates is
 		return type_face'value (face);
 	end to_face;
 	
-	function to_distance (distance : in string) return type_distance is
-	begin
-		return type_distance'value (distance);
-	end to_distance;
+-- 	function to_distance (distance : in string) return type_distance is
+-- 	begin
+-- 		return type_distance'value (distance);
+-- 	end to_distance;
 
 	function right_point_before_left_2d (right, left : in type_point_2d) return boolean is
 	-- Returns true if right point comes before left point.

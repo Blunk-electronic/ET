@@ -3068,7 +3068,7 @@ package body et_project is
 		line : in et_string_processing.type_fields_of_line; -- "size width 30 height 40"
 		from : in positive)
 		return et_pcb.type_text_dimensions is
-		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 		use et_string_processing;
 
 		function f (line : in type_fields_of_line; position : in positive) return string 
@@ -4353,7 +4353,7 @@ package body et_project is
 
 											elsif kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
-												pac_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_line_width := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -4430,7 +4430,7 @@ package body et_project is
 
 									elsif kw = keyword_width then -- width 0.3
 										expect_field_count (line, 2);
-										pac_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										pac_line_width := to_distance (f (line, 2));
 										
 									elsif kw = keyword_layers then -- layers 2..16
 										
@@ -4524,7 +4524,7 @@ package body et_project is
 
 											elsif kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
-												pac_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_line_width := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -4619,7 +4619,7 @@ package body et_project is
 
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										pac_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										pac_line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_layers then -- layers 1 14 3
 
@@ -4714,11 +4714,11 @@ package body et_project is
 												
 											elsif kw = keyword_radius then -- radius 22
 												expect_field_count (line, 2);
-												pac_circle_fillable.radius := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_circle_fillable.radius := to_distance (f (line, 2));
 												
 											elsif kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
-												pac_circle_fillable.width := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_circle_fillable.width := to_distance (f (line, 2));
 
 											elsif kw = keyword_filled then -- filled yes/no
 												expect_field_count (line, 2);													
@@ -4730,11 +4730,11 @@ package body et_project is
 
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												pac_circle_fillable.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_circle_fillable.hatching_line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
-												pac_circle_fillable.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_circle_fillable.hatching_spacing := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -4754,11 +4754,11 @@ package body et_project is
 											
 											elsif kw = keyword_radius then -- radius 213
 												expect_field_count (line, 2);
-												pac_circle_copper.radius := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_circle_copper.radius := to_distance (f (line, 2));
 
 											elsif kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
-												pac_circle_copper.width := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_circle_copper.width := to_distance (f (line, 2));
 
 											elsif kw = keyword_filled then -- filled yes/no
 												expect_field_count (line, 2);													
@@ -4770,11 +4770,11 @@ package body et_project is
 
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												pac_circle_copper.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_circle_copper.hatching_line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
-												pac_circle_copper.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_circle_copper.hatching_spacing := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -4794,7 +4794,7 @@ package body et_project is
 												
 											elsif kw = keyword_radius then -- radius 22
 												expect_field_count (line, 2);
-												pac_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_circle.radius := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -4817,7 +4817,7 @@ package body et_project is
 										
 									elsif kw = keyword_radius then -- radius 22
 										expect_field_count (line, 2);
-										pac_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+										pac_circle.radius := to_distance (f (line, 2));
 								
 									elsif kw = keyword_locked then -- locked no
 										expect_field_count (line, 2);
@@ -4841,11 +4841,11 @@ package body et_project is
 										
 									elsif kw = keyword_radius then -- radius 22
 										expect_field_count (line, 2);
-										pac_circle_fillable.radius := et_pcb_coordinates.to_distance (f (line, 2));
+										pac_circle_fillable.radius := to_distance (f (line, 2));
 										
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										pac_circle_fillable.width := et_pcb_coordinates.to_distance (f (line, 2));
+										pac_circle_fillable.width := to_distance (f (line, 2));
 
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);													
@@ -4857,11 +4857,11 @@ package body et_project is
 
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													
-										pac_circle_fillable.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										pac_circle_fillable.hatching_line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 										expect_field_count (line, 2);													
-										pac_circle_fillable.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+										pac_circle_fillable.hatching_spacing := to_distance (f (line, 2));
 
 									elsif kw = keyword_layers then -- layers 1 14 3
 
@@ -4888,7 +4888,7 @@ package body et_project is
 										
 									elsif kw = keyword_radius then -- radius 22
 										expect_field_count (line, 2);
-										pac_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+										pac_circle.radius := to_distance (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -4909,7 +4909,7 @@ package body et_project is
 									elsif kw = keyword_radius then -- radius 22.3
 										expect_field_count (line, 2);
 
-										pac_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+										pac_circle.radius := to_distance (f (line, 2));
 										
 									elsif kw = keyword_locked then -- locked no/yes
 										expect_field_count (line, 2);
@@ -4943,15 +4943,15 @@ package body et_project is
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
-												pac_polygon.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_polygon.easing_radius := to_distance (f (line, 2));
 												
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												pac_polygon.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_polygon.hatching_line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
-												pac_polygon.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_polygon.hatching_spacing := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -4973,15 +4973,15 @@ package body et_project is
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
-												pac_polygon_copper.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_polygon_copper.easing_radius := to_distance (f (line, 2));
 												
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												pac_polygon_copper.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_polygon_copper.hatching_line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
-												pac_polygon_copper.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_polygon_copper.hatching_spacing := to_distance (f (line, 2));
 
 											elsif kw = keyword_priority then -- priority 2
 												expect_field_count (line, 2);
@@ -4989,7 +4989,7 @@ package body et_project is
 
 											elsif kw = keyword_isolation then -- isolation 0.5
 												expect_field_count (line, 2);
-												pac_polygon_copper.isolation_gap := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_polygon_copper.isolation_gap := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -5016,19 +5016,19 @@ package body et_project is
 
 									elsif kw = keyword_easing_radius then -- easing_radius 0.4
 										expect_field_count (line, 2);													
-										pac_polygon.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
+										pac_polygon.easing_radius := to_distance (f (line, 2));
 										
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													
-										pac_polygon.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										pac_polygon.hatching_line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 										expect_field_count (line, 2);													
-										pac_polygon.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+										pac_polygon.hatching_spacing := to_distance (f (line, 2));
 										
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										pac_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										pac_line_width := to_distance (f (line, 2));
 										
 									elsif kw = keyword_layers then -- layers 1 14 3
 
@@ -5099,7 +5099,7 @@ package body et_project is
 
 											elsif kw = keyword_line_width then -- line_width 0.1
 												expect_field_count (line, 2);
-												pac_text.line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_text.line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 												expect_field_count (line, 5);
@@ -5146,7 +5146,7 @@ package body et_project is
 
 											elsif kw = keyword_line_width then -- line_width 0.1
 												expect_field_count (line, 2);
-												pac_text_placeholder.line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												pac_text_placeholder.line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 												expect_field_count (line, 5);
@@ -5190,7 +5190,7 @@ package body et_project is
 
 									elsif kw = keyword_width_inner_layers then -- width_inner_layers 0.2
 										expect_field_count (line, 2);
-										tht_width_inner_layers := et_pcb_coordinates.to_distance (f (line,2));
+										tht_width_inner_layers := to_distance (f (line,2));
 
 									elsif kw = keyword_tht_hole then -- hole drilled/milled
 										expect_field_count (line, 2);
@@ -5198,7 +5198,7 @@ package body et_project is
 
 									elsif kw = keyword_drill_size then -- drill_size 0.8
 										expect_field_count (line, 2);
-										tht_drill_size := et_pcb_coordinates.to_distance (f (line,2));
+										tht_drill_size := to_distance (f (line,2));
 										
 									elsif kw = keyword_face then -- face top/bottom
 										expect_field_count (line, 2);
@@ -5317,6 +5317,7 @@ package body et_project is
 	-- Opens the symbol file and stores the symbol in container et_libraries.symbols.
 		file_name 		: in et_libraries.type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		log_threshold	: in et_string_processing.type_log_level) is
+		use et_coordinates.geometry;
 		use et_string_processing;
 		use et_libraries;
 		file_handle : ada.text_io.file_type;
@@ -5748,7 +5749,7 @@ package body et_project is
 
 									elsif kw = keyword_width then
 										expect_field_count (line, 2);
-										symbol_line.width := et_coordinates.to_distance (f (line, 2));
+										symbol_line.width := to_distance (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -5785,11 +5786,11 @@ package body et_project is
 
 									elsif kw = keyword_width then
 										expect_field_count (line, 2);
-										symbol_arc.width := et_coordinates.to_distance (f (line, 2));
+										symbol_arc.width := to_distance (f (line, 2));
 
 									elsif kw = keyword_radius then
 										expect_field_count (line, 2);
-										symbol_arc.radius := et_coordinates.to_distance (f (line, 2));
+										symbol_arc.radius := to_distance (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -5814,11 +5815,11 @@ package body et_project is
 
 									elsif kw = keyword_width then -- widht 0.2
 										expect_field_count (line, 2);
-										symbol_circle.width := et_coordinates.to_distance (f (line, 2));
+										symbol_circle.width := to_distance (f (line, 2));
 
 									elsif kw = keyword_radius then -- radius 5
 										expect_field_count (line, 2);
-										symbol_circle.radius := et_coordinates.to_distance (f (line, 2));
+										symbol_circle.radius := to_distance (f (line, 2));
 
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);
@@ -5851,11 +5852,11 @@ package body et_project is
 
 									elsif kw = keyword_size then -- size 5
 										expect_field_count (line, 2);
-										symbol_text_base.size := et_coordinates.to_distance (f (line, 2));
+										symbol_text_base.size := to_distance (f (line, 2));
 
 									elsif kw = keyword_line_width then -- line_width 0.2
 										expect_field_count (line, 2);
-										symbol_text_base.line_width := et_coordinates.to_distance (f (line, 2));
+										symbol_text_base.line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
@@ -5896,11 +5897,11 @@ package body et_project is
 
 									elsif kw = keyword_size then -- size 5
 										expect_field_count (line, 2);
-										symbol_text_base.size := et_coordinates.to_distance (f (line, 2));
+										symbol_text_base.size := to_distance (f (line, 2));
 
 									elsif kw = keyword_line_width then -- line_width 0.2
 										expect_field_count (line, 2);
-										symbol_text_base.line_width := et_coordinates.to_distance (f (line, 2));
+										symbol_text_base.line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
@@ -5941,7 +5942,7 @@ package body et_project is
 
 									elsif kw = keyword_length then -- length 5
 										expect_field_count (line, 2);
-										port.length := et_coordinates.to_distance (f (line, 2));
+										port.length := to_distance (f (line, 2));
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
@@ -5953,7 +5954,7 @@ package body et_project is
 
 									elsif kw = keyword_port_name_size then -- port_name_size 2.0
 										expect_field_count (line, 2);
-										port.port_name_size := et_coordinates.to_distance (f (line, 2));
+										port.port_name_size := to_distance (f (line, 2));
 
 									elsif kw = keyword_terminal_name_visible then -- terminal_name_visible yes/no
 										expect_field_count (line, 2);
@@ -5961,7 +5962,7 @@ package body et_project is
 
 									elsif kw = keyword_terminal_name_size then -- terminal_name_size 2.0
 										expect_field_count (line, 2);
-										port.terminal_name_size := et_coordinates.to_distance (f (line, 2));
+										port.terminal_name_size := to_distance (f (line, 2));
 
 									elsif kw = keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
 										expect_field_count (line, 2);
@@ -6956,7 +6957,7 @@ package body et_project is
 
 									elsif kw = keyword_width then
 										expect_field_count (line, 2);
-										symbol_line.width := et_coordinates.to_distance (f (line, 2));
+										symbol_line.width := to_distance (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -6993,11 +6994,11 @@ package body et_project is
 
 									elsif kw = keyword_width then
 										expect_field_count (line, 2);
-										symbol_arc.width := et_coordinates.to_distance (f (line, 2));
+										symbol_arc.width := to_distance (f (line, 2));
 
 									elsif kw = keyword_radius then
 										expect_field_count (line, 2);
-										symbol_arc.radius := et_coordinates.to_distance (f (line, 2));
+										symbol_arc.radius := to_distance (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -7022,11 +7023,11 @@ package body et_project is
 
 									elsif kw = keyword_width then -- widht 0.2
 										expect_field_count (line, 2);
-										symbol_circle.width := et_coordinates.to_distance (f (line, 2));
+										symbol_circle.width := to_distance (f (line, 2));
 
 									elsif kw = keyword_radius then -- radius 5
 										expect_field_count (line, 2);
-										symbol_circle.radius := et_coordinates.to_distance (f (line, 2));
+										symbol_circle.radius := to_distance (f (line, 2));
 
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);
@@ -7065,11 +7066,11 @@ package body et_project is
 
 									elsif kw = keyword_size then -- size 5
 										expect_field_count (line, 2);
-										symbol_text_base.size := et_coordinates.to_distance (f (line, 2));
+										symbol_text_base.size := to_distance (f (line, 2));
 
 									elsif kw = keyword_line_width then -- line_width 0.2
 										expect_field_count (line, 2);
-										symbol_text_base.line_width := et_coordinates.to_distance (f (line, 2));
+										symbol_text_base.line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
@@ -7116,11 +7117,11 @@ package body et_project is
 
 									elsif kw = keyword_size then -- size 5
 										expect_field_count (line, 2);
-										symbol_text_base.size := et_coordinates.to_distance (f (line, 2));
+										symbol_text_base.size := to_distance (f (line, 2));
 
 									elsif kw = keyword_line_width then -- line_width 0.2
 										expect_field_count (line, 2);
-										symbol_text_base.line_width := et_coordinates.to_distance (f (line, 2));
+										symbol_text_base.line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
@@ -7167,7 +7168,7 @@ package body et_project is
 
 									elsif kw = keyword_length then -- length 5
 										expect_field_count (line, 2);
-										port.length := et_coordinates.to_distance (f (line, 2));
+										port.length := to_distance (f (line, 2));
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
@@ -7179,7 +7180,7 @@ package body et_project is
 
 									elsif kw = keyword_port_name_size then -- port_name_size 2.0
 										expect_field_count (line, 2);
-										port.port_name_size := et_coordinates.to_distance (f (line, 2));
+										port.port_name_size := to_distance (f (line, 2));
 
 									elsif kw = keyword_terminal_name_visible then -- terminal_name_visible yes/no
 										expect_field_count (line, 2);
@@ -7187,7 +7188,7 @@ package body et_project is
 
 									elsif kw = keyword_terminal_name_size then -- terminal_name_size 2.0
 										expect_field_count (line, 2);
-										port.terminal_name_size := et_coordinates.to_distance (f (line, 2));
+										port.terminal_name_size := to_distance (f (line, 2));
 
 									elsif kw = keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
 										expect_field_count (line, 2);
@@ -7966,7 +7967,7 @@ package body et_project is
 			line : in type_fields_of_line; -- "size x 30 y 40"
 			from : in positive)
 			return submodules.type_submodule_size is
-			use et_coordinates;
+			use et_coordinates.geometry;
 			
 			size : submodules.type_submodule_size; -- to be returned
 			place : positive := from; -- the field being read from given line
@@ -10899,32 +10900,32 @@ package body et_project is
 										
 									elsif kw = keyword_clearance then
 										expect_field_count (line, 2);
-										net_class.clearance := et_pcb_coordinates.to_distance (f (line,2));
+										net_class.clearance := et_pcb_coordinates.geometry.to_distance (f (line,2));
 										et_pcb.validate_track_clearance (net_class.clearance);
 										
 									elsif kw = keyword_track_width_min then
 										expect_field_count (line, 2);
-										net_class.track_width_min := et_pcb_coordinates.to_distance (f (line,2));
+										net_class.track_width_min := et_pcb_coordinates.geometry.to_distance (f (line,2));
 										et_pcb.validate_track_width (net_class.track_width_min);
 										
 									elsif kw = keyword_via_drill_min then
 										expect_field_count (line, 2);
-										net_class.via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
+										net_class.via_drill_min := et_pcb_coordinates.geometry.to_distance (f (line,2));
 										et_pcb.validate_drill_size (net_class.via_drill_min);
 										
 									elsif kw = keyword_via_restring_min then
 										expect_field_count (line, 2);
-										net_class.via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
+										net_class.via_restring_min := et_pcb_coordinates.geometry.to_distance (f (line,2));
 										et_pcb.validate_restring_width (net_class.via_restring_min);
 										
 									elsif kw = keyword_micro_via_drill_min then
 										expect_field_count (line, 2);
-										net_class.micro_via_drill_min := et_pcb_coordinates.to_distance (f (line,2));
+										net_class.micro_via_drill_min := et_pcb_coordinates.geometry.to_distance (f (line,2));
 										et_pcb.validate_drill_size (net_class.micro_via_drill_min);
 										
 									elsif kw = keyword_micro_via_restring_min then
 										expect_field_count (line, 2);
-										net_class.micro_via_restring_min := et_pcb_coordinates.to_distance (f (line,2));
+										net_class.micro_via_restring_min := et_pcb_coordinates.geometry.to_distance (f (line,2));
 										et_pcb.validate_restring_width (net_class.micro_via_restring_min);
 									else
 										invalid_keyword (kw);
@@ -11169,7 +11170,7 @@ package body et_project is
 
 									elsif kw = keyword_size then -- size 1.3
 										expect_field_count (line, 2);
-										net_label.size := et_coordinates.to_distance (f (line, 2));
+										net_label.size := et_coordinates.geometry.to_distance (f (line, 2));
 
 									elsif kw = keyword_style then -- style normal
 										expect_field_count (line, 2);
@@ -11177,7 +11178,7 @@ package body et_project is
 
 									elsif kw = keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);
-										net_label.width := et_coordinates.to_distance (f (line, 2));
+										net_label.width := et_coordinates.geometry.to_distance (f (line, 2));
 
 									elsif kw = keyword_appearance then -- appearance tag/simple
 										expect_field_count (line, 2);
@@ -11220,7 +11221,7 @@ package body et_project is
 
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										route_line.width := et_pcb_coordinates.to_distance (f (line, 2));
+										route_line.width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -11249,7 +11250,7 @@ package body et_project is
 
 											elsif kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
-												board_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -11278,7 +11279,7 @@ package body et_project is
 
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										board_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
 									elsif kw = keyword_layers then -- layers 1 14 3
 
@@ -11310,7 +11311,7 @@ package body et_project is
 
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										board_track_line.width := et_pcb_coordinates.to_distance (f (line, 2));
+										board_track_line.width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
 									elsif kw = keyword_layer then -- layer 1
 										expect_field_count (line, 2);
@@ -11380,7 +11381,7 @@ package body et_project is
 
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										route_arc.width := et_pcb_coordinates.to_distance (f (line, 2));
+										route_arc.width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -11415,7 +11416,7 @@ package body et_project is
 
 											elsif kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
-												board_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -11450,7 +11451,7 @@ package body et_project is
 
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										board_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
 									elsif kw = keyword_layers then -- layers 1 14 3
 
@@ -11489,7 +11490,7 @@ package body et_project is
 
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										board_track_arc.width := et_pcb_coordinates.to_distance (f (line, 2));
+										board_track_arc.width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
 									elsif kw = keyword_layer then -- layer 1
 										expect_field_count (line, 2);
@@ -11552,11 +11553,11 @@ package body et_project is
 												
 											elsif kw = keyword_radius then -- radius 22
 												expect_field_count (line, 2);
-												board_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+												board_circle.radius := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 												
 											elsif kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
-												board_circle.width := et_pcb_coordinates.to_distance (f (line, 2));
+												board_circle.width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
 											elsif kw = keyword_filled then -- filled yes/no
 												expect_field_count (line, 2);													
@@ -11568,11 +11569,11 @@ package body et_project is
 
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												board_circle.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												board_circle.hatching_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
-												board_circle.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+												board_circle.hatching_spacing := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -11592,11 +11593,11 @@ package body et_project is
 -- 													
 -- 												elsif kw = keyword_radius then -- radius 22
 -- 													expect_field_count (line, 2);
--- 													board_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+-- 													board_circle.radius := to_distance (f (line, 2));
 -- 													
 -- 												elsif kw = keyword_width then -- width 0.5
 -- 													expect_field_count (line, 2);
--- 													board_circle.width := et_pcb_coordinates.to_distance (f (line, 2));
+-- 													board_circle.width := to_distance (f (line, 2));
 -- 
 -- 												elsif kw = keyword_filled then -- filled yes/no
 -- 													expect_field_count (line, 2);													
@@ -11608,11 +11609,11 @@ package body et_project is
 -- 
 -- 												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 -- 													expect_field_count (line, 2);													
--- 													board_circle.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+-- 													board_circle.hatching_line_width := to_distance (f (line, 2));
 -- 
 -- 												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 -- 													expect_field_count (line, 2);													
--- 													board_circle.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+-- 													board_circle.hatching_spacing := to_distance (f (line, 2));
 -- 													
 -- 												else
 -- 													invalid_keyword (kw);
@@ -11623,6 +11624,7 @@ package body et_project is
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								declare
+									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -11634,11 +11636,11 @@ package body et_project is
 										
 									elsif kw = keyword_radius then -- radius 22
 										expect_field_count (line, 2);
-										board_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+										board_circle.radius := to_distance (f (line, 2));
 										
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										board_circle.width := et_pcb_coordinates.to_distance (f (line, 2));
+										board_circle.width := to_distance (f (line, 2));
 
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);													
@@ -11650,11 +11652,11 @@ package body et_project is
 
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													
-										board_circle.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										board_circle.hatching_line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 										expect_field_count (line, 2);													
-										board_circle.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+										board_circle.hatching_spacing := to_distance (f (line, 2));
 
 									elsif kw = keyword_layers then -- layers 1 14 3
 
@@ -11670,6 +11672,7 @@ package body et_project is
 
 							when SEC_COPPER =>
 								declare
+									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -11681,11 +11684,11 @@ package body et_project is
 									
 									elsif kw = keyword_radius then -- radius 213
 										expect_field_count (line, 2);
-										board_track_circle.radius := et_pcb_coordinates.to_distance (f (line, 2));
+										board_track_circle.radius := to_distance (f (line, 2));
 
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										board_track_circle.width := et_pcb_coordinates.to_distance (f (line, 2));
+										board_track_circle.width := to_distance (f (line, 2));
 
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);													
@@ -11697,11 +11700,11 @@ package body et_project is
 
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													
-										board_track_circle.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										board_track_circle.hatching_line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 										expect_field_count (line, 2);													
-										board_track_circle.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+										board_track_circle.hatching_spacing := to_distance (f (line, 2));
 										
 									elsif kw = keyword_layer then -- layer 1
 										expect_field_count (line, 2);
@@ -11713,6 +11716,7 @@ package body et_project is
 
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								declare
+									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -11724,7 +11728,7 @@ package body et_project is
 										
 									elsif kw = keyword_radius then -- radius 22
 										expect_field_count (line, 2);
-										board_circle_contour.radius := et_pcb_coordinates.to_distance (f (line, 2));
+										board_circle_contour.radius := to_distance (f (line, 2));
 								
 									elsif kw = keyword_locked then -- locked no
 										expect_field_count (line, 2);
@@ -11742,6 +11746,7 @@ package body et_project is
 						case stack.parent is
 							when SEC_ROUTE =>
 								declare
+									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -11751,7 +11756,7 @@ package body et_project is
 
 									elsif kw = keyword_isolation then -- isolation 0.5
 										expect_field_count (line, 2);
-										route_polygon.isolation_gap := et_pcb_coordinates.to_distance (f (line, 2));
+										route_polygon.isolation_gap := to_distance (f (line, 2));
 										
 									elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 										expect_field_count (line, 2);
@@ -11759,7 +11764,7 @@ package body et_project is
 
 									elsif kw = keyword_easing_radius then -- easing_radius 0.3
 										expect_field_count (line, 2);
-										route_polygon.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
+										route_polygon.easing_radius := to_distance (f (line, 2));
 
 									elsif kw = keyword_fill_style then -- fill_style solid,hatched,cutout
 										expect_field_count (line, 2);
@@ -11767,11 +11772,11 @@ package body et_project is
 
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 1
 										expect_field_count (line, 2);
-										route_polygon.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										route_polygon.hatching_line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 1
 										expect_field_count (line, 2);
-										route_polygon.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+										route_polygon.hatching_spacing := to_distance (f (line, 2));
 
 									elsif kw = keyword_layer then -- layer 2
 										expect_field_count (line, 2);
@@ -11779,7 +11784,7 @@ package body et_project is
 
 									elsif kw = keyword_min_width then -- min_width 0.3
 										expect_field_count (line, 2);
-										route_polygon_width_min := et_pcb_coordinates.to_distance (f (line, 2));
+										route_polygon_width_min := to_distance (f (line, 2));
 
 									elsif kw = keyword_pad_technology then -- pad_technology smt_only/tht_only/smt_and_tht
 										expect_field_count (line, 2);
@@ -11791,11 +11796,11 @@ package body et_project is
 										
 									elsif kw = keyword_thermal_width then -- thermal_width 0.3
 										expect_field_count (line, 2);
-										route_polygon_thermal_width := et_pcb_coordinates.to_distance (f (line, 2));
+										route_polygon_thermal_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_thermal_gap then -- thermal_gap 0.7
 										expect_field_count (line, 2);
-										route_polygon_thermal_gap := et_pcb_coordinates.to_distance (f (line, 2));
+										route_polygon_thermal_gap := to_distance (f (line, 2));
 
 									else
 										invalid_keyword (kw);
@@ -11807,6 +11812,7 @@ package body et_project is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
 										declare
+											use et_pcb_coordinates.geometry;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -11820,15 +11826,15 @@ package body et_project is
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
-												board_polygon.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
+												board_polygon.easing_radius := to_distance (f (line, 2));
 												
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												board_polygon.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												board_polygon.hatching_line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
-												board_polygon.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+												board_polygon.hatching_spacing := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -11840,6 +11846,7 @@ package body et_project is
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								declare
+									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -11853,19 +11860,19 @@ package body et_project is
 
 									elsif kw = keyword_easing_radius then -- easing_radius 0.4
 										expect_field_count (line, 2);													
-										board_polygon.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
+										board_polygon.easing_radius := to_distance (f (line, 2));
 										
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													
-										board_polygon.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										board_polygon.hatching_line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 										expect_field_count (line, 2);													
-										board_polygon.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+										board_polygon.hatching_spacing := to_distance (f (line, 2));
 
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										board_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										board_line_width := to_distance (f (line, 2));
 										
 									elsif kw = keyword_layers then -- layers 1 14 3
 
@@ -11880,6 +11887,7 @@ package body et_project is
 
 							when SEC_COPPER =>
 								declare
+									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -11893,19 +11901,19 @@ package body et_project is
 
 									elsif kw = keyword_easing_radius then -- easing_radius 0.4
 										expect_field_count (line, 2);													
-										board_polygon_floating.easing_radius := et_pcb_coordinates.to_distance (f (line, 2));
+										board_polygon_floating.easing_radius := to_distance (f (line, 2));
 										
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													
-										board_polygon_floating.hatching_line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										board_polygon_floating.hatching_line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 										expect_field_count (line, 2);													
-										board_polygon_floating.hatching_spacing := et_pcb_coordinates.to_distance (f (line, 2));
+										board_polygon_floating.hatching_spacing := to_distance (f (line, 2));
 
 									elsif kw = keyword_min_width then -- min_width 0.5
 										expect_field_count (line, 2);
-										board_polygon_floating.width_min := et_pcb_coordinates.to_distance (f (line, 2));
+										board_polygon_floating.width_min := to_distance (f (line, 2));
 										
 									elsif kw = keyword_layer then -- layer 1
 										expect_field_count (line, 2);
@@ -11917,7 +11925,7 @@ package body et_project is
 
 									elsif kw = keyword_isolation then -- isolation 0.5
 										expect_field_count (line, 2);
-										board_polygon_floating.isolation_gap := et_pcb_coordinates.to_distance (f (line, 2));
+										board_polygon_floating.isolation_gap := to_distance (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -11931,6 +11939,7 @@ package body et_project is
 						case stack.parent is
 							when SEC_ROUTE =>
 								declare
+									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -11942,15 +11951,15 @@ package body et_project is
 
 									elsif kw = keyword_diameter then -- diameter 0.35
 										expect_field_count (line, 2);
-										route_via.diameter := et_pcb_coordinates.to_distance (f (line, 2));
+										route_via.diameter := to_distance (f (line, 2));
 
 									elsif kw = keyword_restring_outer_layers then -- restring_outer_layers 0.3
 										expect_field_count (line, 2);
-										route_via.restring_outer := et_pcb_coordinates.to_distance (f (line, 2));
+										route_via.restring_outer := to_distance (f (line, 2));
 
 									elsif kw = keyword_restring_inner_layers then -- restring_inner_layers 0.34
 										expect_field_count (line, 2);
-										route_via.restring_inner := et_pcb_coordinates.to_distance (f (line, 2));
+										route_via.restring_inner := to_distance (f (line, 2));
 
 									elsif kw = keyword_layer_start then -- layer_start 1
 										expect_field_count (line, 2);
@@ -11972,6 +11981,7 @@ package body et_project is
 						case stack.parent is
 							when SEC_POLYGON =>
 								declare
+									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
 									-- read corner points
@@ -12119,6 +12129,7 @@ package body et_project is
 						case stack.parent is
 							when SEC_TEXTS => -- in schematic
 								declare
+									use et_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -12134,11 +12145,11 @@ package body et_project is
 
 									elsif kw = keyword_size then -- size 1.4
 										expect_field_count (line, 2);
-										note.size := et_coordinates.to_distance (f (line, 2));
+										note.size := to_distance (f (line, 2));
 
 									elsif kw = keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);
-										note.line_width := et_coordinates.to_distance (f (line, 2));
+										note.line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_rotation then -- rotation 90
 										expect_field_count (line, 2);
@@ -12163,6 +12174,7 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK => -- CS SEC_KEEPOUT
 										declare
+											use et_pcb_coordinates.geometry;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -12180,7 +12192,7 @@ package body et_project is
 
 											elsif kw = keyword_line_width then -- line_width 0.1
 												expect_field_count (line, 2);
-												board_text.line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												board_text.line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 												expect_field_count (line, 5);
@@ -12202,6 +12214,7 @@ package body et_project is
 
 							when SEC_COPPER =>
 								declare
+									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -12219,7 +12232,7 @@ package body et_project is
 
 									elsif kw = keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);
-										board_text_copper.line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										board_text_copper.line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
@@ -12332,6 +12345,7 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_PACKAGE => -- in layout
 										declare
+											use et_pcb_coordinates.geometry;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -12358,7 +12372,7 @@ package body et_project is
 											elsif kw = keyword_line_width then -- line_width 0.15
 												expect_field_count (line, 2);
 
-												device_text_placeholder.line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												device_text_placeholder.line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 												expect_field_count (line, 5);
@@ -12373,6 +12387,7 @@ package body et_project is
 
 									when SEC_UNIT =>
 										declare
+											use et_coordinates.geometry;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -12390,12 +12405,12 @@ package body et_project is
 												expect_field_count (line, 2);
 
 												-- extract dimensions of placeholder text starting at field 2
-												unit_placeholder.size := et_coordinates.to_distance (f (line, 2));
+												unit_placeholder.size := to_distance (f (line, 2));
 
 											elsif kw = keyword_line_width then -- line_width 0.15
 												expect_field_count (line, 2);
 
-												unit_placeholder.line_width := et_coordinates.to_distance (f (line, 2));
+												unit_placeholder.line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_rotation then -- rotation 90.0
 												expect_field_count (line, 2);
@@ -12425,6 +12440,7 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOP_MASK => -- CS SEC_KEEPOUT
 										declare
+											use et_pcb_coordinates.geometry;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -12442,7 +12458,7 @@ package body et_project is
 
 											elsif kw = keyword_line_width then -- line_width 0.1
 												expect_field_count (line, 2);
-												board_text_placeholder.line_width := et_pcb_coordinates.to_distance (f (line, 2));
+												board_text_placeholder.line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 												expect_field_count (line, 5);
@@ -12464,6 +12480,7 @@ package body et_project is
 
 							when SEC_COPPER =>
 								declare
+									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -12481,7 +12498,7 @@ package body et_project is
 
 									elsif kw = keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);
-										board_text_copper_placeholder.line_width := et_pcb_coordinates.to_distance (f (line, 2));
+										board_text_copper_placeholder.line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
