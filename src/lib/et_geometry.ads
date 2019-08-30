@@ -56,6 +56,17 @@ package et_geometry is
 		function x (point : in type_point'class) return type_distance; -- CS class attr. not required ?
 		function y (point : in type_point'class) return type_distance;		
 
+		axis_separator : constant string := "/";
+		point_preamble : constant string := " pos (x" & axis_separator & "y) ";
+		point_preamble_with_rotation : constant string := " pos "
+			& "(x"
+			& axis_separator
+			& "y"
+			& axis_separator
+			& "rotation)";
+
+
+		
 		function set (x, y : in type_distance) return type_point'class;
 
 		procedure set (
@@ -151,6 +162,8 @@ package et_geometry is
 			angle 		: in type_rotation)
 			return type_point'class;
 
+
+		function to_string (point : in type_point'class) return string;
 		
 	private
 

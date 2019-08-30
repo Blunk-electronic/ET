@@ -138,18 +138,18 @@ package body et_coordinates is
 		end if;
 	end;
 
-	function to_string (point : in type_point'class) return string is
-	-- Returns the given point coordinates to a string.
-		use et_string_processing;
-	begin
-		return position_preamble
-		-- 	& trim (type_distance'image (point.x), left)
-			& to_string (point.x)
-			& latin_1.space & axis_separator & latin_1.space
-		--	& trim (type_distance'image (point.y), left);
-			& to_string (point.y);
-	
-	end to_string;
+-- 	function to_string (point : in type_point'class) return string is
+-- 	-- Returns the given point coordinates to a string.
+-- 		use et_string_processing;
+-- 	begin
+-- 		return position_preamble
+-- 		-- 	& trim (type_distance'image (point.x), left)
+-- 			& to_string (point.x)
+-- 			& latin_1.space & axis_separator & latin_1.space
+-- 		--	& trim (type_distance'image (point.y), left);
+-- 			& to_string (point.y);
+-- 	
+-- 	end to_string;
 
 -- 	procedure rotate (
 -- 	-- Rotates the given point by the given angle with the origin as center.

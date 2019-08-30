@@ -124,12 +124,12 @@ package et_coordinates is
 
 	function "<" (left, right : in type_point) return boolean;
 	
-	axis_separator		: constant string (1..1) := "/";
+-- 	axis_separator		: constant string (1..1) := "/";
 	--position_preamble	: constant string (1..15) := "position (x" & axis_separator & "y) ";
-	position_preamble	: constant string (1..11) := " pos (x" & axis_separator & "y) ";
+-- 	position_preamble	: constant string (1..11) := " pos (x" & axis_separator & "y) ";
 	--position_preamble	: constant string (1..6) := "(x" & axis_separator & "y) ";
 	
-	function to_string (point : in type_point'class) return string;
+-- 	function to_string (point : in type_point'class) return string;
 	-- Returns the given point coordinates to a string.
 
 -- 	procedure rotate ( -- CS delete or move to et_geometry

@@ -251,12 +251,12 @@ package body et_kicad_to_native is
 				log (text => "note '" & et_libraries.to_string (note.content) & "'", level => log_threshold + 3);
 				log_indentation_up;
 				
-				log (text => before & et_coordinates.to_string (note.coordinates), level => log_threshold + 4);
+				log (text => before & to_string (note.coordinates), level => log_threshold + 4);
 
 				-- Move position from negative to positive y.
 				move (note.coordinates);
 
-				log (text => now & et_coordinates.to_string (note.coordinates), level => log_threshold + 4);
+				log (text => now & to_string (note.coordinates), level => log_threshold + 4);
 
 				log_indentation_down;
 			end change_path;
@@ -359,6 +359,7 @@ package body et_kicad_to_native is
 				-- moves the position of the package in layout
 					use et_libraries;
 					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 				begin
 					if component.appearance = SCH_PCB then
 						log_indentation_up;
@@ -431,6 +432,7 @@ package body et_kicad_to_native is
 				strand_cursor : et_kicad.type_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in out et_kicad.type_strand) is
+					use et_coordinates.geometry;
 					use et_kicad.type_net_segments;
 					segment_cursor : et_kicad.type_net_segments.cursor := strand.segments.first;
 
@@ -551,9 +553,9 @@ package body et_kicad_to_native is
 				begin -- query_segments
 
 					-- Move the start coordinates of the strand from kicad frame to native frame:
-					log (text => "schematic strand start " & before & et_coordinates.to_string (point => strand.position), level => log_threshold + 3);
+					log (text => "schematic strand start " & before & to_string (point => strand.position), level => log_threshold + 3);
 					move (strand.position); 
-					log (text => "schematic strand start " & now & et_coordinates.to_string (point => strand.position), level => log_threshold + 3);
+					log (text => "schematic strand start " & now & to_string (point => strand.position), level => log_threshold + 3);
 
 					-- Change path of segments:
 					while segment_cursor /= et_kicad.type_net_segments.no_element loop
@@ -616,7 +618,7 @@ package body et_kicad_to_native is
 					end move_arc;
 
 					procedure move_via (via : in out et_pcb.type_via) is
-						use et_pcb_coordinates;
+						use et_pcb_coordinates.geometry;
 					begin
 						log (text => board_track & "via", level => log_threshold + 4);
 						log_indentation_up;
@@ -632,6 +634,7 @@ package body et_kicad_to_native is
 
 					procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_signal) is
 						use et_pcb_coordinates;
+						use et_pcb_coordinates.geometry;
 						use et_pcb.type_polygon_points;
 						point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 
@@ -766,7 +769,7 @@ package body et_kicad_to_native is
 			module		: in out et_kicad.type_module) is
 
 			log_threshold_add : type_log_level := 2;
-			
+
 			procedure move_silk_screen is
 				use et_pcb.type_silk_lines;
 				lines_cursor : et_pcb.type_silk_lines.cursor;
@@ -819,7 +822,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				procedure move_circle (circle : in out et_pcb.type_silk_circle) is
-					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 				begin
 					log (text => board_silk_screen & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -835,6 +838,7 @@ package body et_kicad_to_native is
 
 				procedure move_polygon (polygon : in out et_pcb.type_silk_polygon) is
 					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 					use et_pcb.type_polygon_points;
 					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
@@ -877,7 +881,7 @@ package body et_kicad_to_native is
 				end move_polygon;
 
 				procedure move_text (text : in out et_pcb.type_text_with_content) is
-					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 				begin
 					log (text => board_silk_screen & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1058,7 +1062,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				procedure move_circle (circle : in out et_pcb.type_doc_circle) is
-					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 				begin
 					log (text => doc & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1074,6 +1078,7 @@ package body et_kicad_to_native is
 
 				procedure move_polygon (polygon : in out et_pcb.type_doc_polygon) is
 					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 					use et_pcb.type_polygon_points;
 					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
@@ -1294,7 +1299,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				procedure move_circle (circle : in out et_pcb.type_stencil_circle) is
-					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 				begin
 					log (text => stencil & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1310,6 +1315,7 @@ package body et_kicad_to_native is
 
 				procedure move_polygon (polygon : in out et_pcb.type_stencil_polygon) is
 					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 					use et_pcb.type_polygon_points;
 					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
@@ -1496,7 +1502,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				procedure move_circle (circle : in out et_pcb.type_stop_circle) is
-					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 				begin
 					log (text => stop & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1512,6 +1518,7 @@ package body et_kicad_to_native is
 
 				procedure move_polygon (polygon : in out et_pcb.type_stop_polygon) is
 					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 					use et_pcb.type_polygon_points;
 					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
@@ -1732,7 +1739,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				procedure move_circle (circle : in out et_pcb.type_keepout_circle) is
-					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 				begin
 					log (text => keepout & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1748,6 +1755,7 @@ package body et_kicad_to_native is
 
 				procedure move_polygon (polygon : in out et_pcb.type_keepout_polygon) is
 					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 					use et_pcb.type_polygon_points;
 					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
@@ -1927,7 +1935,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				procedure move_circle (circle : in out et_pcb.type_pcb_contour_circle) is
-					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 				begin
 					log (text => contour & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -2034,7 +2042,7 @@ package body et_kicad_to_native is
 				end move_arc;
 
 				procedure move_circle (circle : in out et_pcb.type_copper_circle_pcb) is
-					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 				begin
 					log (text => board_copper & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -2050,6 +2058,7 @@ package body et_kicad_to_native is
 
 				procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_floating) is
 					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 					use et_pcb.type_polygon_points;
 					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
@@ -2789,6 +2798,7 @@ package body et_kicad_to_native is
 					return et_schematic.type_junctions is
 					junctions : et_schematic.type_junctions; -- to be returned
 
+					use et_coordinates.geometry;
 					use kicad_coordinates;
 					use et_kicad.type_junctions;
 					junction_cursor : et_kicad.type_junctions.cursor := segment.junctions.first;
@@ -2797,7 +2807,7 @@ package body et_kicad_to_native is
 					
 					while junction_cursor /= et_kicad.type_junctions.no_element loop
 
-						log (text => "junction" & et_coordinates.to_string (
+						log (text => "junction" & to_string (
 							point => element (junction_cursor).coordinates),
 							level => log_threshold + 5);
 

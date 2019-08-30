@@ -3899,7 +3899,7 @@ package body et_kicad is
 				end loop;
 			end query_segments;
 
-			use et_coordinates;
+			use et_coordinates.geometry;
 		begin -- collect_hierarchic_strands
 
 			-- If a hierarchic net is available, query all hierarchic strands of the module.
@@ -4103,14 +4103,14 @@ package body et_kicad is
 			label_tag		: type_tag_labels.cursor	:= segment.label_list_tag.first;
 			use type_simple_labels;
 			use type_tag_labels;
-			use et_coordinates;
+			use et_coordinates.geometry;
 		begin
 			if log_level >= log_threshold + 3 then
 				
 				log_indentation_up;
 				while label_simple /= type_simple_labels.no_element loop
 					--log (text => "simple label at " & to_string (position => element (label_simple).coordinates, scope => xy));
-					log (text => "simple label at " & to_string (point => element (label_simple).coordinates));
+					log (text => "simple label at " & to_string (element (label_simple).coordinates));
 					next (label_simple);
 				end loop;
 
@@ -4118,13 +4118,13 @@ package body et_kicad is
 					if element (label_tag).hierarchic then
 						--log (text => "hierarchic label at " 
 							   --	& to_string (position => element (label_tag).coordinates, scope => xy));
-						log (text => "hierarchic label at " & to_string (point => element (label_tag).coordinates));
+						log (text => "hierarchic label at " & to_string (element (label_tag).coordinates));
 					end if;
 
 					if element (label_tag).global then
 						--log (text => "global label at " 
 							   --	& to_string (position => element (label_tag).coordinates, scope => xy));
-						log (text => "global label at " & to_string (point => element (label_tag).coordinates));
+						log (text => "global label at " & to_string (element (label_tag).coordinates));
 					end if;
 					
 					next (label_tag);
@@ -9701,19 +9701,19 @@ package body et_kicad is
 			label_tag		: type_tag_labels.cursor	:= segment.label_list_tag.first;
 			use type_simple_labels;
 			use type_tag_labels;
-			use et_coordinates;
+			use et_coordinates.geometry;
 		begin
 			if log_level >= log_threshold + 2 then
 				log_indentation_up;
 				while label_simple /= type_simple_labels.no_element loop
 					--log (text => "simple label " & to_string (position => element (label_simple).coordinates));
-					log (text => "simple label " & to_string (point => element (label_simple).coordinates));
+					log (text => "simple label " & to_string (element (label_simple).coordinates));
 					next (label_simple);
 				end loop;
 
 				while label_tag /= type_tag_labels.no_element loop
 					--log (text => "tag label " & to_string (position => element (label_tag).coordinates));
-					log (text => "tag label " & to_string (point => element (label_tag).coordinates));
+					log (text => "tag label " & to_string (element (label_tag).coordinates));
 					next (label_tag);
 				end loop;
 
@@ -11880,7 +11880,7 @@ package body et_kicad is
 	-- Writes the properties of the given net label in the logfile.
 		use et_string_processing;
 		use et_schematic;
-		use et_coordinates;
+		use et_coordinates.geometry;
 		log_threshold : type_log_level := 2;
 	begin
 		log_indentation_up;
@@ -11910,7 +11910,7 @@ package body et_kicad is
 		end case;
 
 		log_indentation_up;
-		log (text => geometry.to_string (label.rotation), level => log_threshold + 1);
+		log (text => to_string (label.rotation), level => log_threshold + 1);
 		
 		case label.label_appearance is
 			when simple =>
@@ -11931,7 +11931,7 @@ package body et_kicad is
 		use et_coordinates;
 	begin
 		--return (to_string (position => label.coordinates, scope => scope));
-		return to_string (point => label.coordinates);
+		return geometry.to_string (point => label.coordinates);
 	end to_string;
 
 	function to_string (

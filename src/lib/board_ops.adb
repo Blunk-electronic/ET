@@ -441,7 +441,7 @@ package body board_ops is
 
 				procedure log_position_in_board is begin
 					if position_in_board /= origin_zero_rotation then
-						log (text => "and applying submodule" & to_string (position_in_board),
+						log (text => "and applying submodule" & geometry.to_string (position_in_board),
 							level => log_threshold + 1);
 					end if;
 				end;
@@ -462,8 +462,8 @@ package body board_ops is
 						-- to the position of the submodule instance in the parent module:
 						move (device_position, type_point_2d (position_in_board));
 
-						log (text => "generic" & to_string (type_point_with_rotation (position_generic)) &
-							" -> " & "in instance" & to_string (type_point_with_rotation (device_position)),
+						log (text => "generic" & et_pcb_coordinates.to_string (type_point_with_rotation (position_generic)) &
+							" -> " & "in instance" & et_pcb_coordinates.to_string (type_point_with_rotation (device_position)),
 							level => log_threshold + 2);
 
 						return device_position;

@@ -183,7 +183,7 @@ package body schematic_ops is
 	begin
 		if element (device_cursor).appearance = SCH_PCB then
 			log (text => "location in board:" & 
-				to_string (point => type_point_2d (element (device_cursor).position)) &
+				et_pcb_coordinates.geometry.to_string (type_point_2d (element (device_cursor).position)) &
 				" face" & 
 				to_string (get_face (element (device_cursor).position)),
 				level => log_threshold);
@@ -1276,13 +1276,13 @@ package body schematic_ops is
 				log (text => "module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
 					to_string (unit_name) & " to sheet" & to_sheet (sheet) &
-					et_coordinates.to_string (point), level => log_threshold);
+					to_string (point), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
 					to_string (unit_name) & " by " & to_sheet_relative (sheet) & " sheet(s)" &
-					et_coordinates.to_string (point), level => log_threshold);
+					to_string (point), level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -1410,13 +1410,13 @@ package body schematic_ops is
 				log (text => "module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
 					to_string (unit_name) & " placeholder" & to_string (meaning) & " to" &
-					et_coordinates.to_string (point), level => log_threshold);
+					to_string (point), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
 					" moving " & to_string (device_name) & " unit " & 
 					to_string (unit_name) & " placeholder" & to_string (meaning) & " by" &
-					et_coordinates.to_string (point), level => log_threshold);
+					to_string (point), level => log_threshold);
 		end case;
 
 		-- locate module
@@ -2253,13 +2253,13 @@ package body schematic_ops is
 				log (text => "module " & to_string (module_name) &
 					" dragging " & to_string (device_name) & " unit " & 
 					to_string (unit_name) & " to" &
-					et_coordinates.to_string (point), level => log_threshold);
+					to_string (point), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
 					" dragging " & to_string (device_name) & " unit " & 
 					to_string (unit_name) & " by" & 
-					et_coordinates.to_string (point), level => log_threshold);
+					to_string (point), level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -2942,7 +2942,7 @@ package body schematic_ops is
 								log_indentation_up;
 								
 								log (text => "device " & to_string (device_name) & " port " & to_string (port_name) &
-									" at" & et_coordinates.to_string (point => port_position),
+									" at" & to_string (port_position),
 									level => log_threshold + 1);
 
 								-- If the port was at the start point of the old segment, then
@@ -2990,7 +2990,7 @@ package body schematic_ops is
 								log_indentation_up;
 								
 								log (text => "submodule " & to_string (submod_name) & " port " & to_string (port_name) &
-									" at" & et_coordinates.to_string (point => port_position),
+									" at" & to_string (port_position),
 									level => log_threshold + 1);
 
 								-- If the port was at the start point of the old segment, then
@@ -3028,8 +3028,8 @@ package body schematic_ops is
 							use submodules;
 
 							procedure query_ports (cursor : in type_ports_netchanger.cursor) is
-								index	: type_netchanger_id; -- 1,2,3,...
-								port	: type_netchanger_port_name; -- SLAVE/MASTER
+								index			: type_netchanger_id; -- 1,2,3,...
+								port			: type_netchanger_port_name; -- SLAVE/MASTER
 								port_position 	: type_point; -- the xy-position of the port
 							begin
 								index := element (cursor).index;
@@ -3040,7 +3040,7 @@ package body schematic_ops is
 								log_indentation_up;
 								
 								log (text => "netchanger " & to_string (index) & " port " & to_string (port) &
-									" at" & et_coordinates.to_string (point => port_position),
+									" at" & to_string (port_position),
 									level => log_threshold + 1);
 
 								-- If the port was at the start point of the old segment, then
@@ -4452,7 +4452,7 @@ package body schematic_ops is
 				
 			begin -- probe_port
 				log_indentation_up;
-				log (text => "at" & et_coordinates.to_string (port), level => log_threshold + 2);
+				log (text => "at" & to_string (port), level => log_threshold + 2);
 				
 				while not port_processed and net_cursor /= type_nets.no_element loop
 					
@@ -4873,13 +4873,13 @@ package body schematic_ops is
 				log (text => "module " & to_string (module_name) &
 					" moving netchanger" & to_string (index) &
 					" to sheet" & to_sheet (sheet) &
-					et_coordinates.to_string (point), level => log_threshold);
+					to_string (point), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
 					" moving netchanger" & to_string (index) &
 					" by " & to_sheet_relative (sheet) & " sheet(s)" &
-					et_coordinates.to_string (point), level => log_threshold);
+					to_string (point), level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -5269,12 +5269,12 @@ package body schematic_ops is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_name) &
 					" dragging netchanger" & to_string (index) &
-					" to" & et_coordinates.to_string (point), level => log_threshold);
+					" to" & to_string (point), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
 					" dragging netchanger" & to_string (index) &
-					" by" & et_coordinates.to_string (point), level => log_threshold);
+					" by" & to_string (point), level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -6052,7 +6052,7 @@ package body schematic_ops is
 						use et_libraries.type_ports;
 					begin
 						log (text => "port " & to_string (key (port_cursor)) &
-							 " at" & et_coordinates.to_string (element (port_cursor).position),
+							 " at" & to_string (element (port_cursor).position),
 							 level => log_threshold + 2);
 
 						-- If the port sits at x/y of place then we have a match:
@@ -6119,7 +6119,7 @@ package body schematic_ops is
 					use et_general.type_net_name;
 				begin
 					log (text => "port " & type_net_name.to_string (key (port_cursor)) &
-							" at" & et_coordinates.to_string (element (port_cursor).position),
+							" at" & to_string (element (port_cursor).position),
 							level => log_threshold + 2);
 
 					-- If the port sits at x/y of place then we have a match:
@@ -6181,7 +6181,7 @@ package body schematic_ops is
 					if ports.master = type_point (place) then
 
 						log (text => "port " & submodules.to_string (submodules.MASTER) &
-							" at" & et_coordinates.to_string (ports.master),
+							" at" & to_string (ports.master),
 							level => log_threshold + 2);
 						
 						-- Insert the port in the portlist to be returned:
@@ -6199,7 +6199,7 @@ package body schematic_ops is
 					elsif ports.slave = type_point (place) then
 
 						log (text => "port " & submodules.to_string (submodules.SLAVE) &
-							" at" & et_coordinates.to_string (ports.slave),
+							" at" & to_string (ports.slave),
 							level => log_threshold + 2);
 						
 						-- Insert the port in the portlist to be returned:
@@ -6707,13 +6707,13 @@ package body schematic_ops is
 				log (text => "module " & to_string (module_name) &
 					" dragging in net " & to_string (net_name) &
 					" segment at" & to_string (position => place) &
-					" to" & et_coordinates.to_string (point), level => log_threshold);
+					" to" & to_string (point), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
 					" dragging in net " & to_string (net_name) &
 					" segment at" & to_string (position => place) &
-					" by" & et_coordinates.to_string (point), level => log_threshold);
+					" by" & to_string (point), level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -7344,7 +7344,7 @@ package body schematic_ops is
 		log (text => "module " & to_string (module_name) &
 			" drawing net " & to_string (net_name) &
 			" segment from" & to_string (position => start_point) &
-			" to" & et_coordinates.to_string (end_point), level => log_threshold);
+			" to" & to_string (end_point), level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -7585,7 +7585,7 @@ package body schematic_ops is
 			" labeling segment at"  &
 			et_coordinates.to_string (position => segment_position) &
 			" with " & to_string (appearance) & " label at" &
-			et_coordinates.to_string (point => label_position) &
+			to_string (point => label_position) &
 			" rotation" & to_string (rotation),
 			level => log_threshold);
 		
@@ -8448,13 +8448,13 @@ package body schematic_ops is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_name) &
 					" moving port " & enclose_in_quotes (to_string (port_name)) &
-					" to" & et_coordinates.to_string (point),
+					" to" & to_string (point),
 					level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
 					" moving port " & enclose_in_quotes (to_string (port_name)) &
-					" by" & et_coordinates.to_string (point),
+					" by" & to_string (point),
 					level => log_threshold);
 
 		end case;
@@ -8864,13 +8864,13 @@ package body schematic_ops is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_name) &
 					" dragging port " & enclose_in_quotes (to_string (port_name)) &
-					" to" & et_coordinates.to_string (point),
+					" to" & to_string (point),
 					level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
 					" dragging port " & enclose_in_quotes (to_string (port_name)) &
-					" by" & et_coordinates.to_string (point),
+					" by" & to_string (point),
 					level => log_threshold);
 
 		end case;
@@ -9186,13 +9186,13 @@ package body schematic_ops is
 				log (text => "module " & to_string (module_name) &
 					" moving submodule instance " & to_string (instance) &
 					" to sheet" & to_sheet (sheet) &
-					et_coordinates.to_string (point), level => log_threshold);
+					to_string (point), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
 					" moving submodule instance " & to_string (instance) &
 					" by " & to_sheet_relative (sheet) & " sheet(s)" &
-					et_coordinates.to_string (point), level => log_threshold);
+					to_string (point), level => log_threshold);
 		end case;
 		
 		-- locate module
@@ -9391,12 +9391,12 @@ package body schematic_ops is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_name) &
 					" dragging submodule instance " & to_string (instance) &
-					" to" & et_coordinates.to_string (point), level => log_threshold);
+					" to" & to_string (point), level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
 					" dragging submodule instance " & to_string (instance) &
-					" by " & et_coordinates.to_string (point), level => log_threshold);
+					" by " & to_string (point), level => log_threshold);
 		end case;
 		
 		-- locate module

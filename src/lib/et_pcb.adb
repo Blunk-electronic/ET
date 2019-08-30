@@ -214,7 +214,7 @@ package body et_pcb is
 	-- Returns the properties of the given text in a long single string.
 		use et_coordinates;
 	begin
-		return to_string (text.position) & latin_1.space
+		return et_pcb_coordinates.to_string (text.position) & latin_1.space
 			& "size (width" & axis_separator & "height)" 
 			& to_string (text.dimensions.width) & latin_1.space & axis_separator & to_string (text.dimensions.height)
 			& " line width" & to_string (text.line_width)
@@ -1142,7 +1142,7 @@ package body et_pcb is
 			points : type_polygon_points.set := element (cursor).corners;
 
 			procedure point (cursor : in type_polygon_points.cursor) is begin
-				log (text => et_pcb_coordinates.to_string (element (cursor)), level => log_threshold + 1);	
+				log (text => to_string (element (cursor)), level => log_threshold + 1);	
 			end point;
 	
 		begin -- polygon

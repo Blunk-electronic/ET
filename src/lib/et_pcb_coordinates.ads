@@ -110,21 +110,21 @@ package et_pcb_coordinates is
 
 	position_preamble_2d : constant string := " pos "
 		& "(x"
-		& et_coordinates.axis_separator
+		& axis_separator
 		& "y)";
 
 	position_preamble_2d_with_rotation : constant string := " pos "
 		& "(x"
-		& et_coordinates.axis_separator
+		& axis_separator
 		& "y"
-		& et_coordinates.axis_separator
+		& axis_separator
 		& "rotation)";
 	
 	position_preamble_3d : constant string (1..12) := " pos "
 		& "(x"
-		& et_coordinates.axis_separator
+		& axis_separator
 		& "y"
-		& et_coordinates.axis_separator
+		& axis_separator
 		& "z)";
 	
 -- 	function to_distance (distance : in string) return type_distance;
@@ -153,7 +153,7 @@ package et_pcb_coordinates is
 	--type type_package_position is new type_point_2d_with_angle with private;
 	type type_package_position is new type_point_with_rotation with private;
 
-	function to_string (point : in type_point_2d) return string;
+-- 	function to_string (point : in type_point_2d) return string;
 	function to_string (point : in type_point_with_rotation) return string;	
 	
 -- 	terminal_position_default : constant type_point_with_rotation := origin_zero_rotation; -- CS remove ?

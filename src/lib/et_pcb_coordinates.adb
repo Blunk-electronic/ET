@@ -207,25 +207,25 @@ package body et_pcb_coordinates is
 -- 		return type_rotation'value (angle);
 -- 	end to_angle;
 	
-	function to_string (point : in type_point_2d) return string is
-	begin
-		return position_preamble_2d
-			& to_string (point.x)
-			& latin_1.space
-			& et_coordinates.axis_separator
-			& to_string (point.y);
-	end to_string;
+-- 	function to_string (point : in type_point_2d) return string is
+-- 	begin
+-- 		return position_preamble_2d
+-- 			& to_string (point.x)
+-- 			& latin_1.space
+-- 			& et_coordinates.axis_separator
+-- 			& to_string (point.y);
+-- 	end to_string;
 
-	function to_string (point : in type_point_with_rotation) return string is
-	begin
-		return position_preamble_2d_with_rotation
-			& to_string (point.x)
-			& latin_1.space
-			& et_coordinates.axis_separator
-			& to_string (point.y)
-			& et_coordinates.axis_separator
-			& to_string (rot (point));
-	end to_string;
+-- 	function to_string (point : in type_point_with_rotation) return string is
+-- 	begin
+-- 		return position_preamble_2d_with_rotation
+-- 			& to_string (point.x)
+-- 			& latin_1.space
+-- 			& axis_separator
+-- 			& to_string (point.y)
+-- 			& axis_separator
+-- 			& to_string (rot (point));
+-- 	end to_string;
 	
 -- 	procedure rotate (
 -- 	-- Rotates the given point by the given angle with the origin as center.
