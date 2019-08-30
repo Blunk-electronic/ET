@@ -134,12 +134,12 @@ package et_pcb_coordinates is
 -- 	for type_angle'small use 0.01;
 -- 	zero_angle : constant type_angle := 0.0;
 
-	function to_string (
-		angle 		: in type_rotation;
-		preamble 	: in boolean := false)
-		return string;
+-- 	function to_string (
+-- 		angle 		: in type_rotation;
+-- 		preamble 	: in boolean := false)
+-- 		return string;
 
-	function to_angle (angle : in string) return type_rotation;
+-- 	function to_angle (angle : in string) return type_rotation;
 
 	subtype type_point_2d is type_point; -- this is just a renaming
 	type type_point_3d is tagged private;

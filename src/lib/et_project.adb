@@ -666,14 +666,14 @@ package body et_project is
 		end if;
 	end position;
 
-	function rotation (angle : in et_coordinates.type_rotation) return string is 
-	begin
-		if angle < 0 then
-			return latin_1.space & et_coordinates.type_rotation'image (angle);
-		else
-			return et_coordinates.type_rotation'image (angle);
-		end if;
-	end rotation;
+-- 	function rotation (angle : in et_coordinates.type_rotation) return string is 
+-- 	begin
+-- 		if angle < zero_rotation then
+-- 			return latin_1.space & et_coordinates.type_rotation'image (angle);
+-- 		else
+-- 			return et_coordinates.type_rotation'image (angle);
+-- 		end if;
+-- 	end rotation;
 
 	function position (point : et_pcb_coordinates.type_point_2d'class) return string is
 		use et_pcb_coordinates;
@@ -706,9 +706,9 @@ package body et_project is
 	procedure write_text_properties (text : in et_libraries.type_text_basic'class) is
 		use et_coordinates.geometry;
 	begin
-		write (keyword => keyword_size, parameters => et_libraries.to_string (text.size, preamble => false));
+		write (keyword => keyword_size, parameters => to_string (text.size));
 		write (keyword => keyword_line_width, parameters => to_string (text.line_width));
-		write (keyword => keyword_rotation, parameters => rotation (text.rotation));
+		write (keyword => keyword_rotation, parameters => to_string (text.rotation));
 		write (keyword => keyword_style, parameters => et_libraries.to_string (text.style));
 		write (keyword => keyword_alignment, parameters => space &
 				keyword_horizontal & et_libraries.to_string (text.alignment.horizontal) & space &
@@ -1451,10 +1451,10 @@ package body et_project is
 			close (module_file_handle);
 		end write_footer;
 		
-		function rotation (pos : in et_pcb_coordinates.geometry.type_point_with_rotation'class) return string is
-			use et_pcb_coordinates;
+		function rotation (pos : in et_pcb_coordinates.geometry.type_point_with_rotation'class) return string is -- CS make generic ?
+			use et_pcb_coordinates.geometry;
 		begin
-			return to_string (et_pcb_coordinates.geometry.rot (pos));
+			return to_string (rot (pos));
 		end rotation;
 		
 		function face (point : et_pcb_coordinates.type_package_position) return string is
@@ -1501,6 +1501,7 @@ package body et_project is
 
 			procedure query_strands (net_name : in type_net_name.bounded_string; net : in type_net) is
 				use type_strands;
+				use et_coordinates.geometry;
 				strand_cursor : type_strands.cursor := net.strands.first;
 
 				procedure query_segments (strand : in type_strand) is
@@ -1524,12 +1525,10 @@ package body et_project is
 								section_mark (section_label, HEADER);
 								
 								write (keyword => keyword_position, parameters => position (element (label_cursor).position));
-								write (keyword => keyword_rotation, parameters => rotation (element (label_cursor).rotation));
-								write (keyword => keyword_size, parameters => 
-									et_libraries.to_string (size => element (label_cursor).size, preamble => false));
+								write (keyword => keyword_rotation, parameters => to_string (element (label_cursor).rotation));
+								write (keyword => keyword_size, parameters => to_string (element (label_cursor).size));
 								write (keyword => keyword_style, parameters => to_string (element (label_cursor).style));
-								write (keyword => keyword_line_width, parameters =>
-									et_libraries.to_string (width => element (label_cursor).width));
+								write (keyword => keyword_line_width, parameters => to_string (element (label_cursor).width));
 
 								write (keyword => keyword_appearance, parameters =>
 									et_schematic.to_string (appearance => element (label_cursor).appearance));
@@ -1783,6 +1782,8 @@ package body et_project is
 				use et_schematic.type_units;
 				unit_cursor : type_units.cursor := device.units.first;
 
+				use et_coordinates.geometry;
+				
 				procedure write_placeholder (ph : in et_libraries.type_text_placeholder) is
 				begin
 					section_mark (section_placeholder, HEADER);
@@ -1800,7 +1801,7 @@ package body et_project is
 					section_mark (section_unit, HEADER);
 					write (keyword => keyword_name, parameters => et_libraries.to_string (key (unit_cursor)), space => true);
 					write (keyword => keyword_position, parameters => position (element (unit_cursor).position)); -- position sheet 1 x 147.32 y 96.97
-					write (keyword => keyword_rotation, parameters => rotation (element (unit_cursor).rotation)); -- rotation 180.0
+					write (keyword => keyword_rotation, parameters => to_string (element (unit_cursor).rotation)); -- rotation 180.0
 					write (keyword => keyword_mirrored, parameters => to_string (element (unit_cursor).mirror, verbose => false)); -- x_axis, y_axis, none
 
 					if element (unit_cursor).appearance = et_libraries.SCH_PCB then
@@ -2002,7 +2003,7 @@ package body et_project is
 				section_mark (section_netchanger, HEADER);
 				write (keyword => keyword_name,	parameters => to_string (key (cursor))); -- 1, 2, 201, ...
 				write (keyword => keyword_position_in_schematic, parameters => position (element (cursor).position_sch)); -- position_in_schematic sheet 1 x 147.32 y 96.97
-				write (keyword => keyword_rotation_in_schematic, parameters => rotation (element (cursor).rotation)); -- rotation_in_schematic 90.0
+				write (keyword => keyword_rotation_in_schematic, parameters => geometry.to_string (element (cursor).rotation)); -- rotation_in_schematic 90.0
 				write (keyword => keyword_position_in_board, parameters => position (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
 				write (keyword => keyword_layer, parameters => et_pcb.to_string (element (cursor).layer)); -- layer 2
 				section_mark (section_netchanger, FOOTER);
@@ -2507,6 +2508,7 @@ package body et_project is
 		symbol			: in et_libraries.type_symbol;
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_libraries;
+		use et_coordinates.geometry;
 		use type_lines;
 		use type_arcs;
 		use type_circles;
@@ -2517,7 +2519,7 @@ package body et_project is
 			section_mark (section_line, HEADER);
 			write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 			write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-			write (keyword => keyword_width, parameters => geometry.to_string (element (cursor).width));
+			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 			section_mark (section_line, FOOTER);
 		end write_line;
 
@@ -2613,7 +2615,7 @@ package body et_project is
 			end case;
 			
 			write (keyword => keyword_length, parameters => geometry.to_string (element (cursor).length));
-			write (keyword => keyword_rotation, parameters => rotation (element (cursor).rotation));
+			write (keyword => keyword_rotation, parameters => to_string (element (cursor).rotation));
 			write (keyword => keyword_port_name_visible, parameters => to_string (element (cursor).port_name_visible));
 			write (keyword => keyword_port_name_size, parameters => geometry.to_string (element (cursor).port_name_size));
 			write (keyword => keyword_terminal_name_visible, parameters => to_string (element (cursor).terminal_name_visible));
@@ -3009,7 +3011,7 @@ package body et_project is
 
 			-- We expect after "rotation" the corresponding value for the rotation
 			elsif f (line, place) = keyword_rotation then
-				set (point, to_angle (f (line, place + 1)));
+				set (point, to_rotation (f (line, place + 1)));
 				
 			else
 				invalid_keyword (f (line, place));
@@ -5860,7 +5862,7 @@ package body et_project is
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
-										symbol_text_base.rotation := et_coordinates.to_angle (f (line, 2));
+										symbol_text_base.rotation := to_rotation (f (line, 2));
 										
 									elsif kw = keyword_style then -- style italic
 										expect_field_count (line, 2);
@@ -5905,7 +5907,7 @@ package body et_project is
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
-										symbol_text_base.rotation := et_coordinates.to_angle (f (line, 2));
+										symbol_text_base.rotation := to_rotation (f (line, 2));
 										
 									elsif kw = keyword_style then -- style italic
 										expect_field_count (line, 2);
@@ -5946,7 +5948,7 @@ package body et_project is
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
-										port.rotation := et_coordinates.to_angle (f (line, 2));
+										port.rotation := to_rotation (f (line, 2));
 										
 									elsif kw = keyword_port_name_visible then -- port_name_visible yes/no
 										expect_field_count (line, 2);
@@ -7074,7 +7076,7 @@ package body et_project is
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
-										symbol_text_base.rotation := et_coordinates.to_angle (f (line, 2));
+										symbol_text_base.rotation := to_rotation (f (line, 2));
 										
 									elsif kw = keyword_style then -- style italic
 										expect_field_count (line, 2);
@@ -7125,7 +7127,7 @@ package body et_project is
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
-										symbol_text_base.rotation := et_coordinates.to_angle (f (line, 2));
+										symbol_text_base.rotation := to_rotation (f (line, 2));
 										
 									elsif kw = keyword_style then -- style italic
 										expect_field_count (line, 2);
@@ -7172,7 +7174,7 @@ package body et_project is
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
-										port.rotation := et_coordinates.to_angle (f (line, 2));
+										port.rotation := to_rotation (f (line, 2));
 										
 									elsif kw = keyword_port_name_visible then -- port_name_visible yes/no
 										expect_field_count (line, 2);
@@ -8019,7 +8021,7 @@ package body et_project is
 
 				-- We expect after "rotation" the corresponding value for the rotation
 				elsif f (line, place) = keyword_rotation then
-					set (point, to_angle (f (line, place + 1)));
+					set (point, to_rotation (f (line, place + 1)));
 
 				-- We expect after "face" the actual face (top/bottom)
 				elsif f (line, place) = keyword_face then
@@ -11166,11 +11168,11 @@ package body et_project is
 										
 									elsif kw = keyword_rotation then -- rotation 0.0
 										expect_field_count (line, 2);
-										net_label.rotation := et_coordinates.to_angle (f (line, 2));
+										net_label.rotation := geometry.to_rotation (f (line, 2));
 
 									elsif kw = keyword_size then -- size 1.3
 										expect_field_count (line, 2);
-										net_label.size := et_coordinates.geometry.to_distance (f (line, 2));
+										net_label.size := geometry.to_distance (f (line, 2));
 
 									elsif kw = keyword_style then -- style normal
 										expect_field_count (line, 2);
@@ -12153,7 +12155,7 @@ package body et_project is
 
 									elsif kw = keyword_rotation then -- rotation 90
 										expect_field_count (line, 2);
-										note.rotation := et_coordinates.to_angle (f (line, 2));
+										note.rotation := to_rotation (f (line, 2));
 
 									elsif kw = keyword_style then -- stlye normal/italic
 										expect_field_count (line, 2);
@@ -12415,7 +12417,7 @@ package body et_project is
 											elsif kw = keyword_rotation then -- rotation 90.0
 												expect_field_count (line, 2);
 
-												unit_placeholder.rotation := et_coordinates.to_angle (f (line, 2));
+												unit_placeholder.rotation := to_rotation (f (line, 2));
 
 											elsif kw = keyword_style then -- stlye italic
 												expect_field_count (line, 2);
@@ -12548,7 +12550,7 @@ package body et_project is
 
 									elsif kw = keyword_rotation then -- rotation 180.0
 										expect_field_count (line, 2);
-										device_unit.rotation := et_coordinates.to_angle (f (line, 2));
+										device_unit.rotation := geometry.to_rotation (f (line, 2));
 
 									elsif kw = keyword_mirrored then -- mirrored no/x_axis/y_axis
 										expect_field_count (line, 2);
@@ -12593,7 +12595,7 @@ package body et_project is
 
 									elsif kw = keyword_rotation_in_schematic then -- rotation_in_schematic 180.0
 										expect_field_count (line, 2);
-										netchanger.rotation := et_coordinates.to_angle (f (line, 2));
+										netchanger.rotation := geometry.to_rotation (f (line, 2));
 
 									elsif kw = keyword_position_in_board then -- position_in_board x 55.000 y 7.555
 										expect_field_count (line, 5);

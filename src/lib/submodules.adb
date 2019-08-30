@@ -183,7 +183,7 @@ package body submodules is
 		netchanger_cursor	: in type_netchangers.cursor)
 		return type_netchanger_ports is
 		use type_netchangers;
-		use et_coordinates;
+		use et_coordinates.geometry;
 		ports : type_netchanger_ports;
 	begin
 		-- rotate the ports according to rotation in schematic

@@ -218,7 +218,7 @@ package body et_pcb is
 			& "size (width" & axis_separator & "height)" 
 			& to_string (text.dimensions.width) & latin_1.space & axis_separator & to_string (text.dimensions.height)
 			& " line width" & to_string (text.line_width)
-			& to_string (rot (text.position), preamble => true)
+			& " rotation" & to_string (rot (text.position))
 			& et_libraries.to_string (text.alignment)
 			-- CS & " hidden " & boolean'image (text.hidden)
 			;
@@ -1158,7 +1158,7 @@ package body et_pcb is
 		log (text => "terminal name" & to_string (name)
 			& " technology" & to_string (terminal.technology)
 			& to_string (type_point_2d (terminal.position))
-			& to_string (angle => rot (terminal.position), preamble => true),
+			& "rotation" & to_string (rot (terminal.position)),
 			level => log_threshold);
 
 		log_indentation_up;

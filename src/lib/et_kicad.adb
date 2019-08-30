@@ -178,6 +178,7 @@ package body et_kicad is
 
 		use et_string_processing;
 		use et_coordinates;
+		use et_coordinates.geometry;
 	begin
 		log_indentation_up;
 		
@@ -911,8 +912,8 @@ package body et_kicad is
 	-- Converts a kicad field text orientation character (H/V) to type_rotation.
 	begin	
 		case type_field_orientation'value (text) is
-			when H => return 0;
-			when V => return 90;
+			when H => return 0.0;
+			when V => return 90.0;
 		end case;
 
 		exception 
@@ -1736,7 +1737,8 @@ package body et_kicad is
 				use geometry;
 			begin -- to_text
 				text.rotation := to_degrees (et_string_processing.field (line,2));
-				if text.rotation not in type_rotation_text then
+-- 				if text.rotation not in type_rotation_text then
+				if text.rotation'valid then
 					warning_angle_greater_90_degrees;
 				end if;
 				
@@ -1869,13 +1871,13 @@ package body et_kicad is
 				-- Translates orientation up/down/left/right (U/D/L/R) to angle.
 					use et_coordinates;
 					orient : constant character := orientation (orientation'first);
-					rot : et_coordinates.type_rotation := 0;
+					rot : et_coordinates.type_rotation := 0.0;
 				begin
 					case orient is
-						when 'D' => rot := 90; -- to be connected with a net from top
-						when 'U' => rot := 270; -- below
-						when 'R' => rot := 180; -- left
-						when 'L' => rot := 0; -- right
+						when 'D' => rot := 90.0; -- to be connected with a net from top
+						when 'U' => rot := 270.0; -- below
+						when 'R' => rot := 180.0; -- left
+						when 'L' => rot := 0.0; -- right
 						when others => 
 							log (ERROR, "invalid port orientation !", console => true);
 							raise constraint_error;
@@ -5375,10 +5377,10 @@ package body et_kicad is
 			o_out : et_coordinates.type_rotation;
 		begin
 			case o_in is
-				when 0 => o_out :=   0;
-				when 1 => o_out :=  90;
-				when 2 => o_out := 180;
-				when 3 => o_out := 270;
+				when 0 => o_out :=   0.0;
+				when 1 => o_out :=  90.0;
+				when 2 => o_out := 180.0;
+				when 3 => o_out := 270.0;
 			end case;
 			return o_out;
 			-- CS: exception handler
@@ -7279,14 +7281,14 @@ package body et_kicad is
 
 				-- Notes might be upside down or readable from the left. So we must fit the rotation
 				-- into a range between 0 and 90 degree:
-				if rotation < 0 then
-					note.rotation := 90;
+				if rotation < 0.0 then
+					note.rotation := 90.0;
 					warn;
-				elsif rotation > 90 and rotation < 270 then
-					note.rotation := 0;
+				elsif rotation > 90.0 and rotation < 270.0 then
+					note.rotation := 0.0;
 					warn;					
-				elsif rotation > 270 then
-					note.rotation := 90;
+				elsif rotation > 270.0 then
+					note.rotation := 90.0;
 					warn;
 				end if;
 
@@ -8068,7 +8070,7 @@ package body et_kicad is
 					case orient_1 is
 						when -1 =>
 							if orient_2 = 0 then
-								orientation := 180;
+								orientation := 180.0;
 
 								-- compute unit mirror style
 								if mirror_1 = 0 then
@@ -8094,7 +8096,7 @@ package body et_kicad is
 						when  0 =>
 							case orient_2 is
 								when -1 => 
-									orientation := 90;
+									orientation := 90.0;
 									
 									-- compute unit mirror style
 									case mirror_1 is
@@ -8120,7 +8122,7 @@ package body et_kicad is
 									end case;
 
 								when  1 =>
-									orientation := -90;
+									orientation := -90.0;
 
 									-- compute unit mirror style
 									case mirror_1 is
@@ -8152,7 +8154,7 @@ package body et_kicad is
 
 						when  1 =>
 							if orient_2 = 0 then
-								orientation := 0;
+								orientation := 0.0;
 
 								-- compute unit mirror style
 								if mirror_1 = 0 then
@@ -9982,9 +9984,9 @@ package body et_kicad is
 						position	=> element (port_cursor).position);
 
 					-- rotate port coordinates
-					et_coordinates.rotate (
-						point	=> port_coordinates,
-						angle	=> orientation_of_unit (unit_name_lib, units_sch)
+					rotate (
+						point		=> port_coordinates,
+						rotation	=> orientation_of_unit (unit_name_lib, units_sch)
 						);
 
 					-- Mirror port coordinates if required.
@@ -11908,7 +11910,7 @@ package body et_kicad is
 		end case;
 
 		log_indentation_up;
-		log (text => to_string (label.rotation), level => log_threshold + 1);
+		log (text => geometry.to_string (label.rotation), level => log_threshold + 1);
 		
 		case label.label_appearance is
 			when simple =>
@@ -13803,7 +13805,7 @@ package body et_kicad is
 			log (text => "line width" & et_libraries.type_text_line_width'image (note.line_width));
 
 			-- rotation
-			log (text => et_coordinates.to_string (note.rotation));
+			log (text => geometry.to_string (note.rotation));
 
 			-- visible
 			--log (text => "visible " & to_lower (et_libraries.type_text_visible'image (note.visible)));

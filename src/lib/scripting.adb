@@ -343,7 +343,7 @@ package body scripting is
 														y => to_distance (f (8))
 														))
 											),
-										rotation		=> to_angle (f (9)),
+										rotation		=> to_rotation (f (9)),
 										variant			=> to_component_variant_name (""),
 										log_threshold	=> log_threshold + 1
 										);
@@ -362,7 +362,7 @@ package body scripting is
 														y => to_distance (f (8))
 														))
 											),
-										rotation		=> to_angle (f (9)),
+										rotation		=> to_rotation (f (9)),
 										variant			=> to_component_variant_name (f (10)),
 										log_threshold	=> log_threshold + 1
 										);
@@ -388,7 +388,7 @@ package body scripting is
 														y => to_distance (f (7))
 														))
 											),
-										rotation		=> to_angle (f (8)),
+										rotation		=> to_rotation (f (8)),
 										log_threshold	=> log_threshold + 1
 										);
 
@@ -502,7 +502,7 @@ package body scripting is
 														y => to_distance (f (8))
 														))
 											),
-										rotation		=> to_angle (f (9)),
+										rotation		=> to_rotation (f (9)),
 										log_threshold	=> log_threshold + 1
 										);
 
@@ -906,7 +906,7 @@ package body scripting is
 														y => to_distance (f (9))
 														))
 											),
-										rotation		=> to_angle (f (10)),
+										rotation		=> to_rotation (f (10)),
 										log_threshold	=> log_threshold + 1
 										);
 
@@ -1183,7 +1183,7 @@ package body scripting is
 																	x => to_distance (f (8)),
 																	y => to_distance (f (9)))),
 
-										rotation			=> to_angle (f (10)), -- 0 / 90
+										rotation			=> to_rotation (f (10)), -- 0 / 90
 										appearance 			=> et_schematic.SIMPLE,
 
 										-- A simple label does not indicate the direction
@@ -1209,7 +1209,7 @@ package body scripting is
 																	x => to_distance (f (8)),
 																	y => to_distance (f (9)))),
 
-										rotation			=> to_angle (f (10)), -- 0 / 90
+										rotation			=> to_rotation (f (10)), -- 0 / 90
 										appearance 			=> et_schematic.TAG,
 
 										-- A tag label requires specification of direction
@@ -1396,7 +1396,7 @@ package body scripting is
 								device_name		=> to_device_name (f (5)), -- IC1
 								unit_name		=> to_unit_name (f (6)), -- A
 								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-								rotation		=> to_angle (f (8)), -- 90
+								rotation		=> to_rotation (f (8)), -- 90
 								log_threshold	=> log_threshold + 1
 								);
 
@@ -1406,7 +1406,7 @@ package body scripting is
 								module_name 	=> module,
 								device_name		=> to_device_name (f (5)), -- IC1
 								unit_name		=> to_unit_name (f (6)), -- A
-								rotation		=> to_angle (f (7)), -- 90
+								rotation		=> to_rotation (f (7)), -- 90
 								meaning			=> et_libraries.REFERENCE,
 								log_threshold	=> log_threshold + 1
 								);
@@ -1417,7 +1417,7 @@ package body scripting is
 								module_name 	=> module,
 								device_name		=> to_device_name (f (5)), -- IC1
 								unit_name		=> to_unit_name (f (6)), -- A
-								rotation		=> to_angle (f (7)), -- 90
+								rotation		=> to_rotation (f (7)), -- 90
 								meaning			=> et_libraries.VALUE,
 								log_threshold	=> log_threshold + 1
 								);
@@ -1428,7 +1428,7 @@ package body scripting is
 								module_name 	=> module,
 								device_name		=> to_device_name (f (5)), -- IC1
 								unit_name		=> to_unit_name (f (6)), -- A
-								rotation		=> to_angle (f (7)), -- 90
+								rotation		=> to_rotation (f (7)), -- 90
 								meaning			=> et_libraries.PURPOSE,
 								log_threshold	=> log_threshold + 1
 								);
@@ -1440,7 +1440,7 @@ package body scripting is
 										module_name 	=> module,
 										index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
 										coordinates		=> schematic_ops.to_coordinates (f (6)), -- relative/absolute
-										rotation		=> to_angle (f (7)), -- 90
+										rotation		=> to_rotation (f (7)), -- 90
 										log_threshold	=> log_threshold + 1
 										);
 
@@ -1911,7 +1911,7 @@ package body scripting is
 										module_name 	=> module,
 										device_name		=> to_device_name (f (5)), -- IC1
 										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
-										rotation		=> to_angle (f (7)),
+										rotation		=> to_rotation (f (7)),
 										log_threshold	=> log_threshold + 1
 										);
 

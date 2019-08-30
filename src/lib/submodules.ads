@@ -160,12 +160,12 @@ package submodules is
 		master_port	: type_netchanger_port := (
 						position	=> position_master_port_default,
 						length		=> 5.0,
-						rotation	=> 0);
+						rotation	=> geometry.zero_rotation);
 
 		slave_port	: type_netchanger_port := (
 						position	=> position_slave_port_default,
 						length		=> 5.0,
-						rotation	=> 180);
+						rotation	=> 180.0);
 
 		-- the arc that connects the ports
 		arc	: et_libraries.type_arc := (
@@ -178,7 +178,7 @@ package submodules is
 
 	type type_netchanger is record
 		position_sch	: et_coordinates.type_coordinates; -- x,y,sheet
-		rotation		: et_coordinates.type_rotation := 0;
+		rotation		: et_coordinates.type_rotation := geometry.zero_rotation;
 		--symbol			: type_netchanger_symbol; -- CS for visualisation only
 		
 		position_brd	: et_pcb_coordinates.type_point_2d; -- x,y

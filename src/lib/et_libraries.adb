@@ -108,6 +108,18 @@ package body et_libraries is
 		return latin_1.space & type_person_name.to_string (person);
 	end to_string;
 
+	function to_string ( -- CS remove
+		size		: in type_text_size;
+		preamble	: in boolean := true) return string is
+	-- Returns the given text size as string.
+	begin
+		if preamble then
+			return "size " & geometry.to_string (size);
+		else
+			return geometry.to_string (size);
+		end if;
+	end to_string;
+
 	function to_text_size (size : in type_distance) return type_text_size is
 	-- Converts given distance to type_text_size. Raises error on excessive text size.
 		use et_string_processing;
@@ -127,19 +139,7 @@ package body et_libraries is
 		return size;
 	end to_text_size;
 	
-	function to_string (
-		size		: in type_text_size;
-		preamble	: in boolean := true) return string is
-	-- Returns the given text size as string.
-	begin
-		if preamble then
-			return "size " & geometry.to_string (size);
-		else
-			return geometry.to_string (size);
-		end if;
-	end to_string;
-
-	function to_string (width : in type_text_line_width) return string is
+	function to_string (width : in type_text_line_width) return string is -- CS remove
 	-- Returns the given line width as string.
 	begin
 		return geometry.to_string (width);

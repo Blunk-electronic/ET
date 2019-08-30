@@ -2395,6 +2395,8 @@ package body conventions is
 		log_threshold	: in et_string_processing.type_log_level) is
 	-- Creates a default conventions file.
 		use et_general;
+		use et_coordinates.geometry;
+		
 		function comment return string is begin return comment_mark & latin_1.space; end comment;
 
 		conventions_file_handle : ada.text_io.file_type;
@@ -2539,12 +2541,12 @@ package body conventions is
 		put_line (comment & "sizes for various kinds of texts in schematic"); 
 		put_line (comment & "category" & latin_1.space & "mm");
 		new_line;		
-		put_line (to_string (NET_LABEL)	& et_libraries.to_string (et_schematic.net_label_text_size_default, preamble => false));
-		put_line (to_string (PORT_NAME) & et_libraries.to_string (et_libraries.port_name_text_size_default, preamble => false));
-		put_line (to_string (TERMINAL_NAME) & et_libraries.to_string (et_libraries.terminal_name_text_size_default, preamble => false));
-		put_line (to_string (COMPONENT_ATTRIBUTE) & et_libraries.to_string (et_libraries.placeholder_text_size_default, preamble => false));
-		put_line (to_string (SHEET_NAME) & et_libraries.to_string (et_project.sheet_name_text_size_default, preamble => false));
-		put_line (to_string (conventions.FILE_NAME) & et_libraries.to_string (et_project.file_name_text_size_default, preamble => false));
+		put_line (to_string (NET_LABEL)	& to_string (et_schematic.net_label_text_size_default));
+		put_line (to_string (PORT_NAME) & to_string (et_libraries.port_name_text_size_default));
+		put_line (to_string (TERMINAL_NAME) & to_string (et_libraries.terminal_name_text_size_default));
+		put_line (to_string (COMPONENT_ATTRIBUTE) & to_string (et_libraries.placeholder_text_size_default));
+		put_line (to_string (SHEET_NAME) & to_string (et_project.sheet_name_text_size_default));
+		put_line (to_string (conventions.FILE_NAME) & to_string (et_project.file_name_text_size_default));
 		
 		new_line;
 		new_line;

@@ -141,18 +141,18 @@ package body et_pcb_coordinates is
 -- 		return latin_1.space & trim (type_distance_total'image (distance), left);
 -- 	end to_string;
 
-	function to_string (
-		angle 		: in type_rotation;
-		preamble 	: in boolean := false)
-		return string is
-	begin
-		if preamble then
-			return " rotation " 
-				& trim (type_rotation'image (angle), left); 
-		else
-			return latin_1.space & trim (type_rotation'image (angle), left);
-		end if;
-	end to_string;
+-- 	function to_string (
+-- 		angle 		: in type_rotation;
+-- 		preamble 	: in boolean := false)
+-- 		return string is
+-- 	begin
+-- 		if preamble then
+-- 			return " rotation " 
+-- 				& trim (type_rotation'image (angle), left); 
+-- 		else
+-- 			return latin_1.space & trim (type_rotation'image (angle), left);
+-- 		end if;
+-- 	end to_string;
 
 	function paper_dimension (
 	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
@@ -202,10 +202,10 @@ package body et_pcb_coordinates is
 	end paper_dimension;
 
 	
-	function to_angle (angle : in string) return type_rotation is
-	begin
-		return type_rotation'value (angle);
-	end to_angle;
+-- 	function to_angle (angle : in string) return type_rotation is
+-- 	begin
+-- 		return type_rotation'value (angle);
+-- 	end to_angle;
 	
 	function to_string (point : in type_point_2d) return string is
 	begin

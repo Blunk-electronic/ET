@@ -2692,6 +2692,7 @@ package body et_kicad_to_native is
 					tag_label_cursor : et_kicad.type_tag_labels.cursor := segment.label_list_tag.first;
 
 					-- For converting kicad rotation to native rotation:
+					use type et_coordinates.type_rotation;
 					rotation : et_coordinates.type_rotation_text;
 					
 				begin -- tag_and_simple_labels
@@ -2706,11 +2707,19 @@ package body et_kicad_to_native is
 
 						-- Kicad label might be rotated by 180 or 270 degree. Translate into native label
 						-- rotation:
-						case element (simple_label_cursor).rotation is
-							when 180 => rotation := 0;
-							when 270 => rotation := 90;
-							when others => rotation := element (simple_label_cursor).rotation;
-						end case;
+-- 						case element (simple_label_cursor).rotation is
+-- 							when 180 => rotation := 0;
+-- 							when 270 => rotation := 90;
+-- 							when others => rotation := element (simple_label_cursor).rotation;
+-- 						end case;
+
+						if element (simple_label_cursor).rotation = 180.0 then
+							rotation := 0.0;
+						elsif element (simple_label_cursor).rotation = 270.0 then
+							rotation := 90.0;
+						else
+							rotation := element (simple_label_cursor).rotation;
+						end if;
 						
 						et_schematic.type_net_labels.append (
 							container	=> labels,
@@ -2735,11 +2744,19 @@ package body et_kicad_to_native is
 
 						-- Kicad label might be rotated by 180 or 270 degree. Translate into native label
 						-- rotation:
-						case element (tag_label_cursor).rotation is
-							when 180 => rotation := 0;
-							when 270 => rotation := 90;
-							when others => rotation := element (tag_label_cursor).rotation;
-						end case;
+-- 						case element (tag_label_cursor).rotation is
+-- 							when 180 => rotation := 0;
+-- 							when 270 => rotation := 90;
+-- 							when others => rotation := element (tag_label_cursor).rotation;
+-- 						end case;
+
+						if element (tag_label_cursor).rotation = 180.0 then
+							rotation := 0.0;
+						elsif element (tag_label_cursor).rotation = 270.0 then
+							rotation := 90.0;
+						else
+							rotation := element (tag_label_cursor).rotation;
+						end if;
 						
 						et_schematic.type_net_labels.append (
 							container	=> labels,

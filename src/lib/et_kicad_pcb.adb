@@ -1416,7 +1416,7 @@ package body et_kicad_pcb is
 						when SEC_FP_ARC =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => arc.angle := to_angle (to_string (arg));
+								when 1 => arc.angle := to_rotation (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -1663,7 +1663,7 @@ package body et_kicad_pcb is
 								when 2 => 
 									set (axis => Y, point => terminal_position, value => to_distance (to_string (arg)));
 								when 3 => 
-									set (terminal_position, to_angle (to_string (arg)));
+									set (terminal_position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1678,7 +1678,7 @@ package body et_kicad_pcb is
 									set (axis => Y, point => text.position, value => to_distance (to_string (arg)));
 								when 3 => 
 									--text.angle := to_angle (to_string (arg));
-									set (text.position, to_angle (to_string (arg)));
+									set (text.position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 							
@@ -4139,7 +4139,7 @@ package body et_kicad_pcb is
 								when 2 =>
 									set (axis => Y, point => package_position, value => to_distance (to_string (arg)));
 								when 3 =>
-									set (package_position, to_angle (to_string (arg)));
+									set (package_position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -4271,7 +4271,7 @@ package body et_kicad_pcb is
 									set (axis => Y, point => package_text.position, value => to_distance (to_string (arg)));
 								when 3 => 
 									--package_text.angle := to_angle (to_string (arg));
-									set (package_text.position, to_angle (to_string (arg)));
+									set (package_text.position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -4315,7 +4315,7 @@ package body et_kicad_pcb is
 									set (axis => Y, point => board_text.position, value => to_distance (to_string (arg)));
 								when 3 => 
 									--board_text.angle := to_angle (to_string (arg));
-									set (board_text.position, to_angle (to_string (arg)));
+									set (board_text.position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -4557,7 +4557,7 @@ package body et_kicad_pcb is
 						when SEC_ANGLE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => package_arc.angle := to_angle (to_string (arg));
+								when 1 => package_arc.angle := to_rotation (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 								
@@ -4639,7 +4639,7 @@ package body et_kicad_pcb is
 								when 2 => 
 									set (axis => Y, point => terminal_position, value => to_distance (to_string (arg)));
 								when 3 => 
-									set (terminal_position, to_angle (to_string (arg)));
+									set (terminal_position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 							
@@ -5234,7 +5234,7 @@ package body et_kicad_pcb is
 						when SEC_ANGLE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board_arc.angle := to_angle (to_string (arg));
+								when 1 => board_arc.angle := to_rotation (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 

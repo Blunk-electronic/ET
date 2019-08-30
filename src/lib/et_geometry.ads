@@ -115,6 +115,9 @@ package et_geometry is
 -- 			point		: in type_point'class;
 -- 			rotation	: in type_rotation) 
 -- 			return type_point_with_rotation;
+
+		function to_rotation (rotation : in string) return type_rotation;
+		function to_string (rotation : in type_rotation) return string;
 		
 		origin_zero_rotation : constant type_point_with_rotation;
 		

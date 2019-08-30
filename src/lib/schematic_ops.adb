@@ -88,9 +88,9 @@ package body schematic_ops is
 
 	procedure relative_rotation_invalid is begin
 		log (ERROR, "Relative rotation must be in range" & 
-			et_coordinates.to_string (rotation_relative_min) &
+			to_string (rotation_relative_min) &
 			" .." & 
-			et_coordinates.to_string (rotation_relative_max),
+			to_string (rotation_relative_max),
 			console => true
 			);
 		raise constraint_error;
@@ -585,9 +585,9 @@ package body schematic_ops is
 						-- Calculate the absolute port position in schematic by
 						-- first rotating port_xy, and then moving port_xy:
 						
-						et_coordinates.rotate (
-							point	=> port_position,
-							angle	=> element (unit_cursor).rotation);
+						rotate (
+							point		=> port_position,
+							rotation	=> element (unit_cursor).rotation);
 						
 						-- CS mirror ?
 						
@@ -763,9 +763,9 @@ package body schematic_ops is
 				-- Calculate the absolute port position in schematic by
 				-- first rotating port_xy, and then moving port_xy:
 				
-				et_coordinates.rotate (
-					point	=> port_xy,
-					angle	=> nc_rotation);
+				rotate (
+					point		=> port_xy,
+					rotation	=> nc_rotation);
 				
 				et_coordinates.move (
 					point	=> port_xy,
@@ -1440,7 +1440,7 @@ package body schematic_ops is
 			name	: in type_port_name.bounded_string;
 			port	: in out type_port) is
 		begin
-			rotate (port.position, angle);
+			geometry.rotate (port.position, angle);
 		end;
 
 		procedure query_port (cursor : in et_libraries.type_ports.cursor) is begin
@@ -1488,6 +1488,8 @@ package body schematic_ops is
 					name	: in type_unit_name.bounded_string; -- A
 					unit	: in out type_unit) is
 
+					use et_coordinates.geometry;
+					
 					procedure rotate_placeholders (rot : in type_rotation) is begin
 					-- Rotate position of placeholders around the unit origin. 
 						rotate (unit.reference.position, rot);
@@ -1520,7 +1522,7 @@ package body schematic_ops is
 
 					-- log unit position and current rotation
 					log (text => to_string (position => position_of_unit) &
-						 et_coordinates.to_string (rotation_before), level => log_threshold + 1);
+						 to_string (rotation_before), level => log_threshold + 1);
 
 					type_units.update_element (
 						container	=> device.units,
@@ -1610,13 +1612,13 @@ package body schematic_ops is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_name) &
 					" rotating " & to_string (device_name) & " unit " & 
-					to_string (unit_name) & " to" & et_coordinates.to_string (rotation), level => log_threshold);
+					to_string (unit_name) & " to" & to_string (rotation), level => log_threshold);
 
 			when RELATIVE =>
 				if rotation in type_rotation_relative then
 					log (text => "module " & to_string (module_name) &
 						" rotating " & to_string (device_name) & " unit " & 
-						to_string (unit_name) & " by" & et_coordinates.to_string (rotation), level => log_threshold);
+						to_string (unit_name) & " by" & to_string (rotation), level => log_threshold);
 				else
 					relative_rotation_invalid;
 				end if;
@@ -1710,7 +1712,7 @@ package body schematic_ops is
 		log (text => "module " & to_string (module_name) &
 			" rotating " & to_string (device_name) & " unit " &
 			to_string (unit_name) & " placeholder" & to_string (meaning) & " to" &
-			et_coordinates.to_string (rotation), level => log_threshold);
+			to_string (rotation), level => log_threshold);
 		
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -3733,7 +3735,7 @@ package body schematic_ops is
 
 			-- Calculate the absolute positions of the unit ports. Rotate first if required:
 			log (text => "calculating absolute port positions ...", level => log_threshold + 2);
-			if rotation /= rotation_zero then
+			if rotation /= zero_rotation then
 				rotate_ports (ports, rotation);
 			end if;
 
@@ -3758,7 +3760,7 @@ package body schematic_ops is
 				" package variant " & to_string (variant) &
 				" at" &
 				to_string (position => place) &
-				" rotation" & et_coordinates.to_string (rotation),				
+				" rotation" & to_string (rotation),
 				level => log_threshold);
 			
 		else -- virtual device
@@ -3766,7 +3768,7 @@ package body schematic_ops is
 				" adding device " & to_string (device_model) &
 				" at" &
 				to_string (position => place) &
-				" rotation" & et_coordinates.to_string (rotation),				
+				" rotation" & to_string (rotation),
 				level => log_threshold);
 		end if;
 			
@@ -4008,7 +4010,7 @@ package body schematic_ops is
 
 				-- Calculate the absolute positions of the unit ports. Rotate first if required:
 				log (text => "calculating absolute port positions ...", level => log_threshold + 2);
-				if rotation /= rotation_zero then
+				if rotation /= zero_rotation then
 					rotate_ports (ports, rotation);
 				end if;
 				
@@ -4034,7 +4036,7 @@ package body schematic_ops is
 		log (text => "module " & to_string (module_name) &
 			" copying " & to_string (device_name) & 
 			" to" & to_string (position => destination) &
-			" rotation" & et_coordinates.to_string (rotation) & " ...", level => log_threshold);
+			" rotation" & to_string (rotation) & " ...", level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -4239,7 +4241,7 @@ package body schematic_ops is
 
 				-- Calculate the absolute positions of the unit ports. Rotate first if required:
 				log (text => "calculating absolute port positions ...", level => log_threshold + 1);
-				if rotation /= rotation_zero then
+				if rotation /= zero_rotation then
 					rotate_ports (ports, rotation);
 				end if;
 
@@ -4265,7 +4267,7 @@ package body schematic_ops is
 			" invoking unit " & to_string (unit_name) &
 			" at" &
 			to_string (position => place) &
-			" rotation" & et_coordinates.to_string (rotation),
+			" rotation" & to_string (rotation),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -4541,7 +4543,7 @@ package body schematic_ops is
 	begin -- add_netchanger
 		log (text => "module " & to_string (module_name) &
 			" adding netchanger at" & to_string (position => place) &
-			" rotation" & et_coordinates.to_string (rotation),
+			" rotation" & to_string (rotation),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -5383,13 +5385,13 @@ package body schematic_ops is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_name) &
 					 " rotating netchanger" & to_string (index) &
-					 " to" & et_coordinates.to_string (rotation), level => log_threshold);
+					 " to" & to_string (rotation), level => log_threshold);
 
 			when RELATIVE =>
 				if rotation in type_rotation_relative then
 					log (text => "module " & to_string (module_name) &
 						" rotating netchanger" & to_string (index) &
-						" by" & et_coordinates.to_string (rotation), level => log_threshold);
+						" by" & to_string (rotation), level => log_threshold);
 				else
 					relative_rotation_invalid;
 				end if;
@@ -7584,7 +7586,7 @@ package body schematic_ops is
 			et_coordinates.to_string (position => segment_position) &
 			" with " & to_string (appearance) & " label at" &
 			et_coordinates.to_string (point => label_position) &
-			" rotation" & to_string (angle => rotation),
+			" rotation" & to_string (rotation),
 			level => log_threshold);
 		
 		log_indentation_up;

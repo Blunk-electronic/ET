@@ -72,11 +72,11 @@ package et_coordinates is
 	subtype type_distance_xy is type_distance range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter, CS rename to type_distance
 
 
-	type type_rotation_new is delta 1.0 range -270.0 .. 270.0;
-	for type_rotation_new'small use 1.0;
+	type type_rotation is delta 1.0 range -270.0 .. 270.0;
+	for type_rotation'small use 1.0;
 	
 	-- instantiation of the 2d geometry package:
-	package geometry is new et_geometry.geometry_operations_2d (type_distance, type_rotation_new);
+	package geometry is new et_geometry.geometry_operations_2d (type_distance, type_rotation);
 	use geometry;
 	
 	subtype type_catch_zone is type_distance range 0.0 .. 10.0;
@@ -92,28 +92,28 @@ package et_coordinates is
 	-- Angles/rotations are to be interpreted as: 
 	-- positive rotation -> counter clock wise
 	-- negative rotation -> clock wise
-	rotation_delta : constant := 90;
-	rotation_min : constant := -270;
-	rotation_max : constant :=  270;
-	pragma assertion_policy (check);		
-	subtype type_rotation is integer range rotation_min .. rotation_max 
-		with dynamic_predicate => type_rotation mod rotation_delta = 0;
+-- 	rotation_delta : constant := 90;
+-- 	rotation_min : constant := -270;
+-- 	rotation_max : constant :=  270;
+-- 	pragma assertion_policy (check);		
+-- 	subtype type_rotation is integer range rotation_min .. rotation_max 
+-- 		with dynamic_predicate => type_rotation mod rotation_delta = 0;
 	
 
 	
-    rotation_zero : type_rotation := 0;
+--     rotation_zero : type_rotation := 0;
     
-	rotation_relative_min : constant type_rotation := -90;
-	rotation_relative_max : constant type_rotation := 180;	
+	rotation_relative_min : constant type_rotation := -90.0;
+	rotation_relative_max : constant type_rotation := 180.0;	
 	subtype type_rotation_relative is type_rotation range rotation_relative_min .. rotation_relative_max;
 
-	rotation_text_min : constant :=  0;
-	rotation_text_max : constant := 90;
+	rotation_text_min : constant := 0.0;
+	rotation_text_max : constant := 90.0;
 	subtype type_rotation_text is type_rotation range rotation_text_min .. rotation_text_max;
 	-- CS: make use of this type by membership tests when required
 
-	function to_string (angle : in type_rotation) return string;
-	function to_angle (angle : in string) return type_rotation;
+-- 	function to_string (angle : in type_rotation) return string;
+-- 	function to_angle (angle : in string) return type_rotation;
 
 	function add (left, right : in type_rotation) return type_rotation;
 	-- Adds two angles.
@@ -132,10 +132,10 @@ package et_coordinates is
 	function to_string (point : in type_point'class) return string;
 	-- Returns the given point coordinates to a string.
 
-	procedure rotate (
-	-- Rotates the given point by the given angle with the origin as center.
-		point	: in out type_point'class;
-		angle	: in type_rotation);
+-- 	procedure rotate ( -- CS delete or move to et_geometry
+-- 	-- Rotates the given point by the given angle with the origin as center.
+-- 		point	: in out type_point'class;
+-- 		angle	: in type_rotation);
 
 
 	-- When handling hierachic structures we use a separator.

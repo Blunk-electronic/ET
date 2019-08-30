@@ -344,6 +344,18 @@ package body et_geometry is
 -- 		begin
 -- 			return (point with rotation);
 -- 		end;
+
+		function to_rotation (rotation : in string) return type_rotation is begin
+			return type_rotation'value (rotation);
+		end;
+
+		function to_string (rotation : in type_rotation) return string is begin
+			if rotation < zero_rotation then
+				return latin_1.space & type_rotation'image (rotation);
+			else
+				return type_rotation'image (rotation);
+			end if;
+		end;
 		
 		procedure set (
 		-- Sets the rotation of a point.					

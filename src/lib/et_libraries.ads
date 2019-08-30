@@ -82,14 +82,14 @@ package et_libraries is
 	function to_text_size (size : in type_distance) return type_text_size;
 	-- Converts given distance to type_text_size. Raises error on excessive text size.
 	
-	function to_string (
-		size 		: in type_text_size;
-		preamble	: in boolean := true) return string;
-	-- Returns the given text size as string.
+-- 	function to_string (
+-- 		size 		: in type_text_size;
+-- 		preamble	: in boolean := true) return string;
+-- 	-- Returns the given text size as string.
 
 	subtype type_text_line_width is type_distance range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
 
-	function to_string (width : in type_text_line_width) return string;
+	--function to_string (width : in type_text_line_width) return string;
 	-- Returns the given line width as string.
 	
 	type type_text_style is (NORMAL, ITALIC, BOLD, ITALIC_BOLD);
@@ -139,7 +139,7 @@ package et_libraries is
         size    	: type_text_size := text_size_default;
         style		: type_text_style := type_text_style'first;
         line_width	: type_text_line_width := type_text_line_width'first; -- CS: use a general type_line_width ?
-        rotation	: type_rotation_text := 0;
+        rotation	: type_rotation_text := 0.0;
 		alignment	: type_text_alignment;
 	end record;
 
@@ -254,7 +254,7 @@ package et_libraries is
 		position			: type_point;
 		length				: type_port_length; 
 		-- CS line_width	: type_line_width := line_width_port_default;
-		rotation			: type_rotation := 0;
+		rotation			: type_rotation := 0.0;
 		
 		port_name_visible		: type_port_name_visible;
 		port_name_size			: type_port_name_text_size;
