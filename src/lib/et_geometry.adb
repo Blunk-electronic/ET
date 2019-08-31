@@ -337,6 +337,28 @@ package body et_geometry is
 			return result;
 		end distance_point_line;
 
+		function add (left, right : in type_rotation) return type_rotation is
+		-- Adds two angles.
+		-- If result greater or equal 360 degree then 360 degree is subtracted from result.
+		-- If result less or equal 360 degree then 360 degree is added to the result.
+			subtype type_rotation_wide is float range -720.0 .. +720.0;
+			scratch : type_rotation_wide;
+			result : type_rotation; -- to be returned
+		begin
+			scratch := float (left) + float (right);
+			
+			if scratch >= 360.0 then
+				scratch := scratch - 360.0;
+				
+			elsif scratch <= -360.0 then
+				scratch := scratch + 360.0;
+			end if;
+
+			result := type_rotation (scratch);
+			return result;
+		end;
+
+		
 -- 		function create (
 -- 			point		: in type_point'class;
 -- 			rotation	: in type_rotation) 

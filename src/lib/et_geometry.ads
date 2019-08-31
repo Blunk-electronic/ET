@@ -120,13 +120,18 @@ package et_geometry is
 			line_range	: in type_line_range) 
 			return type_distance_point_line;
 
+		function add (left, right : in type_rotation) return type_rotation;
+		-- Adds two angles.
+		-- If result greater or equal 360 degree then 360 degree is subtracted from result.
+		-- If result less or equal 360 degree then 360 degree is added to the result.
+		
 		type type_point_with_rotation is new type_point with private;
 
 -- 		function create (
 -- 			point		: in type_point'class;
 -- 			rotation	: in type_rotation) 
 -- 			return type_point_with_rotation;
-
+		
 		function to_rotation (rotation : in string) return type_rotation;
 		function to_string (rotation : in type_rotation) return string;
 		
@@ -154,7 +159,7 @@ package et_geometry is
 		-- Rotates the given point by the given angle around the origin.
 			point		: in out type_point;
 			rotation	: in type_rotation);
-
+		
 		function arc_end_point (
 		-- Computes the end point of an arc.
 			center		: in type_point;
