@@ -56,6 +56,11 @@ package et_geometry is
 		function x (point : in type_point'class) return type_distance; -- CS class attr. not required ?
 		function y (point : in type_point'class) return type_distance;		
 
+		function mil_to_distance (mil : in string) return type_distance;
+		-- Converts a mil number (given as a string) to millimeters.	
+
+		function distance_to_mil (distance : in type_distance) return string;
+		
 		axis_separator : constant string := "/";
 		point_preamble : constant string := " pos (x" & axis_separator & "y) ";
 		point_preamble_with_rotation : constant string := " pos "

@@ -341,6 +341,14 @@ package body et_coordinates is
 	
 	function to_string (position : in type_coordinates) return string is
 		use et_string_processing;
+
+		coordinates_preamble_sheet : constant string := " pos "
+			& "(sheet"
+			& axis_separator
+			& "x"
+			& axis_separator
+			& "y) ";
+
 	begin
 		return coordinates_preamble_sheet
 			& to_sheet (position.sheet) 

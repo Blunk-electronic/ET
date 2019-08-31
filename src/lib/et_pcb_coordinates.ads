@@ -101,11 +101,11 @@ package et_pcb_coordinates is
 	pcb_thickness_max : constant type_distance := 20.0;	
 	subtype type_pcb_thickness is type_distance_total range pcb_thickness_min .. pcb_thickness_max;
 	
-	mil_min : constant float := -390_000_000.0; -- equals approx. type_distance'first
-	mil_max : constant float :=  390_000_000.0; -- equals approx. type_distance'last
-	
-	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) 
-		return type_distance;
+-- 	mil_min : constant float := -390_000_000.0; -- equals approx. type_distance'first
+-- 	mil_max : constant float :=  390_000_000.0; -- equals approx. type_distance'last
+-- 	
+-- 	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) 
+-- 		return type_distance;
 	-- Converts a mil number (given as a string) to millimeters.	
 
 -- 	position_preamble_2d : constant string := " pos "

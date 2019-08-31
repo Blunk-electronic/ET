@@ -184,26 +184,26 @@ package et_coordinates is
 	
 	zero_position : constant type_coordinates;
 
-	coordinates_preamble_xy : constant string (1..11) := " pos "
-		& "(x"
-		& axis_separator
-		& "y) ";
-	
-	coordinates_preamble_sheet : constant string (1..17) := " pos "
-		& "(sheet"
-		& axis_separator
-		& "x"
-		& axis_separator
-		& "y) ";
-
-	coordinates_preamble_module : constant string (1..22) := " pos "
-		& "(path"
-		& axis_separator
-		& "sheet"
-		& axis_separator
-		& "x"
-		& axis_separator
-		& "y) ";
+-- 	coordinates_preamble_xy : constant string (1..11) := " pos "
+-- 		& "(x"
+-- 		& axis_separator
+-- 		& "y) ";
+-- 	
+-- 	coordinates_preamble_sheet : constant string (1..17) := " pos "
+-- 		& "(sheet"
+-- 		& axis_separator
+-- 		& "x"
+-- 		& axis_separator
+-- 		& "y) ";
+-- 
+-- 	coordinates_preamble_module : constant string (1..22) := " pos "
+-- 		& "(path"
+-- 		& axis_separator
+-- 		& "sheet"
+-- 		& axis_separator
+-- 		& "x"
+-- 		& axis_separator
+-- 		& "y) ";
 
 	function to_string (position : in type_coordinates) return string;
 	

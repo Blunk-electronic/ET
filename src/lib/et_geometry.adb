@@ -68,6 +68,19 @@ package body et_geometry is
 			return point.y;
 		end;
 
+		function mil_to_distance (mil : in string) return type_distance is
+		-- Converts a mil number (given as a string) to millimeters.
+			
+			-- type type_distance_intermediate is digits 13 range mil_min .. mil_max; -- unit is mil
+			-- CS: refine range and delta if required
+
+			-- d_in : type_distance_intermediate;
+			distance_mil : float := float'value (mil);
+		begin
+			-- d_in := type_distance_intermediate'value (mil);
+			return type_distance (distance_mil * (25.4 * 0.001));
+		end mil_to_distance;
+		
 		function "<" (left, right : in type_point) return boolean is begin
 			if left.x < right.x then
 				return true;
@@ -82,6 +95,26 @@ package body et_geometry is
 				return false;
 			end if;
 		end;
+
+		function distance_to_mil (distance : in type_distance) return string is
+		-- Returns the given distance as string in mil.
+			-- type type_distance_mm is digits 10 range -400_000_000.0 .. 400_000_000.0; 
+			-- CS: increase digits if accuracy not sufficient
+		
+			--scratch : type_distance_mm;
+			scratch : float;
+
+			-- This is the output type:
+			-- type type_distance_mil is delta 0.1 range -400_000_000.0 .. 400_000_000.0;
+			-- type type_distance_mil is range -400_000_000 .. 400_000_000;
+		begin
+			--scratch := type_distance_mm (distance) * 1000.00 / 25.4;
+			scratch := float (distance) * 1000.00 / 25.4;
+
+			--return trim (type_distance_mil'image (type_distance_mil (scratch)), left);
+			return to_string (type_distance (scratch));
+		end;
+
 		
 		function set (x, y : in type_distance) return type_point'class is
 			point : type_point;
