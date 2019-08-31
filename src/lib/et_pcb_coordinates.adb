@@ -75,30 +75,30 @@ package body et_pcb_coordinates is
 -- 		return type_distance'value (distance);
 -- 	end to_distance;
 
-	function right_point_before_left_2d (right, left : in type_point_2d) return boolean is
-	-- Returns true if right point comes before left point.
-	-- Compares axis in this order: x, y
-	-- If right point equals left point, returns false.
-		result : boolean := false;
-	begin
-		if right.x < left.x then result := true;
-		elsif right.x = left.x then
-			
-			if right.y < left.y then result := true;
--- 			elsif right.y = left.y then
+-- 	function right_point_before_left_2d (right, left : in type_point_2d) return boolean is
+-- 	-- Returns true if right point comes before left point.
+-- 	-- Compares axis in this order: x, y
+-- 	-- If right point equals left point, returns false.
+-- 		result : boolean := false;
+-- 	begin
+-- 		if right.x < left.x then result := true;
+-- 		elsif right.x = left.x then
+-- 			
+-- 			if right.y < left.y then result := true;
+-- -- 			elsif right.y = left.y then
+-- -- 
+-- -- 				if right.z < left.z then result := true;
+-- -- 				else result := false;
+-- -- 				end if;
+-- 				
+-- 			else result := false;
+-- 			end if;
 -- 
--- 				if right.z < left.z then result := true;
--- 				else result := false;
--- 				end if;
-				
-			else result := false;
-			end if;
-
-		else result := false;
-		end if;
-
-		return result;
-	end right_point_before_left_2d;
+-- 		else result := false;
+-- 		end if;
+-- 
+-- 		return result;
+-- 	end right_point_before_left_2d;
 	
 	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) 
 		return type_distance is

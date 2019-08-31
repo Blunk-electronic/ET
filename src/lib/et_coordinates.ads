@@ -122,7 +122,7 @@ package et_coordinates is
 
 	
 
-	function "<" (left, right : in type_point) return boolean;
+-- 	function "<" (left, right : in type_point) return boolean;
 	
 -- 	axis_separator		: constant string (1..1) := "/";
 	--position_preamble	: constant string (1..15) := "position (x" & axis_separator & "y) ";

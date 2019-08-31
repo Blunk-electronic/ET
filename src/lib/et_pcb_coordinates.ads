@@ -144,7 +144,7 @@ package et_pcb_coordinates is
 	subtype type_point_2d is type_point; -- this is just a renaming
 	type type_point_3d is tagged private;
 	
-	function right_point_before_left_2d (right, left : in type_point_2d) return boolean;
+-- 	function right_point_before_left_2d (right, left : in type_point_2d) return boolean;
 	-- Returns true if right point comes before left point.
 	-- Compares axis is this order: x, y
 	-- If right point equals left point, returns false.

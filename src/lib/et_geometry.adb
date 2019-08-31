@@ -68,6 +68,21 @@ package body et_geometry is
 			return point.y;
 		end;
 
+		function "<" (left, right : in type_point) return boolean is begin
+			if left.x < right.x then
+				return true;
+			elsif left.x > right.x then
+				return false;
+
+			-- left.x = right.x -> compare y:
+			elsif left.y < right.y then
+				return true;
+			else 
+				-- if left.y greater or equal right.y
+				return false;
+			end if;
+		end;
+		
 		function set (x, y : in type_distance) return type_point'class is
 			point : type_point;
 		begin

@@ -65,7 +65,7 @@ package et_geometry is
 			& axis_separator
 			& "rotation)";
 
-
+		function "<" (left, right : in type_point) return boolean;
 		
 		function set (x, y : in type_distance) return type_point'class;
 

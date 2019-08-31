@@ -388,8 +388,8 @@ package et_pcb is
 	-- Corner points are collected in an ordered set.
 	-- This prevents placing two identical points on top of each other.
 	package type_polygon_points is new ordered_sets (
-		element_type	=> type_point_2d,
-		"<"				=> right_point_before_left_2d);
+		element_type	=> type_point_2d);
+-- 		"<"				=> right_point_before_left_2d);
 
 	type type_corner_easing is (NONE, CHAMFER, FILLET);
 	
