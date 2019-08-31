@@ -559,7 +559,7 @@ package body et_geometry is
 				& to_string (point.y);
 		end;
 
--- 		overriding
+		overriding
 		function to_string (point : in type_point_with_rotation) return string is begin
 			return point_preamble_with_rotation
 				& to_string (point.x)
