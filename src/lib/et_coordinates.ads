@@ -54,13 +54,6 @@ with et_geometry;
 package et_coordinates is
 	pragma assertion_policy (check);
 	
-	-- There are drawings with the origin at the upper left corner (used by KiCad, ...).
-	-- There are also drawings the the origin at the lower left corner (used by EAGLE, ...)
--- 	type type_Y_axis_positive is (UPWARDS, DOWNWARDS);
-
-	-- This flag is set on import or export of designs in accordance to the desired CAD format.
-	-- Geometric operations like rotating require this flag.
--- 	Y_axis_positive : type_Y_axis_positive := UPWARDS;
 	
 	-- The total distance between two objects:
 	--	type type_distance is digits 9 range -100_000_000.0 .. 100_000_000.0; -- unit is metric millimeter
@@ -82,11 +75,6 @@ package et_coordinates is
 	subtype type_catch_zone is type_distance range 0.0 .. 10.0;
 	catch_zone : type_catch_zone := 2.0; -- CS: should be a system setting in the future
 	
--- 	function to_distance (distance : in string) return type_distance_xy;	
-
--- 	function to_string (distance : in type_distance) return string;
-
-
 
 	
 	-- Angles/rotations are to be interpreted as: 
@@ -99,9 +87,6 @@ package et_coordinates is
 -- 	subtype type_rotation is integer range rotation_min .. rotation_max 
 -- 		with dynamic_predicate => type_rotation mod rotation_delta = 0;
 	
-
-	
---     rotation_zero : type_rotation := 0;
     
 	rotation_relative_min : constant type_rotation := -90.0;
 	rotation_relative_max : constant type_rotation := 180.0;	
@@ -111,31 +96,6 @@ package et_coordinates is
 	rotation_text_max : constant := 90.0;
 	subtype type_rotation_text is type_rotation range rotation_text_min .. rotation_text_max;
 	-- CS: make use of this type by membership tests when required
-
--- 	function to_string (angle : in type_rotation) return string;
--- 	function to_angle (angle : in string) return type_rotation;
-
--- 	function add (left, right : in type_rotation) return type_rotation;
--- 	-- Adds two angles.
--- 	-- If result greater or equal 360 degree then 360 degree is subtracted from result.
--- 	-- If result less or equal 360 degree then 360 degree is added to the result.
-
-	
-
--- 	function "<" (left, right : in type_point) return boolean;
-	
--- 	axis_separator		: constant string (1..1) := "/";
-	--position_preamble	: constant string (1..15) := "position (x" & axis_separator & "y) ";
--- 	position_preamble	: constant string (1..11) := " pos (x" & axis_separator & "y) ";
-	--position_preamble	: constant string (1..6) := "(x" & axis_separator & "y) ";
-	
--- 	function to_string (point : in type_point'class) return string;
-	-- Returns the given point coordinates to a string.
-
--- 	procedure rotate ( -- CS delete or move to et_geometry
--- 	-- Rotates the given point by the given angle with the origin as center.
--- 		point	: in out type_point'class;
--- 		angle	: in type_rotation);
 
 
 	-- When handling hierachic structures we use a separator.
@@ -184,26 +144,6 @@ package et_coordinates is
 	
 	zero_position : constant type_coordinates;
 
--- 	coordinates_preamble_xy : constant string (1..11) := " pos "
--- 		& "(x"
--- 		& axis_separator
--- 		& "y) ";
--- 	
--- 	coordinates_preamble_sheet : constant string (1..17) := " pos "
--- 		& "(sheet"
--- 		& axis_separator
--- 		& "x"
--- 		& axis_separator
--- 		& "y) ";
--- 
--- 	coordinates_preamble_module : constant string (1..22) := " pos "
--- 		& "(path"
--- 		& axis_separator
--- 		& "sheet"
--- 		& axis_separator
--- 		& "x"
--- 		& axis_separator
--- 		& "y) ";
 
 	function to_string (position : in type_coordinates) return string;
 	

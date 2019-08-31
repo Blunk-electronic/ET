@@ -67,8 +67,6 @@ package et_pcb_coordinates is
 	type type_distance_total is delta 0.001 range -100_000_000.00 .. 100_000_000.00; -- unit is metric millimeter
 	for type_distance_total'small use 0.001; -- this is the accuracy required for layout
 
--- 	function to_string (distance : in type_distance_total) return string;
-	
 	-- The x and y position of an object:
 	subtype type_distance is type_distance_total range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter
 
@@ -101,83 +99,13 @@ package et_pcb_coordinates is
 	pcb_thickness_max : constant type_distance := 20.0;	
 	subtype type_pcb_thickness is type_distance_total range pcb_thickness_min .. pcb_thickness_max;
 	
--- 	mil_min : constant float := -390_000_000.0; -- equals approx. type_distance'first
--- 	mil_max : constant float :=  390_000_000.0; -- equals approx. type_distance'last
--- 	
--- 	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) 
--- 		return type_distance;
-	-- Converts a mil number (given as a string) to millimeters.	
-
--- 	position_preamble_2d : constant string := " pos "
--- 		& "(x"
--- 		& axis_separator
--- 		& "y)";
-
--- 	position_preamble_2d_with_rotation : constant string := " pos "
--- 		& "(x"
--- 		& axis_separator
--- 		& "y"
--- 		& axis_separator
--- 		& "rotation)";
-	
--- 	position_preamble_3d : constant string (1..12) := " pos "
--- 		& "(x"
--- 		& axis_separator
--- 		& "y"
--- 		& axis_separator
--- 		& "z)";
-	
--- 	function to_distance (distance : in string) return type_distance;
-
--- 	units_per_cycle : constant float := 360.0;
--- 	type type_angle is delta 0.01 range -359.9 .. 359.9;
--- 	for type_angle'small use 0.01;
--- 	zero_angle : constant type_angle := 0.0;
-
--- 	function to_string (
--- 		angle 		: in type_rotation;
--- 		preamble 	: in boolean := false)
--- 		return string;
-
--- 	function to_angle (angle : in string) return type_rotation;
-
 	subtype type_point_2d is type_point; -- this is just a renaming
 -- 	type type_point_3d is tagged private;
 	
--- 	function right_point_before_left_2d (right, left : in type_point_2d) return boolean;
-	-- Returns true if right point comes before left point.
-	-- Compares axis is this order: x, y
-	-- If right point equals left point, returns false.
-
-	--type type_point_2d_with_angle is new type_point_2d with private;
-	--type type_package_position is new type_point_2d_with_angle with private;
 	type type_package_position is new type_point_with_rotation with private;
 
--- 	function to_string (point : in type_point_2d) return string;
--- 	function to_string (point : in type_point_with_rotation) return string;	
-	
--- 	terminal_position_default : constant type_point_with_rotation := origin_zero_rotation; -- CS remove ?
 	package_position_default : constant type_package_position;
 	placeholder_position_default : constant type_package_position;	
--- 	submodule_position_default : constant type_point_with_rotation := origin_zero_rotation; -- CS remove ?
-	
--- 	procedure rotate (
--- 	-- Rotates the given point by the given angle with the origin as center.
--- 		point	: in out type_point_2d;
--- 		angle	: in type_angle);
-	
--- 	procedure set_angle (
--- 	-- Sets the rotation of a point at the given angle.					
--- 		value	: in type_angle;
--- 		point	: in out type_point_2d_with_angle'class);
-
--- 	procedure rotate (
--- 	-- Changes the rotation of a point by the given angle.
--- 		point	: in out type_point_2d_with_angle'class;
--- 		rotation: in type_angle);
-	
--- 	function get_angle (point : in type_point_2d_with_angle'class)
--- 		return type_angle;
 
 	procedure set_face (
 		face	: in type_face;
@@ -198,18 +126,7 @@ package et_pcb_coordinates is
 -- 		type type_point_3d is new type_point with record
 -- 			z : type_distance := zero;
 -- 		end record;
-
--- 		type type_point_2d_with_angle is new type_point_2d with record
--- 			angle	: type_angle := zero_angle;
--- 		end record;
-
-		--terminal_position_default : constant type_point_2d_with_angle := (
--- 		terminal_position_default : constant type_point_with_rotation;
-
---		submodule_position_default : constant type_point_2d_with_angle := (
--- 		submodule_position_default : constant type_point_with_rotation;			
 		
-		--type type_package_position is new type_point_2d_with_angle with record
 		type type_package_position is new type_point_with_rotation with record
 			face	: type_face := TOP;
 		end record;

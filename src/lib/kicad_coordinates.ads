@@ -49,15 +49,6 @@ with et_string_processing;
 with et_coordinates;			use et_coordinates;
 
 package kicad_coordinates is
--- 
--- 	mil_min : constant float := -390_000_000.0; -- equals approx. type_distance_xy'first
--- 	mil_max : constant float :=  390_000_000.0; -- equals approx. type_distance_xy'last
--- 	
--- 	function mil_to_distance (mil : in string; warn_on_negative : boolean := true) return type_distance_xy;
-	-- Returns the given mils as type_distance_xy.
-	
--- 	function to_mil_string (distance : in type_distance_xy) return string;
-
 	
 	procedure warning_angle_greater_90_degrees;
 
