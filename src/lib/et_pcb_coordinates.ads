@@ -108,24 +108,24 @@ package et_pcb_coordinates is
 		return type_distance;
 	-- Converts a mil number (given as a string) to millimeters.	
 
-	position_preamble_2d : constant string := " pos "
-		& "(x"
-		& axis_separator
-		& "y)";
+-- 	position_preamble_2d : constant string := " pos "
+-- 		& "(x"
+-- 		& axis_separator
+-- 		& "y)";
 
-	position_preamble_2d_with_rotation : constant string := " pos "
-		& "(x"
-		& axis_separator
-		& "y"
-		& axis_separator
-		& "rotation)";
+-- 	position_preamble_2d_with_rotation : constant string := " pos "
+-- 		& "(x"
+-- 		& axis_separator
+-- 		& "y"
+-- 		& axis_separator
+-- 		& "rotation)";
 	
-	position_preamble_3d : constant string (1..12) := " pos "
-		& "(x"
-		& axis_separator
-		& "y"
-		& axis_separator
-		& "z)";
+-- 	position_preamble_3d : constant string (1..12) := " pos "
+-- 		& "(x"
+-- 		& axis_separator
+-- 		& "y"
+-- 		& axis_separator
+-- 		& "z)";
 	
 -- 	function to_distance (distance : in string) return type_distance;
 
@@ -142,7 +142,7 @@ package et_pcb_coordinates is
 -- 	function to_angle (angle : in string) return type_rotation;
 
 	subtype type_point_2d is type_point; -- this is just a renaming
-	type type_point_3d is tagged private;
+-- 	type type_point_3d is tagged private;
 	
 -- 	function right_point_before_left_2d (right, left : in type_point_2d) return boolean;
 	-- Returns true if right point comes before left point.
@@ -195,9 +195,9 @@ package et_pcb_coordinates is
 
 	
 	private
-		type type_point_3d is new type_point with record
-			z : type_distance := zero;
-		end record;
+-- 		type type_point_3d is new type_point with record
+-- 			z : type_distance := zero;
+-- 		end record;
 
 -- 		type type_point_2d_with_angle is new type_point_2d with record
 -- 			angle	: type_angle := zero_angle;

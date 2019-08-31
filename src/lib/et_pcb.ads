@@ -348,11 +348,11 @@ package et_pcb is
 		-- CS locked : type_locked;
 	end record;
 
-	type type_line_3d is abstract tagged record
-		start_point 	: type_point_3d;
-		end_point   	: type_point_3d;
-		-- CS locked : type_locked;
-	end record;
+-- 	type type_line_3d is abstract tagged record
+-- 		start_point 	: type_point_3d;
+-- 		end_point   	: type_point_3d;
+-- 		-- CS locked : type_locked;
+-- 	end record;
 	
 	-- ARC
 	type type_arc_2d is abstract tagged record
@@ -362,13 +362,13 @@ package et_pcb is
 		-- CS locked : type_locked;		
 	end record;
 
-	type type_arc_3d is abstract tagged record
-		center			: type_point_3d;
-		start_point		: type_point_3d;
-		end_point		: type_point_3d;
-		-- 		angle			: type_angle;
-		-- CS locked : type_locked;
-	end record;
+-- 	type type_arc_3d is abstract tagged record
+-- 		center			: type_point_3d;
+-- 		start_point		: type_point_3d;
+-- 		end_point		: type_point_3d;
+-- 		-- 		angle			: type_angle;
+-- 		-- CS locked : type_locked;
+-- 	end record;
 	
 	-- CIRCLE
 	type type_circle_2d is abstract tagged record
@@ -377,11 +377,11 @@ package et_pcb is
 		-- CS locked : type_locked;
 	end record;
 
-	type type_circle_3d is abstract tagged record
-		center			: type_point_3d;
-		radius  		: type_distance;
-		-- CS locked : type_locked;		
-	end record;
+-- 	type type_circle_3d is abstract tagged record
+-- 		center			: type_point_3d;
+-- 		radius  		: type_distance;
+-- 		-- CS locked : type_locked;		
+-- 	end record;
 
 	
 	-- POLYGON
@@ -474,20 +474,20 @@ package et_pcb is
 		log_threshold	: in et_string_processing.type_log_level);
 		
 	-- PACKAGE CONTOUR/OUTLINE -- for 3d only
-	type type_package_contour_line is new type_line_3d with null record;
-	package type_package_contour_lines is new doubly_linked_lists (type_package_contour_line);
+-- 	type type_package_contour_line is new type_line_3d with null record;
+-- 	package type_package_contour_lines is new doubly_linked_lists (type_package_contour_line);
 
-	type type_package_contour_arc is new type_arc_3d with null record;
-	package type_package_contour_arcs is new doubly_linked_lists (type_package_contour_arc);
+-- 	type type_package_contour_arc is new type_arc_3d with null record;
+-- 	package type_package_contour_arcs is new doubly_linked_lists (type_package_contour_arc);
 
-	type type_package_contour_circle is new type_circle_3d with null record;
-	package type_package_contour_circles is new doubly_linked_lists (type_package_contour_circle);
+-- 	type type_package_contour_circle is new type_circle_3d with null record;
+-- 	package type_package_contour_circles is new doubly_linked_lists (type_package_contour_circle);
 	
-	type type_package_contour is record
-		lines 	: type_package_contour_lines.list;
-		arcs	: type_package_contour_arcs.list;
-		circles	: type_package_contour_circles.list;
-	end record;
+-- 	type type_package_contour is record
+-- 		lines 	: type_package_contour_lines.list;
+-- 		arcs	: type_package_contour_arcs.list;
+-- 		circles	: type_package_contour_circles.list;
+-- 	end record;
 
 
 	
@@ -1198,7 +1198,8 @@ package et_pcb is
 		-- Only REAL packages have 3d contours:
 		case appearance is
 			when REAL =>
-				package_contour	: type_package_contour;
+				null; -- CS
+				--package_contour	: type_package_contour;
 			when VIRTUAL =>
 				null; -- netchangers, testpoints, ISA-Board edge connectors, ...
 		end case;
