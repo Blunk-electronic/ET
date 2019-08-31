@@ -154,7 +154,7 @@ package et_pcb_coordinates is
 	type type_package_position is new type_point_with_rotation with private;
 
 -- 	function to_string (point : in type_point_2d) return string;
-	function to_string (point : in type_point_with_rotation) return string;	
+-- 	function to_string (point : in type_point_with_rotation) return string;	
 	
 -- 	terminal_position_default : constant type_point_with_rotation := origin_zero_rotation; -- CS remove ?
 	package_position_default : constant type_package_position;

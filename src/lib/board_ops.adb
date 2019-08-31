@@ -462,8 +462,8 @@ package body board_ops is
 						-- to the position of the submodule instance in the parent module:
 						move (device_position, type_point_2d (position_in_board));
 
-						log (text => "generic" & et_pcb_coordinates.to_string (type_point_with_rotation (position_generic)) &
-							" -> " & "in instance" & et_pcb_coordinates.to_string (type_point_with_rotation (device_position)),
+						log (text => "generic" & to_string (position_generic) &
+							" -> " & "in instance" & to_string (device_position),
 							level => log_threshold + 2);
 
 						return device_position;

@@ -214,7 +214,7 @@ package body et_pcb is
 	-- Returns the properties of the given text in a long single string.
 		use et_coordinates;
 	begin
-		return et_pcb_coordinates.to_string (text.position) & latin_1.space
+		return to_string (text.position) & latin_1.space
 			& "size (width" & axis_separator & "height)" 
 			& to_string (text.dimensions.width) & latin_1.space & axis_separator & to_string (text.dimensions.height)
 			& " line width" & to_string (text.line_width)

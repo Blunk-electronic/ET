@@ -482,14 +482,15 @@ package body et_geometry is
 
 
 		
-		function to_string2 (point : in type_point) return string is begin
+		function to_string (point : in type_point) return string is begin
 			return point_preamble
 				& to_string (point.x)
 				& axis_separator
 				& to_string (point.y);
 		end;
 
-		function to_string2 (point : in type_point_with_rotation) return string is begin
+-- 		overriding
+		function to_string (point : in type_point_with_rotation) return string is begin
 			return point_preamble_with_rotation
 				& to_string (point.x)
 				& axis_separator
@@ -498,9 +499,6 @@ package body et_geometry is
 				& to_string (rot (point));
 		end;
 
-		function to_string (point : in type_point'class) return string is begin
-			return to_string2 (point);
-		end;
 		
 		
 	end geometry_operations_2d;

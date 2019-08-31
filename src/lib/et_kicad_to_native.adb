@@ -245,18 +245,20 @@ package body et_kicad_to_native is
 			note_cursor : et_kicad.type_texts.cursor := module.notes.first;
 
 			procedure change_path (note : in out et_kicad.type_text) is
-				use et_coordinates;
+				use et_coordinates;				
 				use kicad_coordinates;
 			begin
 				log (text => "note '" & et_libraries.to_string (note.content) & "'", level => log_threshold + 3);
 				log_indentation_up;
 				
-				log (text => before & to_string (note.coordinates), level => log_threshold + 4);
+				log (text => before & to_string (position => note.coordinates, scope => SHEET),
+					 level => log_threshold + 4);
 
 				-- Move position from negative to positive y.
 				move (note.coordinates);
 
-				log (text => now & to_string (note.coordinates), level => log_threshold + 4);
+				log (text => now & to_string (position => note.coordinates, scope => SHEET),
+					 level => log_threshold + 4);
 
 				log_indentation_down;
 			end change_path;
@@ -553,9 +555,9 @@ package body et_kicad_to_native is
 				begin -- query_segments
 
 					-- Move the start coordinates of the strand from kicad frame to native frame:
-					log (text => "schematic strand start " & before & to_string (point => strand.position), level => log_threshold + 3);
+					log (text => "schematic strand start " & before & to_string (type_point (strand.position)), level => log_threshold + 3);
 					move (strand.position); 
-					log (text => "schematic strand start " & now & to_string (point => strand.position), level => log_threshold + 3);
+					log (text => "schematic strand start " & now & to_string (type_point (strand.position)), level => log_threshold + 3);
 
 					-- Change path of segments:
 					while segment_cursor /= et_kicad.type_net_segments.no_element loop
@@ -1122,6 +1124,7 @@ package body et_kicad_to_native is
 
 				procedure move_text (text : in out et_pcb.type_text_with_content) is
 					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 				begin
 					log (text => doc & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1562,6 +1565,7 @@ package body et_kicad_to_native is
 
 				procedure move_text (text : in out et_pcb.type_text_with_content) is
 					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 				begin
 					log (text => stop & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -2102,6 +2106,7 @@ package body et_kicad_to_native is
 
 				procedure move_text (text : in out et_pcb.type_text_with_content_pcb) is
 					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 				begin
 					log (text => board_copper & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -2117,6 +2122,7 @@ package body et_kicad_to_native is
 
 				procedure move_placeholder (text : in out et_pcb.type_text_placeholder_copper) is
 					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
 				begin
 					log (text => board_copper & "text placeholder", level => log_threshold + log_threshold_add);
 					log_indentation_up;

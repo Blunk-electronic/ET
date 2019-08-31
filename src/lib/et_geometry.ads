@@ -163,7 +163,11 @@ package et_geometry is
 			return type_point'class;
 
 
-		function to_string (point : in type_point'class) return string;
+		function to_string (point : in type_point) return string;
+		function to_string (point : in type_point_with_rotation) return string;
+
+
+
 		
 	private
 

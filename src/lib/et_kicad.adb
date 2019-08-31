@@ -7258,8 +7258,9 @@ package body et_kicad is
 				rotation : et_coordinates.type_rotation;
 
 				procedure warn is begin 
-					log (WARNING, " text note at " & kicad_coordinates.to_string (note.coordinates) &
-						 " might be misplaced !");
+					log (WARNING, " text note at " 
+						& kicad_coordinates.to_string (position => note.coordinates, scope => SHEET) 
+						& " might be misplaced !");
 				end;
 				
 			begin -- make_text_note
