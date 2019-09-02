@@ -121,14 +121,10 @@ package et_coordinates is
 	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
 	
 
-	--type type_coordinates is new type_point with private;
 	type type_coordinates is new type_position with private;
-	--type type_coordinates_relative is new type_point with private;
 	type type_coordinates_relative is new type_position with private;
 
 	function "<" (left, right : in type_coordinates) return boolean;
-	-- Returns true if left comes before right.
-	-- Returns false if left equals right.	
 	
 	procedure move (
 		position	: in out type_coordinates'class;
@@ -175,8 +171,7 @@ package et_coordinates is
 
 	
 	private 
-	
-		--		type type_coordinates is new type_point with record
+
 		type type_coordinates is new type_position with record
 			sheet : type_sheet := type_sheet'first;
 		end record;
@@ -187,7 +182,6 @@ package et_coordinates is
 		end record;
 
 		zero_position : constant type_coordinates := (
-			--origin with sheet => type_sheet'first);
 			origin_zero_rotation with sheet => type_sheet'first);
 		
 end et_coordinates;

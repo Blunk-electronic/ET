@@ -103,7 +103,6 @@ package et_schematic is
 	-- Some placeholders of a unit are available when the device appears in both schematic and layout:
 	type type_unit (appearance : type_appearance_schematic) is record
 		position	: et_coordinates.type_coordinates; -- incl. rotation and sheet number
-		--rotation	: et_coordinates.type_rotation := et_coordinates.geometry.zero_rotation;		
 		mirror		: type_mirror := NO;
 		case appearance is
 			when et_libraries.SCH => null; -- CS

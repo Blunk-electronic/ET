@@ -100,8 +100,6 @@ package body et_coordinates is
 	end;
 
 	function "<" (left, right : in type_coordinates) return boolean is
-	-- Returns true if left comes before right.
-	-- Returns false if left equals right.
 		result : boolean := false;
 	begin
 		if left.sheet < right.sheet then
@@ -123,8 +121,16 @@ package body et_coordinates is
 				elsif left.y > right.y then
 					result := false;
 				else
-					-- y positions equal
-					result := false;
+					-- y positions equal -> compare rotation
+
+					if rot (left) < rot (right) then
+						result := true;
+					elsif rot (left) > rot (right) then
+						result := false;
+					else
+						-- rotations equal
+						result := false;
+					end if;
 				end if;
 
 			end if;
