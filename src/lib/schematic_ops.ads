@@ -231,8 +231,7 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in et_libraries.type_component_variant_name.bounded_string; -- N, D, S_0805
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y
-		rotation		: in et_coordinates.type_rotation; -- 90 -- CS remove
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level);
 
 	procedure copy_device (
@@ -241,7 +240,6 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		destination		: in et_coordinates.type_coordinates; -- sheet/x/y
-		rotation		: in et_coordinates.type_rotation; -- 90 -- CS remove		
 		log_threshold	: in type_log_level);
 	
 	procedure invoke_unit (
@@ -250,7 +248,6 @@ package schematic_ops is
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in type_unit_name.bounded_string; -- A, B, IO_BANK_2
 		place			: in et_coordinates.type_coordinates; -- sheet/x/y
-		rotation		: in et_coordinates.type_rotation; -- 90 -- CS remove
 		log_threshold	: in type_log_level);
 
 	procedure add_netchanger (

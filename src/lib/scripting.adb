@@ -341,9 +341,9 @@ package body scripting is
 														(
 														x => to_distance (f (7)),
 														y => to_distance (f (8))
-														))
+														)),
+											rotation => to_rotation (f (9))
 											),
-										rotation		=> to_rotation (f (9)),
 										variant			=> to_component_variant_name (""),
 										log_threshold	=> log_threshold + 1
 										);
@@ -360,9 +360,9 @@ package body scripting is
 														(
 														x => to_distance (f (7)),
 														y => to_distance (f (8))
-														))
+														)),
+											rotation		=> to_rotation (f (9))
 											),
-										rotation		=> to_rotation (f (9)),
 										variant			=> to_component_variant_name (f (10)),
 										log_threshold	=> log_threshold + 1
 										);
@@ -500,9 +500,9 @@ package body scripting is
 														(
 														x => to_distance (f (7)),
 														y => to_distance (f (8))
-														))
+														)),
+											rotation		=> to_rotation (f (9))
 											),
-										rotation		=> to_rotation (f (9)),
 										log_threshold	=> log_threshold + 1
 										);
 
@@ -904,9 +904,9 @@ package body scripting is
 														(
 														x => to_distance (f (8)),
 														y => to_distance (f (9))
-														))
+														)),
+											rotation		=> to_rotation (f (10))
 											),
-										rotation		=> to_rotation (f (10)),
 										log_threshold	=> log_threshold + 1
 										);
 

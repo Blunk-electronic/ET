@@ -3517,8 +3517,7 @@ package body schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in et_libraries.type_component_variant_name.bounded_string; -- N, D, S_0805
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y
-		rotation		: in et_coordinates.type_rotation; -- 90		
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y,rotation
 		log_threshold	: in type_log_level) is
 
 		use et_coordinates;
@@ -3560,7 +3559,6 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
--- 								rotation	=> rotation, -- the rotation provided by the calling unit
 								others 		=> <>)
 								);
 						
@@ -3571,7 +3569,6 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
--- 								rotation	=> rotation, -- the rotation provided by the calling unit								
 								reference	=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
 								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
 								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
@@ -3602,7 +3599,6 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
--- 								rotation	=> rotation, -- the rotation provided by the calling unit								
 								others 		=> <>)
 								);
 						
@@ -3623,7 +3619,6 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
--- 								rotation	=> rotation, -- the rotation provided by the calling unit								
 								reference	=> element (symbol_cursor).reference,	-- placeholder for device name
 								value		=> element (symbol_cursor).value,		-- placeholder for device value
 								purpose		=> element (symbol_cursor).purpose,		-- placeholder for device purpose
@@ -3740,8 +3735,8 @@ package body schematic_ops is
 
 			-- Calculate the absolute positions of the unit ports. Rotate first if required:
 			log (text => "calculating absolute port positions ...", level => log_threshold + 2);
-			if rotation /= zero_rotation then
-				rotate_ports (ports, rotation);
+			if rot (place) /= zero_rotation then
+				rotate_ports (ports, rot (place));
 			end if;
 
 			move_ports (ports, place);
@@ -3765,7 +3760,7 @@ package body schematic_ops is
 				" package variant " & to_string (variant) &
 				" at" &
 				to_string (position => place) &
-				" rotation" & to_string (rotation),
+				" rotation" & to_string (rot (place)),
 				level => log_threshold);
 			
 		else -- virtual device
@@ -3773,7 +3768,7 @@ package body schematic_ops is
 				" adding device " & to_string (device_model) &
 				" at" &
 				to_string (position => place) &
-				" rotation" & to_string (rotation),
+				" rotation" & to_string (rot (place)),
 				level => log_threshold);
 		end if;
 			
@@ -3804,8 +3799,7 @@ package body schematic_ops is
 	-- at the given destination in the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		destination		: in et_coordinates.type_coordinates; -- sheet/x/y
-		rotation		: in et_coordinates.type_rotation; -- 90		
+		destination		: in et_coordinates.type_coordinates; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module being modified
@@ -3845,7 +3839,6 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH,
 								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
--- 								rotation	=> rotation, -- the rotation provided by the calling unit
 								others 		=> <>)
 								);
 						
@@ -3856,7 +3849,6 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
--- 								rotation	=> rotation, -- the rotation provided by the calling unit								
 								reference	=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
 								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
 								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
@@ -3887,7 +3879,6 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH,
 								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
--- 								rotation	=> rotation, -- the rotation provided by the calling unit								
 								others 		=> <>)
 								);
 						
@@ -3908,7 +3899,6 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
--- 								rotation	=> rotation, -- the rotation provided by the calling unit								
 								reference	=> element (symbol_cursor).reference,	-- placeholder for device name
 								value		=> element (symbol_cursor).value,		-- placeholder for device value
 								purpose		=> element (symbol_cursor).purpose,		-- placeholder for device purpose
@@ -4015,8 +4005,8 @@ package body schematic_ops is
 
 				-- Calculate the absolute positions of the unit ports. Rotate first if required:
 				log (text => "calculating absolute port positions ...", level => log_threshold + 2);
-				if rotation /= zero_rotation then
-					rotate_ports (ports, rotation);
+				if rot (destination) /= zero_rotation then
+					rotate_ports (ports, rot (destination));
 				end if;
 				
 				move_ports (ports, destination);
@@ -4041,7 +4031,8 @@ package body schematic_ops is
 		log (text => "module " & to_string (module_name) &
 			" copying " & to_string (device_name) & 
 			" to" & to_string (position => destination) &
-			" rotation" & to_string (rotation) & " ...", level => log_threshold);
+			" rotation" & to_string (rot (destination)) &
+			" ...", level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);
@@ -4058,8 +4049,7 @@ package body schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in type_unit_name.bounded_string; -- A, B, IO_BANK_2
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y
-		rotation		: in et_coordinates.type_rotation; -- 90		
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level) is
 
 		use et_coordinates;
@@ -4110,7 +4100,6 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
--- 								rotation	=> rotation, -- the rotation provided by the calling unit								
 								others 		=> <>)
 								);
 						
@@ -4121,7 +4110,6 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
--- 								rotation	=> rotation, -- the rotation provided by the calling unit
 								reference	=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
 								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
 								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
@@ -4152,7 +4140,6 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
--- 								rotation	=> rotation, -- the rotation provided by the calling unit								
 								others 		=> <>)
 								);
 						
@@ -4173,7 +4160,6 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
--- 								rotation	=> rotation, -- the rotation provided by the calling unit								
 								reference	=> element (symbol_cursor).reference,	-- placeholder for device name
 								value		=> element (symbol_cursor).value,		-- placeholder for device value
 								purpose		=> element (symbol_cursor).purpose,		-- placeholder for device purpose
@@ -4246,8 +4232,8 @@ package body schematic_ops is
 
 				-- Calculate the absolute positions of the unit ports. Rotate first if required:
 				log (text => "calculating absolute port positions ...", level => log_threshold + 1);
-				if rotation /= zero_rotation then
-					rotate_ports (ports, rotation);
+				if rot (place) /= zero_rotation then
+					rotate_ports (ports, rot (place));
 				end if;
 
 				move_ports (ports, place);
@@ -4272,7 +4258,7 @@ package body schematic_ops is
 			" invoking unit " & to_string (unit_name) &
 			" at" &
 			to_string (position => place) &
-			" rotation" & to_string (rotation),
+			" rotation" & to_string (rot (place)),
 			level => log_threshold);
 
 		log_indentation_up;
