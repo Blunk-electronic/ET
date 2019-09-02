@@ -2360,15 +2360,17 @@ package body et_kicad_to_native is
 	end transpose;
 
 	
-	function to_native_coordinates (point : in kicad_coordinates.type_coordinates)
+	function to_native_coordinates (
+		point 		: in kicad_coordinates.type_coordinates;
+		rotation	: in et_coordinates.type_rotation := et_coordinates.geometry.zero_rotation)
 	-- Converts kicad schematic coordinates to native schematic coordinates.
 		return et_coordinates.type_coordinates is
 		point_out : et_coordinates.type_coordinates;
 	begin
 		point_out := et_coordinates.to_coordinates (
-				point => point, -- x,y
-				sheet => kicad_coordinates.sheet (point) -- sheet
-				);
+			point		=> point, -- x,y
+			sheet		=> kicad_coordinates.sheet (point), -- sheet
+			rotation	=> rotation);
 
 		return point_out;
 	end;
@@ -2548,9 +2550,12 @@ package body et_kicad_to_native is
 -- 											appearance	=> et_libraries.SCH);
 
 							unit_native_virtual := (
-								rotation	=> element (unit_cursor_kicad).rotation,
+								--rotation	=> element (unit_cursor_kicad).rotation,
 								mirror		=> element (unit_cursor_kicad).mirror,
-								position	=> to_native_coordinates (element (unit_cursor_kicad).position),
+								--position	=> to_native_coordinates (element (unit_cursor_kicad).position),
+								position	=> to_native_coordinates (
+												point		=> element (unit_cursor_kicad).position,
+												rotation 	=> element (unit_cursor_kicad).rotation),
 								appearance	=> et_libraries.SCH);
 							
 							et_schematic.type_units.insert (
@@ -2567,9 +2572,12 @@ package body et_kicad_to_native is
 -- 											appearance	=> et_libraries.SCH_PCB,
 
 							unit_native_real := (
-								rotation	=> element (unit_cursor_kicad).rotation,
+								--rotation	=> element (unit_cursor_kicad).rotation,
 								mirror		=> element (unit_cursor_kicad).mirror,
-								position	=> to_native_coordinates (element (unit_cursor_kicad).position),
+								--position	=> to_native_coordinates (element (unit_cursor_kicad).position),
+								position	=> to_native_coordinates (
+												point		=> element (unit_cursor_kicad).position,
+												rotation 	=> element (unit_cursor_kicad).rotation),
 								appearance	=> et_libraries.SCH_PCB,
 							
 								-- and stuff that comes with a real device:

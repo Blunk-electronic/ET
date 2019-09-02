@@ -1801,7 +1801,8 @@ package body et_project is
 					section_mark (section_unit, HEADER);
 					write (keyword => keyword_name, parameters => et_libraries.to_string (key (unit_cursor)), space => true);
 					write (keyword => keyword_position, parameters => position (element (unit_cursor).position)); -- position sheet 1 x 147.32 y 96.97
-					write (keyword => keyword_rotation, parameters => to_string (element (unit_cursor).rotation)); -- rotation 180.0
+					--write (keyword => keyword_rotation, parameters => to_string (element (unit_cursor).rotation)); -- rotation 180.0
+					write (keyword => keyword_rotation, parameters => to_string (rot (element (unit_cursor).position))); -- rotation 180.0
 					write (keyword => keyword_mirrored, parameters => to_string (element (unit_cursor).mirror, verbose => false)); -- x_axis, y_axis, none
 
 					if element (unit_cursor).appearance = et_libraries.SCH_PCB then
@@ -8130,10 +8131,10 @@ package body et_project is
 		device_value			: et_libraries.type_value.bounded_string; -- 470R
 		device_appearance		: et_schematic.type_appearance_schematic;
 		--device_unit				: et_schematic.type_unit;
-		device_unit_rotation	: et_coordinates.type_rotation := geometry.zero_rotation;
+		--device_unit_rotation	: et_coordinates.type_rotation := geometry.zero_rotation;
 		device_unit_mirror		: et_schematic.type_mirror := et_schematic.NO;
 		device_unit_name		: et_libraries.type_unit_name.bounded_string; -- GPIO_BANK_1
-		device_unit_position	: et_coordinates.type_coordinates; -- x,y,sheet
+		device_unit_position	: et_coordinates.type_coordinates; -- x,y,sheet,rotation
 
 		-- assembly variants
 		assembly_variant_name			: et_general.type_variant_name.bounded_string; -- low_cost
@@ -8409,11 +8410,14 @@ package body et_project is
 -- 												position	=> device_unit_position,
 -- 												appearance	=> et_libraries.SCH));
 								new_item	=> (
-												rotation	=> device_unit_rotation,
-												mirror		=> device_unit_mirror,
-												position	=> device_unit_position,
-												appearance	=> et_libraries.SCH));
-								
+-- 									rotation	=> device_unit_rotation,
+-- 									mirror		=> device_unit_mirror,
+-- 									position	=> device_unit_position,
+-- 									appearance	=> et_libraries.SCH));
+									appearance	=> et_libraries.SCH,
+									mirror		=> device_unit_mirror,
+									position	=> device_unit_position));
+												   
 						when SCH_PCB =>
 							-- A unit of a real device has placeholders:
 							et_schematic.type_units.insert (
@@ -8421,7 +8425,7 @@ package body et_project is
 								key			=> device_unit_name,
 -- 								new_item	=> (device_unit with
 								new_item	=> (
-									rotation	=> device_unit_rotation,
+-- 									rotation	=> device_unit_rotation,
 									mirror		=> device_unit_mirror,
 
 									position	=> device_unit_position,
@@ -8439,7 +8443,7 @@ package body et_project is
 					device_unit_name := unit_name_default;
 					--device_unit := (others => <>);
 					device_unit_mirror := et_schematic.NO;
-					device_unit_rotation := geometry.zero_rotation;
+					--device_unit_rotation := geometry.zero_rotation;
 
 					-- CS reset placeholders for name, value and purpose ?
 
@@ -12563,7 +12567,8 @@ package body et_project is
 
 									elsif kw = keyword_rotation then -- rotation 180.0
 										expect_field_count (line, 2);
-										device_unit_rotation := geometry.to_rotation (f (line, 2));
+										--device_unit_rotation := geometry.to_rotation (f (line, 2));
+										set (device_unit_position, geometry.to_rotation (f (line, 2)));
 
 									elsif kw = keyword_mirrored then -- mirrored no/x_axis/y_axis
 										expect_field_count (line, 2);

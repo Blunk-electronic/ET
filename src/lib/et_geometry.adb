@@ -428,7 +428,7 @@ package body et_geometry is
 		end;
 		
 		procedure set (
-		-- Sets the rotation of a point.					
+		-- Sets the rotation of a position. (position.rotation)
 			point		: in out type_position;
 			rotation	: in type_rotation) is 
 		begin
@@ -436,22 +436,23 @@ package body et_geometry is
 		end;
 					
 		function rot (point : in type_position'class) return type_rotation is begin
-		-- Returns the rotation of the given point.
+		-- Returns the rotation of the given position.
 			return point.rotation;
 		end;
 
 		procedure rotate (
-		-- Rotates a point by the given offset.
+		-- Changes the rotation of the given position by the given offset.
+		-- Preserves x/y. Changes position.rotation only.
 			point	: in out type_position'class;
 			offset	: in type_rotation) is
 		begin
 			point.rotation := point.rotation + offset;
 		end;
-
 		
 		procedure rotate (
 		-- Rotates the given point by the given angle around the origin.
-			point		: in out type_point;
+		-- Changes point.x and point.y only.							 
+			point		: in out type_point'class;
 			rotation	: in type_rotation) is
 
 			type type_float_distance is digits 7 range -1000.0 .. 1000.0; -- CS: refine

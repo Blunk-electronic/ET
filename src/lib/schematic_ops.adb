@@ -587,7 +587,7 @@ package body schematic_ops is
 						
 						rotate (
 							point		=> port_position,
-							rotation	=> element (unit_cursor).rotation);
+							rotation	=> rot (element (unit_cursor).position));
 						
 						-- CS mirror ?
 						
@@ -1502,12 +1502,16 @@ package body schematic_ops is
 				begin -- rotate_unit
 					case coordinates is
 						when ABSOLUTE =>
-							unit.rotation := rotation;
-							rotate_placeholders (unit.rotation);
+							--unit.rotation := rotation;
+							set (unit.position, rotation);
+							--rotate_placeholders (unit.rotation);
+							rotate_placeholders (rot (unit.position));
 							
 						when RELATIVE =>
-							unit.rotation := add (rotation_before, rotation);
-							rotate_placeholders (unit.rotation);
+							--unit.rotation := add (rotation_before, rotation);
+							set (unit.position, add (rotation_before, rotation));
+							--rotate_placeholders (unit.rotation);
+							rotate_placeholders (rot (unit.position));
 					end case;
 				end rotate_unit;
 				
@@ -1518,7 +1522,8 @@ package body schematic_ops is
 
 					-- load unit position and current rotation
 					position_of_unit := element (unit_cursor).position;
-					rotation_before := element (unit_cursor).rotation;
+					--rotation_before := element (unit_cursor).rotation;
+					rotation_before := rot (element (unit_cursor).position);
 
 					-- log unit position and current rotation
 					log (text => to_string (position => position_of_unit) &
@@ -3554,9 +3559,9 @@ package body schematic_ops is
 							key			=> key (unit_cursors.int), -- the unit name like A, B
 							new_item	=> (
 								appearance	=> SCH,
-								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
-								rotation	=> rotation, -- the rotation provided by the calling unit
-								others 		=> <>) -- rotation and mirror
+								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+-- 								rotation	=> rotation, -- the rotation provided by the calling unit
+								others 		=> <>)
 								);
 						
 					when SCH_PCB =>
@@ -3565,8 +3570,8 @@ package body schematic_ops is
 							key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
 							new_item	=> (
 								appearance	=> SCH_PCB,
-								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
-								rotation	=> rotation, -- the rotation provided by the calling unit								
+								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+-- 								rotation	=> rotation, -- the rotation provided by the calling unit								
 								reference	=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
 								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
 								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
@@ -3597,8 +3602,8 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
-								rotation	=> rotation, -- the rotation provided by the calling unit								
-								others 		=> <>) -- rotation and mirror
+-- 								rotation	=> rotation, -- the rotation provided by the calling unit								
+								others 		=> <>)
 								);
 						
 					when SCH_PCB =>
@@ -3618,7 +3623,7 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
-								rotation	=> rotation, -- the rotation provided by the calling unit								
+-- 								rotation	=> rotation, -- the rotation provided by the calling unit								
 								reference	=> element (symbol_cursor).reference,	-- placeholder for device name
 								value		=> element (symbol_cursor).value,		-- placeholder for device value
 								purpose		=> element (symbol_cursor).purpose,		-- placeholder for device purpose
@@ -3839,9 +3844,9 @@ package body schematic_ops is
 							key			=> key (unit_cursors.int), -- the unit name like A, B
 							new_item	=> (
 								appearance	=> SCH,
-								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
-								rotation	=> rotation, -- the rotation provided by the calling unit
-								others 		=> <>) -- rotation and mirror
+								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+-- 								rotation	=> rotation, -- the rotation provided by the calling unit
+								others 		=> <>)
 								);
 						
 					when SCH_PCB =>
@@ -3850,8 +3855,8 @@ package body schematic_ops is
 							key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
 							new_item	=> (
 								appearance	=> SCH_PCB,
-								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
-								rotation	=> rotation, -- the rotation provided by the calling unit								
+								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+-- 								rotation	=> rotation, -- the rotation provided by the calling unit								
 								reference	=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
 								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
 								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
@@ -3881,9 +3886,9 @@ package body schematic_ops is
 							key			=> key (unit_cursors.ext), -- the unit name like A, B
 							new_item	=> (
 								appearance	=> SCH,
-								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
-								rotation	=> rotation, -- the rotation provided by the calling unit								
-								others 		=> <>) -- rotation and mirror
+								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+-- 								rotation	=> rotation, -- the rotation provided by the calling unit								
+								others 		=> <>)
 								);
 						
 					when SCH_PCB =>
@@ -3902,8 +3907,8 @@ package body schematic_ops is
 							key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
 							new_item	=> (
 								appearance	=> SCH_PCB,
-								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y)
-								rotation	=> rotation, -- the rotation provided by the calling unit								
+								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+-- 								rotation	=> rotation, -- the rotation provided by the calling unit								
 								reference	=> element (symbol_cursor).reference,	-- placeholder for device name
 								value		=> element (symbol_cursor).value,		-- placeholder for device value
 								purpose		=> element (symbol_cursor).purpose,		-- placeholder for device purpose
@@ -4104,9 +4109,9 @@ package body schematic_ops is
 							key			=> key (unit_cursors.int), -- the unit name like A, B
 							new_item	=> (
 								appearance	=> SCH,
-								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
-								rotation	=> rotation, -- the rotation provided by the calling unit								
-								others 		=> <>) -- rotation and mirror
+								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+-- 								rotation	=> rotation, -- the rotation provided by the calling unit								
+								others 		=> <>)
 								);
 						
 					when SCH_PCB =>
@@ -4115,8 +4120,8 @@ package body schematic_ops is
 							key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
 							new_item	=> (
 								appearance	=> SCH_PCB,
-								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
-								rotation	=> rotation, -- the rotation provided by the calling unit
+								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+-- 								rotation	=> rotation, -- the rotation provided by the calling unit
 								reference	=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
 								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
 								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
@@ -4146,9 +4151,9 @@ package body schematic_ops is
 							key			=> key (unit_cursors.ext), -- the unit name like A, B
 							new_item	=> (
 								appearance	=> SCH,
-								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
-								rotation	=> rotation, -- the rotation provided by the calling unit								
-								others 		=> <>) -- rotation and mirror
+								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+-- 								rotation	=> rotation, -- the rotation provided by the calling unit								
+								others 		=> <>)
 								);
 						
 					when SCH_PCB =>
@@ -4167,8 +4172,8 @@ package body schematic_ops is
 							key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
 							new_item	=> (
 								appearance	=> SCH_PCB,
-								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
-								rotation	=> rotation, -- the rotation provided by the calling unit								
+								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
+-- 								rotation	=> rotation, -- the rotation provided by the calling unit								
 								reference	=> element (symbol_cursor).reference,	-- placeholder for device name
 								value		=> element (symbol_cursor).value,		-- placeholder for device value
 								purpose		=> element (symbol_cursor).purpose,		-- placeholder for device purpose
@@ -6045,7 +6050,7 @@ package body schematic_ops is
 					use et_schematic.type_units;
 					use et_libraries.type_unit_name;
 					unit_position : et_coordinates.type_coordinates;
-					unit_rotation : et_coordinates.type_rotation;
+-- 					unit_rotation : et_coordinates.type_rotation;
 					ports : et_libraries.type_ports.map;
 
 					procedure query_port (port_cursor : in et_libraries.type_ports.cursor) is
@@ -6075,7 +6080,7 @@ package body schematic_ops is
 					
 				begin -- query_units
 					unit_position := element (unit_cursor).position;
-					unit_rotation := element (unit_cursor).rotation;
+-- 					unit_rotation := element (unit_cursor).rotation;
 
 					-- Look at units on the given sheet of place:
 					if sheet (unit_position) = sheet (place) then
@@ -6088,7 +6093,8 @@ package body schematic_ops is
 							unit_name		=> key (unit_cursor));
 
 						-- CS mirror before rotate or after rotate ?
-						rotate_ports (ports, unit_rotation);
+						--rotate_ports (ports, unit_rotation);
+						rotate_ports (ports, rot (unit_position));
 
 						move_ports (ports, unit_position);
 

@@ -121,8 +121,10 @@ package et_coordinates is
 	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
 	
 
-	type type_coordinates is new type_point with private;
-	type type_coordinates_relative is new type_point with private;
+	--type type_coordinates is new type_point with private;
+	type type_coordinates is new type_position with private;
+	--type type_coordinates_relative is new type_point with private;
+	type type_coordinates_relative is new type_position with private;
 
 	function "<" (left, right : in type_coordinates) return boolean;
 	-- Returns true if left comes before right.
@@ -133,15 +135,17 @@ package et_coordinates is
 		offset		: in type_coordinates_relative);
 	
 	function to_coordinates (
-		point 	: in type_point'class;
-		sheet	: in type_sheet)
+		point 		: in type_point'class;
+		sheet		: in type_sheet;
+		rotation	: in type_rotation := zero_rotation)
 		return type_coordinates;
 
 
 
 	function to_coordinates_relative (
-		point 	: in type_point'class;
-		sheet	: in type_sheet_relative)
+		point 		: in type_point'class;
+		sheet		: in type_sheet_relative;
+		rotation	: in type_rotation := zero_rotation)		
 		return type_coordinates_relative;
 	
 	zero_position : constant type_coordinates;
@@ -172,16 +176,19 @@ package et_coordinates is
 	
 	private 
 	
-		type type_coordinates is new type_point with record
+		--		type type_coordinates is new type_point with record
+		type type_coordinates is new type_position with record
 			sheet : type_sheet := type_sheet'first;
 		end record;
 
-		type type_coordinates_relative is new type_point with record
+		--type type_coordinates_relative is new type_point with record
+		type type_coordinates_relative is new type_position with record
 			sheet : type_sheet_relative := 0;
 		end record;
 
 		zero_position : constant type_coordinates := (
-			origin with sheet => type_sheet'first);
+			--origin with sheet => type_sheet'first);
+			origin_zero_rotation with sheet => type_sheet'first);
 		
 end et_coordinates;
 

@@ -150,29 +150,30 @@ package body et_coordinates is
 	end;
 	
 	function to_coordinates (
-		point 	: in type_point'class;
-		sheet	: in type_sheet)
+		point 		: in type_point'class;
+		sheet		: in type_sheet;
+		rotation	: in type_rotation := zero_rotation)
 		return type_coordinates is
+
+		p : type_coordinates;
 	begin
--- 		return (
--- 			x		=> point.x,
--- 			y		=> point.y,
--- 			sheet	=> sheet
--- 			);
-		return (type_point (point) with sheet);
+		set (p, point);
+		set_sheet (p, sheet);
+		set (p, rotation);
+		return p;
 	end;
 
 	function to_coordinates_relative (
-		point 	: in type_point'class;
-		sheet	: in type_sheet_relative)
+		point 		: in type_point'class;
+		sheet		: in type_sheet_relative;
+		rotation	: in type_rotation := zero_rotation)
 		return type_coordinates_relative is
+		p : type_coordinates_relative;
 	begin
--- 		return (
--- 			x		=> point.x,
--- 			y		=> point.y,
--- 			sheet	=> sheet
--- 			);
-		return (type_point (point) with sheet);
+		set (p, point);
+		p.sheet := sheet;
+		set (p, rotation);
+		return p;
 	end;
 	
 	function to_string (position : in type_coordinates) return string is
