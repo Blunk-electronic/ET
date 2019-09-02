@@ -8129,7 +8129,9 @@ package body et_project is
 		device_model			: et_libraries.type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
 		device_value			: et_libraries.type_value.bounded_string; -- 470R
 		device_appearance		: et_schematic.type_appearance_schematic;
-		device_unit				: et_schematic.type_unit_base;
+		--device_unit				: et_schematic.type_unit;
+		device_unit_rotation	: et_coordinates.type_rotation := geometry.zero_rotation;
+		device_unit_mirror		: et_schematic.type_mirror := et_schematic.NO;
 		device_unit_name		: et_libraries.type_unit_name.bounded_string; -- GPIO_BANK_1
 		device_unit_position	: et_coordinates.type_coordinates; -- x,y,sheet
 
@@ -8403,16 +8405,25 @@ package body et_project is
 							et_schematic.type_units.insert (
 								container	=> device_units,
 								key			=> device_unit_name,
-								new_item	=> (device_unit with 
+-- 								new_item	=> (device_unit with 
+-- 												position	=> device_unit_position,
+-- 												appearance	=> et_libraries.SCH));
+								new_item	=> (
+												rotation	=> device_unit_rotation,
+												mirror		=> device_unit_mirror,
 												position	=> device_unit_position,
 												appearance	=> et_libraries.SCH));
-
+								
 						when SCH_PCB =>
 							-- A unit of a real device has placeholders:
 							et_schematic.type_units.insert (
 								container	=> device_units,
 								key			=> device_unit_name,
-								new_item	=> (device_unit with
+-- 								new_item	=> (device_unit with
+								new_item	=> (
+									rotation	=> device_unit_rotation,
+									mirror		=> device_unit_mirror,
+
 									position	=> device_unit_position,
 									appearance	=> et_libraries.SCH_PCB,
 
@@ -8426,7 +8437,9 @@ package body et_project is
 					-- clean up for next unit
 					device_unit_position := zero_position;
 					device_unit_name := unit_name_default;
-					device_unit := (others => <>);
+					--device_unit := (others => <>);
+					device_unit_mirror := et_schematic.NO;
+					device_unit_rotation := geometry.zero_rotation;
 
 					-- CS reset placeholders for name, value and purpose ?
 
@@ -12550,11 +12563,11 @@ package body et_project is
 
 									elsif kw = keyword_rotation then -- rotation 180.0
 										expect_field_count (line, 2);
-										device_unit.rotation := geometry.to_rotation (f (line, 2));
+										device_unit_rotation := geometry.to_rotation (f (line, 2));
 
 									elsif kw = keyword_mirrored then -- mirrored no/x_axis/y_axis
 										expect_field_count (line, 2);
-										device_unit.mirror := et_schematic.to_mirror_style (f (line, 2));
+										device_unit_mirror := et_schematic.to_mirror_style (f (line, 2));
 
 									else
 										invalid_keyword (kw);

@@ -2543,10 +2543,16 @@ package body et_kicad_to_native is
 					case element (component_cursor_kicad).appearance is
 						when et_libraries.SCH => -- virtual device
 
-							unit_native_virtual := (et_schematic.type_unit_base (element (unit_cursor_kicad)) with 
-											position	=> to_native_coordinates (element (unit_cursor_kicad).position),
-											appearance	=> et_libraries.SCH);
+-- 							unit_native_virtual := (et_schematic.type_unit_base (element (unit_cursor_kicad)) with 
+-- 											position	=> to_native_coordinates (element (unit_cursor_kicad).position),
+-- 											appearance	=> et_libraries.SCH);
 
+							unit_native_virtual := (
+								rotation	=> element (unit_cursor_kicad).rotation,
+								mirror		=> element (unit_cursor_kicad).mirror,
+								position	=> to_native_coordinates (element (unit_cursor_kicad).position),
+								appearance	=> et_libraries.SCH);
+							
 							et_schematic.type_units.insert (
 								container	=> component.units,
 								key			=> key (unit_cursor_kicad),
@@ -2556,18 +2562,24 @@ package body et_kicad_to_native is
 
 						when et_libraries.SCH_PCB => -- real device
 
-							unit_native_real := (et_schematic.type_unit_base (element (unit_cursor_kicad)) with 
-											position	=> to_native_coordinates (element (unit_cursor_kicad).position),
-											appearance	=> et_libraries.SCH_PCB,
-											
-											-- and stuff that comes with a real device:
-											
-												reference	=> element (unit_cursor_kicad).reference,
-												value		=> element (unit_cursor_kicad).value,
+-- 							unit_native_real := (et_schematic.type_unit_base (element (unit_cursor_kicad)) with 
+-- 											position	=> to_native_coordinates (element (unit_cursor_kicad).position),
+-- 											appearance	=> et_libraries.SCH_PCB,
+
+							unit_native_real := (
+								rotation	=> element (unit_cursor_kicad).rotation,
+								mirror		=> element (unit_cursor_kicad).mirror,
+								position	=> to_native_coordinates (element (unit_cursor_kicad).position),
+								appearance	=> et_libraries.SCH_PCB,
+							
+								-- and stuff that comes with a real device:
+									
+								reference	=> element (unit_cursor_kicad).reference,
+								value		=> element (unit_cursor_kicad).value,
 												
-												-- create a placeholder for purpose because kicad does not know such a thing
-												purpose		=> (meaning => et_libraries.PURPOSE, others => <>)
-												);
+								-- create a placeholder for purpose because kicad does not know such a thing
+								purpose		=> (meaning => et_libraries.PURPOSE, others => <>)
+								);
 							
 							et_schematic.type_units.insert (
 								container	=> component.units,

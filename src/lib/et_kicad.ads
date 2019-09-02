@@ -163,7 +163,12 @@ package et_kicad is
 	type type_de_morgan_representation is (NO, YES);
 
 	-- A kicad unit inherits a lot from the base unit:
-	type type_unit_schematic (appearance : et_schematic.type_appearance_schematic) is new et_schematic.type_unit_base with record
+	type type_unit_base is tagged record -- CS move to et_kicad.ads
+		rotation	: et_coordinates.type_rotation := et_coordinates.geometry.zero_rotation;
+		mirror		: et_schematic.type_mirror := et_schematic.NO;
+	end record;
+	
+	type type_unit_schematic (appearance : et_schematic.type_appearance_schematic) is new type_unit_base with record
 		position	: kicad_coordinates.type_coordinates;		
 		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
 		value		: et_libraries.type_text_placeholder (meaning => et_libraries.value);
