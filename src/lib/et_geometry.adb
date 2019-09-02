@@ -410,7 +410,7 @@ package body et_geometry is
 -- 		function create (
 -- 			point		: in type_point'class;
 -- 			rotation	: in type_rotation) 
--- 			return type_point_with_rotation is
+-- 			return type_position is
 -- 		begin
 -- 			return (point with rotation);
 -- 		end;
@@ -429,20 +429,20 @@ package body et_geometry is
 		
 		procedure set (
 		-- Sets the rotation of a point.					
-			point		: in out type_point_with_rotation;
+			point		: in out type_position;
 			rotation	: in type_rotation) is 
 		begin
 			point.rotation := rotation;
 		end;
 					
-		function rot (point : in type_point_with_rotation'class) return type_rotation is begin
+		function rot (point : in type_position'class) return type_rotation is begin
 		-- Returns the rotation of the given point.
 			return point.rotation;
 		end;
 
 		procedure rotate (
 		-- Rotates a point by the given offset.
-			point	: in out type_point_with_rotation'class;
+			point	: in out type_position'class;
 			offset	: in type_rotation) is
 		begin
 			point.rotation := point.rotation + offset;
@@ -560,7 +560,7 @@ package body et_geometry is
 		end;
 
 		overriding
-		function to_string (point : in type_point_with_rotation) return string is begin
+		function to_string (point : in type_position) return string is begin
 			return point_preamble_with_rotation
 				& to_string (point.x)
 				& axis_separator

@@ -107,7 +107,7 @@ package board_ops is
 	
 	-- For laying out traces we need a type that provides for a terminal information about
 	-- x/y/rotation/technology and optionally the face.
-	type type_terminal_position (technology	: et_pcb.type_assembly_technology) is new geometry.type_point_with_rotation with record
+	type type_terminal_position (technology	: et_pcb.type_assembly_technology) is new geometry.type_position with record
 		face : type_face;
 	end record;
 

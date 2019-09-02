@@ -301,9 +301,9 @@ package body board_ops is
 	--  - The submodule instance must exist in the module.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in et_general.type_module_instance_name.bounded_string) -- OSC1
-		return type_point_with_rotation is
+		return type_position is
 		
-		position : type_point_with_rotation := origin_zero_rotation; -- to be returned
+		position : type_position := origin_zero_rotation; -- to be returned
 
 		module_cursor : type_modules.cursor; -- points to the module
 
@@ -436,7 +436,7 @@ package body board_ops is
 				module_cursor		: in type_modules.cursor;
 				variant				: in type_variant_name.bounded_string;
 				offset				: in et_libraries.type_device_name_index;
-				position_in_board	: in type_point_with_rotation) -- submod pos. in parent
+				position_in_board	: in type_position) -- submod pos. in parent
 			is
 
 				procedure log_position_in_board is begin
@@ -651,11 +651,11 @@ package body board_ops is
 
 			-- Another stack keeps record of the submodule position (inside the parent module) on submodule levels.
 			package stack_position_in_board is new et_general.stack_lifo (
-				item	=> type_point_with_rotation,
+				item	=> type_position,
 				max 	=> submodules.nesting_depth_max);
 
 			-- This is the position of the submodule in the board (usually its lower left corner):
-			position_in_board : type_point_with_rotation := origin_zero_rotation;
+			position_in_board : type_position := origin_zero_rotation;
 			
 			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself

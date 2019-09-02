@@ -130,34 +130,33 @@ package et_geometry is
 		-- If result greater or equal 360 degree then 360 degree is subtracted from result.
 		-- If result less or equal 360 degree then 360 degree is added to the result.
 		
-		type type_point_with_rotation is new type_point with private;
+		type type_position is new type_point with private;
 
 -- 		function create (
 -- 			point		: in type_point'class;
 -- 			rotation	: in type_rotation) 
--- 			return type_point_with_rotation;
+-- 			return type_position;
 		
 		function to_rotation (rotation : in string) return type_rotation;
 		function to_string (rotation : in type_rotation) return string;
 		
-		origin_zero_rotation : constant type_point_with_rotation;
+		origin_zero_rotation : constant type_position;
 		
 		units_per_cycle : constant float := 360.0;
--- 		type type_rotation2 is delta 0.01 range -359.9 .. 359.9;
--- 		for type_rotation2'small use 0.01;
+
 		zero_rotation : constant type_rotation := 0.0;
 
 		procedure set (
 		-- Sets the rotation of a point.					
-			point		: in out type_point_with_rotation;
+			point		: in out type_position;
 			rotation	: in type_rotation);
 		
-		function rot (point : in type_point_with_rotation'class) return type_rotation;
+		function rot (point : in type_position'class) return type_rotation;
 		-- Returns the rotation of the given point.
 
 		procedure rotate (
 		-- Rotates a point by the given offset.
-			point	: in out type_point_with_rotation'class;
+			point	: in out type_position'class;
 			offset	: in type_rotation);
 		
 		procedure rotate (
@@ -174,7 +173,7 @@ package et_geometry is
 
 
 		function to_string (point : in type_point) return string;
-		function to_string (point : in type_point_with_rotation) return string;
+		function to_string (point : in type_position) return string;
 
 
 
@@ -187,11 +186,11 @@ package et_geometry is
 
 		origin : constant type_point := (others => zero);
 		
-		type type_point_with_rotation is new type_point with record
+		type type_position is new type_point with record
 			rotation	: type_rotation := zero_rotation;
 		end record;
 
-		origin_zero_rotation : constant type_point_with_rotation := (others => <>);
+		origin_zero_rotation : constant type_position := (others => <>);
 
 	end geometry_operations_2d;
 

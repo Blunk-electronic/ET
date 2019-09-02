@@ -69,7 +69,9 @@ package et_coordinates is
 	for type_rotation'small use 1.0;
 	
 	-- instantiation of the 2d geometry package:
-	package geometry is new et_geometry.geometry_operations_2d (type_distance, type_rotation);
+	package geometry is new et_geometry.geometry_operations_2d (
+		type_distance	=> type_distance,
+		type_rotation	=> type_rotation);
 	use geometry;
 	
 	subtype type_catch_zone is type_distance range 0.0 .. 10.0;

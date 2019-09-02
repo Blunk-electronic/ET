@@ -75,7 +75,10 @@ package et_pcb_coordinates is
 	for type_rotation'small use 0.01;
 	
 	-- instantiation of the 2d geometry package:	
-	package geometry is new et_geometry.geometry_operations_2d (type_distance_total, type_rotation);
+	package geometry is new et_geometry.geometry_operations_2d (
+		type_distance	=> type_distance_total,
+		type_rotation 	=> type_rotation);
+	
 	use geometry;
 	
 	
@@ -102,7 +105,7 @@ package et_pcb_coordinates is
 	subtype type_point_2d is type_point; -- this is just a renaming
 -- 	type type_point_3d is tagged private;
 	
-	type type_package_position is new type_point_with_rotation with private;
+	type type_package_position is new type_position with private;
 
 	package_position_default : constant type_package_position;
 	placeholder_position_default : constant type_package_position;	
@@ -118,7 +121,7 @@ package et_pcb_coordinates is
 	-- Composes from a given point and angle the terminal position.
 		point		: in type_point_2d;
 		rotation	: in type_rotation)
-		return type_point_with_rotation'class;
+		return type_position'class;
 
 
 	
@@ -127,7 +130,7 @@ package et_pcb_coordinates is
 -- 			z : type_distance := zero;
 -- 		end record;
 		
-		type type_package_position is new type_point_with_rotation with record
+		type type_package_position is new type_position with record
 			face	: type_face := TOP;
 		end record;
 

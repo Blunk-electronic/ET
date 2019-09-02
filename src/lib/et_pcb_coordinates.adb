@@ -135,8 +135,8 @@ package body et_pcb_coordinates is
 	-- Composes from a given point and angle the terminal position.
 		point		: in type_point_2d;
 		rotation	: in type_rotation)
-		return type_point_with_rotation'class is
-		pos : type_point_with_rotation;
+		return type_position'class is
+		pos : type_position;
 	begin
 		--pos := (point with rotation);
 		set (pos, point);

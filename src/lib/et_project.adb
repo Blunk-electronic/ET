@@ -687,14 +687,14 @@ package body et_project is
 			return xy;
 			-- position x 162.560 y 98.240
 			
-		elsif point'tag = type_point_with_rotation'tag then
+		elsif point'tag = type_position'tag then
 			return xy 
-				& space & keyword_rotation & to_string (rot (type_point_with_rotation (point)));
+				& space & keyword_rotation & to_string (rot (type_position (point)));
 				-- position x 162.560 y 98.240 rotation 180.00
 			
 		elsif point'tag = type_package_position'tag then
 			return xy
-				& space & keyword_rotation & to_string (rot (type_point_with_rotation (point)))
+				& space & keyword_rotation & to_string (rot (type_position (point)))
 				& space & keyword_face & to_string (get_face (type_package_position (point)));
 				-- position x 162.560 y 98.240 rotation 180.00 face top
 		else
@@ -750,7 +750,7 @@ package body et_project is
 
 		-- CS this could be more elegant way. did not get it working
 		-- 		write (keyword => keyword_position, parameters => 
-		-- 			   position (type_point_with_rotation (text.position with face => face))
+		-- 			   position (type_position (text.position with face => face))
 		-- 			  );
 		
 		write (keyword => keyword_size, parameters => space & keyword_width & to_string (text.dimensions.width) 
@@ -1451,7 +1451,7 @@ package body et_project is
 			close (module_file_handle);
 		end write_footer;
 		
-		function rotation (pos : in et_pcb_coordinates.geometry.type_point_with_rotation'class) return string is -- CS make generic ?
+		function rotation (pos : in et_pcb_coordinates.geometry.type_position'class) return string is -- CS make generic ?
 			use et_pcb_coordinates.geometry;
 		begin
 			return to_string (rot (pos));
@@ -2982,10 +2982,10 @@ package body et_project is
 	end to_position;
 		
 	function to_position (
-	-- Returns a type_point_with_rotation in the layout.
+	-- Returns a type_position in the layout.
 		line : in et_string_processing.type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
 		from : in positive)
-		return et_pcb_coordinates.geometry.type_point_with_rotation is
+		return et_pcb_coordinates.geometry.type_position is
 
 		use et_pcb_coordinates;
 		use et_pcb_coordinates.geometry;
@@ -2994,7 +2994,7 @@ package body et_project is
 		function f (line : in type_fields_of_line; position : in positive) return string 
 			renames et_string_processing.field;
 		
-		point : type_point_with_rotation; -- to be returned
+		point : type_position; -- to be returned
 		place : positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
@@ -3181,7 +3181,7 @@ package body et_project is
 		terminal_name			: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology		: et_pcb.type_assembly_technology := et_pcb.assembly_technology_default;
 		pad_shape_polygon		: type_pad_polygon; -- for polygons that outline a pad
-		terminal_position		: et_pcb_coordinates.geometry.type_point_with_rotation := origin_zero_rotation;
+		terminal_position		: et_pcb_coordinates.geometry.type_position := origin_zero_rotation;
 		tht_pad_shape			: et_pcb.type_pad_outline_tht;
 		tht_width_inner_layers	: et_pcb_coordinates.type_distance := zero;
 		tht_hole				: et_pcb.type_terminal_tht_hole := et_pcb.terminal_tht_hole_default;
@@ -8349,7 +8349,7 @@ package body et_project is
 					use et_pcb;
 					use et_pcb_coordinates;
 				begin
-					device_text_placeholder.position := et_pcb_coordinates.geometry.type_point_with_rotation (device_text_placeholder_position);
+					device_text_placeholder.position := et_pcb_coordinates.geometry.type_position (device_text_placeholder_position);
 					
 					case device_text_placeholder_layer is
 						when SILK_SCREEN => 
