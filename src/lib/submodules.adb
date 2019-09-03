@@ -187,8 +187,8 @@ package body submodules is
 		ports : type_netchanger_ports;
 	begin
 		-- rotate the ports according to rotation in schematic
-		rotate (ports.master, element (netchanger_cursor).rotation);
-		rotate (ports.slave,  element (netchanger_cursor).rotation);
+		rotate (ports.master, rot (element (netchanger_cursor).position_sch));
+		rotate (ports.slave,  rot (element (netchanger_cursor).position_sch));
 
 		-- move the ports according to position in schematic
 		move (ports.master, element (netchanger_cursor).position_sch);

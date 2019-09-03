@@ -739,7 +739,6 @@ package body schematic_ops is
 			use type_netchangers;
 			nc_cursor : type_netchangers.cursor;
 			nc_position : et_coordinates.type_coordinates;
-			nc_rotation : et_coordinates.type_rotation;
 			port_xy : type_point;
 		begin -- query_netchangers
 			if contains (module.netchangers, index) then
@@ -749,7 +748,6 @@ package body schematic_ops is
 
 				-- get netchanger position (sheet/x/y) and rotation in schematic
 				nc_position := element (nc_cursor).position_sch;
-				nc_rotation := element (nc_cursor).rotation;
 
 				-- get the port position relative to the center of the netchanger
 				case port is
@@ -765,7 +763,7 @@ package body schematic_ops is
 				
 				rotate (
 					point		=> port_xy,
-					rotation	=> nc_rotation);
+					rotation	=> rot (nc_position));
 				
 				et_coordinates.move (
 					point	=> port_xy,
@@ -4482,8 +4480,7 @@ package body schematic_ops is
 	procedure add_netchanger (
 	-- Adds a netchanger to the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y
-		rotation		: in et_coordinates.type_rotation; -- 90				
+		place			: in et_coordinates.type_coordinates; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -4506,7 +4503,6 @@ package body schematic_ops is
 			
 			-- build the new netchanger
 			netchanger.position_sch := place;
-			netchanger.rotation := rotation;
 
 			-- insert the new netchanger in the module
 			insert (
@@ -4534,7 +4530,7 @@ package body schematic_ops is
 	begin -- add_netchanger
 		log (text => "module " & to_string (module_name) &
 			" adding netchanger at" & to_string (position => place) &
-			" rotation" & to_string (rotation),
+			" rotation" & to_string (rot (place)),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -5305,7 +5301,7 @@ package body schematic_ops is
 				index		: in type_netchanger_id;
 				netchanger	: in out type_netchanger) is
 			begin
-				netchanger.rotation := rotation;
+				set (netchanger.position_sch, rotation);
 			end;
 			
 		begin -- query_netchangers
@@ -5324,7 +5320,7 @@ package body schematic_ops is
 			
 				-- Fetch the current netchanger position and rotation:
 				location := element (cursor).position_sch;
-				rotation := element (cursor).rotation;
+				rotation := rot (location);
 
 				-- Delete netchanger ports in nets:
 				delete_ports (

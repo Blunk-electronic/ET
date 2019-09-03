@@ -177,8 +177,7 @@ package submodules is
 	end record;
 
 	type type_netchanger is record
-		position_sch	: et_coordinates.type_coordinates; -- x,y,sheet
-		rotation		: et_coordinates.type_rotation := geometry.zero_rotation;
+		position_sch	: et_coordinates.type_coordinates; -- x,y,sheet,rotation
 		--symbol			: type_netchanger_symbol; -- CS for visualisation only
 		
 		position_brd	: et_pcb_coordinates.type_point_2d; -- x,y

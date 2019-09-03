@@ -254,7 +254,6 @@ package schematic_ops is
 	-- Adds a netchanger to the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		place			: in et_coordinates.type_coordinates; -- sheet/x/y
-		rotation		: in et_coordinates.type_rotation; -- 90				
 		log_threshold	: in type_log_level);
 
 	procedure delete_netchanger (

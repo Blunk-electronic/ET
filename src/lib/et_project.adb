@@ -2004,7 +2004,7 @@ package body et_project is
 				section_mark (section_netchanger, HEADER);
 				write (keyword => keyword_name,	parameters => to_string (key (cursor))); -- 1, 2, 201, ...
 				write (keyword => keyword_position_in_schematic, parameters => position (element (cursor).position_sch)); -- position_in_schematic sheet 1 x 147.32 y 96.97
-				write (keyword => keyword_rotation_in_schematic, parameters => geometry.to_string (element (cursor).rotation)); -- rotation_in_schematic 90.0
+				write (keyword => keyword_rotation_in_schematic, parameters => geometry.to_string (geometry.rot (element (cursor).position_sch))); -- rotation_in_schematic 90.0
 				write (keyword => keyword_position_in_board, parameters => position (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
 				write (keyword => keyword_layer, parameters => et_pcb.to_string (element (cursor).layer)); -- layer 2
 				section_mark (section_netchanger, FOOTER);
@@ -12613,7 +12613,7 @@ package body et_project is
 
 									elsif kw = keyword_rotation_in_schematic then -- rotation_in_schematic 180.0
 										expect_field_count (line, 2);
-										netchanger.rotation := geometry.to_rotation (f (line, 2));
+										set (netchanger.position_sch, geometry.to_rotation (f (line, 2)));
 
 									elsif kw = keyword_position_in_board then -- position_in_board x 55.000 y 7.555
 										expect_field_count (line, 5);

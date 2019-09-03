@@ -386,9 +386,9 @@ package body scripting is
 														(
 														x => to_distance (f (6)),
 														y => to_distance (f (7))
-														))
+														)),
+											rotation		=> to_rotation (f (8))
 											),
-										rotation		=> to_rotation (f (8)),
 										log_threshold	=> log_threshold + 1
 										);
 
