@@ -2367,7 +2367,7 @@ package body et_kicad_to_native is
 		return et_coordinates.type_position is
 		point_out : et_coordinates.type_position;
 	begin
-		point_out := et_coordinates.to_coordinates (
+		point_out := et_coordinates.to_position (
 			point		=> point, -- x,y
 			sheet		=> kicad_coordinates.sheet (point), -- sheet
 			rotation	=> rotation);

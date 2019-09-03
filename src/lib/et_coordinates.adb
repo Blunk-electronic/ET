@@ -156,7 +156,7 @@ package body et_coordinates is
 		position.sheet := type_sheet (type_sheet_relative (position.sheet) + offset.sheet);
 	end;
 	
-	function to_coordinates (
+	function to_position (
 		point 		: in geometry.type_point'class;
 		sheet		: in type_sheet;
 		rotation	: in type_rotation := geometry.zero_rotation)
@@ -171,7 +171,7 @@ package body et_coordinates is
 		return p;
 	end;
 
-	function to_coordinates_relative (
+	function to_position_relative (
 		point 		: in geometry.type_point'class;
 		sheet		: in type_sheet_relative;
 		rotation	: in type_rotation := geometry.zero_rotation)

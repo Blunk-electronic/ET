@@ -577,7 +577,7 @@ package body schematic_ops is
 						unit_position := element (unit_cursor).position; -- unit pos. in schematic
 
 						port_cursor := find (ports, port_name);
-						port_position := et_coordinates.to_coordinates (
+						port_position := et_coordinates.to_position (
 									sheet	=> sheet (unit_position), -- the sheet where the unit is
 									point	=> element (port_cursor).position -- default xy pos of port
 									);														 
@@ -674,7 +674,7 @@ package body schematic_ops is
 					-- Now port_xy holds the absolute x/y of the port in the schematic.
 
 					-- Assemble the port_position to be returned:
-					port_position := to_coordinates (
+					port_position := to_position (
 						point	=> port_xy,
 						sheet	=> sheet (submod_position)
 						);
@@ -772,7 +772,7 @@ package body schematic_ops is
 				-- Now port_xy holds the absolute x/y of the port in the schematic.
 
 				-- Assemble the port_position to be returned:
-				port_position := to_coordinates (
+				port_position := to_position (
 					point	=> port_xy,
 					sheet	=> sheet (nc_position)
 					);
@@ -1177,12 +1177,12 @@ package body schematic_ops is
 				begin
 					case coordinates is
 						when ABSOLUTE =>
-							unit.position := to_coordinates (point, type_sheet (sheet));
+							unit.position := to_position (point, type_sheet (sheet));
 
 						when RELATIVE =>
 							move (
 								position	=> unit.position,
-								offset		=> to_coordinates_relative (point, sheet)
+								offset		=> to_position_relative (point, sheet)
 								);
 					end case;
 
@@ -2015,7 +2015,7 @@ package body schematic_ops is
 				use netlists.type_ports_netchanger;
 			begin
 				-- assemble the point to be probed
-				point := to_coordinates (
+				point := to_position (
 							point	=> element (port_cursor).position,
 							sheet	=> sheet (location));
 				
@@ -2154,7 +2154,7 @@ package body schematic_ops is
 					-- Set new x/y position. Sheet number is unchanged.
 					case coordinates is
 						when ABSOLUTE =>
-							unit.position := to_coordinates (point, sheet);
+							unit.position := to_position (point, sheet);
 
 						when RELATIVE =>
 							move (
@@ -4815,7 +4815,7 @@ package body schematic_ops is
 					when ABSOLUTE =>
 						-- The absolute position is defined by the given point (x/y) 
 						-- and the given sheet number:
-						location := to_coordinates (point, type_sheet (sheet));
+						location := to_position (point, type_sheet (sheet));
 
 					when RELATIVE =>
 						-- The relative position is the netchanger position BEFORE 
@@ -4825,7 +4825,7 @@ package body schematic_ops is
 						
 						move (
 							position	=> location,
-							offset		=> to_coordinates_relative (point, sheet));
+							offset		=> to_position_relative (point, sheet));
 				end case;
 
 				-- move the netchanger to the new position
@@ -5142,7 +5142,7 @@ package body schematic_ops is
 			-- Test point where the master port is:
 			test_point 
 				(
-				point		=> to_coordinates (
+				point		=> to_position (
 								point => netchanger_ports.master,
 								sheet => sheet (location)),
 				port_name	=> MASTER
@@ -5151,7 +5151,7 @@ package body schematic_ops is
 			-- Test point where the slave port is:			
 			test_point 
 				(
-				point		=> to_coordinates (
+				point		=> to_position (
 								point => netchanger_ports.slave,
 								sheet => sheet (location)),
 				port_name	=> SLAVE
@@ -6352,14 +6352,14 @@ package body schematic_ops is
 			
 			case zone is
 				when START_POINT =>
-					point := to_coordinates (
+					point := to_position (
 							point => segment.coordinates_start,
 							sheet => sheet (place));
 
 					search_ports; -- sets result to false if a port is connected with the start point
 					
 				when END_POINT =>
-					point := to_coordinates (
+					point := to_position (
 							point => segment.coordinates_end,
 							sheet => sheet (place));
 
@@ -6369,7 +6369,7 @@ package body schematic_ops is
 					-- Both start and end point must be checked for any ports.
 					-- First check the start point of the segment.
 					-- If start point is movable, then the end point must be checked too.
-					point := to_coordinates (
+					point := to_position (
 							point => segment.coordinates_start,
 							sheet => sheet (place));
 
@@ -6377,7 +6377,7 @@ package body schematic_ops is
 
 					-- If start point is movable, check end point.
 					if result = true then
-						point := to_coordinates (
+						point := to_position (
 								point => segment.coordinates_end,
 								sheet => sheet (place));
 
@@ -6526,7 +6526,7 @@ package body schematic_ops is
 								ports := ports_at_place 
 									(
 									module_name	=> module_name, 
-									place 		=> to_coordinates (
+									place 		=> to_position (
 													point => segment.coordinates_start,
 													sheet => sheet (place)),
 									log_threshold => log_threshold + 1
@@ -6538,7 +6538,7 @@ package body schematic_ops is
 								ports := ports_at_place 
 									(
 									module_name	=> module_name, 
-									place 		=> to_coordinates (
+									place 		=> to_position (
 													point => segment.coordinates_end,
 													sheet => sheet (place)),
 									log_threshold => log_threshold + 1
@@ -6550,7 +6550,7 @@ package body schematic_ops is
 								ports := ports_at_place 
 									(
 									module_name	=> module_name, 
-									place 		=> to_coordinates (
+									place 		=> to_position (
 													point => segment.coordinates_start,
 													sheet => sheet (place)),
 									log_threshold => log_threshold + 1
@@ -6561,7 +6561,7 @@ package body schematic_ops is
 								ports := ports_at_place 
 									(
 									module_name	=> module_name, 
-									place 		=> to_coordinates (
+									place 		=> to_position (
 													point => segment.coordinates_end,
 													sheet => sheet (place)),
 									log_threshold => log_threshold + 1
@@ -6904,7 +6904,7 @@ package body schematic_ops is
 			evaluate_net_names (point);
 			
 			-- Test whether any foreign nets cross the end point of the segment:
-			point := to_coordinates (
+			point := to_position (
 					sheet => sheet (start_point),
 					point => end_point);
 			
@@ -6932,7 +6932,7 @@ package body schematic_ops is
 			-- The end point is just x/y. The sheet must be derived from the start point.
 			ports := ports_at_place (
 					module_name		=> module_name,
-					place			=> to_coordinates (
+					place			=> to_position (
 										sheet => sheet (start_point),
 										point => end_point),
 					log_threshold	=> log_threshold + 1);
@@ -7198,7 +7198,7 @@ package body schematic_ops is
 			evaluate_net_names (point); -- modifies the attach_to_strand flag
 			
 			-- Obtain the names of nets that cross the end point of the segment:
-			point := to_coordinates (
+			point := to_position (
 					sheet => sheet (start_point),
 					point => end_point);
 			
@@ -7248,14 +7248,14 @@ package body schematic_ops is
 				----------
 				
 				-- Alternatively the strand could be crossing the end point:
-				strand_at_end := which_strand (to_coordinates (
+				strand_at_end := which_strand (to_position (
 									sheet => sheet (start_point),
 									point => end_point));
 
 				if not dead_end (strand_at_end) then
 					-- The end point will be connected with a strand:
 					log (text => "with its end point at " & to_string (
-								position => to_coordinates (
+								position => to_position (
 									sheet => sheet (start_point),
 									point => end_point)
 									),
@@ -7265,7 +7265,7 @@ package body schematic_ops is
 					-- The junction will be placed later.
 					if strand_at_end.junction_required then
 						junction_at_end_point.required := true;
-						junction_at_end_point.place := to_coordinates (
+						junction_at_end_point.place := to_position (
 									sheet => sheet (start_point),
 									point => end_point);
 					end if;
@@ -7277,7 +7277,7 @@ package body schematic_ops is
 					-- The end point is just x/y. The sheet must be derived from the start point.
 					ports := ports_at_place (
 							module_name		=> module_name,
-							place			=> to_coordinates (
+							place			=> to_position (
 												sheet => sheet (start_point),
 												point => end_point),
 							log_threshold	=> log_threshold + 1);
@@ -8375,7 +8375,7 @@ package body schematic_ops is
 
 						-- Later, for inserting the new port in the nets the
 						-- absolute port position must be built:
-						port_position := to_coordinates (
+						port_position := to_position (
 									point	=> port.position, -- relative x/y to submodule position
 									sheet	=> sheet (submodule_position));
 
@@ -8741,7 +8741,7 @@ package body schematic_ops is
 					point_tmp : type_point := point;
 				begin
 					-- BACKUP THE PORT POSITION BEFORE THE DRAG OPERATION:
-					port_position_before := to_coordinates (
+					port_position_before := to_position (
 								point	=> port.position, -- relative x/y to submodule position
 								sheet	=> sheet (submodule_position)); -- same sheet as submodule box
 
@@ -8790,7 +8790,7 @@ package body schematic_ops is
 
 						-- Later, for inserting the new port in the nets the
 						-- absolute port position must be built:
-						port_position_after := to_coordinates (
+						port_position_after := to_position (
 									point	=> port.position, -- relative x/y to submodule position
 									sheet	=> sheet (submodule_position)); -- same sheet as submodule box
 
@@ -9077,12 +9077,12 @@ package body schematic_ops is
 			begin
 				case coordinates is
 					when ABSOLUTE =>
-						submodule.position := to_coordinates (point, sheet);
+						submodule.position := to_position (point, sheet);
 
 					when RELATIVE =>
 						move (
 							position	=> submodule.position,
-							offset		=> to_coordinates_relative (point, sheet)
+							offset		=> to_position_relative (point, sheet)
 							);
 				end case;
 
@@ -9107,7 +9107,7 @@ package body schematic_ops is
 				while port_cursor /= type_submodule_ports.no_element loop
 
 					-- build the port position (sheet/x/y)
-					position := to_coordinates 
+					position := to_position 
 							(
 							point	=> element (port_cursor).position,
 							sheet	=> et_coordinates.sheet (submodule_position_after)
@@ -9269,7 +9269,7 @@ package body schematic_ops is
 					case coordinates is
 						when ABSOLUTE =>
 
-							drag.after := to_coordinates (
+							drag.after := to_position (
 								point	=> point,
 								sheet	=> sheet (submodule.position));
 
@@ -9435,7 +9435,7 @@ package body schematic_ops is
 				while port_cursor /= type_submodule_ports.no_element loop
 
 					-- build the port position (sheet/x/y)
-					position := to_coordinates 
+					position := to_position 
 							(
 							point	=> element (port_cursor).position,
 							sheet	=> et_coordinates.sheet (element (submod_cursor).position)
@@ -9552,7 +9552,7 @@ package body schematic_ops is
 				while port_cursor /= type_submodule_ports.no_element loop
 
 					-- build the port position (sheet/x/y)
-					position := to_coordinates 
+					position := to_position 
 							(
 							point	=> element (port_cursor).position,
 							sheet	=> et_coordinates.sheet (submodule_old.position)

@@ -334,7 +334,7 @@ package body scripting is
 									schematic_ops.add_device (
 										module_name 	=> module,
 										device_model	=> to_file_name (f (5)),
-										place			=> to_coordinates 
+										place			=> to_position 
 											(
 											sheet => to_sheet (f (6)),
 											point => type_point (set 
@@ -353,7 +353,7 @@ package body scripting is
 									schematic_ops.add_device (
 										module_name 	=> module,
 										device_model	=> to_file_name (f (5)),
-										place			=> to_coordinates 
+										place			=> to_position 
 											(
 											sheet => to_sheet (f (6)),
 											point => type_point (set 
@@ -379,7 +379,7 @@ package body scripting is
 								when 8 =>
 									schematic_ops.add_netchanger (
 										module_name 	=> module,
-										place			=> to_coordinates 
+										place			=> to_position 
 											(
 											sheet => to_sheet (f (5)),
 											point => type_point (set 
@@ -429,7 +429,7 @@ package body scripting is
 										module_name 	=> module, -- parent module (where the submodule is to be inserted)
 										file			=> submodules.to_submodule_path (f (5)),
 										instance		=> et_general.to_instance_name (f (6)), -- submodule instance name
-										position		=> to_coordinates 
+										position		=> to_position 
 											(
 											sheet => to_sheet (f (7)),
 											point => type_point (set 
@@ -493,7 +493,7 @@ package body scripting is
 									schematic_ops.copy_device (
 										module_name 	=> module,
 										device_name		=> to_device_name (f (5)),
-										destination		=> to_coordinates 
+										destination		=> to_position 
 											(
 											sheet => to_sheet (f (6)),
 											point => type_point (set
@@ -521,7 +521,7 @@ package body scripting is
 										module_name 	=> module, -- parent module (where the submodule is to be copied)
 										instance_origin	=> et_general.to_instance_name (f (5)), -- submodule instance name
 										instance_new	=> et_general.to_instance_name (f (6)), -- submodule instance name
-										destination		=> to_coordinates 
+										destination		=> to_position 
 											(
 											sheet => to_sheet (f (7)),
 											point => type_point (set
@@ -581,7 +581,7 @@ package body scripting is
 										(
 										module_name		=> module,
 
-										position		=> to_coordinates (
+										position		=> to_position (
 															point => type_point (set (
 																x => to_distance (f (6)),
 																y => to_distance (f (7)))),
@@ -609,7 +609,7 @@ package body scripting is
 										module_name			=> module,
 										net_name			=> to_net_name (f (5)), -- RESET
 										scope				=> EVERYWHERE,
-										place				=> to_coordinates (
+										place				=> to_position (
 																point => origin,
 																sheet => 1),
 										log_threshold		=> log_threshold + 1);
@@ -623,7 +623,7 @@ package body scripting is
 										module_name			=> module,
 										net_name			=> to_net_name (f (5)), -- RESET
 										scope				=> SHEET,
-										place				=> to_coordinates (
+										place				=> to_position (
 																point => origin,
 																sheet => to_sheet (f (6))), -- sheet number
 										log_threshold		=> log_threshold + 1);
@@ -636,7 +636,7 @@ package body scripting is
 										module_name			=> module,
 										net_name			=> to_net_name (f (5)), -- RESET
 										scope				=> STRAND,
-										place				=> to_coordinates (
+										place				=> to_position (
 																point => type_point (set (
 																	x => to_distance (f (7)),
 																	y => to_distance (f (8)))),
@@ -691,7 +691,7 @@ package body scripting is
 								(
 								module_name			=> module,
 								net_name			=> to_net_name (f (5)), -- RESET
-								place				=> to_coordinates (
+								place				=> to_position (
 														point => type_point (set (
 															x => to_distance (f (7)),
 															y => to_distance (f (8)))),
@@ -828,7 +828,7 @@ package body scripting is
 								(
 								module_name		=> module,
 								net_name		=> to_net_name (f (5)), -- RESET
-								place			=> to_coordinates (
+								place			=> to_position (
 													point => type_point (set (
 														x => to_distance (f (7)),
 														y => to_distance (f (8)))),
@@ -872,7 +872,7 @@ package body scripting is
 								(
 								module_name		=> module,
 								net_name		=> to_net_name (f (5)), -- RESET
-								start_point		=> to_coordinates (
+								start_point		=> to_position (
 														point => type_point (set (
 															x => to_distance (f (7)),
 															y => to_distance (f (8)))),
@@ -897,7 +897,7 @@ package body scripting is
 										module_name		=> module,
 										device_name		=> to_device_name (f (5)),
 										unit_name		=> to_unit_name (f (6)),
-										place			=> to_coordinates 
+										place			=> to_position 
 											(
 											sheet => to_sheet (f (7)),
 											point => type_point (set
@@ -1154,7 +1154,7 @@ package body scripting is
 							schematic_ops.place_junction 
 								(
 								module_name 	=> module,
-								place			=> to_coordinates 
+								place			=> to_position 
 													(
 													sheet => to_sheet (f (5)),
 													point => type_point (set (
@@ -1173,7 +1173,7 @@ package body scripting is
 										(
 										module_name			=> module,
 
-										segment_position	=> to_coordinates (
+										segment_position	=> to_position (
 																point => type_point (set (
 																	x => to_distance (f (6)),
 																	y => to_distance (f (7)))),
@@ -1199,7 +1199,7 @@ package body scripting is
 										(
 										module_name			=> module,
 
-										segment_position	=> to_coordinates (
+										segment_position	=> to_position (
 																point => type_point (set (
 																	x => to_distance (f (6)),
 																	y => to_distance (f (7)))),
@@ -1313,7 +1313,7 @@ package body scripting is
 										net_name_before		=> to_net_name (f (5)), -- RESET
 										net_name_after		=> to_net_name (f (6)), -- RESET_N
 										scope				=> EVERYWHERE,
-										place				=> to_coordinates (
+										place				=> to_position (
 																point => origin,
 																sheet => 1),
 										log_threshold		=> log_threshold + 1);
@@ -1328,7 +1328,7 @@ package body scripting is
 										net_name_before		=> to_net_name (f (5)), -- RESET
 										net_name_after		=> to_net_name (f (6)), -- RESET_N
 										scope				=> SHEET,
-										place				=> to_coordinates (
+										place				=> to_position (
 																point => origin,
 																sheet => to_sheet (f (7))), -- sheet number
 										log_threshold		=> log_threshold + 1);
@@ -1342,7 +1342,7 @@ package body scripting is
 										net_name_before		=> to_net_name (f (5)), -- RESET
 										net_name_after		=> to_net_name (f (6)), -- RESET_N
 										scope				=> STRAND,
-										place				=> to_coordinates (
+										place				=> to_position (
 																point => type_point (set (
 																	x => to_distance (f (8)),
 																	y => to_distance (f (9)))),
