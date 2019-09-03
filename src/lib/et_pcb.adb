@@ -460,7 +460,7 @@ package body et_pcb is
 	function package_position (position : in type_package_position) return string is
 	-- Returns the coordinates of a package (in a board) as string.
 	begin
-		return (" position" & to_string (type_point_2d (position))
+		return (" position" & to_string (type_point (position))
 			& " angle" & to_string (rot (position))
 			& " face" & to_string (get_face (position)));
 	end package_position;
@@ -1157,7 +1157,7 @@ package body et_pcb is
 	begin -- terminal_properties
 		log (text => "terminal name" & to_string (name)
 			& " technology" & to_string (terminal.technology)
-			& to_string (type_point_2d (terminal.position))
+			& to_string (type_point (terminal.position))
 			& "rotation" & to_string (rot (terminal.position)),
 			level => log_threshold);
 

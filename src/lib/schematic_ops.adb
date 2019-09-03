@@ -179,11 +179,12 @@ package body schematic_ops is
 		device_cursor	: in et_schematic.type_devices.cursor;
 		log_threshold	: in type_log_level) is
 		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 		use et_schematic.type_devices;
 	begin
 		if element (device_cursor).appearance = SCH_PCB then
 			log (text => "location in board:" & 
-				et_pcb_coordinates.geometry.to_string (type_point_2d (element (device_cursor).position)) &
+				to_string (et_pcb_coordinates.geometry.type_point (element (device_cursor).position)) &
 				" face" & 
 				to_string (get_face (element (device_cursor).position)),
 				level => log_threshold);

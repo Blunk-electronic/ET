@@ -121,7 +121,7 @@ package et_pcb is
 
 	-- DRILLS
 	type type_drill is tagged record
-		position	: type_point_2d;
+		position	: type_point;
 		diameter	: type_drill_size;
 		-- CS locked : type_locked;
 	end record;
@@ -343,8 +343,8 @@ package et_pcb is
 	
 	-- LINE
 	type type_line_2d is abstract tagged record
-		start_point 	: type_point_2d;
-		end_point   	: type_point_2d;
+		start_point 	: type_point;
+		end_point   	: type_point;
 		-- CS locked : type_locked;
 	end record;
 
@@ -356,9 +356,9 @@ package et_pcb is
 	
 	-- ARC
 	type type_arc_2d is abstract tagged record
-		center			: type_point_2d;
-		start_point		: type_point_2d;
-		end_point		: type_point_2d;
+		center			: type_point;
+		start_point		: type_point;
+		end_point		: type_point;
 		-- CS locked : type_locked;		
 	end record;
 
@@ -372,7 +372,7 @@ package et_pcb is
 	
 	-- CIRCLE
 	type type_circle_2d is abstract tagged record
-		center			: type_point_2d;
+		center			: type_point;
 		radius  		: type_distance := zero;
 		-- CS locked : type_locked;
 	end record;
@@ -388,7 +388,7 @@ package et_pcb is
 	-- Corner points are collected in an ordered set.
 	-- This prevents placing two identical points on top of each other.
 	package type_polygon_points is new ordered_sets (
-		element_type	=> type_point_2d);
+		element_type	=> type_point);
 -- 		"<"				=> right_point_before_left_2d);
 
 	type type_corner_easing is (NONE, CHAMFER, FILLET);

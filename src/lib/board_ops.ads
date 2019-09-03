@@ -70,7 +70,7 @@ package board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		point			: in geometry.type_point; -- x/y
 		log_threshold	: in type_log_level);
 
 	procedure rotate_device (
@@ -96,7 +96,7 @@ package board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in type_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		point			: in geometry.type_point; -- x/y
 		log_threshold	: in type_log_level);
 	
 	procedure make_pick_and_place (
@@ -118,8 +118,8 @@ package board_ops is
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
-		from			: in et_pcb_coordinates.type_point_2d; -- x/y
-		to				: in et_pcb_coordinates.type_point_2d; -- x/y
+		from			: in geometry.type_point; -- x/y
+		to				: in geometry.type_point; -- x/y
 		log_threshold	: in type_log_level);
 
 	procedure draw_track_line (
@@ -129,8 +129,8 @@ package board_ops is
 		net_cursor		: in et_schematic.type_nets.cursor; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
-		from			: in et_pcb_coordinates.type_point_2d; -- x/y
-		to				: in et_pcb_coordinates.type_point_2d; -- x/y
+		from			: in geometry.type_point; -- x/y
+		to				: in geometry.type_point; -- x/y
 		log_threshold	: in type_log_level);
 	
 	procedure draw_track_arc (
@@ -139,9 +139,9 @@ package board_ops is
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
-		center			: in et_pcb_coordinates.type_point_2d; -- x/y
-		from			: in et_pcb_coordinates.type_point_2d; -- x/y		
-		to				: in et_pcb_coordinates.type_point_2d; -- x/y
+		center			: in geometry.type_point; -- x/y
+		from			: in geometry.type_point; -- x/y		
+		to				: in geometry.type_point; -- x/y
 		log_threshold	: in type_log_level);
 
 	procedure ripup_track_segment (
@@ -151,7 +151,7 @@ package board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
-		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		point			: in geometry.type_point; -- x/y
 		accuracy		: in type_distance;
 		log_threshold	: in type_log_level);
 
@@ -159,22 +159,22 @@ package board_ops is
 	procedure draw_outline_line (
 	-- Draws a line in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		from			: in et_pcb_coordinates.type_point_2d; -- x/y
-		to				: in et_pcb_coordinates.type_point_2d; -- x/y		
+		from			: in geometry.type_point; -- x/y
+		to				: in geometry.type_point; -- x/y		
 		log_threshold	: in type_log_level);
 
 	procedure draw_outline_arc (
 	-- Draws an arc in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		center			: in et_pcb_coordinates.type_point_2d; -- x/y
-		from			: in et_pcb_coordinates.type_point_2d; -- x/y		
-		to				: in et_pcb_coordinates.type_point_2d; -- x/y		
+		center			: in geometry.type_point; -- x/y
+		from			: in geometry.type_point; -- x/y		
+		to				: in geometry.type_point; -- x/y		
 		log_threshold	: in type_log_level);
 
 	procedure draw_outline_circle (
 	-- Draws a circle in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		center			: in et_pcb_coordinates.type_point_2d; -- x/y
+		center			: in geometry.type_point; -- x/y
 		radius			: in et_pcb_coordinates.type_distance;
 		log_threshold	: in type_log_level);
 
@@ -183,7 +183,7 @@ package board_ops is
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		point			: in geometry.type_point; -- x/y
 		accuracy		: in type_distance;
 		log_threshold	: in type_log_level);
 

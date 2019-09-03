@@ -675,7 +675,7 @@ package body et_project is
 -- 		end if;
 -- 	end rotation;
 
-	function position (point : et_pcb_coordinates.type_point_2d'class) return string is
+	function position (point : et_pcb_coordinates.geometry.type_point'class) return string is
 		use et_pcb_coordinates;
 		use et_pcb_coordinates.geometry;
 		use ada.tags;
@@ -683,7 +683,7 @@ package body et_project is
 		xy : constant string := space & keyword_pos_x & to_string (x (point)) 
 				& space & keyword_pos_y & to_string (y (point));
 	begin
-		if point'tag = type_point_2d'tag then
+		if point'tag = et_pcb_coordinates.geometry.type_point'tag then
 			return xy;
 			-- position x 162.560 y 98.240
 			
@@ -2943,7 +2943,7 @@ package body et_project is
 	-- Returns a type_point_2d in the the layout.
 		line : in et_string_processing.type_fields_of_line; -- "start x 44.5 y 53.5"
 		from : in positive)
-		return et_pcb_coordinates.type_point_2d is
+		return et_pcb_coordinates.geometry.type_point is
 		use et_pcb_coordinates;
 		use et_pcb_coordinates.geometry;
 		use et_string_processing;
@@ -2951,7 +2951,7 @@ package body et_project is
 		function f (line : in type_fields_of_line; position : in positive) return string 
 			renames et_string_processing.field;
 		
-		point : type_point_2d; -- to be returned
+		point : et_pcb_coordinates.geometry.type_point; -- to be returned
 		place : positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
@@ -3174,7 +3174,7 @@ package body et_project is
 		pac_polygon_copper		: type_copper_polygon;
 		procedure reset_polygon_copper is begin pac_polygon_copper := (others => <>); end;
 		polygon_corner_points	: type_polygon_points.set;
-		polygon_corner_point	: et_pcb_coordinates.type_point_2d;
+		polygon_corner_point	: et_pcb_coordinates.geometry.type_point;
 
 		pac_text				: et_pcb.type_text_with_content;
 		pac_text_placeholder	: et_pcb.type_text_placeholder_package;
@@ -8094,7 +8094,7 @@ package body et_project is
 		route_polygon_thermal_gap		: et_pcb.type_polygon_thermal_gap := et_pcb.type_polygon_thermal_gap'first;
 		route_polygon_solid_technology	: et_pcb.type_polygon_pad_technology := et_pcb.type_polygon_pad_technology'first;
 
-		polygon_corner_point	: et_pcb_coordinates.type_point_2d;
+		polygon_corner_point	: et_pcb_coordinates.geometry.type_point;
 		polygon_corner_points	: et_pcb.type_polygon_points.set;
 
 		frame_template_schematic	: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frm

@@ -1599,7 +1599,7 @@ package body scripting is
 									-- delete a segment of board outline
 									board_ops.delete_outline (
 										module_name 	=> module,
-										point			=> type_point_2d (set (
+										point			=> type_point (set (
 												x => to_distance (f (5)),
 												y => to_distance (f (6)))),
 										accuracy		=> to_distance (f (7)),
@@ -1630,10 +1630,10 @@ package body scripting is
 											when 9 =>
 												board_ops.draw_outline_line (
 													module_name 	=> module,
-													from			=> type_point_2d (set (
+													from			=> type_point (set (
 															x => to_distance (f (6)),
 															y => to_distance (f (7)))),
-													to				=> type_point_2d (set (
+													to				=> type_point (set (
 															x => to_distance (f (8)),
 															y => to_distance (f (9)))),
 
@@ -1652,13 +1652,13 @@ package body scripting is
 											when 11 =>
 												board_ops.draw_outline_arc (
 													module_name 	=> module,
-													center			=> type_point_2d (set (
+													center			=> type_point (set (
 															x => to_distance (f (6)),
 															y => to_distance (f (7)))),
-													from			=> type_point_2d (set (
+													from			=> type_point (set (
 															x => to_distance (f (8)),
 															y => to_distance (f (9)))),
-													to				=> type_point_2d (set (
+													to				=> type_point (set (
 															x => to_distance (f (10)),
 															y => to_distance (f (11)))),
 
@@ -1677,7 +1677,7 @@ package body scripting is
 											when 8 =>
 												board_ops.draw_outline_circle (
 													module_name 	=> module,
-													center			=> type_point_2d (set (
+													center			=> type_point (set (
 															x => to_distance (f (6)),
 															y => to_distance (f (7)))),
 													radius			=> to_distance (f (8)),
@@ -1735,10 +1735,10 @@ package body scripting is
 													module_name 	=> module,
 													width			=> to_distance (f (7)),
 													net_name		=> to_net_name (""),
-													from			=> type_point_2d (set (
+													from			=> type_point (set (
 															x => to_distance (f (8)),
 															y => to_distance (f (9)))),
-													to				=> type_point_2d (set (
+													to				=> type_point (set (
 															x => to_distance (f (10)),
 															y => to_distance (f (11)))),
 													layer			=> to_signal_layer (f (5)),
@@ -1760,13 +1760,13 @@ package body scripting is
 													module_name 	=> module,
 													layer			=> to_signal_layer (f (5)),
 													width			=> to_distance (f (7)),
-													center			=> type_point_2d (set (
+													center			=> type_point (set (
 															x => to_distance (f (8)),
 															y => to_distance (f (9)))),
-													from			=> type_point_2d (set (
+													from			=> type_point (set (
 															x => to_distance (f (10)),
 															y => to_distance (f (11)))),
-													to				=> type_point_2d (set (
+													to				=> type_point (set (
 															x => to_distance (f (12)),
 															y => to_distance (f (13)))),
 													net_name		=> to_net_name (""),
@@ -1798,10 +1798,10 @@ package body scripting is
 													net_name		=> to_net_name (f (5)),
 													layer			=> to_signal_layer (f (6)),
 													width			=> to_distance (f (8)),
-													from			=> type_point_2d (set (
+													from			=> type_point (set (
 															x => to_distance (f (9)),
 															y => to_distance (f (10)))),
-													to				=> type_point_2d (set (
+													to				=> type_point (set (
 															x => to_distance (f (11)),
 															y => to_distance (f (12)))),
 													
@@ -1824,13 +1824,13 @@ package body scripting is
 													net_name		=> to_net_name (f (5)),
 													layer			=> to_signal_layer (f (6)),
 													width			=> to_distance (f (8)),
-													center			=> type_point_2d (set (
+													center			=> type_point (set (
 															x => to_distance (f (9)),
 															y => to_distance (f (10)))),
-													from			=> type_point_2d (set (
+													from			=> type_point (set (
 															x => to_distance (f (11)),
 															y => to_distance (f (12)))),
-													to				=> type_point_2d (set (
+													to				=> type_point (set (
 															x => to_distance (f (13)),
 															y => to_distance (f (14)))),
 
@@ -1860,7 +1860,7 @@ package body scripting is
 										module_name 	=> module,
 										net_name		=> to_net_name (""),
 										layer			=> to_signal_layer (f (5)),
-										point			=> type_point_2d (set (
+										point			=> type_point (set (
 												x => to_distance (f (6)),
 												y => to_distance (f (7)))),
 										accuracy		=> to_distance (f (8)),
@@ -1883,7 +1883,7 @@ package body scripting is
 										module_name 	=> module,
 										net_name		=> to_net_name (f (5)),
 										layer			=> to_signal_layer (f (6)),
-										point			=> type_point_2d (set (
+										point			=> type_point (set (
 												x => to_distance (f (7)),
 												y => to_distance (f (8)))),
 										accuracy		=> to_distance (f (9)),
@@ -1954,7 +1954,7 @@ package body scripting is
 										module_name 	=> module,
 										device_name		=> to_device_name (f (5)), -- IC1
 										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
-										point			=> type_point_2d (set (
+										point			=> type_point (set (
 															x => to_distance (f (7)),
 															y => to_distance (f (8)))),
 										log_threshold	=> log_threshold + 1
@@ -1974,7 +1974,7 @@ package body scripting is
 										module_name 	=> module,
 										instance		=> et_general.to_instance_name (f (5)), -- OSC1
 										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
-										point			=> type_point_2d (set (
+										point			=> type_point (set (
 															x => to_distance (f (7)),
 															y => to_distance (f (8)))),
 										log_threshold	=> log_threshold + 1

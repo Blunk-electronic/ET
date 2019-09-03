@@ -354,7 +354,7 @@ package body et_kicad_pcb is
 	function to_pad_shape_circle (
 		position	: in type_position;
 		diameter	: in et_pcb.type_pad_size;
-		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
+		offset		: in type_point)	-- the offset of the pad from the center
 		return et_pcb.type_pad_outline is
 
 		use et_pcb_coordinates;
@@ -365,7 +365,7 @@ package body et_kicad_pcb is
 
 		shape : et_pcb.type_pad_outline; -- to be returned
 	begin
-		circle.center := type_point_2d (position);
+		circle.center := type_point (position);
 		circle.radius := diameter / 2.0;
 		move (circle.center, offset);
 		append (shape.circles, circle);
@@ -376,10 +376,10 @@ package body et_kicad_pcb is
 	-- Converts the given position and dimensions of a rectangular pad
 	-- to a list with four lines (top, bottom, right, left).
 	-- CS: rework as in to_pad_shape_oval
-		center		: in type_position; -- the pad center position (incl. angle)
+		center		: in type_position; 		-- the pad center position (incl. angle)
 		size_x		: in et_pcb.type_pad_size;	-- the size in x of the pad
 		size_y		: in et_pcb.type_pad_size;	-- the size in y of the pad
-		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
+		offset		: in type_point)			-- the offset of the pad from the center
 		return et_pcb.type_pad_outline is
 
 		use et_pcb;
@@ -401,8 +401,8 @@ package body et_kicad_pcb is
 		yn : constant type_distance := -(yp);
 
  		-- supportive corner points:
-		p11, p12 : type_point_2d;
-		p21, p22 : type_point_2d;
+		p11, p12 : type_point;
+		p21, p22 : type_point;
 
 		-- These are the four lines we need for the rectangular pad contour:
 		line_1, line_2 : type_pad_line; -- left line, right line
@@ -410,11 +410,11 @@ package body et_kicad_pcb is
 
 	begin -- to_pad_shape_rectangle
 		-- set supportive cornert points
-		p11 := type_point_2d (set (x => xn, y => yp));
-		p12 := type_point_2d (set (x => xn, y => yn));
+		p11 := type_point (set (x => xn, y => yp));
+		p12 := type_point (set (x => xn, y => yn));
 
-		p21 := type_point_2d (set (x => xp, y => yp));
-		p22 := type_point_2d (set (x => xp, y => yn));
+		p21 := type_point (set (x => xp, y => yp));
+		p22 := type_point (set (x => xp, y => yn));
 
 		-- rotate supportive points
 		rotate (p11, angle);
@@ -458,10 +458,10 @@ package body et_kicad_pcb is
 	function to_pad_shape_oval (
 	-- Converts the given position and dimensions of an oval pad
 	-- to a list with two vertical lines and two arcs (rotation assumed zero).
-		center		: in type_position; -- the pad center position (incl. angle)
+		center		: in type_position; 		-- the pad center position (incl. angle)
 		size_x		: in et_pcb.type_pad_size;	-- the size in x of the pad
 		size_y		: in et_pcb.type_pad_size;	-- the size in y of the pad
-		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
+		offset		: in type_point)			-- the offset of the pad from the center
 		return et_pcb.type_pad_outline is
 
 		use et_pcb;
@@ -486,9 +486,9 @@ package body et_kicad_pcb is
 		y2n : constant type_distance := -(y2p);
 
 		-- supportive points:
-		p11, p12 : type_point_2d; -- start/end point of left line
-		p21, p22 : type_point_2d; -- start/end point of right line
-		p41, p42 : type_point_2d; -- center of upper/lower arc
+		p11, p12 : type_point; -- start/end point of left line
+		p21, p22 : type_point; -- start/end point of right line
+		p41, p42 : type_point; -- center of upper/lower arc
 
 		-- These are the two lines and the two arcs we need for the oval pad contour:
 		line_1, line_2 : type_pad_line; -- left line, right line
@@ -497,14 +497,14 @@ package body et_kicad_pcb is
 	begin -- to_pad_shape_oval
 
 		-- set supportive points
-		p11 := type_point_2d (set (x => x1n, y => y2p));
-		p12 := type_point_2d (set (x => x1n, y => y2n));
+		p11 := type_point (set (x => x1n, y => y2p));
+		p12 := type_point (set (x => x1n, y => y2n));
 
-		p21 := type_point_2d (set (x => x1p, y => y2p));
-		p22 := type_point_2d (set (x => x1p, y => y2n));
+		p21 := type_point (set (x => x1p, y => y2p));
+		p22 := type_point (set (x => x1p, y => y2n));
 
-		p41 := type_point_2d (set (x => zero, y => y2p));
-		p42 := type_point_2d (set (x => zero, y => y2n));			
+		p41 := type_point (set (x => zero, y => y2p));
+		p42 := type_point (set (x => zero, y => y2n));			
 
 		-- rotate supportive points 
 		rotate (p11, angle);
@@ -556,10 +556,10 @@ package body et_kicad_pcb is
 	function to_pad_milling_contour (
 	-- Converts the given position and dimensions of a rectangular slotted hole
 	-- to a list with four lines (top, bottom, right, left).
-		center		: in type_position; -- the terminal position (incl. angle, (z axis ignored))
+		center		: in type_position; 		-- the terminal position (incl. angle, (z axis ignored))
 		size_x		: in et_pcb.type_pad_size;	-- the size in x of the hole
 		size_y		: in et_pcb.type_pad_size;	-- the size in y of the hole
-		offset		: in et_pcb_coordinates.type_point_2d)	-- the offset of the pad from the center
+		offset		: in type_point)			-- the offset of the pad from the center
 		return et_pcb.type_pcb_contour_lines.list is
 
 		use et_pcb;
@@ -579,8 +579,8 @@ package body et_kicad_pcb is
 		yn : constant type_distance := -(yp);
 
  		-- supportive corner points:
-		p11, p12 : type_point_2d;
-		p21, p22 : type_point_2d;
+		p11, p12 : type_point;
+		p21, p22 : type_point;
 
 		-- These are the four lines we need for the rectangular pad contour:
 		line_1, line_2 : type_pcb_contour_line; -- left line, right line
@@ -588,11 +588,11 @@ package body et_kicad_pcb is
 
 	begin -- to_pad_milling_contour
 		-- set supportive cornert points
-		p11 := type_point_2d (set (x => xn, y => yp));
-		p12 := type_point_2d (set (x => xn, y => yn));
+		p11 := type_point (set (x => xn, y => yp));
+		p12 := type_point (set (x => xn, y => yn));
 
-		p21 := type_point_2d (set (x => xp, y => yp));
-		p22 := type_point_2d (set (x => xp, y => yn));
+		p21 := type_point (set (x => xp, y => yp));
+		p22 := type_point (set (x => xp, y => yn));
 
 		-- rotate supportive points
 		rotate (p11, angle);
@@ -789,12 +789,12 @@ package body et_kicad_pcb is
 		terminal_pad_shape_tht 	: type_pad_shape_tht;
 		terminal_pad_shape_smt 	: type_pad_shape_smt;
 
-		terminal_face 			: et_pcb_coordinates.type_face;
-		terminal_drill_size		: type_drill_size; 
-		terminal_hole_shape	: type_tht_hole_shape; -- for slotted holes
-		terminal_milling_size_x	: type_pad_milling_size;  -- CS use a composite instead ?
-		terminal_milling_size_y	: type_pad_milling_size; 
-		terminal_pad_drill_offset : et_pcb_coordinates.type_point_2d;
+		terminal_face 				: et_pcb_coordinates.type_face;
+		terminal_drill_size			: type_drill_size; 
+		terminal_hole_shape			: type_tht_hole_shape; -- for slotted holes
+		terminal_milling_size_x		: type_pad_milling_size;  -- CS use a composite instead ?
+		terminal_milling_size_y		: type_pad_milling_size; 
+		terminal_pad_drill_offset	: type_point;
 
 		-- The center of an smt pad or the position of the drill of a tht pad:
 		terminal_position	: type_position; 
@@ -1889,7 +1889,7 @@ package body et_kicad_pcb is
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 				
 				-- compute end point of arc from center, start_point and angle
-				arc.end_point := type_point_2d (arc_end_point (arc.center, arc.start_point, arc.angle));
+				arc.end_point := type_point (arc_end_point (arc.center, arc.start_point, arc.angle));
 
 				-- The angle of the arc and its layer are now discarded
 				-- as the arc is converted back to its anchestor
@@ -3242,7 +3242,7 @@ package body et_kicad_pcb is
 		segment			: type_segment;
 		via				: type_via;
 		polygon 		: type_polygon; -- NOTE: kicad allows polygons in copper layers exclusively
-		polygon_point	: et_pcb_coordinates.type_point_2d;
+		polygon_point	: type_point;
 
 		-- Since SEC_POLYGON and SEC_FILLED_POLYGON have the same subsections (SEC_PTS/SEC_XY)
 		-- the flag section_polygon_entered is required. When section SEC_XY is executed,
@@ -3307,7 +3307,7 @@ package body et_kicad_pcb is
 		terminal_milling_size_x	: type_pad_milling_size;
 		terminal_milling_size_y	: type_pad_milling_size;
 
-		terminal_pad_drill_offset : et_pcb_coordinates.type_point_2d;
+		terminal_pad_drill_offset : type_point;
 		
 		-- The center of an smt pad or the position of the drill of a tht pad:		
 		terminal_position	: type_position;
@@ -6073,7 +6073,7 @@ package body et_kicad_pcb is
 			procedure insert_board_arc is begin
 				-- Compute the arc end point from its center, start point and angle.
 				-- Later the angle is discarded.
-				board_arc.end_point := type_point_2d (arc_end_point (
+				board_arc.end_point := type_point (arc_end_point (
 					board_arc.center, board_arc.start_point, board_arc.angle));
 
 				-- The board_arc is converted back to its anchestor and
@@ -6345,7 +6345,7 @@ package body et_kicad_pcb is
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 
 				-- compute end point of arc from center, start_point and angle
-				package_arc.end_point := type_point_2d (
+				package_arc.end_point := type_point (
 					arc_end_point (package_arc.center, package_arc.start_point, package_arc.angle));
 
 				-- The angle of the arc and its layer are now discarded

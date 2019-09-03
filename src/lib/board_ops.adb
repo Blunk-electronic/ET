@@ -78,7 +78,7 @@ package body board_ops is
 	
 	procedure no_net_segment_found (
 		layer		: in type_signal_layer;
-		point		: in type_point_2d; 
+		point		: in type_point; 
 		accuracy	: in type_distance) is
 	begin
 		log (importance => WARNING, 
@@ -88,7 +88,7 @@ package body board_ops is
 	end;
 
 	procedure no_outline_segment_found (
-		point		: in type_point_2d; 
+		point		: in type_point; 
 		accuracy	: in type_distance) is
 	begin
 		log (importance => WARNING, 
@@ -103,7 +103,7 @@ package body board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		point			: in geometry.type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -334,7 +334,7 @@ package body board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in type_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		point			: in geometry.type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -460,7 +460,7 @@ package body board_ops is
 						-- Get the device position in the generic submodule.
 						-- Then move it according
 						-- to the position of the submodule instance in the parent module:
-						move (device_position, type_point_2d (position_in_board));
+						move (device_position, type_point (position_in_board));
 
 						log (text => "generic" & to_string (position_generic) &
 							" -> " & "in instance" & to_string (device_position),
@@ -721,7 +721,7 @@ package body board_ops is
 
 					-- The new position_in_board is a vector sum of the position_in_board of the parent module
 					-- and the position_in_board of the current submodule:
-					move (position_in_board, type_point_2d (get_position (parent_name, module_instance)));
+					move (position_in_board, type_point (get_position (parent_name, module_instance)));
 
 					-- CS position_in_board must be rotated according to rotation specified where
 					-- the submodule has been instanciated. 
@@ -915,8 +915,8 @@ package body board_ops is
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
-		from			: in et_pcb_coordinates.type_point_2d; -- x/y
-		to				: in et_pcb_coordinates.type_point_2d; -- x/y
+		from			: in geometry.type_point; -- x/y
+		to				: in geometry.type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -1013,8 +1013,8 @@ package body board_ops is
 		net_cursor		: in et_schematic.type_nets.cursor; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
-		from			: in et_pcb_coordinates.type_point_2d; -- x/y
-		to				: in et_pcb_coordinates.type_point_2d; -- x/y
+		from			: in geometry.type_point; -- x/y
+		to				: in geometry.type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
 		procedure add_named_track (
@@ -1061,9 +1061,9 @@ package body board_ops is
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
 		width			: in type_track_width;
-		center			: in et_pcb_coordinates.type_point_2d; -- x/y
-		from			: in et_pcb_coordinates.type_point_2d; -- x/y		
-		to				: in et_pcb_coordinates.type_point_2d; -- x/y
+		center			: in geometry.type_point; -- x/y
+		from			: in geometry.type_point; -- x/y		
+		to				: in geometry.type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -1157,7 +1157,7 @@ package body board_ops is
 
 	function on_segment (
 	-- Returns true if the given point sits on the given line segment.
-		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		point			: in geometry.type_point; -- x/y
 		layer			: in type_signal_layer;
 		line			: in type_copper_lines_pcb.cursor;
 		accuracy		: in type_distance)
@@ -1176,7 +1176,7 @@ package body board_ops is
 
 	function on_segment (
 	-- Returns true if the given point sits on the given arc segment.
-		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		point			: in geometry.type_point; -- x/y
 		layer			: in type_signal_layer;
 		arc				: in type_copper_arcs_pcb.cursor;
 		accuracy		: in type_distance)
@@ -1200,7 +1200,7 @@ package body board_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
-		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		point			: in geometry.type_point; -- x/y
 		accuracy		: in type_distance;
 		log_threshold	: in type_log_level) is
 
@@ -1352,8 +1352,8 @@ package body board_ops is
 	procedure draw_outline_line (
 	-- Draws a line in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		from			: in et_pcb_coordinates.type_point_2d; -- x/y
-		to				: in et_pcb_coordinates.type_point_2d; -- x/y		
+		from			: in geometry.type_point; -- x/y
+		to				: in geometry.type_point; -- x/y		
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -1392,9 +1392,9 @@ package body board_ops is
 	procedure draw_outline_arc (
 	-- Draws an arc in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		center			: in et_pcb_coordinates.type_point_2d; -- x/y
-		from			: in et_pcb_coordinates.type_point_2d; -- x/y		
-		to				: in et_pcb_coordinates.type_point_2d; -- x/y		
+		center			: in geometry.type_point; -- x/y
+		from			: in geometry.type_point; -- x/y		
+		to				: in geometry.type_point; -- x/y		
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -1436,7 +1436,7 @@ package body board_ops is
 	procedure draw_outline_circle (
 	-- Draws a circle in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		center			: in et_pcb_coordinates.type_point_2d; -- x/y
+		center			: in geometry.type_point; -- x/y
 		radius			: in et_pcb_coordinates.type_distance;
 		log_threshold	: in type_log_level) is
 
@@ -1476,7 +1476,7 @@ package body board_ops is
 
 	function on_segment (
 	-- Returns true if the given point sits on the given line segment.
-		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		point			: in geometry.type_point; -- x/y
 		line			: in type_pcb_contour_lines.cursor;
 		accuracy		: in type_distance)
 		return boolean is
@@ -1489,7 +1489,7 @@ package body board_ops is
 
 	function on_segment (
 	-- Returns true if the given point sits on the given arc segment.
-		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		point			: in geometry.type_point; -- x/y
 		arc				: in type_pcb_contour_arcs.cursor;
 		accuracy		: in type_distance)
 		return boolean is
@@ -1502,7 +1502,7 @@ package body board_ops is
 
 	function on_segment (
 	-- Returns true if the given point sits on the given circle segment.
-		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		point			: in geometry.type_point; -- x/y
 		circle			: in type_pcb_contour_circles.cursor;
 		accuracy		: in type_distance)
 		return boolean is
@@ -1519,7 +1519,7 @@ package body board_ops is
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		point			: in et_pcb_coordinates.type_point_2d; -- x/y
+		point			: in geometry.type_point; -- x/y
 		accuracy		: in type_distance;
 		log_threshold	: in type_log_level) is
 

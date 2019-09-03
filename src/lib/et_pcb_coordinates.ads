@@ -79,7 +79,7 @@ package et_pcb_coordinates is
 		type_distance	=> type_distance_total,
 		type_rotation 	=> type_rotation);
 	
-	use geometry;
+	--use geometry;
 	
 	
 	-- PAPER SIZES
@@ -102,10 +102,7 @@ package et_pcb_coordinates is
 	pcb_thickness_max : constant type_distance := 20.0;	
 	subtype type_pcb_thickness is type_distance_total range pcb_thickness_min .. pcb_thickness_max;
 	
-	subtype type_point_2d is type_point; -- this is just a renaming
--- 	type type_point_3d is tagged private;
-	
-	type type_package_position is new type_position with private;
+	type type_package_position is new geometry.type_position with private;
 
 	package_position_default : constant type_package_position;
 	placeholder_position_default : constant type_package_position;	
@@ -119,26 +116,23 @@ package et_pcb_coordinates is
 	
 	function to_terminal_position (
 	-- Composes from a given point and angle the terminal position.
-		point		: in type_point_2d;
+		point		: in geometry.type_point;
 		rotation	: in type_rotation)
-		return type_position'class;
+		return geometry.type_position'class;
 
 
 	
 	private
--- 		type type_point_3d is new type_point with record
--- 			z : type_distance := zero;
--- 		end record;
 		
-		type type_package_position is new type_position with record
+		type type_package_position is new geometry.type_position with record
 			face	: type_face := TOP;
 		end record;
 
 		package_position_default : constant type_package_position := (
-			origin_zero_rotation with face => TOP);
+			geometry.origin_zero_rotation with face => TOP);
 
 		placeholder_position_default : constant type_package_position := (
-			origin_zero_rotation with face => TOP);
+			geometry.origin_zero_rotation with face => TOP);
 
 		
 end et_pcb_coordinates;

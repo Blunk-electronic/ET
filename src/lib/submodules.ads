@@ -180,7 +180,7 @@ package submodules is
 		position_sch	: et_coordinates.type_position; -- x,y,sheet,rotation
 		--symbol			: type_netchanger_symbol; -- CS for visualisation only
 		
-		position_brd	: et_pcb_coordinates.type_point_2d; -- x,y
+		position_brd	: et_pcb_coordinates.geometry.type_point; -- x,y
 		-- in board there is no rotation because the netchanger is just a point in x/y.
 		layer			: et_pcb.type_signal_layer := et_pcb.type_signal_layer'first;
 	end record;

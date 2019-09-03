@@ -211,7 +211,7 @@ package et_kicad_pcb is
 
 	type type_circle is new et_pcb.type_circle_2d with record -- center and radius incl.
 		width 	: et_pcb.type_text_line_width;
-		point 	: et_pcb_coordinates.type_point_2d;
+		point 	: et_pcb_coordinates.geometry.type_point;
 		layer	: type_layer_abbrevation;
 	end record;
 

@@ -224,7 +224,7 @@ package body et_kicad_to_native is
 			layout_sheet_height := paper_dimension (axis => Y, paper_size => board_paper_size);
 		end prepare_layout_y_movements;
 
-		procedure move (point : in out et_pcb_coordinates.type_point_2d'class) is
+		procedure move (point : in out et_pcb_coordinates.geometry.type_point'class) is
 		-- Transposes the given point in layout from the kicad frame to the ET native frame.
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
@@ -369,9 +369,9 @@ package body et_kicad_to_native is
 						log (text => "package", level => log_threshold + 4);
 						
 						log_indentation_up;
-						log (text => before & to_string (type_point_2d (component.position)), level => log_threshold + 4);
+						log (text => before & to_string (type_point (component.position)), level => log_threshold + 4);
 						move (point => component.position);
-						log (text => now & to_string (type_point_2d (component.position)), level => log_threshold + 4);
+						log (text => now & to_string (type_point (component.position)), level => log_threshold + 4);
 						
 						log_indentation_down;
 						log_indentation_down;
@@ -642,10 +642,10 @@ package body et_kicad_to_native is
 
 						new_points : et_pcb.type_polygon_points.set;
 						
-						procedure get_point (point : in type_point_2d) is
+						procedure get_point (point : in type_point) is
 						-- Reads a corner point, copies it, moves the copy and inserts the moved
 						-- copy in a new set "new_points".
-							new_point : type_point_2d := point; -- copy given point
+							new_point : type_point := point; -- copy given point
 						begin
 							log (text => before & to_string (new_point), level => log_threshold + 4);
 							move (new_point); -- move copied point
@@ -845,10 +845,10 @@ package body et_kicad_to_native is
 					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
 
-					procedure get_point (point : in type_point_2d) is
+					procedure get_point (point : in type_point) is
 					-- Reads a corner point, copies it, moves the copy and inserts the moved
 					-- copy in a new set "new_points".
-						new_point : type_point_2d := point; -- copy given point
+						new_point : type_point := point; -- copy given point
 					begin
 						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
 						move (new_point); -- move copied point
@@ -1085,10 +1085,10 @@ package body et_kicad_to_native is
 					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
 
-					procedure get_point (point : in type_point_2d) is
+					procedure get_point (point : in type_point) is
 					-- Reads a corner point, copies it, moves the copy and inserts the moved
 					-- copy in a new set "new_points".
-						new_point : type_point_2d := point; -- copy given point
+						new_point : type_point := point; -- copy given point
 					begin
 						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
 						move (new_point); -- move copied point
@@ -1323,10 +1323,10 @@ package body et_kicad_to_native is
 					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
 
-					procedure get_point (point : in type_point_2d) is
+					procedure get_point (point : in type_point) is
 					-- Reads a corner point, copies it, moves the copy and inserts the moved
 					-- copy in a new set "new_points".
-						new_point : type_point_2d := point; -- copy given point
+						new_point : type_point := point; -- copy given point
 					begin
 						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
 						move (new_point); -- move copied point
@@ -1526,10 +1526,10 @@ package body et_kicad_to_native is
 					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
 
-					procedure get_point (point : in type_point_2d) is
+					procedure get_point (point : in type_point) is
 					-- Reads a corner point, copies it, moves the copy and inserts the moved
 					-- copy in a new set "new_points".
-						new_point : type_point_2d := point; -- copy given point
+						new_point : type_point := point; -- copy given point
 					begin
 						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
 						move (new_point); -- move copied point
@@ -1764,10 +1764,10 @@ package body et_kicad_to_native is
 					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
 
-					procedure get_point (point : in type_point_2d) is
+					procedure get_point (point : in type_point) is
 					-- Reads a corner point, copies it, moves the copy and inserts the moved
 					-- copy in a new set "new_points".
-						new_point : type_point_2d := point; -- copy given point
+						new_point : type_point := point; -- copy given point
 					begin
 						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
 						move (new_point); -- move copied point
@@ -2067,10 +2067,10 @@ package body et_kicad_to_native is
 					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
 					new_points : et_pcb.type_polygon_points.set;
 
-					procedure get_point (point : in type_point_2d) is
+					procedure get_point (point : in type_point) is
 					-- Reads a corner point, copies it, moves the copy and inserts the moved
 					-- copy in a new set "new_points".
-						new_point : type_point_2d := point; -- copy given point
+						new_point : type_point := point; -- copy given point
 					begin
 						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
 						move (new_point); -- move copied point
