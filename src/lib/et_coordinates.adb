@@ -142,7 +142,7 @@ package body et_coordinates is
 	
 	procedure move (
 		position	: in out type_position'class;
-		offset		: in type_coordinates_relative) is
+		offset		: in type_position_relative) is
 		use et_string_processing;
 		use geometry;
 	begin
@@ -175,8 +175,8 @@ package body et_coordinates is
 		point 		: in geometry.type_point'class;
 		sheet		: in type_sheet_relative;
 		rotation	: in type_rotation := geometry.zero_rotation)
-		return type_coordinates_relative is
-		p : type_coordinates_relative;
+		return type_position_relative is
+		p : type_position_relative;
 		use geometry;
 	begin
 		set (p, point);

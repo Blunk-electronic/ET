@@ -122,13 +122,13 @@ package et_coordinates is
 	
 
 	type type_position is new geometry.type_position with private;
-	type type_coordinates_relative is new geometry.type_position with private;
+	type type_position_relative is new geometry.type_position with private;
 
 	function "<" (left, right : in type_position) return boolean;
 	
 	procedure move (
 		position	: in out type_position'class;
-		offset		: in type_coordinates_relative);
+		offset		: in type_position_relative);
 	
 	function to_coordinates (
 		point 		: in geometry.type_point'class;
@@ -142,7 +142,7 @@ package et_coordinates is
 		point 		: in geometry.type_point'class;
 		sheet		: in type_sheet_relative;
 		rotation	: in type_rotation := geometry.zero_rotation)		
-		return type_coordinates_relative;
+		return type_position_relative;
 	
 	zero_position : constant type_position;
 
@@ -176,8 +176,7 @@ package et_coordinates is
 			sheet : type_sheet := type_sheet'first;
 		end record;
 
-		--type type_coordinates_relative is new type_point with record
-		type type_coordinates_relative is new geometry.type_position with record
+		type type_position_relative is new geometry.type_position with record
 			sheet : type_sheet_relative := 0;
 		end record;
 
