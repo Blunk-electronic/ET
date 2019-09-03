@@ -53,7 +53,7 @@ with et_general;
 with et_string_processing;
 with et_libraries;				--use et_libraries;
 with et_pcb_coordinates;		use et_pcb_coordinates;
-
+with et_geometry;
 
 package et_pcb is
 	use geometry;
@@ -340,6 +340,13 @@ package et_pcb is
 
 	fill_style_hatching_line_width_default	: constant type_distance := 0.3; -- the width of the lines
 	fill_style_hatching_spacing_default		: constant type_distance := 2.0; -- the space between the lines
+
+	package shapes is new et_geometry.shapes_2d (
+		type_distance	=> et_pcb_coordinates.type_distance,
+		type_rotation	=> et_pcb_coordinates.type_rotation,
+		geometry		=> et_pcb_coordinates.geometry
+		);
+
 	
 	-- LINE
 	type type_line_2d is abstract tagged record
@@ -373,7 +380,7 @@ package et_pcb is
 	-- CIRCLE
 	type type_circle_2d is abstract tagged record
 		center			: type_point;
-		radius  		: type_distance := zero;
+		radius  		: et_pcb_coordinates.type_distance := zero;
 		-- CS locked : type_locked;
 	end record;
 
@@ -393,8 +400,8 @@ package et_pcb is
 
 	type type_corner_easing is (NONE, CHAMFER, FILLET);
 	
-	polygon_easing_radius_max : constant type_distance := 1.0;
-	subtype type_polygon_easing_radius is type_distance range type_distance'first .. polygon_easing_radius_max;
+	polygon_easing_radius_max : constant et_pcb_coordinates.type_distance := 1.0;
+	subtype type_polygon_easing_radius is et_pcb_coordinates.type_distance range et_pcb_coordinates.type_distance'first .. polygon_easing_radius_max;
 
 	function to_corner_easing (easing : in string) return type_corner_easing;
 	function to_string (easing : in type_corner_easing) return string;
@@ -574,7 +581,7 @@ package et_pcb is
 
 	polygon_thermal_width_min : constant type_track_width := type_track_width'first;
 	polygon_thermal_width_max : constant type_track_width := 3.0; -- CS: adjust if nessecariy
-	subtype type_polygon_thermal_width is type_distance range polygon_thermal_width_min .. polygon_thermal_width_max;
+	subtype type_polygon_thermal_width is et_pcb_coordinates.type_distance range polygon_thermal_width_min .. polygon_thermal_width_max;
 
 	text_polygon_thermal_width : constant string (1..13) := "thermal_width";		
 	
@@ -750,9 +757,9 @@ package et_pcb is
 	end record;
 
 	
-	stop_mask_expansion_min : constant type_distance := 0.02;
-	stop_mask_expansion_max : constant type_distance := 0.2;
-	subtype type_stop_mask_expansion is type_distance range stop_mask_expansion_min .. stop_mask_expansion_max;
+	stop_mask_expansion_min : constant et_pcb_coordinates.type_distance := 0.02;
+	stop_mask_expansion_max : constant et_pcb_coordinates.type_distance := 0.2;
+	subtype type_stop_mask_expansion is et_pcb_coordinates.type_distance range stop_mask_expansion_min .. stop_mask_expansion_max;
 	-- see <https://docs.oshpark.com/tips+tricks/stop-mask-expansion/>
 
 
@@ -1125,7 +1132,7 @@ package et_pcb is
 				-- Since the hole can be of any shape we do not speak about restring.
 				-- The shape of the copper area around the hole is the same as the shape of the 
 				-- hole. No further contours possible.
-				width_inner_layers : type_distance; -- CS use subtype for reasonable range
+				width_inner_layers : et_pcb_coordinates.type_distance; -- CS use subtype for reasonable range
 				
 				case tht_hole is
 					when DRILLED =>

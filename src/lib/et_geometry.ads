@@ -223,6 +223,28 @@ package et_geometry is
 -- 		
 -- 	end geometry_operations_3d;
 
+	generic
+		type type_distance is delta <>;
+		type type_rotation is delta <>;
+		with package geometry is new geometry_operations_2d (<>);
+-- 			type_distance	=> type_distance,
+-- 			type_rotation	=> type_rotation);
+		
+	package shapes_2d is
+		use geometry;
+		
+		t : natural := 0;
+
+		-- LINE
+		type type_line_2d is abstract tagged record
+			start_point 	: type_point;
+			end_point   	: type_point;
+			-- CS locked : type_locked;
+		end record;
+
+		
+	end shapes_2d;
+	
 	
 end et_geometry;
 

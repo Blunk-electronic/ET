@@ -569,10 +569,13 @@ package body et_geometry is
 				& axis_separator
 				& to_string (rot (point));
 		end;
-
-		
 		
 	end geometry_operations_2d;
+
+	package body shapes_2d is
+		procedure dummy is begin null; end;
+	end shapes_2d;
+
 	
 end et_geometry;
 
