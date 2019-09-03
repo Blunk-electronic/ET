@@ -148,17 +148,17 @@ package et_geometry is
 
 		procedure set (
 		-- Sets the rotation of a position. (position.rotation)
-			point		: in out type_position;
+			position	: in out type_position;
 			rotation	: in type_rotation);
 		
-		function rot (point : in type_position'class) return type_rotation;
+		function rot (position : in type_position'class) return type_rotation;
 		-- Returns the rotation of the given position.
 
 		procedure rotate (
 		-- Changes the rotation of the given position by the given offset.
 		-- Preserves x/y. Changes position.rotation only.
-			point	: in out type_position'class;
-			offset	: in type_rotation);
+			position	: in out type_position'class;
+			offset		: in type_rotation);
 		
 		procedure rotate (
 		-- Rotates the given point by the given angle around the origin.

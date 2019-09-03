@@ -196,7 +196,7 @@ package body board_ops is
 						set (device.position, rotation); -- preserve x/y and face
 
 					when RELATIVE =>
-						rotate (point => device.position, offset => rotation); -- preserve x/y and face
+						rotate (position => device.position, offset => rotation); -- preserve x/y and face
 				end case;
 			end;
 			
