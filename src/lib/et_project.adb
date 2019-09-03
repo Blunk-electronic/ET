@@ -662,7 +662,7 @@ package body et_project is
 			return text; -- a 2d point has just x and y
 		else
 			-- A type_coordinates also has the sheet number:
-			return space & keyword_sheet & to_sheet (sheet (type_coordinates (pos))) & text;
+			return space & keyword_sheet & to_sheet (sheet (et_coordinates.type_position (pos))) & text;
 		end if;
 	end position;
 
@@ -677,9 +677,9 @@ package body et_project is
 
 	function position (point : et_pcb_coordinates.type_point_2d'class) return string is
 		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
 		use ada.tags;
 
-		use et_pcb_coordinates.geometry;
 		xy : constant string := space & keyword_pos_x & to_string (x (point)) 
 				& space & keyword_pos_y & to_string (y (point));
 	begin
@@ -687,14 +687,14 @@ package body et_project is
 			return xy;
 			-- position x 162.560 y 98.240
 			
-		elsif point'tag = type_position'tag then
+		elsif point'tag = et_pcb_coordinates.geometry.type_position'tag then
 			return xy 
-				& space & keyword_rotation & to_string (rot (type_position (point)));
+				& space & keyword_rotation & to_string (rot (et_pcb_coordinates.geometry.type_position (point)));
 				-- position x 162.560 y 98.240 rotation 180.00
 			
 		elsif point'tag = type_package_position'tag then
 			return xy
-				& space & keyword_rotation & to_string (rot (type_position (point)))
+				& space & keyword_rotation & to_string (rot (et_pcb_coordinates.geometry.type_position (point)))
 				& space & keyword_face & to_string (get_face (type_package_position (point)));
 				-- position x 162.560 y 98.240 rotation 180.00 face top
 		else
@@ -2995,7 +2995,7 @@ package body et_project is
 		function f (line : in type_fields_of_line; position : in positive) return string 
 			renames et_string_processing.field;
 		
-		point : type_position; -- to be returned
+		point : et_pcb_coordinates.geometry.type_position; -- to be returned
 		place : positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
@@ -7930,12 +7930,12 @@ package body et_project is
 		function to_position (
 			line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
 			from : in positive)
-			return et_coordinates.type_coordinates is
+			return et_coordinates.type_position is
 			
 			use et_coordinates;
 			use geometry;
 			
-			point : type_coordinates; -- to be returned
+			point : et_coordinates.type_position; -- to be returned
 			place : positive := from; -- the field being read from given line
 
 			-- CS: flags to detect missing sheet, x or y
@@ -8134,7 +8134,7 @@ package body et_project is
 		--device_unit_rotation	: et_coordinates.type_rotation := geometry.zero_rotation;
 		device_unit_mirror		: et_schematic.type_mirror := et_schematic.NO;
 		device_unit_name		: et_libraries.type_unit_name.bounded_string; -- GPIO_BANK_1
-		device_unit_position	: et_coordinates.type_coordinates; -- x,y,sheet,rotation
+		device_unit_position	: et_coordinates.type_position; -- x,y,sheet,rotation
 
 		-- assembly variants
 		assembly_variant_name			: et_general.type_variant_name.bounded_string; -- low_cost

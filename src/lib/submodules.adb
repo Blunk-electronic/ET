@@ -126,7 +126,7 @@ package body submodules is
 	procedure move_ports (
 	-- Moves the given ports by the given offset.
 		ports	: in out type_submodule_ports.map; -- the portlist
-		offset	: in et_coordinates.type_coordinates) -- the offset (only x/y matters)
+		offset	: in et_coordinates.type_position) -- the offset (only x/y matters)
 		is
 
 		procedure move (

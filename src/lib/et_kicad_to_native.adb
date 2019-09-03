@@ -2364,8 +2364,8 @@ package body et_kicad_to_native is
 		point 		: in kicad_coordinates.type_coordinates;
 		rotation	: in et_coordinates.type_rotation := et_coordinates.geometry.zero_rotation)
 	-- Converts kicad schematic coordinates to native schematic coordinates.
-		return et_coordinates.type_coordinates is
-		point_out : et_coordinates.type_coordinates;
+		return et_coordinates.type_position is
+		point_out : et_coordinates.type_position;
 	begin
 		point_out := et_coordinates.to_coordinates (
 			point		=> point, -- x,y

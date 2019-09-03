@@ -73,7 +73,7 @@ package et_schematic is
 
 	-- A text/note in the schematic:
 	type type_text is new et_libraries.type_text_basic with record
-		coordinates		: et_coordinates.type_coordinates; -- CS rename to position
+		coordinates		: et_coordinates.type_position; -- CS rename to position
 		content			: et_libraries.type_text_content.bounded_string;
 	end record;
 
@@ -102,7 +102,7 @@ package et_schematic is
 	-- A unit is a subsection of a device.
 	-- Some placeholders of a unit are available when the device appears in both schematic and layout:
 	type type_unit (appearance : type_appearance_schematic) is record
-		position	: et_coordinates.type_coordinates; -- incl. rotation and sheet number
+		position	: et_coordinates.type_position; -- incl. rotation and sheet number
 		mirror		: type_mirror := NO;
 		case appearance is
 			when et_libraries.SCH => null; -- CS
@@ -125,7 +125,7 @@ package et_schematic is
 	package type_unit_positions is new ordered_maps (
 		key_type		=> et_libraries.type_unit_name.bounded_string, -- A, B, IO_BANK_1
 		"<" 			=> et_libraries.type_unit_name."<",
-		element_type	=> et_coordinates.type_coordinates, -- sheet, x, y
+		element_type	=> et_coordinates.type_position, -- sheet, x, y
 		"="				=> et_coordinates."=");
 
 	function unit_positions (units : in type_units.map) return type_unit_positions.map;
@@ -282,7 +282,7 @@ package et_schematic is
 	type type_strand is record
 	-- NOTE: ET does not provide a name for a strand.
 	-- As a strand is part of a net, there is no need for individual strand names.
-		position	: et_coordinates.type_coordinates; -- sheet and lowest x/y, rotation doesn't matter -> always zero
+		position	: et_coordinates.type_position; -- sheet and lowest x/y, rotation doesn't matter -> always zero
 		segments	: type_net_segments.list;
 	end record;
 

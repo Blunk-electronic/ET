@@ -66,7 +66,7 @@ package numbering is
 
 
 	package type_devices is new ordered_maps (
-		key_type		=> et_coordinates.type_coordinates, -- sheet/x/y
+		key_type		=> et_coordinates.type_position, -- sheet/x/y
 		"<"				=> et_coordinates."<",
 		element_type	=> type_device);
 

@@ -144,7 +144,7 @@ package body schematic_ops is
 	
 	procedure dragging_not_possible (
 		port 		: in string;
-		position	: in et_coordinates.type_coordinates) is
+		position	: in et_coordinates.type_position) is
 	begin
 		log (ERROR, "port " & enclose_in_quotes (port) &
 			 " is directly connected with other ports at" &
@@ -510,7 +510,7 @@ package body schematic_ops is
 	procedure move_ports ( -- CS move to et_libraries
 	-- Moves the given unit ports by given offset.
 		ports	: in out et_libraries.type_ports.map; -- the portlist
-		offset	: in et_coordinates.type_coordinates) -- the offset (only x/y matters)
+		offset	: in et_coordinates.type_position) -- the offset (only x/y matters)
 		is
 		use et_libraries.type_ports;
 
@@ -538,9 +538,9 @@ package body schematic_ops is
 		device_name		: in type_device_name; -- IC34
 		port_name		: in type_port_name.bounded_string; -- CE
 		log_threshold	: in type_log_level)
-		return et_coordinates.type_coordinates is
+		return et_coordinates.type_position is
 
-		port_position : et_coordinates.type_coordinates; -- to be returned		
+		port_position : et_coordinates.type_position; -- to be returned		
 		
 		module_cursor : type_modules.cursor; -- points to the module being inquired
 
@@ -549,7 +549,7 @@ package body schematic_ops is
 			module		: in type_module) is
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor;
-			unit_position : et_coordinates.type_coordinates;
+			unit_position : et_coordinates.type_position;
 
 			procedure query_units (
 				device_name	: in type_device_name;
@@ -640,9 +640,9 @@ package body schematic_ops is
 		submod_name		: in et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
 		port_name		: in type_net_name.bounded_string; -- RESET
 		log_threshold	: in type_log_level)
-		return et_coordinates.type_coordinates is
+		return et_coordinates.type_position is
 
-		port_position : et_coordinates.type_coordinates; -- to be returned		
+		port_position : et_coordinates.type_position; -- to be returned		
 		
 		module_cursor : type_modules.cursor; -- points to the module being inquired
 
@@ -652,7 +652,7 @@ package body schematic_ops is
 			use submodules;			
 			use type_submodules;
 			submod_cursor : type_submodules.cursor;
-			submod_position : et_coordinates.type_coordinates;
+			submod_position : et_coordinates.type_position;
 
 			procedure query_ports (
 				submod_name	: in et_general.type_module_instance_name.bounded_string;
@@ -726,10 +726,10 @@ package body schematic_ops is
 		index			: in submodules.type_netchanger_id; -- 1,2,3,...
 		port			: in submodules.type_netchanger_port_name; -- SLAVE/MASTER
 		log_threshold	: in type_log_level)
-		return et_coordinates.type_coordinates is
+		return et_coordinates.type_position is
 
 		use submodules;
-		port_position : et_coordinates.type_coordinates; -- to be returned		
+		port_position : et_coordinates.type_position; -- to be returned		
 		
 		module_cursor : type_modules.cursor; -- points to the module being inquired
 
@@ -738,7 +738,7 @@ package body schematic_ops is
 			module		: in type_module) is
 			use type_netchangers;
 			nc_cursor : type_netchangers.cursor;
-			nc_position : et_coordinates.type_coordinates;
+			nc_position : et_coordinates.type_position;
 			port_xy : type_point;
 		begin -- query_netchangers
 			if contains (module.netchangers, index) then
@@ -1160,7 +1160,7 @@ package body schematic_ops is
 			-- There will be only one unit in this container.
 			position_of_unit_old : type_unit_positions.map;
 
-			position_of_unit_new : et_coordinates.type_coordinates;
+			position_of_unit_new : et_coordinates.type_position;
 
 			ports : et_libraries.type_ports.map;
 
@@ -1471,7 +1471,7 @@ package body schematic_ops is
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor;
 
-			position_of_unit : et_coordinates.type_coordinates;
+			position_of_unit : et_coordinates.type_position;
 			rotation_before : et_coordinates.type_rotation;
 
 			ports_lib, ports_scratch : et_libraries.type_ports.map;
@@ -1896,7 +1896,7 @@ package body schematic_ops is
 	function net_segment_at_place (
 	-- Returns true if at given place a net segment starts or ends.
 		module_cursor	: in type_modules.cursor;
-		place			: in et_coordinates.type_coordinates)
+		place			: in et_coordinates.type_position)
 		return boolean is
 
 		-- This flag goes true once a segment has been found.
@@ -2000,14 +2000,14 @@ package body schematic_ops is
 		-- Tests whether the given unit ports at their individual location are movable. 
 		-- The criteria for movement are: no netchanger port, no device port, no submodule ports there.
 		-- The only port allowed at a individual drag point is the port-to-be-dragged itself.
-			location 	: in et_coordinates.type_coordinates; -- only sheet number matters
+			location 	: in et_coordinates.type_position; -- only sheet number matters
 			unit_ports	: in et_libraries.type_ports.map)
 			is
 			use et_libraries.type_ports;
 			port_cursor : et_libraries.type_ports.cursor := unit_ports.first;
 
 			procedure test_point (port_cursor : in et_libraries.type_ports.cursor) is
-				point : et_coordinates.type_coordinates; -- the point
+				point : et_coordinates.type_position; -- the point
 				ports : type_ports;
 				port : et_schematic.type_port_device;
 				use type_ports_submodule;
@@ -2114,8 +2114,8 @@ package body schematic_ops is
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
 			--position_of_unit_old : type_unit_positions.map;
-			position_of_unit_old : et_coordinates.type_coordinates;	
-			position_of_unit_new : et_coordinates.type_coordinates;
+			position_of_unit_old : et_coordinates.type_position;	
+			position_of_unit_new : et_coordinates.type_position;
 
 			ports, ports_old, ports_new : et_libraries.type_ports.map;
 
@@ -2897,7 +2897,7 @@ package body schematic_ops is
 	-- is split in two new segments with the junction between them.
 	-- If there is no net segment at the given position, no junction is placed and warning issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		place			: in et_coordinates.type_position; -- sheet/x/y, rotation doesn't matter
 		log_threshold	: in type_log_level) is
 		use et_coordinates;
 		
@@ -3515,7 +3515,7 @@ package body schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in et_libraries.type_component_variant_name.bounded_string; -- N, D, S_0805
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y,rotation
+		place			: in et_coordinates.type_position; -- sheet/x/y,rotation
 		log_threshold	: in type_log_level) is
 
 		use et_coordinates;
@@ -3797,7 +3797,7 @@ package body schematic_ops is
 	-- at the given destination in the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		destination		: in et_coordinates.type_coordinates; -- sheet/x/y/rotation
+		destination		: in et_coordinates.type_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module being modified
@@ -4047,7 +4047,7 @@ package body schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in type_unit_name.bounded_string; -- A, B, IO_BANK_2
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y/rotation
+		place			: in et_coordinates.type_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level) is
 
 		use et_coordinates;
@@ -4480,7 +4480,7 @@ package body schematic_ops is
 	procedure add_netchanger (
 	-- Adds a netchanger to the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y/rotation
+		place			: in et_coordinates.type_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -4689,7 +4689,7 @@ package body schematic_ops is
 			use et_coordinates;
 			use type_netchangers;
 			cursor : type_netchangers.cursor;
-			location : et_coordinates.type_coordinates;
+			location : et_coordinates.type_position;
 		begin -- query_netchangers
 
 			-- locate given netchanger
@@ -4768,7 +4768,7 @@ package body schematic_ops is
 			use et_coordinates;
 			use type_netchangers;
 			cursor : type_netchangers.cursor;
-			location : et_coordinates.type_coordinates;
+			location : et_coordinates.type_position;
 			ports : type_netchanger_ports;
 			
 			procedure move (
@@ -5079,12 +5079,12 @@ package body schematic_ops is
 		-- are movable. 
 		-- The criteria for movement are: no device, no submodule ports there.
 		-- The ports allowed here are the ports-to-be-dragged itself.
-			location 			: in et_coordinates.type_coordinates; -- only sheet number matters
+			location 			: in et_coordinates.type_position; -- only sheet number matters
 			netchanger_ports	: in submodules.type_netchanger_ports) -- x/y of master and slave port
 			is			
 
 			procedure test_point (
-				point		: in et_coordinates.type_coordinates; -- sheet/x/y -- the point to be probed
+				point		: in et_coordinates.type_position; -- sheet/x/y -- the point to be probed
 				port_name	: in submodules.type_netchanger_port_name) -- master/slave
 				is 
 				use netlists;
@@ -5166,7 +5166,7 @@ package body schematic_ops is
 			use et_coordinates;
 			use type_netchangers;
 			cursor : type_netchangers.cursor;
-			location : et_coordinates.type_coordinates;
+			location : et_coordinates.type_position;
 			ports_old : type_netchanger_ports;
 			ports_new : type_netchanger_ports;
 			
@@ -5292,7 +5292,7 @@ package body schematic_ops is
 			use et_coordinates;
 			use type_netchangers;
 			cursor : type_netchangers.cursor;
-			location : et_coordinates.type_coordinates;
+			location : et_coordinates.type_position;
 			rotation : et_coordinates.type_rotation;
 			ports_old : type_netchanger_ports;
 			ports_new : type_netchanger_ports;
@@ -5427,7 +5427,7 @@ package body schematic_ops is
 		net_name_before	: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		net_name_after	: in et_general.type_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
 		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -5706,7 +5706,7 @@ package body schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -5875,7 +5875,7 @@ package body schematic_ops is
 	-- Deletes a segment of a net.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -6012,7 +6012,7 @@ package body schematic_ops is
 	function ports_at_place (
 	-- Returns lists of device, netchanger and submodule ports at the given place.
 		module_name		: in type_module_name.bounded_string;
-		place			: in et_coordinates.type_coordinates;
+		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)
 		return type_ports is
 		ports : type_ports; -- to be returned
@@ -6031,7 +6031,7 @@ package body schematic_ops is
 				procedure query_units (unit_cursor : in et_schematic.type_units.cursor) is
 					use et_schematic.type_units;
 					use et_libraries.type_unit_name;
-					unit_position : et_coordinates.type_coordinates;
+					unit_position : et_coordinates.type_position;
 -- 					unit_rotation : et_coordinates.type_rotation;
 					ports : et_libraries.type_ports.map;
 
@@ -6099,7 +6099,7 @@ package body schematic_ops is
 			end query_devices;
 
 			procedure query_submodules (submodule_cursor : in submodules.type_submodules.cursor) is
-				submodule_position : et_coordinates.type_coordinates;
+				submodule_position : et_coordinates.type_position;
 				ports : submodules.type_submodule_ports.map;
 
 				procedure query_port (port_cursor : in submodules.type_submodule_ports.cursor) is
@@ -6147,7 +6147,7 @@ package body schematic_ops is
 			end query_submodules;
 
 			procedure query_netchangers (netchanger_cursor : in submodules.type_netchangers.cursor) is
-				netchanger_position : et_coordinates.type_coordinates;
+				netchanger_position : et_coordinates.type_position;
 				ports : submodules.type_netchanger_ports;
 				use netlists;
 			begin -- query_netchangers
@@ -6235,7 +6235,7 @@ package body schematic_ops is
 	-- Place adresses the segment within the schematic. 
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y, this addresses the segment
+		place			: in et_coordinates.type_position; -- sheet/x/y, this addresses the segment
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y, the new position 
 		log_threshold	: in type_log_level) is
@@ -6260,7 +6260,7 @@ package body schematic_ops is
 			result : boolean := true; -- to be returned. true means the zone is movable.
 			-- Goes false once a port has been found in the given zone.
 
-			point : et_coordinates.type_coordinates;
+			point : et_coordinates.type_position;
 
 			procedure search_ports is
 			-- Searches ports of devices, netchangers and submodules that sit on
@@ -6728,7 +6728,7 @@ package body schematic_ops is
 	function nets_at_place (
 	-- Returns lists of nets that cross the given place.
 		module_name		: in type_module_name.bounded_string;
-		place			: in et_coordinates.type_coordinates;
+		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)
 		return type_net_names.list is
 		nets : type_net_names.list; -- to be returned
@@ -6829,7 +6829,7 @@ package body schematic_ops is
 	--  placed where the new segment meets the existing net.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		start_point		: in et_coordinates.type_coordinates; -- sheet/x/y
+		start_point		: in et_coordinates.type_position; -- sheet/x/y
 		end_point		: in type_point; -- x/y
 		log_threshold	: in type_log_level) is
 
@@ -6838,11 +6838,11 @@ package body schematic_ops is
 		use et_schematic.type_nets;
 		net_cursor : type_nets.cursor; -- points to the net
 		segment : type_net_segment;
-		point : et_coordinates.type_coordinates;
+		point : et_coordinates.type_position;
 
 		type type_junction is record
 			required	: boolean := false;
-			place		: et_coordinates.type_coordinates;
+			place		: et_coordinates.type_position;
 		end record;
 
 		junction_at_start_point : type_junction;
@@ -6879,7 +6879,7 @@ package body schematic_ops is
 			strand : type_strand;
 			net : type_net;
 
-			procedure evaluate_net_names (point : in et_coordinates.type_coordinates) is 
+			procedure evaluate_net_names (point : in et_coordinates.type_position) is 
 			-- Issues error message and raises constraint_error if net_names contains
 			-- any foreign net names.
 			begin -- evaluate_net_names
@@ -6974,7 +6974,7 @@ package body schematic_ops is
 
 			attach_to_strand : boolean := false;
 
-			procedure evaluate_net_names (point : in et_coordinates.type_coordinates) is 
+			procedure evaluate_net_names (point : in et_coordinates.type_position) is 
 			-- Issues error message and raises constraint_error if net_names contains
 			-- any net names but the give net_name.
 			-- If net_names contains the given net_name, then the flag attach_to_strand
@@ -7018,7 +7018,7 @@ package body schematic_ops is
 				end if;
 			end dead_end;
 			
-			function which_strand (place : in et_coordinates.type_coordinates) 
+			function which_strand (place : in et_coordinates.type_position) 
 			-- Returns a cursor to the strand at place and a flag whether to place
 			-- a junction at the given place.
 				return type_which_strand is
@@ -7450,7 +7450,7 @@ package body schematic_ops is
 	procedure place_net_label (
 	-- Places a label next to a segment at position.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		segment_position: in et_coordinates.type_coordinates; -- sheet/x/y
+		segment_position: in et_coordinates.type_position; -- sheet/x/y
 		label_position	: in type_point; -- x/y
 		rotation		: in et_coordinates.type_rotation; -- 0 / 90 degree
 		appearance 		: in type_net_label_appearance; -- simple/tag label
@@ -7613,7 +7613,7 @@ package body schematic_ops is
 	procedure delete_net_label (
 	-- Deletes a label.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		position		: in et_coordinates.type_coordinates; -- sheet/x/y
+		position		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -7727,7 +7727,7 @@ package body schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		file			: in submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		position		: in et_coordinates.type_coordinates; -- sheet, lower left corner x/y 
+		position		: in et_coordinates.type_position; -- sheet, lower left corner x/y 
 		size			: in submodules.type_submodule_size; -- the size of the box in x and y
 		log_threshold	: in type_log_level) is
 
@@ -7825,7 +7825,7 @@ package body schematic_ops is
 		module			: in type_modules.cursor;		-- the module
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC
 		port			: in et_general.type_net_name.bounded_string; -- clock_output
-		position		: in et_coordinates.type_coordinates; -- the port position
+		position		: in et_coordinates.type_position; -- the port position
 		log_threshold	: in type_log_level) is
 
 		procedure query_nets (
@@ -7969,10 +7969,10 @@ package body schematic_ops is
 		use submodules;
 
 		-- The place where the box is in the parent module:
-		submodule_position : et_coordinates.type_coordinates;
+		submodule_position : et_coordinates.type_position;
 
 		-- Handling the absolute position of the port requires this variable:
-		port_position : et_coordinates.type_coordinates;
+		port_position : et_coordinates.type_position;
 		
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
@@ -8106,7 +8106,7 @@ package body schematic_ops is
 	-- Removes a port from the net segments.
 		module			: in type_modules.cursor;		-- the module
 		port			: in et_schematic.type_port_submodule; -- OSC1 / clock_output
-		position		: in et_coordinates.type_coordinates; -- the submodule position (only sheet matters)
+		position		: in et_coordinates.type_position; -- the submodule position (only sheet matters)
 		log_threshold	: in type_log_level) is
 
 		procedure query_nets (
@@ -8232,7 +8232,7 @@ package body schematic_ops is
 		use submodules;
 
 		-- The place where the box is in the parent module:
-		submodule_position : et_coordinates.type_coordinates;
+		submodule_position : et_coordinates.type_position;
 		
 		procedure query_submodules (
 			module_name	: in type_module_name.bounded_string;
@@ -8320,10 +8320,10 @@ package body schematic_ops is
 		use submodules;
 
 		-- The place where the box is in the parent module:
-		submodule_position : et_coordinates.type_coordinates;
+		submodule_position : et_coordinates.type_position;
 
 		-- Handling the absolute position of the port requires this variable:
-		port_position : et_coordinates.type_coordinates;
+		port_position : et_coordinates.type_position;
 		
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
@@ -8483,8 +8483,8 @@ package body schematic_ops is
 	-- lands between start and end point.
 		module			: in type_modules.cursor;				-- the module
 		port			: in et_schematic.type_port_submodule;	-- instance and port name
-		pos_before		: in et_coordinates.type_coordinates;	-- the old port position
-		pos_after		: in et_coordinates.type_coordinates;	-- the new port position
+		pos_before		: in et_coordinates.type_position;	-- the old port position
+		pos_after		: in et_coordinates.type_position;	-- the new port position
 		log_threshold	: in type_log_level) is
 
 		procedure query_nets (
@@ -8641,7 +8641,7 @@ package body schematic_ops is
 		module_cursor	: in type_modules.cursor;
 		instance		: in et_general.type_module_instance_name.bounded_string;
 		port_name		: in et_general.type_net_name.bounded_string;
-		point 			: in et_coordinates.type_coordinates;
+		point 			: in et_coordinates.type_position;
 		log_threshold	: in et_string_processing.type_log_level) is 
 		ports : type_ports;
 		port : et_schematic.type_port_submodule;
@@ -8714,11 +8714,11 @@ package body schematic_ops is
 		use submodules;
 
 		-- The place where the box is in the parent module:
-		submodule_position : et_coordinates.type_coordinates;
+		submodule_position : et_coordinates.type_position;
 
 		-- Handling the absolute position of the port requires these variables:
-		port_position_before : et_coordinates.type_coordinates;
-		port_position_after  : et_coordinates.type_coordinates;
+		port_position_before : et_coordinates.type_position;
+		port_position_after  : et_coordinates.type_position;
 		
 		module_cursor : type_modules.cursor; -- points to the module being modified
 	
@@ -8885,7 +8885,7 @@ package body schematic_ops is
 	-- Deletes all references to the given submodule in the nets.
 		module_cursor	: in type_modules.cursor;					-- the module
 		instance		: in et_general.type_module_instance_name.bounded_string; -- the submodule instance
-		position		: in et_coordinates.type_coordinates; 		-- the location in the schematic (only sheet matters)
+		position		: in et_coordinates.type_position; 		-- the location in the schematic (only sheet matters)
 		log_threshold	: in type_log_level) is
 
 		procedure query_nets (
@@ -8995,7 +8995,7 @@ package body schematic_ops is
 		use submodules;
 
 		-- The place where the box is in the parent module:
-		submodule_position : et_coordinates.type_coordinates;
+		submodule_position : et_coordinates.type_position;
 		
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
@@ -9057,8 +9057,8 @@ package body schematic_ops is
 		use submodules;
 
 		-- The place where the box is in the parent module BEFORE and AFTER the move:
-		submodule_position_before : et_coordinates.type_coordinates;
-		submodule_position_after : et_coordinates.type_coordinates;		
+		submodule_position_before : et_coordinates.type_position;
+		submodule_position_after : et_coordinates.type_position;		
 		
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
@@ -9102,7 +9102,7 @@ package body schematic_ops is
 			-- from the submodule_position_after (or submodule_position_before).
 				use type_submodule_ports;
 				port_cursor : type_submodule_ports.cursor := ports.first;
-				position : et_coordinates.type_coordinates;
+				position : et_coordinates.type_position;
 			begin
 				while port_cursor /= type_submodule_ports.no_element loop
 
@@ -9212,8 +9212,8 @@ package body schematic_ops is
 		-- This type describes a submodule port before and after the drag operation:
 		type type_drag is record
 			name	: et_general.type_net_name.bounded_string;
-			before	: et_coordinates.type_coordinates;
-			after 	: et_coordinates.type_coordinates;
+			before	: et_coordinates.type_position;
+			after 	: et_coordinates.type_position;
 		end record;
 
 		-- Since there are lots of submodule ports we store the drag points in a simple list:
@@ -9407,7 +9407,7 @@ package body schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance_origin	: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		instance_new	: in et_general.type_module_instance_name.bounded_string; -- CLOCK_GENERATOR
-		destination		: in et_coordinates.type_coordinates; -- sheet/x/y
+		destination		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module being modified
@@ -9430,7 +9430,7 @@ package body schematic_ops is
 			-- from the submodule position.
 				use type_submodule_ports;
 				port_cursor : type_submodule_ports.cursor := ports.first;
-				position : et_coordinates.type_coordinates;
+				position : et_coordinates.type_position;
 			begin
 				while port_cursor /= type_submodule_ports.no_element loop
 
@@ -9547,7 +9547,7 @@ package body schematic_ops is
 			-- from the submodule position.
 				use type_submodule_ports;
 				port_cursor : type_submodule_ports.cursor := submodule_old.ports.first;
-				position : et_coordinates.type_coordinates;
+				position : et_coordinates.type_position;
 			begin
 				while port_cursor /= type_submodule_ports.no_element loop
 
@@ -10462,7 +10462,7 @@ package body schematic_ops is
 
 				procedure sort (unit_cursor : in et_schematic.type_units.cursor) is 
 					unit_name : type_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
-					unit_position : et_coordinates.type_coordinates := element (unit_cursor).position;
+					unit_position : et_coordinates.type_position := element (unit_cursor).position;
 					inserted : boolean := false;
 					cursor_sort : numbering.type_devices.cursor;
 				begin -- sort
@@ -10601,7 +10601,7 @@ package body schematic_ops is
 				cursor_done : numbering.type_devices.cursor := cursor;
 
 				procedure set_done (
-					coordinates : in et_coordinates.type_coordinates;
+					coordinates : in et_coordinates.type_position;
 					device		: in out numbering.type_device) is
 				begin
 					device.done := true;

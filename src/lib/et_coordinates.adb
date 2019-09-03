@@ -63,9 +63,9 @@ package body et_coordinates is
 		exception 
 			when constraint_error => 
 				log (ERROR, "Rotation " & angle & " outside range" & 
-					 to_string (type_rotation'first) &
+					 geometry.to_string (type_rotation'first) &
 					 " .." & 
-					 to_string (type_rotation'last) &
+					 geometry.to_string (type_rotation'last) &
 					 " (must be an integer) !",
 					 console => true
 					);
@@ -74,7 +74,7 @@ package body et_coordinates is
 			-- CS check for multiple of 90 degree
 			when system.assertions.assert_failure =>
 				log (ERROR, "Rotation " & angle & " is not a multiple of" &
-					 to_string (rotation => type_rotation'small) & " !",
+					 geometry.to_string (rotation => type_rotation'small) & " !",
 					 console => true
 					);
 				raise;
@@ -99,8 +99,9 @@ package body et_coordinates is
 		return type_sheet_relative'value (sheet);
 	end;
 
-	function "<" (left, right : in type_coordinates) return boolean is
+	function "<" (left, right : in type_position) return boolean is
 		result : boolean := false;
+		use et_coordinates.geometry;
 	begin
 		if left.sheet < right.sheet then
 			result := true;
@@ -140,7 +141,7 @@ package body et_coordinates is
 	end;
 	
 	procedure move (
-		position	: in out type_coordinates'class;
+		position	: in out type_position'class;
 		offset		: in type_coordinates_relative) is
 		use et_string_processing;
 		use geometry;
@@ -156,12 +157,13 @@ package body et_coordinates is
 	end;
 	
 	function to_coordinates (
-		point 		: in type_point'class;
+		point 		: in geometry.type_point'class;
 		sheet		: in type_sheet;
-		rotation	: in type_rotation := zero_rotation)
-		return type_coordinates is
+		rotation	: in type_rotation := geometry.zero_rotation)
+		return type_position is
 
-		p : type_coordinates;
+		use geometry;
+		p : type_position;
 	begin
 		set (p, point);
 		set_sheet (p, sheet);
@@ -170,11 +172,12 @@ package body et_coordinates is
 	end;
 
 	function to_coordinates_relative (
-		point 		: in type_point'class;
+		point 		: in geometry.type_point'class;
 		sheet		: in type_sheet_relative;
-		rotation	: in type_rotation := zero_rotation)
+		rotation	: in type_rotation := geometry.zero_rotation)
 		return type_coordinates_relative is
 		p : type_coordinates_relative;
+		use geometry;
 	begin
 		set (p, point);
 		p.sheet := sheet;
@@ -182,8 +185,9 @@ package body et_coordinates is
 		return p;
 	end;
 	
-	function to_string (position : in type_coordinates) return string is
+	function to_string (position : in type_position) return string is
 		use et_string_processing;
+		use geometry;
 
 		coordinates_preamble_sheet : constant string := " pos "
 			& "(sheet"
@@ -201,12 +205,12 @@ package body et_coordinates is
 			& to_string (y (position));
 	end to_string;
 
-	function sheet (position : in type_coordinates) return type_sheet is
+	function sheet (position : in type_position) return type_sheet is
 	begin
 		return position.sheet;
 	end sheet;
 
-	procedure set_sheet (position : in out type_coordinates; sheet : in type_sheet) is
+	procedure set_sheet (position : in out type_position; sheet : in type_sheet) is
 	-- Sets the sheet number in given position.
 	begin
 		position.sheet := sheet;

@@ -121,13 +121,13 @@ package submodules is
 	procedure move_ports (
 	-- Moves the given submodule ports by the given offset.
 		ports	: in out type_submodule_ports.map; -- the portlist
-		offset	: in et_coordinates.type_coordinates); -- the offset (only x/y matters)
+		offset	: in et_coordinates.type_position); -- the offset (only x/y matters)
 
 	-- THIS IS THE GRAPHICAL REPRESENTATION OF A SUBMODULE ->
 	-- THE RECTANGULAR BOX AT THE SHEET WHERE THE SUBMODULE IS INSTANTIATED.
 	type type_submodule is record
 		file				: type_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
-		position		    : et_coordinates.type_coordinates; -- the lower left corner
+		position		    : et_coordinates.type_position; -- the lower left corner
 		size				: type_submodule_size; -- CS default ?
 		position_in_board	: et_pcb_coordinates.geometry.type_position := et_pcb_coordinates.geometry.origin_zero_rotation;
 		view_mode			: type_submodule_view_mode := ORIGIN;
@@ -177,7 +177,7 @@ package submodules is
 	end record;
 
 	type type_netchanger is record
-		position_sch	: et_coordinates.type_coordinates; -- x,y,sheet,rotation
+		position_sch	: et_coordinates.type_position; -- x,y,sheet,rotation
 		--symbol			: type_netchanger_symbol; -- CS for visualisation only
 		
 		position_brd	: et_pcb_coordinates.type_point_2d; -- x,y

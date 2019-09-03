@@ -72,7 +72,7 @@ package et_coordinates is
 	package geometry is new et_geometry.geometry_operations_2d (
 		type_distance	=> type_distance,
 		type_rotation	=> type_rotation);
-	use geometry;
+	--use geometry;
 	
 	subtype type_catch_zone is type_distance range 0.0 .. 10.0;
 	catch_zone : type_catch_zone := 2.0; -- CS: should be a system setting in the future
@@ -121,37 +121,37 @@ package et_coordinates is
 	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
 	
 
-	type type_coordinates is new type_position with private;
-	type type_coordinates_relative is new type_position with private;
+	type type_position is new geometry.type_position with private;
+	type type_coordinates_relative is new geometry.type_position with private;
 
-	function "<" (left, right : in type_coordinates) return boolean;
+	function "<" (left, right : in type_position) return boolean;
 	
 	procedure move (
-		position	: in out type_coordinates'class;
+		position	: in out type_position'class;
 		offset		: in type_coordinates_relative);
 	
 	function to_coordinates (
-		point 		: in type_point'class;
+		point 		: in geometry.type_point'class;
 		sheet		: in type_sheet;
-		rotation	: in type_rotation := zero_rotation)
-		return type_coordinates;
+		rotation	: in type_rotation := geometry.zero_rotation)
+		return type_position;
 
 
 
 	function to_coordinates_relative (
-		point 		: in type_point'class;
+		point 		: in geometry.type_point'class;
 		sheet		: in type_sheet_relative;
-		rotation	: in type_rotation := zero_rotation)		
+		rotation	: in type_rotation := geometry.zero_rotation)		
 		return type_coordinates_relative;
 	
-	zero_position : constant type_coordinates;
+	zero_position : constant type_position;
 
 
-	function to_string (position : in type_coordinates) return string;
+	function to_string (position : in type_position) return string;
 	
-	function sheet (position : in type_coordinates) return type_sheet;
+	function sheet (position : in type_position) return type_sheet;
 
-	procedure set_sheet (position : in out type_coordinates; sheet : in type_sheet);
+	procedure set_sheet (position : in out type_position; sheet : in type_sheet);
 	-- Sets the sheet number in given position.
 
 	-- PAPER SIZES
@@ -172,17 +172,17 @@ package et_coordinates is
 	
 	private 
 
-		type type_coordinates is new type_position with record
+		type type_position is new geometry.type_position with record
 			sheet : type_sheet := type_sheet'first;
 		end record;
 
 		--type type_coordinates_relative is new type_point with record
-		type type_coordinates_relative is new type_position with record
+		type type_coordinates_relative is new geometry.type_position with record
 			sheet : type_sheet_relative := 0;
 		end record;
 
-		zero_position : constant type_coordinates := (
-			origin_zero_rotation with sheet => type_sheet'first);
+		zero_position : constant type_position := (
+			geometry.origin_zero_rotation with sheet => type_sheet'first);
 		
 end et_coordinates;
 

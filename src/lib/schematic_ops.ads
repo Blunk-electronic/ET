@@ -215,7 +215,7 @@ package schematic_ops is
 	-- is split in two new segments with the junction between them.
 	-- If there is no net segment at the given position, no junction is placed and warning issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		place			: in et_coordinates.type_position; -- sheet/x/y, rotation doesn't matter
 		log_threshold	: in type_log_level);
 
 	function next_device_name (
@@ -231,7 +231,7 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in et_libraries.type_component_variant_name.bounded_string; -- N, D, S_0805
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y/rotation
+		place			: in et_coordinates.type_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level);
 
 	procedure copy_device (
@@ -239,7 +239,7 @@ package schematic_ops is
 	-- at the given destination in the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		destination		: in et_coordinates.type_coordinates; -- sheet/x/y
+		destination		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 	
 	procedure invoke_unit (
@@ -247,13 +247,13 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in type_unit_name.bounded_string; -- A, B, IO_BANK_2
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
 	procedure add_netchanger (
 	-- Adds a netchanger to the schematic.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
 	procedure delete_netchanger (
@@ -309,7 +309,7 @@ package schematic_ops is
 		net_name_before	: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		net_name_after	: in et_general.type_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
 		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
 	procedure delete_net (
@@ -321,14 +321,14 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
 	procedure delete_segment (
 	-- Deletes a segment of a net.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y
+		place			: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
 	-- If ports at a certain position in a schematic are inquired this type is required:
@@ -341,7 +341,7 @@ package schematic_ops is
 	function ports_at_place (
 	-- Returns lists of device, netchanger and submodule ports at the given place.
 		module_name		: in type_module_name.bounded_string;
-		place			: in et_coordinates.type_coordinates;
+		place			: in et_coordinates.type_position;
 		log_threshold	: in type_log_level)		
 		return type_ports;	
 	
@@ -350,7 +350,7 @@ package schematic_ops is
 	-- Place adresses the segment within the schematic. 
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		place			: in et_coordinates.type_coordinates; -- sheet/x/y, this addresses the segment
+		place			: in et_coordinates.type_position; -- sheet/x/y, this addresses the segment
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y, the new position 
 		log_threshold	: in type_log_level);
@@ -370,7 +370,7 @@ package schematic_ops is
 	--  by start_point and end_point) will be added to the existing net.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in et_general.type_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		start_point		: in et_coordinates.type_coordinates; -- sheet/x/y
+		start_point		: in et_coordinates.type_position; -- sheet/x/y
 		end_point		: in type_point; -- x/y
 		log_threshold	: in type_log_level);
 
@@ -384,7 +384,7 @@ package schematic_ops is
 	procedure place_net_label (
 	-- Places a label next to a segment at position.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		segment_position: in et_coordinates.type_coordinates; -- sheet/x/y
+		segment_position: in et_coordinates.type_position; -- sheet/x/y
 		label_position	: in type_point; -- x/y
 		rotation		: in et_coordinates.type_rotation; -- 0 / 90 degree
 		appearance 		: in type_net_label_appearance; -- simple/tag label		
@@ -394,7 +394,7 @@ package schematic_ops is
 	procedure delete_net_label (
 	-- Deletes a label.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		position		: in et_coordinates.type_coordinates; -- sheet/x/y
+		position		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 	
 	procedure add_submodule (
@@ -402,7 +402,7 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		file			: in submodules.type_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		position		: in et_coordinates.type_coordinates; -- sheet, lower left corner x/y 
+		position		: in et_coordinates.type_position; -- sheet, lower left corner x/y 
 		size			: in submodules.type_submodule_size; -- the size of the box in x and y
 		log_threshold	: in type_log_level);
 	
@@ -484,7 +484,7 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance_origin	: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		instance_new	: in et_general.type_module_instance_name.bounded_string; -- CLOCK_GENERATOR
-		destination		: in et_coordinates.type_coordinates; -- sheet/x/y
+		destination		: in et_coordinates.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
 	procedure rename_submodule (
