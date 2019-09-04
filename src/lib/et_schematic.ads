@@ -64,10 +64,20 @@ with submodules;
 with numbering;
 with material;
 with netlists;
+with et_geometry;
 
 package et_schematic is
 	use et_general.type_net_name;
 	use et_coordinates.geometry;
+
+	package shapes is new et_geometry.shapes_2d (
+		type_distance	=> et_coordinates.type_distance,
+		type_rotation	=> et_coordinates.type_rotation,
+		geometry		=> et_coordinates.geometry
+		);
+
+	use shapes;
+
 	
 -- TEXT FIELD
 
@@ -263,14 +273,14 @@ package et_schematic is
 	--
 	-- The position of the bar (|) in this drawing depends on the zone_division_factor.
 	-- The center has twice the length of start/end point.
-	type type_zone is (START_POINT, CENTER, END_POINT);
-	zone_division_factor : constant positive := 4;
+-- 	type type_zone is (START_POINT, CENTER, END_POINT);
+-- 	zone_division_factor : constant positive := 4;
 	
 	function which_zone (
 	-- Calculates the zone on the segment where point is nearest.
 		point	: in type_point;
 		segment	: in type_net_segments.cursor) 
-		return type_zone;
+		return type_line_zone;
 
 	function to_string (segment : in type_net_segments.cursor) return string;
 	-- Returns a string that tells about start and end coordinates of the net segment.

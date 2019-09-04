@@ -6255,9 +6255,11 @@ package body schematic_ops is
 
 		function movable (
 			segment	: in type_net_segment;
-			zone	: in type_zone) 
+			zone	: in shapes.type_line_zone) 
 			return boolean is
 
+			use shapes;
+			
 			result : boolean := true; -- to be returned. true means the zone is movable.
 			-- Goes false once a port has been found in the given zone.
 
@@ -6408,7 +6410,9 @@ package body schematic_ops is
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 					segment_cursor_target : type_net_segments.cursor;
 					target_segment_before : type_net_segment;
-					zone : type_zone;
+
+					use shapes;
+					zone : type_line_zone;
 
 					procedure move_targeted_segment (segment : in out type_net_segment) is begin
 						case zone is
@@ -6590,7 +6594,7 @@ package body schematic_ops is
 								segment	=> segment_cursor);
 
 							-- depending on zone, drag start point, end point or both
-							log (text => "dragging at " & type_zone'image (zone), level => log_threshold + 2);
+							log (text => "dragging at " & type_line_zone'image (zone), level => log_threshold + 2);
 
 							-- Test whether the zone is movable. If not movable, nothing happens.
 							if movable (element (segment_cursor), zone) then

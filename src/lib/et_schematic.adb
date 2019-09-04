@@ -120,10 +120,10 @@ package body et_schematic is
 	-- See specs for type_zone for details.
 		point	: in type_point;
 		segment	: in type_net_segments.cursor) 
-		return type_zone is
+		return shapes.type_line_zone is
 
-		zone : type_zone; -- to be returned
-		
+		zone : shapes.type_line_zone; -- to be returned
+
 		use et_coordinates;
 		use type_net_segments;
 		start_point : type_point := element (segment).coordinates_start;
@@ -137,7 +137,7 @@ package body et_schematic is
 -- 
 -- 			-- calculate the zone border. This depends on the segment length.
 -- 			segment_length := distance (start_point, end_point, Y);
--- 			zone_border := segment_length / type_distance (zone_division_factor);
+-- 			zone_border := segment_length / type_distance (line_zone_division_factor);
 -- 
 -- 			if distance (Y, start_point) < distance (Y, end_point) then 
 -- 			-- DRAWN UPWARDS
@@ -165,7 +165,7 @@ package body et_schematic is
 -- 
 -- 			-- calculate the zone border. This depends on the segment length.
 -- 			segment_length := distance (start_point, end_point, X);
--- 			zone_border := segment_length / type_distance (zone_division_factor);
+-- 			zone_border := segment_length / type_distance (line_zone_division_factor);
 -- 			
 -- 			if distance (X, start_point) < distance (X, end_point) then 
 -- 			-- DRAWN FROM LEFT TO THE RIGHT
@@ -202,26 +202,26 @@ package body et_schematic is
 				-- calculate the zone border. This depends on the segment length
 				-- in X direction.
 				segment_length := distance (start_point, end_point, X);
-				zone_border := segment_length / type_distance (zone_division_factor);
+				zone_border := segment_length / type_distance (line_zone_division_factor);
 
 				if x (start_point) < x (end_point) then 
 				-- DRAWN FROM LEFT TO THE RIGHT
 					if x (point) < x (start_point) + zone_border then
-						zone := et_schematic.START_POINT; -- point is in the zone of start_point
+						zone := shapes.START_POINT; -- point is in the zone of start_point
 					elsif x (point) > x (end_point) - zone_border then
-						zone := et_schematic.END_POINT; -- point is in the zone of end_point
+						zone := shapes.END_POINT; -- point is in the zone of end_point
 					else
-						zone := et_schematic.CENTER;
+						zone := shapes.CENTER;
 					end if;
 
 				else 
 				-- DRAWN FROM RIGHT TO THE LEFT
 					if x (point) > x (start_point) - zone_border then
-						zone := et_schematic.START_POINT; -- point is in the zone of start_point
+						zone := shapes.START_POINT; -- point is in the zone of start_point
 					elsif x (point) < x (end_point) + zone_border then
-						zone := et_schematic.END_POINT; -- point is in the zone of end_point
+						zone := shapes.END_POINT; -- point is in the zone of end_point
 					else
-						zone := et_schematic.CENTER;
+						zone := shapes.CENTER;
 					end if;
 				end if;
 
@@ -233,26 +233,26 @@ package body et_schematic is
 				-- calculate the zone border. This depends on the segment length
 				-- in X direction.
 				segment_length := distance (start_point, end_point, Y);
-				zone_border := segment_length / type_distance (zone_division_factor);
+				zone_border := segment_length / type_distance (line_zone_division_factor);
 
 				if y (start_point) < y (end_point) then 
 				-- DRAWN UPWARDS
 					if y (point) < y (start_point) + zone_border then
-						zone := et_schematic.START_POINT; -- point is in the zone of start_point
+						zone := shapes.START_POINT; -- point is in the zone of start_point
 					elsif y (point) > y (end_point) - zone_border then
-						zone := et_schematic.END_POINT; -- point is in the zone of end_point
+						zone := shapes.END_POINT; -- point is in the zone of end_point
 					else
-						zone := et_schematic.CENTER;
+						zone := shapes.CENTER;
 					end if;
 						
 				else 
 				-- DRAWN DOWNWARDS
 					if y (point) > y (start_point) - zone_border then
-						zone := et_schematic.START_POINT; -- point is in the zone of start_point
+						zone := shapes.START_POINT; -- point is in the zone of start_point
 					elsif y (point) < y (end_point) + zone_border then
-						zone := et_schematic.END_POINT; -- point is in the zone of end_point
+						zone := shapes.END_POINT; -- point is in the zone of end_point
 					else
-						zone := et_schematic.CENTER;
+						zone := shapes.CENTER;
 					end if;
 				end if;
 				
