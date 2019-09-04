@@ -211,7 +211,7 @@ package et_kicad_pcb is
 		layer	: type_layer_abbrevation;
 	end record;
 
-	type type_circle is new et_pcb.shapes.type_circle_2d with record -- center and radius incl.
+	type type_circle is new et_pcb.shapes.type_circle with record -- center and radius incl.
 		width 	: et_pcb.type_text_line_width;
 		point 	: et_pcb_coordinates.geometry.type_point;
 		layer	: type_layer_abbrevation;

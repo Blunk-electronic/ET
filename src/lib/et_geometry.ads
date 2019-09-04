@@ -247,7 +247,7 @@ package et_geometry is
 		end record;
 
 		-- CIRCLE
-		type type_circle_2d is abstract tagged record
+		type type_circle is abstract tagged record
 			center			: type_point;
 			radius  		: geometry.type_distance := geometry.zero;
 			-- CS locked : type_locked;
@@ -260,7 +260,7 @@ package et_geometry is
 	function to_string (arc : in type_arc) return string;
 	-- Returns the start, end point and angle of the given arc as string.
 	
-	function to_string (circle : in type_circle_2d) return string;
+	function to_string (circle : in type_circle) return string;
 	-- Returns the center and radius of the given circle as string.
 		
 	end shapes_2d;

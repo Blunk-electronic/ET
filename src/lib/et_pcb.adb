@@ -499,7 +499,7 @@ package body et_pcb is
 	begin
 		circle := element (cursor);
 		log (text => "copper circle face" & to_string (face) & latin_1.space 
-			 & to_string (type_circle_2d (circle))
+			 & to_string (type_circle (circle))
 			 & " width" & to_string (circle.width)
 			 & " filled" & to_string (circle.filled), level => log_threshold);
 	end circle_copper_properties;
@@ -679,7 +679,7 @@ package body et_pcb is
 	begin
 		circle := element (cursor);
 		log (text => "silk screen circle face" & to_string (face) & latin_1.space 
-			 & to_string (type_circle_2d (circle))
+			 & to_string (type_circle (circle))
 			 & " width" & to_string (circle.width)
 			 & " filled" & to_string (circle.filled)
 			 & " " & text_fill_style & to_string (circle.fill_style), level => log_threshold);
@@ -767,7 +767,7 @@ package body et_pcb is
 	begin
 		circle := element (cursor);
 		log (text => "assembly doc circle face" & to_string (face) & latin_1.space 
-			 & to_string (type_circle_2d (circle))
+			 & to_string (type_circle (circle))
 			 & " width" & to_string (circle.width)
 			 & " filled" & to_string (circle.filled)
 			 & " " & text_fill_style & to_string (circle.fill_style), level => log_threshold);
@@ -854,7 +854,7 @@ package body et_pcb is
 	begin
 		circle := element (cursor);
 		log (text => "keepout (courtyard) circle face" & to_string (face) & latin_1.space 
-			& to_string (type_circle_2d (circle))
+			& to_string (type_circle (circle))
 			& " filled" & to_string (circle.filled)
 			& " " & text_fill_style & to_string (circle.fill_style), level => log_threshold);
 	end circle_keepout_properties;
@@ -886,7 +886,7 @@ package body et_pcb is
 	begin
 		circle := element (cursor);
 		log (text => "stop mask circle face" & to_string (face) & latin_1.space 
-			& to_string (type_circle_2d (circle))
+			& to_string (type_circle (circle))
 			& " width" & to_string (circle.width)
 			& " filled" & to_string (circle.filled)
 			& " " & text_fill_style & to_string (circle.fill_style), level => log_threshold);
@@ -958,7 +958,7 @@ package body et_pcb is
 	begin
 		circle := element (cursor);
 		log (text => "solder paste (stencil) circle face" & to_string (face) & latin_1.space 
-			& to_string (type_circle_2d (circle))
+			& to_string (type_circle (circle))
 			& " width" & to_string (circle.width)
 			& " filled" & to_string (circle.filled)
 			& " " & text_fill_style & to_string (circle.fill_style), level => log_threshold);
@@ -1076,7 +1076,7 @@ package body et_pcb is
 	begin
 		circle := element (cursor);
 		log (text => "PCB contour (edge cuts / outline) circle face" & latin_1.space 
-			& to_string (type_circle_2d (circle)), level => log_threshold);
+			& to_string (type_circle (circle)), level => log_threshold);
 	end circle_pcb_contour_properties;
 
 
@@ -1108,7 +1108,7 @@ package body et_pcb is
 		end arc;
 		
 		procedure circle (cursor : in type_pad_circles.cursor) is begin
-			log (text => to_string (type_circle_2d (element (cursor))), level => log_threshold + 1);
+			log (text => to_string (shapes.type_circle (element (cursor))), level => log_threshold + 1);
 		end circle;
 
 		procedure polygon (cursor : in type_pad_polygons.cursor) is 

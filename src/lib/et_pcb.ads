@@ -402,7 +402,7 @@ package et_pcb is
 	package type_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
 
 	
-	type type_pcb_contour_circle is new type_circle_2d with record  -- CS: in the future type_circle_3d
+	type type_pcb_contour_circle is new type_circle with record  -- CS: in the future type_circle_3d
 		locked : type_locked := type_locked'first;
 	end record;
 	package type_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
@@ -464,7 +464,7 @@ package et_pcb is
 	function to_string (filled : in type_filled) return string;
 	function to_filled (filled : in string) return type_filled;
 
-	type type_copper_circle is new type_circle_2d with record
+	type type_copper_circle is new type_circle with record
 		width				: type_track_width := type_track_width'first;
 		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
@@ -647,7 +647,7 @@ package et_pcb is
 
 	-- This circle type is used by silk screen, assembly doc, 
 	-- stop mask, stencil, keepout, route restrict, via restrict
-	type type_fillable_circle is new type_circle_2d with record
+	type type_fillable_circle is new type_circle with record
 		width				: type_general_line_width := type_general_line_width'first; -- the width of the circumfence		
 		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
@@ -1044,7 +1044,7 @@ package et_pcb is
 	-- A pad outline consists of lines, arcs, circles, polygons:
 	type type_pad_line is new type_line with null record;
 	type type_pad_arc is new type_arc with null record;
-	type type_pad_circle is new type_circle_2d with null record;
+	type type_pad_circle is new type_circle with null record;
 	type type_pad_polygon is record corners : type_polygon_points.set; end record;
 
 	package type_pad_lines is new doubly_linked_lists (type_pad_line);

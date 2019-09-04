@@ -3160,8 +3160,8 @@ package body et_project is
 		pac_arc					: type_arc;
 		procedure reset_arc is begin pac_arc := (others => <>); end;
 
-		type type_circle_2d is new et_pcb.shapes.type_circle_2d with null record;
-		pac_circle				: type_circle_2d;
+		type type_circle is new et_pcb.shapes.type_circle with null record;
+		pac_circle				: type_circle;
 		procedure reset_circle is begin pac_circle := (others => <>); end;
 		pac_circle_fillable		: et_pcb.type_fillable_circle;
 		procedure reset_circle_fillable is begin pac_circle_fillable := (others => <>); end;
@@ -3741,7 +3741,7 @@ package body et_project is
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_circles.append (
 											container	=> tht_pad_shape.top.circles,
-											new_item	=> (et_pcb.shapes.type_circle_2d (pac_circle) with null record));
+											new_item	=> (et_pcb.shapes.type_circle (pac_circle) with null record));
 
 										-- clean up for next circle
 										reset_circle;
@@ -3803,7 +3803,7 @@ package body et_project is
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_circles.append (
 											container	=> tht_pad_shape.bottom.circles,
-											new_item	=> (et_pcb.shapes.type_circle_2d (pac_circle) with null record));
+											new_item	=> (et_pcb.shapes.type_circle (pac_circle) with null record));
 
 										-- clean up for next circle
 										reset_circle;
@@ -3815,7 +3815,7 @@ package body et_project is
 								
 								type_pcb_contour_circles.append (
 									container	=> packge.pcb_contour.circles,
-									new_item	=> (et_pcb.shapes.type_circle_2d (pac_circle) with lock_status));
+									new_item	=> (et_pcb.shapes.type_circle (pac_circle) with lock_status));
 
 								-- clean up for next circle
 								reset_circle;
@@ -3846,7 +3846,7 @@ package body et_project is
 							when SEC_PAD_CONTOURS_SMT =>
 								type_pad_circles.append (
 									container	=> smt_pad_shape.circles,
-									new_item	=> (et_pcb.shapes.type_circle_2d (pac_circle) with null record));
+									new_item	=> (et_pcb.shapes.type_circle (pac_circle) with null record));
 
 								-- clean up for next circle
 								reset_circle;
@@ -3854,7 +3854,7 @@ package body et_project is
 							when SEC_MILLINGS =>
 								type_pcb_contour_circles.append (
 									container	=> tht_millings.circles,
-									new_item	=> (et_pcb.shapes.type_circle_2d (pac_circle) with lock_status));
+									new_item	=> (et_pcb.shapes.type_circle (pac_circle) with lock_status));
 								
 								-- clean up for next circle
 								reset_circle;

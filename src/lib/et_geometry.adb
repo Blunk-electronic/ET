@@ -594,7 +594,7 @@ package body et_geometry is
 				& " end" & to_string (arc.end_point);
 		end to_string;
 
-		function to_string (circle : in type_circle_2d) return string is
+		function to_string (circle : in type_circle) return string is
 		-- Returns the center and radius of the given circle as string.
 		begin
 			return latin_1.space
