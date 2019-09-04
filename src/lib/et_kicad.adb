@@ -3704,6 +3704,7 @@ package body et_kicad is
 
 			use et_coordinates;
 			use geometry;
+			use et_schematic.shapes;
 			distance : type_distance_point_line;
 			
 		begin
@@ -5711,6 +5712,7 @@ package body et_kicad is
 					segment	: in type_net_segment) return boolean is
 					sits_on_segment : boolean := false;
 					use geometry;
+					use et_schematic.shapes;
 					d : type_distance_point_line;
 				begin
 					-- calculate the shortes distance of point from line.
@@ -9136,6 +9138,7 @@ package body et_kicad is
 
 		use et_coordinates;
 		use geometry;
+		use et_schematic.shapes;
 		d : type_distance_point_line;
 
 	begin
@@ -9408,6 +9411,7 @@ package body et_kicad is
 		sits_on_segment : boolean := false;
 
 		use et_coordinates.geometry;
+		use et_schematic.shapes;
 		distance : type_distance_point_line;
 
 		function junction_here return boolean is
@@ -11123,6 +11127,7 @@ package body et_kicad is
 						segment_cursor_sec : type_net_segments.cursor := strand.segments.first;
 						use et_coordinates;
 						use geometry;
+						use et_schematic.shapes;
 						distance : type_distance_point_line;
 					begin -- query_segments_sec
 						log_indentation_up;
@@ -11340,6 +11345,7 @@ package body et_kicad is
 						segment_cursor : type_net_segments.cursor := strand.segments.first;
 						use et_coordinates;
 						use geometry;
+						use et_schematic.shapes;
 						distance : type_distance_point_line;
 					begin
 						while segment_cursor /= type_net_segments.no_element loop
@@ -11458,6 +11464,7 @@ package body et_kicad is
 						segment_cursor : type_net_segments.cursor := strand.segments.first;
 						use et_coordinates;
 						use geometry;
+						use et_schematic.shapes;
 						distance : type_distance_point_line;
 					begin
 						while segment_cursor /= type_net_segments.no_element loop
@@ -11630,6 +11637,7 @@ package body et_kicad is
 						use type_no_connection_flags;
 						use et_coordinates;
 						use geometry;
+						use et_schematic.shapes;
 						distance : type_distance_point_line;
 						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
 					begin -- query_no_connect_flags

@@ -938,6 +938,7 @@ package body schematic_ops is
 		return boolean is
 	-- Returns true if given point sits on given segment.
 		use et_coordinates.geometry;
+		use et_schematic.shapes;
 		dist : type_distance_point_line;
 		use type_net_segments;
 	begin
@@ -964,7 +965,8 @@ package body schematic_ops is
 		catch_zone	: in et_coordinates.type_catch_zone := zero
 		)
 		return boolean is
-		use geometry;
+		use et_coordinates.geometry;
+		use et_schematic.shapes;
 		dist : type_distance_point_line;
 		use type_net_segments;
 	begin

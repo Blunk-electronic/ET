@@ -105,26 +105,6 @@ package et_geometry is
 		function distance (point_one, point_two : in type_point) return type_distance;
 		-- Computes the total distance between point_one and point_two.	
 
-		type type_distance_point_line is record -- CS private ?
-			distance		: type_distance := zero;
-			sits_on_start	: boolean := false;
-			sits_on_end		: boolean := false;
-			out_of_range	: boolean := false;
-		end record;
-
-		type type_line_range is (
-			INSIDE_END_POINTS,	-- start and end point excluded -- CS rename to between_end_points ?
-			WITH_END_POINTS,	-- start and end point included
-			BEYOND_END_POINTS	-- unlimited line assumed. extends beyond both start and end point into infinity
-			);
-		
-		function distance_point_line (
-			point		: in type_point; 
-			line_start	: in type_point;
-			line_end 	: in type_point;
-			line_range	: in type_line_range) 
-			return type_distance_point_line;
-
 		function add (left, right : in type_rotation) return type_rotation;
 		-- Adds two angles.
 		-- If result greater or equal 360 degree then 360 degree is subtracted from result.
@@ -243,6 +223,28 @@ package et_geometry is
 			point	: in type_point'class;
 			line	: in type_line'class) 
 			return type_line_zone;
+
+		type type_distance_point_line is record -- CS private ?
+			distance		: type_distance := zero;
+			sits_on_start	: boolean := false;
+			sits_on_end		: boolean := false;
+			out_of_range	: boolean := false;
+		end record;
+
+		type type_line_range is (
+			INSIDE_END_POINTS,	-- start and end point excluded -- CS rename to between_end_points ?
+			WITH_END_POINTS,	-- start and end point included
+			BEYOND_END_POINTS	-- unlimited line assumed. extends beyond both start and end point into infinity
+			);
+		
+		function distance_point_line (
+			point		: in type_point; 
+			line_start	: in type_point;
+			line_end 	: in type_point;
+			line_range	: in type_line_range) 
+			return type_distance_point_line;
+
+		
 		
 		-- ARC
 		type type_arc is abstract tagged record
@@ -258,6 +260,9 @@ package et_geometry is
 			start_point	: in type_point;	
 			angle 		: in type_rotation)
 			return type_point'class;
+
+
+
 		
 		-- CIRCLE
 		type type_circle is abstract tagged record

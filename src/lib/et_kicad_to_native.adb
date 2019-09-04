@@ -2858,7 +2858,8 @@ package body et_kicad_to_native is
 
 					use et_coordinates;
 					use geometry;
-					distance : geometry.type_distance_point_line;
+					use shapes;
+					distance : shapes.type_distance_point_line;
 				begin -- read_ports
 					log_indentation_up;
 					
@@ -2885,7 +2886,7 @@ package body et_kicad_to_native is
 -- 								line_end	=> et_coordinates.geometry.type_point (segment.coordinates_end),
 -- 								line_range	=> WITH_END_POINTS);
 -- CS
-							distance := geometry.distance_point_line (
+							distance := distance_point_line (
 								point 		=> type_point (element (port_cursor_kicad).coordinates),
 								line_start	=> geometry.type_point (segment.coordinates_start),
 								line_end	=> geometry.type_point (segment.coordinates_end),
