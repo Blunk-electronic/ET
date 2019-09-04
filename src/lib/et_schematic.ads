@@ -264,12 +264,6 @@ package et_schematic is
 	
 	package type_net_segments is new doubly_linked_lists (type_net_segment);
 	
-	function which_zone (
-	-- Calculates the zone on the segment where point is nearest.
-		point	: in type_point;
-		segment	: in type_net_segments.cursor) 
-		return type_line_zone;
-
 	function to_string (segment : in type_net_segments.cursor) return string;
 	-- Returns a string that tells about start and end coordinates of the net segment.
 	

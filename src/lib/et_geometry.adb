@@ -579,8 +579,8 @@ package body et_geometry is
 
 		function which_zone (
 		-- Calculates the zone of the line where point is nearest.
-			point	: in type_point;
-			line	: in type_line) 
+			point	: in type_point'class;
+			line	: in type_line'class) 
 			return type_line_zone is
 
 			zone : type_line_zone; -- to be returned

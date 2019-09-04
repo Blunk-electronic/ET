@@ -6590,8 +6590,8 @@ package body schematic_ops is
 
 							-- Calculate the zone of attack. This is where place is.
 							zone := which_zone (
-								point	=> type_point (place),
-								segment	=> segment_cursor);
+								point	=> place,
+								line	=> element (segment_cursor));
 
 							-- depending on zone, drag start point, end point or both
 							log (text => "dragging at " & type_line_zone'image (zone), level => log_threshold + 2);
