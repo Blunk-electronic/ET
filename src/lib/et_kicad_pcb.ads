@@ -58,6 +58,8 @@ with et_pcb_coordinates;
 with et_kicad_general;			use et_kicad_general;
 
 package et_kicad_pcb is
+
+	use et_pcb.shapes;
 	use et_pcb_coordinates.geometry;
 	
 	-- V4:
@@ -198,18 +200,18 @@ package et_kicad_pcb is
 	-- They are derived from the abstract anchestor types in et_pcb.ads.
 	-- Their additional components (width, layer, angle, ...) are later 
 	-- copied to the final lines, arcs and circles as specified in et_pcb.ads:
-	type type_line is new et_pcb.type_line_2d with record
+	type type_line is new et_pcb.shapes.type_line_2d with record
 		width	: et_pcb.type_text_line_width;
 		layer	: type_layer_abbrevation;
 	end record;
 
-	type type_arc is new et_pcb.type_arc_2d with record
+	type type_arc is new et_pcb.shapes.type_arc_2d with record
 		width 	: et_pcb.type_text_line_width;
 		angle 	: et_pcb_coordinates.type_rotation;
 		layer	: type_layer_abbrevation;
 	end record;
 
-	type type_circle is new et_pcb.type_circle_2d with record -- center and radius incl.
+	type type_circle is new et_pcb.shapes.type_circle_2d with record -- center and radius incl.
 		width 	: et_pcb.type_text_line_width;
 		point 	: et_pcb_coordinates.geometry.type_point;
 		layer	: type_layer_abbrevation;

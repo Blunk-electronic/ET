@@ -572,8 +572,37 @@ package body et_geometry is
 		
 	end geometry_operations_2d;
 
+
+	
 	package body shapes_2d is
-		procedure dummy is begin null; end;
+		use geometry;
+		
+		function to_string (line : in type_line_2d) return string is
+		-- Returns the start and end point of the given line as string.
+		begin
+			return latin_1.space 
+				& "start" & to_string (line.start_point) 
+				& " end" & to_string (line.end_point);
+		end;
+
+		function to_string (arc : in type_arc_2d) return string is
+		-- Returns the start, end point and angle of the given arc as string.
+		begin
+			return latin_1.space 
+				& "center" & to_string (arc.center) 
+				& " start" & to_string (arc.start_point) 
+				& " end" & to_string (arc.end_point);
+		end to_string;
+
+		function to_string (circle : in type_circle_2d) return string is
+		-- Returns the center and radius of the given circle as string.
+		begin
+			return latin_1.space
+				& "center" & to_string (circle.center) 
+				& " radius" & to_string (circle.radius);
+		end to_string;
+
+		
 	end shapes_2d;
 
 	

@@ -58,7 +58,7 @@ with et_libraries;
 with et_string_processing;		use et_string_processing;
 
 package body et_pcb is
-
+	use shapes;
 
 	function to_string (directory_name : in type_directory_name.bounded_string) return string is
 	-- Converts a directory name to a string.
@@ -404,32 +404,6 @@ package body et_pcb is
 		return type_locked'value (locked);
 	end to_lock_status;
 	
-	function to_string (line : in type_line_2d) return string is
-	-- Returns the start and end point of the given line as string.
-	begin
-		return latin_1.space 
-			& "start" & to_string (line.start_point) 
-			& " end" & to_string (line.end_point);
-	end to_string;
-
-	function to_string (arc : in type_arc_2d) return string is
-	-- Returns the start, end point and angle of the given arc as string.
-	begin
-		return latin_1.space 
-			& "center" & to_string (arc.center) 
-			& " start" & to_string (arc.start_point) 
-			& " end" & to_string (arc.end_point);
-	end to_string;
-
-	function to_string (circle : in type_circle_2d) return string is
-	-- Returns the center and radius of the given circle as string.
-	begin
-		return latin_1.space
-			& "center" & to_string (circle.center) 
-			& " radius" & to_string (circle.radius);
-	end to_string;
-
-	
 	function to_string (
 		description : in type_package_description.bounded_string;
 		verbose		: in boolean := false) return string is
@@ -560,7 +534,7 @@ package body et_pcb is
 		line : type_copper_line_pcb;
 	begin
 		line := element (cursor);
-		log (text => "segment " & et_pcb.to_string (type_line_2d (line)) &
+		log (text => "segment " & to_string (type_line_2d (line)) &
 			 " width" & to_string (line.width) &
 			 " layer" & to_string (line.layer)
 			 -- CS locked

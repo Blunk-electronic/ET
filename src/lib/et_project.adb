@@ -3152,15 +3152,15 @@ package body et_project is
 		pac_signal_layers		: type_signal_layers.set;
 		lock_status 			: et_pcb.type_locked := lock_status_default;
 		
-		type type_line_2d is new et_pcb.type_line_2d with null record;
+		type type_line_2d is new et_pcb.shapes.type_line_2d with null record;
 		pac_line				: type_line_2d;
 		procedure reset_line is begin pac_line := (others => <>); end;
 		
-		type type_arc_2d is new et_pcb.type_arc_2d with null record;
+		type type_arc_2d is new et_pcb.shapes.type_arc_2d with null record;
 		pac_arc					: type_arc_2d;
 		procedure reset_arc is begin pac_arc := (others => <>); end;
 
-		type type_circle_2d is new et_pcb.type_circle_2d with null record;
+		type type_circle_2d is new et_pcb.shapes.type_circle_2d with null record;
 		pac_circle				: type_circle_2d;
 		procedure reset_circle is begin pac_circle := (others => <>); end;
 		pac_circle_fillable		: et_pcb.type_fillable_circle;
@@ -3302,7 +3302,7 @@ package body et_project is
 
 										type_copper_lines.append (
 											container	=> packge.copper.top.lines, 
-											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with pac_line_width));
 
 										-- clean up for next line
 										reset_line;
@@ -3311,7 +3311,7 @@ package body et_project is
 									when SEC_SILK_SCREEN => 
 										type_silk_lines.append (
 											container	=> packge.silk_screen.top.lines, 
-											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with pac_line_width));
 
 										-- clean up for next line
 										reset_line;
@@ -3320,7 +3320,7 @@ package body et_project is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_lines.append (
 											container	=> packge.assembly_documentation.top.lines, 
-											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with pac_line_width));
 
 										-- clean up for next line
 										reset_line;
@@ -3329,7 +3329,7 @@ package body et_project is
 									when SEC_STENCIL =>
 										type_stencil_lines.append (
 											container	=> packge.stencil.top.lines, 
-											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with pac_line_width));
 
 										-- clean up for next line
 										reset_line;
@@ -3338,7 +3338,7 @@ package body et_project is
 									when SEC_STOP_MASK =>
 										type_stop_lines.append (
 											container	=> packge.stop_mask.top.lines, 
-											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with pac_line_width));
 
 										-- clean up for next line
 										reset_line;
@@ -3347,7 +3347,7 @@ package body et_project is
 									when SEC_KEEPOUT =>
 										type_keepout_lines.append (
 											container	=> packge.keepout.top.lines, 
-											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with pac_line_width));
 
 										-- clean up for next line
 										reset_line;
@@ -3356,7 +3356,7 @@ package body et_project is
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_lines.append (
 											container	=> tht_pad_shape.top.lines,
-											new_item	=> (et_pcb.type_line_2d (pac_line) with null record));
+											new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with null record));
 
 										-- clean up for next line
 										reset_line;
@@ -3370,7 +3370,7 @@ package body et_project is
 
 										type_copper_lines.append (
 											container	=> packge.copper.bottom.lines, 
-											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with pac_line_width));
 
 										-- clean up for next line
 										reset_line;
@@ -3379,7 +3379,7 @@ package body et_project is
 									when SEC_SILK_SCREEN => 
 										type_silk_lines.append (
 											container	=> packge.silk_screen.bottom.lines, 
-											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with pac_line_width));
 
 										-- clean up for next line
 										reset_line;
@@ -3388,7 +3388,7 @@ package body et_project is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_lines.append (
 											container	=> packge.assembly_documentation.bottom.lines, 
-											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with pac_line_width));
 
 										-- clean up for next line
 										reset_line;
@@ -3397,7 +3397,7 @@ package body et_project is
 									when SEC_STENCIL =>
 										type_stencil_lines.append (
 											container	=> packge.stencil.bottom.lines, 
-											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with pac_line_width));
 
 										-- clean up for next line
 										reset_line;
@@ -3406,7 +3406,7 @@ package body et_project is
 									when SEC_STOP_MASK =>
 										type_stop_lines.append (
 											container	=> packge.stop_mask.bottom.lines, 
-											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with pac_line_width));
 
 										-- clean up for next line
 										reset_line;
@@ -3415,7 +3415,7 @@ package body et_project is
 									when SEC_KEEPOUT =>
 										type_keepout_lines.append (
 											container	=> packge.keepout.bottom.lines, 
-											new_item	=> (et_pcb.type_line_2d (pac_line) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with pac_line_width));
 
 										-- clean up for next line
 										reset_line;
@@ -3424,7 +3424,7 @@ package body et_project is
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_lines.append (
 											container	=> tht_pad_shape.bottom.lines,
-											new_item	=> (et_pcb.type_line_2d (pac_line) with null record));
+											new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with null record));
 
 										-- clean up for next line
 										reset_line;
@@ -3436,7 +3436,7 @@ package body et_project is
 								
 								type_pcb_contour_lines.append (
 									container	=> packge.pcb_contour.lines,
-									new_item	=> (et_pcb.type_line_2d (pac_line) with lock_status));
+									new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with lock_status));
 
 								-- clean up for next line
 								reset_line;
@@ -3446,7 +3446,7 @@ package body et_project is
 								
 								type_route_restrict_lines.append (
 									container	=> packge.route_restrict.lines,
-									new_item	=> (et_pcb.type_line_2d (pac_line) with
+									new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with
 													width	=> pac_line_width,
 													layers	=> pac_signal_layers));
 
@@ -3459,7 +3459,7 @@ package body et_project is
 								
 								type_via_restrict_lines.append (
 									container	=> packge.via_restrict.lines,
-									new_item	=> (et_pcb.type_line_2d (pac_line) with
+									new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with
 													width	=> pac_line_width,
 													layers	=> pac_signal_layers));
 
@@ -3472,7 +3472,7 @@ package body et_project is
 								
 								type_pad_lines.append (
 									container	=> smt_pad_shape.lines,
-									new_item	=> (et_pcb.type_line_2d (pac_line) with null record));
+									new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with null record));
 
 								-- clean up for next line
 								reset_line;
@@ -3481,7 +3481,7 @@ package body et_project is
 
 								type_pcb_contour_lines.append (
 									container	=> tht_millings.lines,
-									new_item	=> (et_pcb.type_line_2d (pac_line) with lock_status));
+									new_item	=> (et_pcb.shapes.type_line_2d (pac_line) with lock_status));
 								
 								-- clean up for next line
 								reset_line;
@@ -3498,7 +3498,7 @@ package body et_project is
 
 										type_copper_arcs.append (
 											container	=> packge.copper.top.arcs, 
-											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3507,7 +3507,7 @@ package body et_project is
 									when SEC_SILK_SCREEN => 
 										type_silk_arcs.append (
 											container	=> packge.silk_screen.top.arcs, 
-											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3516,7 +3516,7 @@ package body et_project is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_arcs.append (
 											container	=> packge.assembly_documentation.top.arcs, 
-											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3525,7 +3525,7 @@ package body et_project is
 									when SEC_STENCIL =>
 										type_stencil_arcs.append (
 											container	=> packge.stencil.top.arcs, 
-											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3534,7 +3534,7 @@ package body et_project is
 									when SEC_STOP_MASK =>
 										type_stop_arcs.append (
 											container	=> packge.stop_mask.top.arcs, 
-											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3543,7 +3543,7 @@ package body et_project is
 									when SEC_KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> packge.keepout.top.arcs,
-											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3552,7 +3552,7 @@ package body et_project is
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_arcs.append (
 											container	=> tht_pad_shape.top.arcs,
-											new_item	=> (et_pcb.type_arc_2d (pac_arc) with null record));
+											new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with null record));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3566,7 +3566,7 @@ package body et_project is
 
 										type_copper_arcs.append (
 											container	=> packge.copper.bottom.arcs, 
-											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3575,7 +3575,7 @@ package body et_project is
 									when SEC_SILK_SCREEN => 
 										type_silk_arcs.append (
 											container	=> packge.silk_screen.bottom.arcs, 
-											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3584,7 +3584,7 @@ package body et_project is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_arcs.append (
 											container	=> packge.assembly_documentation.bottom.arcs, 
-											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3593,7 +3593,7 @@ package body et_project is
 									when SEC_STENCIL =>
 										type_stencil_arcs.append (
 											container	=> packge.stencil.bottom.arcs, 
-											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3602,7 +3602,7 @@ package body et_project is
 									when SEC_STOP_MASK =>
 										type_stop_arcs.append (
 											container	=> packge.stop_mask.bottom.arcs, 
-											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3611,7 +3611,7 @@ package body et_project is
 									when SEC_KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> packge.keepout.bottom.arcs, 
-											new_item	=> (et_pcb.type_arc_2d (pac_arc) with pac_line_width));
+											new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3620,7 +3620,7 @@ package body et_project is
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_arcs.append (
 											container	=> tht_pad_shape.bottom.arcs,
-											new_item	=> (et_pcb.type_arc_2d (pac_arc) with null record));
+											new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with null record));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3632,7 +3632,7 @@ package body et_project is
 								
 								type_pcb_contour_arcs.append (
 									container	=> packge.pcb_contour.arcs,
-									new_item	=> (et_pcb.type_arc_2d (pac_arc) with lock_status));
+									new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with lock_status));
 
 								-- clean up for next arc
 								reset_arc;
@@ -3642,7 +3642,7 @@ package body et_project is
 								
 								type_route_restrict_arcs.append (
 									container	=> packge.route_restrict.arcs,
-									new_item	=> (et_pcb.type_arc_2d (pac_arc) with
+									new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with
 													width	=> pac_line_width,
 													layers	=> pac_signal_layers));
 
@@ -3655,7 +3655,7 @@ package body et_project is
 								
 								type_via_restrict_arcs.append (
 									container	=> packge.via_restrict.arcs,
-									new_item	=> (et_pcb.type_arc_2d (pac_arc) with
+									new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with
 													width	=> pac_line_width,
 													layers	=> pac_signal_layers));
 
@@ -3667,7 +3667,7 @@ package body et_project is
 							when SEC_PAD_CONTOURS_SMT =>
 								type_pad_arcs.append (
 									container	=> smt_pad_shape.arcs,
-									new_item	=> (et_pcb.type_arc_2d (pac_arc) with null record));
+									new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with null record));
 
 								-- clean up for next arc
 								reset_arc;
@@ -3676,7 +3676,7 @@ package body et_project is
 								
 								type_pcb_contour_arcs.append (
 									container	=> tht_millings.arcs,
-									new_item	=> (et_pcb.type_arc_2d (pac_arc) with lock_status));
+									new_item	=> (et_pcb.shapes.type_arc_2d (pac_arc) with lock_status));
 								
 								-- clean up for next arc
 								reset_arc;
@@ -3741,7 +3741,7 @@ package body et_project is
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_circles.append (
 											container	=> tht_pad_shape.top.circles,
-											new_item	=> (et_pcb.type_circle_2d (pac_circle) with null record));
+											new_item	=> (et_pcb.shapes.type_circle_2d (pac_circle) with null record));
 
 										-- clean up for next circle
 										reset_circle;
@@ -3803,7 +3803,7 @@ package body et_project is
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_circles.append (
 											container	=> tht_pad_shape.bottom.circles,
-											new_item	=> (et_pcb.type_circle_2d (pac_circle) with null record));
+											new_item	=> (et_pcb.shapes.type_circle_2d (pac_circle) with null record));
 
 										-- clean up for next circle
 										reset_circle;
@@ -3815,7 +3815,7 @@ package body et_project is
 								
 								type_pcb_contour_circles.append (
 									container	=> packge.pcb_contour.circles,
-									new_item	=> (et_pcb.type_circle_2d (pac_circle) with lock_status));
+									new_item	=> (et_pcb.shapes.type_circle_2d (pac_circle) with lock_status));
 
 								-- clean up for next circle
 								reset_circle;
@@ -3846,7 +3846,7 @@ package body et_project is
 							when SEC_PAD_CONTOURS_SMT =>
 								type_pad_circles.append (
 									container	=> smt_pad_shape.circles,
-									new_item	=> (et_pcb.type_circle_2d (pac_circle) with null record));
+									new_item	=> (et_pcb.shapes.type_circle_2d (pac_circle) with null record));
 
 								-- clean up for next circle
 								reset_circle;
@@ -3854,7 +3854,7 @@ package body et_project is
 							when SEC_MILLINGS =>
 								type_pcb_contour_circles.append (
 									container	=> tht_millings.circles,
-									new_item	=> (et_pcb.type_circle_2d (pac_circle) with lock_status));
+									new_item	=> (et_pcb.shapes.type_circle_2d (pac_circle) with lock_status));
 								
 								-- clean up for next circle
 								reset_circle;
@@ -8174,10 +8174,10 @@ package body et_project is
 		netchanger_id	: submodules.type_netchanger_id := submodules.type_netchanger_id'first;
 					
 		-- general board stuff
-		type type_line is new et_pcb.type_line_2d with null record;
+		type type_line is new et_pcb.shapes.type_line_2d with null record;
 		board_line : type_line;
 
-		type type_arc is new et_pcb.type_arc_2d with null record;
+		type type_arc is new et_pcb.shapes.type_arc_2d with null record;
 		board_arc : type_arc;
 
 		board_circle : et_pcb.type_fillable_circle;
@@ -8655,27 +8655,27 @@ package body et_project is
 									when SILK_SCREEN =>
 										type_silk_lines.append (
 											container	=> module.board.silk_screen.top.lines,
-											new_item	=> (type_line_2d (board_line) with board_line_width));
+											new_item	=> (shapes.type_line_2d (board_line) with board_line_width));
 
 									when ASSEMBLY_DOCUMENTATION =>
 										type_doc_lines.append (
 											container	=> module.board.assy_doc.top.lines,
-											new_item	=> (type_line_2d (board_line) with board_line_width));
+											new_item	=> (shapes.type_line_2d (board_line) with board_line_width));
 
 									when STENCIL =>
 										type_stencil_lines.append (
 											container	=> module.board.stencil.top.lines,
-											new_item	=> (type_line_2d (board_line) with board_line_width));
+											new_item	=> (shapes.type_line_2d (board_line) with board_line_width));
 										
 									when STOP_MASK =>
 										type_stop_lines.append (
 											container	=> module.board.stop_mask.top.lines,
-											new_item	=> (type_line_2d (board_line) with board_line_width));
+											new_item	=> (shapes.type_line_2d (board_line) with board_line_width));
 
 									when KEEPOUT =>
 										type_keepout_lines.append (
 											container	=> module.board.keepout.top.lines,
-											new_item	=> (type_line_2d (board_line) with board_line_width));
+											new_item	=> (shapes.type_line_2d (board_line) with board_line_width));
 										
 								end case;
 								
@@ -8684,27 +8684,27 @@ package body et_project is
 									when SILK_SCREEN =>
 										type_silk_lines.append (
 											container	=> module.board.silk_screen.bottom.lines,
-											new_item	=> (type_line_2d (board_line) with board_line_width));
+											new_item	=> (shapes.type_line_2d (board_line) with board_line_width));
 
 									when ASSEMBLY_DOCUMENTATION =>
 										type_doc_lines.append (
 											container	=> module.board.assy_doc.bottom.lines,
-											new_item	=> (type_line_2d (board_line) with board_line_width));
+											new_item	=> (shapes.type_line_2d (board_line) with board_line_width));
 										
 									when STENCIL =>
 										type_stencil_lines.append (
 											container	=> module.board.stencil.bottom.lines,
-											new_item	=> (type_line_2d (board_line) with board_line_width));
+											new_item	=> (shapes.type_line_2d (board_line) with board_line_width));
 										
 									when STOP_MASK =>
 										type_stop_lines.append (
 											container	=> module.board.stop_mask.bottom.lines,
-											new_item	=> (type_line_2d (board_line) with board_line_width));
+											new_item	=> (shapes.type_line_2d (board_line) with board_line_width));
 
 									when KEEPOUT =>
 										type_keepout_lines.append (
 											container	=> module.board.keepout.bottom.lines,
-											new_item	=> (type_line_2d (board_line) with board_line_width));
+											new_item	=> (shapes.type_line_2d (board_line) with board_line_width));
 
 								end case;
 								
@@ -8741,27 +8741,27 @@ package body et_project is
 									when SILK_SCREEN =>
 										type_silk_arcs.append (
 											container	=> module.board.silk_screen.top.arcs,
-											new_item	=> (type_arc_2d (board_arc) with board_line_width));
+											new_item	=> (shapes.type_arc_2d (board_arc) with board_line_width));
 
 									when ASSEMBLY_DOCUMENTATION =>
 										type_doc_arcs.append (
 											container	=> module.board.assy_doc.top.arcs,
-											new_item	=> (type_arc_2d (board_arc) with board_line_width));
+											new_item	=> (shapes.type_arc_2d (board_arc) with board_line_width));
 
 									when STENCIL =>
 										type_stencil_arcs.append (
 											container	=> module.board.stencil.top.arcs,
-											new_item	=> (type_arc_2d (board_arc) with board_line_width));
+											new_item	=> (shapes.type_arc_2d (board_arc) with board_line_width));
 										
 									when STOP_MASK =>
 										type_stop_arcs.append (
 											container	=> module.board.stop_mask.top.arcs,
-											new_item	=> (type_arc_2d (board_arc) with board_line_width));
+											new_item	=> (shapes.type_arc_2d (board_arc) with board_line_width));
 
 									when KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> module.board.keepout.top.arcs,
-											new_item	=> (type_arc_2d (board_arc) with board_line_width));
+											new_item	=> (shapes.type_arc_2d (board_arc) with board_line_width));
 								end case;
 								
 							when BOTTOM => null;
@@ -8769,27 +8769,27 @@ package body et_project is
 									when SILK_SCREEN =>
 										type_silk_arcs.append (
 											container	=> module.board.silk_screen.bottom.arcs,
-											new_item	=> (type_arc_2d (board_arc) with board_line_width));
+											new_item	=> (shapes.type_arc_2d (board_arc) with board_line_width));
 
 									when ASSEMBLY_DOCUMENTATION =>
 										type_doc_arcs.append (
 											container	=> module.board.assy_doc.bottom.arcs,
-											new_item	=> (type_arc_2d (board_arc) with board_line_width));
+											new_item	=> (shapes.type_arc_2d (board_arc) with board_line_width));
 										
 									when STENCIL =>
 										type_stencil_arcs.append (
 											container	=> module.board.stencil.bottom.arcs,
-											new_item	=> (type_arc_2d (board_arc) with board_line_width));
+											new_item	=> (shapes.type_arc_2d (board_arc) with board_line_width));
 										
 									when STOP_MASK =>
 										type_stop_arcs.append (
 											container	=> module.board.stop_mask.bottom.arcs,
-											new_item	=> (type_arc_2d (board_arc) with board_line_width));
+											new_item	=> (shapes.type_arc_2d (board_arc) with board_line_width));
 
 									when KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> module.board.keepout.bottom.arcs,
-											new_item	=> (type_arc_2d (board_arc) with board_line_width));
+											new_item	=> (shapes.type_arc_2d (board_arc) with board_line_width));
 								end case;
 								
 						end case;
@@ -9140,7 +9140,7 @@ package body et_project is
 					begin
 						type_route_restrict_lines.append (
 							container	=> module.board.route_restrict.lines,
-							new_item	=> (type_line_2d (board_line) with 
+							new_item	=> (shapes.type_line_2d (board_line) with 
 											layers	=> signal_layers,
 											width	=> board_line_width));
 					end do_it;
@@ -9167,7 +9167,7 @@ package body et_project is
 					begin
 						type_route_restrict_arcs.append (
 							container	=> module.board.route_restrict.arcs,
-							new_item	=> (type_arc_2d (board_arc) with 
+							new_item	=> (shapes.type_arc_2d (board_arc) with 
 											layers	=> signal_layers,
 											width	=> board_line_width));
 					end do_it;
@@ -9245,7 +9245,7 @@ package body et_project is
 					begin
 						type_via_restrict_lines.append (
 							container	=> module.board.via_restrict.lines,
-							new_item	=> (type_line_2d (board_line) with 
+							new_item	=> (shapes.type_line_2d (board_line) with 
 											layers	=> signal_layers,
 											width	=> board_line_width));
 					end do_it;
@@ -9272,7 +9272,7 @@ package body et_project is
 					begin
 						type_via_restrict_arcs.append (
 							container	=> module.board.via_restrict.arcs,
-							new_item	=> (type_arc_2d (board_arc) with 
+							new_item	=> (shapes.type_arc_2d (board_arc) with 
 											layers	=> signal_layers,
 											width	=> board_line_width));
 					end do_it;
@@ -9481,7 +9481,7 @@ package body et_project is
 					begin
 						type_pcb_contour_lines.append (
 							container	=> module.board.contour.lines,
-							new_item	=> (type_line_2d (board_line) with lock_status));
+							new_item	=> (shapes.type_line_2d (board_line) with lock_status));
 					end do_it;
 										
 				begin -- insert_line_contour
@@ -9504,7 +9504,7 @@ package body et_project is
 					begin
 						type_pcb_contour_arcs.append (
 							container	=> module.board.contour.arcs,
-							new_item	=> (type_arc_2d (board_arc) with lock_status));
+							new_item	=> (shapes.type_arc_2d (board_arc) with lock_status));
 					end do_it;
 										
 				begin -- insert_arc_contour

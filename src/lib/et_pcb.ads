@@ -347,50 +347,10 @@ package et_pcb is
 		geometry		=> et_pcb_coordinates.geometry
 		);
 
+	use shapes;
 	
-	-- LINE
-	type type_line_2d is abstract tagged record
-		start_point 	: type_point;
-		end_point   	: type_point;
-		-- CS locked : type_locked;
-	end record;
-
--- 	type type_line_3d is abstract tagged record
--- 		start_point 	: type_point_3d;
--- 		end_point   	: type_point_3d;
--- 		-- CS locked : type_locked;
--- 	end record;
 	
-	-- ARC
-	type type_arc_2d is abstract tagged record
-		center			: type_point;
-		start_point		: type_point;
-		end_point		: type_point;
-		-- CS locked : type_locked;		
-	end record;
 
--- 	type type_arc_3d is abstract tagged record
--- 		center			: type_point_3d;
--- 		start_point		: type_point_3d;
--- 		end_point		: type_point_3d;
--- 		-- 		angle			: type_angle;
--- 		-- CS locked : type_locked;
--- 	end record;
-	
-	-- CIRCLE
-	type type_circle_2d is abstract tagged record
-		center			: type_point;
-		radius  		: et_pcb_coordinates.type_distance := zero;
-		-- CS locked : type_locked;
-	end record;
-
--- 	type type_circle_3d is abstract tagged record
--- 		center			: type_point_3d;
--- 		radius  		: type_distance;
--- 		-- CS locked : type_locked;		
--- 	end record;
-
-	
 	-- POLYGON
 	-- Corner points are collected in an ordered set.
 	-- This prevents placing two identical points on top of each other.
@@ -426,17 +386,7 @@ package et_pcb is
 	function to_string (locked : in type_locked) return string;
 	function to_lock_status (locked : in string) return type_locked;
 	
-	function to_string (line : in type_line_2d) return string;
-	-- Returns the start and end point of the given line as string.
 
-	function to_string (arc : in type_arc_2d) return string;
-	-- Returns the start, end point and angle of the given arc as string.
-
-	function to_string (circle : in type_circle_2d) return string;
-	-- Returns the center and radius of the given circle as string.
-
-	-- CS: functions as above for 3d line, arc, circle
-	
 	
 	-- PCB CONTOUR/OUTLINE
 	type type_pcb_contour_line is new type_line_2d with record -- CS: in the future type_line_3d

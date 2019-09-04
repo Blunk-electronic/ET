@@ -227,13 +227,9 @@ package et_geometry is
 		type type_distance is delta <>;
 		type type_rotation is delta <>;
 		with package geometry is new geometry_operations_2d (<>);
--- 			type_distance	=> type_distance,
--- 			type_rotation	=> type_rotation);
 		
 	package shapes_2d is
 		use geometry;
-		
-		t : natural := 0;
 
 		-- LINE
 		type type_line_2d is abstract tagged record
@@ -242,6 +238,30 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
+		-- ARC
+		type type_arc_2d is abstract tagged record
+			center			: type_point;
+			start_point		: type_point;
+			end_point		: type_point;
+			-- CS locked : type_locked;		
+		end record;
+
+		-- CIRCLE
+		type type_circle_2d is abstract tagged record
+			center			: type_point;
+			radius  		: geometry.type_distance := geometry.zero;
+			-- CS locked : type_locked;
+		end record;
+		
+		
+	function to_string (line : in type_line_2d) return string;
+	-- Returns the start and end point of the given line as string.
+
+	function to_string (arc : in type_arc_2d) return string;
+	-- Returns the start, end point and angle of the given arc as string.
+	
+	function to_string (circle : in type_circle_2d) return string;
+	-- Returns the center and radius of the given circle as string.
 		
 	end shapes_2d;
 	
