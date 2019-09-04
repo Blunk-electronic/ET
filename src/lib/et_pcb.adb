@@ -471,7 +471,7 @@ package body et_pcb is
 	begin
 		line := element (cursor);
 		log (text => "copper line face" & to_string (face) & latin_1.space 
-			 & to_string (type_line_2d (line))
+			 & to_string (type_line (line))
 			 & " width" & to_string (line.width), level => log_threshold);
 	end line_copper_properties;
 
@@ -534,7 +534,7 @@ package body et_pcb is
 		line : type_copper_line_pcb;
 	begin
 		line := element (cursor);
-		log (text => "segment " & to_string (type_line_2d (line)) &
+		log (text => "segment " & to_string (type_line (line)) &
 			 " width" & to_string (line.width) &
 			 " layer" & to_string (line.layer)
 			 -- CS locked
@@ -651,7 +651,7 @@ package body et_pcb is
 	begin
 		line := element (cursor);
 		log (text => "silk screen line face" & to_string (face) & latin_1.space 
-			 & to_string (type_line_2d (line))
+			 & to_string (type_line (line))
 			 & " width" & to_string (line.width), level => log_threshold);
 	end line_silk_screen_properties;
 
@@ -739,7 +739,7 @@ package body et_pcb is
 	begin
 		line := element (cursor);
 		log (text => "assembly doc line face" & to_string (face) & latin_1.space
-			 & to_string (type_line_2d (line))
+			 & to_string (type_line (line))
 			 & " width" & to_string (line.width), level => log_threshold);
 	end line_assy_doc_properties;
 
@@ -828,7 +828,7 @@ package body et_pcb is
 	begin
 		line := element (cursor);
 		log (text => "keepout (courtyard) line face" & to_string (face) & latin_1.space
-			 & to_string (type_line_2d (line)), level => log_threshold);
+			 & to_string (type_line (line)), level => log_threshold);
 	end line_keepout_properties;
 
 	procedure arc_keepout_properties (
@@ -908,7 +908,7 @@ package body et_pcb is
 	begin
 		line := element (cursor);
 		log (text => "stop mask line face" & to_string (face) & latin_1.space
-			 & to_string (type_line_2d (line))
+			 & to_string (type_line (line))
 			 & " width" & to_string (line.width),
 			 level => log_threshold);
 	end line_stop_mask_properties;
@@ -974,7 +974,7 @@ package body et_pcb is
 	begin
 		line := element (cursor);
 		log (text => "solder paste (stencil) line face" & to_string (face) & latin_1.space
-			 & to_string (type_line_2d (line))
+			 & to_string (type_line (line))
 			 & " width" & to_string (line.width),
 			 level => log_threshold);
 	end line_stencil_properties;
@@ -992,7 +992,7 @@ package body et_pcb is
 	begin
 		line := element (cursor);
 		log (text => "route restrict line face" & to_string (face) & latin_1.space
-			 & to_string (type_line_2d (line)), level => log_threshold);
+			 & to_string (type_line (line)), level => log_threshold);
 	end line_route_restrict_properties;
 
 	procedure arc_route_restrict_properties (
@@ -1023,7 +1023,7 @@ package body et_pcb is
 	begin
 		line := element (cursor);
 		log (text => "via restrict line face" & to_string (face) & latin_1.space
-			 & to_string (type_line_2d (line)), level => log_threshold);
+			 & to_string (type_line (line)), level => log_threshold);
 	end line_via_restrict_properties;
 
 	procedure arc_via_restrict_properties (
@@ -1052,7 +1052,7 @@ package body et_pcb is
 	begin
 		line := element (cursor);
 		log (text => "PCB contour (edge cuts / outline) line face" & latin_1.space
-			 & to_string (type_line_2d (line)), level => log_threshold);
+			 & to_string (type_line (line)), level => log_threshold);
 	end line_pcb_contour_properties;
 
 	procedure arc_pcb_contour_properties (
@@ -1100,7 +1100,7 @@ package body et_pcb is
 		use type_pad_polygons;		
 		
 		procedure line (cursor : in type_pad_lines.cursor) is begin
-			log (text => to_string (type_line_2d (element (cursor))), level => log_threshold + 1);
+			log (text => to_string (shapes.type_line (element (cursor))), level => log_threshold + 1);
 		end line;
 
 		procedure arc (cursor : in type_pad_arcs.cursor) is begin

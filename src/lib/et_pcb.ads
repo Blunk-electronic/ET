@@ -389,7 +389,7 @@ package et_pcb is
 
 	
 	-- PCB CONTOUR/OUTLINE
-	type type_pcb_contour_line is new type_line_2d with record -- CS: in the future type_line_3d
+	type type_pcb_contour_line is new type_line with record -- CS: in the future type_line_3d
 		locked : type_locked := type_locked'first;
 	end record;
 
@@ -450,7 +450,7 @@ package et_pcb is
 	
 
 	-- COPPER OBJECTS (NON ELECTRIC !!) OF A PACKAGE
-	type type_copper_line is new type_line_2d with record
+	type type_copper_line is new type_line with record
 		width	: type_track_width;
 	end record;
 	package type_copper_lines is new doubly_linked_lists (type_copper_line);
@@ -657,7 +657,7 @@ package et_pcb is
 	
 	
 	-- SOLDER STOP MASK
-	type type_stop_line is new type_line_2d with record
+	type type_stop_line is new type_line with record
 		width	: type_general_line_width;
 	end record;
 
@@ -717,7 +717,7 @@ package et_pcb is
 
 
 	-- SOLDER PASTE STENCIL
-	type type_stencil_line is new type_line_2d with record
+	type type_stencil_line is new type_line with record
 		width	: type_general_line_width;
 	end record;
 
@@ -760,7 +760,7 @@ package et_pcb is
 	
 	
 	-- SILK SCREEN
-	type type_silk_line is new type_line_2d with record
+	type type_silk_line is new type_line with record
 		width	: type_general_line_width;
 	end record;
 
@@ -820,7 +820,7 @@ package et_pcb is
 	
 
 	-- ASSEMBLY DOCUMENTATION
-	type type_doc_line is new type_line_2d with record
+	type type_doc_line is new type_line with record
 		width	: type_general_line_width;
 	end record;
 
@@ -880,7 +880,7 @@ package et_pcb is
 	
 	
 	-- KEEPOUT
-	type type_keepout_line is new type_line_2d with record
+	type type_keepout_line is new type_line with record
 		width	: type_general_line_width;
 	end record;
 	
@@ -916,7 +916,7 @@ package et_pcb is
 
 	
 	-- ROUTE RESTRICT
-	type type_route_restrict_line is new type_line_2d with record
+	type type_route_restrict_line is new type_line with record
 		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers 	: type_signal_layers.set;
 	end record;
@@ -959,7 +959,7 @@ package et_pcb is
 	
 
 	-- VIA RESTRICT
-	type type_via_restrict_line is new type_line_2d with record
+	type type_via_restrict_line is new type_line with record
 		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers	: type_signal_layers.set;
 	end record;
@@ -1042,7 +1042,7 @@ package et_pcb is
 
 	
 	-- A pad outline consists of lines, arcs, circles, polygons:
-	type type_pad_line is new type_line_2d with null record;
+	type type_pad_line is new type_line with null record;
 	type type_pad_arc is new type_arc_2d with null record;
 	type type_pad_circle is new type_circle_2d with null record;
 	type type_pad_polygon is record corners : type_polygon_points.set; end record;

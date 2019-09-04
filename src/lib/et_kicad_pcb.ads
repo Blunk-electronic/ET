@@ -200,7 +200,7 @@ package et_kicad_pcb is
 	-- They are derived from the abstract anchestor types in et_pcb.ads.
 	-- Their additional components (width, layer, angle, ...) are later 
 	-- copied to the final lines, arcs and circles as specified in et_pcb.ads:
-	type type_line is new et_pcb.shapes.type_line_2d with record
+	type type_line is new et_pcb.shapes.type_line with record
 		width	: et_pcb.type_text_line_width;
 		layer	: type_layer_abbrevation;
 	end record;

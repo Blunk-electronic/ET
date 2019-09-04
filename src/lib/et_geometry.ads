@@ -232,7 +232,7 @@ package et_geometry is
 		use geometry;
 
 		-- LINE
-		type type_line_2d is abstract tagged record
+		type type_line is abstract tagged record
 			start_point 	: type_point;
 			end_point   	: type_point;
 			-- CS locked : type_locked;
@@ -254,7 +254,7 @@ package et_geometry is
 		end record;
 		
 		
-	function to_string (line : in type_line_2d) return string;
+	function to_string (line : in type_line) return string;
 	-- Returns the start and end point of the given line as string.
 
 	function to_string (arc : in type_arc_2d) return string;

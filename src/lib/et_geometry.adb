@@ -577,7 +577,7 @@ package body et_geometry is
 	package body shapes_2d is
 		use geometry;
 		
-		function to_string (line : in type_line_2d) return string is
+		function to_string (line : in type_line) return string is
 		-- Returns the start and end point of the given line as string.
 		begin
 			return latin_1.space 

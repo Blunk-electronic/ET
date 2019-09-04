@@ -6226,38 +6226,38 @@ package body et_kicad_pcb is
 				case board_line.layer is
 
 					when TOP_SILK =>
-						board.silk_screen.top.lines.append ((type_line_2d (board_line) with board_line.width));
+						board.silk_screen.top.lines.append ((shapes.type_line (board_line) with board_line.width));
 						line_silk_screen_properties (TOP, board.silk_screen.top.lines.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						board.silk_screen.bottom.lines.append ((type_line_2d (board_line) with board_line.width));
+						board.silk_screen.bottom.lines.append ((shapes.type_line (board_line) with board_line.width));
 						line_silk_screen_properties (BOTTOM, board.silk_screen.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						board.assy_doc.top.lines.append ((type_line_2d (board_line) with board_line.width));
+						board.assy_doc.top.lines.append ((shapes.type_line (board_line) with board_line.width));
 						line_assy_doc_properties (TOP, board.assy_doc.top.lines.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						board.assy_doc.bottom.lines.append ((type_line_2d (board_line) with board_line.width));
+						board.assy_doc.bottom.lines.append ((shapes.type_line (board_line) with board_line.width));
 						line_assy_doc_properties (BOTTOM, board.assy_doc.bottom.lines.last, log_threshold + 1);
 
 
 					when TOP_PASTE =>
-						board.stencil.top.lines.append ((type_line_2d (board_line) with board_line.width));
+						board.stencil.top.lines.append ((shapes.type_line (board_line) with board_line.width));
 						line_stencil_properties (TOP, board.stencil.top.lines.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						board.stencil.bottom.lines.append ((type_line_2d (board_line) with board_line.width));
+						board.stencil.bottom.lines.append ((shapes.type_line (board_line) with board_line.width));
 						line_stencil_properties (BOTTOM, board.stencil.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						board.stop_mask.top.lines.append ((type_line_2d (board_line) with board_line.width));
+						board.stop_mask.top.lines.append ((shapes.type_line (board_line) with board_line.width));
 						line_stop_mask_properties (TOP, board.stop_mask.top.lines.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						board.stop_mask.bottom.lines.append ((type_line_2d (board_line) with board_line.width));
+						board.stop_mask.bottom.lines.append ((shapes.type_line (board_line) with board_line.width));
 						line_stop_mask_properties (BOTTOM, board.stop_mask.bottom.lines.last, log_threshold + 1);
 
 
@@ -6277,7 +6277,7 @@ package body et_kicad_pcb is
 
 						
 					when EDGE_CUTS =>
-						board.contour.lines.append ((type_line_2d (board_line) with locked => NO));
+						board.contour.lines.append ((shapes.type_line (board_line) with locked => NO));
 						line_pcb_contour_properties (board.contour.lines.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -6910,7 +6910,7 @@ package body et_kicad_pcb is
 					container	=> board.segments,
 					new_item	=> segment);
 
-				log (text => "segment " & shapes.to_string (type_line_2d (segment)) & -- start and end point
+				log (text => "segment " & to_string (shapes.type_line (segment)) & -- start and end point
 					 " width" & to_string (segment.width) &
 					 " layer" & to_string (segment.layer) &
 					 " net_id" & to_string (segment.net_id) &
