@@ -585,11 +585,10 @@ package body et_geometry is
 
 			zone : type_line_zone; -- to be returned
 		
-			line_length : geometry.type_distance;
-			zone_border : geometry.type_distance;
+			line_length : type_distance;
+			zone_border : type_distance;
 			
-		begin
-
+		begin -- which_zone
 			-- The greater distance from start to end point in X or Y determines 
 			-- whether the segment is handled like a horizontal or vertical drawn segment.
 			if distance (line.start_point, line.end_point, X) > distance (line.start_point, line.end_point, Y) then

@@ -341,12 +341,7 @@ package et_pcb is
 	fill_style_hatching_line_width_default	: constant type_distance := 0.3; -- the width of the lines
 	fill_style_hatching_spacing_default		: constant type_distance := 2.0; -- the space between the lines
 
-	package shapes is new et_geometry.shapes_2d (
-		type_distance	=> et_pcb_coordinates.type_distance,
-		type_rotation	=> et_pcb_coordinates.type_rotation,
-		geometry		=> et_pcb_coordinates.geometry
-		);
-
+	package shapes is new et_geometry.shapes_2d (geometry => et_pcb_coordinates.geometry);
 	use shapes;
 	
 	

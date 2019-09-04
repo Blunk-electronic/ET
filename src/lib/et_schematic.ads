@@ -70,12 +70,7 @@ package et_schematic is
 	use et_general.type_net_name;
 	use et_coordinates.geometry;
 
-	package shapes is new et_geometry.shapes_2d (
-		type_distance	=> et_coordinates.type_distance,
-		type_rotation	=> et_coordinates.type_rotation,
-		geometry		=> et_coordinates.geometry
-		);
-
+	package shapes is new et_geometry.shapes_2d (geometry => et_coordinates.geometry);
 	use shapes;
 
 	

@@ -224,8 +224,6 @@ package et_geometry is
 -- 	end geometry_operations_3d;
 
 	generic
-		type type_distance is delta <>;
-		type type_rotation is delta <>;
 		with package geometry is new geometry_operations_2d (<>);
 		
 	package shapes_2d is
@@ -265,7 +263,7 @@ package et_geometry is
 		-- CIRCLE
 		type type_circle is abstract tagged record
 			center			: type_point;
-			radius  		: geometry.type_distance := geometry.zero;
+			radius  		: type_distance := geometry.zero;
 			-- CS locked : type_locked;
 		end record;
 		
