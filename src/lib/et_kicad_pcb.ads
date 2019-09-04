@@ -205,7 +205,7 @@ package et_kicad_pcb is
 		layer	: type_layer_abbrevation;
 	end record;
 
-	type type_arc is new et_pcb.shapes.type_arc_2d with record
+	type type_arc is new et_pcb.shapes.type_arc with record
 		width 	: et_pcb.type_text_line_width;
 		angle 	: et_pcb_coordinates.type_rotation;
 		layer	: type_layer_abbrevation;

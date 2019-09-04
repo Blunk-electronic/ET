@@ -396,7 +396,7 @@ package et_pcb is
 	package type_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
 
 	
-	type type_pcb_contour_arc is new type_arc_2d with record  -- CS: in the future type_arc_3d
+	type type_pcb_contour_arc is new type_arc with record  -- CS: in the future type_arc_3d
 		locked : type_locked := type_locked'first;
 	end record;
 	package type_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
@@ -455,7 +455,7 @@ package et_pcb is
 	end record;
 	package type_copper_lines is new doubly_linked_lists (type_copper_line);
 
-	type type_copper_arc is new type_arc_2d with record
+	type type_copper_arc is new type_arc with record
 		width	: type_track_width;
 	end record;
 	package type_copper_arcs is new doubly_linked_lists (type_copper_arc);
@@ -664,7 +664,7 @@ package et_pcb is
 	package type_stop_lines is new doubly_linked_lists (type_stop_line);
 
 
-	type type_stop_arc is new type_arc_2d with record
+	type type_stop_arc is new type_arc with record
 		width	: type_general_line_width;
 	end record;
 
@@ -724,7 +724,7 @@ package et_pcb is
 	package type_stencil_lines is new doubly_linked_lists (type_stencil_line);
 
 
-	type type_stencil_arc is new type_arc_2d with record
+	type type_stencil_arc is new type_arc with record
 		width	: type_general_line_width;
 	end record;
 
@@ -767,7 +767,7 @@ package et_pcb is
 	package type_silk_lines is new doubly_linked_lists (type_silk_line);
 
 
-	type type_silk_arc is new type_arc_2d with record
+	type type_silk_arc is new type_arc with record
 		width	: type_general_line_width;
 	end record;
 
@@ -827,7 +827,7 @@ package et_pcb is
 	package type_doc_lines is new doubly_linked_lists (type_doc_line);
 
 
-	type type_doc_arc is new type_arc_2d with record
+	type type_doc_arc is new type_arc with record
 		width	: type_general_line_width;
 	end record;
 
@@ -886,7 +886,7 @@ package et_pcb is
 	
 	package type_keepout_lines is new doubly_linked_lists (type_keepout_line);
 
-	type type_keepout_arc is new type_arc_2d with record
+	type type_keepout_arc is new type_arc with record
 		width	: type_general_line_width;
 	end record;
 		
@@ -923,7 +923,7 @@ package et_pcb is
 	
 	package type_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
 
-	type type_route_restrict_arc is new type_arc_2d with record
+	type type_route_restrict_arc is new type_arc with record
 		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers 	: type_signal_layers.set;
 	end record;
@@ -967,7 +967,7 @@ package et_pcb is
 	package type_via_restrict_lines is new doubly_linked_lists (type_via_restrict_line);
 
 	
-	type type_via_restrict_arc is new type_arc_2d with record
+	type type_via_restrict_arc is new type_arc with record
 		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers	: type_signal_layers.set;
 	end record;
@@ -1043,7 +1043,7 @@ package et_pcb is
 	
 	-- A pad outline consists of lines, arcs, circles, polygons:
 	type type_pad_line is new type_line with null record;
-	type type_pad_arc is new type_arc_2d with null record;
+	type type_pad_arc is new type_arc with null record;
 	type type_pad_circle is new type_circle_2d with null record;
 	type type_pad_polygon is record corners : type_polygon_points.set; end record;
 

@@ -485,7 +485,7 @@ package body et_pcb is
 	begin
 		arc := element (cursor);
 		log (text => "copper arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc_2d (arc))
+			 & to_string (type_arc (arc))
 			 & " width" & to_string (arc.width), level => log_threshold);
 	end arc_copper_properties;
 	
@@ -665,7 +665,7 @@ package body et_pcb is
 	begin
 		arc := element (cursor);
 		log (text => "silk screen arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc_2d (arc))
+			 & to_string (type_arc (arc))
 			 & " width" & to_string (arc.width), level => log_threshold);
 	end arc_silk_screen_properties;
 	
@@ -753,7 +753,7 @@ package body et_pcb is
 	begin
 		arc := element (cursor);
 		log (text => "assembly doc arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc_2d (arc))
+			 & to_string (type_arc (arc))
 			 & " width" & to_string (arc.width), level => log_threshold);
 	end arc_assy_doc_properties;
 
@@ -841,7 +841,7 @@ package body et_pcb is
 	begin
 		arc := element (cursor);
 		log (text => "keepout (courtyard) arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc_2d (arc)), level => log_threshold);
+			 & to_string (type_arc (arc)), level => log_threshold);
 	end arc_keepout_properties;
 
 	procedure circle_keepout_properties (
@@ -871,7 +871,7 @@ package body et_pcb is
 	begin
 		arc := element (cursor);
 		log (text => "stop mask arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc_2d (arc))
+			 & to_string (type_arc (arc))
 			 & " width" & to_string (arc.width),
 			 level => log_threshold);
 	end arc_stop_mask_properties;
@@ -943,7 +943,7 @@ package body et_pcb is
 	begin
 		arc := element (cursor);
 		log (text => "solder paste (stencil) arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc_2d (arc))
+			 & to_string (type_arc (arc))
 			 & " width" & to_string (arc.width),
 			 level => log_threshold);
 	end arc_stencil_properties;
@@ -1005,7 +1005,7 @@ package body et_pcb is
 	begin
 		arc := element (cursor);
 		log (text => "route restrict arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc_2d (arc)), level => log_threshold);
+			 & to_string (type_arc (arc)), level => log_threshold);
 	end arc_route_restrict_properties;
 
 
@@ -1036,7 +1036,7 @@ package body et_pcb is
 	begin
 		arc := element (cursor);
 		log (text => "via restrict arc face" & to_string (face) & latin_1.space 
-			 & to_string (type_arc_2d (arc)), level => log_threshold);
+			 & to_string (type_arc (arc)), level => log_threshold);
 	end arc_via_restrict_properties;
 
 	-- CS procedure circle_via_restrict_properties
@@ -1064,7 +1064,7 @@ package body et_pcb is
 	begin
 		arc := element (cursor);
 		log (text => "PCB contour (edge cuts / outline) arc" & latin_1.space 
-			 & to_string (type_arc_2d (arc)), level => log_threshold);
+			 & to_string (type_arc (arc)), level => log_threshold);
 	end arc_pcb_contour_properties;
 
 	procedure circle_pcb_contour_properties (
@@ -1104,7 +1104,7 @@ package body et_pcb is
 		end line;
 
 		procedure arc (cursor : in type_pad_arcs.cursor) is begin
-			log (text => to_string (type_arc_2d (element (cursor))), level => log_threshold + 1);
+			log (text => to_string (shapes.type_arc (element (cursor))), level => log_threshold + 1);
 		end arc;
 		
 		procedure circle (cursor : in type_pad_circles.cursor) is begin

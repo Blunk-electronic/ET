@@ -585,7 +585,7 @@ package body et_geometry is
 				& " end" & to_string (line.end_point);
 		end;
 
-		function to_string (arc : in type_arc_2d) return string is
+		function to_string (arc : in type_arc) return string is
 		-- Returns the start, end point and angle of the given arc as string.
 		begin
 			return latin_1.space 

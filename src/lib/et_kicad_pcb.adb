@@ -1898,20 +1898,20 @@ package body et_kicad_pcb is
 				-- is formed and appended to the list of silk screen circles.
 				case arc.layer is
 					when TOP_SILK =>
-						silk_screen.top.arcs.append ((et_pcb.shapes.type_arc_2d (arc) with arc.width));
+						silk_screen.top.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
 						arc_silk_screen_properties (TOP, silk_screen.top.arcs.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						silk_screen.bottom.arcs.append ((et_pcb.shapes.type_arc_2d (arc) with arc.width));
+						silk_screen.bottom.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
 						arc_silk_screen_properties (BOTTOM, silk_screen.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						assy_doc.top.arcs.append ((et_pcb.shapes.type_arc_2d (arc) with arc.width));
+						assy_doc.top.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
 						arc_assy_doc_properties (TOP, assy_doc.top.arcs.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						assy_doc.bottom.arcs.append ((et_pcb.shapes.type_arc_2d (arc) with arc.width));
+						assy_doc.bottom.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
 						arc_assy_doc_properties (BOTTOM, assy_doc.bottom.arcs.last, log_threshold + 1);
 
 						
@@ -1933,29 +1933,29 @@ package body et_kicad_pcb is
 
 						
 					when TOP_COPPER => 
-						copper.top.arcs.append ((et_pcb.shapes.type_arc_2d (arc) with arc.width));
+						copper.top.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
 						arc_copper_properties (TOP, copper.top.arcs.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						copper.bottom.arcs.append ((et_pcb.shapes.type_arc_2d (arc) with arc.width));
+						copper.bottom.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
 						arc_copper_properties (BOTTOM, copper.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						stop_mask.top.arcs.append ((et_pcb.shapes.type_arc_2d (arc) with arc.width));
+						stop_mask.top.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
 						arc_stop_mask_properties (TOP, stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						stop_mask.bottom.arcs.append ((et_pcb.shapes.type_arc_2d (arc) with arc.width));
+						stop_mask.bottom.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
 						arc_stop_mask_properties (BOTTOM, stop_mask.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
-						stencil.top.arcs.append ((et_pcb.shapes.type_arc_2d (arc) with arc.width));
+						stencil.top.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
 						arc_stencil_properties (TOP, stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						stencil.bottom.arcs.append ((et_pcb.shapes.type_arc_2d (arc) with arc.width));
+						stencil.bottom.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
 						arc_stencil_properties (BOTTOM, stencil.bottom.arcs.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -6081,38 +6081,38 @@ package body et_kicad_pcb is
 				-- depending on the layer extended with specific properties.
 				case board_arc.layer is
 					when TOP_SILK =>
-						board.silk_screen.top.arcs.append ((et_pcb.shapes.type_arc_2d (board_arc) with board_arc.width));
+						board.silk_screen.top.arcs.append ((et_pcb.shapes.type_arc (board_arc) with board_arc.width));
 						arc_silk_screen_properties (TOP, board.silk_screen.top.arcs.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						board.silk_screen.bottom.arcs.append ((et_pcb.shapes.type_arc_2d (board_arc) with board_arc.width));
+						board.silk_screen.bottom.arcs.append ((et_pcb.shapes.type_arc (board_arc) with board_arc.width));
 						arc_silk_screen_properties (BOTTOM, board.silk_screen.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						board.assy_doc.top.arcs.append ((et_pcb.shapes.type_arc_2d (board_arc) with board_arc.width));
+						board.assy_doc.top.arcs.append ((et_pcb.shapes.type_arc (board_arc) with board_arc.width));
 						arc_assy_doc_properties (TOP, board.assy_doc.top.arcs.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						board.assy_doc.bottom.arcs.append ((et_pcb.shapes.type_arc_2d (board_arc) with board_arc.width));
+						board.assy_doc.bottom.arcs.append ((et_pcb.shapes.type_arc (board_arc) with board_arc.width));
 						arc_assy_doc_properties (BOTTOM, board.assy_doc.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
-						board.stencil.top.arcs.append ((et_pcb.shapes.type_arc_2d (board_arc) with board_arc.width));
+						board.stencil.top.arcs.append ((et_pcb.shapes.type_arc (board_arc) with board_arc.width));
 						arc_stencil_properties (TOP, board.stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						board.stencil.bottom.arcs.append ((et_pcb.shapes.type_arc_2d (board_arc) with board_arc.width));
+						board.stencil.bottom.arcs.append ((et_pcb.shapes.type_arc (board_arc) with board_arc.width));
 						arc_stencil_properties (BOTTOM, board.stencil.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						board.stop_mask.top.arcs.append ((et_pcb.shapes.type_arc_2d (board_arc) with board_arc.width));
+						board.stop_mask.top.arcs.append ((et_pcb.shapes.type_arc (board_arc) with board_arc.width));
 						arc_stop_mask_properties (TOP, board.stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						board.stop_mask.bottom.arcs.append ((et_pcb.shapes.type_arc_2d (board_arc) with board_arc.width));
+						board.stop_mask.bottom.arcs.append ((et_pcb.shapes.type_arc (board_arc) with board_arc.width));
 						arc_stop_mask_properties (BOTTOM, board.stop_mask.bottom.arcs.last, log_threshold + 1);
 
 
@@ -6133,7 +6133,7 @@ package body et_kicad_pcb is
 						arc_keepout_properties (BOTTOM, board.keepout.bottom.arcs.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
-						board.contour.arcs.append ((et_pcb.shapes.type_arc_2d (board_arc) with locked => NO));
+						board.contour.arcs.append ((et_pcb.shapes.type_arc (board_arc) with locked => NO));
 						arc_pcb_contour_properties (board.contour.arcs.last, log_threshold + 1);
 						
 					when others => invalid_layer;
@@ -6355,20 +6355,20 @@ package body et_kicad_pcb is
 				-- is formed and appended to the list of silk screen circles.
 				case package_arc.layer is
 					when TOP_SILK =>
-						package_silk_screen.top.arcs.append ((et_pcb.shapes.type_arc_2d (package_arc) with package_arc.width));
+						package_silk_screen.top.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
 						arc_silk_screen_properties (TOP, package_silk_screen.top.arcs.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						package_silk_screen.bottom.arcs.append ((et_pcb.shapes.type_arc_2d (package_arc) with package_arc.width));
+						package_silk_screen.bottom.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
 						arc_silk_screen_properties (BOTTOM, package_silk_screen.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						package_assy_doc.top.arcs.append ((et_pcb.shapes.type_arc_2d (package_arc) with package_arc.width));
+						package_assy_doc.top.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
 						arc_assy_doc_properties (TOP, package_assy_doc.top.arcs.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						package_assy_doc.bottom.arcs.append ((et_pcb.shapes.type_arc_2d (package_arc) with package_arc.width));
+						package_assy_doc.bottom.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
 						arc_assy_doc_properties (BOTTOM, package_assy_doc.bottom.arcs.last, log_threshold + 1);
 
 						
@@ -6390,29 +6390,29 @@ package body et_kicad_pcb is
 
 						
 					when TOP_COPPER => 
-						package_copper.top.arcs.append ((et_pcb.shapes.type_arc_2d (package_arc) with package_arc.width));
+						package_copper.top.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
 						arc_copper_properties (TOP, package_copper.top.arcs.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						package_copper.bottom.arcs.append ((et_pcb.shapes.type_arc_2d (package_arc) with package_arc.width));
+						package_copper.bottom.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
 						arc_copper_properties (BOTTOM, package_copper.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						package_stop_mask.top.arcs.append ((et_pcb.shapes.type_arc_2d (package_arc) with package_arc.width));
+						package_stop_mask.top.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
 						arc_stop_mask_properties (TOP, package_stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						package_stop_mask.bottom.arcs.append ((et_pcb.shapes.type_arc_2d (package_arc) with package_arc.width));
+						package_stop_mask.bottom.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
 						arc_stop_mask_properties (BOTTOM, package_stop_mask.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
-						package_stencil.top.arcs.append ((et_pcb.shapes.type_arc_2d (package_arc) with package_arc.width));
+						package_stencil.top.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
 						arc_stencil_properties (TOP, package_stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						package_stencil.bottom.arcs.append ((et_pcb.shapes.type_arc_2d (package_arc) with package_arc.width));
+						package_stencil.bottom.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
 						arc_stencil_properties (BOTTOM, package_stencil.bottom.arcs.last, log_threshold + 1);
 
 					when others => invalid_layer;
