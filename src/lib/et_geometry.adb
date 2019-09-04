@@ -590,14 +590,13 @@ package body et_geometry is
 			
 		begin -- which_zone
 			-- The greater distance from start to end point in X or Y determines 
-			-- whether the segment is handled like a horizontal or vertical drawn segment.
+			-- whether the line is handled like a horizontal or vertical drawn line.
 			if distance (line.start_point, line.end_point, X) > distance (line.start_point, line.end_point, Y) then
 
 				-- distance in X greater -> decision will be made along the X axis.
-				-- The segment will be handled like a horizontal drawn segment.
+				-- The line will be handled like a horizontal drawn line.
 				
-				-- calculate the zone border. This depends on the segment length
-				-- in X direction.
+				-- calculate the zone border. This depends on the line length in X direction.
 				line_length := distance (line.start_point, line.end_point, X);
 				zone_border := line_length / type_distance (line_zone_division_factor);
 
@@ -625,10 +624,9 @@ package body et_geometry is
 				
 			else
 				-- distance in Y greater or equal distance in X -> decision will be made along the Y axis.
-				-- The segment will be handled like a vertical drawn segment.
+				-- The line will be handled like a vertical drawn line.
 
-				-- calculate the zone border. This depends on the segment length
-				-- in X direction.
+				-- calculate the zone border. This depends on the line length in X direction.
 				line_length := distance (line.start_point, line.end_point, Y);
 				zone_border := line_length / type_distance (line_zone_division_factor);
 
