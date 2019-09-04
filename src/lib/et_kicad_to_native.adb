@@ -2880,19 +2880,27 @@ package body et_kicad_to_native is
 							kicad_coordinates.sheet (element (kicad_strand_cursor).position) then
 
 -- 							-- calculate distance of port from segment
+
 -- 							distance := geometry.distance_point_line (
 -- 								point 		=> et_coordinates.geometry.type_point (element (port_cursor_kicad).coordinates),
 -- 								line_start	=> et_coordinates.geometry.type_point (segment.coordinates_start),
 -- 								line_end	=> et_coordinates.geometry.type_point (segment.coordinates_end),
 -- 								line_range	=> WITH_END_POINTS);
--- CS
-							distance := et_schematic.shapes.distance_point_line (
-								point 		=> type_point (element (port_cursor_kicad).coordinates),
--- 								line_start	=> geometry.type_point (segment.coordinates_start),
--- 								line_end	=> geometry.type_point (segment.coordinates_end),
-								line 		=> (segment.coordinates_start, segment.coordinates_end),
-								line_range	=> WITH_END_POINTS);
-								
+							-- CS
+
+							-- CS this is a workaround in order to provide a line for function distance_point_line:
+							declare
+								type type_line_scratch is new shapes.type_line with null record;
+								line : type_line_scratch := (
+									start_point	=> geometry.type_point (segment.coordinates_start), 
+									end_point	=> geometry.type_point (segment.coordinates_end));
+							begin
+								distance := et_schematic.shapes.distance_point_line (
+									point 		=> type_point (element (port_cursor_kicad).coordinates),
+									line 		=> type_line (line),
+									line_range	=> WITH_END_POINTS);
+							end;
+							
 							-- If port sits on segment, append it to ports_of_segment.
 							if (not distance.out_of_range) and distance.distance = zero then
 								log (text => et_libraries.to_string (element (port_cursor_kicad).reference) 

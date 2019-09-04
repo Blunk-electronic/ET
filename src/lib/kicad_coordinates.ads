@@ -89,7 +89,7 @@ package kicad_coordinates is
 	-- If top_module = false, the name of the top module is omitted.
 
 	
-	type type_coordinates is new et_coordinates.geometry.type_point with private;
+	type type_coordinates is new et_coordinates.geometry.type_point with private; -- rename to type_position
 	
 
 	function path (position : in type_coordinates) return type_path_to_submodule.list;

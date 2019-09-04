@@ -479,8 +479,6 @@ package body et_geometry is
 
 			point		: in type_point;
 			line		: in type_line;
--- 			line_start	: in type_point;
--- 			line_end 	: in type_point;
 			line_range	: in type_line_range) 
 			return type_distance_point_line is
 

@@ -3706,12 +3706,17 @@ package body et_kicad is
 			use geometry;
 			use et_schematic.shapes;
 			distance : type_distance_point_line;
+
+			-- CS this is a workaround in order to provide a line for function distance_point_line:
+			type type_line_scratch is new et_schematic.shapes.type_line with null record;
+			line : type_line_scratch := (
+				start_point	=> geometry.type_point (segment.coordinates_start), 
+				end_point	=> geometry.type_point (segment.coordinates_end));
 			
-		begin
+		begin -- on_segment
 			distance := distance_point_line (
 				point 		=> port.coordinates,
-				line_start	=> type_point (segment.coordinates_start),
-				line_end	=> type_point (segment.coordinates_end),
+				line		=> line,
 				line_range	=> with_end_points);
 
 			-- start and end points of the segment are inclued in the test
@@ -5714,13 +5719,18 @@ package body et_kicad is
 					use geometry;
 					use et_schematic.shapes;
 					d : type_distance_point_line;
+
+					-- CS this is a workaround in order to provide a line for function distance_point_line:
+					type type_line_scratch is new et_schematic.shapes.type_line with null record;
+					line : type_line_scratch := (
+						start_point	=> geometry.type_point (segment.coordinates_start), 
+						end_point	=> geometry.type_point (segment.coordinates_end));
+					
 				begin
 					-- calculate the shortes distance of point from line.
 					d := distance_point_line (
-						--point		=> et_libraries.type_coordinates(point),
 						point		=> type_point (label.coordinates),
-						line_start	=> type_point (segment.coordinates_start),
-						line_end	=> type_point (segment.coordinates_end),
+						line		=> line,
 						line_range	=> with_end_points);
 					
 					--log (text => "distance: " & type_grid'image(d.distance), level => 1);
@@ -6551,7 +6561,7 @@ package body et_kicad is
 			-- Builds the drawing frame.
 			-- CS: Read lines and position of text placeholders from
 			-- *.kicad_wks file (either the default file or the one specified
-			-- in the project file by a line like "PageLayoutDescrFile=/home/luno/tmp/sheet.kicad_wks".
+			-- in the project file by a line like "PageLayoutDescrFile=/home/user/tmp/sheet.kicad_wks".
 				lines 			: in type_lines.list;
 				log_threshold	: in type_log_level) is
 
@@ -9141,12 +9151,17 @@ package body et_kicad is
 		use et_schematic.shapes;
 		d : type_distance_point_line;
 
+		-- CS this is a workaround in order to provide a line for function distance_point_line:
+		type type_line_scratch is new et_schematic.shapes.type_line with null record;
+		line : type_line_scratch := (
+			start_point	=> geometry.type_point (segment.coordinates_start), 
+			end_point	=> geometry.type_point (segment.coordinates_end));
+		
 	begin
 		-- calculate the shortes distance of point from line.
 		d := distance_point_line (
 			point 		=> type_point (junction.coordinates),
-			line_start	=> type_point (segment.coordinates_start),
-			line_end	=> type_point (segment.coordinates_end),
+			line		=> line,
 			line_range	=> inside_end_points);
 
 		if (not d.out_of_range) and d.distance = zero then
@@ -9519,12 +9534,18 @@ package body et_kicad is
 		end test_junction;
 
 		use et_coordinates;
+
+		-- CS this is a workaround in order to provide a line for function distance_point_line:
+		type type_line_scratch is new et_schematic.shapes.type_line with null record;
+		line : type_line_scratch := (
+			start_point	=> geometry.type_point (segment.coordinates_start), 
+			end_point	=> geometry.type_point (segment.coordinates_end));
 		
 	begin -- port_connected_with_segment
 		-- First make sure the port is to be connected at all. Ports intended to be open
 		-- are regarded as "not connected with the segment".
 		--if not port.intended_open then
-		if NOT (port.intended_open) then
+		if not (port.intended_open) then
 	
 			-- Make sure port and segment share the same module path and sheet.
 			-- It is sufficient to check against the segment start coordinates.
@@ -9533,8 +9554,7 @@ package body et_kicad is
 				-- calculate the shortes distance of point from line.
 				distance := distance_point_line (
 					point 		=> type_point (port.coordinates),
-					line_start	=> type_point (segment.coordinates_start),
-					line_end	=> type_point (segment.coordinates_end),
+					line		=> line,
 					line_range	=> with_end_points);
 
 				if (not distance.out_of_range) and distance.distance = zero then
@@ -11144,33 +11164,41 @@ package body et_kicad is
 								element (segment_cursor_prim).coordinates_start,
 								element (segment_cursor_sec).coordinates_start) then
 
-								-- If START point of primary segment sits BETWEEN start and end point of secondary segment,
-								-- exit prematurely and return the coordinates of the expected junction.
-								distance := distance_point_line (
-									point 		=> type_point (element (segment_cursor_prim).coordinates_start),
-									line_start	=> type_point (element (segment_cursor_sec).coordinates_start),
-									line_end	=> type_point (element (segment_cursor_sec).coordinates_end),
-									line_range	=> inside_end_points);
+								-- CS this is a workaround in order to provide a line for function distance_point_line:
+								declare
+									type type_line_scratch is new et_schematic.shapes.type_line with null record;
+									line : type_line_scratch := (
+										start_point	=> geometry.type_point (element (segment_cursor_sec).coordinates_start), 
+										end_point	=> geometry.type_point (element (segment_cursor_sec).coordinates_end));
+								begin
+									-- If START point of primary segment sits BETWEEN start and end point of secondary segment,
+									-- exit prematurely and return the coordinates of the expected junction.
+									distance := distance_point_line (
+										point 		=> type_point (element (segment_cursor_prim).coordinates_start),
+										line		=> line,
+										line_range	=> inside_end_points);
+								
+									if (not distance.out_of_range) and distance.distance = zero then
+										junction_position.expected := true;
+										junction_position.position := element (segment_cursor_prim).coordinates_start;
+										exit;
+									end if;
 
-								if (not distance.out_of_range) and distance.distance = zero then
-									junction_position.expected := true;
-									junction_position.position := element (segment_cursor_prim).coordinates_start;
-									exit;
-								end if;
+									-- If END point of primary segment sits BETWEEN start and end point of secondary segment,
+									-- exit prematurely and return the coordinates of the expected junction.
 
-								-- If END point of primary segment sits BETWEEN start and end point of secondary segment,
-								-- exit prematurely and return the coordinates of the expected junction.
-								distance := distance_point_line (
-									point 		=> type_point (element (segment_cursor_prim).coordinates_end),
-									line_start	=> type_point (element (segment_cursor_sec).coordinates_start),
-									line_end	=> type_point (element (segment_cursor_sec).coordinates_end),
-									line_range	=> inside_end_points);
-
-								if (not distance.out_of_range) and distance.distance = zero then
-									junction_position.expected := true;
-									junction_position.position := element (segment_cursor_prim).coordinates_end;
-									exit;
-								end if;
+									distance := distance_point_line (
+										point 		=> type_point (element (segment_cursor_prim).coordinates_end),
+										line		=> line,
+										line_range	=> inside_end_points);
+								
+									if (not distance.out_of_range) and distance.distance = zero then
+										junction_position.expected := true;
+										junction_position.position := element (segment_cursor_prim).coordinates_end;
+										exit;
+									end if;
+								end;
+								
 							end if;
 
 							next (segment_cursor_sec);
@@ -11354,12 +11382,18 @@ package body et_kicad is
 							-- It is sufficient to check against the segment start coordinates.
 							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
 
-								distance := distance_point_line (
-									point 		=> type_point (element (junction_cursor).coordinates),
-									line_start	=> type_point (element (segment_cursor).coordinates_start),
-									line_end	=> type_point (element (segment_cursor).coordinates_end),
-									line_range	=> with_end_points);
-
+								declare
+									type type_line_scratch is new et_schematic.shapes.type_line with null record;
+									line : type_line_scratch := (
+										start_point	=> geometry.type_point (element (segment_cursor).coordinates_start), 
+										end_point	=> geometry.type_point (element (segment_cursor).coordinates_end));
+								begin
+									distance := distance_point_line (
+										point 		=> type_point (element (junction_cursor).coordinates),
+										line		=> line,
+										line_range	=> with_end_points);
+								end;
+									
 								if (not distance.out_of_range) and distance.distance = zero then
 									segment_found := true;
 									exit;
@@ -11473,12 +11507,18 @@ package body et_kicad is
 							-- It is sufficient to check against the segment start coordinates.
 							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
 
-								distance := distance_point_line (
-									point 		=> type_point (element (junction_cursor).coordinates),
-									line_start	=> type_point (element (segment_cursor).coordinates_start),
-									line_end	=> type_point (element (segment_cursor).coordinates_end),
-									line_range	=> with_end_points);
-
+								declare
+									type type_line_scratch is new et_schematic.shapes.type_line with null record;
+									line : type_line_scratch := (
+										start_point	=> geometry.type_point (element (segment_cursor).coordinates_start), 
+										end_point	=> geometry.type_point (element (segment_cursor).coordinates_end));
+								begin
+									distance := distance_point_line (
+										point 		=> type_point (element (junction_cursor).coordinates),
+										line		=> line,
+										line_range	=> with_end_points);
+								end;
+								
 								-- count segments
 								if (not distance.out_of_range) and distance.distance = zero then
 									segment_counter := segment_counter + 1;
@@ -11658,13 +11698,19 @@ package body et_kicad is
 							if same_path_and_sheet (
 								element (no_connection_flag_cursor).coordinates,
 								element (segment_cursor).coordinates_start) then
-															
-								distance := distance_point_line (
-									point 		=> type_point (element (no_connection_flag_cursor).coordinates),
-									line_start	=> type_point (element (segment_cursor).coordinates_start),
-									line_end	=> type_point (element (segment_cursor).coordinates_end),
-									line_range	=> with_end_points);
 
+								declare
+									type type_line_scratch is new et_schematic.shapes.type_line with null record;
+									line : type_line_scratch := (
+										start_point	=> geometry.type_point (element (segment_cursor).coordinates_start), 
+										end_point	=> geometry.type_point (element (segment_cursor).coordinates_end));
+								begin
+									distance := distance_point_line (
+										point 		=> type_point (element (no_connection_flag_cursor).coordinates),
+										line		=> line,
+										line_range	=> with_end_points);
+								end;
+									
 								if (not distance.out_of_range) and distance.distance = zero then
 									log (WARNING, "no-connection-flag misplaced on a net at " 
 										& to_string (element (no_connection_flag_cursor).coordinates, kicad_coordinates.MODULE));
