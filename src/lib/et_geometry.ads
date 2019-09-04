@@ -238,6 +238,22 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
+		-- A line is divided into three zones. Their width is the ratio
+		-- of line length and the zone_division_factor.
+		-- 
+		--    S---|---center---|---E
+		--
+		-- The position of the bar (|) in this drawing depends on the zone_division_factor.
+		-- The center length is twice the length of start/end point.
+		type type_line_zone is (START_POINT, CENTER, END_POINT);
+		line_zone_division_factor : constant positive := 4;
+		
+		function which_zone (
+		-- Calculates the zone of the line where point is nearest.
+			point	: in type_point;
+			line	: in type_line) 
+			return type_line_zone;
+		
 		-- ARC
 		type type_arc is abstract tagged record
 			center			: type_point;

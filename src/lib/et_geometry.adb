@@ -576,6 +576,90 @@ package body et_geometry is
 	
 	package body shapes_2d is
 		use geometry;
+
+		function which_zone (
+		-- Calculates the zone of the line where point is nearest.
+			point	: in type_point;
+			line	: in type_line) 
+			return type_line_zone is
+
+			zone : type_line_zone; -- to be returned
+		
+			line_length : geometry.type_distance;
+			zone_border : geometry.type_distance;
+			
+		begin
+
+			-- The greater distance from start to end point in X or Y determines 
+			-- whether the segment is handled like a horizontal or vertical drawn segment.
+			if distance (line.start_point, line.end_point, X) > distance (line.start_point, line.end_point, Y) then
+
+				-- distance in X greater -> decision will be made along the X axis.
+				-- The segment will be handled like a horizontal drawn segment.
+				
+				-- calculate the zone border. This depends on the segment length
+				-- in X direction.
+				line_length := distance (line.start_point, line.end_point, X);
+				zone_border := line_length / type_distance (line_zone_division_factor);
+
+				if x (line.start_point) < x (line.end_point) then 
+				-- DRAWN FROM LEFT TO THE RIGHT
+					if x (point) < x (line.start_point) + zone_border then
+						zone := START_POINT; -- point is in the zone of line.start_point
+					elsif x (point) > x (line.end_point) - zone_border then
+						zone := END_POINT; -- point is in the zone of line.end_point
+					else
+						zone := CENTER;
+					end if;
+
+				else 
+				-- DRAWN FROM RIGHT TO THE LEFT
+					if x (point) > x (line.start_point) - zone_border then
+						zone := START_POINT; -- point is in the zone of line.start_point
+					elsif x (point) < x (line.end_point) + zone_border then
+						zone := END_POINT; -- point is in the zone of line.end_point
+					else
+						zone := CENTER;
+					end if;
+				end if;
+
+				
+			else
+				-- distance in Y greater or equal distance in X -> decision will be made along the Y axis.
+				-- The segment will be handled like a vertical drawn segment.
+
+				-- calculate the zone border. This depends on the segment length
+				-- in X direction.
+				line_length := distance (line.start_point, line.end_point, Y);
+				zone_border := line_length / type_distance (line_zone_division_factor);
+
+				if y (line.start_point) < y (line.end_point) then 
+				-- DRAWN UPWARDS
+					if y (point) < y (line.start_point) + zone_border then
+						zone := START_POINT; -- point is in the zone of line.start_point
+					elsif y (point) > y (line.end_point) - zone_border then
+						zone := END_POINT; -- point is in the zone of line.end_point
+					else
+						zone := CENTER;
+					end if;
+						
+				else 
+				-- DRAWN DOWNWARDS
+					if y (point) > y (line.start_point) - zone_border then
+						zone := START_POINT; -- point is in the zone of line.start_point
+					elsif y (point) < y (line.end_point) + zone_border then
+						zone := END_POINT; -- point is in the zone of line.end_point
+					else
+						zone := CENTER;
+					end if;
+				end if;
+				
+				
+			end if;
+			
+			return center;
+		end which_zone;
+
 		
 		function to_string (line : in type_line) return string is
 		-- Returns the start and end point of the given line as string.
