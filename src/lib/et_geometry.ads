@@ -166,14 +166,6 @@ package et_geometry is
 			point		: in out type_point'class;
 			rotation	: in type_rotation);
 		
-		function arc_end_point (
-		-- Computes the end point of an arc.
-			center		: in type_point;
-			start_point	: in type_point;	
-			angle 		: in type_rotation)
-			return type_point'class;
-
-
 		function to_string (point : in type_point) return string;
 		function to_string (point : in type_position) return string;
 
@@ -260,6 +252,13 @@ package et_geometry is
 			-- CS locked : type_locked;		
 		end record;
 
+		function arc_end_point (
+		-- Computes the end point of an arc.
+			center		: in type_point;
+			start_point	: in type_point;	
+			angle 		: in type_rotation)
+			return type_point'class;
+		
 		-- CIRCLE
 		type type_circle is abstract tagged record
 			center			: type_point;

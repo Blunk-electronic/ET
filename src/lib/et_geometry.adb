@@ -536,22 +536,6 @@ package body et_geometry is
 			
 		end rotate;
 
-		function arc_end_point (
-		-- Computes the end point of an arc.
-			center		: in type_point;
-			start_point	: in type_point;	
-			angle 		: in type_rotation)
-			return type_point'class is
-			end_point : type_point; -- to be returned			
-		begin
-			-- CS
-			set (X, zero, end_point);
-			set (Y, zero, end_point);
-			
-			return end_point;
-		end arc_end_point;
-
-
 		
 		function to_string (point : in type_point) return string is begin
 			return point_preamble
@@ -657,6 +641,21 @@ package body et_geometry is
 			return center;
 		end which_zone;
 
+		function arc_end_point (
+		-- Computes the end point of an arc.
+			center		: in type_point;
+			start_point	: in type_point;	
+			angle 		: in type_rotation)
+			return type_point'class is
+			end_point : type_point; -- to be returned			
+		begin
+			-- CS
+			set (X, zero, end_point);
+			set (Y, zero, end_point);
+			
+			return end_point;
+		end arc_end_point;
+		
 		
 		function to_string (line : in type_line) return string is
 		-- Returns the start and end point of the given line as string.
