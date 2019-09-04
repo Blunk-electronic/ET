@@ -126,8 +126,8 @@ package body et_schematic is
 
 		use et_coordinates;
 		use type_net_segments;
-		start_point : type_point := element (segment).coordinates_start;
-		end_point   : type_point := element (segment).coordinates_end;
+		start_point : type_point := element (segment).start_point;
+		end_point   : type_point := element (segment).end_point;
 
 		segment_length : type_distance;
 		zone_border : type_distance;
@@ -269,9 +269,9 @@ package body et_schematic is
 		use type_net_segments;
 	begin
 		return ("segment start" & 
-			to_string (point => element (segment).coordinates_start) &
+			to_string (point => element (segment).start_point) &
 			" / end" &	
-			to_string (point => element (segment).coordinates_end)
+			to_string (point => element (segment).end_point)
 			);
 	end to_string;
 	
@@ -290,14 +290,14 @@ package body et_schematic is
 		procedure query_strand (cursor : in type_net_segments.cursor) is begin
 			-- Test start point of segment. 
 			-- if closer to orign than point_1 keep start point
-			point_2	:= type_point (element (cursor).coordinates_start);
+			point_2	:= type_point (element (cursor).start_point);
 			if distance (point_2, origin) < distance (point_1, origin) then
 				point_1 := point_2;
 			end if;
 
 			-- Test start point of segment.
 			-- if closer to orign than point_1 keep end point
-			point_2	:= type_point (element (cursor).coordinates_end);
+			point_2	:= type_point (element (cursor).end_point);
 			if distance (point_2, origin) < distance (point_1, origin) then
 				point_1 := point_2;
 			end if;

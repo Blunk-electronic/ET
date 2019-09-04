@@ -1604,8 +1604,8 @@ package body et_project is
 					while segment_cursor /= type_net_segments.no_element loop
 						section_mark (section_segment, HEADER);
 
-						write (keyword => keyword_start, parameters => position (element (segment_cursor).coordinates_start));
-						write (keyword => keyword_end,   parameters => "  " & position (element (segment_cursor).coordinates_end));
+						write (keyword => keyword_start, parameters => position (element (segment_cursor).start_point));
+						write (keyword => keyword_end,   parameters => "  " & position (element (segment_cursor).end_point));
 
 						query_element (segment_cursor, query_labels'access);
 						query_element (segment_cursor, query_junctions'access);
@@ -11042,13 +11042,13 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract start position starting at field 2
-										net_segment.coordinates_start := to_position (line, from => 2);
+										net_segment.start_point := to_position (line, from => 2);
 										
 									elsif kw = keyword_end then -- "end x 6 y 4"
 										expect_field_count (line, 5);
 
 										-- extract end position starting at field 2
-										net_segment.coordinates_end := to_position (line, from => 2);
+										net_segment.end_point := to_position (line, from => 2);
 
 									elsif kw = keyword_junction then -- "junction start/end"
 										expect_field_count (line, 2);

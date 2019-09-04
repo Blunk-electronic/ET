@@ -943,8 +943,8 @@ package body schematic_ops is
 	begin
 		dist := distance_point_line (
 			point 		=> point,
-			line_start	=> element (segment).coordinates_start,
-			line_end	=> element (segment).coordinates_end,
+			line_start	=> element (segment).start_point,
+			line_end	=> element (segment).end_point,
 			line_range	=> with_end_points);
 
 		-- start and end points of the segment are inclued in the test
@@ -970,8 +970,8 @@ package body schematic_ops is
 	begin
 		dist := distance_point_line (
 			point 		=> point,
-			line_start	=> element (segment).coordinates_start,
-			line_end	=> element (segment).coordinates_end,
+			line_start	=> element (segment).start_point,
+			line_end	=> element (segment).end_point,
 			line_range	=> inside_end_points);
 
 		--if not distance.out_of_range and distance.distance = zero then
@@ -1025,8 +1025,8 @@ package body schematic_ops is
 							-- If port sits on start OR end point of segment AND if it
 							-- is not already in the segment then append it to segment.ports_devices.
 							-- append it to the portlist of the segment.
-							if 	segment.coordinates_start = element (port_cursor).position or
-								segment.coordinates_end = element (port_cursor).position then
+							if 	segment.start_point = element (port_cursor).position or
+								segment.end_point = element (port_cursor).position then
 
 								-- If port not already in segment, append it.
 								-- Otherwise it must not be appended again. constraint_error would arise.
@@ -1770,30 +1770,30 @@ package body schematic_ops is
 							begin -- change_segment
 								
 								-- if port sits on a start point of a segment -> move start point
-								if segment.coordinates_start = element (drag_cursor).before then
+								if segment.start_point = element (drag_cursor).before then
 									log (text => "move segment start point from" & 
-										to_string (segment.coordinates_start),
+										to_string (segment.start_point),
 										level => log_threshold + 3);
 
-									segment.coordinates_start := element (drag_cursor).after;
+									segment.start_point := element (drag_cursor).after;
 
 									log (text => "to" & 
-										to_string (segment.coordinates_start),
+										to_string (segment.start_point),
 										level => log_threshold + 3);
 
 									drag_processed := true;
 								end if;
 
 								-- if port sits on an end point of a segment -> move end point
-								if segment.coordinates_end = element (drag_cursor).before then
+								if segment.end_point = element (drag_cursor).before then
 									log (text => "move segment end point from" & 
-										to_string (segment.coordinates_end),
+										to_string (segment.end_point),
 										level => log_threshold + 3);
 
-									segment.coordinates_end := element (drag_cursor).after;
+									segment.end_point := element (drag_cursor).after;
 
 									log (text => "to" & 
-										to_string (segment.coordinates_end),
+										to_string (segment.end_point),
 										level => log_threshold + 3);
 
 									drag_processed := true;
@@ -1924,13 +1924,13 @@ package body schematic_ops is
 
 					procedure probe_segment (segment : in type_net_segment) is begin
 						-- if place is a start point of a segment
-						if segment.coordinates_start = type_point (place) then
+						if segment.start_point = type_point (place) then
 							-- signal iterations in upper level to cancel
 							segment_found := true;
 						end if;
 
 						-- if place is an end point of a segment
-						if segment.coordinates_end = type_point (place) then
+						if segment.end_point = type_point (place) then
 							-- signal iterations in upper level to cancel
 							segment_found := true;
 						end if;
@@ -2951,12 +2951,12 @@ package body schematic_ops is
 
 								-- If the port was at the start point of the old segment, then
 								-- it goes into segment_1.
-								if port_position = old_segment.coordinates_start then
+								if port_position = old_segment.start_point then
 									insert (segment_1.ports_devices, element (cursor));
 
 								-- If the port was at the end point of the old segment, then
 								-- it goes into segment_2.
-								elsif port_position = old_segment.coordinates_end then
+								elsif port_position = old_segment.end_point then
 									insert (segment_2.ports_devices, element (cursor));
 
 								-- If port was somewhere else, we have a problem. This should never happen.
@@ -2999,12 +2999,12 @@ package body schematic_ops is
 
 								-- If the port was at the start point of the old segment, then
 								-- it goes into segment_1.
-								if port_position = old_segment.coordinates_start then
+								if port_position = old_segment.start_point then
 									insert (segment_1.ports_submodules, element (cursor));
 
 								-- If the port was at the end point of the old segment, then
 								-- it goes into segment_2.
-								elsif port_position = old_segment.coordinates_end then
+								elsif port_position = old_segment.end_point then
 									insert (segment_2.ports_submodules, element (cursor));
 
 								-- If port was somewhere else, we have a problem. This should never happen.
@@ -3049,12 +3049,12 @@ package body schematic_ops is
 
 								-- If the port was at the start point of the old segment, then
 								-- it goes into segment_1.
-								if port_position = old_segment.coordinates_start then
+								if port_position = old_segment.start_point then
 									insert (segment_1.ports_netchangers, element (cursor));
 
 								-- If the port was at the end point of the old segment, then
 								-- it goes into segment_2.
-								elsif port_position = old_segment.coordinates_end then
+								elsif port_position = old_segment.end_point then
 									insert (segment_2.ports_netchangers, element (cursor));
 
 								-- If port was somewhere else, we have a problem. This should never happen.
@@ -3076,10 +3076,10 @@ package body schematic_ops is
 						
 					begin -- insert_two_new_segments
 						-- set start and end points of new segments
-						segment_1.coordinates_start := old_segment.coordinates_start;
-						segment_1.coordinates_end := type_point (place);
-						segment_2.coordinates_start := type_point (place);
-						segment_2.coordinates_end := old_segment.coordinates_end;
+						segment_1.start_point := old_segment.start_point;
+						segment_1.end_point := type_point (place);
+						segment_2.start_point := type_point (place);
+						segment_2.end_point := old_segment.end_point;
 
 						-- set junctions
 						segment_1.junctions.start_point := old_segment.junctions.start_point;
@@ -3122,7 +3122,7 @@ package body schematic_ops is
 						--log_indentation_up;
 						--log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 
-						if type_point (place) = element (segment_cursor).coordinates_start then
+						if type_point (place) = element (segment_cursor).start_point then
 
 							-- place junction at start point of segment
 							update_element (
@@ -3133,7 +3133,7 @@ package body schematic_ops is
 							segment_found := true;
 							exit; -- no need to search for other segments
 							
-						elsif type_point (place) = element (segment_cursor).coordinates_end then
+						elsif type_point (place) = element (segment_cursor).end_point then
 
 							-- place junction at end point of segment
 							update_element (
@@ -4370,8 +4370,8 @@ package body schematic_ops is
 							-- If port sits on start OR end point of segment AND if it
 							-- is not already in the segment then append it to the 
 							-- portlist of the segment.
-							if 	segment.coordinates_start = port or
-								segment.coordinates_end = port then
+							if 	segment.start_point = port or
+								segment.end_point = port then
 
 								-- If port not already in segment, append it.
 								-- Otherwise it must not be appended again. constraint_error would arise.
@@ -4924,15 +4924,15 @@ package body schematic_ops is
 						log_indentation_up;
 						
 						-- if port sits on a start point of a segment -> move start point
-						if segment.coordinates_start = port_before then
+						if segment.start_point = port_before then
 							log (text => "move segment start point from" & 
-								to_string (segment.coordinates_start),
+								to_string (segment.start_point),
 								level => log_threshold + 3);
 
-							segment.coordinates_start := port_after;
+							segment.start_point := port_after;
 
 							log (text => "to" & 
-								to_string (segment.coordinates_start),
+								to_string (segment.start_point),
 								level => log_threshold + 3);
 
 							-- signal iterations in upper level to cancel
@@ -4940,15 +4940,15 @@ package body schematic_ops is
 						end if;
 
 						-- if port sits on an end point of a segment -> move end point
-						if segment.coordinates_end = port_before then
+						if segment.end_point = port_before then
 							log (text => "move segment end point from" & 
-								to_string (segment.coordinates_end),
+								to_string (segment.end_point),
 								level => log_threshold + 3);
 
-							segment.coordinates_end := port_after;
+							segment.end_point := port_after;
 
 							log (text => "to" & 
-								to_string (segment.coordinates_end),
+								to_string (segment.end_point),
 								level => log_threshold + 3);
 							
 							-- signal iterations in upper level to cancel
@@ -6356,14 +6356,14 @@ package body schematic_ops is
 			case zone is
 				when START_POINT =>
 					point := to_position (
-							point => segment.coordinates_start,
+							point => segment.start_point,
 							sheet => sheet (place));
 
 					search_ports; -- sets result to false if a port is connected with the start point
 					
 				when END_POINT =>
 					point := to_position (
-							point => segment.coordinates_end,
+							point => segment.end_point,
 							sheet => sheet (place));
 
 					search_ports; -- sets result to false if a port is connected with the end point
@@ -6373,7 +6373,7 @@ package body schematic_ops is
 					-- First check the start point of the segment.
 					-- If start point is movable, then the end point must be checked too.
 					point := to_position (
-							point => segment.coordinates_start,
+							point => segment.start_point,
 							sheet => sheet (place));
 
 					search_ports; -- sets result to false if a port is connected with the start point
@@ -6381,7 +6381,7 @@ package body schematic_ops is
 					-- If start point is movable, check end point.
 					if result = true then
 						point := to_position (
-								point => segment.coordinates_end,
+								point => segment.end_point,
 								sheet => sheet (place));
 
 						search_ports; -- sets result to false if a port is connected with the end point
@@ -6419,11 +6419,11 @@ package body schematic_ops is
 							when START_POINT =>
 								case coordinates is
 									when ABSOLUTE =>
-										segment.coordinates_start := point; -- given position is absolute
+										segment.start_point := point; -- given position is absolute
 
 									when RELATIVE =>
 										move (
-											point	=> segment.coordinates_start,
+											point	=> segment.start_point,
 											offset	=> point -- the given position is relative
 											);
 								end case;
@@ -6431,11 +6431,11 @@ package body schematic_ops is
 							when END_POINT =>
 								case coordinates is
 									when ABSOLUTE =>
-										segment.coordinates_end := point; -- given position is absolute
+										segment.end_point := point; -- given position is absolute
 
 									when RELATIVE =>
 										move (
-											point	=> segment.coordinates_end,
+											point	=> segment.end_point,
 											offset	=> point -- the given position is relative
 											);
 								end case;
@@ -6448,12 +6448,12 @@ package body schematic_ops is
 
 									when RELATIVE =>
 										move (
-											point	=> segment.coordinates_start,
+											point	=> segment.start_point,
 											offset	=> point -- the given position is relative
 											);
 
 										move (
-											point	=> segment.coordinates_end,
+											point	=> segment.end_point,
 											offset	=> point -- the given position is relative
 											);
 										
@@ -6466,22 +6466,22 @@ package body schematic_ops is
 					-- with the target_segment_before.
 
 						procedure copy_start_point is begin
-							if connected_segment.coordinates_start = target_segment_before.coordinates_start then
-								connected_segment.coordinates_start := element (segment_cursor_target).coordinates_start;
+							if connected_segment.start_point = target_segment_before.start_point then
+								connected_segment.start_point := element (segment_cursor_target).start_point;
 							end if;
 
-							if connected_segment.coordinates_end = target_segment_before.coordinates_start then
-								connected_segment.coordinates_end := element (segment_cursor_target).coordinates_start;
+							if connected_segment.end_point = target_segment_before.start_point then
+								connected_segment.end_point := element (segment_cursor_target).start_point;
 							end if;
 						end;
 
 						procedure copy_end_point is begin
-							if connected_segment.coordinates_start = target_segment_before.coordinates_end then
-								connected_segment.coordinates_start := element (segment_cursor_target).coordinates_end;
+							if connected_segment.start_point = target_segment_before.end_point then
+								connected_segment.start_point := element (segment_cursor_target).end_point;
 							end if;
 
-							if connected_segment.coordinates_end = target_segment_before.coordinates_end then
-								connected_segment.coordinates_end := element (segment_cursor_target).coordinates_end;
+							if connected_segment.end_point = target_segment_before.end_point then
+								connected_segment.end_point := element (segment_cursor_target).end_point;
 							end if;
 						end;
 						
@@ -6532,7 +6532,7 @@ package body schematic_ops is
 									(
 									module_name	=> module_name, 
 									place 		=> to_position (
-													point => segment.coordinates_start,
+													point => segment.start_point,
 													sheet => sheet (place)),
 									log_threshold => log_threshold + 1
 									);
@@ -6544,7 +6544,7 @@ package body schematic_ops is
 									(
 									module_name	=> module_name, 
 									place 		=> to_position (
-													point => segment.coordinates_end,
+													point => segment.end_point,
 													sheet => sheet (place)),
 									log_threshold => log_threshold + 1
 									);
@@ -6556,7 +6556,7 @@ package body schematic_ops is
 									(
 									module_name	=> module_name, 
 									place 		=> to_position (
-													point => segment.coordinates_start,
+													point => segment.start_point,
 													sheet => sheet (place)),
 									log_threshold => log_threshold + 1
 									);
@@ -6567,7 +6567,7 @@ package body schematic_ops is
 									(
 									module_name	=> module_name, 
 									place 		=> to_position (
-													point => segment.coordinates_end,
+													point => segment.end_point,
 													sheet => sheet (place)),
 									log_threshold => log_threshold + 1
 									);
@@ -7347,8 +7347,8 @@ package body schematic_ops is
 		net_cursor := locate_net (module_cursor, net_name);
 
 		-- build the segment from given start and end point
-		segment.coordinates_start := type_point (start_point);
-		segment.coordinates_end := end_point;
+		segment.start_point := type_point (start_point);
+		segment.end_point := end_point;
 		
 		log_indentation_up;
 		
@@ -7860,8 +7860,8 @@ package body schematic_ops is
 						-- If port sits on start OR end point of segment AND if it
 						-- is not already in the segment then append it to the 
 						-- portlist of the segment.
-						if 	segment.coordinates_start = type_point (position) or
-							segment.coordinates_end = type_point (position) then
+						if 	segment.start_point = type_point (position) or
+							segment.end_point = type_point (position) then
 
 							-- If port not already in segment, append it.
 							-- Otherwise it must not be appended again. constraint_error would arise.
@@ -8521,15 +8521,15 @@ package body schematic_ops is
 						log_indentation_up;
 						
 						-- if port sits on a start point of a segment -> move start point
-						if segment.coordinates_start = type_point (pos_before) then
+						if segment.start_point = type_point (pos_before) then
 							log (text => "move segment start point from" & 
-								to_string (segment.coordinates_start),
+								to_string (segment.start_point),
 								level => log_threshold + 3);
 
-							segment.coordinates_start := type_point (pos_after);
+							segment.start_point := type_point (pos_after);
 
 							log (text => "to" & 
-								to_string (segment.coordinates_start),
+								to_string (segment.start_point),
 								level => log_threshold + 3);
 
 							-- signal iterations in upper level to cancel
@@ -8537,15 +8537,15 @@ package body schematic_ops is
 						end if;
 
 						-- if port sits on an end point of a segment -> move end point
-						if segment.coordinates_end = type_point (pos_before) then
+						if segment.end_point = type_point (pos_before) then
 							log (text => "move segment end point from" & 
-								to_string (segment.coordinates_end),
+								to_string (segment.end_point),
 								level => log_threshold + 3);
 
-							segment.coordinates_end := type_point (pos_after);
+							segment.end_point := type_point (pos_after);
 
 							log (text => "to" & 
-								to_string (segment.coordinates_end),
+								to_string (segment.end_point),
 								level => log_threshold + 3);
 							
 							-- signal iterations in upper level to cancel

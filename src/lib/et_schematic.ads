@@ -254,27 +254,15 @@ package et_schematic is
 		end_point	: boolean := false;
 	end record;
 
-	type type_net_segment is record
-		coordinates_start 	: et_coordinates.geometry.type_point;
-		coordinates_end   	: et_coordinates.geometry.type_point;
+	type type_net_segment is new shapes.type_line with record
 		labels				: type_net_labels.list;
 		junctions			: type_junctions;
 		ports_devices		: type_ports_device.set;
 		ports_submodules	: type_ports_submodule.set;
 		ports_netchangers	: netlists.type_ports_netchanger.set;
 	end record;
-
+	
 	package type_net_segments is new doubly_linked_lists (type_net_segment);
-
-	-- A net segment is divided into three zones. Their width is the ratio
-	-- of segment length and the zone_division_factor.
-	-- 
-	--    S---|---center---|---E
-	--
-	-- The position of the bar (|) in this drawing depends on the zone_division_factor.
-	-- The center has twice the length of start/end point.
--- 	type type_zone is (START_POINT, CENTER, END_POINT);
--- 	zone_division_factor : constant positive := 4;
 	
 	function which_zone (
 	-- Calculates the zone on the segment where point is nearest.
