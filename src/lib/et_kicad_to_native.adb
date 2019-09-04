@@ -2886,10 +2886,11 @@ package body et_kicad_to_native is
 -- 								line_end	=> et_coordinates.geometry.type_point (segment.coordinates_end),
 -- 								line_range	=> WITH_END_POINTS);
 -- CS
-							distance := distance_point_line (
+							distance := et_schematic.shapes.distance_point_line (
 								point 		=> type_point (element (port_cursor_kicad).coordinates),
-								line_start	=> geometry.type_point (segment.coordinates_start),
-								line_end	=> geometry.type_point (segment.coordinates_end),
+-- 								line_start	=> geometry.type_point (segment.coordinates_start),
+-- 								line_end	=> geometry.type_point (segment.coordinates_end),
+								line 		=> (segment.coordinates_start, segment.coordinates_end),
 								line_range	=> WITH_END_POINTS);
 								
 							-- If port sits on segment, append it to ports_of_segment.

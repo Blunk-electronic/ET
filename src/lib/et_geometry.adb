@@ -477,9 +477,10 @@ package body et_geometry is
 		-- CS: provide range and accuracy via parameter
 		-- CS: type_Y_axis_positive (upwards, downwards) may matter here. 
 
-			point		: in type_point; 
-			line_start	: in type_point;
-			line_end 	: in type_point;
+			point		: in type_point;
+			line		: in type_line;
+-- 			line_start	: in type_point;
+-- 			line_end 	: in type_point;
 			line_range	: in type_line_range) 
 			return type_distance_point_line is
 
@@ -488,8 +489,8 @@ package body et_geometry is
 			type type_float is digits 11 range -100000000.0 .. 100000000.0; -- CS: probably way too much
 			package functions is new ada.numerics.generic_elementary_functions (type_float);
 
-			s : type_point := line_start;
-			e : type_point := line_end;		
+			s : type_point := line.start_point;
+			e : type_point := line.end_point;		
 
 			delta_x : type_distance := x (e) - x (s);
 			delta_y : type_distance := y (e) - y (s);
@@ -508,12 +509,12 @@ package body et_geometry is
 			case line_range is
 				when with_end_points | beyond_end_points =>
 					
-					if point = line_start then
+					if point = line.start_point then
 						
 						result.sits_on_start := true;
 						return result;
 
-					elsif point = line_end then
+					elsif point = line.end_point then
 						
 						result.sits_on_end := true;
 						return result;

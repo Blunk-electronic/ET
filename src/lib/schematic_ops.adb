@@ -944,8 +944,9 @@ package body schematic_ops is
 	begin
 		dist := distance_point_line (
 			point 		=> point,
-			line_start	=> element (segment).start_point,
-			line_end	=> element (segment).end_point,
+-- 			line_start	=> element (segment).start_point,
+			-- 			line_end	=> element (segment).end_point,
+			line		=> element (segment),
 			line_range	=> with_end_points);
 
 		-- start and end points of the segment are inclued in the test
@@ -972,8 +973,9 @@ package body schematic_ops is
 	begin
 		dist := distance_point_line (
 			point 		=> point,
-			line_start	=> element (segment).start_point,
-			line_end	=> element (segment).end_point,
+-- 			line_start	=> element (segment).start_point,
+-- 			line_end	=> element (segment).end_point,
+			line		=> element (segment),
 			line_range	=> inside_end_points);
 
 		--if not distance.out_of_range and distance.distance = zero then

@@ -239,8 +239,9 @@ package et_geometry is
 		
 		function distance_point_line (
 			point		: in type_point; 
-			line_start	: in type_point;
-			line_end 	: in type_point;
+-- 			line_start	: in type_point;
+			-- 			line_end 	: in type_point;
+			line		: in type_line;
 			line_range	: in type_line_range) 
 			return type_distance_point_line;
 
