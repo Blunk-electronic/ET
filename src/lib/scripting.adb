@@ -932,7 +932,7 @@ package body scripting is
 								point			=> type_point (set (
 													x => to_distance (f (8)),
 													y => to_distance (f (9)))),
-								meaning			=> et_libraries.REFERENCE,
+								meaning			=> et_libraries.NAME,
 								log_threshold	=> log_threshold + 1
 								);
 
@@ -1407,7 +1407,7 @@ package body scripting is
 								device_name		=> to_device_name (f (5)), -- IC1
 								unit_name		=> to_unit_name (f (6)), -- A
 								rotation		=> to_rotation (f (7)), -- 90
-								meaning			=> et_libraries.REFERENCE,
+								meaning			=> et_libraries.NAME,
 								log_threshold	=> log_threshold + 1
 								);
 

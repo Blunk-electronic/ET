@@ -167,7 +167,7 @@ package et_kicad is
 		rotation	: et_coordinates.type_rotation := et_coordinates.geometry.zero_rotation;
 		mirror		: et_schematic.type_mirror := et_schematic.NO;
 		position	: kicad_coordinates.type_position;		
-		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
+		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.NAME);
 		value		: et_libraries.type_text_placeholder (meaning => et_libraries.value);
 		
 		timestamp	: et_kicad_general.type_timestamp;
@@ -380,7 +380,7 @@ package et_kicad is
 		ports	: type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol
 
 		-- Placeholders for component wide texts. To be filled with content when a symbol is placed in the schematic:
-		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.REFERENCE);
+		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.NAME);
 		value		: et_libraries.type_text_placeholder (meaning => et_libraries.VALUE);
 		
 		-- Symbols have text placeholders according to the appearance of the component:		

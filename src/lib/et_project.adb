@@ -5587,7 +5587,7 @@ package body et_project is
 								-- placeholder would overwrite the previous one.
 
 								case symbol_placeholder_meaning is
-									when REFERENCE =>
+									when NAME =>
 										symbol.reference := (symbol_text_base with 
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);
@@ -6616,7 +6616,7 @@ package body et_project is
 								-- placeholder would overwrite the previous one.
 
 								case symbol_placeholder_meaning is
-									when REFERENCE =>
+									when NAME =>
 										unit_symbol.reference := (symbol_text_base with 
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);
@@ -8165,7 +8165,7 @@ package body et_project is
 		unit_placeholder			: et_libraries.type_text_basic;
 		unit_placeholder_position	: et_coordinates.geometry.type_point;
 		unit_placeholder_meaning	: et_libraries.type_text_meaning := et_libraries.type_text_meaning'first;
-		unit_placeholder_reference	: et_libraries.type_text_placeholder (meaning => et_libraries.REFERENCE);
+		unit_placeholder_reference	: et_libraries.type_text_placeholder (meaning => et_libraries.NAME);
 		unit_placeholder_value		: et_libraries.type_text_placeholder (meaning => et_libraries.VALUE);
 		unit_placeholder_purpose	: et_libraries.type_text_placeholder (meaning => et_libraries.PURPOSE);
 
@@ -8457,9 +8457,9 @@ package body et_project is
 					use et_libraries;
 				begin
 					case unit_placeholder_meaning is
-						when REFERENCE =>
+						when NAME =>
 							unit_placeholder_reference := (unit_placeholder with
-								meaning		=> REFERENCE,
+								meaning		=> NAME,
 								position	=> unit_placeholder_position);
 							
 						when VALUE =>

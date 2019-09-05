@@ -112,9 +112,9 @@ package et_schematic is
 		case appearance is
 			when et_libraries.SCH => null; -- CS
 			when et_libraries.SCH_PCB =>
-				name	: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
-				value	: et_libraries.type_text_placeholder (meaning => et_libraries.value);
-				purpose	: et_libraries.type_text_placeholder (meaning => et_libraries.purpose); -- to be filled in schematic later by the user
+				name	: et_libraries.type_text_placeholder (meaning => et_libraries.NAME);
+				value	: et_libraries.type_text_placeholder (meaning => et_libraries.VALUE);
+				purpose	: et_libraries.type_text_placeholder (meaning => et_libraries.PURPOSE); -- to be filled in schematic later by the user
 		end case;
 		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
 		-- basic coordinates (x/y). Via the unit position the sheet number can be obtained.

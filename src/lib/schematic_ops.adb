@@ -1302,7 +1302,7 @@ package body schematic_ops is
 				begin
 					-- The given meaning determines the placeholder to be moved:
 					case meaning is
-						when REFERENCE =>
+						when NAME =>
 							case coordinates is
 								when ABSOLUTE =>
 									unit.name.position := point;
@@ -1644,7 +1644,7 @@ package body schematic_ops is
 					unit	: in out type_unit) is
 				begin -- rotate_placeholder
 					case meaning is
-						when REFERENCE =>
+						when et_libraries.NAME =>
 							unit.name.rotation := rotation;
 							
 						when VALUE =>

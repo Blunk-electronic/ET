@@ -867,10 +867,10 @@ package body et_kicad is
 					-- Then we test the field id.
 					-- The field id must be mapped to the actual field meaning:
 					case type_component_field_id'value (et_string_processing.field (line,2)) is -- "0.."
-						when component_field_reference		=> meaning := et_libraries.reference;
-						when component_field_value			=> meaning := et_libraries.value;
-						when component_field_package		=> meaning := et_libraries.packge;
-						when component_field_datasheet		=> meaning := et_libraries.datasheet;
+						when component_field_reference		=> meaning := et_libraries.NAME;
+						when component_field_value			=> meaning := et_libraries.VALUE;
+						when component_field_package		=> meaning := et_libraries.PACKGE;
+						when component_field_datasheet		=> meaning := et_libraries.DATASHEET;
 						when others => null;
 					end case;
 
@@ -886,10 +886,10 @@ package body et_kicad is
 				if strip_id (et_string_processing.field (line,1)) = component_field_identifier then
 				
 					case type_component_field_id'value (strip_f (et_string_processing.field (line,1))) is
-						when component_field_reference		=> meaning := et_libraries.reference;
-						when component_field_value			=> meaning := et_libraries.value;
-						when component_field_package		=> meaning := et_libraries.packge;
-						when component_field_datasheet		=> meaning := et_libraries.datasheet;
+						when component_field_reference		=> meaning := et_libraries.NAME;
+						when component_field_value			=> meaning := et_libraries.VALUE;
+						when component_field_package		=> meaning := et_libraries.PACKGE;
+						when component_field_datasheet		=> meaning := et_libraries.DATASHEET;
 						when others => null;
 					end case;
 
@@ -1305,7 +1305,7 @@ package body et_kicad is
 			tmp_unit_add_level	: type_unit_add_level := type_unit_add_level'first; -- CS: rename to unit_add_level
 			tmp_unit_global		: boolean := false; -- specifies if a unit harbors component wide pins (such as power supply) -- CS: rename to unit_global
 			
-			field_reference		: et_libraries.type_text (meaning => reference); -- CS: should be field_prefix as it contains just the prefix 
+			field_reference		: et_libraries.type_text (meaning => NAME); -- CS: should be field_prefix as it contains just the prefix 
 			field_value			: et_libraries.type_text (meaning => value);
 			field_package		: et_libraries.type_text (meaning => packge);
 			field_datasheet		: et_libraries.type_text (meaning => datasheet);
@@ -1974,7 +1974,7 @@ package body et_kicad is
 				-- check content vs. meaning. 
 				case meaning is
 
-					when REFERENCE =>
+					when NAME =>
 						check_prefix_length (content (text));
 						check_prefix_characters (
 							prefix => type_device_name_prefix.to_bounded_string (content (text)),
@@ -2474,16 +2474,16 @@ package body et_kicad is
 					-- We convert the text field downward to a type_text_basic (which strips off the content) first.
 					-- Then we convert the type_text_basic upward to type_text_placeholder by providing the meaning:
 					unit.symbol.reference	:= (type_text_basic (field_reference)
-												with meaning => reference, position => field_reference.position);
+										with meaning => NAME, position => field_reference.position);
 					unit.symbol.value		:= (type_text_basic (field_value)
-												with meaning => value, position => field_value.position);
+										with meaning => VALUE, position => field_value.position);
 
 					case unit.symbol.appearance is
 						when sch_pcb =>
 							unit.symbol.packge		:= (type_text_basic (field_package)		
-														with meaning => packge, position => field_package.position);
+											with meaning => PACKGE, position => field_package.position);
 							unit.symbol.datasheet	:= (type_text_basic (field_datasheet)	
-														with meaning => datasheet, position => field_datasheet.position);
+											with meaning => DATASHEET, position => field_datasheet.position);
 						when others => null;
 					end case;
 				end set;
@@ -2812,7 +2812,7 @@ package body et_kicad is
 				case to_text_meaning (line => line, schematic => false) is
 
 					-- If we have the prefix field like "F0 "U" 0 50 50 H V C CNN"
-					when reference =>
+					when NAME =>
 									
 						-- CS: Do a cross check of prefix and reference -- "U" 
 						-- The prefix is already defined in the component hearder. 
@@ -2825,14 +2825,14 @@ package body et_kicad is
 						end if;
 
 						field_prefix_found := true;
-						field_reference := to_field (line => line, meaning => reference);
+						field_reference := to_field (line => line, meaning => NAME);
 						-- for the log:
 						write_text_properies (et_libraries.type_text (field_reference), log_threshold + 1);
 
 					-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
 					when value =>
 						field_value_found := true;
-						field_value := to_field (line => line, meaning => value);
+						field_value := to_field (line => line, meaning => VALUE);
 						
 						-- for the log:
 						write_text_properies (et_libraries.type_text (field_value), log_threshold + 1);
@@ -7395,10 +7395,10 @@ package body et_kicad is
 
 				-- These are the actual fields that descibe the component more detailled.
 				-- They are contextual validated once the given lines are read completely.
-				field_reference		: et_libraries.type_text (meaning => et_libraries.reference); -- like IC5 (redundant information with referenc, see above)
-				field_value			: et_libraries.type_text (meaning => value);	-- like 74LS00
-				field_package		: et_libraries.type_text (meaning => packge); -- like "bel_primiteves:S_SOT23"
-				field_datasheet		: et_libraries.type_text (meaning => datasheet); -- might be useful for some special components
+				field_reference		: et_libraries.type_text (meaning => NAME); -- like IC5 (redundant information with referenc, see above)
+				field_value			: et_libraries.type_text (meaning => VALUE);	-- like 74LS00
+				field_package		: et_libraries.type_text (meaning => PACKGE); -- like "bel_primiteves:S_SOT23"
+				field_datasheet		: et_libraries.type_text (meaning => DATASHEET); -- might be useful for some special components
 			
 				function to_field return et_libraries.type_text is
 				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
@@ -7519,7 +7519,7 @@ package body et_kicad is
 					-- NOTE: the reference prefix has been checked already in main of procedure make_component
 					log (text => "reference", level => log_threshold + 1);
 					if not field_reference_found then
-						missing_field (et_libraries.reference);
+						missing_field (et_libraries.NAME);
 						-- CS: use missing_field (text_reference.meaning); -- apply this to other calls of missing_field too
 					else
 						-- If alternative references have been found, they must be looked up according to the

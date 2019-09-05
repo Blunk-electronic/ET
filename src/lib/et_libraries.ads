@@ -114,7 +114,7 @@ package et_libraries is
 	function to_string (alignment : in type_text_alignment) return string;
 	
 	type type_text_meaning is (
-		REFERENCE,		-- for things like R301 or X9
+		NAME,			-- for things like R301 or X9
 		VALUE,			-- for component values like "200R"
 		PACKGE,			-- for component packages like SOT23
 		DATASHEET,		-- for url to datasheet
@@ -637,7 +637,7 @@ package et_libraries is
 			when SCH_PCB =>
 				-- Placeholders for device wide texts. To be filled with content when 
 				-- a symbol is placed in the schematic:
-				reference	: type_text_placeholder (meaning => et_libraries.REFERENCE);
+				reference	: type_text_placeholder (meaning => et_libraries.NAME);
 				value		: type_text_placeholder (meaning => et_libraries.VALUE);
 				purpose 	: type_text_placeholder (meaning => et_libraries.PURPOSE);
 			when SCH => null;				
