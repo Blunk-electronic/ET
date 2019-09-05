@@ -137,7 +137,7 @@ package body et_kicad is
 	-- The unit is an element in the given list of units.
 		name 	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
-		return kicad_coordinates.type_coordinates is
+		return kicad_coordinates.type_position is
 		unit_cursor : type_units_schematic.cursor;
 	begin
 		unit_cursor := type_units_schematic.find (container => units, key => name);
@@ -5506,7 +5506,7 @@ package body et_kicad is
 				return type_same_coord_result is
 
 				sc : type_same_coord_result;
-				line_start, line_end : kicad_coordinates.type_coordinates;
+				line_start, line_end : kicad_coordinates.type_position;
 				s, e : boolean; -- indicate the end point, that has been processed already
 				untouched, half_processed : boolean; -- indicate whether a segment is completely untouched or processed in only one direction
 
@@ -7380,7 +7380,7 @@ package body et_kicad is
 				
 				alternative_references		: type_alternative_references.list;
 				unit_name					: type_unit_name.bounded_string; -- A, B, PWR, CT, IO-BANK1 ...
-				position					: kicad_coordinates.type_coordinates;
+				position					: kicad_coordinates.type_position;
 				orientation					: et_coordinates.type_rotation;
 				mirror						: type_mirror;
 				timestamp					: type_timestamp; -- 59F202F2
@@ -9901,7 +9901,7 @@ package body et_kicad is
 			port_cursor : type_ports_library.cursor; 
 
 			unit_name_lib : type_unit_name.bounded_string; -- the unit name in the library. like "A", "B" or "PWR"
-			unit_position : kicad_coordinates.type_coordinates; -- the coordinates of the current unit
+			unit_position : kicad_coordinates.type_position; -- the coordinates of the current unit
 			-- CS: external units
 
 			procedure add_port is
@@ -9921,7 +9921,7 @@ package body et_kicad is
 					ports		: in out type_ports.list) is
 					use type_modules;
 					
-					port_coordinates : kicad_coordinates.type_coordinates;
+					port_coordinates : kicad_coordinates.type_position;
 					use et_coordinates.geometry;
 
 					function left_open return type_port_open is
@@ -9972,7 +9972,7 @@ package body et_kicad is
 					
 				begin -- add
 					-- Init port coordinates with the coordinates of the port found in the library.
-					-- The port position is a type_point and must be converted to type_coordinates.
+					-- The port position is a type_point and must be converted to type_position.
 					set (
 						point		=> port_coordinates,
 						position	=> element (port_cursor).position);
@@ -11093,7 +11093,7 @@ package body et_kicad is
 
 				type type_junction is record
 					expected : boolean := false;
-					position : kicad_coordinates.type_coordinates;
+					position : kicad_coordinates.type_position;
 				end record;
 
 				junction : type_junction;

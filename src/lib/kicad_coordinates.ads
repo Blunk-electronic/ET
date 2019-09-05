@@ -89,12 +89,12 @@ package kicad_coordinates is
 	-- If top_module = false, the name of the top module is omitted.
 
 	
-	type type_coordinates is new et_coordinates.geometry.type_point with private; -- rename to type_position
+	type type_position is new et_coordinates.geometry.type_point with private;
 	
 
-	function path (position : in type_coordinates) return type_path_to_submodule.list;
+	function path (position : in type_position) return type_path_to_submodule.list;
 
-	procedure set_path (position : in out type_coordinates; path : in type_path_to_submodule.list);
+	procedure set_path (position : in out type_position; path : in type_path_to_submodule.list);
 	-- Sets the path in given position.
 	
 	
@@ -110,23 +110,23 @@ package kicad_coordinates is
 	function to_string (
 	-- Returns the given position as string. Scope specifies how much position is to
 	-- be displayed. See type_scope comments.
-		position	: in type_coordinates;
+		position	: in type_position;
 		scope		: in type_scope := SHEET)
 		return string;
 
 
-	function sheet (position : in type_coordinates) return type_sheet;
+	function sheet (position : in type_position) return type_sheet;
 
-	function same_path_and_sheet (left, right : in type_coordinates) return boolean;
+	function same_path_and_sheet (left, right : in type_position) return boolean;
 	-- Returns true if the given coordinates have same path and sheet.
 	
-	procedure set_sheet (position : in out type_coordinates; sheet : in type_sheet);
+	procedure set_sheet (position : in out type_position; sheet : in type_sheet);
 	-- Sets the sheet number in given position.
 
 	
 	private 
 	
-		type type_coordinates is new et_coordinates.geometry.type_point with record
+		type type_position is new et_coordinates.geometry.type_point with record
 			path            : type_path_to_submodule.list; 
 			sheet_number	: type_sheet := type_sheet'first;
 		end record;

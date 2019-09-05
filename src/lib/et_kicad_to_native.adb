@@ -72,7 +72,7 @@ package body et_kicad_to_native is
 	
 	procedure transpose (log_threshold : in et_string_processing.type_log_level) is
 	-- Transposes coordinates of schematic and layout elements:
-	-- 1. In schematic changes the path (selector of et_coordinates.type_coordinates) to the root path (/).
+	-- 1. In schematic changes the path (selector of et_coordinates.type_position) to the root path (/).
 	--    CS: Native coordinates currently do not require the "path" selector. The change-path-stuff is thus not required.
 	-- 2. Moves schematic and layout objects from negative to positive y coordinates.
 	--    (The origin in kicad is the upper left corner. The origin in ET is the lower left corner.)
@@ -146,7 +146,7 @@ package body et_kicad_to_native is
 			return size;
 		end paper_size_of_schematic_sheet;
 
-		procedure move (point : in out kicad_coordinates.type_coordinates) is
+		procedure move (point : in out kicad_coordinates.type_position) is
 		-- Transposes a schematic point from the kicad frame to the ET native frame.
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
@@ -177,7 +177,7 @@ package body et_kicad_to_native is
 
 		procedure move (
 			point_actual	: in out et_coordinates.geometry.type_point;	-- the point it is about
-			point_help		: in kicad_coordinates.type_coordinates	-- supportive point that provides the sheet number
+			point_help		: in kicad_coordinates.type_position	-- supportive point that provides the sheet number
 			) is
 		-- Transposes the schematic point_actual from the kicad frame to the ET native frame.
 		-- point_help has supporting purpose: it provides the sheet number where point_actual sits.
@@ -2361,7 +2361,7 @@ package body et_kicad_to_native is
 
 	
 	function to_native_coordinates (
-		point 		: in kicad_coordinates.type_coordinates;
+		point 		: in kicad_coordinates.type_position;
 		rotation	: in et_coordinates.type_rotation := et_coordinates.geometry.zero_rotation)
 	-- Converts kicad schematic coordinates to native schematic coordinates.
 		return et_coordinates.type_position is

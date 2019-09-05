@@ -166,7 +166,7 @@ package et_kicad is
 	type type_unit_schematic (appearance : et_schematic.type_appearance_schematic) is record
 		rotation	: et_coordinates.type_rotation := et_coordinates.geometry.zero_rotation;
 		mirror		: et_schematic.type_mirror := et_schematic.NO;
-		position	: kicad_coordinates.type_coordinates;		
+		position	: kicad_coordinates.type_position;		
 		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.reference);
 		value		: et_libraries.type_text_placeholder (meaning => et_libraries.value);
 		
@@ -212,7 +212,7 @@ package et_kicad is
 	-- The unit is an element in the given list of units.
 		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
-		return type_coordinates;
+		return type_position;
 	
 	function mirror_style_of_unit (
 	-- Returns the mirror style of the given unit.
@@ -606,7 +606,7 @@ package et_kicad is
 
 	-- No-connection-flags indicate that a component port is intentionally left unconnected.
 	type type_no_connection_flag is record
-		coordinates : type_coordinates;
+		coordinates : type_position;
 		-- CS: processed flag
 	end record;
 
@@ -624,7 +624,7 @@ package et_kicad is
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
 		name			: et_libraries.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
-		coordinates 	: type_coordinates;
+		coordinates 	: type_position;
 		direction		: type_port_direction; -- example: "passive"
 		style			: type_port_style;
 		appearance		: et_schematic.type_appearance_schematic;
@@ -724,7 +724,7 @@ package et_kicad is
 
 	-- A net junction is where segments can be connected with each other.
 	type type_net_junction is record -- CS rename to type_junction
-		coordinates : type_coordinates;
+		coordinates : type_position;
 	end record;
 
 	function to_string (
@@ -737,8 +737,8 @@ package et_kicad is
 	package type_junctions is new doubly_linked_lists (type_net_junction);
 
 	type type_net_segment_base is tagged record
-		coordinates_start 	: kicad_coordinates.type_coordinates;
-		coordinates_end   	: kicad_coordinates.type_coordinates; -- CS et_coordinates.geometry.type_point ?
+		coordinates_start 	: kicad_coordinates.type_position;
+		coordinates_end   	: kicad_coordinates.type_position; -- CS et_coordinates.geometry.type_point ?
 	end record;
 
 	function length (segment : in type_net_segment_base) 
@@ -776,7 +776,7 @@ package et_kicad is
 	-- As long as strands are independed of each other they must 
 	-- have a name and their own scope.
 	type type_strand is record
-		position	: kicad_coordinates.type_coordinates; -- lowest x/y
+		position	: kicad_coordinates.type_position; -- lowest x/y
 		name		: et_general.type_net_name.bounded_string; -- example "CPU_CLOCK"		
 		scope 		: type_strand_scope := type_strand_scope'first; -- example "local"
 		segments	: type_net_segments.list;
@@ -1209,7 +1209,7 @@ package et_kicad is
 	type type_hierarchic_sheet is record
         text_size_of_name   : et_libraries.type_text_size;
         text_size_of_file   : et_libraries.type_text_size;
-		coordinates		    : type_coordinates;
+		coordinates		    : type_position;
         size_x, size_y      : et_coordinates.type_distance; -- size x/y of the box
 		timestamp           : type_timestamp;
 		ports				: type_hierarchic_sheet_ports.map;
@@ -1341,7 +1341,7 @@ package et_kicad is
 
 	
 	type type_frame is new et_libraries.type_frame with record
-		coordinates : type_coordinates; -- the position of the frame -- CS rename to position
+		coordinates : type_position; -- the position of the frame -- CS rename to position
 	end record;
 
 	procedure add_frame (
@@ -1431,7 +1431,7 @@ package et_kicad is
 	
 	-- A text/note in the schematic:
 	type type_text is new et_libraries.type_text_basic with record
-		coordinates		: kicad_coordinates.type_coordinates; -- CS rename to position
+		coordinates		: kicad_coordinates.type_position; -- CS rename to position
 		content			: et_libraries.type_text_content.bounded_string;
 	end record;
 

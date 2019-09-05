@@ -127,12 +127,12 @@ package body kicad_coordinates is
 		return to_string (result);
 	end to_string;
 
-	function path (position : in type_coordinates) return type_path_to_submodule.list is begin
+	function path (position : in type_position) return type_path_to_submodule.list is begin
 		return position.path;
 	end;
 
 	procedure set_path (
-		position	: in out type_coordinates;
+		position	: in out type_position;
 		path		: in type_path_to_submodule.list) is begin
 	-- Sets the path in given position.
 		position.path := path;
@@ -226,7 +226,7 @@ package body kicad_coordinates is
 	function to_string (
 	-- Returns the given position as string. Scope specifies how much position is to
 	-- be displayed. See specification of type_scope.
-		position	: in type_coordinates;
+		position	: in type_position;
 		scope		: in type_scope := SHEET)
 		return string is
 
@@ -281,11 +281,11 @@ package body kicad_coordinates is
 		end case;
 	end to_string;
 
-	function sheet (position : in type_coordinates) return type_sheet is begin
+	function sheet (position : in type_position) return type_sheet is begin
 		return position.sheet_number;
 	end sheet;
 
-	function same_path_and_sheet (left, right : in type_coordinates) return boolean is
+	function same_path_and_sheet (left, right : in type_position) return boolean is
 	-- Returns true if the given coordinates have same path and sheet.
 		same : boolean := false;
 		use type_path_to_submodule;
@@ -300,7 +300,7 @@ package body kicad_coordinates is
 		return same;
 	end same_path_and_sheet;
 	
-	procedure set_sheet (position : in out type_coordinates; sheet : in type_sheet) is
+	procedure set_sheet (position : in out type_position; sheet : in type_sheet) is
 	-- Sets the sheet number in given position.
 	begin
 		position.sheet_number := sheet;
