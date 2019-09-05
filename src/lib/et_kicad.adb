@@ -7244,7 +7244,7 @@ package body et_kicad is
 
 				procedure warn is begin 
 					log (WARNING, " text note at " 
-						& kicad_coordinates.to_string (position => note.coordinates, scope => SHEET) 
+						& kicad_coordinates.to_string (position => note.position, scope => SHEET) 
 						& " might be misplaced !");
 				end;
 				
@@ -7255,12 +7255,12 @@ package body et_kicad is
 				line_cursor := type_lines.first (lines);
 
 				-- set coordinates
-				set_path (note.coordinates, path_to_sheet);
-				set_sheet (note.coordinates, sheet_number);
-				--set_x (note.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
-				set (X, mil_to_distance (et_string_processing.field (et_kicad.line,3)), note.coordinates);
-				--set_y (note.coordinates, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
-				set (Y, mil_to_distance (et_string_processing.field (et_kicad.line,4)), note.coordinates);
+				set_path (note.position, path_to_sheet);
+				set_sheet (note.position, sheet_number);
+				--set_x (note.position, mil_to_distance (et_string_processing.field (et_kicad.line,3)));
+				set (X, mil_to_distance (et_string_processing.field (et_kicad.line,3)), note.position);
+				--set_y (note.position, mil_to_distance (et_string_processing.field (et_kicad.line,4)));
+				set (Y, mil_to_distance (et_string_processing.field (et_kicad.line,4)), note.position);
 				
 				--note.rotation := to_angle (et_string_processing.field (et_kicad.line,5));
 				rotation := to_angle (et_string_processing.field (et_kicad.line,5));
@@ -13786,7 +13786,7 @@ package body et_kicad is
 		use et_libraries;
 	begin
 		log (text => "text note" & to_string (
-			position => note.coordinates, scope => kicad_coordinates.XY), level => log_threshold);
+			position => note.position, scope => kicad_coordinates.XY), level => log_threshold);
 
 		log_indentation_up;
 

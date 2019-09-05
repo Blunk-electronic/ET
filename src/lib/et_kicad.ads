@@ -1431,8 +1431,8 @@ package et_kicad is
 	
 	-- A text/note in the schematic:
 	type type_text is new et_libraries.type_text_basic with record
-		coordinates		: kicad_coordinates.type_position; -- CS rename to position
-		content			: et_libraries.type_text_content.bounded_string;
+		position	: kicad_coordinates.type_position;
+		content		: et_libraries.type_text_content.bounded_string;
 	end record;
 
 	procedure write_note_properties (

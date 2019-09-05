@@ -251,13 +251,13 @@ package body et_kicad_to_native is
 				log (text => "note '" & et_libraries.to_string (note.content) & "'", level => log_threshold + 3);
 				log_indentation_up;
 				
-				log (text => before & to_string (position => note.coordinates, scope => SHEET),
+				log (text => before & to_string (position => note.position, scope => SHEET),
 					 level => log_threshold + 4);
 
 				-- Move position from negative to positive y.
-				move (note.coordinates);
+				move (note.position);
 
-				log (text => now & to_string (position => note.coordinates, scope => SHEET),
+				log (text => now & to_string (position => note.position, scope => SHEET),
 					 level => log_threshold + 4);
 
 				log_indentation_down;
@@ -2415,7 +2415,7 @@ package body et_kicad_to_native is
 				text_native : et_schematic.type_text;
 			begin
 				-- copy the coordinates x,y,sheet from kicad text to native text
-				text_native.coordinates := to_native_coordinates (text_kicad.coordinates);
+				text_native.coordinates := to_native_coordinates (text_kicad.position);
 				
 				-- copy the content
 				text_native.content := text_kicad.content;
