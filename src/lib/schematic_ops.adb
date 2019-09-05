@@ -3545,7 +3545,7 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								name		=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
+								name		=> element (unit_cursors.int).symbol.name, -- placeholder for device name
 								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
 								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
 								others 		=> <>)
@@ -3595,9 +3595,9 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
-								name		=> element (symbol_cursor).reference,	-- placeholder for device name
-								value		=> element (symbol_cursor).value,		-- placeholder for device value
-								purpose		=> element (symbol_cursor).purpose,		-- placeholder for device purpose
+								name		=> element (symbol_cursor).name,	-- placeholder for device name
+								value		=> element (symbol_cursor).value,	-- placeholder for device value
+								purpose		=> element (symbol_cursor).purpose,	-- placeholder for device purpose
 								others 		=> <>)
 								);
 
@@ -3825,7 +3825,7 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								name		=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
+								name		=> element (unit_cursors.int).symbol.name, 		-- placeholder for device name
 								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
 								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
 								others 		=> <>)
@@ -3875,9 +3875,9 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								name		=> element (symbol_cursor).reference,	-- placeholder for device name
-								value		=> element (symbol_cursor).value,		-- placeholder for device value
-								purpose		=> element (symbol_cursor).purpose,		-- placeholder for device purpose
+								name		=> element (symbol_cursor).name,	-- placeholder for device name
+								value		=> element (symbol_cursor).value,	-- placeholder for device value
+								purpose		=> element (symbol_cursor).purpose,	-- placeholder for device purpose
 								others 		=> <>)
 								);
 
@@ -4086,7 +4086,7 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								name		=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
+								name		=> element (unit_cursors.int).symbol.name, 		-- placeholder for device name
 								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
 								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
 								others 		=> <>)
@@ -4136,9 +4136,9 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								name		=> element (symbol_cursor).reference,	-- placeholder for device name
-								value		=> element (symbol_cursor).value,		-- placeholder for device value
-								purpose		=> element (symbol_cursor).purpose,		-- placeholder for device purpose
+								name		=> element (symbol_cursor).name,	-- placeholder for device name
+								value		=> element (symbol_cursor).value,	-- placeholder for device value
+								purpose		=> element (symbol_cursor).purpose,	-- placeholder for device purpose
 								others 		=> <>)
 								);
 

@@ -2558,9 +2558,9 @@ package body et_project is
 					section_mark (section_placeholders, HEADER);
 					
 					section_mark (section_placeholder, HEADER);
-					write (keyword => keyword_meaning , parameters => to_string (symbol.reference.meaning));
-					write (keyword => keyword_position, parameters => position (symbol.reference.position));
-					write_text_properties (symbol.reference);
+					write (keyword => keyword_meaning , parameters => to_string (symbol.name.meaning));
+					write (keyword => keyword_position, parameters => position (symbol.name.position));
+					write_text_properties (symbol.name);
 					section_mark (section_placeholder, FOOTER);
 
 					section_mark (section_placeholder, HEADER);
@@ -5588,7 +5588,7 @@ package body et_project is
 
 								case symbol_placeholder_meaning is
 									when NAME =>
-										symbol.reference := (symbol_text_base with 
+										symbol.name := (symbol_text_base with 
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);
 
@@ -6617,7 +6617,7 @@ package body et_project is
 
 								case symbol_placeholder_meaning is
 									when NAME =>
-										unit_symbol.reference := (symbol_text_base with 
+										unit_symbol.name := (symbol_text_base with 
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);
 

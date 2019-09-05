@@ -637,9 +637,9 @@ package et_libraries is
 			when SCH_PCB =>
 				-- Placeholders for device wide texts. To be filled with content when 
 				-- a symbol is placed in the schematic:
-				reference	: type_text_placeholder (meaning => et_libraries.NAME);
-				value		: type_text_placeholder (meaning => et_libraries.VALUE);
-				purpose 	: type_text_placeholder (meaning => et_libraries.PURPOSE);
+				name	: type_text_placeholder (meaning => et_libraries.NAME);
+				value	: type_text_placeholder (meaning => et_libraries.VALUE);
+				purpose : type_text_placeholder (meaning => et_libraries.PURPOSE);
 			when SCH => null;				
 			when others => null; -- CS
 		end case;
