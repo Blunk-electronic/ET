@@ -640,8 +640,24 @@ package body et_geometry is
 			return result;
 		end distance_point_line;
 
+		function on_line (
+		-- Returns true if the given point sits on the given line.
+		-- The optional parameter accuracy may be used to specifiy the range at
+		-- which the point is regarded as sitting on the line.
+			point		: in type_point;
+			line		: in type_line;
+			accuracy	: in type_accuracy := zero)
+			return boolean is
+			distance : type_distance_point_line;
+		begin
+			distance := distance_point_line (point, line, WITH_END_POINTS);
 
-
+			if not distance.out_of_range and distance.distance <= accuracy then
+				return true;
+			else
+				return false;
+			end if;
+		end;
 		
 		function arc_end_point (
 		-- Computes the end point of an arc.

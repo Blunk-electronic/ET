@@ -45,6 +45,8 @@ package et_geometry is
 		
 	package geometry_operations_2d is
 		zero : constant type_distance := 0.0;
+
+		subtype type_accuracy is type_distance range zero .. type_distance'last/1000;
 		
 		type type_point is tagged private;
 
@@ -242,10 +244,17 @@ package et_geometry is
 		-- range of the x coordinate, the corresponding flag in the return value is set.
 			point		: in type_point; 
 			line		: in type_line;
-			line_range	: in type_line_range) 
+			line_range	: in type_line_range) -- CS default WITH_END_POINTS ?
 			return type_distance_point_line;
 
-		
+		function on_line (
+		-- Returns true if the given point sits on the given line.
+		-- The optional parameter accuracy may be used to specifiy the range at
+		-- which the point is regarded as sitting on the line.
+			point		: in type_point;
+			line		: in type_line;
+			accuracy	: in type_accuracy := zero)
+			return boolean; 
 		
 		-- ARC
 		type type_arc is abstract tagged record
