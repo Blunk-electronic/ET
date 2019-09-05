@@ -3703,28 +3703,15 @@ package body et_kicad is
 		-- Returns true if given port sits on given segment.
 
 			use et_coordinates;
-			use geometry;
-			use et_schematic.shapes;
-			distance : type_distance_point_line;
 
-			-- CS this is a workaround in order to provide a line for function distance_point_line:
+			-- CS this is a workaround in order to provide a line for function on_line:
 			type type_line_scratch is new et_schematic.shapes.type_line with null record;
 			line : type_line_scratch := (
 				start_point	=> geometry.type_point (segment.coordinates_start), 
 				end_point	=> geometry.type_point (segment.coordinates_end));
 			
 		begin -- on_segment
-			distance := distance_point_line (
-				point 		=> port.coordinates,
-				line		=> line,
-				line_range	=> with_end_points);
-
-			-- start and end points of the segment are inclued in the test
-			if not distance.out_of_range and distance.distance = zero then
-				return true;
-			else
-				return false;
-			end if;
+			return on_line (port.coordinates, line);
 		end on_segment;
 
 		function hierarchic_net (segment : in type_net_segments.cursor) return type_hierachic_net is
@@ -5715,30 +5702,16 @@ package body et_kicad is
 				function label_sits_on_segment (
 					label	: in type_net_label;
 					segment	: in type_net_segment) return boolean is
-					sits_on_segment : boolean := false;
 					use geometry;
-					use et_schematic.shapes;
-					d : type_distance_point_line;
 
-					-- CS this is a workaround in order to provide a line for function distance_point_line:
+					-- CS this is a workaround in order to provide a line for function line:
 					type type_line_scratch is new et_schematic.shapes.type_line with null record;
 					line : type_line_scratch := (
 						start_point	=> geometry.type_point (segment.coordinates_start), 
 						end_point	=> geometry.type_point (segment.coordinates_end));
 					
 				begin
-					-- calculate the shortes distance of point from line.
-					d := distance_point_line (
-						point		=> type_point (label.coordinates),
-						line		=> line,
-						line_range	=> with_end_points);
-					
-					--log (text => "distance: " & type_grid'image(d.distance), level => 1);
-					
-					if not d.out_of_range and d.distance = zero then
-						sits_on_segment := true;
-					end if;
-					return sits_on_segment;
+					return on_line (type_point (label.coordinates), line);
 				end label_sits_on_segment;
 
 				use type_net_segments;
@@ -9133,17 +9106,13 @@ package body et_kicad is
 -- 					raise;
 		
 	end import_design;
-
-
+	
 	function junction_sits_on_segment (
 	-- Returns true if the given junction sits on the given net segment.
 		junction	: in type_net_junction;
 		segment		: in type_net_segment_base'class) 
 		return boolean is
 
-		-- CS: clean up as in port_connected_with_segment
-		
--- 		zero : constant et_coordinates.type_distance := et_coordinates.zero;
 		sits_on_segment : boolean := false;
 
 		use et_coordinates;
@@ -9170,8 +9139,8 @@ package body et_kicad is
 
 		return sits_on_segment;
 	end junction_sits_on_segment;
-	
 
+	
 	function component_power_flag (cursor : in type_components_library.cursor)
 	-- Returns the component power flag status.
 		return type_power_flag is
@@ -11373,8 +11342,6 @@ package body et_kicad is
 						segment_cursor : type_net_segments.cursor := strand.segments.first;
 						use et_coordinates;
 						use geometry;
-						use et_schematic.shapes;
-						distance : type_distance_point_line;
 					begin
 						while segment_cursor /= type_net_segments.no_element loop
 
@@ -11388,16 +11355,11 @@ package body et_kicad is
 										start_point	=> geometry.type_point (element (segment_cursor).coordinates_start), 
 										end_point	=> geometry.type_point (element (segment_cursor).coordinates_end));
 								begin
-									distance := distance_point_line (
-										point 		=> type_point (element (junction_cursor).coordinates),
-										line		=> line,
-										line_range	=> with_end_points);
+									if on_line (type_point (element (junction_cursor).coordinates), line) then
+										segment_found := true;
+										exit;
+									end if;
 								end;
-									
-								if (not distance.out_of_range) and distance.distance = zero then
-									segment_found := true;
-									exit;
-								end if;
 
 							end if;
 								
@@ -11498,8 +11460,6 @@ package body et_kicad is
 						segment_cursor : type_net_segments.cursor := strand.segments.first;
 						use et_coordinates;
 						use geometry;
-						use et_schematic.shapes;
-						distance : type_distance_point_line;
 					begin
 						while segment_cursor /= type_net_segments.no_element loop
 
@@ -11513,16 +11473,11 @@ package body et_kicad is
 										start_point	=> geometry.type_point (element (segment_cursor).coordinates_start), 
 										end_point	=> geometry.type_point (element (segment_cursor).coordinates_end));
 								begin
-									distance := distance_point_line (
-										point 		=> type_point (element (junction_cursor).coordinates),
-										line		=> line,
-										line_range	=> with_end_points);
+									-- count segments
+									if on_line (type_point (element (junction_cursor).coordinates), line) then
+										segment_counter := segment_counter + 1;
+									end if;
 								end;
-								
-								-- count segments
-								if (not distance.out_of_range) and distance.distance = zero then
-									segment_counter := segment_counter + 1;
-								end if;
 
 							end if;
 								
@@ -11677,8 +11632,6 @@ package body et_kicad is
 						use type_no_connection_flags;
 						use et_coordinates;
 						use geometry;
-						use et_schematic.shapes;
-						distance : type_distance_point_line;
 						no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
 					begin -- query_no_connect_flags
 						log (text => "quering no_connection_flags ...", level => log_threshold + 4);
@@ -11705,16 +11658,12 @@ package body et_kicad is
 										start_point	=> geometry.type_point (element (segment_cursor).coordinates_start), 
 										end_point	=> geometry.type_point (element (segment_cursor).coordinates_end));
 								begin
-									distance := distance_point_line (
-										point 		=> type_point (element (no_connection_flag_cursor).coordinates),
-										line		=> line,
-										line_range	=> with_end_points);
+									if on_line (type_point (element (no_connection_flag_cursor).coordinates), line) then
+										log (WARNING, "no-connection-flag misplaced on a net at " 
+											& to_string (element (no_connection_flag_cursor).coordinates, kicad_coordinates.MODULE));
+									end if;
+
 								end;
-									
-								if (not distance.out_of_range) and distance.distance = zero then
-									log (WARNING, "no-connection-flag misplaced on a net at " 
-										& to_string (element (no_connection_flag_cursor).coordinates, kicad_coordinates.MODULE));
-								end if;
 							end if;
 
 							next (no_connection_flag_cursor);	
