@@ -3534,9 +3534,9 @@ package body et_kicad_to_native is
 														with 
 															shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes),
 															appearance	=> et_libraries.SCH_PCB,
-															ports		=> et_libraries.type_ports.empty_map, -- ports will come later
-															name		=> element (unit_cursor_kicad).symbol.reference, -- placeholder
-															value		=> element (unit_cursor_kicad).symbol.value, -- placeholder
+															ports		=> et_libraries.type_ports.empty_map, 			-- ports will come later
+															name		=> element (unit_cursor_kicad).symbol.name, 	-- placeholder
+															value		=> element (unit_cursor_kicad).symbol.value,	-- placeholder
 															purpose		=> ( -- we must invent a placeholder for purpose since kicad does not know such a thing
 																	meaning	=> et_libraries.PURPOSE,
 																	others 	=> <>))

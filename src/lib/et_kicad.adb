@@ -2473,17 +2473,17 @@ package body et_kicad is
 					-- The content (in this example "IC") is not relevant here as it applies for the whole component.
 					-- We convert the text field downward to a type_text_basic (which strips off the content) first.
 					-- Then we convert the type_text_basic upward to type_text_placeholder by providing the meaning:
-					unit.symbol.reference	:= (type_text_basic (field_reference)
+					unit.symbol.name := (type_text_basic (field_reference)
 										with meaning => NAME, position => field_reference.position);
-					unit.symbol.value		:= (type_text_basic (field_value)
+					unit.symbol.value := (type_text_basic (field_value)
 										with meaning => VALUE, position => field_value.position);
 
 					case unit.symbol.appearance is
 						when sch_pcb =>
-							unit.symbol.packge		:= (type_text_basic (field_package)		
-											with meaning => PACKGE, position => field_package.position);
-							unit.symbol.datasheet	:= (type_text_basic (field_datasheet)	
-											with meaning => DATASHEET, position => field_datasheet.position);
+							unit.symbol.packge := (type_text_basic (field_package)		
+										with meaning => PACKGE, position => field_package.position);
+							unit.symbol.datasheet := (type_text_basic (field_datasheet)	
+										with meaning => DATASHEET, position => field_datasheet.position);
 						when others => null;
 					end case;
 				end set;
