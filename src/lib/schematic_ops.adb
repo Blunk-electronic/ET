@@ -949,7 +949,7 @@ package body schematic_ops is
 		dist := distance_point_line (
 			point 		=> point,
 			line		=> element (segment),
-			line_range	=> inside_end_points);
+			line_range	=> BETWEEN_END_POINTS);
 
 		--if not distance.out_of_range and distance.distance = zero then
 		if not dist.out_of_range and dist.distance <= catch_zone then

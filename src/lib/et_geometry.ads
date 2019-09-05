@@ -235,7 +235,7 @@ package et_geometry is
 		end record;
 
 		type type_line_range is (
-			INSIDE_END_POINTS,	-- start and end point excluded -- CS rename to between_end_points ?
+			BETWEEN_END_POINTS,	-- start and end point excluded
 			WITH_END_POINTS,	-- start and end point included
 			BEYOND_END_POINTS	-- unlimited line assumed. extends beyond both start and end point into infinity
 			);
@@ -245,7 +245,7 @@ package et_geometry is
 		-- range of the x coordinate, the corresponding flag in the return value is set.
 			point		: in type_point; 
 			line		: in type_line;
-			line_range	: in type_line_range) -- CS default WITH_END_POINTS ?
+			line_range	: in type_line_range)
 			return type_distance_point_line;
 
 		function on_line (

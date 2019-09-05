@@ -551,7 +551,7 @@ package body et_geometry is
 			-- matters. Means if it was drawn from the left to the right or the other way around.
 			-- Swap start/end coordinates of line if drawn from right to the left.
 			case line_range is
-				when inside_end_points | with_end_points =>
+				when BETWEEN_END_POINTS | WITH_END_POINTS =>
 					if delta_x < zero then 
 						line_scratch := s;
 						s := e;
@@ -562,7 +562,7 @@ package body et_geometry is
 
 			-- Test range of point in regard of the x position.
 			case line_range is
-				when inside_end_points =>
+				when BETWEEN_END_POINTS =>
 					if result.distance = zero then
 
 						if delta_x = zero then -- vertical line
@@ -650,7 +650,7 @@ package body et_geometry is
 			return boolean is
 			distance : type_distance_point_line;
 		begin
-			distance := distance_point_line (point, line, WITH_END_POINTS);
+			distance := distance_point_line (point, line, BETWEEN_END_POINTS);
 
 			if not distance.out_of_range and distance.distance <= accuracy then
 				return true;

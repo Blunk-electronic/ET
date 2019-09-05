@@ -9131,7 +9131,7 @@ package body et_kicad is
 		d := distance_point_line (
 			point 		=> type_point (junction.coordinates),
 			line		=> line,
-			line_range	=> inside_end_points);
+			line_range	=> BETWEEN_END_POINTS);
 
 		if (not d.out_of_range) and d.distance = zero then
 			sits_on_segment := true;
@@ -11145,7 +11145,7 @@ package body et_kicad is
 									distance := distance_point_line (
 										point 		=> type_point (element (segment_cursor_prim).coordinates_start),
 										line		=> line,
-										line_range	=> inside_end_points);
+										line_range	=> BETWEEN_END_POINTS);
 								
 									if (not distance.out_of_range) and distance.distance = zero then
 										junction_position.expected := true;
@@ -11159,7 +11159,7 @@ package body et_kicad is
 									distance := distance_point_line (
 										point 		=> type_point (element (segment_cursor_prim).coordinates_end),
 										line		=> line,
-										line_range	=> inside_end_points);
+										line_range	=> BETWEEN_END_POINTS);
 								
 									if (not distance.out_of_range) and distance.distance = zero then
 										junction_position.expected := true;
