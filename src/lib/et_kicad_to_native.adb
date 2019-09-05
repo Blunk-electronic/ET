@@ -2415,7 +2415,7 @@ package body et_kicad_to_native is
 				text_native : et_schematic.type_text;
 			begin
 				-- copy the coordinates x,y,sheet from kicad text to native text
-				text_native.coordinates := to_native_coordinates (text_kicad.position);
+				text_native.position := to_native_coordinates (text_kicad.position);
 				
 				-- copy the content
 				text_native.content := text_kicad.content;

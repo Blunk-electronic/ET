@@ -78,8 +78,8 @@ package et_schematic is
 
 	-- A text/note in the schematic:
 	type type_text is new et_libraries.type_text_basic with record
-		coordinates		: et_coordinates.type_position; -- CS rename to position
-		content			: et_libraries.type_text_content.bounded_string;
+		position	: et_coordinates.type_position;
+		content		: et_libraries.type_text_content.bounded_string;
 	end record;
 
 	package type_texts is new doubly_linked_lists (type_text);

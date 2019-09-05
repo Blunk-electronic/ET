@@ -2093,7 +2093,7 @@ package body et_project is
 
 			procedure write (text_cursor : in type_texts.cursor) is begin
 				section_mark (section_text, HEADER);
-				write (keyword => keyword_position, parameters => position (element (text_cursor).coordinates));
+				write (keyword => keyword_position, parameters => position (element (text_cursor).position));
 				write (keyword => keyword_content, space => true, wrap => true,
 					   parameters => et_libraries.to_string (element (text_cursor).content));
 				write_text_properties (element (text_cursor));
@@ -12156,7 +12156,7 @@ package body et_project is
 										expect_field_count (line, 7);
 
 										-- extract position of note starting at field 2
-										note.coordinates := to_position (line, 2);
+										note.position := to_position (line, 2);
 
 									elsif kw = keyword_content then -- content "DUMMY TEXT IN CORE MODULE"
 										expect_field_count (line, 2); -- actual content in quotes !
