@@ -932,30 +932,28 @@ package body schematic_ops is
 				raise;
 	end;
 
-	function on_segment (
-		point 	: in type_point;
-		segment : in type_net_segments.cursor)
-		return boolean is
-	-- Returns true if given point sits on given segment.
-		use et_coordinates.geometry;
-		use et_schematic.shapes;
-		dist : type_distance_point_line;
-		use type_net_segments;
-	begin
-		dist := distance_point_line (
-			point 		=> point,
--- 			line_start	=> element (segment).start_point,
-			-- 			line_end	=> element (segment).end_point,
-			line		=> element (segment),
-			line_range	=> with_end_points);
-
-		-- start and end points of the segment are inclued in the test
-		if not dist.out_of_range and dist.distance = zero then
-			return true;
-		else
-			return false;
-		end if;
-	end on_segment;
+-- 	function on_segment (
+-- 		point 	: in type_point;
+-- 		segment : in type_net_segments.cursor)
+-- 		return boolean is
+-- 	-- Returns true if given point sits on given segment.
+-- 		use et_coordinates.geometry;
+-- 		use et_schematic.shapes;
+-- 		dist : type_distance_point_line;
+-- 		use type_net_segments;
+-- 	begin
+-- 		dist := distance_point_line (
+-- 			point 		=> point,
+-- 			line		=> element (segment),
+-- 			line_range	=> with_end_points);
+-- 
+-- 		-- start and end points of the segment are inclued in the test
+-- 		if not dist.out_of_range and dist.distance = zero then
+-- 			return true;
+-- 		else
+-- 			return false;
+-- 		end if;
+-- 	end on_segment;
 
 	function between_start_and_end_point (
 	-- Returns true if given point sits between start and end point of given segment.
@@ -6766,10 +6764,14 @@ package body schematic_ops is
 					while segment_cursor /= type_net_segments.no_element loop
 						log (text => "segment " & to_string (segment_cursor), level => log_threshold + 2);
 						
-						if on_segment (
-							point 	=> type_point (place),
-							segment	=> segment_cursor) then
+-- 						if on_segment (
+-- 							point 	=> type_point (place),
+-- 							segment	=> segment_cursor) then
 
+						if on_line (
+							point 	=> type_point (place),
+							line	=> element (segment_cursor)) then
+						
 							log (text => " match", level => log_threshold + 2);
 
 							match := true; -- signals the calling unit to cancel the search
@@ -7049,8 +7051,12 @@ package body schematic_ops is
 						while segment_cursor /= type_net_segments.no_element loop
 
 							-- Test if place sits on segment.
-							if on_segment (type_point (place), segment_cursor) then
+-- 							if on_segment (type_point (place), segment_cursor) then
 
+							if on_line (
+								point 	=> type_point (place),
+								line	=> element (segment_cursor)) then
+								
 								-- signal "strand iterator" to abort search prematurely
 								segment_found := true;
 
@@ -7535,10 +7541,15 @@ package body schematic_ops is
 				begin -- query_segments
 					while not segment_found and segment_cursor /= type_net_segments.no_element loop
 
-						if on_segment (
-							point	=> type_point (segment_position),
-							segment	=> segment_cursor) then
+-- 						if on_segment (
+-- 							point	=> type_point (segment_position),
+-- 							segment	=> segment_cursor) then
 
+						if on_line (
+							point 	=> type_point (segment_position),
+							line	=> element (segment_cursor)) then
+
+							
 							update_element (
 								container	=> strand.segments,
 								position	=> segment_cursor,

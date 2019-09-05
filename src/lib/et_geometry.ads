@@ -155,7 +155,8 @@ package et_geometry is
 
 		
 	private
-
+		-- CS need an abstract type_point_abstract ?
+		
 		type type_point is tagged record
 			x, y : type_distance := zero;
 		end record;
