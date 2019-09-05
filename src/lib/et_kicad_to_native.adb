@@ -2570,7 +2570,7 @@ package body et_kicad_to_native is
 							
 								-- and stuff that comes with a real device:
 									
-								reference	=> element (unit_cursor_kicad).reference,
+								name		=> element (unit_cursor_kicad).reference,
 								value		=> element (unit_cursor_kicad).value,
 												
 								-- create a placeholder for purpose because kicad does not know such a thing

@@ -1808,7 +1808,7 @@ package body et_project is
 					if element (unit_cursor).appearance = et_libraries.SCH_PCB then
 						section_mark (section_placeholders, HEADER);
 						
-						write_placeholder (element (unit_cursor).reference);
+						write_placeholder (element (unit_cursor).name);
 						write_placeholder (element (unit_cursor).value);
 						write_placeholder (element (unit_cursor).purpose);
 						--write_placeholder (element (unit_cursor).partcode);
@@ -8433,7 +8433,7 @@ package body et_project is
 
 									-- The placeholders for reference, value and purpose have
 									-- been built and can now be assigned to the unit:
-									reference	=> unit_placeholder_reference,
+									name		=> unit_placeholder_reference,
 									value 		=> unit_placeholder_value,
 									purpose		=> unit_placeholder_purpose));
 					end case;

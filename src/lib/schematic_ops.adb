@@ -1305,11 +1305,11 @@ package body schematic_ops is
 						when REFERENCE =>
 							case coordinates is
 								when ABSOLUTE =>
-									unit.reference.position := point;
+									unit.name.position := point;
 
 								when RELATIVE =>
 									move (
-										point	=> unit.reference.position,
+										point	=> unit.name.position,
 										offset	=> point);
 							end case;
 							
@@ -1468,7 +1468,7 @@ package body schematic_ops is
 					
 					procedure rotate_placeholders (rot : in type_rotation) is begin
 					-- Rotate position of placeholders around the unit origin. 
-						rotate (unit.reference.position, rot);
+						rotate (unit.name.position, rot);
 						rotate (unit.value.position, rot);
 						rotate (unit.purpose.position, rot);
 
@@ -1645,7 +1645,7 @@ package body schematic_ops is
 				begin -- rotate_placeholder
 					case meaning is
 						when REFERENCE =>
-							unit.reference.rotation := rotation;
+							unit.name.rotation := rotation;
 							
 						when VALUE =>
 							unit.value.rotation := rotation;
@@ -3545,7 +3545,7 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								reference	=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
+								name		=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
 								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
 								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
 								others 		=> <>)
@@ -3595,7 +3595,7 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
-								reference	=> element (symbol_cursor).reference,	-- placeholder for device name
+								name		=> element (symbol_cursor).reference,	-- placeholder for device name
 								value		=> element (symbol_cursor).value,		-- placeholder for device value
 								purpose		=> element (symbol_cursor).purpose,		-- placeholder for device purpose
 								others 		=> <>)
@@ -3825,7 +3825,7 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								reference	=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
+								name		=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
 								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
 								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
 								others 		=> <>)
@@ -3875,7 +3875,7 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								reference	=> element (symbol_cursor).reference,	-- placeholder for device name
+								name		=> element (symbol_cursor).reference,	-- placeholder for device name
 								value		=> element (symbol_cursor).value,		-- placeholder for device value
 								purpose		=> element (symbol_cursor).purpose,		-- placeholder for device purpose
 								others 		=> <>)
@@ -4086,7 +4086,7 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								reference	=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
+								name		=> element (unit_cursors.int).symbol.reference, -- placeholder for device name
 								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
 								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
 								others 		=> <>)
@@ -4136,7 +4136,7 @@ package body schematic_ops is
 							new_item	=> (
 								appearance	=> SCH_PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
-								reference	=> element (symbol_cursor).reference,	-- placeholder for device name
+								name		=> element (symbol_cursor).reference,	-- placeholder for device name
 								value		=> element (symbol_cursor).value,		-- placeholder for device value
 								purpose		=> element (symbol_cursor).purpose,		-- placeholder for device purpose
 								others 		=> <>)
