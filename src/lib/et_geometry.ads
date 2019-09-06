@@ -64,9 +64,9 @@ package et_geometry is
 		function distance_to_mil (distance : in type_distance) return string;
 		
 		axis_separator : constant string := "/";
-		point_preamble : constant string := " pos (x" & axis_separator & "y) ";
-		point_preamble_with_rotation : constant string := " pos "
-			& "(x"
+		point_preamble : constant string := " (x" & axis_separator & "y) ";
+		point_preamble_with_rotation : constant string := 
+			" (x"
 			& axis_separator
 			& "y"
 			& axis_separator
