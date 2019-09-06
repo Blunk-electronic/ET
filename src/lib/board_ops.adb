@@ -1522,6 +1522,120 @@ package body board_ops is
 		
 	end delete_outline;
 
+-- SILK SCREEN
+	procedure draw_silk_screen_line (
+	-- Draws a line in the PCB silk screen.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		width			: in type_general_line_width;
+		from			: in geometry.type_point; -- x/y
+		to				: in geometry.type_point; -- x/y		
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure add (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_pcb;
+			use et_pcb.type_silk_lines;
+		begin
+			case face is
+				when TOP =>
+					append (
+						container	=> module.board.silk_screen.top.lines,
+						new_item	=> (start_point	=> from,
+										end_point	=> to,
+										width		=> width));
+				when BOTTOM =>
+					append (
+						container	=> module.board.silk_screen.bottom.lines,
+						new_item	=> (start_point	=> from,
+										end_point	=> to,
+										width		=> width));
+			end case;
+		end;
+							   
+	begin -- draw_silk_scree_line
+		log (text => "module " & to_string (module_name) &
+			" drawing silk scren line" &
+			" face" & to_string (face) &
+			" from" & to_string (from) &
+			" to" & to_string (to),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> add'access);
+
+	end draw_silk_screen_line;
+
+	procedure draw_silk_screen_arc (
+	-- Draws an arc in the PCB silk screen.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		width			: in type_general_line_width;
+		center			: in geometry.type_point; -- x/y
+		from			: in geometry.type_point; -- x/y		
+		to				: in geometry.type_point; -- x/y		
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure add (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_pcb;
+			use et_pcb.type_silk_arcs;
+		begin
+			case face is
+				when TOP =>
+					append (
+						container	=> module.board.silk_screen.top.arcs,
+						new_item	=> (
+							center		=> center,
+							start_point	=> from,
+							end_point	=> to,
+							width		=> width));
+
+				when BOTTOM =>
+					append (
+						container	=> module.board.silk_screen.bottom.arcs,
+						new_item	=> (
+   							center		=> center,
+							start_point	=> from,
+							end_point	=> to,
+							width		=> width));
+
+			end case;
+		end;
+							   
+	begin -- draw_silk_screen_arc
+		log (text => "module " & to_string (module_name) &
+			" drawing silk scren arc" &
+			" face" & to_string (face) &
+			" center" & to_string (center) &
+			" from" & to_string (from) &
+			" to" & to_string (to),
+
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> add'access);
+
+	end draw_silk_screen_arc;
+
 	
 end board_ops;
 	

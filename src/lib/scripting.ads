@@ -189,6 +189,7 @@ package scripting is
 	
 
 	type type_noun_board is ( -- CS prepend prefix NOUN_
+		ASSY, -- assembly documentation
 		DEVICE,
 		FREETRACK,
 		NAME,
@@ -197,6 +198,7 @@ package scripting is
 		PARTCODE,
 		PNP, -- pick & place
 		PURPOSE,
+		SILK, -- silk screen
 		SUBMODULE,
 		TEXT,
 		TEXT_SIZE,

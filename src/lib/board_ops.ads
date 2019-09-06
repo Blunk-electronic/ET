@@ -111,7 +111,7 @@ package board_ops is
 		face : type_face;
 	end record;
 
--- TRACKS
+-- TRACKS AND FREETRACKS
 	procedure draw_track_line (
 	-- Draws track line. If net_name is empty a freetrack will be drawn.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -155,7 +155,7 @@ package board_ops is
 		accuracy		: in geometry.type_accuracy;
 		log_threshold	: in type_log_level);
 
--- BOARD OUTLINE	
+-- BOARD OUTLINE / CONTOUR
 	procedure draw_outline_line (
 	-- Draws a line in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -186,6 +186,57 @@ package board_ops is
 		point			: in geometry.type_point; -- x/y
 		accuracy		: in geometry.type_accuracy;
 		log_threshold	: in type_log_level);
+
+
+-- VIA RESTRICT
+
+-- ROUTE RESTRICT
+
+-- KEEPOUT
+
+-- STOP MASK
+
+-- STENCIL / SOLDER PASTE
+
+-- ASSEMBLY DOCUMENTATION
+
+-- SILK SCREEN
+	procedure draw_silk_screen_line (
+	-- Draws a line in the PCB silk_screen.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		width			: in type_general_line_width;
+		from			: in geometry.type_point; -- x/y
+		to				: in geometry.type_point; -- x/y		
+		log_threshold	: in type_log_level);
+
+	procedure draw_silk_screen_arc (
+	-- Draws an arc in the PCB silk_screen.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		width			: in type_general_line_width;		
+		center			: in geometry.type_point; -- x/y
+		from			: in geometry.type_point; -- x/y		
+		to				: in geometry.type_point; -- x/y		
+		log_threshold	: in type_log_level);
+
+-- 	procedure draw_silk_screen_circle (
+-- 	-- Draws a circle in the PCB silk_screen.
+-- 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+-- 		face			: in type_face;	
+-- 		center			: in geometry.type_point; -- x/y
+-- 		radius			: in et_pcb_coordinates.type_distance;
+-- 		log_threshold	: in type_log_level);
+-- 
+-- 	procedure delete_silk_screen (
+-- 	-- Deletes the segment of the silk_screen that crosses the given point.
+-- 	-- CS currently deletes the first segment found. Leaves other segments untouched.
+-- 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+-- 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+-- 		face			: in type_face;
+-- 		point			: in geometry.type_point; -- x/y
+-- 		accuracy		: in geometry.type_accuracy;
+-- 		log_threshold	: in type_log_level);
 
 	
 end board_ops;
