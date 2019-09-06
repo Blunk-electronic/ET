@@ -226,13 +226,13 @@ package et_pcb is
 	
 	
 	-- PLACEHOLDERS FOR TEXTS IN A PACKAGE
-	type type_text_meaning_package is (REFERENCE, VALUE, PURPOSE);
+	type type_text_meaning_package is (NAME, VALUE, PURPOSE);
 
 	function to_string (text_meaning : in type_text_meaning_package) return string;
 	function to_text_meaning (text_meaning : in string) return type_text_meaning_package;
 	
 	type type_text_placeholder_package is new type_text with record
-		meaning : type_text_meaning_package := REFERENCE;
+		meaning : type_text_meaning_package := NAME;
 	end record;
 
 	-- There can be lots of placeholders of this kind. So they are stored in a list:	

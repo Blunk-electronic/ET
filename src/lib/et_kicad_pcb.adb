@@ -2333,7 +2333,7 @@ package body et_kicad_pcb is
 
 				case text.meaning is
 					when REFERENCE =>
-						placeholder := (et_pcb.type_text (text) with meaning => REFERENCE);
+						placeholder := (et_pcb.type_text (text) with meaning => NAME);
 						
 						case text.layer is
 							when TOP_SILK =>
@@ -2451,7 +2451,7 @@ package body et_kicad_pcb is
 			cursor := silk_screen.top.placeholders.first;
 			while cursor /= type_text_placeholders_package.no_element loop
 				placeholder := element (cursor);
-				if placeholder.meaning = REFERENCE then
+				if placeholder.meaning = NAME then
 					reference_found := true;
 					exit;
 				end if;
@@ -2461,7 +2461,7 @@ package body et_kicad_pcb is
 			if not reference_found then
 				log (ERROR, "in " & path_and_file_name, console => true);
 				log (ERROR, "no placeholder for component " 
-					 & to_string (REFERENCE) 
+					 & to_string (NAME) 
 					 & " found in " & to_string (TOP) & " silk screen !", console => true);
 				raise constraint_error;
 			end if;
@@ -6831,12 +6831,12 @@ package body et_kicad_pcb is
 						case package_text.layer is
 							when TOP_SILK =>
 								package_silk_screen.top.placeholders.append (
-									(et_pcb.type_text (package_text) with meaning => REFERENCE));
+									(et_pcb.type_text (package_text) with meaning => NAME));
 								placeholder_silk_screen_properties (TOP, package_silk_screen.top.placeholders.last, log_threshold + 1);
 								
 							when BOT_SILK =>
 								package_silk_screen.bottom.placeholders.append (
-									(et_pcb.type_text (package_text) with meaning => REFERENCE));
+									(et_pcb.type_text (package_text) with meaning => NAME));
 								placeholder_silk_screen_properties (BOTTOM, package_silk_screen.bottom.placeholders.last, log_threshold + 1);
 
 							when others => -- should never happen
@@ -7626,11 +7626,11 @@ package body et_kicad_pcb is
 						cursor := comp_package.silk_screen.top.placeholders.first;
 						while cursor /= type_text_placeholders_package.no_element loop
 
-							if element (cursor).meaning = REFERENCE then
+							if element (cursor).meaning = NAME then
 	
 								type_text_placeholders_package.append (
 									container	=> placeholders.silk_screen.top,
-									new_item	=> (et_pcb.type_text (element (cursor)) with meaning => REFERENCE));
+									new_item	=> (et_pcb.type_text (element (cursor)) with meaning => NAME));
 	
 								-- log placeholder properties
 								placeholder_silk_screen_properties (TOP, placeholders.silk_screen.top.last, log_threshold + 3);
@@ -7643,11 +7643,11 @@ package body et_kicad_pcb is
 						cursor := comp_package.silk_screen.bottom.placeholders.first;
 						while cursor /= type_text_placeholders_package.no_element loop
 
-							if element (cursor).meaning = REFERENCE then
+							if element (cursor).meaning = NAME then
 
 								type_text_placeholders_package.append (
 									container	=> placeholders.silk_screen.bottom,
-									new_item	=> (et_pcb.type_text (element (cursor)) with meaning => REFERENCE));
+									new_item	=> (et_pcb.type_text (element (cursor)) with meaning => NAME));
 
 								-- log placeholder properties
 								placeholder_silk_screen_properties (BOTTOM, placeholders.silk_screen.bottom.last, log_threshold + 3);
