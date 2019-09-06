@@ -428,6 +428,22 @@ package body et_pcb is
 	function to_pad_technology (technology : in string) return type_polygon_pad_technology is begin
 		return type_polygon_pad_technology'value (technology);
 	end to_pad_technology;
+
+	function to_string (circle : in type_fillable_circle) return string is begin
+		case circle.filled is
+			when YES =>
+				return
+					shapes.to_string (type_circle (circle)) &
+					" line_width" & to_string (circle.width) &
+					" fill_style" & to_string (circle.fill_style) &
+					" hatching_line_width" & to_string (circle.hatching_line_width) &
+					" hatching_spacing" & to_string (circle.hatching_spacing);
+			when NO =>
+				return
+					shapes.to_string (type_circle (circle)) &
+					" line_width" & to_string (circle.width);
+		end case;
+	end;
 	
 	function to_string (fill_style : in type_fill_style) return string is
 	begin

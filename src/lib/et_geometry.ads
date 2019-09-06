@@ -302,14 +302,14 @@ package et_geometry is
 			return boolean;
 		
 		
-	function to_string (line : in type_line) return string;
-	-- Returns the start and end point of the given line as string.
+		function to_string (line : in type_line) return string;
+		-- Returns the start and end point of the given line as string.
 
-	function to_string (arc : in type_arc) return string;
-	-- Returns the start, end point and angle of the given arc as string.
-	
-	function to_string (circle : in type_circle) return string;
-	-- Returns the center and radius of the given circle as string.
+		function to_string (arc : in type_arc) return string;
+		-- Returns the start, end point and angle of the given arc as string.
+		
+		function to_string (circle : in type_circle) return string;
+		-- Returns the center and radius of the given circle as string.
 		
 	end shapes_2d;
 	

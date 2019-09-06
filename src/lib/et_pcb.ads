@@ -658,14 +658,15 @@ package et_pcb is
 
 	-- This circle type is used by silk screen, assembly doc, 
 	-- stop mask, stencil, keepout, route restrict, via restrict
-	type type_fillable_circle is new type_circle with record
+	type type_fillable_circle is new type_circle with record -- CS controlled type via fill_style ?
 		width				: type_general_line_width := type_general_line_width'first; -- the width of the circumfence		
 		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
 		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
 		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
-	
+
+	function to_string (circle : in type_fillable_circle) return string;
 	
 	-- SOLDER STOP MASK
 	type type_stop_line is new type_line with record

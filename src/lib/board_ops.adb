@@ -1636,6 +1636,52 @@ package body board_ops is
 
 	end draw_silk_screen_arc;
 
+	procedure draw_silk_screen_circle (
+	-- Draws a circle in the PCB silk screen.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		circle			: in type_fillable_circle;
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure add (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_pcb;
+			use et_pcb.type_silk_circles;
+		begin
+			case face is
+				when TOP =>
+					append (
+						container	=> module.board.silk_screen.top.circles,
+						new_item	=> (circle with others => <>));
+
+				when BOTTOM =>
+					append (
+						container	=> module.board.silk_screen.bottom.circles,
+						new_item	=> (circle with others => <>));
+
+			end case;
+		end;
+							   
+	begin -- draw_silk_screen_circle
+		log (text => "module " & to_string (module_name) &
+			" drawing silk scren circle" &
+			" face" & to_string (face) &
+			to_string (circle),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> add'access);
+
+	end draw_silk_screen_circle;
 	
 end board_ops;
 	
