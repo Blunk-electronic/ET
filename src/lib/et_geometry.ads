@@ -265,6 +265,15 @@ package et_geometry is
 			-- CS locked : type_locked;		
 		end record;
 
+		function on_arc (
+		-- Returns true if the given point sits on the given arc.
+		-- The optional parameter accuracy may be used to specifiy the range at
+		-- which the point is regarded as sitting on the arc.
+			point		: in type_point;
+			arc			: in type_arc;
+			accuracy	: in type_accuracy := zero)
+			return boolean; 
+		
 		function arc_end_point (
 		-- Computes the end point of an arc.
 			center		: in type_point;
@@ -281,6 +290,15 @@ package et_geometry is
 			radius  		: type_distance := geometry.zero;
 			-- CS locked : type_locked;
 		end record;
+
+		function on_circle (
+		-- Returns true if the given point sits on the given circle circumfence.
+		-- The optional parameter accuracy may be used to specifiy the range at
+		-- which the point is regarded as sitting on the circle.
+			point		: in type_point;
+			circle		: in type_circle;
+			accuracy	: in type_accuracy := zero)
+			return boolean;
 		
 		
 	function to_string (line : in type_line) return string;

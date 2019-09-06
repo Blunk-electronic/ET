@@ -658,6 +658,19 @@ package body et_geometry is
 				return false;
 			end if;
 		end;
+
+		function on_arc (
+		-- Returns true if the given point sits on the given arc.
+		-- The optional parameter accuracy may be used to specifiy the range at
+		-- which the point is regarded as sitting on the arc.
+			point		: in type_point;
+			arc			: in type_arc;
+			accuracy	: in type_accuracy := zero)
+			return boolean is
+		begin
+			return false; 
+			-- CS math required
+		end;
 		
 		function arc_end_point (
 		-- Computes the end point of an arc.
@@ -674,6 +687,18 @@ package body et_geometry is
 			return end_point;
 		end arc_end_point;
 		
+		function on_circle (
+		-- Returns true if the given point sits on the given circle circumfence.
+		-- The optional parameter accuracy may be used to specifiy the range at
+		-- which the point is regarded as sitting on the circle.
+			point		: in type_point;
+			circle		: in type_circle;
+			accuracy	: in type_accuracy := zero)
+			return boolean is
+		begin
+			return false; 
+			-- CS math required
+		end;
 		
 		function to_string (line : in type_line) return string is
 		-- Returns the start and end point of the given line as string.

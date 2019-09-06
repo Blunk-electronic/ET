@@ -1154,44 +1154,6 @@ package body board_ops is
 		end if;
 
 	end draw_track_arc;
-
-	function on_segment (
-	-- Returns true if the given point sits on the given line segment.
-		point			: in geometry.type_point; -- x/y
-		layer			: in type_signal_layer;
-		line			: in type_copper_lines_pcb.cursor;
-		accuracy		: in type_distance)
-		return boolean is
-		result : boolean := false; -- to be returned
-		use type_copper_lines_pcb;
-	begin -- on_segment
-		if element (line).layer = layer then
-			result := true; -- CS
-		else
-			result := false;
-		end if;
-		
-		return result;
-	end on_segment;
-
-	function on_segment (
-	-- Returns true if the given point sits on the given arc segment.
-		point			: in geometry.type_point; -- x/y
-		layer			: in type_signal_layer;
-		arc				: in type_copper_arcs_pcb.cursor;
-		accuracy		: in type_distance)
-		return boolean is
-		result : boolean := false; -- to be returned
-		use type_copper_arcs_pcb;
-	begin -- on_segment
-		if element (arc).layer = layer then
-			result := true; -- CS
-		else
-			result := false;
-		end if;
-
-		return result;
-	end on_segment;
 	
 	procedure ripup_track_segment (
 	-- Rips up the track segment of a net that crosses the given point in given layer.
@@ -1201,7 +1163,7 @@ package body board_ops is
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
 		point			: in geometry.type_point; -- x/y
-		accuracy		: in type_distance;
+		accuracy		: in geometry.type_accuracy;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -1474,53 +1436,13 @@ package body board_ops is
 
 	end draw_outline_circle;
 
-	function on_segment (
-	-- Returns true if the given point sits on the given line segment.
-		point			: in geometry.type_point; -- x/y
-		line			: in type_pcb_contour_lines.cursor;
-		accuracy		: in type_distance)
-		return boolean is
-		result : boolean := false; -- to be returned
-		use type_pcb_contour_lines;
-	begin -- on_segment
-		-- CS
-		return result;
-	end on_segment;
-
-	function on_segment (
-	-- Returns true if the given point sits on the given arc segment.
-		point			: in geometry.type_point; -- x/y
-		arc				: in type_pcb_contour_arcs.cursor;
-		accuracy		: in type_distance)
-		return boolean is
-		result : boolean := false; -- to be returned
-		use type_pcb_contour_lines;
-	begin -- on_segment
-		-- CS
-		return result;
-	end on_segment;
-
-	function on_segment (
-	-- Returns true if the given point sits on the given circle segment.
-		point			: in geometry.type_point; -- x/y
-		circle			: in type_pcb_contour_circles.cursor;
-		accuracy		: in type_distance)
-		return boolean is
-		result : boolean := false; -- to be returned
-		use type_pcb_contour_lines;
-	begin -- on_segment
-		-- CS
-		return result;
-	end on_segment;
-
-	
 	procedure delete_outline (
 	-- Deletes the segment of the outline that crosses the given point.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in geometry.type_point; -- x/y
-		accuracy		: in type_distance;
+		accuracy		: in geometry.type_accuracy;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -1541,7 +1463,7 @@ package body board_ops is
 		begin
 			-- first search for a matching segment among the lines
 			while line_cursor /= type_pcb_contour_lines.no_element loop
-				if on_segment (point, line_cursor, accuracy) then
+				if on_line (point, element (line_cursor), accuracy) then
 					delete (module.board.contour.lines, line_cursor);
 					deleted := true;
 					exit;
@@ -1553,7 +1475,7 @@ package body board_ops is
 			if not deleted then
 				while arc_cursor /= type_pcb_contour_arcs.no_element loop
 					
-					if on_segment (point, arc_cursor, accuracy) then
+					if on_arc (point, element (arc_cursor), accuracy) then
 						delete (module.board.contour.arcs, arc_cursor);
 						deleted := true;
 						exit;
@@ -1567,7 +1489,7 @@ package body board_ops is
 			if not deleted then
 				while circle_cursor /= type_pcb_contour_circles.no_element loop
 					
-					if on_segment (point, circle_cursor, accuracy) then
+					if on_circle (point, element (circle_cursor), accuracy) then
 						delete (module.board.contour.circles, circle_cursor);
 						deleted := true;
 						exit;

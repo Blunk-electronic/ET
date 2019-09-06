@@ -514,11 +514,27 @@ package et_pcb is
 	end record;
 	package type_copper_lines_pcb is new doubly_linked_lists (type_copper_line_pcb);
 
+	function on_segment (
+	-- Returns true if the given point sits on the given line of copper.
+		point			: in geometry.type_point; -- x/y
+		layer			: in type_signal_layer;
+		line			: in type_copper_lines_pcb.cursor;
+		accuracy		: in geometry.type_accuracy)
+		return boolean;
+	
 	type type_copper_arc_pcb is new type_copper_arc with record
 		layer	: type_signal_layer;		
 	end record;
 	package type_copper_arcs_pcb is new doubly_linked_lists (type_copper_arc_pcb);
 
+	function on_segment (
+	-- Returns true if the given point sits on the given arc of copper.
+		point			: in geometry.type_point; -- x/y
+		layer			: in type_signal_layer;
+		arc				: in type_copper_arcs_pcb.cursor;
+		accuracy		: in et_pcb_coordinates.type_distance)
+		return boolean;
+	
 	type type_copper_circle_pcb is new type_copper_circle with record
 		layer	: type_signal_layer;
 	end record;

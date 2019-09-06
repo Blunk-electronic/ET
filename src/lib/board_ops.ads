@@ -152,7 +152,7 @@ package board_ops is
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
 		point			: in geometry.type_point; -- x/y
-		accuracy		: in type_distance;
+		accuracy		: in geometry.type_accuracy;
 		log_threshold	: in type_log_level);
 
 -- BOARD OUTLINE	
@@ -184,7 +184,7 @@ package board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in geometry.type_point; -- x/y
-		accuracy		: in type_distance;
+		accuracy		: in geometry.type_accuracy;
 		log_threshold	: in type_log_level);
 
 	

@@ -370,6 +370,49 @@ package body et_pcb is
 		return latin_1.space & to_lower (type_corner_easing'image (easing));
 	end to_string;
 
+	function on_segment (
+	-- Returns true if the given point sits on the given line of copper.
+		point			: in geometry.type_point; -- x/y
+		layer			: in type_signal_layer;
+		line			: in type_copper_lines_pcb.cursor;
+		accuracy		: in geometry.type_accuracy)
+		return boolean is
+		result : boolean := false; -- to be returned
+		use type_copper_lines_pcb;
+	begin -- on_segment
+		if element (line).layer = layer then
+			if on_line (point, element (line), accuracy) then
+				result := true;
+			else
+				result := false;
+			end if;
+		else
+			result := false;
+		end if;
+		
+		return result;
+	end on_segment;
+
+	function on_segment (
+	-- Returns true if the given point sits on the given arc of copper.
+		point			: in geometry.type_point; -- x/y
+		layer			: in type_signal_layer;
+		arc				: in type_copper_arcs_pcb.cursor;
+		accuracy		: in et_pcb_coordinates.type_distance)
+		return boolean is
+		result : boolean := false; -- to be returned
+		use type_copper_arcs_pcb;
+	begin -- on_segment
+		if element (arc).layer = layer then
+			result := true; -- CS
+		else
+			result := false;
+		end if;
+
+		return result;
+	end on_segment;
+
+	
 	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is begin
 		return latin_1.space & to_lower (type_polygon_pad_connection'image (polygon_pad_connection));
 	end to_string;
