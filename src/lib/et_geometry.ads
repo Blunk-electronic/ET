@@ -46,6 +46,7 @@ package et_geometry is
 	package geometry_operations_2d is
 		zero : constant type_distance := 0.0;
 
+		subtype type_distance_positive is type_distance range zero .. type_distance'last;
 		subtype type_accuracy is type_distance range zero .. type_distance'last/1000;
 		
 		type type_point is tagged private;
@@ -228,7 +229,7 @@ package et_geometry is
 			return type_line_zone;
 
 		type type_distance_point_line is record -- CS private ?
-			distance		: type_distance := zero;
+			distance		: type_distance_positive := zero;
 			sits_on_start	: boolean := false;
 			sits_on_end		: boolean := false;
 			out_of_range	: boolean := false;
@@ -287,7 +288,7 @@ package et_geometry is
 		-- CIRCLE
 		type type_circle is abstract tagged record
 			center			: type_point;
-			radius  		: type_distance := geometry.zero;
+			radius  		: type_distance_positive := zero;
 			-- CS locked : type_locked;
 		end record;
 
