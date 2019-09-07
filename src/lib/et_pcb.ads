@@ -666,6 +666,27 @@ package et_pcb is
 		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
 	end record;
 
+	type type_fillable_circle2 (
+		filled		: type_filled;
+		fill_style	: type_fill_style -- don't care if filled is NO
+		)
+		is new type_circle with record
+		width				: type_general_line_width := type_general_line_width'first; -- the width of the circumfence. CS rename to width_circumfence
+		case filled is
+			when YES =>
+				case fill_style is
+					when SOLID => null;
+					when others =>
+						hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
+						hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
+				end case;
+				
+			when NO => 
+				null;
+		end case;
+	end record;
+
+	
 	function to_string (circle : in type_fillable_circle) return string;
 	
 	-- SOLDER STOP MASK
