@@ -3163,8 +3163,24 @@ package body et_project is
 		type type_circle is new et_pcb.shapes.type_circle with null record;
 		pac_circle				: type_circle;
 		procedure reset_circle is begin pac_circle := (others => <>); end;
-		pac_circle_fillable		: et_pcb.type_fillable_circle;
-		procedure reset_circle_fillable is begin pac_circle_fillable := (others => <>); end;
+
+
+
+		pac_circle_fillable_width				: type_general_line_width := type_general_line_width'first;
+		pac_circle_fillable_filled				: type_filled := type_filled'first;
+		pac_circle_fillable_fill_style			: type_fill_style := type_fill_style'first;
+		pac_circle_fillable_hatching_line_width : type_general_line_width := type_general_line_width'first;
+		pac_circle_fillable_hatching_spacing	: type_general_line_width := type_general_line_width'first;
+
+		procedure reset_circle_fillable is begin 
+			pac_circle								:= (others => <>);
+			pac_circle_fillable_width				:= type_general_line_width'first;
+			pac_circle_fillable_filled				:= type_filled'first;
+			pac_circle_fillable_fill_style			:= type_fill_style'first;
+			pac_circle_fillable_hatching_line_width := type_general_line_width'first;
+			pac_circle_fillable_hatching_spacing	:= type_general_line_width'first;			
+		end;
+
 		pac_circle_copper		: et_pcb.type_copper_circle;
 		procedure reset_circle_copper is begin pac_circle_copper := (others => <>); end;		
 		
@@ -3699,12 +3715,20 @@ package body et_project is
 										pac_circle_copper := (others => <>);
 
 									when SEC_SILK_SCREEN => 
-										type_silk_circles.append (
-											container	=> packge.silk_screen.top.circles, 
-											new_item	=> (pac_circle_fillable with null record));
 
+-- 										type_silk_circles.append (
+-- 											container	=> packge.silk_screen.top.circles, 
+-- 											new_item	=> to_fillable_circle (
+-- 													circle 		=> pac_circle,
+-- 													filled		=> pac_circle_fillable_filled,
+-- 													fill_style	=> pac_circle_fillable_fill_style,
+-- 													circumfence_width	=> pac_circle_fillable_width,
+-- 													hatching_line_width	=> pac_circle_fillable_hatching_line_width,
+-- 													hatching_spacing	=> pac_circle_fillable_hatching_spacing
+-- 													));
+															
 										-- clean up for next circle
-										pac_circle_fillable := (others => <>);
+										reset_circle_fillable;
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_circles.append (
@@ -4713,31 +4737,31 @@ package body et_project is
 												expect_field_count (line, 5);
 
 												-- extract the center position starting at field 2 of line
-												pac_circle_fillable.center := to_position (line, 2);
+												pac_circle.center := to_position (line, 2);
 												
 											elsif kw = keyword_radius then -- radius 22
 												expect_field_count (line, 2);
-												pac_circle_fillable.radius := to_distance (f (line, 2));
+												pac_circle.radius := to_distance (f (line, 2));
 												
 											elsif kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
-												pac_circle_fillable.width := to_distance (f (line, 2));
+												pac_circle_fillable_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_filled then -- filled yes/no
 												expect_field_count (line, 2);													
-												pac_circle_fillable.filled := et_pcb.to_filled (f (line, 2));
+												pac_circle_fillable_filled := et_pcb.to_filled (f (line, 2));
 
 											elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
 												expect_field_count (line, 2);													
-												pac_circle_fillable.fill_style := et_pcb.to_fill_style (f (line, 2));
+												pac_circle_fillable_fill_style := et_pcb.to_fill_style (f (line, 2));
 
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												pac_circle_fillable.hatching_line_width := to_distance (f (line, 2));
+												pac_circle_fillable_hatching_line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
-												pac_circle_fillable.hatching_spacing := to_distance (f (line, 2));
+												pac_circle_fillable_hatching_spacing := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
