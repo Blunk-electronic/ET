@@ -671,7 +671,7 @@ package et_pcb is
 		filled		: type_filled;
 		fill_style	: type_fill_style -- don't care if filled is NO
 		)
-		is abstract new type_circle with record
+		is new type_circle with record
 		case filled is
 			when NO => 
 				width : type_general_line_width := type_general_line_width'first; -- the width of the circumfence. CS rename to width_circumfence
@@ -687,17 +687,17 @@ package et_pcb is
 		end case;
 	end record;
 
-	function to_fillable_circle (
-	-- Composes a fillable circle from the given parameters. 
-	-- Filled and fill_style are discriminants. Depending on them some parameters
-	-- matter or not. See spec for type_fillable_circle.									
-		circle				: in type_circle;
-		filled				: in type_filled;
-		fill_style			: in type_fill_style;
-		circumfence_width	: in type_general_line_width;
-		hatching_line_width	: in type_general_line_width;
-		hatching_spacing	: in type_general_line_width)
-		return type_fillable_circle is abstract;
+-- 	function to_fillable_circle (
+-- 	-- Composes a fillable circle from the given parameters. 
+-- 	-- Filled and fill_style are discriminants. Depending on them some parameters
+-- 	-- matter or not. See spec for type_fillable_circle.									
+-- 		circle				: in type_circle;
+-- 		filled				: in type_filled;
+-- 		fill_style			: in type_fill_style;
+-- 		circumfence_width	: in type_general_line_width;
+-- 		hatching_line_width	: in type_general_line_width;
+-- 		hatching_spacing	: in type_general_line_width)
+-- 		return type_fillable_circle'class;
 	
 	function to_string (circle : in type_fillable_circle) return string;
 	
@@ -978,6 +978,21 @@ package et_pcb is
 	type type_route_restrict_circle is new type_fillable_circle with record
 		layers 	: type_signal_layers.set;
 	end record;
+
+-- 	overriding
+-- 	function to_fillable_circle (
+-- 	-- Composes a fillable circle from the given parameters. 
+-- 	-- Filled and fill_style are discriminants. Depending on them some parameters
+-- 	-- matter or not. See spec for type_fillable_circle.									
+-- 		circle				: in type_circle;
+-- 		filled				: in type_filled;
+-- 		fill_style			: in type_fill_style;
+-- 		circumfence_width	: in type_general_line_width;
+-- 		hatching_line_width	: in type_general_line_width;
+-- 		hatching_spacing	: in type_general_line_width)
+-- -- 		layers 				: in type_signal_layers.set)
+-- 		return type_route_restrict_circle;
+
 	package type_route_restrict_circles is new indefinite_doubly_linked_lists (type_route_restrict_circle);
 
 	type type_route_restrict_polygon is new type_polygon with record

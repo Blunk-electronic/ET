@@ -429,48 +429,95 @@ package body et_pcb is
 		return type_polygon_pad_technology'value (technology);
 	end to_pad_technology;
 
-	overriding
-	function to_fillable_circle (
-	-- Composes a fillable circle from the given parameters. 
-	-- Filled and fill_style are discriminants. Depending on them some parameters
-	-- matter or not. See spec for type_fillable_circle.
- 		circle				: in type_circle;
-		filled				: in type_filled;
-		fill_style			: in type_fill_style;
-		circumfence_width	: in type_general_line_width;
-		hatching_line_width	: in type_general_line_width;
-		hatching_spacing	: in type_general_line_width)
-		return type_silk_circle is
-	begin
-		case filled is
-			when NO =>
-				return (circle with (
-					filled		=> NO,
-					fill_style	=> fill_style,
-					width		=> circumfence_width));
+-- 	function to_fillable_circle (
+-- 	-- Composes a fillable circle from the given parameters. 
+-- 	-- Filled and fill_style are discriminants. Depending on them some parameters
+-- 	-- matter or not. See spec for type_fillable_circle.
+--  		circle				: in type_circle;
+-- 		filled				: in type_filled;
+-- 		fill_style			: in type_fill_style;
+-- 		circumfence_width	: in type_general_line_width;
+-- 		hatching_line_width	: in type_general_line_width;
+-- 		hatching_spacing	: in type_general_line_width)
+-- 		return type_fillable_circle'class is
+-- 	begin
+-- 		case filled is
+-- 			when NO =>
+-- 				return (circle with (
+-- 					filled		=> NO,
+-- 					fill_style	=> fill_style,
+-- 					width		=> circumfence_width));
+-- 
+-- 			when YES =>
+-- 				case fill_style is
+-- 					when SOLID =>
+-- 						return (circle with (
+-- 							filled		=> YES,
+-- 							fill_style	=> SOLID));
+-- 
+-- 					when CUTOUT =>
+-- 						return (circle with (
+-- 							filled		=> YES,
+-- 							fill_style	=> CUTOUT));
+-- 							
+-- 					when HATCHED =>
+-- 						return (circle with (
+-- 							filled				=> YES,
+-- 							fill_style			=> HATCHED,
+-- 							hatching_line_width	=> hatching_line_width,
+-- 							hatching_spacing	=> hatching_spacing));
+-- 
+-- 				end case;
+-- 		end case;
+-- 	end;
 
-			when YES =>
-				case fill_style is
-					when SOLID =>
-						return (circle with (
-							filled		=> YES,
-							fill_style	=> SOLID));
-
-					when CUTOUT =>
-						return (circle with (
-							filled		=> YES,
-							fill_style	=> CUTOUT));
-							
-					when HATCHED =>
-						return (circle with (
-							filled				=> YES,
-							fill_style			=> HATCHED,
-							hatching_line_width	=> hatching_line_width,
-							hatching_spacing	=> hatching_spacing));
-
-				end case;
-		end case;
-	end;
+-- 	function to_fillable_circle (
+-- 	-- Composes a fillable circle from the given parameters. 
+-- 	-- Filled and fill_style are discriminants. Depending on them some parameters
+-- 	-- matter or not. See spec for type_fillable_circle.
+--  		circle				: in type_circle;
+-- 		filled				: in type_filled;
+-- 		fill_style			: in type_fill_style;
+-- 		circumfence_width	: in type_general_line_width;
+-- 		hatching_line_width	: in type_general_line_width;
+-- 		hatching_spacing	: in type_general_line_width)
+-- -- 		layers 				: in type_signal_layers.set)
+-- 		return type_route_restrict_circle is
+-- 		layers : type_signal_layers.set;
+-- 	begin
+-- 		case filled is
+-- 			when NO =>
+-- 				return (circle with (
+-- 					filled		=> NO,
+-- 					fill_style	=> fill_style,
+-- 					width		=> circumfence_width,
+-- 					layers		=> layers));
+-- 
+-- 			when YES =>
+-- 				case fill_style is
+-- 					when SOLID =>
+-- 						return (circle with (
+-- 							filled		=> YES,
+-- 							fill_style	=> SOLID,
+-- 							layers		=> layers));
+-- 						
+-- 					when CUTOUT =>
+-- 						return (circle with (
+-- 							filled		=> YES,
+-- 							fill_style	=> CUTOUT,
+-- 							layers		=> layers));
+-- 							
+-- 					when HATCHED =>
+-- 						return (circle with (
+-- 							filled				=> YES,
+-- 							fill_style			=> HATCHED,
+-- 							hatching_line_width	=> hatching_line_width,
+-- 							hatching_spacing	=> hatching_spacing,
+-- 							layers				=> layers));
+-- 
+-- 				end case;
+-- 		end case;
+-- 	end;
 
 	
 	function to_string (circle : in type_fillable_circle) return string is begin

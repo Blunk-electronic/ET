@@ -3181,6 +3181,55 @@ package body et_project is
 			pac_circle_fillable_hatching_spacing	:= type_general_line_width'first;			
 		end;
 
+		function to_fillable_circle (
+		-- Composes a fillable circle from the given parameters. 
+		-- Filled and fill_style are discriminants. Depending on them some parameters
+		-- matter or not. See spec for type_fillable_circle.
+			circle				: in shapes.type_circle;
+			filled				: in type_filled;
+			fill_style			: in type_fill_style;
+			circumfence_width	: in type_general_line_width;
+			hatching_line_width	: in type_general_line_width;
+			hatching_spacing	: in type_general_line_width)
+			return type_fillable_circle is
+		begin
+			case filled is
+				when NO =>
+-- 					return (circle with (
+-- 						filled		=> NO,
+-- 						fill_style	=> fill_style,
+-- 						width		=> circumfence_width));
+					return (shapes.type_circle with
+						(
+						filled		=> NO,
+						fill_style	=> fill_style,
+						width		=> circumfence_width));
+
+						
+				when YES =>
+					case fill_style is
+						when SOLID =>
+							return (circle with (
+								filled		=> YES,
+								fill_style	=> SOLID));
+
+						when CUTOUT =>
+							return (circle with (
+								filled		=> YES,
+								fill_style	=> CUTOUT));
+								
+						when HATCHED =>
+							return (circle with (
+								filled				=> YES,
+								fill_style			=> HATCHED,
+								hatching_line_width	=> hatching_line_width,
+								hatching_spacing	=> hatching_spacing));
+
+					end case;
+			end case;
+		end;
+
+		
 		pac_circle_copper		: et_pcb.type_copper_circle;
 		procedure reset_circle_copper is begin pac_circle_copper := (others => <>); end;		
 		
