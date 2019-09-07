@@ -1751,25 +1751,32 @@ package body scripting is
 												command_incomplete;
 										end case;
 
--- 									when CIRCLE =>
--- 										case fields is
--- 											when 8 =>
--- 												board_ops.draw_outline_circle (
--- 													module_name 	=> module,
--- 													center			=> type_point (set (
--- 															x => to_distance (f (6)),
--- 															y => to_distance (f (7)))),
--- 													radius			=> to_distance (f (8)),
--- 
--- 													log_threshold	=> log_threshold + 1
--- 													);
--- 
--- 											when 9 .. count_type'last =>
--- 												command_too_long (8);
--- 												
--- 											when others =>
--- 												command_incomplete;
--- 										end case;
+									when CIRCLE =>
+										case fields is
+											when 8 =>
+												board_ops.draw_silk_screen_circle (
+													module_name 	=> module,
+													face			=> to_face (f (5)),
+													circle			=> 
+																(
+																width	=> to_distance (f (7)),
+																center	=> type_point (set (
+																			x => to_distance (f (8)),
+																			y => to_distance (f (9)))),
+																radius	=> to_distance (f (10)),
+																filled	=> NO,
+																others	=> <>
+																),
+													log_threshold	=> log_threshold + 1
+													);
+
+											when 9 .. count_type'last =>
+												command_too_long (8);
+												
+											when others =>
+												command_incomplete;
+										end case;
+
 									when others => null;
 								end case;
 							end;
