@@ -34,6 +34,9 @@
 --
 --   history of changes:
 --
+-- CS:
+-- - test field count for all commands
+-- - replace command_too_long (x) by command_too_long (fields - 1);
 
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
@@ -215,10 +218,9 @@ package body scripting is
 		end;
 
 		procedure command_too_long (from : in count_type) is begin
-			log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
+			log (WARNING, "command " & enclose_in_quotes (to_string (cmd)) &
 				 " too long !");
-			log (text => " -> Excessive arguments after no." & count_type'image (from) & " !");
-			raise constraint_error;
+			log (text => " -> Excessive arguments after no." & count_type'image (from) & " ignored !");
 		end;
 
 		procedure project_cmd (
@@ -322,7 +324,6 @@ package body scripting is
 			use schematic_ops;
 			use et_coordinates;
 			use geometry;
-		-- CS: test field count for all commands
 		begin
 			case verb is
 				when ADD =>
@@ -1718,7 +1719,7 @@ package body scripting is
 													);
 
 											when 12 .. count_type'last =>
-												command_too_long (11);
+												command_too_long (fields - 1);
 												
 											when others =>
 												command_incomplete;
@@ -1745,7 +1746,7 @@ package body scripting is
 													);
 
 											when 14 .. count_type'last =>
-												command_too_long (13);
+												command_too_long (fields - 1);
 												
 											when others =>
 												command_incomplete;
@@ -1753,7 +1754,7 @@ package body scripting is
 
 									when CIRCLE =>
 										case fields is
-											when 8 =>
+											when 10 =>
 												board_ops.draw_silk_screen_circle (
 													module_name 	=> module,
 													face			=> to_face (f (5)),
@@ -1770,8 +1771,8 @@ package body scripting is
 													log_threshold	=> log_threshold + 1
 													);
 
-											when 9 .. count_type'last =>
-												command_too_long (8);
+											when 11 .. count_type'last =>
+												command_too_long (fields - 1);
 												
 											when others =>
 												command_incomplete;

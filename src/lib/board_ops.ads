@@ -209,6 +209,7 @@ package board_ops is
 		from			: in geometry.type_point; -- x/y
 		to				: in geometry.type_point; -- x/y		
 		log_threshold	: in type_log_level);
+		-- CS use type_silk_line
 
 	procedure draw_silk_screen_arc (
 	-- Draws an arc in the PCB silk_screen.
@@ -219,6 +220,7 @@ package board_ops is
 		from			: in geometry.type_point; -- x/y		
 		to				: in geometry.type_point; -- x/y		
 		log_threshold	: in type_log_level);
+		-- CS use type_silk_arc
 
 	procedure draw_silk_screen_circle (
 	-- Draws a circle in the PCB silk_screen.

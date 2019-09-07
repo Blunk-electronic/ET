@@ -371,7 +371,7 @@ package et_pcb is
 		-- CS locked : type_locked;
 	end record;
 
-	text_polygon_corner_points : constant string (1..13) := "corner_points";
+	text_polygon_corner_points : constant string := "corner_points";
 
 	
 	-- LOCK STATUS OF AN OBJECT
@@ -384,20 +384,20 @@ package et_pcb is
 
 	
 	-- PCB CONTOUR/OUTLINE
-	type type_pcb_contour_line is new type_line with record -- CS: in the future type_line_3d
+	type type_pcb_contour_line is new type_line with record
 		locked : type_locked := type_locked'first;
 	end record;
 
 	package type_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
 
 	
-	type type_pcb_contour_arc is new type_arc with record  -- CS: in the future type_arc_3d
+	type type_pcb_contour_arc is new type_arc with record
 		locked : type_locked := type_locked'first;
 	end record;
 	package type_pcb_contour_arcs is new doubly_linked_lists (type_pcb_contour_arc);
 
 	
-	type type_pcb_contour_circle is new type_circle with record  -- CS: in the future type_circle_3d
+	type type_pcb_contour_circle is new type_circle with record
 		locked : type_locked := type_locked'first;
 	end record;
 	package type_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
