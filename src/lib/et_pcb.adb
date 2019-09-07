@@ -431,17 +431,24 @@ package body et_pcb is
 
 	function to_string (circle : in type_fillable_circle) return string is begin
 		case circle.filled is
-			when YES =>
-				return
-					shapes.to_string (type_circle (circle)) &
-					" line_width" & to_string (circle.width) &
-					" fill_style" & to_string (circle.fill_style) &
-					" hatching_line_width" & to_string (circle.hatching_line_width) &
-					" hatching_spacing" & to_string (circle.hatching_spacing);
 			when NO =>
 				return
 					shapes.to_string (type_circle (circle)) &
-					" line_width" & to_string (circle.width);
+					text_line_width & to_string (circle.width);
+
+			when YES =>
+				case circle.fill_style is
+					when SOLID | CUTOUT =>
+						return 
+							shapes.to_string (type_circle (circle)) &
+							latin_1.space & text_fill_style & to_string (circle.fill_style);
+					when HATCHED =>
+						return
+							shapes.to_string (type_circle (circle)) &
+							latin_1.space & text_fill_style & to_string (circle.fill_style) &
+							latin_1.space & text_hatching_line_width & to_string (circle.hatching_line_width) &
+							latin_1.space & text_hatching_spacing & to_string (circle.hatching_spacing);
+				end case;
 		end case;
 	end;
 	
@@ -734,21 +741,11 @@ package body et_pcb is
 		cursor			: in type_silk_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use type_silk_circles;
-		circle : type_silk_circle;
 	begin
-		circle := element (cursor);
-		log (text => "silk screen circle face" & to_string (face) & latin_1.space 
-			 & to_string (type_circle (circle))
-			 & " width" & to_string (circle.width)
-			 & " filled" & to_string (circle.filled)
-			 & " " & text_fill_style & to_string (circle.fill_style), level => log_threshold);
-
-		-- if filled with a hatched pattern, output hatch line width and spacing
-		if circle.fill_style = HATCHED then
-			log (text => text_hatching_line_width & to_string (circle.hatching_line_width) & " "
-				& text_hatching_spacing & to_string (circle.hatching_spacing), level => log_threshold);
-		end if;
-	end circle_silk_screen_properties;
+		log (text => "silk screen circle face" & to_string (face)
+			 & to_string (element (cursor)),
+			level => log_threshold);
+	end;
 
 	procedure placeholder_silk_screen_properties (
 	-- Logs the properties of the given silk screen placeholder
@@ -822,21 +819,11 @@ package body et_pcb is
 		cursor			: in type_doc_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use type_doc_circles;
-		circle : type_doc_circle;
 	begin
-		circle := element (cursor);
 		log (text => "assembly doc circle face" & to_string (face) & latin_1.space 
-			 & to_string (type_circle (circle))
-			 & " width" & to_string (circle.width)
-			 & " filled" & to_string (circle.filled)
-			 & " " & text_fill_style & to_string (circle.fill_style), level => log_threshold);
-
-		-- if filled with a hatched pattern, output hatch line width and spacing
-		if circle.fill_style = HATCHED then
-			log (text => text_hatching_line_width & to_string (circle.hatching_line_width) & " "
-				& text_hatching_spacing & to_string (circle.hatching_spacing), level => log_threshold);
-		end if;
-	end circle_assy_doc_properties;
+			 & to_string (element (cursor)),
+			level => log_threshold);
+	end;
 
 	procedure placeholder_assy_doc_properties (
 	-- Logs the properties of the given assembly documentation placeholder
@@ -909,14 +896,11 @@ package body et_pcb is
 		cursor			: in type_keepout_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use type_keepout_circles;
-		circle : type_keepout_circle;
 	begin
-		circle := element (cursor);
-		log (text => "keepout (courtyard) circle face" & to_string (face) & latin_1.space 
-			& to_string (type_circle (circle))
-			& " filled" & to_string (circle.filled)
-			& " " & text_fill_style & to_string (circle.fill_style), level => log_threshold);
-	end circle_keepout_properties;
+		log (text => "keepout circle face" & to_string (face) & latin_1.space 
+			 & to_string (element (cursor)),
+			level => log_threshold);
+	end;
 
 
 -- PROPERTIES OF OBJECTS IN STOP MASK
@@ -941,21 +925,11 @@ package body et_pcb is
 		cursor			: in type_stop_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use type_stop_circles;
-		circle : type_stop_circle;
 	begin
-		circle := element (cursor);
 		log (text => "stop mask circle face" & to_string (face) & latin_1.space 
-			& to_string (type_circle (circle))
-			& " width" & to_string (circle.width)
-			& " filled" & to_string (circle.filled)
-			& " " & text_fill_style & to_string (circle.fill_style), level => log_threshold);
-
-		-- if filled with a hatched pattern, output hatch line width and spacing
-		if circle.fill_style = HATCHED then
-			log (text => text_hatching_line_width & to_string (circle.hatching_line_width) & " "
-				& text_hatching_spacing & to_string (circle.hatching_spacing), level => log_threshold);
-		end if;
-	end circle_stop_mask_properties;
+			& to_string (element (cursor)),
+			level => log_threshold);
+	end;
 
 	procedure line_stop_mask_properties (
 	-- Logs the properties of the given line of stop mask
@@ -1013,15 +987,11 @@ package body et_pcb is
 		cursor			: in type_stencil_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use type_stencil_circles;
-		circle : type_stencil_circle;
 	begin
-		circle := element (cursor);
 		log (text => "solder paste (stencil) circle face" & to_string (face) & latin_1.space 
-			& to_string (type_circle (circle))
-			& " width" & to_string (circle.width)
-			& " filled" & to_string (circle.filled)
-			& " " & text_fill_style & to_string (circle.fill_style), level => log_threshold);
-	end circle_stencil_properties;
+			& to_string (element (cursor)),
+			level => log_threshold);
+	end;
 
 	procedure line_stencil_properties (
 	-- Logs the properties of the given line of stencil

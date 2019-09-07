@@ -1760,13 +1760,13 @@ package body scripting is
 													face			=> to_face (f (5)),
 													circle			=> 
 																(
+																filled		=> NO,
+																fill_style	=> SOLID,
 																width	=> to_distance (f (7)),
 																center	=> type_point (set (
 																			x => to_distance (f (8)),
 																			y => to_distance (f (9)))),
-																radius	=> to_distance (f (10)),
-																filled	=> NO,
-																others	=> <>
+																radius	=> to_distance (f (10))
 																),
 													log_threshold	=> log_threshold + 1
 													);

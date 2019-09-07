@@ -331,9 +331,10 @@ package et_pcb is
 	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE
 	type type_fill_style is (SOLID, HATCHED, CUTOUT);
 
-	text_fill_style : constant string (1..10) := "fill_style";
-	text_hatching_line_width	: constant string (1..19) := "hatching_line_width";
-	text_hatching_spacing 		: constant string (1..16) := "hatching_spacing";	
+	text_line_width : constant string := "line_width";
+	text_fill_style : constant string := "fill_style";
+	text_hatching_line_width	: constant string := "hatching_line_width";
+	text_hatching_spacing 		: constant string := "hatching_spacing";	
 	
 	function to_string (fill_style : in type_fill_style) return string;
 	function to_fill_style (fill_style : in string) return type_fill_style;
@@ -658,31 +659,31 @@ package et_pcb is
 
 	-- This circle type is used by silk screen, assembly doc, 
 	-- stop mask, stencil, keepout, route restrict, via restrict
-	type type_fillable_circle is new type_circle with record -- CS controlled type via fill_style ?
-		width				: type_general_line_width := type_general_line_width'first; -- the width of the circumfence		
-		filled 				: type_filled := NO;
-		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
-		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
-		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
-	end record;
+-- 	type type_fillable_circle is new type_circle with record -- CS controlled type via fill_style ?
+-- 		width				: type_general_line_width := type_general_line_width'first; -- the width of the circumfence		
+-- 		filled 				: type_filled := NO;
+-- 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
+-- 		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
+-- 		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
+-- 	end record;
 
-	type type_fillable_circle2 (
+	type type_fillable_circle (
 		filled		: type_filled;
 		fill_style	: type_fill_style -- don't care if filled is NO
 		)
 		is new type_circle with record
-		width				: type_general_line_width := type_general_line_width'first; -- the width of the circumfence. CS rename to width_circumfence
 		case filled is
+			when NO => 
+				width : type_general_line_width := type_general_line_width'first; -- the width of the circumfence. CS rename to width_circumfence
+
 			when YES =>
 				case fill_style is
-					when SOLID => null;
-					when others =>
-						hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
-						hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
+					when SOLID | CUTOUT => null;
+					when HATCHED =>
+						hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the circumfence and the hatching lines
+						hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the hatching lines
 				end case;
 				
-			when NO => 
-				null;
 		end case;
 	end record;
 
@@ -706,7 +707,7 @@ package et_pcb is
 	
 	
 	type type_stop_circle is new type_fillable_circle with null record;
-	package type_stop_circles is new doubly_linked_lists (type_stop_circle);
+	package type_stop_circles is new indefinite_doubly_linked_lists (type_stop_circle);
 
 
 	type type_stop_polygon is new type_polygon with null record;
@@ -765,7 +766,7 @@ package et_pcb is
 
 	
 	type type_stencil_circle is new type_fillable_circle with null record;
-	package type_stencil_circles is new doubly_linked_lists (type_stencil_circle);
+	package type_stencil_circles is new indefinite_doubly_linked_lists (type_stencil_circle);
 
 
 	type type_stencil_polygon is new type_polygon with null record; -- fill style hatched does not make sense
@@ -808,7 +809,7 @@ package et_pcb is
 
 	
 	type type_silk_circle is new type_fillable_circle with null record;
-	package type_silk_circles is new doubly_linked_lists (type_silk_circle);
+	package type_silk_circles is new indefinite_doubly_linked_lists (type_silk_circle);
 
 
 	type type_silk_polygon is new type_polygon with null record;
@@ -868,7 +869,7 @@ package et_pcb is
 
 	
 	type type_doc_circle is new type_fillable_circle with null record;
-	package type_doc_circles is new doubly_linked_lists (type_doc_circle);
+	package type_doc_circles is new indefinite_doubly_linked_lists (type_doc_circle);
 
 
 	type type_doc_polygon is new type_polygon with null record;
@@ -926,7 +927,7 @@ package et_pcb is
 	package type_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
 	
 	type type_keepout_circle is new type_fillable_circle with null record;	
-	package type_keepout_circles is new doubly_linked_lists (type_keepout_circle);
+	package type_keepout_circles is new indefinite_doubly_linked_lists (type_keepout_circle);
 
 	type type_keepout_polygon is new type_polygon with null record;
 	package type_keepout_polygons is new doubly_linked_lists (type_keepout_polygon);
@@ -966,7 +967,7 @@ package et_pcb is
 	type type_route_restrict_circle is new type_fillable_circle with record
 		layers 	: type_signal_layers.set;
 	end record;
-	package type_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
+	package type_route_restrict_circles is new indefinite_doubly_linked_lists (type_route_restrict_circle);
 
 	type type_route_restrict_polygon is new type_polygon with record
 		width	: type_general_line_width; -- CS use subtype for reasonable range
@@ -1012,7 +1013,7 @@ package et_pcb is
 		layers	: type_signal_layers.set;
 	end record;
 	
-	package type_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
+	package type_via_restrict_circles is new indefinite_doubly_linked_lists (type_via_restrict_circle);
 
 	
 	type type_via_restrict_polygon is new type_polygon with record
