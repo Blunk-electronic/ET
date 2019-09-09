@@ -820,20 +820,36 @@ package body et_project is
 		arc_end;
 	end write_arc;
 
+	procedure write_circle_fillable (circle : in et_pcb.type_fillable_circle) is 
+		use et_pcb;
+		use et_pcb_coordinates.geometry;		
+	begin
+		circle_begin;
+		write (keyword => keyword_center, parameters => position (circle.center));
+		write (keyword => keyword_radius, parameters => to_string (circle.radius));
+		write (keyword => keyword_width , parameters => to_string (circle.width));
+		write (keyword => keyword_filled, parameters => to_string (circle.filled));
+		case circle.filled is
+			when NO => null;
+			when YES =>
+				write (keyword => keyword_fill_style, parameters => to_string (circle.fill_style));
+
+				case circle.fill_style is
+					when SOLID | CUTOUT => null;
+					when HATCHED =>
+						write (keyword => keyword_hatching_line_width  , parameters => to_string (circle.hatching_line_width));
+						write (keyword => keyword_hatching_line_spacing, parameters => to_string (circle.hatching_spacing));
+				end case;
+
+		end case;
+		circle_end;
+	end write_circle_fillable;
+	
 	procedure write_circle (cursor : in et_pcb.type_keepout_circles.cursor) is 
 		use et_pcb;
 		use type_keepout_circles;
-		use et_pcb_coordinates.geometry;
 	begin
-		circle_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
-		write (keyword => keyword_width , parameters => to_string (element (cursor).width));
-		write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
-		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-		circle_end;
+		write_circle_fillable (element (cursor));
 	end write_circle;
 	
 	procedure write_polygon (cursor : in et_pcb.type_keepout_polygons.cursor) is 
@@ -888,17 +904,8 @@ package body et_project is
 	procedure write_circle (cursor : in et_pcb.type_stop_circles.cursor) is 
 		use et_pcb;
 		use type_stop_circles;
-		use et_pcb_coordinates.geometry;
 	begin
-		circle_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
-		write (keyword => keyword_width , parameters => to_string (element (cursor).width));
-		write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
-		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-		circle_end;
+		write_circle_fillable (element (cursor));
 	end write_circle;
 	
 	procedure write_polygon (cursor : in et_pcb.type_stop_polygons.cursor) is 
@@ -953,17 +960,8 @@ package body et_project is
 	procedure write_circle (cursor : in et_pcb.type_stencil_circles.cursor) is 
 		use et_pcb;
 		use type_stencil_circles;
-		use et_pcb_coordinates.geometry;
 	begin
-		circle_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
-		write (keyword => keyword_width , parameters => to_string (element (cursor).width));
-		write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
-		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-		circle_end;
+		write_circle_fillable (element (cursor));
 	end write_circle;
 	
 	procedure write_polygon (cursor : in et_pcb.type_stencil_polygons.cursor) is 
@@ -1210,17 +1208,8 @@ package body et_project is
 	procedure write_circle (cursor : in et_pcb.type_silk_circles.cursor) is 
 		use et_pcb;
 		use type_silk_circles;
-		use et_pcb_coordinates.geometry;		
 	begin
-		circle_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
-		write (keyword => keyword_width , parameters => to_string (element (cursor).width));
-		write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
-		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-		circle_end;
+		write_circle_fillable (element (cursor));
 	end write_circle;
 	
 	procedure write_polygon (cursor : in et_pcb.type_silk_polygons.cursor) is 
@@ -1275,17 +1264,8 @@ package body et_project is
 	procedure write_circle (cursor : in et_pcb.type_doc_circles.cursor) is
 		use et_pcb;
 		use type_doc_circles;
-		use et_pcb_coordinates.geometry;		
 	begin
-		circle_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
-		write (keyword => keyword_width , parameters => to_string (element (cursor).width));
-		write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
-		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-		circle_end;
+		write_circle_fillable (element (cursor));
 	end write_circle;
 	
 	procedure write_polygon (cursor : in et_pcb.type_doc_polygons.cursor) is 
@@ -3219,7 +3199,7 @@ package body et_project is
 			pac_circle								:= (others => <>);
 			pac_circle_fillable_width				:= type_general_line_width'first;
 			pac_circle_fillable_filled				:= type_filled'first;
-			pac_circle_fillable_fill_style			:= type_fill_style'first;
+			pac_circle_fillable_fill_style			:= fill_style_default;
 			pac_circle_fillable_hatching_line_width := type_general_line_width'first;
 			pac_circle_fillable_hatching_spacing	:= type_general_line_width'first;			
 		end;
@@ -8250,7 +8230,7 @@ package body et_project is
 			board_circle								:= (others => <>);
 			board_circle_fillable_width					:= type_general_line_width'first;
 			board_circle_fillable_filled				:= type_filled'first;
-			board_circle_fillable_fill_style			:= type_fill_style'first;
+			board_circle_fillable_fill_style			:= fill_style_default;
 			board_circle_fillable_hatching_line_width 	:= type_general_line_width'first;
 			board_circle_fillable_hatching_spacing		:= type_general_line_width'first;			
 		end;

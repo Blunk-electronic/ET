@@ -1971,86 +1971,80 @@ package body et_kicad_pcb is
 
 				-- The point at the circle and its layer are now discarded
 				-- as the circle is converted back to its anchestor
-				-- and then extended with the line width. Thus a type_silk_circle
-				-- is formed and appended to the list of silk screen circles.
+				-- and then extended with the line width of the circumfence. Thus a type_fillable_circle
+				-- is formed and appended to the corresponding list of circles.
+				-- Filling circles is not supported by kicad -> default to no filling.
 				case circle.layer is
 					when TOP_SILK =>
-						silk_screen.top.circles.append ((et_pcb.shapes.type_circle (circle) with circle.width, others => <>)); 
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						silk_screen.top.circles.append ((et_pcb.shapes.type_circle (circle) with 
+							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+						
 						circle_silk_screen_properties (TOP, silk_screen.top.circles.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						silk_screen.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with circle.width, others => <>)); 
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						silk_screen.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with
+							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
 						
 						circle_silk_screen_properties (BOTTOM, silk_screen.bottom.circles.last, log_threshold + 1);
-
 						
 					when TOP_ASSY =>
-						assy_doc.top.circles.append ((et_pcb.shapes.type_circle (circle) with circle.width, others => <>)); 
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						assy_doc.top.circles.append ((et_pcb.shapes.type_circle (circle) with
+							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+
 						circle_assy_doc_properties (TOP, assy_doc.top.circles.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						assy_doc.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with circle.width, others => <>)); 
-						-- filling not supported by kicad -> therefore "others" assumes default.
-						circle_assy_doc_properties (BOTTOM, assy_doc.bottom.circles.last, log_threshold + 1);
+						assy_doc.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with
+							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
 
+						circle_assy_doc_properties (BOTTOM, assy_doc.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_KEEP =>
-						keepout.top.circles.append ((et_pcb.shapes.type_circle (circle) with circle.width, others => <>)); 
-						-- filling not supported by kicad -> therefore "others" assumes default.
-							-- center 		=> circle.center,
-							-- radius		=> circle.radius,
-							-- filled		=> circle.filled,
-							-- fill_style	=> circle.fill_style,
-							-- width		=> circle.width,
-							-- hatching_line_width	=> <>,
-							-- hatching_spacing	=> <>
-							-- ));
+						keepout.top.circles.append ((et_pcb.shapes.type_circle (circle) with
+							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+
 						circle_keepout_properties (TOP, keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
-						keepout.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with circle.width, others => <>)); 
-							-- center 		=> circle.center,
-							-- radius		=> circle.radius, -- line width discarded because this is keepout
-							-- filled		=> circle.filled,
-							-- fill_style	=> circle.fill_style));
+						keepout.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with
+							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+						
 						circle_keepout_properties (BOTTOM, keepout.bottom.circles.last, log_threshold + 1);
-
 						
 					when TOP_COPPER => 
-						copper.top.circles.append ((et_pcb.shapes.type_circle (circle) with circle.width, others => <>)); 
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						copper.top.circles.append ((et_pcb.shapes.type_circle (circle) with
+							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>));
 						
 						circle_copper_properties (TOP, copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						copper.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with circle.width, others => <>));
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						copper.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with
+							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
 						
 						circle_copper_properties (BOTTOM, copper.bottom.circles.last, log_threshold + 1);
-
 						
 					when TOP_STOP =>
-						stop_mask.top.circles.append ((et_pcb.shapes.type_circle (circle) with circle.width, others => <>));
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						stop_mask.top.circles.append ((et_pcb.shapes.type_circle (circle) with
+							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+
 						circle_stop_mask_properties (TOP, stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						stop_mask.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with circle.width, others => <>));
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						stop_mask.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with
+							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+						
 						circle_stop_mask_properties (BOTTOM, stop_mask.bottom.circles.last, log_threshold + 1);
-
 						
 					when TOP_PASTE =>
-						--stencil.top.circles.append ((et_pcb.shapes.type_circle (circle) with circle.width));
-						stencil.top.circles.append ((et_pcb.shapes.type_circle (circle) with circle.width, others => <>));
+						stencil.top.circles.append ((et_pcb.shapes.type_circle (circle) with
+							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+
 						circle_stencil_properties (TOP, stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						--stencil.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with circle.width));
-						stencil.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with circle.width, others => <>));
+						stencil.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with
+							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+
 						circle_stencil_properties (BOTTOM, stencil.bottom.circles.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -6145,71 +6139,71 @@ package body et_kicad_pcb is
 				-- Later the angle is discarded.
 				board_circle.radius := distance (board_circle.center, board_circle.point);
 
-				-- The board_circle is converted back to its anchestor and
-				-- depending on the layer extended with specific properties.
+				-- The point at the circle and its layer are now discarded
+				-- as the circle is converted back to its anchestor
+				-- and then extended with the line width of the circumfence. Thus a type_fillable_circle
+				-- is formed and appended to the corresponding list of circles.
+				-- Filling circles is not supported by kicad -> default to no filling.
 				case board_circle.layer is
 					when TOP_SILK =>
-						board.silk_screen.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with board_circle.width, others => <>)); 
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						board.silk_screen.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+						
 						circle_silk_screen_properties (TOP, board.silk_screen.top.circles.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						board.silk_screen.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with board_circle.width, others => <>)); 
-						-- filling not supported by kicad -> therefore "others" assumes default.
-						circle_silk_screen_properties (BOTTOM, board.silk_screen.bottom.circles.last, log_threshold + 1);
+						board.silk_screen.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
 
+						circle_silk_screen_properties (BOTTOM, board.silk_screen.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_ASSY =>
-						board.assy_doc.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with board_circle.width, others => <>)); 
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						board.assy_doc.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+
 						circle_assy_doc_properties (TOP, board.assy_doc.top.circles.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						board.assy_doc.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with board_circle.width, others => <>)); 
-						-- filling not supported by kicad -> therefore "others" assumes default.
-						circle_assy_doc_properties (BOTTOM, board.assy_doc.bottom.circles.last, log_threshold + 1);
+						board.assy_doc.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
 
+						circle_assy_doc_properties (BOTTOM, board.assy_doc.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_PASTE =>
-						--board.stencil.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with board_circle.width));
-						board.stencil.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with board_circle.width, others => <>));
+						board.stencil.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+
 						circle_stencil_properties (TOP, board.stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						--board.stencil.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with board_circle.width));
-						board.stencil.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with board_circle.width, others => <>));
+						board.stencil.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+
 						circle_stencil_properties (BOTTOM, board.stencil.bottom.circles.last, log_threshold + 1);
-						
 
 					when TOP_STOP =>
-						board.stop_mask.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with board_circle.width, others => <>));
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						board.stop_mask.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+
 						circle_stop_mask_properties (TOP, board.stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						board.stop_mask.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with board_circle.width, others => <>));
-						-- filling not supported by kicad -> therefore "others" assumes default.
-						circle_stop_mask_properties (BOTTOM, board.stop_mask.bottom.circles.last, log_threshold + 1);
+						board.stop_mask.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
 
+						circle_stop_mask_properties (BOTTOM, board.stop_mask.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_KEEP =>
-						board.keepout.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with board_circle.width, others => <>));
-						--board.keepout.top.circles.append ((
-						--	center		=> board_circle.center,
-						--	radius		=> board_circle.radius,
-						--	filled		=> board_circle.filled,
-						--	fill_style	=> board_circle.fill_style));
+						board.keepout.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+
 						circle_keepout_properties (TOP, board.keepout.top.circles.last, log_threshold + 1);
 
 					when BOT_KEEP =>
-						board.keepout.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with board_circle.width, others => <>));
-						--board.keepout.bottom.circles.append ((
-						--	center		=> board_circle.center,
-						--	radius		=> board_circle.radius,
-						--	filled		=> board_circle.filled,
-						--	fill_style	=> board_circle.fill_style));
-						circle_keepout_properties (BOTTOM, board.keepout.bottom.circles.last, log_threshold + 1);
+						board.keepout.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
 
+						circle_keepout_properties (BOTTOM, board.keepout.bottom.circles.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
 						board.contour.circles.append ((et_pcb.shapes.type_circle (board_circle) with locked => NO));
@@ -6428,83 +6422,81 @@ package body et_kicad_pcb is
 					distance (package_circle.center, package_circle.point);
 
 				-- The point at the circle and its layer are now discarded
-				-- as the package_circle is converted back to its anchestor
-				-- and then extended with the line width. Thus a type_silk_circle
-				-- is formed and appended to the list of silk screen circles.
+				-- as the circle is converted back to its anchestor
+				-- and then extended with the line width of the circumfence. Thus a type_fillable_circle
+				-- is formed and appended to the corresponding list of circles.
+				-- Filling circles is not supported by kicad -> default to no filling.
 				case package_circle.layer is
 					when TOP_SILK =>
-						package_silk_screen.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with package_circle.width, others => <>)); 
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						package_silk_screen.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+
 						circle_silk_screen_properties (TOP, package_silk_screen.top.circles.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						package_silk_screen.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with package_circle.width, others => <>)); 
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						package_silk_screen.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+						
 						circle_silk_screen_properties (BOTTOM, package_silk_screen.bottom.circles.last, log_threshold + 1);
-
 						
 					when TOP_ASSY =>
-						package_assy_doc.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with package_circle.width, others => <>)); 
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						package_assy_doc.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+
 						circle_assy_doc_properties (TOP, package_assy_doc.top.circles.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						package_assy_doc.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with package_circle.width, others => <>)); 
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						package_assy_doc.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+						
 						circle_assy_doc_properties (BOTTOM, package_assy_doc.bottom.circles.last, log_threshold + 1);
-
 						
 					when TOP_KEEP =>
-						package_keepout.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with package_circle.width, others => <>));
-						--package_keepout.top.circles.append ((
-						--	center 		=> package_circle.center,
-						--	radius		=> package_circle.radius,  -- line width discarded because this is keepout
-						--	filled		=> package_circle.filled,
-						--	fill_style	=> package_circle.fill_style));
+						package_keepout.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+						
 						circle_keepout_properties (TOP, package_keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
-						package_keepout.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with package_circle.width, others => <>));
-						--package_keepout.bottom.circles.append ((
-						--	center 		=> package_circle.center,
-						--	radius		=> package_circle.radius,  -- line width discarded because this is keepout
-						--	filled		=> package_circle.filled,
-						--	fill_style	=> package_circle.fill_style));
+						package_keepout.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+						
 						circle_keepout_properties (BOTTOM, package_keepout.bottom.circles.last, log_threshold + 1);
-
 						
 					when TOP_COPPER => 
-						package_copper.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with package_circle.width, others => <>));
-						-- filling not supported by kicad -> therefore "others" assume default.
+						package_copper.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
 
 						circle_copper_properties (TOP, package_copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						package_copper.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with package_circle.width, others => <>));
-						-- filling not supported by kicad -> therefore "others" assume default.
+						package_copper.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>));
 
 						circle_copper_properties (BOTTOM, package_copper.bottom.circles.last, log_threshold + 1);
-
 						
 					when TOP_STOP =>
-						package_stop_mask.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with package_circle.width, others => <>));
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						package_stop_mask.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+
 						circle_stop_mask_properties (TOP, package_stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						package_stop_mask.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with package_circle.width, others => <>));
-						-- filling not supported by kicad -> therefore "others" assumes default.
+						package_stop_mask.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+						
 						circle_stop_mask_properties (BOTTOM, package_stop_mask.bottom.circles.last, log_threshold + 1);
-
 						
 					when TOP_PASTE =>
-						--package_stencil.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with package_circle.width));
-						package_stencil.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with package_circle.width, others => <>));
+						package_stencil.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+						
 						circle_stencil_properties (TOP, package_stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						--package_stencil.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with package_circle.width));
-						package_stencil.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with package_circle.width, others => <>));
+						package_stencil.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+						
 						circle_stencil_properties (BOTTOM, package_stencil.bottom.circles.last, log_threshold + 1);
 
 					when others => invalid_layer;
