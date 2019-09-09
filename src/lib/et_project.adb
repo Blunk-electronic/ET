@@ -3209,8 +3209,6 @@ package body et_project is
 		pac_circle				: type_circle;
 		procedure reset_circle is begin pac_circle := (others => <>); end;
 
-
-
 		pac_circle_fillable_width				: type_general_line_width := type_general_line_width'first;
 		pac_circle_fillable_filled				: type_filled := type_filled'first;
 		pac_circle_fillable_fill_style			: type_fill_style := type_fill_style'first;
@@ -3224,6 +3222,16 @@ package body et_project is
 			pac_circle_fillable_fill_style			:= type_fill_style'first;
 			pac_circle_fillable_hatching_line_width := type_general_line_width'first;
 			pac_circle_fillable_hatching_spacing	:= type_general_line_width'first;			
+		end;
+
+		function make_fillable_circle return type_fillable_circle is begin
+			return to_fillable_circle (
+				circle 				=> shapes.type_circle (pac_circle),
+				filled				=> pac_circle_fillable_filled,
+				fill_style			=> pac_circle_fillable_fill_style,
+				circumfence_width	=> pac_circle_fillable_width,
+				hatching_line_width	=> pac_circle_fillable_hatching_line_width,
+				hatching_spacing	=> pac_circle_fillable_hatching_spacing);
 		end;
 		
 		pac_circle_copper		: et_pcb.type_copper_circle;
@@ -3760,53 +3768,40 @@ package body et_project is
 										pac_circle_copper := (others => <>);
 
 									when SEC_SILK_SCREEN => 
-
 										type_silk_circles.append (
 											container	=> packge.silk_screen.top.circles, 
-											new_item	=> (to_fillable_circle (
-												circle 				=> shapes.type_circle (pac_circle),
-												filled				=> pac_circle_fillable_filled,
-												fill_style			=> pac_circle_fillable_fill_style,
-												circumfence_width	=> pac_circle_fillable_width,
-												hatching_line_width	=> pac_circle_fillable_hatching_line_width,
-												hatching_spacing	=> pac_circle_fillable_hatching_spacing)
-												with null record));
+											new_item	=> make_fillable_circle);
 															
-										-- clean up for next circle
-										reset_circle_fillable;
+										reset_circle_fillable; -- clean up for next circle
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_circles.append (
 											container	=> packge.assembly_documentation.top.circles, 
-											new_item	=> (pac_circle_fillable with null record));
+											new_item	=> make_fillable_circle);
 
-										-- clean up for next circle
-										pac_circle_fillable := (others => <>);
-
+										reset_circle_fillable; -- clean up for next circle
+										
 									when SEC_STENCIL =>
 										type_stencil_circles.append (
 											container	=> packge.stencil.top.circles, 
-											new_item	=> (pac_circle_fillable with null record));
+											new_item	=> make_fillable_circle);
 
-										-- clean up for next circle
-										pac_circle_fillable := (others => <>);
-
+										reset_circle_fillable; -- clean up for next circle
+										
 									when SEC_STOP_MASK =>
 										type_stop_circles.append (
 											container	=> packge.stop_mask.top.circles, 
-											new_item	=> (pac_circle_fillable with null record));
+											new_item	=> make_fillable_circle);
 
-										-- clean up for next circle
-										pac_circle_fillable := (others => <>);
+										reset_circle_fillable; -- clean up for next circle
 
 									when SEC_KEEPOUT =>
 										type_keepout_circles.append (
 											container	=> packge.keepout.top.circles,
-											new_item	=> (pac_circle_fillable with null record));
+											new_item	=> make_fillable_circle);
 
-										-- clean up for next circle
-										pac_circle_fillable := (others => <>);
-
+										reset_circle_fillable; -- clean up for next circle
+										
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_circles.append (
 											container	=> tht_pad_shape.top.circles,
@@ -3832,42 +3827,37 @@ package body et_project is
 									when SEC_SILK_SCREEN => 
 										type_silk_circles.append (
 											container	=> packge.silk_screen.bottom.circles, 
-											new_item	=> (pac_circle_fillable with null record));
+											new_item	=> make_fillable_circle);
 
-										-- clean up for next circle
-										pac_circle_fillable := (others => <>);
-
+										reset_circle_fillable; -- clean up for next circle
+										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_circles.append (
 											container	=> packge.assembly_documentation.bottom.circles, 
-											new_item	=> (pac_circle_fillable with null record));
+											new_item	=> make_fillable_circle);
 
-										-- clean up for next circle
-										pac_circle_fillable := (others => <>);
+										reset_circle_fillable; -- clean up for next circle
 
 									when SEC_STENCIL =>
 										type_stencil_circles.append (
 											container	=> packge.stencil.bottom.circles, 
-											new_item	=> (pac_circle_fillable with null record));
+											new_item	=> make_fillable_circle);
 
-										-- clean up for next circle
-										pac_circle_fillable := (others => <>);
+										reset_circle_fillable; -- clean up for next circle
 
 									when SEC_STOP_MASK =>
 										type_stop_circles.append (
 											container	=> packge.stop_mask.bottom.circles, 
-											new_item	=> (pac_circle_fillable with null record));
+											new_item	=> make_fillable_circle);
 
-										-- clean up for next circle
-										pac_circle_fillable := (others => <>);
+										reset_circle_fillable; -- clean up for next circle
 
 									when SEC_KEEPOUT =>
 										type_keepout_circles.append (
 											container	=> packge.keepout.bottom.circles,
-											new_item	=> (pac_circle_fillable with null record));
+											new_item	=> make_fillable_circle);
 
-										-- clean up for next circle
-										pac_circle_fillable := (others => <>);
+										reset_circle_fillable; -- clean up for next circle
 
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_circles.append (
@@ -3894,22 +3884,18 @@ package body et_project is
 								
 								type_route_restrict_circles.append (
 									container	=> packge.route_restrict.circles,
-									new_item	=> (pac_circle_fillable with pac_signal_layers));
+									new_item	=> (make_fillable_circle with pac_signal_layers));
 
-								-- clean up for next circle
-								reset_circle;
-								reset_line_width;
+								reset_circle_fillable; -- clean up for next circle
 								type_signal_layers.clear (pac_signal_layers);
 
 							when SEC_VIA_RESTRICT =>
 								
 								type_via_restrict_circles.append (
 									container	=> packge.via_restrict.circles,
-									new_item	=> (pac_circle_fillable with pac_signal_layers));
+									new_item	=> (make_fillable_circle with pac_signal_layers));
 
-								-- clean up for next circle
-								reset_circle;
-								reset_line_width;
+								reset_circle_fillable; -- clean up for next circle
 								type_signal_layers.clear (pac_signal_layers);
 
 							when SEC_PAD_CONTOURS_SMT =>
@@ -4909,31 +4895,31 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the center position starting at field 2 of line
-										pac_circle_fillable.center := to_position (line, 2);
+										pac_circle.center := to_position (line, 2);
 										
 									elsif kw = keyword_radius then -- radius 22
 										expect_field_count (line, 2);
-										pac_circle_fillable.radius := to_distance (f (line, 2));
+										pac_circle.radius := to_distance (f (line, 2));
 										
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
-										pac_circle_fillable.width := to_distance (f (line, 2));
+										pac_circle_fillable_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);													
-										pac_circle_fillable.filled := et_pcb.to_filled (f (line, 2));
+										pac_circle_fillable_filled := et_pcb.to_filled (f (line, 2));
 
 									elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
 										expect_field_count (line, 2);													
-										pac_circle_fillable.fill_style := et_pcb.to_fill_style (f (line, 2));
+										pac_circle_fillable_fill_style := et_pcb.to_fill_style (f (line, 2));
 
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													
-										pac_circle_fillable.hatching_line_width := to_distance (f (line, 2));
+										pac_circle_fillable_hatching_line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 										expect_field_count (line, 2);													
-										pac_circle_fillable.hatching_spacing := to_distance (f (line, 2));
+										pac_circle_fillable_hatching_spacing := to_distance (f (line, 2));
 
 									elsif kw = keyword_layers then -- layers 1 14 3
 

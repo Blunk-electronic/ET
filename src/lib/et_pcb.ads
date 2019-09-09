@@ -659,14 +659,6 @@ package et_pcb is
 
 	-- This circle type is used by silk screen, assembly doc, 
 	-- stop mask, stencil, keepout, route restrict, via restrict
--- 	type type_fillable_circle is new type_circle with record -- CS controlled type via fill_style ?
--- 		width				: type_general_line_width := type_general_line_width'first; -- the width of the circumfence		
--- 		filled 				: type_filled := NO;
--- 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
--- 		hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the lines
--- 		hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the lines
--- 	end record;
-
 	type type_fillable_circle (
 		filled		: type_filled;
 		fill_style	: type_fill_style -- don't care if filled is NO
@@ -687,18 +679,6 @@ package et_pcb is
 		end case;
 	end record;
 
--- 	function to_fillable_circle (
--- 	-- Composes a fillable circle from the given parameters. 
--- 	-- Filled and fill_style are discriminants. Depending on them some parameters
--- 	-- matter or not. See spec for type_fillable_circle.									
--- 		circle				: in type_circle;
--- 		filled				: in type_filled;
--- 		fill_style			: in type_fill_style;
--- 		circumfence_width	: in type_general_line_width;
--- 		hatching_line_width	: in type_general_line_width;
--- 		hatching_spacing	: in type_general_line_width)
--- 		return type_fillable_circle'class;
-	
 	function to_string (circle : in type_fillable_circle) return string;
 	
 	-- SOLDER STOP MASK
@@ -717,8 +697,8 @@ package et_pcb is
 
 	
 	
-	type type_stop_circle is new type_fillable_circle with null record;
-	package type_stop_circles is new indefinite_doubly_linked_lists (type_stop_circle);
+
+	package type_stop_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
 
 	type type_stop_polygon is new type_polygon with null record;
@@ -776,8 +756,8 @@ package et_pcb is
 	package type_stencil_arcs is new doubly_linked_lists (type_stencil_arc);
 
 	
-	type type_stencil_circle is new type_fillable_circle with null record;
-	package type_stencil_circles is new indefinite_doubly_linked_lists (type_stencil_circle);
+
+	package type_stencil_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
 
 	type type_stencil_polygon is new type_polygon with null record; -- fill style hatched does not make sense
@@ -819,8 +799,7 @@ package et_pcb is
 	package type_silk_arcs is new doubly_linked_lists (type_silk_arc);
 
 	
-	type type_silk_circle is new type_fillable_circle with null record;
-	package type_silk_circles is new indefinite_doubly_linked_lists (type_silk_circle);
+	package type_silk_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
 
 	type type_silk_polygon is new type_polygon with null record;
@@ -879,8 +858,7 @@ package et_pcb is
 	package type_doc_arcs is new doubly_linked_lists (type_doc_arc);
 
 	
-	type type_doc_circle is new type_fillable_circle with null record;
-	package type_doc_circles is new indefinite_doubly_linked_lists (type_doc_circle);
+	package type_doc_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
 
 	type type_doc_polygon is new type_polygon with null record;
@@ -937,8 +915,7 @@ package et_pcb is
 		
 	package type_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
 	
-	type type_keepout_circle is new type_fillable_circle with null record;	
-	package type_keepout_circles is new indefinite_doubly_linked_lists (type_keepout_circle);
+	package type_keepout_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
 	type type_keepout_polygon is new type_polygon with null record;
 	package type_keepout_polygons is new doubly_linked_lists (type_keepout_polygon);
@@ -979,20 +956,7 @@ package et_pcb is
 		layers 	: type_signal_layers.set;
 	end record;
 
--- 	overriding
--- 	function to_fillable_circle (
--- 	-- Composes a fillable circle from the given parameters. 
--- 	-- Filled and fill_style are discriminants. Depending on them some parameters
--- 	-- matter or not. See spec for type_fillable_circle.									
--- 		circle				: in type_circle;
--- 		filled				: in type_filled;
--- 		fill_style			: in type_fill_style;
--- 		circumfence_width	: in type_general_line_width;
--- 		hatching_line_width	: in type_general_line_width;
--- 		hatching_spacing	: in type_general_line_width)
--- -- 		layers 				: in type_signal_layers.set)
--- 		return type_route_restrict_circle;
-
+	
 	package type_route_restrict_circles is new indefinite_doubly_linked_lists (type_route_restrict_circle);
 
 	type type_route_restrict_polygon is new type_polygon with record

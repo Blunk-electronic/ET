@@ -1656,12 +1656,12 @@ package body board_ops is
 				when TOP =>
 					append (
 						container	=> module.board.silk_screen.top.circles,
-						new_item	=> (circle with others => <>));
+						new_item	=> circle);
 
 				when BOTTOM =>
 					append (
 						container	=> module.board.silk_screen.bottom.circles,
-						new_item	=> (circle with others => <>));
+						new_item	=> circle);
 
 			end case;
 		end;
