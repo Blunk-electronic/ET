@@ -823,7 +823,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
-				procedure move_circle (circle : in out et_pcb.type_silk_circle) is
+				procedure move_circle (circle : in out et_pcb.type_fillable_circle) is
 					use et_pcb_coordinates.geometry;
 				begin
 					log (text => board_silk_screen & "circle", level => log_threshold + log_threshold_add);
@@ -1063,7 +1063,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
-				procedure move_circle (circle : in out et_pcb.type_doc_circle) is
+				procedure move_circle (circle : in out et_pcb.type_fillable_circle) is
 					use et_pcb_coordinates.geometry;
 				begin
 					log (text => doc & "circle", level => log_threshold + log_threshold_add);
@@ -1301,7 +1301,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
-				procedure move_circle (circle : in out et_pcb.type_stencil_circle) is
+				procedure move_circle (circle : in out et_pcb.type_fillable_circle) is
 					use et_pcb_coordinates.geometry;
 				begin
 					log (text => stencil & "circle", level => log_threshold + log_threshold_add);
@@ -1504,7 +1504,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
-				procedure move_circle (circle : in out et_pcb.type_stop_circle) is
+				procedure move_circle (circle : in out et_pcb.type_fillable_circle) is
 					use et_pcb_coordinates.geometry;
 				begin
 					log (text => stop & "circle", level => log_threshold + log_threshold_add);
@@ -1742,7 +1742,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
-				procedure move_circle (circle : in out et_pcb.type_keepout_circle) is
+				procedure move_circle (circle : in out et_pcb.type_fillable_circle) is
 					use et_pcb_coordinates.geometry;
 				begin
 					log (text => keepout & "circle", level => log_threshold + log_threshold_add);
