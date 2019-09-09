@@ -3101,6 +3101,51 @@ package body et_project is
 		
 		return dim;
 	end to_dimensions;
+
+	function to_fillable_circle (
+	-- Composes a fillable circle from the given parameters. 
+	-- Filled and fill_style are discriminants. Depending on them some parameters
+	-- matter or not. See spec for type_fillable_circle.
+		circle				: in et_pcb.shapes.type_circle;
+		filled				: in et_pcb.type_filled;
+		fill_style			: in et_pcb.type_fill_style;
+		circumfence_width	: in et_pcb.type_general_line_width;
+		hatching_line_width	: in et_pcb.type_general_line_width;
+		hatching_spacing	: in et_pcb.type_general_line_width)
+		return et_pcb.type_fillable_circle is
+
+		use et_pcb;
+
+	begin -- to_fillable_circle
+		case filled is
+			when NO =>
+				return (circle with
+					filled		=> NO,
+					fill_style	=> fill_style,
+					width		=> circumfence_width);
+				
+			when YES =>
+				case fill_style is
+					when SOLID =>
+						return (circle with
+							filled		=> YES,
+							fill_style	=> SOLID);
+
+					when CUTOUT =>
+						return (circle with
+							filled		=> YES,
+							fill_style	=> CUTOUT);
+							
+					when HATCHED =>
+						return (circle with
+							filled				=> YES,
+							fill_style			=> HATCHED,
+							hatching_line_width	=> hatching_line_width,
+							hatching_spacing	=> hatching_spacing);
+
+				end case;
+		end case;
+	end to_fillable_circle;
 	
 	procedure read_package (
 	-- Opens the package file and stores the package in container et_libraries.packages.
@@ -3180,55 +3225,6 @@ package body et_project is
 			pac_circle_fillable_hatching_line_width := type_general_line_width'first;
 			pac_circle_fillable_hatching_spacing	:= type_general_line_width'first;			
 		end;
-
-		function to_fillable_circle (
-		-- Composes a fillable circle from the given parameters. 
-		-- Filled and fill_style are discriminants. Depending on them some parameters
-		-- matter or not. See spec for type_fillable_circle.
-			circle				: in shapes.type_circle;
-			filled				: in type_filled;
-			fill_style			: in type_fill_style;
-			circumfence_width	: in type_general_line_width;
-			hatching_line_width	: in type_general_line_width;
-			hatching_spacing	: in type_general_line_width)
-			return type_fillable_circle is
-		begin
-			case filled is
-				when NO =>
--- 					return (circle with (
--- 						filled		=> NO,
--- 						fill_style	=> fill_style,
--- 						width		=> circumfence_width));
-					return (shapes.type_circle with
-						(
-						filled		=> NO,
-						fill_style	=> fill_style,
-						width		=> circumfence_width));
-
-						
-				when YES =>
-					case fill_style is
-						when SOLID =>
-							return (circle with (
-								filled		=> YES,
-								fill_style	=> SOLID));
-
-						when CUTOUT =>
-							return (circle with (
-								filled		=> YES,
-								fill_style	=> CUTOUT));
-								
-						when HATCHED =>
-							return (circle with (
-								filled				=> YES,
-								fill_style			=> HATCHED,
-								hatching_line_width	=> hatching_line_width,
-								hatching_spacing	=> hatching_spacing));
-
-					end case;
-			end case;
-		end;
-
 		
 		pac_circle_copper		: et_pcb.type_copper_circle;
 		procedure reset_circle_copper is begin pac_circle_copper := (others => <>); end;		
@@ -3765,16 +3761,16 @@ package body et_project is
 
 									when SEC_SILK_SCREEN => 
 
--- 										type_silk_circles.append (
--- 											container	=> packge.silk_screen.top.circles, 
--- 											new_item	=> to_fillable_circle (
--- 													circle 		=> pac_circle,
--- 													filled		=> pac_circle_fillable_filled,
--- 													fill_style	=> pac_circle_fillable_fill_style,
--- 													circumfence_width	=> pac_circle_fillable_width,
--- 													hatching_line_width	=> pac_circle_fillable_hatching_line_width,
--- 													hatching_spacing	=> pac_circle_fillable_hatching_spacing
--- 													));
+										type_silk_circles.append (
+											container	=> packge.silk_screen.top.circles, 
+											new_item	=> (to_fillable_circle (
+												circle 				=> shapes.type_circle (pac_circle),
+												filled				=> pac_circle_fillable_filled,
+												fill_style			=> pac_circle_fillable_fill_style,
+												circumfence_width	=> pac_circle_fillable_width,
+												hatching_line_width	=> pac_circle_fillable_hatching_line_width,
+												hatching_spacing	=> pac_circle_fillable_hatching_spacing)
+												with null record));
 															
 										-- clean up for next circle
 										reset_circle_fillable;
