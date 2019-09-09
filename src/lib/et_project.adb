@@ -796,30 +796,6 @@ package body et_project is
 		write (keyword => keyword_position, parameters => position (element (pc)));
 	end write_polygon_corners;
 
--- KEEPOUT
-	procedure write_line (cursor : in et_pcb.type_keepout_lines.cursor) is
-		use et_pcb.type_keepout_lines;
-		use et_pcb_coordinates.geometry;		
-	begin
-		line_begin;
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-		line_end;
-	end write_line;
-
-	procedure write_arc (cursor : in et_pcb.type_keepout_arcs.cursor) is 
-		use et_pcb.type_keepout_arcs;
-		use et_pcb_coordinates.geometry;		
-	begin
-		arc_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-		arc_end;
-	end write_arc;
-
 	procedure write_circle_fillable (circle : in et_pcb.type_fillable_circle) is 
 		use et_pcb;
 		use et_pcb_coordinates.geometry;		
@@ -844,6 +820,30 @@ package body et_project is
 		end case;
 		circle_end;
 	end write_circle_fillable;
+
+-- KEEPOUT
+	procedure write_line (cursor : in et_pcb.type_keepout_lines.cursor) is
+		use et_pcb.type_keepout_lines;
+		use et_pcb_coordinates.geometry;		
+	begin
+		line_begin;
+		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+		line_end;
+	end write_line;
+
+	procedure write_arc (cursor : in et_pcb.type_keepout_arcs.cursor) is 
+		use et_pcb.type_keepout_arcs;
+		use et_pcb_coordinates.geometry;		
+	begin
+		arc_begin;
+		write (keyword => keyword_center, parameters => position (element (cursor).center));
+		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+		arc_end;
+	end write_arc;
 	
 	procedure write_circle (cursor : in et_pcb.type_keepout_circles.cursor) is 
 		use et_pcb;

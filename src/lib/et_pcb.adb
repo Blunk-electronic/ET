@@ -434,7 +434,7 @@ package body et_pcb is
 			when NO =>
 				return
 					shapes.to_string (type_circle (circle)) &
-					text_line_width & to_string (circle.width);
+					latin_1.space & text_line_width & to_string (circle.width);
 
 			when YES =>
 				case circle.fill_style is
