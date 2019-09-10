@@ -198,12 +198,15 @@ package et_string_processing is
 	-- removes a trailing directory separator.
 	
 	procedure write_message (
-		file_handle : in ada.text_io.file_type;
-		identation : in natural := 0;
-		text : in string;
-		lf   : in boolean := true;
-		file : in boolean := true;
-		console : in boolean := false);
+		file_handle	: in ada.text_io.file_type;
+		identation 	: in natural := 0;
+		text 		: in string;
+		lf   		: in boolean := true;
+		file 		: in boolean := true;
+		console 	: in boolean := false);
+
+	function is_number (text : in string) return boolean;
+	-- Returns true if given string is a number. 
 	
 	function get_field_from_line (
 	-- Extracts a field separated by ifs at position. If trailer is true, the 

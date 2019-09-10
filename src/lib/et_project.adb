@@ -803,12 +803,13 @@ package body et_project is
 		circle_begin;
 		write (keyword => keyword_center, parameters => position (circle.center));
 		write (keyword => keyword_radius, parameters => to_string (circle.radius));
-		write (keyword => keyword_width , parameters => to_string (circle.width));
-		write (keyword => keyword_filled, parameters => to_string (circle.filled));
+		write (keyword => keyword_filled, parameters => latin_1.space & to_string (circle.filled));
 		case circle.filled is
-			when NO => null;
+			when NO =>
+				write (keyword => keyword_width, parameters => to_string (circle.width));
+				
 			when YES =>
-				write (keyword => keyword_fill_style, parameters => to_string (circle.fill_style));
+				write (keyword => keyword_fill_style, parameters => latin_1.space & to_string (circle.fill_style));
 
 				case circle.fill_style is
 					when SOLID | CUTOUT => null;

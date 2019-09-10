@@ -481,7 +481,17 @@ package body et_string_processing is
 		end if;
 	end write_message;
 
-
+	function is_number (text : in string) return boolean is
+	-- Returns true if given string is a number. 
+	-- CS: This test is very crude currently as it tests only the first character.
+		first_character : constant character := text(text'first);
+	begin
+		if is_digit (first_character) then
+			return true;
+		else
+			return false;
+		end if;
+	end;
 	
 	function get_field_from_line( 
 	-- Extracts a field separated by ifs at position. If trailer is true, the trailing content until trailer_to is also returned.

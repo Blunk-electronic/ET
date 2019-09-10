@@ -331,7 +331,7 @@ package body et_pcb is
 	end to_tht_hole;
 	
 	function to_string (filled : in type_filled) return string is begin
-		return latin_1.space & to_lower (type_filled'image (filled));
+		return to_lower (type_filled'image (filled));
 	end to_string;
 
 	function to_filled (filled : in string) return type_filled is begin
@@ -441,11 +441,12 @@ package body et_pcb is
 					when SOLID | CUTOUT =>
 						return 
 							shapes.to_string (type_circle (circle)) &
-							latin_1.space & text_fill_style & to_string (circle.fill_style);
+							latin_1.space & text_fill_style & latin_1.space & to_string (circle.fill_style);
+
 					when HATCHED =>
 						return
 							shapes.to_string (type_circle (circle)) &
-							latin_1.space & text_fill_style & to_string (circle.fill_style) &
+							latin_1.space & text_fill_style & latin_1.space & to_string (circle.fill_style) &
 							latin_1.space & text_hatching_line_width & to_string (circle.hatching_line_width) &
 							latin_1.space & text_hatching_spacing & to_string (circle.hatching_spacing);
 				end case;
@@ -454,7 +455,7 @@ package body et_pcb is
 	
 	function to_string (fill_style : in type_fill_style) return string is
 	begin
-		return " " & to_lower (type_fill_style'image (fill_style));
+		return to_lower (type_fill_style'image (fill_style));
 	end to_string;
 
 	function to_fill_style (fill_style : in string) return type_fill_style is
@@ -463,7 +464,7 @@ package body et_pcb is
 	end to_fill_style;
 
 	function to_string (locked : in type_locked) return string is begin
-		return latin_1.space & to_lower (type_locked'image (locked));
+		return to_lower (type_locked'image (locked));
 	end to_string;
 
 	function to_lock_status (locked : in string) return type_locked is begin
