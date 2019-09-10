@@ -569,12 +569,12 @@ board led_driver draw silk top circle 2.5 50 50 40 # top, circle, width 2.5mm, c
 ```
 Fill styles are: SOLID, HATCHED, CUTOUT.
 ```
-board led_driver draw silk top circle 2.5 50 50 fill solid # top, circle, width 2.5mm, center 50/50 radius 50, filled solid
+board led_driver draw silk top circle solid 50 50 40 # top, circle, solid, center 50/50 radius 50
 ```
 ```
-board led_driver draw silk top circle 2.5 50 50 fill cutout # top, circle, width 2.5mm, center 50/50 radius 50, fill cutout
+board led_driver draw silk top circle cutout 50 50 # top, circle, cutout, center 50/50 radius 50
 ```
 ```
-board led_driver draw silk top circle 2.5 50 50 40 fill hatched 0.5 1 # top, circle, width 2.5mm, center 50/50 radius 40, fill hatched, line width 0.5, spacing 1
+board led_driver draw silk top circle hatched 50 50 40 0.5 1 # top, circle, hatched, center 50/50 radius 40, hatching line width 0.5, spacing 1
 ```
 

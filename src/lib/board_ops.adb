@@ -913,10 +913,7 @@ package body board_ops is
 	-- Draws a track line. If net_name is empty a freetrack will be drawn.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		layer			: in type_signal_layer;
-		width			: in type_track_width;
-		from			: in geometry.type_point; -- x/y
-		to				: in geometry.type_point; -- x/y
+		line			: in type_copper_line_pcb;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -931,12 +928,7 @@ package body board_ops is
 		begin
 			append (
 				container	=> module.board.copper.lines,
-				new_item	=> (start_point	=> from,
-								end_point	=> to,
-								width		=> width,
-								layer		=> layer)
-								--locked		=> NO)
-			);
+				new_item	=> line);
 		end;
 		
 		procedure add_named_track (
@@ -954,12 +946,7 @@ package body board_ops is
 			begin
 				append (
 					container	=> net.route.lines,
-					new_item	=> (start_point	=> from,
-									end_point	=> to,
-									width		=> width,
-									layer		=> layer)
-									--locked		=> NO)
-				);
+					new_item	=> line);
 			end add;
 
 		begin -- add_named_track
@@ -980,9 +967,8 @@ package body board_ops is
 		log (text => "module " & to_string (module_name) &
 			freetrack (net_name) &
 			" drawing line" &
-			" in layer" & to_string (layer) &
-			" from" & to_string (from) &
-			" to" & to_string (to),
+			" in layer" & to_string (line.layer) &
+			to_string (line),
 			level => log_threshold);
 
 		-- locate module
@@ -1011,10 +997,7 @@ package body board_ops is
 	-- Assumes that module_cursor and net_cursor point to a existing objects.
 		module_cursor	: in type_modules.cursor;
 		net_cursor		: in et_schematic.type_nets.cursor; -- reset_n
-		layer			: in type_signal_layer;
-		width			: in type_track_width;
-		from			: in geometry.type_point; -- x/y
-		to				: in geometry.type_point; -- x/y
+		line			: in type_copper_line_pcb;
 		log_threshold	: in type_log_level) is
 
 		procedure add_named_track (
@@ -1031,12 +1014,7 @@ package body board_ops is
 			begin
 				append (
 					container	=> net.route.lines,
-					new_item	=> (start_point	=> from,
-									end_point	=> to,
-									width		=> width,
-									layer		=> layer)
-									--locked		=> NO)
-				);
+					new_item	=> line);
 			end add;
 
 		begin -- add_named_track
@@ -1047,6 +1025,7 @@ package body board_ops is
 		end add_named_track;
 
 		use et_project.type_modules;
+		
 	begin -- draw_track_line
 		update_element (
 			container	=> modules,
@@ -1059,11 +1038,7 @@ package body board_ops is
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		layer			: in type_signal_layer;
-		width			: in type_track_width;
-		center			: in geometry.type_point; -- x/y
-		from			: in geometry.type_point; -- x/y		
-		to				: in geometry.type_point; -- x/y
+		arc				: in type_copper_arc_pcb;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -1078,13 +1053,7 @@ package body board_ops is
 		begin
 			append (
 				container	=> module.board.copper.arcs,
-				new_item	=> (center		=> center,
-								start_point	=> from,
-								end_point	=> to,
-								width		=> width,
-								layer		=> layer)
-								--locked		=> NO)
-			);
+				new_item	=> arc);
 		end;
 		
 		procedure add_named_track (
@@ -1102,13 +1071,7 @@ package body board_ops is
 			begin
 				append (
 					container	=> net.route.arcs,
-					new_item	=> (center		=> center,
-									start_point	=> from,
-									end_point	=> to,
-									width		=> width,
-									layer		=> layer)
-									--locked		=> NO)
-				);
+					new_item	=> arc);
 			end add;
 
 		begin -- add_named_track
@@ -1129,10 +1092,8 @@ package body board_ops is
 		log (text => "module " & to_string (module_name) &
 			 freetrack (net_name) &
 			" drawing arc" &
-			" in layer" & to_string (layer) &
-			" center" & to_string (center) &			 
-			" from" & to_string (from) &
-			" to" & to_string (to),
+			" in layer" & to_string (arc.layer) &
+			to_string (arc),
 			level => log_threshold);
 
 		-- locate module
@@ -1314,8 +1275,7 @@ package body board_ops is
 	procedure draw_outline_line (
 	-- Draws a line in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		from			: in geometry.type_point; -- x/y
-		to				: in geometry.type_point; -- x/y		
+		line			: in type_pcb_contour_line;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -1329,16 +1289,13 @@ package body board_ops is
 		begin
 			append (
 				container	=> module.board.contour.lines,
-				new_item	=> (start_point	=> from,
-								end_point	=> to,
-								locked		=> NO));
+				new_item	=> line);
 		end;
 							   
 	begin -- draw_outline_line
 		log (text => "module " & to_string (module_name) &
-					" drawing outline line" &
-					" from" & to_string (from) &
-					" to" & to_string (to),
+				" drawing outline line" &
+				to_string (line),
 			level => log_threshold);
 
 		-- locate module
@@ -1354,9 +1311,7 @@ package body board_ops is
 	procedure draw_outline_arc (
 	-- Draws an arc in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		center			: in geometry.type_point; -- x/y
-		from			: in geometry.type_point; -- x/y		
-		to				: in geometry.type_point; -- x/y		
+		arc				: in type_pcb_contour_arc;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -1370,19 +1325,13 @@ package body board_ops is
 		begin
 			append (
 				container	=> module.board.contour.arcs,
-				new_item	=> (
-						center		=> center,
-						start_point	=> from,
-						end_point	=> to,
-						locked		=> NO));
+				new_item	=> arc);
 		end;
 							   
 	begin -- draw_outline_arc
 		log (text => "module " & to_string (module_name) &
 				" drawing outline arc" &
-				" center" & to_string (center) &
-				" from" & to_string (from) &
-				" to" & to_string (to),
+				to_string (arc),
 			level => log_threshold);
 
 		-- locate module
@@ -1398,8 +1347,7 @@ package body board_ops is
 	procedure draw_outline_circle (
 	-- Draws a circle in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		center			: in geometry.type_point; -- x/y
-		radius			: in et_pcb_coordinates.type_distance;
+		circle			: in type_pcb_contour_circle;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -1413,17 +1361,13 @@ package body board_ops is
 		begin
 			append (
 				container	=> module.board.contour.circles,
-				new_item	=> (
-						center		=> center,
-						radius		=> radius,
-						locked		=> NO));
+				new_item	=> circle);
 		end;
 							   
 	begin -- draw_outline_circle
 		log (text => "module " & to_string (module_name) &
 				" drawing outline circle" &
-				" center" & to_string (center) &
-				" radius" & to_string (radius),
+				to_string (circle),
 			level => log_threshold);
 
 		-- locate module
@@ -1527,9 +1471,7 @@ package body board_ops is
 	-- Draws a line in the PCB silk screen.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		width			: in type_general_line_width;
-		from			: in geometry.type_point; -- x/y
-		to				: in geometry.type_point; -- x/y		
+		line			: in type_silk_line;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -1545,15 +1487,12 @@ package body board_ops is
 				when TOP =>
 					append (
 						container	=> module.board.silk_screen.top.lines,
-						new_item	=> (start_point	=> from,
-										end_point	=> to,
-										width		=> width));
+						new_item	=> line);
+					
 				when BOTTOM =>
 					append (
 						container	=> module.board.silk_screen.bottom.lines,
-						new_item	=> (start_point	=> from,
-										end_point	=> to,
-										width		=> width));
+						new_item	=> line);
 			end case;
 		end;
 							   
@@ -1561,8 +1500,7 @@ package body board_ops is
 		log (text => "module " & to_string (module_name) &
 			" drawing silk scren line" &
 			" face" & to_string (face) &
-			" from" & to_string (from) &
-			" to" & to_string (to),
+			to_string (line),
 			level => log_threshold);
 
 		-- locate module
@@ -1579,10 +1517,7 @@ package body board_ops is
 	-- Draws an arc in the PCB silk screen.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		width			: in type_general_line_width;
-		center			: in geometry.type_point; -- x/y
-		from			: in geometry.type_point; -- x/y		
-		to				: in geometry.type_point; -- x/y		
+		arc				: in type_silk_arc;		
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -1598,21 +1533,12 @@ package body board_ops is
 				when TOP =>
 					append (
 						container	=> module.board.silk_screen.top.arcs,
-						new_item	=> (
-							center		=> center,
-							start_point	=> from,
-							end_point	=> to,
-							width		=> width));
+						new_item	=> arc);
 
 				when BOTTOM =>
 					append (
 						container	=> module.board.silk_screen.bottom.arcs,
-						new_item	=> (
-   							center		=> center,
-							start_point	=> from,
-							end_point	=> to,
-							width		=> width));
-
+						new_item	=> arc);
 			end case;
 		end;
 							   
@@ -1620,9 +1546,8 @@ package body board_ops is
 		log (text => "module " & to_string (module_name) &
 			" drawing silk scren arc" &
 			" face" & to_string (face) &
-			" center" & to_string (center) &
-			" from" & to_string (from) &
-			" to" & to_string (to),
+			to_string (arc) &
+			" width" & to_string (arc.width),
 
 			level => log_threshold);
 

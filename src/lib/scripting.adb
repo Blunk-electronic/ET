@@ -1631,13 +1631,15 @@ package body scripting is
 											when 9 =>
 												board_ops.draw_outline_line (
 													module_name 	=> module,
-													from			=> type_point (set (
+													line			=> (
+														start_point	=> type_point (set (
 															x => to_distance (f (6)),
 															y => to_distance (f (7)))),
-													to				=> type_point (set (
+														end_point	=> type_point (set (
 															x => to_distance (f (8)),
 															y => to_distance (f (9)))),
-
+														locked		=> lock_status_default
+														),
 													log_threshold	=> log_threshold + 1
 													);
 
@@ -1653,15 +1655,18 @@ package body scripting is
 											when 11 =>
 												board_ops.draw_outline_arc (
 													module_name 	=> module,
-													center			=> type_point (set (
+													arc				=> (
+														center		=> type_point (set (
 															x => to_distance (f (6)),
 															y => to_distance (f (7)))),
-													from			=> type_point (set (
+														start_point	=> type_point (set (
 															x => to_distance (f (8)),
 															y => to_distance (f (9)))),
-													to				=> type_point (set (
+														end_point	=> type_point (set (
 															x => to_distance (f (10)),
 															y => to_distance (f (11)))),
+														locked	=> lock_status_default
+														),
 
 													log_threshold	=> log_threshold + 1
 													);
@@ -1678,10 +1683,13 @@ package body scripting is
 											when 8 =>
 												board_ops.draw_outline_circle (
 													module_name 	=> module,
-													center			=> type_point (set (
+													circle			=> (
+														center	=> type_point (set (
 															x => to_distance (f (6)),
 															y => to_distance (f (7)))),
-													radius			=> to_distance (f (8)),
+														radius	=> to_distance (f (8)),
+														locked	=> lock_status_default
+														),
 
 													log_threshold	=> log_threshold + 1
 													);
@@ -1707,13 +1715,15 @@ package body scripting is
 												board_ops.draw_silk_screen_line (
 													module_name 	=> module,
 													face			=> to_face (f (5)),
-													width			=> to_distance (f (7)),
-													from			=> type_point (set (
-															x => to_distance (f (8)),
-															y => to_distance (f (9)))),
-													to				=> type_point (set (
-															x => to_distance (f (10)),
-															y => to_distance (f (11)))),
+													line			=> (
+																width		=> to_distance (f (7)),
+																start_point	=> type_point (set (
+																	x => to_distance (f (8)),
+																	y => to_distance (f (9)))),
+																end_point	=> type_point (set (
+																	x => to_distance (f (10)),
+																	y => to_distance (f (11))))
+																),
 
 													log_threshold	=> log_threshold + 1
 													);
@@ -1731,16 +1741,18 @@ package body scripting is
 												board_ops.draw_silk_screen_arc (
 													module_name 	=> module,
 													face			=> to_face (f (5)),
-													width			=> to_distance (f (7)),
-													center			=> type_point (set (
-															x => to_distance (f (8)),
-															y => to_distance (f (9)))),
-													from			=> type_point (set (
-															x => to_distance (f (10)),
-															y => to_distance (f (11)))),
-													to				=> type_point (set (
-															x => to_distance (f (12)),
-															y => to_distance (f (13)))),
+													arc				=> (
+																width	=> to_distance (f (7)),
+																center	=> type_point (set (
+																	x => to_distance (f (8)),
+																	y => to_distance (f (9)))),
+																start_point	=> type_point (set (
+																	x => to_distance (f (10)),
+																	y => to_distance (f (11)))),
+																end_point	=> type_point (set (
+																	x => to_distance (f (12)),
+																	y => to_distance (f (13))))
+																),
 
 													log_threshold	=> log_threshold + 1
 													);
@@ -1895,15 +1907,17 @@ package body scripting is
 												-- draw a freetrack
 												board_ops.draw_track_line (
 													module_name 	=> module,
-													width			=> to_distance (f (7)),
 													net_name		=> to_net_name (""),
-													from			=> type_point (set (
+													line	=> (
+														width		=> to_distance (f (7)),
+														start_point	=> type_point (set (
 															x => to_distance (f (8)),
 															y => to_distance (f (9)))),
-													to				=> type_point (set (
+														end_point	=> type_point (set (
 															x => to_distance (f (10)),
 															y => to_distance (f (11)))),
-													layer			=> to_signal_layer (f (5)),
+														layer		=> to_signal_layer (f (5))
+														),
 													log_threshold	=> log_threshold + 1
 													);
 
@@ -1920,17 +1934,19 @@ package body scripting is
 												-- draw a freetrack
 												board_ops.draw_track_arc (
 													module_name 	=> module,
-													layer			=> to_signal_layer (f (5)),
-													width			=> to_distance (f (7)),
-													center			=> type_point (set (
+													arc			=> (
+														layer			=> to_signal_layer (f (5)),
+														width			=> to_distance (f (7)),
+														center			=> type_point (set (
 															x => to_distance (f (8)),
 															y => to_distance (f (9)))),
-													from			=> type_point (set (
+														start_point		=> type_point (set (
 															x => to_distance (f (10)),
 															y => to_distance (f (11)))),
-													to				=> type_point (set (
+														end_point		=> type_point (set (
 															x => to_distance (f (12)),
-															y => to_distance (f (13)))),
+															y => to_distance (f (13))))
+															),
 													net_name		=> to_net_name (""),
 
 													log_threshold	=> log_threshold + 1
@@ -1958,14 +1974,16 @@ package body scripting is
 												board_ops.draw_track_line (
 													module_name 	=> module,
 													net_name		=> to_net_name (f (5)),
-													layer			=> to_signal_layer (f (6)),
-													width			=> to_distance (f (8)),
-													from			=> type_point (set (
+													line	=> (
+														layer		=> to_signal_layer (f (6)),
+														width		=> to_distance (f (8)),
+														start_point	=> type_point (set (
 															x => to_distance (f (9)),
 															y => to_distance (f (10)))),
-													to				=> type_point (set (
+														end_point	=> type_point (set (
 															x => to_distance (f (11)),
-															y => to_distance (f (12)))),
+															y => to_distance (f (12))))
+														),
 													
 													log_threshold	=> log_threshold + 1
 													);
@@ -1984,17 +2002,19 @@ package body scripting is
 												board_ops.draw_track_arc (
 													module_name 	=> module,
 													net_name		=> to_net_name (f (5)),
-													layer			=> to_signal_layer (f (6)),
-													width			=> to_distance (f (8)),
-													center			=> type_point (set (
+													arc		=> (
+														layer		=> to_signal_layer (f (6)),
+														width		=> to_distance (f (8)),
+														center		=> type_point (set (
 															x => to_distance (f (9)),
 															y => to_distance (f (10)))),
-													from			=> type_point (set (
+														start_point	=> type_point (set (
 															x => to_distance (f (11)),
 															y => to_distance (f (12)))),
-													to				=> type_point (set (
+														end_point	=> type_point (set (
 															x => to_distance (f (13)),
-															y => to_distance (f (14)))),
+															y => to_distance (f (14))))
+														),
 
 													log_threshold	=> log_threshold + 1
 													);

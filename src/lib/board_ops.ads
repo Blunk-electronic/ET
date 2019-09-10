@@ -116,10 +116,7 @@ package board_ops is
 	-- Draws track line. If net_name is empty a freetrack will be drawn.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		layer			: in type_signal_layer;
-		width			: in type_track_width;
-		from			: in geometry.type_point; -- x/y
-		to				: in geometry.type_point; -- x/y
+		line			: in type_copper_line_pcb;
 		log_threshold	: in type_log_level);
 
 	procedure draw_track_line (
@@ -127,21 +124,14 @@ package board_ops is
 	-- Assumes that module_cursor and net_cursor point to existing objects.
 		module_cursor	: in type_modules.cursor;
 		net_cursor		: in et_schematic.type_nets.cursor; -- reset_n
-		layer			: in type_signal_layer;
-		width			: in type_track_width;
-		from			: in geometry.type_point; -- x/y
-		to				: in geometry.type_point; -- x/y
+		line			: in type_copper_line_pcb;
 		log_threshold	: in type_log_level);
 	
 	procedure draw_track_arc (
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		layer			: in type_signal_layer;
-		width			: in type_track_width;
-		center			: in geometry.type_point; -- x/y
-		from			: in geometry.type_point; -- x/y		
-		to				: in geometry.type_point; -- x/y
+		arc				: in type_copper_arc_pcb;
 		log_threshold	: in type_log_level);
 
 	procedure ripup_track_segment (
@@ -159,23 +149,19 @@ package board_ops is
 	procedure draw_outline_line (
 	-- Draws a line in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		from			: in geometry.type_point; -- x/y
-		to				: in geometry.type_point; -- x/y		
+		line			: in type_pcb_contour_line;
 		log_threshold	: in type_log_level);
 
 	procedure draw_outline_arc (
 	-- Draws an arc in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		center			: in geometry.type_point; -- x/y
-		from			: in geometry.type_point; -- x/y		
-		to				: in geometry.type_point; -- x/y		
+		arc				: in type_pcb_contour_arc;
 		log_threshold	: in type_log_level);
 
 	procedure draw_outline_circle (
 	-- Draws a circle in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		center			: in geometry.type_point; -- x/y
-		radius			: in et_pcb_coordinates.type_distance;
+		circle			: in type_pcb_contour_circle;
 		log_threshold	: in type_log_level);
 
 	procedure delete_outline (
@@ -205,9 +191,7 @@ package board_ops is
 	-- Draws a line in the PCB silk_screen.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		width			: in type_general_line_width;
-		from			: in geometry.type_point; -- x/y
-		to				: in geometry.type_point; -- x/y		
+		line			: in type_silk_line;
 		log_threshold	: in type_log_level);
 		-- CS use type_silk_line
 
@@ -215,10 +199,7 @@ package board_ops is
 	-- Draws an arc in the PCB silk_screen.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		width			: in type_general_line_width;		
-		center			: in geometry.type_point; -- x/y
-		from			: in geometry.type_point; -- x/y		
-		to				: in geometry.type_point; -- x/y		
+		arc				: in type_silk_arc;
 		log_threshold	: in type_log_level);
 		-- CS use type_silk_arc
 

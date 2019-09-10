@@ -667,14 +667,18 @@ package et_pcb is
 		is new type_circle with record
 		case filled is
 			when NO => 
-				width : type_general_line_width := type_general_line_width'first; -- the width of the circumfence. CS rename to width_circumfence
+				-- the line width of the circumfence:
+				width : type_general_line_width := type_general_line_width'first; -- CS rename to width_circumfence
 
 			when YES =>
 				case fill_style is
 					when SOLID | CUTOUT => null;
 					when HATCHED =>
-						hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default; -- the width of the circumfence and the hatching lines
-						hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default; -- the space between the hatching lines
+						-- the width of the circumfence and the hatching lines:
+						hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default;
+
+						-- the space between the hatching lines:
+						hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default;
 				end case;
 				
 		end case;
