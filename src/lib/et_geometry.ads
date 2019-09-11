@@ -95,6 +95,8 @@ package et_geometry is
 			offset	: in type_point);
 		
 		procedure mirror (
+		-- If axis is Y then it swaps right x with left x.
+		-- If axis is X then it swaps upper y with lower y.
 			point	: in out type_point;
 			axis	: in type_axis_2d);	
 

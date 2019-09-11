@@ -110,11 +110,20 @@ package board_ops is
 	-- x/y/rotation/technology and optionally the face. Face is available if technology is SMT.
 	type type_terminal_position (technology	: et_pcb.type_assembly_technology) is new geometry.type_position with record
 		case technology is
-			when SMT 	=> face : type_face;
-			when others	=> null;
+			when SMT => face : type_face;
+			when THT => null;
 		end case;
 	end record;
 
+	function terminal_position (
+	-- Returns the position of a terminal of the given device in the board.
+	-- The device must be real (appearance SCH_PCB).
+		module_cursor	: in et_project.type_modules.cursor;
+		device_cursor	: in et_schematic.type_devices.cursor; -- IC45
+		terminal_name	: in et_libraries.type_terminal_name.bounded_string) -- H7, 14
+		return type_terminal_position;
+
+	
 -- TRACKS AND FREETRACKS
 	procedure draw_track_line (
 	-- Draws track line. If net_name is empty a freetrack will be drawn.

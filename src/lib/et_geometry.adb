@@ -158,6 +158,8 @@ package body et_geometry is
 		end;
 
 		procedure mirror (
+		-- If axis is Y then it swaps right x with left x.
+		-- If axis is X then it swaps upper y with lower y.
 			point	: in out type_point;
 			axis	: in type_axis_2d) is
 		begin
