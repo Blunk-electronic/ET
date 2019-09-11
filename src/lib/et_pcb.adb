@@ -526,6 +526,29 @@ package body et_pcb is
 			return false;
 		end if;
 	end is_real;
+
+	function terminal_properties (
+		cursor		: in type_packages.cursor;
+		terminal	: in et_libraries.type_terminal_name.bounded_string) -- H4, 14
+		return type_terminals.cursor is
+	-- Returns a cursor to the requested terminal (with all its properties) within the given package model.
+		terminal_cursor : type_terminals.cursor;
+
+		procedure query_terminals (
+			model_name	: in et_libraries.type_package_model_file.bounded_string;
+			model		: in type_package) is
+			use type_terminals;
+		begin
+			terminal_cursor := find (model.terminals, terminal);
+		end;
+		
+	begin -- terminal_position
+		type_packages.query_element (
+			position	=> cursor,
+			process		=> query_terminals'access);
+
+		return terminal_cursor;
+	end terminal_properties;
 	
 -- PROPERTIES OF OBJECTS IN COPPER (NON ELECTRIC !!)
 	procedure line_copper_properties (

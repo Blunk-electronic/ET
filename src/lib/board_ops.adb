@@ -857,22 +857,61 @@ package body board_ops is
 
 	
 	function terminal_position (
-	-- Returns the coordinates of a terminal.
+	-- Returns the position of a terminal of the given device.
+	-- The device must be real (appearance SCH_PCB).
 		module_cursor	: in et_project.type_modules.cursor;
 		device_cursor	: in et_schematic.type_devices.cursor; -- IC45
-		terminal_cursor	: in et_pcb.type_terminals.cursor) -- H7, 14
+		terminal_name	: in et_libraries.type_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position is
 		use et_pcb;
+
+		package_position : et_pcb_coordinates.type_package_position; -- incl. angle and face
+
+		terminal_position_base : geometry.type_position; -- x/y/rotation
+		terminal_position_face : type_face;
+		
 		pos : type_terminal_position (SMT); -- to be returned
 
 		model : type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
-		model_cursor : type_packages.cursor;
+		package_model_cursor : type_packages.cursor;
+
+		use type_terminals;
+		terminal_cursor : type_terminals.cursor;
 	begin
 		-- get the package model of the given device:
 		model := package_model (device_cursor);
 
+		-- get the position of the package as it is in the layout
+		package_position := et_schematic.type_devices.element (device_cursor).position;
+		
 		-- set cursor to package model:
-		model_cursor := locate_package_model (model);
+		package_model_cursor := locate_package_model (model);
+
+		terminal_cursor := terminal_properties (package_model_cursor, terminal_name);
+		-- CS error if terminal_cursor is no_element (means terminal not found in package)
+
+		terminal_position_base := type_terminals.element (terminal_cursor).position;
+
+		-- The general assumption is that a package model is drawn as if the package
+		-- sits on the top side of the board.
+		-- If the package has been flipped to bottom side by operator
+		if get_face (package_position) = BOTTOM then 
+			case element (terminal_cursor).technology is
+				when SMT =>
+					if element (terminal_cursor).face = TOP then
+						terminal_position_face := BOTTOM;
+					else
+						terminal_position_face := TOP;
+					end if;
+
+				when THT => null;
+			end case;
+		end if;
+		-- mirror/flip
+
+		-- rotate
+
+		-- move
 		
 		return pos; -- CS
 	end terminal_position;

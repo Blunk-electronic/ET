@@ -125,7 +125,7 @@ package et_pcb_coordinates is
 	private
 		
 		type type_package_position is new geometry.type_position with record
-			face	: type_face := TOP;
+			face : type_face := TOP;
 		end record;
 
 		package_position_default : constant type_package_position := (

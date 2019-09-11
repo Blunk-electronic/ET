@@ -1089,8 +1089,8 @@ package et_pcb is
 	end record;	
 
 	type type_pad_outline_tht is record
-		top			: type_pad_outline; -- The pad shape on the top side
-		bottom		: type_pad_outline; -- is not nessecarily the same as on the bottom side.
+		top		: type_pad_outline; -- The pad shape on the top side
+		bottom	: type_pad_outline; -- is not nessecarily the same as on the bottom side.
 	end record;
 	
 	type type_terminal (
@@ -1098,14 +1098,18 @@ package et_pcb is
 		tht_hole	: type_terminal_tht_hole) -- drilled/milled, without meaning if technology is SMT
 		is tagged record
 
-			position : type_position; -- drill position or center of pad
-			-- The angle is useful for exotic pad contours. The operator would be drawing the 
+			position : type_position; -- position (x/y) and rotation
+			-- For SMT pads this is the geometic center of the pad.
+			-- The rotation has no meaning for THT pads with round shape.
+			-- The rotation is useful for exotic pad contours. The operator would be drawing the 
 			-- contour with zero rotation first (which is easier). Then by applying an angle,
 			-- the countour would be rotated to its final position.
 			
 		case technology is
 			when THT =>
-				pad_shape_tht : type_pad_outline_tht; -- top and bottom shape
+				-- The shape of the pad on top and bottom side.
+				-- CS: Currently we assume the shape to be the same on top and bottom side.
+				pad_shape_tht : type_pad_outline_tht; 
 
 				-- This is the width of the copper surrounding the hole in inner layers.
 				-- Since the hole can be of any shape we do not speak about restring.
@@ -1223,6 +1227,12 @@ package et_pcb is
 	
 	function is_real (package_name : in et_libraries.type_package_model_file.bounded_string) return boolean;
 	-- Returns true if the given package is real (means it has a height).
+
+	function terminal_properties (
+		cursor		: in type_packages.cursor;
+		terminal	: in et_libraries.type_terminal_name.bounded_string)  -- H4, 14
+		return type_terminals.cursor;
+	-- Returns a cursor to the requested terminal (with all its properties) within the given package model.
 	
 -- PROPERTIES OF OBJECTS IN COPPER (NON ELECTRIC !!)
 	procedure line_copper_properties (

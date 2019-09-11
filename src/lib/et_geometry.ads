@@ -165,7 +165,7 @@ package et_geometry is
 		origin : constant type_point := (others => zero);
 		
 		type type_position is new type_point with record
-			rotation	: type_rotation := zero_rotation;
+			rotation : type_rotation := zero_rotation;
 		end record;
 
 		origin_zero_rotation : constant type_position := (others => <>);

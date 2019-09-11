@@ -106,9 +106,12 @@ package board_ops is
 		log_threshold	: in type_log_level);
 	
 	-- For laying out traces we need a type that provides for a terminal information about
-	-- x/y/rotation/technology and optionally the face.
+	-- x/y/rotation/technology and optionally the face. Face is available if technology is SMT.
 	type type_terminal_position (technology	: et_pcb.type_assembly_technology) is new geometry.type_position with record
-		face : type_face;
+		case technology is
+			when SMT 	=> face : type_face;
+			when others	=> null;
+		end case;
 	end record;
 
 -- TRACKS AND FREETRACKS
