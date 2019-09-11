@@ -242,6 +242,7 @@ package body board_ops is
 	procedure flip_device (
 	-- Flips a device in the board layout from top to bottom or vice versa.
 	-- Leaves x/y and rotation as it is.
+	-- Warns operator if device already on desired face of board.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		face			: in type_face; -- top/bottom
@@ -259,8 +260,22 @@ package body board_ops is
 			procedure flip (
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
+				
+				face_before : constant type_face := get_face (device.position);
 			begin
-				set_face (position => device.position, face => face); -- preserve x/y and rotation
+				if face_before /= face then
+					set_face (position => device.position, face => face); -- preserve x/y and rotation
+
+					-- toggle the flipped flag
+					if device.flipped = NO then
+						device.flipped := YES;
+					else
+						device.flipped := NO;
+					end if;
+					
+				else
+					log (WARNING, "package already on " & to_string (face) & " !");
+				end if;
 			end;
 			
 		begin -- query_devices

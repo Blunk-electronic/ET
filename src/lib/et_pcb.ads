@@ -1191,7 +1191,7 @@ package et_pcb is
 				null; -- CS
 				--package_contour	: type_package_contour;
 			when VIRTUAL =>
-				null; -- netchangers, testpoints, ISA-Board edge connectors, ...
+				null; -- netchangers, testpoints, board edge connectors, ...
 		end case;
 	end record;
 
@@ -1199,12 +1199,20 @@ package et_pcb is
 	-- Returns the coordinates of a package (in a board) as string.
 
 
+	-- To indicate whether a package has been flipped by the operator:
+	type type_flipped is (NO, YES);
+	flipped_default : constant type_flipped := NO;
+
+	function to_string (flipped : in type_flipped) return string;
+	function to_flipped (flipped : in string) return type_flipped;
 	
 	
 -- LIBRARIES
+
 	
 	-- A package in the library extends the base package type:
 	type type_package is new type_package_base with record
+		-- CS default for face ?
 		silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
 		assembly_documentation	: type_assembly_documentation_package_both_sides; -- incl. placeholder for value
 		terminals				: type_terminals.map;

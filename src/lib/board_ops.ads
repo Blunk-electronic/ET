@@ -85,6 +85,7 @@ package board_ops is
 	procedure flip_device (
 	-- Flips a device in the board layout from top to bottom or vice versa.
 	-- Leaves x/y and rotation as it is.
+	-- Warns operator if device already on desired face of board.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		face			: in type_face; -- top/bottom

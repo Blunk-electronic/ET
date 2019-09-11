@@ -1858,7 +1858,10 @@ package body et_project is
 
 						-- This is the position of the package in the layout, 
 						write (keyword => keyword_position, parameters => -- position x 34.5 y 60.1 face top/bottom
-							position (element (device_cursor).position));
+							   position (element (device_cursor).position));
+
+						-- Flip status:
+						write (keyword => keyword_flipped, parameters => et_pcb.to_string (element (device_cursor).flipped), space => true);
 					
 						query_element (device_cursor, query_placeholders'access);
 						section_mark (section_package, FOOTER);
@@ -8185,6 +8188,7 @@ package body et_project is
 		device_purpose			: et_libraries.type_device_purpose.bounded_string;
 		device_variant			: et_libraries.type_component_variant_name.bounded_string; -- D, N
 		device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
+		device_flipped			: et_pcb.type_flipped := et_pcb.flipped_default;
 
 		-- These two variables assist when a particular placeholder is appended to the
 		-- list of placholders in silk screen, assy doc and their top or bottom face:
@@ -10548,8 +10552,14 @@ package body et_project is
 								-- issue warning and skip this statement in this case:
 								device.position := device_position;
 
+								-- Assign flipped flag
+								device.flipped := device_flipped;
+
 								-- reset device package position for next device
 								device_position := et_pcb_coordinates.package_position_default;
+
+								-- reset flip flag for next device
+								device_flipped := et_pcb.flipped_default;
 
 							when others => invalid_section;
 						end case;
@@ -12417,6 +12427,11 @@ package body et_project is
 
 										-- extract package position starting at field 2
 										device_position := to_position (line, 2);
+
+									elsif kw = keyword_flipped then -- flipped no/yes
+										expect_field_count (line, 2);
+
+										device_flipped := et_pcb.to_flipped (f (line, 2));
 									else
 										invalid_keyword (kw);
 									end if;

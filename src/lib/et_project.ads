@@ -349,12 +349,13 @@ package et_project is
 	keyword_class					: constant string := "class";
 	keyword_scope					: constant string := "scope";	
 	keyword_position				: constant string := "position";
+	keyword_flipped					: constant string := "flipped";
 	keyword_start					: constant string := "start";
 	keyword_end						: constant string := "end";
 	keyword_rotation				: constant string := "rotation";
 	keyword_rotation_in_schematic	: constant string := "rotation_in_schematic";
 	keyword_size					: constant string := "size";
-	keyword_style					: constant string := "style"; -- CS remove ?
+	keyword_style					: constant string := "style";
 	keyword_line_width				: constant string := "line_width";
 	keyword_appearance				: constant string := "appearance";
 	keyword_direction				: constant string := "direction";			
@@ -400,7 +401,6 @@ package et_project is
 	keyword_vertical				: constant string := "vertical";		
 	keyword_hidden					: constant string := "hidden";		
 	keyword_sheet					: constant string := "sheet";
-	--keyword_path					: constant string := "path";	
 	keyword_position_in_board		: constant string := "position_in_board";
 	keyword_position_in_schematic	: constant string := "position_in_schematic";	
 	keyword_view_mode				: constant string := "view_mode";

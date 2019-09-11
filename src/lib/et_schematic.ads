@@ -152,7 +152,10 @@ package et_schematic is
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for name, value and purpose.
+				-- There is also a flag that indicates whether the package has been flipped
+				-- by the operator.
 				position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
+				flipped				: et_pcb.type_flipped := et_pcb.flipped_default;
 				text_placeholders	: et_pcb.type_text_placeholders;
 
 				-- CS flags that signal whether partcode, purpose, bom are displayed or not.

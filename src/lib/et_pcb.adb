@@ -506,6 +506,14 @@ package body et_pcb is
 			& " face" & to_string (get_face (position)));
 	end package_position;
 
+	function to_string (flipped : in type_flipped) return string is begin
+		return to_lower (type_flipped'image (flipped));
+	end;
+
+	function to_flipped (flipped : in string) return type_flipped is begin
+		return type_flipped'value (flipped);
+	end;
+	
 	function locate_package_model (model_name : in et_libraries.type_package_model_file.bounded_string) -- ../lbr/smd/SO15.pac
 	-- Returns a cursor to the given package model.		
 		return type_packages.cursor is
