@@ -139,6 +139,17 @@ package board_ops is
 		net_cursor		: in et_schematic.type_nets.cursor; -- reset_n
 		line			: in type_copper_line_pcb;
 		log_threshold	: in type_log_level);
+
+	procedure draw_track_line (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
+		device			: in type_device_name;
+		terminal		: in type_terminal_name.bounded_string;
+		direction		: in type_rotation;
+		length			: in type_distance;
+		log_threshold	: in type_log_level);
 	
 	procedure draw_track_arc (
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.

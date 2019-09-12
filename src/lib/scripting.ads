@@ -212,6 +212,10 @@ package scripting is
 	function to_string (noun : in type_noun_board) return string;
 	function to_noun (noun : in string) return type_noun_board;
 
+-- 	keyword_from			: constant string := "from";
+	keyword_to				: constant string := "to";
+	keyword_direction		: constant string := "direction";
+-- 	keyword_length			: constant string := "length";
 	
 	function execute_script (
 		file_name		: in type_script_name.bounded_string;

@@ -167,13 +167,19 @@ package body scripting is
 	end;
 
 	procedure expect_number (field : in count_type) is begin
-		log (ERROR, "number expected in field no." & count_type'image (field), console => true);
+		log (ERROR, "number expected in field no." & count_type'image (field) & " !", console => true);
 		raise constraint_error;
 	end;
 
 	procedure expect_fill_style (style : in et_pcb.type_fill_style; field : in count_type) is begin
 		log (ERROR, "fill style " & enclose_in_quotes (et_pcb.to_string (style)) &
-			 " expected in field no. " & count_type'image (field), console => true);
+			 " expected in field no. " & count_type'image (field) & " !" , console => true);
+		raise constraint_error;
+	end;
+
+	procedure invalid_keyword (field : in count_type) is begin
+		log (ERROR, "invalid keyword in field no." & count_type'image (field) & " !",
+			 console => true);
 		raise constraint_error;
 	end;
 	
@@ -1601,6 +1607,190 @@ package body scripting is
 			-- CS circular tracks are currently not supported
 			subtype type_track_shape is type_shape range LINE..ARC;
 
+			procedure route_net is 
+				shape : type_track_shape := to_shape (f (7));
+			begin
+				case shape is
+					when LINE =>
+						if is_number (f (9)) then -- 33.4 or IC4
+							
+							-- THE TRACK STARTS AT A DEDICATED POINT AT X/Y:
+							
+							-- board motor_driver route net NET_1 2 line 0.25 0 0 160 0
+							case fields is
+								when 12 =>
+									board_ops.draw_track_line (
+										module_name 	=> module,
+										net_name		=> to_net_name (f (5)),
+										line	=> (
+											layer		=> to_signal_layer (f (6)),
+											width		=> to_distance (f (8)),
+											start_point	=> type_point (set (
+												x => to_distance (f (9)),
+												y => to_distance (f (10)))),
+											end_point	=> type_point (set (
+												x => to_distance (f (11)),
+												y => to_distance (f (12))))
+											),
+										
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 13 .. count_type'last =>
+									command_too_long (fields - 1);
+									
+								when others =>
+									command_incomplete;
+							end case;
+							
+						else
+							-- THE TRACK STARTS AT A TERMINAL:
+							
+							if f (11) = keyword_to then
+								-- board motor_driver route net NET_1 1 line 0.25 R1 1 to 35 40
+								-- board motor_driver route net NET_1 1 line 0.25 R1 1 to x 5
+								
+								if is_number (f (12)) then
+									-- THE TRACK ENDS AT A DEDICATED POINT X/Y
+									
+									-- board motor_driver route net NET_1 1 line 0.25 R1 1 to 35 40
+									case fields is
+										when 13 =>
+											null;
+											
+										when 14 .. count_type'last =>
+											command_too_long (fields - 1);
+											
+										when others =>
+											command_incomplete;
+									end case;
+											
+								else
+									-- THE TRACK ENDS AT A GRID LINE ALONG A GIVEN AXIS:
+									
+									-- board motor_driver route net NET_1 1 line 0.25 R1 1 to x 5
+									if f (12) = to_string (X) or f (12) = to_string (Y) then
+										case fields is
+											when 13 =>
+												null;
+												
+											when 14 .. count_type'last =>
+												command_too_long (fields - 1);
+												
+											when others =>
+												command_incomplete;
+										end case;
+										
+									else
+										invalid_keyword (12);
+									end if;
+								end if;
+								
+								
+							elsif f (11) = keyword_direction then
+								-- THE TRACK RUNS INTO GIVEN DIRECTION
+								
+								if is_number (f (13)) then
+									-- THE TRACK ENDS AFTER A GIVEN DISTANCE (it has a given length)
+									
+									-- board motor_driver route net NET_1 1 line 0.25 R1 1 direction 45 50
+									
+									case fields is
+										when 13 =>
+											board_ops.draw_track_line (
+												module_name => module,
+												net_name	=> to_net_name (f (5)),
+												layer		=> to_signal_layer (f (6)),
+												width		=> to_distance (f (8)),
+												device		=> to_device_name (f (9)),
+												terminal	=> to_terminal_name (f (10)),
+												direction	=> to_rotation (f (12)), -- 45 degree
+												length		=> to_distance (f (13)), -- 50mm
+												
+												log_threshold	=> log_threshold + 1
+												);
+
+										when 14 .. count_type'last =>
+											command_too_long (fields - 1);
+											
+										when others =>
+											command_incomplete;
+									end case;
+
+								else
+									-- THE TRACK ENDS AT A GIVEN GRID LINE ALONG A GIVEN AXIS
+									
+									-- board motor_driver route net NET_1 1 line 0.25 R1 1 direction 45 x 5
+									if f (13) = to_string (X) or f (13) = to_string (Y) then
+										
+										case fields is
+											when 14 =>
+												null;
+-- 												board_ops.draw_track_line (
+-- 													module_name => module,
+-- 													net_name	=> to_net_name (f (5)),
+-- 													layer		=> to_signal_layer (f (6)),
+-- 													width		=> to_distance (f (8)),
+-- 													device		=> to_device_name (f (9)),
+-- 													terminal	=> to_terminal_name (f (10)),
+-- 													direction	=> to_rotation (f (12)), -- 45 degree
+-- 													length		=> to_distance (f (13)), -- 50mm
+-- 													
+-- 													log_threshold	=> log_threshold + 1
+-- 													);
+
+											when 15 .. count_type'last =>
+												command_too_long (fields - 1);
+												
+											when others =>
+												command_incomplete;
+										end case;
+										
+									else
+										invalid_keyword (13);
+									end if;
+								end if;
+
+							else
+								invalid_keyword (11);
+							end if;
+						end if;
+						
+					when ARC =>
+						case fields is
+							when 14 =>
+								-- draw a named track
+								board_ops.draw_track_arc (
+									module_name 	=> module,
+									net_name		=> to_net_name (f (5)),
+									arc		=> (
+										layer		=> to_signal_layer (f (6)),
+										width		=> to_distance (f (8)),
+										center		=> type_point (set (
+											x => to_distance (f (9)),
+											y => to_distance (f (10)))),
+										start_point	=> type_point (set (
+											x => to_distance (f (11)),
+											y => to_distance (f (12)))),
+										end_point	=> type_point (set (
+											x => to_distance (f (13)),
+											y => to_distance (f (14))))
+										),
+
+									log_threshold	=> log_threshold + 1
+									);
+								
+							when 15 .. count_type'last =>
+								command_too_long (14);
+								
+							when others =>
+								command_incomplete;
+						end case;
+
+				end case;
+			end route_net;
+
+			
 		begin -- board_cmd
 			case verb is
 				when DELETE =>
@@ -2053,71 +2243,7 @@ package body scripting is
 							end;
 
 						when NET =>
-							declare
-								shape : type_track_shape := to_shape (f (7));
-							begin
-								case shape is
-									when LINE =>
-										case fields is
-											when 12 =>
-												-- draw a named track
-												board_ops.draw_track_line (
-													module_name 	=> module,
-													net_name		=> to_net_name (f (5)),
-													line	=> (
-														layer		=> to_signal_layer (f (6)),
-														width		=> to_distance (f (8)),
-														start_point	=> type_point (set (
-															x => to_distance (f (9)),
-															y => to_distance (f (10)))),
-														end_point	=> type_point (set (
-															x => to_distance (f (11)),
-															y => to_distance (f (12))))
-														),
-													
-													log_threshold	=> log_threshold + 1
-													);
-
-											when 13 .. count_type'last =>
-												command_too_long (12);
-												
-											when others =>
-												command_incomplete;
-										end case;
-										
-									when ARC =>
-										case fields is
-											when 14 =>
-												-- draw a named track
-												board_ops.draw_track_arc (
-													module_name 	=> module,
-													net_name		=> to_net_name (f (5)),
-													arc		=> (
-														layer		=> to_signal_layer (f (6)),
-														width		=> to_distance (f (8)),
-														center		=> type_point (set (
-															x => to_distance (f (9)),
-															y => to_distance (f (10)))),
-														start_point	=> type_point (set (
-															x => to_distance (f (11)),
-															y => to_distance (f (12)))),
-														end_point	=> type_point (set (
-															x => to_distance (f (13)),
-															y => to_distance (f (14))))
-														),
-
-													log_threshold	=> log_threshold + 1
-													);
-												
-											when 15 .. count_type'last =>
-												command_too_long (14);
-												
-											when others =>
-												command_incomplete;
-										end case;
-
-								end case;
-							end;
+							route_net;
 							
 						when others => invalid_noun (to_string (noun));
 					end case;

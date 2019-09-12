@@ -123,6 +123,9 @@ package et_general is
 	type type_axis is (X, Y, Z);
 	subtype type_axis_2d is type_axis range X .. Y;
 
+	function to_string (axis : in type_axis) return string;
+	function to_axis (axis : in string) return type_axis;
+
 -- NET NAMES
     -- If the name of a strand can not be identified, we default to the well proved "N$" notation:
 	anonymous_net_name_prefix : constant string (1..2) := "N$";

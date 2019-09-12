@@ -297,6 +297,26 @@ board led_driver route net reset_n 1 line 0.25 10 10 16 13 # net reset_n, layer 
 board led_driver route net reset_n 1 arc 0.25 50 50 50 0 50 100 # net reset_n, layer 1, arc, width 0.25, center 50/50, from 50/0 to 50/100
 ```
 
+Route track from IC1 pad H7 in direction 45 degrees with length of 50mm:
+```
+board led_driver route net reset_n 1 line 0.25 IC1 H7 direction 45 50
+```
+Route track from IC1 pad H7 in direction 45 degrees to the 5th grid line in x:
+```
+board led_driver route net reset_n 1 line 0.25 IC1 H7 direction 45 x 5
+```
+
+Route track from IC1 pad H7 to point 35/40:
+```
+board led_driver route net reset_n 1 line 0.25 IC1 H7 to 35 40
+```
+
+Route track from IC1 pad H7 in x direction to the 5th grid line in x:
+```
+board led_driver route net reset_n 1 line 0.25 IC1 H7 to x 5
+```
+
+
 Ripping up:
 ```
 board led_driver ripup net reset_n 1 12 10 2 # net reset_n, layer 1, crossing point 12/10, accuracy 2
