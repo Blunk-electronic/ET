@@ -126,6 +126,12 @@ package et_general is
 	function to_string (axis : in type_axis) return string;
 	function to_axis (axis : in string) return type_axis;
 
+-- GRID 
+	type type_grid_notches is new positive;
+
+	function to_notches (notches : in string) return type_grid_notches;
+	function to_string (notches : in type_grid_notches) return string;
+	
 -- NET NAMES
     -- If the name of a strand can not be identified, we default to the well proved "N$" notation:
 	anonymous_net_name_prefix : constant string (1..2) := "N$";

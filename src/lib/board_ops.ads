@@ -150,6 +150,39 @@ package board_ops is
 		direction		: in type_rotation;
 		length			: in type_distance;
 		log_threshold	: in type_log_level);
+
+	procedure draw_track_line (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
+		device			: in type_device_name;
+		terminal		: in type_terminal_name.bounded_string;
+		direction		: in type_rotation;
+		axis			: in type_axis_2d;
+		notches			: in type_grid_notches;
+		log_threshold	: in type_log_level);
+
+	procedure draw_track_line (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
+		device			: in type_device_name;
+		terminal		: in type_terminal_name.bounded_string;
+		end_point		: in geometry.type_point;
+		log_threshold	: in type_log_level);
+
+	procedure draw_track_line (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
+		device			: in type_device_name;
+		terminal		: in type_terminal_name.bounded_string;
+		axis			: in type_axis_2d;
+		notches			: in type_grid_notches;
+		log_threshold	: in type_log_level);
 	
 	procedure draw_track_arc (
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.

@@ -301,7 +301,7 @@ Route track from IC1 pad H7 in direction 45 degrees with length of 50mm:
 ```
 board led_driver route net reset_n 1 line 0.25 IC1 H7 direction 45 50
 ```
-Route track from IC1 pad H7 in direction 45 degrees to the 5th grid line in x:
+Route track from IC1 pad H7 in direction 45 degrees to the 5th grid line along x axis:
 ```
 board led_driver route net reset_n 1 line 0.25 IC1 H7 direction 45 x 5
 ```
@@ -311,7 +311,7 @@ Route track from IC1 pad H7 to point 35/40:
 board led_driver route net reset_n 1 line 0.25 IC1 H7 to 35 40
 ```
 
-Route track from IC1 pad H7 in x direction to the 5th grid line in x:
+Route track from IC1 pad H7 in x direction to the 5th grid line in along x axis:
 ```
 board led_driver route net reset_n 1 line 0.25 IC1 H7 to x 5
 ```

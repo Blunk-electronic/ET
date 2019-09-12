@@ -1656,7 +1656,19 @@ package body scripting is
 									-- board motor_driver route net NET_1 1 line 0.25 R1 1 to 35 40
 									case fields is
 										when 13 =>
-											null;
+											board_ops.draw_track_line (
+												module_name => module,
+												net_name	=> to_net_name (f (5)),
+												layer		=> to_signal_layer (f (6)),
+												width		=> to_distance (f (8)),
+												device		=> to_device_name (f (9)),
+												terminal	=> to_terminal_name (f (10)),
+												end_point	=> type_point (set (
+														x => to_distance (f (12)),	 -- 35
+														y => to_distance (f (13)))), -- 40
+												
+												log_threshold	=> log_threshold + 1
+												);
 											
 										when 14 .. count_type'last =>
 											command_too_long (fields - 1);
@@ -1666,13 +1678,24 @@ package body scripting is
 									end case;
 											
 								else
-									-- THE TRACK ENDS AT A GRID LINE ALONG A GIVEN AXIS:
+									-- THE TRACK ENDS ON A GRID LINE ALONG A GIVEN AXIS:
 									
 									-- board motor_driver route net NET_1 1 line 0.25 R1 1 to x 5
 									if f (12) = to_string (X) or f (12) = to_string (Y) then
 										case fields is
 											when 13 =>
-												null;
+												board_ops.draw_track_line (
+													module_name => module,
+													net_name	=> to_net_name (f (5)),
+													layer		=> to_signal_layer (f (6)),
+													width		=> to_distance (f (8)),
+													device		=> to_device_name (f (9)),
+													terminal	=> to_terminal_name (f (10)),
+													axis		=> to_axis (f (12)),
+													notches		=> to_notches (f (13)), -- 5
+													
+													log_threshold	=> log_threshold + 1
+													);
 												
 											when 14 .. count_type'last =>
 												command_too_long (fields - 1);
@@ -1688,7 +1711,7 @@ package body scripting is
 								
 								
 							elsif f (11) = keyword_direction then
-								-- THE TRACK RUNS INTO GIVEN DIRECTION
+								-- THE TRACK RUNS INTO GIVEN DIRECTION SPECIFIED BY AN ANGLE
 								
 								if is_number (f (13)) then
 									-- THE TRACK ENDS AFTER A GIVEN DISTANCE (it has a given length)
@@ -1725,19 +1748,19 @@ package body scripting is
 										
 										case fields is
 											when 14 =>
-												null;
--- 												board_ops.draw_track_line (
--- 													module_name => module,
--- 													net_name	=> to_net_name (f (5)),
--- 													layer		=> to_signal_layer (f (6)),
--- 													width		=> to_distance (f (8)),
--- 													device		=> to_device_name (f (9)),
--- 													terminal	=> to_terminal_name (f (10)),
--- 													direction	=> to_rotation (f (12)), -- 45 degree
--- 													length		=> to_distance (f (13)), -- 50mm
--- 													
--- 													log_threshold	=> log_threshold + 1
--- 													);
+												board_ops.draw_track_line (
+													module_name => module,
+													net_name	=> to_net_name (f (5)),
+													layer		=> to_signal_layer (f (6)),
+													width		=> to_distance (f (8)),
+													device		=> to_device_name (f (9)),
+													terminal	=> to_terminal_name (f (10)),
+													direction	=> to_rotation (f (12)), -- 45 degree
+													axis		=> to_axis (f (13)),
+													notches		=> to_notches (f (14)), -- 5
+													
+													log_threshold	=> log_threshold + 1
+													);
 
 											when 15 .. count_type'last =>
 												command_too_long (fields - 1);

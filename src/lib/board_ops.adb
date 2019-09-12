@@ -1147,6 +1147,99 @@ package body board_ops is
 		module_cursor := locate_module (module_name);
 
 	end draw_track_line;
+
+	procedure draw_track_line (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
+		device			: in type_device_name;
+		terminal		: in type_terminal_name.bounded_string;
+		direction		: in type_rotation;
+		axis			: in type_axis_2d;
+		notches			: in type_grid_notches;
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		use et_pcb;
+		use et_pcb.type_copper_lines_pcb;
+		
+	begin -- draw_track_line
+		log (text => "module " & to_string (module_name) &
+			" " & to_string (net_name) &
+			" drawing line in layer" & to_string (layer) &
+			" from " & to_string (device) & " terminal " & to_string (terminal) &
+			" direction " & to_string (direction) &
+			" along axis " & to_string (axis) &
+			" grid notches " & to_string (notches),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+	end draw_track_line;
+
+	procedure draw_track_line (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
+		device			: in type_device_name;
+		terminal		: in type_terminal_name.bounded_string;
+		end_point		: in geometry.type_point;
+		log_threshold	: in type_log_level) is
+		
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		use et_pcb;
+		use et_pcb.type_copper_lines_pcb;
+		
+	begin -- draw_track_line
+		log (text => "module " & to_string (module_name) &
+			" " & to_string (net_name) &
+			" drawing line in layer" & to_string (layer) &
+			" from " & to_string (device) & " terminal " & to_string (terminal) &
+			" to " & to_string (end_point),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+	end draw_track_line;
+
+	procedure draw_track_line (
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		layer			: in type_signal_layer;
+		width			: in type_track_width;
+		device			: in type_device_name;
+		terminal		: in type_terminal_name.bounded_string;
+		axis			: in type_axis_2d;
+		notches			: in type_grid_notches;
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		use et_pcb;
+		use et_pcb.type_copper_lines_pcb;
+		
+	begin -- draw_track_line
+		log (text => "module " & to_string (module_name) &
+			" " & to_string (net_name) &
+			" drawing line in layer" & to_string (layer) &
+			" from " & to_string (device) & " terminal " & to_string (terminal) &
+			" along axis " & to_string (axis) &
+			" grid notches " & to_string (notches),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+	end draw_track_line;
 	
 	procedure draw_track_arc (
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
