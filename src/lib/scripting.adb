@@ -1839,6 +1839,29 @@ package body scripting is
 									command_incomplete;
 							end case;
 
+						when SILK =>
+							-- board led_driver delete silk top 40 50 1
+							case fields is
+								when 8 =>
+									-- delete a segment of silk screen
+									board_ops.delete_silk_screen (
+										module_name 	=> module,
+										face			=> to_face (f (5)),
+										point			=> type_point (set (
+												x => to_distance (f (6)),
+												y => to_distance (f (7)))),
+										accuracy		=> to_distance (f (8)),
+										
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last =>
+									command_too_long (fields - 1);
+									
+								when others =>
+									command_incomplete;
+							end case;
+
 						when others => invalid_noun (to_string (noun));
 
 					end case;

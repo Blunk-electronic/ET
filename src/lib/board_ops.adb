@@ -87,12 +87,12 @@ package body board_ops is
 			 " in vicinity of" & to_string (accuracy));
 	end;
 
-	procedure no_outline_segment_found (
+	procedure no_segment_found (
 		point		: in type_point; 
 		accuracy	: in type_distance) is
 	begin
 		log (importance => WARNING, 
-			 text => "no outline segment found at" & to_string (point) &
+			 text => "nothing found at" & to_string (point) &
 			 " in vicinity of" & to_string (accuracy));
 	end;
 
@@ -1651,7 +1651,7 @@ package body board_ops is
 			end if;
 
 			if not deleted then
-				no_outline_segment_found (point, accuracy);
+				no_segment_found (point, accuracy);
 			end if;
 			
 		end delete;
@@ -1814,6 +1814,114 @@ package body board_ops is
 			process		=> add'access);
 
 	end draw_silk_screen_circle;
+
+	procedure delete_silk_screen (
+	-- Deletes the segment of the silk_screen that crosses the given point.
+	-- CS currently deletes the first segment found. Leaves other segments untouched.
+	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		point			: in geometry.type_point; -- x/y
+		accuracy		: in geometry.type_accuracy;
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure delete (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_pcb;
+			use type_silk_lines;
+			use type_silk_arcs;
+			use type_silk_circles;
+			line_cursor   : type_silk_lines.cursor;
+			arc_cursor    : type_silk_arcs.cursor;
+			circle_cursor : type_silk_circles.cursor;
+
+			deleted : boolean := false; -- goes true if at least one segment has been deleted
+		begin
+			if face = TOP then
+				line_cursor   	:= module.board.silk_screen.top.lines.first;
+				arc_cursor    	:= module.board.silk_screen.top.arcs.first;
+				circle_cursor	:= module.board.silk_screen.top.circles.first;
+			else
+				line_cursor   	:= module.board.silk_screen.bottom.lines.first;
+				arc_cursor    	:= module.board.silk_screen.bottom.arcs.first;
+				circle_cursor	:= module.board.silk_screen.bottom.circles.first;
+			end if;
+			
+			-- first search for a matching segment among the lines
+			while line_cursor /= type_silk_lines.no_element loop
+				if on_line (point, element (line_cursor), accuracy) then
+					if face = TOP then
+						delete (module.board.silk_screen.top.lines, line_cursor);
+					else
+						delete (module.board.silk_screen.bottom.lines, line_cursor);
+					end if;
+					deleted := true;
+					exit;
+				end if;
+				next (line_cursor);
+			end loop;
+
+			-- if no line found, search among arcs
+			if not deleted then
+				while arc_cursor /= type_silk_arcs.no_element loop
+					if on_arc (point, element (arc_cursor), accuracy) then
+						if face = TOP then
+							delete (module.board.silk_screen.top.arcs, arc_cursor);
+						else
+							delete (module.board.silk_screen.bottom.arcs, arc_cursor);
+						end if;
+						deleted := true;
+						exit;
+					end if;
+					next (arc_cursor);
+				end loop;
+			end if;
+
+			-- if no arc found, search among circles
+			if not deleted then
+				while circle_cursor /= type_silk_circles.no_element loop
+					
+					if on_circle (point, element (circle_cursor), accuracy) then
+						if face = TOP then
+							delete (module.board.silk_screen.top.circles, circle_cursor);
+						else
+							delete (module.board.silk_screen.bottom.circles, circle_cursor);
+						end if;
+						deleted := true;
+						exit;
+					end if;
+					next (circle_cursor);
+				end loop;
+			end if;
+
+			if not deleted then
+				no_segment_found (point, accuracy);
+			end if;
+			
+		end delete;
+		
+	begin -- delete_silk_screen
+		log (text => "module " & to_string (module_name) &
+			" deleting silk screen segment face" & to_string (face) &
+			" at" & to_string (point) &
+			" accuracy" & to_string (accuracy),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> delete'access);
+		
+	end delete_silk_screen;
+
+
 	
 end board_ops;
 	

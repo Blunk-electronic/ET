@@ -597,4 +597,7 @@ board led_driver draw silk top circle cutout 50 50 40 # top, circle, cutout, cen
 ```
 board led_driver draw silk top circle hatched 50 50 40 0.5 1 # top, circle, hatched, center 50/50 radius 40, hatching line width 0.5, spacing 1
 ```
+```
+board led_driver delete silk top 40 50 1 # crossing 40/50, accuracy 1
+```
 

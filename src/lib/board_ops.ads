@@ -267,15 +267,15 @@ package board_ops is
 		circle			: in type_fillable_circle;
 		log_threshold	: in type_log_level);
 
--- 	procedure delete_silk_screen (
--- 	-- Deletes the segment of the silk_screen that crosses the given point.
--- 	-- CS currently deletes the first segment found. Leaves other segments untouched.
--- 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
--- 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
--- 		face			: in type_face;
--- 		point			: in geometry.type_point; -- x/y
--- 		accuracy		: in geometry.type_accuracy;
--- 		log_threshold	: in type_log_level);
+	procedure delete_silk_screen (
+	-- Deletes the segment of the silk_screen that crosses the given point.
+	-- CS currently deletes the first segment found. Leaves other segments untouched.
+	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		point			: in geometry.type_point; -- x/y
+		accuracy		: in geometry.type_accuracy;
+		log_threshold	: in type_log_level);
 
 	
 end board_ops;
