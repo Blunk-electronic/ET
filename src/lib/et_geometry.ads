@@ -48,6 +48,14 @@ package et_geometry is
 
 		subtype type_distance_positive is type_distance range zero .. type_distance'last;
 		subtype type_accuracy is type_distance range zero .. type_distance'last/1000;
+
+		grid_max : constant type_distance_positive := type_distance_positive'last/1000;
+		subtype type_distance_grid is type_distance_positive range zero .. grid_max;
+		grid_default : constant type_distance_grid := 1.0;
+		
+		type type_grid is record
+			x,y	: type_distance_grid := grid_default;
+		end record;
 		
 		type type_point is tagged private;
 

@@ -340,6 +340,8 @@ package et_schematic is
 
 	
 	type type_module is record
+		grid			: type_grid; -- the drawing grid of the schematic
+
 		board_available	: type_board_available := FALSE;
 		
 		devices			: type_devices.map;						-- the devices of the module
@@ -356,6 +358,7 @@ package et_schematic is
 		frame_template_board		: et_libraries.type_frame_template_name.bounded_string :=	-- $ET_FRAMES/drawing_frame_version_2.frm
 			et_libraries.frame_template_name_dummy;
 		-- CS: handle sheet description via a composite type consisting of template name and a bounded string
+		-- CS: move to et_pcb and make it a selector of board ?
 		
 		texts       	: type_texts.list; -- general notes, not related to drawing frames !
 		-- CS: images
