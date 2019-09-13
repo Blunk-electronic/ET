@@ -1186,14 +1186,12 @@ package body et_pcb is
 			iterate (points, point'access);
 			log_indentation_down;
 		end polygon;
-	
-		
-		
+			
 	begin -- terminal_properties
-		log (text => "terminal name" & to_string (name)
+		log (text => "terminal name " & to_string (name)
 			& " technology" & to_string (terminal.technology)
 			& to_string (type_point (terminal.position))
-			& "rotation" & to_string (rot (terminal.position)),
+			& " rotation" & to_string (rot (terminal.position)),
 			level => log_threshold);
 
 		log_indentation_up;

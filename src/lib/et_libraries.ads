@@ -722,10 +722,7 @@ package et_libraries is
 	use type_terminal_name;
 
 	function to_string (terminal : in type_terminal_name.bounded_string) return string;
-	-- Returns the given terminal name as string.
-
 	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string;
-	-- Converts a string to a type_terminal_name.
 	
 -- PACKAGE VARIANTS
 	-- The variant is usually a suffix in a device value, given by its manufacturer. The variant is a manufacturer

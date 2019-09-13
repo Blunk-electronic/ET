@@ -115,6 +115,12 @@ package board_ops is
 		end case;
 	end record;
 
+	function locate_device (
+	-- Returns a cursor to the requested device in the given module.
+		module_cursor	: in et_project.type_modules.cursor;
+		device_name		: in type_device_name)
+		return et_schematic.type_devices.cursor;
+	
 	function terminal_position (
 	-- Returns the position of a terminal of the given device in the board.
 	-- The device must be real (appearance SCH_PCB).

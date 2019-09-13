@@ -2692,7 +2692,7 @@ package body et_project is
 
 			procedure write_terminal (terminal_cursor : in type_terminal_port_map.cursor) is begin
 				write (keyword => keyword_terminal, parameters => 
-					to_string (key (terminal_cursor)) & space 		-- terminal name like G14 or 16
+					space & to_string (key (terminal_cursor)) & space -- terminal name like G14 or 16
 					& keyword_unit & space & to_string (element (terminal_cursor).unit) -- unit name like A,B or GPIO_BANK_1
 					& space & keyword_port & space & to_string (element (terminal_cursor).name) 	-- port name like CE, WE, GND
 					);
@@ -7812,7 +7812,7 @@ package body et_project is
 			
 			while terminal_cursor /= type_terminals.no_element loop
 				section_mark (section_terminal, HEADER);
-				write (keyword => keyword_name, parameters => et_libraries.to_string (key (terminal_cursor)));
+				write (keyword => keyword_name, parameters => space & et_libraries.to_string (key (terminal_cursor)));
 				write (keyword => keyword_assembly_technology, parameters => to_string (element (terminal_cursor).technology));
 				write (keyword => keyword_position, parameters => position (element (terminal_cursor).position));
 				

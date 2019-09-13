@@ -267,39 +267,28 @@ package body et_libraries is
 		return type_port_name.to_bounded_string (name);
 	end to_port_name;
 	
-	function to_port_name_text_size (text : in string) return type_port_name_text_size is
-	-- Converts a string to type_port_name_text_size.
-	begin
+	function to_port_name_text_size (text : in string) return type_port_name_text_size is begin
 		return type_port_name_text_size'value (text);
-	end to_port_name_text_size;
+	end;
 	
-	function to_string (terminal : in type_terminal_name.bounded_string) return string is
-	-- Returns the given terminal name as string.
-	begin
-		return latin_1.space & type_terminal_name.to_string (terminal);
-	end to_string;
+	function to_string (terminal : in type_terminal_name.bounded_string) return string is begin
+		return type_terminal_name.to_string (terminal);
+	end;
 
-	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string is
-	-- Converts a string to a type_terminal_name.	
-	begin
+	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string is begin
 		return type_terminal_name.to_bounded_string (terminal);
-	end to_terminal_name;
+	end;
 	
-	function to_terminal_name_text_size (text : in string) return type_terminal_name_text_size is
-	-- Converts a string to type_terminal_name_text_size.
-	begin
+	function to_terminal_name_text_size (text : in string) return type_terminal_name_text_size is begin
 		return type_terminal_name_text_size'value (text);
 	end to_terminal_name_text_size;
 
-	function to_string (package_variant : in type_component_variant_name.bounded_string) return string is
-	-- converts a type_component_variant_name to a string.
-	begin
+	function to_string (package_variant : in type_component_variant_name.bounded_string) return string is begin
 		return type_component_variant_name.to_string (package_variant);
 	end to_string;
 
 	function to_component_variant_name (variant_name : in string) 
 		return type_component_variant_name.bounded_string is
-	-- converts a string to a variant name
 	begin
 		return type_component_variant_name.to_bounded_string (variant_name);
 	end to_component_variant_name;

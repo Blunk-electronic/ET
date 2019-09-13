@@ -96,6 +96,11 @@ package body board_ops is
 			 " in vicinity of" & to_string (accuracy));
 	end;
 
+	procedure terminal_not_found (terminal_name : in type_terminal_name.bounded_string) is begin
+		log (ERROR,	"terminal " & enclose_in_quotes (to_string (terminal_name)) & " not found !",
+			 console => true);
+		raise constraint_error;
+	end;
 	
 	procedure move_device (
 	-- Moves a device in the board layout in x/y direction.
@@ -870,7 +875,34 @@ package body board_ops is
 		
 	end make_pick_and_place;
 
-	
+	function locate_device (
+	-- Returns a cursor to the requested device in the given module.
+		module_cursor	: in et_project.type_modules.cursor;
+		device_name		: in type_device_name)
+		return et_schematic.type_devices.cursor is
+
+		use et_schematic.type_devices;
+		device_cursor : et_schematic.type_devices.cursor;
+		
+		procedure query_devices (
+			module_name		: in type_module_name.bounded_string;
+			module			: in type_module) is
+		begin
+			device_cursor := find (module.devices, device_name);
+		end query_devices;
+		
+	begin -- locate_device
+		et_project.type_modules.query_element (
+			position	=> module_cursor,
+			process		=> query_devices'access);
+
+		if device_cursor = et_schematic.type_devices.no_element then
+			device_not_found (device_name);
+		end if;
+		
+		return device_cursor;
+	end;
+		
 	function terminal_position (
 	-- Returns the position of a terminal of the given device in the board.
 	-- The device must be real (appearance SCH_PCB).
@@ -909,7 +941,9 @@ package body board_ops is
 
 		-- locate the desired terminal in the package model:
 		terminal_cursor := terminal_properties (package_model_cursor, terminal_name);
-		-- CS error if terminal_cursor is no_element (means terminal not found in package)
+		if terminal_cursor = type_terminals.no_element then
+			terminal_not_found (terminal_name);
+		end if;
 
 		-- get the assembly technology of the terminal (SMT or THT):
 		terminal_technology := element (terminal_cursor).technology;
@@ -1136,6 +1170,24 @@ package body board_ops is
 
 		use et_pcb;
 		use et_pcb.type_copper_lines_pcb;
+
+		use et_schematic.type_devices;
+		device_cursor : et_schematic.type_devices.cursor;
+		
+-- 		procedure query_devices (
+-- 			module_name		: in type_module_name.bounded_string;
+-- 			module			: in type_module) is
+-- 
+-- 			use et_schematic.type_devices;
+-- 			device_cursor : et_schematic.type_devices.cursor := find (module.devices, device);
+-- 		begin
+-- 			null;
+-- 		end query_devices;
+
+		procedure draw (terminal_position : in type_terminal_position) is
+		begin
+			null;
+		end;
 		
 	begin -- draw_track_line
 		log (text => "module " & to_string (module_name) &
@@ -1148,6 +1200,18 @@ package body board_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+-- 		query_element (
+-- 			position	=> module_cursor,
+-- 			process		=> query_devices'access);
+
+		device_cursor := locate_device (module_cursor, device);
+
+-- 		if device_cursor /= et_schematic.type_devices.no_element then
+			draw (terminal_position (module_cursor, device_cursor, terminal));
+-- 		else
+-- 			device_not_found (device);
+-- 		end if;
+		
 	end draw_track_line;
 
 	procedure draw_track_line (
