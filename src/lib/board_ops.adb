@@ -1166,6 +1166,9 @@ package body board_ops is
 	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track ends
 	-- after the given length in given direction.
+	-- If the terminal is a THT type, then the track may start at any signal layer.
+	-- If the terminal is a SMT type, then the track may start at either the top or bottom
+	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
@@ -1173,12 +1176,16 @@ package body board_ops is
 		device			: in type_device_name;
 		terminal		: in type_terminal_name.bounded_string;
 		direction		: in type_rotation;
-		length			: in type_distance;
+		length			: in geometry.type_distance_positive;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
+		-- This is going to be the segment we will insert. In the follwing it
+		-- will be tailored according to given terminal position, direction and length.
+		-- Finally it will be added to the list of line segments (via procedure add_named_track)
+		-- to the given net.
 		line : type_copper_line_pcb;
 		
 		use et_schematic.type_devices;
@@ -1194,14 +1201,20 @@ package body board_ops is
 				width		=> width, -- as given by operator
 				layer		=> layer, -- as given by operator
 				others 		=> <>);
-			
+
+			-- If the terminal is a THT type, then the track may start at any signal layer.
+			-- If the terminal is a SMT type, then the track may start at either the top or bottom
+			-- signal layer. If operator indeed whishes an inner layer a warning must be issued.
 			if terminal_position.technology = SMT then
 				null;
 				-- CS check desired layer against terminal_position.face and issue warning. advise placing a via
 			end if;
 
-			-- Build the end point of the line:
-			line.end_point := type_point (terminal_position); -- CS just a dummy. math required
+			-- Build the end point of the line. It is the start point moved in direction at given length:
+			line.end_point := type_point (move (
+					point 		=> type_point (terminal_position),
+					direction	=> direction,
+					distance	=> length));
 			
 		end make_line;
 		

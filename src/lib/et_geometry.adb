@@ -157,6 +157,33 @@ package body et_geometry is
 			point.y := point.y + offset.y;
 		end;
 
+		function move (
+		-- Moves a point into direction at distance.
+			point		: in type_point;
+			direction	: in type_rotation;
+			distance	: in type_distance_positive)
+			return type_point'class is 
+
+			package functions is new ada.numerics.generic_elementary_functions (float);
+			use functions;
+			
+			delta_x, delta_y : float := 0.0;
+
+			result : type_point;
+			
+		begin
+			-- sin (direction) * distance = delta y
+			-- cos (direction) * distance = delty x
+
+			delta_y := sin (float (direction), float (units_per_cycle)) * float (distance);
+			delta_x := cos (float (direction), float (units_per_cycle)) * float (distance);
+
+			result.x := point.x + type_distance (delta_x);
+			result.y := point.y + type_distance (delta_y);
+			
+			return result;
+		end;
+		
 		procedure mirror (
 		-- If axis is Y then it swaps right x with left x.
 		-- If axis is X then it swaps upper y with lower y.

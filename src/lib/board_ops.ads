@@ -131,6 +131,13 @@ package board_ops is
 
 	
 -- TRACKS AND FREETRACKS
+
+	procedure add_named_track (
+	-- Adds a line track segment to the given net in the given module.
+		module_cursor	: in type_modules.cursor;
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		line			: in type_copper_line_pcb);
+	
 	procedure draw_track_line (
 	-- Draws track line. If net_name is empty a freetrack will be drawn.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -148,7 +155,10 @@ package board_ops is
 
 	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track ends
-	-- after the given length in given direction.								  
+	-- after the given length in given direction.
+	-- If the terminal is a THT type, then the track may start at any signal layer.
+	-- If the terminal is a SMT type, then the track may start at either the top or bottom
+	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
@@ -156,7 +166,7 @@ package board_ops is
 		device			: in type_device_name;
 		terminal		: in type_terminal_name.bounded_string;
 		direction		: in type_rotation;
-		length			: in type_distance;
+		length			: in geometry.type_distance_positive;
 		log_threshold	: in type_log_level);
 
 	procedure draw_track_line (

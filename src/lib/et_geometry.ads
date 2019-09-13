@@ -93,6 +93,13 @@ package et_geometry is
 		procedure move (
 			point	: in out type_point'class;
 			offset	: in type_point);
+
+		function move (
+		-- Moves a point into direction at distance.
+			point		: in type_point;
+			direction	: in type_rotation;
+			distance	: in type_distance_positive)
+			return type_point'class;
 		
 		procedure mirror (
 		-- If axis is Y then it swaps right x with left x.
