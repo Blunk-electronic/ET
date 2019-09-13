@@ -172,6 +172,9 @@ package board_ops is
 	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track ends
 	-- after the given number of notches along the given axis.
+	-- If the terminal is a THT type, then the track may start at any signal layer.
+	-- If the terminal is a SMT type, then the track may start at either the top or bottom
+	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
@@ -184,8 +187,10 @@ package board_ops is
 		log_threshold	: in type_log_level);
 
 	procedure draw_track_line (
-	-- Draws a track starting at a terminal. The track ends
-	-- at the given point.
+	-- Draws a track starting at a terminal. The track ends at the given point.
+	-- If the terminal is a THT type, then the track may start at any signal layer.
+	-- If the terminal is a SMT type, then the track may start at either the top or bottom
+	-- signal layer. If operator indeed whishes an inner layer a warning is issued.								  
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
@@ -198,6 +203,9 @@ package board_ops is
 	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track runs into the 
 	-- given direction and ends after the given number of notches along the given axis.
+	-- If the terminal is a THT type, then the track may start at any signal layer.
+	-- If the terminal is a SMT type, then the track may start at either the top or bottom
+	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;

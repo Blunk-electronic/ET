@@ -1027,6 +1027,19 @@ package body board_ops is
 		end if;
 	end;
 
+	procedure check_terminal_face_vs_layer (
+	-- If the terminal is a THT type, then the track may start at any signal layer.
+	-- If the terminal is a SMT type, then the track may start at either the top or bottom
+	-- signal layer. If operator indeed whishes an inner layer a warning must be issued.
+		terminal	: in type_terminal_position;
+		layer		: in type_signal_layer) is
+	begin
+		if terminal.technology = SMT then
+			null;
+			-- CS check desired layer against terminal_position.face and issue warning. advise placing a via
+		end if;
+	end;
+	
 	procedure add_named_track (
 	-- Adds a line track segment to the given net in the given module.
 		module_cursor	: in type_modules.cursor;
@@ -1202,14 +1215,8 @@ package body board_ops is
 				layer		=> layer, -- as given by operator
 				others 		=> <>);
 
-			-- If the terminal is a THT type, then the track may start at any signal layer.
-			-- If the terminal is a SMT type, then the track may start at either the top or bottom
-			-- signal layer. If operator indeed whishes an inner layer a warning must be issued.
-			if terminal_position.technology = SMT then
-				null;
-				-- CS check desired layer against terminal_position.face and issue warning. advise placing a via
-			end if;
-
+			check_terminal_face_vs_layer (terminal_position, layer);
+			
 			-- Build the end point of the line. It is the start point moved in direction at given length:
 			line.end_point := type_point (move (
 					point 		=> type_point (terminal_position),
@@ -1239,6 +1246,9 @@ package body board_ops is
 	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track ends
 	-- after the given number of notches along the given axis.
+	-- If the terminal is a THT type, then the track may start at any signal layer.
+	-- If the terminal is a SMT type, then the track may start at either the top or bottom
+	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
@@ -1253,8 +1263,32 @@ package body board_ops is
 		use et_project.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
-		use et_pcb;
-		use et_pcb.type_copper_lines_pcb;
+		-- This is going to be the segment we will insert. In the follwing it
+		-- will be tailored according to given terminal position, direction, axis and grid notches.
+		-- Finally it will be added to the list of line segments (via procedure add_named_track)
+		-- to the given net.
+		line : type_copper_line_pcb;
+		
+		use et_schematic.type_devices;
+		device_cursor : et_schematic.type_devices.cursor;
+		
+		procedure make_line (terminal_position : in type_terminal_position) is begin
+
+			-- Build the start point of the line:
+			-- The start point of the line is always the x/y of the terminal.
+			-- further-on set line width and layer.
+			line := (
+				start_point	=> type_point (terminal_position),
+				width		=> width, -- as given by operator
+				layer		=> layer, -- as given by operator
+				others 		=> <>);
+
+			check_terminal_face_vs_layer (terminal_position, layer);
+			
+			-- Build the end point of the line. It is the start point moved in direction:
+			-- CS
+			
+		end make_line;
 		
 	begin -- draw_track_line
 		log (text => "module " & to_string (module_name) &
@@ -1266,14 +1300,21 @@ package body board_ops is
 			" grid notches " & to_string (notches),
 			level => log_threshold);
 
-		-- locate module
+		-- locate module and device
 		module_cursor := locate_module (module_name);
+		device_cursor := locate_device (module_cursor, device);
+
+		make_line (terminal_position (module_cursor, device_cursor, terminal));
+
+		add_named_track (module_cursor, net_name, line);
 
 	end draw_track_line;
 
 	procedure draw_track_line (
-	-- Draws a track starting at a terminal. The track ends
-	-- at the given point.
+	-- Draws a track starting at a terminal. The track ends at the given point.
+	-- If the terminal is a THT type, then the track may start at any signal layer.
+	-- If the terminal is a SMT type, then the track may start at either the top or bottom
+	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
@@ -1286,8 +1327,29 @@ package body board_ops is
 		use et_project.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
-		use et_pcb;
-		use et_pcb.type_copper_lines_pcb;
+		-- This is going to be the segment we will insert. In the follwing it
+		-- will be tailored according to given terminal position and end point.
+		-- Finally it will be added to the list of line segments (via procedure add_named_track)
+		-- to the given net.
+		line : type_copper_line_pcb;
+		
+		use et_schematic.type_devices;
+		device_cursor : et_schematic.type_devices.cursor;
+		
+		procedure make_line (terminal_position : in type_terminal_position) is begin
+
+			-- Build the start point of the line:
+			-- The start point of the line is always the x/y of the terminal.
+			-- further-on set line width and layer.
+			line := (
+				start_point	=> type_point (terminal_position),
+				width		=> width, -- as given by operator
+				layer		=> layer, -- as given by operator
+				end_point	=> end_point); -- as given by operator
+
+			check_terminal_face_vs_layer (terminal_position, layer);
+			
+		end make_line;
 		
 	begin -- draw_track_line
 		log (text => "module " & to_string (module_name) &
@@ -1297,14 +1359,22 @@ package body board_ops is
 			" to " & to_string (end_point),
 			level => log_threshold);
 
-		-- locate module
+		-- locate module and device
 		module_cursor := locate_module (module_name);
+		device_cursor := locate_device (module_cursor, device);
 
+		make_line (terminal_position (module_cursor, device_cursor, terminal));
+
+		add_named_track (module_cursor, net_name, line);
+		
 	end draw_track_line;
 
 	procedure draw_track_line (
 	-- Draws a track starting at a terminal. The track runs into the 
 	-- given direction and ends after the given number of notches along the given axis.
+	-- If the terminal is a THT type, then the track may start at any signal layer.
+	-- If the terminal is a SMT type, then the track may start at either the top or bottom
+	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in type_signal_layer;
@@ -1318,8 +1388,32 @@ package body board_ops is
 		use et_project.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
-		use et_pcb;
-		use et_pcb.type_copper_lines_pcb;
+		-- This is going to be the segment we will insert. In the follwing it
+		-- will be tailored according to given terminal position, axis and grid notches.
+		-- Finally it will be added to the list of line segments (via procedure add_named_track)
+		-- to the given net.
+		line : type_copper_line_pcb;
+		
+		use et_schematic.type_devices;
+		device_cursor : et_schematic.type_devices.cursor;
+		
+		procedure make_line (terminal_position : in type_terminal_position) is begin
+
+			-- Build the start point of the line:
+			-- The start point of the line is always the x/y of the terminal.
+			-- further-on set line width and layer.
+			line := (
+				start_point	=> type_point (terminal_position),
+				width		=> width, -- as given by operator
+				layer		=> layer, -- as given by operator
+				others 		=> <>);
+
+			check_terminal_face_vs_layer (terminal_position, layer);
+			
+			-- Build the end point of the line. It is the start point moved in direction:
+			-- CS
+			
+		end make_line;
 		
 	begin -- draw_track_line
 		log (text => "module " & to_string (module_name) &
@@ -1330,8 +1424,13 @@ package body board_ops is
 			" grid notches " & to_string (notches),
 			level => log_threshold);
 
-		-- locate module
+		-- locate module and device
 		module_cursor := locate_module (module_name);
+		device_cursor := locate_device (module_cursor, device);
+
+		make_line (terminal_position (module_cursor, device_cursor, terminal));
+
+		add_named_track (module_cursor, net_name, line);
 
 	end draw_track_line;
 	
