@@ -1027,6 +1027,53 @@ package body board_ops is
 		end if;
 	end;
 
+	procedure add_named_track (
+	-- Adds a line track segment to the given net in the given module.
+		module_cursor	: in type_modules.cursor;
+		net_name		: in type_net_name.bounded_string; -- reset_n
+		line			: in type_copper_line_pcb) is
+
+		procedure do_it (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+
+			-- A track belonging to a net requires the net to be located in the given module:
+			use et_schematic.type_nets;
+			net_cursor : et_schematic.type_nets.cursor := find (module.nets, net_name);
+
+			procedure add (
+			-- Appends the track to the net.
+				net_name	: in type_net_name.bounded_string;
+				net			: in out type_net) is
+				use et_pcb.type_copper_lines_pcb;
+			begin
+				append (
+					container	=> net.route.lines,
+					new_item	=> line);
+			end add;
+
+		begin -- add_named_track
+			if net_exists (net_cursor) then
+				
+				type_nets.update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> add'access);
+				
+			else
+				net_not_found (net_name);
+			end if;
+
+		end do_it;
+
+	begin -- add_named_track
+		et_project.type_modules.update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> do_it'access);
+		
+	end add_named_track;
+		
 	procedure draw_track_line (
 	-- Draws a track line. If net_name is empty a freetrack will be drawn.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -1049,38 +1096,6 @@ package body board_ops is
 				new_item	=> line);
 		end;
 		
-		procedure add_named_track (
-			module_name	: in type_module_name.bounded_string;
-			module		: in out type_module) is
-
-			-- A track belonging to a net requires the net to be located in the given module:
-			use et_schematic.type_nets;
-			net_cursor : et_schematic.type_nets.cursor := find (module.nets, net_name);
-
-			procedure add (
-			-- Appends the track to the net.
-				net_name	: in type_net_name.bounded_string;
-				net			: in out type_net) is
-			begin
-				append (
-					container	=> net.route.lines,
-					new_item	=> line);
-			end add;
-
-		begin -- add_named_track
-			if net_exists (net_cursor) then
-				
-				type_nets.update_element (
-					container	=> module.nets,
-					position	=> net_cursor,
-					process		=> add'access);
-				
-			else
-				net_not_found (net_name);
-			end if;
-
-		end add_named_track;
-		
 	begin -- draw_track_line
 		log (text => "module " & to_string (module_name) &
 			freetrack (net_name) &
@@ -1101,11 +1116,7 @@ package body board_ops is
 
 		else
 
-			update_element (
-				container	=> modules,
-				position	=> module_cursor,
-				process		=> add_named_track'access);
-
+			add_named_track (module_cursor, net_name, line);
 		end if;
 
 	end draw_track_line;
@@ -1168,26 +1179,31 @@ package body board_ops is
 		use et_project.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
-		use et_pcb;
-		use et_pcb.type_copper_lines_pcb;
-
+		line : type_copper_line_pcb;
+		
 		use et_schematic.type_devices;
 		device_cursor : et_schematic.type_devices.cursor;
 		
--- 		procedure query_devices (
--- 			module_name		: in type_module_name.bounded_string;
--- 			module			: in type_module) is
--- 
--- 			use et_schematic.type_devices;
--- 			device_cursor : et_schematic.type_devices.cursor := find (module.devices, device);
--- 		begin
--- 			null;
--- 		end query_devices;
+		procedure make_line (terminal_position : in type_terminal_position) is begin
 
-		procedure draw (terminal_position : in type_terminal_position) is
-		begin
-			null;
-		end;
+			-- Build the start point of the line:
+			-- The start point of the line is always the x/y of the terminal.
+			-- further-on set line width and layer.
+			line := (
+				start_point	=> type_point (terminal_position),
+				width		=> width, -- as given by operator
+				layer		=> layer, -- as given by operator
+				others 		=> <>);
+			
+			if terminal_position.technology = SMT then
+				null;
+				-- CS check desired layer against terminal_position.face and issue warning. advise placing a via
+			end if;
+
+			-- Build the end point of the line:
+			line.end_point := type_point (terminal_position); -- CS just a dummy. math required
+			
+		end make_line;
 		
 	begin -- draw_track_line
 		log (text => "module " & to_string (module_name) &
@@ -1197,20 +1213,13 @@ package body board_ops is
 			" direction " & to_string (direction) & " length " & to_string (length),
 			level => log_threshold);
 
-		-- locate module
+		-- locate module and device
 		module_cursor := locate_module (module_name);
-
--- 		query_element (
--- 			position	=> module_cursor,
--- 			process		=> query_devices'access);
-
 		device_cursor := locate_device (module_cursor, device);
 
--- 		if device_cursor /= et_schematic.type_devices.no_element then
-			draw (terminal_position (module_cursor, device_cursor, terminal));
--- 		else
--- 			device_not_found (device);
--- 		end if;
+		make_line (terminal_position (module_cursor, device_cursor, terminal));
+
+		add_named_track (module_cursor, net_name, line);
 		
 	end draw_track_line;
 
