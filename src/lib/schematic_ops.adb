@@ -153,6 +153,37 @@ package body schematic_ops is
 			 console => true);
 		raise constraint_error;
 	end;
+
+	procedure set_grid (
+	-- Sets the grid of the module.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		grid			: in geometry.type_grid;
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure do_it (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+		begin
+			module.grid := grid;
+		end;
+		
+	begin -- set_grid
+		log (text => "module " & to_string (module_name) &
+			" setting schematic grid" & to_string (grid),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> do_it'access);
+
+	end set_grid;
 	
 	procedure log_unit_positions (
 	-- Writes the positions of the device unis in the log file.

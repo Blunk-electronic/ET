@@ -138,6 +138,7 @@ package scripting is
 		--DEVICE_PARTCODE,
 		--DEVICE_PURPOSE,
 		--DEVICE_VALUE,
+		NOUN_GRID,
 		NOUN_INTEGRITY,
 		NOUN_JUNCTION,
 		NOUN_LABEL,
@@ -192,6 +193,7 @@ package scripting is
 		ASSY, -- assembly documentation
 		DEVICE,
 		FREETRACK,
+		GRID,
 		NAME,
 		NET,
 		OUTLINE,

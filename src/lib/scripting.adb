@@ -1474,7 +1474,22 @@ package body scripting is
 
 				when SET =>
 					case noun is
-				
+						when NOUN_GRID =>
+							case fields is
+								-- schematic led_driver set grid 5 5
+								when 6 =>
+									schematic_ops.set_grid (
+										module_name 	=> module,
+										grid			=> (
+												x => to_distance (f (5)),
+												y => to_distance (f (6))),
+										log_threshold	=> log_threshold + 1);
+
+								when 7 .. count_type'last => command_too_long (fields - 1);
+									
+								when others => command_incomplete;
+							end case;
+					
 						when NOUN_PARTCODE =>
 							declare
 								partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
@@ -2432,6 +2447,29 @@ package body scripting is
 							end case;
 							
 						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when SET =>
+					case noun is
+						when GRID =>
+							case fields is
+								-- board led_driver set grid 0.5 0.5
+								when 6 =>
+									board_ops.set_grid (
+										module_name 	=> module,
+										grid			=> (
+												x => to_distance (f (5)),
+												y => to_distance (f (6))),
+										log_threshold	=> log_threshold + 1);
+
+								when 7 .. count_type'last => command_too_long (fields - 1);
+									
+								when others =>
+									command_incomplete;
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+
 					end case;
 					
 				when others => 

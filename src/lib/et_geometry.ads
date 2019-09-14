@@ -56,6 +56,8 @@ package et_geometry is
 		type type_grid is record
 			x,y	: type_distance_grid := grid_default;
 		end record;
+
+		function to_string (grid : in type_grid) return string;
 		
 		type type_point is tagged private;
 

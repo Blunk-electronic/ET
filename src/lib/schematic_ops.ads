@@ -68,6 +68,11 @@ package schematic_ops is
 	procedure net_not_found (name : in et_general.type_net_name.bounded_string);
 	procedure assembly_variant_not_found (variant : in type_variant_name.bounded_string);
 	
+	procedure set_grid (
+	-- Sets the grid of the module.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		grid			: in geometry.type_grid;
+		log_threshold	: in type_log_level);		
 	
 	procedure delete_device (
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

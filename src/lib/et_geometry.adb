@@ -48,6 +48,10 @@ package body et_geometry is
 
 	package body geometry_operations_2d is
 
+		function to_string (grid : in type_grid) return string is begin
+			return point_preamble & to_string (grid.x) & axis_separator & to_string (grid.y);
+		end;
+		
 		function to_distance (distance : in string) return type_distance is begin
 			return type_distance'value (distance);
 		end;

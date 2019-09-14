@@ -38,6 +38,16 @@ project save module led_driver
 project delete module led_driver
 ```
 
+## DRAWING GRID
+The drawing grid is to be set for each module. It's default is both 1mm in x and y direction:
+```
+schematic led_driver set grid 2 2 # x/y 2/2
+```
+```
+board led_driver set grid 0.5 0.5 # x/y 0.5/0.5
+```
+
+
 ## DEVICES AND UNITS
 A device is something like a resistor (consisting of a schematic symbol and a package drawing).
 A single resistor contains only one symbol:
