@@ -151,6 +151,83 @@ package body et_project is
 		return find (modules, name);
 	end;
 
+	procedure invalid_keyword (word : in string) is 
+		use et_string_processing;
+	begin
+		log (ERROR, "invalid keyword '" & word & "' !", console => true);
+		raise constraint_error;
+	end;
+	
+	function to_grid (
+		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
+		from : in positive)
+		return et_coordinates.geometry.type_grid is
+		use et_string_processing;
+		use et_coordinates.geometry;
+		
+		grid : et_coordinates.geometry.type_grid; -- to be returned
+
+		place : positive := from; -- the field being read from given line
+
+		function f (line : in type_fields_of_line; position : in positive) return string 
+			renames et_string_processing.field;
+		
+	begin
+		while place <= positive (field_count (line)) loop
+
+			-- We expect after the x the corresponding value for x
+			if f (line, place) = keyword_pos_x then
+				grid.x := to_distance (f (line, place + 1));
+
+			-- We expect after the y the corresponding value for y
+			elsif f (line, place) = keyword_pos_y then
+				grid.y := to_distance (f (line, place + 1));
+
+			else
+				invalid_keyword (f (line, place));
+			end if;
+					
+			place := place + 2;
+		end loop;
+		
+		return grid;
+	end to_grid;
+
+	function to_grid (
+		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
+		from : in positive)
+		return et_pcb_coordinates.geometry.type_grid is
+		use et_string_processing;
+		use et_pcb_coordinates.geometry;
+		
+		grid : et_pcb_coordinates.geometry.type_grid; -- to be returned
+
+		place : positive := from; -- the field being read from given line
+
+		function f (line : in type_fields_of_line; position : in positive) return string 
+			renames et_string_processing.field;
+		
+	begin
+		while place <= positive (field_count (line)) loop
+
+			-- We expect after the x the corresponding value for x
+			if f (line, place) = keyword_pos_x then
+				grid.x := to_distance (f (line, place + 1));
+
+			-- We expect after the y the corresponding value for y
+			elsif f (line, place) = keyword_pos_y then
+				grid.y := to_distance (f (line, place + 1));
+
+			else
+				invalid_keyword (f (line, place));
+			end if;
+					
+			place := place + 2;
+		end loop;
+		
+		return grid;
+	end to_grid;
+	
 	function port_connected (
 	-- Returns true if given port of netchanger is connected with any net.
 		module	: in type_modules.cursor;
@@ -1475,6 +1552,31 @@ package body et_project is
 			log_indentation_down;
 		end query_net_classes;
 
+		procedure query_drawing_grid is 
+			use et_coordinates.geometry;
+			use et_pcb_coordinates.geometry;
+		begin
+			log_indentation_up;
+			
+			section_mark (section_drawing_grid, HEADER);
+
+			section_mark (section_schematic, HEADER);
+			write (keyword => keyword_default, space => true, parameters => 
+				   keyword_pos_x & to_string (element (module_cursor).grid.x) & space &
+				   keyword_pos_y & to_string (element (module_cursor).grid.y));
+			section_mark (section_schematic, FOOTER);
+
+			section_mark (section_board, HEADER);
+			write (keyword => keyword_default, space => true, parameters => 
+				   keyword_pos_x & to_string (element (module_cursor).board.grid.x) & space &
+				   keyword_pos_y & to_string (element (module_cursor).board.grid.y));
+			section_mark (section_board, FOOTER);
+			
+			section_mark (section_drawing_grid, FOOTER);
+
+			log_indentation_down;
+		end query_drawing_grid;
+		
 		procedure query_nets is
 			use et_schematic;
 			use et_schematic.type_nets;
@@ -2375,6 +2477,10 @@ package body et_project is
 		-- net classes
 		query_net_classes;
 		put_line (row_separator_single);
+
+		-- drawing grid
+		query_drawing_grid;
+		put_line (row_separator_single);
 		
 		-- nets
 		query_nets;
@@ -2822,13 +2928,6 @@ package body et_project is
 		
 	end save_device;
 
-	procedure invalid_keyword (word : in string) is 
-		use et_string_processing;
-	begin
-		log (ERROR, "invalid keyword '" & word & "' !", console => true);
-		raise constraint_error;
-	end;
-	
 	function write_top_level_reached return string is begin return "top level reached"; end;
 
 	function write_enter_section return string is begin return "entering section "; end;
@@ -8076,8 +8175,13 @@ package body et_project is
 			return point;
 		end to_position;
 
+		
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 
+		-- drawing grid
+		grid_schematic : et_coordinates.geometry.type_grid;
+		grid_board : et_pcb_coordinates.geometry.type_grid;
+		
 		-- net class
 		net_class 		: et_pcb.type_net_class;
 		net_class_name	: et_pcb.type_net_class_name.bounded_string;
@@ -8324,6 +8428,32 @@ package body et_project is
 					
 				end insert_net_class;
 
+				procedure set_drawing_grid is
+
+					procedure set (
+						module_name	: in type_module_name.bounded_string;
+						module		: in out et_schematic.type_module) is
+						use et_coordinates.geometry;
+						use et_pcb_coordinates.geometry;
+					begin
+						module.grid := grid_schematic;
+						log (text => "schematic" & to_string (module.grid), level => log_threshold + 2);
+						module.board.grid := grid_board;
+						log (text => "board" & to_string (module.board.grid), level => log_threshold + 2);
+					end;
+					
+				begin -- set_drawing_grid
+					log (text => "drawing grid", level => log_threshold + 1);
+					log_indentation_up;
+					
+					update_element (
+						container	=> modules,
+						position	=> module_cursor,
+						process		=> set'access);
+
+					log_indentation_down;
+				end set_drawing_grid;
+				
 				procedure insert_net (
 					module_name	: in type_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
@@ -9699,6 +9829,12 @@ package body et_project is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
+
+					when SEC_DRAWING_GRID =>
+						case stack.parent is
+							when SEC_INIT => set_drawing_grid;
+							when others => invalid_section;
+						end case;
 						
 					when SEC_NET =>
 						case stack.parent is
@@ -10365,8 +10501,10 @@ package body et_project is
 									position	=> module_cursor,
 									process		=> set_frame_schematic'access);
 
-								when others => invalid_section;
-							end case;
+							when SEC_DRAWING_GRID => null; -- nothing to do
+							
+							when others => invalid_section;
+						end case;
 
 					when SEC_BOARD =>
 						case stack.parent is
@@ -10379,6 +10517,8 @@ package body et_project is
 									container	=> modules,
 									position	=> module_cursor,
 									process		=> set_frame_board'access);
+
+							when SEC_DRAWING_GRID => null; -- nothing to do
 								
 							when others => invalid_section;
 						end case;
@@ -10719,6 +10859,7 @@ package body et_project is
 		begin -- process_line
 			if set (section_net_classes, SEC_NET_CLASSES) then null;
 			elsif set (section_net_class, SEC_NET_CLASS) then null;
+			elsif set (section_drawing_grid, SEC_DRAWING_GRID) then null;
 			elsif set (section_nets, SEC_NETS) then null;
 			elsif set (section_net, SEC_NET) then null;
 			elsif set (section_strands, SEC_STRANDS) then null;
@@ -10779,6 +10920,12 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
+					when SEC_DRAWING_GRID =>
+						case stack.parent is
+							when SEC_INIT => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+						
 					when SEC_DEVICES =>
 						case stack.parent is
 							when SEC_INIT => null; -- nothing to do
@@ -10959,7 +11106,6 @@ package body et_project is
 								
 							when others => invalid_section;
 						end case;
-
 						
 					when SEC_TEXTS =>
 						case stack.parent is
@@ -12198,6 +12344,19 @@ package body et_project is
 									end if;
 								end;
 
+							when SEC_DRAWING_GRID =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_default then -- default x 1.00 y 1.00
+										expect_field_count (line, 5);
+										grid_schematic := to_grid (line, 2);
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+								
 							when others => invalid_section;
 						end case;
 
@@ -12218,6 +12377,19 @@ package body et_project is
 									end if;
 								end;
 
+							when SEC_DRAWING_GRID =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_default then -- default x 1.00 y 1.00
+										expect_field_count (line, 5);
+										grid_board := to_grid (line, 2);
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+								
 							when others => invalid_section;
 						end case;
 						

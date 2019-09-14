@@ -328,7 +328,8 @@ package et_project is
 	
 
 -- FILE SECTIONS AND KEYWORDS
-	
+
+	keyword_default					: constant string := "default";
 	keyword_generic_name			: constant string := "generic_name";
 	keyword_instance_name			: constant string := "instance_name";
 	keyword_assembly_variant		: constant string := "assembly_variant";
@@ -456,6 +457,8 @@ package et_project is
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";
 
+	section_drawing_grid		: constant string := "[DRAWING_GRID";
+	
 	section_nets				: constant string := "[NETS";
 	section_net					: constant string := "[NET";
 
@@ -550,6 +553,7 @@ package et_project is
 	section_title_block			: constant string	:= "[TITLE_BLOCK";
 	
 	type type_section_name_module is (
+		SEC_DRAWING_GRID,
 		SEC_INIT,
 		SEC_NET_CLASSES,
 		SEC_NET_CLASS,

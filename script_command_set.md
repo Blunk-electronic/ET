@@ -39,7 +39,7 @@ project delete module led_driver
 ```
 
 ## DRAWING GRID
-The drawing grid is to be set for each module. It's default is both 1mm in x and y direction:
+The drawing grid is to be set for each module. It's default is 1mm in both x and y direction:
 ```
 schematic led_driver set grid 2 2 # x/y 2/2
 ```
@@ -299,7 +299,8 @@ board led_driver ripup freetrack 1 12 10 2 # layer 1, crossing point 12/10, accu
 
 
 ### NETS
-Laying out:
+#### Routing
+Laying out tracks takes place in the layout:
 ```
 board led_driver route net reset_n 1 line 0.25 10 10 16 13 # net reset_n, layer 1, line, width 0.25, line from 10/10 to 16/13
 ```
@@ -311,7 +312,9 @@ Route track from IC1 pad H7 in direction 45 degrees with length of 50mm:
 ```
 board led_driver route net reset_n 1 line 0.25 IC1 H7 direction 45 50
 ```
-Route track from IC1 pad H7 in direction 45 degrees to the 5th grid line along x axis:
+
+Route track from IC1 pad H7 in direction 45 degrees to the 5th grid line along x axis.
+This operation depends on the drawing grid size:
 ```
 board led_driver route net reset_n 1 line 0.25 IC1 H7 direction 45 x 5
 ```
@@ -322,10 +325,10 @@ board led_driver route net reset_n 1 line 0.25 IC1 H7 to 35 40
 ```
 
 Route track from IC1 pad H7 in x direction to the 5th grid line in along x axis:
+This operation depends on the drawing grid size:
 ```
 board led_driver route net reset_n 1 line 0.25 IC1 H7 to x 5
 ```
-
 
 Ripping up:
 ```
