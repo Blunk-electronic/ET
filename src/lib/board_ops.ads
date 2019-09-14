@@ -267,19 +267,6 @@ package board_ops is
 		accuracy		: in geometry.type_accuracy;
 		log_threshold	: in type_log_level);
 
-
--- VIA RESTRICT
-
--- ROUTE RESTRICT
-
--- KEEPOUT
-
--- STOP MASK
-
--- STENCIL / SOLDER PASTE
-
--- ASSEMBLY DOCUMENTATION
-
 -- SILK SCREEN
 	procedure draw_silk_screen_line (
 	-- Draws a line in the PCB silk_screen.
@@ -287,7 +274,6 @@ package board_ops is
 		face			: in type_face;
 		line			: in type_silk_line;
 		log_threshold	: in type_log_level);
-		-- CS use type_silk_line
 
 	procedure draw_silk_screen_arc (
 	-- Draws an arc in the PCB silk_screen.
@@ -295,7 +281,6 @@ package board_ops is
 		face			: in type_face;
 		arc				: in type_silk_arc;
 		log_threshold	: in type_log_level);
-		-- CS use type_silk_arc
 
 	procedure draw_silk_screen_circle (
 	-- Draws a circle in the PCB silk_screen.
@@ -313,6 +298,51 @@ package board_ops is
 		point			: in geometry.type_point; -- x/y
 		accuracy		: in geometry.type_accuracy;
 		log_threshold	: in type_log_level);
+
+
+-- ASSEMBLY DOCUMENTATION
+	procedure draw_assy_doc_line (
+	-- Draws a line in the assembly documentation.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		line			: in type_doc_line;
+		log_threshold	: in type_log_level);
+
+	procedure draw_assy_doc_arc (
+	-- Draws an arc in the assembly documentation.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		arc				: in type_doc_arc;
+		log_threshold	: in type_log_level);
+
+	procedure draw_assy_doc_circle (
+	-- Draws a circle in the assembly documentation.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;	
+		circle			: in type_fillable_circle;
+		log_threshold	: in type_log_level);
+
+	procedure delete_assy_doc (
+	-- Deletes the segment of the assembly documentation that crosses the given point.
+	-- CS currently deletes the first segment found. Leaves other segments untouched.
+	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		point			: in geometry.type_point; -- x/y
+		accuracy		: in geometry.type_accuracy;
+		log_threshold	: in type_log_level);
+
+	
+-- VIA RESTRICT
+
+-- ROUTE RESTRICT
+
+-- KEEPOUT
+
+-- STOP MASK
+
+-- STENCIL / SOLDER PASTE
+
 
 	
 end board_ops;

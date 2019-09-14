@@ -588,6 +588,8 @@ board led_driver delete outline 40 50 1 # crossing 40/50, accuracy 1
 ```
 
 ## SILK SCREEN AND ASSEMBLY DOCUMENTATION
+The following commands address silk screen. To address assembly documentation replace
+the 4th keyword 'silk' by 'assy'.
 ```
 board led_driver draw silk top line 2.5 0 0 160 0 # top, line, width 2.5mm, from 0/0 to 160/0
 ```
