@@ -54,13 +54,12 @@ with ada.containers.ordered_sets;
 with ada.exceptions;
 
 with et_coordinates;
-with et_libraries;
 with et_string_processing;		use et_string_processing;
 
 package body et_pcb_stack is
 
-	function to_string (signal_layer : in type_signal_layer) return string is begin
-		return type_signal_layer'image (signal_layer);
+	function to_string (layer : in type_signal_layer) return string is begin
+		return type_signal_layer'image (layer);
 	end to_string;
 
 	function to_signal_layer (layer : in string) return type_signal_layer is begin

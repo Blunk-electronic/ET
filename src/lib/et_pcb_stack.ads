@@ -54,18 +54,15 @@ with ada.containers.ordered_sets;
 
 with et_general;
 with et_string_processing;
-with et_libraries;				--use et_libraries;
 with et_pcb_coordinates;		use et_pcb_coordinates;
--- with et_geometry;
 
 package et_pcb_stack is
--- 	use geometry;
 	
 	signal_layer_top : constant positive := 1;
 	signal_layer_bot : constant positive := 100;
 	type type_signal_layer is range signal_layer_top .. signal_layer_bot;
 
-	function to_string (signal_layer : in type_signal_layer) return string;
+	function to_string (layer : in type_signal_layer) return string;
 	function to_signal_layer (layer : in string) return type_signal_layer;
 
 	package type_signal_layers is new ordered_sets (type_signal_layer);
