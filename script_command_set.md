@@ -5,6 +5,7 @@ Scripting is an important feature of advanced CAE tools. It allows:
 - repeating and automating of tedious or error prone tasks.
 - software testing without graphical user interfaces
 - generating schematics, layouts and device models via third party software
+- The acronym 'CS' indicates a construction site where things are not complete or intended for the future.
 
 A script in general is just a list of things to do by the CAE system. This list
 is a plain ASCII file. Comments start with #. 
@@ -314,7 +315,7 @@ board led_driver route net reset_n 1 line 0.25 IC1 H7 direction 45 50
 ```
 
 Route track from IC1 pad H7 in direction 45 degrees to the 5th grid line along x axis.
-This operation depends on the drawing grid size:
+This operation depends on the drawing grid size. CS: Not implemented yet:
 ```
 board led_driver route net reset_n 1 line 0.25 IC1 H7 direction 45 x 5
 ```
@@ -325,7 +326,7 @@ board led_driver route net reset_n 1 line 0.25 IC1 H7 to 35 40
 ```
 
 Route track from IC1 pad H7 in x direction to the 5th grid line in along x axis:
-This operation depends on the drawing grid size:
+This operation depends on the drawing grid size.  CS: Not implemented yet:
 ```
 board led_driver route net reset_n 1 line 0.25 IC1 H7 to x 5
 ```

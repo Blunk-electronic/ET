@@ -34,6 +34,9 @@
 --
 --   history of changes:
 --
+--   to do:
+--		- separate in two packages things related to board and device package.
+
 with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
@@ -351,9 +354,7 @@ package et_pcb is
 	-- POLYGON
 	-- Corner points are collected in an ordered set.
 	-- This prevents placing two identical points on top of each other.
-	package type_polygon_points is new ordered_sets (
-		element_type	=> type_point);
--- 		"<"				=> right_point_before_left_2d);
+	package type_polygon_points is new ordered_sets (type_point);
 
 	type type_corner_easing is (NONE, CHAMFER, FILLET);
 	
@@ -365,6 +366,8 @@ package et_pcb is
 	
 	type type_polygon is abstract tagged record
 		corners				: type_polygon_points.set;
+		-- CS: consider a list of lines and arcs (circles ?) instead
+		
 		fill_style			: type_fill_style := SOLID; -- a polygon is always filled
 		hatching_line_width	: type_track_width := fill_style_hatching_line_width_default; -- the with of the lines
 		hatching_spacing	: type_track_clearance := fill_style_hatching_spacing_default; -- the space between the lines
