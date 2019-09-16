@@ -4,31 +4,31 @@ VPATH = include
 
 OBJS = $(TARGET).o \
 	et_geometry.o \
+	et_pcb_coordinates.o \
+	et_pcb.o \
+	et_pcb_stack.o \
 	board_ops.o \
-	pick_and_place.o \
-	netlists.o \
-	material.o \
-	numbering.o \
-	assembly_variants.o \
-	schematic_ops.o \
 	scripting.o \
-	submodules.o \
-	et_schematic.o \
 	et_libraries.o \
 	et_project.o \
 	et_coordinates.o \
-	et_pcb_coordinates.o \
-	et_pcb.o \
 	conventions.o \
 	et_csv.o \
 	et_general.o \
-	et_operations.o \
-	et_import.o et_export.o \
 	et_kicad_general.o \
 	et_kicad_to_native.o \
 	kicad_coordinates.o \
 	et_kicad.o \
 	et_kicad_pcb.o \
+	pick_and_place.o \
+	netlists.o \
+	material.o \
+	numbering.o \
+	assembly_variants.o \
+	et_schematic.o \
+	submodules.o \
+	schematic_ops.o \
+	et_import.o et_export.o \
 	et_string_processing.o
 
 PREFIX = $(HOME)

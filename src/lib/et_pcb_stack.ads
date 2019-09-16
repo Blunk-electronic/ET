@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                    SYSTEM ET OPERATIONS DECLARATIONS                     --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                                 ET                                       --
+--                              PCB STACK                                   --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -24,7 +24,7 @@
 
 --   For correct displaying set tab width in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -34,18 +34,48 @@
 --
 --   history of changes:
 --
+--   to do:
 
-with ada.strings.bounded; 	use ada.strings.bounded;
-with ada.containers; 		use ada.containers;
-with ada.containers.vectors;
 
-package et_operations is
+with ada.text_io;				use ada.text_io;
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
 
-	procedure a; -- CS: dummy, remove it !
+with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.containers; 			use ada.containers;
+
+with ada.containers.doubly_linked_lists;
+with ada.containers.indefinite_doubly_linked_lists;
+with ada.containers.ordered_maps;
+with ada.containers.indefinite_ordered_maps;
+with ada.containers.ordered_sets;
+
+with et_general;
+with et_string_processing;
+with et_libraries;				--use et_libraries;
+with et_pcb_coordinates;		use et_pcb_coordinates;
+-- with et_geometry;
+
+package et_pcb_stack is
+-- 	use geometry;
+	
+	signal_layer_top : constant positive := 1;
+	signal_layer_bot : constant positive := 100;
+	type type_signal_layer is range signal_layer_top .. signal_layer_bot;
+
+	function to_string (signal_layer : in type_signal_layer) return string;
+	function to_signal_layer (layer : in string) return type_signal_layer;
+
+	package type_signal_layers is new ordered_sets (type_signal_layer);
+
+
 
 	
+end et_pcb_stack;
 
-end et_operations;
+-- Soli Deo Gloria
 
 -- For God so loved the world that he gave 
 -- his one and only Son, that whoever believes in him 
