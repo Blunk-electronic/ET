@@ -99,6 +99,41 @@ package body board_ops is
 			 console => true);
 		raise constraint_error;
 	end;
+
+	procedure add_layer (
+	-- Adds a signal layer to the board.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		use et_geometry;
+		
+		procedure add (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_pcb_stack.package_layers;
+		begin
+			append (module.board.stack.layers, layer);
+		end add;
+		
+	begin -- add_layer
+		log (text => "module " & to_string (module_name) &
+			" adding layer conductor thickness" & to_string (layer.conductor.thickness) &
+			" dieelectic thickness" & to_string (layer.dielectric.thickness),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> add'access);
+		
+	end add_layer;
 	
 	procedure move_device (
 	-- Moves a device in the board layout in x/y direction.

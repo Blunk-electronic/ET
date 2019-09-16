@@ -194,6 +194,7 @@ package scripting is
 		DEVICE,
 		FREETRACK,
 		GRID,
+		LAYER, 	-- signal layer with dielectic
 		NAME,
 		NET,
 		OUTLINE,

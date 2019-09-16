@@ -46,10 +46,10 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
+-- with ada.containers.doubly_linked_lists;
+with ada.containers.vectors;
+-- with ada.containers.ordered_maps;
+-- with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;
@@ -57,6 +57,10 @@ with et_string_processing;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 
 package et_pcb_stack is
+
+	keyword_conductor	: constant string := "conductor";
+	keyword_dielectric	: constant string := "dielectric";	
+	keyword_bottom		: constant string := "bottom";	
 	
 	signal_layer_top : constant positive := 1;
 	signal_layer_bot : constant positive := 100;
@@ -67,8 +71,44 @@ package et_pcb_stack is
 
 	package type_signal_layers is new ordered_sets (type_signal_layer);
 
+	use geometry;
+-- 	subtype type_prepreg_thickness is type_distance_positive range 0.05 .. 0.5; -- CS reasonable ?
+-- 	subtype type_core_thickness is type_distance_positive range 0.1 .. 5.0;  -- CS reasonable ?
 
+	subtype type_dielectric_thickness is type_distance_positive range 0.01 .. 5.0; -- CS reasonable ?
+	dielectric_thickness_default : constant type_dielectric_thickness := 1.5;
 
+	subtype type_conductor_thickness is type_distance_positive range 0.01 .. 0.2;  -- CS reasonable ?
+	conductor_thickness_outer_default : constant type_conductor_thickness := 0.035;
+	conductor_thickness_inner_default : constant type_conductor_thickness := 0.018;	
+
+	type type_conductor is record
+		thickness	: type_conductor_thickness := conductor_thickness_outer_default;
+		-- CS material specific values
+	end record;
+
+	type type_dielectric is record
+		thickness	: type_dielectric_thickness := dielectric_thickness_default;
+		-- CS material specific values
+	end record;
+
+	-- A layer is a compound of a conductor and a dielectric:
+	type type_layer is record
+		conductor	: type_conductor;
+		dielectric	: type_dielectric;
+	end record;
+
+	-- The layers are collected in vectors:
+	package package_layers is new vectors (
+		index_type		=> type_signal_layer,
+		element_type	=> type_layer);
+
+	-- The final layer stack always has at least the top layer (index 1) 
+	-- and the bottom layer. The bottom layer does not have a dielectric.
+	type type_stack is record
+		layers	: package_layers.vector;
+		bottom	: type_conductor;
+	end record;
 	
 end et_pcb_stack;
 

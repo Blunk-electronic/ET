@@ -62,6 +62,12 @@ with pick_and_place;
 
 package board_ops is
 
+	procedure add_layer (
+	-- Adds a signal layer to the board.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
+		log_threshold	: in type_log_level);
+	
 	procedure move_device (
 	-- Moves a device in the board layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.

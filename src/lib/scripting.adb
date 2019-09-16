@@ -1830,9 +1830,40 @@ package body scripting is
 				end case;
 			end route_net;
 
+			procedure add_layer is
+				use et_pcb_stack;
+				layer : type_layer;
+			begin
+				-- board tree_1 add layer 0.12 0.2				
+				layer.conductor.thickness := to_distance (f (5));
+				layer.dielectric.thickness := to_distance (f (6));
+				
+				board_ops.add_layer (
+					module_name 	=> module,
+					layer			=> layer,
+					log_threshold	=> log_threshold + 1);
+
+			end add_layer;
 			
 		begin -- board_cmd
 			case verb is
+				when ADD =>
+					case noun is
+						when LAYER =>
+							case fields is
+								when 6 =>
+									add_layer;
+									-- board tree_1 add layer 0.12 0.2
+
+								when 7 .. count_type'last => command_too_long (fields - 1);
+									
+								when others => command_incomplete;
+
+							end case;
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
 				when DELETE =>
 					case noun is
 						when OUTLINE =>
@@ -1846,14 +1877,11 @@ package body scripting is
 												y => to_distance (f (6)))),
 										accuracy		=> to_distance (f (7)),
 										
-										log_threshold	=> log_threshold + 1
-										);
+										log_threshold	=> log_threshold + 1);
 
-								when 8 .. count_type'last =>
-									command_too_long (7);
+								when 8 .. count_type'last => command_too_long (fields - 1);
 									
-								when others =>
-									command_incomplete;
+								when others => command_incomplete;
 							end case;
 
 						when SILK =>

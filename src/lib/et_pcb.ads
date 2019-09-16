@@ -1478,6 +1478,7 @@ package et_pcb is
 	-- This is general board stuff:
 	type type_board is tagged record
 		grid			: type_grid;  -- the drawing grid of the board
+		stack			: et_pcb_stack.type_stack;	-- the layer stack
 		silk_screen		: type_silk_screen_pcb_both_sides;
 		assy_doc		: type_assembly_documentation_pcb_both_sides;
 		stencil			: type_stencil_both_sides;

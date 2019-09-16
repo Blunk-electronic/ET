@@ -1577,7 +1577,44 @@ package body et_project is
 
 			log_indentation_down;
 		end query_drawing_grid;
-		
+
+		procedure query_layer_stack is
+			use et_pcb_coordinates.geometry;
+			use et_pcb_stack;
+			use package_layers;
+
+			procedure query_layers (cursor : in package_layers.cursor) is
+				layer : type_layer := element (cursor);
+			begin
+				write (keyword => keyword_conductor,
+					parameters => to_string (to_index (cursor)) & to_string (layer.conductor.thickness));
+				
+				write (keyword => keyword_dielectric, 
+					   parameters => to_string (to_index (cursor)) & to_string (layer.dielectric.thickness));
+
+			end;
+
+			bottom_layer : type_signal_layer;
+			bottom_layer_thickness : type_conductor_thickness;
+			
+		begin -- query_layer_stack
+			log_indentation_up;
+			
+			section_mark (section_board_layer_stack, HEADER);
+			iterate (element (module_cursor).board.stack.layers, query_layers'access);
+
+			bottom_layer := last_index (element (module_cursor).board.stack.layers) + 1;
+			bottom_layer_thickness := element (module_cursor).board.stack.bottom.thickness;
+			
+			write (keyword => keyword_conductor, space => true,
+				parameters => to_string (bottom_layer) & to_string (bottom_layer_thickness));
+			
+			section_mark (section_board_layer_stack, FOOTER);
+			
+			log_indentation_down;
+			
+		end query_layer_stack;
+			
 		procedure query_nets is
 			use et_schematic;
 			use et_schematic.type_nets;
@@ -2483,6 +2520,10 @@ package body et_project is
 
 		-- drawing grid
 		query_drawing_grid;
+		put_line (row_separator_single);
+
+		-- layer stack
+		query_layer_stack;
 		put_line (row_separator_single);
 		
 		-- nets

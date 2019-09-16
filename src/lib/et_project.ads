@@ -329,7 +329,8 @@ package et_project is
 	
 
 -- FILE SECTIONS AND KEYWORDS
-
+	-- CS move package specific keywords to related packages
+	
 	keyword_default					: constant string := "default";
 	keyword_generic_name			: constant string := "generic_name";
 	keyword_instance_name			: constant string := "instance_name";
@@ -408,7 +409,7 @@ package et_project is
 	keyword_view_mode				: constant string := "view_mode";
 	keyword_content					: constant string := "content";
 	keyword_radius					: constant string := "radius";
-	keyword_filled					: constant string := "filled";		
+	keyword_filled					: constant string := "filled";
 	keyword_layers					: constant string := "layers";
 	keyword_locked					: constant string := "locked";
 	keyword_prefix					: constant string := "prefix";	
@@ -445,7 +446,7 @@ package et_project is
 	keyword_solder_paste			: constant string := "solder_paste";
 	keyword_drill_size				: constant string := "drill_size";
 	keyword_not_mounted				: constant string := "not_mounted";
-
+	
 	section_begin				: constant string := "BEGIN]";	
 	section_end					: constant string := "END]";
 
@@ -459,6 +460,8 @@ package et_project is
 	section_net_class			: constant string := "[NET_CLASS";
 
 	section_drawing_grid		: constant string := "[DRAWING_GRID";
+
+	section_board_layer_stack	: constant string := "[BOARD_LAYER_STACK";
 	
 	section_nets				: constant string := "[NETS";
 	section_net					: constant string := "[NET";

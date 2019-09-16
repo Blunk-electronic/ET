@@ -283,6 +283,13 @@ schematic templates/filter set scope GND global
 schematic templates/adc set scope AGND local
 ```
 
+### BOARD LAYER STACK
+A layer is a compound of conductor and dielectric. The bottom conductor layer is always there 
+and has the highest number.
+```
+board led_driver add layer 0.12 0.2 # conductor thickness 0.12, dielectric thickness 0.2
+```
+
 ## ROUTING TRACKS
 ### FREETRACKS
 Laying out:
@@ -292,6 +299,12 @@ board led_driver route freetrack 1 line 0.25 10 10 16 13 # layer 1, line, width 
 ```
 board led_driver route freetrack 1 arc 0.25 50 50 50 0 50 100 # layer 1, arc, width 0.25, center 50/50, from 50/0 to 50/100
 ```
+
+Changing width. CS: Not implemented yet.
+```
+board led_driver width freetrack 1 12 10 1.2 # layer 1, segment in layer 1, crossing 12/10, new width 1.2
+```
+
 
 Ripping up:
 ```
@@ -330,6 +343,12 @@ This operation depends on the drawing grid size.  CS: Not implemented yet:
 ```
 board led_driver route net reset_n 1 line 0.25 IC1 H7 to x 5
 ```
+
+Changing width. CS: Not implemented yet.
+```
+board led_driver width net reset_n 1 12 10 1.2 # layer 1, segment in layer 1, crossing 12/10, new width 1.2
+```
+
 
 Ripping up:
 ```
