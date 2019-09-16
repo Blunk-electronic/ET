@@ -646,3 +646,10 @@ The difference is the 4th keyword 'keepout'. An example to draw a line:
 ```
 board led_driver draw keepout top line 2.5 0 0 160 0 # top, line, width 2.5mm, from 0/0 to 160/0
 ```
+
+## SOLDER STOP MASK
+Objects in the solder stop mask are drawn and deleted the like those in silk screen (see above).
+The difference is the 4th keyword 'stop'. An example to draw a line:
+```
+board led_driver draw stop top line 2.5 0 0 160 0 # top, line, width 2.5mm, from 0/0 to 160/0
+```

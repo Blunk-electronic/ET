@@ -203,6 +203,7 @@ package scripting is
 		PNP, -- pick & place
 		PURPOSE,
 		SILK, -- silk screen
+		STOP, -- solder stop mask
 		SUBMODULE,
 		TEXT,
 		TEXT_SIZE,
