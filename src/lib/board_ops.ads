@@ -54,13 +54,11 @@ with et_project;				use et_project;
 with et_schematic;
 with schematic_ops;				use schematic_ops;
 with et_pcb;					use et_pcb;
+with et_pcb_stack;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 -- with submodules;
 with assembly_variants;
 with pick_and_place;
--- with numbering;
--- with material;
--- with netlists;
 
 package board_ops is
 
@@ -166,7 +164,7 @@ package board_ops is
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		layer			: in type_signal_layer;
+		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in type_terminal_name.bounded_string;
@@ -182,7 +180,7 @@ package board_ops is
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		layer			: in type_signal_layer;
+		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in type_terminal_name.bounded_string;
@@ -198,7 +196,7 @@ package board_ops is
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.								  
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		layer			: in type_signal_layer;
+		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in type_terminal_name.bounded_string;
@@ -213,7 +211,7 @@ package board_ops is
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		layer			: in type_signal_layer;
+		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in type_terminal_name.bounded_string;
@@ -234,7 +232,7 @@ package board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		layer			: in type_signal_layer;
+		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in geometry.type_point; -- x/y
 		accuracy		: in geometry.type_accuracy;
 		log_threshold	: in type_log_level);

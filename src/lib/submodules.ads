@@ -52,6 +52,7 @@ with et_general;
 with et_coordinates;		use et_coordinates;
 with et_libraries;			use et_libraries;
 with et_pcb;
+with et_pcb_stack;
 with et_pcb_coordinates;
 
 package submodules is
@@ -182,7 +183,7 @@ package submodules is
 		
 		position_brd	: et_pcb_coordinates.geometry.type_point; -- x,y
 		-- in board there is no rotation because the netchanger is just a point in x/y.
-		layer			: et_pcb.type_signal_layer := et_pcb.type_signal_layer'first;
+		layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 	end record;
 
 	package type_netchangers is new ordered_maps (

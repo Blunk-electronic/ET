@@ -61,6 +61,7 @@ with et_libraries;
 with et_schematic;
 with et_kicad_general;			use et_kicad_general;
 with et_pcb;
+with et_pcb_stack;
 with et_pcb_coordinates;
 with et_string_processing;		use et_string_processing;
 
@@ -6320,8 +6321,8 @@ package body et_kicad_pcb is
 						if board_text.layer in type_signal_layer_id then
 							board.copper.texts.append ((
 								et_pcb.type_text (board_text) with
-									content => board_text.content,
-									layer => et_pcb.type_signal_layer ((board_text.layer) + 1)
+									content	=> board_text.content,
+									layer 	=> et_pcb_stack.type_signal_layer ((board_text.layer) + 1)
 								));
 							text_copper_properties (board.copper.texts.last, log_threshold + 1);
 						else
@@ -7441,7 +7442,7 @@ package body et_kicad_pcb is
 									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
 									-- The bottom layer in kicad is always number 31. Top layer is number 0.
 									-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-									layer => et_pcb.type_signal_layer (element (segment_cursor).layer + 1)
+									layer => et_pcb_stack.type_signal_layer (element (segment_cursor).layer + 1)
 
 									-- CS Translate the locked and differential status
 									-- CS locked => et_pcb.NO -- translate from segment status to locked status
@@ -7477,8 +7478,8 @@ package body et_kicad_pcb is
 									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
 									-- The bottom layer in kicad is always number 31. Top layer is number 0.
 									-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-									layer_start	=> et_pcb.type_signal_layer (element (via_cursor).layer_start + 1),
-									layer_end 	=> et_pcb.type_signal_layer (element (via_cursor).layer_end + 1),
+									layer_start	=> et_pcb_stack.type_signal_layer (element (via_cursor).layer_start + 1),
+									layer_end 	=> et_pcb_stack.type_signal_layer (element (via_cursor).layer_end + 1),
 
 									-- Since kicad does not distinguish between restring in outer or inner layers
 									-- both are assigned the same value here:
@@ -7527,7 +7528,7 @@ package body et_kicad_pcb is
 											-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
 											-- The bottom layer in kicad is always number 31. Top layer is number 0.
 											-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-											layer 				=> et_pcb.type_signal_layer (element (polygon_cursor).layer + 1),
+											layer 				=> et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1),
 
 											-- This is the type depended stuff:
 											thermal_technology	=> element (polygon_cursor).pad_technology,
@@ -7545,7 +7546,7 @@ package body et_kicad_pcb is
 											-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
 											-- The bottom layer in kicad is always number 31. Top layer is number 0.
 											-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-											layer 				=> et_pcb.type_signal_layer (element (polygon_cursor).layer + 1),
+											layer 				=> et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1),
 											
 											-- This is the type depended stuff:
 											solid_technology	=> element (polygon_cursor).pad_technology
@@ -7561,7 +7562,7 @@ package body et_kicad_pcb is
 											-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
 											-- The bottom layer in kicad is always number 31. Top layer is number 0.
 											-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-											layer 				=> et_pcb.type_signal_layer (element (polygon_cursor).layer + 1)
+											layer 				=> et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1)
 
 											-- no further properties
 										));
@@ -7855,13 +7856,13 @@ package body et_kicad_pcb is
 							
 							module.board.copper.polygons.append (
 								new_item => (et_pcb.type_copper_polygon (element (polygon_cursor)) with
-									width_min			=> element (polygon_cursor).min_thickness,
+									width_min	=> element (polygon_cursor).min_thickness,
 
 									-- Translate the kicad layer id to the ET signal layer:
 									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
 									-- The bottom layer in kicad is always number 31. Top layer is number 0.
 									-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-									layer 				=> et_pcb.type_signal_layer (element (polygon_cursor).layer + 1)
+									layer 		=> et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1)
 								));
 
 							et_pcb.floating_copper_polygon_properties (module.board.copper.polygons.last, log_threshold + 2);

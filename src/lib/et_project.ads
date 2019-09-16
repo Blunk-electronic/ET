@@ -56,6 +56,7 @@ with submodules;
 with netlists;
 with assembly_variants;
 with et_pcb;
+with et_pcb_stack;
 
 
 package et_project is

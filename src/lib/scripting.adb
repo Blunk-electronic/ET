@@ -61,6 +61,7 @@ with et_libraries;				use et_libraries;
 with et_schematic;
 with schematic_ops;
 with et_pcb;
+with et_pcb_stack;
 with board_ops;
 
 with submodules;
@@ -1618,6 +1619,7 @@ package body scripting is
 			use et_pcb;
 			use et_pcb_coordinates;
 			use et_pcb_coordinates.geometry;
+			use et_pcb_stack;
 
 			-- CS circular tracks are currently not supported
 			subtype type_track_shape is type_shape range LINE..ARC;

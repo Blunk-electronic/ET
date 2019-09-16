@@ -58,6 +58,7 @@ with et_string_processing;		use et_string_processing;
 -- with et_libraries;				use et_libraries;
 with et_schematic;				use et_schematic;
 with et_pcb;					use et_pcb;
+with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;
 
@@ -67,17 +68,14 @@ with assembly_variants;
 with pick_and_place;
 with submodules;
 with numbering;
--- with conventions;
--- with material;
--- with netlists;
--- with et_geometry;
+
 
 package body board_ops is
 
 	use et_pcb_coordinates.geometry;
 	
 	procedure no_net_segment_found (
-		layer		: in type_signal_layer;
+		layer		: in et_pcb_stack.type_signal_layer;
 		point		: in type_point; 
 		accuracy	: in type_distance) is
 	begin
@@ -1062,7 +1060,7 @@ package body board_ops is
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning must be issued.
 		terminal	: in type_terminal_position;
-		layer		: in type_signal_layer) is
+		layer		: in et_pcb_stack.type_signal_layer) is
 	begin
 		if terminal.technology = SMT then
 			null;
@@ -1214,7 +1212,7 @@ package body board_ops is
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		layer			: in type_signal_layer;
+		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in type_terminal_name.bounded_string;
@@ -1281,7 +1279,7 @@ package body board_ops is
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		layer			: in type_signal_layer;
+		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in type_terminal_name.bounded_string;
@@ -1347,7 +1345,7 @@ package body board_ops is
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		layer			: in type_signal_layer;
+		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in type_terminal_name.bounded_string;
@@ -1407,7 +1405,7 @@ package body board_ops is
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		layer			: in type_signal_layer;
+		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in type_terminal_name.bounded_string;
@@ -1552,7 +1550,7 @@ package body board_ops is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		layer			: in type_signal_layer;
+		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in geometry.type_point; -- x/y
 		accuracy		: in geometry.type_accuracy;
 		log_threshold	: in type_log_level) is

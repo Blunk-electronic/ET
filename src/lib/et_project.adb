@@ -59,6 +59,7 @@ with et_export;
 with et_import;
 with et_schematic;
 with et_pcb;
+with et_pcb_stack;
 with et_pcb_coordinates;
 with conventions;
 with submodules;
@@ -1065,8 +1066,8 @@ package body et_project is
 		polygon_end;
 	end write_polygon;
 
-	procedure write_layer_numbers (layers : in et_pcb.type_signal_layers.set) is
-		use et_pcb;
+	procedure write_layer_numbers (layers : in et_pcb_stack.type_signal_layers.set) is
+		use et_pcb_stack;
 		use type_signal_layers;
 		-- For each layer number we require 3 characters (like "10 12 13 ...")
 		-- CS the count should be set in a more professional way.
@@ -1730,6 +1731,7 @@ package body et_project is
 
 			procedure query_route (net_name : in type_net_name.bounded_string; net : in type_net) is
 				use et_pcb;
+				use et_pcb_stack;
 				use et_pcb_coordinates.geometry;
 				
 				use type_copper_lines_pcb;
@@ -2092,7 +2094,7 @@ package body et_project is
 				write (keyword => keyword_position_in_schematic, parameters => position (element (cursor).position_sch)); -- position_in_schematic sheet 1 x 147.32 y 96.97
 				write (keyword => keyword_rotation_in_schematic, parameters => geometry.to_string (geometry.rot (element (cursor).position_sch))); -- rotation_in_schematic 90.0
 				write (keyword => keyword_position_in_board, parameters => position (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
-				write (keyword => keyword_layer, parameters => et_pcb.to_string (element (cursor).layer)); -- layer 2
+				write (keyword => keyword_layer, parameters => et_pcb_stack.to_string (element (cursor).layer)); -- layer 2
 				section_mark (section_netchanger, FOOTER);
 			end query_netchanger;
 			
@@ -2194,6 +2196,7 @@ package body et_project is
 
 		procedure query_board is
 			use et_pcb;
+			use et_pcb_stack;
 			use et_pcb_coordinates.geometry;
 
 			use type_texts_with_content;
@@ -3111,19 +3114,20 @@ package body et_project is
 	-- Converts a line like "layers 1 4 17" to a set of signal layers.
 	-- Issues warning if a layer number occurs more than once.
 		line : in et_string_processing.type_fields_of_line) -- layers 1 3 17
-		return et_pcb.type_signal_layers.set is
+		return et_pcb_stack.type_signal_layers.set is
 
 		use et_pcb;
-		use et_pcb.type_signal_layers;
+		use et_pcb_stack;
+		use et_pcb_stack.type_signal_layers;
 		use et_string_processing;
 
 		function f (line : in type_fields_of_line; position : in positive) return string 
 			renames et_string_processing.field;
 		
-		layers 		: et_pcb.type_signal_layers.set; -- to be returned
-		cursor 		: et_pcb.type_signal_layers.cursor;
+		layers 		: type_signal_layers.set; -- to be returned
+		cursor 		: type_signal_layers.cursor;
 		inserted	: boolean;
-		layer 		: et_pcb.type_signal_layer;
+		layer 		: type_signal_layer;
 		place 		: positive := 2; -- we start reading the layer numbers with field 2
 	begin
 		while place <= positive (field_count (line)) loop
@@ -3277,7 +3281,7 @@ package body et_project is
 		pac_line_width			: type_general_line_width := type_general_line_width'first;
 		procedure reset_line_width is begin pac_line_width := type_general_line_width'first; end;
 		
-		pac_signal_layers		: type_signal_layers.set;
+		pac_signal_layers		: et_pcb_stack.type_signal_layers.set;
 		lock_status 			: et_pcb.type_locked := lock_status_default;
 		
 		type type_line is new et_pcb.shapes.type_line with null record;
@@ -3605,7 +3609,7 @@ package body et_project is
 								-- clean up for next line
 								reset_line;
 								reset_line_width;
-								type_signal_layers.clear (pac_signal_layers);
+								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
 
 							when SEC_VIA_RESTRICT =>
 								
@@ -3618,7 +3622,7 @@ package body et_project is
 								-- clean up for next line
 								reset_line;
 								reset_line_width;
-								type_signal_layers.clear (pac_signal_layers);
+								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
 								
 							when SEC_PAD_CONTOURS_SMT =>
 								
@@ -3801,7 +3805,7 @@ package body et_project is
 								-- clean up for next arc
 								reset_arc;
 								reset_line_width;
-								type_signal_layers.clear (pac_signal_layers);
+								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
 
 							when SEC_VIA_RESTRICT =>
 								
@@ -3814,7 +3818,7 @@ package body et_project is
 								-- clean up for next arc
 								reset_arc;
 								reset_line_width;
-								type_signal_layers.clear (pac_signal_layers);
+								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
 
 							when SEC_PAD_CONTOURS_SMT =>
 								type_pad_arcs.append (
@@ -3970,7 +3974,7 @@ package body et_project is
 									new_item	=> (make_fillable_circle with pac_signal_layers));
 
 								reset_circle_fillable; -- clean up for next circle
-								type_signal_layers.clear (pac_signal_layers);
+								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
 
 							when SEC_VIA_RESTRICT =>
 								
@@ -3979,7 +3983,7 @@ package body et_project is
 									new_item	=> (make_fillable_circle with pac_signal_layers));
 
 								reset_circle_fillable; -- clean up for next circle
-								type_signal_layers.clear (pac_signal_layers);
+								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
 
 							when SEC_PAD_CONTOURS_SMT =>
 								type_pad_circles.append (
@@ -4150,7 +4154,7 @@ package body et_project is
 								-- clean up for next polygon
 								reset_polygon;
 								reset_line_width;
-								type_signal_layers.clear (pac_signal_layers);
+								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
 
 							when SEC_VIA_RESTRICT =>
 								
@@ -4163,7 +4167,7 @@ package body et_project is
 								-- clean up for next polygon
 								reset_polygon;
 								reset_line_width;
-								type_signal_layers.clear (pac_signal_layers);
+								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
 
 							when SEC_PAD_CONTOURS_SMT =>
 
@@ -8227,7 +8231,7 @@ package body et_project is
 
 		route_polygon					: et_pcb.type_copper_polygon;
 		route_polygon_pad_connection	: et_pcb.type_polygon_pad_connection := et_pcb.type_polygon_pad_connection'first;
-		route_polygon_layer				: et_pcb.type_signal_layer := et_pcb.type_signal_layer'first;
+		route_polygon_layer				: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 		route_polygon_width_min			: et_pcb.type_track_width := et_pcb.type_track_width'first;
 
 		-- Use this for both thermal_technology and solid_technology:
@@ -8246,6 +8250,7 @@ package body et_project is
 
 		procedure reset_polygon_parameters is 
 			use et_pcb;
+			use et_pcb_stack;
 		begin
 			route_polygon					:= (others => <>);
 			route_polygon_pad_connection	:= type_polygon_pad_connection'first;
@@ -8364,7 +8369,7 @@ package body et_project is
 		board_text : et_pcb.type_text_with_content;
 		board_text_placeholder : et_pcb.type_text_placeholder_pcb;
 
-		signal_layers : et_pcb.type_signal_layers.set;
+		signal_layers : et_pcb_stack.type_signal_layers.set;
 
 		board_polygon_floating : et_pcb.type_copper_polygon_floating;
 		board_track_line : et_pcb.type_copper_line_pcb;
@@ -9332,6 +9337,7 @@ package body et_project is
 
 				procedure insert_line_route_restrict is
 					use et_pcb;
+					use et_pcb_stack;
 					use type_signal_layers;
 					
 					procedure do_it (
@@ -9359,6 +9365,7 @@ package body et_project is
 				
 				procedure insert_arc_route_restrict is
 					use et_pcb;
+					use et_pcb_stack;					
 					use type_signal_layers;
 					
 					procedure do_it (
@@ -9386,6 +9393,7 @@ package body et_project is
 
 				procedure insert_circle_route_restrict is
 					use et_pcb;
+					use et_pcb_stack;
 					use type_signal_layers;
 					
 					procedure do_it (
@@ -9410,6 +9418,7 @@ package body et_project is
 
 				procedure insert_polygon_route_restrict is
 					use et_pcb;
+					use et_pcb_stack;
 					use type_signal_layers;
 					
 					procedure do_it (
@@ -9437,6 +9446,7 @@ package body et_project is
 
 				procedure insert_line_via_restrict is
 					use et_pcb;
+					use et_pcb_stack;
 					use type_signal_layers;
 					
 					procedure do_it (
@@ -9464,6 +9474,7 @@ package body et_project is
 
 				procedure insert_arc_via_restrict is
 					use et_pcb;
+					use et_pcb_stack;
 					use type_signal_layers;
 					
 					procedure do_it (
@@ -9491,6 +9502,7 @@ package body et_project is
 
 				procedure insert_circle_via_restrict is
 					use et_pcb;
+					use et_pcb_stack;
 					use type_signal_layers;
 					
 					procedure do_it (
@@ -9516,6 +9528,7 @@ package body et_project is
 
 				procedure insert_polygon_via_restrict is
 					use et_pcb;
+					use et_pcb_stack;
 					use type_signal_layers;
 					
 					procedure do_it (
@@ -11459,7 +11472,7 @@ package body et_project is
 
 									elsif kw = keyword_layer then -- layer 2
 										expect_field_count (line, 2);
-										route_line.layer := et_pcb.to_signal_layer (f (line, 2));
+										route_line.layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
@@ -11557,7 +11570,7 @@ package body et_project is
 
 									elsif kw = keyword_layer then -- layer 1
 										expect_field_count (line, 2);
-										board_track_line.layer := et_pcb.to_signal_layer (f (line, 2));
+										board_track_line.layer := et_pcb_stack.to_signal_layer (f (line, 2));
 									else
 										invalid_keyword (kw);
 									end if;
@@ -11619,7 +11632,7 @@ package body et_project is
 
 									elsif kw = keyword_layer then -- layer 2
 										expect_field_count (line, 2);
-										route_arc.layer := et_pcb.to_signal_layer (f (line, 2));
+										route_arc.layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
 									elsif kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
@@ -11736,7 +11749,7 @@ package body et_project is
 
 									elsif kw = keyword_layer then -- layer 1
 										expect_field_count (line, 2);
-										board_track_arc.layer := et_pcb.to_signal_layer (f (line, 2));
+										board_track_arc.layer := et_pcb_stack.to_signal_layer (f (line, 2));
 									else
 										invalid_keyword (kw);
 									end if;
@@ -11950,7 +11963,7 @@ package body et_project is
 										
 									elsif kw = keyword_layer then -- layer 1
 										expect_field_count (line, 2);
-										board_track_circle.layer := et_pcb.to_signal_layer (f (line, 2));
+										board_track_circle.layer := et_pcb_stack.to_signal_layer (f (line, 2));
 									else
 										invalid_keyword (kw);
 									end if;
@@ -12022,7 +12035,7 @@ package body et_project is
 
 									elsif kw = keyword_layer then -- layer 2
 										expect_field_count (line, 2);
-										route_polygon_layer := et_pcb.to_signal_layer (f (line, 2));
+										route_polygon_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
 									elsif kw = keyword_min_width then -- min_width 0.3
 										expect_field_count (line, 2);
@@ -12159,7 +12172,7 @@ package body et_project is
 										
 									elsif kw = keyword_layer then -- layer 1
 										expect_field_count (line, 2);
-										board_polygon_floating.layer := et_pcb.to_signal_layer (f (line, 2));
+										board_polygon_floating.layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
 									elsif kw = keyword_priority then -- priority 2
 										expect_field_count (line, 2);
@@ -12205,11 +12218,11 @@ package body et_project is
 
 									elsif kw = keyword_layer_start then -- layer_start 1
 										expect_field_count (line, 2);
-										route_via.layer_start := et_pcb.to_signal_layer (f (line, 2));
+										route_via.layer_start := et_pcb_stack.to_signal_layer (f (line, 2));
 
 									elsif kw = keyword_layer_end then -- layer_end 15
 										expect_field_count (line, 2);
-										route_via.layer_end := et_pcb.to_signal_layer (f (line, 2));
+										route_via.layer_end := et_pcb_stack.to_signal_layer (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -12514,7 +12527,7 @@ package body et_project is
 
 									elsif kw = keyword_layer then -- layer 15
 										expect_field_count (line, 2);
-										board_text_copper.layer := et_pcb.to_signal_layer (f (line, 2));
+										board_text_copper.layer := et_pcb_stack.to_signal_layer (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -12785,7 +12798,7 @@ package body et_project is
 
 									elsif kw = keyword_layer then -- layer 15
 										expect_field_count (line, 2);
-										board_text_copper_placeholder.layer := et_pcb.to_signal_layer (f (line, 2));
+										board_text_copper_placeholder.layer := et_pcb_stack.to_signal_layer (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -12877,7 +12890,7 @@ package body et_project is
 
 									elsif kw = keyword_layer then -- layer 3 (signal layer in board)
 										expect_field_count (line, 2);
-										netchanger.layer := et_pcb.to_signal_layer (f (line, 2));
+										netchanger.layer := et_pcb_stack.to_signal_layer (f (line, 2));
 										
 									else
 										invalid_keyword (kw);

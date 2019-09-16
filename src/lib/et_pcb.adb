@@ -66,15 +66,6 @@ package body et_pcb is
 		return type_directory_name.to_string (directory_name);
 	end to_string;
 
-	function to_string (signal_layer : in type_signal_layer) return string is begin
-		--return trim (type_signal_layer'image (signal_layer), left);
-		return type_signal_layer'image (signal_layer);
-	end to_string;
-
-	function to_signal_layer (layer : in string) return type_signal_layer is begin
-		return type_signal_layer'value (layer);
-	end to_signal_layer;
-	
 	procedure validate_text_size (size : in type_distance) is
 	-- Checks whether given text size is in range of type_text_size.
 	begin
