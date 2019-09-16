@@ -342,6 +342,36 @@ package board_ops is
 -- ROUTE RESTRICT
 
 -- KEEPOUT
+	procedure draw_keepout_line (
+	-- Draws a line in the keepout layer.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		line			: in type_keepout_line;
+		log_threshold	: in type_log_level);
+
+	procedure draw_keepout_arc (
+	-- Draws an arc in the keepout layer.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		arc				: in type_keepout_arc;
+		log_threshold	: in type_log_level);
+
+	procedure draw_keepout_circle (
+	-- Draws a circle in the keepout layer.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;	
+		circle			: in type_fillable_circle;
+		log_threshold	: in type_log_level);
+
+	procedure delete_keepout (
+	-- Deletes the segment in the keepout layer that crosses the given point.
+	-- CS currently deletes the first segment found. Leaves other segments untouched.
+	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		point			: in geometry.type_point; -- x/y
+		accuracy		: in geometry.type_accuracy;
+		log_threshold	: in type_log_level);
 
 -- STOP MASK
 

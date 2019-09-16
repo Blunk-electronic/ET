@@ -607,14 +607,11 @@ board led_driver draw outline circle 50 50 50 # center 50/50 radius 50
 board led_driver delete outline 40 50 1 # crossing 40/50, accuracy 1
 ```
 
-## SILK SCREEN AND ASSEMBLY DOCUMENTATION
-The following commands address silk screen. To address assembly documentation replace
-the 4th keyword 'silk' by 'assy'.
+## SILK SCREEN
+This is (mostly) the white ink that the PCB house applies onto the board. Whatever you draw 
+in this layer affects the PCB manufacturing.
 ```
 board led_driver draw silk top line 2.5 0 0 160 0 # top, line, width 2.5mm, from 0/0 to 160/0
-```
-```
-board led_driver draw assy top line 2.5 0 0 160 0 # top, line, width 2.5mm, from 0/0 to 160/0
 ```
 ```
 board led_driver draw silk top arc 2.5 50 50 0 50 100 0 # top, arc, width 2.5mm, center 50/50 from 50/0 to 50/100
@@ -636,3 +633,16 @@ board led_driver draw silk top circle hatched 50 50 40 0.5 1 # top, circle, hatc
 board led_driver delete silk top 40 50 1 # crossing 40/50, accuracy 1
 ```
 
+## ASSEMBLY DOCUMENTATION
+Objects in the assembly documentation layer are drawn and deleted the like those in silk screen (see above).
+The difference is the 4th keyword 'assy'. An example to draw a line:
+```
+board led_driver draw assy top line 2.5 0 0 160 0 # top, line, width 2.5mm, from 0/0 to 160/0
+```
+
+## KEEPOUT
+Objects in the keepout layer are drawn and deleted the like those in silk screen (see above).
+The difference is the 4th keyword 'keepout'. An example to draw a line:
+```
+board led_driver draw keepout top line 2.5 0 0 160 0 # top, line, width 2.5mm, from 0/0 to 160/0
+```
