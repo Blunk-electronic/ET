@@ -654,7 +654,7 @@ package et_pcb is
 
 
 	-- This circle type is used by silk screen, assembly doc, 
-	-- stop mask, stencil, keepout, route restrict, via restrict
+	-- stop mask, stencil
 	type type_fillable_circle (
 		filled		: type_filled;
 		fill_style	: type_fill_style -- don't care if filled is NO
@@ -680,6 +680,13 @@ package et_pcb is
 	end record;
 
 	function to_string (circle : in type_fillable_circle) return string;
+
+	-- This circle type is used by keepout, route restrict, via restrict.
+	-- The fill style is always solid.
+	type type_fillable_circle_solid is new type_circle with record
+		filled : type_filled;
+	end record;
+
 	
 	-- SOLDER STOP MASK
 	type type_stop_line is new type_line with record
@@ -937,7 +944,7 @@ package et_pcb is
 
 
 	
-	-- ROUTE RESTRICT
+-- ROUTE RESTRICT
 	type type_route_restrict_line is new type_line with record
 		layers 	: type_signal_layers.set;
 	end record;
@@ -950,7 +957,7 @@ package et_pcb is
 	
 	package type_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
 	
-	type type_route_restrict_circle is new type_fillable_circle with record
+	type type_route_restrict_circle is new type_fillable_circle_solid with record
 		layers 	: type_signal_layers.set;
 	end record;
 
@@ -980,9 +987,8 @@ package et_pcb is
 
 	
 
-	-- VIA RESTRICT
+-- VIA RESTRICT
 	type type_via_restrict_line is new type_line with record
-		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers	: type_signal_layers.set;
 	end record;
 	
@@ -990,14 +996,13 @@ package et_pcb is
 
 	
 	type type_via_restrict_arc is new type_arc with record
-		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers	: type_signal_layers.set;
 	end record;
 	
 	package type_via_restrict_arcs is new doubly_linked_lists (type_via_restrict_arc);
 
 	
-	type type_via_restrict_circle is new type_fillable_circle with record
+	type type_via_restrict_circle is new type_fillable_circle_solid with record
 		layers	: type_signal_layers.set;
 	end record;
 	
@@ -1005,7 +1010,7 @@ package et_pcb is
 
 	
 	type type_via_restrict_polygon is new type_polygon with record
-		width	: type_general_line_width; -- CS use subtype for reasonable range
+		width	: type_general_line_width; -- CS no need
 		layers 	: type_signal_layers.set;
 	end record;
 

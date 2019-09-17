@@ -1123,7 +1123,7 @@ package body et_project is
 		circle_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
 		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
-		write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+		write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
 		write_layer_numbers (element (cursor).layers);
 		circle_end;
 	end write_circle;
@@ -1161,7 +1161,6 @@ package body et_project is
 		line_begin;
 		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 		write_layer_numbers (element (cursor).layers);
 		line_end;
 	end write_line;
@@ -1175,7 +1174,6 @@ package body et_project is
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
 		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 		write_layer_numbers (element (cursor).layers);
 		arc_end;
 	end write_arc;
@@ -1188,7 +1186,7 @@ package body et_project is
 		circle_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
 		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
-		write (keyword => keyword_width , parameters => to_string (element (cursor).width));
+		write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
 		write_layer_numbers (element (cursor).layers);
 		circle_end;
 	end write_circle;
@@ -3367,6 +3365,10 @@ package body et_project is
 				hatching_line_width	=> pac_circle_fillable_hatching_line_width,
 				hatching_spacing	=> pac_circle_fillable_hatching_spacing);
 		end;
+
+		function make_fillable_circle_solid return type_fillable_circle_solid is begin
+			return (shapes.type_circle (pac_circle) with pac_circle_fillable_filled);
+		end;
 		
 		pac_circle_copper		: et_pcb.type_copper_circle;
 		procedure reset_circle_copper is begin pac_circle_copper := (others => <>); end;		
@@ -3661,7 +3663,6 @@ package body et_project is
 								type_via_restrict_lines.append (
 									container	=> packge.via_restrict.lines,
 									new_item	=> (et_pcb.shapes.type_line (pac_line) with
-													width	=> pac_line_width,
 													layers	=> pac_signal_layers));
 
 								-- clean up for next line
@@ -3855,7 +3856,6 @@ package body et_project is
 								type_via_restrict_arcs.append (
 									container	=> packge.via_restrict.arcs,
 									new_item	=> (et_pcb.shapes.type_arc (pac_arc) with
-													width	=> pac_line_width,
 													layers	=> pac_signal_layers));
 
 								-- clean up for next arc
@@ -4014,7 +4014,7 @@ package body et_project is
 								
 								type_route_restrict_circles.append (
 									container	=> packge.route_restrict.circles,
-									new_item	=> (make_fillable_circle with pac_signal_layers));
+									new_item	=> (make_fillable_circle_solid with pac_signal_layers));
 
 								reset_circle_fillable; -- clean up for next circle
 								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
@@ -4023,7 +4023,7 @@ package body et_project is
 								
 								type_via_restrict_circles.append (
 									container	=> packge.via_restrict.circles,
-									new_item	=> (make_fillable_circle with pac_signal_layers));
+									new_item	=> (make_fillable_circle_solid with pac_signal_layers));
 
 								reset_circle_fillable; -- clean up for next circle
 								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
@@ -8403,6 +8403,13 @@ package body et_project is
 				hatching_line_width	=> board_circle_fillable_hatching_line_width,
 				hatching_spacing	=> board_circle_fillable_hatching_spacing);
 		end;
+
+		function make_fillable_circle_solid return et_pcb.type_fillable_circle_solid is
+			use et_pcb;
+		begin
+			return (shapes.type_circle (board_circle) with board_circle_fillable_filled);
+		end;
+
 		
 		board_line_width : et_pcb.type_general_line_width := et_pcb.type_general_line_width'first;
 
@@ -9521,7 +9528,7 @@ package body et_project is
 					begin
 						type_route_restrict_circles.append (
 							container	=> module.board.route_restrict.circles,
-							new_item	=> (make_fillable_circle with signal_layers));
+							new_item	=> (make_fillable_circle_solid with signal_layers));
 					end do_it;
 										
 				begin -- insert_circle_route_restrict
@@ -9575,8 +9582,7 @@ package body et_project is
 						type_via_restrict_lines.append (
 							container	=> module.board.via_restrict.lines,
 							new_item	=> (shapes.type_line (board_line) with 
-											layers	=> signal_layers,
-											width	=> board_line_width));
+											layers	=> signal_layers));
 					end do_it;
 										
 				begin -- insert_line_via_restrict
@@ -9603,8 +9609,7 @@ package body et_project is
 						type_via_restrict_arcs.append (
 							container	=> module.board.via_restrict.arcs,
 							new_item	=> (shapes.type_arc (board_arc) with 
-											layers	=> signal_layers,
-											width	=> board_line_width));
+											layers	=> signal_layers));
 					end do_it;
 										
 				begin -- insert_arc_via_restrict
@@ -9630,8 +9635,7 @@ package body et_project is
 					begin
 						type_via_restrict_circles.append (
 							container	=> module.board.via_restrict.circles,
-							--new_item	=> (board_circle with signal_layers));
-							new_item	=> (make_fillable_circle with signal_layers));
+							new_item	=> (make_fillable_circle_solid with signal_layers));
 					end do_it;
 										
 				begin -- insert_circle_via_restrict
@@ -12024,25 +12028,9 @@ package body et_project is
 										expect_field_count (line, 2);
 										board_circle.radius := to_distance (f (line, 2));
 										
-									elsif kw = keyword_width then -- circumfence line width 0.5
-										expect_field_count (line, 2);
-										board_circle_fillable_width := to_distance (f (line, 2));
-
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);													
 										board_circle_fillable_filled := et_pcb.to_filled (f (line, 2));
-
-									elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
-										expect_field_count (line, 2);													
-										board_circle_fillable_fill_style := et_pcb.to_fill_style (f (line, 2));
-
-									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-										expect_field_count (line, 2);													
-										board_circle_fillable_hatching_line_width := to_distance (f (line, 2));
-
-									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
-										expect_field_count (line, 2);													
-										board_circle_fillable_hatching_spacing := to_distance (f (line, 2));
 
 									elsif kw = keyword_layers then -- layers 1 14 3
 
