@@ -1098,7 +1098,6 @@ package body et_project is
 		line_begin;
 		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 		write_layer_numbers (element (cursor).layers);
 		line_end;
 	end write_line;
@@ -1112,7 +1111,6 @@ package body et_project is
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
 		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 		write_layer_numbers (element (cursor).layers);
 		arc_end;
 	end write_arc;
@@ -3652,12 +3650,10 @@ package body et_project is
 								type_route_restrict_lines.append (
 									container	=> packge.route_restrict.lines,
 									new_item	=> (et_pcb.shapes.type_line (pac_line) with
-													width	=> pac_line_width,
 													layers	=> pac_signal_layers));
 
 								-- clean up for next line
 								reset_line;
-								reset_line_width;
 								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
 
 							when SEC_VIA_RESTRICT =>
@@ -3848,12 +3844,10 @@ package body et_project is
 								type_route_restrict_arcs.append (
 									container	=> packge.route_restrict.arcs,
 									new_item	=> (et_pcb.shapes.type_arc (pac_arc) with
-													width	=> pac_line_width,
 													layers	=> pac_signal_layers));
 
 								-- clean up for next arc
 								reset_arc;
-								reset_line_width;
 								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
 
 							when SEC_VIA_RESTRICT =>
@@ -9474,8 +9468,7 @@ package body et_project is
 						type_route_restrict_lines.append (
 							container	=> module.board.route_restrict.lines,
 							new_item	=> (shapes.type_line (board_line) with 
-											layers	=> signal_layers,
-											width	=> board_line_width));
+											layers	=> signal_layers));
 					end do_it;
 										
 				begin -- insert_line_route_restrict
@@ -9502,8 +9495,7 @@ package body et_project is
 						type_route_restrict_arcs.append (
 							container	=> module.board.route_restrict.arcs,
 							new_item	=> (shapes.type_arc (board_arc) with 
-											layers	=> signal_layers,
-											width	=> board_line_width));
+											layers	=> signal_layers));
 					end do_it;
 										
 				begin -- insert_arc_route_restrict
@@ -11679,10 +11671,6 @@ package body et_project is
 										-- extract the end position starting at field 2 of line
 										board_line.end_point := to_position (line, 2);
 
-									elsif kw = keyword_width then -- width 0.5
-										expect_field_count (line, 2);
-										board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
-
 									elsif kw = keyword_layers then -- layers 1 14 3
 
 										-- there must be at least two fields:
@@ -11850,10 +11838,6 @@ package body et_project is
 
 										-- extract the end position starting at field 2 of line
 										board_arc.end_point := to_position (line, 2);
-
-									elsif kw = keyword_width then -- width 0.5
-										expect_field_count (line, 2);
-										board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
 									elsif kw = keyword_layers then -- layers 1 14 3
 

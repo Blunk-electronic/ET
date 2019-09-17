@@ -939,14 +939,12 @@ package et_pcb is
 	
 	-- ROUTE RESTRICT
 	type type_route_restrict_line is new type_line with record
-		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers 	: type_signal_layers.set;
 	end record;
 	
 	package type_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
 
 	type type_route_restrict_arc is new type_arc with record
-		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers 	: type_signal_layers.set;
 	end record;
 	
