@@ -286,10 +286,16 @@ schematic templates/adc set scope AGND local
 ### BOARD LAYER STACK
 A layer is a compound of conductor and dielectric. The bottom conductor layer is always there 
 and has the highest number. There is no command to add the bottom conductor layer.
+Note that after adding or deleting a layer the layers are renumbered.
 The top layer or further inner layers can be added via this command:
 ```
 board led_driver add layer 0.12 0.2 # conductor thickness 0.12, dielectric thickness 0.2
 ```
+All layers except the bottom layer can be deleted this way:
+```
+board led_driver delete layer 3
+```
+
 
 ## ROUTING TRACKS
 ### FREETRACKS

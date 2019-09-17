@@ -1587,7 +1587,7 @@ package body et_project is
 				layer : type_layer := element (cursor);
 			begin
 				write (keyword => keyword_conductor,
-					parameters => to_string (to_index (cursor)) & to_string (layer.conductor.thickness));
+					   parameters => space & to_string (to_index (cursor)) & to_string (layer.conductor.thickness));
 				
 				write (keyword => keyword_dielectric, 
 					   parameters => to_string (to_index (cursor)) & to_string (layer.dielectric.thickness));
@@ -1614,7 +1614,8 @@ package body et_project is
 
 			-- Write the bottom layer in the file.
 			write (keyword => keyword_conductor, space => true,
-				parameters => to_string (bottom_layer) & to_string (bottom_layer_thickness));
+				parameters => to_string (bottom_layer) & to_string (bottom_layer_thickness) &
+				space & comment_mark & " bottom signal layer");
 			
 			section_mark (section_board_layer_stack, FOOTER);
 			

@@ -64,8 +64,20 @@ package board_ops is
 
 	procedure add_layer (
 	-- Adds a signal layer to the board.
+	-- Renumbers the signal layers.							
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
+		log_threshold	: in type_log_level);
+
+	function layer_count (module_cursor	: in et_project.type_modules.cursor) 
+	-- Returns the total number of signal layers used by the given module.
+		return et_pcb_stack.type_signal_layer;
+	
+	procedure delete_layer (
+	-- Deletes a signal layer in the board.
+	-- Renumbers the signal layers.							   
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		layer			: in et_pcb_stack.type_signal_layer;
 		log_threshold	: in type_log_level);
 	
 	procedure move_device (

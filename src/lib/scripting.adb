@@ -1866,6 +1866,22 @@ package body scripting is
 					
 				when DELETE =>
 					case noun is
+						when LAYER =>
+							case fields is
+								when 5 =>
+									-- board tree_1 delete layer 2
+									board_ops.delete_layer (
+										module_name 	=> module,
+										layer			=> to_signal_layer (f (5)),
+										
+										log_threshold	=> log_threshold + 1);
+
+								when 6 .. count_type'last => command_too_long (fields - 1);
+									
+								when others => command_incomplete;
+
+							end case;
+
 						when OUTLINE =>
 							case fields is
 								when 7 =>

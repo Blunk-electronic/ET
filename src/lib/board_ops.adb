@@ -102,6 +102,7 @@ package body board_ops is
 
 	procedure add_layer (
 	-- Adds a signal layer to the board.
+	-- Renumbers the signal layers.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		layer			: in et_pcb_stack.type_layer; -- incl. conductor and dieelectic thickness
 		log_threshold	: in type_log_level) is
@@ -122,7 +123,7 @@ package body board_ops is
 	begin -- add_layer
 		log (text => "module " & to_string (module_name) &
 			" adding layer conductor thickness" & to_string (layer.conductor.thickness) &
-			" dieelectic thickness" & to_string (layer.dielectric.thickness),
+			" dielectic thickness" & to_string (layer.dielectric.thickness),
 			level => log_threshold);
 
 		-- locate module
@@ -134,6 +135,76 @@ package body board_ops is
 			process		=> add'access);
 		
 	end add_layer;
+
+	function layer_count (module_cursor	: in et_project.type_modules.cursor) 
+	-- Returns the total number of signal layers used by the given module.
+		return et_pcb_stack.type_signal_layer is
+		use et_project.type_modules;
+		use et_pcb_stack;
+		use package_layers;
+	begin
+		return last_index (element (module_cursor).board.stack.layers) + 1;
+	end;
+	
+	procedure delete_layer (
+	-- Deletes a signal layer in the board.
+	-- Renumbers the signal layers.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		layer			: in et_pcb_stack.type_signal_layer;
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		use et_geometry;
+		
+		procedure delete (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_pcb_stack;
+			use package_layers;
+
+			-- get the total number of layers used by the module
+			layers_used : type_signal_layer := layer_count (module_cursor);
+
+			old_stack : package_layers.vector := element (module_cursor).board.stack.layers;
+			new_stack : package_layers.vector;
+		begin -- delete
+			-- The bottom layer can not be deleted:
+			if layer = layers_used then
+				log (WARNING, "The bottom layer" & to_string (layer) & " can not be deleted !");
+
+			-- The layer must not be greater than the total number of layers:
+			elsif layer > layers_used then
+				log (WARNING, "layer" & to_string (layer) & " does not exist. " &
+					 "The board uses only" & to_string (layers_used) & " layers !");
+			else
+				-- Rebuild the layer stack by copying the old layers one by one
+				-- to the new layer stack. The layer to be deleted is skipped:
+				for i in first_index (old_stack) .. last_index (old_stack) loop
+					if i /= layer then
+						append (new_stack, element (old_stack, i));
+					end if;
+				end loop;
+
+				module.board.stack.layers := new_stack;
+			end if;
+		end delete;
+		
+	begin -- delete_layer
+		log (text => "module " & to_string (module_name) &
+			" deleting layer" & to_string (layer),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> delete'access);
+		
+	end delete_layer;
 	
 	procedure move_device (
 	-- Moves a device in the board layout in x/y direction.
