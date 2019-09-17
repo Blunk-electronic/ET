@@ -53,9 +53,7 @@ with ada.containers.ordered_maps;
 -- with ada.containers.indefinite_ordered_sets;
 
 with et_general;				use et_general;
--- with et_coordinates;
 with et_string_processing;		use et_string_processing;
--- with et_libraries;				use et_libraries;
 with et_schematic;				use et_schematic;
 with et_pcb;					use et_pcb;
 with et_pcb_stack;				use et_pcb_stack;
@@ -144,6 +142,22 @@ package body board_ops is
 		use package_layers;
 	begin
 		return last_index (element (module_cursor).board.stack.layers) + 1;
+	end;
+
+	procedure test_layer (
+	-- Tests whether the given layer is allowed according to current layer stack
+	-- of the given board.
+		module_cursor	: in et_project.type_modules.cursor;
+		layer			: in et_pcb_stack.type_signal_layer) is
+		use et_pcb_stack;
+		layers_used : et_pcb_stack.type_signal_layer := layer_count (module_cursor);
+	begin
+		if layer > layers_used then
+			log (ERROR, "Layer" & to_string (layer) & " invalid !" &
+				 " The current layer stack allows only" & to_string (layers_used) & " layers !",
+				 console => true);
+			raise constraint_error;
+		end if;
 	end;
 	
 	procedure delete_layer (
@@ -1163,14 +1177,33 @@ package body board_ops is
 
 	procedure check_terminal_face_vs_layer (
 	-- If the terminal is a THT type, then the track may start at any signal layer.
-	-- If the terminal is a SMT type, then the track may start at either the top or bottom
+	-- If the terminal is an SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning must be issued.
-		terminal	: in type_terminal_position;
-		layer		: in et_pcb_stack.type_signal_layer) is
+		module_cursor	: in et_project.type_modules.cursor;											   
+		terminal		: in type_terminal_position;
+		layer			: in et_pcb_stack.type_signal_layer) is
+		use et_pcb_stack;
+
+		procedure warning is begin
+			log (WARNING, "The terminal is an SMT type. Via required to connect with inner layer !");
+		end;
+		
 	begin
+		-- If terminal is SMT type: check desired layer against terminal.face 
+		-- and issue warning if layer is an inner layer.
 		if terminal.technology = SMT then
-			null;
-			-- CS check desired layer against terminal_position.face and issue warning. advise placing a via
+
+			if terminal.face = TOP then
+				if layer /= type_signal_layer'first then
+					warning;
+				end if;
+
+			else -- terminal.face is bottom
+				if layer /= layer_count (module_cursor) then
+					warning;
+				end if;
+			end if;
+
 		end if;
 	end;
 	
@@ -1254,6 +1287,9 @@ package body board_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+		-- make sure the desired layer is available according to current layer stack:
+		test_layer (module_cursor, line.layer);
+		
 		if is_freetrack (net_name) then
 			
 			update_element (
@@ -1349,7 +1385,7 @@ package body board_ops is
 				layer		=> layer, -- as given by operator
 				others 		=> <>);
 
-			check_terminal_face_vs_layer (terminal_position, layer);
+			check_terminal_face_vs_layer (module_cursor, terminal_position, layer);
 			
 			-- Build the end point of the line. It is the start point moved in direction at given length:
 			line.end_point := type_point (move (
@@ -1371,6 +1407,9 @@ package body board_ops is
 		module_cursor := locate_module (module_name);
 		device_cursor := locate_device (module_cursor, device);
 
+		-- make sure the desired layer is available according to current layer stack:
+		test_layer (module_cursor, layer);
+		
 		make_line (terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line);
@@ -1417,7 +1456,7 @@ package body board_ops is
 				layer		=> layer, -- as given by operator
 				others 		=> <>);
 
-			check_terminal_face_vs_layer (terminal_position, layer);
+			check_terminal_face_vs_layer (module_cursor, terminal_position, layer);
 			
 			-- Build the end point of the line. It is the start point moved in direction:
 			-- CS
@@ -1438,6 +1477,9 @@ package body board_ops is
 		module_cursor := locate_module (module_name);
 		device_cursor := locate_device (module_cursor, device);
 
+		-- make sure the desired layer is available according to current layer stack:
+		test_layer (module_cursor, layer);
+		
 		make_line (terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line);
@@ -1481,7 +1523,7 @@ package body board_ops is
 				layer		=> layer, -- as given by operator
 				end_point	=> end_point); -- as given by operator
 
-			check_terminal_face_vs_layer (terminal_position, layer);
+			check_terminal_face_vs_layer (module_cursor, terminal_position, layer);
 			
 		end make_line;
 		
@@ -1497,6 +1539,9 @@ package body board_ops is
 		module_cursor := locate_module (module_name);
 		device_cursor := locate_device (module_cursor, device);
 
+		-- make sure the desired layer is available according to current layer stack:
+		test_layer (module_cursor, layer);
+		
 		make_line (terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line);
@@ -1542,7 +1587,7 @@ package body board_ops is
 				layer		=> layer, -- as given by operator
 				others 		=> <>);
 
-			check_terminal_face_vs_layer (terminal_position, layer);
+			check_terminal_face_vs_layer (module_cursor, terminal_position, layer);
 			
 			-- Build the end point of the line. It is the start point moved in direction:
 			-- CS
@@ -1562,6 +1607,9 @@ package body board_ops is
 		module_cursor := locate_module (module_name);
 		device_cursor := locate_device (module_cursor, device);
 
+		-- make sure the desired layer is available according to current layer stack:
+		test_layer (module_cursor, layer);
+		
 		make_line (terminal_position (module_cursor, device_cursor, terminal));
 
 		add_named_track (module_cursor, net_name, line);
@@ -1633,6 +1681,9 @@ package body board_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+		-- make sure the desired layer is available according to current layer stack:
+		test_layer (module_cursor, arc.layer);
+		
 		if is_freetrack (net_name) then
 			
 			update_element (
@@ -1787,6 +1838,9 @@ package body board_ops is
 		-- locate module
 		module_cursor := locate_module (module_name);
 
+		-- make sure the desired layer is available according to current layer stack:
+		test_layer (module_cursor, layer);
+		
 		if is_freetrack (net_name) then
 			
 			update_element (
@@ -2001,6 +2055,7 @@ package body board_ops is
 	end delete_outline;
 
 -- SILK SCREEN
+
 	procedure draw_silk_screen_line (
 	-- Draws a line in the PCB silk screen.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -2499,6 +2554,7 @@ package body board_ops is
 	end delete_assy_doc;
 
 -- KEEPOUT
+
 	procedure draw_keepout_line (
 	-- Draws a line in the keepout layer.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -2747,6 +2803,7 @@ package body board_ops is
 	end delete_keepout;
 
 -- STOP MASK
+	
 	procedure draw_stop_line (
 	-- Draws a line in the stop mask layer.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)

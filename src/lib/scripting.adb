@@ -1852,8 +1852,8 @@ package body scripting is
 						when LAYER =>
 							case fields is
 								when 6 =>
-									add_layer;
 									-- board tree_1 add layer 0.12 0.2
+									add_layer;
 
 								when 7 .. count_type'last => command_too_long (fields - 1);
 									

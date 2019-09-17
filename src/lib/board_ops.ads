@@ -72,6 +72,12 @@ package board_ops is
 	function layer_count (module_cursor	: in et_project.type_modules.cursor) 
 	-- Returns the total number of signal layers used by the given module.
 		return et_pcb_stack.type_signal_layer;
+
+	procedure test_layer (
+	-- Tests whether the given layer is allowed according to current layer stack
+	-- of the given board.
+		module_cursor	: in et_project.type_modules.cursor;
+		layer			: in et_pcb_stack.type_signal_layer);
 	
 	procedure delete_layer (
 	-- Deletes a signal layer in the board.
