@@ -285,7 +285,8 @@ schematic templates/adc set scope AGND local
 
 ### BOARD LAYER STACK
 A layer is a compound of conductor and dielectric. The bottom conductor layer is always there 
-and has the highest number.
+and has the highest number. There is no command to add the bottom conductor layer.
+The top layer or further inner layers can be added via this command:
 ```
 board led_driver add layer 0.12 0.2 # conductor thickness 0.12, dielectric thickness 0.2
 ```

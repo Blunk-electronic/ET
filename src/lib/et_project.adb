@@ -1601,11 +1601,18 @@ package body et_project is
 			log_indentation_up;
 			
 			section_mark (section_board_layer_stack, HEADER);
+
+			-- iterate layers starting at top layer (1) until the deepest inner layer.
+			-- The bottom layer is not part of the layer list and will be written later.
 			iterate (element (module_cursor).board.stack.layers, query_layers'access);
 
+			-- The bottom layer number is the deepest inner layer plus one:
 			bottom_layer := last_index (element (module_cursor).board.stack.layers) + 1;
+
+			-- Get the bottom conductor thickness:
 			bottom_layer_thickness := element (module_cursor).board.stack.bottom.thickness;
-			
+
+			-- Write the bottom layer in the file.
 			write (keyword => keyword_conductor, space => true,
 				parameters => to_string (bottom_layer) & to_string (bottom_layer_thickness));
 			
@@ -8411,7 +8418,13 @@ package body et_project is
 		board_text_placeholder : et_pcb.type_text_placeholder_pcb;
 
 		signal_layers : et_pcb_stack.type_signal_layers.set;
-
+		
+		conductor_layer, dielectric_layer : et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
+		conductor_thickness : et_pcb_stack.type_conductor_thickness := et_pcb_stack.conductor_thickness_outer_default;
+		dielectric_found : boolean := false;
+		board_layer : et_pcb_stack.type_layer;
+		board_layers : et_pcb_stack.package_layers.vector;
+		
 		board_polygon_floating : et_pcb.type_copper_polygon_floating;
 		board_track_line : et_pcb.type_copper_line_pcb;
 		board_track_arc : et_pcb.type_copper_arc_pcb;
@@ -8424,8 +8437,7 @@ package body et_project is
 
 		net_junctions : et_schematic.type_junctions;
 		
-		procedure set_junction (place : in string) is
-		begin
+		procedure set_junction (place : in string) is begin
 			if f (line, 2) = keyword_start then
 				net_junctions.start_point := true;
 			end if;
@@ -8474,6 +8486,35 @@ package body et_project is
 					
 				end insert_net_class;
 
+				procedure add_board_layer (
+					module_name	: in type_module_name.bounded_string;
+					module		: in out et_schematic.type_module) is
+					use et_pcb_stack;
+				begin
+					log (text => "board layer stack", level => log_threshold + 1);
+
+					-- Copy the collected layers (except the bottom conductor layer) into the module:
+					module.board.stack.layers := board_layers;
+
+					-- If the last entry was "conductor n t" then we assume that this
+					-- was the bottom conductor layer (it does not have a dielectric layer underneath).
+					if not dielectric_found then
+						module.board.stack.bottom.thickness := conductor_thickness;
+					else
+						log (ERROR, "dielectric not allowed underneath the bottom conductor layer !", console => true);
+						raise constraint_error;
+					end if;
+					
+					-- reset layer values:
+					dielectric_found := false;
+					conductor_layer := et_pcb_stack.type_signal_layer'first;
+					dielectric_layer := et_pcb_stack.type_signal_layer'first;
+					conductor_thickness := et_pcb_stack.conductor_thickness_outer_default;
+					board_layer := (others => <>);
+					package_layers.clear (board_layers);
+
+				end add_board_layer;
+				
 				procedure set_drawing_grid is
 
 					procedure set (
@@ -9884,6 +9925,19 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
+					when SEC_BOARD_LAYER_STACK =>
+						case stack.parent is
+							when SEC_INIT => 
+
+								-- add board layer
+								update_element (
+									container	=> modules,
+									position	=> module_cursor,
+									process		=> add_board_layer'access);
+								
+							when others => invalid_section;
+						end case;
+						
 					when SEC_DRAWING_GRID =>
 						case stack.parent is
 							when SEC_INIT => set_drawing_grid;
@@ -10913,6 +10967,7 @@ package body et_project is
 		begin -- process_line
 			if set (section_net_classes, SEC_NET_CLASSES) then null;
 			elsif set (section_net_class, SEC_NET_CLASS) then null;
+			elsif set (section_board_layer_stack, SEC_BOARD_LAYER_STACK) then null;			
 			elsif set (section_drawing_grid, SEC_DRAWING_GRID) then null;
 			elsif set (section_nets, SEC_NETS) then null;
 			elsif set (section_net, SEC_NET) then null;
@@ -10977,6 +11032,56 @@ package body et_project is
 					when SEC_DRAWING_GRID =>
 						case stack.parent is
 							when SEC_INIT => null; -- nothing to do
+							when others => invalid_section;
+						end case;
+
+					when SEC_BOARD_LAYER_STACK =>
+						case stack.parent is
+							when SEC_INIT => 
+								declare
+									kw : string := f (line, 1);
+									use et_pcb_stack;
+									use package_layers;
+									use et_pcb_coordinates.geometry;
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_conductor then -- conductor 1 0.035
+										expect_field_count (line, 3);
+										conductor_layer := to_signal_layer (f (line, 2));
+										conductor_thickness := to_distance (f (line, 3));
+										board_layer.conductor.thickness := conductor_thickness;
+
+										-- Layer numbers must be continuous.
+										-- After the dielectric of a layer the next conductor layer must
+										-- have the next number:
+										if dielectric_found then
+											if to_index (board_layers.last) /= conductor_layer - 1 then
+												log (ERROR, "expect conductor layer number" &
+													to_string (to_index (board_layers.last) + 1) & " !",
+													console => true);
+												raise constraint_error;
+											end if;
+										end if;
+										
+										dielectric_found := false;
+
+									elsif kw = keyword_dielectric then -- dielectric 1 1.5
+										expect_field_count (line, 3);
+										dielectric_layer := to_signal_layer (f (line, 2));
+										board_layer.dielectric.thickness := to_distance (f (line, 3));
+										dielectric_found := true;
+										
+										if dielectric_layer = conductor_layer then
+											append (board_layers, board_layer);
+										else
+											log (ERROR, "expect dielectric layer number" & to_string (conductor_layer) & " !", console => true);
+											raise constraint_error;
+										end if;
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
 							when others => invalid_section;
 						end case;
 						

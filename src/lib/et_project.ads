@@ -557,6 +557,7 @@ package et_project is
 	section_title_block			: constant string	:= "[TITLE_BLOCK";
 	
 	type type_section_name_module is (
+		SEC_BOARD_LAYER_STACK,
 		SEC_DRAWING_GRID,
 		SEC_INIT,
 		SEC_NET_CLASSES,
