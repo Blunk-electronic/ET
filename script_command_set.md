@@ -400,6 +400,9 @@ board led_driver draw restrict [1,3,5-9] line 10 10 60 10  # line, from 10/10 to
 board led_driver draw restrict [1,3,5-9] arc 50 50 0 50 100 0 # arc, center 50/50 from 50/0 to 50/100
 ```
 ```
+board led_driver draw restrict [1,3,5-9] circle 50 50 40 # circle, center 50/50 radius 40
+```
+```
 board led_driver draw restrict [1,3,5-9] circle solid 50 50 40 # circle, solid, center 50/50 radius 40
 ```
 
