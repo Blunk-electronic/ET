@@ -261,7 +261,17 @@ package board_ops is
 		accuracy		: in geometry.type_accuracy;
 		log_threshold	: in type_log_level);
 
+-- ROUTE RESTRICT
+	
+	procedure draw_route_restrict_line (
+	-- Draws route restrict line.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		line			: in type_route_restrict_line;
+		log_threshold	: in type_log_level);
+
+	
 -- BOARD OUTLINE / CONTOUR
+
 	procedure draw_outline_line (
 	-- Draws a line in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -290,6 +300,7 @@ package board_ops is
 		log_threshold	: in type_log_level);
 
 -- SILK SCREEN
+
 	procedure draw_silk_screen_line (
 	-- Draws a line in the PCB silk_screen.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -353,11 +364,6 @@ package board_ops is
 		point			: in geometry.type_point; -- x/y
 		accuracy		: in geometry.type_accuracy;
 		log_threshold	: in type_log_level);
-
-	
--- VIA RESTRICT
-
--- ROUTE RESTRICT
 
 -- KEEPOUT
 	procedure draw_keepout_line (
@@ -424,6 +430,8 @@ package board_ops is
 		log_threshold	: in type_log_level);
 
 -- STENCIL / SOLDER PASTE
+
+-- VIA RESTRICT
 
 
 	

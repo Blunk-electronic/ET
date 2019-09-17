@@ -1066,7 +1066,7 @@ package body et_project is
 		polygon_end;
 	end write_polygon;
 
-	procedure write_layer_numbers (layers : in et_pcb_stack.type_signal_layers.set) is
+	procedure write_layer_numbers (layers : in et_pcb_stack.type_signal_layers.set) is -- CS replace by et_pcb_stack.to_string
 		use et_pcb_stack;
 		use type_signal_layers;
 		-- For each layer number we require 3 characters (like "10 12 13 ...")

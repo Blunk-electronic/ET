@@ -66,7 +66,29 @@ package body et_pcb_stack is
 		return type_signal_layer'value (layer);
 	end to_signal_layer;
 
+	function to_string (layers : in type_signal_layers.set) return string is
+	-- Returns a string like "1 3 5 8"
+		
+		use type_signal_layers;
+		-- For each layer number we require 3 characters (like "10 12 13 ...")
+		-- CS the count should be set in a more professional way.
+		-- CS Constraint error will be raised if layer numbers assume 3 digits (some day...)
+		count : count_type := length (layers) * 3; 
 
+		-- The layer numbers will be stored here:
+		package type_layer_numbers is new generic_bounded_length (positive (count)); 
+		use type_layer_numbers;
+		layers_string : type_layer_numbers.bounded_string;
+
+		
+		procedure query_layer (cursor : in type_signal_layers.cursor) is begin
+			layers_string := layers_string & to_bounded_string (to_string (element (cursor)));
+		end;
+			
+	begin
+		iterate (layers, query_layer'access);
+		return to_string (layers_string);
+	end;
 	
 end et_pcb_stack;
 

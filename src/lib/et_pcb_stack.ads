@@ -71,6 +71,9 @@ package et_pcb_stack is
 
 	package type_signal_layers is new ordered_sets (type_signal_layer);
 
+	function to_string (layers : in type_signal_layers.set) return string;
+	-- Returns a string like "1 3 5 8"
+	
 	use geometry;
 -- 	subtype type_prepreg_thickness is type_distance_positive range 0.05 .. 0.5; -- CS reasonable ?
 -- 	subtype type_core_thickness is type_distance_positive range 0.1 .. 5.0;  -- CS reasonable ?

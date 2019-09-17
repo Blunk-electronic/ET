@@ -1857,6 +1857,67 @@ package body board_ops is
 		end if;
 		
 	end ripup_track_segment;
+
+-- ROUTE RESTRICT
+
+	procedure test_layers (
+	-- Tests the given set of signal layers whether each of them is available
+	-- according to the current layer stack of the given module.
+		module_cursor	: in et_project.type_modules.cursor;
+		layers 			: in et_pcb_stack.type_signal_layers.set) is
+
+		use et_pcb_stack;
+		use type_signal_layers;
+		
+		procedure query_layer (cursor : in type_signal_layers.cursor) is
+		begin
+			test_layer (module_cursor, element (cursor));
+		end;
+		
+	begin
+		iterate (layers, query_layer'access);
+	end;
+	
+	procedure draw_route_restrict_line (
+	-- Draws route restrict line.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		line			: in type_route_restrict_line;
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		use et_pcb;
+		use et_pcb.type_route_restrict_lines;
+
+		procedure draw (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+		begin
+			append (
+				container	=> module.board.route_restrict.lines,
+				new_item	=> line);
+		end;
+		
+	begin 
+		log (text => "module " & to_string (module_name) &
+			" drawing route restrict line in layer" & to_string (line.layers) &
+			to_string (line),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- make sure the desired layers are available according to current layer stack:
+		test_layers (module_cursor, line.layers);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> draw'access);
+		
+	end draw_route_restrict_line;
+
 	
 -- BOARD OUTLINE
 
@@ -3050,6 +3111,7 @@ package body board_ops is
 			process		=> delete'access);
 		
 	end delete_stop;
+
 	
 end board_ops;
 	

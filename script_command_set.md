@@ -389,6 +389,19 @@ board led_driver move via 10 10 5-9 absolute 11 10
 board led_driver delete via 10 10 5-9
 ```-->
 
+#### ROUTE RESTRICT
+Route restrict is a means to define areas and layers in the board where routing is not allowed.
+In the examples below the term '[1,3,5-9]' addresses signal layers 1,3 and 5 through 9. 
+NOTE: Within the term do not use whitespace characters.
+```
+board led_driver draw restrict [1,3,5-9] line 10 10 60 10  # line, from 10/10 to 60/10
+```
+```
+board led_driver draw restrict [1,3,5-9] arc 50 50 0 50 100 0 # arc, center 50/50 from 50/0 to 50/100
+```
+```
+board led_driver draw restrict [1,3,5-9] circle solid 50 50 40 # circle, solid, center 50/50 radius 40
+```
 
 ### DRAGGING
 Dragging a net segment requires the net name, sheet and point of attack.
