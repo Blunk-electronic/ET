@@ -8447,6 +8447,50 @@ package body et_project is
 			end if;
 		end set_junction;
 
+		procedure read_layer is
+			kw : string := f (line, 1);
+			use et_pcb_stack;
+			use package_layers;
+			use et_pcb_coordinates.geometry;
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_conductor then -- conductor 1 0.035
+				expect_field_count (line, 3);
+				conductor_layer := to_signal_layer (f (line, 2));
+				conductor_thickness := to_distance (f (line, 3));
+				board_layer.conductor.thickness := conductor_thickness;
+
+				-- Layer numbers must be continuous from top to bottom.
+				-- After the dielectric of a layer the next conductor layer must
+				-- have the next number:
+				if dielectric_found then
+					if to_index (board_layers.last) /= conductor_layer - 1 then
+						log (ERROR, "expect conductor layer number" &
+							to_string (to_index (board_layers.last) + 1) & " !",
+							console => true);
+						raise constraint_error;
+					end if;
+				end if;
+				
+				dielectric_found := false;
+
+			elsif kw = keyword_dielectric then -- dielectric 1 1.5
+				expect_field_count (line, 3);
+				dielectric_layer := to_signal_layer (f (line, 2));
+				board_layer.dielectric.thickness := to_distance (f (line, 3));
+				dielectric_found := true;
+				
+				if dielectric_layer = conductor_layer then
+					append (board_layers, board_layer);
+				else
+					log (ERROR, "expect dielectric layer number" & to_string (conductor_layer) & " !", console => true);
+					raise constraint_error;
+				end if;
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+		
 		
 		procedure process_line is 
 
@@ -11037,51 +11081,7 @@ package body et_project is
 
 					when SEC_BOARD_LAYER_STACK =>
 						case stack.parent is
-							when SEC_INIT => 
-								declare
-									kw : string := f (line, 1);
-									use et_pcb_stack;
-									use package_layers;
-									use et_pcb_coordinates.geometry;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_conductor then -- conductor 1 0.035
-										expect_field_count (line, 3);
-										conductor_layer := to_signal_layer (f (line, 2));
-										conductor_thickness := to_distance (f (line, 3));
-										board_layer.conductor.thickness := conductor_thickness;
-
-										-- Layer numbers must be continuous.
-										-- After the dielectric of a layer the next conductor layer must
-										-- have the next number:
-										if dielectric_found then
-											if to_index (board_layers.last) /= conductor_layer - 1 then
-												log (ERROR, "expect conductor layer number" &
-													to_string (to_index (board_layers.last) + 1) & " !",
-													console => true);
-												raise constraint_error;
-											end if;
-										end if;
-										
-										dielectric_found := false;
-
-									elsif kw = keyword_dielectric then -- dielectric 1 1.5
-										expect_field_count (line, 3);
-										dielectric_layer := to_signal_layer (f (line, 2));
-										board_layer.dielectric.thickness := to_distance (f (line, 3));
-										dielectric_found := true;
-										
-										if dielectric_layer = conductor_layer then
-											append (board_layers, board_layer);
-										else
-											log (ERROR, "expect dielectric layer number" & to_string (conductor_layer) & " !", console => true);
-											raise constraint_error;
-										end if;
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
+							when SEC_INIT => read_layer;
 							when others => invalid_section;
 						end case;
 						
