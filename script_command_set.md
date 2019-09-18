@@ -390,7 +390,7 @@ board led_driver delete via 10 10 5-9
 ```-->
 
 #### ROUTE RESTRICT
-Route restrict is a means to define areas and layers in the board where routing is not allowed.
+Route restrict is a means to define areas in signal layers in the board where routing is not allowed.
 In the examples below the term '[1,3,5-9]' addresses signal layers 1,3 and 5 through 9. 
 NOTE: Within the term do not use whitespace characters.
 ```
@@ -409,6 +409,10 @@ board led_driver draw route_restrict [1,3,5-9] circle solid 50 50 40 # circle, s
 board led_driver delete route_restrict 40 50 1 # crossing 40/50, accuracy 1
 ```
 
+#### ROUTE RESTRICT
+Via restrict is a means to define areas in signal layers in the board where vias are not allowed.
+The commands are similar to the route restrict commands (see above) but the keyword
+'route_restrict' is to be replaced by 'via_restrict'.
 
 ### DRAGGING
 Dragging a net segment requires the net name, sheet and point of attack.

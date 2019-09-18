@@ -290,6 +290,35 @@ package board_ops is
 		accuracy		: in geometry.type_accuracy;
 		log_threshold	: in type_log_level);
 
+-- VIA RESTRICT
+
+	procedure draw_via_restrict_line (
+	-- Draws a via restrict line.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		line			: in type_via_restrict_line;
+		log_threshold	: in type_log_level);
+
+	procedure draw_via_restrict_arc (
+	-- Draws a via restrict arc.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		arc				: in type_via_restrict_arc;
+		log_threshold	: in type_log_level);
+
+	procedure draw_via_restrict_circle (
+	-- Draws a via restrict circle.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		circle			: in type_via_restrict_circle;
+		log_threshold	: in type_log_level);
+
+	procedure delete_via_restrict (
+	-- Deletes the segment of via restrict that crosses the given point.
+	-- CS currently rips up the first segment found. Leaves other segments untouched.
+	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		point			: in geometry.type_point; -- x/y
+		accuracy		: in geometry.type_accuracy;
+		log_threshold	: in type_log_level);
+
 	
 -- BOARD OUTLINE / CONTOUR
 

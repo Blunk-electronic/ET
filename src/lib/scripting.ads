@@ -212,7 +212,8 @@ package scripting is
 -- 		TRACK,
 		VALUE,
 		VIA,
-		VIA_DRILL
+		VIA_DRILL,
+		VIA_RESTRICT
 		);
 
 	function to_string (noun : in type_noun_board) return string;

@@ -1635,14 +1635,14 @@ package body scripting is
 			use et_pcb_coordinates.geometry;
 			use et_pcb_stack;
 
-			procedure draw_restrict is
+			procedure draw_route_restrict is
 				shape : type_shape := to_shape (f (6));
 			begin
 				case shape is
 					when LINE =>
 						case fields is
 							when 10 =>
-								-- board led_driver draw restrict [1,3,5-9] line 10 10 60 10
+								-- board led_driver draw route_restrict [1,3,5-9] line 10 10 60 10
 								board_ops.draw_route_restrict_line (
 									module_name 	=> module,
 									line			=> (
@@ -1665,7 +1665,7 @@ package body scripting is
 					when ARC =>
 						case fields is
 							when 12 =>
-								-- board led_driver draw restrict [1,3,5-9] arc 50 50 0 50 100 0
+								-- board led_driver draw route_restrict [1,3,5-9] arc 50 50 0 50 100 0
 								board_ops.draw_route_restrict_arc (
 									module_name 	=> module,
 									arc				=> (
@@ -1691,7 +1691,7 @@ package body scripting is
 					when CIRCLE =>
 						case fields is
 							when 9 =>
-								-- board led_driver draw restrict [1,3,5-9] circle 20 50 40
+								-- board led_driver draw route_restrict [1,3,5-9] circle 20 50 40
 								if is_number (f (7)) then -- 20
 
 									-- Circle is not filled.
@@ -1714,7 +1714,7 @@ package body scripting is
 
 							when 10 =>
 								-- Circle is filled.
-								-- board led_driver draw restrict [1,3,5-9] circle filled 20 50 40
+								-- board led_driver draw route_restrict [1,3,5-9] circle filled 20 50 40
 								if f (7) = et_pcb.keyword_filled then
 
 									-- Circle is filled.
@@ -1742,8 +1742,116 @@ package body scripting is
 								
 					when others => null;
 				end case;
-			end draw_restrict;
+			end draw_route_restrict;
 
+			procedure draw_via_restrict is
+				shape : type_shape := to_shape (f (6));
+			begin
+				case shape is
+					when LINE =>
+						case fields is
+							when 10 =>
+								-- board led_driver draw via_restrict [1,3,5-9] line 10 10 60 10
+								board_ops.draw_via_restrict_line (
+									module_name 	=> module,
+									line			=> (
+												layers		=> to_layers (f (5)), -- [1,3,5-9]
+												start_point	=> type_point (set (
+													x => to_distance (f (7)),
+													y => to_distance (f (8)))),
+												end_point	=> type_point (set (
+													x => to_distance (f (9)),
+													y => to_distance (f (10))))
+												),
+
+									log_threshold	=> log_threshold + 1);
+
+							when 11 .. count_type'last => command_too_long (fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when ARC =>
+						case fields is
+							when 12 =>
+								-- board led_driver draw via_restrict [1,3,5-9] arc 50 50 0 50 100 0
+								board_ops.draw_via_restrict_arc (
+									module_name 	=> module,
+									arc				=> (
+												layers		=> to_layers (f (5)), -- [1,3,5-9]
+												center	=> type_point (set (
+													x => to_distance (f (7)),
+													y => to_distance (f (8)))),
+												start_point	=> type_point (set (
+													x => to_distance (f (9)),
+													y => to_distance (f (10)))),
+												end_point	=> type_point (set (
+													x => to_distance (f (11)),
+													y => to_distance (f (12))))
+												),
+
+									log_threshold	=> log_threshold + 1);
+
+							when 13 .. count_type'last => command_too_long (fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when CIRCLE =>
+						case fields is
+							when 9 =>
+								-- board led_driver draw via_restrict [1,3,5-9] circle 20 50 40
+								if is_number (f (7)) then -- 20
+
+									-- Circle is not filled.
+									board_ops.draw_via_restrict_circle (
+										module_name 	=> module,
+										circle			=> 
+													(
+													layers		=> to_layers (f (5)), -- [1,3,5-9]
+													filled		=> NO,
+													center	=> type_point (set (
+																x => to_distance (f (7)), -- 20
+																y => to_distance (f (8)))), -- 50
+													radius	=> to_distance (f (9)) -- 40
+													),
+													
+										log_threshold	=> log_threshold + 1);
+								else
+									expect_value_center_x (7);
+								end if;
+
+							when 10 =>
+								-- Circle is filled.
+								-- board led_driver draw via_restrict [1,3,5-9] circle filled 20 50 40
+								if f (7) = et_pcb.keyword_filled then
+
+									-- Circle is filled.
+									board_ops.draw_via_restrict_circle (
+										module_name 	=> module,
+										circle			=> 
+													(
+													layers		=> to_layers (f (5)), -- [1,3,5-9]
+													filled		=> YES,
+													center	=> type_point (set (
+																x => to_distance (f (8)), -- 20
+																y => to_distance (f (9)))), -- 50
+													radius	=> to_distance (f (10)) -- 40
+													),
+													
+										log_threshold	=> log_threshold + 1);
+								else
+									expect_keyword_filled (7);
+								end if;
+
+							when 11 .. count_type'last => command_too_long (fields - 1);
+							
+							when others => command_incomplete;
+						end case;
+								
+					when others => null;
+				end case;
+			end draw_via_restrict;
 			
 			-- CS circular tracks are currently not supported
 			subtype type_track_shape is type_shape range LINE..ARC;
@@ -2130,6 +2238,25 @@ package body scripting is
 								when others => command_incomplete;
 							end case;
 
+						when VIA_RESTRICT =>
+							-- board led_driver delete via_restrict 40 50 1
+							case fields is
+								when 7 =>
+									-- delete a segment of via restrict
+									board_ops.delete_via_restrict (
+										module_name 	=> module,
+										point			=> type_point (set (
+												x => to_distance (f (5)),
+												y => to_distance (f (6)))),
+										accuracy		=> to_distance (f (7)),
+										
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 8 .. count_type'last => command_too_long (fields - 1);
+									
+								when others => command_incomplete;
+							end case;
 							
 						when others => invalid_noun (to_string (noun));
 
@@ -2716,8 +2843,8 @@ package body scripting is
 							end;
 
 						when ROUTE_RESTRICT =>
-							draw_restrict;
-							
+							draw_route_restrict;
+
 						when STOP =>
 							declare
 								shape : type_shape := to_shape (f (6));
@@ -2875,6 +3002,8 @@ package body scripting is
 								end case;
 							end;
 
+						when VIA_RESTRICT =>
+							draw_via_restrict;
 							
 						when others => invalid_noun (to_string (noun));
 					end case;
