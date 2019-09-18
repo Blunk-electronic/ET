@@ -3089,7 +3089,7 @@ package body board_ops is
 	-- Draws an circle in the keepout layer.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		circle			: in type_fillable_circle;
+		circle			: in type_fillable_circle_solid;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;

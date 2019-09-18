@@ -1635,6 +1635,115 @@ package body scripting is
 			use et_pcb_coordinates.geometry;
 			use et_pcb_stack;
 
+			procedure draw_keepout is
+				shape : type_shape := to_shape (f (6));
+			begin
+				case shape is
+					when LINE =>
+						case fields is
+							when 11 =>
+								board_ops.draw_keepout_line (
+									module_name 	=> module,
+									face			=> to_face (f (5)),
+									line			=> (
+												width		=> to_distance (f (7)),
+												start_point	=> type_point (set (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+												end_point	=> type_point (set (
+													x => to_distance (f (10)),
+													y => to_distance (f (11))))
+												),
+
+									log_threshold	=> log_threshold + 1);
+
+							when 12 .. count_type'last => command_too_long (fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when ARC =>
+						case fields is
+							when 13 =>
+								board_ops.draw_keepout_arc (
+									module_name 	=> module,
+									face			=> to_face (f (5)),
+									arc				=> (
+												width	=> to_distance (f (7)),
+												center	=> type_point (set (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+												start_point	=> type_point (set (
+													x => to_distance (f (10)),
+													y => to_distance (f (11)))),
+												end_point	=> type_point (set (
+													x => to_distance (f (12)),
+													y => to_distance (f (13))))
+												),
+
+									log_threshold	=> log_threshold + 1);
+
+							when 14 .. count_type'last => command_too_long (fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when CIRCLE =>
+						case fields is
+							when 9 =>
+							-- board led_driver draw keepout top circle 50 50 40 -- 9 fields
+								
+								if is_number (f (7)) then
+									-- Circle is not filled.
+									
+									board_ops.draw_keepout_circle (
+										module_name 	=> module,
+										face			=> to_face (f (5)),
+										circle			=> 
+													(
+													filled		=> NO,
+													center	=> type_point (set (
+																x => to_distance (f (7)),
+																y => to_distance (f (8)))),
+													radius	=> to_distance (f (9))
+													),
+										log_threshold	=> log_threshold + 1);
+								else
+									expect_value_center_x (7);
+								end if;
+
+							when 10 =>
+							-- board led_driver draw keepout top circle filled 50 50 40 -- 10 fields
+								
+								if f (7) = et_pcb.keyword_filled then
+									-- Circle is filled.
+									
+									board_ops.draw_keepout_circle (
+										module_name 	=> module,
+										face			=> to_face (f (5)),
+										circle			=> 
+													(
+													filled		=> YES,
+													center	=> type_point (set (
+																x => to_distance (f (8)),
+																y => to_distance (f (9)))),
+													radius	=> to_distance (f (10))
+													),
+										log_threshold	=> log_threshold + 1);
+								else
+									expect_keyword_filled (7);
+								end if;
+									
+							when 12 .. count_type'last => command_too_long (fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+								
+					when others => null;
+				end case;
+			end draw_keepout;
+			
 			procedure draw_route_restrict is
 				shape : type_shape := to_shape (f (6));
 			begin
@@ -2686,162 +2795,8 @@ package body scripting is
 							end;
 
 						when KEEPOUT =>
-							declare
-								shape : type_shape := to_shape (f (6));
-							begin
-								case shape is
-									when LINE =>
-										case fields is
-											when 11 =>
-												board_ops.draw_keepout_line (
-													module_name 	=> module,
-													face			=> to_face (f (5)),
-													line			=> (
-																width		=> to_distance (f (7)),
-																start_point	=> type_point (set (
-																	x => to_distance (f (8)),
-																	y => to_distance (f (9)))),
-																end_point	=> type_point (set (
-																	x => to_distance (f (10)),
-																	y => to_distance (f (11))))
-																),
-
-													log_threshold	=> log_threshold + 1);
-
-											when 12 .. count_type'last => command_too_long (fields - 1);
-												
-											when others => command_incomplete;
-										end case;
-										
-									when ARC =>
-										case fields is
-											when 13 =>
-												board_ops.draw_keepout_arc (
-													module_name 	=> module,
-													face			=> to_face (f (5)),
-													arc				=> (
-																width	=> to_distance (f (7)),
-																center	=> type_point (set (
-																	x => to_distance (f (8)),
-																	y => to_distance (f (9)))),
-																start_point	=> type_point (set (
-																	x => to_distance (f (10)),
-																	y => to_distance (f (11)))),
-																end_point	=> type_point (set (
-																	x => to_distance (f (12)),
-																	y => to_distance (f (13))))
-																),
-
-													log_threshold	=> log_threshold + 1);
-
-											when 14 .. count_type'last => command_too_long (fields - 1);
-												
-											when others => command_incomplete;
-										end case;
-
-									when CIRCLE =>
-										case fields is
-											when 10 =>
-
-											-- The 7th field can either be a line width like 2.5 or a 
-											-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
-												if is_number (f (7)) then
-
-													-- Circle is not filled and has a circumfence line width
-													-- specified in field 7.
-													board_ops.draw_keepout_circle (
-														module_name 	=> module,
-														face			=> to_face (f (5)),
-														circle			=> 
-																	(
-																	filled		=> NO,
-																	fill_style	=> fill_style_default, -- don't care here
-																	width	=> to_distance (f (7)),
-																	center	=> type_point (set (
-																				x => to_distance (f (8)),
-																				y => to_distance (f (9)))),
-																	radius	=> to_distance (f (10))
-																	),
-														log_threshold	=> log_threshold + 1);
-												else
-													
-													-- Circle is filled with the fill style specified in field 7:
-													case to_fill_style (f (7)) is
-														when CUTOUT =>
-													
-															board_ops.draw_keepout_circle (
-																module_name 	=> module,
-																face			=> to_face (f (5)),
-																circle			=> 
-																			(
-																			filled		=> YES,
-																			fill_style	=> CUTOUT,
-																			center	=> type_point (set (
-																						x => to_distance (f (8)),
-																						y => to_distance (f (9)))),
-																			radius	=> to_distance (f (10))
-																			),
-																log_threshold	=> log_threshold + 1);
-
-														when SOLID =>
-													
-															board_ops.draw_keepout_circle (
-																module_name 	=> module,
-																face			=> to_face (f (5)),
-																circle			=> 
-																			(
-																			filled		=> YES,
-																			fill_style	=> SOLID,
-																			center	=> type_point (set (
-																						x => to_distance (f (8)),
-																						y => to_distance (f (9)))),
-																			radius	=> to_distance (f (10))
-																			),
-																log_threshold	=> log_threshold + 1);
-
-														when HATCHED => command_incomplete;
-
-													end case;
-												end if;
-													
-											when 12 =>
-												-- This is going to be a hatched circle.
-												-- In this case the 7th field MUST be fill style HATCHED.
-												if is_number (f (7)) then
-													expect_fill_style (HATCHED, 7); -- error
-												else
-													case to_fill_style (f (7)) is
-														when HATCHED =>
-															board_ops.draw_keepout_circle (
-																module_name 	=> module,
-																face			=> to_face (f (5)),
-																circle			=> 
-																			(
-																			filled		=> YES,
-																			fill_style	=> HATCHED,
-																			center	=> type_point (set (
-																						x => to_distance (f (8)),
-																						y => to_distance (f (9)))),
-																			radius	=> to_distance (f (10)),
-																			hatching_line_width	=> to_distance (f (11)),
-																			hatching_spacing	=> to_distance (f (12))
-																			),
-																log_threshold	=> log_threshold + 1);
-
-														when others => expect_fill_style (HATCHED, 7);
-													end case;
-												end if;
-
-											when 13 .. count_type'last => command_too_long (fields - 1);
-												
-											when others => command_incomplete;
-										end case;
-
-												
-									when others => null;
-								end case;
-							end;
-
+							draw_keepout;
+							
 						when ROUTE_RESTRICT =>
 							draw_route_restrict;
 

@@ -654,8 +654,7 @@ package et_pcb is
 	end record;
 
 
-	-- This circle type is used by silk screen, assembly doc, 
-	-- stop mask, stencil
+	-- This circle type is used by silk screen, assembly doc, stop mask, stencil
 	type type_fillable_circle (
 		filled		: type_filled;
 		fill_style	: type_fill_style -- don't care if filled is NO
@@ -923,7 +922,7 @@ package et_pcb is
 		
 	package type_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
 	
-	package type_keepout_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
+	package type_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
 
 	type type_keepout_polygon is new type_polygon with null record;
 	package type_keepout_polygons is new doubly_linked_lists (type_keepout_polygon);

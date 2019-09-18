@@ -672,11 +672,19 @@ board led_driver draw assy top line 2.5 0 0 160 0 # top, line, width 2.5mm, from
 ```
 
 ## KEEPOUT
-Objects in the keepout layer are drawn and deleted the like those in silk screen (see above).
+Objects in the keepout layers are drawn and deleted the like those in silk screen (see above).
 The difference is the 4th keyword 'keepout'. An example to draw a line:
 ```
 board led_driver draw keepout top line 2.5 0 0 160 0 # top, line, width 2.5mm, from 0/0 to 160/0
 ```
+Circles can either be filled or not. The fill style is always solid:
+```
+board led_driver draw keepout top circle filled 50 50 40 # circle, filled, center 50/50 radius 40
+```
+```
+board led_driver draw keepout top circle 50 50 40 # circle, not filled, center 50/50 radius 40
+```
+
 
 ## SOLDER STOP MASK
 Objects in the solder stop mask are drawn and deleted the like those in silk screen (see above).
