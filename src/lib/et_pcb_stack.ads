@@ -71,8 +71,16 @@ package et_pcb_stack is
 
 	package type_signal_layers is new ordered_sets (type_signal_layer);
 
+	layer_term_start : constant character := '[';
+	layer_term_end   : constant character := ']';	
+	layer_term_separator : constant character := ',';
+	layer_term_range : constant character := '-';
+	
 	function to_string (layers : in type_signal_layers.set) return string;
-	-- Returns a string like "1 3 5 8"
+	-- Returns a string like "[1,3,5-9]"
+
+	function to_layers (layers : in string) return type_signal_layers.set;
+	-- converts a string like [1,3,5-9] to a set of signal layers.
 	
 	use geometry;
 -- 	subtype type_prepreg_thickness is type_distance_positive range 0.05 .. 0.5; -- CS reasonable ?

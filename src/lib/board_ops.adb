@@ -153,8 +153,8 @@ package body board_ops is
 		layers_used : et_pcb_stack.type_signal_layer := layer_count (module_cursor);
 	begin
 		if layer > layers_used then
-			log (ERROR, "Layer" & to_string (layer) & " invalid !" &
-				 " The current layer stack allows only" & to_string (layers_used) & " layers !",
+			log (ERROR, "Layer " & to_string (layer) & " invalid !" &
+				 " The current layer stack allows only " & to_string (layers_used) & " layers !",
 				 console => true);
 			raise constraint_error;
 		end if;
@@ -1879,7 +1879,7 @@ package body board_ops is
 	end;
 	
 	procedure draw_route_restrict_line (
-	-- Draws route restrict line.
+	-- Draws a route restrict line.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		line			: in type_route_restrict_line;
 		log_threshold	: in type_log_level) is
@@ -1901,7 +1901,7 @@ package body board_ops is
 		
 	begin 
 		log (text => "module " & to_string (module_name) &
-			" drawing route restrict line in layer" & to_string (line.layers) &
+			" drawing route restrict line in layer(s) " & to_string (line.layers) &
 			to_string (line),
 			level => log_threshold);
 
@@ -1917,6 +1917,172 @@ package body board_ops is
 			process		=> draw'access);
 		
 	end draw_route_restrict_line;
+
+	procedure draw_route_restrict_arc (
+	-- Draws a route restrict arc.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		arc				: in type_route_restrict_arc;
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		use et_pcb;
+		use et_pcb.type_route_restrict_arcs;
+
+		procedure draw (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+		begin
+			append (
+				container	=> module.board.route_restrict.arcs,
+				new_item	=> arc);
+		end;
+		
+	begin 
+		log (text => "module " & to_string (module_name) &
+			" drawing route restrict arc in layer(s) " & to_string (arc.layers) &
+			to_string (arc),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- make sure the desired layers are available according to current layer stack:
+		test_layers (module_cursor, arc.layers);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> draw'access);
+		
+	end draw_route_restrict_arc;
+
+	procedure draw_route_restrict_circle (
+	-- Draws a route restrict circle.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		circle			: in type_route_restrict_circle;
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		use et_pcb;
+		use et_pcb.type_route_restrict_circles;
+
+		procedure draw (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+		begin
+			append (
+				container	=> module.board.route_restrict.circles,
+				new_item	=> circle);
+		end;
+		
+	begin 
+		log (text => "module " & to_string (module_name) &
+			" drawing route restrict circle in layer(s) " & to_string (circle.layers) &
+			to_string (circle),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		-- make sure the desired layers are available according to current layer stack:
+		test_layers (module_cursor, circle.layers);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> draw'access);
+		
+	end draw_route_restrict_circle;
+
+	procedure delete_route_restrict (
+	-- Deletes the segment of route restrict that crosses the given point.
+	-- CS currently rips up the first segment found. Leaves other segments untouched.
+	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		point			: in geometry.type_point; -- x/y
+		accuracy		: in geometry.type_accuracy;
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure delete (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+			use et_pcb;
+			use type_route_restrict_lines;
+			use type_route_restrict_arcs;
+			use type_route_restrict_circles;
+			line_cursor   : type_route_restrict_lines.cursor  := module.board.route_restrict.lines.first;
+			arc_cursor    : type_route_restrict_arcs.cursor   := module.board.route_restrict.arcs.first;
+			circle_cursor : type_route_restrict_circles.cursor := module.board.route_restrict.circles.first;
+
+			deleted : boolean := false; -- goes true if at least one segment has been deleted
+		begin
+			-- first search for a matching segment among the lines
+			while line_cursor /= type_route_restrict_lines.no_element loop
+				if on_line (point, element (line_cursor), accuracy) then
+					delete (module.board.route_restrict.lines, line_cursor);
+					deleted := true;
+					exit;
+				end if;
+				next (line_cursor);
+			end loop;
+
+			-- if no line found, search among arcs
+			if not deleted then
+				while arc_cursor /= type_route_restrict_arcs.no_element loop
+					
+					if on_arc (point, element (arc_cursor), accuracy) then
+						delete (module.board.route_restrict.arcs, arc_cursor);
+						deleted := true;
+						exit;
+					end if;
+					
+					next (arc_cursor);
+				end loop;
+			end if;
+
+			-- if no arc found, search among circles
+			if not deleted then
+				while circle_cursor /= type_route_restrict_circles.no_element loop
+					
+					if on_circle (point, element (circle_cursor), accuracy) then
+						delete (module.board.route_restrict.circles, circle_cursor);
+						deleted := true;
+						exit;
+					end if;
+					
+					next (circle_cursor);
+				end loop;
+			end if;
+
+			if not deleted then
+				no_segment_found (point, accuracy);
+			end if;
+			
+		end delete;
+		
+	begin -- delete_route_restrict
+		log (text => "module " & to_string (module_name) &
+			" deleting route restrict segment" &
+			" at" & to_string (point) &
+			" accuracy" & to_string (accuracy),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> delete'access);
+		
+	end delete_route_restrict;
 
 	
 -- BOARD OUTLINE

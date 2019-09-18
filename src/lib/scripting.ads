@@ -202,6 +202,7 @@ package scripting is
 		PARTCODE,
 		PNP, -- pick & place
 		PURPOSE,
+		ROUTE_RESTRICT,
 		SILK, -- silk screen
 		STOP, -- solder stop mask
 		SUBMODULE,

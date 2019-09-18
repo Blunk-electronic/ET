@@ -183,6 +183,20 @@ package body scripting is
 			 console => true);
 		raise constraint_error;
 	end;
+
+	procedure expect_value_center_x (field : in count_type) is begin
+		log (ERROR, "Expect value for center x in field no." & count_type'image (field) & " !",
+			 console => true);
+		raise constraint_error;
+	end;
+
+	procedure expect_keyword_filled (field : in count_type) is begin
+		log (ERROR, "Expect keyword " & enclose_in_quotes (et_pcb.keyword_filled) &
+			" in field no." & count_type'image (field) & " !",
+			 console => true);
+		raise constraint_error;
+	end;
+
 	
 	function execute_command (
 		file_name		: in type_script_name.bounded_string;
@@ -1621,9 +1635,119 @@ package body scripting is
 			use et_pcb_coordinates.geometry;
 			use et_pcb_stack;
 
+			procedure draw_restrict is
+				shape : type_shape := to_shape (f (6));
+			begin
+				case shape is
+					when LINE =>
+						case fields is
+							when 10 =>
+								-- board led_driver draw restrict [1,3,5-9] line 10 10 60 10
+								board_ops.draw_route_restrict_line (
+									module_name 	=> module,
+									line			=> (
+												layers		=> to_layers (f (5)), -- [1,3,5-9]
+												start_point	=> type_point (set (
+													x => to_distance (f (7)),
+													y => to_distance (f (8)))),
+												end_point	=> type_point (set (
+													x => to_distance (f (9)),
+													y => to_distance (f (10))))
+												),
+
+									log_threshold	=> log_threshold + 1);
+
+							when 11 .. count_type'last => command_too_long (fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when ARC =>
+						case fields is
+							when 12 =>
+								-- board led_driver draw restrict [1,3,5-9] arc 50 50 0 50 100 0
+								board_ops.draw_route_restrict_arc (
+									module_name 	=> module,
+									arc				=> (
+												layers		=> to_layers (f (5)), -- [1,3,5-9]
+												center	=> type_point (set (
+													x => to_distance (f (7)),
+													y => to_distance (f (8)))),
+												start_point	=> type_point (set (
+													x => to_distance (f (9)),
+													y => to_distance (f (10)))),
+												end_point	=> type_point (set (
+													x => to_distance (f (11)),
+													y => to_distance (f (12))))
+												),
+
+									log_threshold	=> log_threshold + 1);
+
+							when 13 .. count_type'last => command_too_long (fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when CIRCLE =>
+						case fields is
+							when 9 =>
+								-- board led_driver draw restrict [1,3,5-9] circle 20 50 40
+								if is_number (f (7)) then -- 20
+
+									-- Circle is not filled.
+									board_ops.draw_route_restrict_circle (
+										module_name 	=> module,
+										circle			=> 
+													(
+													layers		=> to_layers (f (5)), -- [1,3,5-9]
+													filled		=> NO,
+													center	=> type_point (set (
+																x => to_distance (f (7)), -- 20
+																y => to_distance (f (8)))), -- 50
+													radius	=> to_distance (f (9)) -- 40
+													),
+													
+										log_threshold	=> log_threshold + 1);
+								else
+									expect_value_center_x (7);
+								end if;
+
+							when 10 =>
+								-- Circle is filled.
+								-- board led_driver draw restrict [1,3,5-9] circle filled 20 50 40
+								if f (7) = et_pcb.keyword_filled then
+
+									-- Circle is filled.
+									board_ops.draw_route_restrict_circle (
+										module_name 	=> module,
+										circle			=> 
+													(
+													layers		=> to_layers (f (5)), -- [1,3,5-9]
+													filled		=> YES,
+													center	=> type_point (set (
+																x => to_distance (f (8)), -- 20
+																y => to_distance (f (9)))), -- 50
+													radius	=> to_distance (f (10)) -- 40
+													),
+													
+										log_threshold	=> log_threshold + 1);
+								else
+									expect_keyword_filled (7);
+								end if;
+
+							when 11 .. count_type'last => command_too_long (fields - 1);
+							
+							when others => command_incomplete;
+						end case;
+								
+					when others => null;
+				end case;
+			end draw_restrict;
+
+			
 			-- CS circular tracks are currently not supported
 			subtype type_track_shape is type_shape range LINE..ARC;
-
+			
 			procedure route_net is 
 				shape : type_track_shape := to_shape (f (7));
 			begin
@@ -1982,6 +2106,26 @@ package body scripting is
 										);
 
 								when 9 .. count_type'last => command_too_long (fields - 1);
+									
+								when others => command_incomplete;
+							end case;
+
+						when ROUTE_RESTRICT =>
+							-- board led_driver delete route_restrict 40 50 1
+							case fields is
+								when 7 =>
+									-- delete a segment of route restrict
+									board_ops.delete_route_restrict (
+										module_name 	=> module,
+										point			=> type_point (set (
+												x => to_distance (f (5)),
+												y => to_distance (f (6)))),
+										accuracy		=> to_distance (f (7)),
+										
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 8 .. count_type'last => command_too_long (fields - 1);
 									
 								when others => command_incomplete;
 							end case;
@@ -2571,6 +2715,9 @@ package body scripting is
 								end case;
 							end;
 
+						when ROUTE_RESTRICT =>
+							draw_restrict;
+							
 						when STOP =>
 							declare
 								shape : type_shape := to_shape (f (6));

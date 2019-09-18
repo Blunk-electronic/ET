@@ -452,6 +452,7 @@ package et_pcb is
 	end record;
 	package type_copper_arcs is new doubly_linked_lists (type_copper_arc);
 
+	keyword_filled : constant string := "filled";
 	type type_filled is (NO, YES);
 	function to_string (filled : in type_filled) return string;
 	function to_filled (filled : in string) return type_filled;

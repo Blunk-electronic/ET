@@ -1066,44 +1066,24 @@ package body et_project is
 		polygon_end;
 	end write_polygon;
 
-	procedure write_layer_numbers (layers : in et_pcb_stack.type_signal_layers.set) is -- CS replace by et_pcb_stack.to_string
-		use et_pcb_stack;
-		use type_signal_layers;
-		-- For each layer number we require 3 characters (like "10 12 13 ...")
-		-- CS the count should be set in a more professional way.
-		-- CS Constraint error will be raised if layer numbers assume 3 digits (some day...)
-		count : count_type := length (layers) * 3; 
-
-		-- The layer numbers will be stored here:
-		package type_layers is new generic_bounded_length (positive (count)); use type_layers;
-		layers_string : type_layers.bounded_string;
-		
-		procedure read_them (slc : in type_signal_layers.cursor) is
-		begin
-			layers_string := layers_string & to_bounded_string (to_string (element (slc)));
-		end read_them;
-		
-	begin -- write_layer_numbers
-		iterate (layers, read_them'access);
-		write (keyword => keyword_layers, parameters => to_string (layers_string));
-	end write_layer_numbers;
-
-	
 -- ROUTE RESTRICT
+	
 	procedure write_line (cursor : in et_pcb.type_route_restrict_lines.cursor) is 
 		use et_pcb;
+		use et_pcb_stack;
 		use type_route_restrict_lines;
 		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
 		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-		write_layer_numbers (element (cursor).layers);
+		write (keyword => keyword_layers, space => true, parameters => to_string (element (cursor).layers));
 		line_end;
 	end write_line;
 
 	procedure write_arc (cursor : in et_pcb.type_route_restrict_arcs.cursor) is 
 		use et_pcb;
+		use et_pcb_stack;
 		use type_route_restrict_arcs;
 		use et_pcb_coordinates.geometry;		
 	begin
@@ -1111,20 +1091,21 @@ package body et_project is
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
 		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-		write_layer_numbers (element (cursor).layers);
+		write (keyword => keyword_layers, space => true, parameters => to_string (element (cursor).layers));
 		arc_end;
 	end write_arc;
 
 	procedure write_circle (cursor : in et_pcb.type_route_restrict_circles.cursor) is 
 		use et_pcb;
+		use et_pcb_stack;
 		use type_route_restrict_circles;
 		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
 		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
-		write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
-		write_layer_numbers (element (cursor).layers);
+		write (keyword => keyword_filled, space => true, parameters => to_string (element (cursor).filled));
+		write (keyword => keyword_layers, space => true, parameters => to_string (element (cursor).layers));
 		circle_end;
 	end write_circle;
 	
@@ -1145,7 +1126,7 @@ package body et_project is
 		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
 		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
 		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
-		-- CS write_layer_numbers (element (cursor).layers);
+		-- CS write layer numbers
 		corners_begin;
 		query_element (cursor, query_points'access);
 		corners_end;
@@ -1155,18 +1136,20 @@ package body et_project is
 -- VIA RESTRICT
 	procedure write_line (cursor : in et_pcb.type_via_restrict_lines.cursor) is 
 		use et_pcb;
+		use et_pcb_stack;
 		use type_via_restrict_lines;
 		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
 		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-		write_layer_numbers (element (cursor).layers);
+		write (keyword => keyword_layers, space => true, parameters => to_string (element (cursor).layers));
 		line_end;
 	end write_line;
 
 	procedure write_arc (cursor : in et_pcb.type_via_restrict_arcs.cursor) is 
 		use et_pcb;
+		use et_pcb_stack;
 		use type_via_restrict_arcs;
 		use et_pcb_coordinates.geometry;		
 	begin
@@ -1174,20 +1157,21 @@ package body et_project is
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
 		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-		write_layer_numbers (element (cursor).layers);
+		write (keyword => keyword_layers, space => true, parameters => to_string (element (cursor).layers));
 		arc_end;
 	end write_arc;
 
 	procedure write_circle (cursor : in et_pcb.type_via_restrict_circles.cursor) is 
 		use et_pcb;
+		use et_pcb_stack;		
 		use type_via_restrict_circles;
 		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
 		write (keyword => keyword_center, parameters => position (element (cursor).center));
 		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
-		write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
-		write_layer_numbers (element (cursor).layers);
+		write (keyword => keyword_filled, space => true, parameters => to_string (element (cursor).filled));
+		write (keyword => keyword_layers, space => true, parameters => to_string (element (cursor).layers));
 		circle_end;
 	end write_circle;
 	

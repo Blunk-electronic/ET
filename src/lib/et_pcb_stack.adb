@@ -59,7 +59,7 @@ with et_string_processing;		use et_string_processing;
 package body et_pcb_stack is
 
 	function to_string (layer : in type_signal_layer) return string is begin
-		return type_signal_layer'image (layer);
+		return trim (type_signal_layer'image (layer), left);
 	end to_string;
 
 	function to_signal_layer (layer : in string) return type_signal_layer is begin
@@ -67,28 +67,153 @@ package body et_pcb_stack is
 	end to_signal_layer;
 
 	function to_string (layers : in type_signal_layers.set) return string is
-	-- Returns a string like "1 3 5 8"
-		
+	-- Returns a string like '[1,3,5-9]'.
+	-- CS: Currently the range notation like 5-9 is not supported. The return is 5,6,7,8,9 instead.
+
 		use type_signal_layers;
-		-- For each layer number we require 3 characters (like "10 12 13 ...")
-		-- CS the count should be set in a more professional way.
-		-- CS Constraint error will be raised if layer numbers assume 3 digits (some day...)
-		count : count_type := length (layers) * 3; 
 
 		-- The layer numbers will be stored here:
-		package type_layer_numbers is new generic_bounded_length (positive (count)); 
-		use type_layer_numbers;
-		layers_string : type_layer_numbers.bounded_string;
+		package type_layer_string is new generic_bounded_length (100); -- CS increase if necessary.
+		use type_layer_string;
+		layer_string : type_layer_string.bounded_string; -- to be returned
 
+		-- set a cursor to the last layer in the given layer set:
+		last_layer : type_signal_layers.cursor := layers.last;
+		
 		
 		procedure query_layer (cursor : in type_signal_layers.cursor) is begin
-			layers_string := layers_string & to_bounded_string (to_string (element (cursor)));
+		-- Append the layer number to the return string.
+			layer_string := layer_string & to_bounded_string (to_string (element (cursor)));
+
+			-- If not the last layer, append a comma:
+			if cursor /= last_layer then
+				layer_string := layer_string & layer_term_separator;
+			end if;
 		end;
-			
-	begin
+
+	begin -- to_string
+		-- the return string always starts with an opening bracket:
+		layer_string := layer_string & layer_term_start;
+		
 		iterate (layers, query_layer'access);
-		return to_string (layers_string);
+
+-- 		for l in type_signal_layer'first .. type_signal_layer'last loop
+-- 			null;
+-- 		end loop;
+
+		-- the return string always ends with a closing bracket:
+		layer_string := layer_string & layer_term_end;
+		
+		return to_string (layer_string);
 	end;
+
+	function to_layers (layers : in string) return type_signal_layers.set is
+	-- converts a string like '[1,3,5-9]' to a set of signal layers.
+		use type_signal_layers;
+		layer_set : type_signal_layers.set; -- to be returned
+		char : character;
+
+		package number_string is new generic_bounded_length (3);
+		use number_string;
+		number : number_string.bounded_string;
+
+		procedure reset_number is begin 
+			number := to_bounded_string ("");
+		end;
+
+		range_started : boolean := false;
+		range_start, range_end : type_signal_layer;
+
+		procedure warning (layer : in type_signal_layer) is begin
+			log (WARNING, "Multiple occurence of layer " & to_string (layer) & " !");
+		end;
+		
+		procedure insert_layer is 
+			l : type_signal_layer := to_signal_layer (to_string (number));
+		begin
+			if not contains (layer_set, l) then
+				insert (layer_set, l);
+			else
+				warning (l);
+			end if;
+		end;
+		
+		procedure insert_range is 
+			inserted : boolean := false;
+		begin
+			-- The range must be going upwards:
+			if range_start > range_end then
+				log (ERROR, "Layer range must be going upwards !", console => true);
+				raise constraint_error;
+			else
+				for l in range_start .. range_end loop
+
+					if not contains (layer_set, l) then
+						insert (layer_set, l);
+					else
+						warning (l);
+					end if;
+				end loop;
+			end if;
+		end;
+		
+	begin -- to_layers
+		if layers'length = 0 then
+			log (ERROR, "Layer term must not be empty !", console => true);
+			raise constraint_error;
+		end if;
+		
+		for place in layers'first .. layers'last loop
+			char := layers (place);
+
+			if place = layers'first and char /= layer_term_start then
+				log (ERROR, "Layer term must start with '" & layer_term_start & "' !", console => true);
+				raise constraint_error;
+				
+			elsif place = layers'last and char /= layer_term_end then
+				log (ERROR, "Layer term must end with '" & layer_term_end & "' !", console => true);
+				raise constraint_error;
+
+			elsif char = layer_term_start then null;
+				
+			elsif is_digit (char) then
+				number := number & char;
+
+			elsif char = layer_term_separator then
+
+				if range_started then
+					range_end := to_signal_layer (to_string (number));
+					range_started := false;
+					insert_range;
+				else
+					insert_layer;
+				end if;
+
+				reset_number;
+
+			elsif char = layer_term_end then
+
+				if range_started then
+					range_end := to_signal_layer (to_string (number));
+					range_started := false;
+					insert_range;
+				else
+					insert_layer;
+				end if;
+				
+			elsif char = layer_term_range then
+				range_started := true;
+				range_start := to_signal_layer (to_string (number));
+				reset_number;
+				
+			else
+				log (ERROR, "Invalid character in layer term !", console => true);
+				raise constraint_error;
+			end if;
+		end loop;
+		
+		return layer_set;
+	end to_layers;
 	
 end et_pcb_stack;
 
