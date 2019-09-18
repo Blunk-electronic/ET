@@ -963,7 +963,7 @@ package et_pcb is
 	end record;
 
 	
-	package type_route_restrict_circles is new indefinite_doubly_linked_lists (type_route_restrict_circle);
+	package type_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 
 	type type_route_restrict_polygon is new type_polygon with record
 		width	: type_general_line_width; -- CS use subtype for reasonable range
@@ -1007,7 +1007,7 @@ package et_pcb is
 		layers	: type_signal_layers.set;
 	end record;
 	
-	package type_via_restrict_circles is new indefinite_doubly_linked_lists (type_via_restrict_circle);
+	package type_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
 
 	
 	type type_via_restrict_polygon is new type_polygon with record
