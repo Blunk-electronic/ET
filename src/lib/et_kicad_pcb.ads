@@ -53,13 +53,14 @@ with et_string_processing;
 with et_libraries;
 with et_schematic;
 with et_general;
+with et_packages;
 with et_pcb;
 with et_pcb_coordinates;
 with et_kicad_general;			use et_kicad_general;
 
 package et_kicad_pcb is
 
-	use et_pcb.shapes;
+	use et_packages.shapes;
 	use et_pcb_coordinates.geometry;
 	
 	-- V4:
@@ -179,7 +180,7 @@ package et_kicad_pcb is
 
 	-- "Slotted drills" or "plated millings" for terminals are limited by drill sizes because
 	-- the PCB manufacturer starts the milling with a drill.
-	subtype type_pad_milling_size is et_pcb_coordinates.type_distance range et_pcb.drill_size_min .. et_pcb.drill_size_max;
+	subtype type_pad_milling_size is et_pcb_coordinates.type_distance range et_packages.drill_size_min .. et_packages.drill_size_max;
 	
 	type type_fp_text_meaning is (REFERENCE, VALUE, USER);
 	
@@ -200,19 +201,19 @@ package et_kicad_pcb is
 	-- They are derived from the abstract anchestor types in et_pcb.ads.
 	-- Their additional components (width, layer, angle, ...) are later 
 	-- copied to the final lines, arcs and circles as specified in et_pcb.ads:
-	type type_line is new et_pcb.shapes.type_line with record
-		width	: et_pcb.type_text_line_width;
+	type type_line is new et_packages.shapes.type_line with record
+		width	: et_packages.type_text_line_width;
 		layer	: type_layer_abbrevation;
 	end record;
 
-	type type_arc is new et_pcb.shapes.type_arc with record
-		width 	: et_pcb.type_text_line_width;
+	type type_arc is new et_packages.shapes.type_arc with record
+		width 	: et_packages.type_text_line_width;
 		angle 	: et_pcb_coordinates.type_rotation;
 		layer	: type_layer_abbrevation;
 	end record;
 
-	type type_circle is new et_pcb.shapes.type_circle with record -- center and radius incl.
-		width 	: et_pcb.type_text_line_width;
+	type type_circle is new et_packages.shapes.type_circle with record -- center and radius incl.
+		width 	: et_packages.type_text_line_width;
 		point 	: et_pcb_coordinates.geometry.type_point;
 		layer	: type_layer_abbrevation;
 	end record;
@@ -327,7 +328,7 @@ package et_kicad_pcb is
 		layer_selection			: type_plot_layer_selection_string.bounded_string;
 		user_gerber_extensions	: type_plot_user_gerber_extensions;
 		exclude_edge_layer		: type_plot_exclude_edge_layer;
-		line_width				: et_pcb.type_general_line_width;	-- for lines without given width
+		line_width				: et_packages.type_general_line_width;	-- for lines without given width
 		frame_ref				: type_plot_frame_ref;
 		vias_on_mask			: type_plot_vias_on_mask;
 		fill_mode				: type_plot_fill_mode;
@@ -391,33 +392,33 @@ package et_kicad_pcb is
 	type type_visible_elements is new string (1..8);
 
 	type type_board_setup is record
-		last_trace_width	: et_pcb.type_track_width;
-		trace_clearance		: et_pcb.type_track_clearance;
-		zone_clearance		: et_pcb.type_track_clearance;
+		last_trace_width	: et_packages.type_track_width;
+		trace_clearance		: et_packages.type_track_clearance;
+		zone_clearance		: et_packages.type_track_clearance;
 		zone_45_only		: type_zone_45_only;
-		trace_min			: et_pcb.type_track_width;
-		segment_width		: et_pcb.type_track_width;
+		trace_min			: et_packages.type_track_width;
+		segment_width		: et_packages.type_track_width;
 		edge_width			: type_edge_cut_line_width;
 		via_size			: type_via_diameter;	-- regular vias
-		via_drill			: et_pcb.type_drill_size;		-- regular vias
+		via_drill			: et_packages.type_drill_size;		-- regular vias
 		via_min_size		: type_via_diameter;	-- regular vias
-		via_min_drill		: et_pcb.type_drill_size;		-- regular vias
+		via_min_drill		: et_packages.type_drill_size;		-- regular vias
 		micro_via_size		: type_via_diameter;	-- micro vias
-		micro_via_drill		: et_pcb.type_drill_size;		-- micro vias
+		micro_via_drill		: et_packages.type_drill_size;		-- micro vias
 		micro_vias_allowed	: et_pcb.type_micro_vias_allowed;
 		micro_via_min_size	: type_via_diameter;	-- micro vias
-		micro_via_min_drill	: et_pcb.type_drill_size;		-- micro vias
-		pcb_text_width		: et_pcb.type_text_line_width;	-- all kinds of texts (no matter what layer)
-		pcb_text_size_x		: et_pcb.type_text_size;
-		pcb_text_size_y		: et_pcb.type_text_size;		
-		module_edge_width	: et_pcb.type_general_line_width;
-		module_text_size_x	: et_pcb.type_text_size;
-		module_text_size_y	: et_pcb.type_text_size;
-		module_text_width	: et_pcb.type_text_line_width; -- line width
-		pad_size_x			: et_pcb.type_pad_size;
-		pad_size_y			: et_pcb.type_pad_size;
-		pad_drill			: et_pcb.type_drill_size;
-		stop_mask_expansion	: et_pcb.type_stop_mask_expansion;
+		micro_via_min_drill	: et_packages.type_drill_size;		-- micro vias
+		pcb_text_width		: et_packages.type_text_line_width;	-- all kinds of texts (no matter what layer)
+		pcb_text_size_x		: et_packages.type_text_size;
+		pcb_text_size_y		: et_packages.type_text_size;		
+		module_edge_width	: et_packages.type_general_line_width;
+		module_text_size_x	: et_packages.type_text_size;
+		module_text_size_y	: et_packages.type_text_size;
+		module_text_width	: et_packages.type_text_line_width; -- line width
+		pad_size_x			: et_packages.type_pad_size;
+		pad_size_y			: et_packages.type_pad_size;
+		pad_drill			: et_packages.type_drill_size;
+		stop_mask_expansion	: et_packages.type_stop_mask_expansion;
 		aux_axis_origin_x	: type_aux_axis_origin;
 		aux_axis_origin_y	: type_aux_axis_origin;
 		visible_elements	: type_visible_elements;
@@ -533,7 +534,7 @@ package et_kicad_pcb is
 	-- For packages, temporarily this type is required to handle texts in 
 	-- silk screen, assembly doc, ...
 	-- When inserting the text in the final package, it is decomposed again.
-	type type_text_package is new et_pcb.type_text with record
+	type type_text_package is new et_packages.type_text with record
 		content	: et_libraries.type_text_content.bounded_string;
 		layer	: type_layer_abbrevation;
 		meaning	: type_fp_text_meaning;
@@ -544,7 +545,7 @@ package et_kicad_pcb is
 	-- For the board, temporarily this type is required to handle texts in
 	-- copper, silk screen, assembly doc, ...
 	-- When inserting the text in the board, it is decomposed again.	
-	type type_text_board is new et_pcb.type_text with record
+	type type_text_board is new et_packages.type_text with record
 		content	: et_libraries.type_text_content.bounded_string;
 		layer	: type_layer_id; -- 0 .. 49 (ALL layers)
 	end record;
@@ -554,15 +555,15 @@ package et_kicad_pcb is
 -- LIBRARIES
 	
 	-- This is the base type of a package:
-	type type_package is new et_pcb.type_package_base with record
+	type type_package is new et_packages.type_package_base with record
 		time_stamp : type_timestamp;
 	end record;
 
 
 	type type_package_library is new type_package with record
-		silk_screen				: et_pcb.type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
-		assembly_documentation	: et_pcb.type_assembly_documentation_package_both_sides; -- incl. placeholder for value
-		terminals				: et_pcb.type_terminals.map;
+		silk_screen				: et_packages.type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
+		assembly_documentation	: et_packages.type_assembly_documentation_package_both_sides; -- incl. placeholder for value
+		terminals				: et_packages.type_terminals.map;
 	end record;
 	
 	-- Lots of packages (in a library) can be collected in a map:
@@ -630,7 +631,7 @@ package et_kicad_pcb is
 	
 	-- In the pcb drawing, a terminal has a net attached. For this reason a
 	-- list of terminals is declared here:
-	type type_terminal is new et_pcb.type_terminal with record
+	type type_terminal is new et_packages.type_terminal with record
 		net_name : et_general.type_net_name.bounded_string;
 	end record;
 
@@ -645,8 +646,8 @@ package et_kicad_pcb is
 	
 	-- A package in a board extends the base package type:
 	type type_package_board is new type_package with record
-		silk_screen				: et_pcb.type_silk_screen_package_both_sides;
-		assembly_documentation	: et_pcb.type_assembly_documentation_package_both_sides;
+		silk_screen				: et_packages.type_silk_screen_package_both_sides;
+		assembly_documentation	: et_packages.type_assembly_documentation_package_both_sides;
 		terminals				: type_terminals.map; -- terminals with net names
 		time_edit				: type_timestamp;
 		value					: et_libraries.type_value.bounded_string;
@@ -657,8 +658,7 @@ package et_kicad_pcb is
 	package type_packages_board is new indefinite_ordered_maps (
 		key_type 		=> et_libraries.type_device_name, -- IC46
 		element_type 	=> type_package_board,
-		"<"				=> et_libraries."<"
-		);
+		"<"				=> et_libraries."<");
 
 
 
@@ -686,7 +686,7 @@ package et_kicad_pcb is
 
 	-- CS function to_segment_status and to_string
 	
-	type type_segment is new et_pcb.type_copper_line with record
+	type type_segment is new et_packages.type_copper_line with record
 		net_id		: type_net_id;
 		layer		: type_signal_layer_id;
 		timestamp	: type_timestamp;
@@ -702,7 +702,7 @@ package et_kicad_pcb is
 	via_status_length_max : constant positive := 8;
 	package type_via_status is new generic_bounded_length (via_status_length_max);
 	
-	type type_via is new et_pcb.type_drill with record
+	type type_via is new et_packages.type_drill with record
 		net_id			: type_net_id;
 		diameter_total	: et_pcb_coordinates.type_distance; -- drill + 2 * restring
 		layer_start		: type_signal_layer_id;
@@ -729,28 +729,29 @@ package et_kicad_pcb is
 	
 
 	-- Polygons may be connected with THT pads only or all pad technologies
-	subtype type_polygon_pad_technology is et_pcb.type_polygon_pad_technology range et_pcb.THT_ONLY .. et_pcb.SMT_AND_THT;
+	subtype type_polygon_pad_technology is et_packages.type_polygon_pad_technology 
+		range et_packages.THT_ONLY .. et_packages.SMT_AND_THT;
 
-	type type_polygon is new et_pcb.type_copper_polygon with record
+	type type_polygon is new et_packages.type_copper_polygon with record
 		net_name			: et_general.type_net_name.bounded_string; -- if name is empty, the polygon is not connected to any net
 		net_id				: type_net_id; -- if id is 0, the polygon is not connected to any net
 		layer				: type_signal_layer_id;
 		timestamp			: type_timestamp;
 		gui_hatch_style		: type_polygon_hatch := EDGE;
 		gui_hatch_width		: et_pcb_coordinates.type_distance;	-- see spec for type_polygon_hatch. always 0.508. CS use subtype
-		min_thickness		: et_pcb.type_track_width;	-- minimum line width
+		min_thickness		: et_packages.type_track_width;	-- minimum line width
 		filled				: boolean; -- CS probably no need
 		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"
 		arc_segments		: natural := 0; -- CS subtype ? -- only 16 or 32 allowed
-		thermal_gap			: et_pcb.type_polygon_thermal_gap := et_pcb.type_polygon_thermal_gap'first;
-		thermal_width		: et_pcb.type_polygon_thermal_width := et_pcb.type_polygon_thermal_width'first; -- spoke width
+		thermal_gap			: et_packages.type_polygon_thermal_gap := et_packages.type_polygon_thermal_gap'first;
+		thermal_width		: et_packages.type_polygon_thermal_width := et_packages.type_polygon_thermal_width'first; -- spoke width
 		pad_technology		: type_polygon_pad_technology := type_polygon_pad_technology'last;
-		pad_connection		: et_pcb.type_polygon_pad_connection := et_pcb.type_polygon_pad_connection'first;
+		pad_connection		: et_packages.type_polygon_pad_connection := et_packages.type_polygon_pad_connection'first;
 	end record;
 
 	package type_polygons is new doubly_linked_lists (type_polygon);
 	
-	-- This is the data type for the Kicad Board design:
+	-- This is the type for the Kicad board design:
 	type type_board is record
 		
 		-- In V5 we sometimes have a non-existing board but nevertheless a board file.
@@ -770,7 +771,7 @@ package et_kicad_pcb is
 		assy_doc	: et_pcb.type_assembly_documentation_pcb_both_sides;
 		stencil		: et_pcb.type_stencil_both_sides;
 		stop_mask	: et_pcb.type_stop_mask_pcb_both_sides;
-		keepout		: et_pcb.type_keepout_both_sides;		
+		keepout		: et_packages.type_keepout_both_sides;		
 		contour		: et_pcb.type_pcb_contour;
 		copper		: et_pcb.type_copper_pcb; -- non-electric. used for texts only
 		-- other non-electric graphic objects in signal layers are not allowed in kicad

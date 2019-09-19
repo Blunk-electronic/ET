@@ -60,6 +60,7 @@ with kicad_coordinates;
 with et_libraries;
 with et_schematic;
 with et_kicad_general;			use et_kicad_general;
+with et_packages;
 with et_pcb;
 with et_pcb_stack;
 with et_pcb_coordinates;
@@ -69,7 +70,7 @@ with et_kicad;
 
 package body et_kicad_pcb is
 
-	use et_pcb.shapes;	
+	use et_packages.shapes;	
 	use et_pcb_coordinates.geometry;
 	
 	use et_general.type_net_name;
@@ -280,8 +281,8 @@ package body et_kicad_pcb is
 		end if;
 	end right_net_equals_left;
 	
-	function to_assembly_technology (tech : in string) return et_pcb.type_assembly_technology is
-		use et_pcb;
+	function to_assembly_technology (tech : in string) return et_packages.type_assembly_technology is
+		use et_packages;
 	begin
 		if tech = "smd" then return SMT;
 		elsif tech = "thru_hole" then return THT;
@@ -355,17 +356,17 @@ package body et_kicad_pcb is
 
 	function to_pad_shape_circle (
 		position	: in type_position;
-		diameter	: in et_pcb.type_pad_size;
+		diameter	: in et_packages.type_pad_size;
 		offset		: in type_point)	-- the offset of the pad from the center
-		return et_pcb.type_pad_outline is
+		return et_packages.type_pad_outline is
 
 		use et_pcb_coordinates;
 		use et_pcb;
-		use et_pcb.type_pad_circles;
+		use et_packages.type_pad_circles;
 
 		circle : type_pad_circle;
 
-		shape : et_pcb.type_pad_outline; -- to be returned
+		shape : et_packages.type_pad_outline; -- to be returned
 	begin
 		circle.center := type_point (position);
 		circle.radius := diameter / 2.0;
@@ -559,12 +560,12 @@ package body et_kicad_pcb is
 	-- Converts the given position and dimensions of a rectangular slotted hole
 	-- to a list with four lines (top, bottom, right, left).
 		center		: in type_position; 		-- the terminal position (incl. angle, (z axis ignored))
-		size_x		: in et_pcb.type_pad_size;	-- the size in x of the hole
-		size_y		: in et_pcb.type_pad_size;	-- the size in y of the hole
+		size_x		: in et_packages.type_pad_size;	-- the size in x of the hole
+		size_y		: in et_packages.type_pad_size;	-- the size in y of the hole
 		offset		: in type_point)			-- the offset of the pad from the center
-		return et_pcb.type_pcb_contour_lines.list is
+		return et_packages.type_pcb_contour_lines.list is
 
-		use et_pcb;
+		use et_packages;
 		use et_pcb_coordinates;
 		use geometry;
 
@@ -638,12 +639,12 @@ package body et_kicad_pcb is
 	function to_package_model (
 	-- Builds a package model from the given lines.
 		file_name		: in string; -- S_0201.kicad_mod
-		lines			: in et_pcb.type_lines.list;
+		lines			: in et_packages.type_lines.list;
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_package_library is
-		
-		use et_pcb;
-		use et_pcb.type_lines;
+
+		use et_packages;
+		use et_packages.type_lines;
 
 		-- Extract the actual package name (like S_0201) from the given file name:
 		package_name : et_libraries.type_component_package_name.bounded_string :=
@@ -659,7 +660,7 @@ package body et_kicad_pcb is
 		end path_and_file_name;
 		
 		-- This cursor points to the line being processed (in the list of lines given in "lines"):
-		line_cursor : et_pcb.type_lines.cursor := lines.first;
+		line_cursor : et_packages.type_lines.cursor := lines.first;
 
 		opening_bracket : constant character := '(';
 		closing_bracket : constant character := ')';
@@ -826,7 +827,7 @@ package body et_kicad_pcb is
 		terminal_stop_mask : type_stop_mask_status;
 
 		-- Here we collect all kinds of terminals after they have been built.
-		terminals : et_pcb.type_terminals.map;
+		terminals : et_packages.type_terminals.map;
 
 
 
@@ -843,24 +844,24 @@ package body et_kicad_pcb is
 
 		-- NON ELECTRIC !!! COPPER OBJECTS (lines, arcs, circles)
 		-- NOTE: Does not include texts as kicad does not allow texts in signal layers.
-		copper : et_pcb.type_copper_package_both_sides;
+		copper : et_packages.type_copper_package_both_sides;
 
 		-- STOP MASK OBJECTS
-		stop_mask : et_pcb.type_stop_mask_both_sides;
+		stop_mask : et_packages.type_stop_mask_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 
 		-- SOLDER STENCIL OBJECTS
-		stencil : et_pcb.type_stencil_both_sides;
+		stencil : et_packages.type_stencil_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 	
 		-- SILK SCREEN OBJECTS (lines, arcs, circles, texts, text placeholders)
-		silk_screen : et_pcb.type_silk_screen_package_both_sides;
+		silk_screen : et_packages.type_silk_screen_package_both_sides;
 	
 		-- ASSEMBLY DOC (FAB) OBJECTS (lines, arcs, circles, texts, text placeholders)
-		assy_doc : et_pcb.type_assembly_documentation_package_both_sides;
+		assy_doc : et_packages.type_assembly_documentation_package_both_sides;
 
 		-- KEEPOUT OBJECTS (lines, arcs, circles)
-		keepout : et_pcb.type_keepout_both_sides;
+		keepout : et_packages.type_keepout_both_sides;
 
 		procedure init_stop_and_mask is begin
 		-- Resets the temporarily status flags of solder paste and stop mask of an SMT terminal.
@@ -1887,7 +1888,9 @@ package body et_kicad_pcb is
 				raise constraint_error;
 			end invalid_layer_user;
 
-			procedure insert_fp_arc is begin
+			procedure insert_fp_arc is 
+				use et_packages;
+			begin
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 				
 				-- compute end point of arc from center, start_point and angle
@@ -1899,20 +1902,20 @@ package body et_kicad_pcb is
 				-- is formed and appended to the list of silk screen circles.
 				case arc.layer is
 					when TOP_SILK =>
-						silk_screen.top.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
+						silk_screen.top.arcs.append ((shapes.type_arc (arc) with arc.width));
 						arc_silk_screen_properties (TOP, silk_screen.top.arcs.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						silk_screen.bottom.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
+						silk_screen.bottom.arcs.append ((shapes.type_arc (arc) with arc.width));
 						arc_silk_screen_properties (BOTTOM, silk_screen.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						assy_doc.top.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
+						assy_doc.top.arcs.append ((shapes.type_arc (arc) with arc.width));
 						arc_assy_doc_properties (TOP, assy_doc.top.arcs.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						assy_doc.bottom.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
+						assy_doc.bottom.arcs.append ((shapes.type_arc (arc) with arc.width));
 						arc_assy_doc_properties (BOTTOM, assy_doc.bottom.arcs.last, log_threshold + 1);
 
 						
@@ -1934,29 +1937,29 @@ package body et_kicad_pcb is
 
 						
 					when TOP_COPPER => 
-						copper.top.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
+						copper.top.arcs.append ((shapes.type_arc (arc) with arc.width));
 						arc_copper_properties (TOP, copper.top.arcs.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						copper.bottom.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
+						copper.bottom.arcs.append ((shapes.type_arc (arc) with arc.width));
 						arc_copper_properties (BOTTOM, copper.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						stop_mask.top.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
+						stop_mask.top.arcs.append ((shapes.type_arc (arc) with arc.width));
 						arc_stop_mask_properties (TOP, stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						stop_mask.bottom.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
+						stop_mask.bottom.arcs.append ((shapes.type_arc (arc) with arc.width));
 						arc_stop_mask_properties (BOTTOM, stop_mask.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
-						stencil.top.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
+						stencil.top.arcs.append ((shapes.type_arc (arc) with arc.width));
 						arc_stencil_properties (TOP, stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						stencil.bottom.arcs.append ((et_pcb.shapes.type_arc (arc) with arc.width));
+						stencil.bottom.arcs.append ((shapes.type_arc (arc) with arc.width));
 						arc_stencil_properties (BOTTOM, stencil.bottom.arcs.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -1964,8 +1967,11 @@ package body et_kicad_pcb is
 
 			end insert_fp_arc;
 
-			procedure insert_fp_circle is begin
+			procedure insert_fp_circle is 
+				use et_packages;
+			begin
 			-- Append the circle to the container corresponding to the layer. Then log the circle properties.
+
 				
 				-- Compute the circle radius from its center and point at circle:
 				circle.radius := distance (circle.center, circle.point);
@@ -1978,71 +1984,71 @@ package body et_kicad_pcb is
 				-- Filling circles is not supported by kicad -> default to no filling.
 				case circle.layer is
 					when TOP_SILK =>
-						silk_screen.top.circles.append ((et_pcb.shapes.type_circle (circle) with 
+						silk_screen.top.circles.append ((shapes.type_circle (circle) with 
 							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
 						
 						circle_silk_screen_properties (TOP, silk_screen.top.circles.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						silk_screen.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with
+						silk_screen.bottom.circles.append ((shapes.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
 						
 						circle_silk_screen_properties (BOTTOM, silk_screen.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_ASSY =>
-						assy_doc.top.circles.append ((et_pcb.shapes.type_circle (circle) with
+						assy_doc.top.circles.append ((shapes.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
 
 						circle_assy_doc_properties (TOP, assy_doc.top.circles.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						assy_doc.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with
+						assy_doc.bottom.circles.append ((shapes.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
 
 						circle_assy_doc_properties (BOTTOM, assy_doc.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_KEEP =>
-						keepout.top.circles.append ((et_pcb.shapes.type_circle (circle) with filled => NO));
+						keepout.top.circles.append ((shapes.type_circle (circle) with filled => NO));
 
 						circle_keepout_properties (TOP, keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
-						keepout.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with filled => NO)); 
+						keepout.bottom.circles.append ((shapes.type_circle (circle) with filled => NO)); 
 						
 						circle_keepout_properties (BOTTOM, keepout.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_COPPER => 
-						copper.top.circles.append ((et_pcb.shapes.type_circle (circle) with
+						copper.top.circles.append ((shapes.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>));
 						
 						circle_copper_properties (TOP, copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						copper.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with
+						copper.bottom.circles.append ((shapes.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
 						
 						circle_copper_properties (BOTTOM, copper.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_STOP =>
-						stop_mask.top.circles.append ((et_pcb.shapes.type_circle (circle) with
+						stop_mask.top.circles.append ((shapes.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
 
 						circle_stop_mask_properties (TOP, stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						stop_mask.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with
+						stop_mask.bottom.circles.append ((shapes.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
 						
 						circle_stop_mask_properties (BOTTOM, stop_mask.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_PASTE =>
-						stencil.top.circles.append ((et_pcb.shapes.type_circle (circle) with
+						stencil.top.circles.append ((shapes.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
 
 						circle_stencil_properties (TOP, stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						stencil.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with
+						stencil.bottom.circles.append ((shapes.type_circle (circle) with
 							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
 
 						circle_stencil_properties (BOTTOM, stencil.bottom.circles.last, log_threshold + 1);
@@ -2120,7 +2126,7 @@ package body et_kicad_pcb is
 			-- This is library related stuff.
 
 				-- this cursor points to the terminal inserted last
-				terminal_cursor : et_pcb.type_terminals.cursor;
+				terminal_cursor : et_packages.type_terminals.cursor;
 				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 				terminal_inserted : boolean;
 
@@ -2310,8 +2316,8 @@ package body et_kicad_pcb is
 
 				if terminal_inserted then
 					et_pcb.terminal_properties (
-						terminal		=> et_pcb.type_terminals.element (terminal_cursor),
-						name			=> et_pcb.type_terminals.key (terminal_cursor),
+						terminal		=> et_packages.type_terminals.element (terminal_cursor),
+						name			=> et_packages.type_terminals.key (terminal_cursor),
 						log_threshold	=> log_threshold + 1);
 				else
 					log (ERROR, "duplicated terminal " & to_string (terminal_name) & " !", console => true);
@@ -2485,8 +2491,8 @@ package body et_kicad_pcb is
 		-- If the package is REAL, counts the tht and smd terminals. 
 		-- Warns operator if the package technology
 		-- is not set according to the majority of terminals respectively.
-			use et_pcb.type_terminals;
-			cursor : et_pcb.type_terminals.cursor := terminals.first;
+			use et_packages.type_terminals;
+			cursor : et_packages.type_terminals.cursor := terminals.first;
 			tht_count, smt_count : natural := 0; -- the number of THT or SMT terminals
 
 			function number (count : in natural) return string is begin
@@ -2502,7 +2508,7 @@ package body et_kicad_pcb is
 			if package_appearance = REAL then
 				log (text => "assembly technology " & to_string (package_technology), level => log_threshold + 1);
 			
-				while cursor /= et_pcb.type_terminals.no_element loop
+				while cursor /= et_packages.type_terminals.no_element loop
 					case element (cursor).technology is
 						when THT => tht_count := tht_count + 1;
 						when SMT => smt_count := smt_count + 1;
@@ -2997,17 +3003,17 @@ package body et_kicad_pcb is
 	
 	function to_board (
 		file_name		: in string; -- pwr_supply.kicad_pcb
-		lines			: in et_pcb.type_lines.list;
+		lines			: in et_packages.type_lines.list;
 		log_threshold	: in et_string_processing.type_log_level) 
 		return et_kicad_pcb.type_board is
 
 		board : et_kicad_pcb.type_board; -- to be returned
-		
+
 		use et_pcb;
-		use et_pcb.type_lines;
+		use et_packages.type_lines;
 
 		-- This cursor points to the line being processed (in the list of lines given in "lines"):
-		line_cursor : et_pcb.type_lines.cursor := lines.first;
+		line_cursor : et_packages.type_lines.cursor := lines.first;
 
 		opening_bracket : constant character := '(';
 		closing_bracket : constant character := ')';
@@ -3273,16 +3279,16 @@ package body et_kicad_pcb is
 		package_arc			: type_arc;
 		package_circle 		: type_circle;
 
-		package_stop_mask		: et_pcb.type_stop_mask_both_sides;
+		package_stop_mask		: et_packages.type_stop_mask_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
-		package_stencil			: et_pcb.type_stencil_both_sides;
+		package_stencil			: et_packages.type_stencil_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
-		package_silk_screen		: et_pcb.type_silk_screen_package_both_sides;
-		package_assy_doc		: et_pcb.type_assembly_documentation_package_both_sides;
-		package_keepout			: et_pcb.type_keepout_both_sides;
-		package_copper			: et_pcb.type_copper_package_both_sides;
+		package_silk_screen		: et_packages.type_silk_screen_package_both_sides;
+		package_assy_doc		: et_packages.type_assembly_documentation_package_both_sides;
+		package_keepout			: et_packages.type_keepout_both_sides;
+		package_copper			: et_packages.type_copper_package_both_sides;
 		
 		-- countours of a package as provided by the 3d model:
 -- 		package_contour			: et_pcb.type_package_contour; -- CS not assigned yet
@@ -3430,7 +3436,7 @@ package body et_kicad_pcb is
 		-- Fetches a new line from the given list of lines (see header of procedure to_board).
 		begin
 			next (line_cursor);
-			if line_cursor /= et_pcb.type_lines.no_element then
+			if line_cursor /= et_packages.type_lines.no_element then
 
 				-- Since a single line in container "lines" (where line_cursor points to) is a list 
 				-- of strings itself, we convert them first to a fixed string and then to a bounded string.
@@ -6134,7 +6140,9 @@ package body et_kicad_pcb is
 				end case;
 			end insert_board_arc;
 
-			procedure insert_board_circle is begin
+			procedure insert_board_circle is 
+				use et_packages;
+			begin
 				-- Compute the circle radius from its center and point at circle.
 				-- Later the angle is discarded.
 				board_circle.radius := distance (board_circle.center, board_circle.point);
@@ -6147,65 +6155,65 @@ package body et_kicad_pcb is
 				-- Filling circles is not supported by kicad -> default to no filling.
 				case board_circle.layer is
 					when TOP_SILK =>
-						board.silk_screen.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+						board.silk_screen.top.circles.append ((shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
 						
 						circle_silk_screen_properties (TOP, board.silk_screen.top.circles.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						board.silk_screen.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+						board.silk_screen.bottom.circles.append ((shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
 
 						circle_silk_screen_properties (BOTTOM, board.silk_screen.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_ASSY =>
-						board.assy_doc.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+						board.assy_doc.top.circles.append ((shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
 
 						circle_assy_doc_properties (TOP, board.assy_doc.top.circles.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						board.assy_doc.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+						board.assy_doc.bottom.circles.append ((shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
 
 						circle_assy_doc_properties (BOTTOM, board.assy_doc.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_PASTE =>
-						board.stencil.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+						board.stencil.top.circles.append ((shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
 
 						circle_stencil_properties (TOP, board.stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						board.stencil.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+						board.stencil.bottom.circles.append ((shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
 
 						circle_stencil_properties (BOTTOM, board.stencil.bottom.circles.last, log_threshold + 1);
 
 					when TOP_STOP =>
-						board.stop_mask.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+						board.stop_mask.top.circles.append ((shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
 
 						circle_stop_mask_properties (TOP, board.stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						board.stop_mask.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with
+						board.stop_mask.bottom.circles.append ((shapes.type_circle (board_circle) with
 							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
 
 						circle_stop_mask_properties (BOTTOM, board.stop_mask.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_KEEP =>
-						board.keepout.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with filled => NO));
+						board.keepout.top.circles.append ((shapes.type_circle (board_circle) with filled => NO));
 
 						circle_keepout_properties (TOP, board.keepout.top.circles.last, log_threshold + 1);
 
 					when BOT_KEEP =>
-						board.keepout.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with filled => NO));
+						board.keepout.bottom.circles.append ((shapes.type_circle (board_circle) with filled => NO));
 
 						circle_keepout_properties (BOTTOM, board.keepout.bottom.circles.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
-						board.contour.circles.append ((et_pcb.shapes.type_circle (board_circle) with locked => NO));
+						board.contour.circles.append ((shapes.type_circle (board_circle) with locked => NO));
 						circle_pcb_contour_properties (board.contour.circles.last, log_threshold + 1);
 						
 					when others => invalid_layer;
@@ -6213,7 +6221,9 @@ package body et_kicad_pcb is
 
 			end insert_board_circle;
 
-			procedure insert_board_line is begin
+			procedure insert_board_line is 
+				use et_packages;
+			begin
 				-- The board_line is converted back to its anchestor, and
 				-- depending on the layer, extended with specific properties.
 				case board_line.layer is
@@ -6278,35 +6288,37 @@ package body et_kicad_pcb is
 					
 			end insert_board_line;
 
-			procedure insert_board_text is begin
+			procedure insert_board_text is 
+				use et_packages;
+			begin
 			-- Inserts the board_text in the board. 
 			-- According to the kicad layer, the text is appended to the silk_screen, assy_doc, copper ...
 			-- of the board.
 				case board_text.layer is
 					when layer_top_silk_screen_id =>
-						board.silk_screen.top.texts.append ((et_pcb.type_text (board_text) with board_text.content));
+						board.silk_screen.top.texts.append ((et_packages.type_text (board_text) with board_text.content));
 						text_silk_screen_properties (TOP, board.silk_screen.top.texts.last, log_threshold + 1);
 						
 					when layer_bot_silk_screen_id =>
-						board.silk_screen.bottom.texts.append ((et_pcb.type_text (board_text) with board_text.content));
+						board.silk_screen.bottom.texts.append ((et_packages.type_text (board_text) with board_text.content));
 						text_silk_screen_properties (BOTTOM, board.silk_screen.bottom.texts.last, log_threshold + 1);
 
 						
 					when layer_top_assy_doc_id =>
-						board.assy_doc.top.texts.append ((et_pcb.type_text (board_text) with board_text.content));
+						board.assy_doc.top.texts.append ((et_packages.type_text (board_text) with board_text.content));
 						text_assy_doc_properties (TOP, board.assy_doc.top.texts.last, log_threshold + 1);
 						
 					when layer_bot_assy_doc_id =>
-						board.assy_doc.bottom.texts.append ((et_pcb.type_text (board_text) with board_text.content));
+						board.assy_doc.bottom.texts.append ((et_packages.type_text (board_text) with board_text.content));
 						text_assy_doc_properties (BOTTOM, board.assy_doc.bottom.texts.last, log_threshold + 1);
 
 						
 					when layer_top_stop_mask_id =>
-						board.stop_mask.top.texts.append ((et_pcb.type_text (board_text) with board_text.content));
+						board.stop_mask.top.texts.append ((et_packages.type_text (board_text) with board_text.content));
 						text_stop_mask_properties (TOP, board.stop_mask.top.texts.last, log_threshold + 1);
 						
 					when layer_bot_stop_mask_id =>
-						board.stop_mask.bottom.texts.append ((et_pcb.type_text (board_text) with board_text.content));
+						board.stop_mask.bottom.texts.append ((et_packages.type_text (board_text) with board_text.content));
 						text_stop_mask_properties (BOTTOM, board.stop_mask.bottom.texts.last, log_threshold + 1);
 
 					when others =>
@@ -6318,7 +6330,7 @@ package body et_kicad_pcb is
 						-- If text is placed in other (non-signal) layers -> error
 						if board_text.layer in type_signal_layer_id then
 							board.copper.texts.append ((
-								et_pcb.type_text (board_text) with
+								et_packages.type_text (board_text) with
 									content	=> board_text.content,
 									layer 	=> et_pcb_stack.type_signal_layer ((board_text.layer) + 1)
 								));
@@ -6335,7 +6347,9 @@ package body et_kicad_pcb is
 				end case;
 			end insert_board_text;
 			
-			procedure insert_fp_arc is begin
+			procedure insert_fp_arc is 
+				use et_packages;
+			begin
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 
 				-- compute end point of arc from center, start_point and angle
@@ -6348,20 +6362,20 @@ package body et_kicad_pcb is
 				-- is formed and appended to the list of silk screen circles.
 				case package_arc.layer is
 					when TOP_SILK =>
-						package_silk_screen.top.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
+						package_silk_screen.top.arcs.append ((shapes.type_arc (package_arc) with package_arc.width));
 						arc_silk_screen_properties (TOP, package_silk_screen.top.arcs.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						package_silk_screen.bottom.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
+						package_silk_screen.bottom.arcs.append ((shapes.type_arc (package_arc) with package_arc.width));
 						arc_silk_screen_properties (BOTTOM, package_silk_screen.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						package_assy_doc.top.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
+						package_assy_doc.top.arcs.append ((shapes.type_arc (package_arc) with package_arc.width));
 						arc_assy_doc_properties (TOP, package_assy_doc.top.arcs.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						package_assy_doc.bottom.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
+						package_assy_doc.bottom.arcs.append ((shapes.type_arc (package_arc) with package_arc.width));
 						arc_assy_doc_properties (BOTTOM, package_assy_doc.bottom.arcs.last, log_threshold + 1);
 
 						
@@ -6383,29 +6397,29 @@ package body et_kicad_pcb is
 
 						
 					when TOP_COPPER => 
-						package_copper.top.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
+						package_copper.top.arcs.append ((shapes.type_arc (package_arc) with package_arc.width));
 						arc_copper_properties (TOP, package_copper.top.arcs.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						package_copper.bottom.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
+						package_copper.bottom.arcs.append ((shapes.type_arc (package_arc) with package_arc.width));
 						arc_copper_properties (BOTTOM, package_copper.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						package_stop_mask.top.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
+						package_stop_mask.top.arcs.append ((shapes.type_arc (package_arc) with package_arc.width));
 						arc_stop_mask_properties (TOP, package_stop_mask.top.arcs.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						package_stop_mask.bottom.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
+						package_stop_mask.bottom.arcs.append ((shapes.type_arc (package_arc) with package_arc.width));
 						arc_stop_mask_properties (BOTTOM, package_stop_mask.bottom.arcs.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
-						package_stencil.top.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
+						package_stencil.top.arcs.append ((shapes.type_arc (package_arc) with package_arc.width));
 						arc_stencil_properties (TOP, package_stencil.top.arcs.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						package_stencil.bottom.arcs.append ((et_pcb.shapes.type_arc (package_arc) with package_arc.width));
+						package_stencil.bottom.arcs.append ((shapes.type_arc (package_arc) with package_arc.width));
 						arc_stencil_properties (BOTTOM, package_stencil.bottom.arcs.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -6413,7 +6427,9 @@ package body et_kicad_pcb is
 
 			end insert_fp_arc;
 			
-			procedure insert_fp_circle is begin
+			procedure insert_fp_circle is 
+				use et_packages;
+			begin
 			-- Append the circle to the container corresponding to the layer. Then log the circle properties.
 
 				-- Compute the circle radius from its center and point at circle:
@@ -6428,71 +6444,71 @@ package body et_kicad_pcb is
 				-- Filling circles is not supported by kicad -> default to no filling.
 				case package_circle.layer is
 					when TOP_SILK =>
-						package_silk_screen.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+						package_silk_screen.top.circles.append ((shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
 
 						circle_silk_screen_properties (TOP, package_silk_screen.top.circles.last, log_threshold + 1);
 						
 					when BOT_SILK =>
-						package_silk_screen.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+						package_silk_screen.bottom.circles.append ((shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
 						
 						circle_silk_screen_properties (BOTTOM, package_silk_screen.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_ASSY =>
-						package_assy_doc.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+						package_assy_doc.top.circles.append ((shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
 
 						circle_assy_doc_properties (TOP, package_assy_doc.top.circles.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
-						package_assy_doc.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+						package_assy_doc.bottom.circles.append ((shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
 						
 						circle_assy_doc_properties (BOTTOM, package_assy_doc.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_KEEP =>
-						package_keepout.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with filled => NO)); 
+						package_keepout.top.circles.append ((shapes.type_circle (package_circle) with filled => NO)); 
 						
 						circle_keepout_properties (TOP, package_keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
-						package_keepout.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with filled => NO)); 
+						package_keepout.bottom.circles.append ((shapes.type_circle (package_circle) with filled => NO)); 
 						
 						circle_keepout_properties (BOTTOM, package_keepout.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_COPPER => 
-						package_copper.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+						package_copper.top.circles.append ((shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
 
 						circle_copper_properties (TOP, package_copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						package_copper.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+						package_copper.bottom.circles.append ((shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>));
 
 						circle_copper_properties (BOTTOM, package_copper.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_STOP =>
-						package_stop_mask.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+						package_stop_mask.top.circles.append ((shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
 
 						circle_stop_mask_properties (TOP, package_stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						package_stop_mask.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+						package_stop_mask.bottom.circles.append ((shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
 						
 						circle_stop_mask_properties (BOTTOM, package_stop_mask.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_PASTE =>
-						package_stencil.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+						package_stencil.top.circles.append ((shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
 						
 						circle_stencil_properties (TOP, package_stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						package_stencil.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with
+						package_stencil.bottom.circles.append ((shapes.type_circle (package_circle) with
 							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
 						
 						circle_stencil_properties (BOTTOM, package_stencil.bottom.circles.last, log_threshold + 1);
@@ -6502,7 +6518,9 @@ package body et_kicad_pcb is
 
 			end insert_fp_circle;
 
-			procedure insert_fp_line is begin
+			procedure insert_fp_line is 
+				use et_packages;
+			begin
 			-- Append the line to the container corresponding to the layer. Then log the line properties.
 				case package_line.layer is
 					when TOP_SILK =>
@@ -6572,9 +6590,11 @@ package body et_kicad_pcb is
 				-- This flag goes true once a terminal is to be inserted that already exists (by its name).
 				terminal_inserted : boolean;
 
-				shape : et_pcb.type_pad_outline;
+				shape : et_packages.type_pad_outline;
 
-				procedure insert_tht is begin
+				procedure insert_tht is 
+					use et_packages;
+				begin
 				-- NOTE: The pad shape (stored in shape) now must be assigned to
 				-- a therminal with either a circular or an oval hole.
 					case terminal_hole_shape is
@@ -6778,8 +6798,8 @@ package body et_kicad_pcb is
 				-- Log terminal properties and reset net name if terminal could be inserted.
 				-- Otherwise abort due to a duplicated usage:
 				if terminal_inserted then
-					et_pcb.terminal_properties (
-						terminal		=> et_pcb.type_terminal (et_kicad_pcb.type_terminals.element (terminal_cursor)),
+					et_packages.terminal_properties (
+						terminal		=> et_packages.type_terminal (et_kicad_pcb.type_terminals.element (terminal_cursor)),
 						name			=> et_kicad_pcb.type_terminals.key (terminal_cursor),
 						log_threshold	=> log_threshold + 1);
 
@@ -6805,8 +6825,10 @@ package body et_kicad_pcb is
 					
 			end insert_terminal;
 
-			procedure insert_fp_text is begin
-			
+			procedure insert_fp_text is 
+				use et_packages;
+			begin
+				
 				-- Since there is no alignment information provided, use default values:
 				package_text.alignment := (horizontal => CENTER, vertical => BOTTOM);
 
@@ -6821,12 +6843,12 @@ package body et_kicad_pcb is
 						case package_text.layer is
 							when TOP_SILK =>
 								package_silk_screen.top.placeholders.append (
-									(et_pcb.type_text (package_text) with meaning => NAME));
+									(et_packages.type_text (package_text) with meaning => NAME));
 								placeholder_silk_screen_properties (TOP, package_silk_screen.top.placeholders.last, log_threshold + 1);
 								
 							when BOT_SILK =>
 								package_silk_screen.bottom.placeholders.append (
-									(et_pcb.type_text (package_text) with meaning => NAME));
+									(et_packages.type_text (package_text) with meaning => NAME));
 								placeholder_silk_screen_properties (BOTTOM, package_silk_screen.bottom.placeholders.last, log_threshold + 1);
 
 							when others => -- should never happen
@@ -6843,12 +6865,12 @@ package body et_kicad_pcb is
 						case package_text.layer is
 							when TOP_ASSY =>
 								package_assy_doc.top.placeholders.append (
-									(et_pcb.type_text (package_text) with meaning => VALUE));
+									(et_packages.type_text (package_text) with meaning => VALUE));
 								placeholder_assy_doc_properties (TOP, package_assy_doc.top.placeholders.last, log_threshold + 1);
 								
 							when BOT_ASSY =>
 								package_assy_doc.bottom.placeholders.append (
-									(et_pcb.type_text (package_text) with meaning => VALUE));
+									(et_packages.type_text (package_text) with meaning => VALUE));
 								placeholder_assy_doc_properties (BOTTOM, package_assy_doc.bottom.placeholders.last, log_threshold + 1);
 								
 							when others => -- should never happen
@@ -6868,22 +6890,22 @@ package body et_kicad_pcb is
 						case package_text.layer is
 							when TOP_SILK => 
 								package_silk_screen.top.texts.append (
-									(et_pcb.type_text (package_text) with content => package_text.content));
+									(et_packages.type_text (package_text) with content => package_text.content));
 								text_silk_screen_properties (TOP, package_silk_screen.top.texts.last, log_threshold + 1);
 								
 							when BOT_SILK => 
 								package_silk_screen.bottom.texts.append (
-									(et_pcb.type_text (package_text) with content => package_text.content));
+									(et_packages.type_text (package_text) with content => package_text.content));
 								text_silk_screen_properties (BOTTOM, package_silk_screen.bottom.texts.last, log_threshold + 1);
 								
 							when TOP_ASSY => 
 								package_assy_doc.top.texts.append (
-									(et_pcb.type_text (package_text) with content => package_text.content));
+									(et_packages.type_text (package_text) with content => package_text.content));
 								text_assy_doc_properties (TOP, package_assy_doc.top.texts.last, log_threshold + 1);
 								
 							when BOT_ASSY => 
 								package_assy_doc.bottom.texts.append (
-									(et_pcb.type_text (package_text) with content => package_text.content));
+									(et_packages.type_text (package_text) with content => package_text.content));
 								text_assy_doc_properties (BOTTOM, package_assy_doc.bottom.texts.last, log_threshold + 1);
 								
 							when others -- should never happen. kicad does not allow texts in signal layers 
@@ -6895,6 +6917,7 @@ package body et_kicad_pcb is
 
 			procedure insert_segment is
 			-- inserts a segment in the list "segments"
+				use et_packages;
 			begin
 				type_segments.append (
 					container	=> board.segments,
@@ -6913,6 +6936,7 @@ package body et_kicad_pcb is
 
 			procedure insert_via is
 			-- inserts a via in the list "vias"
+				use et_packages;
 			begin
 				if via.layer_start > via.layer_end then
 					log (ERROR, "via start layer id must be less than end layer id !", console => true);
@@ -6923,7 +6947,7 @@ package body et_kicad_pcb is
 					container	=> board.vias,
 					new_item	=> via);
 
-				log (text => "via" & to_string (et_pcb.type_drill (via)) & -- position and drill diameter
+				log (text => "via" & to_string (type_drill (via)) & -- position and drill diameter
 					" diameter_total" & to_string (via.diameter_total) &
 					" layer_start" & to_string (via.layer_start) &
 					" layer_end" & to_string (via.layer_end) &
@@ -6936,6 +6960,7 @@ package body et_kicad_pcb is
 
 			procedure add_polygon_corner_point is
 			-- adds the current polygon_point to the corner points of the current polygon
+				use et_packages;
 				use type_polygon_points;
 				point_cursor : type_polygon_points.cursor;
 				inserted : boolean := true;
@@ -6957,6 +6982,7 @@ package body et_kicad_pcb is
 
 			procedure insert_polygon is
 			-- inserts the current polygon in the list "polygons"
+				use et_packages;
 				use type_polygon_points;
 			begin
 				board.polygons.append (polygon);
@@ -6964,7 +6990,7 @@ package body et_kicad_pcb is
 				log (text => "polygon/zone net " & et_general.to_string (polygon.net_name) &
 					 " " & text_polygon_signal_layer & to_string (polygon.layer) &
 					 " timestamp " & string (polygon.timestamp) & -- CS use constant
-					 " " & text_polygon_priority_level & et_pcb.to_string (polygon.priority_level) &
+					 " " & text_polygon_priority_level & et_packages.to_string (polygon.priority_level) &
 					 -- CS: hatch_style and hatch_width are related to the display mode in the GUI.
 					 -- So there is no need to output this stuff here.
 					 --" hatch_width" & to_string (polygon.hatch_width) & -- CS use constant for "hatch width" ?
@@ -7240,8 +7266,8 @@ package body et_kicad_pcb is
 		board_handle : ada.text_io.file_type;
 		line : type_fields_of_line; -- a line of the board file
 
-		use et_pcb.type_lines;
-		lines : et_pcb.type_lines.list; -- all lines of the board file
+		use et_packages.type_lines;
+		lines : et_packages.type_lines.list; -- all lines of the board file
 
 		-- Here the board data goes. 
 		-- CS: If Kicad supports multi boards some day, this must become a list of boards.
@@ -7337,7 +7363,7 @@ package body et_kicad_pcb is
 				package_reference	: et_libraries.type_device_name;
 				package_position	: et_pcb_coordinates.type_package_position;
 
-				text_placeholders	: et_pcb.type_text_placeholders;
+				text_placeholders	: et_packages.type_text_placeholders;
 
 				function to_net_id (name : in type_net_name.bounded_string) return type_net_id is
 				-- Converts the given net name to a net id.
@@ -7416,7 +7442,7 @@ package body et_kicad_pcb is
 					use type_vias;
 					via_cursor : type_vias.cursor := board.vias.first;
 					via : et_pcb.type_via; -- an ET via
-					restring : et_pcb.type_restring_width;
+					restring : et_packages.type_restring_width;
 
 					use type_polygons;
 					polygon_cursor : type_polygons.cursor := board.polygons.first;
@@ -7433,7 +7459,7 @@ package body et_kicad_pcb is
 						if element (segment_cursor).net_id = net_id then
 
 							-- copy start/end point and line width (by a conversion to the base type)
-							line := (et_pcb.type_copper_line (element (segment_cursor)) with 
+							line := (et_packages.type_copper_line (element (segment_cursor)) with 
 
 									-- Translate the kicad layer id to the ET signal layer:
 									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
@@ -7469,7 +7495,7 @@ package body et_kicad_pcb is
 							restring := (element (via_cursor).diameter_total - element (via_cursor).diameter) / 2;
 						
 							-- copy position, drill diameter (by a conversion to the base type)
-							via := (et_pcb.type_drill (element (via_cursor)) with 
+							via := (et_packages.type_drill (element (via_cursor)) with 
 
 									-- Translate the kicad layer id to the ET signal layer:
 									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
@@ -7515,10 +7541,10 @@ package body et_kicad_pcb is
 							-- net_id, timestamp, hatch_style, hatch_width, filled, fill_mode_segment, arc_segments
 							
 							case element (polygon_cursor).pad_connection is
-								when et_pcb.THERMAL =>
+								when et_packages.THERMAL =>
 									route.polygons.append (
-										new_item => (et_pcb.type_copper_polygon (element (polygon_cursor)) with
-											pad_connection		=> et_pcb.THERMAL,
+										new_item => (et_packages.type_copper_polygon (element (polygon_cursor)) with
+											pad_connection		=> et_packages.THERMAL,
 											width_min			=> element (polygon_cursor).min_thickness,
 
 											-- Translate the kicad layer id to the ET signal layer:
@@ -7533,10 +7559,10 @@ package body et_kicad_pcb is
 											thermal_width		=> element (polygon_cursor).thermal_width
 										));
 
-								when et_pcb.SOLID =>
+								when et_packages.SOLID =>
 									route.polygons.append (
-										new_item => (et_pcb.type_copper_polygon (element (polygon_cursor)) with
-											pad_connection		=> et_pcb.SOLID,
+										new_item => (et_packages.type_copper_polygon (element (polygon_cursor)) with
+											pad_connection		=> et_packages.SOLID,
 											width_min			=> element (polygon_cursor).min_thickness,
 											
 											-- Translate the kicad layer id to the ET signal layer:
@@ -7549,10 +7575,10 @@ package body et_kicad_pcb is
 											solid_technology	=> element (polygon_cursor).pad_technology
 										));
 								
-								when et_pcb.NONE =>
+								when et_packages.NONE =>
 									route.polygons.append (
-										new_item => (et_pcb.type_copper_polygon (element (polygon_cursor)) with
-											pad_connection		=> et_pcb.NONE,
+										new_item => (et_packages.type_copper_polygon (element (polygon_cursor)) with
+											pad_connection		=> et_packages.NONE,
 											width_min			=> element (polygon_cursor).min_thickness,
 											
 											-- Translate the kicad layer id to the ET signal layer:
@@ -7566,7 +7592,7 @@ package body et_kicad_pcb is
 
 							end case;
 
-							et_pcb.route_polygon_properties (route.polygons.last, log_threshold + 3);
+							et_packages.route_polygon_properties (route.polygons.last, log_threshold + 3);
 
 						end if;
 							
@@ -7596,10 +7622,10 @@ package body et_kicad_pcb is
 					component.text_placeholders := text_placeholders;
 				end update_component_in_schematic;
 
-				function to_placeholders return et_pcb.type_text_placeholders is 
+				function to_placeholders return et_packages.type_text_placeholders is 
 				-- Returns the placeholders for reference and value of the current package (indicated by package_cursor).
 				-- The return distinguishes them by the face (TOP/BOTTOM), silk screen and assembly documentation.
-					use et_pcb;
+					use et_packages;
 					use et_pcb_coordinates;
 					placeholders : type_text_placeholders; -- to be returned
 
@@ -7607,10 +7633,11 @@ package body et_kicad_pcb is
 						comp_reference	: in et_libraries.type_device_name;
 						comp_package	: in type_package_board) is
 
-						use et_pcb.type_text_placeholders_package;
+						use et_packages.type_text_placeholders_package;
 
 						-- points to a placeholder in the package
-						cursor : et_pcb.type_text_placeholders_package.cursor;
+						cursor : et_packages.type_text_placeholders_package.cursor;
+						
 					begin -- query_placeholders 
 						-- Collect placeholders for REFERENCE in TOP silk screen:
 						cursor := comp_package.silk_screen.top.placeholders.first;
@@ -7620,7 +7647,7 @@ package body et_kicad_pcb is
 	
 								type_text_placeholders_package.append (
 									container	=> placeholders.silk_screen.top,
-									new_item	=> (et_pcb.type_text (element (cursor)) with meaning => NAME));
+									new_item	=> (et_packages.type_text (element (cursor)) with meaning => NAME));
 	
 								-- log placeholder properties
 								placeholder_silk_screen_properties (TOP, placeholders.silk_screen.top.last, log_threshold + 3);
@@ -7637,7 +7664,7 @@ package body et_kicad_pcb is
 
 								type_text_placeholders_package.append (
 									container	=> placeholders.silk_screen.bottom,
-									new_item	=> (et_pcb.type_text (element (cursor)) with meaning => NAME));
+									new_item	=> (et_packages.type_text (element (cursor)) with meaning => NAME));
 
 								-- log placeholder properties
 								placeholder_silk_screen_properties (BOTTOM, placeholders.silk_screen.bottom.last, log_threshold + 3);
@@ -7654,7 +7681,7 @@ package body et_kicad_pcb is
 
 								type_text_placeholders_package.append (
 									container	=> placeholders.assy_doc.top,
-									new_item	=> (et_pcb.type_text (element (cursor)) with meaning => VALUE));
+									new_item	=> (et_packages.type_text (element (cursor)) with meaning => VALUE));
 
 								-- log placeholder properties
 								placeholder_assy_doc_properties (TOP, placeholders.assy_doc.top.last, log_threshold + 3);
@@ -7671,7 +7698,7 @@ package body et_kicad_pcb is
 
 								type_text_placeholders_package.append (
 									container	=> placeholders.assy_doc.bottom,
-									new_item	=> (et_pcb.type_text (element (cursor)) with meaning => VALUE));
+									new_item	=> (et_packages.type_text (element (cursor)) with meaning => VALUE));
 
 								-- log placeholder properties
 								placeholder_assy_doc_properties (BOTTOM, placeholders.assy_doc.bottom.last, log_threshold + 3);
@@ -7852,7 +7879,7 @@ package body et_kicad_pcb is
 							-- net_id, timestamp, hatch_style, hatch_width, filled, fill_mode_segment, arc_segments
 							
 							module.board.copper.polygons.append (
-								new_item => (et_pcb.type_copper_polygon (element (polygon_cursor)) with
+								new_item => (et_packages.type_copper_polygon (element (polygon_cursor)) with
 									width_min	=> element (polygon_cursor).min_thickness,
 
 									-- Translate the kicad layer id to the ET signal layer:
@@ -7862,7 +7889,7 @@ package body et_kicad_pcb is
 									layer 		=> et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1)
 								));
 
-							et_pcb.floating_copper_polygon_properties (module.board.copper.polygons.last, log_threshold + 2);
+							et_packages.floating_copper_polygon_properties (module.board.copper.polygons.last, log_threshold + 2);
 							log (WARNING, "polygon is not connected with any net !", level => log_threshold + 2);
 
 						end if;
@@ -8109,10 +8136,10 @@ package body et_kicad_pcb is
 		use type_libraries;
 		library_cursor : type_libraries.cursor;
 
-		procedure validate_terminals (package_terminals : in et_pcb.type_terminals.map) is
+		procedure validate_terminals (package_terminals : in et_packages.type_terminals.map) is
 		-- Test if the terminals of the terminal_port_map are also in the given package.
 		-- Raises constraint_error if a terminal could not be found in the package.
-			use et_pcb.type_terminals; -- the terminals of the package
+			use et_packages.type_terminals; -- the terminals of the package
 			use et_libraries.type_terminal_port_map;
 		
 			-- This cursor points to the terminal in the terminal_port_map
@@ -8127,7 +8154,7 @@ package body et_kicad_pcb is
 			while terminal_cursor /= et_libraries.type_terminal_port_map.no_element loop
 				terminal_name_in_map := key (terminal_cursor);
 
-				if package_terminals.find (terminal_name_in_map) = et_pcb.type_terminals.no_element then
+				if package_terminals.find (terminal_name_in_map) = et_packages.type_terminals.no_element then
 					log (ERROR, "package " & et_libraries.to_string (packge => package_name)
 						 & " does not have a terminal '" 
 						 & et_libraries.to_string (terminal_name_in_map) & "' !", console => true);
@@ -8146,7 +8173,7 @@ package body et_kicad_pcb is
 			package_cursor : type_packages_library.cursor;
 
 			use type_packages_library;
-			use et_pcb.type_terminals;
+			use et_packages.type_terminals;
 			use et_libraries.type_terminal_port_map;
 			terminals : et_libraries.type_terminal_count;
 		begin
@@ -8231,7 +8258,7 @@ package body et_kicad_pcb is
 		procedure locate_package (
 			library_name	: in type_package_library_name.bounded_string;
 			packages		: in type_packages_library.map) is
-			use et_pcb.type_terminals;
+			use et_packages.type_terminals;
 			use type_packages_library;
 			package_cursor : type_packages_library.cursor;
 		begin
