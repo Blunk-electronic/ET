@@ -639,8 +639,8 @@ board led_driver delete outline 40 50 1 # crossing 40/50, accuracy 1
 ```
 
 ## SILK SCREEN
-This is (mostly) the white ink that the PCB house applies onto the board. Whatever you draw 
-in this layer affects the PCB manufacturing.
+This is (mostly) the white ink that the PCB house applies onto the board. 
+NOTE: Whatever you draw in here affects the PCB manufacturing.
 ```
 board led_driver draw silk top line 2.5 0 0 160 0 # top, line, width 2.5mm, from 0/0 to 160/0
 ```
@@ -687,6 +687,9 @@ board led_driver draw keepout top circle 50 50 40 # circle, not filled, center 5
 
 
 ## SOLDER STOP MASK
+The solder stop mask defines the areas where the conductor plane (mostly copper) is exposed,
+means where no stop laquer is applied.
+NOTE: Whatever you draw here affects the PCB manufacturing.
 Objects in the solder stop mask are drawn and deleted the like those in silk screen (see above).
 The difference is the 4th keyword 'stop'. An example to draw a line:
 ```
