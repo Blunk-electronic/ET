@@ -383,6 +383,21 @@ package et_pcb is
 		cursor			: in type_vias.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
+-- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
+	procedure line_pcb_contour_properties (
+	-- Logs the properties of the given line of pcb contour
+		cursor			: in type_pcb_contour_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure arc_pcb_contour_properties (
+	-- Logs the properties of the given arc of pcb contour
+		cursor			: in type_pcb_contour_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure circle_pcb_contour_properties (
+	-- Logs the properties of the given circle of pcb contour
+		cursor			: in type_pcb_contour_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
 	
 
 

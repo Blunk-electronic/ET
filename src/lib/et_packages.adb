@@ -936,7 +936,7 @@ package body et_packages is
 		line : type_pcb_contour_line;
 	begin
 		line := element (cursor);
-		log (text => "PCB contour (edge cuts / outline) line face" & latin_1.space
+		log (text => "PCB contour (edge cuts / outline) line" & latin_1.space
 			 & to_string (type_line (line)), level => log_threshold);
 	end line_pcb_contour_properties;
 
@@ -960,7 +960,7 @@ package body et_packages is
 		circle : type_pcb_contour_circle;
 	begin
 		circle := element (cursor);
-		log (text => "PCB contour (edge cuts / outline) circle face" & latin_1.space 
+		log (text => "PCB contour (edge cuts / outline) circle" & latin_1.space 
 			& to_string (type_circle (circle)), level => log_threshold);
 	end circle_pcb_contour_properties;
 

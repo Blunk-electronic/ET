@@ -55,6 +55,7 @@ with et_string_processing;
 with et_export;
 with et_import;
 with et_csv;
+with et_packages;
 
 package body et_schematic is
 	use et_coordinates.geometry;
@@ -260,7 +261,7 @@ package body et_schematic is
 		package_name := package_model (device);
 
 		-- ask for the package status (real or virtual) and return the result right away:
-		return et_pcb.is_real (package_name);
+		return et_packages.is_real (package_name);
 	end has_real_package;
 	
 	function to_string (

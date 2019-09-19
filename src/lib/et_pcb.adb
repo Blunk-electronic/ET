@@ -248,6 +248,45 @@ package body et_pcb is
 			 , level => log_threshold);
 	end route_via_properties;
 
+-- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
+	procedure line_pcb_contour_properties (
+	-- Logs the properties of the given line of pcb contour
+		cursor			: in type_pcb_contour_lines.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_pcb_contour_lines;
+		line : type_pcb_contour_line;
+	begin
+		line := element (cursor);
+		log (text => "PCB contour (edge cuts / outline) line" & latin_1.space
+			 & to_string (type_line (line)), level => log_threshold);
+			-- CS lock status
+	end line_pcb_contour_properties;
+
+	procedure arc_pcb_contour_properties (
+	-- Logs the properties of the given arc of pcb contour
+		cursor			: in type_pcb_contour_arcs.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_pcb_contour_arcs;
+		arc : type_pcb_contour_arc;
+	begin
+		arc := element (cursor);
+		log (text => "PCB contour (edge cuts / outline) arc" & latin_1.space 
+			 & to_string (type_arc (arc)), level => log_threshold);
+			-- CS lock status
+	end arc_pcb_contour_properties;
+
+	procedure circle_pcb_contour_properties (
+	-- Logs the properties of the given circle of pcb contour
+		cursor			: in type_pcb_contour_circles.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_pcb_contour_circles;
+		circle : type_pcb_contour_circle;
+	begin
+		circle := element (cursor);
+		log (text => "PCB contour (edge cuts / outline) circle" & latin_1.space 
+			 & to_string (type_circle (circle)), level => log_threshold);
+			-- CS lock status
+	end circle_pcb_contour_properties;
 
 
 	
