@@ -2415,17 +2415,17 @@ package body board_ops is
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
 
-			use type_pcb_contour_lines;
-			use type_pcb_contour_arcs;
-			use type_pcb_contour_circles;
-			line_cursor   : type_pcb_contour_lines.cursor   := module.board.contour.lines.first;
-			arc_cursor    : type_pcb_contour_arcs.cursor    := module.board.contour.arcs.first;
-			circle_cursor : type_pcb_contour_circles.cursor := module.board.contour.circles.first;
+			use et_pcb.type_pcb_contour_lines;
+			use et_pcb.type_pcb_contour_arcs;
+			use et_pcb.type_pcb_contour_circles;
+			line_cursor   : et_pcb.type_pcb_contour_lines.cursor   := module.board.contour.lines.first;
+			arc_cursor    : et_pcb.type_pcb_contour_arcs.cursor    := module.board.contour.arcs.first;
+			circle_cursor : et_pcb.type_pcb_contour_circles.cursor := module.board.contour.circles.first;
 
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 		begin
 			-- first search for a matching segment among the lines
-			while line_cursor /= type_pcb_contour_lines.no_element loop
+			while line_cursor /= et_pcb.type_pcb_contour_lines.no_element loop
 				if on_line (point, element (line_cursor), accuracy) then
 					delete (module.board.contour.lines, line_cursor);
 					deleted := true;
@@ -2436,7 +2436,7 @@ package body board_ops is
 
 			-- if no line found, search among arcs
 			if not deleted then
-				while arc_cursor /= type_pcb_contour_arcs.no_element loop
+				while arc_cursor /= et_pcb.type_pcb_contour_arcs.no_element loop
 					
 					if on_arc (point, element (arc_cursor), accuracy) then
 						delete (module.board.contour.arcs, arc_cursor);
@@ -2450,7 +2450,7 @@ package body board_ops is
 
 			-- if no arc found, search among circles
 			if not deleted then
-				while circle_cursor /= type_pcb_contour_circles.no_element loop
+				while circle_cursor /= et_pcb.type_pcb_contour_circles.no_element loop
 					
 					if on_circle (point, element (circle_cursor), accuracy) then
 						delete (module.board.contour.circles, circle_cursor);
@@ -2500,8 +2500,8 @@ package body board_ops is
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.type_silk_lines;
+			
+			use type_silk_lines;
 		begin
 			case face is
 				when TOP =>
@@ -2546,8 +2546,8 @@ package body board_ops is
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.type_silk_arcs;
+
+			use type_silk_arcs;
 		begin
 			case face is
 				when TOP =>
@@ -2594,8 +2594,8 @@ package body board_ops is
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.type_silk_circles;
+
+			use type_silk_circles;
 		begin
 			case face is
 				when TOP =>
@@ -2644,7 +2644,7 @@ package body board_ops is
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
+
 			use type_silk_lines;
 			use type_silk_arcs;
 			use type_silk_circles;
@@ -2750,8 +2750,8 @@ package body board_ops is
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.type_doc_lines;
+
+			use type_doc_lines;
 		begin
 			case face is
 				when TOP =>
@@ -2796,8 +2796,8 @@ package body board_ops is
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.type_doc_arcs;
+
+			use type_doc_arcs;
 		begin
 			case face is
 				when TOP =>
@@ -2844,8 +2844,8 @@ package body board_ops is
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.type_doc_circles;
+
+			use type_doc_circles;
 		begin
 			case face is
 				when TOP =>
@@ -2894,7 +2894,7 @@ package body board_ops is
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
+
 			use type_doc_lines;
 			use type_doc_arcs;
 			use type_doc_circles;
@@ -2999,8 +2999,8 @@ package body board_ops is
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.type_keepout_lines;
+
+			use type_keepout_lines;
 		begin
 			case face is
 				when TOP =>
@@ -3045,8 +3045,8 @@ package body board_ops is
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.type_keepout_arcs;
+
+			use type_keepout_arcs;
 		begin
 			case face is
 				when TOP =>
@@ -3093,8 +3093,8 @@ package body board_ops is
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.type_keepout_circles;
+
+			use type_keepout_circles;
 		begin
 			case face is
 				when TOP =>
@@ -3143,7 +3143,7 @@ package body board_ops is
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
+
 			use type_keepout_lines;
 			use type_keepout_arcs;
 			use type_keepout_circles;
@@ -3248,8 +3248,8 @@ package body board_ops is
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.type_stop_lines;
+
+			use type_stop_lines;
 		begin
 			case face is
 				when TOP =>
@@ -3294,8 +3294,8 @@ package body board_ops is
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.type_stop_arcs;
+
+			use type_stop_arcs;
 		begin
 			case face is
 				when TOP =>
@@ -3342,8 +3342,8 @@ package body board_ops is
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.type_stop_circles;
+
+			use type_stop_circles;
 		begin
 			case face is
 				when TOP =>
@@ -3392,7 +3392,7 @@ package body board_ops is
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
+
 			use type_stop_lines;
 			use type_stop_arcs;
 			use type_stop_circles;
@@ -3497,8 +3497,8 @@ package body board_ops is
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.type_stencil_lines;
+
+			use type_stencil_lines;
 		begin
 			case face is
 				when TOP =>
@@ -3543,8 +3543,8 @@ package body board_ops is
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.type_stencil_arcs;
+
+			use type_stencil_arcs;
 		begin
 			case face is
 				when TOP =>
@@ -3591,8 +3591,8 @@ package body board_ops is
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
-			use et_pcb.type_stencil_circles;
+
+			use type_stencil_circles;
 		begin
 			case face is
 				when TOP =>
@@ -3641,7 +3641,7 @@ package body board_ops is
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
+
 			use type_stencil_lines;
 			use type_stencil_arcs;
 			use type_stencil_circles;
