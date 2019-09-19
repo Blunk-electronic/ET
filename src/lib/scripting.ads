@@ -177,12 +177,12 @@ package scripting is
 		FLIP,
 		MAKE,
 		MOVE,
-		PLACE,
+		--PLACE,
 		RIPUP,
 		ROTATE,
 		ROUTE,
-		SET,
-		WRITE
+		SET
+		--WRITE
 		);
 
 	function to_string (verb : in type_verb_board) return string;
@@ -204,6 +204,7 @@ package scripting is
 		PURPOSE,
 		ROUTE_RESTRICT,
 		SILK, -- silk screen
+		STENCIL, -- solder mask
 		STOP, -- solder stop mask
 		SUBMODULE,
 		TEXT,

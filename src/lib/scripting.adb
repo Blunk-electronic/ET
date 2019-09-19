@@ -1961,6 +1961,318 @@ package body scripting is
 					when others => null;
 				end case;
 			end draw_via_restrict;
+
+			procedure draw_stop_mask is
+				shape : type_shape := to_shape (f (6));
+			begin
+				case shape is
+					when LINE =>
+						case fields is
+							when 11 =>
+								board_ops.draw_stop_line (
+									module_name 	=> module,
+									face			=> to_face (f (5)),
+									line			=> (
+												width		=> to_distance (f (7)),
+												start_point	=> type_point (set (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+												end_point	=> type_point (set (
+													x => to_distance (f (10)),
+													y => to_distance (f (11))))
+												),
+
+									log_threshold	=> log_threshold + 1);
+
+							when 12 .. count_type'last => command_too_long (fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when ARC =>
+						case fields is
+							when 13 =>
+								board_ops.draw_stop_arc (
+									module_name 	=> module,
+									face			=> to_face (f (5)),
+									arc				=> (
+												width	=> to_distance (f (7)),
+												center	=> type_point (set (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+												start_point	=> type_point (set (
+													x => to_distance (f (10)),
+													y => to_distance (f (11)))),
+												end_point	=> type_point (set (
+													x => to_distance (f (12)),
+													y => to_distance (f (13))))
+												),
+
+									log_threshold	=> log_threshold + 1);
+
+							when 14 .. count_type'last => command_too_long (fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when CIRCLE =>
+						case fields is
+							when 10 =>
+
+							-- The 7th field can either be a line width like 2.5 or a 
+							-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
+								if is_number (f (7)) then
+
+									-- Circle is not filled and has a circumfence line width
+									-- specified in field 7.
+									board_ops.draw_stop_circle (
+										module_name 	=> module,
+										face			=> to_face (f (5)),
+										circle			=> 
+													(
+													filled		=> NO,
+													fill_style	=> fill_style_default, -- don't care here
+													width	=> to_distance (f (7)),
+													center	=> type_point (set (
+																x => to_distance (f (8)),
+																y => to_distance (f (9)))),
+													radius	=> to_distance (f (10))
+													),
+										log_threshold	=> log_threshold + 1);
+								else
+									
+									-- Circle is filled with the fill style specified in field 7:
+									case to_fill_style (f (7)) is
+										when CUTOUT =>
+									
+											board_ops.draw_stop_circle (
+												module_name 	=> module,
+												face			=> to_face (f (5)),
+												circle			=> 
+															(
+															filled		=> YES,
+															fill_style	=> CUTOUT,
+															center	=> type_point (set (
+																		x => to_distance (f (8)),
+																		y => to_distance (f (9)))),
+															radius	=> to_distance (f (10))
+															),
+												log_threshold	=> log_threshold + 1);
+
+										when SOLID =>
+									
+											board_ops.draw_stop_circle (
+												module_name 	=> module,
+												face			=> to_face (f (5)),
+												circle			=> 
+															(
+															filled		=> YES,
+															fill_style	=> SOLID,
+															center	=> type_point (set (
+																		x => to_distance (f (8)),
+																		y => to_distance (f (9)))),
+															radius	=> to_distance (f (10))
+															),
+												log_threshold	=> log_threshold + 1);
+
+										when HATCHED => command_incomplete;
+
+									end case;
+								end if;
+									
+							when 12 =>
+								-- This is going to be a hatched circle.
+								-- In this case the 7th field MUST be fill style HATCHED.
+								if is_number (f (7)) then
+									expect_fill_style (HATCHED, 7); -- error
+								else
+									case to_fill_style (f (7)) is
+										when HATCHED =>
+											board_ops.draw_stop_circle (
+												module_name 	=> module,
+												face			=> to_face (f (5)),
+												circle			=> 
+															(
+															filled		=> YES,
+															fill_style	=> HATCHED,
+															center	=> type_point (set (
+																		x => to_distance (f (8)),
+																		y => to_distance (f (9)))),
+															radius	=> to_distance (f (10)),
+															hatching_line_width	=> to_distance (f (11)),
+															hatching_spacing	=> to_distance (f (12))
+															),
+												log_threshold	=> log_threshold + 1);
+
+										when others => expect_fill_style (HATCHED, 7);
+									end case;
+								end if;
+
+							when 13 .. count_type'last => command_too_long (fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+								
+					when others => null;
+				end case;
+			end draw_stop_mask;
+
+			procedure draw_stencil is
+				shape : type_shape := to_shape (f (6));
+			begin
+				case shape is
+					when LINE =>
+						case fields is
+							when 11 =>
+								board_ops.draw_stencil_line (
+									module_name 	=> module,
+									face			=> to_face (f (5)),
+									line			=> (
+												width		=> to_distance (f (7)),
+												start_point	=> type_point (set (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+												end_point	=> type_point (set (
+													x => to_distance (f (10)),
+													y => to_distance (f (11))))
+												),
+
+									log_threshold	=> log_threshold + 1);
+
+							when 12 .. count_type'last => command_too_long (fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+						
+					when ARC =>
+						case fields is
+							when 13 =>
+								board_ops.draw_stencil_arc (
+									module_name 	=> module,
+									face			=> to_face (f (5)),
+									arc				=> (
+												width	=> to_distance (f (7)),
+												center	=> type_point (set (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+												start_point	=> type_point (set (
+													x => to_distance (f (10)),
+													y => to_distance (f (11)))),
+												end_point	=> type_point (set (
+													x => to_distance (f (12)),
+													y => to_distance (f (13))))
+												),
+
+									log_threshold	=> log_threshold + 1);
+
+							when 14 .. count_type'last => command_too_long (fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+					when CIRCLE =>
+						case fields is
+							when 10 =>
+
+							-- The 7th field can either be a line width like 2.5 or a 
+							-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
+								if is_number (f (7)) then
+
+									-- Circle is not filled and has a circumfence line width
+									-- specified in field 7.
+									board_ops.draw_stencil_circle (
+										module_name 	=> module,
+										face			=> to_face (f (5)),
+										circle			=> 
+													(
+													filled		=> NO,
+													fill_style	=> fill_style_default, -- don't care here
+													width	=> to_distance (f (7)),
+													center	=> type_point (set (
+																x => to_distance (f (8)),
+																y => to_distance (f (9)))),
+													radius	=> to_distance (f (10))
+													),
+										log_threshold	=> log_threshold + 1);
+								else
+									
+									-- Circle is filled with the fill style specified in field 7:
+									case to_fill_style (f (7)) is
+										when CUTOUT =>
+									
+											board_ops.draw_stencil_circle (
+												module_name 	=> module,
+												face			=> to_face (f (5)),
+												circle			=> 
+															(
+															filled		=> YES,
+															fill_style	=> CUTOUT,
+															center	=> type_point (set (
+																		x => to_distance (f (8)),
+																		y => to_distance (f (9)))),
+															radius	=> to_distance (f (10))
+															),
+												log_threshold	=> log_threshold + 1);
+
+										when SOLID =>
+									
+											board_ops.draw_stencil_circle (
+												module_name 	=> module,
+												face			=> to_face (f (5)),
+												circle			=> 
+															(
+															filled		=> YES,
+															fill_style	=> SOLID,
+															center	=> type_point (set (
+																		x => to_distance (f (8)),
+																		y => to_distance (f (9)))),
+															radius	=> to_distance (f (10))
+															),
+												log_threshold	=> log_threshold + 1);
+
+										when HATCHED => command_incomplete;
+
+									end case;
+								end if;
+									
+							when 12 =>
+								-- This is going to be a hatched circle.
+								-- In this case the 7th field MUST be fill style HATCHED.
+								if is_number (f (7)) then
+									expect_fill_style (HATCHED, 7); -- error
+								else
+									case to_fill_style (f (7)) is
+										when HATCHED =>
+											board_ops.draw_stencil_circle (
+												module_name 	=> module,
+												face			=> to_face (f (5)),
+												circle			=> 
+															(
+															filled		=> YES,
+															fill_style	=> HATCHED,
+															center	=> type_point (set (
+																		x => to_distance (f (8)),
+																		y => to_distance (f (9)))),
+															radius	=> to_distance (f (10)),
+															hatching_line_width	=> to_distance (f (11)),
+															hatching_spacing	=> to_distance (f (12))
+															),
+												log_threshold	=> log_threshold + 1);
+
+										when others => expect_fill_style (HATCHED, 7);
+									end case;
+								end if;
+
+							when 13 .. count_type'last => command_too_long (fields - 1);
+								
+							when others => command_incomplete;
+						end case;
+
+								
+					when others => null;
+				end case;
+			end draw_stencil;
 			
 			-- CS circular tracks are currently not supported
 			subtype type_track_shape is type_shape range LINE..ARC;
@@ -2306,6 +2618,27 @@ package body scripting is
 								when others => command_incomplete;
 							end case;
 
+						when STENCIL =>
+							-- board led_driver delete stencil top 40 50 1
+							case fields is
+								when 8 =>
+									-- delete a segment of stencil
+									board_ops.delete_stencil (
+										module_name 	=> module,
+										face			=> to_face (f (5)),
+										point			=> type_point (set (
+												x => to_distance (f (6)),
+												y => to_distance (f (7)))),
+										accuracy		=> to_distance (f (8)),
+										
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last => command_too_long (fields - 1);
+									
+								when others => command_incomplete;
+							end case;
+							
 						when STOP =>
 							-- board led_driver delete stop top 40 50 1
 							case fields is
@@ -2800,162 +3133,11 @@ package body scripting is
 						when ROUTE_RESTRICT =>
 							draw_route_restrict;
 
+						when STENCIL =>
+							draw_stencil;
+							
 						when STOP =>
-							declare
-								shape : type_shape := to_shape (f (6));
-							begin
-								case shape is
-									when LINE =>
-										case fields is
-											when 11 =>
-												board_ops.draw_stop_line (
-													module_name 	=> module,
-													face			=> to_face (f (5)),
-													line			=> (
-																width		=> to_distance (f (7)),
-																start_point	=> type_point (set (
-																	x => to_distance (f (8)),
-																	y => to_distance (f (9)))),
-																end_point	=> type_point (set (
-																	x => to_distance (f (10)),
-																	y => to_distance (f (11))))
-																),
-
-													log_threshold	=> log_threshold + 1);
-
-											when 12 .. count_type'last => command_too_long (fields - 1);
-												
-											when others => command_incomplete;
-										end case;
-										
-									when ARC =>
-										case fields is
-											when 13 =>
-												board_ops.draw_stop_arc (
-													module_name 	=> module,
-													face			=> to_face (f (5)),
-													arc				=> (
-																width	=> to_distance (f (7)),
-																center	=> type_point (set (
-																	x => to_distance (f (8)),
-																	y => to_distance (f (9)))),
-																start_point	=> type_point (set (
-																	x => to_distance (f (10)),
-																	y => to_distance (f (11)))),
-																end_point	=> type_point (set (
-																	x => to_distance (f (12)),
-																	y => to_distance (f (13))))
-																),
-
-													log_threshold	=> log_threshold + 1);
-
-											when 14 .. count_type'last => command_too_long (fields - 1);
-												
-											when others => command_incomplete;
-										end case;
-
-									when CIRCLE =>
-										case fields is
-											when 10 =>
-
-											-- The 7th field can either be a line width like 2.5 or a 
-											-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
-												if is_number (f (7)) then
-
-													-- Circle is not filled and has a circumfence line width
-													-- specified in field 7.
-													board_ops.draw_stop_circle (
-														module_name 	=> module,
-														face			=> to_face (f (5)),
-														circle			=> 
-																	(
-																	filled		=> NO,
-																	fill_style	=> fill_style_default, -- don't care here
-																	width	=> to_distance (f (7)),
-																	center	=> type_point (set (
-																				x => to_distance (f (8)),
-																				y => to_distance (f (9)))),
-																	radius	=> to_distance (f (10))
-																	),
-														log_threshold	=> log_threshold + 1);
-												else
-													
-													-- Circle is filled with the fill style specified in field 7:
-													case to_fill_style (f (7)) is
-														when CUTOUT =>
-													
-															board_ops.draw_stop_circle (
-																module_name 	=> module,
-																face			=> to_face (f (5)),
-																circle			=> 
-																			(
-																			filled		=> YES,
-																			fill_style	=> CUTOUT,
-																			center	=> type_point (set (
-																						x => to_distance (f (8)),
-																						y => to_distance (f (9)))),
-																			radius	=> to_distance (f (10))
-																			),
-																log_threshold	=> log_threshold + 1);
-
-														when SOLID =>
-													
-															board_ops.draw_stop_circle (
-																module_name 	=> module,
-																face			=> to_face (f (5)),
-																circle			=> 
-																			(
-																			filled		=> YES,
-																			fill_style	=> SOLID,
-																			center	=> type_point (set (
-																						x => to_distance (f (8)),
-																						y => to_distance (f (9)))),
-																			radius	=> to_distance (f (10))
-																			),
-																log_threshold	=> log_threshold + 1);
-
-														when HATCHED => command_incomplete;
-
-													end case;
-												end if;
-													
-											when 12 =>
-												-- This is going to be a hatched circle.
-												-- In this case the 7th field MUST be fill style HATCHED.
-												if is_number (f (7)) then
-													expect_fill_style (HATCHED, 7); -- error
-												else
-													case to_fill_style (f (7)) is
-														when HATCHED =>
-															board_ops.draw_stop_circle (
-																module_name 	=> module,
-																face			=> to_face (f (5)),
-																circle			=> 
-																			(
-																			filled		=> YES,
-																			fill_style	=> HATCHED,
-																			center	=> type_point (set (
-																						x => to_distance (f (8)),
-																						y => to_distance (f (9)))),
-																			radius	=> to_distance (f (10)),
-																			hatching_line_width	=> to_distance (f (11)),
-																			hatching_spacing	=> to_distance (f (12))
-																			),
-																log_threshold	=> log_threshold + 1);
-
-														when others => expect_fill_style (HATCHED, 7);
-													end case;
-												end if;
-
-											when 13 .. count_type'last => command_too_long (fields - 1);
-												
-											when others => command_incomplete;
-										end case;
-
-												
-									when others => null;
-								end case;
-							end;
+							draw_stop_mask;
 
 						when VIA_RESTRICT =>
 							draw_via_restrict;
@@ -3221,10 +3403,7 @@ package body scripting is
 						when others => invalid_noun (to_string (noun));
 
 					end case;
-					
-				when others => 
-					null; -- CS
-							
+
 			end case;
 		end board_cmd;
 		

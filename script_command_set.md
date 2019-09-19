@@ -695,3 +695,14 @@ The difference is the 4th keyword 'stop'. An example to draw a line:
 ```
 board led_driver draw stop top line 2.5 0 0 160 0 # top, line, width 2.5mm, from 0/0 to 160/0
 ```
+
+## STENCIL
+The stencil defines areas where solder cream is to be applied. These are mostly pads of SMT
+devices. Solder cream is NOT applied to pads of THT devices. Solder cream can be applied only
+where the solder stop mask is open (see above).
+NOTE: Whatever you draw here affects the PCB manufacturing.
+Objects in the stencil are drawn and deleted the like those in silk screen (see above).
+The difference is the 4th keyword 'stencil'. An example to draw a line:
+```
+board led_driver draw stencil top line 2.5 0 0 160 0 # top, line, width 2.5mm, from 0/0 to 160/0
+```

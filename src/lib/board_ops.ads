@@ -479,9 +479,39 @@ package board_ops is
 		accuracy		: in geometry.type_accuracy;
 		log_threshold	: in type_log_level);
 
--- STENCIL / SOLDER PASTE
+-- STENCIL
 
--- VIA RESTRICT
+	procedure draw_stencil_line (
+	-- Draws a line in the stencil layer.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		line			: in type_stencil_line;
+		log_threshold	: in type_log_level);
+
+	procedure draw_stencil_arc (
+	-- Draws an arc in the stencil layer.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		arc				: in type_stencil_arc;		
+		log_threshold	: in type_log_level);
+
+	procedure draw_stencil_circle (
+	-- Draws an circle in the stencil layer.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		circle			: in type_fillable_circle;
+		log_threshold	: in type_log_level);
+
+	procedure delete_stencil (
+	-- Deletes the segment of the stencil that crosses the given point.
+	-- CS currently deletes the first segment found. Leaves other segments untouched.
+	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		point			: in geometry.type_point; -- x/y
+		accuracy		: in geometry.type_accuracy;
+		log_threshold	: in type_log_level);
+
 
 
 	
