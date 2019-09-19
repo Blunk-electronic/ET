@@ -58,6 +58,7 @@ with et_string_processing;		use et_string_processing;
 with et_libraries;				use et_libraries;
 with et_schematic;				use et_schematic;
 with et_pcb;
+with et_packages;
 with et_pcb_coordinates;
 with et_project;				use et_project;
 with submodules;
@@ -3480,11 +3481,11 @@ package body schematic_ops is
 	-- by the given variant name. The given device is accessed by the given device cursor.
 		device	: in et_libraries.type_devices.cursor;
 		variant	: in et_libraries.type_component_variant_name.bounded_string) -- N, D, S_0805
-		return et_pcb.type_text_placeholders is
+		return et_packages.type_text_placeholders is
 		use et_libraries;
 		use et_libraries.type_devices;
 		use et_libraries.type_component_variants;
-		placeholders		: et_pcb.type_text_placeholders; -- to be returned
+		placeholders		: et_packages.type_text_placeholders; -- to be returned
 
 		-- fetch the package variants available for the given device:
 		variants_available	: type_component_variants.map := element (device).variants;
@@ -3492,9 +3493,9 @@ package body schematic_ops is
 		variant_cursor		: type_component_variants.cursor;
 		package_model		: type_package_model_file.bounded_string; -- ../lbr/smd/SO15.pac
 
-		use et_pcb;		
-		use et_pcb.type_packages;
-		package_cursor		: et_pcb.type_packages.cursor;
+		use et_packages;		
+		use type_packages;
+		package_cursor		: type_packages.cursor;
 
 	begin -- placeholders_of_package
 		
@@ -3505,7 +3506,7 @@ package body schematic_ops is
 		package_model := element (variant_cursor).package_model; -- ../lbr/smd/SO15.pac
 
 		-- locate the package model in the package library:
-		package_cursor := et_pcb.type_packages.find (et_pcb.packages, package_model);
+		package_cursor := type_packages.find (packages, package_model);
 
 		-- fetch the placeholders of silk screen top and bottom
 		placeholders.silk_screen.top := element (package_cursor).silk_screen.top.placeholders;
