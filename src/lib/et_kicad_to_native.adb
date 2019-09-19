@@ -1757,6 +1757,21 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
+				procedure move_circle (circle : in out et_pcb.type_fillable_circle_solid) is
+					use et_pcb_coordinates.geometry;
+				begin
+					log (text => keepout & "circle", level => log_threshold + log_threshold_add);
+					log_indentation_up;
+
+					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
+
+					move (circle.center);
+					
+					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
+							
+					log_indentation_down;
+				end move_circle;
+				
 				procedure move_polygon (polygon : in out et_pcb.type_keepout_polygon) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;

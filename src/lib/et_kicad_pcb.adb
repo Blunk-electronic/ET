@@ -1972,7 +1972,8 @@ package body et_kicad_pcb is
 
 				-- The point at the circle and its layer are now discarded
 				-- as the circle is converted back to its anchestor
-				-- and then extended with the line width of the circumfence. Thus a type_fillable_circle
+				-- and then optionally extended with the line width of the circumfence. 
+				-- Thus a type_fillable_circle or a type_fillable_circle_solid
 				-- is formed and appended to the corresponding list of circles.
 				-- Filling circles is not supported by kicad -> default to no filling.
 				case circle.layer is
@@ -2001,14 +2002,12 @@ package body et_kicad_pcb is
 						circle_assy_doc_properties (BOTTOM, assy_doc.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_KEEP =>
-						keepout.top.circles.append ((et_pcb.shapes.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+						keepout.top.circles.append ((et_pcb.shapes.type_circle (circle) with filled => NO));
 
 						circle_keepout_properties (TOP, keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
-						keepout.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+						keepout.bottom.circles.append ((et_pcb.shapes.type_circle (circle) with filled => NO)); 
 						
 						circle_keepout_properties (BOTTOM, keepout.bottom.circles.last, log_threshold + 1);
 						
@@ -6142,7 +6141,8 @@ package body et_kicad_pcb is
 
 				-- The point at the circle and its layer are now discarded
 				-- as the circle is converted back to its anchestor
-				-- and then extended with the line width of the circumfence. Thus a type_fillable_circle
+				-- and then optionally extended with the line width of the circumfence. 
+				-- Thus a type_fillable_circle or a type_fillable_circle_solid
 				-- is formed and appended to the corresponding list of circles.
 				-- Filling circles is not supported by kicad -> default to no filling.
 				case board_circle.layer is
@@ -6195,14 +6195,12 @@ package body et_kicad_pcb is
 						circle_stop_mask_properties (BOTTOM, board.stop_mask.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_KEEP =>
-						board.keepout.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+						board.keepout.top.circles.append ((et_pcb.shapes.type_circle (board_circle) with filled => NO));
 
 						circle_keepout_properties (TOP, board.keepout.top.circles.last, log_threshold + 1);
 
 					when BOT_KEEP =>
-						board.keepout.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+						board.keepout.bottom.circles.append ((et_pcb.shapes.type_circle (board_circle) with filled => NO));
 
 						circle_keepout_properties (BOTTOM, board.keepout.bottom.circles.last, log_threshold + 1);
 						
@@ -6424,7 +6422,8 @@ package body et_kicad_pcb is
 
 				-- The point at the circle and its layer are now discarded
 				-- as the circle is converted back to its anchestor
-				-- and then extended with the line width of the circumfence. Thus a type_fillable_circle
+				-- and then optionally extended with the line width of the circumfence. 
+				-- Thus a type_fillable_circle or a type_fillable_circle_solid
 				-- is formed and appended to the corresponding list of circles.
 				-- Filling circles is not supported by kicad -> default to no filling.
 				case package_circle.layer is
@@ -6453,14 +6452,12 @@ package body et_kicad_pcb is
 						circle_assy_doc_properties (BOTTOM, package_assy_doc.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_KEEP =>
-						package_keepout.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+						package_keepout.top.circles.append ((et_pcb.shapes.type_circle (package_circle) with filled => NO)); 
 						
 						circle_keepout_properties (TOP, package_keepout.top.circles.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
-						package_keepout.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+						package_keepout.bottom.circles.append ((et_pcb.shapes.type_circle (package_circle) with filled => NO)); 
 						
 						circle_keepout_properties (BOTTOM, package_keepout.bottom.circles.last, log_threshold + 1);
 						

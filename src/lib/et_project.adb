@@ -926,9 +926,14 @@ package body et_project is
 	
 	procedure write_circle (cursor : in et_pcb.type_keepout_circles.cursor) is 
 		use et_pcb;
+		use et_pcb_coordinates.geometry;		
 		use type_keepout_circles;
 	begin
-		write_circle_fillable (element (cursor));
+		circle_begin;
+		write (keyword => keyword_center, parameters => position (element (cursor).center));
+		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+		write (keyword => keyword_filled, space => true, parameters => to_string (element (cursor).filled));
+		circle_end;
 	end write_circle;
 	
 	procedure write_polygon (cursor : in et_pcb.type_keepout_polygons.cursor) is 
@@ -1567,10 +1572,10 @@ package body et_project is
 				layer : type_layer := element (cursor);
 			begin
 				write (keyword => keyword_conductor,
-					   parameters => space & to_string (to_index (cursor)) & to_string (layer.conductor.thickness));
+					   parameters => 2 * space & to_string (to_index (cursor)) & to_string (layer.conductor.thickness));
 				
 				write (keyword => keyword_dielectric, 
-					   parameters => to_string (to_index (cursor)) & to_string (layer.dielectric.thickness));
+					   parameters => space & to_string (to_index (cursor)) & to_string (layer.dielectric.thickness));
 
 			end;
 
@@ -1594,7 +1599,7 @@ package body et_project is
 
 			-- Write the bottom layer in the file.
 			write (keyword => keyword_conductor, space => true,
-				parameters => to_string (bottom_layer) & to_string (bottom_layer_thickness) &
+				parameters => space & to_string (bottom_layer) & to_string (bottom_layer_thickness) &
 				space & comment_mark & " bottom signal layer");
 			
 			section_mark (section_board_layer_stack, FOOTER);
@@ -3912,7 +3917,7 @@ package body et_project is
 									when SEC_KEEPOUT =>
 										type_keepout_circles.append (
 											container	=> packge.keepout.top.circles,
-											new_item	=> make_fillable_circle);
+											new_item	=> make_fillable_circle_solid);
 
 										reset_circle_fillable; -- clean up for next circle
 										
@@ -3969,7 +3974,7 @@ package body et_project is
 									when SEC_KEEPOUT =>
 										type_keepout_circles.append (
 											container	=> packge.keepout.bottom.circles,
-											new_item	=> make_fillable_circle);
+											new_item	=> make_fillable_circle_solid);
 
 										reset_circle_fillable; -- clean up for next circle
 
@@ -9162,7 +9167,7 @@ package body et_project is
 									when KEEPOUT =>
 										type_keepout_circles.append (
 											container	=> module.board.keepout.top.circles,
-											new_item	=> make_fillable_circle);
+											new_item	=> make_fillable_circle_solid);
 								end case;
 								
 							when BOTTOM => null;
@@ -9190,7 +9195,7 @@ package body et_project is
 									when KEEPOUT =>
 										type_keepout_circles.append (
 											container	=> module.board.keepout.bottom.circles,
-											new_item	=> make_fillable_circle);
+											new_item	=> make_fillable_circle_solid);
 								end case;
 								
 						end case;
