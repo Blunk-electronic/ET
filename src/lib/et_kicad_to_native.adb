@@ -54,6 +54,7 @@ with et_schematic;
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 with et_project;
+with et_packages;
 with et_pcb;
 with et_pcb_coordinates;
 with et_kicad_general;
@@ -577,12 +578,12 @@ package body et_kicad_to_native is
 					use et_pcb.type_copper_lines_pcb;
 					use et_pcb.type_copper_arcs_pcb;
 					use et_pcb.type_vias;
-					use et_pcb.type_copper_polygons_signal;
+					use et_packages.type_copper_polygons_signal;
 					
 					line_cursor : et_pcb.type_copper_lines_pcb.cursor := net.route.lines.first;
 					arc_cursor	: et_pcb.type_copper_arcs_pcb.cursor := net.route.arcs.first;
 					via_cursor	: et_pcb.type_vias.cursor := net.route.vias.first;
-					poly_cursor	: et_pcb.type_copper_polygons_signal.cursor := net.route.polygons.first;
+					poly_cursor	: et_packages.type_copper_polygons_signal.cursor := net.route.polygons.first;
 
 					board_track : constant string (1..12) := "board track ";
 					
@@ -634,13 +635,13 @@ package body et_kicad_to_native is
 						log_indentation_down;
 					end move_via;
 
-					procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_signal) is
+					procedure move_polygon (polygon : in out et_packages.type_copper_polygon_signal) is
 						use et_pcb_coordinates;
 						use et_pcb_coordinates.geometry;
-						use et_pcb.type_polygon_points;
-						point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
+						use et_packages.type_polygon_points;
+						point_cursor : et_packages.type_polygon_points.cursor := polygon.corners.first;
 
-						new_points : et_pcb.type_polygon_points.set;
+						new_points : et_packages.type_polygon_points.set;
 						
 						procedure get_point (point : in type_point) is
 						-- Reads a corner point, copies it, moves the copy and inserts the moved
@@ -652,7 +653,7 @@ package body et_kicad_to_native is
 							log (text => now & to_string (new_point), level => log_threshold + 4);
 
 							-- insert new point in new_points:
-							et_pcb.type_polygon_points.insert (
+							et_packages.type_polygon_points.insert (
 								container	=> new_points,
 								new_item	=> new_point);
 							
@@ -663,9 +664,9 @@ package body et_kicad_to_native is
 						log_indentation_up;
 
 						-- loop through polygon corner points and read one after another:
-						while point_cursor /= et_pcb.type_polygon_points.no_element loop
+						while point_cursor /= et_packages.type_polygon_points.no_element loop
 
-							et_pcb.type_polygon_points.query_element (
+							et_packages.type_polygon_points.query_element (
 								position	=> point_cursor,
 								process		=> get_point'access);
 							
@@ -711,8 +712,8 @@ package body et_kicad_to_native is
 						next (via_cursor);
 					end loop;
 
-					while poly_cursor /= et_pcb.type_copper_polygons_signal.no_element loop
-						et_pcb.type_copper_polygons_signal.update_element (
+					while poly_cursor /= et_packages.type_copper_polygons_signal.no_element loop
+						et_packages.type_copper_polygons_signal.update_element (
 							container 	=> net.route.polygons,
 							position	=> poly_cursor,
 							process		=> move_polygon'access);
@@ -772,27 +773,27 @@ package body et_kicad_to_native is
 
 			log_threshold_add : type_log_level := 2;
 
+			use et_packages;
+			
 			procedure move_silk_screen is
-				use et_pcb.type_silk_lines;
-				lines_cursor : et_pcb.type_silk_lines.cursor;
+				use type_silk_lines;
+				lines_cursor : type_silk_lines.cursor;
 
-				use et_pcb.type_silk_arcs;
-				arcs_cursor : et_pcb.type_silk_arcs.cursor;
+				use type_silk_arcs;
+				arcs_cursor : type_silk_arcs.cursor;
 
-				use et_pcb.type_silk_circles;
-				circles_cursor : et_pcb.type_silk_circles.cursor;
+				use type_silk_circles;
+				circles_cursor : type_silk_circles.cursor;
 
-				use et_pcb.type_silk_polygons;
-				polygons_cursor : et_pcb.type_silk_polygons.cursor;
+				use type_silk_polygons;
+				polygons_cursor : type_silk_polygons.cursor;
 
-				use et_pcb.type_texts_with_content;
-				texts_cursor : et_pcb.type_texts_with_content.cursor;
+				use type_texts_with_content;
+				texts_cursor : type_texts_with_content.cursor;
 				
 				board_silk_screen : constant string (1..18) := "board silk screen ";
 				
-				procedure move_line (line : in out et_pcb.type_silk_line) is
-					use et_pcb;
-				begin
+				procedure move_line (line : in out type_silk_line) is begin
 					log (text => board_silk_screen & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
@@ -806,9 +807,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_line;
 
-				procedure move_arc (arc : in out et_pcb.type_silk_arc) is
-					use et_pcb;
-				begin
+				procedure move_arc (arc : in out type_silk_arc) is begin
 					log (text => board_silk_screen & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
@@ -823,7 +822,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
-				procedure move_circle (circle : in out et_pcb.type_fillable_circle) is
+				procedure move_circle (circle : in out type_fillable_circle) is 
 					use et_pcb_coordinates.geometry;
 				begin
 					log (text => board_silk_screen & "circle", level => log_threshold + log_threshold_add);
@@ -838,12 +837,12 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out et_pcb.type_silk_polygon) is
+				procedure move_polygon (polygon : in out type_silk_polygon) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
-					use et_pcb.type_polygon_points;
-					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
-					new_points : et_pcb.type_polygon_points.set;
+					use type_polygon_points;
+					point_cursor : type_polygon_points.cursor := polygon.corners.first;
+					new_points : type_polygon_points.set;
 
 					procedure get_point (point : in type_point) is
 					-- Reads a corner point, copies it, moves the copy and inserts the moved
@@ -855,7 +854,7 @@ package body et_kicad_to_native is
 						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
 
 						-- insert new point in new_points:
-						et_pcb.type_polygon_points.insert (
+						type_polygon_points.insert (
 							container	=> new_points,
 							new_item	=> new_point);
 						
@@ -866,9 +865,9 @@ package body et_kicad_to_native is
 					log_indentation_up;
 
 					-- loop through polygon corner points and read one after another:
-					while point_cursor /= et_pcb.type_polygon_points.no_element loop
+					while point_cursor /= type_polygon_points.no_element loop
 
-						et_pcb.type_polygon_points.query_element (
+						type_polygon_points.query_element (
 							position	=> point_cursor,
 							process		=> get_point'access);
 						
@@ -882,7 +881,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_polygon;
 
-				procedure move_text (text : in out et_pcb.type_text_with_content) is
+				procedure move_text (text : in out type_text_with_content) is
 					use et_pcb_coordinates.geometry;
 				begin
 					log (text => board_silk_screen & "text", level => log_threshold + log_threshold_add);
@@ -902,8 +901,8 @@ package body et_kicad_to_native is
 				
 				-- LINES TOP
 				lines_cursor := module.board.silk_screen.top.lines.first;
-				while lines_cursor /= et_pcb.type_silk_lines.no_element loop
-					et_pcb.type_silk_lines.update_element (
+				while lines_cursor /= type_silk_lines.no_element loop
+					type_silk_lines.update_element (
 						container	=> module.board.silk_screen.top.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -913,8 +912,8 @@ package body et_kicad_to_native is
 
 				-- LINES BOTTOM
 				lines_cursor := module.board.silk_screen.bottom.lines.first;
-				while lines_cursor /= et_pcb.type_silk_lines.no_element loop
-					et_pcb.type_silk_lines.update_element (
+				while lines_cursor /= type_silk_lines.no_element loop
+					type_silk_lines.update_element (
 						container	=> module.board.silk_screen.bottom.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -924,8 +923,8 @@ package body et_kicad_to_native is
 
 				-- ARCS TOP
 				arcs_cursor := module.board.silk_screen.top.arcs.first;
-				while arcs_cursor /= et_pcb.type_silk_arcs.no_element loop
-					et_pcb.type_silk_arcs.update_element (
+				while arcs_cursor /= type_silk_arcs.no_element loop
+					type_silk_arcs.update_element (
 						container	=> module.board.silk_screen.top.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -935,8 +934,8 @@ package body et_kicad_to_native is
 
 				-- ARCS BOTTOM
 				arcs_cursor := module.board.silk_screen.bottom.arcs.first;
-				while arcs_cursor /= et_pcb.type_silk_arcs.no_element loop
-					et_pcb.type_silk_arcs.update_element (
+				while arcs_cursor /= type_silk_arcs.no_element loop
+					type_silk_arcs.update_element (
 						container	=> module.board.silk_screen.bottom.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -946,8 +945,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES TOP
 				circles_cursor := module.board.silk_screen.top.circles.first;
-				while circles_cursor /= et_pcb.type_silk_circles.no_element loop
-					et_pcb.type_silk_circles.update_element (
+				while circles_cursor /= type_silk_circles.no_element loop
+					type_silk_circles.update_element (
 						container	=> module.board.silk_screen.top.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
@@ -957,8 +956,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES BOTTOM
 				circles_cursor := module.board.silk_screen.bottom.circles.first;
-				while circles_cursor /= et_pcb.type_silk_circles.no_element loop
-					et_pcb.type_silk_circles.update_element (
+				while circles_cursor /= type_silk_circles.no_element loop
+					type_silk_circles.update_element (
 						container	=> module.board.silk_screen.bottom.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
@@ -968,8 +967,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS TOP
 				polygons_cursor := module.board.silk_screen.top.polygons.first;
-				while polygons_cursor /= et_pcb.type_silk_polygons.no_element loop
-					et_pcb.type_silk_polygons.update_element (
+				while polygons_cursor /= type_silk_polygons.no_element loop
+					type_silk_polygons.update_element (
 						container	=> module.board.silk_screen.top.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -979,8 +978,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.silk_screen.bottom.polygons.first;
-				while polygons_cursor /= et_pcb.type_silk_polygons.no_element loop
-					et_pcb.type_silk_polygons.update_element (
+				while polygons_cursor /= type_silk_polygons.no_element loop
+					type_silk_polygons.update_element (
 						container	=> module.board.silk_screen.bottom.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -990,8 +989,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS TOP
 				texts_cursor := module.board.silk_screen.top.texts.first;
-				while texts_cursor /= et_pcb.type_texts_with_content.no_element loop
-					et_pcb.type_texts_with_content.update_element (
+				while texts_cursor /= type_texts_with_content.no_element loop
+					type_texts_with_content.update_element (
 						container	=> module.board.silk_screen.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1001,8 +1000,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS BOTTOM
 				texts_cursor := module.board.silk_screen.bottom.texts.first;
-				while texts_cursor /= et_pcb.type_texts_with_content.no_element loop
-					et_pcb.type_texts_with_content.update_element (
+				while texts_cursor /= type_texts_with_content.no_element loop
+					type_texts_with_content.update_element (
 						container	=> module.board.silk_screen.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1013,26 +1012,24 @@ package body et_kicad_to_native is
 			end move_silk_screen;
 
 			procedure move_assembly_documentation is
-				use et_pcb.type_doc_lines;
-				lines_cursor : et_pcb.type_doc_lines.cursor;
+				use type_doc_lines;
+				lines_cursor : type_doc_lines.cursor;
 
-				use et_pcb.type_doc_arcs;
-				arcs_cursor : et_pcb.type_doc_arcs.cursor;
+				use type_doc_arcs;
+				arcs_cursor : type_doc_arcs.cursor;
 
-				use et_pcb.type_doc_circles;
-				circles_cursor : et_pcb.type_doc_circles.cursor;
+				use type_doc_circles;
+				circles_cursor : type_doc_circles.cursor;
 
-				use et_pcb.type_doc_polygons;
-				polygons_cursor : et_pcb.type_doc_polygons.cursor;
+				use type_doc_polygons;
+				polygons_cursor : type_doc_polygons.cursor;
 
-				use et_pcb.type_texts_with_content;
-				texts_cursor : et_pcb.type_texts_with_content.cursor;
+				use type_texts_with_content;
+				texts_cursor : type_texts_with_content.cursor;
 				
 				doc : constant string (1..29) := "board assembly documentation ";
 				
-				procedure move_line (line : in out et_pcb.type_doc_line) is
-					use et_pcb;
-				begin
+				procedure move_line (line : in out type_doc_line) is begin
 					log (text => doc & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
@@ -1046,9 +1043,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_line;
 
-				procedure move_arc (arc : in out et_pcb.type_doc_arc) is
-					use et_pcb;
-				begin
+				procedure move_arc (arc : in out type_doc_arc) is begin
 					log (text => doc & "arc", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
@@ -1063,7 +1058,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
-				procedure move_circle (circle : in out et_pcb.type_fillable_circle) is
+				procedure move_circle (circle : in out type_fillable_circle) is 
 					use et_pcb_coordinates.geometry;
 				begin
 					log (text => doc & "circle", level => log_threshold + log_threshold_add);
@@ -1078,12 +1073,12 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out et_pcb.type_doc_polygon) is
+				procedure move_polygon (polygon : in out type_doc_polygon) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
-					use et_pcb.type_polygon_points;
-					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
-					new_points : et_pcb.type_polygon_points.set;
+					use type_polygon_points;
+					point_cursor : type_polygon_points.cursor := polygon.corners.first;
+					new_points : type_polygon_points.set;
 
 					procedure get_point (point : in type_point) is
 					-- Reads a corner point, copies it, moves the copy and inserts the moved
@@ -1095,7 +1090,7 @@ package body et_kicad_to_native is
 						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
 
 						-- insert new point in new_points:
-						et_pcb.type_polygon_points.insert (
+						type_polygon_points.insert (
 							container	=> new_points,
 							new_item	=> new_point);
 						
@@ -1106,9 +1101,9 @@ package body et_kicad_to_native is
 					log_indentation_up;
 
 					-- loop through polygon corner points and read one after another:
-					while point_cursor /= et_pcb.type_polygon_points.no_element loop
+					while point_cursor /= type_polygon_points.no_element loop
 
-						et_pcb.type_polygon_points.query_element (
+						type_polygon_points.query_element (
 							position	=> point_cursor,
 							process		=> get_point'access);
 						
@@ -1122,7 +1117,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_polygon;
 
-				procedure move_text (text : in out et_pcb.type_text_with_content) is
+				procedure move_text (text : in out type_text_with_content) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
 				begin
@@ -1143,8 +1138,8 @@ package body et_kicad_to_native is
 				
 				-- LINES TOP
 				lines_cursor := module.board.assy_doc.top.lines.first;
-				while lines_cursor /= et_pcb.type_doc_lines.no_element loop
-					et_pcb.type_doc_lines.update_element (
+				while lines_cursor /= type_doc_lines.no_element loop
+					type_doc_lines.update_element (
 						container	=> module.board.assy_doc.top.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -1154,8 +1149,8 @@ package body et_kicad_to_native is
 
 				-- LINES BOTTOM
 				lines_cursor := module.board.assy_doc.bottom.lines.first;
-				while lines_cursor /= et_pcb.type_doc_lines.no_element loop
-					et_pcb.type_doc_lines.update_element (
+				while lines_cursor /= type_doc_lines.no_element loop
+					type_doc_lines.update_element (
 						container	=> module.board.assy_doc.bottom.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -1165,8 +1160,8 @@ package body et_kicad_to_native is
 
 				-- ARCS TOP
 				arcs_cursor := module.board.assy_doc.top.arcs.first;
-				while arcs_cursor /= et_pcb.type_doc_arcs.no_element loop
-					et_pcb.type_doc_arcs.update_element (
+				while arcs_cursor /= type_doc_arcs.no_element loop
+					type_doc_arcs.update_element (
 						container	=> module.board.assy_doc.top.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -1176,8 +1171,8 @@ package body et_kicad_to_native is
 
 				-- ARCS BOTTOM
 				arcs_cursor := module.board.assy_doc.bottom.arcs.first;
-				while arcs_cursor /= et_pcb.type_doc_arcs.no_element loop
-					et_pcb.type_doc_arcs.update_element (
+				while arcs_cursor /= type_doc_arcs.no_element loop
+					type_doc_arcs.update_element (
 						container	=> module.board.assy_doc.bottom.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -1187,8 +1182,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES TOP
 				circles_cursor := module.board.assy_doc.top.circles.first;
-				while circles_cursor /= et_pcb.type_doc_circles.no_element loop
-					et_pcb.type_doc_circles.update_element (
+				while circles_cursor /= type_doc_circles.no_element loop
+					type_doc_circles.update_element (
 						container	=> module.board.assy_doc.top.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
@@ -1198,8 +1193,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES BOTTOM
 				circles_cursor := module.board.assy_doc.bottom.circles.first;
-				while circles_cursor /= et_pcb.type_doc_circles.no_element loop
-					et_pcb.type_doc_circles.update_element (
+				while circles_cursor /= type_doc_circles.no_element loop
+					type_doc_circles.update_element (
 						container	=> module.board.assy_doc.bottom.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
@@ -1209,8 +1204,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS TOP
 				polygons_cursor := module.board.assy_doc.top.polygons.first;
-				while polygons_cursor /= et_pcb.type_doc_polygons.no_element loop
-					et_pcb.type_doc_polygons.update_element (
+				while polygons_cursor /= type_doc_polygons.no_element loop
+					type_doc_polygons.update_element (
 						container	=> module.board.assy_doc.top.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1220,8 +1215,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.assy_doc.bottom.polygons.first;
-				while polygons_cursor /= et_pcb.type_doc_polygons.no_element loop
-					et_pcb.type_doc_polygons.update_element (
+				while polygons_cursor /= type_doc_polygons.no_element loop
+					type_doc_polygons.update_element (
 						container	=> module.board.assy_doc.bottom.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1231,8 +1226,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS TOP
 				texts_cursor := module.board.assy_doc.top.texts.first;
-				while texts_cursor /= et_pcb.type_texts_with_content.no_element loop
-					et_pcb.type_texts_with_content.update_element (
+				while texts_cursor /= type_texts_with_content.no_element loop
+					type_texts_with_content.update_element (
 						container	=> module.board.assy_doc.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1242,8 +1237,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS BOTTOM
 				texts_cursor := module.board.assy_doc.bottom.texts.first;
-				while texts_cursor /= et_pcb.type_texts_with_content.no_element loop
-					et_pcb.type_texts_with_content.update_element (
+				while texts_cursor /= type_texts_with_content.no_element loop
+					type_texts_with_content.update_element (
 						container	=> module.board.assy_doc.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1254,21 +1249,21 @@ package body et_kicad_to_native is
 			end move_assembly_documentation;
 
 			procedure move_stencil is
-				use et_pcb.type_stencil_lines;
-				lines_cursor : et_pcb.type_stencil_lines.cursor;
+				use type_stencil_lines;
+				lines_cursor : type_stencil_lines.cursor;
 
-				use et_pcb.type_stencil_arcs;
-				arcs_cursor : et_pcb.type_stencil_arcs.cursor;
+				use type_stencil_arcs;
+				arcs_cursor : type_stencil_arcs.cursor;
 
-				use et_pcb.type_stencil_circles;
-				circles_cursor : et_pcb.type_stencil_circles.cursor;
+				use type_stencil_circles;
+				circles_cursor : type_stencil_circles.cursor;
 
-				use et_pcb.type_stencil_polygons;
-				polygons_cursor : et_pcb.type_stencil_polygons.cursor;
+				use type_stencil_polygons;
+				polygons_cursor : type_stencil_polygons.cursor;
 
 				stencil : constant string (1..14) := "board stencil ";
 				
-				procedure move_line (line : in out et_pcb.type_stencil_line) is
+				procedure move_line (line : in out type_stencil_line) is
 					use et_pcb;
 				begin
 					log (text => stencil & "line", level => log_threshold + log_threshold_add);
@@ -1284,7 +1279,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_line;
 
-				procedure move_arc (arc : in out et_pcb.type_stencil_arc) is
+				procedure move_arc (arc : in out type_stencil_arc) is
 					use et_pcb;
 				begin
 					log (text => stencil & "arc", level => log_threshold + log_threshold_add);
@@ -1301,7 +1296,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
-				procedure move_circle (circle : in out et_pcb.type_fillable_circle) is
+				procedure move_circle (circle : in out type_fillable_circle) is
 					use et_pcb_coordinates.geometry;
 				begin
 					log (text => stencil & "circle", level => log_threshold + log_threshold_add);
@@ -1316,12 +1311,12 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out et_pcb.type_stencil_polygon) is
+				procedure move_polygon (polygon : in out type_stencil_polygon) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
-					use et_pcb.type_polygon_points;
-					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
-					new_points : et_pcb.type_polygon_points.set;
+					use type_polygon_points;
+					point_cursor : type_polygon_points.cursor := polygon.corners.first;
+					new_points : type_polygon_points.set;
 
 					procedure get_point (point : in type_point) is
 					-- Reads a corner point, copies it, moves the copy and inserts the moved
@@ -1333,7 +1328,7 @@ package body et_kicad_to_native is
 						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
 
 						-- insert new point in new_points:
-						et_pcb.type_polygon_points.insert (
+						type_polygon_points.insert (
 							container	=> new_points,
 							new_item	=> new_point);
 						
@@ -1344,9 +1339,9 @@ package body et_kicad_to_native is
 					log_indentation_up;
 
 					-- loop through polygon corner points and read one after another:
-					while point_cursor /= et_pcb.type_polygon_points.no_element loop
+					while point_cursor /= type_polygon_points.no_element loop
 
-						et_pcb.type_polygon_points.query_element (
+						type_polygon_points.query_element (
 							position	=> point_cursor,
 							process		=> get_point'access);
 						
@@ -1364,8 +1359,8 @@ package body et_kicad_to_native is
 				
 				-- LINES TOP
 				lines_cursor := module.board.stencil.top.lines.first;
-				while lines_cursor /= et_pcb.type_stencil_lines.no_element loop
-					et_pcb.type_stencil_lines.update_element (
+				while lines_cursor /= type_stencil_lines.no_element loop
+					type_stencil_lines.update_element (
 						container	=> module.board.stencil.top.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -1375,8 +1370,8 @@ package body et_kicad_to_native is
 
 				-- LINES BOTTOM
 				lines_cursor := module.board.stencil.bottom.lines.first;
-				while lines_cursor /= et_pcb.type_stencil_lines.no_element loop
-					et_pcb.type_stencil_lines.update_element (
+				while lines_cursor /= type_stencil_lines.no_element loop
+					type_stencil_lines.update_element (
 						container	=> module.board.stencil.bottom.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -1386,8 +1381,8 @@ package body et_kicad_to_native is
 
 				-- ARCS TOP
 				arcs_cursor := module.board.stencil.top.arcs.first;
-				while arcs_cursor /= et_pcb.type_stencil_arcs.no_element loop
-					et_pcb.type_stencil_arcs.update_element (
+				while arcs_cursor /= type_stencil_arcs.no_element loop
+					type_stencil_arcs.update_element (
 						container	=> module.board.stencil.top.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -1397,8 +1392,8 @@ package body et_kicad_to_native is
 
 				-- ARCS BOTTOM
 				arcs_cursor := module.board.stencil.bottom.arcs.first;
-				while arcs_cursor /= et_pcb.type_stencil_arcs.no_element loop
-					et_pcb.type_stencil_arcs.update_element (
+				while arcs_cursor /= type_stencil_arcs.no_element loop
+					type_stencil_arcs.update_element (
 						container	=> module.board.stencil.bottom.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -1408,8 +1403,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES TOP
 				circles_cursor := module.board.stencil.top.circles.first;
-				while circles_cursor /= et_pcb.type_stencil_circles.no_element loop
-					et_pcb.type_stencil_circles.update_element (
+				while circles_cursor /= type_stencil_circles.no_element loop
+					type_stencil_circles.update_element (
 						container	=> module.board.stencil.top.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
@@ -1419,8 +1414,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES BOTTOM
 				circles_cursor := module.board.stencil.bottom.circles.first;
-				while circles_cursor /= et_pcb.type_stencil_circles.no_element loop
-					et_pcb.type_stencil_circles.update_element (
+				while circles_cursor /= type_stencil_circles.no_element loop
+					type_stencil_circles.update_element (
 						container	=> module.board.stencil.bottom.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
@@ -1430,8 +1425,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS TOP
 				polygons_cursor := module.board.stencil.top.polygons.first;
-				while polygons_cursor /= et_pcb.type_stencil_polygons.no_element loop
-					et_pcb.type_stencil_polygons.update_element (
+				while polygons_cursor /= type_stencil_polygons.no_element loop
+					type_stencil_polygons.update_element (
 						container	=> module.board.stencil.top.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1441,8 +1436,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.stencil.bottom.polygons.first;
-				while polygons_cursor /= et_pcb.type_stencil_polygons.no_element loop
-					et_pcb.type_stencil_polygons.update_element (
+				while polygons_cursor /= type_stencil_polygons.no_element loop
+					type_stencil_polygons.update_element (
 						container	=> module.board.stencil.bottom.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1454,24 +1449,24 @@ package body et_kicad_to_native is
 
 
 			procedure move_stop_mask is
-				use et_pcb.type_stop_lines;
-				lines_cursor : et_pcb.type_stop_lines.cursor;
+				use type_stop_lines;
+				lines_cursor : type_stop_lines.cursor;
 
-				use et_pcb.type_stop_arcs;
-				arcs_cursor : et_pcb.type_stop_arcs.cursor;
+				use type_stop_arcs;
+				arcs_cursor : type_stop_arcs.cursor;
 
-				use et_pcb.type_stop_circles;
-				circles_cursor : et_pcb.type_stop_circles.cursor;
+				use type_stop_circles;
+				circles_cursor : type_stop_circles.cursor;
 
-				use et_pcb.type_stop_polygons;
-				polygons_cursor : et_pcb.type_stop_polygons.cursor;
+				use type_stop_polygons;
+				polygons_cursor : type_stop_polygons.cursor;
 
-				use et_pcb.type_texts_with_content;
-				texts_cursor : et_pcb.type_texts_with_content.cursor;
+				use type_texts_with_content;
+				texts_cursor : type_texts_with_content.cursor;
 				
 				stop : constant string (1..16) := "board stop mask ";
 				
-				procedure move_line (line : in out et_pcb.type_stop_line) is
+				procedure move_line (line : in out type_stop_line) is
 					use et_pcb;
 				begin
 					log (text => stop & "line", level => log_threshold + log_threshold_add);
@@ -1487,7 +1482,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_line;
 
-				procedure move_arc (arc : in out et_pcb.type_stop_arc) is
+				procedure move_arc (arc : in out type_stop_arc) is
 					use et_pcb;
 				begin
 					log (text => stop & "arc", level => log_threshold + log_threshold_add);
@@ -1504,7 +1499,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
-				procedure move_circle (circle : in out et_pcb.type_fillable_circle) is
+				procedure move_circle (circle : in out type_fillable_circle) is
 					use et_pcb_coordinates.geometry;
 				begin
 					log (text => stop & "circle", level => log_threshold + log_threshold_add);
@@ -1519,12 +1514,12 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out et_pcb.type_stop_polygon) is
+				procedure move_polygon (polygon : in out type_stop_polygon) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
-					use et_pcb.type_polygon_points;
-					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
-					new_points : et_pcb.type_polygon_points.set;
+					use type_polygon_points;
+					point_cursor : type_polygon_points.cursor := polygon.corners.first;
+					new_points : type_polygon_points.set;
 
 					procedure get_point (point : in type_point) is
 					-- Reads a corner point, copies it, moves the copy and inserts the moved
@@ -1536,7 +1531,7 @@ package body et_kicad_to_native is
 						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
 
 						-- insert new point in new_points:
-						et_pcb.type_polygon_points.insert (
+						type_polygon_points.insert (
 							container	=> new_points,
 							new_item	=> new_point);
 						
@@ -1547,9 +1542,9 @@ package body et_kicad_to_native is
 					log_indentation_up;
 
 					-- loop through polygon corner points and read one after another:
-					while point_cursor /= et_pcb.type_polygon_points.no_element loop
+					while point_cursor /= type_polygon_points.no_element loop
 
-						et_pcb.type_polygon_points.query_element (
+						type_polygon_points.query_element (
 							position	=> point_cursor,
 							process		=> get_point'access);
 						
@@ -1563,7 +1558,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_polygon;
 
-				procedure move_text (text : in out et_pcb.type_text_with_content) is
+				procedure move_text (text : in out type_text_with_content) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
 				begin
@@ -1583,8 +1578,8 @@ package body et_kicad_to_native is
 				
 				-- LINES TOP
 				lines_cursor := module.board.stop_mask.top.lines.first;
-				while lines_cursor /= et_pcb.type_stop_lines.no_element loop
-					et_pcb.type_stop_lines.update_element (
+				while lines_cursor /= type_stop_lines.no_element loop
+					type_stop_lines.update_element (
 						container	=> module.board.stop_mask.top.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -1594,8 +1589,8 @@ package body et_kicad_to_native is
 
 				-- LINES BOTTOM
 				lines_cursor := module.board.stop_mask.bottom.lines.first;
-				while lines_cursor /= et_pcb.type_stop_lines.no_element loop
-					et_pcb.type_stop_lines.update_element (
+				while lines_cursor /= type_stop_lines.no_element loop
+					type_stop_lines.update_element (
 						container	=> module.board.stop_mask.bottom.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -1605,8 +1600,8 @@ package body et_kicad_to_native is
 
 				-- ARCS TOP
 				arcs_cursor := module.board.stop_mask.top.arcs.first;
-				while arcs_cursor /= et_pcb.type_stop_arcs.no_element loop
-					et_pcb.type_stop_arcs.update_element (
+				while arcs_cursor /= type_stop_arcs.no_element loop
+					type_stop_arcs.update_element (
 						container	=> module.board.stop_mask.top.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -1616,8 +1611,8 @@ package body et_kicad_to_native is
 
 				-- ARCS BOTTOM
 				arcs_cursor := module.board.stop_mask.bottom.arcs.first;
-				while arcs_cursor /= et_pcb.type_stop_arcs.no_element loop
-					et_pcb.type_stop_arcs.update_element (
+				while arcs_cursor /= type_stop_arcs.no_element loop
+					type_stop_arcs.update_element (
 						container	=> module.board.stop_mask.bottom.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -1627,8 +1622,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES TOP
 				circles_cursor := module.board.stop_mask.top.circles.first;
-				while circles_cursor /= et_pcb.type_stop_circles.no_element loop
-					et_pcb.type_stop_circles.update_element (
+				while circles_cursor /= type_stop_circles.no_element loop
+					type_stop_circles.update_element (
 						container	=> module.board.stop_mask.top.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
@@ -1638,8 +1633,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES BOTTOM
 				circles_cursor := module.board.stop_mask.bottom.circles.first;
-				while circles_cursor /= et_pcb.type_stop_circles.no_element loop
-					et_pcb.type_stop_circles.update_element (
+				while circles_cursor /= type_stop_circles.no_element loop
+					type_stop_circles.update_element (
 						container	=> module.board.stop_mask.bottom.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
@@ -1649,8 +1644,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS TOP
 				polygons_cursor := module.board.stop_mask.top.polygons.first;
-				while polygons_cursor /= et_pcb.type_stop_polygons.no_element loop
-					et_pcb.type_stop_polygons.update_element (
+				while polygons_cursor /= type_stop_polygons.no_element loop
+					type_stop_polygons.update_element (
 						container	=> module.board.stop_mask.top.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1660,8 +1655,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.stop_mask.bottom.polygons.first;
-				while polygons_cursor /= et_pcb.type_stop_polygons.no_element loop
-					et_pcb.type_stop_polygons.update_element (
+				while polygons_cursor /= type_stop_polygons.no_element loop
+					type_stop_polygons.update_element (
 						container	=> module.board.stop_mask.bottom.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1671,8 +1666,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS TOP
 				texts_cursor := module.board.stop_mask.top.texts.first;
-				while texts_cursor /= et_pcb.type_texts_with_content.no_element loop
-					et_pcb.type_texts_with_content.update_element (
+				while texts_cursor /= type_texts_with_content.no_element loop
+					type_texts_with_content.update_element (
 						container	=> module.board.stop_mask.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1682,8 +1677,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS BOTTOM
 				texts_cursor := module.board.stop_mask.bottom.texts.first;
-				while texts_cursor /= et_pcb.type_texts_with_content.no_element loop
-					et_pcb.type_texts_with_content.update_element (
+				while texts_cursor /= type_texts_with_content.no_element loop
+					type_texts_with_content.update_element (
 						container	=> module.board.stop_mask.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
@@ -1695,21 +1690,21 @@ package body et_kicad_to_native is
 
 
 			procedure move_keepout is
-				use et_pcb.type_keepout_lines;
-				lines_cursor : et_pcb.type_keepout_lines.cursor;
+				use type_keepout_lines;
+				lines_cursor : type_keepout_lines.cursor;
 
-				use et_pcb.type_keepout_arcs;
-				arcs_cursor : et_pcb.type_keepout_arcs.cursor;
+				use type_keepout_arcs;
+				arcs_cursor : type_keepout_arcs.cursor;
 
-				use et_pcb.type_keepout_circles;
-				circles_cursor : et_pcb.type_keepout_circles.cursor;
+				use type_keepout_circles;
+				circles_cursor : type_keepout_circles.cursor;
 
-				use et_pcb.type_keepout_polygons;
-				polygons_cursor : et_pcb.type_keepout_polygons.cursor;
+				use type_keepout_polygons;
+				polygons_cursor : type_keepout_polygons.cursor;
 
 				keepout : constant string (1..14) := "board keepout ";
 				
-				procedure move_line (line : in out et_pcb.type_keepout_line) is
+				procedure move_line (line : in out type_keepout_line) is
 					use et_pcb;
 				begin
 					log (text => keepout & "line", level => log_threshold + log_threshold_add);
@@ -1725,7 +1720,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_line;
 
-				procedure move_arc (arc : in out et_pcb.type_keepout_arc) is
+				procedure move_arc (arc : in out type_keepout_arc) is
 					use et_pcb;
 				begin
 					log (text => keepout & "arc", level => log_threshold + log_threshold_add);
@@ -1742,7 +1737,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
-				procedure move_circle (circle : in out et_pcb.type_fillable_circle) is
+				procedure move_circle (circle : in out type_fillable_circle) is
 					use et_pcb_coordinates.geometry;
 				begin
 					log (text => keepout & "circle", level => log_threshold + log_threshold_add);
@@ -1757,7 +1752,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_circle (circle : in out et_pcb.type_fillable_circle_solid) is
+				procedure move_circle (circle : in out type_fillable_circle_solid) is
 					use et_pcb_coordinates.geometry;
 				begin
 					log (text => keepout & "circle", level => log_threshold + log_threshold_add);
@@ -1772,12 +1767,12 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 				
-				procedure move_polygon (polygon : in out et_pcb.type_keepout_polygon) is
+				procedure move_polygon (polygon : in out type_keepout_polygon) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
-					use et_pcb.type_polygon_points;
-					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
-					new_points : et_pcb.type_polygon_points.set;
+					use type_polygon_points;
+					point_cursor : type_polygon_points.cursor := polygon.corners.first;
+					new_points : type_polygon_points.set;
 
 					procedure get_point (point : in type_point) is
 					-- Reads a corner point, copies it, moves the copy and inserts the moved
@@ -1789,7 +1784,7 @@ package body et_kicad_to_native is
 						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
 
 						-- insert new point in new_points:
-						et_pcb.type_polygon_points.insert (
+						type_polygon_points.insert (
 							container	=> new_points,
 							new_item	=> new_point);
 						
@@ -1800,9 +1795,9 @@ package body et_kicad_to_native is
 					log_indentation_up;
 
 					-- loop through polygon corner points and read one after another:
-					while point_cursor /= et_pcb.type_polygon_points.no_element loop
+					while point_cursor /= type_polygon_points.no_element loop
 
-						et_pcb.type_polygon_points.query_element (
+						type_polygon_points.query_element (
 							position	=> point_cursor,
 							process		=> get_point'access);
 						
@@ -1820,8 +1815,8 @@ package body et_kicad_to_native is
 				
 				-- LINES TOP
 				lines_cursor := module.board.keepout.top.lines.first;
-				while lines_cursor /= et_pcb.type_keepout_lines.no_element loop
-					et_pcb.type_keepout_lines.update_element (
+				while lines_cursor /= type_keepout_lines.no_element loop
+					type_keepout_lines.update_element (
 						container	=> module.board.keepout.top.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -1831,8 +1826,8 @@ package body et_kicad_to_native is
 
 				-- LINES BOTTOM
 				lines_cursor := module.board.keepout.bottom.lines.first;
-				while lines_cursor /= et_pcb.type_keepout_lines.no_element loop
-					et_pcb.type_keepout_lines.update_element (
+				while lines_cursor /= type_keepout_lines.no_element loop
+					type_keepout_lines.update_element (
 						container	=> module.board.keepout.bottom.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -1842,8 +1837,8 @@ package body et_kicad_to_native is
 
 				-- ARCS TOP
 				arcs_cursor := module.board.keepout.top.arcs.first;
-				while arcs_cursor /= et_pcb.type_keepout_arcs.no_element loop
-					et_pcb.type_keepout_arcs.update_element (
+				while arcs_cursor /= type_keepout_arcs.no_element loop
+					type_keepout_arcs.update_element (
 						container	=> module.board.keepout.top.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -1853,8 +1848,8 @@ package body et_kicad_to_native is
 
 				-- ARCS BOTTOM
 				arcs_cursor := module.board.keepout.bottom.arcs.first;
-				while arcs_cursor /= et_pcb.type_keepout_arcs.no_element loop
-					et_pcb.type_keepout_arcs.update_element (
+				while arcs_cursor /= type_keepout_arcs.no_element loop
+					type_keepout_arcs.update_element (
 						container	=> module.board.keepout.bottom.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -1864,8 +1859,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES TOP
 				circles_cursor := module.board.keepout.top.circles.first;
-				while circles_cursor /= et_pcb.type_keepout_circles.no_element loop
-					et_pcb.type_keepout_circles.update_element (
+				while circles_cursor /= type_keepout_circles.no_element loop
+					type_keepout_circles.update_element (
 						container	=> module.board.keepout.top.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
@@ -1875,8 +1870,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES BOTTOM
 				circles_cursor := module.board.keepout.bottom.circles.first;
-				while circles_cursor /= et_pcb.type_keepout_circles.no_element loop
-					et_pcb.type_keepout_circles.update_element (
+				while circles_cursor /= type_keepout_circles.no_element loop
+					type_keepout_circles.update_element (
 						container	=> module.board.keepout.bottom.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
@@ -1886,8 +1881,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS TOP
 				polygons_cursor := module.board.keepout.top.polygons.first;
-				while polygons_cursor /= et_pcb.type_keepout_polygons.no_element loop
-					et_pcb.type_keepout_polygons.update_element (
+				while polygons_cursor /= type_keepout_polygons.no_element loop
+					type_keepout_polygons.update_element (
 						container	=> module.board.keepout.top.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1897,8 +1892,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.keepout.bottom.polygons.first;
-				while polygons_cursor /= et_pcb.type_keepout_polygons.no_element loop
-					et_pcb.type_keepout_polygons.update_element (
+				while polygons_cursor /= type_keepout_polygons.no_element loop
+					type_keepout_polygons.update_element (
 						container	=> module.board.keepout.bottom.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -2016,8 +2011,8 @@ package body et_kicad_to_native is
 				use et_pcb.type_copper_circles_pcb;
 				circles_cursor : et_pcb.type_copper_circles_pcb.cursor;
 
-				use et_pcb.type_copper_polygons_floating;
-				polygons_cursor : et_pcb.type_copper_polygons_floating.cursor;
+				use et_packages.type_copper_polygons_floating;
+				polygons_cursor : et_packages.type_copper_polygons_floating.cursor;
 
 				use et_pcb.type_texts_with_content_pcb;
 				texts_cursor : et_pcb.type_texts_with_content_pcb.cursor;
@@ -2075,12 +2070,12 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_floating) is
+				procedure move_polygon (polygon : in out et_packages.type_copper_polygon_floating) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
-					use et_pcb.type_polygon_points;
-					point_cursor : et_pcb.type_polygon_points.cursor := polygon.corners.first;
-					new_points : et_pcb.type_polygon_points.set;
+					use type_polygon_points;
+					point_cursor : type_polygon_points.cursor := polygon.corners.first;
+					new_points : type_polygon_points.set;
 
 					procedure get_point (point : in type_point) is
 					-- Reads a corner point, copies it, moves the copy and inserts the moved
@@ -2092,7 +2087,7 @@ package body et_kicad_to_native is
 						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
 
 						-- insert new point in new_points:
-						et_pcb.type_polygon_points.insert (
+						type_polygon_points.insert (
 							container	=> new_points,
 							new_item	=> new_point);
 						
@@ -2103,9 +2098,9 @@ package body et_kicad_to_native is
 					log_indentation_up;
 
 					-- loop through polygon corner points and read one after another:
-					while point_cursor /= et_pcb.type_polygon_points.no_element loop
+					while point_cursor /= type_polygon_points.no_element loop
 
-						et_pcb.type_polygon_points.query_element (
+						type_polygon_points.query_element (
 							position	=> point_cursor,
 							process		=> get_point'access);
 						
@@ -2188,8 +2183,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS
 				polygons_cursor := module.board.copper.polygons.first;
-				while polygons_cursor /= et_pcb.type_copper_polygons_floating.no_element loop
-					et_pcb.type_copper_polygons_floating.update_element (
+				while polygons_cursor /= et_packages.type_copper_polygons_floating.no_element loop
+					et_packages.type_copper_polygons_floating.update_element (
 						container	=> module.board.copper.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -2512,7 +2507,7 @@ package body et_kicad_to_native is
 			model_return := et_libraries.to_file_name (compose (
 					containing_directory	=> et_libraries.to_string (prefix_packages_dir),
 					name					=> et_libraries.to_string (model_copy),
-					extension				=> et_pcb.library_file_extension));
+					extension				=> et_packages.library_file_extension));
 
 			return model_return;
 		end rename_package_model;
@@ -3728,8 +3723,8 @@ package body et_kicad_to_native is
 				package_name			: et_libraries.type_component_package_name.bounded_string;
 				package_model			: et_libraries.type_package_model_file.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
 
-				use et_pcb.type_packages;
-				package_cursor			: et_pcb.type_packages.cursor;
+				use et_packages.type_packages;
+				package_cursor			: et_packages.type_packages.cursor;
 				inserted				: boolean;
 			begin -- query_packages
 				-- Loop in kicad packages (footprints) of the current library.
@@ -3749,12 +3744,12 @@ package body et_kicad_to_native is
 					-- Insert the new package model in et_pcb.packages. In case the package is already in the 
 					-- container (due to other project imports), the flag "inserted" will go false. The package
 					-- would not be inserted again:
-					et_pcb.type_packages.insert (
-						container	=> et_pcb.packages,
+					et_packages.type_packages.insert (
+						container	=> et_packages.packages,
 						key			=> package_model, -- libraries/packages/#home#user#lbr#bel_battery_pretty#S_CR3232.pac
 						position	=> package_cursor,
 						inserted	=> inserted,
-						new_item	=> (et_pcb.type_package_base (element (package_cursor_kicad))
+						new_item	=> (et_packages.type_package_base (element (package_cursor_kicad))
 										with 
 										silk_screen				=> element (package_cursor_kicad).silk_screen,
 										assembly_documentation	=> element (package_cursor_kicad).assembly_documentation,
@@ -3869,9 +3864,9 @@ package body et_kicad_to_native is
 					log_threshold	=> log_threshold + 1); 
 			end save_device;
 
-			use et_pcb.type_packages;
+			use et_packages.type_packages;
 			
-			procedure save_package (package_cursor : in et_pcb.type_packages.cursor) is
+			procedure save_package (package_cursor : in et_packages.type_packages.cursor) is
 				use et_libraries.type_package_model_file;
 			begin
 				et_project.save_package (
@@ -3895,7 +3890,7 @@ package body et_kicad_to_native is
 			
 			log (text => "packages (former KiCad footprints) ...", level => log_threshold + 1);
 			log_indentation_up;
-			iterate (et_pcb.packages, save_package'access);
+			iterate (et_packages.packages, save_package'access);
 			log_indentation_down;
 
 			log_indentation_down;			

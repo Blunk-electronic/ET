@@ -796,7 +796,7 @@ package body et_project is
 		--write (keyword => keyword_hidden, parameters => et_libraries.to_string (text.visible)); -- CS: no need. probably useless
 	end write_text_properties;
 
-	procedure write_text_properties (text : in et_pcb.type_text'class) is
+	procedure write_text_properties (text : in et_packages.type_text'class) is
 		use et_pcb_coordinates.geometry;
 	begin
 -- 		write (keyword => keyword_position, parameters => position (text.position) & 
@@ -818,7 +818,7 @@ package body et_project is
 	end write_text_properties;
 
 	procedure write_text_properties_with_face (
-		text	: in et_pcb.type_text'class;
+		text	: in et_packages.type_text'class;
 		face	: in et_pcb_coordinates.type_face) 
 		is
 		use et_pcb_coordinates;
@@ -859,8 +859,8 @@ package body et_project is
 	procedure placeholder_begin is begin section_mark (section_placeholder, HEADER); end;
 	procedure placeholder_end   is begin section_mark (section_placeholder, FOOTER); end;
 	
-	procedure write_text (cursor : in et_pcb.type_texts_with_content.cursor) is
-		use et_pcb.type_texts_with_content;
+	procedure write_text (cursor : in et_packages.type_texts_with_content.cursor) is
+		use et_packages.type_texts_with_content;
 	begin
 		text_begin;
 		write (keyword => keyword_content, space => true, wrap => true,
@@ -869,14 +869,14 @@ package body et_project is
 		text_end;
 	end write_text;
 	
-	procedure write_polygon_corners (pc : in et_pcb.type_polygon_points.cursor) is
-		use et_pcb.type_polygon_points;
+	procedure write_polygon_corners (pc : in et_packages.type_polygon_points.cursor) is
+		use et_packages.type_polygon_points;
 	begin
 		write (keyword => keyword_position, parameters => position (element (pc)));
 	end write_polygon_corners;
 
-	procedure write_circle_fillable (circle : in et_pcb.type_fillable_circle) is 
-		use et_pcb;
+	procedure write_circle_fillable (circle : in et_packages.type_fillable_circle) is 
+		use et_packages;
 		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
@@ -902,8 +902,8 @@ package body et_project is
 	end write_circle_fillable;
 
 -- KEEPOUT
-	procedure write_line (cursor : in et_pcb.type_keepout_lines.cursor) is
-		use et_pcb.type_keepout_lines;
+	procedure write_line (cursor : in et_packages.type_keepout_lines.cursor) is
+		use et_packages.type_keepout_lines;
 		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
@@ -913,8 +913,8 @@ package body et_project is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in et_pcb.type_keepout_arcs.cursor) is 
-		use et_pcb.type_keepout_arcs;
+	procedure write_arc (cursor : in et_packages.type_keepout_arcs.cursor) is 
+		use et_packages.type_keepout_arcs;
 		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
@@ -925,8 +925,8 @@ package body et_project is
 		arc_end;
 	end write_arc;
 	
-	procedure write_circle (cursor : in et_pcb.type_keepout_circles.cursor) is 
-		use et_pcb;
+	procedure write_circle (cursor : in et_packages.type_keepout_circles.cursor) is 
+		use et_packages;
 		use et_pcb_coordinates.geometry;		
 		use type_keepout_circles;
 	begin
@@ -937,8 +937,8 @@ package body et_project is
 		circle_end;
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_pcb.type_keepout_polygons.cursor) is 
-		use et_pcb;		
+	procedure write_polygon (cursor : in et_packages.type_keepout_polygons.cursor) is 
+		use et_packages;		
 		use type_keepout_polygons;
 		use type_polygon_points;
 		use et_pcb_coordinates.geometry;
@@ -961,8 +961,8 @@ package body et_project is
 	end write_polygon;
 	
 -- STOP MASK
-	procedure write_line (cursor : in et_pcb.type_stop_lines.cursor) is 
-		use et_pcb;
+	procedure write_line (cursor : in et_packages.type_stop_lines.cursor) is 
+		use et_packages;
 		use type_stop_lines;
 		use et_pcb_coordinates.geometry;
 	begin
@@ -973,8 +973,8 @@ package body et_project is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in et_pcb.type_stop_arcs.cursor) is 
-		use et_pcb;
+	procedure write_arc (cursor : in et_packages.type_stop_arcs.cursor) is 
+		use et_packages;
 		use type_stop_arcs;
 		use et_pcb_coordinates.geometry;
 	begin
@@ -986,15 +986,15 @@ package body et_project is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in et_pcb.type_stop_circles.cursor) is 
-		use et_pcb;
+	procedure write_circle (cursor : in et_packages.type_stop_circles.cursor) is 
+		use et_packages;
 		use type_stop_circles;
 	begin
 		write_circle_fillable (element (cursor));
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_pcb.type_stop_polygons.cursor) is 
-		use et_pcb;
+	procedure write_polygon (cursor : in et_packages.type_stop_polygons.cursor) is 
+		use et_packages;
 		use type_stop_polygons;
 		use et_pcb_coordinates.geometry;
 		use type_polygon_points;
@@ -1017,8 +1017,8 @@ package body et_project is
 	end write_polygon;
 
 -- STENCIL (OR SOLDER PASTE MASK)
-	procedure write_line (cursor : in et_pcb.type_stencil_lines.cursor) is 
-		use et_pcb;
+	procedure write_line (cursor : in et_packages.type_stencil_lines.cursor) is 
+		use et_packages;
 		use type_stencil_lines;
 		use et_pcb_coordinates.geometry;
 	begin
@@ -1029,8 +1029,8 @@ package body et_project is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in et_pcb.type_stencil_arcs.cursor) is 
-		use et_pcb;
+	procedure write_arc (cursor : in et_packages.type_stencil_arcs.cursor) is 
+		use et_packages;
 		use type_stencil_arcs;
 		use et_pcb_coordinates.geometry;
 	begin
@@ -1042,15 +1042,15 @@ package body et_project is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in et_pcb.type_stencil_circles.cursor) is 
-		use et_pcb;
+	procedure write_circle (cursor : in et_packages.type_stencil_circles.cursor) is 
+		use et_packages;
 		use type_stencil_circles;
 	begin
 		write_circle_fillable (element (cursor));
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_pcb.type_stencil_polygons.cursor) is 
-		use et_pcb;
+	procedure write_polygon (cursor : in et_packages.type_stencil_polygons.cursor) is 
+		use et_packages;
 		use type_stencil_polygons;
 		use et_pcb_coordinates.geometry;		
 		use type_polygon_points;
@@ -1074,8 +1074,8 @@ package body et_project is
 
 -- ROUTE RESTRICT
 	
-	procedure write_line (cursor : in et_pcb.type_route_restrict_lines.cursor) is 
-		use et_pcb;
+	procedure write_line (cursor : in et_packages.type_route_restrict_lines.cursor) is 
+		use et_packages;
 		use et_pcb_stack;
 		use type_route_restrict_lines;
 		use et_pcb_coordinates.geometry;		
@@ -1087,8 +1087,8 @@ package body et_project is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in et_pcb.type_route_restrict_arcs.cursor) is 
-		use et_pcb;
+	procedure write_arc (cursor : in et_packages.type_route_restrict_arcs.cursor) is 
+		use et_packages;
 		use et_pcb_stack;
 		use type_route_restrict_arcs;
 		use et_pcb_coordinates.geometry;		
@@ -1101,8 +1101,8 @@ package body et_project is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in et_pcb.type_route_restrict_circles.cursor) is 
-		use et_pcb;
+	procedure write_circle (cursor : in et_packages.type_route_restrict_circles.cursor) is 
+		use et_packages;
 		use et_pcb_stack;
 		use type_route_restrict_circles;
 		use et_pcb_coordinates.geometry;		
@@ -1115,8 +1115,8 @@ package body et_project is
 		circle_end;
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_pcb.type_route_restrict_polygons.cursor) is 
-		use et_pcb;
+	procedure write_polygon (cursor : in et_packages.type_route_restrict_polygons.cursor) is 
+		use et_packages;
 		use type_route_restrict_polygons;
 		use et_pcb_coordinates.geometry;		
 		use type_polygon_points;
@@ -1140,8 +1140,8 @@ package body et_project is
 	end write_polygon;
 
 -- VIA RESTRICT
-	procedure write_line (cursor : in et_pcb.type_via_restrict_lines.cursor) is 
-		use et_pcb;
+	procedure write_line (cursor : in et_packages.type_via_restrict_lines.cursor) is 
+		use et_packages;
 		use et_pcb_stack;
 		use type_via_restrict_lines;
 		use et_pcb_coordinates.geometry;		
@@ -1153,8 +1153,8 @@ package body et_project is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in et_pcb.type_via_restrict_arcs.cursor) is 
-		use et_pcb;
+	procedure write_arc (cursor : in et_packages.type_via_restrict_arcs.cursor) is 
+		use et_packages;
 		use et_pcb_stack;
 		use type_via_restrict_arcs;
 		use et_pcb_coordinates.geometry;		
@@ -1167,8 +1167,8 @@ package body et_project is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in et_pcb.type_via_restrict_circles.cursor) is 
-		use et_pcb;
+	procedure write_circle (cursor : in et_packages.type_via_restrict_circles.cursor) is 
+		use et_packages;
 		use et_pcb_stack;		
 		use type_via_restrict_circles;
 		use et_pcb_coordinates.geometry;		
@@ -1181,8 +1181,8 @@ package body et_project is
 		circle_end;
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_pcb.type_via_restrict_polygons.cursor) is 
-		use et_pcb;
+	procedure write_polygon (cursor : in et_packages.type_via_restrict_polygons.cursor) is 
+		use et_packages;
 		use type_via_restrict_polygons;
 		use et_pcb_coordinates.geometry;		
 		use type_polygon_points;
@@ -1207,6 +1207,40 @@ package body et_project is
 
 	
 -- BOARD CONTOUR
+	procedure write_line (cursor : in et_packages.type_pcb_contour_lines.cursor) is 
+		use et_packages;
+		use type_pcb_contour_lines;
+		use et_pcb_coordinates.geometry;		
+	begin
+		line_begin;
+		write (keyword => keyword_start , parameters => position (element (cursor).start_point));
+		write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
+		line_end;
+	end write_line;
+
+	procedure write_arc (cursor : in et_packages.type_pcb_contour_arcs.cursor) is 
+		use et_packages;
+		use type_pcb_contour_arcs;
+		use et_pcb_coordinates.geometry;		
+	begin
+		arc_begin;
+		write (keyword => keyword_center, parameters => position (element (cursor).center));
+		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		arc_end;
+	end write_arc;
+
+	procedure write_circle (cursor : in et_packages.type_pcb_contour_circles.cursor) is 
+		use et_packages;
+		use type_pcb_contour_circles;
+		use et_pcb_coordinates.geometry;		
+	begin
+		circle_begin;
+		write (keyword => keyword_center, parameters => position (element (cursor).center));
+		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+		circle_end;
+	end write_circle;
+	
 	procedure write_line (cursor : in et_pcb.type_pcb_contour_lines.cursor) is 
 		use et_pcb;
 		use type_pcb_contour_lines;
@@ -1218,7 +1252,7 @@ package body et_project is
 		write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
 		line_end;
 	end write_line;
-
+	
 	procedure write_arc (cursor : in et_pcb.type_pcb_contour_arcs.cursor) is 
 		use et_pcb;
 		use type_pcb_contour_arcs;
@@ -1245,8 +1279,8 @@ package body et_project is
 	end write_circle;
 
 -- SILK SCREEN
-	procedure write_line (cursor : in et_pcb.type_silk_lines.cursor) is 
-		use et_pcb;
+	procedure write_line (cursor : in et_packages.type_silk_lines.cursor) is 
+		use et_packages;
 		use type_silk_lines;
 		use et_pcb_coordinates.geometry;		
 	begin
@@ -1257,8 +1291,8 @@ package body et_project is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in et_pcb.type_silk_arcs.cursor) is 
-		use et_pcb;
+	procedure write_arc (cursor : in et_packages.type_silk_arcs.cursor) is 
+		use et_packages;
 		use type_silk_arcs;
 		use et_pcb_coordinates.geometry;		
 	begin
@@ -1270,15 +1304,15 @@ package body et_project is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in et_pcb.type_silk_circles.cursor) is 
-		use et_pcb;
+	procedure write_circle (cursor : in et_packages.type_silk_circles.cursor) is 
+		use et_packages;
 		use type_silk_circles;
 	begin
 		write_circle_fillable (element (cursor));
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_pcb.type_silk_polygons.cursor) is 
-		use et_pcb;
+	procedure write_polygon (cursor : in et_packages.type_silk_polygons.cursor) is 
+		use et_packages;
 		use type_silk_polygons;
 		use et_pcb_coordinates.geometry;		
 		use type_polygon_points;
@@ -1301,8 +1335,8 @@ package body et_project is
 	end write_polygon;
 
 -- ASSEMBLY DOCUMENTATION
-	procedure write_line (cursor : in et_pcb.type_doc_lines.cursor) is 
-		use et_pcb;
+	procedure write_line (cursor : in et_packages.type_doc_lines.cursor) is 
+		use et_packages;
 		use type_doc_lines;
 		use et_pcb_coordinates.geometry;		
 	begin
@@ -1313,8 +1347,8 @@ package body et_project is
 		line_end;
 	end write_line;
 
-	procedure write_arc (cursor : in et_pcb.type_doc_arcs.cursor) is 
-		use et_pcb;
+	procedure write_arc (cursor : in et_packages.type_doc_arcs.cursor) is 
+		use et_packages;
 		use type_doc_arcs;
 		use et_pcb_coordinates.geometry;		
 	begin
@@ -1326,15 +1360,15 @@ package body et_project is
 		arc_end;
 	end write_arc;
 
-	procedure write_circle (cursor : in et_pcb.type_doc_circles.cursor) is
-		use et_pcb;
+	procedure write_circle (cursor : in et_packages.type_doc_circles.cursor) is
+		use et_packages;
 		use type_doc_circles;
 	begin
 		write_circle_fillable (element (cursor));
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_pcb.type_doc_polygons.cursor) is 
-		use et_pcb;
+	procedure write_polygon (cursor : in et_packages.type_doc_polygons.cursor) is 
+		use et_packages;
 		use type_doc_polygons;
 		use et_pcb_coordinates.geometry;
 		use type_polygon_points;
@@ -1761,6 +1795,7 @@ package body et_project is
 			end query_strands;
 
 			procedure query_route (net_name : in type_net_name.bounded_string; net : in type_net) is
+				use et_packages;
 				use et_pcb;
 				use et_pcb_stack;
 				use et_pcb_coordinates.geometry;
@@ -1834,7 +1869,7 @@ package body et_project is
 				while polygon_cursor /= type_copper_polygons_signal.no_element loop
 					section_mark (section_polygon, HEADER);
 
-					write (keyword => keyword_priority , parameters => et_pcb.to_string (element (polygon_cursor).priority_level));
+					write (keyword => keyword_priority , parameters => to_string (element (polygon_cursor).priority_level));
 					write (keyword => keyword_layer , parameters => to_string (element (polygon_cursor).layer));
 					write (keyword => keyword_min_width , parameters => to_string (element (polygon_cursor).width_min));
 					write (keyword => keyword_isolation, parameters => to_string (element (polygon_cursor).isolation_gap));
@@ -1846,13 +1881,13 @@ package body et_project is
 
 					case element (polygon_cursor).pad_connection is
 						when THERMAL => 
-							write (keyword => keyword_pad_connection, parameters => et_pcb.to_string (element (polygon_cursor).pad_connection));
-							write (keyword => keyword_pad_technology, parameters => et_pcb.to_string (element (polygon_cursor).thermal_technology));
+							write (keyword => keyword_pad_connection, parameters => to_string (element (polygon_cursor).pad_connection));
+							write (keyword => keyword_pad_technology, parameters => to_string (element (polygon_cursor).thermal_technology));
 							write (keyword => keyword_thermal_width , parameters => to_string (element (polygon_cursor).thermal_width));
 							write (keyword => keyword_thermal_gap   , parameters => to_string (element (polygon_cursor).thermal_gap));	
 							
 						when SOLID =>
-							write (keyword => keyword_pad_technology, parameters => et_pcb.to_string (element (polygon_cursor).solid_technology));	
+							write (keyword => keyword_pad_technology, parameters => to_string (element (polygon_cursor).solid_technology));	
 							
 						when NONE => null;
 					end case;
@@ -1938,10 +1973,12 @@ package body et_project is
 				section_mark (section_units, FOOTER);
 			end query_units;
 
-			procedure query_placeholders (device_name : in et_libraries.type_device_name; device : in et_schematic.type_device) is
+			procedure query_placeholders (
+				device_name : in et_libraries.type_device_name;
+				device 		: in et_schematic.type_device) is
 				use et_pcb_coordinates;
-				use et_pcb;
-				use et_pcb.type_text_placeholders_package;
+				use et_packages;
+				use type_text_placeholders_package;
 				placeholder_cursor : type_text_placeholders_package.cursor;
 
 				face : et_pcb_coordinates.type_face;
@@ -2276,9 +2313,9 @@ package body et_project is
 			use type_texts_with_content_pcb;
 			use type_text_placeholders_copper;
 
-			use type_pcb_contour_lines;
-			use type_pcb_contour_arcs;
-			use type_pcb_contour_circles;
+			use et_pcb.type_pcb_contour_lines;
+			use et_pcb.type_pcb_contour_arcs;
+			use et_pcb.type_pcb_contour_circles;
 			
 			-- general stuff
 			procedure write_placeholder (cursor : in type_text_placeholders_pcb.cursor) is
@@ -3193,14 +3230,14 @@ package body et_project is
 	function to_dimensions (
 		line : in et_string_processing.type_fields_of_line; -- "size width 30 height 40"
 		from : in positive)
-		return et_pcb.type_text_dimensions is
+		return et_packages.type_text_dimensions is
 		use et_pcb_coordinates.geometry;
 		use et_string_processing;
 
 		function f (line : in type_fields_of_line; position : in positive) return string 
 			renames et_string_processing.field;
 		
-		dim : et_pcb.type_text_dimensions; -- to be returned
+		dim : et_packages.type_text_dimensions; -- to be returned
 		place : positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing x or y
@@ -3229,15 +3266,15 @@ package body et_project is
 	-- Composes a fillable circle from the given parameters. 
 	-- Filled and fill_style are discriminants. Depending on them some parameters
 	-- matter or not. See spec for type_fillable_circle.
-		circle				: in et_pcb.shapes.type_circle;
-		filled				: in et_pcb.type_filled;
-		fill_style			: in et_pcb.type_fill_style;
-		circumfence_width	: in et_pcb.type_general_line_width;
-		hatching_line_width	: in et_pcb.type_general_line_width;
-		hatching_spacing	: in et_pcb.type_general_line_width)
-		return et_pcb.type_fillable_circle is
+		circle				: in et_packages.shapes.type_circle;
+		filled				: in et_packages.type_filled;
+		fill_style			: in et_packages.type_fill_style;
+		circumfence_width	: in et_packages.type_general_line_width;
+		hatching_line_width	: in et_packages.type_general_line_width;
+		hatching_spacing	: in et_packages.type_general_line_width)
+		return et_packages.type_fillable_circle is
 
-		use et_pcb;
+		use et_packages;
 
 	begin -- to_fillable_circle
 		case filled is
@@ -3318,7 +3355,7 @@ package body et_project is
 		procedure reset_line_width is begin pac_line_width := type_general_line_width'first; end;
 		
 		pac_signal_layers		: et_pcb_stack.type_signal_layers.set;
-		lock_status 			: et_pcb.type_locked := lock_status_default;
+-- 		lock_status 			: et_pcb.type_locked := lock_status_default;
 		
 		type type_line is new et_packages.shapes.type_line with null record;
 		pac_line				: type_line;
@@ -3364,7 +3401,7 @@ package body et_project is
 		pac_circle_copper		: et_packages.type_copper_circle;
 		procedure reset_circle_copper is begin pac_circle_copper := (others => <>); end;		
 		
-		type type_polygon is new et_pcb.type_polygon with null record;
+		type type_polygon is new et_packages.type_polygon with null record;
 		pac_polygon				: type_polygon;
 		procedure reset_polygon is begin pac_polygon := (others => <>); end;
 		pac_polygon_copper		: type_copper_polygon;
@@ -3376,18 +3413,18 @@ package body et_project is
 		pac_text_placeholder	: et_packages.type_text_placeholder_package;
 
 		terminal_name			: et_libraries.type_terminal_name.bounded_string;
-		terminal_technology		: et_pcb.type_assembly_technology := et_pcb.assembly_technology_default;
+		terminal_technology		: et_packages.type_assembly_technology := et_packages.assembly_technology_default;
 		pad_shape_polygon		: type_pad_polygon; -- for polygons that outline a pad
 		terminal_position		: et_pcb_coordinates.geometry.type_position := origin_zero_rotation;
 		tht_pad_shape			: et_packages.type_pad_outline_tht;
 		tht_width_inner_layers	: et_pcb_coordinates.type_distance := zero;
-		tht_hole				: et_packages.type_terminal_tht_hole := et_pcb.terminal_tht_hole_default;
-		tht_drill_size			: et_packages.type_drill_size := et_pcb.type_drill_size'first;
+		tht_hole				: et_packages.type_terminal_tht_hole := et_packages.terminal_tht_hole_default;
+		tht_drill_size			: et_packages.type_drill_size := et_packages.type_drill_size'first;
 		tht_millings			: et_packages.type_package_pcb_contour_plated;
 		smt_pad_shape			: et_packages.type_pad_outline;
 		smt_pad_face			: et_pcb_coordinates.type_face := et_pcb_coordinates.face_default;
-		smt_stop_mask			: et_packages.type_stop_mask_status := et_pcb.stop_mask_status_default;
-		smt_solder_paste		: et_packages.type_solder_paste_status := et_pcb.solder_paste_status_default;
+		smt_stop_mask			: et_packages.type_stop_mask_status := et_packages.stop_mask_status_default;
+		smt_solder_paste		: et_packages.type_solder_paste_status := et_packages.solder_paste_status_default;
 
 		procedure build_terminal is 
 		-- Assembles the elements of a terminal and appends the final terminal to the
@@ -3454,12 +3491,12 @@ package body et_project is
 			-- clean up for next terminal
 			terminal_position := origin_zero_rotation;
  			smt_pad_shape := (others => <>);
-			smt_stop_mask := et_pcb.stop_mask_status_default;
-			smt_solder_paste := et_pcb.solder_paste_status_default;
+			smt_stop_mask := et_packages.stop_mask_status_default;
+			smt_solder_paste := solder_paste_status_default;
 			tht_pad_shape := (others => <>);
 			tht_hole := terminal_tht_hole_default;
 			tht_width_inner_layers := zero;
-			tht_drill_size := et_pcb.type_drill_size'first;
+			tht_drill_size := type_drill_size'first;
 			
 		end build_terminal;
 		
@@ -3516,7 +3553,7 @@ package body et_project is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_lines.append (
 											container	=> packge.assembly_documentation.top.lines, 
-											new_item	=> (et_pcb.shapes.type_line (pac_line) with pac_line_width));
+											new_item	=> (shapes.type_line (pac_line) with pac_line_width));
 
 										-- clean up for next line
 										reset_line;
@@ -3630,13 +3667,12 @@ package body et_project is
 								
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								
-								type_pcb_contour_lines.append (
+								et_packages.type_pcb_contour_lines.append (
 									container	=> packge.pcb_contour.lines,
-									new_item	=> (shapes.type_line (pac_line) with lock_status));
+									new_item	=> (shapes.type_line (pac_line) with null record));
 
 								-- clean up for next line
 								reset_line;
-								lock_status := lock_status_default;
 								
 							when SEC_ROUTE_RESTRICT =>
 								
@@ -3672,13 +3708,12 @@ package body et_project is
 
 							when SEC_MILLINGS =>
 
-								type_pcb_contour_lines.append (
+								et_packages.type_pcb_contour_lines.append (
 									container	=> tht_millings.lines,
-									new_item	=> (et_pcb.shapes.type_line (pac_line) with lock_status));
+									new_item	=> (shapes.type_line (pac_line) with null record));
 								
 								-- clean up for next line
 								reset_line;
-								lock_status := lock_status_default;
 								
 							when others => invalid_section;
 						end case;
@@ -3691,7 +3726,7 @@ package body et_project is
 
 										type_copper_arcs.append (
 											container	=> packge.copper.top.arcs, 
-											new_item	=> (et_pcb.shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3700,7 +3735,7 @@ package body et_project is
 									when SEC_SILK_SCREEN => 
 										type_silk_arcs.append (
 											container	=> packge.silk_screen.top.arcs, 
-											new_item	=> (et_pcb.shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3709,7 +3744,7 @@ package body et_project is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_arcs.append (
 											container	=> packge.assembly_documentation.top.arcs, 
-											new_item	=> (et_pcb.shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3718,7 +3753,7 @@ package body et_project is
 									when SEC_STENCIL =>
 										type_stencil_arcs.append (
 											container	=> packge.stencil.top.arcs, 
-											new_item	=> (et_pcb.shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3727,7 +3762,7 @@ package body et_project is
 									when SEC_STOP_MASK =>
 										type_stop_arcs.append (
 											container	=> packge.stop_mask.top.arcs, 
-											new_item	=> (et_pcb.shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3736,7 +3771,7 @@ package body et_project is
 									when SEC_KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> packge.keepout.top.arcs,
-											new_item	=> (et_pcb.shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3745,7 +3780,7 @@ package body et_project is
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_arcs.append (
 											container	=> tht_pad_shape.top.arcs,
-											new_item	=> (et_pcb.shapes.type_arc (pac_arc) with null record));
+											new_item	=> (shapes.type_arc (pac_arc) with null record));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3759,7 +3794,7 @@ package body et_project is
 
 										type_copper_arcs.append (
 											container	=> packge.copper.bottom.arcs, 
-											new_item	=> (et_pcb.shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3768,7 +3803,7 @@ package body et_project is
 									when SEC_SILK_SCREEN => 
 										type_silk_arcs.append (
 											container	=> packge.silk_screen.bottom.arcs, 
-											new_item	=> (et_pcb.shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3777,7 +3812,7 @@ package body et_project is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_arcs.append (
 											container	=> packge.assembly_documentation.bottom.arcs, 
-											new_item	=> (et_pcb.shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3786,7 +3821,7 @@ package body et_project is
 									when SEC_STENCIL =>
 										type_stencil_arcs.append (
 											container	=> packge.stencil.bottom.arcs, 
-											new_item	=> (et_pcb.shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3795,7 +3830,7 @@ package body et_project is
 									when SEC_STOP_MASK =>
 										type_stop_arcs.append (
 											container	=> packge.stop_mask.bottom.arcs, 
-											new_item	=> (et_pcb.shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3804,7 +3839,7 @@ package body et_project is
 									when SEC_KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> packge.keepout.bottom.arcs, 
-											new_item	=> (et_pcb.shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3813,7 +3848,7 @@ package body et_project is
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_arcs.append (
 											container	=> tht_pad_shape.bottom.arcs,
-											new_item	=> (et_pcb.shapes.type_arc (pac_arc) with null record));
+											new_item	=> (shapes.type_arc (pac_arc) with null record));
 
 										-- clean up for next arc
 										reset_arc;
@@ -3823,20 +3858,18 @@ package body et_project is
 
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								
-								type_pcb_contour_arcs.append (
+								et_packages.type_pcb_contour_arcs.append (
 									container	=> packge.pcb_contour.arcs,
-									new_item	=> (et_pcb.shapes.type_arc (pac_arc) with lock_status));
+									new_item	=> (shapes.type_arc (pac_arc) with null record));
 
 								-- clean up for next arc
 								reset_arc;
-								lock_status := lock_status_default;
 								
 							when SEC_ROUTE_RESTRICT =>
 								
 								type_route_restrict_arcs.append (
 									container	=> packge.route_restrict.arcs,
-									new_item	=> (et_pcb.shapes.type_arc (pac_arc) with
-													layers	=> pac_signal_layers));
+									new_item	=> (shapes.type_arc (pac_arc) with layers => pac_signal_layers));
 
 								-- clean up for next arc
 								reset_arc;
@@ -3846,8 +3879,7 @@ package body et_project is
 								
 								type_via_restrict_arcs.append (
 									container	=> packge.via_restrict.arcs,
-									new_item	=> (et_pcb.shapes.type_arc (pac_arc) with
-													layers	=> pac_signal_layers));
+									new_item	=> (shapes.type_arc (pac_arc) with layers => pac_signal_layers));
 
 								-- clean up for next arc
 								reset_arc;
@@ -3857,20 +3889,19 @@ package body et_project is
 							when SEC_PAD_CONTOURS_SMT =>
 								type_pad_arcs.append (
 									container	=> smt_pad_shape.arcs,
-									new_item	=> (et_pcb.shapes.type_arc (pac_arc) with null record));
+									new_item	=> (shapes.type_arc (pac_arc) with null record));
 
 								-- clean up for next arc
 								reset_arc;
 
 							when SEC_MILLINGS =>
 								
-								type_pcb_contour_arcs.append (
+								et_packages.type_pcb_contour_arcs.append (
 									container	=> tht_millings.arcs,
-									new_item	=> (et_pcb.shapes.type_arc (pac_arc) with lock_status));
+									new_item	=> (shapes.type_arc (pac_arc) with null record));
 								
 								-- clean up for next arc
 								reset_arc;
-								lock_status := lock_status_default;
 
 							when others => invalid_section;
 						end case;
@@ -3926,7 +3957,7 @@ package body et_project is
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_circles.append (
 											container	=> tht_pad_shape.top.circles,
-											new_item	=> (et_pcb.shapes.type_circle (pac_circle) with null record));
+											new_item	=> (shapes.type_circle (pac_circle) with null record));
 
 										-- clean up for next circle
 										reset_circle;
@@ -3983,7 +4014,7 @@ package body et_project is
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_circles.append (
 											container	=> tht_pad_shape.bottom.circles,
-											new_item	=> (et_pcb.shapes.type_circle (pac_circle) with null record));
+											new_item	=> (shapes.type_circle (pac_circle) with null record));
 
 										-- clean up for next circle
 										reset_circle;
@@ -3993,13 +4024,12 @@ package body et_project is
 
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								
-								type_pcb_contour_circles.append (
+								et_packages.type_pcb_contour_circles.append (
 									container	=> packge.pcb_contour.circles,
-									new_item	=> (et_pcb.shapes.type_circle (pac_circle) with lock_status));
+									new_item	=> (shapes.type_circle (pac_circle) with null record));
 
 								-- clean up for next circle
 								reset_circle;
-								lock_status := lock_status_default;
 								
 							when SEC_ROUTE_RESTRICT =>
 								
@@ -4022,19 +4052,18 @@ package body et_project is
 							when SEC_PAD_CONTOURS_SMT =>
 								type_pad_circles.append (
 									container	=> smt_pad_shape.circles,
-									new_item	=> (et_pcb.shapes.type_circle (pac_circle) with null record));
+									new_item	=> (shapes.type_circle (pac_circle) with null record));
 
 								-- clean up for next circle
 								reset_circle;
 
 							when SEC_MILLINGS =>
-								type_pcb_contour_circles.append (
+								et_packages.type_pcb_contour_circles.append (
 									container	=> tht_millings.circles,
-									new_item	=> (et_pcb.shapes.type_circle (pac_circle) with lock_status));
+									new_item	=> (shapes.type_circle (pac_circle) with null record));
 								
 								-- clean up for next circle
 								reset_circle;
-								lock_status := lock_status_default;
 								
 							when others => invalid_section;
 						end case;
@@ -4047,7 +4076,7 @@ package body et_project is
 
 										type_silk_polygons.append (
 											container	=> packge.silk_screen.top.polygons, 
-											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
 
 										-- clean up for next polygon
 										reset_polygon;
@@ -4056,7 +4085,7 @@ package body et_project is
 
 										type_doc_polygons.append (
 											container	=> packge.assembly_documentation.top.polygons, 
-											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
 
 										-- clean up for next polygon
 										reset_polygon;
@@ -4065,7 +4094,7 @@ package body et_project is
 
 										type_stencil_polygons.append (
 											container	=> packge.stencil.top.polygons, 
-											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
 
 										-- clean up for next polygon
 										reset_polygon;
@@ -4074,7 +4103,7 @@ package body et_project is
 
 										type_stop_polygons.append (
 											container	=> packge.stop_mask.top.polygons, 
-											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
 
 										-- clean up for next polygon
 										reset_polygon;
@@ -4083,7 +4112,7 @@ package body et_project is
 
 										type_keepout_polygons.append (
 											container	=> packge.keepout.top.polygons, 
-											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
 
 										-- clean up for next polygon
 										reset_polygon;
@@ -4115,7 +4144,7 @@ package body et_project is
 
 										type_silk_polygons.append (
 											container	=> packge.silk_screen.bottom.polygons, 
-											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
 
 										-- clean up for next polygon
 										reset_polygon;
@@ -4124,7 +4153,7 @@ package body et_project is
 
 										type_doc_polygons.append (
 											container	=> packge.assembly_documentation.bottom.polygons, 
-											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
 
 										-- clean up for next polygon
 										reset_polygon;
@@ -4133,7 +4162,7 @@ package body et_project is
 
 										type_stencil_polygons.append (
 											container	=> packge.stencil.bottom.polygons, 
-											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
 
 										-- clean up for next polygon
 										reset_polygon;
@@ -4142,7 +4171,7 @@ package body et_project is
 
 										type_stop_polygons.append (
 											container	=> packge.stop_mask.bottom.polygons, 
-											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
 
 										-- clean up for next polygon
 										reset_polygon;
@@ -4151,7 +4180,7 @@ package body et_project is
 
 										type_keepout_polygons.append (
 											container	=> packge.keepout.bottom.polygons, 
-											new_item	=> (et_pcb.type_polygon (pac_polygon) with null record));
+											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
 
 										-- clean up for next polygon
 										reset_polygon;
@@ -4181,7 +4210,7 @@ package body et_project is
 								
 								type_route_restrict_polygons.append (
 									container	=> packge.route_restrict.polygons, 
-									new_item	=> (et_pcb.type_polygon (pac_polygon) with 
+									new_item	=> (et_packages.type_polygon (pac_polygon) with 
 													width	=> pac_line_width,
 													layers	=> pac_signal_layers));
 
@@ -4194,7 +4223,7 @@ package body et_project is
 								
 								type_via_restrict_polygons.append (
 									container	=> packge.via_restrict.polygons, 
-									new_item	=> (et_pcb.type_polygon (pac_polygon) with 
+									new_item	=> (et_packages.type_polygon (pac_polygon) with 
 													width	=> pac_line_width,
 													layers	=> pac_signal_layers));
 
@@ -4460,29 +4489,29 @@ package body et_project is
 							-- CS: In the following: set a corresponding parameter-found-flag
 							if kw = keyword_appearance then -- appearance real/virtual
 								expect_field_count (line, 2);
-								pac_appearance := et_pcb.to_appearance (f (line,2));
+								pac_appearance := to_appearance (f (line,2));
 
 								-- Depending on the appearance we create a virtual or real package
 								-- where pointer packge is pointing at:
 								case pac_appearance is
 									when REAL =>
-										packge := new et_pcb.type_package' (
-													appearance	=> et_pcb.REAL,
+										packge := new type_package' (
+													appearance	=> REAL,
 													others		=> <>);
 
 									when VIRTUAL =>
-										packge := new et_pcb.type_package' (
-													appearance	=> et_pcb.VIRTUAL,
+										packge := new type_package' (
+													appearance	=> VIRTUAL,
 													others		=> <>);
 								end case;
 										
 							elsif kw = keyword_description then -- description "blabla"
 								expect_field_count (line, 2);
-								pac_description := et_pcb.to_package_description (f (line,2));
+								pac_description := to_package_description (f (line,2));
 
 							elsif kw = keyword_assembly_technology then -- technology SMT/THT
 								expect_field_count (line, 2);
-								pac_technology := et_pcb.to_assembly_technology (f (line,2));
+								pac_technology := to_assembly_technology (f (line,2));
 								
 							else
 								invalid_keyword (kw);
@@ -4581,10 +4610,6 @@ package body et_project is
 										-- extract the end position starting at field 2 of line
 										pac_line.end_point := to_position (line, 2);
 
-									elsif kw = keyword_locked then -- locked no/yes
-										expect_field_count (line, 2);
-										lock_status := et_pcb.to_lock_status (f (line, 2));
-										
 									else
 										invalid_keyword (kw);
 									end if;
@@ -4661,10 +4686,6 @@ package body et_project is
 										-- extract the end position starting at field 2 of line
 										pac_line.end_point := to_position (line, 2);
 
-									elsif kw = keyword_locked then -- locked no/yes
-										expect_field_count (line, 2);
-										lock_status := et_pcb.to_lock_status (f (line, 2));
-										
 									else
 										invalid_keyword (kw);
 									end if;
@@ -4764,10 +4785,6 @@ package body et_project is
 										-- extract the end position starting at field 2 of line
 										pac_arc.end_point := to_position (line, 2);
 								
-									elsif kw = keyword_locked then -- locked no
-										expect_field_count (line, 2);
-										lock_status := et_pcb.to_lock_status (f (line, 2));
-										
 									else
 										invalid_keyword (kw);
 									end if;
@@ -4863,10 +4880,6 @@ package body et_project is
 										-- extract the end position starting at field 2 of line
 										pac_arc.end_point := to_position (line, 2);
 
-									elsif kw = keyword_locked then -- locked no/yes
-										expect_field_count (line, 2);
-										lock_status := et_pcb.to_lock_status (f (line, 2));
-										
 									else
 										invalid_keyword (kw);
 									end if;
@@ -4901,11 +4914,11 @@ package body et_project is
 
 											elsif kw = keyword_filled then -- filled yes/no
 												expect_field_count (line, 2);													
-												pac_circle_fillable_filled := et_pcb.to_filled (f (line, 2));
+												pac_circle_fillable_filled := to_filled (f (line, 2));
 
 											elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
 												expect_field_count (line, 2);													
-												pac_circle_fillable_fill_style := et_pcb.to_fill_style (f (line, 2));
+												pac_circle_fillable_fill_style := to_fill_style (f (line, 2));
 
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
@@ -4941,11 +4954,11 @@ package body et_project is
 
 											elsif kw = keyword_filled then -- filled yes/no
 												expect_field_count (line, 2);													
-												pac_circle_copper.filled := et_pcb.to_filled (f (line, 2));
+												pac_circle_copper.filled := to_filled (f (line, 2));
 
 											elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
 												expect_field_count (line, 2);													
-												pac_circle_copper.fill_style := et_pcb.to_fill_style (f (line, 2));
+												pac_circle_copper.fill_style := to_fill_style (f (line, 2));
 
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
@@ -4998,10 +5011,6 @@ package body et_project is
 										expect_field_count (line, 2);
 										pac_circle.radius := to_distance (f (line, 2));
 								
-									elsif kw = keyword_locked then -- locked no
-										expect_field_count (line, 2);
-										lock_status := et_pcb.to_lock_status (f (line, 2));
-										
 									else
 										invalid_keyword (kw);
 									end if;
@@ -5028,11 +5037,11 @@ package body et_project is
 
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);													
-										pac_circle_fillable_filled := et_pcb.to_filled (f (line, 2));
+										pac_circle_fillable_filled := to_filled (f (line, 2));
 
 									elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
 										expect_field_count (line, 2);													
-										pac_circle_fillable_fill_style := et_pcb.to_fill_style (f (line, 2));
+										pac_circle_fillable_fill_style := to_fill_style (f (line, 2));
 
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													
@@ -5090,10 +5099,6 @@ package body et_project is
 
 										pac_circle.radius := to_distance (f (line, 2));
 										
-									elsif kw = keyword_locked then -- locked no/yes
-										expect_field_count (line, 2);
-										lock_status := et_pcb.to_lock_status (f (line, 2));
-										
 									else
 										invalid_keyword (kw);
 									end if;
@@ -5114,11 +5119,11 @@ package body et_project is
 											-- CS: In the following: set a corresponding parameter-found-flag
 											if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
 												expect_field_count (line, 2);													
-												pac_polygon.fill_style := et_pcb.to_fill_style (f (line, 2));
+												pac_polygon.fill_style := to_fill_style (f (line, 2));
 
 											elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 												expect_field_count (line, 2);													
-												pac_polygon.corner_easing := et_pcb.to_corner_easing (f (line, 2));
+												pac_polygon.corner_easing := to_corner_easing (f (line, 2));
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
@@ -5144,11 +5149,11 @@ package body et_project is
 											-- CS: In the following: set a corresponding parameter-found-flag
 											if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
 												expect_field_count (line, 2);													
-												pac_polygon_copper.fill_style := et_pcb.to_fill_style (f (line, 2));
+												pac_polygon_copper.fill_style := to_fill_style (f (line, 2));
 
 											elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 												expect_field_count (line, 2);													
-												pac_polygon_copper.corner_easing := et_pcb.to_corner_easing (f (line, 2));
+												pac_polygon_copper.corner_easing := to_corner_easing (f (line, 2));
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
@@ -5164,7 +5169,7 @@ package body et_project is
 
 											elsif kw = keyword_priority then -- priority 2
 												expect_field_count (line, 2);
-												pac_polygon_copper.priority_level := et_pcb.to_polygon_priority (f (line, 2));
+												pac_polygon_copper.priority_level := to_polygon_priority (f (line, 2));
 
 											elsif kw = keyword_isolation then -- isolation 0.5
 												expect_field_count (line, 2);
@@ -5187,11 +5192,11 @@ package body et_project is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
 										expect_field_count (line, 2);													
-										pac_polygon.fill_style := et_pcb.to_fill_style (f (line, 2));
+										pac_polygon.fill_style := to_fill_style (f (line, 2));
 
 									elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 										expect_field_count (line, 2);													
-										pac_polygon.corner_easing := et_pcb.to_corner_easing (f (line, 2));
+										pac_polygon.corner_easing := to_corner_easing (f (line, 2));
 
 									elsif kw = keyword_easing_radius then -- easing_radius 0.4
 										expect_field_count (line, 2);													
@@ -5246,7 +5251,7 @@ package body et_project is
 										polygon_corner_point := to_position (line, 2);
 
 										-- insert the corner point in collection of corner points
-										et_pcb.type_polygon_points.insert (polygon_corner_points, polygon_corner_point);
+										type_polygon_points.insert (polygon_corner_points, polygon_corner_point);
 									else
 										invalid_keyword (kw);
 									end if;
@@ -5335,7 +5340,7 @@ package body et_project is
 												
 											elsif kw = keyword_meaning then -- meaning reference, value, purpose
 												expect_field_count (line, 2);
-												pac_text_placeholder.meaning := et_pcb.to_text_meaning (f (line, 2));
+												pac_text_placeholder.meaning := to_text_meaning (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -5361,7 +5366,7 @@ package body et_project is
 
 									elsif kw = keyword_assembly_technology then -- technology tht
 										expect_field_count (line, 2);
-										terminal_technology := et_pcb.to_assembly_technology (f (line,2));
+										terminal_technology := to_assembly_technology (f (line,2));
 
 									elsif kw = keyword_position then -- position x 12.7 y 3.0 rotation 0.0
 										expect_field_count (line, 7);
@@ -5426,7 +5431,7 @@ package body et_project is
 		
 		-- test if container et_pcb.packages already contains the package
 		-- named "file_name". If so, there would be no need to read the file_name again.
-		if et_pcb.type_packages.contains (et_pcb.packages, file_name) then
+		if type_packages.contains (packages, file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			
@@ -5470,8 +5475,8 @@ package body et_project is
 			packge.technology := pac_technology;
 
 			-- Insert the package (accessed by pointer packge) in et_pcb.packages:
-			et_pcb.type_packages.insert (
-				container	=> et_pcb.packages, 
+			type_packages.insert (
+				container	=> packages, 
 				key			=> file_name, -- libraries/packages/S_SO14.pac
 				new_item	=> packge.all);
 
@@ -7585,7 +7590,7 @@ package body et_project is
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_packages;
-		use et_pcb;
+-- 		use et_pcb;
 		use et_pcb_coordinates.geometry;
 		
 		file_handle : ada.text_io.file_type;
@@ -7675,7 +7680,7 @@ package body et_project is
 
 			begin -- write_polygon
 				polygon_begin;
-				write (keyword => keyword_priority, parameters => et_pcb.to_string (element (cursor).priority_level));
+				write (keyword => keyword_priority, parameters => to_string (element (cursor).priority_level));
 				write (keyword => keyword_isolation, parameters => to_string (element (cursor).isolation_gap));
 				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
 				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
@@ -7919,7 +7924,7 @@ package body et_project is
 
 				procedure write_polygon (cursor : in type_pad_polygons.cursor) is 
 					procedure query_points (polygon : in type_pad_polygon) is 
-						use et_pcb.type_polygon_points;
+						use et_packages.type_polygon_points;
 					begin
 						iterate (polygon.corners, write_polygon_corners'access);
 					end query_points;

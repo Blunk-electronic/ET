@@ -48,6 +48,7 @@ with ada.containers.vectors;
 with et_general;
 with et_project;
 with et_schematic;
+with et_packages;
 with et_pcb;
 with et_kicad_general;			use et_kicad_general;
 with kicad_coordinates;			use kicad_coordinates;
@@ -548,7 +549,7 @@ package et_kicad is
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for reference and value.
 				position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
-				text_placeholders	: et_pcb.type_text_placeholders;
+				text_placeholders	: et_packages.type_text_placeholders;
 				
 			-- If a component appears in the schematic only, it does not have any package variants.
 			-- Such components are power symbols or power flags. Later when building netlists
