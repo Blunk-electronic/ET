@@ -53,6 +53,7 @@ with et_string_processing;		use et_string_processing;
 with et_project;				use et_project;
 with et_schematic;
 with schematic_ops;				use schematic_ops;
+with et_packages;				use et_packages;
 with et_pcb;					use et_pcb;
 with et_pcb_stack;
 with et_pcb_coordinates;		use et_pcb_coordinates;
@@ -130,7 +131,7 @@ package board_ops is
 	
 	-- For laying out traces we need a type that provides for a terminal information about
 	-- x/y/rotation/technology and optionally the face. Face is available if technology is SMT.
-	type type_terminal_position (technology	: et_pcb.type_assembly_technology) is new geometry.type_position with record
+	type type_terminal_position (technology	: et_packages.type_assembly_technology) is new geometry.type_position with record
 		case technology is
 			when SMT => face : type_face;
 			when THT => null;
@@ -325,19 +326,19 @@ package board_ops is
 	procedure draw_outline_line (
 	-- Draws a line in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		line			: in type_pcb_contour_line;
+		line			: in et_pcb.type_pcb_contour_line;
 		log_threshold	: in type_log_level);
 
 	procedure draw_outline_arc (
 	-- Draws an arc in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		arc				: in type_pcb_contour_arc;
+		arc				: in et_pcb.type_pcb_contour_arc;
 		log_threshold	: in type_log_level);
 
 	procedure draw_outline_circle (
 	-- Draws a circle in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		circle			: in type_pcb_contour_circle;
+		circle			: in et_pcb.type_pcb_contour_circle;
 		log_threshold	: in type_log_level);
 
 	procedure delete_outline (

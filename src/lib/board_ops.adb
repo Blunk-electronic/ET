@@ -55,6 +55,7 @@ with ada.containers.ordered_maps;
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 with et_schematic;				use et_schematic;
+with et_packages;				use et_packages;
 with et_pcb;					use et_pcb;
 with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_coordinates;		use et_pcb_coordinates;
@@ -1044,7 +1045,7 @@ package body board_ops is
 		-- This cursor points to the terminal in the package model:
 		terminal_cursor : type_terminals.cursor;
 		
-		terminal_technology : et_pcb.type_assembly_technology;
+		terminal_technology : type_assembly_technology;
 		
 		use et_schematic.type_devices;
 	begin
@@ -1887,8 +1888,7 @@ package body board_ops is
 		use et_project.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
-		use et_pcb;
-		use et_pcb.type_route_restrict_lines;
+		use type_route_restrict_lines;
 
 		procedure draw (
 			module_name	: in type_module_name.bounded_string;
@@ -1927,8 +1927,7 @@ package body board_ops is
 		use et_project.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
-		use et_pcb;
-		use et_pcb.type_route_restrict_arcs;
+		use type_route_restrict_arcs;
 
 		procedure draw (
 			module_name	: in type_module_name.bounded_string;
@@ -1967,8 +1966,7 @@ package body board_ops is
 		use et_project.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
-		use et_pcb;
-		use et_pcb.type_route_restrict_circles;
+		use type_route_restrict_circles;
 
 		procedure draw (
 			module_name	: in type_module_name.bounded_string;
@@ -2095,8 +2093,7 @@ package body board_ops is
 		use et_project.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
-		use et_pcb;
-		use et_pcb.type_via_restrict_lines;
+		use type_via_restrict_lines;
 
 		procedure draw (
 			module_name	: in type_module_name.bounded_string;
@@ -2135,8 +2132,7 @@ package body board_ops is
 		use et_project.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
-		use et_pcb;
-		use et_pcb.type_via_restrict_arcs;
+		use type_via_restrict_arcs;
 
 		procedure draw (
 			module_name	: in type_module_name.bounded_string;
@@ -2175,8 +2171,7 @@ package body board_ops is
 		use et_project.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
-		use et_pcb;
-		use et_pcb.type_via_restrict_circles;
+		use type_via_restrict_circles;
 
 		procedure draw (
 			module_name	: in type_module_name.bounded_string;
@@ -2221,7 +2216,7 @@ package body board_ops is
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
+
 			use type_via_restrict_lines;
 			use type_via_restrict_arcs;
 			use type_via_restrict_circles;
@@ -2299,7 +2294,7 @@ package body board_ops is
 	procedure draw_outline_line (
 	-- Draws a line in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		line			: in type_pcb_contour_line;
+		line			: in et_pcb.type_pcb_contour_line;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -2335,7 +2330,7 @@ package body board_ops is
 	procedure draw_outline_arc (
 	-- Draws an arc in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		arc				: in type_pcb_contour_arc;
+		arc				: in et_pcb.type_pcb_contour_arc;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -2371,7 +2366,7 @@ package body board_ops is
 	procedure draw_outline_circle (
 	-- Draws a circle in the PCB outline.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		circle			: in type_pcb_contour_circle;
+		circle			: in et_pcb.type_pcb_contour_circle;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
@@ -2419,7 +2414,7 @@ package body board_ops is
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use et_pcb;
+
 			use type_pcb_contour_lines;
 			use type_pcb_contour_arcs;
 			use type_pcb_contour_circles;

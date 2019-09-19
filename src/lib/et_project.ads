@@ -55,6 +55,7 @@ with et_schematic;
 with submodules;
 with netlists;
 with assembly_variants;
+with et_packages;
 with et_pcb;
 with et_pcb_stack;
 
@@ -323,7 +324,7 @@ package et_project is
 	
 	procedure save_package (
 		name			: in string; -- libraries/devices/resistor.pac
-		packge			: in et_pcb.type_package; -- the actual device model
+		packge			: in et_packages.type_package; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level);
 
 	

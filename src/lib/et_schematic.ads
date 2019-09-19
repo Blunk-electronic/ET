@@ -58,6 +58,7 @@ with et_coordinates;
 with et_libraries;
 with assembly_variants;
 with et_string_processing;
+with et_packages;
 with et_pcb;
 with et_pcb_coordinates;
 with submodules;
@@ -156,7 +157,7 @@ package et_schematic is
 				-- by the operator.
 				position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
 				flipped				: et_pcb.type_flipped := et_pcb.flipped_default;
-				text_placeholders	: et_pcb.type_text_placeholders;
+				text_placeholders	: et_packages.type_text_placeholders;
 
 				-- CS flags that signal whether partcode, purpose, bom are displayed or not.
 				

@@ -60,6 +60,7 @@ with et_pcb_coordinates;
 with et_libraries;				use et_libraries;
 with et_schematic;
 with schematic_ops;
+with et_packages;
 with et_pcb;
 with et_pcb_stack;
 with board_ops;
@@ -172,8 +173,8 @@ package body scripting is
 		raise constraint_error;
 	end;
 
-	procedure expect_fill_style (style : in et_pcb.type_fill_style; field : in count_type) is begin
-		log (ERROR, "fill style " & enclose_in_quotes (et_pcb.to_string (style)) &
+	procedure expect_fill_style (style : in et_packages.type_fill_style; field : in count_type) is begin
+		log (ERROR, "fill style " & enclose_in_quotes (et_packages.to_string (style)) &
 			 " expected in field no. " & count_type'image (field) & " !" , console => true);
 		raise constraint_error;
 	end;
@@ -191,7 +192,7 @@ package body scripting is
 	end;
 
 	procedure expect_keyword_filled (field : in count_type) is begin
-		log (ERROR, "Expect keyword " & enclose_in_quotes (et_pcb.keyword_filled) &
+		log (ERROR, "Expect keyword " & enclose_in_quotes (et_packages.keyword_filled) &
 			" in field no." & count_type'image (field) & " !",
 			 console => true);
 		raise constraint_error;
@@ -1630,6 +1631,7 @@ package body scripting is
 		end schematic_cmd;
 
 		procedure board_cmd (verb : in type_verb_board; noun : in type_noun_board) is
+			use et_packages;
 			use et_pcb;
 			use et_pcb_coordinates;
 			use et_pcb_coordinates.geometry;
@@ -1715,7 +1717,7 @@ package body scripting is
 							when 10 =>
 							-- board led_driver draw keepout top circle filled 50 50 40 -- 10 fields
 								
-								if f (7) = et_pcb.keyword_filled then
+								if f (7) = et_packages.keyword_filled then
 									-- Circle is filled.
 									
 									board_ops.draw_keepout_circle (
@@ -1824,7 +1826,7 @@ package body scripting is
 							when 10 =>
 								-- Circle is filled.
 								-- board led_driver draw route_restrict [1,3,5-9] circle filled 20 50 40
-								if f (7) = et_pcb.keyword_filled then
+								if f (7) = et_packages.keyword_filled then
 
 									-- Circle is filled.
 									board_ops.draw_route_restrict_circle (
@@ -1933,7 +1935,7 @@ package body scripting is
 							when 10 =>
 								-- Circle is filled.
 								-- board led_driver draw via_restrict [1,3,5-9] circle filled 20 50 40
-								if f (7) = et_pcb.keyword_filled then
+								if f (7) = et_packages.keyword_filled then
 
 									-- Circle is filled.
 									board_ops.draw_via_restrict_circle (
