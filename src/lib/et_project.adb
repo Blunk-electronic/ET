@@ -2309,8 +2309,8 @@ package body et_project is
 			use pac_copper_lines;
 			use pac_copper_arcs;
 			use pac_copper_circles;
-			use type_copper_polygons_floating;
-			use type_texts_with_content_pcb;
+			use pac_copper_polygons_floating;
+			use pac_texts;
 			use type_text_placeholders_copper;
 
 			use et_pcb.type_pcb_contour_lines;
@@ -2355,7 +2355,7 @@ package body et_project is
 				circle_end;
 			end write_circle;
 			
-			procedure write_polygon (cursor : in type_copper_polygons_floating.cursor) is 
+			procedure write_polygon (cursor : in pac_copper_polygons_floating.cursor) is 
 				use type_polygon_points;
 				
 				procedure query_points (polygon : in type_copper_polygon_floating) is begin
@@ -2376,7 +2376,7 @@ package body et_project is
 				polygon_end;
 			end write_polygon;
 
-			procedure write_text (cursor : in type_texts_with_content_pcb.cursor) is -- copper texts in board !
+			procedure write_text (cursor : in pac_texts.cursor) is -- copper texts in board !
 			begin
 				text_begin;
 				write (keyword => keyword_content, parameters => et_libraries.to_string (element (cursor).content));
@@ -8429,7 +8429,7 @@ package body et_project is
 		board_track_line : et_pcb.type_copper_line;
 		board_track_arc : et_pcb.type_copper_arc;
 		board_track_circle : et_pcb.type_copper_circle;
-		board_text_copper : et_pcb.type_text_with_content_pcb;
+		board_text_copper : et_pcb.type_text;
 		board_text_copper_placeholder : et_pcb.type_text_placeholder_copper;
 		board_circle_contour : et_pcb.type_pcb_contour_circle;
 
@@ -9686,7 +9686,7 @@ package body et_project is
 						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 					begin
-						type_copper_polygons_floating.append (
+						pac_copper_polygons_floating.append (
 							container	=> module.board.copper.polygons,
 							new_item	=> board_polygon_floating);
 					end do_it;
@@ -9774,7 +9774,7 @@ package body et_project is
 						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 					begin
-						type_texts_with_content_pcb.append (
+						pac_texts.append (
 							container	=> module.board.copper.texts,
 							new_item	=> board_text_copper);
 					end do_it;

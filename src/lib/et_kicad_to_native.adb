@@ -2011,11 +2011,11 @@ package body et_kicad_to_native is
 				use et_pcb.pac_copper_circles;
 				circles_cursor : et_pcb.pac_copper_circles.cursor;
 
-				use et_pcb.type_copper_polygons_floating;
-				polygons_cursor : et_pcb.type_copper_polygons_floating.cursor;
+				use et_pcb.pac_copper_polygons_floating;
+				polygons_cursor : et_pcb.pac_copper_polygons_floating.cursor;
 
-				use et_pcb.type_texts_with_content_pcb;
-				texts_cursor : et_pcb.type_texts_with_content_pcb.cursor;
+				use et_pcb.pac_texts;
+				texts_cursor : et_pcb.pac_texts.cursor;
 
 				use et_pcb.type_text_placeholders_copper;
 				placeholders_cursor : et_pcb.type_text_placeholders_copper.cursor;
@@ -2114,7 +2114,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_polygon;
 
-				procedure move_text (text : in out et_pcb.type_text_with_content_pcb) is
+				procedure move_text (text : in out et_pcb.type_text) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
 				begin
@@ -2183,8 +2183,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS
 				polygons_cursor := module.board.copper.polygons.first;
-				while polygons_cursor /= et_pcb.type_copper_polygons_floating.no_element loop
-					et_pcb.type_copper_polygons_floating.update_element (
+				while polygons_cursor /= et_pcb.pac_copper_polygons_floating.no_element loop
+					et_pcb.pac_copper_polygons_floating.update_element (
 						container	=> module.board.copper.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -2194,8 +2194,8 @@ package body et_kicad_to_native is
 
 				-- TEXTS
 				texts_cursor := module.board.copper.texts.first;
-				while texts_cursor /= et_pcb.type_texts_with_content_pcb.no_element loop
-					et_pcb.type_texts_with_content_pcb.update_element (
+				while texts_cursor /= et_pcb.pac_texts.no_element loop
+					et_pcb.pac_texts.update_element (
 						container	=> module.board.copper.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);

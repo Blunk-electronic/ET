@@ -235,11 +235,11 @@ package et_pcb is
 
 
 	
-	type type_text_with_content_pcb is new type_text_with_content with record
+	type type_text is new et_packages.type_text_with_content with record
 		layer	: type_signal_layer;
 	end record;
 
-	package type_texts_with_content_pcb is new doubly_linked_lists (type_text_with_content_pcb);
+	package pac_texts is new doubly_linked_lists (type_text);
 
 
 	-- A floating copper polygon is not connected to a net:
@@ -248,7 +248,7 @@ package et_pcb is
 		width_min	: type_track_width; -- the minimum width
 	end record;
 
-	package type_copper_polygons_floating is new doubly_linked_lists (type_copper_polygon_floating);
+	package pac_copper_polygons_floating is new doubly_linked_lists (type_copper_polygon_floating);
 
 	
 	
@@ -260,9 +260,9 @@ package et_pcb is
 		circles			: pac_copper_circles.list;
 
 		-- CS: It is probably no good idea to allow floating copper polygons.
-		polygons		: type_copper_polygons_floating.list; 
+		polygons		: pac_copper_polygons_floating.list; 
 		
-		texts			: type_texts_with_content_pcb.list;
+		texts			: pac_texts.list;
 		placeholders	: type_text_placeholders_copper.list;
 	end record;
 
@@ -401,7 +401,7 @@ package et_pcb is
 	
 	procedure text_copper_properties (
 	-- Logs the properties of the given text of copper
-		cursor			: in type_texts_with_content_pcb.cursor;
+		cursor			: in pac_texts.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	
@@ -431,7 +431,7 @@ package et_pcb is
 
 	procedure floating_copper_polygon_properties (
 	-- Logs the properties of the given floating copper polygon.
-		cursor			: in type_copper_polygons_floating.cursor;
+		cursor			: in pac_copper_polygons_floating.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 	

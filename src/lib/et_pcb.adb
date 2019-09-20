@@ -91,7 +91,7 @@ package body et_pcb is
 		return type_net_class_description.to_bounded_string (class_description);
 	end to_net_class_description;
 	
-	function text_properties (text : in type_text) return string is
+	function text_properties (text : in et_packages.type_text) return string is
 	-- Returns the properties of the given text in a long single string.
 	begin
 		return to_string (text.position) & latin_1.space
@@ -194,11 +194,11 @@ package body et_pcb is
 
 	procedure text_copper_properties (
 	-- Logs the properties of the given text of copper
-		cursor			: in type_texts_with_content_pcb.cursor;
+		cursor			: in pac_texts.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use et_libraries.type_text_content;
-		use type_texts_with_content_pcb;
-		text : type_text_with_content_pcb;
+		use pac_texts;
+		text : type_text;
 	begin
 		text := element (cursor);
 		log (text => "copper text signal layer" & to_string (text.layer) & latin_1.space
@@ -298,9 +298,9 @@ package body et_pcb is
 
 	procedure floating_copper_polygon_properties (
 	-- Logs the properties of the given floating copper polygon.
-		cursor			: in type_copper_polygons_floating.cursor;
+		cursor			: in pac_copper_polygons_floating.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_copper_polygons_floating;
+		use pac_copper_polygons_floating;
 		use type_polygon_points;
 		points : type_polygon_points.set;
 		point_cursor : type_polygon_points.cursor;
