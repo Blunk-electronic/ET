@@ -205,7 +205,7 @@ package body et_packages is
 	end to_directory;
 
 	procedure log_plated_millings (
-		millings 		: in type_package_pcb_contour_plated;
+		millings 		: in type_pcb_contour_plated;
 		log_threshold	: in et_string_processing.type_log_level)
 		is
 		use type_pcb_contour_lines;
@@ -521,10 +521,10 @@ package body et_packages is
 	procedure placeholder_silk_screen_properties (
 	-- Logs the properties of the given silk screen placeholder
 		face			: in type_face;
-		cursor			: in type_text_placeholders_package.cursor;
+		cursor			: in pac_text_placeholders.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_text_placeholders_package;
-		placeholder : type_text_placeholder_package;
+		use pac_text_placeholders;
+		placeholder : type_text_placeholder;
 	begin
 		placeholder := element (cursor);
 		log (text => "silk screen placeholder face" & to_string (face)
@@ -599,10 +599,10 @@ package body et_packages is
 	procedure placeholder_assy_doc_properties (
 	-- Logs the properties of the given assembly documentation placeholder
 		face			: in type_face;
-		cursor			: in type_text_placeholders_package.cursor;
+		cursor			: in pac_text_placeholders.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_text_placeholders_package;
-		placeholder : type_text_placeholder_package;
+		use pac_text_placeholders;
+		placeholder : type_text_placeholder;
 	begin
 		placeholder := element (cursor);
 		log (text => "assembly doc placeholder face" & to_string (face)

@@ -561,8 +561,8 @@ package et_kicad_pcb is
 
 
 	type type_package_library is new type_package with record
-		silk_screen				: et_packages.type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
-		assembly_documentation	: et_packages.type_assembly_documentation_package_both_sides; -- incl. placeholder for value
+		silk_screen				: et_packages.type_silk_screen_both_sides; -- incl. placeholder for reference and purpose
+		assembly_documentation	: et_packages.type_assembly_documentation_both_sides; -- incl. placeholder for value
 		terminals				: et_packages.type_terminals.map;
 	end record;
 	
@@ -646,8 +646,8 @@ package et_kicad_pcb is
 	
 	-- A package in a board extends the base package type:
 	type type_package_board is new type_package with record
-		silk_screen				: et_packages.type_silk_screen_package_both_sides;
-		assembly_documentation	: et_packages.type_assembly_documentation_package_both_sides;
+		silk_screen				: et_packages.type_silk_screen_both_sides;
+		assembly_documentation	: et_packages.type_assembly_documentation_both_sides;
 		terminals				: type_terminals.map; -- terminals with net names
 		time_edit				: type_timestamp;
 		value					: et_libraries.type_value.bounded_string;

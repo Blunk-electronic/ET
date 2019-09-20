@@ -185,12 +185,12 @@ package et_packages is
 	function to_string (text_meaning : in type_text_meaning_package) return string;
 	function to_text_meaning (text_meaning : in string) return type_text_meaning_package;
 	
-	type type_text_placeholder_package is new type_text with record
+	type type_text_placeholder is new type_text with record
 		meaning : type_text_meaning_package := NAME;
 	end record;
 
 	-- There can be lots of placeholders of this kind. So they are stored in a list:	
-	package type_text_placeholders_package is new doubly_linked_lists (type_text_placeholder_package);
+	package pac_text_placeholders is new doubly_linked_lists (type_text_placeholder);
 
 	-- Placeholders for device name (or reference) and value can be placed in
 	-- silk screen or assembly documentation only:
@@ -204,13 +204,13 @@ package et_packages is
 	-- Initally, when a device is added to the schematic, these placeholders are 
 	-- copies of the placeholders defined in the package model.
 	type type_text_placeholders_silk_screen is record
-		top		: type_text_placeholders_package.list;
-		bottom	: type_text_placeholders_package.list;
+		top		: pac_text_placeholders.list;
+		bottom	: pac_text_placeholders.list;
 	end record;
 
 	type type_text_placeholders_assembly_documentation is record
-		top		: type_text_placeholders_package.list;
-		bottom	: type_text_placeholders_package.list;
+		top		: pac_text_placeholders.list;
+		bottom	: pac_text_placeholders.list;
 	end record;
 
 	type type_text_placeholders is record -- CS no need any more
@@ -276,7 +276,6 @@ package et_packages is
 
 	
 
-	-- COPPER OBJECTS (NON ELECTRIC !!) OF A PACKAGE
 	type type_copper_line is new type_line with record
 		width	: type_track_width;
 	end record;
@@ -319,7 +318,6 @@ package et_packages is
 	
 	package type_copper_polygons is new doubly_linked_lists (type_copper_polygon);
 	
-	-- Type for NON ELECTRIC !! copper objects of a package:
 	type type_copper is record 
 		lines 		: type_copper_lines.list;
 		arcs		: type_copper_arcs.list;
@@ -331,7 +329,7 @@ package et_packages is
 	-- since NON ELECTRIC copper objects of a package can be on both sides 
 	-- of the board we need this type. There is no reason for NON ELECTRIC 
 	-- copper objects in inner layers. So we deal with top and bottom side only:
-	type type_copper_package_both_sides is record
+	type type_copper_both_sides is record
 		top		: type_copper;
 		bottom	: type_copper;
 	end record;
@@ -523,7 +521,7 @@ package et_packages is
 	
 
 	-- This is the base type for silk screen objects in general:
-	type type_silk_screen is tagged record
+	type type_silk_screen_base is tagged record
 		lines 		: type_silk_lines.list;
 		arcs		: type_silk_arcs.list;
 		circles		: type_silk_circles.list;
@@ -532,14 +530,14 @@ package et_packages is
 	end record;
 
 	-- Silk screen objects of a package (in the library) include placeholders:
-	type type_silk_screen_package is new type_silk_screen with record
-		placeholders: type_text_placeholders_package.list;
+	type type_silk_screen is new type_silk_screen_base with record
+		placeholders: pac_text_placeholders.list;
 	end record;
 
 	-- Because silk screen is about two sides of the board this composite is required:
-	type type_silk_screen_package_both_sides is record
-		top		: type_silk_screen_package;
-		bottom	: type_silk_screen_package;
+	type type_silk_screen_both_sides is record
+		top		: type_silk_screen;
+		bottom	: type_silk_screen;
 	end record;
 
 
@@ -569,7 +567,7 @@ package et_packages is
 
 	
 	-- This is the base type for assembly documentation objects in general:
-	type type_assembly_documentation is tagged record
+	type type_assembly_documentation_base is tagged record
 		lines 		: type_doc_lines.list;
 		arcs		: type_doc_arcs.list;
 		circles		: type_doc_circles.list;
@@ -578,14 +576,14 @@ package et_packages is
 	end record;
 
 	-- Assembly documentation objects of a package (in the library) include placeholders:
-	type type_assembly_documentation_package is new type_assembly_documentation with record
-		placeholders: type_text_placeholders_package.list;
+	type type_assembly_documentation is new type_assembly_documentation_base with record
+		placeholders: pac_text_placeholders.list;
 	end record;
 
 	-- Because assembly documentation is about two sides of the board this composite is required:
-	type type_assembly_documentation_package_both_sides is record
-		top		: type_assembly_documentation_package;
-		bottom	: type_assembly_documentation_package;
+	type type_assembly_documentation_both_sides is record
+		top		: type_assembly_documentation;
+		bottom	: type_assembly_documentation;
 	end record;
 
 	
@@ -723,20 +721,20 @@ package et_packages is
 	type type_pcb_contour_circle is new type_circle with null record;
 	package type_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
 	
-	type type_package_pcb_contour is record -- PCB contour as defined by the package
+	type type_pcb_contour is record
 		lines 	: type_pcb_contour_lines.list;
 		arcs	: type_pcb_contour_arcs.list;
 		circles	: type_pcb_contour_circles.list;
 	end record;
 	
-	type type_package_pcb_contour_plated is record -- plated PCB contour as defined by the package
+	type type_pcb_contour_plated is record
 		lines 	: type_pcb_contour_lines.list;
 		arcs	: type_pcb_contour_arcs.list;
 		circles	: type_pcb_contour_circles.list;
 	end record;
 	
 	procedure log_plated_millings (
-		millings 		: in type_package_pcb_contour_plated;
+		millings 		: in type_pcb_contour_plated;
 		log_threshold	: in et_string_processing.type_log_level);
 
 	type type_package_appearance is (
@@ -826,7 +824,7 @@ package et_packages is
 						drill_size : type_drill_size;
 						
 					when MILLED =>
-						millings : type_package_pcb_contour_plated;
+						millings : type_pcb_contour_plated;
 				end case;
 				
 			when SMT =>
@@ -871,7 +869,7 @@ package et_packages is
 	-- This is the base type of a package:
 	type type_package_base (appearance : type_package_appearance) is abstract tagged record
 		description				: type_package_description.bounded_string;
-		copper					: type_copper_package_both_sides; -- non-electric objects
+		copper					: type_copper_both_sides; -- non-electric objects
 		keepout 				: type_keepout_both_sides;
 		stop_mask				: type_stop_mask_both_sides;
 		stencil					: type_stencil_both_sides;
@@ -881,11 +879,11 @@ package et_packages is
 		-- CS holes
 
 		-- PCB contour or so called "non-plated millings"
-		pcb_contour				: type_package_pcb_contour; 
+		pcb_contour				: type_pcb_contour; 
 
 		-- Plated millings. NOTE: NOT FOR SLITTED HOLES ! See type_terminal instead.
 		-- CS: currently no need for such things
-		--pcb_contour_plated 		: type_package_pcb_contour_plated;
+		--pcb_contour_plated 		: type_pcb_contour_plated;
 		
 		technology				: type_assembly_technology; -- set by majority of terminals
 		
@@ -904,8 +902,8 @@ package et_packages is
 	-- A package in the library extends the base package type:
 	type type_package is new type_package_base with record
 		-- CS default for face ?
-		silk_screen				: type_silk_screen_package_both_sides; -- incl. placeholder for reference and purpose
-		assembly_documentation	: type_assembly_documentation_package_both_sides; -- incl. placeholder for value
+		silk_screen				: type_silk_screen_both_sides; -- incl. placeholder for reference and purpose
+		assembly_documentation	: type_assembly_documentation_both_sides; -- incl. placeholder for value
 		terminals				: type_terminals.map;
 	end record;
 
@@ -976,7 +974,7 @@ package et_packages is
 	procedure placeholder_silk_screen_properties (
 	-- Logs the properties of the given silk screen placeholder
 		face			: in type_face;
-		cursor			: in type_text_placeholders_package.cursor;
+		cursor			: in pac_text_placeholders.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 	procedure text_silk_screen_properties (
@@ -1009,7 +1007,7 @@ package et_packages is
 	procedure placeholder_assy_doc_properties (
 	-- Logs the properties of the given assembly documentation placeholder
 		face			: in type_face;
-		cursor			: in type_text_placeholders_package.cursor;
+		cursor			: in pac_text_placeholders.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure text_assy_doc_properties (

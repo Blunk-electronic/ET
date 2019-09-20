@@ -342,7 +342,7 @@ package et_pcb is
 	
 -- SILK SCREEN
 	-- For silk screen objects that do not belong to any packages use this type:
-	type type_silk_screen_pcb is new type_silk_screen with record
+	type type_silk_screen_pcb is new type_silk_screen_base with record
 		-- Placeholders for revision, board name, misc ... :
 		placeholders : type_text_placeholders_pcb.list;
 	end record;
@@ -360,7 +360,7 @@ package et_pcb is
 -- ASSEMBLY DOCUMENTATION
 
 	-- For assembly documentation objects that do not belong to any packages use this type:
-	type type_assembly_documentation_pcb is new type_assembly_documentation with record
+	type type_assembly_documentation_pcb is new type_assembly_documentation_base with record
 		-- Placeholders for revision, board name, misc ... :
 		placeholders : type_text_placeholders_pcb.list;
 	end record;

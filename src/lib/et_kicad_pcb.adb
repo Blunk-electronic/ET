@@ -835,7 +835,7 @@ package body et_kicad_pcb is
 		text : type_text_package;
 
 		-- Temporarily text placeholders for reference and value are required. 
-		placeholder : type_text_placeholder_package;
+		placeholder : type_text_placeholder;
 
 
 		
@@ -844,7 +844,7 @@ package body et_kicad_pcb is
 
 		-- NON ELECTRIC !!! COPPER OBJECTS (lines, arcs, circles)
 		-- NOTE: Does not include texts as kicad does not allow texts in signal layers.
-		copper : et_packages.type_copper_package_both_sides;
+		copper : et_packages.type_copper_both_sides;
 
 		-- STOP MASK OBJECTS
 		stop_mask : et_packages.type_stop_mask_both_sides;
@@ -855,10 +855,10 @@ package body et_kicad_pcb is
 		-- CS: mind objects explicitely drawn and such auto generated
 	
 		-- SILK SCREEN OBJECTS (lines, arcs, circles, texts, text placeholders)
-		silk_screen : et_packages.type_silk_screen_package_both_sides;
+		silk_screen : et_packages.type_silk_screen_both_sides;
 	
 		-- ASSEMBLY DOC (FAB) OBJECTS (lines, arcs, circles, texts, text placeholders)
-		assy_doc : et_packages.type_assembly_documentation_package_both_sides;
+		assy_doc : et_packages.type_assembly_documentation_both_sides;
 
 		-- KEEPOUT OBJECTS (lines, arcs, circles)
 		keepout : et_packages.type_keepout_both_sides;
@@ -2444,14 +2444,14 @@ package body et_kicad_pcb is
 		-- Checks if there is at least one placeholder for reference and for value.
 		-- CS: validate text sizes and width according to specifications in configuration file
 			use et_pcb_coordinates;
-			use type_text_placeholders_package;
-			cursor 		: type_text_placeholders_package.cursor;
-			placeholder : type_text_placeholder_package;
+			use pac_text_placeholders;
+			cursor 		: pac_text_placeholders.cursor;
+			placeholder : type_text_placeholder;
 			reference_found, value_found : boolean := false;
 		begin
 			-- There must be a placeholder for the reference in the top silk screen:
 			cursor := silk_screen.top.placeholders.first;
-			while cursor /= type_text_placeholders_package.no_element loop
+			while cursor /= pac_text_placeholders.no_element loop
 				placeholder := element (cursor);
 				if placeholder.meaning = NAME then
 					reference_found := true;
@@ -2470,7 +2470,7 @@ package body et_kicad_pcb is
 
 			-- There must be a placeholder for the value in the top assembly documentation:
 			cursor := assy_doc.top.placeholders.first;
-			while cursor /= type_text_placeholders_package.no_element loop
+			while cursor /= pac_text_placeholders.no_element loop
 				placeholder := element (cursor);
 				if placeholder.meaning = VALUE then
 					value_found := true;
@@ -3288,10 +3288,10 @@ package body et_kicad_pcb is
 		package_stencil			: et_packages.type_stencil_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
-		package_silk_screen		: et_packages.type_silk_screen_package_both_sides;
-		package_assy_doc		: et_packages.type_assembly_documentation_package_both_sides;
+		package_silk_screen		: et_packages.type_silk_screen_both_sides;
+		package_assy_doc		: et_packages.type_assembly_documentation_both_sides;
 		package_keepout			: et_packages.type_keepout_both_sides;
-		package_copper			: et_packages.type_copper_package_both_sides;
+		package_copper			: et_packages.type_copper_both_sides;
 		
 		-- countours of a package as provided by the 3d model:
 -- 		package_contour			: et_pcb.type_package_contour; -- CS not assigned yet
@@ -7638,19 +7638,19 @@ package body et_kicad_pcb is
 						comp_reference	: in et_libraries.type_device_name;
 						comp_package	: in type_package_board) is
 
-						use et_packages.type_text_placeholders_package;
+						use et_packages.pac_text_placeholders;
 
 						-- points to a placeholder in the package
-						cursor : et_packages.type_text_placeholders_package.cursor;
+						cursor : et_packages.pac_text_placeholders.cursor;
 						
 					begin -- query_placeholders 
 						-- Collect placeholders for REFERENCE in TOP silk screen:
 						cursor := comp_package.silk_screen.top.placeholders.first;
-						while cursor /= type_text_placeholders_package.no_element loop
+						while cursor /= pac_text_placeholders.no_element loop
 
 							if element (cursor).meaning = NAME then
 	
-								type_text_placeholders_package.append (
+								pac_text_placeholders.append (
 									container	=> placeholders.silk_screen.top,
 									new_item	=> (et_packages.type_text (element (cursor)) with meaning => NAME));
 	
@@ -7663,11 +7663,11 @@ package body et_kicad_pcb is
 
 						-- Collect placeholders for REFERENCE in BOTTOM silk screen:
 						cursor := comp_package.silk_screen.bottom.placeholders.first;
-						while cursor /= type_text_placeholders_package.no_element loop
+						while cursor /= pac_text_placeholders.no_element loop
 
 							if element (cursor).meaning = NAME then
 
-								type_text_placeholders_package.append (
+								pac_text_placeholders.append (
 									container	=> placeholders.silk_screen.bottom,
 									new_item	=> (et_packages.type_text (element (cursor)) with meaning => NAME));
 
@@ -7680,11 +7680,11 @@ package body et_kicad_pcb is
 
 						-- Collect placeholders for VALUE in TOP assembly documentation:
 						cursor := comp_package.assembly_documentation.top.placeholders.first;
-						while cursor /= type_text_placeholders_package.no_element loop
+						while cursor /= pac_text_placeholders.no_element loop
 
 							if element (cursor).meaning = VALUE then
 
-								type_text_placeholders_package.append (
+								pac_text_placeholders.append (
 									container	=> placeholders.assy_doc.top,
 									new_item	=> (et_packages.type_text (element (cursor)) with meaning => VALUE));
 
@@ -7697,11 +7697,11 @@ package body et_kicad_pcb is
 
 						-- Collect placeholders for VALUE in BOTTOM assembly documentation:
 						cursor := comp_package.assembly_documentation.bottom.placeholders.first;
-						while cursor /= type_text_placeholders_package.no_element loop
+						while cursor /= pac_text_placeholders.no_element loop
 
 							if element (cursor).meaning = VALUE then
 
-								type_text_placeholders_package.append (
+								pac_text_placeholders.append (
 									container	=> placeholders.assy_doc.bottom,
 									new_item	=> (et_packages.type_text (element (cursor)) with meaning => VALUE));
 

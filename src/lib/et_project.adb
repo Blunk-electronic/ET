@@ -1978,13 +1978,13 @@ package body et_project is
 				device 		: in et_schematic.type_device) is
 				use et_pcb_coordinates;
 				use et_packages;
-				use type_text_placeholders_package;
-				placeholder_cursor : type_text_placeholders_package.cursor;
+				use pac_text_placeholders;
+				placeholder_cursor : pac_text_placeholders.cursor;
 
 				face : et_pcb_coordinates.type_face;
 				layer : type_placeholder_package_layer;
 				
-				procedure write_placeholder (placeholder_cursor : in type_text_placeholders_package.cursor) is 
+				procedure write_placeholder (placeholder_cursor : in pac_text_placeholders.cursor) is 
 				begin
 					section_mark (section_placeholder, HEADER);
 					write (keyword => keyword_layer, parameters => to_string (layer));
@@ -3410,7 +3410,7 @@ package body et_project is
 		polygon_corner_point	: et_pcb_coordinates.geometry.type_point;
 
 		pac_text				: et_packages.type_text_with_content;
-		pac_text_placeholder	: et_packages.type_text_placeholder_package;
+		pac_text_placeholder	: et_packages.type_text_placeholder;
 
 		terminal_name			: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology		: et_packages.type_assembly_technology := et_packages.assembly_technology_default;
@@ -3420,7 +3420,7 @@ package body et_project is
 		tht_width_inner_layers	: et_pcb_coordinates.type_distance := zero;
 		tht_hole				: et_packages.type_terminal_tht_hole := et_packages.terminal_tht_hole_default;
 		tht_drill_size			: et_packages.type_drill_size := et_packages.type_drill_size'first;
-		tht_millings			: et_packages.type_package_pcb_contour_plated;
+		tht_millings			: et_packages.type_pcb_contour_plated;
 		smt_pad_shape			: et_packages.type_pad_outline;
 		smt_pad_face			: et_pcb_coordinates.type_face := et_pcb_coordinates.face_default;
 		smt_stop_mask			: et_packages.type_stop_mask_status := et_packages.stop_mask_status_default;
@@ -4343,13 +4343,13 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN =>
 										
-										type_text_placeholders_package.append (
+										pac_text_placeholders.append (
 											container	=> packge.silk_screen.top.placeholders,
 											new_item	=> pac_text_placeholder);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										
-										type_text_placeholders_package.append (
+										pac_text_placeholders.append (
 											container	=> packge.assembly_documentation.top.placeholders,
 											new_item	=> pac_text_placeholder);
 										
@@ -4363,13 +4363,13 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN =>
 										
-										type_text_placeholders_package.append (
+										pac_text_placeholders.append (
 											container	=> packge.silk_screen.bottom.placeholders,
 											new_item	=> pac_text_placeholder);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										
-										type_text_placeholders_package.append (
+										pac_text_placeholders.append (
 											container	=> packge.assembly_documentation.bottom.placeholders,
 											new_item	=> pac_text_placeholder);
 										
@@ -7596,7 +7596,7 @@ package body et_project is
 		file_handle : ada.text_io.file_type;
 
 		use type_texts_with_content;
-		use type_text_placeholders_package;
+		use pac_text_placeholders;
 		
 		use type_copper_lines;
 		use type_copper_arcs;
@@ -7715,7 +7715,7 @@ package body et_project is
 			section_mark (section_copper, FOOTER);
 		end write_copper;
 
-		procedure write_placeholder (cursor : in type_text_placeholders_package.cursor) is
+		procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is
 		begin
 			placeholder_begin;
 			write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
@@ -7941,7 +7941,7 @@ package body et_project is
 				iterate (pad_shape.polygons, write_polygon'access);
 			end write_pad_shape;
 
-			procedure write_plated_millings (millings : in type_package_pcb_contour_plated) is
+			procedure write_plated_millings (millings : in type_pcb_contour_plated) is
 			begin
 				section_mark (section_pad_millings, HEADER);
 				iterate (millings.lines, write_line'access);
@@ -8346,10 +8346,10 @@ package body et_project is
 		device_text_placeholder_layer	: et_packages.type_placeholder_package_layer := et_packages.type_placeholder_package_layer'first; -- silk_screen/assembly_documentation
 
 		-- a single temporarily placeholder of a package
-		device_text_placeholder			: et_packages.type_text_placeholder_package;
+		device_text_placeholder		: et_packages.type_text_placeholder;
 
 		-- the temporarily collection of placeholders of packages
-		device_text_placeholders		: et_packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
+		device_text_placeholders	: et_packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
 
 		-- temporarily placeholders of unit reference (IC12), value (7400) and purpose (clock buffer)
 		unit_placeholder			: et_libraries.type_text_basic;
@@ -8690,12 +8690,12 @@ package body et_project is
 							case get_face (device_text_placeholder_position) is
 
 								when TOP =>
-									type_text_placeholders_package.append (
+									pac_text_placeholders.append (
 										container	=> device_text_placeholders.silk_screen.top,
 										new_item	=> device_text_placeholder);
 									
 								when BOTTOM =>
-									type_text_placeholders_package.append (
+									pac_text_placeholders.append (
 										container	=> device_text_placeholders.silk_screen.bottom,
 										new_item	=> device_text_placeholder);
 							end case;
@@ -8704,12 +8704,12 @@ package body et_project is
 							case get_face (device_text_placeholder_position) is
 
 								when TOP =>
-									type_text_placeholders_package.append (
+									pac_text_placeholders.append (
 										container	=> device_text_placeholders.assy_doc.top,
 										new_item	=> device_text_placeholder);
 
 								when BOTTOM =>
-									type_text_placeholders_package.append (
+									pac_text_placeholders.append (
 										container	=> device_text_placeholders.assy_doc.bottom,
 										new_item	=> device_text_placeholder);
 							end case;
