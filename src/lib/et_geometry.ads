@@ -373,9 +373,7 @@ package et_geometry is
 					hatching_line_width	: type_distance_positive := 0.2; -- the with of the lines
 					hatching_spacing	: type_distance_positive := 1.0; -- the space between the lines
 			end case;
-			
-
-	end record;
+		end record;
 	
 		
 	end shapes_2d;
