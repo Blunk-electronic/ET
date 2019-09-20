@@ -7442,7 +7442,7 @@ package body et_kicad_pcb is
 					route : et_pcb.type_route; -- to be returned
 					use type_segments;
 					segment_cursor : type_segments.cursor := board.segments.first;
-					line : et_pcb.type_copper_line_pcb; -- an ET segment
+					line : et_pcb.type_copper_line; -- an ET segment
 
 					use type_vias;
 					via_cursor : type_vias.cursor := board.vias.first;
@@ -7486,7 +7486,7 @@ package body et_kicad_pcb is
 					end loop;
 
 					-- Log if the net has no routed segments.
-					if et_pcb.type_copper_lines_pcb.is_empty (route.lines) then
+					if et_pcb.pac_copper_lines.is_empty (route.lines) then
 						log (text => "no segments", level => log_threshold + 3);
 					end if;
 					

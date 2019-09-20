@@ -575,19 +575,19 @@ package body et_kicad_to_native is
 				procedure move_route is
 				-- Move y position of copper objects of the net: lines, arcs, vias, polygons
 
-					use et_pcb.type_copper_lines_pcb;
-					use et_pcb.type_copper_arcs_pcb;
+					use et_pcb.pac_copper_lines;
+					use et_pcb.pac_copper_arcs;
 					use et_pcb.type_vias;
 					use et_pcb.type_copper_polygons_signal;
 					
-					line_cursor : et_pcb.type_copper_lines_pcb.cursor := net.route.lines.first;
-					arc_cursor	: et_pcb.type_copper_arcs_pcb.cursor := net.route.arcs.first;
+					line_cursor : et_pcb.pac_copper_lines.cursor := net.route.lines.first;
+					arc_cursor	: et_pcb.pac_copper_arcs.cursor := net.route.arcs.first;
 					via_cursor	: et_pcb.type_vias.cursor := net.route.vias.first;
 					poly_cursor	: et_pcb.type_copper_polygons_signal.cursor := net.route.polygons.first;
 
 					board_track : constant string (1..12) := "board track ";
 					
-					procedure move_line (line : in out et_pcb.type_copper_line_pcb) is
+					procedure move_line (line : in out et_pcb.type_copper_line) is
 						use et_pcb;
 					begin
 						log (text => board_track & "line", level => log_threshold + 4);
@@ -603,7 +603,7 @@ package body et_kicad_to_native is
 						log_indentation_down;
 					end move_line;
 
-					procedure move_arc (arc : in out et_pcb.type_copper_arc_pcb) is
+					procedure move_arc (arc : in out et_pcb.type_copper_arc) is
 						use et_pcb;
 					begin
 						log (text => board_track & "arc", level => log_threshold + 4);
@@ -683,8 +683,8 @@ package body et_kicad_to_native is
 				begin -- move_route
 					
 					-- Move lines:
-					while line_cursor /= et_pcb.type_copper_lines_pcb.no_element loop
-						et_pcb.type_copper_lines_pcb.update_element (
+					while line_cursor /= et_pcb.pac_copper_lines.no_element loop
+						et_pcb.pac_copper_lines.update_element (
 							container 	=> net.route.lines,
 							position	=> line_cursor,
 							process		=> move_line'access);
@@ -693,8 +693,8 @@ package body et_kicad_to_native is
 					end loop;
 
 					-- Move arcs:
-					while arc_cursor /= et_pcb.type_copper_arcs_pcb.no_element loop
-						et_pcb.type_copper_arcs_pcb.update_element (
+					while arc_cursor /= et_pcb.pac_copper_arcs.no_element loop
+						et_pcb.pac_copper_arcs.update_element (
 							container 	=> net.route.arcs,
 							position	=> arc_cursor,
 							process		=> move_arc'access);
@@ -2002,14 +2002,14 @@ package body et_kicad_to_native is
 
 			
 			procedure move_copper is
-				use et_pcb.type_copper_lines_pcb;
-				lines_cursor : et_pcb.type_copper_lines_pcb.cursor;
+				use et_pcb.pac_copper_lines;
+				lines_cursor : et_pcb.pac_copper_lines.cursor;
 
-				use et_pcb.type_copper_arcs_pcb;
-				arcs_cursor : et_pcb.type_copper_arcs_pcb.cursor;
+				use et_pcb.pac_copper_arcs;
+				arcs_cursor : et_pcb.pac_copper_arcs.cursor;
 
-				use et_pcb.type_copper_circles_pcb;
-				circles_cursor : et_pcb.type_copper_circles_pcb.cursor;
+				use et_pcb.pac_copper_circles;
+				circles_cursor : et_pcb.pac_copper_circles.cursor;
 
 				use et_pcb.type_copper_polygons_floating;
 				polygons_cursor : et_pcb.type_copper_polygons_floating.cursor;
@@ -2022,7 +2022,7 @@ package body et_kicad_to_native is
 				
 				board_copper : constant string (1..13) := "board copper ";
 				
-				procedure move_line (line : in out et_pcb.type_copper_line_pcb) is
+				procedure move_line (line : in out et_pcb.type_copper_line) is
 					use et_pcb;
 				begin
 					log (text => board_copper & "line", level => log_threshold + log_threshold_add);
@@ -2038,7 +2038,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_line;
 
-				procedure move_arc (arc : in out et_pcb.type_copper_arc_pcb) is
+				procedure move_arc (arc : in out et_pcb.type_copper_arc) is
 					use et_pcb;
 				begin
 					log (text => board_copper & "arc", level => log_threshold + log_threshold_add);
@@ -2055,7 +2055,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_arc;
 
-				procedure move_circle (circle : in out et_pcb.type_copper_circle_pcb) is
+				procedure move_circle (circle : in out et_pcb.type_copper_circle) is
 					use et_pcb_coordinates.geometry;
 				begin
 					log (text => board_copper & "circle", level => log_threshold + log_threshold_add);
@@ -2150,8 +2150,8 @@ package body et_kicad_to_native is
 				
 				-- LINES
 				lines_cursor := module.board.copper.lines.first;
-				while lines_cursor /= et_pcb.type_copper_lines_pcb.no_element loop
-					et_pcb.type_copper_lines_pcb.update_element (
+				while lines_cursor /= et_pcb.pac_copper_lines.no_element loop
+					et_pcb.pac_copper_lines.update_element (
 						container	=> module.board.copper.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
@@ -2161,8 +2161,8 @@ package body et_kicad_to_native is
 
 				-- ARCS
 				arcs_cursor := module.board.copper.arcs.first;
-				while arcs_cursor /= et_pcb.type_copper_arcs_pcb.no_element loop
-					et_pcb.type_copper_arcs_pcb.update_element (
+				while arcs_cursor /= et_pcb.pac_copper_arcs.no_element loop
+					et_pcb.pac_copper_arcs.update_element (
 						container	=> module.board.copper.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
@@ -2172,8 +2172,8 @@ package body et_kicad_to_native is
 
 				-- CIRCLES
 				circles_cursor := module.board.copper.circles.first;
-				while circles_cursor /= et_pcb.type_copper_circles_pcb.no_element loop
-					et_pcb.type_copper_circles_pcb.update_element (
+				while circles_cursor /= et_pcb.pac_copper_circles.no_element loop
+					et_pcb.pac_copper_circles.update_element (
 						container	=> module.board.copper.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);

@@ -112,23 +112,23 @@ package body et_pcb is
 		return type_text_meaning_copper'value (meaning);
 	end to_meaning;
 	
-	function to_string (meaning : in type_text_meaning_pcb) return string is begin
-		return latin_1.space & to_lower (type_text_meaning_pcb'image (meaning));
+	function to_string (meaning : in type_text_meaning) return string is begin
+		return latin_1.space & to_lower (type_text_meaning'image (meaning));
 	end to_string;
 
-	function to_meaning (meaning : in string) return type_text_meaning_pcb is begin
-		return type_text_meaning_pcb'value (meaning);
+	function to_meaning (meaning : in string) return type_text_meaning is begin
+		return type_text_meaning'value (meaning);
 	end to_meaning;
 	
 	function on_segment (
 	-- Returns true if the given point sits on the given line of copper.
 		point			: in geometry.type_point; -- x/y
 		layer			: in type_signal_layer;
-		line			: in type_copper_lines_pcb.cursor;
+		line			: in pac_copper_lines.cursor;
 		accuracy		: in geometry.type_accuracy)
 		return boolean is
 		result : boolean := false; -- to be returned
-		use type_copper_lines_pcb;
+		use pac_copper_lines;
 	begin -- on_segment
 		if element (line).layer = layer then
 			if on_line (point, element (line), accuracy) then
@@ -147,11 +147,11 @@ package body et_pcb is
 	-- Returns true if the given point sits on the given arc of copper.
 		point			: in geometry.type_point; -- x/y
 		layer			: in type_signal_layer;
-		arc				: in type_copper_arcs_pcb.cursor;
+		arc				: in pac_copper_arcs.cursor;
 		accuracy		: in et_pcb_coordinates.type_distance)
 		return boolean is
 		result : boolean := false; -- to be returned
-		use type_copper_arcs_pcb;
+		use pac_copper_arcs;
 	begin -- on_segment
 		if element (arc).layer = layer then
 			result := true; -- CS
@@ -216,10 +216,10 @@ package body et_pcb is
 -- PROPERTIES OF ELECTRIC OBJECTS IN SIGNAL LAYERS
 	procedure route_line_properties (
 	-- Logs the properties of the given line of a route
-		cursor			: in type_copper_lines_pcb.cursor;
+		cursor			: in pac_copper_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_copper_lines_pcb;
-		line : type_copper_line_pcb;
+		use pac_copper_lines;
+		line : type_copper_line;
 	begin
 		line := element (cursor);
 		log (text => "segment " & to_string (type_line (line)) &

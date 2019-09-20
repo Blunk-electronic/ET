@@ -1212,7 +1212,7 @@ package body board_ops is
 	-- Adds a line track segment to the given net in the given module.
 		module_cursor	: in type_modules.cursor;
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		line			: in type_copper_line_pcb) is
+		line			: in et_pcb.type_copper_line) is
 
 		procedure do_it (
 			module_name	: in type_module_name.bounded_string;
@@ -1226,7 +1226,7 @@ package body board_ops is
 			-- Appends the track to the net.
 				net_name	: in type_net_name.bounded_string;
 				net			: in out type_net) is
-				use et_pcb.type_copper_lines_pcb;
+				use et_pcb.pac_copper_lines;
 			begin
 				append (
 					container	=> net.route.lines,
@@ -1259,14 +1259,14 @@ package body board_ops is
 	-- Draws a track line. If net_name is empty a freetrack will be drawn.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		line			: in type_copper_line_pcb;
+		line			: in et_pcb.type_copper_line;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		use et_pcb;
-		use et_pcb.type_copper_lines_pcb;
+		use et_pcb.pac_copper_lines;
 		
 		procedure add_freetrack (
 			module_name	: in type_module_name.bounded_string;
@@ -1310,7 +1310,7 @@ package body board_ops is
 	-- Assumes that module_cursor and net_cursor point to a existing objects.
 		module_cursor	: in type_modules.cursor;
 		net_cursor		: in et_schematic.type_nets.cursor; -- reset_n
-		line			: in type_copper_line_pcb;
+		line			: in et_pcb.type_copper_line;
 		log_threshold	: in type_log_level) is
 
 		procedure add_named_track (
@@ -1323,7 +1323,7 @@ package body board_ops is
 			-- Appends the track to the net.
 				net_name	: in type_net_name.bounded_string;
 				net			: in out type_net) is
-				use et_pcb.type_copper_lines_pcb;
+				use et_pcb.pac_copper_lines;
 			begin
 				append (
 					container	=> net.route.lines,
@@ -1370,7 +1370,7 @@ package body board_ops is
 		-- will be tailored according to given terminal position, direction and length.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : type_copper_line_pcb;
+		line : et_pcb.type_copper_line;
 		
 		use et_schematic.type_devices;
 		device_cursor : et_schematic.type_devices.cursor;
@@ -1441,7 +1441,7 @@ package body board_ops is
 		-- will be tailored according to given terminal position, direction, axis and grid notches.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : type_copper_line_pcb;
+		line : et_pcb.type_copper_line;
 		
 		use et_schematic.type_devices;
 		device_cursor : et_schematic.type_devices.cursor;
@@ -1508,7 +1508,7 @@ package body board_ops is
 		-- will be tailored according to given terminal position and end point.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : type_copper_line_pcb;
+		line : et_pcb.type_copper_line;
 		
 		use et_schematic.type_devices;
 		device_cursor : et_schematic.type_devices.cursor;
@@ -1572,7 +1572,7 @@ package body board_ops is
 		-- will be tailored according to given terminal position, axis and grid notches.
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
-		line : type_copper_line_pcb;
+		line : et_pcb.type_copper_line;
 		
 		use et_schematic.type_devices;
 		device_cursor : et_schematic.type_devices.cursor;
@@ -1621,14 +1621,14 @@ package body board_ops is
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in type_net_name.bounded_string; -- reset_n
-		arc				: in type_copper_arc_pcb;
+		arc				: in et_pcb.type_copper_arc;
 		log_threshold	: in type_log_level) is
 
 		use et_project.type_modules;
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		use et_pcb;
-		use et_pcb.type_copper_arcs_pcb;
+		use et_pcb.pac_copper_arcs;
 		
 		procedure add_freetrack (
 			module_name	: in type_module_name.bounded_string;
@@ -1717,20 +1717,20 @@ package body board_ops is
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
 		use et_pcb;
-		use type_copper_lines_pcb;
-		use type_copper_arcs_pcb;
+		use pac_copper_lines;
+		use pac_copper_arcs;
 
 		deleted : boolean := false; -- goes true if at least one segment has been ripup
 		
 		procedure ripup_freetrack (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			line_cursor : type_copper_lines_pcb.cursor := module.board.copper.lines.first;
-			arc_cursor  : type_copper_arcs_pcb.cursor := module.board.copper.arcs.first;
+			line_cursor : pac_copper_lines.cursor := module.board.copper.lines.first;
+			arc_cursor  : pac_copper_arcs.cursor := module.board.copper.arcs.first;
 		begin
 			-- first probe the lines. If a matching line found, delete it 
 			-- and abort iteration.
-			while line_cursor /= type_copper_lines_pcb.no_element loop
+			while line_cursor /= pac_copper_lines.no_element loop
 
 				if on_segment (point, layer, line_cursor, accuracy) then
 					delete (module.board.copper.lines, line_cursor);
@@ -1744,7 +1744,7 @@ package body board_ops is
 			-- probe arcs if no line found.
 			-- If a matching arc found, delete it and abort iteration.
 			if not deleted then
-				while arc_cursor /= type_copper_arcs_pcb.no_element loop
+				while arc_cursor /= pac_copper_arcs.no_element loop
 
 					if on_segment (point, layer, arc_cursor, accuracy) then
 						delete (module.board.copper.arcs, arc_cursor);
@@ -1774,12 +1774,12 @@ package body board_ops is
 			procedure ripup (
 				net_name	: in type_net_name.bounded_string;
 				net			: in out type_net) is
-				line_cursor : type_copper_lines_pcb.cursor := net.route.lines.first;
-				arc_cursor  : type_copper_arcs_pcb.cursor := net.route.arcs.first;
+				line_cursor : pac_copper_lines.cursor := net.route.lines.first;
+				arc_cursor  : pac_copper_arcs.cursor := net.route.arcs.first;
 			begin
 				-- first probe the lines. If a matching line found, delete it 
 				-- and abort iteration.
-				while line_cursor /= type_copper_lines_pcb.no_element loop
+				while line_cursor /= pac_copper_lines.no_element loop
 
 					if on_segment (point, layer, line_cursor, accuracy) then
 						delete (net.route.lines, line_cursor);
@@ -1793,7 +1793,7 @@ package body board_ops is
 				-- probe arcs if no line found.
 				-- If a matching arc found, delete it and abort iteration.
 				if not deleted then
-					while arc_cursor /= type_copper_arcs_pcb.no_element loop
+					while arc_cursor /= pac_copper_arcs.no_element loop
 
 						if on_segment (point, layer, arc_cursor, accuracy) then
 							delete (net.route.arcs, arc_cursor);

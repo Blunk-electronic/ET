@@ -1800,11 +1800,11 @@ package body et_project is
 				use et_pcb_stack;
 				use et_pcb_coordinates.geometry;
 				
-				use type_copper_lines_pcb;
-				line_cursor : type_copper_lines_pcb.cursor := net.route.lines.first;
+				use pac_copper_lines;
+				line_cursor : pac_copper_lines.cursor := net.route.lines.first;
 
-				use type_copper_arcs_pcb;
-				arc_cursor : type_copper_arcs_pcb.cursor := net.route.arcs.first;
+				use pac_copper_arcs;
+				arc_cursor : pac_copper_arcs.cursor := net.route.arcs.first;
 
 				use type_vias;
 				via_cursor : type_vias.cursor := net.route.vias.first;
@@ -1827,7 +1827,7 @@ package body et_project is
 			begin -- query_route
 				section_mark (section_route, HEADER);
 
-				while line_cursor /= type_copper_lines_pcb.no_element loop
+				while line_cursor /= pac_copper_lines.no_element loop
 					section_mark (section_line, HEADER);
 					
 					write (keyword => keyword_start, parameters => position (element (line_cursor).start_point));
@@ -1839,7 +1839,7 @@ package body et_project is
 					next (line_cursor);
 				end loop;
 
-				while arc_cursor /= type_copper_arcs_pcb.no_element loop
+				while arc_cursor /= pac_copper_arcs.no_element loop
 					section_mark (section_arc, HEADER);
 
 					write (keyword => keyword_center, parameters => position (element (arc_cursor).center));
@@ -2269,7 +2269,7 @@ package body et_project is
 			use et_pcb_coordinates.geometry;
 
 			use type_texts_with_content;
-			use type_text_placeholders_pcb;
+			use et_pcb.pac_text_placeholders;
 
 			use type_silk_lines;
 			use type_silk_arcs;
@@ -2306,9 +2306,9 @@ package body et_project is
 			use type_via_restrict_circles;
 			use type_via_restrict_polygons;
 
-			use type_copper_lines_pcb;
-			use type_copper_arcs_pcb;
-			use type_copper_circles_pcb;
+			use pac_copper_lines;
+			use pac_copper_arcs;
+			use pac_copper_circles;
 			use type_copper_polygons_floating;
 			use type_texts_with_content_pcb;
 			use type_text_placeholders_copper;
@@ -2318,7 +2318,7 @@ package body et_project is
 			use et_pcb.type_pcb_contour_circles;
 			
 			-- general stuff
-			procedure write_placeholder (cursor : in type_text_placeholders_pcb.cursor) is
+			procedure write_placeholder (cursor : in et_pcb.pac_text_placeholders.cursor) is
 			begin
 				placeholder_begin;
 				write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
@@ -2327,7 +2327,7 @@ package body et_project is
 			end write_placeholder;
 
 			-- COPPER (NON-ELECTRIC)
-			procedure write_line (cursor : in type_copper_lines_pcb.cursor) is begin
+			procedure write_line (cursor : in pac_copper_lines.cursor) is begin
 				line_begin;
 				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
@@ -2336,7 +2336,7 @@ package body et_project is
 				line_end;
 			end write_line;
 
-			procedure write_arc (cursor : in type_copper_arcs_pcb.cursor) is begin
+			procedure write_arc (cursor : in pac_copper_arcs.cursor) is begin
 				arc_begin;
 				write (keyword => keyword_center, parameters => position (element (cursor).center));
 				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
@@ -2346,7 +2346,7 @@ package body et_project is
 				arc_end;
 			end write_arc;
 
-			procedure write_circle (cursor : in type_copper_circles_pcb.cursor) is begin
+			procedure write_circle (cursor : in pac_copper_circles.cursor) is begin
 				circle_begin;
 				write (keyword => keyword_center, parameters => position (element (cursor).center));
 				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
@@ -4343,13 +4343,13 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN =>
 										
-										pac_text_placeholders.append (
+										et_packages.pac_text_placeholders.append (
 											container	=> packge.silk_screen.top.placeholders,
 											new_item	=> pac_text_placeholder);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										
-										pac_text_placeholders.append (
+										et_packages.pac_text_placeholders.append (
 											container	=> packge.assembly_documentation.top.placeholders,
 											new_item	=> pac_text_placeholder);
 										
@@ -4363,13 +4363,13 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN =>
 										
-										pac_text_placeholders.append (
+										et_packages.pac_text_placeholders.append (
 											container	=> packge.silk_screen.bottom.placeholders,
 											new_item	=> pac_text_placeholder);
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										
-										pac_text_placeholders.append (
+										et_packages.pac_text_placeholders.append (
 											container	=> packge.assembly_documentation.bottom.placeholders,
 											new_item	=> pac_text_placeholder);
 										
@@ -8265,8 +8265,8 @@ package body et_project is
 		net_netchanger_ports : netlists.type_ports_netchanger.set;
 
 		route			: et_pcb.type_route;
-		route_line 		: et_pcb.type_copper_line_pcb;
-		route_arc		: et_pcb.type_copper_arc_pcb;
+		route_line 		: et_pcb.type_copper_line;
+		route_arc		: et_pcb.type_copper_arc;
 		route_via		: et_pcb.type_via;
 
 		route_polygon					: et_packages.type_copper_polygon;
@@ -8415,7 +8415,7 @@ package body et_project is
 		board_polygon : type_polygon;
 
 		board_text : et_packages.type_text_with_content;
-		board_text_placeholder : et_pcb.type_text_placeholder_pcb;
+		board_text_placeholder : et_pcb.type_text_placeholder;
 
 		signal_layers : et_pcb_stack.type_signal_layers.set;
 		
@@ -8426,9 +8426,9 @@ package body et_project is
 		board_layers : et_pcb_stack.package_layers.vector;
 		
 		board_polygon_floating : et_pcb.type_copper_polygon_floating;
-		board_track_line : et_pcb.type_copper_line_pcb;
-		board_track_arc : et_pcb.type_copper_arc_pcb;
-		board_track_circle : et_pcb.type_copper_circle_pcb;
+		board_track_line : et_pcb.type_copper_line;
+		board_track_arc : et_pcb.type_copper_arc;
+		board_track_circle : et_pcb.type_copper_circle;
 		board_text_copper : et_pcb.type_text_with_content_pcb;
 		board_text_copper_placeholder : et_pcb.type_text_placeholder_copper;
 		board_circle_contour : et_pcb.type_pcb_contour_circle;
@@ -9403,23 +9403,23 @@ package body et_project is
 							when TOP =>
 								case layer is
 									when SILK_SCREEN =>
-										type_text_placeholders_pcb.append (
+										pac_text_placeholders.append (
 											container	=> module.board.silk_screen.top.placeholders,
 											new_item	=> board_text_placeholder);
 
 									when ASSEMBLY_DOCUMENTATION =>
-										type_text_placeholders_pcb.append (
+										pac_text_placeholders.append (
 											container	=> module.board.assy_doc.top.placeholders,
 											new_item	=> board_text_placeholder);
 
 									when STOP_MASK =>
-										type_text_placeholders_pcb.append (
+										pac_text_placeholders.append (
 											container	=> module.board.stop_mask.top.placeholders,
 											new_item	=> board_text_placeholder);
 
 									-- CS
 									--when KEEPOUT =>
-									--	type_text_placeholders_pcb.append (
+									--	pac_text_placeholders.append (
 									--		container	=> module.board.keepout.top.placeholders,
 									--		new_item	=> board_text_placeholder);
 
@@ -9429,23 +9429,23 @@ package body et_project is
 							when BOTTOM => null;
 								case layer is
 									when SILK_SCREEN =>
-										type_text_placeholders_pcb.append (
+										pac_text_placeholders.append (
 											container	=> module.board.silk_screen.bottom.placeholders,
 											new_item	=> board_text_placeholder);
 
 									when ASSEMBLY_DOCUMENTATION =>
-										type_text_placeholders_pcb.append (
+										pac_text_placeholders.append (
 											container	=> module.board.assy_doc.bottom.placeholders,
 											new_item	=> board_text_placeholder);
 										
 									when STOP_MASK =>
-										type_text_placeholders_pcb.append (
+										pac_text_placeholders.append (
 											container	=> module.board.stop_mask.bottom.placeholders,
 											new_item	=> board_text_placeholder);
 
 									-- CS
 									--when KEEPOUT =>
-									--	type_text_placeholders_pcb.append (
+									--	pac_text_placeholders.append (
 									--		container	=> module.board.keepout.bottom.placeholders,
 									--		new_item	=> board_text_placeholder);
 
@@ -9708,7 +9708,7 @@ package body et_project is
 						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 					begin
-						type_copper_lines_pcb.append (
+						pac_copper_lines.append (
 							container	=> module.board.copper.lines,
 							new_item	=> board_track_line);
 					end do_it;
@@ -9730,7 +9730,7 @@ package body et_project is
 						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 					begin
-						type_copper_arcs_pcb.append (
+						pac_copper_arcs.append (
 							container	=> module.board.copper.arcs,
 							new_item	=> board_track_arc);
 					end do_it;
@@ -9752,7 +9752,7 @@ package body et_project is
 						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 					begin
-						type_copper_circles_pcb.append (
+						pac_copper_circles.append (
 							container	=> module.board.copper.circles,
 							new_item	=> board_track_circle);
 					end do_it;
@@ -10189,7 +10189,7 @@ package body et_project is
 							when SEC_ROUTE =>
 
 								-- insert line in route.lines
-								et_pcb.type_copper_lines_pcb.append (route.lines, route_line);
+								et_pcb.pac_copper_lines.append (route.lines, route_line);
 								route_line := (others => <>); -- clean up for next line
 
 							when SEC_TOP =>
@@ -10272,7 +10272,7 @@ package body et_project is
 							when SEC_ROUTE =>
 
 								-- insert arc in route.arcs
-								et_pcb.type_copper_arcs_pcb.append (route.arcs, route_arc);
+								et_pcb.pac_copper_arcs.append (route.arcs, route_arc);
 								route_arc := (others => <>); -- clean up for next arc
 
 							when SEC_TOP =>

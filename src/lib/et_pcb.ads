@@ -130,8 +130,8 @@ package et_pcb is
 
 	
 	
-	-- PLACEHOLDERS FOR TEXTS IN BOARD DRAWING
-	type type_text_meaning_pcb is (
+-- PLACEHOLDERS FOR TEXTS
+	type type_text_meaning is (
 		PROJECT_NAME,
 		PROJECT_STATUS,
 		DRAWING_NUMBER,
@@ -147,15 +147,15 @@ package et_pcb is
 		);
 		-- CS should be defined via configuration file:
 
-	function to_string (meaning : in type_text_meaning_pcb) return string;
-	function to_meaning (meaning : in string) return type_text_meaning_pcb;
+	function to_string (meaning : in type_text_meaning) return string;
+	function to_meaning (meaning : in string) return type_text_meaning;
 	
 	-- TEXT PLACEHOLDERS
-	type type_text_placeholder_pcb is new type_text with record
-		meaning : type_text_meaning_pcb;
+	type type_text_placeholder is new type_text with record
+		meaning : type_text_meaning;
 	end record;
 
-	package type_text_placeholders_pcb is new doubly_linked_lists (type_text_placeholder_pcb);
+	package pac_text_placeholders is new doubly_linked_lists (type_text_placeholder);
 
 	
 	
@@ -201,36 +201,36 @@ package et_pcb is
 	-- COPPER OBJECTS OF A PCB
 	-- In a pcb drawing copper objects can be placed at various copper layers.
 	-- This requires a layer id for the object.
-	type type_copper_line_pcb is new type_copper_line with record
+	type type_copper_line is new et_packages.type_copper_line with record
 		layer	: type_signal_layer;
 	end record;
-	package type_copper_lines_pcb is new doubly_linked_lists (type_copper_line_pcb);
+	package pac_copper_lines is new doubly_linked_lists (type_copper_line);
 
 	function on_segment (
 	-- Returns true if the given point sits on the given line of copper.
 		point			: in geometry.type_point; -- x/y
 		layer			: in type_signal_layer;
-		line			: in type_copper_lines_pcb.cursor;
+		line			: in pac_copper_lines.cursor;
 		accuracy		: in geometry.type_accuracy)
 		return boolean;
 	
-	type type_copper_arc_pcb is new type_copper_arc with record
+	type type_copper_arc is new et_packages.type_copper_arc with record
 		layer	: type_signal_layer;		
 	end record;
-	package type_copper_arcs_pcb is new doubly_linked_lists (type_copper_arc_pcb);
+	package pac_copper_arcs is new doubly_linked_lists (type_copper_arc);
 
 	function on_segment (
 	-- Returns true if the given point sits on the given arc of copper.
 		point			: in geometry.type_point; -- x/y
 		layer			: in type_signal_layer;
-		arc				: in type_copper_arcs_pcb.cursor;
+		arc				: in pac_copper_arcs.cursor;
 		accuracy		: in et_pcb_coordinates.type_distance)
 		return boolean;
 	
-	type type_copper_circle_pcb is new type_copper_circle with record
+	type type_copper_circle is new et_packages.type_copper_circle with record
 		layer	: type_signal_layer;
 	end record;
-	package type_copper_circles_pcb is new doubly_linked_lists (type_copper_circle_pcb);
+	package pac_copper_circles is new doubly_linked_lists (type_copper_circle);
 	
 
 
@@ -255,9 +255,9 @@ package et_pcb is
 	-- Type for NON ELECTRIC !! copper objects:
 	-- NON ELECTRIC copper objects of a pcb may also include text placeholders:
 	type type_copper_pcb is record 
-		lines 			: type_copper_lines_pcb.list;
-		arcs			: type_copper_arcs_pcb.list;
-		circles			: type_copper_circles_pcb.list;
+		lines 			: pac_copper_lines.list;
+		arcs			: pac_copper_arcs.list;
+		circles			: pac_copper_circles.list;
 
 		-- CS: It is probably no good idea to allow floating copper polygons.
 		polygons		: type_copper_polygons_floating.list; 
@@ -306,8 +306,8 @@ package et_pcb is
 	package type_copper_polygons_signal is new indefinite_doubly_linked_lists (type_copper_polygon_signal);
 	
 	type type_route is record 
-		lines 			: type_copper_lines_pcb.list;
-		arcs			: type_copper_arcs_pcb.list;
+		lines 			: pac_copper_lines.list;
+		arcs			: pac_copper_arcs.list;
 		vias			: type_vias.list;
 		polygons		: type_copper_polygons_signal.list;
 	end record;
@@ -315,7 +315,7 @@ package et_pcb is
 
 	-- Stop mask in board (may contain placeholders):
 	type type_stop_mask_pcb is new type_stop_mask with record
-		placeholders : type_text_placeholders_pcb.list; -- for texts in copper to be exposed
+		placeholders : pac_text_placeholders.list; -- for texts in copper to be exposed
 	end record;
 
 	type type_stop_mask_pcb_both_sides is record
@@ -344,7 +344,7 @@ package et_pcb is
 	-- For silk screen objects that do not belong to any packages use this type:
 	type type_silk_screen_pcb is new type_silk_screen_base with record
 		-- Placeholders for revision, board name, misc ... :
-		placeholders : type_text_placeholders_pcb.list;
+		placeholders : pac_text_placeholders.list;
 	end record;
 		
 
@@ -362,7 +362,7 @@ package et_pcb is
 	-- For assembly documentation objects that do not belong to any packages use this type:
 	type type_assembly_documentation_pcb is new type_assembly_documentation_base with record
 		-- Placeholders for revision, board name, misc ... :
-		placeholders : type_text_placeholders_pcb.list;
+		placeholders : pac_text_placeholders.list;
 	end record;
 
 
@@ -409,7 +409,7 @@ package et_pcb is
 -- PROPERTIES OF ELECTRIC OBJECTS IN SIGNAL LAYERS
 	procedure route_line_properties (
 	-- Logs the properties of the given line of a route
-		cursor			: in type_copper_lines_pcb.cursor;
+		cursor			: in pac_copper_lines.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure route_via_properties (
