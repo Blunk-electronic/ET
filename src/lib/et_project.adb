@@ -8425,7 +8425,7 @@ package body et_project is
 		board_layer : et_pcb_stack.type_layer;
 		board_layers : et_pcb_stack.package_layers.vector;
 		
-		board_polygon_floating : et_packages.type_copper_polygon_floating;
+		board_polygon_floating : et_pcb.type_copper_polygon_floating;
 		board_track_line : et_pcb.type_copper_line_pcb;
 		board_track_arc : et_pcb.type_copper_arc_pcb;
 		board_track_circle : et_pcb.type_copper_circle_pcb;
@@ -9680,7 +9680,7 @@ package body et_project is
 				end insert_polygon_via_restrict;
 
 				procedure insert_polygon_copper is
-					use et_packages;
+					use et_pcb;
 					
 					procedure do_it (
 						module_name	: in type_module_name.bounded_string;
@@ -10447,7 +10447,7 @@ package body et_project is
 								
 								case route_polygon_pad_connection is
 									when et_packages.THERMAL =>
-										et_packages.type_copper_polygons_signal.append (
+										et_pcb.type_copper_polygons_signal.append (
 											container	=> route.polygons,
 											new_item	=> (route_polygon with
 												layer				=> route_polygon_layer,
@@ -10458,7 +10458,7 @@ package body et_project is
 												thermal_gap			=> route_polygon_thermal_gap));
 
 									when et_packages.SOLID =>
-										et_packages.type_copper_polygons_signal.append (
+										et_pcb.type_copper_polygons_signal.append (
 											container	=> route.polygons,
 											new_item	=> (route_polygon with
 												layer				=> route_polygon_layer,
@@ -10469,7 +10469,7 @@ package body et_project is
 										-- CS warn about ignored parameters
 										
 									when et_packages.NONE =>
-										et_packages.type_copper_polygons_signal.append (
+										et_pcb.type_copper_polygons_signal.append (
 											container	=> route.polygons,
 											new_item	=> (route_polygon with
 												layer				=> route_polygon_layer,

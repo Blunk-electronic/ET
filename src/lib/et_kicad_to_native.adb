@@ -578,12 +578,12 @@ package body et_kicad_to_native is
 					use et_pcb.type_copper_lines_pcb;
 					use et_pcb.type_copper_arcs_pcb;
 					use et_pcb.type_vias;
-					use et_packages.type_copper_polygons_signal;
+					use et_pcb.type_copper_polygons_signal;
 					
 					line_cursor : et_pcb.type_copper_lines_pcb.cursor := net.route.lines.first;
 					arc_cursor	: et_pcb.type_copper_arcs_pcb.cursor := net.route.arcs.first;
 					via_cursor	: et_pcb.type_vias.cursor := net.route.vias.first;
-					poly_cursor	: et_packages.type_copper_polygons_signal.cursor := net.route.polygons.first;
+					poly_cursor	: et_pcb.type_copper_polygons_signal.cursor := net.route.polygons.first;
 
 					board_track : constant string (1..12) := "board track ";
 					
@@ -635,7 +635,7 @@ package body et_kicad_to_native is
 						log_indentation_down;
 					end move_via;
 
-					procedure move_polygon (polygon : in out et_packages.type_copper_polygon_signal) is
+					procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_signal) is
 						use et_pcb_coordinates;
 						use et_pcb_coordinates.geometry;
 						use et_packages.type_polygon_points;
@@ -712,8 +712,8 @@ package body et_kicad_to_native is
 						next (via_cursor);
 					end loop;
 
-					while poly_cursor /= et_packages.type_copper_polygons_signal.no_element loop
-						et_packages.type_copper_polygons_signal.update_element (
+					while poly_cursor /= et_pcb.type_copper_polygons_signal.no_element loop
+						et_pcb.type_copper_polygons_signal.update_element (
 							container 	=> net.route.polygons,
 							position	=> poly_cursor,
 							process		=> move_polygon'access);
@@ -2011,8 +2011,8 @@ package body et_kicad_to_native is
 				use et_pcb.type_copper_circles_pcb;
 				circles_cursor : et_pcb.type_copper_circles_pcb.cursor;
 
-				use et_packages.type_copper_polygons_floating;
-				polygons_cursor : et_packages.type_copper_polygons_floating.cursor;
+				use et_pcb.type_copper_polygons_floating;
+				polygons_cursor : et_pcb.type_copper_polygons_floating.cursor;
 
 				use et_pcb.type_texts_with_content_pcb;
 				texts_cursor : et_pcb.type_texts_with_content_pcb.cursor;
@@ -2070,7 +2070,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out et_packages.type_copper_polygon_floating) is
+				procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_floating) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
 					use type_polygon_points;
@@ -2183,8 +2183,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS
 				polygons_cursor := module.board.copper.polygons.first;
-				while polygons_cursor /= et_packages.type_copper_polygons_floating.no_element loop
-					et_packages.type_copper_polygons_floating.update_element (
+				while polygons_cursor /= et_pcb.type_copper_polygons_floating.no_element loop
+					et_pcb.type_copper_polygons_floating.update_element (
 						container	=> module.board.copper.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);

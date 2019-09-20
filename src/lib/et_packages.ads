@@ -343,23 +343,17 @@ package et_packages is
 	polygon_thermal_width_max : constant type_track_width := 3.0; -- CS: adjust if nessecariy
 	subtype type_polygon_thermal_width is et_pcb_coordinates.type_distance range polygon_thermal_width_min .. polygon_thermal_width_max;
 
-	text_polygon_thermal_width : constant string (1..13) := "thermal_width";		
-	
 	-- If a terminal is connected/associated with a polyon, this is the space between pad and polygon:
 	polygon_thermal_gap_min : constant type_track_clearance := type_track_clearance'first;
 	polygon_thermal_gap_max : constant type_track_clearance := 3.0; -- CS: adjust if nessecariy
 	subtype type_polygon_thermal_gap is type_track_clearance range polygon_thermal_gap_min .. polygon_thermal_gap_max;
 
-	text_polygon_thermal_gap : constant string (1..11) := "thermal_gap";
-	
 	-- Polygons may be connected with associated pads via thermals, via solid connection or not at all:
 	type type_polygon_pad_connection is (
 		THERMAL,
 		SOLID,
 		NONE);
 
-	text_polygon_pad_connection : constant string (1..14) := "pad_connection";
-	
 	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string;
 	function to_pad_connection (connection : in string) return type_polygon_pad_connection;
 
@@ -369,46 +363,10 @@ package et_packages is
 		THT_ONLY,
 		SMT_AND_THT);
 
-	text_polygon_pad_technology : constant string (1..15) := "connected_width";
+
 	
 	function to_string (polygon_pad_technology : in type_polygon_pad_technology) return string;
 	function to_pad_technology (technology : in string) return type_polygon_pad_technology;
-
-	-- A polygon in a signal layer is usually connected with a THT or SMD pads (or both) via thermals, solid (or not at all).
-	-- For this reason we define a controlled type here because some properties may exist (or may not exists) depending
-	-- on the kinde of pad_connection:
-	type type_copper_polygon_signal (pad_connection : type_polygon_pad_connection) is new type_copper_polygon with record
-		layer 		: type_signal_layer;
-		width_min	: type_track_width; -- the minimum width
-				
-		case pad_connection is
-			when THERMAL =>
-				thermal_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
-				thermal_width		: type_polygon_thermal_width; -- the thermal width
-				thermal_gap			: type_polygon_thermal_gap; -- the space between associated pads and polygon -- CS: rename to thermal_length ?
-
-			when SOLID =>
-				solid_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
-				-- no need for any kind of thermal parameters
-
-			when NONE => null;
-				-- no more properties required
-		end case;
-				
-	end record;
-
-	text_polygon_signal_layer	: constant string (1..12) := "signal_layer";	
-	text_polygon_width_min		: constant string (1..13) := "minimum_width";
-	
-	package type_copper_polygons_signal is new indefinite_doubly_linked_lists (type_copper_polygon_signal);
-
-	-- A floating copper polygon is not connected to a net:
-	type type_copper_polygon_floating is new type_copper_polygon with record
-		layer 		: type_signal_layer;
-		width_min	: type_track_width; -- the minimum width
-	end record;
-
-	package type_copper_polygons_floating is new doubly_linked_lists (type_copper_polygon_floating);
 
 
 
@@ -994,18 +952,6 @@ package et_packages is
 		face			: in type_face;
 		cursor			: in type_copper_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
-
-
-	procedure route_polygon_properties (
-	-- Logs the properties of the given polygon of a route
-		cursor			: in type_copper_polygons_signal.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-	
-	procedure floating_copper_polygon_properties (
-	-- Logs the properties of the given floating copper polygon.
-		cursor			: in type_copper_polygons_floating.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
-
 
 	
 -- PROPERTIES OF OBJECTS IN SILK SCREEN	

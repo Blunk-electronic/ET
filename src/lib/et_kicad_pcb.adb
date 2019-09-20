@@ -7597,7 +7597,7 @@ package body et_kicad_pcb is
 
 							end case;
 
-							et_packages.route_polygon_properties (route.polygons.last, log_threshold + 3);
+							et_pcb.route_polygon_properties (route.polygons.last, log_threshold + 3);
 
 						end if;
 							
@@ -7894,7 +7894,7 @@ package body et_kicad_pcb is
 									layer 		=> et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1)
 								));
 
-							et_packages.floating_copper_polygon_properties (module.board.copper.polygons.last, log_threshold + 2);
+							et_pcb.floating_copper_polygon_properties (module.board.copper.polygons.last, log_threshold + 2);
 							log (WARNING, "polygon is not connected with any net !", level => log_threshold + 2);
 
 						end if;

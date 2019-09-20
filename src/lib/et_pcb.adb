@@ -248,6 +248,88 @@ package body et_pcb is
 			 , level => log_threshold);
 	end route_via_properties;
 
+	procedure route_polygon_properties (
+	-- Logs the properties of the given polygon of a route
+		cursor			: in type_copper_polygons_signal.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_copper_polygons_signal;
+		use type_polygon_points;
+		points : type_polygon_points.set;
+		point_cursor : type_polygon_points.cursor;
+	begin
+		-- general stuff
+		log (text => "polygon" & 
+			 " " & text_polygon_signal_layer & to_string (element (cursor).layer) &
+			 " " & text_polygon_width_min & to_string (element (cursor).width_min) &
+			 " " & text_polygon_pad_connection & to_string (element (cursor).pad_connection) &
+			 " " & text_polygon_priority_level & to_string (element (cursor).priority_level) &
+			 " " & text_polygon_isolation_gap & to_string (element (cursor).isolation_gap) &
+			 " " & text_polygon_corner_easing & to_string (element (cursor).corner_easing) &
+			 " " & text_polygon_easing_radius & to_string (element (cursor).easing_radius),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		-- type depended stuff
+		case element (cursor).pad_connection is
+			when THERMAL =>
+				log (text => text_polygon_pad_technology & to_string (element (cursor).thermal_technology) &
+					" " & text_polygon_thermal_width & to_string (element (cursor).thermal_width) &
+					" " & text_polygon_thermal_gap & to_string (element (cursor).thermal_gap),
+					level => log_threshold);
+
+			when SOLID =>
+				log (text => text_polygon_pad_technology & to_string (element (cursor).solid_technology),
+					level => log_threshold);
+				
+			when NONE =>
+				null;
+		end case;
+
+		-- corner points
+		log (text => text_polygon_corner_points, level => log_threshold);
+		points := element (cursor).corners;
+		point_cursor := points.first;
+		while point_cursor /= type_polygon_points.no_element loop
+			log (text => to_string (element (point_cursor)), level => log_threshold);
+			next (point_cursor);
+		end loop;
+		
+		log_indentation_down;
+	end route_polygon_properties;
+
+	procedure floating_copper_polygon_properties (
+	-- Logs the properties of the given floating copper polygon.
+		cursor			: in type_copper_polygons_floating.cursor;
+		log_threshold 	: in et_string_processing.type_log_level) is
+		use type_copper_polygons_floating;
+		use type_polygon_points;
+		points : type_polygon_points.set;
+		point_cursor : type_polygon_points.cursor;
+	begin
+		-- general stuff
+		log (text => "polygon" & 
+			 " " & text_polygon_signal_layer & to_string (element (cursor).layer) &
+			 " " & text_polygon_width_min & to_string (element (cursor).width_min) &
+			 " " & text_polygon_corner_easing & to_string (element (cursor).corner_easing) &
+			 " " & text_polygon_easing_radius & to_string (element (cursor).easing_radius),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		-- corner points
+		log (text => text_polygon_corner_points, level => log_threshold);
+		points := element (cursor).corners;
+		point_cursor := points.first;
+		while point_cursor /= type_polygon_points.no_element loop
+			log (text => to_string (element (point_cursor)), level => log_threshold);
+			next (point_cursor);
+		end loop;
+		
+		log_indentation_down;
+	end floating_copper_polygon_properties;
+
+	
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
 	procedure line_pcb_contour_properties (
 	-- Logs the properties of the given line of pcb contour

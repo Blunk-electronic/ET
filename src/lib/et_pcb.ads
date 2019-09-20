@@ -242,6 +242,15 @@ package et_pcb is
 	package type_texts_with_content_pcb is new doubly_linked_lists (type_text_with_content_pcb);
 
 
+	-- A floating copper polygon is not connected to a net:
+	type type_copper_polygon_floating is new type_copper_polygon with record
+		layer 		: type_signal_layer;
+		width_min	: type_track_width; -- the minimum width
+	end record;
+
+	package type_copper_polygons_floating is new doubly_linked_lists (type_copper_polygon_floating);
+
+	
 	
 	-- Type for NON ELECTRIC !! copper objects:
 	-- NON ELECTRIC copper objects of a pcb may also include text placeholders:
@@ -270,13 +279,38 @@ package et_pcb is
 	package type_vias is new doubly_linked_lists (type_via);
 	
 	-- route (tracks/traces, vias, polgons)
+
+	-- A polygon in a signal layer is usually connected with a THT or SMD pads (or both) via thermals, solid (or not at all).
+	-- For this reason we define a controlled type here because some properties may exist (or may not exists) depending
+	-- on the kinde of pad_connection:
+	type type_copper_polygon_signal (pad_connection : type_polygon_pad_connection) is new type_copper_polygon with record
+		layer 		: type_signal_layer;
+		width_min	: type_track_width; -- the minimum width
+				
+		case pad_connection is
+			when THERMAL =>
+				thermal_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
+				thermal_width		: type_polygon_thermal_width; -- the thermal width
+				thermal_gap			: type_polygon_thermal_gap; -- the space between associated pads and polygon -- CS: rename to thermal_length ?
+
+			when SOLID =>
+				solid_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
+				-- no need for any kind of thermal parameters
+
+			when NONE => null;
+				-- no more properties required
+		end case;
+				
+	end record;
+
+	package type_copper_polygons_signal is new indefinite_doubly_linked_lists (type_copper_polygon_signal);
+	
 	type type_route is record 
 		lines 			: type_copper_lines_pcb.list;
 		arcs			: type_copper_arcs_pcb.list;
 		vias			: type_vias.list;
 		polygons		: type_copper_polygons_signal.list;
 	end record;
-
 	
 
 	-- Stop mask in board (may contain placeholders):
@@ -383,6 +417,24 @@ package et_pcb is
 		cursor			: in type_vias.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
+	text_polygon_thermal_width : constant string := "thermal_width";	
+	text_polygon_thermal_gap : constant string := "thermal_gap";	
+	text_polygon_pad_connection : constant string := "pad_connection";	
+	text_polygon_pad_technology : constant string := "connected_with";	
+	text_polygon_width_min : constant string := "minimum_width";	
+	text_polygon_signal_layer : constant string := "signal_layer";
+	
+	procedure route_polygon_properties (
+	-- Logs the properties of the given polygon of a route
+		cursor			: in type_copper_polygons_signal.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+
+	procedure floating_copper_polygon_properties (
+	-- Logs the properties of the given floating copper polygon.
+		cursor			: in type_copper_polygons_floating.cursor;
+		log_threshold 	: in et_string_processing.type_log_level);
+	
+	
 -- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
 	procedure line_pcb_contour_properties (
 	-- Logs the properties of the given line of pcb contour
