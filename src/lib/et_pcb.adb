@@ -231,9 +231,9 @@ package body et_pcb is
 	
 	procedure route_via_properties (
 	-- Logs the properties of the given via of a route
-		cursor			: in type_vias.cursor;
+		cursor			: in pac_vias.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_vias;
+		use pac_vias;
 		via : type_via;
 	begin
 		via := element (cursor);

@@ -1806,8 +1806,8 @@ package body et_project is
 				use pac_copper_arcs;
 				arc_cursor : pac_copper_arcs.cursor := net.route.arcs.first;
 
-				use type_vias;
-				via_cursor : type_vias.cursor := net.route.vias.first;
+				use pac_vias;
+				via_cursor : pac_vias.cursor := net.route.vias.first;
 
 				use type_copper_polygons_signal;
 				polygon_cursor : type_copper_polygons_signal.cursor := net.route.polygons.first;
@@ -1852,7 +1852,7 @@ package body et_project is
 					next (arc_cursor);
 				end loop;
 
-				while via_cursor /= type_vias.no_element loop
+				while via_cursor /= pac_vias.no_element loop
 					section_mark (section_via, HEADER);
 
 					write (keyword => keyword_position, parameters => position (element (via_cursor).position));
@@ -10432,7 +10432,7 @@ package body et_project is
 							when SEC_ROUTE =>
 
 								-- insert via in route.vias
-								et_pcb.type_vias.append (route.vias, route_via);
+								et_pcb.pac_vias.append (route.vias, route_via);
 								route_via := (others => <>); -- clean up for next via
 
 							when others => invalid_section;

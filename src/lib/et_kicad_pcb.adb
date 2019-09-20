@@ -7528,7 +7528,7 @@ package body et_kicad_pcb is
 					end loop;
 
 					-- Log if the net has no vias.
-					if et_pcb.type_vias.is_empty (route.vias) then
+					if et_pcb.pac_vias.is_empty (route.vias) then
 						log (text => "no vias", level => log_threshold + 3);
 					end if;
 

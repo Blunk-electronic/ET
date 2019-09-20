@@ -254,7 +254,7 @@ package et_pcb is
 	
 	-- Type for NON ELECTRIC !! copper objects:
 	-- NON ELECTRIC copper objects of a pcb may also include text placeholders:
-	type type_copper_pcb is record 
+	type type_copper is record 
 		lines 			: pac_copper_lines.list;
 		arcs			: pac_copper_arcs.list;
 		circles			: pac_copper_circles.list;
@@ -276,7 +276,7 @@ package et_pcb is
 	end record;
 
 	-- vias are collected in simple lists
-	package type_vias is new doubly_linked_lists (type_via);
+	package pac_vias is new doubly_linked_lists (type_via);
 	
 	-- route (tracks/traces, vias, polgons)
 
@@ -308,7 +308,7 @@ package et_pcb is
 	type type_route is record 
 		lines 			: pac_copper_lines.list;
 		arcs			: pac_copper_arcs.list;
-		vias			: type_vias.list;
+		vias			: pac_vias.list;
 		polygons		: type_copper_polygons_signal.list;
 	end record;
 	
@@ -414,7 +414,7 @@ package et_pcb is
 
 	procedure route_via_properties (
 	-- Logs the properties of the given via of a route
-		cursor			: in type_vias.cursor;
+		cursor			: in pac_vias.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	text_polygon_thermal_width : constant string := "thermal_width";	
@@ -468,7 +468,7 @@ package et_pcb is
 		keepout			: et_packages.type_keepout_both_sides;
 		route_restrict	: type_route_restrict_pcb;
 		via_restrict	: type_via_restrict_pcb;
-		copper			: type_copper_pcb; -- non-electric copper stuff, incl. floating polygons !
+		copper			: type_copper; -- non-electric copper stuff, incl. floating polygons !
 		contour			: type_pcb_contour;
 	end record;
 
