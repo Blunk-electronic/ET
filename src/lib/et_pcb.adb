@@ -248,9 +248,9 @@ package body et_pcb is
 
 	procedure route_polygon_properties (
 	-- Logs the properties of the given polygon of a route
-		cursor			: in type_copper_polygons_signal.cursor;
+		cursor			: in pac_copper_polygons_signal.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_copper_polygons_signal;
+		use pac_copper_polygons_signal;
 		use type_polygon_points;
 		points : type_polygon_points.set;
 		point_cursor : type_polygon_points.cursor;

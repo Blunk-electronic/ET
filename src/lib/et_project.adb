@@ -1809,8 +1809,8 @@ package body et_project is
 				use pac_vias;
 				via_cursor : pac_vias.cursor := net.route.vias.first;
 
-				use type_copper_polygons_signal;
-				polygon_cursor : type_copper_polygons_signal.cursor := net.route.polygons.first;
+				use pac_copper_polygons_signal;
+				polygon_cursor : pac_copper_polygons_signal.cursor := net.route.polygons.first;
 
 				procedure query_points (polygon : in type_copper_polygon_signal) is
 					use type_polygon_points;
@@ -1866,7 +1866,7 @@ package body et_project is
 					next (via_cursor);
 				end loop;
 				
-				while polygon_cursor /= type_copper_polygons_signal.no_element loop
+				while polygon_cursor /= pac_copper_polygons_signal.no_element loop
 					section_mark (section_polygon, HEADER);
 
 					write (keyword => keyword_priority , parameters => to_string (element (polygon_cursor).priority_level));
@@ -10447,7 +10447,7 @@ package body et_project is
 								
 								case route_polygon_pad_connection is
 									when et_packages.THERMAL =>
-										et_pcb.type_copper_polygons_signal.append (
+										et_pcb.pac_copper_polygons_signal.append (
 											container	=> route.polygons,
 											new_item	=> (route_polygon with
 												layer				=> route_polygon_layer,
@@ -10458,7 +10458,7 @@ package body et_project is
 												thermal_gap			=> route_polygon_thermal_gap));
 
 									when et_packages.SOLID =>
-										et_pcb.type_copper_polygons_signal.append (
+										et_pcb.pac_copper_polygons_signal.append (
 											container	=> route.polygons,
 											new_item	=> (route_polygon with
 												layer				=> route_polygon_layer,
@@ -10469,7 +10469,7 @@ package body et_project is
 										-- CS warn about ignored parameters
 										
 									when et_packages.NONE =>
-										et_pcb.type_copper_polygons_signal.append (
+										et_pcb.pac_copper_polygons_signal.append (
 											container	=> route.polygons,
 											new_item	=> (route_polygon with
 												layer				=> route_polygon_layer,

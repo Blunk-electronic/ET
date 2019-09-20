@@ -578,12 +578,12 @@ package body et_kicad_to_native is
 					use et_pcb.pac_copper_lines;
 					use et_pcb.pac_copper_arcs;
 					use et_pcb.pac_vias;
-					use et_pcb.type_copper_polygons_signal;
+					use et_pcb.pac_copper_polygons_signal;
 					
 					line_cursor : et_pcb.pac_copper_lines.cursor := net.route.lines.first;
 					arc_cursor	: et_pcb.pac_copper_arcs.cursor := net.route.arcs.first;
 					via_cursor	: et_pcb.pac_vias.cursor := net.route.vias.first;
-					poly_cursor	: et_pcb.type_copper_polygons_signal.cursor := net.route.polygons.first;
+					poly_cursor	: et_pcb.pac_copper_polygons_signal.cursor := net.route.polygons.first;
 
 					board_track : constant string (1..12) := "board track ";
 					
@@ -712,8 +712,8 @@ package body et_kicad_to_native is
 						next (via_cursor);
 					end loop;
 
-					while poly_cursor /= et_pcb.type_copper_polygons_signal.no_element loop
-						et_pcb.type_copper_polygons_signal.update_element (
+					while poly_cursor /= et_pcb.pac_copper_polygons_signal.no_element loop
+						et_pcb.pac_copper_polygons_signal.update_element (
 							container 	=> net.route.polygons,
 							position	=> poly_cursor,
 							process		=> move_polygon'access);

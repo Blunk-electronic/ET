@@ -303,31 +303,31 @@ package et_pcb is
 				
 	end record;
 
-	package type_copper_polygons_signal is new indefinite_doubly_linked_lists (type_copper_polygon_signal);
+	package pac_copper_polygons_signal is new indefinite_doubly_linked_lists (type_copper_polygon_signal);
 	
 	type type_route is record 
 		lines 			: pac_copper_lines.list;
 		arcs			: pac_copper_arcs.list;
 		vias			: pac_vias.list;
-		polygons		: type_copper_polygons_signal.list;
+		polygons		: pac_copper_polygons_signal.list;
 	end record;
 	
 
 	-- Stop mask in board (may contain placeholders):
-	type type_stop_mask_pcb is new type_stop_mask with record
+	type type_stop_mask is new et_packages.type_stop_mask with record
 		placeholders : pac_text_placeholders.list; -- for texts in copper to be exposed
 	end record;
 
-	type type_stop_mask_pcb_both_sides is record
-		top		: type_stop_mask_pcb;
-		bottom	: type_stop_mask_pcb;
+	type type_stop_mask_both_sides is record
+		top		: type_stop_mask;
+		bottom	: type_stop_mask;
 	end record;
 
 	
 
 
 
-	-- STENCIL
+-- STENCIL
 
 	-- Because stencil is about two sides of the board this composite is required:
 	type type_stencil_both_sides is record
@@ -342,16 +342,16 @@ package et_pcb is
 	
 -- SILK SCREEN
 	-- For silk screen objects that do not belong to any packages use this type:
-	type type_silk_screen_pcb is new type_silk_screen_base with record
+	type type_silk_screen is new type_silk_screen_base with record
 		-- Placeholders for revision, board name, misc ... :
 		placeholders : pac_text_placeholders.list;
 	end record;
 		
 
 	-- Because silk screen is about two sides of the board this composite is required:	
-	type type_silk_screen_pcb_both_sides is record
-		top 	: type_silk_screen_pcb;
-		bottom	: type_silk_screen_pcb;
+	type type_silk_screen_both_sides is record
+		top 	: type_silk_screen;
+		bottom	: type_silk_screen;
 	end record;
 
 
@@ -360,28 +360,28 @@ package et_pcb is
 -- ASSEMBLY DOCUMENTATION
 
 	-- For assembly documentation objects that do not belong to any packages use this type:
-	type type_assembly_documentation_pcb is new type_assembly_documentation_base with record
+	type type_assembly_documentation is new type_assembly_documentation_base with record
 		-- Placeholders for revision, board name, misc ... :
 		placeholders : pac_text_placeholders.list;
 	end record;
 
 
 	-- Because assembly documentation is about two sides of the board this composite is required:	
-	type type_assembly_documentation_pcb_both_sides is record
-		top 	: type_assembly_documentation_pcb;
-		bottom	: type_assembly_documentation_pcb;
+	type type_assembly_documentation_both_sides is record
+		top 	: type_assembly_documentation;
+		bottom	: type_assembly_documentation;
 	end record;
 
 
 -- ROUTE RESTRICT
 	
-	type type_route_restrict_pcb is new type_route_restrict with null record;
+	type type_route_restrict is new et_packages.type_route_restrict with null record;
 
 
 
 -- VIA RESTRICT
 
-	type type_via_restrict_pcb is new type_via_restrict with null record;
+	type type_via_restrict is new et_packages.type_via_restrict with null record;
 	
 	
 
@@ -397,16 +397,16 @@ package et_pcb is
 
 	function to_string (flipped : in type_flipped) return string;
 	function to_flipped (flipped : in string) return type_flipped;
+
+
 	
+-- LOGGING PROPERTIES OF OBJECTS
 	
 	procedure text_copper_properties (
 	-- Logs the properties of the given text of copper
 		cursor			: in pac_texts.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
-	
-
--- PROPERTIES OF ELECTRIC OBJECTS IN SIGNAL LAYERS
 	procedure route_line_properties (
 	-- Logs the properties of the given line of a route
 		cursor			: in pac_copper_lines.cursor;
@@ -426,7 +426,7 @@ package et_pcb is
 	
 	procedure route_polygon_properties (
 	-- Logs the properties of the given polygon of a route
-		cursor			: in type_copper_polygons_signal.cursor;
+		cursor			: in pac_copper_polygons_signal.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure floating_copper_polygon_properties (
@@ -435,7 +435,6 @@ package et_pcb is
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 	
--- PROPERTIES OF OBJECTS IN BOARD CONTOUR / OUTLINE / EDGE CUTS
 	procedure line_pcb_contour_properties (
 	-- Logs the properties of the given line of pcb contour
 		cursor			: in type_pcb_contour_lines.cursor;
@@ -461,13 +460,13 @@ package et_pcb is
 	type type_board is tagged record
 		grid			: type_grid;  -- the drawing grid of the board
 		stack			: et_pcb_stack.type_stack;	-- the layer stack
-		silk_screen		: type_silk_screen_pcb_both_sides;
-		assy_doc		: type_assembly_documentation_pcb_both_sides;
+		silk_screen		: type_silk_screen_both_sides;
+		assy_doc		: type_assembly_documentation_both_sides;
 		stencil			: type_stencil_both_sides;
-		stop_mask		: type_stop_mask_pcb_both_sides;
+		stop_mask		: type_stop_mask_both_sides;
 		keepout			: et_packages.type_keepout_both_sides;
-		route_restrict	: type_route_restrict_pcb;
-		via_restrict	: type_via_restrict_pcb;
+		route_restrict	: type_route_restrict;
+		via_restrict	: type_via_restrict;
 		copper			: type_copper; -- non-electric copper stuff, incl. floating polygons !
 		contour			: type_pcb_contour;
 	end record;

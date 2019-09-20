@@ -767,10 +767,10 @@ package et_kicad_pcb is
 		net_classes	: type_net_classes.map;
 		packages	: type_packages_board.map;
 
-		silk_screen	: et_pcb.type_silk_screen_pcb_both_sides;
-		assy_doc	: et_pcb.type_assembly_documentation_pcb_both_sides;
+		silk_screen	: et_pcb.type_silk_screen_both_sides;
+		assy_doc	: et_pcb.type_assembly_documentation_both_sides;
 		stencil		: et_pcb.type_stencil_both_sides;
-		stop_mask	: et_pcb.type_stop_mask_pcb_both_sides;
+		stop_mask	: et_pcb.type_stop_mask_both_sides;
 		keepout		: et_packages.type_keepout_both_sides;		
 		contour		: et_pcb.type_pcb_contour;
 		copper		: et_pcb.type_copper; -- non-electric. used for texts only
