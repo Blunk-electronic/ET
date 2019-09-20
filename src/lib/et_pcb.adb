@@ -53,7 +53,6 @@ with ada.containers.ordered_sets;
 
 with ada.exceptions;
 
-with et_coordinates; -- CS remove ?
 with et_libraries;
 with et_packages;
 with et_string_processing;		use et_string_processing;
@@ -94,7 +93,6 @@ package body et_pcb is
 	
 	function text_properties (text : in type_text) return string is
 	-- Returns the properties of the given text in a long single string.
-		use et_coordinates;
 	begin
 		return to_string (text.position) & latin_1.space
 			& "size (width" & axis_separator & "height)" 
