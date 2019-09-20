@@ -759,6 +759,22 @@ package body et_geometry is
 		end to_string;
 
 		
+		function to_corner_easing (easing : in string) return type_corner_easing is begin
+			return type_corner_easing'value (easing);
+		end;
+
+		function to_string (easing : in type_corner_easing) return string is begin
+			return to_lower (type_corner_easing'image (easing));
+		end to_string;
+
+		function to_string (fill_style : in type_fill_style) return string is begin
+			return to_lower (type_fill_style'image (fill_style));
+		end;
+
+		function to_fill_style (fill_style : in string) return type_fill_style is begin
+			return type_fill_style'value (fill_style);
+		end;
+		
 	end shapes_2d;
 
 	

@@ -34,6 +34,8 @@
 --
 --   history of changes:
 --
+with ada.containers; 			use ada.containers;
+with ada.containers.doubly_linked_lists;
 
 with et_general;				use et_general;
 
@@ -224,7 +226,7 @@ package et_geometry is
 	package shapes_2d is
 		use geometry;
 
-		-- LINE
+	-- LINE
 		type type_line is abstract tagged record
 			start_point 	: type_point;
 			end_point   	: type_point;
@@ -277,7 +279,7 @@ package et_geometry is
 			accuracy	: in type_accuracy := zero)
 			return boolean; 
 		
-		-- ARC
+	-- ARC
 		type type_arc is abstract tagged record
 			center			: type_point;
 			start_point		: type_point;
@@ -304,7 +306,7 @@ package et_geometry is
 
 
 		
-		-- CIRCLE
+	-- CIRCLE
 		type type_circle is abstract tagged record
 			center			: type_point;
 			radius  		: type_distance_positive := zero;
@@ -329,6 +331,52 @@ package et_geometry is
 		
 		function to_string (circle : in type_circle) return string;
 		-- Returns the center and radius of the given circle as string.
+
+		-- POLYGON
+		type type_corner_easing is (NONE, CHAMFER, FILLET);
+
+		function to_corner_easing (easing : in string) return type_corner_easing;
+		function to_string (easing : in type_corner_easing) return string;
+		
+		
+		easing_radius_max : constant type_distance_positive := 100.0;
+		subtype type_easing_radius is type_distance_positive range type_distance_positive'first .. easing_radius_max;
+
+		type type_fill_style is (SOLID, HATCHED, CUTOUT); -- CS move up. is something general
+-- 		fill_style_default : constant type_fill_style := SOLID;
+		
+		function to_string (fill_style : in type_fill_style) return string;
+		function to_fill_style (fill_style : in string) return type_fill_style;
+
+
+	-- POLYGON
+		type type_polygon_line is new type_line with null record;
+		package pac_polygon_lines is new doubly_linked_lists (type_polygon_line); -- CS consider a set
+
+		type type_polygon_arc is new type_arc with null record;
+		package pac_polygon_arcs is new doubly_linked_lists (type_polygon_arc);  -- CS consider a set
+
+		type type_polygon_circle is new type_circle with null record;
+		package pac_polygon_circles is new doubly_linked_lists (type_polygon_circle);  -- CS consider a set
+		
+		type type_polygon (fill_style : type_fill_style) is abstract tagged record
+			lines	: pac_polygon_lines.list;
+			arcs	: pac_polygon_arcs.list;
+			circles	: pac_polygon_circles.list;
+			
+			corner_easing		: type_corner_easing := NONE;
+			easing_radius		: type_easing_radius := zero; -- center of circle at corner point
+
+			case fill_style is
+				when SOLID | CUTOUT => null;
+				when HATCHED =>
+					hatching_line_width	: type_distance_positive := 0.2; -- the with of the lines
+					hatching_spacing	: type_distance_positive := 1.0; -- the space between the lines
+			end case;
+			
+
+	end record;
+	
 		
 	end shapes_2d;
 	
