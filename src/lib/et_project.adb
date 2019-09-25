@@ -10017,6 +10017,48 @@ package body et_project is
 					assembly_variant_submodules := type_submodules.empty_map;
 					
 				end insert_assembly_variant;
+
+				procedure add_polygon_line (line : in out type_line) is
+					use et_packages.shapes;
+					use et_packages.shapes.pac_polygon_lines;
+
+					-- make a polygon line:
+					l : type_polygon_line := (et_packages.shapes.type_line (line) with others => <>);
+				begin
+					-- collect the polygon line 
+					append (polygon_2.lines, l);
+
+					-- reset line
+					line := (others => <>);
+				end;
+
+				procedure add_polygon_arc (arc : in out type_arc) is
+					use et_packages.shapes;
+					use et_packages.shapes.pac_polygon_arcs;
+
+					-- make a polygon arc:
+					a : type_polygon_arc := (et_packages.shapes.type_arc (arc) with others => <>);
+				begin
+					-- collect the polygon line 
+					append (polygon_2.arcs, a);
+
+					-- reset arc
+					arc := (others => <>);
+				end;
+
+				procedure add_polygon_circe (circle : in out type_circle) is
+					use et_packages.shapes;
+					use et_packages.shapes.pac_polygon_circles;
+
+					-- make a polygon circle:
+					c : type_polygon_circle := (et_packages.shapes.type_circle (circle) with others => <>);
+				begin
+					-- collect the polygon line 
+					append (polygon_2.circles, c);
+
+					-- reset circle
+					circle := (others => <>);
+				end;
 				
 			begin -- execute_section
 				case stack.current is
@@ -10274,9 +10316,8 @@ package body et_project is
 						
 					when SEC_LINE =>
 						case stack.parent is
-							when SEC_CONTOURS =>
-								null; -- CS
-							
+							when SEC_CONTOURS => add_polygon_line (board_line);
+								
 							when SEC_ROUTE =>
 
 								-- insert line in route.lines
@@ -10360,8 +10401,7 @@ package body et_project is
 						
 					when SEC_ARC =>
 						case stack.parent is
-							when SEC_CONTOURS =>
-								null; -- CS
+							when SEC_CONTOURS => add_polygon_arc (board_arc);
 
 							when SEC_ROUTE =>
 								
@@ -10446,8 +10486,7 @@ package body et_project is
 
 					when SEC_CIRCLE =>
 						case stack.parent is
-							when SEC_CONTOURS =>
-								null; -- CS
+							when SEC_CONTOURS => add_polygon_circe (board_circle);
 							
 							when SEC_TOP =>
 								case stack.parent (degree => 2) is
