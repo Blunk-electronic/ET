@@ -487,7 +487,8 @@ package et_project is
 	section_circle				: constant string := "[CIRCLE";
 	
 	section_polygon				: constant string := "[POLYGON";
-	section_corners				: constant string := "[CORNERS";
+	section_corners				: constant string := "[CORNERS"; -- CS remove
+	section_contours			: constant string := "[CONTOURS";
 	
 	section_via					: constant string := "[VIA";
 	
@@ -559,6 +560,7 @@ package et_project is
 	
 	type type_section_name_module is (
 		SEC_BOARD_LAYER_STACK,
+		SEC_CONTOURS,
 		SEC_DRAWING_GRID,
 		SEC_INIT,
 		SEC_NET_CLASSES,
@@ -577,7 +579,7 @@ package et_project is
 		SEC_LINE,
 		SEC_ARC,
 		SEC_POLYGON,
-		SEC_CORNERS,
+		SEC_CORNERS, -- CS remove
 		SEC_VIA,
 		SEC_SUBMODULES,
 		SEC_SUBMODULE,

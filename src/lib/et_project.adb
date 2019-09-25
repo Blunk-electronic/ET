@@ -1832,7 +1832,7 @@ package body et_project is
 					
 					write (keyword => keyword_start, parameters => position (element (line_cursor).start_point));
 					write (keyword => keyword_end  , parameters => position (element (line_cursor).end_point));
-					write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
+					write (keyword => keyword_layer, space => true, parameters => to_string (element (line_cursor).layer));
 					write (keyword => keyword_width, parameters => to_string (element (line_cursor).width));
 
 					section_mark (section_line, FOOTER);
@@ -8494,6 +8494,75 @@ package body et_project is
 			end if;
 		end;
 		
+		procedure read_board_line is
+			kw : string := f (line, 1);
+			use et_pcb_coordinates.geometry;
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_start then -- start x 22.3 y 23.3
+				expect_field_count (line, 5);
+
+				-- extract the start position starting at field 2 of line
+				board_line.start_point := to_position (line, 2);
+				
+			elsif kw = keyword_end then -- end x 22.3 y 23.3
+				expect_field_count (line, 5);
+
+				-- extract the end position starting at field 2 of line
+				board_line.end_point := to_position (line, 2);
+				
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
+		procedure read_board_arc is
+			kw : string := f (line, 1);
+			use et_pcb_coordinates.geometry;
+		begin
+			if kw = keyword_start then -- start x 22.3 y 23.3
+				expect_field_count (line, 5);
+
+				-- extract the start position starting at field 2 of line
+				board_arc.start_point := to_position (line, 2);
+
+			elsif kw = keyword_end then -- end x 22.3 y 23.3
+				expect_field_count (line, 5);
+
+				-- extract the end position starting at field 2 of line
+				board_arc.end_point := to_position (line, 2);
+				
+			elsif kw = keyword_center then -- center x 22.3 y 23.3
+				expect_field_count (line, 5);
+
+				-- extract the center position starting at field 2 of line
+				board_arc.center := to_position (line, 2);
+
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
+		procedure read_board_circle is
+			kw : string := f (line, 1);
+			use et_pcb_coordinates.geometry;
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_center then -- center x 150 y 45
+				expect_field_count (line, 5);
+
+				-- extract the center position starting at field 2 of line
+				board_circle.center := to_position (line, 2);
+				
+			elsif kw = keyword_radius then -- radius 22
+				expect_field_count (line, 2);
+				
+				board_circle.radius := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
 		
 		procedure process_line is 
 
@@ -9951,6 +10020,22 @@ package body et_project is
 				
 			begin -- execute_section
 				case stack.current is
+
+					when SEC_CONTOURS =>
+						case stack.parent is
+							when SEC_POLYGON => 
+
+								case stack.parent (degree => 2) is
+									when SEC_ROUTE => NULL; -- CS assemble route polygon
+
+									when SEC_TOP => null; -- CS assemble polygon in silk, assy, ...
+									when SEC_BOTTOM => null; -- CS assemble polygon in silk, assy, ...
+
+									when others => invalid_section;
+								end case;
+								
+							when others => invalid_section;
+						end case;
 					
 					when SEC_NET_CLASS =>
 						case stack.parent is
@@ -10189,6 +10274,9 @@ package body et_project is
 						
 					when SEC_LINE =>
 						case stack.parent is
+							when SEC_CONTOURS =>
+								null; -- CS
+							
 							when SEC_ROUTE =>
 
 								-- insert line in route.lines
@@ -10272,8 +10360,11 @@ package body et_project is
 						
 					when SEC_ARC =>
 						case stack.parent is
-							when SEC_ROUTE =>
+							when SEC_CONTOURS =>
+								null; -- CS
 
+							when SEC_ROUTE =>
+								
 								-- insert arc in route.arcs
 								et_pcb.pac_copper_arcs.append (route.arcs, route_arc);
 								route_arc := (others => <>); -- clean up for next arc
@@ -10355,6 +10446,9 @@ package body et_project is
 
 					when SEC_CIRCLE =>
 						case stack.parent is
+							when SEC_CONTOURS =>
+								null; -- CS
+							
 							when SEC_TOP =>
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN =>
@@ -11029,7 +11123,8 @@ package body et_project is
 			elsif set (section_line, SEC_LINE) then null;								
 			elsif set (section_arc, SEC_ARC) then null;								
 			elsif set (section_polygon, SEC_POLYGON) then null;								
-			elsif set (section_corners, SEC_CORNERS) then null;								
+			elsif set (section_corners, SEC_CORNERS) then null; -- CS remove
+			elsif set (section_contours, SEC_CONTOURS) then null;								
 			elsif set (section_via, SEC_VIA) then null;								
 			elsif set (section_submodules, SEC_SUBMODULES) then null;
 			elsif set (section_submodule, SEC_SUBMODULE) then null;
@@ -11069,6 +11164,12 @@ package body et_project is
 		
 				case stack.current is
 
+					when SEC_CONTOURS =>
+						case stack.parent is
+							when SEC_POLYGON => null;
+							when others => invalid_section;
+						end case;
+					
 					when SEC_NET_CLASSES =>
 						case stack.parent is
 							when SEC_INIT => null; -- nothing to do
@@ -11603,6 +11704,9 @@ package body et_project is
 					
 					when SEC_LINE =>
 						case stack.parent is
+
+							when SEC_CONTOURS => read_board_line;
+
 							when SEC_ROUTE =>	
 								declare
 									kw : string := f (line, 1);
@@ -11637,6 +11741,8 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+
+										-- CS call procedure read_board_line ?								
 										declare
 											kw : string := f (line, 1);
 										begin
@@ -11666,6 +11772,7 @@ package body et_project is
 								end case;
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+								-- CS call procedure read_board_line ?																
 								declare
 									kw : string := f (line, 1);
 								begin
@@ -11753,6 +11860,9 @@ package body et_project is
 
 					when SEC_ARC =>
 						case stack.parent is
+
+							when SEC_CONTOURS => read_board_arc;
+							
 							when SEC_ROUTE =>
 								declare
 									kw : string := f (line, 1);
@@ -11793,6 +11903,7 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										-- CS call procedure read_board_arc ?
 										declare
 											kw : string := f (line, 1);
 										begin
@@ -11828,6 +11939,7 @@ package body et_project is
 								end case;
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+								-- CS call procedure read_board_arc ?								
 								declare
 									kw : string := f (line, 1);
 								begin
@@ -11934,10 +12046,15 @@ package body et_project is
 
 					when SEC_CIRCLE =>
 						case stack.parent is
+
+							when SEC_CONTOURS => read_board_circle;
+							
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+
+										-- CS call procedure read_board_circle ?
 										declare
 											use et_packages;
 											kw : string := f (line, 1);
@@ -12021,6 +12138,7 @@ package body et_project is
 								end case;
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+								-- CS call procedure read_board_circle ?
 								declare
 									use et_packages;
 									use et_pcb_coordinates.geometry;
