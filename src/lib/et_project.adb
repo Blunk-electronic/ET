@@ -8269,6 +8269,9 @@ package body et_project is
 		route_arc		: et_pcb.type_copper_arc;
 		route_via		: et_pcb.type_via;
 
+		type type_polygon_2 is new et_packages.shapes.type_polygon_base with null record;
+		polygon_2 : type_polygon_2; -- CS rename to type_polygon
+		
 		route_polygon					: et_packages.type_copper_polygon;
 		route_polygon_pad_connection	: et_packages.type_polygon_pad_connection := et_packages.type_polygon_pad_connection'first;
 		route_polygon_layer				: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;

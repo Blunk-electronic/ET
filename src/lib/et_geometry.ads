@@ -358,15 +358,17 @@ package et_geometry is
 
 		type type_polygon_circle is new type_circle with null record;
 		package pac_polygon_circles is new doubly_linked_lists (type_polygon_circle);  -- CS consider a set
-		
-		type type_polygon (fill_style : type_fill_style) is abstract tagged record
-			lines	: pac_polygon_lines.list;
-			arcs	: pac_polygon_arcs.list;
-			circles	: pac_polygon_circles.list;
-			
-			corner_easing		: type_corner_easing := NONE;
-			easing_radius		: type_easing_radius := zero; -- center of circle at corner point
 
+		type type_polygon_base is abstract tagged record
+			lines			: pac_polygon_lines.list;
+			arcs			: pac_polygon_arcs.list;
+			circles			: pac_polygon_circles.list;
+			
+			corner_easing	: type_corner_easing := NONE;
+			easing_radius	: type_easing_radius := zero; -- center of circle at corner point
+		end record;
+		
+		type type_polygon (fill_style : type_fill_style) is new type_polygon_base with record
 			case fill_style is
 				when SOLID | CUTOUT => null;
 				when HATCHED =>

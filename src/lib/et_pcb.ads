@@ -61,8 +61,8 @@ with et_packages;				use et_packages;
 with et_pcb_stack;				use et_pcb_stack;
 
 package et_pcb is
-	use geometry;
-	use shapes;
+	use et_pcb_coordinates.geometry;
+	use et_packages.shapes;
 	
 	-- VIAS
 	type type_micro_vias_allowed is (NO, YES);
