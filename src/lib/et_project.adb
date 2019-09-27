@@ -8283,16 +8283,7 @@ package body et_project is
 
 		thermal : et_pcb.type_thermal;
 		
-		route_polygon_pad_connection	: et_packages.type_polygon_pad_connection := et_packages.type_polygon_pad_connection'first;
-		route_polygon_thermal_width		: et_packages.type_polygon_thermal_width := et_packages.type_polygon_thermal_width'first;
-		route_polygon_thermal_gap		: et_packages.type_polygon_thermal_gap := et_packages.type_polygon_thermal_gap'first;
-		route_polygon_solid_technology	: et_packages.type_polygon_pad_technology := et_packages.type_polygon_pad_technology'first;
-
-		-- Use this for both thermal_technology and solid_technology:
-		route_polygon_pad_technology	: et_packages.type_polygon_pad_technology := et_packages.type_polygon_pad_technology'first;
-		
-
-
+		polygon_pad_connection	: et_packages.type_polygon_pad_connection := et_packages.type_polygon_pad_connection'first;
 		
 		route_polygon					: et_packages.type_copper_polygon; -- CS remove
 		polygon_corner_point	: et_pcb_coordinates.geometry.type_point;  -- CS remove
@@ -8305,17 +8296,13 @@ package body et_project is
 
 		procedure reset_polygon_parameters is
 			use et_packages;
--- 			use et_pcb;
 			use et_pcb_stack;
 		begin
-			route_polygon					:= (others => <>);
-			route_polygon_pad_connection	:= type_polygon_pad_connection'first;
-			route_layer						:= type_signal_layer'first;
-			route_width						:= type_track_width'first;
-			route_polygon_pad_technology	:= type_polygon_pad_technology'first;
-			route_polygon_thermal_width		:= type_polygon_thermal_width'first;
-			route_polygon_thermal_gap		:= type_polygon_thermal_gap'first;
-			route_polygon_solid_technology	:= type_polygon_pad_technology'first;
+			route_polygon			:= (others => <>);
+			polygon_pad_connection	:= type_polygon_pad_connection'first;
+			route_layer				:= type_signal_layer'first;
+			route_width				:= type_track_width'first;
+			thermal := (others => <>);
 		end reset_polygon_parameters;
 
 		-- submodules
@@ -10593,7 +10580,7 @@ package body et_project is
 								-- insert polygon in route.polygons
 								-- The polygon type depends on the route_polygon_pad_connection:
 								
-								case route_polygon_pad_connection is
+								case polygon_pad_connection is
 									when et_packages.THERMAL =>
 										et_pcb.pac_copper_polygons_signal.append (
 											container	=> route.polygons,
@@ -10601,9 +10588,9 @@ package body et_project is
 												layer				=> route_layer,
 												width_min			=> route_width,
 												pad_connection		=> et_packages.THERMAL,
-												thermal_technology	=> route_polygon_pad_technology,
-												thermal_width		=> route_polygon_thermal_width,
-												thermal_gap			=> route_polygon_thermal_gap));
+												thermal_technology	=> thermal.technology,
+												thermal_width		=> thermal.width,
+												thermal_gap			=> thermal.gap));
 
 									when et_packages.SOLID =>
 										et_pcb.pac_copper_polygons_signal.append (
@@ -10612,7 +10599,7 @@ package body et_project is
 												layer				=> route_layer,
 												width_min			=> route_width,
 												pad_connection		=> et_packages.SOLID,
-												solid_technology	=> route_polygon_pad_technology));
+												solid_technology	=> thermal.technology));
 
 										-- CS warn about ignored parameters
 										
@@ -12342,19 +12329,19 @@ package body et_project is
 
 									elsif kw = keyword_pad_technology then -- pad_technology smt_only/tht_only/smt_and_tht
 										expect_field_count (line, 2);
-										route_polygon_pad_technology := to_pad_technology (f (line, 2));
+										thermal.technology := to_pad_technology (f (line, 2));
 
 									elsif kw = keyword_pad_connection then -- pad_connection thermal/solid
 										expect_field_count (line, 2);
-										route_polygon_pad_connection := to_pad_connection (f (line, 2));
+										polygon_pad_connection := to_pad_connection (f (line, 2));
 										
 									elsif kw = keyword_thermal_width then -- thermal_width 0.3
 										expect_field_count (line, 2);
-										route_polygon_thermal_width := to_distance (f (line, 2));
+										thermal.width := to_distance (f (line, 2));
 
 									elsif kw = keyword_thermal_gap then -- thermal_gap 0.7
 										expect_field_count (line, 2);
-										route_polygon_thermal_gap := to_distance (f (line, 2));
+										thermal.gap := to_distance (f (line, 2));
 
 									else
 										invalid_keyword (kw);
