@@ -311,13 +311,69 @@ package et_pcb is
 				
 	end record;
 
-	package pac_copper_polygons_signal is new indefinite_doubly_linked_lists (type_copper_polygon_signal);
+	type type_copper_polygon_solid (connection : type_polygon_pad_connection) is new
+		et_packages.type_copper_polygon_solid with record
+
+		layer 		: type_signal_layer;
+		width_min	: type_track_width; -- the minimum width
+				
+		case connection is
+			when THERMAL =>
+				thermal : type_thermal;
+
+			when SOLID =>
+				technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
+				-- no need for any kind of thermal parameters
+
+			when NONE => null;
+				-- no more properties required
+		end case;
+				
+	end record;
+
+	type type_copper_polygon_hatched (connection : type_polygon_pad_connection) is new
+		et_packages.type_copper_polygon_hatched with record
+
+		layer 		: type_signal_layer;
+		width_min	: type_track_width; -- the minimum width
+				
+		case connection is
+			when THERMAL =>
+				thermal : type_thermal;
+
+			when SOLID =>
+				technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
+				-- no need for any kind of thermal parameters
+
+			when NONE => null;
+				-- no more properties required
+		end case;
+				
+	end record;
+
+	type type_copper_polygon_cutout is new et_packages.type_polygon_cutout with record
+		layer 		: type_signal_layer;
+	end record;
+
+	
+	package pac_copper_polygons_signal is new indefinite_doubly_linked_lists (type_copper_polygon_signal); -- CS remove
+	
+	package pac_signal_polygons_solid is new indefinite_doubly_linked_lists (type_copper_polygon_solid);
+	package pac_signal_polygons_hatched is new indefinite_doubly_linked_lists (type_copper_polygon_hatched);	
+	package pac_signal_polygons_cutout is new doubly_linked_lists (type_copper_polygon_cutout);
+
+	type type_signal_polygons is record
+		solid	: pac_signal_polygons_solid.list;
+		hatched	: pac_signal_polygons_hatched.list;
+		cutout	: pac_signal_polygons_cutout.list;
+	end record;
 	
 	type type_route is record 
 		lines 			: pac_copper_lines.list;
 		arcs			: pac_copper_arcs.list;
 		vias			: pac_vias.list;
-		polygons		: pac_copper_polygons_signal.list;
+		polygons		: pac_copper_polygons_signal.list; -- CS remove
+		polygons_2		: type_signal_polygons;
 	end record;
 	
 

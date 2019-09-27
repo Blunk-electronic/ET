@@ -10058,6 +10058,27 @@ package body et_project is
 					-- reset circle
 					circle := (others => <>);
 				end;
+
+				procedure build_route_polygon is
+					use et_packages.shapes;
+-- 					use et_pcb.pac_copper_polygons_solid;
+
+-- 					polygon : et_pcb.type_copper_polygon_2 (
+-- 								fill_style	=> fill_style,
+-- 															   connection	=> polygon_pad_connection,
+-- 															   fill_style	=> cutout
+-- 														   );
+				begin
+-- 					case fill_style is
+-- 						when SOLID | CUTOUT => NULL;
+-- 							append (
+-- 								container	=> route.polygons_2,
+-- 								
+-- 						when others => NULL;
+					-- 					end case;
+
+					null;
+				end build_route_polygon;
 				
 			begin -- execute_section
 				case stack.current is
@@ -10067,7 +10088,7 @@ package body et_project is
 							when SEC_POLYGON => 
 
 								case stack.parent (degree => 2) is
-									when SEC_ROUTE => NULL; -- CS assemble route polygon
+									when SEC_ROUTE => build_route_polygon;
 
 									when SEC_TOP => null; -- CS assemble polygon in silk, assy, ...
 									when SEC_BOTTOM => null; -- CS assemble polygon in silk, assy, ...

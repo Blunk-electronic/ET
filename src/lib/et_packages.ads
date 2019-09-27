@@ -301,29 +301,53 @@ package et_packages is
 	end record;
 	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
 
-	-- Polgon priority: 0 is weakest, 100 ist strongest.
+	-- Polgon priority: 0 is weakest, 100 ist strongest. -- CS move to et_pcb
 	polygon_priority_max : constant natural := 100;
 	subtype type_polygon_priority is natural range natural'first .. polygon_priority_max;
 	function to_string (priority_level : in type_polygon_priority) return string;
 	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
 
-	type type_copper_polygon is new type_polygon with record
+	type type_copper_polygon is new type_polygon with record -- CS remove
 		priority_level		: type_polygon_priority := type_polygon_priority'first;
 		isolation_gap		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 	end record;
 
+	type type_copper_polygon_solid is new shapes.type_polygon (fill_style => SOLID) with record
+		isolation : type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
+	end record;
+
+	type type_copper_polygon_hatched is new shapes.type_polygon (fill_style => HATCHED) with record
+		isolation : type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
+	end record;
+
+	type type_polygon_cutout is new shapes.type_polygon (fill_style => CUTOUT) with null record;
+	
+	package pac_polygons_cutout is new doubly_linked_lists (type_polygon_cutout);
+	
 	text_polygon_priority_level	: constant string (1..14) := "priority_level";
 	text_polygon_isolation_gap	: constant string (1..13) := "isolation_gap";
 	text_polygon_corner_easing	: constant string (1..13) := "corner_easing";
 	text_polygon_easing_radius	: constant string (1..13) := "easing_radius";		
 	
 	package type_copper_polygons is new doubly_linked_lists (type_copper_polygon);
+
+	package pac_copper_polygons_solid is new doubly_linked_lists (type_copper_polygon_solid);
+	package pac_copper_polygons_hatched is new doubly_linked_lists (type_copper_polygon_hatched);
+
+	type type_copper_polygons_2 is record
+		solid	: pac_copper_polygons_solid.list;
+		hatched	: pac_copper_polygons_hatched.list;
+		cutout	: pac_polygons_cutout.list;
+	end record;
+
+		
 	
 	type type_copper is record 
 		lines 		: type_copper_lines.list;
 		arcs		: type_copper_arcs.list;
 		circles		: type_copper_circles.list;
 		polygons	: type_copper_polygons.list;
+-- 		polygons	: type_copper_polygons_2; -- CS
 		texts		: type_texts_with_content.list;
 	end record;
 	
@@ -337,7 +361,7 @@ package et_packages is
 
 
 
-
+-- CS move to et_pcb
 	polygon_thermal_width_min : constant type_track_width := type_track_width'first;
 	polygon_thermal_width_max : constant type_track_width := 3.0; -- CS: adjust if nessecariy
 	subtype type_polygon_thermal_width is et_pcb_coordinates.type_distance range polygon_thermal_width_min .. polygon_thermal_width_max;
@@ -351,7 +375,7 @@ package et_packages is
 	type type_polygon_pad_connection is (
 		THERMAL,
 		SOLID,
-		NONE);
+		NONE); -- CS remove
 
 	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string;
 	function to_pad_connection (connection : in string) return type_polygon_pad_connection;
