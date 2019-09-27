@@ -8264,6 +8264,9 @@ package body et_project is
 		net_netchanger_port : netlists.type_port_netchanger;
 		net_netchanger_ports : netlists.type_ports_netchanger.set;
 
+		fill_style	: et_packages.shapes.type_fill_style := et_packages.shapes.type_fill_style'first;
+		hatching	: et_packages.shapes.type_hatching;
+		
 		route			: et_pcb.type_route;
 		route_line 		: et_pcb.type_copper_line;
 		route_arc		: et_pcb.type_copper_arc;
@@ -8271,22 +8274,31 @@ package body et_project is
 
 		type type_polygon_2 is new et_packages.shapes.type_polygon_base with null record;
 		polygon_2 : type_polygon_2; -- CS rename to type_polygon
-		
-		route_polygon					: et_packages.type_copper_polygon;
-		route_polygon_pad_connection	: et_packages.type_polygon_pad_connection := et_packages.type_polygon_pad_connection'first;
-		route_polygon_layer				: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
-		route_polygon_width_min			: et_packages.type_track_width := et_packages.type_track_width'first;
 
-		-- Use this for both thermal_technology and solid_technology:
-		route_polygon_pad_technology	: et_packages.type_polygon_pad_technology := et_packages.type_polygon_pad_technology'first;
+		route_polygon_priority			: et_packages.type_polygon_priority := et_packages.type_polygon_priority'first;
+		route_polygon_isolation_gap		: et_packages.type_track_clearance := et_packages.type_track_clearance'first;
+		route_layer						: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
+		route_width						: et_packages.type_track_width := et_packages.type_track_width'first;
+
+
+		thermal : et_pcb.type_thermal;
 		
+		route_polygon_pad_connection	: et_packages.type_polygon_pad_connection := et_packages.type_polygon_pad_connection'first;
 		route_polygon_thermal_width		: et_packages.type_polygon_thermal_width := et_packages.type_polygon_thermal_width'first;
 		route_polygon_thermal_gap		: et_packages.type_polygon_thermal_gap := et_packages.type_polygon_thermal_gap'first;
 		route_polygon_solid_technology	: et_packages.type_polygon_pad_technology := et_packages.type_polygon_pad_technology'first;
 
-		polygon_corner_point	: et_pcb_coordinates.geometry.type_point;
-		polygon_corner_points	: et_packages.type_polygon_points.set;
+		-- Use this for both thermal_technology and solid_technology:
+		route_polygon_pad_technology	: et_packages.type_polygon_pad_technology := et_packages.type_polygon_pad_technology'first;
+		
 
+
+		
+		route_polygon					: et_packages.type_copper_polygon; -- CS remove
+		polygon_corner_point	: et_pcb_coordinates.geometry.type_point;  -- CS remove
+		polygon_corner_points	: et_packages.type_polygon_points.set;  -- CS remove
+
+		
 		frame_template_schematic	: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frm
 		-- CS frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
 		frame_template_board		: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frm
@@ -8298,8 +8310,8 @@ package body et_project is
 		begin
 			route_polygon					:= (others => <>);
 			route_polygon_pad_connection	:= type_polygon_pad_connection'first;
-			route_polygon_layer				:= type_signal_layer'first;
-			route_polygon_width_min			:= type_track_width'first;
+			route_layer						:= type_signal_layer'first;
+			route_width						:= type_track_width'first;
 			route_polygon_pad_technology	:= type_polygon_pad_technology'first;
 			route_polygon_thermal_width		:= type_polygon_thermal_width'first;
 			route_polygon_thermal_gap		:= type_polygon_thermal_gap'first;
@@ -10586,8 +10598,8 @@ package body et_project is
 										et_pcb.pac_copper_polygons_signal.append (
 											container	=> route.polygons,
 											new_item	=> (route_polygon with
-												layer				=> route_polygon_layer,
-												width_min			=> route_polygon_width_min,
+												layer				=> route_layer,
+												width_min			=> route_width,
 												pad_connection		=> et_packages.THERMAL,
 												thermal_technology	=> route_polygon_pad_technology,
 												thermal_width		=> route_polygon_thermal_width,
@@ -10597,8 +10609,8 @@ package body et_project is
 										et_pcb.pac_copper_polygons_signal.append (
 											container	=> route.polygons,
 											new_item	=> (route_polygon with
-												layer				=> route_polygon_layer,
-												width_min			=> route_polygon_width_min,
+												layer				=> route_layer,
+												width_min			=> route_width,
 												pad_connection		=> et_packages.SOLID,
 												solid_technology	=> route_polygon_pad_technology));
 
@@ -10608,8 +10620,8 @@ package body et_project is
 										et_pcb.pac_copper_polygons_signal.append (
 											container	=> route.polygons,
 											new_item	=> (route_polygon with
-												layer				=> route_polygon_layer,
-												width_min			=> route_polygon_width_min,
+												layer				=> route_layer,
+												width_min			=> route_width,
 												pad_connection		=> et_packages.NONE));
 
 										-- CS warn about ignored parameters
@@ -12294,39 +12306,39 @@ package body et_project is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_priority then -- priority 2
 										expect_field_count (line, 2);
-										route_polygon.priority_level := to_polygon_priority (f (line, 2));
+										route_polygon_priority := to_polygon_priority (f (line, 2));
 
 									elsif kw = keyword_isolation then -- isolation 0.5
 										expect_field_count (line, 2);
-										route_polygon.isolation_gap := to_distance (f (line, 2));
+										route_polygon_isolation_gap := to_distance (f (line, 2));
 										
 									elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 										expect_field_count (line, 2);
-										route_polygon.corner_easing := to_corner_easing (f (line, 2));
+										polygon_2.corner_easing := shapes.to_corner_easing (f (line, 2));
 
 									elsif kw = keyword_easing_radius then -- easing_radius 0.3
 										expect_field_count (line, 2);
-										route_polygon.easing_radius := to_distance (f (line, 2));
+										polygon_2.easing_radius := to_distance (f (line, 2));
 
 									elsif kw = keyword_fill_style then -- fill_style solid,hatched,cutout
 										expect_field_count (line, 2);
-										route_polygon.fill_style := to_fill_style (f (line, 2));
+										fill_style := shapes.to_fill_style (f (line, 2));
 
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 1
 										expect_field_count (line, 2);
-										route_polygon.hatching_line_width := to_distance (f (line, 2));
+										hatching.width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 1
 										expect_field_count (line, 2);
-										route_polygon.hatching_spacing := to_distance (f (line, 2));
+										hatching.spacing := to_distance (f (line, 2));
 
 									elsif kw = keyword_layer then -- layer 2
 										expect_field_count (line, 2);
-										route_polygon_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+										route_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
 									elsif kw = keyword_min_width then -- min_width 0.3
 										expect_field_count (line, 2);
-										route_polygon_width_min := to_distance (f (line, 2));
+										route_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_pad_technology then -- pad_technology smt_only/tht_only/smt_and_tht
 										expect_field_count (line, 2);

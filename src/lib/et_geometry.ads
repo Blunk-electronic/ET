@@ -348,6 +348,17 @@ package et_geometry is
 		function to_string (fill_style : in type_fill_style) return string;
 		function to_fill_style (fill_style : in string) return type_fill_style;
 
+		hatching_line_width_default : constant type_distance_positive := 0.2;
+		hatching_spacing_default	: constant type_distance_positive := 1.0;
+
+		type type_hatching is record
+			-- the with of the lines:
+			width	: type_distance_positive := hatching_line_width_default;
+
+			-- the space between the lines:
+			spacing	: type_distance_positive := hatching_spacing_default;
+		end record;
+		
 
 	-- POLYGON
 		type type_polygon_line is new type_line with null record;
@@ -370,10 +381,8 @@ package et_geometry is
 		
 		type type_polygon (fill_style : type_fill_style) is new type_polygon_base with record
 			case fill_style is
-				when SOLID | CUTOUT => null;
-				when HATCHED =>
-					hatching_line_width	: type_distance_positive := 0.2; -- the with of the lines
-					hatching_spacing	: type_distance_positive := 1.0; -- the space between the lines
+				when SOLID | CUTOUT	=> null;
+				when HATCHED		=> hatching : type_hatching;
 			end case;
 		end record;
 	

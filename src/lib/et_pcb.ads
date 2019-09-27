@@ -283,12 +283,20 @@ package et_pcb is
 	-- A polygon in a signal layer is usually connected with a THT or SMD pads (or both) via thermals, solid (or not at all).
 	-- For this reason we define a controlled type here because some properties may exist (or may not exists) depending
 	-- on the kinde of pad_connection:
+
+	type type_thermal is record
+		technology	: type_polygon_pad_technology; 	-- whether SMT, THT or both kinds of pads connect with the polygon
+		width		: type_polygon_thermal_width; 	-- the width of the spokes
+		gap			: type_polygon_thermal_gap;		-- the space between pad and polygon -- CS: rename to thermal_length ?
+	end record;
+	
 	type type_copper_polygon_signal (pad_connection : type_polygon_pad_connection) is new type_copper_polygon with record
 		layer 		: type_signal_layer;
 		width_min	: type_track_width; -- the minimum width
 				
 		case pad_connection is
 			when THERMAL =>
+				-- CS use type_thermal
 				thermal_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
 				thermal_width		: type_polygon_thermal_width; -- the thermal width
 				thermal_gap			: type_polygon_thermal_gap; -- the space between associated pads and polygon -- CS: rename to thermal_length ?
