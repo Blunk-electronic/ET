@@ -312,32 +312,38 @@ package et_packages is
 		isolation_gap		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 	end record;
 
+	package type_copper_polygons is new doubly_linked_lists (type_copper_polygon); -- CS remove
+
+	
 	type type_copper_polygon_solid is new shapes.type_polygon (fill_style => SOLID) with record
 		isolation : type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 	end record;
+
+	package pac_copper_polygons_solid is new doubly_linked_lists (type_copper_polygon_solid);
 
 	type type_copper_polygon_hatched is new shapes.type_polygon (fill_style => HATCHED) with record
 		isolation : type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 	end record;
 
-	type type_polygon_cutout is new shapes.type_polygon (fill_style => CUTOUT) with null record;
+	package pac_copper_polygons_hatched is new doubly_linked_lists (type_copper_polygon_hatched);
+
+	-- A cutout-polygon use in copper layers:
+	type type_copper_polygon_cutout is new shapes.type_polygon (fill_style => CUTOUT) with null record;
 	
-	package pac_polygons_cutout is new doubly_linked_lists (type_polygon_cutout);
+	package pac_copper_polygons_cutout is new doubly_linked_lists (type_copper_polygon_cutout);
+
 	
 	text_polygon_priority_level	: constant string (1..14) := "priority_level";
 	text_polygon_isolation_gap	: constant string (1..13) := "isolation_gap";
 	text_polygon_corner_easing	: constant string (1..13) := "corner_easing";
 	text_polygon_easing_radius	: constant string (1..13) := "easing_radius";		
 	
-	package type_copper_polygons is new doubly_linked_lists (type_copper_polygon);
 
-	package pac_copper_polygons_solid is new doubly_linked_lists (type_copper_polygon_solid);
-	package pac_copper_polygons_hatched is new doubly_linked_lists (type_copper_polygon_hatched);
 
 	type type_copper_polygons_2 is record
 		solid	: pac_copper_polygons_solid.list;
 		hatched	: pac_copper_polygons_hatched.list;
-		cutout	: pac_polygons_cutout.list;
+		cutout	: pac_copper_polygons_cutout.list;
 	end record;
 
 		
@@ -346,7 +352,7 @@ package et_packages is
 		lines 		: type_copper_lines.list;
 		arcs		: type_copper_arcs.list;
 		circles		: type_copper_circles.list;
-		polygons	: type_copper_polygons.list;
+		polygons	: type_copper_polygons.list; -- CS remove
 -- 		polygons	: type_copper_polygons_2; -- CS
 		texts		: type_texts_with_content.list;
 	end record;
@@ -449,7 +455,7 @@ package et_packages is
 
 
 	type type_stop_polygon is new type_polygon with null record;
-	
+
 	package type_stop_polygons is new doubly_linked_lists (type_stop_polygon);
 
 	

@@ -351,7 +351,7 @@ package et_pcb is
 				
 	end record;
 
-	type type_copper_polygon_cutout is new et_packages.type_polygon_cutout with record
+	type type_copper_polygon_cutout is new et_packages.type_copper_polygon_cutout with record
 		layer 		: type_signal_layer;
 	end record;
 
