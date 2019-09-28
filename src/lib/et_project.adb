@@ -10061,23 +10061,104 @@ package body et_project is
 
 				procedure build_route_polygon is
 					use et_packages.shapes;
--- 					use et_pcb.pac_copper_polygons_solid;
 
--- 					polygon : et_pcb.type_copper_polygon_2 (
--- 								fill_style	=> fill_style,
--- 															   connection	=> polygon_pad_connection,
--- 															   fill_style	=> cutout
--- 														   );
-				begin
--- 					case fill_style is
--- 						when SOLID | CUTOUT => NULL;
--- 							append (
--- 								container	=> route.polygons_2,
--- 								
--- 						when others => NULL;
-					-- 					end case;
+					procedure solid_polygon is
+						use et_pcb.pac_signal_polygons_solid;
+						-- 						use type et_packages.type_polygon_pad_connection;
+						use et_packages;
 
-					null;
+						procedure connection_thermal is
+							p1 : et_packages.type_copper_polygon_solid;
+							p2 : et_pcb.type_copper_polygon_solid (connection => et_packages.THERMAL);
+						begin
+							p1 := (et_packages.shapes.type_polygon_base (polygon_2) with 
+								fill_style	=> shapes.SOLID,
+								isolation	=> route_polygon_isolation_gap);
+
+							--p2 := (p1 with others => <>);
+							
+							p2.layer := route_layer;
+							-- p2.fill_style := shapes.SOLID;
+							-- p2.connection := et_packages.THERMAL;
+
+-- 							p2 := ( shapes.type_polygon (p1 with fill_style => shapes.SOLID)  with 
+-- 								   connection => et_packages.THERMAL,
+-- 								   others => <>);
+							p2.lines := p1.lines;
+							p2.arcs := p1.arcs;
+							p2.circles := p1.circles;
+							p2.corner_easing := p1.corner_easing;
+							p2.easing_radius := p1.easing_radius;
+							p2.thermal := thermal;
+							
+							et_pcb.pac_signal_polygons_solid.append (
+								container	=> route.polygons_2.solid,
+								new_item	=> p2);
+							
+-- 										fill_style	=> shapes.SOLID,
+-- -- 										connection => et_packages.THERMAL,
+-- 										others => <>
+-- 								 )); 
+-- 											with
+-- 											connection	=> et_packages.THERMAL,
+-- 											thermal		=> thermal,
+-- 											isolation	=> route_polygon_isolation_gap,
+-- 											width_min	=> route_width,
+-- 											layer		=> route_layer)
+-- 									   );
+							null;
+						end;
+						
+					begin
+						case polygon_pad_connection is
+							when et_packages.THERMAL =>
+								connection_thermal;
+-- 								append (
+-- 									container	=> route.polygons_2.solid, 
+-- 									new_item	=> ((et_packages.shapes.type_polygon_base (polygon_2) 
+-- 													 with fill_style => shapes.SOLID) 
+-- 											with
+-- 											connection	=> et_packages.THERMAL,
+-- 											thermal		=> thermal,
+-- 											isolation	=> route_polygon_isolation_gap,
+-- 											width_min	=> route_width,
+-- 											layer		=> route_layer)
+-- 									   );
+								NULL;
+							when SOLID =>
+								null;
+							when NONE =>
+								null;
+						end case;
+					end solid_polygon;
+
+					procedure hatched_polygon is
+						use et_pcb.pac_signal_polygons_hatched;
+						use et_packages;
+					begin
+						case polygon_pad_connection is
+							when et_packages.THERMAL =>
+								NULL;
+							when SOLID =>
+								null;
+							when NONE =>
+								null;
+						end case;
+					end hatched_polygon;
+
+					procedure cutout_polygon is
+						use et_pcb.pac_signal_polygons_hatched;
+-- 						use et_packages;
+					begin
+						null;
+					end cutout_polygon;
+					
+				begin -- build_route_polygon
+					case fill_style is
+						when SOLID		=> solid_polygon;
+						when HATCHED	=> hatched_polygon;
+						when CUTOUT		=> cutout_polygon;
+					end case;
 				end build_route_polygon;
 				
 			begin -- execute_section
