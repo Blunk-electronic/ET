@@ -1867,7 +1867,7 @@ package body et_kicad_pcb is
 		-- set earlier (when processing the arguments. see procedure read_arg).
 		-- Restores the previous section.
 			use et_pcb_coordinates;
-			use et_libraries;
+-- 			use et_libraries;
 
 			procedure invalid_layer is begin
 				log (ERROR, "invalid layer for this object !", console => true);
@@ -2320,7 +2320,7 @@ package body et_kicad_pcb is
 						name			=> et_packages.type_terminals.key (terminal_cursor),
 						log_threshold	=> log_threshold + 1);
 				else
-					log (ERROR, "duplicated terminal " & to_string (terminal_name) & " !", console => true);
+					log (ERROR, "duplicated terminal " & et_libraries.to_string (terminal_name) & " !", console => true);
 					raise constraint_error;
 				end if;
 
@@ -2328,6 +2328,7 @@ package body et_kicad_pcb is
 
 			procedure insert_fp_text is 
 				use et_packages;
+				use et_libraries;
 			begin
 					
 				-- Since there is no alignment information provided, use default values:
@@ -5791,19 +5792,19 @@ package body et_kicad_pcb is
 		-- set earlier (when processing the arguments. see procedure read_arg).
 		-- Restores the previous section.
 			use et_pcb_coordinates;
-			use et_libraries;
+-- 			use et_libraries;
 
 			procedure invalid_layer_reference is begin
-				log (ERROR, "reference " & to_string (package_reference) & " must be in a silk screen layer !", console => true);
+				log (ERROR, "reference " & et_libraries.to_string (package_reference) & " must be in a silk screen layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_reference;
 
 			procedure invalid_layer_value is begin
-				log (WARNING, "value " & to_string (package_value) & " should be in a fabrication layer !");
+				log (WARNING, "value " & et_libraries.to_string (package_value) & " should be in a fabrication layer !");
 			end invalid_layer_value;
 
 			procedure invalid_layer_user is begin
-				log (ERROR, "user text " & to_string (package_text.content) 
+				log (ERROR, "user text " & et_libraries.to_string (package_text.content) 
 					 & " must be in a silk screen or fabrication layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_user;
@@ -5816,8 +5817,8 @@ package body et_kicad_pcb is
 			procedure warn_on_missing_net is begin
 			-- Warns operator if a terminal is not connected to a net.
 				if length (terminal_net_name) = 0 then
-					log (WARNING, to_string (package_reference) & latin_1.space
-						 & to_string (terminal_name) & " not connected with a net !");
+					log (WARNING, et_libraries.to_string (package_reference) & latin_1.space
+						 & et_libraries.to_string (terminal_name) & " not connected with a net !");
 				end if;
 			end warn_on_missing_net;
 			
@@ -5903,7 +5904,7 @@ package body et_kicad_pcb is
 				if package_inserted then
 
 					-- log package coordinates
-					log (text => "package " & to_string (package_reference)
+					log (text => "package " & et_libraries.to_string (package_reference)
 						 & et_pcb.package_position (package_position), -- this is a function that returns package coordinates !
 						 level => log_threshold + 1);
 					
@@ -5922,7 +5923,7 @@ package body et_kicad_pcb is
 
 					-- reset reference and value
 					package_reference := default_component_reference;
-					package_value := to_value ("");
+					package_value := et_libraries.to_value ("");
 
 					-- delete list of terminals
 					terminals.clear;
@@ -5976,7 +5977,7 @@ package body et_kicad_pcb is
 					package_copper.bottom.texts.clear;
 
 				else
-					log (ERROR, "package " & to_string (package_reference) 
+					log (ERROR, "package " & et_libraries.to_string (package_reference) 
 						& et_pcb.package_position (package_position)
 						& " already used !",
 						 console => true);
@@ -6824,7 +6825,7 @@ package body et_kicad_pcb is
 					init_terminal_net_name; -- in case the next terminal has no net connected
 
 				else -- terminal could not be inserted
-					log (ERROR, "duplicated terminal " & to_string (terminal_name) & " !", console => true);
+					log (ERROR, "duplicated terminal " & et_libraries.to_string (terminal_name) & " !", console => true);
 					raise constraint_error;
 				end if;
 					
@@ -6832,6 +6833,7 @@ package body et_kicad_pcb is
 
 			procedure insert_fp_text is 
 				use et_packages;
+				use et_libraries;
 			begin
 				
 				-- Since there is no alignment information provided, use default values:

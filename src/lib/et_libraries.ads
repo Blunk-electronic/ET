@@ -51,6 +51,7 @@ with ada.containers.ordered_sets;
 --with ada.containers.vectors;
 
 with et_coordinates;			use et_coordinates;
+with et_geometry;
 with et_string_processing;
 with et_general;
 
@@ -560,22 +561,21 @@ package et_libraries is
 	-- Returns the given number of terminals as string.
 
 
+	-- Instantiation of the generic shapes package et_geometry.shapes_2d:
+	package shapes is new et_geometry.shapes_2d (geometry => et_coordinates.geometry);
+	use shapes;
+	
 
 
 	-- lines
-	type type_line is record
-		start_point : type_point;
-		end_point   : type_point;
+	type type_line is new shapes.type_line with record
 		width		: type_line_width;
 	end record;
 	package type_lines is new doubly_linked_lists (type_line);
 
 	-- Arcs
-	type type_arc is tagged record
-		center		: type_point;
-		radius  	: type_distance;
-		start_point	: type_point;
-		end_point	: type_point;
+	type type_arc is new shapes.type_arc with record
+		radius		: type_distance_positive; -- CS really required ?
 		width		: type_line_width;
 	end record;
 	package type_arcs is new doubly_linked_lists (type_arc);
@@ -585,9 +585,7 @@ package et_libraries is
 	function to_circle_filled (filled : in string) return type_circle_filled;
 	
 	-- Circles
-	type type_circle_base is tagged record
-		center		: type_point;
-		radius  	: type_distance;
+	type type_circle_base is new shapes.type_circle with record
 		width		: type_line_width;
 	end record;
 
@@ -716,7 +714,7 @@ package et_libraries is
 	-- Other CAE systems refer to "pins" or "pads". In order to use only a single word
 	-- we further-on speak about "terminals".
 	-- The name of a terminal may have 10 characters which seems sufficient for now.
-	-- CS: character set, length check, charcter check
+	-- CS: character set, length check, charcter check -- CS move to et_packages
  	terminal_name_length_max : constant natural := 10;
 	package type_terminal_name is new generic_bounded_length (terminal_name_length_max);
 	use type_terminal_name;

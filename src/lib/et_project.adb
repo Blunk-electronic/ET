@@ -2688,6 +2688,7 @@ package body et_project is
 		symbol			: in et_libraries.type_symbol;
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_libraries;
+		use et_libraries.shapes;
 		use et_coordinates.geometry;
 		use type_lines;
 		use type_arcs;
@@ -3330,7 +3331,7 @@ package body et_project is
 		use et_packages.shapes;
 		use et_pcb;
 		use et_pcb_coordinates.geometry;
-		use et_libraries;
+-- 		use et_libraries;
 		
 		file_handle : ada.text_io.file_type;
 
@@ -3410,7 +3411,7 @@ package body et_project is
 		end;
 
 		function make_fillable_circle_solid return type_fillable_circle_solid is begin
-			return (shapes.type_circle (pac_circle) with pac_circle_fillable_filled);
+			return (et_packages.shapes.type_circle (pac_circle) with pac_circle_fillable_filled);
 		end;
 		
 		pac_circle_copper		: et_packages.type_copper_circle;
@@ -3498,7 +3499,7 @@ package body et_project is
 			end case;
 
 			if not inserted then
-				log (ERROR, "terminal" & to_string (terminal_name) 
+				log (ERROR, "terminal" & et_libraries.to_string (terminal_name) 
 					 & " already used !", console => true);
 				raise constraint_error;
 			end if;
@@ -5431,7 +5432,7 @@ package body et_project is
 			end if;
 
 			exception when event: others =>
-				log (text => "file " & to_string (file_name) & latin_1.space 
+				log (text => "file " & et_libraries.to_string (file_name) & latin_1.space 
 					 & affected_line (line) & to_string (line), console => true);
 				raise;
 			
@@ -5441,7 +5442,7 @@ package body et_project is
 		
 	begin -- read_package
 		log_indentation_up;
-		log (text => "reading package " & to_string (file_name) & " ...", level => log_threshold);
+		log (text => "reading package " & et_libraries.to_string (file_name) & " ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- test if container et_pcb.packages already contains the package
@@ -5454,7 +5455,7 @@ package body et_project is
 			open (
 				file => file_handle,
 				mode => in_file, 
-				name => expand (to_string (file_name)));
+				name => expand (et_libraries.to_string (file_name)));
 
 			set_input (file_handle);
 			
@@ -6020,7 +6021,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_circle.radius := to_distance (f (line, 2));
 
-									elsif kw = keyword_filled then -- filled yes/no
+									elsif kw = et_libraries.shapes.keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);
 										symbol_circle.filled := et_libraries.to_circle_filled (f (line, 2));
 										
@@ -7228,7 +7229,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_circle.radius := to_distance (f (line, 2));
 
-									elsif kw = keyword_filled then -- filled yes/no
+									elsif kw = et_libraries.shapes.keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);
 										symbol_circle.filled := et_libraries.to_circle_filled (f (line, 2));
 										

@@ -2035,7 +2035,7 @@ package body scripting is
 										circle			=> 
 													(
 													filled		=> NO,
-													fill_style	=> shapes.fill_style_default, -- don't care here
+													fill_style	=> fill_style_default, -- don't care here
 													width	=> to_distance (f (7)),
 													center	=> type_point (set (
 																x => to_distance (f (8)),
@@ -2047,7 +2047,7 @@ package body scripting is
 									
 									-- Circle is filled with the fill style specified in field 7:
 									case to_fill_style (f (7)) is
-										when shapes.CUTOUT =>
+										when CUTOUT =>
 									
 											board_ops.draw_stop_circle (
 												module_name 	=> module,
@@ -2079,7 +2079,7 @@ package body scripting is
 															),
 												log_threshold	=> log_threshold + 1);
 
-										when shapes.HATCHED => command_incomplete;
+										when HATCHED => command_incomplete;
 
 									end case;
 								end if;

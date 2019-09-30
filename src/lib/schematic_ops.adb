@@ -55,7 +55,7 @@ with ada.containers.ordered_maps;
 with et_general;				use et_general;
 with et_coordinates;
 with et_string_processing;		use et_string_processing;
-with et_libraries;				use et_libraries;
+with et_libraries;				--use et_libraries;
 with et_schematic;				use et_schematic;
 with et_pcb;
 with et_packages;
@@ -6264,10 +6264,10 @@ package body schematic_ops is
 
 		function movable (
 			segment	: in type_net_segment;
-			zone	: in shapes.type_line_zone) 
+			zone	: in et_schematic.shapes.type_line_zone) 
 			return boolean is
 
-			use shapes;
+			use et_schematic.shapes;
 			
 			result : boolean := true; -- to be returned. true means the zone is movable.
 			-- Goes false once a port has been found in the given zone.
@@ -6420,7 +6420,7 @@ package body schematic_ops is
 					segment_cursor_target : type_net_segments.cursor;
 					target_segment_before : type_net_segment;
 
-					use shapes;
+					use et_schematic.shapes;
 					zone : type_line_zone;
 
 					procedure move_targeted_segment (segment : in out type_net_segment) is begin
