@@ -226,6 +226,16 @@ package et_geometry is
 	package shapes_2d is
 		use geometry;
 
+	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE		
+		type type_fill_style is (SOLID, HATCHED, CUTOUT);
+		fill_style_default : constant type_fill_style := SOLID;
+		
+		function to_string (fill_style : in type_fill_style) return string;
+		function to_fill_style (fill_style : in string) return type_fill_style;
+
+		text_fill_style : constant string := "fill_style";
+
+		
 	-- LINE
 		type type_line is abstract tagged record
 			start_point 	: type_point;
@@ -342,15 +352,14 @@ package et_geometry is
 		easing_radius_max : constant type_distance_positive := 100.0;
 		subtype type_easing_radius is type_distance_positive range type_distance_positive'first .. easing_radius_max;
 
-		type type_fill_style is (SOLID, HATCHED, CUTOUT); -- CS move up. is something general
--- 		fill_style_default : constant type_fill_style := SOLID;
-		
-		function to_string (fill_style : in type_fill_style) return string;
-		function to_fill_style (fill_style : in string) return type_fill_style;
 
 		hatching_line_width_default : constant type_distance_positive := 0.2;
 		hatching_spacing_default	: constant type_distance_positive := 1.0;
 
+		
+		text_hatching_line_width	: constant string := "hatching_line_width";
+		text_hatching_spacing 		: constant string := "hatching_spacing";	
+		
 		type type_hatching is record
 			-- the with of the lines:
 			width	: type_distance_positive := hatching_line_width_default;

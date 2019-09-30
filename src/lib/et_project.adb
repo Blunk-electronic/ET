@@ -877,6 +877,7 @@ package body et_project is
 
 	procedure write_circle_fillable (circle : in et_packages.type_fillable_circle) is 
 		use et_packages;
+		use et_packages.shapes;
 		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
@@ -938,7 +939,8 @@ package body et_project is
 	end write_circle;
 	
 	procedure write_polygon (cursor : in et_packages.type_keepout_polygons.cursor) is 
-		use et_packages;		
+		use et_packages;
+		use et_packages.shapes;
 		use type_keepout_polygons;
 		use type_polygon_points;
 		use et_pcb_coordinates.geometry;
@@ -995,6 +997,7 @@ package body et_project is
 	
 	procedure write_polygon (cursor : in et_packages.type_stop_polygons.cursor) is 
 		use et_packages;
+		use et_packages.shapes;		
 		use type_stop_polygons;
 		use et_pcb_coordinates.geometry;
 		use type_polygon_points;
@@ -1051,6 +1054,7 @@ package body et_project is
 	
 	procedure write_polygon (cursor : in et_packages.type_stencil_polygons.cursor) is 
 		use et_packages;
+		use et_packages.shapes;		
 		use type_stencil_polygons;
 		use et_pcb_coordinates.geometry;		
 		use type_polygon_points;
@@ -1117,6 +1121,7 @@ package body et_project is
 	
 	procedure write_polygon (cursor : in et_packages.type_route_restrict_polygons.cursor) is 
 		use et_packages;
+		use et_packages.shapes;		
 		use type_route_restrict_polygons;
 		use et_pcb_coordinates.geometry;		
 		use type_polygon_points;
@@ -1183,6 +1188,7 @@ package body et_project is
 	
 	procedure write_polygon (cursor : in et_packages.type_via_restrict_polygons.cursor) is 
 		use et_packages;
+		use et_packages.shapes;		
 		use type_via_restrict_polygons;
 		use et_pcb_coordinates.geometry;		
 		use type_polygon_points;
@@ -1313,6 +1319,7 @@ package body et_project is
 	
 	procedure write_polygon (cursor : in et_packages.type_silk_polygons.cursor) is 
 		use et_packages;
+		use et_packages.shapes;		
 		use type_silk_polygons;
 		use et_pcb_coordinates.geometry;		
 		use type_polygon_points;
@@ -1369,6 +1376,7 @@ package body et_project is
 	
 	procedure write_polygon (cursor : in et_packages.type_doc_polygons.cursor) is 
 		use et_packages;
+		use et_packages.shapes;		
 		use type_doc_polygons;
 		use et_pcb_coordinates.geometry;
 		use type_polygon_points;
@@ -1796,6 +1804,7 @@ package body et_project is
 
 			procedure query_route (net_name : in type_net_name.bounded_string; net : in type_net) is
 				use et_packages;
+				use et_packages.shapes;
 				use et_pcb;
 				use et_pcb_stack;
 				use et_pcb_coordinates.geometry;
@@ -2356,6 +2365,7 @@ package body et_project is
 			end write_circle;
 			
 			procedure write_polygon (cursor : in pac_copper_polygons_floating.cursor) is 
+				use et_packages.shapes;
 				use type_polygon_points;
 				
 				procedure query_points (polygon : in type_copper_polygon_floating) is begin
@@ -3268,13 +3278,14 @@ package body et_project is
 	-- matter or not. See spec for type_fillable_circle.
 		circle				: in et_packages.shapes.type_circle;
 		filled				: in et_packages.type_filled;
-		fill_style			: in et_packages.type_fill_style;
+		fill_style			: in et_packages.shapes.type_fill_style;
 		circumfence_width	: in et_packages.type_general_line_width;
 		hatching_line_width	: in et_packages.type_general_line_width;
 		hatching_spacing	: in et_packages.type_general_line_width)
 		return et_packages.type_fillable_circle is
 
 		use et_packages;
+		use et_packages.shapes;
 
 	begin -- to_fillable_circle
 		case filled is
@@ -3313,6 +3324,7 @@ package body et_project is
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_packages;
+		use et_packages.shapes;
 		use et_pcb;
 		use et_pcb_coordinates.geometry;
 		use et_libraries;
@@ -7672,6 +7684,7 @@ package body et_project is
 
 			procedure write_polygon (cursor : in type_copper_polygons.cursor) is 
 				use et_pcb_coordinates;
+				use et_packages.shapes;
 				use type_polygon_points;
 				
 				procedure query_points (polygon : in type_copper_polygon) is begin
@@ -8377,12 +8390,13 @@ package body et_project is
 
 		board_circle_fillable_width					: et_packages.type_general_line_width := et_packages.type_general_line_width'first;
 		board_circle_fillable_filled				: et_packages.type_filled := et_packages.type_filled'first;
-		board_circle_fillable_fill_style			: et_packages.type_fill_style := et_packages.type_fill_style'first;
+		board_circle_fillable_fill_style			: et_packages.shapes.type_fill_style := et_packages.shapes.fill_style_default;
 		board_circle_fillable_hatching_line_width 	: et_packages.type_general_line_width := et_packages.type_general_line_width'first;
 		board_circle_fillable_hatching_spacing		: et_packages.type_general_line_width := et_packages.type_general_line_width'first;
 
 		procedure reset_board_circle_fillable is 
 			use et_packages;
+			use et_packages.shapes;
 		begin 
 			board_circle								:= (others => <>);
 			board_circle_fillable_width					:= type_general_line_width'first;
@@ -10075,15 +10089,16 @@ package body et_project is
 								fill_style	=> shapes.SOLID,
 								isolation	=> route_polygon_isolation_gap);
 
-							--p2 := (p1 with others => <>);
+-- 							p2 := (p1 with others => <>);
 							
 							p2.layer := route_layer;
 							-- p2.fill_style := shapes.SOLID;
 							-- p2.connection := et_packages.THERMAL;
 
--- 							p2 := ( shapes.type_polygon (p1 with fill_style => shapes.SOLID)  with 
+-- 							p2 := (p1 with 
 -- 								   connection => et_packages.THERMAL,
 -- 								   others => <>);
+							
 							p2.lines := p1.lines;
 							p2.arcs := p1.arcs;
 							p2.circles := p1.circles;
@@ -12197,6 +12212,7 @@ package body et_project is
 										-- CS call procedure read_board_circle ?
 										declare
 											use et_packages;
+											use et_packages.shapes;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -12314,6 +12330,7 @@ package body et_project is
 							when SEC_COPPER =>
 								declare
 									use et_packages;
+									use et_packages.shapes;
 									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
@@ -12456,6 +12473,7 @@ package body et_project is
 										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
 										declare
 											use et_packages;
+											use et_packages.shapes;
 											use et_pcb_coordinates.geometry;
 											kw : string := f (line, 1);
 										begin
@@ -12491,6 +12509,7 @@ package body et_project is
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								declare
 									use et_packages;
+									use et_packages.shapes;
 									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
@@ -12533,6 +12552,7 @@ package body et_project is
 							when SEC_COPPER =>
 								declare
 									use et_packages;
+									use et_packages.shapes;									
 									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin

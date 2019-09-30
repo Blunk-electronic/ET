@@ -228,19 +228,19 @@ package et_packages is
 	
 
 	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE
-	type type_fill_style is (SOLID, HATCHED, CUTOUT);
-	fill_style_default : constant type_fill_style := SOLID;
+-- 	type type_fill_style is (SOLID, HATCHED, CUTOUT);
+-- 	fill_style_default : constant type_fill_style := SOLID;
 	
 	text_line_width : constant string := "line_width";
-	text_fill_style : constant string := "fill_style";
-	text_hatching_line_width	: constant string := "hatching_line_width";
-	text_hatching_spacing 		: constant string := "hatching_spacing";	
+-- 	text_fill_style : constant string := "fill_style";
+-- 	text_hatching_line_width	: constant string := "hatching_line_width";
+-- 	text_hatching_spacing 		: constant string := "hatching_spacing";	
 	
-	function to_string (fill_style : in type_fill_style) return string;
-	function to_fill_style (fill_style : in string) return type_fill_style;
-
-	fill_style_hatching_line_width_default	: constant type_distance := 0.3; -- the width of the lines
-	fill_style_hatching_spacing_default		: constant type_distance := 2.0; -- the space between the lines
+-- 	function to_string (fill_style : in type_fill_style) return string;
+-- 	function to_fill_style (fill_style : in string) return type_fill_style;
+-- 
+-- 	fill_style_hatching_line_width_default	: constant type_distance := 0.3; -- the width of the lines
+-- 	fill_style_hatching_spacing_default		: constant type_distance := 2.0; -- the space between the lines
 
 	-- Instantiation of the generic shapes package et_geometry.shapes_2d:
 	package shapes is new et_geometry.shapes_2d (geometry => et_pcb_coordinates.geometry);
@@ -266,8 +266,8 @@ package et_packages is
 		-- CS: consider a list of lines and arcs (circles ?) instead
 		
 		fill_style			: type_fill_style := SOLID; -- a polygon is always filled
-		hatching_line_width	: type_track_width := fill_style_hatching_line_width_default; -- the with of the lines
-		hatching_spacing	: type_track_clearance := fill_style_hatching_spacing_default; -- the space between the lines
+		hatching_line_width	: type_track_width := hatching_line_width_default; -- the with of the lines
+		hatching_spacing	: type_track_clearance := hatching_spacing_default; -- the space between the lines
 		corner_easing		: type_corner_easing := NONE;
 		easing_radius		: type_polygon_easing_radius := zero; -- center of circle at corner point
 		-- CS locked : type_locked;
@@ -296,8 +296,8 @@ package et_packages is
 		width				: type_track_width := type_track_width'first;
 		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
-		hatching_line_width	: type_track_width := fill_style_hatching_line_width_default; -- the with of the lines
-		hatching_spacing	: type_track_clearance := fill_style_hatching_spacing_default; -- the space between the lines
+		hatching_line_width	: type_track_width := hatching_line_width_default; -- the with of the lines
+		hatching_spacing	: type_track_clearance := hatching_spacing_default; -- the space between the lines
 	end record;
 	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
 
@@ -416,10 +416,10 @@ package et_packages is
 					when SOLID | CUTOUT => null;
 					when HATCHED =>
 						-- the width of the circumfence and the hatching lines:
-						hatching_line_width	: type_general_line_width := fill_style_hatching_line_width_default;
+						hatching_line_width	: type_general_line_width := hatching_line_width_default;
 
 						-- the space between the hatching lines:
-						hatching_spacing	: type_general_line_width := fill_style_hatching_spacing_default;
+						hatching_spacing	: type_general_line_width := hatching_spacing_default;
 				end case;
 				
 		end case;

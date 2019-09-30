@@ -173,8 +173,8 @@ package body scripting is
 		raise constraint_error;
 	end;
 
-	procedure expect_fill_style (style : in et_packages.type_fill_style; field : in count_type) is begin
-		log (ERROR, "fill style " & enclose_in_quotes (et_packages.to_string (style)) &
+	procedure expect_fill_style (style : in et_packages.shapes.type_fill_style; field : in count_type) is begin
+		log (ERROR, "fill style " & enclose_in_quotes (et_packages.shapes.to_string (style)) &
 			 " expected in field no. " & count_type'image (field) & " !" , console => true);
 		raise constraint_error;
 	end;
@@ -1965,6 +1965,7 @@ package body scripting is
 			end draw_via_restrict;
 
 			procedure draw_stop_mask is
+				use et_packages.shapes;
 				shape : type_shape := to_shape (f (6));
 			begin
 				case shape is
@@ -2033,7 +2034,7 @@ package body scripting is
 										circle			=> 
 													(
 													filled		=> NO,
-													fill_style	=> fill_style_default, -- don't care here
+													fill_style	=> shapes.fill_style_default, -- don't care here
 													width	=> to_distance (f (7)),
 													center	=> type_point (set (
 																x => to_distance (f (8)),
@@ -2045,7 +2046,7 @@ package body scripting is
 									
 									-- Circle is filled with the fill style specified in field 7:
 									case to_fill_style (f (7)) is
-										when CUTOUT =>
+										when shapes.CUTOUT =>
 									
 											board_ops.draw_stop_circle (
 												module_name 	=> module,
@@ -2077,7 +2078,7 @@ package body scripting is
 															),
 												log_threshold	=> log_threshold + 1);
 
-										when HATCHED => command_incomplete;
+										when shapes.HATCHED => command_incomplete;
 
 									end case;
 								end if;
@@ -2121,6 +2122,7 @@ package body scripting is
 			end draw_stop_mask;
 
 			procedure draw_stencil is
+				use et_packages.shapes;
 				shape : type_shape := to_shape (f (6));
 			begin
 				case shape is
@@ -2793,6 +2795,7 @@ package body scripting is
 
 						when SILK =>
 							declare
+								use et_packages.shapes;
 								shape : type_shape := to_shape (f (6));
 							begin
 								case shape is
@@ -2962,6 +2965,7 @@ package body scripting is
 
 						when ASSY =>
 							declare
+								use et_packages.shapes;
 								shape : type_shape := to_shape (f (6));
 							begin
 								case shape is
