@@ -708,13 +708,12 @@ package et_libraries is
 		element_type	=> type_unit_external);
 
 
-	
--- TERMINALS
-	-- A terminal is where electrical energy is fed in or provided by a component.
+-- TERMINALS	
+	-- A terminal is the physical point where electrical energy comes in or out of the device.
 	-- Other CAE systems refer to "pins" or "pads". In order to use only a single word
 	-- we further-on speak about "terminals".
 	-- The name of a terminal may have 10 characters which seems sufficient for now.
-	-- CS: character set, length check, charcter check -- CS move to et_packages
+	-- CS: character set, length check, charcter check
  	terminal_name_length_max : constant natural := 10;
 	package type_terminal_name is new generic_bounded_length (terminal_name_length_max);
 	use type_terminal_name;

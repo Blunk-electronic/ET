@@ -842,6 +842,7 @@ package et_packages is
 				
 		end case;
 	end record;
+
 	
 
 	procedure terminal_properties (
