@@ -2321,7 +2321,8 @@ package body et_project is
 			use pac_copper_lines;
 			use pac_copper_arcs;
 			use pac_copper_circles;
-			use pac_copper_polygons_floating;
+			use pac_copper_polygons_floating_solid;
+			use pac_copper_polygons_floating_hatched;			
 			use pac_texts;
 			use type_text_placeholders_copper;
 
@@ -2367,28 +2368,53 @@ package body et_project is
 				circle_end;
 			end write_circle;
 			
-			procedure write_polygon (cursor : in pac_copper_polygons_floating.cursor) is 
+			procedure write_polygon (cursor : in pac_copper_polygons_floating_solid.cursor) is 
 				use et_packages.shapes;
 				use type_polygon_points;
-				
-				procedure query_points (polygon : in type_copper_polygon_floating) is begin
-					iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
-				end query_points;
+
+-- CS write shapes instead				
+-- 				procedure query_points (polygon : in type_copper_polygon_floating) is begin
+-- 					iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
+-- 				end query_points;
 				
 			begin -- write_polygon
 				polygon_begin;
 				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching.width));
+				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching.spacing));
 				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
 				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
 				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
 				corners_begin;
-				query_element (cursor, query_points'access);
+-- 				query_element (cursor, query_points'access); -- CS query shapes instead
 				corners_end;
 				polygon_end;
 			end write_polygon;
 
+			procedure write_polygon (cursor : in pac_copper_polygons_floating_hatched.cursor) is -- CS currently not used
+				use et_packages.shapes;
+				use type_polygon_points;
+
+-- CS write shapes instead				
+-- 				procedure query_points (polygon : in type_copper_polygon_floating) is begin
+-- 					iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
+-- 				end query_points;
+				
+			begin -- write_polygon
+				polygon_begin;
+				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching.width));
+				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching.spacing));
+				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
+				corners_begin;
+-- 				query_element (cursor, query_points'access); -- CS query shapes instead
+				corners_end;
+				polygon_end;
+			end write_polygon;
+
+			
 			procedure write_text (cursor : in pac_texts.cursor) is -- copper texts in board !
 			begin
 				text_begin;
@@ -2540,7 +2566,8 @@ package body et_project is
 				iterate (element (module_cursor).board.copper.lines, write_line'access);
 				iterate (element (module_cursor).board.copper.arcs, write_arc'access);
 				iterate (element (module_cursor).board.copper.circles, write_circle'access);
-				iterate (element (module_cursor).board.copper.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.copper.polygons.solid, write_polygon'access);
+				-- CS iterate (element (module_cursor).board.copper.polygons.hatched, write_polygon'access);
 				iterate (element (module_cursor).board.copper.texts, write_text'access);
 				iterate (element (module_cursor).board.copper.placeholders, write_placeholder'access);
 			section_mark (section_copper, FOOTER);
@@ -8445,7 +8472,7 @@ package body et_project is
 		board_layer : et_pcb_stack.type_layer;
 		board_layers : et_pcb_stack.package_layers.vector;
 		
-		board_polygon_floating : et_pcb.type_copper_polygon_floating;
+-- 		board_polygon_floating : et_pcb.type_copper_polygon_floating;
 		board_track_line : et_pcb.type_copper_line;
 		board_track_arc : et_pcb.type_copper_arc;
 		board_track_circle : et_pcb.type_copper_circle;
@@ -9769,15 +9796,47 @@ package body et_project is
 				end insert_polygon_via_restrict;
 
 				procedure insert_polygon_copper is
+				-- This is about floating polygons in signal layers. No connection to any net.
 					use et_pcb;
+					use et_packages.shapes;
 					
 					procedure do_it (
 						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 					begin
-						pac_copper_polygons_floating.append (
-							container	=> module.board.copper.polygons,
-							new_item	=> board_polygon_floating);
+						case fill_style is
+							when SOLID =>
+								pac_copper_polygons_floating_solid.append (
+									container	=> module.board.copper.polygons.solid,
+									new_item	=> (type_polygon_base (polygon_2) with
+											fill_style 		=> SOLID,
+											priority_level	=> route_polygon_priority,
+											isolation_gap	=> route_polygon_isolation_gap,
+											layer			=> route_layer,
+											width_min		=> route_width)
+											);
+
+							when HATCHED =>
+								pac_copper_polygons_floating_hatched.append (
+									container	=> module.board.copper.polygons.hatched,
+									new_item	=> (type_polygon_base (polygon_2) with
+											fill_style 		=> HATCHED,
+											priority_level	=> route_polygon_priority,
+											isolation_gap	=> route_polygon_isolation_gap,
+											layer			=> route_layer,
+											width_min		=> route_width,
+											hatching		=> hatching)
+											);
+
+							when CUTOUT =>
+								pac_copper_polygons_cutout.append (
+									container	=> module.board.copper.polygons.cutout,
+									new_item	=> (type_polygon_base (polygon_2) with
+											fill_style 		=> CUTOUT,
+											layer			=> route_layer)
+											);
+
+						end case;
 					end do_it;
 										
 				begin -- insert_polygon_copper

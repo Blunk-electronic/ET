@@ -241,15 +241,38 @@ package et_pcb is
 
 	package pac_texts is new doubly_linked_lists (type_text);
 
-
-	-- A floating copper polygon is not connected to a net:
-	type type_copper_polygon_floating is new type_copper_polygon with record
+	-- Cutout-polygons in copper layers:
+	type type_copper_polygon_cutout is new et_packages.type_copper_polygon_cutout with record
 		layer 		: type_signal_layer;
-		width_min	: type_track_width; -- the minimum width
 	end record;
 
-	package pac_copper_polygons_floating is new doubly_linked_lists (type_copper_polygon_floating);
+	package pac_copper_polygons_cutout is new doubly_linked_lists (type_copper_polygon_cutout);
 
+
+	-- A floating copper polygon is not connected to any net:
+	type type_copper_polygon_floating_solid is new shapes.type_polygon (fill_style => SOLID) with record
+		priority_level	: type_polygon_priority := type_polygon_priority'first;
+		isolation_gap	: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
+		layer 			: type_signal_layer;
+		width_min		: type_track_width; -- the minimum width
+	end record;
+
+	package pac_copper_polygons_floating_solid is new indefinite_doubly_linked_lists (type_copper_polygon_floating_solid);
+	
+	type type_copper_polygon_floating_hatched is new shapes.type_polygon (fill_style => HATCHED) with record
+		priority_level	: type_polygon_priority := type_polygon_priority'first;
+		isolation_gap	: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
+		layer 			: type_signal_layer;
+		width_min		: type_track_width; -- the minimum width
+	end record;
+
+	package pac_copper_polygons_floating_hatched is new indefinite_doubly_linked_lists (type_copper_polygon_floating_hatched);
+	
+	type type_copper_polygons_floating is record
+		solid	: pac_copper_polygons_floating_solid.list;
+		hatched	: pac_copper_polygons_floating_hatched.list;
+		cutout	: pac_copper_polygons_cutout.list;
+	end record;
 	
 	
 	-- Type for NON ELECTRIC !! copper objects:
@@ -260,7 +283,7 @@ package et_pcb is
 		circles			: pac_copper_circles.list;
 
 		-- CS: It is probably no good idea to allow floating copper polygons.
-		polygons		: pac_copper_polygons_floating.list; 
+		polygons		: type_copper_polygons_floating; 
 		
 		texts			: pac_texts.list;
 		placeholders	: type_text_placeholders_copper.list;
@@ -351,21 +374,18 @@ package et_pcb is
 				
 	end record;
 
-	type type_copper_polygon_cutout is new et_packages.type_copper_polygon_cutout with record
-		layer 		: type_signal_layer;
-	end record;
 
 	
 	package pac_copper_polygons_signal is new indefinite_doubly_linked_lists (type_copper_polygon_signal); -- CS remove
 	
 	package pac_signal_polygons_solid is new indefinite_doubly_linked_lists (type_copper_polygon_solid);
 	package pac_signal_polygons_hatched is new indefinite_doubly_linked_lists (type_copper_polygon_hatched);	
-	package pac_signal_polygons_cutout is new doubly_linked_lists (type_copper_polygon_cutout);
+
 
 	type type_signal_polygons is record
 		solid	: pac_signal_polygons_solid.list;
 		hatched	: pac_signal_polygons_hatched.list;
-		cutout	: pac_signal_polygons_cutout.list;
+		cutout	: pac_copper_polygons_cutout.list;
 	end record;
 	
 	type type_route is record 
@@ -494,10 +514,11 @@ package et_pcb is
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure floating_copper_polygon_properties (
-	-- Logs the properties of the given floating copper polygon.
-		cursor			: in pac_copper_polygons_floating.cursor;
+	-- Logs the properties of the given floating solid copper polygon.
+		cursor			: in pac_copper_polygons_floating_solid.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
-	
+
+	-- CS procedure floating_copper_polygon_hatched_properties
 	
 	procedure line_pcb_contour_properties (
 	-- Logs the properties of the given line of pcb contour

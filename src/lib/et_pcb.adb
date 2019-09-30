@@ -298,9 +298,9 @@ package body et_pcb is
 
 	procedure floating_copper_polygon_properties (
 	-- Logs the properties of the given floating copper polygon.
-		cursor			: in pac_copper_polygons_floating.cursor;
+		cursor			: in pac_copper_polygons_floating_solid.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use pac_copper_polygons_floating;
+		use pac_copper_polygons_floating_solid;
 		use type_polygon_points;
 		points : type_polygon_points.set;
 		point_cursor : type_polygon_points.cursor;
@@ -316,13 +316,14 @@ package body et_pcb is
 		log_indentation_up;
 		
 		-- corner points
-		log (text => text_polygon_corner_points, level => log_threshold);
-		points := element (cursor).corners;
-		point_cursor := points.first;
-		while point_cursor /= type_polygon_points.no_element loop
-			log (text => to_string (element (point_cursor)), level => log_threshold);
-			next (point_cursor);
-		end loop;
+		-- CS show shapes instead
+-- 		log (text => text_polygon_corner_points, level => log_threshold);
+-- 		points := element (cursor).corners;
+-- 		point_cursor := points.first;
+-- 		while point_cursor /= type_polygon_points.no_element loop
+-- 			log (text => to_string (element (point_cursor)), level => log_threshold);
+-- 			next (point_cursor);
+-- 		end loop;
 		
 		log_indentation_down;
 	end floating_copper_polygon_properties;
