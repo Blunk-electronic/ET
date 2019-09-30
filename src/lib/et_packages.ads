@@ -227,20 +227,9 @@ package et_packages is
 	package type_texts_with_content is new doubly_linked_lists (type_text_with_content);
 	
 
-	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE
--- 	type type_fill_style is (SOLID, HATCHED, CUTOUT);
--- 	fill_style_default : constant type_fill_style := SOLID;
+
 	
 	text_line_width : constant string := "line_width";
--- 	text_fill_style : constant string := "fill_style";
--- 	text_hatching_line_width	: constant string := "hatching_line_width";
--- 	text_hatching_spacing 		: constant string := "hatching_spacing";	
-	
--- 	function to_string (fill_style : in type_fill_style) return string;
--- 	function to_fill_style (fill_style : in string) return type_fill_style;
--- 
--- 	fill_style_hatching_line_width_default	: constant type_distance := 0.3; -- the width of the lines
--- 	fill_style_hatching_spacing_default		: constant type_distance := 2.0; -- the space between the lines
 
 	-- Instantiation of the generic shapes package et_geometry.shapes_2d:
 	package shapes is new et_geometry.shapes_2d (geometry => et_pcb_coordinates.geometry);
