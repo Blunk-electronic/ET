@@ -235,6 +235,13 @@ package et_geometry is
 
 		text_fill_style : constant string := "fill_style";
 
+
+		type type_filled is (NO, YES);
+		function to_string (filled : in type_filled) return string;
+		function to_filled (filled : in string) return type_filled;
+
+		keyword_filled : constant string := "filled";
+
 		
 	-- LINE
 		type type_line is abstract tagged record

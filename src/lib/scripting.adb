@@ -192,7 +192,7 @@ package body scripting is
 	end;
 
 	procedure expect_keyword_filled (field : in count_type) is begin
-		log (ERROR, "Expect keyword " & enclose_in_quotes (et_packages.keyword_filled) &
+		log (ERROR, "Expect keyword " & enclose_in_quotes (et_packages.shapes.keyword_filled) &
 			" in field no." & count_type'image (field) & " !",
 			 console => true);
 		raise constraint_error;
@@ -1632,6 +1632,7 @@ package body scripting is
 
 		procedure board_cmd (verb : in type_verb_board; noun : in type_noun_board) is
 			use et_packages;
+			use et_packages.shapes;
 			use et_pcb;
 			use et_pcb_coordinates;
 			use et_pcb_coordinates.geometry;
@@ -1717,7 +1718,7 @@ package body scripting is
 							when 10 =>
 							-- board led_driver draw keepout top circle filled 50 50 40 -- 10 fields
 								
-								if f (7) = et_packages.keyword_filled then
+								if f (7) = keyword_filled then
 									-- Circle is filled.
 									
 									board_ops.draw_keepout_circle (
@@ -1826,7 +1827,7 @@ package body scripting is
 							when 10 =>
 								-- Circle is filled.
 								-- board led_driver draw route_restrict [1,3,5-9] circle filled 20 50 40
-								if f (7) = et_packages.keyword_filled then
+								if f (7) = keyword_filled then
 
 									-- Circle is filled.
 									board_ops.draw_route_restrict_circle (
@@ -1935,7 +1936,7 @@ package body scripting is
 							when 10 =>
 								-- Circle is filled.
 								-- board led_driver draw via_restrict [1,3,5-9] circle filled 20 50 40
-								if f (7) = et_packages.keyword_filled then
+								if f (7) = keyword_filled then
 
 									-- Circle is filled.
 									board_ops.draw_via_restrict_circle (

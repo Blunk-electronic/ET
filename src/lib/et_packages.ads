@@ -242,14 +242,6 @@ package et_packages is
 	-- This prevents placing two identical points on top of each other.
 	package type_polygon_points is new ordered_sets (type_point);
 
-	type type_corner_easing is (NONE, CHAMFER, FILLET);
-	
-	polygon_easing_radius_max : constant et_pcb_coordinates.type_distance := 1.0;
-	subtype type_polygon_easing_radius is et_pcb_coordinates.type_distance range et_pcb_coordinates.type_distance'first .. polygon_easing_radius_max;
-
-	function to_corner_easing (easing : in string) return type_corner_easing;
-	function to_string (easing : in type_corner_easing) return string;
-	
 	type type_polygon is abstract tagged record
 		corners				: type_polygon_points.set;
 		-- CS: consider a list of lines and arcs (circles ?) instead
@@ -258,7 +250,7 @@ package et_packages is
 		hatching_line_width	: type_track_width := hatching_line_width_default; -- the with of the lines
 		hatching_spacing	: type_track_clearance := hatching_spacing_default; -- the space between the lines
 		corner_easing		: type_corner_easing := NONE;
-		easing_radius		: type_polygon_easing_radius := zero; -- center of circle at corner point
+		easing_radius		: type_easing_radius := zero; -- center of circle at corner point
 		-- CS locked : type_locked;
 	end record;
 
@@ -275,11 +267,6 @@ package et_packages is
 		width	: type_track_width;
 	end record;
 	package type_copper_arcs is new doubly_linked_lists (type_copper_arc);
-
-	keyword_filled : constant string := "filled";
-	type type_filled is (NO, YES);
-	function to_string (filled : in type_filled) return string;
-	function to_filled (filled : in string) return type_filled;
 
 	type type_copper_circle is new type_circle with record
 		width				: type_track_width := type_track_width'first;

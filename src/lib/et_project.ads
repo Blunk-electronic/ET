@@ -410,7 +410,6 @@ package et_project is
 	keyword_view_mode				: constant string := "view_mode";
 	keyword_content					: constant string := "content";
 	keyword_radius					: constant string := "radius";
-	keyword_filled					: constant string := "filled";
 	keyword_layers					: constant string := "layers";
 	keyword_locked					: constant string := "locked";
 	keyword_prefix					: constant string := "prefix";	

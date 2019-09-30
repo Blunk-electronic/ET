@@ -928,6 +928,7 @@ package body et_project is
 	
 	procedure write_circle (cursor : in et_packages.type_keepout_circles.cursor) is 
 		use et_packages;
+		use et_packages.shapes;
 		use et_pcb_coordinates.geometry;		
 		use type_keepout_circles;
 	begin
@@ -1107,6 +1108,7 @@ package body et_project is
 
 	procedure write_circle (cursor : in et_packages.type_route_restrict_circles.cursor) is 
 		use et_packages;
+		use et_packages.shapes;
 		use et_pcb_stack;
 		use type_route_restrict_circles;
 		use et_pcb_coordinates.geometry;		
@@ -1174,6 +1176,7 @@ package body et_project is
 
 	procedure write_circle (cursor : in et_packages.type_via_restrict_circles.cursor) is 
 		use et_packages;
+		use et_packages.shapes;		
 		use et_pcb_stack;		
 		use type_via_restrict_circles;
 		use et_pcb_coordinates.geometry;		
@@ -3277,7 +3280,7 @@ package body et_project is
 	-- Filled and fill_style are discriminants. Depending on them some parameters
 	-- matter or not. See spec for type_fillable_circle.
 		circle				: in et_packages.shapes.type_circle;
-		filled				: in et_packages.type_filled;
+		filled				: in et_packages.shapes.type_filled;
 		fill_style			: in et_packages.shapes.type_fill_style;
 		circumfence_width	: in et_packages.type_general_line_width;
 		hatching_line_width	: in et_packages.type_general_line_width;
@@ -8389,7 +8392,7 @@ package body et_project is
 		board_circle : type_circle;
 
 		board_circle_fillable_width					: et_packages.type_general_line_width := et_packages.type_general_line_width'first;
-		board_circle_fillable_filled				: et_packages.type_filled := et_packages.type_filled'first;
+		board_circle_fillable_filled				: et_packages.shapes.type_filled := et_packages.shapes.type_filled'first;
 		board_circle_fillable_fill_style			: et_packages.shapes.type_fill_style := et_packages.shapes.fill_style_default;
 		board_circle_fillable_hatching_line_width 	: et_packages.type_general_line_width := et_packages.type_general_line_width'first;
 		board_circle_fillable_hatching_spacing		: et_packages.type_general_line_width := et_packages.type_general_line_width'first;
@@ -12297,6 +12300,7 @@ package body et_project is
 								-- CS call procedure read_board_circle ?
 								declare
 									use et_packages;
+									use et_packages.shapes;
 									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin

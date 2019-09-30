@@ -272,14 +272,6 @@ package body et_packages is
 		return type_terminal_tht_hole'value (tht_hole);
 	end to_tht_hole;
 	
-	function to_string (filled : in type_filled) return string is begin
-		return to_lower (type_filled'image (filled));
-	end to_string;
-
-	function to_filled (filled : in string) return type_filled is begin
-		return type_filled'value (filled);
-	end to_filled;
-	
 	function to_string (priority_level : in type_polygon_priority) return string is
 	begin
 		return type_polygon_priority'image (priority_level);

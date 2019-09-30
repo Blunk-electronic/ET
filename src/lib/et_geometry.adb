@@ -423,6 +423,22 @@ package body et_geometry is
 	package body shapes_2d is
 		use geometry;
 
+		function to_string (fill_style : in type_fill_style) return string is begin
+			return to_lower (type_fill_style'image (fill_style));
+		end;
+
+		function to_fill_style (fill_style : in string) return type_fill_style is begin
+			return type_fill_style'value (fill_style);
+		end;
+
+		function to_string (filled : in type_filled) return string is begin
+			return to_lower (type_filled'image (filled));
+		end to_string;
+
+		function to_filled (filled : in string) return type_filled is begin
+			return type_filled'value (filled);
+		end to_filled;
+				
 		function which_zone (
 		-- Calculates the zone of the line where point is nearest.
 			point	: in type_point'class;
@@ -766,14 +782,6 @@ package body et_geometry is
 		function to_string (easing : in type_corner_easing) return string is begin
 			return to_lower (type_corner_easing'image (easing));
 		end to_string;
-
-		function to_string (fill_style : in type_fill_style) return string is begin
-			return to_lower (type_fill_style'image (fill_style));
-		end;
-
-		function to_fill_style (fill_style : in string) return type_fill_style is begin
-			return type_fill_style'value (fill_style);
-		end;
 		
 	end shapes_2d;
 
