@@ -394,7 +394,7 @@ package et_pcb is
 		lines 			: pac_copper_lines.list;
 		arcs			: pac_copper_arcs.list;
 		vias			: pac_vias.list;
-		polygons		: pac_copper_polygons_signal.list; -- CS remove
+-- 		polygons		: pac_copper_polygons_signal.list; -- CS remove
 		polygons_2		: type_signal_polygons;
 	end record;
 	

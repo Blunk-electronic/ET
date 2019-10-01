@@ -1821,8 +1821,9 @@ package body et_project is
 				use pac_vias;
 				via_cursor : pac_vias.cursor := net.route.vias.first;
 
-				use pac_copper_polygons_signal;
-				polygon_cursor : pac_copper_polygons_signal.cursor := net.route.polygons.first;
+				use pac_signal_polygons_solid; use pac_signal_polygons_hatched;				
+				polygon_solid_cursor : pac_signal_polygons_solid.cursor := net.route.polygons_2.solid.first;
+				polygon_hatched_cursor : pac_signal_polygons_hatched.cursor := net.route.polygons_2.hatched.first;
 
 				procedure query_points (polygon : in type_copper_polygon_signal) is
 					use type_polygon_points;
@@ -1878,35 +1879,35 @@ package body et_project is
 					next (via_cursor);
 				end loop;
 				
-				while polygon_cursor /= pac_copper_polygons_signal.no_element loop
+				while polygon_solid_cursor /= pac_signal_polygons_solid.no_element loop
 					section_mark (section_polygon, HEADER);
 
-					write (keyword => keyword_priority , parameters => to_string (element (polygon_cursor).priority_level));
-					write (keyword => keyword_layer , parameters => to_string (element (polygon_cursor).layer));
-					write (keyword => keyword_min_width , parameters => to_string (element (polygon_cursor).width_min));
-					write (keyword => keyword_isolation, parameters => to_string (element (polygon_cursor).isolation_gap));
-					write (keyword => keyword_fill_style, parameters => to_string (element (polygon_cursor).fill_style));
-					write (keyword => keyword_hatching_line_width  , parameters => to_string (element (polygon_cursor).hatching_line_width));
-					write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (polygon_cursor).hatching_spacing));
-					write (keyword => keyword_corner_easing, parameters => to_string (element (polygon_cursor).corner_easing));
-					write (keyword => keyword_easing_radius, parameters => to_string (element (polygon_cursor).easing_radius));
+					write (keyword => keyword_priority , parameters => to_string (element (polygon_solid_cursor).priority_level));
+					write (keyword => keyword_layer , parameters => to_string (element (polygon_solid_cursor).layer));
+					write (keyword => keyword_min_width , parameters => to_string (element (polygon_solid_cursor).width_min));
+					write (keyword => keyword_isolation, parameters => to_string (element (polygon_solid_cursor).isolation));
+					write (keyword => keyword_fill_style, parameters => to_string (et_packages.shapes.SOLID));
+					write (keyword => keyword_hatching_line_width  , parameters => to_string (element (polygon_solid_cursor).hatching.width));
+					write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (polygon_solid_cursor).hatching.spacing));
+					write (keyword => keyword_corner_easing, parameters => to_string (element (polygon_solid_cursor).easing.style));
+					write (keyword => keyword_easing_radius, parameters => to_string (element (polygon_solid_cursor).easing.radius));
 
-					case element (polygon_cursor).pad_connection is
+					case element (polygon_solid_cursor).connection is
 						when THERMAL => 
-							write (keyword => keyword_pad_connection, parameters => to_string (element (polygon_cursor).pad_connection));
-							write (keyword => keyword_pad_technology, parameters => to_string (element (polygon_cursor).thermal_technology));
-							write (keyword => keyword_thermal_width , parameters => to_string (element (polygon_cursor).thermal_width));
-							write (keyword => keyword_thermal_gap   , parameters => to_string (element (polygon_cursor).thermal_gap));	
+							write (keyword => keyword_pad_connection, parameters => to_string (element (polygon_solid_cursor).connection));
+							write (keyword => keyword_pad_technology, parameters => to_string (element (polygon_solid_cursor).thermal.technology));
+							write (keyword => keyword_thermal_width , parameters => to_string (element (polygon_solid_cursor).thermal.width));
+							write (keyword => keyword_thermal_gap   , parameters => to_string (element (polygon_solid_cursor).thermal.gap));	
 							
 						when SOLID =>
-							write (keyword => keyword_pad_technology, parameters => to_string (element (polygon_cursor).solid_technology));	
+							write (keyword => keyword_pad_technology, parameters => to_string (element (polygon_solid_cursor).technology));	
 							
 						when NONE => null;
 					end case;
 
-					query_element (polygon_cursor, query_points'access);
+-- CS segments					query_element (polygon_solid_cursor, query_points'access);
 					section_mark (section_polygon, FOOTER);
-					next (polygon_cursor);
+					next (polygon_solid_cursor);
 				end loop;
 				
 				section_mark (section_route, FOOTER);
