@@ -10147,94 +10147,141 @@ package body et_project is
 
 					procedure solid_polygon is
 						use et_pcb.pac_signal_polygons_solid;
-						-- 						use type et_packages.type_polygon_pad_connection;
 						use et_packages;
 
 						procedure connection_thermal is
-							p1 : et_packages.type_copper_polygon_solid;
-							p2 : et_pcb.type_copper_polygon_solid (connection => et_packages.THERMAL);
+							p : et_pcb.type_copper_polygon_solid (connection => et_packages.THERMAL);
 						begin
-							p1 := (et_packages.shapes.type_polygon_base (polygon_2) with 
-								fill_style	=> shapes.SOLID,
-								isolation	=> route_polygon_isolation_gap);
+							p.lines := polygon_2.lines;
+							p.arcs := polygon_2.arcs;
+							p.circles := polygon_2.circles;
 
--- 							p2 := (p1 with others => <>);
-							
-							p2.layer := route_layer;
-							-- p2.fill_style := shapes.SOLID;
-							-- p2.connection := et_packages.THERMAL;
+							p.corner_easing := polygon_2.corner_easing;
+							p.easing_radius := polygon_2.easing_radius;
 
--- 							p2 := (p1 with 
--- 								   connection => et_packages.THERMAL,
--- 								   others => <>);
+							p.isolation	:= route_polygon_isolation_gap;
+							p.width_min	:= route_width;
+
+							p.layer := route_layer;
+							p.priority_level := route_polygon_priority;
 							
-							p2.lines := p1.lines;
-							p2.arcs := p1.arcs;
-							p2.circles := p1.circles;
-							p2.corner_easing := p1.corner_easing;
-							p2.easing_radius := p1.easing_radius;
-							p2.thermal := thermal;
-							
+							p.thermal := thermal;
+
 							et_pcb.pac_signal_polygons_solid.append (
 								container	=> route.polygons_2.solid,
-								new_item	=> p2);
+								new_item	=> p);
+						end;
+
+						procedure connection_solid is
+							p : et_pcb.type_copper_polygon_solid (connection => et_packages.SOLID);
+						begin
+							p.lines := polygon_2.lines;
+							p.arcs := polygon_2.arcs;
+							p.circles := polygon_2.circles;
+
+							p.corner_easing := polygon_2.corner_easing;
+							p.easing_radius := polygon_2.easing_radius;
+
+							p.isolation	:= route_polygon_isolation_gap;
+							p.width_min	:= route_width;
+
+							p.layer := route_layer;
+							p.priority_level := route_polygon_priority;
 							
--- 										fill_style	=> shapes.SOLID,
--- -- 										connection => et_packages.THERMAL,
--- 										others => <>
--- 								 )); 
--- 											with
--- 											connection	=> et_packages.THERMAL,
--- 											thermal		=> thermal,
--- 											isolation	=> route_polygon_isolation_gap,
--- 											width_min	=> route_width,
--- 											layer		=> route_layer)
--- 									   );
-							null;
+							p.technology := thermal.technology;
+
+							et_pcb.pac_signal_polygons_solid.append (
+								container	=> route.polygons_2.solid,
+								new_item	=> p);
 						end;
 						
-					begin
+					begin -- solid_polygon
 						case polygon_pad_connection is
-							when et_packages.THERMAL =>
-								connection_thermal;
--- 								append (
--- 									container	=> route.polygons_2.solid, 
--- 									new_item	=> ((et_packages.shapes.type_polygon_base (polygon_2) 
--- 													 with fill_style => shapes.SOLID) 
--- 											with
--- 											connection	=> et_packages.THERMAL,
--- 											thermal		=> thermal,
--- 											isolation	=> route_polygon_isolation_gap,
--- 											width_min	=> route_width,
--- 											layer		=> route_layer)
--- 									   );
-								NULL;
-							when SOLID =>
-								null;
-							when NONE =>
-								null;
+							when et_packages.THERMAL => connection_thermal;
+							when SOLID => connection_solid;
+							when NONE => null;
 						end case;
 					end solid_polygon;
 
 					procedure hatched_polygon is
 						use et_pcb.pac_signal_polygons_hatched;
 						use et_packages;
-					begin
+
+						procedure connection_thermal is
+							p : et_pcb.type_copper_polygon_hatched (connection => et_packages.THERMAL);
+						begin
+							p.lines := polygon_2.lines;
+							p.arcs := polygon_2.arcs;
+							p.circles := polygon_2.circles;
+
+							p.corner_easing := polygon_2.corner_easing;
+							p.easing_radius := polygon_2.easing_radius;
+
+							p.hatching := hatching;
+							
+							p.isolation	:= route_polygon_isolation_gap;
+							p.width_min	:= route_width;
+
+							p.layer := route_layer;
+							p.priority_level := route_polygon_priority;
+							
+							p.thermal := thermal;
+							
+							et_pcb.pac_signal_polygons_hatched.append (
+								container	=> route.polygons_2.hatched,
+								new_item	=> p);
+						end;
+
+						procedure connection_solid is
+							p : et_pcb.type_copper_polygon_hatched (connection => et_packages.SOLID);
+						begin
+							p.lines := polygon_2.lines;
+							p.arcs := polygon_2.arcs;
+							p.circles := polygon_2.circles;
+
+							p.corner_easing := polygon_2.corner_easing;
+							p.easing_radius := polygon_2.easing_radius;
+
+							p.hatching := hatching;
+							
+							p.isolation	:= route_polygon_isolation_gap;
+							p.width_min	:= route_width;
+
+							p.layer := route_layer;
+							p.priority_level := route_polygon_priority;
+							
+							p.technology := thermal.technology;
+							
+							et_pcb.pac_signal_polygons_hatched.append (
+								container	=> route.polygons_2.hatched,
+								new_item	=> p);
+						end;
+						
+					begin -- hatched_polygon
 						case polygon_pad_connection is
-							when et_packages.THERMAL =>
-								NULL;
-							when SOLID =>
-								null;
-							when NONE =>
-								null;
+							when et_packages.THERMAL => connection_thermal;
+							when SOLID => connection_solid;
+							when NONE => null;
 						end case;
 					end hatched_polygon;
 
 					procedure cutout_polygon is
-						use et_pcb.pac_signal_polygons_hatched;
--- 						use et_packages;
+						use et_pcb.pac_copper_polygons_cutout;
+						p : et_pcb.type_copper_polygon_cutout;
 					begin
-						null;
+						p.lines := polygon_2.lines;
+						p.arcs := polygon_2.arcs;
+						p.circles := polygon_2.circles;
+
+						p.corner_easing := polygon_2.corner_easing;
+						p.easing_radius := polygon_2.easing_radius;
+
+						p.layer := route_layer;
+
+						et_pcb.pac_copper_polygons_cutout.append (
+							container	=> route.polygons_2.cutout,
+							new_item	=> p);
+
 					end cutout_polygon;
 					
 				begin -- build_route_polygon
