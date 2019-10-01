@@ -2011,9 +2011,12 @@ package body et_kicad_to_native is
 				use et_pcb.pac_copper_circles;
 				circles_cursor : et_pcb.pac_copper_circles.cursor;
 
-				use et_pcb.pac_copper_polygons_floating;
-				polygons_cursor : et_pcb.pac_copper_polygons_floating.cursor;
+				use et_pcb.pac_copper_polygons_floating_solid;
+				polygons_solid_cursor : et_pcb.pac_copper_polygons_floating_solid.cursor;
 
+				use et_pcb.pac_copper_polygons_floating_hatched;
+				polygons_hatched_cursor : et_pcb.pac_copper_polygons_floating_hatched.cursor;
+				
 				use et_pcb.pac_texts;
 				texts_cursor : et_pcb.pac_texts.cursor;
 
@@ -2070,50 +2073,96 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_floating) is
+				procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_floating_solid) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
-					use type_polygon_points;
-					point_cursor : type_polygon_points.cursor := polygon.corners.first;
-					new_points : type_polygon_points.set;
+-- CS
+-- 					use type_polygon_points;
+-- 					point_cursor : type_polygon_points.cursor := polygon.corners.first;
+-- 					new_points : type_polygon_points.set;
 
-					procedure get_point (point : in type_point) is
-					-- Reads a corner point, copies it, moves the copy and inserts the moved
-					-- copy in a new set "new_points".
-						new_point : type_point := point; -- copy given point
-					begin
-						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
-						move (new_point); -- move copied point
-						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
-
-						-- insert new point in new_points:
-						type_polygon_points.insert (
-							container	=> new_points,
-							new_item	=> new_point);
-						
-					end get_point;
+-- 					procedure get_point (point : in type_point) is
+-- 					-- Reads a corner point, copies it, moves the copy and inserts the moved
+-- 					-- copy in a new set "new_points".
+-- 						new_point : type_point := point; -- copy given point
+-- 					begin
+-- 						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
+-- 						move (new_point); -- move copied point
+-- 						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
+-- 
+-- 						-- insert new point in new_points:
+-- 						type_polygon_points.insert (
+-- 							container	=> new_points,
+-- 							new_item	=> new_point);
+-- 						
+-- 					end get_point;
 					
 				begin -- move_polygon
-					log (text => board_copper & "polygon corner points", level => log_threshold + log_threshold_add);
+					log (text => board_copper & "solid polygon segments", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					-- loop through polygon corner points and read one after another:
-					while point_cursor /= type_polygon_points.no_element loop
-
-						type_polygon_points.query_element (
-							position	=> point_cursor,
-							process		=> get_point'access);
-						
-						next (point_cursor);
-					end loop;
+-- 					-- loop through polygon corner points and read one after another:
+-- 					while point_cursor /= type_polygon_points.no_element loop
+-- 
+-- 						type_polygon_points.query_element (
+-- 							position	=> point_cursor,
+-- 							process		=> get_point'access);
+-- 						
+-- 						next (point_cursor);
+-- 					end loop;
 
 					-- Now the new set of polygon corner points is available in "new_points".
 					-- new_points replaces the old list of points:
-					polygon.corners := new_points;
+-- 					polygon.corners := new_points;
 					
 					log_indentation_down;
 				end move_polygon;
 
+				procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_floating_hatched) is
+					use et_pcb_coordinates;
+					use et_pcb_coordinates.geometry;
+-- CS
+-- 					use type_polygon_points;
+-- 					point_cursor : type_polygon_points.cursor := polygon.corners.first;
+-- 					new_points : type_polygon_points.set;
+
+-- 					procedure get_point (point : in type_point) is
+-- 					-- Reads a corner point, copies it, moves the copy and inserts the moved
+-- 					-- copy in a new set "new_points".
+-- 						new_point : type_point := point; -- copy given point
+-- 					begin
+-- 						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
+-- 						move (new_point); -- move copied point
+-- 						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
+-- 
+-- 						-- insert new point in new_points:
+-- 						type_polygon_points.insert (
+-- 							container	=> new_points,
+-- 							new_item	=> new_point);
+-- 						
+-- 					end get_point;
+					
+				begin -- move_polygon
+					log (text => board_copper & "hatched polygon segments", level => log_threshold + log_threshold_add);
+					log_indentation_up;
+
+-- 					-- loop through polygon corner points and read one after another:
+-- 					while point_cursor /= type_polygon_points.no_element loop
+-- 
+-- 						type_polygon_points.query_element (
+-- 							position	=> point_cursor,
+-- 							process		=> get_point'access);
+-- 						
+-- 						next (point_cursor);
+-- 					end loop;
+
+					-- Now the new set of polygon corner points is available in "new_points".
+					-- new_points replaces the old list of points:
+-- 					polygon.corners := new_points;
+					
+					log_indentation_down;
+				end move_polygon;
+				
 				procedure move_text (text : in out et_pcb.type_text) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
@@ -2182,16 +2231,26 @@ package body et_kicad_to_native is
 				end loop;
 
 				-- POLYGONS
-				polygons_cursor := module.board.copper.polygons.first;
-				while polygons_cursor /= et_pcb.pac_copper_polygons_floating.no_element loop
-					et_pcb.pac_copper_polygons_floating.update_element (
-						container	=> module.board.copper.polygons,
-						position	=> polygons_cursor,
+				polygons_solid_cursor := module.board.copper.polygons.solid.first;
+				while polygons_solid_cursor /= et_pcb.pac_copper_polygons_floating_solid.no_element loop
+					et_pcb.pac_copper_polygons_floating_solid.update_element (
+						container	=> module.board.copper.polygons.solid,
+						position	=> polygons_solid_cursor,
 						process		=> move_polygon'access);
 					
-					next (polygons_cursor);
+					next (polygons_solid_cursor);
 				end loop;
 
+				polygons_hatched_cursor := module.board.copper.polygons.hatched.first;
+				while polygons_hatched_cursor /= et_pcb.pac_copper_polygons_floating_hatched.no_element loop
+					et_pcb.pac_copper_polygons_floating_hatched.update_element (
+						container	=> module.board.copper.polygons.hatched,
+						position	=> polygons_hatched_cursor,
+						process		=> move_polygon'access);
+					
+					next (polygons_hatched_cursor);
+				end loop;
+				
 				-- TEXTS
 				texts_cursor := module.board.copper.texts.first;
 				while texts_cursor /= et_pcb.pac_texts.no_element loop

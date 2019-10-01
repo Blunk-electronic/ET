@@ -337,8 +337,9 @@ package et_pcb is
 	type type_copper_polygon_solid (connection : type_polygon_pad_connection) is new
 		et_packages.type_copper_polygon_solid with record
 
-		layer 		: type_signal_layer;
-		width_min	: type_track_width; -- the minimum width
+		layer 			: type_signal_layer;
+		width_min		: type_track_width; -- the minimum width
+		priority_level	: type_polygon_priority := type_polygon_priority'first;
 				
 		case connection is
 			when THERMAL =>
@@ -357,8 +358,9 @@ package et_pcb is
 	type type_copper_polygon_hatched (connection : type_polygon_pad_connection) is new
 		et_packages.type_copper_polygon_hatched with record
 
-		layer 		: type_signal_layer;
-		width_min	: type_track_width; -- the minimum width
+		layer 			: type_signal_layer;
+		width_min		: type_track_width; -- the minimum width
+		priority_level	: type_polygon_priority := type_polygon_priority'first;
 				
 		case connection is
 			when THERMAL =>

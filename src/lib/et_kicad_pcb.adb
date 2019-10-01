@@ -7539,63 +7539,74 @@ package body et_kicad_pcb is
 						if element (polygon_cursor).net_id = net_id then
 						-- Transfer kicad polygon to et polygon:
 
-							-- The polygon to be appended to route.polygons is a controlled type.
-							-- Hence, there are selectors (properties) that exist (or do not exist)
-							-- depending on the kind of pad_connection. See spec for type_copper_polygon_pcb
-							-- for details.
-
 							-- These properites of kicad polygons are discarded as there is no need for them:
 							-- net_id, timestamp, hatch_style, hatch_width, filled, fill_mode_segment, arc_segments
 							
 							case element (polygon_cursor).pad_connection is
 								when et_packages.THERMAL =>
-									route.polygons.append (
-										new_item => (et_packages.type_copper_polygon (element (polygon_cursor)) with
-											pad_connection		=> et_packages.THERMAL,
-											width_min			=> element (polygon_cursor).min_thickness,
+									declare
+										use et_packages;
+										p : et_pcb.type_copper_polygon_solid (THERMAL);
+									begin
+										p.width_min	:= element (polygon_cursor).min_thickness;
+										p.isolation := element (polygon_cursor).isolation_gap;
+										p.priority_level := element (polygon_cursor).priority_level;
+										
+										-- Translate the kicad layer id to the ET signal layer:
+										-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
+										-- The bottom layer in kicad is always number 31. Top layer is number 0.
+										-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
+										p.layer := et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1);
+										
+										p.thermal := (
+													technology	=> element (polygon_cursor).pad_technology,
+													gap			=> element (polygon_cursor).thermal_gap,
+													width		=> element (polygon_cursor).thermal_width);
 
-											-- Translate the kicad layer id to the ET signal layer:
-											-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
-											-- The bottom layer in kicad is always number 31. Top layer is number 0.
-											-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-											layer 				=> et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1),
+										-- CS make lines from element (polygon_cursor).corners
 
-											-- This is the type depended stuff:
-											thermal_technology	=> element (polygon_cursor).pad_technology,
-											thermal_gap			=> element (polygon_cursor).thermal_gap,
-											thermal_width		=> element (polygon_cursor).thermal_width
-										));
-
+										route.polygons_2.solid.append (p);																					  
+									end;
+									
 								when et_packages.SOLID =>
-									route.polygons.append (
-										new_item => (et_packages.type_copper_polygon (element (polygon_cursor)) with
-											pad_connection		=> et_packages.SOLID,
-											width_min			=> element (polygon_cursor).min_thickness,
-											
-											-- Translate the kicad layer id to the ET signal layer:
-											-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
-											-- The bottom layer in kicad is always number 31. Top layer is number 0.
-											-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-											layer 				=> et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1),
-											
-											-- This is the type depended stuff:
-											solid_technology	=> element (polygon_cursor).pad_technology
-										));
+									declare
+										use et_packages;
+										p : et_pcb.type_copper_polygon_solid (SOLID);
+									begin
+										p.width_min	:= element (polygon_cursor).min_thickness;
+										p.isolation := element (polygon_cursor).isolation_gap;
+										p.priority_level := element (polygon_cursor).priority_level;
+										
+										-- Translate the kicad layer id to the ET signal layer:
+										-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
+										-- The bottom layer in kicad is always number 31. Top layer is number 0.
+										-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
+										p.layer := et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1);
+										
+										p.technology := element (polygon_cursor).pad_technology;
+
+										-- CS make lines from element (polygon_cursor).corners
+
+										route.polygons_2.solid.append (p);																					  
+									end;
 								
 								when et_packages.NONE =>
-									route.polygons.append (
-										new_item => (et_packages.type_copper_polygon (element (polygon_cursor)) with
-											pad_connection		=> et_packages.NONE,
-											width_min			=> element (polygon_cursor).min_thickness,
-											
-											-- Translate the kicad layer id to the ET signal layer:
-											-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
-											-- The bottom layer in kicad is always number 31. Top layer is number 0.
-											-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-											layer 				=> et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1)
-
-											-- no further properties
-										));
+									null;
+									-- CS a polygon with no connections to pads is ignored here.
+									
+-- 									route.polygons.append (
+-- 										new_item => (et_packages.type_copper_polygon (element (polygon_cursor)) with
+-- 											pad_connection		=> et_packages.NONE,
+-- 											width_min			=> element (polygon_cursor).min_thickness,
+-- 											
+-- 											-- Translate the kicad layer id to the ET signal layer:
+-- 											-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
+-- 											-- The bottom layer in kicad is always number 31. Top layer is number 0.
+-- 											-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
+-- 											layer 				=> et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1)
+-- 
+-- 											-- no further properties
+-- 										));
 
 							end case;
 
@@ -7885,18 +7896,24 @@ package body et_kicad_pcb is
 							-- These properites of kicad polygons are discarded as there is no need for them:
 							-- net_id, timestamp, hatch_style, hatch_width, filled, fill_mode_segment, arc_segments
 							
-							module.board.copper.polygons.append (
-								new_item => (et_packages.type_copper_polygon (element (polygon_cursor)) with
+							module.board.copper.polygons.solid.append (
+								--new_item => (et_packages.type_copper_polygon (element (polygon_cursor)) with
+								new_item => (
+									-- CS make lines from element (polygon_cursor).corners,
+									fill_style	=> et_packages.shapes.SOLID,
 									width_min	=> element (polygon_cursor).min_thickness,
 
 									-- Translate the kicad layer id to the ET signal layer:
 									-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
 									-- The bottom layer in kicad is always number 31. Top layer is number 0.
 									-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
-									layer 		=> et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1)
+									layer 		=> et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1),
+
+									-- CS
+									others => <>
 								));
 
-							et_pcb.floating_copper_polygon_properties (module.board.copper.polygons.last, log_threshold + 2);
+							et_pcb.floating_copper_polygon_properties (module.board.copper.polygons.solid.last, log_threshold + 2);
 							log (WARNING, "polygon is not connected with any net !", level => log_threshold + 2);
 
 						end if;

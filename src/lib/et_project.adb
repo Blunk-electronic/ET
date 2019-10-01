@@ -8340,12 +8340,18 @@ package body et_project is
 
 		procedure reset_polygon_parameters is
 			use et_packages;
+			use et_packages.shapes;
 			use et_pcb_stack;
 		begin
 			route_polygon			:= (others => <>);
+			polygon_2				:= (others => <>);
 			polygon_pad_connection	:= type_polygon_pad_connection'first;
 			route_layer				:= type_signal_layer'first;
 			route_width				:= type_track_width'first;
+			fill_style				:= fill_style_default;
+			route_polygon_isolation_gap := et_packages.type_track_clearance'first;
+			route_polygon_priority		:= et_packages.type_polygon_priority'first;
+			hatching				:= (others => <>);
 			thermal := (others => <>);
 		end reset_polygon_parameters;
 
@@ -9846,7 +9852,7 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next floating board polygon
-					board_polygon_floating := (others => <>);
+					reset_polygon_parameters;
 				end insert_polygon_copper;
 
 				procedure insert_line_track is
@@ -10890,7 +10896,8 @@ package body et_project is
 										board_polygon.corners := polygon_corner_points;
 
 									when SEC_COPPER =>
-										board_polygon_floating.corners := polygon_corner_points;
+										null;
+-- CS										board_polygon_floating.corners := polygon_corner_points;
 										
 									when others => invalid_section;
 								end case;
@@ -12623,39 +12630,39 @@ package body et_project is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
 										expect_field_count (line, 2);													
-										board_polygon_floating.fill_style := to_fill_style (f (line, 2));
+										fill_style := to_fill_style (f (line, 2));
 
 									elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 										expect_field_count (line, 2);													
-										board_polygon_floating.corner_easing := to_corner_easing (f (line, 2));
+										polygon_2.corner_easing := to_corner_easing (f (line, 2));
 
 									elsif kw = keyword_easing_radius then -- easing_radius 0.4
 										expect_field_count (line, 2);													
-										board_polygon_floating.easing_radius := to_distance (f (line, 2));
+										polygon_2.easing_radius := to_distance (f (line, 2));
 										
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													
-										board_polygon_floating.hatching_line_width := to_distance (f (line, 2));
+										hatching.width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 										expect_field_count (line, 2);													
-										board_polygon_floating.hatching_spacing := to_distance (f (line, 2));
+										hatching.spacing := to_distance (f (line, 2));
 
 									elsif kw = keyword_min_width then -- min_width 0.5
 										expect_field_count (line, 2);
-										board_polygon_floating.width_min := to_distance (f (line, 2));
+										route_width := to_distance (f (line, 2));
 										
 									elsif kw = keyword_layer then -- layer 1
 										expect_field_count (line, 2);
-										board_polygon_floating.layer := et_pcb_stack.to_signal_layer (f (line, 2));
+										route_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
 									elsif kw = keyword_priority then -- priority 2
 										expect_field_count (line, 2);
-										board_polygon_floating.priority_level := to_polygon_priority (f (line, 2));
+										route_polygon_priority := to_polygon_priority (f (line, 2));
 
 									elsif kw = keyword_isolation then -- isolation 0.5
 										expect_field_count (line, 2);
-										board_polygon_floating.isolation_gap := to_distance (f (line, 2));
+										route_polygon_isolation_gap := to_distance (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
