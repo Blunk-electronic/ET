@@ -2382,8 +2382,8 @@ package body et_project is
 				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
 				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching.width));
 				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching.spacing));
-				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
-				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).easing.style));
+				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing.radius));
 				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
 				corners_begin;
 -- 				query_element (cursor, query_points'access); -- CS query shapes instead
@@ -2405,8 +2405,8 @@ package body et_project is
 				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
 				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching.width));
 				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching.spacing));
-				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
-				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).easing.style));
+				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing.radius));
 				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
 				corners_begin;
 -- 				query_element (cursor, query_points'access); -- CS query shapes instead
@@ -10108,7 +10108,7 @@ package body et_project is
 					l : type_polygon_line := (et_packages.shapes.type_line (line) with others => <>);
 				begin
 					-- collect the polygon line 
-					append (polygon_2.lines, l);
+					append (polygon_2.segments.lines, l);
 
 					-- reset line
 					line := (others => <>);
@@ -10122,7 +10122,7 @@ package body et_project is
 					a : type_polygon_arc := (et_packages.shapes.type_arc (arc) with others => <>);
 				begin
 					-- collect the polygon line 
-					append (polygon_2.arcs, a);
+					append (polygon_2.segments.arcs, a);
 
 					-- reset arc
 					arc := (others => <>);
@@ -10136,7 +10136,7 @@ package body et_project is
 					c : type_polygon_circle := (et_packages.shapes.type_circle (circle) with others => <>);
 				begin
 					-- collect the polygon line 
-					append (polygon_2.circles, c);
+					append (polygon_2.segments.circles, c);
 
 					-- reset circle
 					circle := (others => <>);
@@ -10152,12 +10152,9 @@ package body et_project is
 						procedure connection_thermal is
 							p : et_pcb.type_copper_polygon_solid (connection => et_packages.THERMAL);
 						begin
-							p.lines := polygon_2.lines;
-							p.arcs := polygon_2.arcs;
-							p.circles := polygon_2.circles;
+							p.segments := polygon_2.segments;
 
-							p.corner_easing := polygon_2.corner_easing;
-							p.easing_radius := polygon_2.easing_radius;
+							p.easing := polygon_2.easing;
 
 							p.isolation	:= route_polygon_isolation_gap;
 							p.width_min	:= route_width;
@@ -10175,13 +10172,10 @@ package body et_project is
 						procedure connection_solid is
 							p : et_pcb.type_copper_polygon_solid (connection => et_packages.SOLID);
 						begin
-							p.lines := polygon_2.lines;
-							p.arcs := polygon_2.arcs;
-							p.circles := polygon_2.circles;
-
-							p.corner_easing := polygon_2.corner_easing;
-							p.easing_radius := polygon_2.easing_radius;
-
+							p.segments := polygon_2.segments;
+							
+							p.easing := polygon_2.easing;
+							
 							p.isolation	:= route_polygon_isolation_gap;
 							p.width_min	:= route_width;
 
@@ -10210,12 +10204,9 @@ package body et_project is
 						procedure connection_thermal is
 							p : et_pcb.type_copper_polygon_hatched (connection => et_packages.THERMAL);
 						begin
-							p.lines := polygon_2.lines;
-							p.arcs := polygon_2.arcs;
-							p.circles := polygon_2.circles;
-
-							p.corner_easing := polygon_2.corner_easing;
-							p.easing_radius := polygon_2.easing_radius;
+							p.segments := polygon_2.segments;
+							
+							p.easing := polygon_2.easing;
 
 							p.hatching := hatching;
 							
@@ -10235,13 +10226,10 @@ package body et_project is
 						procedure connection_solid is
 							p : et_pcb.type_copper_polygon_hatched (connection => et_packages.SOLID);
 						begin
-							p.lines := polygon_2.lines;
-							p.arcs := polygon_2.arcs;
-							p.circles := polygon_2.circles;
-
-							p.corner_easing := polygon_2.corner_easing;
-							p.easing_radius := polygon_2.easing_radius;
-
+							p.segments := polygon_2.segments;
+							
+							p.easing := polygon_2.easing;
+							
 							p.hatching := hatching;
 							
 							p.isolation	:= route_polygon_isolation_gap;
@@ -10269,13 +10257,10 @@ package body et_project is
 						use et_pcb.pac_copper_polygons_cutout;
 						p : et_pcb.type_copper_polygon_cutout;
 					begin
-						p.lines := polygon_2.lines;
-						p.arcs := polygon_2.arcs;
-						p.circles := polygon_2.circles;
-
-						p.corner_easing := polygon_2.corner_easing;
-						p.easing_radius := polygon_2.easing_radius;
-
+						p.segments := polygon_2.segments;
+						
+						p.easing := polygon_2.easing;
+						
 						p.layer := route_layer;
 
 						et_pcb.pac_copper_polygons_cutout.append (
@@ -12538,11 +12523,11 @@ package body et_project is
 										
 									elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 										expect_field_count (line, 2);
-										polygon_2.corner_easing := shapes.to_corner_easing (f (line, 2));
+										polygon_2.easing.style := shapes.to_corner_easing (f (line, 2));
 
 									elsif kw = keyword_easing_radius then -- easing_radius 0.3
 										expect_field_count (line, 2);
-										polygon_2.easing_radius := to_distance (f (line, 2));
+										polygon_2.easing.radius := to_distance (f (line, 2));
 
 									elsif kw = keyword_fill_style then -- fill_style solid,hatched,cutout
 										expect_field_count (line, 2);
@@ -12681,11 +12666,11 @@ package body et_project is
 
 									elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 										expect_field_count (line, 2);													
-										polygon_2.corner_easing := to_corner_easing (f (line, 2));
+										polygon_2.easing.style := to_corner_easing (f (line, 2));
 
 									elsif kw = keyword_easing_radius then -- easing_radius 0.4
 										expect_field_count (line, 2);													
-										polygon_2.easing_radius := to_distance (f (line, 2));
+										polygon_2.easing.radius := to_distance (f (line, 2));
 										
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													

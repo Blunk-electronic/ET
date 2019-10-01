@@ -349,20 +349,11 @@ package et_geometry is
 		function to_string (circle : in type_circle) return string;
 		-- Returns the center and radius of the given circle as string.
 
-		-- POLYGON
-		type type_corner_easing is (NONE, CHAMFER, FILLET);
-
-		function to_corner_easing (easing : in string) return type_corner_easing;
-		function to_string (easing : in type_corner_easing) return string;
-		
-		
-		easing_radius_max : constant type_distance_positive := 100.0;
-		subtype type_easing_radius is type_distance_positive range type_distance_positive'first .. easing_radius_max;
 
 
+	-- HATCHING OF OBJECTS WITH CLOSED CIRCUMFENCE
 		hatching_line_width_default : constant type_distance_positive := 0.2;
 		hatching_spacing_default	: constant type_distance_positive := 1.0;
-
 		
 		text_hatching_line_width	: constant string := "hatching_line_width";
 		text_hatching_spacing 		: constant string := "hatching_spacing";	
@@ -386,13 +377,30 @@ package et_geometry is
 		type type_polygon_circle is new type_circle with null record;
 		package pac_polygon_circles is new doubly_linked_lists (type_polygon_circle);  -- CS consider a set
 
+		type type_polygon_segments is record
+			lines	: pac_polygon_lines.list;
+			arcs	: pac_polygon_arcs.list;
+			circles	: pac_polygon_circles.list;
+		end record;
+
+		-- EASING
+		type type_corner_easing is (NONE, CHAMFER, FILLET);
+
+		function to_corner_easing (easing : in string) return type_corner_easing;
+		function to_string (easing : in type_corner_easing) return string;
+		
+		easing_radius_max : constant type_distance_positive := 100.0;
+		subtype type_easing_radius is type_distance_positive range type_distance_positive'first .. easing_radius_max;
+
+		type type_polygon_easing is record
+			style	: type_corner_easing := NONE;
+			radius	: type_easing_radius := zero; -- center of circle at corner point
+		end record;
+
+		
 		type type_polygon_base is abstract tagged record
-			lines			: pac_polygon_lines.list;
-			arcs			: pac_polygon_arcs.list;
-			circles			: pac_polygon_circles.list;
-			
-			corner_easing	: type_corner_easing := NONE;
-			easing_radius	: type_easing_radius := zero; -- center of circle at corner point
+			segments	: type_polygon_segments;
+			easing		: type_polygon_easing;
 		end record;
 		
 		type type_polygon (fill_style : type_fill_style) is new type_polygon_base with record
