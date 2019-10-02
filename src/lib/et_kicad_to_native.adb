@@ -1024,8 +1024,8 @@ package body et_kicad_to_native is
 				use type_doc_circles;
 				circles_cursor : type_doc_circles.cursor;
 
-				use type_doc_polygons;
-				polygons_cursor : type_doc_polygons.cursor;
+				use pac_doc_polygons;
+				polygons_cursor : pac_doc_polygons.cursor;
 
 				use type_texts_with_content;
 				texts_cursor : type_texts_with_content.cursor;
@@ -1076,46 +1076,46 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out type_doc_polygon) is
+				procedure move_polygon (polygon : in out shapes.type_polygon) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
-					use type_polygon_points;
-					point_cursor : type_polygon_points.cursor := polygon.corners.first;
-					new_points : type_polygon_points.set;
-
-					procedure get_point (point : in type_point) is
-					-- Reads a corner point, copies it, moves the copy and inserts the moved
-					-- copy in a new set "new_points".
-						new_point : type_point := point; -- copy given point
-					begin
-						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
-						move (new_point); -- move copied point
-						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
-
-						-- insert new point in new_points:
-						type_polygon_points.insert (
-							container	=> new_points,
-							new_item	=> new_point);
-						
-					end get_point;
+-- 					use type_polygon_points;
+-- 					point_cursor : type_polygon_points.cursor := polygon.corners.first;
+-- 					new_points : type_polygon_points.set;
+-- 
+-- 					procedure get_point (point : in type_point) is
+-- 					-- Reads a corner point, copies it, moves the copy and inserts the moved
+-- 					-- copy in a new set "new_points".
+-- 						new_point : type_point := point; -- copy given point
+-- 					begin
+-- 						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
+-- 						move (new_point); -- move copied point
+-- 						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
+-- 
+-- 						-- insert new point in new_points:
+-- 						type_polygon_points.insert (
+-- 							container	=> new_points,
+-- 							new_item	=> new_point);
+-- 						
+-- 					end get_point;
 					
 				begin -- move_polygon
-					log (text => doc & "polygon corner points", level => log_threshold + log_threshold_add);
+					log (text => doc & "polygon segments", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					-- loop through polygon corner points and read one after another:
-					while point_cursor /= type_polygon_points.no_element loop
-
-						type_polygon_points.query_element (
-							position	=> point_cursor,
-							process		=> get_point'access);
-						
-						next (point_cursor);
-					end loop;
-
-					-- Now the new set of polygon corner points is available in "new_points".
-					-- new_points replaces the old list of points:
-					polygon.corners := new_points;
+-- 					-- loop through polygon corner points and read one after another:
+-- 					while point_cursor /= type_polygon_points.no_element loop
+-- 
+-- 						type_polygon_points.query_element (
+-- 							position	=> point_cursor,
+-- 							process		=> get_point'access);
+-- 						
+-- 						next (point_cursor);
+-- 					end loop;
+-- 
+-- 					-- Now the new set of polygon corner points is available in "new_points".
+-- 					-- new_points replaces the old list of points:
+-- 					polygon.corners := new_points;
 					
 					log_indentation_down;
 				end move_polygon;
@@ -1207,8 +1207,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS TOP
 				polygons_cursor := module.board.assy_doc.top.polygons.first;
-				while polygons_cursor /= type_doc_polygons.no_element loop
-					type_doc_polygons.update_element (
+				while polygons_cursor /= pac_doc_polygons.no_element loop
+					pac_doc_polygons.update_element (
 						container	=> module.board.assy_doc.top.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1218,8 +1218,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.assy_doc.bottom.polygons.first;
-				while polygons_cursor /= type_doc_polygons.no_element loop
-					type_doc_polygons.update_element (
+				while polygons_cursor /= pac_doc_polygons.no_element loop
+					pac_doc_polygons.update_element (
 						container	=> module.board.assy_doc.bottom.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);

@@ -1332,6 +1332,7 @@ package body et_project is
 -- 		end query_points;
 		
 	begin -- write_polygon
+		-- CS discriminant check !
 		polygon_begin;
 		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
 		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching.width));
@@ -1378,27 +1379,31 @@ package body et_project is
 		write_circle_fillable (element (cursor));
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_packages.type_doc_polygons.cursor) is 
+	procedure write_polygon (cursor : in et_packages.pac_doc_polygons.cursor) is 
 		use et_packages;
 		use et_packages.shapes;		
-		use type_doc_polygons;
-		use et_pcb_coordinates.geometry;
-		use type_polygon_points;
+		-- CS write segments
 		
-		procedure query_points (polygon : in type_doc_polygon) is begin
-			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
-		end query_points;
+		use pac_doc_polygons;
+		use et_pcb_coordinates.geometry;
+-- 		use type_polygon_points;
+-- 		
+-- 		procedure query_points (polygon : in type_doc_polygon) is begin
+-- 			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
+-- 		end query_points;
 		
 	begin -- write_polygon
+		-- CS discriminant check !
+
 		polygon_begin;
 		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
-		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
-		corners_begin;
-		query_element (cursor, query_points'access);
-		corners_end;
+		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching.width));
+		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching.spacing));
+		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).easing.style));
+		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing.radius));
+-- 		corners_begin;
+-- 		query_element (cursor, query_points'access);
+-- 		corners_end;
 		polygon_end;
 	end write_polygon;
 
@@ -2293,7 +2298,7 @@ package body et_project is
 			use type_doc_lines;
 			use type_doc_arcs;
 			use type_doc_circles;
-			use type_doc_polygons;
+			use pac_doc_polygons;
 
 			use type_stencil_lines;
 			use type_stencil_arcs;
@@ -3612,6 +3617,60 @@ package body et_project is
 					reset_polygon;
 				end;
 
+				procedure append_assy_doc_polygon_top is begin
+					case fill_style is
+						when SOLID =>
+							pac_doc_polygons.append (
+								container	=> packge.assembly_documentation.top.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+												fill_style => SOLID));
+
+						when HATCHED =>
+							pac_doc_polygons.append (
+								container	=> packge.assembly_documentation.top.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+												fill_style => HATCHED,
+												hatching => hatching));
+
+						when CUTOUT =>
+							pac_doc_polygons.append (
+								container	=> packge.assembly_documentation.top.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+												fill_style => CUTOUT));
+
+					end case;
+					
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_assy_doc_polygon_bottom is begin
+					case fill_style is
+						when SOLID =>
+							pac_doc_polygons.append (
+								container	=> packge.assembly_documentation.bottom.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+												fill_style => SOLID));
+
+						when HATCHED =>
+							pac_doc_polygons.append (
+								container	=> packge.assembly_documentation.bottom.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+												fill_style => HATCHED,
+												hatching => hatching));
+
+						when CUTOUT =>
+							pac_doc_polygons.append (
+								container	=> packge.assembly_documentation.bottom.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+												fill_style => CUTOUT));
+
+					end case;
+					
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
 				
 			begin -- execute_section
 				case stack.current is
@@ -4185,12 +4244,7 @@ package body et_project is
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 
-										type_doc_polygons.append (
-											container	=> packge.assembly_documentation.top.polygons, 
-											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
-
-										-- clean up for next polygon
-										reset_polygon;
+										append_assy_doc_polygon_top;
 										
 									when SEC_STENCIL =>
 
@@ -4246,13 +4300,7 @@ package body et_project is
 										append_silk_polygon_bottom;
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-
-										type_doc_polygons.append (
-											container	=> packge.assembly_documentation.bottom.polygons, 
-											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
-
-										-- clean up for next polygon
-										reset_polygon;
+										append_assy_doc_polygon_bottom;
 										
 									when SEC_STENCIL =>
 
@@ -7737,7 +7785,7 @@ package body et_project is
 		use type_doc_lines;
 		use type_doc_arcs;
 		use type_doc_circles;
-		use type_doc_polygons;
+		use pac_doc_polygons;
 				
 		procedure write_copper is
 
@@ -9458,6 +9506,52 @@ package body et_project is
 							end case;
 						end;
 						
+						procedure append_assy_doc_polygon_top is begin
+							case fill_style is 
+								when SOLID =>
+									pac_doc_polygons.append (
+										container	=> module.board.assy_doc.top.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with 
+														fill_style 	=> SOLID));
+
+								when HATCHED =>
+									pac_doc_polygons.append (
+										container	=> module.board.assy_doc.top.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with 
+														fill_style	=> HATCHED,
+														hatching	=> hatching));
+
+								when CUTOUT =>
+									pac_doc_polygons.append (
+										container	=> module.board.assy_doc.top.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with 
+														fill_style	=> CUTOUT));
+							end case;
+						end;
+
+						procedure append_assy_doc_polygon_bottom is begin
+							case fill_style is 
+								when SOLID =>
+									pac_doc_polygons.append (
+										container	=> module.board.assy_doc.bottom.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with 
+														fill_style 	=> SOLID));
+
+								when HATCHED =>
+									pac_doc_polygons.append (
+										container	=> module.board.assy_doc.bottom.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with 
+														fill_style	=> HATCHED,
+														hatching	=> hatching));
+
+								when CUTOUT =>
+									pac_doc_polygons.append (
+										container	=> module.board.assy_doc.bottom.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with 
+														fill_style	=> CUTOUT));
+							end case;
+						end;
+
 						
 					begin -- do_it
 						case face is
@@ -9467,9 +9561,7 @@ package body et_project is
 										append_silk_polygon_top;
 													
 									when ASSEMBLY_DOCUMENTATION =>
-										type_doc_polygons.append (
-											container	=> module.board.assy_doc.top.polygons,
-											new_item	=> (et_packages.type_polygon (board_polygon) with null record));
+										append_assy_doc_polygon_top;
 
 									when STENCIL =>
 										type_stencil_polygons.append (
@@ -9493,9 +9585,7 @@ package body et_project is
 										append_silk_polygon_bottom;
 
 									when ASSEMBLY_DOCUMENTATION =>
-										type_doc_polygons.append (
-											container	=> module.board.assy_doc.bottom.polygons,
-											new_item	=> (et_packages.type_polygon (board_polygon) with null record));
+										append_assy_doc_polygon_bottom;
 										
 									when STENCIL =>
 										type_stencil_polygons.append (

@@ -569,9 +569,9 @@ package et_packages is
 	package type_doc_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
 
-	type type_doc_polygon is new type_polygon with null record;
+-- 	type type_doc_polygon is new type_polygon with null record;
 	
-	package type_doc_polygons is new doubly_linked_lists (type_doc_polygon);
+	package pac_doc_polygons is new indefinite_doubly_linked_lists (shapes.type_polygon);
 
 	
 	-- This is the base type for assembly documentation objects in general:
@@ -579,7 +579,7 @@ package et_packages is
 		lines 		: type_doc_lines.list;
 		arcs		: type_doc_arcs.list;
 		circles		: type_doc_circles.list;
-		polygons	: type_doc_polygons.list;
+		polygons	: pac_doc_polygons.list;
 		texts		: type_texts_with_content.list;
 	end record;
 
