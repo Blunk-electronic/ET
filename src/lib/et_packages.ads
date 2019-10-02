@@ -522,9 +522,9 @@ package et_packages is
 	package type_silk_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
 
-	type type_silk_polygon is new type_polygon with null record;
+	type type_silk_polygon is new shapes.type_polygon with null record;
 	
-	package type_silk_polygons is new doubly_linked_lists (type_silk_polygon);
+	package type_silk_polygons is new indefinite_doubly_linked_lists (type_silk_polygon);
 	
 
 	-- This is the base type for silk screen objects in general:

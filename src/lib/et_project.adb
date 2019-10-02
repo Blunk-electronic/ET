@@ -1327,20 +1327,21 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 		use type_polygon_points;
 		
-		procedure query_points (polygon : in type_silk_polygon) is begin
-			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
-		end query_points;
+-- 		procedure query_points (polygon : in type_silk_polygon) is begin
+-- 			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
+-- 		end query_points;
 		
 	begin -- write_polygon
 		polygon_begin;
 		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
-		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
-		corners_begin;
-		query_element (cursor, query_points'access);
-		corners_end;
+		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching.width));
+		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching.spacing));
+		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).easing.style));
+		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing.radius));
+-- 		corners_begin;
+		-- 		query_element (cursor, query_points'access);
+		-- CS segments
+-- 		corners_end;
 		polygon_end;
 	end write_polygon;
 
@@ -3447,6 +3448,13 @@ package body et_project is
 		
 		type type_polygon is new et_packages.type_polygon with null record;
 		pac_polygon				: type_polygon;
+
+		type type_polygon_2 is new et_packages.shapes.type_polygon_base with null record;
+		polygon_2				: type_polygon_2;
+
+		fill_style	: shapes.type_fill_style := shapes.fill_style_default;
+		hatching : shapes.type_hatching;
+
 		procedure reset_polygon is begin pac_polygon := (others => <>); end;
 		pac_polygon_copper		: type_copper_polygon;
 		procedure reset_polygon_copper is begin pac_polygon_copper := (others => <>); end;
@@ -3548,7 +3556,63 @@ package body et_project is
 
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
-			-- and finally assembled to actual objects:
+				-- and finally assembled to actual objects:
+
+				procedure append_silk_polygon_top is begin
+					case fill_style is
+						when SOLID =>
+							type_silk_polygons.append (
+								container	=> packge.silk_screen.top.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+												fill_style => SOLID));
+
+						when HATCHED =>
+							type_silk_polygons.append (
+								container	=> packge.silk_screen.top.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+												fill_style => HATCHED,
+												hatching => hatching));
+
+						when CUTOUT =>
+							type_silk_polygons.append (
+								container	=> packge.silk_screen.top.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+												fill_style => CUTOUT));
+
+					end case;
+					
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_silk_polygon_bottom is begin
+					case fill_style is
+						when SOLID =>
+							type_silk_polygons.append (
+								container	=> packge.silk_screen.bottom.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+												fill_style => SOLID));
+
+						when HATCHED =>
+							type_silk_polygons.append (
+								container	=> packge.silk_screen.bottom.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+												fill_style => HATCHED,
+												hatching => hatching));
+
+						when CUTOUT =>
+							type_silk_polygons.append (
+								container	=> packge.silk_screen.bottom.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+												fill_style => CUTOUT));
+
+					end case;
+					
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				
 			begin -- execute_section
 				case stack.current is
 
@@ -4117,13 +4181,7 @@ package body et_project is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN =>
-
-										type_silk_polygons.append (
-											container	=> packge.silk_screen.top.polygons, 
-											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
-
-										-- clean up for next polygon
-										reset_polygon;
+										append_silk_polygon_top;
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 
@@ -4185,13 +4243,7 @@ package body et_project is
 							when SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN =>
-
-										type_silk_polygons.append (
-											container	=> packge.silk_screen.bottom.polygons, 
-											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
-
-										-- clean up for next polygon
-										reset_polygon;
+										append_silk_polygon_bottom;
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 
@@ -9349,24 +9401,71 @@ package body et_project is
 				procedure insert_polygon (
 					layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
 					face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
-				-- The board_polygon and its board_line_width have been general things until now. 
-				-- Depending on the layer and the side of the board (face) the board_polygon
+				-- The polygon and its board_line_width have been general things until now. 
+				-- Depending on the layer and the side of the board (face) the polygon
 				-- is now assigned to the board where it belongs to.
-					
+
 					procedure do_it (
 						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 						use et_pcb_coordinates;
 						use et_packages;
+						use et_packages.shapes;
+						
+						procedure append_silk_polygon_top is begin
+							case fill_style is 
+								when SOLID =>
+									type_silk_polygons.append (
+										container	=> module.board.silk_screen.top.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with 
+														fill_style 	=> SOLID));
+
+								when HATCHED =>
+									type_silk_polygons.append (
+										container	=> module.board.silk_screen.top.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with 
+														fill_style	=> HATCHED,
+														hatching	=> hatching));
+
+								when CUTOUT =>
+									type_silk_polygons.append (
+										container	=> module.board.silk_screen.top.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with 
+														fill_style	=> CUTOUT));
+							end case;
+						end;
+
+						procedure append_silk_polygon_bottom is begin
+							case fill_style is 
+								when SOLID =>
+									type_silk_polygons.append (
+										container	=> module.board.silk_screen.bottom.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with 
+														fill_style 	=> SOLID));
+
+								when HATCHED =>
+									type_silk_polygons.append (
+										container	=> module.board.silk_screen.bottom.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with 
+														fill_style	=> HATCHED,
+														hatching	=> hatching));
+
+								when CUTOUT =>
+									type_silk_polygons.append (
+										container	=> module.board.silk_screen.bottom.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with 
+														fill_style	=> CUTOUT));
+							end case;
+						end;
+						
+						
 					begin -- do_it
 						case face is
 							when TOP =>
 								case layer is
 									when SILK_SCREEN =>
-										type_silk_polygons.append (
-											container	=> module.board.silk_screen.top.polygons,
-											new_item	=> (et_packages.type_polygon (board_polygon) with null record));
-
+										append_silk_polygon_top;
+													
 									when ASSEMBLY_DOCUMENTATION =>
 										type_doc_polygons.append (
 											container	=> module.board.assy_doc.top.polygons,
@@ -9391,9 +9490,7 @@ package body et_project is
 							when BOTTOM => null;
 								case layer is
 									when SILK_SCREEN =>
-										type_silk_polygons.append (
-											container	=> module.board.silk_screen.bottom.polygons,
-											new_item	=> (et_packages.type_polygon (board_polygon) with null record));
+										append_silk_polygon_bottom;
 
 									when ASSEMBLY_DOCUMENTATION =>
 										type_doc_polygons.append (
