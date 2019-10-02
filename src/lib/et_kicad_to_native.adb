@@ -786,8 +786,8 @@ package body et_kicad_to_native is
 				use type_silk_circles;
 				circles_cursor : type_silk_circles.cursor;
 
-				use type_silk_polygons;
-				polygons_cursor : type_silk_polygons.cursor;
+				use pac_silk_polygons;
+				polygons_cursor : pac_silk_polygons.cursor;
 
 				use type_texts_with_content;
 				texts_cursor : type_texts_with_content.cursor;
@@ -838,10 +838,10 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out type_silk_polygon) is
+				procedure move_polygon (polygon : in out shapes.type_polygon) is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
-					use type_polygon_points;
+-- 					use type_polygon_points;
 					-- CS move segments
 					
 -- 					point_cursor : type_polygon_points.cursor := polygon.corners.first;
@@ -970,8 +970,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS TOP
 				polygons_cursor := module.board.silk_screen.top.polygons.first;
-				while polygons_cursor /= type_silk_polygons.no_element loop
-					type_silk_polygons.update_element (
+				while polygons_cursor /= pac_silk_polygons.no_element loop
+					pac_silk_polygons.update_element (
 						container	=> module.board.silk_screen.top.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -981,8 +981,8 @@ package body et_kicad_to_native is
 
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.silk_screen.bottom.polygons.first;
-				while polygons_cursor /= type_silk_polygons.no_element loop
-					type_silk_polygons.update_element (
+				while polygons_cursor /= pac_silk_polygons.no_element loop
+					pac_silk_polygons.update_element (
 						container	=> module.board.silk_screen.bottom.polygons,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);

@@ -1320,12 +1320,12 @@ package body et_project is
 		write_circle_fillable (element (cursor));
 	end write_circle;
 	
-	procedure write_polygon (cursor : in et_packages.type_silk_polygons.cursor) is 
+	procedure write_polygon (cursor : in et_packages.pac_silk_polygons.cursor) is 
 		use et_packages;
 		use et_packages.shapes;		
-		use type_silk_polygons;
+		use pac_silk_polygons;
 		use et_pcb_coordinates.geometry;		
-		use type_polygon_points;
+-- 		use type_polygon_points;
 		
 -- 		procedure query_points (polygon : in type_silk_polygon) is begin
 -- 			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
@@ -2288,7 +2288,7 @@ package body et_project is
 			use type_silk_lines;
 			use type_silk_arcs;
 			use type_silk_circles;
-			use type_silk_polygons;
+			use pac_silk_polygons;
 
 			use type_doc_lines;
 			use type_doc_arcs;
@@ -3561,20 +3561,20 @@ package body et_project is
 				procedure append_silk_polygon_top is begin
 					case fill_style is
 						when SOLID =>
-							type_silk_polygons.append (
+							pac_silk_polygons.append (
 								container	=> packge.silk_screen.top.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon_2) with 
 												fill_style => SOLID));
 
 						when HATCHED =>
-							type_silk_polygons.append (
+							pac_silk_polygons.append (
 								container	=> packge.silk_screen.top.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon_2) with 
 												fill_style => HATCHED,
 												hatching => hatching));
 
 						when CUTOUT =>
-							type_silk_polygons.append (
+							pac_silk_polygons.append (
 								container	=> packge.silk_screen.top.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon_2) with 
 												fill_style => CUTOUT));
@@ -3588,20 +3588,20 @@ package body et_project is
 				procedure append_silk_polygon_bottom is begin
 					case fill_style is
 						when SOLID =>
-							type_silk_polygons.append (
+							pac_silk_polygons.append (
 								container	=> packge.silk_screen.bottom.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon_2) with 
 												fill_style => SOLID));
 
 						when HATCHED =>
-							type_silk_polygons.append (
+							pac_silk_polygons.append (
 								container	=> packge.silk_screen.bottom.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon_2) with 
 												fill_style => HATCHED,
 												hatching => hatching));
 
 						when CUTOUT =>
-							type_silk_polygons.append (
+							pac_silk_polygons.append (
 								container	=> packge.silk_screen.bottom.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon_2) with 
 												fill_style => CUTOUT));
@@ -7732,7 +7732,7 @@ package body et_project is
 		use type_silk_lines;
 		use type_silk_arcs;
 		use type_silk_circles;
-		use type_silk_polygons;
+		use pac_silk_polygons;
 
 		use type_doc_lines;
 		use type_doc_arcs;
@@ -9415,20 +9415,20 @@ package body et_project is
 						procedure append_silk_polygon_top is begin
 							case fill_style is 
 								when SOLID =>
-									type_silk_polygons.append (
+									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.top.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon_2) with 
 														fill_style 	=> SOLID));
 
 								when HATCHED =>
-									type_silk_polygons.append (
+									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.top.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon_2) with 
 														fill_style	=> HATCHED,
 														hatching	=> hatching));
 
 								when CUTOUT =>
-									type_silk_polygons.append (
+									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.top.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon_2) with 
 														fill_style	=> CUTOUT));
@@ -9438,20 +9438,20 @@ package body et_project is
 						procedure append_silk_polygon_bottom is begin
 							case fill_style is 
 								when SOLID =>
-									type_silk_polygons.append (
+									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.bottom.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon_2) with 
 														fill_style 	=> SOLID));
 
 								when HATCHED =>
-									type_silk_polygons.append (
+									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.bottom.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon_2) with 
 														fill_style	=> HATCHED,
 														hatching	=> hatching));
 
 								when CUTOUT =>
-									type_silk_polygons.append (
+									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.bottom.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon_2) with 
 														fill_style	=> CUTOUT));
