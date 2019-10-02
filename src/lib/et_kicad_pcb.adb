@@ -7610,7 +7610,7 @@ package body et_kicad_pcb is
 
 							end case;
 
-							et_pcb.route_polygon_properties (route.polygons.last, log_threshold + 3);
+-- 							et_pcb.route_polygon_properties (route.polygons_2.solid.last, log_threshold + 3);
 
 						end if;
 							

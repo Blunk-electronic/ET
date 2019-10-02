@@ -578,12 +578,12 @@ package body et_kicad_to_native is
 					use et_pcb.pac_copper_lines;
 					use et_pcb.pac_copper_arcs;
 					use et_pcb.pac_vias;
-					use et_pcb.pac_copper_polygons_signal;
+					use et_pcb.pac_signal_polygons_solid;
 					
 					line_cursor : et_pcb.pac_copper_lines.cursor := net.route.lines.first;
 					arc_cursor	: et_pcb.pac_copper_arcs.cursor := net.route.arcs.first;
 					via_cursor	: et_pcb.pac_vias.cursor := net.route.vias.first;
-					poly_cursor	: et_pcb.pac_copper_polygons_signal.cursor := net.route.polygons.first;
+					poly_cursor	: et_pcb.pac_signal_polygons_solid.cursor := net.route.polygons_2.solid.first;
 
 					board_track : constant string (1..12) := "board track ";
 					
@@ -635,47 +635,48 @@ package body et_kicad_to_native is
 						log_indentation_down;
 					end move_via;
 
-					procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_signal) is
+					procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_solid) is
 						use et_pcb_coordinates;
 						use et_pcb_coordinates.geometry;
 						use et_packages.type_polygon_points;
-						point_cursor : et_packages.type_polygon_points.cursor := polygon.corners.first;
-
-						new_points : et_packages.type_polygon_points.set;
-						
-						procedure get_point (point : in type_point) is
-						-- Reads a corner point, copies it, moves the copy and inserts the moved
-						-- copy in a new set "new_points".
-							new_point : type_point := point; -- copy given point
-						begin
-							log (text => before & to_string (new_point), level => log_threshold + 4);
-							move (new_point); -- move copied point
-							log (text => now & to_string (new_point), level => log_threshold + 4);
-
-							-- insert new point in new_points:
-							et_packages.type_polygon_points.insert (
-								container	=> new_points,
-								new_item	=> new_point);
-							
-						end get_point;
+						-- CS move polygon segments
+-- 						point_cursor : et_packages.type_polygon_points.cursor := polygon.corners.first;
+-- 
+-- 						new_points : et_packages.type_polygon_points.set;
+-- 						
+-- 						procedure get_point (point : in type_point) is
+-- 						-- Reads a corner point, copies it, moves the copy and inserts the moved
+-- 						-- copy in a new set "new_points".
+-- 							new_point : type_point := point; -- copy given point
+-- 						begin
+-- 							log (text => before & to_string (new_point), level => log_threshold + 4);
+-- 							move (new_point); -- move copied point
+-- 							log (text => now & to_string (new_point), level => log_threshold + 4);
+-- 
+-- 							-- insert new point in new_points:
+-- 							et_packages.type_polygon_points.insert (
+-- 								container	=> new_points,
+-- 								new_item	=> new_point);
+-- 							
+-- 						end get_point;
 						
 					begin -- move_polygon
 						log (text => "board polygon corner points", level => log_threshold + 4);
 						log_indentation_up;
 
-						-- loop through polygon corner points and read one after another:
-						while point_cursor /= et_packages.type_polygon_points.no_element loop
-
-							et_packages.type_polygon_points.query_element (
-								position	=> point_cursor,
-								process		=> get_point'access);
-							
-							next (point_cursor);
-						end loop;
-
-						-- Now the new set of polygon corner points is available in "new_points".
-						-- new_points replaces the old list of points:
-						polygon.corners := new_points;
+-- 						-- loop through polygon corner points and read one after another:
+-- 						while point_cursor /= et_packages.type_polygon_points.no_element loop
+-- 
+-- 							et_packages.type_polygon_points.query_element (
+-- 								position	=> point_cursor,
+-- 								process		=> get_point'access);
+-- 							
+-- 							next (point_cursor);
+-- 						end loop;
+-- 
+-- 						-- Now the new set of polygon corner points is available in "new_points".
+-- 						-- new_points replaces the old list of points:
+-- 						polygon.corners := new_points;
 						
 						log_indentation_down;
 					end move_polygon;
@@ -712,9 +713,9 @@ package body et_kicad_to_native is
 						next (via_cursor);
 					end loop;
 
-					while poly_cursor /= et_pcb.pac_copper_polygons_signal.no_element loop
-						et_pcb.pac_copper_polygons_signal.update_element (
-							container 	=> net.route.polygons,
+					while poly_cursor /= et_pcb.pac_signal_polygons_solid.no_element loop
+						et_pcb.pac_signal_polygons_solid.update_element (
+							container 	=> net.route.polygons_2.solid,
 							position	=> poly_cursor,
 							process		=> move_polygon'access);
 

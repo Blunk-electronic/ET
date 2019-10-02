@@ -10276,6 +10276,8 @@ package body et_project is
 						when HATCHED	=> hatched_polygon;
 						when CUTOUT		=> cutout_polygon;
 					end case;
+
+					reset_polygon_parameters; -- clean up for next polygon
 				end build_route_polygon;
 				
 			begin -- execute_section
@@ -10283,17 +10285,7 @@ package body et_project is
 
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_POLYGON => 
-
-								case stack.parent (degree => 2) is
-									when SEC_ROUTE => build_route_polygon;
-
-									when SEC_TOP => null; -- CS assemble polygon in silk, assy, ...
-									when SEC_BOTTOM => null; -- CS assemble polygon in silk, assy, ...
-
-									when others => invalid_section;
-								end case;
-								
+							when SEC_POLYGON => null;								
 							when others => invalid_section;
 						end case;
 					
@@ -10795,45 +10787,7 @@ package body et_project is
 					when SEC_POLYGON =>
 						case stack.parent is
 							when SEC_ROUTE =>
-
-								-- insert polygon in route.polygons
-								-- The polygon type depends on the route_polygon_pad_connection:
-								
-								case polygon_pad_connection is
-									when et_packages.THERMAL =>
-										et_pcb.pac_copper_polygons_signal.append (
-											container	=> route.polygons,
-											new_item	=> (route_polygon with
-												layer				=> route_layer,
-												width_min			=> route_width,
-												pad_connection		=> et_packages.THERMAL,
-												thermal_technology	=> thermal.technology,
-												thermal_width		=> thermal.width,
-												thermal_gap			=> thermal.gap));
-
-									when et_packages.SOLID =>
-										et_pcb.pac_copper_polygons_signal.append (
-											container	=> route.polygons,
-											new_item	=> (route_polygon with
-												layer				=> route_layer,
-												width_min			=> route_width,
-												pad_connection		=> et_packages.SOLID,
-												solid_technology	=> thermal.technology));
-
-										-- CS warn about ignored parameters
-										
-									when et_packages.NONE =>
-										et_pcb.pac_copper_polygons_signal.append (
-											container	=> route.polygons,
-											new_item	=> (route_polygon with
-												layer				=> route_layer,
-												width_min			=> route_width,
-												pad_connection		=> et_packages.NONE));
-
-										-- CS warn about ignored parameters
-								end case;
-
-								reset_polygon_parameters; -- clean up for next polygon
+								build_route_polygon;
 
 							when SEC_TOP =>
 								case stack.parent (degree => 2) is

@@ -510,12 +510,12 @@ package et_pcb is
 	text_polygon_width_min : constant string := "minimum_width";	
 	text_polygon_signal_layer : constant string := "signal_layer";
 	
-	procedure route_polygon_properties (
+	procedure route_polygon_properties ( -- CS move to et_kicad_pcb
 	-- Logs the properties of the given polygon of a route
 		cursor			: in pac_copper_polygons_signal.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
-	procedure floating_copper_polygon_properties (
+	procedure floating_copper_polygon_properties ( -- CS move to et_kicad_pcb
 	-- Logs the properties of the given floating solid copper polygon.
 		cursor			: in pac_copper_polygons_floating_solid.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
