@@ -313,26 +313,26 @@ package et_pcb is
 		gap			: type_polygon_thermal_gap;		-- the space between pad and polygon -- CS: rename to thermal_length ?
 	end record;
 	
-	type type_copper_polygon_signal (pad_connection : type_polygon_pad_connection) is new type_copper_polygon with record
-		layer 		: type_signal_layer;
-		width_min	: type_track_width; -- the minimum width
-				
-		case pad_connection is
-			when THERMAL =>
-				-- CS use type_thermal
-				thermal_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
-				thermal_width		: type_polygon_thermal_width; -- the thermal width
-				thermal_gap			: type_polygon_thermal_gap; -- the space between associated pads and polygon -- CS: rename to thermal_length ?
-
-			when SOLID =>
-				solid_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
-				-- no need for any kind of thermal parameters
-
-			when NONE => null;
-				-- no more properties required
-		end case;
-				
-	end record;
+-- 	type type_copper_polygon_signal (pad_connection : type_polygon_pad_connection) is new type_copper_polygon with record
+-- 		layer 		: type_signal_layer;
+-- 		width_min	: type_track_width; -- the minimum width
+-- 				
+-- 		case pad_connection is
+-- 			when THERMAL =>
+-- 				-- CS use type_thermal
+-- 				thermal_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
+-- 				thermal_width		: type_polygon_thermal_width; -- the thermal width
+-- 				thermal_gap			: type_polygon_thermal_gap; -- the space between associated pads and polygon -- CS: rename to thermal_length ?
+-- 
+-- 			when SOLID =>
+-- 				solid_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
+-- 				-- no need for any kind of thermal parameters
+-- 
+-- 			when NONE => null;
+-- 				-- no more properties required
+-- 		end case;
+-- 				
+-- 	end record;
 
 	type type_copper_polygon_solid (connection : type_polygon_pad_connection) is new
 		et_packages.type_copper_polygon_solid with record
@@ -378,7 +378,7 @@ package et_pcb is
 
 
 	
-	package pac_copper_polygons_signal is new indefinite_doubly_linked_lists (type_copper_polygon_signal); -- CS remove
+-- 	package pac_copper_polygons_signal is new indefinite_doubly_linked_lists (type_copper_polygon_signal); -- CS remove
 	
 	package pac_signal_polygons_solid is new indefinite_doubly_linked_lists (type_copper_polygon_solid);
 	package pac_signal_polygons_hatched is new indefinite_doubly_linked_lists (type_copper_polygon_hatched);	
@@ -510,10 +510,10 @@ package et_pcb is
 	text_polygon_width_min : constant string := "minimum_width";	
 	text_polygon_signal_layer : constant string := "signal_layer";
 	
-	procedure route_polygon_properties ( -- CS move to et_kicad_pcb
-	-- Logs the properties of the given polygon of a route
-		cursor			: in pac_copper_polygons_signal.cursor;
-		log_threshold 	: in et_string_processing.type_log_level);
+-- 	procedure route_polygon_properties ( -- CS move to et_kicad_pcb
+-- 	-- Logs the properties of the given polygon of a route
+-- 		cursor			: in pac_copper_polygons_signal.cursor;
+-- 		log_threshold 	: in et_string_processing.type_log_level);
 
 	procedure floating_copper_polygon_properties ( -- CS move to et_kicad_pcb
 	-- Logs the properties of the given floating solid copper polygon.

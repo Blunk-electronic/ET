@@ -1825,17 +1825,17 @@ package body et_project is
 				polygon_solid_cursor : pac_signal_polygons_solid.cursor := net.route.polygons_2.solid.first;
 				polygon_hatched_cursor : pac_signal_polygons_hatched.cursor := net.route.polygons_2.hatched.first;
 
-				procedure query_points (polygon : in type_copper_polygon_signal) is
-					use type_polygon_points;
-					point_cursor : type_polygon_points.cursor := polygon.corners.first;
-				begin
-					section_mark (section_corners, HEADER);
-					while point_cursor /= type_polygon_points.no_element loop
-						write (keyword => keyword_position, parameters => position (element (point_cursor)));
-						next (point_cursor);
-					end loop;
-					section_mark (section_corners, FOOTER);
-				end query_points;
+-- 				procedure query_points (polygon : in type_copper_polygon_signal) is
+-- 					use type_polygon_points;
+-- 					point_cursor : type_polygon_points.cursor := polygon.corners.first;
+-- 				begin
+-- 					section_mark (section_corners, HEADER);
+-- 					while point_cursor /= type_polygon_points.no_element loop
+-- 						write (keyword => keyword_position, parameters => position (element (point_cursor)));
+-- 						next (point_cursor);
+-- 					end loop;
+-- 					section_mark (section_corners, FOOTER);
+-- 				end query_points;
 				
 			begin -- query_route
 				section_mark (section_route, HEADER);
