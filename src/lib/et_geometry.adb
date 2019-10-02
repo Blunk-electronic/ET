@@ -782,6 +782,15 @@ package body et_geometry is
 		function to_string (easing : in type_corner_easing) return string is begin
 			return to_lower (type_corner_easing'image (easing));
 		end to_string;
+
+
+		procedure move (
+			polygon : in out type_polygon_base;
+			offset	: in type_point) is
+		begin
+			-- CS move segments of polygon
+			null;
+		end;
 		
 	end shapes_2d;
 

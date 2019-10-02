@@ -236,7 +236,19 @@ package body et_kicad_to_native is
 			new_y := layout_sheet_height - y (point);
 			set (Y, new_y, point);
 		end move;
-		
+
+		procedure move (polygon : in out et_packages.shapes.type_polygon_base'class) is
+			use et_pcb_coordinates.geometry;
+-- 			offset : type_point := origin;
+-- 			new_y : type_distance := -1.0 * layout_sheet_height;
+		begin
+-- 			offset := type_point (set (x => zero, y => new_y));
+			
+-- 			et_packages.shapes.move (polygon, offset);
+			
+			null; -- CS
+		end;
+			
 		procedure flatten_notes (
 			module_name	: in kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.type_module) is
@@ -635,50 +647,9 @@ package body et_kicad_to_native is
 						log_indentation_down;
 					end move_via;
 
-					procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_solid) is
-						use et_pcb_coordinates;
-						use et_pcb_coordinates.geometry;
-						use et_packages.type_polygon_points;
-						-- CS move polygon segments
--- 						point_cursor : et_packages.type_polygon_points.cursor := polygon.corners.first;
--- 
--- 						new_points : et_packages.type_polygon_points.set;
--- 						
--- 						procedure get_point (point : in type_point) is
--- 						-- Reads a corner point, copies it, moves the copy and inserts the moved
--- 						-- copy in a new set "new_points".
--- 							new_point : type_point := point; -- copy given point
--- 						begin
--- 							log (text => before & to_string (new_point), level => log_threshold + 4);
--- 							move (new_point); -- move copied point
--- 							log (text => now & to_string (new_point), level => log_threshold + 4);
--- 
--- 							-- insert new point in new_points:
--- 							et_packages.type_polygon_points.insert (
--- 								container	=> new_points,
--- 								new_item	=> new_point);
--- 							
--- 						end get_point;
-						
-					begin -- move_polygon
-						log (text => "board polygon segments", level => log_threshold + 4);
-						log_indentation_up;
-
--- 						-- loop through polygon corner points and read one after another:
--- 						while point_cursor /= et_packages.type_polygon_points.no_element loop
--- 
--- 							et_packages.type_polygon_points.query_element (
--- 								position	=> point_cursor,
--- 								process		=> get_point'access);
--- 							
--- 							next (point_cursor);
--- 						end loop;
--- 
--- 						-- Now the new set of polygon corner points is available in "new_points".
--- 						-- new_points replaces the old list of points:
--- 						polygon.corners := new_points;
-						
-						log_indentation_down;
+					procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_solid) is begin
+						log (text => "polygon segments", level => log_threshold + 4);
+						move (polygon);
 					end move_polygon;
 					
 				begin -- move_route
@@ -838,51 +809,10 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out shapes.type_polygon) is
-					use et_pcb_coordinates;
-					use et_pcb_coordinates.geometry;
--- 					use type_polygon_points;
-					-- CS move segments
-					
--- 					point_cursor : type_polygon_points.cursor := polygon.corners.first;
--- 					new_points : type_polygon_points.set;
--- 
--- 					procedure get_point (point : in type_point) is
--- 					-- Reads a corner point, copies it, moves the copy and inserts the moved
--- 					-- copy in a new set "new_points".
--- 						new_point : type_point := point; -- copy given point
--- 					begin
--- 						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
--- 						move (new_point); -- move copied point
--- 						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
--- 
--- 						-- insert new point in new_points:
--- 						type_polygon_points.insert (
--- 							container	=> new_points,
--- 							new_item	=> new_point);
--- 						
--- 					end get_point;
-					
-				begin -- move_polygon
+				procedure move_polygon (polygon : in out shapes.type_polygon) is begin
 					log (text => board_silk_screen & "polygon segments", level => log_threshold + log_threshold_add);
-					log_indentation_up;
-
--- 					-- loop through polygon corner points and read one after another:
--- 					while point_cursor /= type_polygon_points.no_element loop
--- 
--- 						type_polygon_points.query_element (
--- 							position	=> point_cursor,
--- 							process		=> get_point'access);
--- 						
--- 						next (point_cursor);
--- 					end loop;
--- 
--- 					-- Now the new set of polygon corner points is available in "new_points".
--- 					-- new_points replaces the old list of points:
--- 					polygon.corners := new_points;
-					
-					log_indentation_down;
-				end move_polygon;
+					move (polygon);
+				end;
 
 				procedure move_text (text : in out type_text_with_content) is
 					use et_pcb_coordinates.geometry;
@@ -1076,49 +1006,10 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out shapes.type_polygon) is
-					use et_pcb_coordinates;
-					use et_pcb_coordinates.geometry;
--- 					use type_polygon_points;
--- 					point_cursor : type_polygon_points.cursor := polygon.corners.first;
--- 					new_points : type_polygon_points.set;
--- 
--- 					procedure get_point (point : in type_point) is
--- 					-- Reads a corner point, copies it, moves the copy and inserts the moved
--- 					-- copy in a new set "new_points".
--- 						new_point : type_point := point; -- copy given point
--- 					begin
--- 						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
--- 						move (new_point); -- move copied point
--- 						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
--- 
--- 						-- insert new point in new_points:
--- 						type_polygon_points.insert (
--- 							container	=> new_points,
--- 							new_item	=> new_point);
--- 						
--- 					end get_point;
-					
-				begin -- move_polygon
+				procedure move_polygon (polygon : in out shapes.type_polygon) is begin
 					log (text => doc & "polygon segments", level => log_threshold + log_threshold_add);
-					log_indentation_up;
-
--- 					-- loop through polygon corner points and read one after another:
--- 					while point_cursor /= type_polygon_points.no_element loop
--- 
--- 						type_polygon_points.query_element (
--- 							position	=> point_cursor,
--- 							process		=> get_point'access);
--- 						
--- 						next (point_cursor);
--- 					end loop;
--- 
--- 					-- Now the new set of polygon corner points is available in "new_points".
--- 					-- new_points replaces the old list of points:
--- 					polygon.corners := new_points;
-					
-					log_indentation_down;
-				end move_polygon;
+					move (polygon);
+				end;
 
 				procedure move_text (text : in out type_text_with_content) is
 					use et_pcb_coordinates;

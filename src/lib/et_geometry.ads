@@ -403,13 +403,17 @@ package et_geometry is
 			easing		: type_polygon_easing;
 		end record;
 		
+		procedure move (
+			polygon : in out type_polygon_base;
+			offset	: in type_point);
+
 		type type_polygon (fill_style : type_fill_style) is new type_polygon_base with record
 			case fill_style is
 				when SOLID | CUTOUT	=> null;
 				when HATCHED		=> hatching : type_hatching;
 			end case;
 		end record;
-	
+
 		
 	end shapes_2d;
 	
