@@ -8330,9 +8330,9 @@ package body et_project is
 		
 		polygon_pad_connection	: et_packages.type_polygon_pad_connection := et_packages.type_polygon_pad_connection'first;
 		
-		route_polygon					: et_packages.type_copper_polygon; -- CS remove
-		polygon_corner_point	: et_pcb_coordinates.geometry.type_point;  -- CS remove
-		polygon_corner_points	: et_packages.type_polygon_points.set;  -- CS remove
+-- 		route_polygon					: et_packages.type_copper_polygon; -- CS remove
+-- 		polygon_corner_point	: et_pcb_coordinates.geometry.type_point;  -- CS remove
+-- 		polygon_corner_points	: et_packages.type_polygon_points.set;  -- CS remove
 
 		
 		frame_template_schematic	: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frm
@@ -8344,7 +8344,7 @@ package body et_project is
 			use et_packages.shapes;
 			use et_pcb_stack;
 		begin
-			route_polygon			:= (others => <>);
+-- 			route_polygon			:= (others => <>);
 			polygon_2				:= (others => <>);
 			polygon_pad_connection	:= type_polygon_pad_connection'first;
 			route_layer				:= type_signal_layer'first;
@@ -10861,39 +10861,40 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
-					when SEC_CORNERS =>
-						case stack.parent is
-							when SEC_POLYGON =>
-
-								-- Insert collection of polygon corner points in polygon.
-								-- The current polygon can be part of a route or part
-								-- of something on top or bottom like silk screen, assy doc, keepout,
-								-- stencil, stop mask, route restrict, via restrict.
-								case stack.parent (degree => 2) is
-									when SEC_ROUTE =>
-
-										route_polygon.corners := polygon_corner_points;
-
-									when SEC_TOP | SEC_BOTTOM =>
-										-- CS check for parent section (degree => 3) to be 
-										-- silk screen, assy doc, keepout, stencil, stop mask ?
-										board_polygon.corners := polygon_corner_points;
-
-									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-										board_polygon.corners := polygon_corner_points;
-
-									when SEC_COPPER =>
-										null;
--- CS										board_polygon_floating.corners := polygon_corner_points;
-										
-									when others => invalid_section;
-								end case;
-								
-								-- clean up for next collection of corner points (of another polygon).
-								et_packages.type_polygon_points.clear (polygon_corner_points);
-								
-							when others => invalid_section;
-						end case;
+					when SEC_CORNERS => null; -- CS remove
+						
+-- 						case stack.parent is
+-- 							when SEC_POLYGON =>
+-- 
+-- 								-- Insert collection of polygon corner points in polygon.
+-- 								-- The current polygon can be part of a route or part
+-- 								-- of something on top or bottom like silk screen, assy doc, keepout,
+-- 								-- stencil, stop mask, route restrict, via restrict.
+-- 								case stack.parent (degree => 2) is
+-- 									when SEC_ROUTE =>
+-- 
+-- 										route_polygon.corners := polygon_corner_points;
+-- 
+-- 									when SEC_TOP | SEC_BOTTOM =>
+-- 										-- CS check for parent section (degree => 3) to be 
+-- 										-- silk screen, assy doc, keepout, stencil, stop mask ?
+-- 										board_polygon.corners := polygon_corner_points;
+-- 
+-- 									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+-- 										board_polygon.corners := polygon_corner_points;
+-- 
+-- 									when SEC_COPPER =>
+-- 										null;
+-- -- CS										board_polygon_floating.corners := polygon_corner_points;
+-- 										
+-- 									when others => invalid_section;
+-- 								end case;
+-- 								
+-- 								-- clean up for next collection of corner points (of another polygon).
+-- 								et_packages.type_polygon_points.clear (polygon_corner_points);
+-- 								
+-- 							when others => invalid_section;
+-- 						end case;
 
 					when SEC_SUBMODULE =>
 						case stack.parent is
@@ -12701,36 +12702,36 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 					
-					when SEC_CORNERS =>
-						case stack.parent is
-							when SEC_POLYGON =>
-								declare
-									use et_pcb_coordinates.geometry;
-									kw : string := f (line, 1);
-								begin
-									-- read corner points
-									-- NOTE: A corner point is defined by a single line.
-									-- Upon reading the line like "position x 4 y 4" the point is
-									-- appended to the corner point collection immediately here. See procdure
-									-- execute_section.
-									-- There is no section for a single corner like [CORNER BEGIN].
-									
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_position then -- position x 123.54 y 2.7
-										expect_field_count (line, 5);
-
-										-- extract corner coordinates from line starting at field 2
-										polygon_corner_point := to_position (line, 2);
-
-										-- insert the corner point in collection of corner points
-										et_packages.type_polygon_points.insert (polygon_corner_points, polygon_corner_point);
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-								
-							when others => invalid_section;
-						end case;
+					when SEC_CORNERS => null;
+-- 						case stack.parent is
+-- 							when SEC_POLYGON =>
+-- 								declare
+-- 									use et_pcb_coordinates.geometry;
+-- 									kw : string := f (line, 1);
+-- 								begin
+-- 									-- read corner points
+-- 									-- NOTE: A corner point is defined by a single line.
+-- 									-- Upon reading the line like "position x 4 y 4" the point is
+-- 									-- appended to the corner point collection immediately here. See procdure
+-- 									-- execute_section.
+-- 									-- There is no section for a single corner like [CORNER BEGIN].
+-- 									
+-- 									-- CS: In the following: set a corresponding parameter-found-flag
+-- 									if kw = keyword_position then -- position x 123.54 y 2.7
+-- 										expect_field_count (line, 5);
+-- 
+-- 										-- extract corner coordinates from line starting at field 2
+-- 										polygon_corner_point := to_position (line, 2);
+-- 
+-- 										-- insert the corner point in collection of corner points
+-- 										et_packages.type_polygon_points.insert (polygon_corner_points, polygon_corner_point);
+-- 									else
+-- 										invalid_keyword (kw);
+-- 									end if;
+-- 								end;
+-- 								
+-- 							when others => invalid_section;
+-- 						end case;
 
 					when SEC_SUBMODULE =>
 						case stack.parent is
