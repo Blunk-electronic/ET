@@ -253,10 +253,13 @@ package et_packages is
 	text_hatching_spacing 		: constant string := "hatching_spacing";	
 	
 	type type_hatching is record
-		-- the with of the lines:
-		width	: type_distance_positive := hatching_line_width_default;
+		-- the width of the border line
+		border_width	: type_distance_positive := 1.0;
+		
+		-- the with of the lines inside the area:
+		width	: type_distance_positive := hatching_line_width_default; -- CS rename to line_width
 
-		-- the space between the lines:
+		-- the space between the lines inside the area:
 		spacing	: type_distance_positive := hatching_spacing_default;
 	end record;
 
@@ -296,18 +299,6 @@ package et_packages is
 	-- This prevents placing two identical points on top of each other.
 	package type_polygon_points is new ordered_sets (type_point); -- CS remove
 
--- 	type type_polygon is abstract tagged record -- CS remove
--- 		corners				: type_polygon_points.set;
--- 		-- CS: consider a list of lines and arcs (circles ?) instead
--- 		
--- 		fill_style			: type_fill_style := SOLID; -- a polygon is always filled
--- 		hatching_line_width	: type_track_width := hatching_line_width_default; -- the with of the lines
--- 		hatching_spacing	: type_track_clearance := hatching_spacing_default; -- the space between the lines
--- 		corner_easing		: type_corner_easing := NONE;
--- 		easing_radius		: type_easing_radius := zero; -- center of circle at corner point
--- 		-- CS locked : type_locked;
--- 	end record;
--- 
 -- 	text_polygon_corner_points : constant string := "corner_points";
 
 	
@@ -718,9 +709,9 @@ package et_packages is
 
 	-- 	type type_route_restrict_polygon is new type_polygon with record
 	type type_route_restrict_polygon is new shapes.type_polygon with record
--- 		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers 	: type_signal_layers.set;
 	end record;
+
 	package type_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
 
 	
@@ -764,7 +755,6 @@ package et_packages is
 
 	
 	type type_via_restrict_polygon is new shapes.type_polygon with record
--- 		width	: type_general_line_width; -- CS no need
 		layers 	: type_signal_layers.set;
 	end record;
 

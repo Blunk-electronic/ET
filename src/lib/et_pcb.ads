@@ -243,7 +243,7 @@ package et_pcb is
 
 	-- Cutout-polygons in copper layers:
 	type type_copper_polygon_cutout is new et_packages.type_polygon_cutout with record
-		layer 		: type_signal_layer;
+		layer 	: type_signal_layer;
 	end record;
 
 	package pac_copper_polygons_cutout is new doubly_linked_lists (type_copper_polygon_cutout);

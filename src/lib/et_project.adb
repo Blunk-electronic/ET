@@ -3448,9 +3448,6 @@ package body et_project is
 		pac_circle_copper		: et_packages.type_copper_circle;
 		procedure reset_circle_copper is begin pac_circle_copper := (others => <>); end;		
 		
--- 		type type_polygon is new et_packages.type_polygon with null record;
--- 		pac_polygon				: type_polygon;
-
 		filled : shapes.type_filled := shapes.filled_default;
 		
 		type type_polygon is new et_packages.shapes.type_polygon_base with null record;
@@ -3464,15 +3461,12 @@ package body et_project is
 		easing : type_polygon_easing;
 
 		procedure reset_polygon is begin 
-			polygon_2 := (others => <>);
+			polygon_2	:= (others => <>);
 
-			fill_style := fill_style_default;
-			hatching := (others => <>);
-			easing := (others => <>);
+			fill_style	:= fill_style_default;
+			hatching	:= (others => <>);
+			easing		:= (others => <>);
 		end;
-
--- 		polygon_corner_points	: type_polygon_points.set;
--- 		polygon_corner_point	: et_pcb_coordinates.geometry.type_point;
 
 		pac_text				: et_packages.type_text_with_content;
 		pac_text_placeholder	: et_packages.type_text_placeholder;
@@ -8528,8 +8522,12 @@ package body et_project is
 		net_netchanger_port : netlists.type_port_netchanger;
 		net_netchanger_ports : netlists.type_ports_netchanger.set;
 
+		schematic_object_filled : et_schematic.shapes.type_filled := et_schematic.shapes.filled_default;		
+		board_object_filled : et_packages.shapes.type_filled := et_packages.shapes.filled_default;
+		
 		fill_style : et_packages.type_fill_style := et_packages.fill_style_default;
 		hatching : et_packages.type_hatching;
+		easing : et_packages.type_polygon_easing;
 		
 		route			: et_pcb.type_route;
 		route_line 		: et_pcb.type_copper_line; -- CS element of route. maybe no need
@@ -8559,9 +8557,11 @@ package body et_project is
 		begin
 			polygon_2				:= (others => <>);
 
+			board_object_filled		:= filled_default;
 			fill_style				:= fill_style_default;
 			hatching				:= (others => <>);
-
+			easing 					:= (others => <>);
+			
 			polygon_pad_connection	:= type_polygon_pad_connection'first;
 			polygon_priority		:= et_packages.type_polygon_priority'first;
 			polygon_isolation		:= et_packages.type_track_clearance'first;
@@ -9579,20 +9579,16 @@ package body et_project is
 									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.top.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon_2) with 
-														fill_style 	=> SOLID));
+														fill_style 	=> SOLID,
+														easing		=> easing));
 
 								when HATCHED =>
 									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.top.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon_2) with 
 														fill_style	=> HATCHED,
+														easing		=> easing,
 														hatching	=> hatching));
-
-								when CUTOUT =>
-									pac_silk_polygons.append (
-										container	=> module.board.silk_screen.top.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon_2) with 
-														fill_style	=> CUTOUT));
 							end case;
 						end;
 
@@ -9602,20 +9598,16 @@ package body et_project is
 									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.bottom.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon_2) with 
-														fill_style 	=> SOLID));
+														fill_style 	=> SOLID,
+														easing		=> easing));
 
 								when HATCHED =>
 									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.bottom.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon_2) with 
 														fill_style	=> HATCHED,
+														easing		=> easing,
 														hatching	=> hatching));
-
-								when CUTOUT =>
-									pac_silk_polygons.append (
-										container	=> module.board.silk_screen.bottom.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon_2) with 
-														fill_style	=> CUTOUT));
 							end case;
 						end;
 						
@@ -9625,6 +9617,7 @@ package body et_project is
 									pac_doc_polygons.append (
 										container	=> module.board.assy_doc.top.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon_2) with 
+														easing		=> easing,
 														fill_style 	=> SOLID));
 
 								when HATCHED =>
@@ -9632,13 +9625,8 @@ package body et_project is
 										container	=> module.board.assy_doc.top.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon_2) with 
 														fill_style	=> HATCHED,
+														easing		=> easing,
 														hatching	=> hatching));
-
-								when CUTOUT =>
-									pac_doc_polygons.append (
-										container	=> module.board.assy_doc.top.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon_2) with 
-														fill_style	=> CUTOUT));
 							end case;
 						end;
 
@@ -9648,6 +9636,7 @@ package body et_project is
 									pac_doc_polygons.append (
 										container	=> module.board.assy_doc.bottom.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon_2) with 
+														easing		=> easing,
 														fill_style 	=> SOLID));
 
 								when HATCHED =>
@@ -9655,34 +9644,100 @@ package body et_project is
 										container	=> module.board.assy_doc.bottom.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon_2) with 
 														fill_style	=> HATCHED,
+														easing		=> easing,
 														hatching	=> hatching));
-
-								when CUTOUT =>
-									pac_doc_polygons.append (
-										container	=> module.board.assy_doc.bottom.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon_2) with 
-														fill_style	=> CUTOUT));
 							end case;
 						end;
 
 						procedure append_keepout_polygon_top is begin
 							type_keepout_polygons.append (
 								container	=> module.board.keepout.top.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon_2) with null record));
-
-							-- clean up for next polygon
--- 							reset_polygon;
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+												filled	=> board_object_filled));
 						end;
 
 						procedure append_keepout_polygon_bottom is begin
 							type_keepout_polygons.append (
 								container	=> module.board.keepout.bottom.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon_2) with null record));
-
-							-- clean up for next polygon
--- 							reset_polygon;
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+												filled	=> board_object_filled));
 						end;
 
+						procedure append_stencil_polygon_top is begin
+							case fill_style is
+								when SOLID =>
+									type_stencil_polygons.append (
+										container	=> module.board.stencil.top.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with
+														fill_style	=> SOLID,
+														easing		=> easing));
+
+								when HATCHED =>
+									type_stencil_polygons.append (
+										container	=> module.board.stencil.top.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with
+														fill_style	=> HATCHED,
+														easing		=> easing,
+														hatching	=> hatching));
+							end case;
+						end;
+
+						procedure append_stencil_polygon_bottom is begin
+							case fill_style is
+								when SOLID =>
+									type_stencil_polygons.append (
+										container	=> module.board.stencil.bottom.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with
+														fill_style	=> SOLID,
+														easing		=> easing));
+
+								when HATCHED =>
+									type_stencil_polygons.append (
+										container	=> module.board.stencil.bottom.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with
+														fill_style	=> HATCHED,
+														easing		=> easing,
+														hatching	=> hatching));
+							end case;
+						end;
+
+						procedure append_stop_polygon_top is begin
+							case fill_style is
+								when SOLID =>
+									type_stop_polygons.append (
+										container	=> module.board.stop_mask.top.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with
+														fill_style	=> SOLID,
+														easing		=> easing));
+
+								when HATCHED =>
+									type_stop_polygons.append (
+										container	=> module.board.stop_mask.top.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with
+														fill_style	=> HATCHED,
+														easing		=> easing,
+														hatching	=> hatching));
+							end case;
+						end;
+
+						procedure append_stop_polygon_bottom is begin
+							case fill_style is
+								when SOLID =>
+									type_stop_polygons.append (
+										container	=> module.board.stop_mask.bottom.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with
+														fill_style	=> SOLID,
+														easing		=> easing));
+
+								when HATCHED =>
+									type_stop_polygons.append (
+										container	=> module.board.stop_mask.bottom.polygons,
+										new_item	=> (shapes.type_polygon_base (polygon_2) with
+														fill_style	=> HATCHED,
+														easing		=> easing,
+														hatching	=> hatching));
+							end case;
+						end;
 						
 					begin -- do_it
 						case face is
@@ -9695,15 +9750,11 @@ package body et_project is
 										append_assy_doc_polygon_top;
 
 									when STENCIL =>
-										type_stencil_polygons.append (
-											container	=> module.board.stencil.top.polygons,
-											new_item	=> (et_packages.type_polygon (board_polygon) with null record));
+										append_stencil_polygon_top;
 										
 									when STOP_MASK =>
-										type_stop_polygons.append (
-											container	=> module.board.stop_mask.top.polygons,
-											new_item	=> (et_packages.type_polygon (board_polygon) with null record));
-
+										append_stop_polygon_top;
+										
 									when KEEPOUT =>
 										append_keepout_polygon_top;
 										
@@ -9718,15 +9769,11 @@ package body et_project is
 										append_assy_doc_polygon_bottom;
 										
 									when STENCIL =>
-										type_stencil_polygons.append (
-											container	=> module.board.stencil.bottom.polygons,
-											new_item	=> (et_packages.type_polygon (board_polygon) with null record));
+										append_stencil_polygon_bottom;
 										
 									when STOP_MASK =>
-										type_stop_polygons.append (
-											container	=> module.board.stop_mask.bottom.polygons,
-											new_item	=> (et_packages.type_polygon (board_polygon) with null record));
-
+										append_stop_polygon_bottom;
+										
 									when KEEPOUT =>
 										append_keepout_polygon_bottom;
 										
@@ -9735,14 +9782,14 @@ package body et_project is
 						end case;
 					end do_it;
 										
-				begin -- insert_circle
+				begin -- insert_polygon
 					update_element (
 						container	=> modules,
 						position	=> module_cursor,
 						process		=> do_it'access);
 
 					-- clean up for next board polygon
-					board_polygon := (others => <>);
+					board_reset_polygon;
 				end insert_polygon;
 
 				procedure insert_text (
@@ -9994,9 +10041,9 @@ package body et_project is
 					begin
 						type_route_restrict_polygons.append (
 							container	=> module.board.route_restrict.polygons,
-							new_item	=> (et_packages.type_polygon (board_polygon) with 
-											layers	=> signal_layers,
-											width	=> board_line_width));
+							new_item	=> (shapes.type_polygon_base (polygon_2) with 
+											filled	=> board_object_filled,
+											layers	=> signal_layers));
 					end do_it;
 										
 				begin -- insert_polygon_route_restrict
@@ -10006,8 +10053,8 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next board polygon
-					board_polygon := (others => <>);
-					board_line_width := type_general_line_width'first;
+					board_reset_polygon;
+
 					clear (signal_layers);
 				end insert_polygon_route_restrict;
 
@@ -10101,9 +10148,9 @@ package body et_project is
 					begin
 						type_via_restrict_polygons.append (
 							container	=> module.board.via_restrict.polygons,
-							new_item	=> (et_packages.type_polygon (board_polygon) with 
-											layers	=> signal_layers,
-											width	=> board_line_width));
+							new_item	=> (shapes.type_polygon_base (polygon_2) with 
+											filled	=> board_object_filled,
+											layers	=> signal_layers));
 					end do_it;
 										
 				begin -- insert_polygon_via_restrict
@@ -10113,15 +10160,16 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next board polygon
-					board_polygon := (others => <>);
-					board_line_width := et_packages.type_general_line_width'first;
+					board_reset_polygon;
+
 					clear (signal_layers);
 				end insert_polygon_via_restrict;
 
 				procedure insert_polygon_copper is
 				-- This is about floating polygons in signal layers. No connection to any net.
-					use et_pcb;
+					use et_packages;
 					use et_packages.shapes;
+					use et_pcb;
 					
 					procedure do_it (
 						module_name	: in type_module_name.bounded_string;
@@ -10133,9 +10181,10 @@ package body et_project is
 									container	=> module.board.copper.polygons.solid,
 									new_item	=> (type_polygon_base (polygon_2) with
 											fill_style 		=> SOLID,
-											priority_level	=> route_polygon_priority,
-											isolation_gap	=> route_polygon_isolation_gap,
-											layer			=> route_layer,
+											easing			=> easing,
+											priority_level	=> polygon_priority,
+											isolation_gap	=> polygon_isolation,
+											layer			=> signal_layer,
 											width_min		=> route_width)
 											);
 
@@ -10144,21 +10193,13 @@ package body et_project is
 									container	=> module.board.copper.polygons.hatched,
 									new_item	=> (type_polygon_base (polygon_2) with
 											fill_style 		=> HATCHED,
-											priority_level	=> route_polygon_priority,
-											isolation_gap	=> route_polygon_isolation_gap,
-											layer			=> route_layer,
+											easing			=> easing,
+											priority_level	=> polygon_priority,
+											isolation_gap	=> polygon_isolation,
+											layer			=> signal_layer,
 											width_min		=> route_width,
 											hatching		=> hatching)
 											);
-
-							when CUTOUT =>
-								pac_copper_polygons_cutout.append (
-									container	=> module.board.copper.polygons.cutout,
-									new_item	=> (type_polygon_base (polygon_2) with
-											fill_style 		=> CUTOUT,
-											layer			=> route_layer)
-											);
-
 						end case;
 					end do_it;
 										
@@ -10169,7 +10210,7 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next floating board polygon
-					reset_polygon_parameters;
+					board_reset_polygon;
 				end insert_polygon_copper;
 
 				procedure insert_line_track is
@@ -10470,16 +10511,15 @@ package body et_project is
 							p : et_pcb.type_copper_polygon_solid (connection => et_packages.THERMAL);
 						begin
 							p.segments := polygon_2.segments;
-
-							p.easing := polygon_2.easing;
-
-							p.isolation	:= route_polygon_isolation_gap;
-							p.width_min	:= route_width;
-
-							p.layer := route_layer;
-							p.priority_level := route_polygon_priority;
 							
-							p.thermal := thermal;
+							p.easing := easing;
+							
+							p.width_min	:= route_width;
+							p.isolation	:= polygon_isolation;
+							
+							p.layer				:= signal_layer;
+							p.priority_level	:= polygon_priority;
+							p.thermal			:= thermal;
 
 							et_pcb.pac_signal_polygons_solid.append (
 								container	=> route.polygons_2.solid,
@@ -10491,13 +10531,13 @@ package body et_project is
 						begin
 							p.segments := polygon_2.segments;
 							
-							p.easing := polygon_2.easing;
+							p.easing := easing;
 							
-							p.isolation	:= route_polygon_isolation_gap;
 							p.width_min	:= route_width;
-
-							p.layer := route_layer;
-							p.priority_level := route_polygon_priority;
+							p.isolation	:= polygon_isolation;
+							
+							p.layer				:= signal_layer;
+							p.priority_level	:= polygon_priority;
 							
 							p.technology := thermal.technology;
 
@@ -10523,17 +10563,14 @@ package body et_project is
 						begin
 							p.segments := polygon_2.segments;
 							
-							p.easing := polygon_2.easing;
-
-							p.hatching := hatching;
+							p.easing := easing;
 							
-							p.isolation	:= route_polygon_isolation_gap;
 							p.width_min	:= route_width;
-
-							p.layer := route_layer;
-							p.priority_level := route_polygon_priority;
+							p.isolation	:= polygon_isolation;
 							
-							p.thermal := thermal;
+							p.layer				:= signal_layer;
+							p.priority_level	:= polygon_priority;
+							p.thermal			:= thermal;
 							
 							et_pcb.pac_signal_polygons_hatched.append (
 								container	=> route.polygons_2.hatched,
@@ -10545,15 +10582,13 @@ package body et_project is
 						begin
 							p.segments := polygon_2.segments;
 							
-							p.easing := polygon_2.easing;
+							p.easing := easing;
 							
-							p.hatching := hatching;
-							
-							p.isolation	:= route_polygon_isolation_gap;
 							p.width_min	:= route_width;
-
-							p.layer := route_layer;
-							p.priority_level := route_polygon_priority;
+							p.isolation	:= polygon_isolation;
+							
+							p.layer				:= signal_layer;
+							p.priority_level	:= polygon_priority;
 							
 							p.technology := thermal.technology;
 							
@@ -10571,29 +10606,23 @@ package body et_project is
 					end hatched_polygon;
 
 					procedure cutout_polygon is
-						use et_pcb.pac_copper_polygons_cutout;
-						p : et_pcb.type_copper_polygon_cutout;
+						use et_packages;
 					begin
-						p.segments := polygon_2.segments;
-						
-						p.easing := polygon_2.easing;
-						
-						p.layer := route_layer;
-
 						et_pcb.pac_copper_polygons_cutout.append (
 							container	=> route.polygons_2.cutout,
-							new_item	=> p);
-
-					end cutout_polygon;
+							new_item	=> (shapes.type_polygon_base (polygon_2) with
+											easing	=> easing,
+											layer	=> signal_layer));
+					end;
 					
 				begin -- build_route_polygon
 					case fill_style is
-						when SOLID		=> solid_polygon;
-						when HATCHED	=> hatched_polygon;
-						when CUTOUT		=> cutout_polygon;
+						when et_packages.SOLID		=> solid_polygon;
+						when et_packages.HATCHED	=> hatched_polygon;
+-- CS						when CUTOUT		=> cutout_polygon;
 					end case;
 
-					reset_polygon_parameters; -- clean up for next polygon
+					board_reset_polygon; -- clean up for next polygon
 				end build_route_polygon;
 				
 			begin -- execute_section
