@@ -682,6 +682,7 @@ package et_project is
 		);
 
 	type type_section_name_package is (
+		SEC_CONTOURS,
 		SEC_INIT,
 		SEC_TOP,
 		SEC_BOTTOM,
@@ -705,7 +706,7 @@ package et_project is
 		SEC_TEXT,
 		SEC_PLACEHOLDER,
 		SEC_POLYGON,
-		SEC_CORNERS,
+-- 		SEC_CORNERS,
 		SEC_PACKAGE_3D_CONTOURS
 		);
 	

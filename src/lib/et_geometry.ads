@@ -239,6 +239,7 @@ package et_geometry is
 		type type_filled is (NO, YES);
 		function to_string (filled : in type_filled) return string;
 		function to_filled (filled : in string) return type_filled;
+		filled_default : constant type_filled := NO;
 
 		keyword_filled : constant string := "filled";
 
@@ -356,20 +357,6 @@ package et_geometry is
 
 
 
-	-- HATCHING OF OBJECTS WITH CLOSED CIRCUMFENCE
-		hatching_line_width_default : constant type_distance_positive := 0.2;
-		hatching_spacing_default	: constant type_distance_positive := 1.0;
-		
-		text_hatching_line_width	: constant string := "hatching_line_width";
-		text_hatching_spacing 		: constant string := "hatching_spacing";	
-		
-		type type_hatching is record
-			-- the with of the lines:
-			width	: type_distance_positive := hatching_line_width_default;
-
-			-- the space between the lines:
-			spacing	: type_distance_positive := hatching_spacing_default;
-		end record;
 		
 
 	-- POLYGON

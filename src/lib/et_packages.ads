@@ -245,6 +245,21 @@ package et_packages is
 
 	text_fill_style : constant string := "fill_style";
 
+	-- HATCHING OF OBJECTS WITH CLOSED CIRCUMFENCE
+	hatching_line_width_default : constant type_distance_positive := 0.2;
+	hatching_spacing_default	: constant type_distance_positive := 1.0;
+	
+	text_hatching_line_width	: constant string := "hatching_line_width";
+	text_hatching_spacing 		: constant string := "hatching_spacing";	
+	
+	type type_hatching is record
+		-- the with of the lines:
+		width	: type_distance_positive := hatching_line_width_default;
+
+		-- the space between the lines:
+		spacing	: type_distance_positive := hatching_spacing_default;
+	end record;
+
 	
 	-- EASING
 	type type_corner_easing is (NONE, CHAMFER, FILLET);
@@ -344,11 +359,11 @@ package et_packages is
 
 	package pac_copper_polygons_hatched is new doubly_linked_lists (type_copper_polygon_hatched);
 
-	-- A cutout-polygon use in copper layers:
+	-- A cutout-polygon used in copper layers:
 	package pac_copper_polygons_cutout is new doubly_linked_lists (type_polygon_cutout);
 
 	
-	text_polygon_priority_level	: constant string (1..14) := "priority_level";
+	text_polygon_priority_level	: constant string (1..14) := "priority_level"; -- CS move to et_pcb
 	text_polygon_isolation_gap	: constant string (1..13) := "isolation_gap";
 	text_polygon_corner_easing	: constant string (1..13) := "corner_easing";
 	text_polygon_easing_radius	: constant string (1..13) := "easing_radius";		
@@ -453,7 +468,7 @@ package et_packages is
 	end record;
 
 	
-	-- SOLDER STOP MASK
+-- SOLDER STOP MASK
 	type type_stop_line is new type_line with record
 		width	: type_general_line_width;
 	end record;

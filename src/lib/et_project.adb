@@ -3342,11 +3342,6 @@ package body et_project is
 							filled		=> YES,
 							fill_style	=> SOLID);
 
-					when CUTOUT =>
-						return (circle with
-							filled		=> YES,
-							fill_style	=> CUTOUT);
-							
 					when HATCHED =>
 						return (circle with
 							filled				=> YES,
@@ -3406,7 +3401,7 @@ package body et_project is
 		pac_line_width			: type_general_line_width := type_general_line_width'first;
 		procedure reset_line_width is begin pac_line_width := type_general_line_width'first; end;
 		
-		pac_signal_layers		: et_pcb_stack.type_signal_layers.set;
+		signal_layers : et_pcb_stack.type_signal_layers.set;
 -- 		lock_status 			: et_pcb.type_locked := lock_status_default;
 		
 		type type_line is new et_packages.shapes.type_line with null record;
@@ -3453,20 +3448,31 @@ package body et_project is
 		pac_circle_copper		: et_packages.type_copper_circle;
 		procedure reset_circle_copper is begin pac_circle_copper := (others => <>); end;		
 		
-		type type_polygon is new et_packages.type_polygon with null record;
-		pac_polygon				: type_polygon;
+-- 		type type_polygon is new et_packages.type_polygon with null record;
+-- 		pac_polygon				: type_polygon;
 
-		type type_polygon_2 is new et_packages.shapes.type_polygon_base with null record;
-		polygon_2				: type_polygon_2;
+		filled : shapes.type_filled := shapes.filled_default;
+		
+		type type_polygon is new et_packages.shapes.type_polygon_base with null record;
+		polygon_2 : type_polygon;
 
-		fill_style	: shapes.type_fill_style := shapes.fill_style_default;
-		hatching : shapes.type_hatching;
+		polygon_width_min : type_track_width; -- CS default ?
+		polygon_isolation : type_track_clearance; -- CS default ?
+		
+		fill_style : type_fill_style := fill_style_default;
+		hatching : type_hatching;
+		easing : type_polygon_easing;
 
-		procedure reset_polygon is begin pac_polygon := (others => <>); end;
-		pac_polygon_copper		: type_copper_polygon;
-		procedure reset_polygon_copper is begin pac_polygon_copper := (others => <>); end;
-		polygon_corner_points	: type_polygon_points.set;
-		polygon_corner_point	: et_pcb_coordinates.geometry.type_point;
+		procedure reset_polygon is begin 
+			polygon_2 := (others => <>);
+
+			fill_style := fill_style_default;
+			hatching := (others => <>);
+			easing := (others => <>);
+		end;
+
+-- 		polygon_corner_points	: type_polygon_points.set;
+-- 		polygon_corner_point	: et_pcb_coordinates.geometry.type_point;
 
 		pac_text				: et_packages.type_text_with_content;
 		pac_text_placeholder	: et_packages.type_text_placeholder;
@@ -3570,22 +3576,18 @@ package body et_project is
 						when SOLID =>
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.top.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon_2) with 
-												fill_style => SOLID));
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+												fill_style 	=> SOLID,
+												easing 		=> easing
+											   ));
 
 						when HATCHED =>
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.top.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon_2) with 
-												fill_style => HATCHED,
-												hatching => hatching));
-
-						when CUTOUT =>
-							pac_silk_polygons.append (
-								container	=> packge.silk_screen.top.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon_2) with 
-												fill_style => CUTOUT));
-
+												fill_style 	=> HATCHED,
+												easing 		=> easing,
+												hatching	=> hatching));
 					end case;
 					
 					-- clean up for next polygon
@@ -3598,21 +3600,17 @@ package body et_project is
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.bottom.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon_2) with 
-												fill_style => SOLID));
+												fill_style	=> SOLID,
+												easing		=> easing
+											   ));
 
 						when HATCHED =>
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.bottom.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon_2) with 
-												fill_style => HATCHED,
-												hatching => hatching));
-
-						when CUTOUT =>
-							pac_silk_polygons.append (
-								container	=> packge.silk_screen.bottom.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon_2) with 
-												fill_style => CUTOUT));
-
+												fill_style	=> HATCHED,
+												easing		=> easing,
+												hatching	=> hatching));
 					end case;
 					
 					-- clean up for next polygon
@@ -3625,21 +3623,16 @@ package body et_project is
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.top.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon_2) with 
-												fill_style => SOLID));
+												easing		=> easing,
+												fill_style	=> SOLID));
 
 						when HATCHED =>
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.top.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon_2) with 
-												fill_style => HATCHED,
-												hatching => hatching));
-
-						when CUTOUT =>
-							pac_doc_polygons.append (
-								container	=> packge.assembly_documentation.top.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon_2) with 
-												fill_style => CUTOUT));
-
+												fill_style	=> HATCHED,
+												easing		=> easing,
+												hatching 	=> hatching));
 					end case;
 					
 					-- clean up for next polygon
@@ -3652,20 +3645,16 @@ package body et_project is
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.bottom.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon_2) with 
-												fill_style => SOLID));
+												easing 		=> easing,
+												fill_style	=> SOLID));
 
 						when HATCHED =>
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.bottom.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon_2) with 
-												fill_style => HATCHED,
-												hatching => hatching));
-
-						when CUTOUT =>
-							pac_doc_polygons.append (
-								container	=> packge.assembly_documentation.bottom.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon_2) with 
-												fill_style => CUTOUT));
+												fill_style	=> HATCHED,
+												easing		=> easing,
+												hatching	=> hatching));
 
 					end case;
 					
@@ -3676,7 +3665,8 @@ package body et_project is
 				procedure append_keepout_polygon_top is begin
 					type_keepout_polygons.append (
 						container	=> packge.keepout.top.polygons, 
-						new_item	=> (shapes.type_polygon_base (polygon_2) with null record));
+						new_item	=> (shapes.type_polygon_base (polygon_2) with 
+										filled	=> filled));
 
 					-- clean up for next polygon
 					reset_polygon;
@@ -3685,12 +3675,178 @@ package body et_project is
 				procedure append_keepout_polygon_bottom is begin
 					type_keepout_polygons.append (
 						container	=> packge.keepout.bottom.polygons, 
-						new_item	=> (shapes.type_polygon_base (polygon_2) with null record));
+						new_item	=> (shapes.type_polygon_base (polygon_2) with
+										filled	=> filled));
 
 					-- clean up for next polygon
 					reset_polygon;
 				end;
 
+				procedure append_stencil_polygon_top is begin
+					case fill_style is
+						when SOLID =>
+							type_stencil_polygons.append (
+								container	=> packge.stencil.top.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+										fill_style	=> SOLID,
+										easing		=> easing));
+
+						when HATCHED =>
+							type_stencil_polygons.append (
+								container	=> packge.stencil.top.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+										fill_style	=> HATCHED,
+										easing		=> easing,
+										hatching	=> hatching));
+					end case;
+
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_stencil_polygon_bottom is begin
+					case fill_style is
+						when SOLID =>
+							type_stencil_polygons.append (
+								container	=> packge.stencil.bottom.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+										fill_style	=> SOLID,
+										easing		=> easing));
+
+						when HATCHED =>
+							type_stencil_polygons.append (
+								container	=> packge.stencil.bottom.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+										fill_style	=> HATCHED,
+										easing		=> easing,
+										hatching	=> hatching));
+					end case;
+
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_stop_polygon_top is begin
+					case fill_style is
+						when SOLID =>
+							type_stop_polygons.append (
+								container	=> packge.stop_mask.top.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+										fill_style	=> SOLID,
+										easing		=> easing));
+
+						when HATCHED =>
+							type_stop_polygons.append (
+								container	=> packge.stop_mask.top.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+										fill_style	=> HATCHED,
+										easing		=> easing,
+										hatching	=> hatching));
+					end case;
+
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+				
+				procedure append_stop_polygon_bottom is begin
+					case fill_style is
+						when SOLID =>
+							type_stop_polygons.append (
+								container	=> packge.stop_mask.bottom.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+										fill_style	=> SOLID,
+										easing		=> easing));
+
+						when HATCHED =>
+							type_stop_polygons.append (
+								container	=> packge.stop_mask.bottom.polygons, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+										fill_style	=> HATCHED,
+										easing		=> easing,
+										hatching	=> hatching));
+					end case;
+
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_copper_polygon_top is begin
+					case fill_style is
+						when SOLID =>
+							pac_copper_polygons_solid.append (
+								container	=> packge.copper.top.polygons.solid, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+										fill_style	=> SOLID,
+										easing		=> easing,
+										width_min 	=> polygon_width_min,
+										isolation	=> polygon_isolation));
+
+						when HATCHED =>
+							pac_copper_polygons_hatched.append (
+								container	=> packge.copper.top.polygons.hatched, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+										fill_style	=> HATCHED,
+										easing		=> easing,
+										hatching	=> hatching,
+										width_min 	=> polygon_width_min,
+										isolation	=> polygon_isolation));
+					end case;
+										
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_copper_polygon_bottom is begin
+					case fill_style is
+						when SOLID =>
+							pac_copper_polygons_solid.append (
+								container	=> packge.copper.bottom.polygons.solid, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+										fill_style	=> SOLID,
+										easing		=> easing,
+										width_min 	=> polygon_width_min,
+										isolation	=> polygon_isolation));
+
+						when HATCHED =>
+							pac_copper_polygons_hatched.append (
+								container	=> packge.copper.bottom.polygons.hatched, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+										fill_style	=> HATCHED,
+										easing		=> easing,
+										hatching	=> hatching,
+										width_min 	=> polygon_width_min,
+										isolation	=> polygon_isolation));
+					end case;
+										
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_route_restrict_polygon is begin
+					type_route_restrict_polygons.append (
+						container	=> packge.route_restrict.polygons, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with 
+										filled	=> filled,
+										layers	=> signal_layers));
+
+					-- clean up for next polygon
+					reset_polygon;
+
+					et_pcb_stack.type_signal_layers.clear (signal_layers);
+				end;
+
+				procedure append_via_restrict_polygon is begin
+					type_via_restrict_polygons.append (
+						container	=> packge.via_restrict.polygons, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with 
+										filled	=> filled,
+										layers	=> signal_layers));
+
+					-- clean up for next polygon
+					reset_polygon;
+
+					et_pcb_stack.type_signal_layers.clear (signal_layers);
+				end;
 				
 			begin -- execute_section
 				case stack.current is
@@ -3866,23 +4022,23 @@ package body et_project is
 								type_route_restrict_lines.append (
 									container	=> packge.route_restrict.lines,
 									new_item	=> (shapes.type_line (pac_line) with
-													layers	=> pac_signal_layers));
+													layers	=> signal_layers));
 
 								-- clean up for next line
 								reset_line;
-								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
+								et_pcb_stack.type_signal_layers.clear (signal_layers);
 
 							when SEC_VIA_RESTRICT =>
 								
 								type_via_restrict_lines.append (
 									container	=> packge.via_restrict.lines,
 									new_item	=> (shapes.type_line (pac_line) with
-													layers	=> pac_signal_layers));
+													layers	=> signal_layers));
 
 								-- clean up for next line
 								reset_line;
 								reset_line_width;
-								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
+								et_pcb_stack.type_signal_layers.clear (signal_layers);
 								
 							when SEC_PAD_CONTOURS_SMT =>
 								
@@ -4056,22 +4212,22 @@ package body et_project is
 								
 								type_route_restrict_arcs.append (
 									container	=> packge.route_restrict.arcs,
-									new_item	=> (shapes.type_arc (pac_arc) with layers => pac_signal_layers));
+									new_item	=> (shapes.type_arc (pac_arc) with layers => signal_layers));
 
 								-- clean up for next arc
 								reset_arc;
-								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
+								et_pcb_stack.type_signal_layers.clear (signal_layers);
 
 							when SEC_VIA_RESTRICT =>
 								
 								type_via_restrict_arcs.append (
 									container	=> packge.via_restrict.arcs,
-									new_item	=> (shapes.type_arc (pac_arc) with layers => pac_signal_layers));
+									new_item	=> (shapes.type_arc (pac_arc) with layers => signal_layers));
 
 								-- clean up for next arc
 								reset_arc;
 								reset_line_width;
-								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
+								et_pcb_stack.type_signal_layers.clear (signal_layers);
 
 							when SEC_PAD_CONTOURS_SMT =>
 								type_pad_arcs.append (
@@ -4222,19 +4378,19 @@ package body et_project is
 								
 								type_route_restrict_circles.append (
 									container	=> packge.route_restrict.circles,
-									new_item	=> (make_fillable_circle_solid with pac_signal_layers));
+									new_item	=> (make_fillable_circle_solid with signal_layers));
 
 								reset_circle_fillable; -- clean up for next circle
-								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
+								et_pcb_stack.type_signal_layers.clear (signal_layers);
 
 							when SEC_VIA_RESTRICT =>
 								
 								type_via_restrict_circles.append (
 									container	=> packge.via_restrict.circles,
-									new_item	=> (make_fillable_circle_solid with pac_signal_layers));
+									new_item	=> (make_fillable_circle_solid with signal_layers));
 
 								reset_circle_fillable; -- clean up for next circle
-								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
+								et_pcb_stack.type_signal_layers.clear (signal_layers);
 
 							when SEC_PAD_CONTOURS_SMT =>
 								type_pad_circles.append (
@@ -4263,39 +4419,19 @@ package body et_project is
 										append_silk_polygon_top;
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
-
 										append_assy_doc_polygon_top;
 										
 									when SEC_STENCIL =>
-
-										type_stencil_polygons.append (
-											container	=> packge.stencil.top.polygons, 
-											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
-
-										-- clean up for next polygon
-										reset_polygon;
+										append_stencil_polygon_top;
 										
 									when SEC_STOP_MASK =>
-
-										type_stop_polygons.append (
-											container	=> packge.stop_mask.top.polygons, 
-											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
-
-										-- clean up for next polygon
-										reset_polygon;
+										append_stop_polygon_top;
 										
 									when SEC_KEEPOUT =>
-
 										append_keepout_polygon_top;
 
 									when SEC_COPPER =>
-
-										type_copper_polygons.append (
-											container	=> packge.copper.top.polygons, 
-											new_item	=> pac_polygon_copper);
-
-										-- clean up for next polygon
-										pac_polygon_copper := (others => <>);
+										append_copper_polygon_top;
 
 									when SEC_PAD_CONTOURS_THT =>
 
@@ -4318,35 +4454,16 @@ package body et_project is
 										append_assy_doc_polygon_bottom;
 										
 									when SEC_STENCIL =>
-
-										type_stencil_polygons.append (
-											container	=> packge.stencil.bottom.polygons, 
-											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
-
-										-- clean up for next polygon
-										reset_polygon;
+										append_stencil_polygon_bottom;
 										
 									when SEC_STOP_MASK =>
-
-										type_stop_polygons.append (
-											container	=> packge.stop_mask.bottom.polygons, 
-											new_item	=> (et_packages.type_polygon (pac_polygon) with null record));
-
-										-- clean up for next polygon
-										reset_polygon;
+										append_stop_polygon_bottom;
 										
 									when SEC_KEEPOUT =>
-
 										append_keepout_polygon_bottom;
 
 									when SEC_COPPER =>
-
-										type_copper_polygons.append (
-											container	=> packge.copper.bottom.polygons, 
-											new_item	=> pac_polygon_copper);
-
-										-- clean up for next polygon
-										pac_polygon_copper := (others => <>);
+										append_copper_polygon_bottom;
 
 									when SEC_PAD_CONTOURS_THT =>
 
@@ -4361,30 +4478,10 @@ package body et_project is
 								end case;
 								
 							when SEC_ROUTE_RESTRICT =>
-								
-								type_route_restrict_polygons.append (
-									container	=> packge.route_restrict.polygons, 
-									new_item	=> (et_packages.type_polygon (pac_polygon) with 
-													width	=> pac_line_width,
-													layers	=> pac_signal_layers));
-
-								-- clean up for next polygon
-								reset_polygon;
-								reset_line_width;
-								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
+								append_route_restrict_polygon;
 
 							when SEC_VIA_RESTRICT =>
-								
-								type_via_restrict_polygons.append (
-									container	=> packge.via_restrict.polygons, 
-									new_item	=> (et_packages.type_polygon (pac_polygon) with 
-													width	=> pac_line_width,
-													layers	=> pac_signal_layers));
-
-								-- clean up for next polygon
-								reset_polygon;
-								reset_line_width;
-								et_pcb_stack.type_signal_layers.clear (pac_signal_layers);
+								append_via_restrict_polygon;
 
 							when SEC_PAD_CONTOURS_SMT =>
 
@@ -4398,21 +4495,23 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 						
-					when SEC_CORNERS =>
+					when SEC_CONTOURS =>
 						case stack.parent is
 							when SEC_POLYGON =>
-								-- Assign the collected corner points to the temporarily polygons
-								-- pac_polygon, pac_polygon_copper and pad_shape_polygon. 
-								-- When the section POLYGON closes one of them is taken.
-								-- CS: A correct implementation should test the parent section of
-								-- SEC_POLYGON instead before copying the corner points.
-								pac_polygon.corners := polygon_corner_points;
-								pac_polygon_copper.corners := polygon_corner_points;
-								pad_shape_polygon.corners := polygon_corner_points;
-
-								-- clean up for next collection of corner points
-								type_polygon_points.clear (polygon_corner_points);
-
+								null;
+-- CS								
+-- 								-- Assign the collected corner points to the temporarily polygons
+-- 								-- pac_polygon, pac_polygon_copper and pad_shape_polygon. 
+-- 								-- When the section POLYGON closes one of them is taken.
+-- 								-- CS: A correct implementation should test the parent section of
+-- 								-- SEC_POLYGON instead before copying the corner points.
+-- 								pac_polygon.corners := polygon_corner_points;
+-- 								pac_polygon_copper.corners := polygon_corner_points;
+-- 								pad_shape_polygon.corners := polygon_corner_points;
+-- 
+-- 								-- clean up for next collection of corner points
+-- 								type_polygon_points.clear (polygon_corner_points);
+-- 
 							when others => invalid_section;
 						end case;
 
@@ -4627,7 +4726,7 @@ package body et_project is
 			elsif set (section_terminals, SEC_TERMINALS) then null;
 			elsif set (section_terminal, SEC_TERMINAL) then null;
 			elsif set (section_polygon, SEC_POLYGON) then null;
-			elsif set (section_corners, SEC_CORNERS) then null;			
+			elsif set (section_corners, SEC_CONTOURS) then null;
 			else
 				-- The line contains something else -> the payload data. 
 				-- Temporarily this data is stored in corresponding variables.
@@ -4794,7 +4893,7 @@ package body et_project is
 										
 										-- there must be at least two fields:
 										expect_field_count (line => line, count_expected => 2, warn => false);
-										pac_signal_layers := to_layers (line);
+										signal_layers := to_layers (line);
 										
 									else
 										invalid_keyword (kw);
@@ -4976,7 +5075,7 @@ package body et_project is
 										-- there must be at least two fields:
 										expect_field_count (line => line, count_expected => 2, warn => false);
 
-										pac_signal_layers := to_layers (line);
+										signal_layers := to_layers (line);
 
 									else
 										invalid_keyword (kw);
@@ -5210,7 +5309,7 @@ package body et_project is
 										-- there must be at least two fields:
 										expect_field_count (line => line, count_expected => 2, warn => false);
 
-										pac_signal_layers := to_layers (line);
+										signal_layers := to_layers (line);
 										
 									else
 										invalid_keyword (kw);
@@ -5273,23 +5372,23 @@ package body et_project is
 											-- CS: In the following: set a corresponding parameter-found-flag
 											if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
 												expect_field_count (line, 2);													
-												pac_polygon.fill_style := to_fill_style (f (line, 2));
+												fill_style := to_fill_style (f (line, 2));
 
 											elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 												expect_field_count (line, 2);													
-												pac_polygon.corner_easing := to_corner_easing (f (line, 2));
+												easing.style := to_corner_easing (f (line, 2));
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
-												pac_polygon.easing_radius := to_distance (f (line, 2));
+												easing.radius := to_distance (f (line, 2));
 												
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												pac_polygon.hatching_line_width := to_distance (f (line, 2));
+												hatching.width := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
-												pac_polygon.hatching_spacing := to_distance (f (line, 2));
+												hatching.spacing := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -5301,33 +5400,33 @@ package body et_project is
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+											if kw = keyword_fill_style then -- fill_style solid/hatched
 												expect_field_count (line, 2);													
-												pac_polygon_copper.fill_style := to_fill_style (f (line, 2));
+												fill_style := to_fill_style (f (line, 2));
 
 											elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 												expect_field_count (line, 2);													
-												pac_polygon_copper.corner_easing := to_corner_easing (f (line, 2));
+												easing.style := to_corner_easing (f (line, 2));
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
-												pac_polygon_copper.easing_radius := to_distance (f (line, 2));
+												easing.radius := to_distance (f (line, 2));
 												
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												pac_polygon_copper.hatching_line_width := to_distance (f (line, 2));
+												hatching.width := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
-												pac_polygon_copper.hatching_spacing := to_distance (f (line, 2));
-
-											elsif kw = keyword_priority then -- priority 2
-												expect_field_count (line, 2);
-												pac_polygon_copper.priority_level := to_polygon_priority (f (line, 2));
+												hatching.spacing := to_distance (f (line, 2));
 
 											elsif kw = keyword_isolation then -- isolation 0.5
 												expect_field_count (line, 2);
-												pac_polygon_copper.isolation_gap := to_distance (f (line, 2));
+												polygon_isolation := to_distance (f (line, 2));
+
+											elsif kw = keyword_width then -- width 0.5
+												expect_field_count (line, 2);
+												polygon_width_min := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -5344,35 +5443,15 @@ package body et_project is
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
-										expect_field_count (line, 2);													
-										pac_polygon.fill_style := to_fill_style (f (line, 2));
-
-									elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
-										expect_field_count (line, 2);													
-										pac_polygon.corner_easing := to_corner_easing (f (line, 2));
-
-									elsif kw = keyword_easing_radius then -- easing_radius 0.4
-										expect_field_count (line, 2);													
-										pac_polygon.easing_radius := to_distance (f (line, 2));
-										
-									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-										expect_field_count (line, 2);													
-										pac_polygon.hatching_line_width := to_distance (f (line, 2));
-
-									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
-										expect_field_count (line, 2);													
-										pac_polygon.hatching_spacing := to_distance (f (line, 2));
-										
-									elsif kw = keyword_width then -- width 0.5
+									if kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);
-										pac_line_width := to_distance (f (line, 2));
-										
+										filled := to_filled (f (line, 2));
+
 									elsif kw = keyword_layers then -- layers 1 14 3
 
 										-- there must be at least two fields:
 										expect_field_count (line => line, count_expected => 2, warn => false);
-										pac_signal_layers := to_layers (line);
+										signal_layers := to_layers (line);
 
 									else
 										invalid_keyword (kw);
@@ -5384,12 +5463,16 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 						
-					when SEC_CORNERS =>
+					when SEC_CONTOURS =>
 						case stack.parent is
 							when SEC_POLYGON =>
 								declare
 									kw : string := f (line, 1);
 								begin
+									null;
+
+									-- CS
+									
 									-- read corner points
 									-- NOTE: A corner point is defined by a single line.
 									-- Upon reading the line like "position x 4 y 4" the point is
@@ -5398,17 +5481,17 @@ package body et_project is
 									-- There is no section for a single corner like [CORNER BEGIN].
 									
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_position then -- position x 123.54 y 2.7
-										expect_field_count (line, 5);
-
-										-- extract corner coordinates from line starting at field 2
-										polygon_corner_point := to_position (line, 2);
-
-										-- insert the corner point in collection of corner points
-										type_polygon_points.insert (polygon_corner_points, polygon_corner_point);
-									else
-										invalid_keyword (kw);
-									end if;
+-- 									if kw = keyword_position then -- position x 123.54 y 2.7
+-- 										expect_field_count (line, 5);
+-- 
+-- 										-- extract corner coordinates from line starting at field 2
+-- 										polygon_corner_point := to_position (line, 2);
+-- 
+-- 										-- insert the corner point in collection of corner points
+-- 										type_polygon_points.insert (polygon_corner_points, polygon_corner_point);
+-- 									else
+-- 										invalid_keyword (kw);
+-- 									end if;
 								end;
 								
 							when others => invalid_section;
@@ -7756,7 +7839,8 @@ package body et_project is
 		use type_copper_arcs;
 		use type_copper_circles;
 		use type_texts_with_content;
-		use type_copper_polygons;
+		use pac_copper_polygons_solid;
+		use pac_copper_polygons_hatched;
 
 		use type_keepout_lines;
 		use type_keepout_arcs;
@@ -7824,29 +7908,54 @@ package body et_project is
 				circle_end;
 			end write_circle;
 
-			procedure write_polygon (cursor : in type_copper_polygons.cursor) is 
-				use et_pcb_coordinates;
-				use et_packages.shapes;
-				use type_polygon_points;
-				
-				procedure query_points (polygon : in type_copper_polygon) is begin
-					iterate (polygon.corners, write_polygon_corners'access);
-				end query_points;
+			procedure write_polygon (cursor : in pac_copper_polygons_solid.cursor) is 
+-- 				use et_pcb_coordinates;
+-- 				use et_packages.shapes;
+-- 				use type_polygon_points;
+-- 				
+-- 				procedure query_points (polygon : in type_copper_polygon) is begin
+-- 					iterate (polygon.corners, write_polygon_corners'access);
+-- 				end query_points;
 
 			begin -- write_polygon
 				polygon_begin;
-				write (keyword => keyword_priority, parameters => to_string (element (cursor).priority_level));
-				write (keyword => keyword_isolation, parameters => to_string (element (cursor).isolation_gap));
-				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
-				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
-				corners_begin;
-				query_element (cursor, query_points'access);
-				corners_end;
+-- 				write (keyword => keyword_priority, parameters => to_string (element (cursor).priority_level));
+-- 				write (keyword => keyword_isolation, parameters => to_string (element (cursor).isolation_gap));
+-- 				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+-- 				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+-- 				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+-- 				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+-- 				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+-- 				corners_begin;
+-- 				query_element (cursor, query_points'access);
+-- 				corners_end;
 				polygon_end;
 			end write_polygon;
+
+			procedure write_polygon (cursor : in pac_copper_polygons_hatched.cursor) is 
+-- 				use et_pcb_coordinates;
+-- 				use et_packages.shapes;
+-- 				use type_polygon_points;
+-- 				
+-- 				procedure query_points (polygon : in type_copper_polygon) is begin
+-- 					iterate (polygon.corners, write_polygon_corners'access);
+-- 				end query_points;
+
+			begin -- write_polygon
+				polygon_begin;
+-- 				write (keyword => keyword_priority, parameters => to_string (element (cursor).priority_level));
+-- 				write (keyword => keyword_isolation, parameters => to_string (element (cursor).isolation_gap));
+-- 				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+-- 				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+-- 				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+-- 				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+-- 				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+-- 				corners_begin;
+-- 				query_element (cursor, query_points'access);
+-- 				corners_end;
+				polygon_end;
+			end write_polygon;
+
 			
 		begin -- write_copper
 			section_mark (section_copper, HEADER);
@@ -8378,8 +8487,8 @@ package body et_project is
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 
 		-- drawing grid
-		grid_schematic : et_coordinates.geometry.type_grid;
-		grid_board : et_pcb_coordinates.geometry.type_grid;
+		grid_schematic : et_coordinates.geometry.type_grid; -- CS rename to schematic_grid
+		grid_board : et_pcb_coordinates.geometry.type_grid; -- CS rename to board_grid
 		
 		-- net class
 		net_class 		: et_pcb.type_net_class;
@@ -8419,52 +8528,49 @@ package body et_project is
 		net_netchanger_port : netlists.type_port_netchanger;
 		net_netchanger_ports : netlists.type_ports_netchanger.set;
 
-		fill_style	: et_packages.shapes.type_fill_style := et_packages.shapes.type_fill_style'first;
-		hatching	: et_packages.shapes.type_hatching;
+		fill_style : et_packages.type_fill_style := et_packages.fill_style_default;
+		hatching : et_packages.type_hatching;
 		
 		route			: et_pcb.type_route;
-		route_line 		: et_pcb.type_copper_line;
-		route_arc		: et_pcb.type_copper_arc;
-		route_via		: et_pcb.type_via;
+		route_line 		: et_pcb.type_copper_line; -- CS element of route. maybe no need
+		route_arc		: et_pcb.type_copper_arc;  -- CS element of route. maybe no need
+		route_via		: et_pcb.type_via;  -- CS element of route. maybe no need
 
 		type type_polygon_2 is new et_packages.shapes.type_polygon_base with null record;
 		polygon_2 : type_polygon_2; -- CS rename to type_polygon
 
-		route_polygon_priority			: et_packages.type_polygon_priority := et_packages.type_polygon_priority'first;
-		route_polygon_isolation_gap		: et_packages.type_track_clearance := et_packages.type_track_clearance'first;
-		route_layer						: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
-		route_width						: et_packages.type_track_width := et_packages.type_track_width'first;
-
+		polygon_pad_connection	: et_packages.type_polygon_pad_connection := et_packages.type_polygon_pad_connection'first;
+		polygon_priority		: et_packages.type_polygon_priority := et_packages.type_polygon_priority'first;
+		polygon_isolation		: et_packages.type_track_clearance := et_packages.type_track_clearance'first;
+		
+		signal_layer	: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
+		route_width		: et_packages.type_track_width := et_packages.type_track_width'first;
 
 		thermal : et_pcb.type_thermal;
-		
-		polygon_pad_connection	: et_packages.type_polygon_pad_connection := et_packages.type_polygon_pad_connection'first;
-		
--- 		route_polygon					: et_packages.type_copper_polygon; -- CS remove
--- 		polygon_corner_point	: et_pcb_coordinates.geometry.type_point;  -- CS remove
--- 		polygon_corner_points	: et_packages.type_polygon_points.set;  -- CS remove
-
 		
 		frame_template_schematic	: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frm
 		-- CS frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
 		frame_template_board		: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frm
 
-		procedure reset_polygon_parameters is
+		procedure board_reset_polygon is
 			use et_packages;
 			use et_packages.shapes;
 			use et_pcb_stack;
 		begin
--- 			route_polygon			:= (others => <>);
 			polygon_2				:= (others => <>);
-			polygon_pad_connection	:= type_polygon_pad_connection'first;
-			route_layer				:= type_signal_layer'first;
-			route_width				:= type_track_width'first;
+
 			fill_style				:= fill_style_default;
-			route_polygon_isolation_gap := et_packages.type_track_clearance'first;
-			route_polygon_priority		:= et_packages.type_polygon_priority'first;
 			hatching				:= (others => <>);
-			thermal := (others => <>);
-		end reset_polygon_parameters;
+
+			polygon_pad_connection	:= type_polygon_pad_connection'first;
+			polygon_priority		:= et_packages.type_polygon_priority'first;
+			polygon_isolation		:= et_packages.type_track_clearance'first;
+
+			signal_layer			:= type_signal_layer'first;
+			route_width				:= type_track_width'first;
+
+			thermal					:= (others => <>);
+		end;
 
 		-- submodules
 		submodule_port			: submodules.type_submodule_port;
@@ -8538,7 +8644,7 @@ package body et_project is
 
 		board_circle_fillable_width					: et_packages.type_general_line_width := et_packages.type_general_line_width'first;
 		board_circle_fillable_filled				: et_packages.shapes.type_filled := et_packages.shapes.type_filled'first;
-		board_circle_fillable_fill_style			: et_packages.shapes.type_fill_style := et_packages.shapes.fill_style_default;
+		board_circle_fillable_fill_style			: et_packages.type_fill_style := et_packages.fill_style_default;
 		board_circle_fillable_hatching_line_width 	: et_packages.type_general_line_width := et_packages.type_general_line_width'first;
 		board_circle_fillable_hatching_spacing		: et_packages.type_general_line_width := et_packages.type_general_line_width'first;
 
@@ -8575,14 +8681,11 @@ package body et_project is
 		
 		board_line_width : et_packages.type_general_line_width := et_packages.type_general_line_width'first;
 
-		type type_polygon is new et_packages.type_polygon with null record;
-		board_polygon : type_polygon;
-
 		board_text : et_packages.type_text_with_content;
 		board_text_placeholder : et_pcb.type_text_placeholder;
 
-		signal_layers : et_pcb_stack.type_signal_layers.set;
 		
+		signal_layers : et_pcb_stack.type_signal_layers.set;
 		conductor_layer, dielectric_layer : et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 		conductor_thickness : et_pcb_stack.type_conductor_thickness := et_pcb_stack.conductor_thickness_outer_default;
 		dielectric_found : boolean := false;

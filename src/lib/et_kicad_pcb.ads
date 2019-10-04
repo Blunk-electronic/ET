@@ -741,8 +741,8 @@ package et_kicad_pcb is
 	type type_polygon_base is abstract tagged record
 		corners				: et_packages.type_polygon_points.set;
 		fill_style			: et_packages.type_fill_style := et_packages.SOLID; -- a polygon is always filled
-		hatching_line_width	: et_packages.type_track_width := hatching_line_width_default; -- the with of the lines
-		hatching_spacing	: et_packages.type_track_clearance := hatching_spacing_default; -- the space between the lines
+		hatching_line_width	: et_packages.type_track_width := et_packages.hatching_line_width_default; -- the with of the lines
+		hatching_spacing	: et_packages.type_track_clearance := et_packages.hatching_spacing_default; -- the space between the lines
 		corner_easing		: et_packages.type_corner_easing := et_packages.NONE;
 		easing_radius		: et_packages.type_easing_radius := zero; -- center of circle at corner point
 		-- CS locked : type_locked;
