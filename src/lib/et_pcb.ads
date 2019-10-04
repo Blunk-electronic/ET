@@ -242,7 +242,7 @@ package et_pcb is
 	package pac_texts is new doubly_linked_lists (type_text);
 
 	-- Cutout-polygons in copper layers:
-	type type_copper_polygon_cutout is new et_packages.type_copper_polygon_cutout with record
+	type type_copper_polygon_cutout is new et_packages.type_polygon_cutout with record
 		layer 		: type_signal_layer;
 	end record;
 
@@ -250,7 +250,7 @@ package et_pcb is
 
 
 	-- A floating copper polygon is not connected to any net:
-	type type_copper_polygon_floating_solid is new shapes.type_polygon (fill_style => SOLID) with record
+	type type_copper_polygon_floating_solid is new et_packages.type_polygon (fill_style => SOLID) with record
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
 		isolation_gap	: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 		layer 			: type_signal_layer;
@@ -259,7 +259,7 @@ package et_pcb is
 
 	package pac_copper_polygons_floating_solid is new indefinite_doubly_linked_lists (type_copper_polygon_floating_solid);
 	
-	type type_copper_polygon_floating_hatched is new shapes.type_polygon (fill_style => HATCHED) with record
+	type type_copper_polygon_floating_hatched is new et_packages.type_polygon (fill_style => HATCHED) with record
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
 		isolation_gap	: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 		layer 			: type_signal_layer;
@@ -338,7 +338,6 @@ package et_pcb is
 		et_packages.type_copper_polygon_solid with record
 
 		layer 			: type_signal_layer;
-		width_min		: type_track_width; -- the minimum width -- CS should be in anchestor
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
 				
 		case connection is
@@ -359,7 +358,6 @@ package et_pcb is
 		et_packages.type_copper_polygon_hatched with record
 
 		layer 			: type_signal_layer;
-		width_min		: type_track_width; -- the minimum width -- CS should be in anchestor
 		priority_level	: type_polygon_priority := type_polygon_priority'first;
 				
 		case connection is
@@ -414,13 +412,8 @@ package et_pcb is
 
 
 -- STENCIL
-
-	-- Because stencil is about two sides of the board this composite is required:
-	type type_stencil_both_sides is record
-		top		: type_stencil;
-		bottom	: type_stencil;
-	end record;
-
+	-- Stencil has no extensions.
+	-- See et_packages.
 
 
 	
@@ -459,16 +452,20 @@ package et_pcb is
 	end record;
 
 
--- ROUTE RESTRICT
+-- KEEPOUT
+	-- Keepout has no extensions.
+	-- See et_packages.
 	
-	type type_route_restrict is new et_packages.type_route_restrict with null record;
-
+	
+-- ROUTE RESTRICT
+	-- route restrict has no extensions.
+	-- See et_packages.
 
 
 -- VIA RESTRICT
+	-- via restrict has no extensions.
+	-- See et_packages.
 
-	type type_via_restrict is new et_packages.type_via_restrict with null record;
-	
 	
 
 

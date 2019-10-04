@@ -235,26 +235,65 @@ package et_packages is
 	package shapes is new et_geometry.shapes_2d (geometry => et_pcb_coordinates.geometry);
 	use shapes;
 	
-	
 
+	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE		
+	type type_fill_style is (SOLID, HATCHED);
+	fill_style_default : constant type_fill_style := SOLID;
+	
+	function to_string (fill_style : in type_fill_style) return string;
+	function to_fill_style (fill_style : in string) return type_fill_style;
+
+	text_fill_style : constant string := "fill_style";
+
+	
+	-- EASING
+	type type_corner_easing is (NONE, CHAMFER, FILLET);
+
+	function to_corner_easing (easing : in string) return type_corner_easing;
+	function to_string (easing : in type_corner_easing) return string;
+	
+	easing_radius_max : constant type_distance_positive := 100.0;
+	subtype type_easing_radius is type_distance_positive range type_distance_positive'first .. easing_radius_max;
+
+	type type_polygon_easing is record -- CS rename to type_easing because it is general
+		style	: type_corner_easing := NONE;
+		radius	: type_easing_radius := zero; -- center of circle at corner point
+	end record;
+
+	
 	-- POLYGON
+	type type_polygon (fill_style : type_fill_style) is new type_polygon_base with record
+		easing : type_polygon_easing;
+		
+		case fill_style is
+			when SOLID		=> null;
+			when HATCHED	=> hatching : type_hatching;
+		end case;
+	end record;
+
+	type type_polygon_cutout is new type_polygon_base with record
+		easing : type_polygon_easing;
+	end record;
+
+
+	
 	-- Corner points are collected in an ordered set.
 	-- This prevents placing two identical points on top of each other.
 	package type_polygon_points is new ordered_sets (type_point); -- CS remove
 
-	type type_polygon is abstract tagged record -- CS remove
-		corners				: type_polygon_points.set;
-		-- CS: consider a list of lines and arcs (circles ?) instead
-		
-		fill_style			: type_fill_style := SOLID; -- a polygon is always filled
-		hatching_line_width	: type_track_width := hatching_line_width_default; -- the with of the lines
-		hatching_spacing	: type_track_clearance := hatching_spacing_default; -- the space between the lines
-		corner_easing		: type_corner_easing := NONE;
-		easing_radius		: type_easing_radius := zero; -- center of circle at corner point
-		-- CS locked : type_locked;
-	end record;
-
-	text_polygon_corner_points : constant string := "corner_points";
+-- 	type type_polygon is abstract tagged record -- CS remove
+-- 		corners				: type_polygon_points.set;
+-- 		-- CS: consider a list of lines and arcs (circles ?) instead
+-- 		
+-- 		fill_style			: type_fill_style := SOLID; -- a polygon is always filled
+-- 		hatching_line_width	: type_track_width := hatching_line_width_default; -- the with of the lines
+-- 		hatching_spacing	: type_track_clearance := hatching_spacing_default; -- the space between the lines
+-- 		corner_easing		: type_corner_easing := NONE;
+-- 		easing_radius		: type_easing_radius := zero; -- center of circle at corner point
+-- 		-- CS locked : type_locked;
+-- 	end record;
+-- 
+-- 	text_polygon_corner_points : constant string := "corner_points";
 
 	
 
@@ -283,30 +322,30 @@ package et_packages is
 	function to_string (priority_level : in type_polygon_priority) return string;
 	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
 
-	type type_copper_polygon is new type_polygon with record -- CS remove
-		priority_level		: type_polygon_priority := type_polygon_priority'first;
-		isolation_gap		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
-	end record;
-
-	package type_copper_polygons is new doubly_linked_lists (type_copper_polygon); -- CS remove
+-- 	type type_copper_polygon is new type_polygon with record -- CS remove
+-- 		priority_level		: type_polygon_priority := type_polygon_priority'first;
+-- 		isolation_gap		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
+-- 	end record;
+-- 
+-- 	package type_copper_polygons is new doubly_linked_lists (type_copper_polygon); -- CS remove
 
 	
-	type type_copper_polygon_solid is new shapes.type_polygon (fill_style => SOLID) with record
+	type type_copper_polygon_solid is new type_polygon (fill_style => SOLID) with record
+		width_min : type_track_width; -- the minimum width
 		isolation : type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 	end record;
 
 	package pac_copper_polygons_solid is new doubly_linked_lists (type_copper_polygon_solid);
 
-	type type_copper_polygon_hatched is new shapes.type_polygon (fill_style => HATCHED) with record
+	type type_copper_polygon_hatched is new type_polygon (fill_style => HATCHED) with record
+		width_min : type_track_width; -- the minimum width
 		isolation : type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 	end record;
 
 	package pac_copper_polygons_hatched is new doubly_linked_lists (type_copper_polygon_hatched);
 
 	-- A cutout-polygon use in copper layers:
-	type type_copper_polygon_cutout is new shapes.type_polygon (fill_style => CUTOUT) with null record;
-	
-	package pac_copper_polygons_cutout is new doubly_linked_lists (type_copper_polygon_cutout);
+	package pac_copper_polygons_cutout is new doubly_linked_lists (type_polygon_cutout);
 
 	
 	text_polygon_priority_level	: constant string (1..14) := "priority_level";
@@ -328,8 +367,8 @@ package et_packages is
 		lines 		: type_copper_lines.list;
 		arcs		: type_copper_arcs.list;
 		circles		: type_copper_circles.list;
-		polygons	: type_copper_polygons.list; -- CS remove
--- 		polygons	: type_copper_polygons_2; -- CS
+-- 		polygons	: type_copper_polygons.list; -- CS remove
+		polygons	: type_copper_polygons_2; -- CS
 		texts		: type_texts_with_content.list;
 	end record;
 	
@@ -377,7 +416,7 @@ package et_packages is
 
 
 	-- This circle type is used by silk screen, assembly doc, stop mask, stencil
-	type type_fillable_circle (
+	type type_fillable_circle ( -- CS rework
 		filled		: type_filled;
 		fill_style	: type_fill_style -- don't care if filled is NO
 		)
@@ -389,8 +428,10 @@ package et_packages is
 
 			when YES =>
 				case fill_style is
-					when SOLID | CUTOUT => null;
+					when SOLID => null;
 					when HATCHED =>
+						-- CS use type_hatching here:
+						
 						-- the width of the circumfence and the hatching lines:
 						hatching_line_width	: type_general_line_width := hatching_line_width_default;
 
@@ -401,6 +442,8 @@ package et_packages is
 		end case;
 	end record;
 
+	-- CS type_circle_cutout ?
+	
 	function to_string (circle : in type_fillable_circle) return string;
 
 	-- This circle type is used by keepout, route restrict, via restrict.
@@ -430,9 +473,9 @@ package et_packages is
 	package type_stop_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
 
-	type type_stop_polygon is new type_polygon with null record;
+	--type type_stop_polygon is new type_polygon with null record;
 
-	package type_stop_polygons is new doubly_linked_lists (type_stop_polygon);
+	package type_stop_polygons is new indefinite_doubly_linked_lists (type_polygon);
 
 	
 	-- This is the type for stop mask objects in general:
@@ -444,7 +487,7 @@ package et_packages is
 		texts		: type_texts_with_content.list; -- for texts in copper to be exposed
 	end record;
 
-	-- Stop mask of packages (in library):
+	-- Stop mask of packages:
 	type type_stop_mask_both_sides is record
 		top		: type_stop_mask;
 		bottom	: type_stop_mask;
@@ -461,7 +504,7 @@ package et_packages is
 
 
 
-	-- SOLDER PASTE STENCIL
+-- STENCIL
 	type type_stencil_line is new type_line with record
 		width	: type_general_line_width;
 	end record;
@@ -480,8 +523,8 @@ package et_packages is
 	package type_stencil_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
 
-	type type_stencil_polygon is new type_polygon with null record; -- fill style hatched does not make sense
-	package type_stencil_polygons is new doubly_linked_lists (type_stencil_polygon);
+-- 	type type_stencil_polygon is new type_polygon with null record; -- fill style hatched does not make sense
+	package type_stencil_polygons is new indefinite_doubly_linked_lists (type_polygon);
 	
 	
 	-- This is the type for solder paste stencil objects in general:
@@ -504,7 +547,7 @@ package et_packages is
 	
 	
 	
-	-- SILK SCREEN
+-- SILK SCREEN
 	type type_silk_line is new type_line with record
 		width	: type_general_line_width;
 	end record;
@@ -525,7 +568,7 @@ package et_packages is
 -- 	type type_silk_polygon is new shapes.type_polygon with null record;
 	
 	--	package type_silk_polygons is new indefinite_doubly_linked_lists (type_silk_polygon);
-	package pac_silk_polygons is new indefinite_doubly_linked_lists (shapes.type_polygon);
+	package pac_silk_polygons is new indefinite_doubly_linked_lists (type_polygon);
 	
 
 	-- This is the base type for silk screen objects in general:
@@ -571,7 +614,7 @@ package et_packages is
 
 -- 	type type_doc_polygon is new type_polygon with null record;
 	
-	package pac_doc_polygons is new indefinite_doubly_linked_lists (shapes.type_polygon);
+	package pac_doc_polygons is new indefinite_doubly_linked_lists (type_polygon);
 
 	
 	-- This is the base type for assembly documentation objects in general:
@@ -583,7 +626,7 @@ package et_packages is
 		texts		: type_texts_with_content.list;
 	end record;
 
-	-- Assembly documentation objects of a package (in the library) include placeholders:
+	-- Assembly documentation objects of a package include placeholders:
 	type type_assembly_documentation is new type_assembly_documentation_base with record
 		placeholders: pac_text_placeholders.list;
 	end record;
@@ -593,6 +636,8 @@ package et_packages is
 		top		: type_assembly_documentation;
 		bottom	: type_assembly_documentation;
 	end record;
+
+
 
 	
 	
@@ -611,10 +656,12 @@ package et_packages is
 	
 	package type_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
 
-	type type_keepout_polygon is new shapes.type_polygon_base with null record;
-
-	package type_keepout_polygons is new doubly_linked_lists (type_keepout_polygon);
--- 	package type_keepout_polygons is new indefinite_doubly_linked_lists (shapes.type_polygon);
+-- 	type type_keepout_polygon is new shapes.type_polygon_base with null record;
+	
+-- 	type type_keepout_polygon_solid is new shapes.type_polygon (fill_style => SOLID) with null record;
+	
+-- 	package type_keepout_polygons is new doubly_linked_lists (type_keepout_polygon);
+	package type_keepout_polygons is new doubly_linked_lists (shapes.type_polygon);
 
 	
 	type type_keepout is record
@@ -654,8 +701,9 @@ package et_packages is
 	
 	package type_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 
-	type type_route_restrict_polygon is new type_polygon with record
-		width	: type_general_line_width; -- CS use subtype for reasonable range
+	-- 	type type_route_restrict_polygon is new type_polygon with record
+	type type_route_restrict_polygon is new shapes.type_polygon with record
+-- 		width	: type_general_line_width; -- CS use subtype for reasonable range
 		layers 	: type_signal_layers.set;
 	end record;
 	package type_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
@@ -670,7 +718,7 @@ package et_packages is
 		-- CS texts		: type_texts_with_content.list; -- for routing notes ? mind signal layer !
 	end record;
 	
-	type type_route_restrict_package is new type_route_restrict with null record;
+-- 	type type_route_restrict_package is new type_route_restrict with null record;
 
 
 
@@ -700,8 +748,8 @@ package et_packages is
 	package type_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
 
 	
-	type type_via_restrict_polygon is new type_polygon with record
-		width	: type_general_line_width; -- CS no need
+	type type_via_restrict_polygon is new shapes.type_polygon with record
+-- 		width	: type_general_line_width; -- CS no need
 		layers 	: type_signal_layers.set;
 	end record;
 
@@ -718,7 +766,7 @@ package et_packages is
 		-- CS texts		: type_texts_with_content.list; -- for via notes ?
 	end record;
 	
-	type type_via_restrict_package is new type_via_restrict with null record;
+-- 	type type_via_restrict_package is new type_via_restrict with null record;
 
 	
 -- PCB CONTOUR
@@ -885,8 +933,8 @@ package et_packages is
 		stop_mask				: type_stop_mask_both_sides;
 		stencil					: type_stencil_both_sides;
 
-		route_restrict 			: type_route_restrict_package;
-		via_restrict 			: type_via_restrict_package;
+		route_restrict 			: type_route_restrict;
+		via_restrict 			: type_via_restrict;
 		-- CS holes
 
 		-- PCB contour or so called "non-plated millings"

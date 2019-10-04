@@ -226,14 +226,14 @@ package et_geometry is
 	package shapes_2d is
 		use geometry;
 
-	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE		
-		type type_fill_style is (SOLID, HATCHED, CUTOUT);
-		fill_style_default : constant type_fill_style := SOLID;
-		
-		function to_string (fill_style : in type_fill_style) return string;
-		function to_fill_style (fill_style : in string) return type_fill_style;
-
-		text_fill_style : constant string := "fill_style";
+-- 	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE		
+-- 		type type_fill_style is (SOLID, CUTOUT, HATCHED);
+-- 		fill_style_default : constant type_fill_style := SOLID;
+-- 		
+-- 		function to_string (fill_style : in type_fill_style) return string;
+-- 		function to_fill_style (fill_style : in string) return type_fill_style;
+-- 
+-- 		text_fill_style : constant string := "fill_style";
 
 
 		type type_filled is (NO, YES);
@@ -324,12 +324,17 @@ package et_geometry is
 
 		
 	-- CIRCLE
-		type type_circle is abstract tagged record
+		type type_circle is abstract tagged record -- CS rename to type_circle_base
 			center			: type_point;
 			radius  		: type_distance_positive := zero;
 			-- CS locked : type_locked;
 		end record;
 
+-- 		type type_circle is new type_circle_base with record
+-- 			filled	: type_filled;
+-- 		end record;
+
+		
 		function on_circle (
 		-- Returns true if the given point sits on the given circle circumfence.
 		-- The optional parameter accuracy may be used to specifiy the range at
@@ -383,36 +388,40 @@ package et_geometry is
 			circles	: pac_polygon_circles.list;
 		end record;
 
-		-- EASING
-		type type_corner_easing is (NONE, CHAMFER, FILLET);
-
-		function to_corner_easing (easing : in string) return type_corner_easing;
-		function to_string (easing : in type_corner_easing) return string;
-		
-		easing_radius_max : constant type_distance_positive := 100.0;
-		subtype type_easing_radius is type_distance_positive range type_distance_positive'first .. easing_radius_max;
-
-		type type_polygon_easing is record
-			style	: type_corner_easing := NONE;
-			radius	: type_easing_radius := zero; -- center of circle at corner point
-		end record;
+-- 		-- EASING
+-- 		type type_corner_easing is (NONE, CHAMFER, FILLET);
+-- 
+-- 		function to_corner_easing (easing : in string) return type_corner_easing;
+-- 		function to_string (easing : in type_corner_easing) return string;
+-- 		
+-- 		easing_radius_max : constant type_distance_positive := 100.0;
+-- 		subtype type_easing_radius is type_distance_positive range type_distance_positive'first .. easing_radius_max;
+-- 
+-- 		type type_polygon_easing is record
+-- 			style	: type_corner_easing := NONE;
+-- 			radius	: type_easing_radius := zero; -- center of circle at corner point
+-- 		end record;
 
 		
 		type type_polygon_base is abstract tagged record
 			segments	: type_polygon_segments;
-			easing		: type_polygon_easing;
+-- 			easing		: type_polygon_easing;
 		end record;
 		
-		procedure move (
-			polygon : in out type_polygon_base;
-			offset	: in type_point);
+-- 		procedure move (
+-- 			polygon : in out type_polygon_base;
+-- 			offset	: in type_point);
 
-		type type_polygon (fill_style : type_fill_style) is new type_polygon_base with record
-			case fill_style is
-				when SOLID | CUTOUT	=> null;
-				when HATCHED		=> hatching : type_hatching;
-			end case;
+		type type_polygon is new type_polygon_base with record
+			filled	: type_filled;
 		end record;
+		
+-- 		type type_polygon (fill_style : type_fill_style) is new type_polygon_base with record
+-- 			case fill_style is
+-- 				when SOLID | CUTOUT	=> null;
+-- 				when HATCHED		=> hatching : type_hatching;
+-- 			end case;
+-- 		end record;
 
 		
 	end shapes_2d;

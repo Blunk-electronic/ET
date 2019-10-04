@@ -892,7 +892,7 @@ package body et_project is
 				write (keyword => keyword_fill_style, parameters => latin_1.space & to_string (circle.fill_style));
 
 				case circle.fill_style is
-					when SOLID | CUTOUT => null;
+					when SOLID => null;
 					when HATCHED =>
 						write (keyword => keyword_hatching_line_width  , parameters => to_string (circle.hatching_line_width));
 						write (keyword => keyword_hatching_line_spacing, parameters => to_string (circle.hatching_spacing));
@@ -1001,24 +1001,24 @@ package body et_project is
 	procedure write_polygon (cursor : in et_packages.type_stop_polygons.cursor) is 
 		use et_packages;
 		use et_packages.shapes;		
-		use type_stop_polygons;
-		use et_pcb_coordinates.geometry;
-		use type_polygon_points;
-		
-		procedure query_points (polygon : in type_stop_polygon) is begin
-			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
-		end query_points;
+-- 		use type_stop_polygons;
+-- 		use et_pcb_coordinates.geometry;
+-- 		use type_polygon_points;
+-- 		
+-- 		procedure query_points (polygon : in type_stop_polygon) is begin
+-- 			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
+-- 		end query_points;
 		
 	begin -- write_polygon
 		polygon_begin;
-		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
-		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
-		corners_begin;
-		query_element (cursor, query_points'access);
-		corners_end;
+-- 		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+-- 		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+-- 		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+-- 		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+-- 		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+-- 		corners_begin;
+-- 		query_element (cursor, query_points'access);
+-- 		corners_end;
 		polygon_end;
 	end write_polygon;
 
@@ -1058,24 +1058,24 @@ package body et_project is
 	procedure write_polygon (cursor : in et_packages.type_stencil_polygons.cursor) is 
 		use et_packages;
 		use et_packages.shapes;		
-		use type_stencil_polygons;
-		use et_pcb_coordinates.geometry;		
-		use type_polygon_points;
-		
-		procedure query_points (polygon : in type_stencil_polygon) is begin
-			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
-		end query_points;
+-- 		use type_stencil_polygons;
+-- 		use et_pcb_coordinates.geometry;		
+-- 		use type_polygon_points;
+-- 		
+-- 		procedure query_points (polygon : in type_stencil_polygon) is begin
+-- 			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
+-- 		end query_points;
 		
 	begin -- write_polygon
 		polygon_begin;
-		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
-		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
-		corners_begin;
-		query_element (cursor, query_points'access);
-		corners_end;
+-- 		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+-- 		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+-- 		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+-- 		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+-- 		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+-- 		corners_begin;
+-- 		query_element (cursor, query_points'access);
+-- 		corners_end;
 		polygon_end;
 	end write_polygon;
 
@@ -1126,25 +1126,25 @@ package body et_project is
 	procedure write_polygon (cursor : in et_packages.type_route_restrict_polygons.cursor) is 
 		use et_packages;
 		use et_packages.shapes;		
-		use type_route_restrict_polygons;
-		use et_pcb_coordinates.geometry;		
-		use type_polygon_points;
-		
-		procedure query_points (polygon : in type_route_restrict_polygon) is begin
-			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
-		end query_points;
+-- 		use type_route_restrict_polygons;
+-- 		use et_pcb_coordinates.geometry;		
+-- 		use type_polygon_points;
+-- 		
+-- 		procedure query_points (polygon : in type_route_restrict_polygon) is begin
+-- 			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
+-- 		end query_points;
 		
 	begin -- write_polygon
 		polygon_begin;
-		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
-		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
-		-- CS write layer numbers
-		corners_begin;
-		query_element (cursor, query_points'access);
-		corners_end;
+-- 		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+-- 		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+-- 		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+-- 		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+-- 		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+-- 		-- CS write layer numbers
+-- 		corners_begin;
+-- 		query_element (cursor, query_points'access);
+-- 		corners_end;
 		polygon_end;
 	end write_polygon;
 
@@ -1194,25 +1194,25 @@ package body et_project is
 	procedure write_polygon (cursor : in et_packages.type_via_restrict_polygons.cursor) is 
 		use et_packages;
 		use et_packages.shapes;		
-		use type_via_restrict_polygons;
-		use et_pcb_coordinates.geometry;		
-		use type_polygon_points;
-		
-		procedure query_points (polygon : in type_via_restrict_polygon) is begin
-			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
-		end query_points;
+-- 		use type_via_restrict_polygons;
+-- 		use et_pcb_coordinates.geometry;		
+-- 		use type_polygon_points;
+-- 		
+-- 		procedure query_points (polygon : in type_via_restrict_polygon) is begin
+-- 			iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
+-- 		end query_points;
 		
 	begin -- write_polygon
 		polygon_begin;
-		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
-		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
-		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
-		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
-		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
-		-- CS write_layer_numbers (element (cursor).layers);
-		corners_begin;
-		query_element (cursor, query_points'access);
-		corners_end;
+-- 		write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
+-- 		write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
+-- 		write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
+-- 		write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
+-- 		write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
+-- 		-- CS write_layer_numbers (element (cursor).layers);
+-- 		corners_begin;
+-- 		query_element (cursor, query_points'access);
+-- 		corners_end;
 		polygon_end;
 	end write_polygon;
 
@@ -1894,7 +1894,7 @@ package body et_project is
 					write (keyword => keyword_layer , parameters => to_string (element (polygon_solid_cursor).layer));
 					write (keyword => keyword_min_width , parameters => to_string (element (polygon_solid_cursor).width_min));
 					write (keyword => keyword_isolation, parameters => to_string (element (polygon_solid_cursor).isolation));
-					write (keyword => keyword_fill_style, parameters => to_string (et_packages.shapes.SOLID));
+					write (keyword => keyword_fill_style, parameters => to_string (fill_style => et_packages.SOLID));
 					write (keyword => keyword_hatching_line_width  , parameters => to_string (element (polygon_solid_cursor).hatching.width));
 					write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (polygon_solid_cursor).hatching.spacing));
 					write (keyword => keyword_corner_easing, parameters => to_string (element (polygon_solid_cursor).easing.style));
@@ -3318,7 +3318,7 @@ package body et_project is
 	-- matter or not. See spec for type_fillable_circle.
 		circle				: in et_packages.shapes.type_circle;
 		filled				: in et_packages.shapes.type_filled;
-		fill_style			: in et_packages.shapes.type_fill_style;
+		fill_style			: in et_packages.type_fill_style;
 		circumfence_width	: in et_packages.type_general_line_width;
 		hatching_line_width	: in et_packages.type_general_line_width;
 		hatching_spacing	: in et_packages.type_general_line_width)

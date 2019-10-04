@@ -197,6 +197,26 @@ package body et_packages is
 	function to_layer (layer : in string) return type_placeholder_package_layer is begin
 		return type_placeholder_package_layer'value (layer);
 	end to_layer;
+
+	-- FILL STYLE
+	function to_string (fill_style : in type_fill_style) return string is begin
+		return to_lower (type_fill_style'image (fill_style));
+	end;
+
+	function to_fill_style (fill_style : in string) return type_fill_style is begin
+		return type_fill_style'value (fill_style);
+	end;
+
+	
+	-- EASING
+	function to_corner_easing (easing : in string) return type_corner_easing is begin
+		return type_corner_easing'value (easing);
+	end;
+
+	function to_string (easing : in type_corner_easing) return string is begin
+		return to_lower (type_corner_easing'image (easing));
+	end to_string;
+
 	
 	function to_directory (directory_name : in string) return type_directory_name.bounded_string is
 	-- Converts a string to a type_directory_name.
@@ -282,27 +302,27 @@ package body et_packages is
 		return type_polygon_priority'value (priority_level);
 	end to_polygon_priority;
 	
-	function to_corner_easing (easing : in string) return type_corner_easing is
-		easing_out : type_corner_easing;
-	begin
-		if to_lower (easing) = to_lower (type_corner_easing'image (NONE)) then
-			easing_out := NONE;
-		elsif to_lower (easing) = to_lower (type_corner_easing'image (CHAMFER)) then
-			easing_out := CHAMFER;
-		elsif to_lower (easing) = to_lower (type_corner_easing'image (FILLET)) then
-			easing_out := FILLET;
-		else
-			log (ERROR, "type of easing '" & easing & "' invalid !", console => true);
-			raise constraint_error;
-		end if;
-
-		return easing_out;
-	end to_corner_easing;
-
-	function to_string (easing : in type_corner_easing) return string is
-	begin
-		return latin_1.space & to_lower (type_corner_easing'image (easing));
-	end to_string;
+-- 	function to_corner_easing (easing : in string) return type_corner_easing is
+-- 		easing_out : type_corner_easing;
+-- 	begin
+-- 		if to_lower (easing) = to_lower (type_corner_easing'image (NONE)) then
+-- 			easing_out := NONE;
+-- 		elsif to_lower (easing) = to_lower (type_corner_easing'image (CHAMFER)) then
+-- 			easing_out := CHAMFER;
+-- 		elsif to_lower (easing) = to_lower (type_corner_easing'image (FILLET)) then
+-- 			easing_out := FILLET;
+-- 		else
+-- 			log (ERROR, "type of easing '" & easing & "' invalid !", console => true);
+-- 			raise constraint_error;
+-- 		end if;
+-- 
+-- 		return easing_out;
+-- 	end to_corner_easing;
+-- 
+-- 	function to_string (easing : in type_corner_easing) return string is
+-- 	begin
+-- 		return latin_1.space & to_lower (type_corner_easing'image (easing));
+-- 	end to_string;
 
 	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is begin
 		return latin_1.space & to_lower (type_polygon_pad_connection'image (polygon_pad_connection));
@@ -329,7 +349,7 @@ package body et_packages is
 
 			when YES =>
 				case circle.fill_style is
-					when SOLID | CUTOUT =>
+					when SOLID =>
 						return 
 							shapes.to_string (type_circle (circle)) &
 							latin_1.space & text_fill_style & latin_1.space & to_string (circle.fill_style);
@@ -344,15 +364,15 @@ package body et_packages is
 		end case;
 	end;
 	
-	function to_string (fill_style : in type_fill_style) return string is
-	begin
-		return to_lower (type_fill_style'image (fill_style));
-	end to_string;
-
-	function to_fill_style (fill_style : in string) return type_fill_style is
-	begin
-		return type_fill_style'value (fill_style);
-	end to_fill_style;
+-- 	function to_string (fill_style : in type_fill_style) return string is
+-- 	begin
+-- 		return to_lower (type_fill_style'image (fill_style));
+-- 	end to_string;
+-- 
+-- 	function to_fill_style (fill_style : in string) return type_fill_style is
+-- 	begin
+-- 		return type_fill_style'value (fill_style);
+-- 	end to_fill_style;
 
 	function to_string (
 		description : in type_package_description.bounded_string;

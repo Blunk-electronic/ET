@@ -173,8 +173,8 @@ package body scripting is
 		raise constraint_error;
 	end;
 
-	procedure expect_fill_style (style : in et_packages.shapes.type_fill_style; field : in count_type) is begin
-		log (ERROR, "fill style " & enclose_in_quotes (et_packages.shapes.to_string (style)) &
+	procedure expect_fill_style (style : in et_packages.type_fill_style; field : in count_type) is begin
+		log (ERROR, "fill style " & enclose_in_quotes (et_packages.to_string (style)) &
 			 " expected in field no. " & count_type'image (field) & " !" , console => true);
 		raise constraint_error;
 	end;
@@ -2047,21 +2047,22 @@ package body scripting is
 									
 									-- Circle is filled with the fill style specified in field 7:
 									case to_fill_style (f (7)) is
-										when CUTOUT =>
-									
-											board_ops.draw_stop_circle (
-												module_name 	=> module,
-												face			=> to_face (f (5)),
-												circle			=> 
-															(
-															filled		=> YES,
-															fill_style	=> CUTOUT,
-															center	=> type_point (set (
-																		x => to_distance (f (8)),
-																		y => to_distance (f (9)))),
-															radius	=> to_distance (f (10))
-															),
-												log_threshold	=> log_threshold + 1);
+-- CS
+-- 										when CUTOUT =>
+-- 									
+-- 											board_ops.draw_stop_circle (
+-- 												module_name 	=> module,
+-- 												face			=> to_face (f (5)),
+-- 												circle			=> 
+-- 															(
+-- 															filled		=> YES,
+-- 															fill_style	=> CUTOUT,
+-- 															center	=> type_point (set (
+-- 																		x => to_distance (f (8)),
+-- 																		y => to_distance (f (9)))),
+-- 															radius	=> to_distance (f (10))
+-- 															),
+-- 												log_threshold	=> log_threshold + 1);
 
 										when SOLID =>
 									
@@ -2204,21 +2205,22 @@ package body scripting is
 									
 									-- Circle is filled with the fill style specified in field 7:
 									case to_fill_style (f (7)) is
-										when CUTOUT =>
-									
-											board_ops.draw_stencil_circle (
-												module_name 	=> module,
-												face			=> to_face (f (5)),
-												circle			=> 
-															(
-															filled		=> YES,
-															fill_style	=> CUTOUT,
-															center	=> type_point (set (
-																		x => to_distance (f (8)),
-																		y => to_distance (f (9)))),
-															radius	=> to_distance (f (10))
-															),
-												log_threshold	=> log_threshold + 1);
+-- CS
+-- 										when CUTOUT =>
+-- 									
+-- 											board_ops.draw_stencil_circle (
+-- 												module_name 	=> module,
+-- 												face			=> to_face (f (5)),
+-- 												circle			=> 
+-- 															(
+-- 															filled		=> YES,
+-- 															fill_style	=> CUTOUT,
+-- 															center	=> type_point (set (
+-- 																		x => to_distance (f (8)),
+-- 																		y => to_distance (f (9)))),
+-- 															radius	=> to_distance (f (10))
+-- 															),
+-- 												log_threshold	=> log_threshold + 1);
 
 										when SOLID =>
 									
@@ -2883,22 +2885,23 @@ package body scripting is
 													
 													-- Circle is filled with the fill style specified in field 7:
 													case to_fill_style (f (7)) is
-														when CUTOUT =>
-													
-															board_ops.draw_silk_screen_circle (
-																module_name 	=> module,
-																face			=> to_face (f (5)),
-																circle			=> 
-																			(
-																			filled		=> YES,
-																			fill_style	=> CUTOUT,
-																			center	=> type_point (set (
-																						x => to_distance (f (8)),
-																						y => to_distance (f (9)))),
-																			radius	=> to_distance (f (10))
-																			),
-																log_threshold	=> log_threshold + 1
-																);
+-- CS
+-- 														when CUTOUT =>
+-- 													
+-- 															board_ops.draw_silk_screen_circle (
+-- 																module_name 	=> module,
+-- 																face			=> to_face (f (5)),
+-- 																circle			=> 
+-- 																			(
+-- 																			filled		=> YES,
+-- 																			fill_style	=> CUTOUT,
+-- 																			center	=> type_point (set (
+-- 																						x => to_distance (f (8)),
+-- 																						y => to_distance (f (9)))),
+-- 																			radius	=> to_distance (f (10))
+-- 																			),
+-- 																log_threshold	=> log_threshold + 1
+-- 																);
 
 														when SOLID =>
 													
@@ -3053,22 +3056,23 @@ package body scripting is
 													
 													-- Circle is filled with the fill style specified in field 7:
 													case to_fill_style (f (7)) is
-														when CUTOUT =>
-													
-															board_ops.draw_assy_doc_circle (
-																module_name 	=> module,
-																face			=> to_face (f (5)),
-																circle			=> 
-																			(
-																			filled		=> YES,
-																			fill_style	=> CUTOUT,
-																			center	=> type_point (set (
-																						x => to_distance (f (8)),
-																						y => to_distance (f (9)))),
-																			radius	=> to_distance (f (10))
-																			),
-																log_threshold	=> log_threshold + 1
-																);
+-- CS
+-- 														when CUTOUT =>
+-- 													
+-- 															board_ops.draw_assy_doc_circle (
+-- 																module_name 	=> module,
+-- 																face			=> to_face (f (5)),
+-- 																circle			=> 
+-- 																			(
+-- 																			filled		=> YES,
+-- 																			fill_style	=> CUTOUT,
+-- 																			center	=> type_point (set (
+-- 																						x => to_distance (f (8)),
+-- 																						y => to_distance (f (9)))),
+-- 																			radius	=> to_distance (f (10))
+-- 																			),
+-- 																log_threshold	=> log_threshold + 1
+-- 																);
 
 														when SOLID =>
 													

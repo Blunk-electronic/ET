@@ -736,16 +736,15 @@ package et_kicad_pcb is
 	-- Corner points are collected in an ordered set.
 	-- This prevents placing two identical points on top of each other.
 
-	-- CS unify the follwing three polygon types:
+	-- CS unify the follwing three polygon types and use composite types:
 	
 	type type_polygon_base is abstract tagged record
-
 		corners				: et_packages.type_polygon_points.set;
-		fill_style			: et_packages.shapes.type_fill_style := SOLID; -- a polygon is always filled
+		fill_style			: et_packages.type_fill_style := et_packages.SOLID; -- a polygon is always filled
 		hatching_line_width	: et_packages.type_track_width := hatching_line_width_default; -- the with of the lines
 		hatching_spacing	: et_packages.type_track_clearance := hatching_spacing_default; -- the space between the lines
-		corner_easing		: type_corner_easing := NONE;
-		easing_radius		: type_easing_radius := zero; -- center of circle at corner point
+		corner_easing		: et_packages.type_corner_easing := et_packages.NONE;
+		easing_radius		: et_packages.type_easing_radius := zero; -- center of circle at corner point
 		-- CS locked : type_locked;
 	end record;
 
@@ -791,7 +790,7 @@ package et_kicad_pcb is
 
 		silk_screen	: et_pcb.type_silk_screen_both_sides;
 		assy_doc	: et_pcb.type_assembly_documentation_both_sides;
-		stencil		: et_pcb.type_stencil_both_sides;
+		stencil		: et_packages.type_stencil_both_sides;
 		stop_mask	: et_pcb.type_stop_mask_both_sides;
 		keepout		: et_packages.type_keepout_both_sides;		
 		contour		: et_pcb.type_pcb_contour;
