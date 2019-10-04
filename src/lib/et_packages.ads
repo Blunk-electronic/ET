@@ -404,7 +404,7 @@ package et_packages is
 	function to_string (circle : in type_fillable_circle) return string;
 
 	-- This circle type is used by keepout, route restrict, via restrict.
-	-- The fill style is always solid.
+	-- The fill style is always solid, hence no discrimintant for fiil style.
 	type type_fillable_circle_solid is new type_circle with record
 		filled : type_filled;
 	end record;
@@ -611,8 +611,10 @@ package et_packages is
 	
 	package type_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
 
-	type type_keepout_polygon is new type_polygon with null record;
+	type type_keepout_polygon is new shapes.type_polygon_base with null record;
+
 	package type_keepout_polygons is new doubly_linked_lists (type_keepout_polygon);
+-- 	package type_keepout_polygons is new indefinite_doubly_linked_lists (shapes.type_polygon);
 
 	
 	type type_keepout is record
