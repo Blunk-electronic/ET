@@ -8542,7 +8542,7 @@ package body et_project is
 		polygon_isolation		: et_packages.type_track_clearance := et_packages.type_track_clearance'first;
 		
 		signal_layer	: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
-		route_width		: et_packages.type_track_width := et_packages.type_track_width'first;
+		route_width		: et_packages.type_track_width := et_packages.type_track_width'first; -- CS rename to track_width
 
 		thermal : et_pcb.type_thermal;
 		
@@ -12807,7 +12807,7 @@ package body et_project is
 
 					when SEC_POLYGON =>
 						case stack.parent is
-							when SEC_ROUTE =>
+							when SEC_ROUTE => -- connected with a net
 								declare
 									use et_packages;
 									use et_pcb_coordinates.geometry;
@@ -12816,23 +12816,23 @@ package body et_project is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_priority then -- priority 2
 										expect_field_count (line, 2);
-										route_polygon_priority := to_polygon_priority (f (line, 2));
+										polygon_priority := to_polygon_priority (f (line, 2));
 
 									elsif kw = keyword_isolation then -- isolation 0.5
 										expect_field_count (line, 2);
-										route_polygon_isolation_gap := to_distance (f (line, 2));
+										polygon_isolation := to_distance (f (line, 2));
 										
 									elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 										expect_field_count (line, 2);
-										polygon_2.easing.style := shapes.to_corner_easing (f (line, 2));
+										easing.style := to_corner_easing (f (line, 2));
 
 									elsif kw = keyword_easing_radius then -- easing_radius 0.3
 										expect_field_count (line, 2);
-										polygon_2.easing.radius := to_distance (f (line, 2));
+										easing.radius := to_distance (f (line, 2));
 
 									elsif kw = keyword_fill_style then -- fill_style solid,hatched,cutout
 										expect_field_count (line, 2);
-										fill_style := shapes.to_fill_style (f (line, 2));
+										fill_style := to_fill_style (f (line, 2));
 
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 1
 										expect_field_count (line, 2);
@@ -12844,7 +12844,7 @@ package body et_project is
 
 									elsif kw = keyword_layer then -- layer 2
 										expect_field_count (line, 2);
-										route_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+										signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
 									elsif kw = keyword_min_width then -- min_width 0.3
 										expect_field_count (line, 2);
@@ -12884,23 +12884,23 @@ package body et_project is
 											-- CS: In the following: set a corresponding parameter-found-flag
 											if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
 												expect_field_count (line, 2);													
-												board_polygon.fill_style := to_fill_style (f (line, 2));
+												fill_style := to_fill_style (f (line, 2));
 
 											elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 												expect_field_count (line, 2);													
-												board_polygon.corner_easing := to_corner_easing (f (line, 2));
+												easing.style := to_corner_easing (f (line, 2));
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
-												board_polygon.easing_radius := to_distance (f (line, 2));
+												easing.radius := to_distance (f (line, 2));
 												
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												board_polygon.hatching_line_width := to_distance (f (line, 2));
+												hatching.width := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
-												board_polygon.hatching_spacing := to_distance (f (line, 2));
+												hatching.spacing := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -12918,30 +12918,10 @@ package body et_project is
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+									if kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);													
-										board_polygon.fill_style := to_fill_style (f (line, 2));
+										board_object_filled := to_filled (f (line, 2));
 
-									elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
-										expect_field_count (line, 2);													
-										board_polygon.corner_easing := to_corner_easing (f (line, 2));
-
-									elsif kw = keyword_easing_radius then -- easing_radius 0.4
-										expect_field_count (line, 2);													
-										board_polygon.easing_radius := to_distance (f (line, 2));
-										
-									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-										expect_field_count (line, 2);													
-										board_polygon.hatching_line_width := to_distance (f (line, 2));
-
-									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
-										expect_field_count (line, 2);													
-										board_polygon.hatching_spacing := to_distance (f (line, 2));
-
-									elsif kw = keyword_width then -- width 0.5
-										expect_field_count (line, 2);
-										board_line_width := to_distance (f (line, 2));
-										
 									elsif kw = keyword_layers then -- layers 1 14 3
 
 										-- there must be at least two fields:
@@ -12953,7 +12933,7 @@ package body et_project is
 									end if;
 								end;
 
-							when SEC_COPPER =>
+							when SEC_COPPER => -- non electrical
 								declare
 									use et_packages;
 									use et_packages.shapes;									
@@ -12967,11 +12947,11 @@ package body et_project is
 
 									elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 										expect_field_count (line, 2);													
-										polygon_2.easing.style := to_corner_easing (f (line, 2));
+										easing.style := to_corner_easing (f (line, 2));
 
 									elsif kw = keyword_easing_radius then -- easing_radius 0.4
 										expect_field_count (line, 2);													
-										polygon_2.easing.radius := to_distance (f (line, 2));
+										easing.radius := to_distance (f (line, 2));
 										
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													
@@ -12987,15 +12967,15 @@ package body et_project is
 										
 									elsif kw = keyword_layer then -- layer 1
 										expect_field_count (line, 2);
-										route_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+										signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
 									elsif kw = keyword_priority then -- priority 2
 										expect_field_count (line, 2);
-										route_polygon_priority := to_polygon_priority (f (line, 2));
+										polygon_priority := to_polygon_priority (f (line, 2));
 
 									elsif kw = keyword_isolation then -- isolation 0.5
 										expect_field_count (line, 2);
-										route_polygon_isolation_gap := to_distance (f (line, 2));
+										polygon_isolation := to_distance (f (line, 2));
 										
 									else
 										invalid_keyword (kw);

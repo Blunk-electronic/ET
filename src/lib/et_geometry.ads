@@ -226,16 +226,6 @@ package et_geometry is
 	package shapes_2d is
 		use geometry;
 
--- 	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE		
--- 		type type_fill_style is (SOLID, CUTOUT, HATCHED);
--- 		fill_style_default : constant type_fill_style := SOLID;
--- 		
--- 		function to_string (fill_style : in type_fill_style) return string;
--- 		function to_fill_style (fill_style : in string) return type_fill_style;
--- 
--- 		text_fill_style : constant string := "fill_style";
-
-
 		type type_filled is (NO, YES);
 		function to_string (filled : in type_filled) return string;
 		function to_filled (filled : in string) return type_filled;
