@@ -7900,7 +7900,7 @@ package body et_kicad_pcb is
 								--new_item => (et_packages.type_copper_polygon (element (polygon_cursor)) with
 								new_item => (
 									-- CS make lines from element (polygon_cursor).corners,
-									fill_style	=> et_packages.shapes.SOLID,
+									fill_style	=> et_packages.SOLID,
 									width_min	=> element (polygon_cursor).min_thickness,
 
 									-- Translate the kicad layer id to the ET signal layer:
