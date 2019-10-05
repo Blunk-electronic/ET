@@ -486,7 +486,6 @@ package et_project is
 	section_circle				: constant string := "[CIRCLE";
 	
 	section_polygon				: constant string := "[POLYGON";
-	section_corners				: constant string := "[CORNERS"; -- CS remove
 	section_contours			: constant string := "[CONTOURS";
 	
 	section_via					: constant string := "[VIA";
@@ -578,7 +577,6 @@ package et_project is
 		SEC_LINE,
 		SEC_ARC,
 		SEC_POLYGON,
-		SEC_CORNERS, -- CS remove
 		SEC_VIA,
 		SEC_SUBMODULES,
 		SEC_SUBMODULE,
@@ -706,7 +704,6 @@ package et_project is
 		SEC_TEXT,
 		SEC_PLACEHOLDER,
 		SEC_POLYGON,
--- 		SEC_CORNERS,
 		SEC_PACKAGE_3D_CONTOURS
 		);
 	

@@ -852,8 +852,8 @@ package body et_project is
 	procedure circle_end   is begin section_mark (section_circle, FOOTER); end;			
 	procedure polygon_begin is begin section_mark (section_polygon, HEADER); end;
 	procedure polygon_end   is begin section_mark (section_polygon, FOOTER); end;
-	procedure corners_begin is begin section_mark (section_corners, HEADER); end;
-	procedure corners_end   is begin section_mark (section_corners, FOOTER); end;
+	procedure contours_begin is begin section_mark (section_contours, HEADER); end;
+	procedure contours_end   is begin section_mark (section_contours, FOOTER); end;
 	procedure text_begin is begin section_mark (section_text, HEADER); end;
 	procedure text_end   is begin section_mark (section_text, FOOTER); end;
 	procedure placeholder_begin is begin section_mark (section_placeholder, HEADER); end;
@@ -2379,13 +2379,7 @@ package body et_project is
 			
 			procedure write_polygon (cursor : in pac_copper_polygons_floating_solid.cursor) is 
 				use et_packages.shapes;
-				use type_polygon_points;
-
--- CS write shapes instead				
--- 				procedure query_points (polygon : in type_copper_polygon_floating) is begin
--- 					iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
--- 				end query_points;
-				
+				-- CS write shapes instead				
 			begin -- write_polygon
 				polygon_begin;
 				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
@@ -2394,21 +2388,13 @@ package body et_project is
 				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).easing.style));
 				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing.radius));
 				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
-				corners_begin;
--- 				query_element (cursor, query_points'access); -- CS query shapes instead
-				corners_end;
+-- 				contours_begin;
 				polygon_end;
 			end write_polygon;
 
 			procedure write_polygon (cursor : in pac_copper_polygons_floating_hatched.cursor) is -- CS currently not used
 				use et_packages.shapes;
-				use type_polygon_points;
-
--- CS write shapes instead				
--- 				procedure query_points (polygon : in type_copper_polygon_floating) is begin
--- 					iterate (polygon.corners, write_polygon_corners'access); -- see general stuff above
--- 				end query_points;
-				
+				-- CS write shapes instead				
 			begin -- write_polygon
 				polygon_begin;
 				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
@@ -2417,12 +2403,9 @@ package body et_project is
 				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).easing.style));
 				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing.radius));
 				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
-				corners_begin;
--- 				query_element (cursor, query_points'access); -- CS query shapes instead
-				corners_end;
+
 				polygon_end;
 			end write_polygon;
-
 			
 			procedure write_text (cursor : in pac_texts.cursor) is -- copper texts in board !
 			begin
@@ -4720,7 +4703,7 @@ package body et_project is
 			elsif set (section_terminals, SEC_TERMINALS) then null;
 			elsif set (section_terminal, SEC_TERMINAL) then null;
 			elsif set (section_polygon, SEC_POLYGON) then null;
-			elsif set (section_corners, SEC_CONTOURS) then null;
+			elsif set (section_contours, SEC_CONTOURS) then null;
 			else
 				-- The line contains something else -> the payload data. 
 				-- Temporarily this data is stored in corresponding variables.
@@ -11206,41 +11189,6 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
-					when SEC_CORNERS => null; -- CS remove
-						
--- 						case stack.parent is
--- 							when SEC_POLYGON =>
--- 
--- 								-- Insert collection of polygon corner points in polygon.
--- 								-- The current polygon can be part of a route or part
--- 								-- of something on top or bottom like silk screen, assy doc, keepout,
--- 								-- stencil, stop mask, route restrict, via restrict.
--- 								case stack.parent (degree => 2) is
--- 									when SEC_ROUTE =>
--- 
--- 										route_polygon.corners := polygon_corner_points;
--- 
--- 									when SEC_TOP | SEC_BOTTOM =>
--- 										-- CS check for parent section (degree => 3) to be 
--- 										-- silk screen, assy doc, keepout, stencil, stop mask ?
--- 										board_polygon.corners := polygon_corner_points;
--- 
--- 									when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
--- 										board_polygon.corners := polygon_corner_points;
--- 
--- 									when SEC_COPPER =>
--- 										null;
--- -- CS										board_polygon_floating.corners := polygon_corner_points;
--- 										
--- 									when others => invalid_section;
--- 								end case;
--- 								
--- 								-- clean up for next collection of corner points (of another polygon).
--- 								et_packages.type_polygon_points.clear (polygon_corner_points);
--- 								
--- 							when others => invalid_section;
--- 						end case;
-
 					when SEC_SUBMODULE =>
 						case stack.parent is
 							when SEC_SUBMODULES =>
@@ -11681,7 +11629,6 @@ package body et_project is
 			elsif set (section_line, SEC_LINE) then null;								
 			elsif set (section_arc, SEC_ARC) then null;								
 			elsif set (section_polygon, SEC_POLYGON) then null;								
-			elsif set (section_corners, SEC_CORNERS) then null; -- CS remove
 			elsif set (section_contours, SEC_CONTOURS) then null;								
 			elsif set (section_via, SEC_VIA) then null;								
 			elsif set (section_submodules, SEC_SUBMODULES) then null;
@@ -13027,37 +12974,6 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 					
-					when SEC_CORNERS => null;
--- 						case stack.parent is
--- 							when SEC_POLYGON =>
--- 								declare
--- 									use et_pcb_coordinates.geometry;
--- 									kw : string := f (line, 1);
--- 								begin
--- 									-- read corner points
--- 									-- NOTE: A corner point is defined by a single line.
--- 									-- Upon reading the line like "position x 4 y 4" the point is
--- 									-- appended to the corner point collection immediately here. See procdure
--- 									-- execute_section.
--- 									-- There is no section for a single corner like [CORNER BEGIN].
--- 									
--- 									-- CS: In the following: set a corresponding parameter-found-flag
--- 									if kw = keyword_position then -- position x 123.54 y 2.7
--- 										expect_field_count (line, 5);
--- 
--- 										-- extract corner coordinates from line starting at field 2
--- 										polygon_corner_point := to_position (line, 2);
--- 
--- 										-- insert the corner point in collection of corner points
--- 										et_packages.type_polygon_points.insert (polygon_corner_points, polygon_corner_point);
--- 									else
--- 										invalid_keyword (kw);
--- 									end if;
--- 								end;
--- 								
--- 							when others => invalid_section;
--- 						end case;
-
 					when SEC_SUBMODULE =>
 						case stack.parent is
 							when SEC_SUBMODULES =>

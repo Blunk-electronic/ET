@@ -364,16 +364,6 @@ package body et_packages is
 		end case;
 	end;
 	
--- 	function to_string (fill_style : in type_fill_style) return string is
--- 	begin
--- 		return to_lower (type_fill_style'image (fill_style));
--- 	end to_string;
--- 
--- 	function to_fill_style (fill_style : in string) return type_fill_style is
--- 	begin
--- 		return type_fill_style'value (fill_style);
--- 	end to_fill_style;
-
 	function to_string (
 		description : in type_package_description.bounded_string;
 		verbose		: in boolean := false) return string is

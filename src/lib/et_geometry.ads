@@ -365,24 +365,9 @@ package et_geometry is
 			circles	: pac_polygon_circles.list;
 		end record;
 
--- 		-- EASING
--- 		type type_corner_easing is (NONE, CHAMFER, FILLET);
--- 
--- 		function to_corner_easing (easing : in string) return type_corner_easing;
--- 		function to_string (easing : in type_corner_easing) return string;
--- 		
--- 		easing_radius_max : constant type_distance_positive := 100.0;
--- 		subtype type_easing_radius is type_distance_positive range type_distance_positive'first .. easing_radius_max;
--- 
--- 		type type_polygon_easing is record
--- 			style	: type_corner_easing := NONE;
--- 			radius	: type_easing_radius := zero; -- center of circle at corner point
--- 		end record;
-
 		
 		type type_polygon_base is abstract tagged record
 			segments	: type_polygon_segments;
--- 			easing		: type_polygon_easing;
 		end record;
 		
 -- 		procedure move (
@@ -392,13 +377,6 @@ package et_geometry is
 		type type_polygon is new type_polygon_base with record
 			filled	: type_filled;
 		end record;
-		
--- 		type type_polygon (fill_style : type_fill_style) is new type_polygon_base with record
--- 			case fill_style is
--- 				when SOLID | CUTOUT	=> null;
--- 				when HATCHED		=> hatching : type_hatching;
--- 			end case;
--- 		end record;
 
 		
 	end shapes_2d;

@@ -328,14 +328,7 @@ package et_packages is
 	function to_string (priority_level : in type_polygon_priority) return string;
 	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
 
--- 	type type_copper_polygon is new type_polygon with record -- CS remove
--- 		priority_level		: type_polygon_priority := type_polygon_priority'first;
--- 		isolation_gap		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
--- 	end record;
--- 
--- 	package type_copper_polygons is new doubly_linked_lists (type_copper_polygon); -- CS remove
 
-	
 	type type_copper_polygon_solid is new type_polygon (fill_style => SOLID) with record
 		width_min : type_track_width; -- the minimum width
 		isolation : type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
@@ -473,13 +466,7 @@ package et_packages is
 
 	package type_stop_arcs is new doubly_linked_lists (type_stop_arc);
 
-	
-	
-
 	package type_stop_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
-
-
-	--type type_stop_polygon is new type_polygon with null record;
 
 	package type_stop_polygons is new indefinite_doubly_linked_lists (type_polygon);
 
@@ -524,12 +511,8 @@ package et_packages is
 
 	package type_stencil_arcs is new doubly_linked_lists (type_stencil_arc);
 
-	
-
 	package type_stencil_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
-
--- 	type type_stencil_polygon is new type_polygon with null record; -- fill style hatched does not make sense
 	package type_stencil_polygons is new indefinite_doubly_linked_lists (type_polygon);
 	
 	
@@ -566,14 +549,9 @@ package et_packages is
 	end record;
 
 	package type_silk_arcs is new doubly_linked_lists (type_silk_arc);
-
 	
 	package type_silk_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
-
--- 	type type_silk_polygon is new shapes.type_polygon with null record;
-	
-	--	package type_silk_polygons is new indefinite_doubly_linked_lists (type_silk_polygon);
 	package pac_silk_polygons is new indefinite_doubly_linked_lists (type_polygon);
 	
 
@@ -613,12 +591,8 @@ package et_packages is
 	end record;
 
 	package type_doc_arcs is new doubly_linked_lists (type_doc_arc);
-
 	
 	package type_doc_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
-
-
--- 	type type_doc_polygon is new type_polygon with null record;
 	
 	package pac_doc_polygons is new indefinite_doubly_linked_lists (type_polygon);
 
@@ -662,11 +636,6 @@ package et_packages is
 	
 	package type_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
 
--- 	type type_keepout_polygon is new shapes.type_polygon_base with null record;
-	
--- 	type type_keepout_polygon_solid is new shapes.type_polygon (fill_style => SOLID) with null record;
-	
--- 	package type_keepout_polygons is new doubly_linked_lists (type_keepout_polygon);
 	package type_keepout_polygons is new doubly_linked_lists (shapes.type_polygon);
 
 	
@@ -707,7 +676,6 @@ package et_packages is
 	
 	package type_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 
-	-- 	type type_route_restrict_polygon is new type_polygon with record
 	type type_route_restrict_polygon is new shapes.type_polygon with record
 		layers 	: type_signal_layers.set;
 	end record;
@@ -723,9 +691,6 @@ package et_packages is
 		polygons	: type_route_restrict_polygons.list;
 		-- CS texts		: type_texts_with_content.list; -- for routing notes ? mind signal layer !
 	end record;
-	
--- 	type type_route_restrict_package is new type_route_restrict with null record;
-
 
 
 
@@ -770,8 +735,6 @@ package et_packages is
 		polygons	: type_via_restrict_polygons.list;
 		-- CS texts		: type_texts_with_content.list; -- for via notes ?
 	end record;
-	
--- 	type type_via_restrict_package is new type_via_restrict with null record;
 
 	
 -- PCB CONTOUR
