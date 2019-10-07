@@ -383,6 +383,7 @@ package et_project is
 	keyword_isolation				: constant string := "isolation";
 	keyword_corner_easing			: constant string := "corner_easing";
 	keyword_easing_radius			: constant string := "easing_radius";	
+-- 	keyword_filled					: constant string := "filled";		
 	keyword_fill_style				: constant string := "fill_style";	
 	keyword_hatching_line_width		: constant string := "hatching_line_width";
 	keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";		

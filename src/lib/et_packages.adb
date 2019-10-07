@@ -292,38 +292,6 @@ package body et_packages is
 		return type_terminal_tht_hole'value (tht_hole);
 	end to_tht_hole;
 	
-	function to_string (priority_level : in type_polygon_priority) return string is
-	begin
-		return type_polygon_priority'image (priority_level);
-	end to_string;
-	
-	function to_polygon_priority (priority_level : in string) return type_polygon_priority is
-	begin
-		return type_polygon_priority'value (priority_level);
-	end to_polygon_priority;
-	
--- 	function to_corner_easing (easing : in string) return type_corner_easing is
--- 		easing_out : type_corner_easing;
--- 	begin
--- 		if to_lower (easing) = to_lower (type_corner_easing'image (NONE)) then
--- 			easing_out := NONE;
--- 		elsif to_lower (easing) = to_lower (type_corner_easing'image (CHAMFER)) then
--- 			easing_out := CHAMFER;
--- 		elsif to_lower (easing) = to_lower (type_corner_easing'image (FILLET)) then
--- 			easing_out := FILLET;
--- 		else
--- 			log (ERROR, "type of easing '" & easing & "' invalid !", console => true);
--- 			raise constraint_error;
--- 		end if;
--- 
--- 		return easing_out;
--- 	end to_corner_easing;
--- 
--- 	function to_string (easing : in type_corner_easing) return string is
--- 	begin
--- 		return latin_1.space & to_lower (type_corner_easing'image (easing));
--- 	end to_string;
-
 	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is begin
 		return latin_1.space & to_lower (type_polygon_pad_connection'image (polygon_pad_connection));
 	end to_string;

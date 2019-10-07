@@ -248,22 +248,27 @@ package et_pcb is
 
 	package pac_copper_polygons_cutout is new doubly_linked_lists (type_copper_polygon_cutout);
 
-
+	-- Polgon priority: 0 is weakest, 100 ist strongest.
+	polygon_priority_max : constant natural := 100;
+	subtype type_polygon_priority is natural range natural'first .. polygon_priority_max;
+	function to_string (priority_level : in type_polygon_priority) return string;
+	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
+	
 	-- A floating copper polygon is not connected to any net:
 	type type_copper_polygon_floating_solid is new et_packages.type_polygon (fill_style => SOLID) with record
-		priority_level	: type_polygon_priority := type_polygon_priority'first;
-		isolation_gap	: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
+		width_min		: type_track_width; -- the minimum width
+		isolation		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 		layer 			: type_signal_layer;
-		width_min		: type_track_width; -- the minimum width -- CS should be in anchestor
+		priority_level	: type_polygon_priority := type_polygon_priority'first;
 	end record;
 
 	package pac_copper_polygons_floating_solid is new indefinite_doubly_linked_lists (type_copper_polygon_floating_solid);
 	
 	type type_copper_polygon_floating_hatched is new et_packages.type_polygon (fill_style => HATCHED) with record
-		priority_level	: type_polygon_priority := type_polygon_priority'first;
-		isolation_gap	: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
+		width_min		: type_track_width; -- the minimum width
+		isolation		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
 		layer 			: type_signal_layer;
-		width_min		: type_track_width; -- the minimum width -- CS should be in anchestor
+		priority_level	: type_polygon_priority := type_polygon_priority'first;
 	end record;
 
 	package pac_copper_polygons_floating_hatched is new indefinite_doubly_linked_lists (type_copper_polygon_floating_hatched);
@@ -313,27 +318,6 @@ package et_pcb is
 		gap			: type_polygon_thermal_gap;		-- the space between pad and polygon -- CS: rename to thermal_length ?
 	end record;
 	
--- 	type type_copper_polygon_signal (pad_connection : type_polygon_pad_connection) is new type_copper_polygon with record
--- 		layer 		: type_signal_layer;
--- 		width_min	: type_track_width; -- the minimum width
--- 				
--- 		case pad_connection is
--- 			when THERMAL =>
--- 				-- CS use type_thermal
--- 				thermal_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
--- 				thermal_width		: type_polygon_thermal_width; -- the thermal width
--- 				thermal_gap			: type_polygon_thermal_gap; -- the space between associated pads and polygon -- CS: rename to thermal_length ?
--- 
--- 			when SOLID =>
--- 				solid_technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
--- 				-- no need for any kind of thermal parameters
--- 
--- 			when NONE => null;
--- 				-- no more properties required
--- 		end case;
--- 				
--- 	end record;
-
 	type type_copper_polygon_solid (connection : type_polygon_pad_connection) is new
 		et_packages.type_copper_polygon_solid with record
 

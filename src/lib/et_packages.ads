@@ -322,11 +322,11 @@ package et_packages is
 	end record;
 	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
 
-	-- Polgon priority: 0 is weakest, 100 ist strongest. -- CS move to et_pcb
-	polygon_priority_max : constant natural := 100;
-	subtype type_polygon_priority is natural range natural'first .. polygon_priority_max;
-	function to_string (priority_level : in type_polygon_priority) return string;
-	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
+-- 	-- Polgon priority: 0 is weakest, 100 ist strongest. -- CS move to et_pcb
+-- 	polygon_priority_max : constant natural := 100;
+-- 	subtype type_polygon_priority is natural range natural'first .. polygon_priority_max;
+-- 	function to_string (priority_level : in type_polygon_priority) return string;
+-- 	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
 
 
 	type type_copper_polygon_solid is new type_polygon (fill_style => SOLID) with record

@@ -749,7 +749,7 @@ package et_kicad_pcb is
 	end record;
 
 	type type_copper_polygon is new type_polygon_base with record
-		priority_level		: et_packages.type_polygon_priority := et_packages.type_polygon_priority'first;
+		priority_level		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
 		isolation_gap		: et_packages.type_track_clearance := et_packages.type_track_clearance'first; -- the space between foreign pads and the polygon
 	end record;
 	

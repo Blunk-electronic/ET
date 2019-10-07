@@ -171,6 +171,13 @@ package body et_pcb is
 		return type_locked'value (locked);
 	end to_lock_status;
 
+	function to_string (priority_level : in type_polygon_priority) return string is begin
+		return type_polygon_priority'image (priority_level);
+	end to_string;
+	
+	function to_polygon_priority (priority_level : in string) return type_polygon_priority is begin
+		return type_polygon_priority'value (priority_level);
+	end to_polygon_priority;
 	
 
 	function package_position (position : in type_package_position) return string is
