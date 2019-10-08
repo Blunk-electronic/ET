@@ -851,7 +851,7 @@ package body et_project is
 	procedure circle_begin is begin section_mark (section_circle, HEADER); end;
 	procedure circle_end   is begin section_mark (section_circle, FOOTER); end;			
 	procedure fill_zone_begin is begin section_mark (section_fill_zone, HEADER); end;
-	procedure fiLL_zone_end   is begin section_mark (section_fill_zone, FOOTER); end;
+	procedure fill_zone_end   is begin section_mark (section_fill_zone, FOOTER); end;
 	procedure contours_begin is begin section_mark (section_contours, HEADER); end;
 	procedure contours_end   is begin section_mark (section_contours, FOOTER); end;
 	procedure text_begin is begin section_mark (section_text, HEADER); end;
@@ -1892,7 +1892,7 @@ package body et_project is
 				end loop;
 				
 				while polygon_solid_cursor /= pac_signal_polygons_solid.no_element loop
-					section_mark (section_fill_zone, HEADER);
+					fill_zone_begin;
 
 					write_easing (element (polygon_solid_cursor).easing);
 					
@@ -1916,12 +1916,12 @@ package body et_project is
 					end case;
 
 					write_polygon_segments (shapes.type_polygon_base (element (polygon_solid_cursor)));
-					section_mark (section_fill_zone, FOOTER);
+					fill_zone_end;
 					next (polygon_solid_cursor);
 				end loop;
 
 				while polygon_hatched_cursor /= pac_signal_polygons_hatched.no_element loop
-					section_mark (section_fill_zone, HEADER);
+					fill_zone_begin;
 
 					write_easing (element (polygon_hatched_cursor).easing);
 
@@ -1947,7 +1947,7 @@ package body et_project is
 					end case;
 
 					write_polygon_segments (shapes.type_polygon_base (element (polygon_hatched_cursor)));
-					section_mark (section_fill_zone, FOOTER);
+					fill_zone_end;
 					next (polygon_hatched_cursor);
 				end loop;
 				
@@ -7925,54 +7925,33 @@ package body et_project is
 				circle_end;
 			end write_circle;
 
-			procedure write_polygon (cursor : in pac_copper_polygons_solid.cursor) is 
--- 				use et_pcb_coordinates;
--- 				use et_packages.shapes;
--- 				use type_polygon_points;
--- 				
--- 				procedure query_points (polygon : in type_copper_polygon) is begin
--- 					iterate (polygon.corners, write_polygon_corners'access);
--- 				end query_points;
-
-			begin -- write_polygon
+			procedure write_polygon (cursor : in pac_copper_polygons_solid.cursor) is begin
 				fill_zone_begin;
--- 				write (keyword => keyword_priority, parameters => to_string (element (cursor).priority_level));
--- 				write (keyword => keyword_isolation, parameters => to_string (element (cursor).isolation_gap));
--- 				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
--- 				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
--- 				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
--- 				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
--- 				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
--- 				corners_begin;
--- 				query_element (cursor, query_points'access);
--- 				corners_end;
+				write_easing (element (cursor).easing);
+
+				write_width_min (element (cursor).width_min);
+				write_isolation (element (cursor).isolation);
+
+				write_fill_stlye (element (cursor).fill_style);
+
+				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
 				fill_zone_end;
 			end write_polygon;
 
-			procedure write_polygon (cursor : in pac_copper_polygons_hatched.cursor) is 
--- 				use et_pcb_coordinates;
--- 				use et_packages.shapes;
--- 				use type_polygon_points;
--- 				
--- 				procedure query_points (polygon : in type_copper_polygon) is begin
--- 					iterate (polygon.corners, write_polygon_corners'access);
--- 				end query_points;
-
-			begin -- write_polygon
+			procedure write_polygon (cursor : in pac_copper_polygons_hatched.cursor) is begin
 				fill_zone_begin;
--- 				write (keyword => keyword_priority, parameters => to_string (element (cursor).priority_level));
--- 				write (keyword => keyword_isolation, parameters => to_string (element (cursor).isolation_gap));
--- 				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
--- 				write (keyword => keyword_hatching_line_width  , parameters => to_string (element (cursor).hatching_line_width));
--- 				write (keyword => keyword_hatching_line_spacing, parameters => to_string (element (cursor).hatching_spacing));
--- 				write (keyword => keyword_corner_easing, parameters => to_string (element (cursor).corner_easing));
--- 				write (keyword => keyword_easing_radius, parameters => to_string (element (cursor).easing_radius));
--- 				corners_begin;
--- 				query_element (cursor, query_points'access);
--- 				corners_end;
+				write_easing (element (cursor).easing);
+
+				write_width_min (element (cursor).width_min);
+				write_isolation (element (cursor).isolation);
+
+				write_fill_stlye (element (cursor).fill_style);
+				write_hatching (element (cursor).hatching);
+				
+				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+
 				fill_zone_end;
 			end write_polygon;
-
 			
 		begin -- write_copper
 			section_mark (section_copper, HEADER);
