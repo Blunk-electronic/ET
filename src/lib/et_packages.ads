@@ -392,10 +392,7 @@ package et_packages is
 	subtype type_polygon_thermal_gap is type_track_clearance range polygon_thermal_gap_min .. polygon_thermal_gap_max;
 
 	-- Polygons may be connected with associated pads via thermals, via solid connection or not at all:
-	type type_polygon_pad_connection is (
-		THERMAL,
-		SOLID,
-		NONE); -- CS remove
+	type type_polygon_pad_connection is (THERMAL, SOLID);
 
 	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string;
 	function to_pad_connection (connection : in string) return type_polygon_pad_connection;

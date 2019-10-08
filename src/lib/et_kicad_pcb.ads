@@ -732,7 +732,7 @@ package et_kicad_pcb is
 	subtype type_polygon_pad_technology is et_packages.type_polygon_pad_technology 
 		range et_packages.THT_ONLY .. et_packages.SMT_AND_THT;
 
-	-- POLYGON
+-- POLYGON (or fill zone)
 	-- Corner points are collected in an ordered set.
 	-- This prevents placing two identical points on top of each other.
 
@@ -752,6 +752,11 @@ package et_kicad_pcb is
 		priority_level		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
 		isolation_gap		: et_packages.type_track_clearance := et_packages.type_track_clearance'first; -- the space between foreign pads and the polygon
 	end record;
+
+	type type_polygon_pad_connection is (THERMAL, SOLID, NONE);
+
+	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string;
+	function to_pad_connection (connection : in string) return type_polygon_pad_connection;
 	
 	type type_polygon is new type_copper_polygon with record
 		net_name			: et_general.type_net_name.bounded_string; -- if name is empty, the polygon is not connected to any net
@@ -767,7 +772,7 @@ package et_kicad_pcb is
 		thermal_gap			: et_packages.type_polygon_thermal_gap := et_packages.type_polygon_thermal_gap'first;
 		thermal_width		: et_packages.type_polygon_thermal_width := et_packages.type_polygon_thermal_width'first; -- spoke width
 		pad_technology		: type_polygon_pad_technology := type_polygon_pad_technology'last;
-		pad_connection		: et_packages.type_polygon_pad_connection := et_packages.type_polygon_pad_connection'first;
+		pad_connection		: type_polygon_pad_connection := type_polygon_pad_connection'first;
 	end record;
 
 	package type_polygons is new doubly_linked_lists (type_polygon);

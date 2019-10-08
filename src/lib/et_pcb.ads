@@ -332,8 +332,6 @@ package et_pcb is
 				technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
 				-- no need for any kind of thermal parameters
 
-			when NONE => null;
-				-- no more properties required
 		end case;
 				
 	end record;
@@ -352,8 +350,6 @@ package et_pcb is
 				technology	: type_polygon_pad_technology; -- whether SMT, THT or both kinds of pads connect with the polygon
 				-- no need for any kind of thermal parameters
 
-			when NONE => null;
-				-- no more properties required
 		end case;
 				
 	end record;

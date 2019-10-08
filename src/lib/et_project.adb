@@ -1912,7 +1912,6 @@ package body et_project is
 						when SOLID =>
 							write_pad_technology (element (polygon_solid_cursor).technology);
 							
-						when NONE => null;
 					end case;
 
 					write_polygon_segments (shapes.type_polygon_base (element (polygon_solid_cursor)));
@@ -1943,7 +1942,6 @@ package body et_project is
 						when SOLID =>
 							write_pad_technology (element (polygon_hatched_cursor).technology);
 
-						when NONE => null;
 					end case;
 
 					write_polygon_segments (shapes.type_polygon_base (element (polygon_hatched_cursor)));
@@ -10552,7 +10550,6 @@ package body et_project is
 						case polygon_pad_connection is
 							when et_packages.THERMAL => connection_thermal;
 							when SOLID => connection_solid;
-							when NONE => null;
 						end case;
 					end solid_polygon;
 
@@ -10603,7 +10600,6 @@ package body et_project is
 						case polygon_pad_connection is
 							when et_packages.THERMAL => connection_thermal;
 							when SOLID => connection_solid;
-							when NONE => null;
 						end case;
 					end hatched_polygon;
 

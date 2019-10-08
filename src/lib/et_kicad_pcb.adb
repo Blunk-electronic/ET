@@ -353,7 +353,14 @@ package body et_kicad_pcb is
 			when constraint_error => invalid_layer; raise;
 	end to_signal_layer_id;
 
+	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is begin
+		return latin_1.space & to_lower (type_polygon_pad_connection'image (polygon_pad_connection));
+	end to_string;
 
+	function to_pad_connection (connection : in string) return type_polygon_pad_connection is begin
+		return type_polygon_pad_connection'value (connection);
+	end to_pad_connection;
+	
 	function to_pad_shape_circle (
 		position	: in type_position;
 		diameter	: in et_packages.type_pad_size;
@@ -7537,13 +7544,14 @@ package body et_kicad_pcb is
 					-- Append polygons to route.polygons
 					while polygon_cursor /= type_polygons.no_element loop
 						if element (polygon_cursor).net_id = net_id then
-						-- Transfer kicad polygon to et polygon:
+						-- Transfer kicad polygon to et polygon.
+						-- The polygon is appended to route.polygons.
 
 							-- These properites of kicad polygons are discarded as there is no need for them:
 							-- net_id, timestamp, hatch_style, hatch_width, filled, fill_mode_segment, arc_segments
 							
 							case element (polygon_cursor).pad_connection is
-								when et_packages.THERMAL =>
+								when THERMAL =>
 									declare
 										use et_packages;
 										p : et_pcb.type_copper_polygon_solid (THERMAL);
@@ -7568,7 +7576,7 @@ package body et_kicad_pcb is
 										route.polygons_2.solid.append (p);																					  
 									end;
 									
-								when et_packages.SOLID =>
+								when SOLID =>
 									declare
 										use et_packages;
 										p : et_pcb.type_copper_polygon_solid (SOLID);
@@ -7589,29 +7597,16 @@ package body et_kicad_pcb is
 
 										route.polygons_2.solid.append (p);																					  
 									end;
-								
-								when et_packages.NONE =>
-									null;
-									-- CS a polygon with no connections to pads is ignored here.
-									
--- 									route.polygons.append (
--- 										new_item => (et_packages.type_copper_polygon (element (polygon_cursor)) with
--- 											pad_connection		=> et_packages.NONE,
--- 											width_min			=> element (polygon_cursor).min_thickness,
--- 											
--- 											-- Translate the kicad layer id to the ET signal layer:
--- 											-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
--- 											-- The bottom layer in kicad is always number 31. Top layer is number 0.
--- 											-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
--- 											layer 				=> et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1)
--- 
--- 											-- no further properties
--- 										));
 
+								when NONE => null; -- floating polygon is ignored here. will be handled below
 							end case;
 
 -- 							et_pcb.route_polygon_properties (route.polygons_2.solid.last, log_threshold + 3);
 
+						else
+							null;
+							-- CS append floating polygon (it has no connections to pads) to general board stuff
+							-- check pad_connection. must be NONE
 						end if;
 							
 						next (polygon_cursor);
