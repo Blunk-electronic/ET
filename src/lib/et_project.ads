@@ -486,7 +486,8 @@ package et_project is
 	section_arc					: constant string := "[ARC";
 	section_circle				: constant string := "[CIRCLE";
 	
-	section_polygon				: constant string := "[POLYGON";
+	section_fill_zone			: constant string := "[FILL_ZONE";
+	section_cutout_zone			: constant string := "[CUTOUT_ZONE";
 	section_contours			: constant string := "[CONTOURS";
 	
 	section_via					: constant string := "[VIA";
@@ -560,7 +561,9 @@ package et_project is
 	type type_section_name_module is (
 		SEC_BOARD_LAYER_STACK,
 		SEC_CONTOURS,
+-- 		SEC_CUTOUT_ZONE,
 		SEC_DRAWING_GRID,
+		SEC_FILL_ZONE,
 		SEC_INIT,
 		SEC_NET_CLASSES,
 		SEC_NET_CLASS,
@@ -577,7 +580,7 @@ package et_project is
 		SEC_ROUTE,
 		SEC_LINE,
 		SEC_ARC,
-		SEC_POLYGON,
+-- 		SEC_POLYGON,
 		SEC_VIA,
 		SEC_SUBMODULES,
 		SEC_SUBMODULE,
@@ -682,6 +685,7 @@ package et_project is
 
 	type type_section_name_package is (
 		SEC_CONTOURS,
+-- 		SEC_CUTOUT_ZONE,
 		SEC_INIT,
 		SEC_TOP,
 		SEC_BOTTOM,
@@ -704,7 +708,7 @@ package et_project is
 		SEC_MILLINGS,
 		SEC_TEXT,
 		SEC_PLACEHOLDER,
-		SEC_POLYGON,
+		SEC_FILL_ZONE,
 		SEC_PACKAGE_3D_CONTOURS
 		);
 	

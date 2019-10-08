@@ -850,8 +850,8 @@ package body et_project is
 	procedure arc_end    is begin section_mark (section_arc , FOOTER); end;
 	procedure circle_begin is begin section_mark (section_circle, HEADER); end;
 	procedure circle_end   is begin section_mark (section_circle, FOOTER); end;			
-	procedure polygon_begin is begin section_mark (section_polygon, HEADER); end;
-	procedure polygon_end   is begin section_mark (section_polygon, FOOTER); end;
+	procedure fill_zone_begin is begin section_mark (section_fill_zone, HEADER); end;
+	procedure fiLL_zone_end   is begin section_mark (section_fill_zone, FOOTER); end;
 	procedure contours_begin is begin section_mark (section_contours, HEADER); end;
 	procedure contours_end   is begin section_mark (section_contours, FOOTER); end;
 	procedure text_begin is begin section_mark (section_text, HEADER); end;
@@ -1027,10 +1027,10 @@ package body et_project is
 		use et_packages;
 		use type_keepout_polygons;
 	begin
-		polygon_begin;
+		fill_zone_begin;
 		write_fill_status (element (cursor).filled);
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
-		polygon_end;
+		fill_zone_end;
 	end write_polygon;
 	
 -- STOP MASK
@@ -1070,7 +1070,7 @@ package body et_project is
 		use et_packages;
 		use type_stop_polygons;
 	begin
-		polygon_begin;
+		fill_zone_begin;
 		write_easing (element (cursor).easing);
 		write_fill_stlye (element (cursor).fill_style);
 					  
@@ -1079,7 +1079,7 @@ package body et_project is
 		end if;
 
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
-		polygon_end;
+		fill_zone_end;
 	end write_polygon;
 
 -- STENCIL (OR SOLDER PASTE MASK)
@@ -1119,7 +1119,7 @@ package body et_project is
 		use et_packages;
 		use type_stencil_polygons;
 	begin
-		polygon_begin;
+		fill_zone_begin;
 		write_easing (element (cursor).easing);
 		write_fill_stlye (element (cursor).fill_style);
 					  
@@ -1128,7 +1128,7 @@ package body et_project is
 		end if;
 
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
-		polygon_end;
+		fill_zone_end;
 	end write_polygon;
 
 -- ROUTE RESTRICT
@@ -1176,11 +1176,11 @@ package body et_project is
 		use et_packages;
 		use type_route_restrict_polygons;
 	begin
-		polygon_begin;
+		fill_zone_begin;
 		write_fill_status (element (cursor).filled);
 		write_signal_layers (element (cursor).layers);
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
-		polygon_end;
+		fill_zone_end;
 	end write_polygon;
 
 -- VIA RESTRICT
@@ -1231,11 +1231,11 @@ package body et_project is
 		use et_pcb_stack;
 		use type_via_restrict_polygons;
 	begin
-		polygon_begin;
+		fill_zone_begin;
 		write_fill_status (element (cursor).filled);
 		write_signal_layers (element (cursor).layers);			
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
-		polygon_end;
+		fill_zone_end;
 	end write_polygon;
 
 	
@@ -1348,7 +1348,7 @@ package body et_project is
 		use et_packages;
 		use pac_silk_polygons;
 	begin
-		polygon_begin;
+		fill_zone_begin;
 
 		write_easing (element (cursor).easing);
 		write_fill_stlye (element (cursor).fill_style);
@@ -1362,7 +1362,7 @@ package body et_project is
 			
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
 
-		polygon_end;
+		fill_zone_end;
 
 	end write_polygon;
 
@@ -1403,7 +1403,7 @@ package body et_project is
 		use et_packages;
 		use pac_doc_polygons;
 	begin
-		polygon_begin;
+		fill_zone_begin;
 
 		write_easing (element (cursor).easing);
 		write_fill_stlye (element (cursor).fill_style);
@@ -1417,7 +1417,7 @@ package body et_project is
 			
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
 
-		polygon_end;
+		fill_zone_end;
 	end write_polygon;
 
 	procedure save_rig_configuration (
@@ -1892,7 +1892,7 @@ package body et_project is
 				end loop;
 				
 				while polygon_solid_cursor /= pac_signal_polygons_solid.no_element loop
-					section_mark (section_polygon, HEADER);
+					section_mark (section_fill_zone, HEADER);
 
 					write_easing (element (polygon_solid_cursor).easing);
 					
@@ -1916,12 +1916,12 @@ package body et_project is
 					end case;
 
 					write_polygon_segments (shapes.type_polygon_base (element (polygon_solid_cursor)));
-					section_mark (section_polygon, FOOTER);
+					section_mark (section_fill_zone, FOOTER);
 					next (polygon_solid_cursor);
 				end loop;
 
 				while polygon_hatched_cursor /= pac_signal_polygons_hatched.no_element loop
-					section_mark (section_polygon, HEADER);
+					section_mark (section_fill_zone, HEADER);
 
 					write_easing (element (polygon_hatched_cursor).easing);
 
@@ -1947,7 +1947,7 @@ package body et_project is
 					end case;
 
 					write_polygon_segments (shapes.type_polygon_base (element (polygon_hatched_cursor)));
-					section_mark (section_polygon, FOOTER);
+					section_mark (section_fill_zone, FOOTER);
 					next (polygon_hatched_cursor);
 				end loop;
 				
@@ -2411,7 +2411,7 @@ package body et_project is
 			end write_circle;
 			
 			procedure write_polygon (cursor : in pac_copper_polygons_floating_solid.cursor) is begin
-				polygon_begin;
+				fill_zone_begin;
 
 				write_easing (element (cursor).easing);
 
@@ -2425,11 +2425,11 @@ package body et_project is
 
 				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
 
-				polygon_end;
+				fill_zone_end;
 			end write_polygon;
 
 			procedure write_polygon (cursor : in pac_copper_polygons_floating_hatched.cursor) is begin
-				polygon_begin;
+				fill_zone_begin;
 
 				write_easing (element (cursor).easing);
 
@@ -2444,7 +2444,7 @@ package body et_project is
 
 				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
 
-				polygon_end;
+				fill_zone_end;
 			end write_polygon;
 			
 			procedure write_text (cursor : in pac_texts.cursor) is -- copper texts in board !
@@ -4428,7 +4428,7 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
-					when SEC_POLYGON =>
+					when SEC_FILL_ZONE =>
 						case stack.parent is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
@@ -4514,14 +4514,14 @@ package body et_project is
 						
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_POLYGON =>
+							when SEC_FILL_ZONE =>
 								null;
 -- CS								
 -- 								-- Assign the collected corner points to the temporarily polygons
 -- 								-- pac_polygon, pac_polygon_copper and pad_shape_polygon. 
 -- 								-- When the section POLYGON closes one of them is taken.
 -- 								-- CS: A correct implementation should test the parent section of
--- 								-- SEC_POLYGON instead before copying the corner points.
+-- 								-- SEC_FILL_ZONE instead before copying the corner points.
 -- 								pac_polygon.corners := polygon_corner_points;
 -- 								pac_polygon_copper.corners := polygon_corner_points;
 -- 								pad_shape_polygon.corners := polygon_corner_points;
@@ -4680,7 +4680,7 @@ package body et_project is
 			-- If it is a header, the section name is pushed onto the sections stack.
 			-- If it is a footer, the latest section name is popped from the stack.
 				section_keyword	: in string; -- [POLYGON
-				section			: in type_section_name_package) -- SEC_POLYGON
+				section			: in type_section_name_package) -- SEC_FILL_ZONE
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1
@@ -4742,7 +4742,7 @@ package body et_project is
 			elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
 			elsif set (section_terminals, SEC_TERMINALS) then null;
 			elsif set (section_terminal, SEC_TERMINAL) then null;
-			elsif set (section_polygon, SEC_POLYGON) then null;
+			elsif set (section_fill_zone, SEC_FILL_ZONE) then null;
 			elsif set (section_contours, SEC_CONTOURS) then null;
 			else
 				-- The line contains something else -> the payload data. 
@@ -5377,7 +5377,7 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
-					when SEC_POLYGON =>
+					when SEC_FILL_ZONE =>
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
@@ -5482,7 +5482,7 @@ package body et_project is
 						
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_POLYGON =>
+							when SEC_FILL_ZONE =>
 								declare
 									kw : string := f (line, 1);
 								begin
@@ -7935,7 +7935,7 @@ package body et_project is
 -- 				end query_points;
 
 			begin -- write_polygon
-				polygon_begin;
+				fill_zone_begin;
 -- 				write (keyword => keyword_priority, parameters => to_string (element (cursor).priority_level));
 -- 				write (keyword => keyword_isolation, parameters => to_string (element (cursor).isolation_gap));
 -- 				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
@@ -7946,7 +7946,7 @@ package body et_project is
 -- 				corners_begin;
 -- 				query_element (cursor, query_points'access);
 -- 				corners_end;
-				polygon_end;
+				fill_zone_end;
 			end write_polygon;
 
 			procedure write_polygon (cursor : in pac_copper_polygons_hatched.cursor) is 
@@ -7959,7 +7959,7 @@ package body et_project is
 -- 				end query_points;
 
 			begin -- write_polygon
-				polygon_begin;
+				fill_zone_begin;
 -- 				write (keyword => keyword_priority, parameters => to_string (element (cursor).priority_level));
 -- 				write (keyword => keyword_isolation, parameters => to_string (element (cursor).isolation_gap));
 -- 				write (keyword => keyword_fill_style, parameters => to_string (element (cursor).fill_style));
@@ -7970,7 +7970,7 @@ package body et_project is
 -- 				corners_begin;
 -- 				query_element (cursor, query_points'access);
 -- 				corners_end;
-				polygon_end;
+				fill_zone_end;
 			end write_polygon;
 
 			
@@ -8210,9 +8210,9 @@ package body et_project is
 						iterate (polygon.corners, write_polygon_corners'access);
 					end query_points;
 				begin -- write_polygon
-					polygon_begin;
+					fill_zone_begin;
 					query_element (cursor, query_points'access);
-					polygon_end;
+					fill_zone_end;
 				end write_polygon;
 									
 			begin --write_pad_shape
@@ -10653,7 +10653,7 @@ package body et_project is
 
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_POLYGON => null;								
+							when SEC_FILL_ZONE => null;								
 							when others => invalid_section;
 						end case;
 					
@@ -11152,7 +11152,7 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 								
-					when SEC_POLYGON =>
+					when SEC_FILL_ZONE =>
 						case stack.parent is
 							when SEC_ROUTE =>
 								build_route_polygon;
@@ -11668,7 +11668,7 @@ package body et_project is
 			elsif set (section_route, SEC_ROUTE) then null;								
 			elsif set (section_line, SEC_LINE) then null;								
 			elsif set (section_arc, SEC_ARC) then null;								
-			elsif set (section_polygon, SEC_POLYGON) then null;								
+			elsif set (section_fill_zone, SEC_FILL_ZONE) then null;								
 			elsif set (section_contours, SEC_CONTOURS) then null;								
 			elsif set (section_via, SEC_VIA) then null;								
 			elsif set (section_submodules, SEC_SUBMODULES) then null;
@@ -11711,7 +11711,7 @@ package body et_project is
 
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_POLYGON => null;
+							when SEC_FILL_ZONE => null;
 							when others => invalid_section;
 						end case;
 					
@@ -12792,7 +12792,7 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
-					when SEC_POLYGON =>
+					when SEC_FILL_ZONE =>
 						case stack.parent is
 							when SEC_ROUTE => -- connected with a net
 								declare
