@@ -3586,6 +3586,7 @@ package body et_project is
 			-- Once a section concludes, the temporarily variables are read, evaluated
 				-- and finally assembled to actual objects:
 
+				-- fill zones
 				procedure append_silk_polygon_top is begin
 					case fill_style is
 						when SOLID =>
@@ -3862,6 +3863,154 @@ package body et_project is
 
 					et_pcb_stack.type_signal_layers.clear (signal_layers);
 				end;
+
+				-- cutout zones
+				procedure append_silk_cutout_top is begin
+					pac_silk_cutouts.append (
+						container	=> packge.silk_screen.top.cutouts, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with
+										easing => easing));
+					
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_silk_cutout_bottom is begin
+					pac_silk_cutouts.append (
+						container	=> packge.silk_screen.bottom.cutouts, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with
+										easing => easing));
+					
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_assy_doc_cutout_top is begin
+					pac_doc_cutouts.append (
+						container	=> packge.assembly_documentation.top.cutouts, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with 
+										easing => easing));
+					
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_assy_doc_cutout_bottom is begin
+					pac_doc_cutouts.append (
+						container	=> packge.assembly_documentation.bottom.cutouts, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with 
+										easing => easing));
+					
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_keepout_cutout_top is begin
+					pac_keepout_cutouts.append (
+						container	=> packge.keepout.top.cutouts, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with 
+										easing => easing));
+
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_keepout_cutout_bottom is begin
+					pac_keepout_cutouts.append (
+						container	=> packge.keepout.bottom.cutouts, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with 
+										easing => easing));
+
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_stencil_cutout_top is begin
+					pac_stencil_cutouts.append (
+						container	=> packge.stencil.top.cutouts, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with
+										easing => easing));
+
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_stencil_cutout_bottom is begin
+					pac_stencil_cutouts.append (
+						container	=> packge.stencil.top.cutouts, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with
+										easing => easing));
+
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_stop_cutout_top is begin
+					pac_stop_cutouts.append (
+						container	=> packge.stop_mask.top.cutouts, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with
+										easing => easing));
+
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+				
+				procedure append_stop_cutout_bottom is begin
+					pac_stop_cutouts.append (
+						container	=> packge.stop_mask.bottom.cutouts, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with
+										easing => easing));
+
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_copper_cutout_top is begin
+					et_packages.pac_copper_polygons_cutout.append (
+						container	=> packge.copper.top.cutouts, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with
+										easing => easing));
+										
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_copper_cutout_bottom is begin
+					et_packages.pac_copper_polygons_cutout.append (
+						container	=> packge.copper.bottom.cutouts, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with
+										easing => easing));
+										
+					-- clean up for next polygon
+					reset_polygon;
+				end;
+
+				procedure append_route_restrict_cutout is begin
+					pac_route_restrict_cutouts.append (
+						container	=> packge.route_restrict.cutouts, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with 
+										easing => easing,
+										layers => signal_layers));
+
+					-- clean up for next polygon
+					reset_polygon;
+
+					et_pcb_stack.type_signal_layers.clear (signal_layers);
+				end;
+
+				procedure append_via_restrict_cutout is begin
+					pac_via_restrict_cutouts.append (
+						container	=> packge.via_restrict.cutouts, 
+						new_item	=> (shapes.type_polygon_base (polygon_2) with 
+										easing => easing,
+										layers => signal_layers));
+
+					-- clean up for next polygon
+					reset_polygon;
+
+					et_pcb_stack.type_signal_layers.clear (signal_layers);
+				end;
+
 				
 			begin -- execute_section
 				case stack.current is
@@ -4072,6 +4221,9 @@ package body et_project is
 								
 								-- clean up for next line
 								reset_line;
+
+							when SEC_CONTOURS =>
+								null; -- CS
 								
 							when others => invalid_section;
 						end case;
@@ -4261,6 +4413,9 @@ package body et_project is
 								-- clean up for next arc
 								reset_arc;
 
+							when SEC_CONTOURS =>
+								null; -- CS
+								
 							when others => invalid_section;
 						end case;
 
@@ -4422,6 +4577,9 @@ package body et_project is
 								
 								-- clean up for next circle
 								reset_circle;
+
+							when SEC_CONTOURS =>
+								null; -- CS
 								
 							when others => invalid_section;
 						end case;
@@ -4509,6 +4667,63 @@ package body et_project is
 								
 							when others => invalid_section;
 						end case;
+
+					when SEC_CUTOUT_ZONE =>
+						case stack.parent is
+							when SEC_TOP => 
+								case stack.parent (degree => 2) is
+									when SEC_SILK_SCREEN =>
+										append_silk_cutout_top;
+										
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										append_assy_doc_cutout_top;
+										
+									when SEC_STENCIL =>
+										append_stencil_cutout_top;
+										
+									when SEC_STOP_MASK =>
+										append_stop_cutout_top;
+										
+									when SEC_KEEPOUT =>
+										append_keepout_cutout_top;
+
+									when SEC_COPPER =>
+										append_copper_cutout_top;
+
+									when others => invalid_section;
+								end case;
+
+							when SEC_BOTTOM => 
+								case stack.parent (degree => 2) is
+									when SEC_SILK_SCREEN =>
+										append_silk_cutout_bottom;
+										
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										append_assy_doc_cutout_bottom;
+										
+									when SEC_STENCIL =>
+										append_stencil_cutout_bottom;
+										
+									when SEC_STOP_MASK =>
+										append_stop_cutout_bottom;
+										
+									when SEC_KEEPOUT =>
+										append_keepout_cutout_bottom;
+
+									when SEC_COPPER =>
+										append_copper_cutout_bottom;
+
+									when others => invalid_section;
+								end case;
+								
+							when SEC_ROUTE_RESTRICT =>
+								append_route_restrict_cutout;
+
+							when SEC_VIA_RESTRICT =>
+								append_via_restrict_cutout;
+								
+							when others => invalid_section;
+						end case;
 						
 					when SEC_CONTOURS =>
 						case stack.parent is
@@ -4527,6 +4742,9 @@ package body et_project is
 -- 								-- clean up for next collection of corner points
 -- 								type_polygon_points.clear (polygon_corner_points);
 -- 
+							when SEC_CUTOUT_ZONE =>
+								null;
+
 							when others => invalid_section;
 						end case;
 
@@ -4742,6 +4960,7 @@ package body et_project is
 			elsif set (section_terminal, SEC_TERMINAL) then null;
 			elsif set (section_fill_zone, SEC_FILL_ZONE) then null;
 			elsif set (section_contours, SEC_CONTOURS) then null;
+			elsif set (section_cutout_zone, SEC_CUTOUT_ZONE) then null;
 			else
 				-- The line contains something else -> the payload data. 
 				-- Temporarily this data is stored in corresponding variables.
@@ -4958,6 +5177,9 @@ package body et_project is
 										invalid_keyword (kw);
 									end if;
 								end;
+
+							when SEC_CONTOURS =>
+								null; -- CS
 								
 							when others => invalid_section;
 						end case;
@@ -5153,6 +5375,9 @@ package body et_project is
 									end if;
 								end;
 
+							when SEC_CONTOURS =>
+								null; -- CS
+								
 							when others => invalid_section;
 						end case;
 
@@ -5184,7 +5409,7 @@ package body et_project is
 												expect_field_count (line, 2);													
 												pac_circle_fillable_filled := to_filled (f (line, 2));
 
-											elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+											elsif kw = keyword_fill_style then -- fill_style solid/hatched
 												expect_field_count (line, 2);													
 												pac_circle_fillable_fill_style := to_fill_style (f (line, 2));
 
@@ -5224,7 +5449,7 @@ package body et_project is
 												expect_field_count (line, 2);													
 												pac_circle_copper.filled := to_filled (f (line, 2));
 
-											elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+											elsif kw = keyword_fill_style then -- fill_style solid/hatched
 												expect_field_count (line, 2);													
 												pac_circle_copper.fill_style := to_fill_style (f (line, 2));
 
@@ -5307,7 +5532,7 @@ package body et_project is
 										expect_field_count (line, 2);													
 										pac_circle_fillable_filled := to_filled (f (line, 2));
 
-									elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+									elsif kw = keyword_fill_style then -- fill_style solid/hatched
 										expect_field_count (line, 2);													
 										pac_circle_fillable_fill_style := to_fill_style (f (line, 2));
 
@@ -5371,21 +5596,94 @@ package body et_project is
 										invalid_keyword (kw);
 									end if;
 								end;
+
+							when SEC_CONTOURS =>
+								null; -- CS
 								
 							when others => invalid_section;
 						end case;
 
+					when SEC_CUTOUT_ZONE =>
+						case stack.parent is
+							when SEC_TOP | SEC_BOTTOM => 
+								case stack.parent (degree => 2) is
+									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+										SEC_STENCIL | SEC_STOP_MASK =>
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+												expect_field_count (line, 2);													
+												easing.style := to_corner_easing (f (line, 2));
+
+											elsif kw = keyword_easing_radius then -- easing_radius 0.4
+												expect_field_count (line, 2);													
+												easing.radius := to_distance (f (line, 2));
+												
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+
+									when SEC_KEEPOUT =>
+										declare
+											kw : string := f (line, 1);
+										begin
+											invalid_keyword (kw);
+										end;
+										
+									when SEC_COPPER =>
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+												expect_field_count (line, 2);													
+												easing.style := to_corner_easing (f (line, 2));
+
+											elsif kw = keyword_easing_radius then -- easing_radius 0.4
+												expect_field_count (line, 2);													
+												easing.radius := to_distance (f (line, 2));
+												
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+
+									when others => invalid_section;
+								end case;
+										
+							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_layers then -- layers 1 14 3
+
+										-- there must be at least two fields:
+										expect_field_count (line => line, count_expected => 2, warn => false);
+										signal_layers := to_layers (line);
+
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
+							when others => invalid_section;
+						end case;
+						
 					when SEC_FILL_ZONE =>
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										SEC_STENCIL | SEC_STOP_MASK =>
 										declare
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+											if kw = keyword_fill_style then -- fill_style solid/hatched
 												expect_field_count (line, 2);													
 												fill_style := to_fill_style (f (line, 2));
 
@@ -5410,6 +5708,18 @@ package body et_project is
 											end if;
 										end;
 
+									when SEC_KEEPOUT =>
+										declare
+											kw : string := f (line, 1);
+										begin
+											if kw = keyword_filled then -- filled yes/no
+												expect_field_count (line, 2);
+												filled := to_filled (f (line, 2));
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+										
 									when SEC_COPPER =>
 										declare
 											kw : string := f (line, 1);
@@ -5481,6 +5791,35 @@ package body et_project is
 					when SEC_CONTOURS =>
 						case stack.parent is
 							when SEC_FILL_ZONE =>
+								declare
+									kw : string := f (line, 1);
+								begin
+									null;
+
+									-- CS
+									
+									-- read corner points
+									-- NOTE: A corner point is defined by a single line.
+									-- Upon reading the line like "position x 4 y 4" the point is
+									-- appended to the corner point collection immediately here. See procdure
+									-- execute_section.
+									-- There is no section for a single corner like [CORNER BEGIN].
+									
+									-- CS: In the following: set a corresponding parameter-found-flag
+-- 									if kw = keyword_position then -- position x 123.54 y 2.7
+-- 										expect_field_count (line, 5);
+-- 
+-- 										-- extract corner coordinates from line starting at field 2
+-- 										polygon_corner_point := to_position (line, 2);
+-- 
+-- 										-- insert the corner point in collection of corner points
+-- 										type_polygon_points.insert (polygon_corner_points, polygon_corner_point);
+-- 									else
+-- 										invalid_keyword (kw);
+-- 									end if;
+								end;
+
+							when SEC_CUTOUT_ZONE =>
 								declare
 									kw : string := f (line, 1);
 								begin
@@ -5661,8 +6000,6 @@ package body et_project is
 							when SEC_TERMINAL => null;
 							when others => invalid_section;
 						end case;
-						
-					when others => invalid_section;
 						
 				end case;
 			end if;
@@ -10617,7 +10954,6 @@ package body et_project is
 					case fill_style is
 						when et_packages.SOLID		=> solid_polygon;
 						when et_packages.HATCHED	=> hatched_polygon;
--- CS						when CUTOUT		=> cutout_polygon;
 					end case;
 
 					board_reset_polygon; -- clean up for next polygon
@@ -10628,7 +10964,8 @@ package body et_project is
 
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_FILL_ZONE => null;								
+							when SEC_CUTOUT_ZONE => null;
+							when SEC_FILL_ZONE => null;
 							when others => invalid_section;
 						end case;
 					
@@ -11126,7 +11463,10 @@ package body et_project is
 
 							when others => invalid_section;
 						end case;
-								
+
+					when SEC_CUTOUT_ZONE =>
+						null; -- CS
+						
 					when SEC_FILL_ZONE =>
 						case stack.parent is
 							when SEC_ROUTE =>
@@ -11642,7 +11982,8 @@ package body et_project is
 			elsif set (section_port, SEC_PORT) then null;				
 			elsif set (section_route, SEC_ROUTE) then null;								
 			elsif set (section_line, SEC_LINE) then null;								
-			elsif set (section_arc, SEC_ARC) then null;								
+			elsif set (section_arc, SEC_ARC) then null;
+			elsif set (section_cutout_zone, SEC_CUTOUT_ZONE) then null;
 			elsif set (section_fill_zone, SEC_FILL_ZONE) then null;								
 			elsif set (section_contours, SEC_CONTOURS) then null;								
 			elsif set (section_via, SEC_VIA) then null;								
@@ -11687,6 +12028,7 @@ package body et_project is
 					when SEC_CONTOURS =>
 						case stack.parent is
 							when SEC_FILL_ZONE => null;
+							when SEC_CUTOUT_ZONE => null;
 							when others => invalid_section;
 						end case;
 					
@@ -12599,7 +12941,7 @@ package body et_project is
 												expect_field_count (line, 2);													
 												board_circle_fillable_filled := to_filled (f (line, 2));
 
-											elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+											elsif kw = keyword_fill_style then -- fill_style solid/hatched
 												expect_field_count (line, 2);													
 												board_circle_fillable_fill_style := to_fill_style (f (line, 2));
 
@@ -12719,7 +13061,7 @@ package body et_project is
 										expect_field_count (line, 2);													
 										board_track_circle.filled := to_filled (f (line, 2));
 
-									elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+									elsif kw = keyword_fill_style then -- fill_style solid/hatched
 										expect_field_count (line, 2);													
 										board_track_circle.fill_style := to_fill_style (f (line, 2));
 
@@ -12767,6 +13109,9 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
+					when SEC_CUTOUT_ZONE =>
+						null; -- CS
+						
 					when SEC_FILL_ZONE =>
 						case stack.parent is
 							when SEC_ROUTE => -- connected with a net
@@ -12792,7 +13137,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										easing.radius := to_distance (f (line, 2));
 
-									elsif kw = keyword_fill_style then -- fill_style solid,hatched,cutout
+									elsif kw = keyword_fill_style then -- fill_style solid,hatched
 										expect_field_count (line, 2);
 										fill_style := to_fill_style (f (line, 2));
 
@@ -12836,7 +13181,7 @@ package body et_project is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										SEC_STENCIL | SEC_STOP_MASK =>
 										declare
 											use et_packages;
 											use et_packages.shapes;
@@ -12844,7 +13189,7 @@ package body et_project is
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+											if kw = keyword_fill_style then -- fill_style solid/hatched
 												expect_field_count (line, 2);													
 												fill_style := to_fill_style (f (line, 2));
 
@@ -12869,6 +13214,21 @@ package body et_project is
 											end if;
 										end;
 
+									when SEC_KEEPOUT =>
+										declare
+											use et_packages.shapes;
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_filled then -- filled yes/no
+												expect_field_count (line, 2);													
+												board_object_filled := to_filled (f (line, 2));
+
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+										
 									when others => invalid_section;
 								end case;
 
@@ -12903,7 +13263,7 @@ package body et_project is
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_fill_style then -- fill_style solid/hatched/cutout
+									if kw = keyword_fill_style then -- fill_style solid/hatched
 										expect_field_count (line, 2);													
 										fill_style := to_fill_style (f (line, 2));
 

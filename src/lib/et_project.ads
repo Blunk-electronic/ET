@@ -561,7 +561,7 @@ package et_project is
 	type type_section_name_module is (
 		SEC_BOARD_LAYER_STACK,
 		SEC_CONTOURS,
--- 		SEC_CUTOUT_ZONE,
+		SEC_CUTOUT_ZONE,
 		SEC_DRAWING_GRID,
 		SEC_FILL_ZONE,
 		SEC_INIT,
@@ -580,7 +580,6 @@ package et_project is
 		SEC_ROUTE,
 		SEC_LINE,
 		SEC_ARC,
--- 		SEC_POLYGON,
 		SEC_VIA,
 		SEC_SUBMODULES,
 		SEC_SUBMODULE,
@@ -685,7 +684,7 @@ package et_project is
 
 	type type_section_name_package is (
 		SEC_CONTOURS,
--- 		SEC_CUTOUT_ZONE,
+		SEC_CUTOUT_ZONE,
 		SEC_INIT,
 		SEC_TOP,
 		SEC_BOTTOM,

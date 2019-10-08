@@ -289,7 +289,7 @@ package et_packages is
 		end case;
 	end record;
 
-	type type_polygon_cutout is new type_polygon_base with record
+	type type_cutout_zone is new type_polygon_base with record
 		easing : type_polygon_easing;
 	end record;
 
@@ -344,7 +344,7 @@ package et_packages is
 	package pac_copper_polygons_hatched is new doubly_linked_lists (type_copper_polygon_hatched);
 
 	-- A cutout-polygon used in copper layers:
-	package pac_copper_polygons_cutout is new doubly_linked_lists (type_polygon_cutout);
+	package pac_copper_polygons_cutout is new doubly_linked_lists (type_cutout_zone);
 
 	
 	text_polygon_priority_level	: constant string (1..14) := "priority_level"; -- CS move to et_pcb
@@ -357,7 +357,6 @@ package et_packages is
 	type type_copper_polygons_2 is record
 		solid	: pac_copper_polygons_solid.list;
 		hatched	: pac_copper_polygons_hatched.list;
-		cutout	: pac_copper_polygons_cutout.list;
 	end record;
 
 		
@@ -366,8 +365,8 @@ package et_packages is
 		lines 		: type_copper_lines.list;
 		arcs		: type_copper_arcs.list;
 		circles		: type_copper_circles.list;
--- 		polygons	: type_copper_polygons.list; -- CS remove
-		polygons	: type_copper_polygons_2; -- CS
+		polygons	: type_copper_polygons_2;
+		cutouts		: pac_copper_polygons_cutout.list;
 		texts		: type_texts_with_content.list;
 	end record;
 	
@@ -466,7 +465,7 @@ package et_packages is
 	package type_stop_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
 	package type_stop_polygons is new indefinite_doubly_linked_lists (type_polygon);
-
+	package pac_stop_cutouts is new doubly_linked_lists (type_cutout_zone);
 	
 	-- This is the type for stop mask objects in general:
 	type type_stop_mask is tagged record
@@ -474,6 +473,7 @@ package et_packages is
 		arcs		: type_stop_arcs.list;
 		circles		: type_stop_circles.list;
 		polygons	: type_stop_polygons.list;
+		cutouts		: pac_stop_cutouts.list;
 		texts		: type_texts_with_content.list; -- for texts in copper to be exposed
 	end record;
 
@@ -511,7 +511,7 @@ package et_packages is
 	package type_stencil_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
 	package type_stencil_polygons is new indefinite_doubly_linked_lists (type_polygon);
-	
+	package pac_stencil_cutouts is new doubly_linked_lists (type_cutout_zone);	
 	
 	-- This is the type for solder paste stencil objects in general:
 	type type_stencil is record
@@ -519,6 +519,7 @@ package et_packages is
 		arcs		: type_stencil_arcs.list;
 		circles		: type_stencil_circles.list;
 		polygons	: type_stencil_polygons.list;
+		cutouts		: pac_stencil_cutouts.list;
 		-- CS: texts ? -- not reasonable and a waste of resources
 	end record;
 
@@ -550,6 +551,7 @@ package et_packages is
 	package type_silk_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 
 	package pac_silk_polygons is new indefinite_doubly_linked_lists (type_polygon);
+	package pac_silk_cutouts is new doubly_linked_lists (type_cutout_zone);	
 	
 
 	-- This is the base type for silk screen objects in general:
@@ -558,6 +560,7 @@ package et_packages is
 		arcs		: type_silk_arcs.list;
 		circles		: type_silk_circles.list;
 		polygons	: pac_silk_polygons.list;
+		cutouts : pac_silk_cutouts.list;
 		texts		: type_texts_with_content.list;
 	end record;
 
@@ -592,7 +595,7 @@ package et_packages is
 	package type_doc_circles is new indefinite_doubly_linked_lists (type_fillable_circle);
 	
 	package pac_doc_polygons is new indefinite_doubly_linked_lists (type_polygon);
-
+	package pac_doc_cutouts is new doubly_linked_lists (type_cutout_zone);	
 	
 	-- This is the base type for assembly documentation objects in general:
 	type type_assembly_documentation_base is tagged record
@@ -600,6 +603,7 @@ package et_packages is
 		arcs		: type_doc_arcs.list;
 		circles		: type_doc_circles.list;
 		polygons	: pac_doc_polygons.list;
+		cutouts		: pac_doc_cutouts.list;
 		texts		: type_texts_with_content.list;
 	end record;
 
@@ -634,13 +638,14 @@ package et_packages is
 	package type_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
 
 	package type_keepout_polygons is new doubly_linked_lists (shapes.type_polygon);
-
+	package pac_keepout_cutouts is new doubly_linked_lists (type_cutout_zone);	
 	
 	type type_keepout is record
 		lines 		: type_keepout_lines.list;
 		arcs		: type_keepout_arcs.list;
 		circles		: type_keepout_circles.list;
 		polygons	: type_keepout_polygons.list;
+		cutouts 	: pac_keepout_cutouts.list;
 		-- CS texts		: type_texts_with_content.list; -- for placement notes ?
 	end record;
 
@@ -679,6 +684,11 @@ package et_packages is
 
 	package type_route_restrict_polygons is new doubly_linked_lists (type_route_restrict_polygon);
 
+	type type_route_restrict_cutout is new type_cutout_zone with record
+		layers 	: type_signal_layers.set;
+	end record;
+		
+	package pac_route_restrict_cutouts is new doubly_linked_lists (type_route_restrict_cutout);
 	
 	-- this is the base type for route restrict objects
 	type type_route_restrict is tagged record
@@ -686,6 +696,7 @@ package et_packages is
 		arcs		: type_route_restrict_arcs.list;
 		circles		: type_route_restrict_circles.list;
 		polygons	: type_route_restrict_polygons.list;
+		cutouts		: pac_route_restrict_cutouts.list;
 		-- CS texts		: type_texts_with_content.list; -- for routing notes ? mind signal layer !
 	end record;
 
@@ -722,6 +733,12 @@ package et_packages is
 
 	package type_via_restrict_polygons is new doubly_linked_lists (type_via_restrict_polygon);
 
+
+	type type_via_restrict_cutout is new type_cutout_zone with record
+		layers 	: type_signal_layers.set;
+	end record;
+		
+	package pac_via_restrict_cutouts is new doubly_linked_lists (type_via_restrict_cutout);
 	
 	
 	-- this is the base type for via restrict objects
@@ -730,6 +747,7 @@ package et_packages is
 		arcs		: type_via_restrict_arcs.list;
 		circles		: type_via_restrict_circles.list;
 		polygons	: type_via_restrict_polygons.list;
+		cutouts		: pac_via_restrict_cutouts.list;
 		-- CS texts		: type_texts_with_content.list; -- for via notes ?
 	end record;
 

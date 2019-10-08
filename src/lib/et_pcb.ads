@@ -242,7 +242,7 @@ package et_pcb is
 	package pac_texts is new doubly_linked_lists (type_text);
 
 	-- Cutout-polygons in copper layers:
-	type type_copper_polygon_cutout is new et_packages.type_polygon_cutout with record
+	type type_copper_polygon_cutout is new et_packages.type_cutout_zone with record
 		layer 	: type_signal_layer;
 	end record;
 
