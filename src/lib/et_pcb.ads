@@ -276,7 +276,6 @@ package et_pcb is
 	type type_copper_polygons_floating is record
 		solid	: pac_copper_polygons_floating_solid.list;
 		hatched	: pac_copper_polygons_floating_hatched.list;
-		cutout	: pac_copper_polygons_cutout.list;
 	end record;
 	
 	
@@ -289,6 +288,7 @@ package et_pcb is
 
 		-- CS: It is probably no good idea to allow floating copper polygons.
 		polygons		: type_copper_polygons_floating; 
+		cutouts			: pac_copper_polygons_cutout.list;		
 		
 		texts			: pac_texts.list;
 		placeholders	: type_text_placeholders_copper.list;
@@ -365,15 +365,15 @@ package et_pcb is
 	type type_signal_polygons is record
 		solid	: pac_signal_polygons_solid.list;
 		hatched	: pac_signal_polygons_hatched.list;
-		cutout	: pac_copper_polygons_cutout.list;
 	end record;
 	
 	type type_route is record 
-		lines 			: pac_copper_lines.list;
-		arcs			: pac_copper_arcs.list;
-		vias			: pac_vias.list;
--- 		polygons		: pac_copper_polygons_signal.list; -- CS remove
-		polygons_2		: type_signal_polygons;
+		lines 		: pac_copper_lines.list;
+		arcs		: pac_copper_arcs.list;
+		vias		: pac_vias.list;
+-- 		polygons	: pac_copper_polygons_signal.list; -- CS remove
+		polygons_2	: type_signal_polygons;
+		cutouts		: pac_copper_polygons_cutout.list;
 	end record;
 	
 

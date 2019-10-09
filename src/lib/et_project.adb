@@ -4727,24 +4727,8 @@ package body et_project is
 						
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_FILL_ZONE =>
-								null;
--- CS								
--- 								-- Assign the collected corner points to the temporarily polygons
--- 								-- pac_polygon, pac_polygon_copper and pad_shape_polygon. 
--- 								-- When the section POLYGON closes one of them is taken.
--- 								-- CS: A correct implementation should test the parent section of
--- 								-- SEC_FILL_ZONE instead before copying the corner points.
--- 								pac_polygon.corners := polygon_corner_points;
--- 								pac_polygon_copper.corners := polygon_corner_points;
--- 								pad_shape_polygon.corners := polygon_corner_points;
--- 
--- 								-- clean up for next collection of corner points
--- 								type_polygon_points.clear (polygon_corner_points);
--- 
-							when SEC_CUTOUT_ZONE =>
-								null;
-
+							when SEC_FILL_ZONE => null;
+							when SEC_CUTOUT_ZONE => null;
 							when others => invalid_section;
 						end case;
 
@@ -5029,7 +5013,7 @@ package body et_project is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										SEC_STENCIL | SEC_STOP_MASK =>
 										declare
 											kw : string := f (line, 1);
 										begin
@@ -5055,6 +5039,28 @@ package body et_project is
 											end if;
 										end;
 
+									when SEC_KEEPOUT =>
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_start then -- start x 22.3 y 23.3
+												expect_field_count (line, 5);
+
+												-- extract the start position starting at field 2 of line
+												pac_line.start_point := to_position (line, 2);
+												
+											elsif kw = keyword_end then -- end x 22.3 y 23.3
+												expect_field_count (line, 5);
+
+												-- extract the end position starting at field 2 of line
+												pac_line.end_point := to_position (line, 2);
+
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+										
 									when SEC_PAD_CONTOURS_THT =>
 										declare
 											kw : string := f (line, 1);
@@ -5119,10 +5125,6 @@ package body et_project is
 										-- extract the end position starting at field 2 of line
 										pac_line.end_point := to_position (line, 2);
 
-									elsif kw = keyword_width then -- width 0.3
-										expect_field_count (line, 2);
-										pac_line_width := to_distance (f (line, 2));
-										
 									elsif kw = keyword_layers then -- layers 2..16
 										
 										-- there must be at least two fields:
@@ -5179,7 +5181,26 @@ package body et_project is
 								end;
 
 							when SEC_CONTOURS =>
-								null; -- CS
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_start then -- start x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the start position starting at field 2 of line
+										pac_line.start_point := to_position (line, 2);
+										
+									elsif kw = keyword_end then -- end x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the end position starting at field 2 of line
+										pac_line.end_point := to_position (line, 2);
+
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
 								
 							when others => invalid_section;
 						end case;
@@ -5189,7 +5210,7 @@ package body et_project is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										SEC_STENCIL | SEC_STOP_MASK =>
 										declare
 											kw : string := f (line, 1);
 										begin
@@ -5221,6 +5242,34 @@ package body et_project is
 											end if;
 										end;
 
+									when SEC_KEEPOUT =>
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_center then -- center x 150 y 45
+												expect_field_count (line, 5);
+
+												-- extract the center position starting at field 2 of line
+												pac_arc.center := to_position (line, 2);
+												
+											elsif kw = keyword_start then -- start x 22.3 y 23.3
+												expect_field_count (line, 5);
+
+												-- extract the start position starting at field 2 of line
+												pac_arc.start_point := to_position (line, 2);
+												
+											elsif kw = keyword_end then -- end x 22.3 y 23.3
+												expect_field_count (line, 5);
+
+												-- extract the end position starting at field 2 of line
+												pac_arc.end_point := to_position (line, 2);
+												
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+										
 									when SEC_PAD_CONTOURS_THT =>
 										declare
 											kw : string := f (line, 1);
@@ -5302,10 +5351,6 @@ package body et_project is
 
 										-- extract the end position starting at field 2 of line
 										pac_arc.end_point := to_position (line, 2);
-
-									elsif kw = keyword_width then -- width 0.5
-										expect_field_count (line, 2);
-										pac_line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_layers then -- layers 1 14 3
 
@@ -5376,7 +5421,32 @@ package body et_project is
 								end;
 
 							when SEC_CONTOURS =>
-								null; -- CS
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_center then -- center x 150 y 45
+										expect_field_count (line, 5);
+
+										-- extract the center position starting at field 2 of line
+										pac_arc.center := to_position (line, 2);
+										
+									elsif kw = keyword_start then -- start x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the start position starting at field 2 of line
+										pac_arc.start_point := to_position (line, 2);
+										
+									elsif kw = keyword_end then -- end x 22.3 y 23.3
+										expect_field_count (line, 5);
+
+										-- extract the end position starting at field 2 of line
+										pac_arc.end_point := to_position (line, 2);
+
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
 								
 							when others => invalid_section;
 						end case;
@@ -5386,7 +5456,7 @@ package body et_project is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										SEC_STENCIL | SEC_STOP_MASK =>
 										declare
 											kw : string := f (line, 1);
 										begin
@@ -5426,6 +5496,26 @@ package body et_project is
 											end if;
 										end;
 
+									when SEC_KEEPOUT =>
+										declare
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_center then -- center x 150 y 45
+												expect_field_count (line, 5);
+
+												-- extract the center position starting at field 2 of line
+												pac_circle.center := to_position (line, 2);
+												
+											elsif kw = keyword_radius then -- radius 22
+												expect_field_count (line, 2);
+												pac_circle.radius := to_distance (f (line, 2));
+												
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+										
 									when SEC_COPPER => -- NON-ELECTRIC !!
 										declare
 											kw : string := f (line, 1);
@@ -5524,10 +5614,6 @@ package body et_project is
 										expect_field_count (line, 2);
 										pac_circle.radius := to_distance (f (line, 2));
 										
-									elsif kw = keyword_width then -- width 0.5
-										expect_field_count (line, 2);
-										pac_circle_fillable_width := to_distance (f (line, 2));
-
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);													
 										pac_circle_fillable_filled := to_filled (f (line, 2));
@@ -5598,7 +5684,24 @@ package body et_project is
 								end;
 
 							when SEC_CONTOURS =>
-								null; -- CS
+								declare
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_center then -- center x 150 y 45
+										expect_field_count (line, 5);
+
+										-- extract the center position starting at field 2 of line
+										pac_circle.center := to_position (line, 2);
+										
+									elsif kw = keyword_radius then -- radius 22
+										expect_field_count (line, 2);
+										pac_circle.radius := to_distance (f (line, 2));
+								
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
 								
 							when others => invalid_section;
 						end case;
@@ -5627,6 +5730,7 @@ package body et_project is
 										end;
 
 									when SEC_KEEPOUT =>
+										-- no parameters allowed here
 										declare
 											kw : string := f (line, 1);
 										begin
@@ -5790,64 +5894,8 @@ package body et_project is
 						
 					when SEC_CONTOURS =>
 						case stack.parent is
-							when SEC_FILL_ZONE =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									null;
-
-									-- CS
-									
-									-- read corner points
-									-- NOTE: A corner point is defined by a single line.
-									-- Upon reading the line like "position x 4 y 4" the point is
-									-- appended to the corner point collection immediately here. See procdure
-									-- execute_section.
-									-- There is no section for a single corner like [CORNER BEGIN].
-									
-									-- CS: In the following: set a corresponding parameter-found-flag
--- 									if kw = keyword_position then -- position x 123.54 y 2.7
--- 										expect_field_count (line, 5);
--- 
--- 										-- extract corner coordinates from line starting at field 2
--- 										polygon_corner_point := to_position (line, 2);
--- 
--- 										-- insert the corner point in collection of corner points
--- 										type_polygon_points.insert (polygon_corner_points, polygon_corner_point);
--- 									else
--- 										invalid_keyword (kw);
--- 									end if;
-								end;
-
-							when SEC_CUTOUT_ZONE =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									null;
-
-									-- CS
-									
-									-- read corner points
-									-- NOTE: A corner point is defined by a single line.
-									-- Upon reading the line like "position x 4 y 4" the point is
-									-- appended to the corner point collection immediately here. See procdure
-									-- execute_section.
-									-- There is no section for a single corner like [CORNER BEGIN].
-									
-									-- CS: In the following: set a corresponding parameter-found-flag
--- 									if kw = keyword_position then -- position x 123.54 y 2.7
--- 										expect_field_count (line, 5);
--- 
--- 										-- extract corner coordinates from line starting at field 2
--- 										polygon_corner_point := to_position (line, 2);
--- 
--- 										-- insert the corner point in collection of corner points
--- 										type_polygon_points.insert (polygon_corner_points, polygon_corner_point);
--- 									else
--- 										invalid_keyword (kw);
--- 									end if;
-								end;
-								
+							when SEC_FILL_ZONE => null;
+							when SEC_CUTOUT_ZONE => null;
 							when others => invalid_section;
 						end case;
 
@@ -9899,7 +9947,7 @@ package body et_project is
 				procedure insert_polygon (
 					layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
 					face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
-				-- The polygon and its board_line_width have been general things until now. 
+				-- The polygon has been a general thing until now. 
 				-- Depending on the layer and the side of the board (face) the polygon
 				-- is now assigned to the board where it belongs to.
 
@@ -10129,6 +10177,226 @@ package body et_project is
 					board_reset_polygon;
 				end insert_polygon;
 
+				procedure insert_cutout (
+					layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
+					face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
+				-- The polygon has been a general thing until now. 
+				-- Depending on the layer and the side of the board (face) the polygon
+				-- is threated as a cutout zone and assigned to the board where it belongs to.
+
+					procedure do_it (
+						module_name	: in type_module_name.bounded_string;
+						module		: in out et_schematic.type_module) is
+						use et_pcb_coordinates;
+						use et_packages;
+						use et_packages.shapes;
+						
+						procedure append_silk_cutout_top is begin
+							pac_silk_cutouts.append (
+								container	=> module.board.silk_screen.top.cutouts,
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+											easing		=> easing));
+						end;
+
+						procedure append_silk_cutout_bottom is begin
+							pac_silk_cutouts.append (
+								container	=> module.board.silk_screen.bottom.cutouts,
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+											easing		=> easing));
+						end;
+						
+						procedure append_assy_doc_cutout_top is begin
+							pac_doc_cutouts.append (
+								container	=> module.board.assy_doc.top.cutouts,
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+												easing		=> easing));
+						end;
+
+						procedure append_assy_doc_cutout_bottom is begin
+							pac_doc_cutouts.append (
+								container	=> module.board.assy_doc.bottom.cutouts,
+								new_item	=> (shapes.type_polygon_base (polygon_2) with 
+												easing		=> easing));
+						end;
+
+						procedure append_keepout_cutout_top is begin
+							pac_keepout_cutouts.append (
+								container	=> module.board.keepout.top.cutouts, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+												easing		=> easing));
+						end;
+
+						procedure append_keepout_cutout_bottom is begin
+							pac_keepout_cutouts.append (
+								container	=> module.board.keepout.bottom.cutouts, 
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+												easing		=> easing));
+						end;
+
+						procedure append_stencil_cutout_top is begin
+							pac_stencil_cutouts.append (
+								container	=> module.board.stencil.top.cutouts,
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+												easing		=> easing));
+						end;
+
+						procedure append_stencil_cutout_bottom is begin
+							pac_stencil_cutouts.append (
+								container	=> module.board.stencil.bottom.cutouts,
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+												easing		=> easing));
+						end;
+
+						procedure append_stop_cutout_top is begin
+							pac_stop_cutouts.append (
+								container	=> module.board.stop_mask.top.cutouts,
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+												easing		=> easing));
+						end;
+
+						procedure append_stop_cutout_bottom is begin
+							pac_stop_cutouts.append (
+								container	=> module.board.stop_mask.bottom.cutouts,
+								new_item	=> (shapes.type_polygon_base (polygon_2) with
+												easing		=> easing));
+						end;
+						
+					begin -- do_it
+						case face is
+							when TOP =>
+								case layer is
+									when SILK_SCREEN =>
+										append_silk_cutout_top;
+													
+									when ASSEMBLY_DOCUMENTATION =>
+										append_assy_doc_cutout_top;
+
+									when STENCIL =>
+										append_stencil_cutout_top;
+										
+									when STOP_MASK =>
+										append_stop_cutout_top;
+										
+									when KEEPOUT =>
+										append_keepout_cutout_top;
+										
+								end case;
+								
+							when BOTTOM => null;
+								case layer is
+									when SILK_SCREEN =>
+										append_silk_cutout_bottom;
+
+									when ASSEMBLY_DOCUMENTATION =>
+										append_assy_doc_cutout_bottom;
+										
+									when STENCIL =>
+										append_stencil_cutout_bottom;
+										
+									when STOP_MASK =>
+										append_stop_cutout_bottom;
+										
+									when KEEPOUT =>
+										append_keepout_cutout_bottom;
+										
+								end case;
+								
+						end case;
+					end do_it;
+										
+				begin -- insert_cutout
+					update_element (
+						container	=> modules,
+						position	=> module_cursor,
+						process		=> do_it'access);
+
+					-- clean up for next board cutout
+					board_reset_polygon;
+				end insert_cutout;
+
+				procedure insert_cutout_via_restrict is
+					use et_packages;
+					use et_pcb_stack;
+					use type_signal_layers;
+					
+					procedure do_it (
+						module_name	: in type_module_name.bounded_string;
+						module		: in out et_schematic.type_module) is
+					begin
+						pac_via_restrict_cutouts.append (
+							container	=> module.board.via_restrict.cutouts,
+							new_item	=> (shapes.type_polygon_base (polygon_2) with 
+											easing	=> easing,
+											layers	=> signal_layers));
+					end do_it;
+										
+				begin
+					update_element (
+						container	=> modules,
+						position	=> module_cursor,
+						process		=> do_it'access);
+
+					-- clean up for next board polygon
+					board_reset_polygon;
+
+					clear (signal_layers);
+				end insert_cutout_via_restrict;
+
+				procedure insert_cutout_route_restrict is
+					use et_packages;
+					use et_pcb_stack;
+					use type_signal_layers;
+					
+					procedure do_it (
+						module_name	: in type_module_name.bounded_string;
+						module		: in out et_schematic.type_module) is
+					begin
+						pac_route_restrict_cutouts.append (
+							container	=> module.board.route_restrict.cutouts,
+							new_item	=> (shapes.type_polygon_base (polygon_2) with 
+											easing	=> easing,
+											layers	=> signal_layers));
+					end do_it;
+										
+				begin
+					update_element (
+						container	=> modules,
+						position	=> module_cursor,
+						process		=> do_it'access);
+
+					-- clean up for next board polygon
+					board_reset_polygon;
+
+					clear (signal_layers);
+				end insert_cutout_route_restrict;
+
+				procedure insert_cutout_copper is
+				-- This is about cutout zones to trim floating polygons in signal layers. No connection to any net.
+					use et_packages;
+					use et_packages.shapes;
+					use et_pcb;
+					
+					procedure do_it (
+						module_name	: in type_module_name.bounded_string;
+						module		: in out et_schematic.type_module) is
+					begin
+						et_pcb.pac_copper_polygons_cutout.append (
+							container	=> module.board.copper.cutouts,
+							new_item	=> (type_polygon_base (polygon_2) with
+									easing			=> easing,
+									layer			=> signal_layer));
+					end do_it;
+										
+				begin -- insert_cutout_copper
+					update_element (
+						container	=> modules,
+						position	=> module_cursor,
+						process		=> do_it'access);
+
+					-- clean up for next floating board polygon
+					board_reset_polygon;
+				end insert_cutout_copper;
+				
 				procedure insert_text (
 					layer	: in type_layer; -- SILK_SCREEN, ASSEMBLY_DOCUMENTATION, ...
 					face	: in et_pcb_coordinates.type_face) is -- TOP, BOTTOM
@@ -10940,16 +11208,6 @@ package body et_project is
 						end case;
 					end hatched_polygon;
 
-					procedure cutout_polygon is
-						use et_packages;
-					begin
-						et_pcb.pac_copper_polygons_cutout.append (
-							container	=> route.polygons_2.cutout,
-							new_item	=> (shapes.type_polygon_base (polygon_2) with
-											easing	=> easing,
-											layer	=> signal_layer));
-					end;
-					
 				begin -- build_route_polygon
 					case fill_style is
 						when et_packages.SOLID		=> solid_polygon;
@@ -10958,6 +11216,17 @@ package body et_project is
 
 					board_reset_polygon; -- clean up for next polygon
 				end build_route_polygon;
+
+				procedure build_route_cutout is
+					use et_packages;
+				begin
+					et_pcb.pac_copper_polygons_cutout.append (
+						container	=> route.cutouts,
+						new_item	=> (shapes.type_polygon_base (polygon_2) with
+										easing	=> easing,
+										layer	=> signal_layer));
+				end;
+
 				
 			begin -- execute_section
 				case stack.current is
@@ -11465,7 +11734,81 @@ package body et_project is
 						end case;
 
 					when SEC_CUTOUT_ZONE =>
-						null; -- CS
+						case stack.parent is
+							when SEC_ROUTE =>
+								build_route_cutout;
+
+							when SEC_TOP =>
+								case stack.parent (degree => 2) is
+									when SEC_SILK_SCREEN =>
+										insert_cutout (
+											layer	=> SILK_SCREEN,
+											face	=> et_pcb_coordinates.TOP);
+
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										insert_cutout (
+											layer	=> ASSEMBLY_DOCUMENTATION,
+											face	=> et_pcb_coordinates.TOP);
+
+									when SEC_STENCIL =>
+										insert_cutout (
+											layer	=> STENCIL,
+											face	=> et_pcb_coordinates.TOP);
+
+									when SEC_STOP_MASK =>
+										insert_cutout (
+											layer	=> STOP_MASK,
+											face	=> et_pcb_coordinates.TOP);
+
+									when SEC_KEEPOUT =>
+										insert_cutout (
+											layer	=> KEEPOUT,
+											face	=> et_pcb_coordinates.TOP);
+										
+									when others => invalid_section;
+								end case;
+
+							when SEC_BOTTOM =>
+								case stack.parent (degree => 2) is
+									when SEC_SILK_SCREEN =>
+										insert_cutout (
+											layer	=> SILK_SCREEN,
+											face	=> et_pcb_coordinates.BOTTOM);
+
+									when SEC_ASSEMBLY_DOCUMENTATION =>
+										insert_cutout (
+											layer	=> ASSEMBLY_DOCUMENTATION,
+											face	=> et_pcb_coordinates.BOTTOM);
+
+									when SEC_STENCIL =>
+										insert_cutout (
+											layer	=> STENCIL,
+											face	=> et_pcb_coordinates.BOTTOM);
+
+									when SEC_STOP_MASK =>
+										insert_cutout (
+											layer	=> STOP_MASK,
+											face	=> et_pcb_coordinates.BOTTOM);
+
+									when SEC_KEEPOUT =>
+										insert_cutout (
+											layer	=> KEEPOUT,
+											face	=> et_pcb_coordinates.BOTTOM);
+										
+									when others => invalid_section;
+								end case;
+
+							when SEC_ROUTE_RESTRICT =>
+								insert_cutout_route_restrict;
+
+							when SEC_VIA_RESTRICT =>
+								insert_cutout_via_restrict;
+
+							when SEC_COPPER =>
+								insert_cutout_copper;
+								
+							when others => invalid_section;
+						end case;
 						
 					when SEC_FILL_ZONE =>
 						case stack.parent is
@@ -12602,26 +12945,15 @@ package body et_project is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										SEC_STENCIL | SEC_STOP_MASK =>
 
-										-- CS call procedure read_board_line ?								
+										read_board_line;
+										
 										declare
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_start then -- start x 22.3 y 23.3
-												expect_field_count (line, 5);
-
-												-- extract the start position starting at field 2 of line
-												board_line.start_point := to_position (line, 2);
-												
-											elsif kw = keyword_end then -- end x 22.3 y 23.3
-												expect_field_count (line, 5);
-
-												-- extract the end position starting at field 2 of line
-												board_line.end_point := to_position (line, 2);
-
-											elsif kw = keyword_width then -- width 0.5
+											if kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
 												board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 												
@@ -12630,28 +12962,19 @@ package body et_project is
 											end if;
 										end;
 
+									when SEC_KEEPOUT => read_board_line;
+										
 									when others => invalid_section;
 								end case;
-
+								
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								-- CS call procedure read_board_line ?																
+								read_board_line;
+								
 								declare
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2 of line
-										board_line.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										board_line.end_point := to_position (line, 2);
-
-									elsif kw = keyword_layers then -- layers 1 14 3
+									if kw = keyword_layers then -- layers 1 14 3
 
 										-- there must be at least two fields:
 										expect_field_count (line => line, count_expected => 2, warn => false);
@@ -12692,23 +13015,13 @@ package body et_project is
 								end;
 
 							when SEC_PCB_CONTOURS_NON_PLATED =>
+								read_board_line;
+								
 								declare
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2 of line
-										board_line.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										board_line.end_point := to_position (line, 2);
-
-									elsif kw = keyword_locked then -- locked no
+									if kw = keyword_locked then -- locked no
 										expect_field_count (line, 2);
 										lock_status := et_pcb.to_lock_status (f (line, 2));
 										
@@ -12764,31 +13077,15 @@ package body et_project is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
-										-- CS call procedure read_board_arc ?
+										SEC_STENCIL | SEC_STOP_MASK =>
+
+										read_board_arc;
+										
 										declare
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_center then -- center x 150 y 45
-												expect_field_count (line, 5);
-
-												-- extract the center position starting at field 2 of line
-												board_arc.center := to_position (line, 2);
-												
-											elsif kw = keyword_start then -- start x 22.3 y 23.3
-												expect_field_count (line, 5);
-
-												-- extract the start position starting at field 2 of line
-												board_arc.start_point := to_position (line, 2);
-												
-											elsif kw = keyword_end then -- end x 22.3 y 23.3
-												expect_field_count (line, 5);
-
-												-- extract the end position starting at field 2 of line
-												board_arc.end_point := to_position (line, 2);
-
-											elsif kw = keyword_width then -- width 0.5
+											if kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
 												board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 												
@@ -12797,34 +13094,19 @@ package body et_project is
 											end if;
 										end;
 
+									when SEC_KEEPOUT => read_board_arc;
+										
 									when others => invalid_section;
 								end case;
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								-- CS call procedure read_board_arc ?								
+								read_board_arc;
+								
 								declare
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 150 y 45
-										expect_field_count (line, 5);
-
-										-- extract the center position starting at field 2 of line
-										board_arc.center := to_position (line, 2);
-										
-									elsif kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2 of line
-										board_arc.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										board_arc.end_point := to_position (line, 2);
-
-									elsif kw = keyword_layers then -- layers 1 14 3
+									if kw = keyword_layers then -- layers 1 14 3
 
 										-- there must be at least two fields:
 										expect_field_count (line => line, count_expected => 2, warn => false);
@@ -12914,26 +13196,17 @@ package body et_project is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK | SEC_KEEPOUT =>
+										SEC_STENCIL | SEC_STOP_MASK =>
 
-										-- CS call procedure read_board_circle ?
+										read_board_circle;
+										
 										declare
 											use et_packages;
 											use et_packages.shapes;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_center then -- center x 150 y 45
-												expect_field_count (line, 5);
-
-												-- extract the center position starting at field 2 of line
-												board_circle.center := to_position (line, 2);
-												
-											elsif kw = keyword_radius then -- radius 22
-												expect_field_count (line, 2);
-												board_circle.radius := et_pcb_coordinates.geometry.to_distance (f (line, 2));
-												
-											elsif kw = keyword_width then -- circumfence line width 0.5
+											if kw = keyword_width then -- circumfence line width 0.5
 												expect_field_count (line, 2);
 												board_circle_fillable_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
@@ -12958,45 +13231,9 @@ package body et_project is
 											end if;
 										end;
 
+									when SEC_KEEPOUT => read_board_circle;
+										
 									when others => invalid_section;
--- 											declare
--- 												kw : string := f (line, 1);
--- 											begin
--- 												-- CS: In the following: set a corresponding parameter-found-flag
--- 												if kw = keyword_center then -- center x 150 y 45
--- 													expect_field_count (line, 5);
--- 
--- 													-- extract the center position starting at field 2 of line
--- 													board_circle.center := to_position (line, 2);
--- 													
--- 												elsif kw = keyword_radius then -- radius 22
--- 													expect_field_count (line, 2);
--- 													board_circle.radius := to_distance (f (line, 2));
--- 													
--- 												elsif kw = keyword_width then -- width 0.5
--- 													expect_field_count (line, 2);
--- 													board_circle.width := to_distance (f (line, 2));
--- 
--- 												elsif kw = keyword_filled then -- filled yes/no
--- 													expect_field_count (line, 2);													
--- 													board_circle.filled := et_pcb.to_filled (f (line, 2));
--- 
--- 												elsif kw = keyword_fill_style then -- fill_style solid/hatched/cutout
--- 													expect_field_count (line, 2);													
--- 													board_circle.fill_style := et_pcb.to_fill_style (f (line, 2));
--- 
--- 												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
--- 													expect_field_count (line, 2);													
--- 													board_circle.hatching_line_width := to_distance (f (line, 2));
--- 
--- 												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
--- 													expect_field_count (line, 2);													
--- 													board_circle.hatching_spacing := to_distance (f (line, 2));
--- 													
--- 												else
--- 													invalid_keyword (kw);
--- 												end if;
--- 											end;
 
 								end case;
 
@@ -13110,7 +13347,112 @@ package body et_project is
 						end case;
 
 					when SEC_CUTOUT_ZONE =>
-						null; -- CS
+						case stack.parent is
+							when SEC_ROUTE =>
+								declare
+									use et_packages;
+									use et_pcb_coordinates.geometry;
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+										expect_field_count (line, 2);
+										easing.style := to_corner_easing (f (line, 2));
+
+									elsif kw = keyword_easing_radius then -- easing_radius 0.3
+										expect_field_count (line, 2);
+										easing.radius := to_distance (f (line, 2));
+
+									elsif kw = keyword_layer then -- layer 2
+										expect_field_count (line, 2);
+										signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
+							when SEC_TOP | SEC_BOTTOM => 
+								case stack.parent (degree => 2) is
+									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+										SEC_STENCIL | SEC_STOP_MASK =>
+										declare
+											use et_packages;
+											use et_packages.shapes;
+											use et_pcb_coordinates.geometry;
+											kw : string := f (line, 1);
+										begin
+											-- CS: In the following: set a corresponding parameter-found-flag
+											if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+												expect_field_count (line, 2);													
+												easing.style := to_corner_easing (f (line, 2));
+
+											elsif kw = keyword_easing_radius then -- easing_radius 0.4
+												expect_field_count (line, 2);													
+												easing.radius := to_distance (f (line, 2));
+												
+											else
+												invalid_keyword (kw);
+											end if;
+										end;
+
+									when SEC_KEEPOUT =>
+										-- no parameters allowed here
+										declare
+											kw : string := f (line, 1);
+										begin
+											invalid_keyword (kw);
+										end;
+										
+									when others => invalid_section;
+								end case;
+
+							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+								declare
+									use et_packages;
+									use et_packages.shapes;
+									use et_pcb_coordinates.geometry;
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_layers then -- layers 1 14 3
+
+										-- there must be at least two fields:
+										expect_field_count (line => line, count_expected => 2, warn => false);
+										signal_layers := to_layers (line);
+
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+
+							when SEC_COPPER => -- non electrical
+								declare
+									use et_packages;
+									use et_packages.shapes;									
+									use et_pcb_coordinates.geometry;
+									kw : string := f (line, 1);
+								begin
+									-- CS: In the following: set a corresponding parameter-found-flag
+									if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
+										expect_field_count (line, 2);													
+										easing.style := to_corner_easing (f (line, 2));
+
+									elsif kw = keyword_easing_radius then -- easing_radius 0.4
+										expect_field_count (line, 2);													
+										easing.radius := to_distance (f (line, 2));
+										
+									elsif kw = keyword_layer then -- layer 1
+										expect_field_count (line, 2);
+										signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+
+									else
+										invalid_keyword (kw);
+									end if;
+								end;
+								
+							when others => invalid_section;
+						end case;
 						
 					when SEC_FILL_ZONE =>
 						case stack.parent is

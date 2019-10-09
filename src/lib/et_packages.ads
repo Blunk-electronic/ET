@@ -560,7 +560,7 @@ package et_packages is
 		arcs		: type_silk_arcs.list;
 		circles		: type_silk_circles.list;
 		polygons	: pac_silk_polygons.list;
-		cutouts : pac_silk_cutouts.list;
+		cutouts 	: pac_silk_cutouts.list;
 		texts		: type_texts_with_content.list;
 	end record;
 
