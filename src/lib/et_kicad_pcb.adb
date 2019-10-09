@@ -1930,16 +1930,16 @@ package body et_kicad_pcb is
 						keepout.top.arcs.append ((
 							center 		=> arc.center,
 							start_point	=> arc.start_point, 
-							end_point	=> arc.end_point,
-							width		=> arc.width));
+							end_point	=> arc.end_point));
+						
 						arc_keepout_properties (TOP, keepout.top.arcs.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
 						keepout.bottom.arcs.append ((
 							center 		=> arc.center,
 							start_point	=> arc.start_point, 
-							end_point	=> arc.end_point,
-							width		=> arc.width));
+							end_point	=> arc.end_point));
+
 						arc_keepout_properties (BOTTOM, keepout.bottom.arcs.last, log_threshold + 1);
 
 						
@@ -2088,11 +2088,11 @@ package body et_kicad_pcb is
 
 						
 					when TOP_KEEP =>
-						keepout.top.lines.append ((line.start_point, line.end_point, line.width));
+						keepout.top.lines.append ((line.start_point, line.end_point));
 						line_keepout_properties (TOP, keepout.top.lines.last, log_threshold + 1);
 
 					when BOT_KEEP =>
-						keepout.bottom.lines.append ((line.start_point, line.end_point, line.width));
+						keepout.bottom.lines.append ((line.start_point, line.end_point));
 						line_keepout_properties (BOTTOM, keepout.bottom.lines.last, log_threshold + 1);
 
 						
@@ -6133,16 +6133,16 @@ package body et_kicad_pcb is
 						board.keepout.top.arcs.append ((
 							center 		=> board_arc.center, 
 							start_point	=> board_arc.start_point,
-							end_point	=> board_arc.end_point,
-							width		=> board_arc.width));
+							end_point	=> board_arc.end_point));
+						
 						arc_keepout_properties (TOP, board.keepout.top.arcs.last, log_threshold + 1);
 
 					when BOT_KEEP =>
 						board.keepout.bottom.arcs.append ((
 							center 		=> board_arc.center, 
 							start_point	=> board_arc.start_point,
-							end_point	=> board_arc.end_point,
-							width		=> board_arc.width));
+							end_point	=> board_arc.end_point));
+
 						arc_keepout_properties (BOTTOM, board.keepout.bottom.arcs.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
@@ -6280,15 +6280,15 @@ package body et_kicad_pcb is
 					when TOP_KEEP =>
 						board.keepout.top.lines.append ((
 							start_point	=> board_line.start_point,
-							end_point	=> board_line.end_point,
-							width		=> board_line.width));
+							end_point	=> board_line.end_point));
+
 						line_keepout_properties (TOP, board.keepout.top.lines.last, log_threshold + 1);
 
 					when BOT_KEEP =>
 						board.keepout.bottom.lines.append ((
 							start_point	=> board_line.start_point,
-							end_point	=> board_line.end_point,
-							width		=> board_line.width));
+							end_point	=> board_line.end_point));
+
 						line_keepout_properties (BOTTOM, board.keepout.bottom.lines.last, log_threshold + 1);
 
 						
@@ -6396,16 +6396,16 @@ package body et_kicad_pcb is
 						package_keepout.top.arcs.append ((
 							center 		=> package_arc.center,
 							start_point	=> package_arc.start_point, 
-							end_point	=> package_arc.end_point,
-							width		=> package_arc.width));
+							end_point	=> package_arc.end_point));
+
 						arc_keepout_properties (TOP, package_keepout.top.arcs.last, log_threshold + 1);
 						
 					when BOT_KEEP =>
 						package_keepout.bottom.arcs.append ((
 							center 		=> package_arc.center,
 							start_point	=> package_arc.start_point, 
-							end_point	=> package_arc.end_point,
-							width		=> package_arc.width));
+							end_point	=> package_arc.end_point));
+						
 						arc_keepout_properties (BOTTOM, package_keepout.bottom.arcs.last, log_threshold + 1);
 
 						
@@ -6555,11 +6555,11 @@ package body et_kicad_pcb is
 
 						
 					when TOP_KEEP =>
-						package_keepout.top.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_keepout.top.lines.append ((package_line.start_point, package_line.end_point));
 						line_keepout_properties (TOP, package_keepout.top.lines.last, log_threshold + 1);
 
 					when BOT_KEEP =>
-						package_keepout.bottom.lines.append ((package_line.start_point, package_line.end_point, package_line.width));
+						package_keepout.bottom.lines.append ((package_line.start_point, package_line.end_point));
 						line_keepout_properties (BOTTOM, package_keepout.bottom.lines.last, log_threshold + 1);
 
 						

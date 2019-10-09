@@ -3065,8 +3065,7 @@ package body board_ops is
 		log (text => "module " & to_string (module_name) &
 			" drawing keepout arc" &
 			" face" & to_string (face) &
-			to_string (arc) &
-			" width" & to_string (arc.width),
+			to_string (arc),
 
 			level => log_threshold);
 

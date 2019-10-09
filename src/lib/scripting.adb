@@ -1644,49 +1644,47 @@ package body scripting is
 				case shape is
 					when LINE =>
 						case fields is
-							when 11 =>
+							when 10 =>
 								board_ops.draw_keepout_line (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									line			=> (
-												width		=> to_distance (f (7)),
 												start_point	=> type_point (set (
-													x => to_distance (f (8)),
-													y => to_distance (f (9)))),
+													x => to_distance (f (7)),
+													y => to_distance (f (8)))),
 												end_point	=> type_point (set (
-													x => to_distance (f (10)),
-													y => to_distance (f (11))))
+													x => to_distance (f (9)),
+													y => to_distance (f (10))))
 												),
 
 									log_threshold	=> log_threshold + 1);
 
-							when 12 .. count_type'last => command_too_long (fields - 1);
+							when 11 .. count_type'last => command_too_long (fields - 1);
 								
 							when others => command_incomplete;
 						end case;
 						
 					when ARC =>
 						case fields is
-							when 13 =>
+							when 12 =>
 								board_ops.draw_keepout_arc (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
 									arc				=> (
-												width	=> to_distance (f (7)),
 												center	=> type_point (set (
-													x => to_distance (f (8)),
-													y => to_distance (f (9)))),
+													x => to_distance (f (7)),
+													y => to_distance (f (8)))),
 												start_point	=> type_point (set (
-													x => to_distance (f (10)),
-													y => to_distance (f (11)))),
+													x => to_distance (f (9)),
+													y => to_distance (f (10)))),
 												end_point	=> type_point (set (
-													x => to_distance (f (12)),
-													y => to_distance (f (13))))
+													x => to_distance (f (11)),
+													y => to_distance (f (12))))
 												),
 
 									log_threshold	=> log_threshold + 1);
 
-							when 14 .. count_type'last => command_too_long (fields - 1);
+							when 13 .. count_type'last => command_too_long (fields - 1);
 								
 							when others => command_incomplete;
 						end case;

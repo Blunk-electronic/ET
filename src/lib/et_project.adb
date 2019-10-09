@@ -869,9 +869,63 @@ package body et_project is
 		text_end;
 	end write_text;
 
-	procedure write_polygon_segments (polygon : in et_packages.shapes.type_polygon_base) is
+	procedure write_line (line : in et_packages.shapes.type_line'class) is
+	-- writes start and end point of a line
+		use et_packages.shapes;
+		use et_pcb_coordinates.geometry;		
 	begin
-		null; -- CS
+		write (keyword => keyword_start, parameters => position (line.start_point));
+		write (keyword => keyword_end  , parameters => position (line.end_point));
+	end write_line;
+
+	procedure write_arc (arc : in et_packages.shapes.type_arc'class) is 
+	-- writes center, start and end point of an arc
+		use et_packages.shapes;
+		use et_pcb_coordinates.geometry;		
+	begin
+		write (keyword => keyword_center, parameters => position (arc.center));
+		write (keyword => keyword_start, parameters => position (arc.start_point));
+		write (keyword => keyword_end  , parameters => position (arc.end_point));
+	end write_arc;
+
+	procedure write_circle (circle : in et_packages.shapes.type_circle'class) is 
+	-- writes center and radius of a circle
+		use et_packages.shapes;
+		use et_pcb_coordinates.geometry;		
+	begin
+		write (keyword => keyword_center, parameters => position (circle.center));
+		write (keyword => keyword_radius, parameters => to_string (circle.radius));
+	end write_circle;
+		
+	procedure write_polygon_segments (polygon : in et_packages.shapes.type_polygon_base) is
+	-- writes the segments of a polygon (lines, arcs and circles)
+		use et_packages;
+		use shapes.pac_polygon_lines;
+		use shapes.pac_polygon_arcs;
+		use shapes.pac_polygon_circles;		
+		
+		procedure write_line (cursor : in shapes.pac_polygon_lines.cursor) is begin
+			line_begin;
+			write_line (element (cursor));
+			line_end;
+		end;
+
+		procedure write_arc (cursor : in shapes.pac_polygon_arcs.cursor) is begin
+			arc_begin;
+			write_arc (element (cursor));
+			arc_end;
+		end;
+
+		procedure write_circle (cursor : in shapes.pac_polygon_circles.cursor) is begin
+			circle_begin;
+			write_circle (element (cursor));
+			circle_end;
+		end;
+
+	begin
+		iterate (polygon.segments.lines, write_line'access);
+		iterate (polygon.segments.arcs, write_arc'access);
+		iterate (polygon.segments.circles, write_circle'access);		
 	end write_polygon_segments;
 
 	procedure write_hatching (hatching : in et_packages.type_hatching) is
@@ -992,9 +1046,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+		write_line (element (cursor));
 		line_end;
 	end write_line;
 
@@ -1003,10 +1055,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
+		write_arc (element (cursor));
 		arc_end;
 	end write_arc;
 	
@@ -1017,8 +1066,7 @@ package body et_project is
 		use type_keepout_circles;
 	begin
 		circle_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+		write_circle (element (cursor));
 		write (keyword => keyword_filled, space => true, parameters => to_string (element (cursor).filled));
 		circle_end;
 	end write_circle;
@@ -4128,7 +4176,7 @@ package body et_project is
 									when SEC_KEEPOUT =>
 										type_keepout_lines.append (
 											container	=> packge.keepout.top.lines, 
-											new_item	=> (shapes.type_line (pac_line) with pac_line_width));
+											new_item	=> (shapes.type_line (pac_line) with null record));
 
 										-- clean up for next line
 										reset_line;
@@ -4196,7 +4244,7 @@ package body et_project is
 									when SEC_KEEPOUT =>
 										type_keepout_lines.append (
 											container	=> packge.keepout.bottom.lines, 
-											new_item	=> (shapes.type_line (pac_line) with pac_line_width));
+											new_item	=> (shapes.type_line (pac_line) with null record));
 
 										-- clean up for next line
 										reset_line;
@@ -4321,7 +4369,7 @@ package body et_project is
 									when SEC_KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> packge.keepout.top.arcs,
-											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (pac_arc) with null record));
 
 										-- clean up for next arc
 										reset_arc;
@@ -4389,7 +4437,7 @@ package body et_project is
 									when SEC_KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> packge.keepout.bottom.arcs, 
-											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (pac_arc) with null record));
 
 										-- clean up for next arc
 										reset_arc;
@@ -9766,7 +9814,7 @@ package body et_project is
 									when KEEPOUT =>
 										type_keepout_lines.append (
 											container	=> module.board.keepout.top.lines,
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (shapes.type_line (board_line) with null record));
 										
 								end case;
 								
@@ -9795,7 +9843,7 @@ package body et_project is
 									when KEEPOUT =>
 										type_keepout_lines.append (
 											container	=> module.board.keepout.bottom.lines,
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (shapes.type_line (board_line) with null record));
 
 								end case;
 								
@@ -9853,7 +9901,7 @@ package body et_project is
 									when KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> module.board.keepout.top.arcs,
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with null record));
 								end case;
 								
 							when BOTTOM => null;
@@ -9881,7 +9929,7 @@ package body et_project is
 									when KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> module.board.keepout.bottom.arcs,
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with null record));
 								end case;
 								
 						end case;

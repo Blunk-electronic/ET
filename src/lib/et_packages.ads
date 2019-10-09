@@ -623,15 +623,11 @@ package et_packages is
 	
 	
 -- KEEPOUT
-	type type_keepout_line is new type_line with record
-		width	: type_general_line_width;
-	end record;
+	type type_keepout_line is new type_line with null record;
 	
 	package type_keepout_lines is new doubly_linked_lists (type_keepout_line);
 
-	type type_keepout_arc is new type_arc with record
-		width	: type_general_line_width;
-	end record;
+	type type_keepout_arc is new type_arc with null record;
 		
 	package type_keepout_arcs is new doubly_linked_lists (type_keepout_arc);
 	
