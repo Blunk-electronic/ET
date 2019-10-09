@@ -1004,7 +1004,7 @@ package body et_project is
 	procedure write_signal_layers (layers : in et_pcb_stack.type_signal_layers.set) is
 		use et_pcb_stack;
 	begin
-		write (keyword => keyword_layers, parameters => to_string (layers));
+		write (keyword => keyword_layers, space => true, parameters => to_string (layers));
 	end;
 	
 	procedure write_polygon_corners (pc : in et_packages.type_polygon_points.cursor) is
@@ -1019,8 +1019,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
-		write (keyword => keyword_center, parameters => position (circle.center));
-		write (keyword => keyword_radius, parameters => to_string (circle.radius));
+		write_circle (circle);
 		write (keyword => keyword_filled, parameters => latin_1.space & to_string (circle.filled));
 		case circle.filled is
 			when NO =>
@@ -1088,8 +1087,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;
 	begin
 		line_begin;
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write_line (element (cursor));
 		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 		line_end;
 	end write_line;
@@ -1100,9 +1098,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;
 	begin
 		arc_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write_arc (element (cursor));
 		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 		arc_end;
 	end write_arc;
@@ -1137,8 +1133,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;
 	begin
 		line_begin;
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write_line (element (cursor));
 		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 		line_end;
 	end write_line;
@@ -1149,9 +1144,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;
 	begin
 		arc_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write_arc (element (cursor));
 		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 		arc_end;
 	end write_arc;
@@ -1187,8 +1180,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write_line (element (cursor));
 		write_signal_layers (element (cursor).layers);
 		line_end;
 	end write_line;
@@ -1200,9 +1192,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write_arc (element (cursor));		
 		write_signal_layers (element (cursor).layers);
 		arc_end;
 	end write_arc;
@@ -1213,8 +1203,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+		write_circle (element (cursor));
 		write_fill_status (element (cursor).filled);
 		write_signal_layers (element (cursor).layers);
 		circle_end;
@@ -1239,8 +1228,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write_line (element (cursor));		
 		write_signal_layers (element (cursor).layers);
 		line_end;
 	end write_line;
@@ -1252,9 +1240,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write_arc (element (cursor));
 		write_signal_layers (element (cursor).layers);
 		arc_end;
 	end write_arc;
@@ -1267,8 +1253,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+		write_circle (element (cursor));
 		write_fill_status (element (cursor).filled);
 		write_signal_layers (element (cursor).layers);
 		circle_end;
@@ -1294,8 +1279,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
-		write (keyword => keyword_start , parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
+		write_line (element (cursor));
 		line_end;
 	end write_line;
 
@@ -1305,9 +1289,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write_arc (element (cursor));
 		arc_end;
 	end write_arc;
 
@@ -1317,8 +1299,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+		write_circle (element (cursor));
 		circle_end;
 	end write_circle;
 	
@@ -1328,8 +1309,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
-		write (keyword => keyword_start , parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
+		write_line (element (cursor));
 		write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
 		line_end;
 	end write_line;
@@ -1340,9 +1320,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write_arc (element (cursor));
 		write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
 		arc_end;
 	end write_arc;
@@ -1353,8 +1331,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+		write_circle (element (cursor));
 		write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
 		circle_end;
 	end write_circle;
@@ -1366,8 +1343,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write_line (element (cursor));		
 		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 		line_end;
 	end write_line;
@@ -1378,9 +1354,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write_arc (element (cursor));
 		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 		arc_end;
 	end write_arc;
@@ -1421,8 +1395,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write_line (element (cursor));		
 		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 		line_end;
 	end write_line;
@@ -1433,9 +1406,7 @@ package body et_project is
 		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
-		write (keyword => keyword_center, parameters => position (element (cursor).center));
-		write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-		write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+		write_arc (element (cursor));
 		write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 		arc_end;
 	end write_arc;
