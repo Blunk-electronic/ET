@@ -4011,6 +4011,47 @@ package body et_project is
 					et_pcb_stack.type_signal_layers.clear (signal_layers);
 				end;
 
+				procedure add_polygon_line (line : in out type_line) is
+					use et_packages.shapes;
+					use et_packages.shapes.pac_polygon_lines;
+
+					-- make a polygon line:
+					l : type_polygon_line := (et_packages.shapes.type_line (line) with others => <>);
+				begin
+					-- collect the polygon line 
+					append (polygon_2.segments.lines, l);
+
+					-- reset line
+					line := (others => <>);
+				end;
+
+				procedure add_polygon_arc (arc : in out type_arc) is
+					use et_packages.shapes;
+					use et_packages.shapes.pac_polygon_arcs;
+
+					-- make a polygon arc:
+					a : type_polygon_arc := (et_packages.shapes.type_arc (arc) with others => <>);
+				begin
+					-- collect the polygon line 
+					append (polygon_2.segments.arcs, a);
+
+					-- reset arc
+					arc := (others => <>);
+				end;
+
+				procedure add_polygon_circe (circle : in out type_circle) is
+					use et_packages.shapes;
+					use et_packages.shapes.pac_polygon_circles;
+
+					-- make a polygon circle:
+					c : type_polygon_circle := (et_packages.shapes.type_circle (circle) with others => <>);
+				begin
+					-- collect the polygon line 
+					append (polygon_2.segments.circles, c);
+
+					-- reset circle
+					circle := (others => <>);
+				end;
 				
 			begin -- execute_section
 				case stack.current is
@@ -4222,8 +4263,7 @@ package body et_project is
 								-- clean up for next line
 								reset_line;
 
-							when SEC_CONTOURS =>
-								null; -- CS
+							when SEC_CONTOURS => add_polygon_line (pac_line);
 								
 							when others => invalid_section;
 						end case;
@@ -4413,8 +4453,7 @@ package body et_project is
 								-- clean up for next arc
 								reset_arc;
 
-							when SEC_CONTOURS =>
-								null; -- CS
+							when SEC_CONTOURS => add_polygon_arc (pac_arc);
 								
 							when others => invalid_section;
 						end case;
@@ -4578,8 +4617,7 @@ package body et_project is
 								-- clean up for next circle
 								reset_circle;
 
-							when SEC_CONTOURS =>
-								null; -- CS
+							when SEC_CONTOURS => add_polygon_circe (pac_circle);
 								
 							when others => invalid_section;
 						end case;

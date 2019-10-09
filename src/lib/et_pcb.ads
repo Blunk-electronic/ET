@@ -242,11 +242,11 @@ package et_pcb is
 	package pac_texts is new doubly_linked_lists (type_text);
 
 	-- Cutout-polygons in copper layers:
-	type type_copper_polygon_cutout is new et_packages.type_cutout_zone with record
+	type type_copper_polygon_cutout is new et_packages.type_cutout_zone with record -- CS rename to type_copper_cutout
 		layer 	: type_signal_layer;
 	end record;
 
-	package pac_copper_polygons_cutout is new doubly_linked_lists (type_copper_polygon_cutout);
+	package pac_copper_polygons_cutout is new doubly_linked_lists (type_copper_polygon_cutout); -- CS rename to pac_copper_cutouts
 
 	-- Polgon priority: 0 is weakest, 100 ist strongest.
 	polygon_priority_max : constant natural := 100;
