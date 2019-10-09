@@ -10418,7 +10418,7 @@ package body et_project is
 						module_name	: in type_module_name.bounded_string;
 						module		: in out et_schematic.type_module) is
 					begin
-						et_pcb.pac_copper_polygons_cutout.append (
+						et_pcb.pac_copper_cutouts.append (
 							container	=> module.board.copper.cutouts,
 							new_item	=> (type_polygon_base (polygon_2) with
 									easing			=> easing,
@@ -11258,7 +11258,7 @@ package body et_project is
 				procedure build_route_cutout is
 					use et_packages;
 				begin
-					et_pcb.pac_copper_polygons_cutout.append (
+					et_pcb.pac_copper_cutouts.append (
 						container	=> route.cutouts,
 						new_item	=> (shapes.type_polygon_base (polygon_2) with
 										easing	=> easing,

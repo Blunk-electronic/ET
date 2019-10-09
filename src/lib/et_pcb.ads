@@ -242,11 +242,11 @@ package et_pcb is
 	package pac_texts is new doubly_linked_lists (type_text);
 
 	-- Cutout-polygons in copper layers:
-	type type_copper_polygon_cutout is new et_packages.type_cutout_zone with record -- CS rename to type_copper_cutout
+	type type_copper_cutout is new et_packages.type_cutout_zone with record
 		layer 	: type_signal_layer;
 	end record;
 
-	package pac_copper_polygons_cutout is new doubly_linked_lists (type_copper_polygon_cutout); -- CS rename to pac_copper_cutouts
+	package pac_copper_cutouts is new doubly_linked_lists (type_copper_cutout);
 
 	-- Polgon priority: 0 is weakest, 100 ist strongest.
 	polygon_priority_max : constant natural := 100;
@@ -288,7 +288,7 @@ package et_pcb is
 
 		-- CS: It is probably no good idea to allow floating copper polygons.
 		polygons		: type_copper_polygons_floating; 
-		cutouts			: pac_copper_polygons_cutout.list;		
+		cutouts			: pac_copper_cutouts.list;		
 		
 		texts			: pac_texts.list;
 		placeholders	: type_text_placeholders_copper.list;
@@ -356,8 +356,6 @@ package et_pcb is
 
 
 	
--- 	package pac_copper_polygons_signal is new indefinite_doubly_linked_lists (type_copper_polygon_signal); -- CS remove
-	
 	package pac_signal_polygons_solid is new indefinite_doubly_linked_lists (type_copper_polygon_solid);
 	package pac_signal_polygons_hatched is new indefinite_doubly_linked_lists (type_copper_polygon_hatched);	
 
@@ -371,9 +369,8 @@ package et_pcb is
 		lines 		: pac_copper_lines.list;
 		arcs		: pac_copper_arcs.list;
 		vias		: pac_vias.list;
--- 		polygons	: pac_copper_polygons_signal.list; -- CS remove
 		polygons_2	: type_signal_polygons;
-		cutouts		: pac_copper_polygons_cutout.list;
+		cutouts		: pac_copper_cutouts.list;
 	end record;
 	
 
