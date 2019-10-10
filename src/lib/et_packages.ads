@@ -90,7 +90,7 @@ package et_packages is
 	procedure validate_text_size (size : in type_distance);
 	-- Checks whether given text size is in range of type_text_size.
 
-	
+	keyword_line_width : constant string := "line_width";	
 	line_width_min : constant type_distance := 0.15;
 	line_width_max : constant type_distance := 10.0;
 	subtype type_text_line_width is type_distance range line_width_min .. line_width_max;
@@ -158,6 +158,9 @@ package et_packages is
 
 
 	-- RESTRING
+	keyword_restring_outer_layers : constant string := "restring_outer_layers";
+	keyword_restring_inner_layers : constant string := "restring_inner_layers";		
+
 	restring_width_max : constant type_distance := 5.0;
 	subtype type_restring_width is type_distance range copper_structure_size_min .. restring_width_max;
 
@@ -229,7 +232,7 @@ package et_packages is
 
 
 	
-	text_line_width : constant string := "line_width";
+
 
 	-- Instantiation of the generic shapes package et_geometry.shapes_2d:
 	package shapes is new et_geometry.shapes_2d (geometry => et_pcb_coordinates.geometry);
@@ -237,20 +240,21 @@ package et_packages is
 	
 
 	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE		
+	keyword_fill_style : constant string := "fill_style";	
 	type type_fill_style is (SOLID, HATCHED);
 	fill_style_default : constant type_fill_style := SOLID;
 	
 	function to_string (fill_style : in type_fill_style) return string;
 	function to_fill_style (fill_style : in string) return type_fill_style;
 
-	text_fill_style : constant string := "fill_style";
 
 	-- HATCHING OF OBJECTS WITH CLOSED CIRCUMFENCE
+	keyword_hatching_line_width		: constant string := "hatching_line_width";
+	keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";		
+
 	hatching_line_width_default : constant type_distance_positive := 0.2;
 	hatching_spacing_default	: constant type_distance_positive := 1.0;
 	
-	text_hatching_line_width	: constant string := "hatching_line_width";
-	text_hatching_spacing 		: constant string := "hatching_spacing";	
 	
 	type type_hatching is record
 		-- the width of the border line
@@ -265,6 +269,9 @@ package et_packages is
 
 	
 	-- EASING
+	keyword_corner_easing : constant string := "corner_easing";
+	keyword_easing_radius : constant string := "easing_radius";	
+
 	type type_corner_easing is (NONE, CHAMFER, FILLET);
 
 	function to_corner_easing (easing : in string) return type_corner_easing;
@@ -299,7 +306,6 @@ package et_packages is
 	-- This prevents placing two identical points on top of each other.
 	package type_polygon_points is new ordered_sets (type_point); -- CS remove
 
--- 	text_polygon_corner_points : constant string := "corner_points";
 
 	
 
@@ -322,39 +328,36 @@ package et_packages is
 	end record;
 	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
 
--- 	-- Polgon priority: 0 is weakest, 100 ist strongest. -- CS move to et_pcb
--- 	polygon_priority_max : constant natural := 100;
--- 	subtype type_polygon_priority is natural range natural'first .. polygon_priority_max;
--- 	function to_string (priority_level : in type_polygon_priority) return string;
--- 	function to_polygon_priority (priority_level : in string) return type_polygon_priority;
 
+	-- the space between foreign pads and the polygon outline
+	keyword_isolation : constant string := "isolation";
 
+	-- the minimal width of a polygon
+	keyword_min_width : constant string := "min_width";
+	
 	type type_copper_polygon_solid is new type_polygon (fill_style => SOLID) with record
 		width_min : type_track_width; -- the minimum width
-		isolation : type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
+		isolation : type_track_clearance := type_track_clearance'first; 
 	end record;
 
 	package pac_copper_polygons_solid is new doubly_linked_lists (type_copper_polygon_solid);
 
 	type type_copper_polygon_hatched is new type_polygon (fill_style => HATCHED) with record
 		width_min : type_track_width; -- the minimum width
-		isolation : type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the polygon
+		isolation : type_track_clearance := type_track_clearance'first;
 	end record;
 
 	package pac_copper_polygons_hatched is new doubly_linked_lists (type_copper_polygon_hatched);
 
 	-- A cutout-polygon used in copper layers:
-	package pac_copper_polygons_cutout is new doubly_linked_lists (type_cutout_zone); -- CS rename to pac_copper_cutouts
+	package pac_copper_cutouts is new doubly_linked_lists (type_cutout_zone);
 
 	
-	text_polygon_priority_level	: constant string (1..14) := "priority_level"; -- CS move to et_pcb
-	text_polygon_isolation_gap	: constant string (1..13) := "isolation_gap";
-	text_polygon_corner_easing	: constant string (1..13) := "corner_easing";
-	text_polygon_easing_radius	: constant string (1..13) := "easing_radius";		
+
 	
 
 
-	type type_copper_polygons_2 is record
+	type type_copper_polygons is record
 		solid	: pac_copper_polygons_solid.list;
 		hatched	: pac_copper_polygons_hatched.list;
 	end record;
@@ -365,8 +368,8 @@ package et_packages is
 		lines 		: type_copper_lines.list;
 		arcs		: type_copper_arcs.list;
 		circles		: type_copper_circles.list;
-		polygons	: type_copper_polygons_2;
-		cutouts		: pac_copper_polygons_cutout.list;
+		polygons	: type_copper_polygons;
+		cutouts		: pac_copper_cutouts.list;
 		texts		: type_texts_with_content.list;
 	end record;
 	
@@ -381,6 +384,9 @@ package et_packages is
 
 
 -- CS move to et_pcb
+	keyword_thermal_width : constant string := "thermal_width";		
+	keyword_thermal_gap : constant string := "thermal_gap";
+	
 	polygon_thermal_width_min : constant type_track_width := type_track_width'first;
 	polygon_thermal_width_max : constant type_track_width := 3.0; -- CS: adjust if nessecariy
 	subtype type_polygon_thermal_width is et_pcb_coordinates.type_distance range polygon_thermal_width_min .. polygon_thermal_width_max;
@@ -391,12 +397,15 @@ package et_packages is
 	subtype type_polygon_thermal_gap is type_track_clearance range polygon_thermal_gap_min .. polygon_thermal_gap_max;
 
 	-- Polygons may be connected with associated pads via thermals, via solid connection or not at all:
+	keyword_pad_connection : constant string := "pad_connection";
 	type type_polygon_pad_connection is (THERMAL, SOLID);
 
 	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string;
 	function to_pad_connection (connection : in string) return type_polygon_pad_connection;
 
 	-- Polygons may be connected with SMT, THT or all pad technologies
+	keyword_pad_technology : constant string := "pad_technology";		
+	
 	type type_polygon_pad_technology is (
 		SMT_ONLY,
 		THT_ONLY,
@@ -951,7 +960,7 @@ package et_packages is
 		"<"				=> et_libraries.type_package_model_file."<",
 		element_type	=> type_package);
 
-	library_file_extension : constant string (1..3) := "pac";
+	library_file_extension : constant string := "pac";
 
 	-- HERE RIG WIDE PACKAGES ARE KEPT:
 	packages : type_packages.map;

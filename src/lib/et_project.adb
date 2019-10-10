@@ -786,7 +786,7 @@ package body et_project is
 		use et_coordinates.geometry;
 	begin
 		write (keyword => keyword_size, parameters => to_string (text.size));
-		write (keyword => keyword_line_width, parameters => to_string (text.line_width));
+		write (keyword => et_libraries.keyword_line_width, parameters => to_string (text.line_width));
 		write (keyword => keyword_rotation, parameters => to_string (text.rotation));
 		write (keyword => keyword_style, parameters => et_libraries.to_string (text.style));
 		write (keyword => keyword_alignment, parameters => space &
@@ -797,6 +797,7 @@ package body et_project is
 	end write_text_properties;
 
 	procedure write_text_properties (text : in et_packages.type_text'class) is
+		use et_packages;
 		use et_pcb_coordinates.geometry;
 	begin
 -- 		write (keyword => keyword_position, parameters => position (text.position) & 
@@ -821,6 +822,7 @@ package body et_project is
 		text	: in et_packages.type_text'class;
 		face	: in et_pcb_coordinates.type_face) 
 		is
+		use et_packages;
 		use et_pcb_coordinates;
 		use et_pcb_coordinates.geometry;
 	begin
@@ -937,6 +939,7 @@ package body et_project is
 	end write_polygon_segments;
 
 	procedure write_hatching (hatching : in et_packages.type_hatching) is
+		use et_packages;
 		use et_pcb_coordinates.geometry;
 	begin
 		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.width));
@@ -962,12 +965,14 @@ package body et_project is
 	end;
 
 	procedure write_width_min (width : in et_packages.type_track_width) is 
+		use et_packages;
 		use et_pcb_coordinates.geometry;
 	begin
 		write (keyword => keyword_min_width, parameters => to_string (width));
 	end;
 
 	procedure write_isolation (iso : in et_packages.type_track_clearance) is 
+		use et_packages;
 		use et_pcb_coordinates.geometry;
 	begin
 		write (keyword => keyword_isolation, parameters => to_string (iso));
@@ -1948,10 +1953,10 @@ package body et_project is
 
 				use pac_signal_polygons_solid; 
 				use pac_signal_polygons_hatched;
-				use pac_copper_cutouts;
+				use et_pcb.pac_copper_cutouts;
 				polygon_solid_cursor : pac_signal_polygons_solid.cursor := net.route.polygons_2.solid.first;
 				polygon_hatched_cursor : pac_signal_polygons_hatched.cursor := net.route.polygons_2.hatched.first;
-				cutout_zone_cursor : pac_copper_cutouts.cursor := net.route.cutouts.first;
+				cutout_zone_cursor : et_pcb.pac_copper_cutouts.cursor := net.route.cutouts.first;
 				
 			begin -- query_route
 				section_mark (section_route, HEADER);
@@ -2056,7 +2061,7 @@ package body et_project is
 				end loop;
 
 				-- cutout zones
-				while cutout_zone_cursor /= pac_copper_cutouts.no_element loop
+				while cutout_zone_cursor /= et_pcb.pac_copper_cutouts.no_element loop
 					cutout_zone_begin;
 					write_signal_layer (element (cutout_zone_cursor).layer);
 					write_easing (element (cutout_zone_cursor).easing);
@@ -2560,8 +2565,8 @@ package body et_project is
 			end;
 
 			-- cutout zones in any signal layers
-			use pac_copper_cutouts;
-			procedure write_cutout (cursor : in pac_copper_cutouts.cursor) is begin
+			use et_pcb.pac_copper_cutouts;
+			procedure write_cutout (cursor : in et_pcb.pac_copper_cutouts.cursor) is begin
 				cutout_zone_begin;
 				write_signal_layer (element (cursor).layer);
 				write_easing (element (cursor).easing);
@@ -3576,7 +3581,7 @@ package body et_project is
 		pac_appearance			: type_package_appearance := package_appearance_default;
 
 		-- The description and technology will be assigned once the complete
-		-- model has been read. See main of this procdure.
+		-- model has been read. See main of this procedure.
 		pac_description			: type_package_description.bounded_string; 
 		pac_technology			: type_assembly_technology := assembly_technology_default;
 		
@@ -3593,7 +3598,7 @@ package body et_project is
 		pac_circle_fillable_hatching_spacing	: type_general_line_width := type_general_line_width'first;
 
 		procedure reset_circle_fillable is begin 
-			board_circle								:= (others => <>);
+			board_circle							:= (others => <>);
 			pac_circle_fillable_width				:= type_general_line_width'first;
 			pac_circle_fillable_filled				:= type_filled'first;
 			pac_circle_fillable_fill_style			:= fill_style_default;
@@ -4115,7 +4120,7 @@ package body et_project is
 				end;
 
 				procedure append_copper_cutout_top is begin
-					et_packages.pac_copper_polygons_cutout.append (
+					et_packages.pac_copper_cutouts.append (
 						container	=> packge.copper.top.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon_2) with
 										easing => easing));
@@ -4125,7 +4130,7 @@ package body et_project is
 				end;
 
 				procedure append_copper_cutout_bottom is begin
-					et_packages.pac_copper_polygons_cutout.append (
+					et_packages.pac_copper_cutouts.append (
 						container	=> packge.copper.bottom.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon_2) with
 										easing => easing));
@@ -8475,8 +8480,8 @@ package body et_project is
 				fill_zone_end;
 			end write_polygon;
 
-			use pac_copper_polygons_cutout;
-			procedure write_cutout (cursor : in pac_copper_polygons_cutout.cursor) is begin
+			use pac_copper_cutouts;
+			procedure write_cutout (cursor : in pac_copper_cutouts.cursor) is begin
 				cutout_zone_begin;
 				write_easing (element (cursor).easing);				
 				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
@@ -9283,7 +9288,6 @@ package body et_project is
 		board_layer : et_pcb_stack.type_layer;
 		board_layers : et_pcb_stack.package_layers.vector;
 		
--- 		board_polygon_floating : et_pcb.type_copper_polygon_floating;
 		board_track_line : et_pcb.type_copper_line;
 		board_track_arc : et_pcb.type_copper_arc;
 		board_track_circle : et_pcb.type_copper_circle;
@@ -13094,7 +13098,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										net_label.style := et_libraries.to_text_style (f (line, 2));
 
-									elsif kw = keyword_line_width then -- line_width 0.1
+									elsif kw = et_libraries.keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);
 										net_label.width := et_coordinates.geometry.to_distance (f (line, 2));
 
@@ -13670,7 +13674,7 @@ package body et_project is
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_priority then -- priority 2
+									if kw = et_pcb.keyword_priority then -- priority 2
 										expect_field_count (line, 2);
 										polygon_priority := et_pcb.to_polygon_priority (f (line, 2));
 
@@ -13840,7 +13844,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
-									elsif kw = keyword_priority then -- priority 2
+									elsif kw = et_pcb.keyword_priority then -- priority 2
 										expect_field_count (line, 2);
 										polygon_priority := et_pcb.to_polygon_priority (f (line, 2));
 
@@ -13861,6 +13865,8 @@ package body et_project is
 							when SEC_ROUTE =>
 								declare
 									use et_pcb_coordinates.geometry;
+									use et_pcb;
+									use et_packages;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -14063,7 +14069,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										note.size := to_distance (f (line, 2));
 
-									elsif kw = keyword_line_width then -- line_width 0.1
+									elsif kw = et_libraries.keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);
 										note.line_width := to_distance (f (line, 2));
 
@@ -14106,7 +14112,7 @@ package body et_project is
 												-- extract text dimensions starting at field 2
 												board_text.dimensions := to_dimensions (line, 2);
 
-											elsif kw = keyword_line_width then -- line_width 0.1
+											elsif kw = et_packages.keyword_line_width then -- line_width 0.1
 												expect_field_count (line, 2);
 												board_text.line_width := to_distance (f (line, 2));
 
@@ -14146,7 +14152,7 @@ package body et_project is
 										-- extract text dimensions starting at field 2
 										board_text_copper.dimensions := to_dimensions (line, 2);
 
-									elsif kw = keyword_line_width then -- line_width 0.1
+									elsif kw = et_packages.keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);
 										board_text_copper.line_width := to_distance (f (line, 2));
 
@@ -14329,7 +14335,7 @@ package body et_project is
 												-- extract dimensions of placeholder text starting at field 2
 												unit_placeholder.size := to_distance (f (line, 2));
 
-											elsif kw = keyword_line_width then -- line_width 0.15
+											elsif kw = et_libraries.keyword_line_width then -- line_width 0.15
 												expect_field_count (line, 2);
 
 												unit_placeholder.line_width := to_distance (f (line, 2));
@@ -14378,7 +14384,7 @@ package body et_project is
 												-- extract text dimensions starting at field 2
 												board_text_placeholder.dimensions := to_dimensions (line, 2);
 
-											elsif kw = keyword_line_width then -- line_width 0.1
+											elsif kw = et_packages.keyword_line_width then -- line_width 0.1
 												expect_field_count (line, 2);
 												board_text_placeholder.line_width := to_distance (f (line, 2));
 
@@ -14418,7 +14424,7 @@ package body et_project is
 										-- extract text dimensions starting at field 2
 										board_text_copper_placeholder.dimensions := to_dimensions (line, 2);
 
-									elsif kw = keyword_line_width then -- line_width 0.1
+									elsif kw = et_packages.keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);
 										board_text_copper_placeholder.line_width := to_distance (f (line, 2));
 

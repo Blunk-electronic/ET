@@ -247,7 +247,8 @@ package et_libraries is
 	-- Converts a string to type_port_name_text_size.
 
 	-- line width
-	subtype type_line_width is type_distance; -- CS reasonable range
+	keyword_line_width : constant string := "line_width";
+	subtype type_line_width is type_distance; -- CS reasonable positive range
 	
 	line_width_port_default : constant type_line_width := 0.2;
 	
@@ -830,7 +831,7 @@ package et_libraries is
 		"<"				=> type_symbol_model_file."<",
 		element_type	=> type_symbol);
 
-	symbol_library_file_extension : constant string (1..3) := "sym";
+	symbol_library_file_extension : constant string := "sym";
 
 	-- HERE RIG WIDE SYMBOLS ARE KEPT:	
 	symbols : type_symbols.map;
@@ -848,7 +849,7 @@ package et_libraries is
 		"<"				=> type_device_model_file."<",
 		element_type	=> type_device);
 
-	device_library_file_extension : constant string (1..3) := "dev";
+	device_library_file_extension : constant string := "dev";
 
 	-- HERE RIG WIDE DEVICES ARE KEPT:
 	devices : type_devices.map;

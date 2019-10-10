@@ -249,6 +249,8 @@ package et_pcb is
 	package pac_copper_cutouts is new doubly_linked_lists (type_copper_cutout);
 
 	-- Polgon priority: 0 is weakest, 100 ist strongest.
+	keyword_priority : constant string := "priority";
+	
 	polygon_priority_max : constant natural := 100;
 	subtype type_polygon_priority is natural range natural'first .. polygon_priority_max;
 	function to_string (priority_level : in type_polygon_priority) return string;
@@ -294,8 +296,12 @@ package et_pcb is
 		placeholders	: type_text_placeholders_copper.list;
 	end record;
 
-	-- Types for ELECTRIC !! copper objects:
-	-- vias
+-- Types for ELECTRIC !! copper objects:
+
+-- VIAS
+	keyword_layer_start	: constant string := "layer_start";
+	keyword_layer_end	: constant string := "layer_end";		
+	
 	type type_via is new type_drill with record
 		restring_outer	: type_restring_width;	-- restring in outer layers (top/bottom)
 		restring_inner	: type_restring_width;	-- restring in inner layers (mostly wider than restring_outer)

@@ -316,8 +316,8 @@ package body et_pcb is
 		log (text => "polygon" & 
 			 " " & text_polygon_signal_layer & to_string (element (cursor).layer) &
 			 " " & text_polygon_width_min & to_string (element (cursor).width_min) &
-			 " " & text_polygon_corner_easing & to_string (element (cursor).easing.style) &
-			 " " & text_polygon_easing_radius & to_string (element (cursor).easing.radius),
+			 " " & et_packages.keyword_corner_easing & to_string (element (cursor).easing.style) &
+			 " " & et_packages.keyword_easing_radius & to_string (element (cursor).easing.radius),
 			 level => log_threshold);
 
 		log_indentation_up;

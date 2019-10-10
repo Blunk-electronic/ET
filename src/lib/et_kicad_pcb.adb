@@ -7004,17 +7004,17 @@ package body et_kicad_pcb is
 				log (text => "polygon/zone net " & et_general.to_string (polygon.net_name) &
 					 " " & text_polygon_signal_layer & to_string (polygon.layer) &
 					 " timestamp " & string (polygon.timestamp) & -- CS use constant
-					 " " & text_polygon_priority_level & et_pcb.to_string (polygon.priority_level) &
+					 " " & keyword_priority & et_pcb.to_string (polygon.priority_level) &
 					 -- CS: hatch_style and hatch_width are related to the display mode in the GUI.
 					 -- So there is no need to output this stuff here.
 					 --" hatch_width" & to_string (polygon.hatch_width) & -- CS use constant for "hatch width" ?
 					 --" hatch_style" & to_string (polygon.hatch_style) & -- CS use constant for "hatch stlye" ?
 					 " min_thickness/" & text_polygon_width_min & to_string (polygon.min_thickness) &
-					 " " & text_polygon_isolation_gap & to_string (polygon.isolation_gap) &
+					 " " & keyword_isolation & to_string (polygon.isolation_gap) &
 					 " filled " & boolean'image (polygon.filled) & -- CS use constant
 					 " fill_mode_segment " & boolean'image (polygon.fill_mode_segment) &
 					 " smooting/easing" & to_string (polygon.corner_easing) &
-					 " " & text_polygon_easing_radius & to_string (polygon.easing_radius) &
+					 " " & keyword_easing_radius & to_string (polygon.easing_radius) &
 					 " arc_segments" & natural'image (polygon.arc_segments) & -- CS use constant
 					 " " & text_polygon_thermal_gap & to_string (polygon.thermal_gap) &
 					 " " & text_polygon_thermal_width & to_string (polygon.thermal_width) &
