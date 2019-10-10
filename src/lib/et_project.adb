@@ -3518,6 +3518,23 @@ package body et_project is
 				end case;
 		end case;
 	end to_fillable_circle;
+
+
+	
+	-- basic geometric objects used in packages and boards
+	type type_board_line is new et_packages.shapes.type_line with null record;
+	board_line : type_board_line;
+	procedure reset_board_line is begin board_line := (others => <>); end;
+
+	type type_board_arc is new et_packages.shapes.type_arc with null record;
+	board_arc : type_board_arc;
+	procedure reset_board_arc is begin board_arc := (others => <>); end;
+
+	type type_board_circle is new et_packages.shapes.type_circle with null record;
+	board_circle : type_board_circle;
+	procedure reset_board_circle is begin board_circle := (others => <>); end;
+
+
 	
 	procedure read_package (
 	-- Opens the package file and stores the package in container et_libraries.packages.
@@ -3569,18 +3586,6 @@ package body et_project is
 		signal_layers : et_pcb_stack.type_signal_layers.set;
 -- 		lock_status 			: et_pcb.type_locked := lock_status_default;
 		
-		type type_line is new et_packages.shapes.type_line with null record;
-		pac_line				: type_line;
-		procedure reset_line is begin pac_line := (others => <>); end;
-		
-		type type_arc is new et_packages.shapes.type_arc with null record;
-		pac_arc					: type_arc;
-		procedure reset_arc is begin pac_arc := (others => <>); end;
-
-		type type_circle is new et_packages.shapes.type_circle with null record;
-		pac_circle				: type_circle;
-		procedure reset_circle is begin pac_circle := (others => <>); end;
-
 		pac_circle_fillable_width				: type_general_line_width := type_general_line_width'first;
 		pac_circle_fillable_filled				: type_filled := type_filled'first;
 		pac_circle_fillable_fill_style			: type_fill_style := type_fill_style'first;
@@ -3588,7 +3593,7 @@ package body et_project is
 		pac_circle_fillable_hatching_spacing	: type_general_line_width := type_general_line_width'first;
 
 		procedure reset_circle_fillable is begin 
-			pac_circle								:= (others => <>);
+			board_circle								:= (others => <>);
 			pac_circle_fillable_width				:= type_general_line_width'first;
 			pac_circle_fillable_filled				:= type_filled'first;
 			pac_circle_fillable_fill_style			:= fill_style_default;
@@ -3598,7 +3603,7 @@ package body et_project is
 
 		function make_fillable_circle return type_fillable_circle is begin
 			return to_fillable_circle (
-				circle 				=> shapes.type_circle (pac_circle),
+				circle 				=> shapes.type_circle (board_circle),
 				filled				=> pac_circle_fillable_filled,
 				fill_style			=> pac_circle_fillable_fill_style,
 				circumfence_width	=> pac_circle_fillable_width,
@@ -3607,7 +3612,7 @@ package body et_project is
 		end;
 
 		function make_fillable_circle_solid return type_fillable_circle_solid is begin
-			return (et_packages.shapes.type_circle (pac_circle) with pac_circle_fillable_filled);
+			return (et_packages.shapes.type_circle (board_circle) with pac_circle_fillable_filled);
 		end;
 		
 		pac_circle_copper		: et_packages.type_copper_circle;
@@ -4155,7 +4160,7 @@ package body et_project is
 					et_pcb_stack.type_signal_layers.clear (signal_layers);
 				end;
 
-				procedure add_polygon_line (line : in out type_line) is
+				procedure add_polygon_line (line : in out type_board_line) is
 					use et_packages.shapes;
 					use et_packages.shapes.pac_polygon_lines;
 
@@ -4165,11 +4170,10 @@ package body et_project is
 					-- collect the polygon line 
 					append (polygon_2.segments.lines, l);
 
-					-- reset line
-					line := (others => <>);
+					reset_board_line;
 				end;
 
-				procedure add_polygon_arc (arc : in out type_arc) is
+				procedure add_polygon_arc (arc : in out type_board_arc) is
 					use et_packages.shapes;
 					use et_packages.shapes.pac_polygon_arcs;
 
@@ -4179,11 +4183,10 @@ package body et_project is
 					-- collect the polygon line 
 					append (polygon_2.segments.arcs, a);
 
-					-- reset arc
-					arc := (others => <>);
+					reset_board_arc;
 				end;
 
-				procedure add_polygon_circe (circle : in out type_circle) is
+				procedure add_polygon_circle (circle : in out type_board_circle) is
 					use et_packages.shapes;
 					use et_packages.shapes.pac_polygon_circles;
 
@@ -4193,8 +4196,7 @@ package body et_project is
 					-- collect the polygon line 
 					append (polygon_2.segments.circles, c);
 
-					-- reset circle
-					circle := (others => <>);
+					reset_board_circle;
 				end;
 				
 			begin -- execute_section
@@ -4227,64 +4229,64 @@ package body et_project is
 
 										type_copper_lines.append (
 											container	=> packge.copper.top.lines, 
-											new_item	=> (shapes.type_line (pac_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with pac_line_width));
 
 										-- clean up for next line
-										reset_line;
+										reset_board_line;
 										reset_line_width;
 
 									when SEC_SILK_SCREEN => 
 										type_silk_lines.append (
 											container	=> packge.silk_screen.top.lines, 
-											new_item	=> (shapes.type_line (pac_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with pac_line_width));
 
 										-- clean up for next line
-										reset_line;
+										reset_board_line;
 										reset_line_width;
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_lines.append (
 											container	=> packge.assembly_documentation.top.lines, 
-											new_item	=> (shapes.type_line (pac_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with pac_line_width));
 
 										-- clean up for next line
-										reset_line;
+										reset_board_line;
 										reset_line_width;
 
 									when SEC_STENCIL =>
 										type_stencil_lines.append (
 											container	=> packge.stencil.top.lines, 
-											new_item	=> (shapes.type_line (pac_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with pac_line_width));
 
 										-- clean up for next line
-										reset_line;
+										reset_board_line;
 										reset_line_width;
 
 									when SEC_STOP_MASK =>
 										type_stop_lines.append (
 											container	=> packge.stop_mask.top.lines, 
-											new_item	=> (shapes.type_line (pac_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with pac_line_width));
 
 										-- clean up for next line
-										reset_line;
+										reset_board_line;
 										reset_line_width;
 
 									when SEC_KEEPOUT =>
 										type_keepout_lines.append (
 											container	=> packge.keepout.top.lines, 
-											new_item	=> (shapes.type_line (pac_line) with null record));
+											new_item	=> (shapes.type_line (board_line) with null record));
 
 										-- clean up for next line
-										reset_line;
+										reset_board_line;
 										reset_line_width;
 										
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_lines.append (
 											container	=> tht_pad_shape.top.lines,
-											new_item	=> (shapes.type_line (pac_line) with null record));
+											new_item	=> (shapes.type_line (board_line) with null record));
 
 										-- clean up for next line
-										reset_line;
+										reset_board_line;
 										
 									when others => invalid_section;
 								end case;
@@ -4295,64 +4297,64 @@ package body et_project is
 
 										type_copper_lines.append (
 											container	=> packge.copper.bottom.lines, 
-											new_item	=> (shapes.type_line (pac_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with pac_line_width));
 
 										-- clean up for next line
-										reset_line;
+										reset_board_line;
 										reset_line_width;
 
 									when SEC_SILK_SCREEN => 
 										type_silk_lines.append (
 											container	=> packge.silk_screen.bottom.lines, 
-											new_item	=> (shapes.type_line (pac_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with pac_line_width));
 
 										-- clean up for next line
-										reset_line;
+										reset_board_line;
 										reset_line_width;
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_lines.append (
 											container	=> packge.assembly_documentation.bottom.lines, 
-											new_item	=> (shapes.type_line (pac_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with pac_line_width));
 
 										-- clean up for next line
-										reset_line;
+										reset_board_line;
 										reset_line_width;
 
 									when SEC_STENCIL =>
 										type_stencil_lines.append (
 											container	=> packge.stencil.bottom.lines, 
-											new_item	=> (shapes.type_line (pac_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with pac_line_width));
 
 										-- clean up for next line
-										reset_line;
+										reset_board_line;
 										reset_line_width;
 										
 									when SEC_STOP_MASK =>
 										type_stop_lines.append (
 											container	=> packge.stop_mask.bottom.lines, 
-											new_item	=> (shapes.type_line (pac_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with pac_line_width));
 
 										-- clean up for next line
-										reset_line;
+										reset_board_line;
 										reset_line_width;
 
 									when SEC_KEEPOUT =>
 										type_keepout_lines.append (
 											container	=> packge.keepout.bottom.lines, 
-											new_item	=> (shapes.type_line (pac_line) with null record));
+											new_item	=> (shapes.type_line (board_line) with null record));
 
 										-- clean up for next line
-										reset_line;
+										reset_board_line;
 										reset_line_width;
 
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_lines.append (
 											container	=> tht_pad_shape.bottom.lines,
-											new_item	=> (shapes.type_line (pac_line) with null record));
+											new_item	=> (shapes.type_line (board_line) with null record));
 
 										-- clean up for next line
-										reset_line;
+										reset_board_line;
 
 									when others => invalid_section;
 								end case;
@@ -4361,31 +4363,31 @@ package body et_project is
 								
 								et_packages.type_pcb_contour_lines.append (
 									container	=> packge.pcb_contour.lines,
-									new_item	=> (shapes.type_line (pac_line) with null record));
+									new_item	=> (shapes.type_line (board_line) with null record));
 
 								-- clean up for next line
-								reset_line;
+								reset_board_line;
 								
 							when SEC_ROUTE_RESTRICT =>
 								
 								type_route_restrict_lines.append (
 									container	=> packge.route_restrict.lines,
-									new_item	=> (shapes.type_line (pac_line) with
+									new_item	=> (shapes.type_line (board_line) with
 													layers	=> signal_layers));
 
 								-- clean up for next line
-								reset_line;
+								reset_board_line;
 								et_pcb_stack.type_signal_layers.clear (signal_layers);
 
 							when SEC_VIA_RESTRICT =>
 								
 								type_via_restrict_lines.append (
 									container	=> packge.via_restrict.lines,
-									new_item	=> (shapes.type_line (pac_line) with
+									new_item	=> (shapes.type_line (board_line) with
 													layers	=> signal_layers));
 
 								-- clean up for next line
-								reset_line;
+								reset_board_line;
 								reset_line_width;
 								et_pcb_stack.type_signal_layers.clear (signal_layers);
 								
@@ -4393,21 +4395,21 @@ package body et_project is
 								
 								type_pad_lines.append (
 									container	=> smt_pad_shape.lines,
-									new_item	=> (shapes.type_line (pac_line) with null record));
+									new_item	=> (shapes.type_line (board_line) with null record));
 
 								-- clean up for next line
-								reset_line;
+								reset_board_line;
 
 							when SEC_MILLINGS =>
 
 								et_packages.type_pcb_contour_lines.append (
 									container	=> tht_millings.lines,
-									new_item	=> (shapes.type_line (pac_line) with null record));
+									new_item	=> (shapes.type_line (board_line) with null record));
 								
 								-- clean up for next line
-								reset_line;
+								reset_board_line;
 
-							when SEC_CONTOURS => add_polygon_line (pac_line);
+							when SEC_CONTOURS => add_polygon_line (board_line);
 								
 							when others => invalid_section;
 						end case;
@@ -4420,64 +4422,64 @@ package body et_project is
 
 										type_copper_arcs.append (
 											container	=> packge.copper.top.arcs, 
-											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
 
 										-- clean up for next arc
-										reset_arc;
+										reset_board_arc;
 										reset_line_width;
 
 									when SEC_SILK_SCREEN => 
 										type_silk_arcs.append (
 											container	=> packge.silk_screen.top.arcs, 
-											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
 
 										-- clean up for next arc
-										reset_arc;
+										reset_board_arc;
 										reset_line_width;
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_arcs.append (
 											container	=> packge.assembly_documentation.top.arcs, 
-											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
 
 										-- clean up for next arc
-										reset_arc;
+										reset_board_arc;
 										reset_line_width;
 
 									when SEC_STENCIL =>
 										type_stencil_arcs.append (
 											container	=> packge.stencil.top.arcs, 
-											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
 
 										-- clean up for next arc
-										reset_arc;
+										reset_board_arc;
 										reset_line_width;
 
 									when SEC_STOP_MASK =>
 										type_stop_arcs.append (
 											container	=> packge.stop_mask.top.arcs, 
-											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
 
 										-- clean up for next arc
-										reset_arc;
+										reset_board_arc;
 										reset_line_width;
 
 									when SEC_KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> packge.keepout.top.arcs,
-											new_item	=> (shapes.type_arc (pac_arc) with null record));
+											new_item	=> (shapes.type_arc (board_arc) with null record));
 
 										-- clean up for next arc
-										reset_arc;
+										reset_board_arc;
 										reset_line_width;
 
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_arcs.append (
 											container	=> tht_pad_shape.top.arcs,
-											new_item	=> (shapes.type_arc (pac_arc) with null record));
+											new_item	=> (shapes.type_arc (board_arc) with null record));
 
 										-- clean up for next arc
-										reset_arc;
+										reset_board_arc;
 										
 									when others => invalid_section;
 								end case;
@@ -4488,64 +4490,64 @@ package body et_project is
 
 										type_copper_arcs.append (
 											container	=> packge.copper.bottom.arcs, 
-											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
 
 										-- clean up for next arc
-										reset_arc;
+										reset_board_arc;
 										reset_line_width;
 
 									when SEC_SILK_SCREEN => 
 										type_silk_arcs.append (
 											container	=> packge.silk_screen.bottom.arcs, 
-											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
 
 										-- clean up for next arc
-										reset_arc;
+										reset_board_arc;
 										reset_line_width;
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_arcs.append (
 											container	=> packge.assembly_documentation.bottom.arcs, 
-											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
 
 										-- clean up for next arc
-										reset_arc;
+										reset_board_arc;
 										reset_line_width;
 
 									when SEC_STENCIL =>
 										type_stencil_arcs.append (
 											container	=> packge.stencil.bottom.arcs, 
-											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
 
 										-- clean up for next arc
-										reset_arc;
+										reset_board_arc;
 										reset_line_width;
 										
 									when SEC_STOP_MASK =>
 										type_stop_arcs.append (
 											container	=> packge.stop_mask.bottom.arcs, 
-											new_item	=> (shapes.type_arc (pac_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
 
 										-- clean up for next arc
-										reset_arc;
+										reset_board_arc;
 										reset_line_width;
 
 									when SEC_KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> packge.keepout.bottom.arcs, 
-											new_item	=> (shapes.type_arc (pac_arc) with null record));
+											new_item	=> (shapes.type_arc (board_arc) with null record));
 
 										-- clean up for next arc
-										reset_arc;
+										reset_board_arc;
 										reset_line_width;
 
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_arcs.append (
 											container	=> tht_pad_shape.bottom.arcs,
-											new_item	=> (shapes.type_arc (pac_arc) with null record));
+											new_item	=> (shapes.type_arc (board_arc) with null record));
 
 										-- clean up for next arc
-										reset_arc;
+										reset_board_arc;
 										
 									when others => invalid_section;
 								end case;
@@ -4554,50 +4556,50 @@ package body et_project is
 								
 								et_packages.type_pcb_contour_arcs.append (
 									container	=> packge.pcb_contour.arcs,
-									new_item	=> (shapes.type_arc (pac_arc) with null record));
+									new_item	=> (shapes.type_arc (board_arc) with null record));
 
 								-- clean up for next arc
-								reset_arc;
+								reset_board_arc;
 								
 							when SEC_ROUTE_RESTRICT =>
 								
 								type_route_restrict_arcs.append (
 									container	=> packge.route_restrict.arcs,
-									new_item	=> (shapes.type_arc (pac_arc) with layers => signal_layers));
+									new_item	=> (shapes.type_arc (board_arc) with layers => signal_layers));
 
 								-- clean up for next arc
-								reset_arc;
+								reset_board_arc;
 								et_pcb_stack.type_signal_layers.clear (signal_layers);
 
 							when SEC_VIA_RESTRICT =>
 								
 								type_via_restrict_arcs.append (
 									container	=> packge.via_restrict.arcs,
-									new_item	=> (shapes.type_arc (pac_arc) with layers => signal_layers));
+									new_item	=> (shapes.type_arc (board_arc) with layers => signal_layers));
 
 								-- clean up for next arc
-								reset_arc;
+								reset_board_arc;
 								reset_line_width;
 								et_pcb_stack.type_signal_layers.clear (signal_layers);
 
 							when SEC_PAD_CONTOURS_SMT =>
 								type_pad_arcs.append (
 									container	=> smt_pad_shape.arcs,
-									new_item	=> (shapes.type_arc (pac_arc) with null record));
+									new_item	=> (shapes.type_arc (board_arc) with null record));
 
 								-- clean up for next arc
-								reset_arc;
+								reset_board_arc;
 
 							when SEC_MILLINGS =>
 								
 								et_packages.type_pcb_contour_arcs.append (
 									container	=> tht_millings.arcs,
-									new_item	=> (shapes.type_arc (pac_arc) with null record));
+									new_item	=> (shapes.type_arc (board_arc) with null record));
 								
 								-- clean up for next arc
-								reset_arc;
+								reset_board_arc;
 
-							when SEC_CONTOURS => add_polygon_arc (pac_arc);
+							when SEC_CONTOURS => add_polygon_arc (board_arc);
 								
 							when others => invalid_section;
 						end case;
@@ -4653,10 +4655,10 @@ package body et_project is
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_circles.append (
 											container	=> tht_pad_shape.top.circles,
-											new_item	=> (shapes.type_circle (pac_circle) with null record));
+											new_item	=> (shapes.type_circle (board_circle) with null record));
 
 										-- clean up for next circle
-										reset_circle;
+										reset_board_circle;
 										
 									when others => invalid_section;
 								end case;
@@ -4710,10 +4712,10 @@ package body et_project is
 									when SEC_PAD_CONTOURS_THT =>
 										type_pad_circles.append (
 											container	=> tht_pad_shape.bottom.circles,
-											new_item	=> (shapes.type_circle (pac_circle) with null record));
+											new_item	=> (shapes.type_circle (board_circle) with null record));
 
 										-- clean up for next circle
-										reset_circle;
+										reset_board_circle;
 										
 									when others => invalid_section;
 								end case;
@@ -4722,10 +4724,10 @@ package body et_project is
 								
 								et_packages.type_pcb_contour_circles.append (
 									container	=> packge.pcb_contour.circles,
-									new_item	=> (shapes.type_circle (pac_circle) with null record));
+									new_item	=> (shapes.type_circle (board_circle) with null record));
 
 								-- clean up for next circle
-								reset_circle;
+								reset_board_circle;
 								
 							when SEC_ROUTE_RESTRICT =>
 								
@@ -4748,20 +4750,20 @@ package body et_project is
 							when SEC_PAD_CONTOURS_SMT =>
 								type_pad_circles.append (
 									container	=> smt_pad_shape.circles,
-									new_item	=> (shapes.type_circle (pac_circle) with null record));
+									new_item	=> (shapes.type_circle (board_circle) with null record));
 
 								-- clean up for next circle
-								reset_circle;
+								reset_board_circle;
 
 							when SEC_MILLINGS =>
 								et_packages.type_pcb_contour_circles.append (
 									container	=> tht_millings.circles,
-									new_item	=> (shapes.type_circle (pac_circle) with null record));
+									new_item	=> (shapes.type_circle (board_circle) with null record));
 								
 								-- clean up for next circle
-								reset_circle;
+								reset_board_circle;
 
-							when SEC_CONTOURS => add_polygon_circe (pac_circle);
+							when SEC_CONTOURS => add_polygon_circle (board_circle);
 								
 							when others => invalid_section;
 						end case;
@@ -5204,13 +5206,13 @@ package body et_project is
 												expect_field_count (line, 5);
 
 												-- extract the start position starting at field 2 of line
-												pac_line.start_point := to_position (line, 2);
+												board_line.start_point := to_position (line, 2);
 												
 											elsif kw = keyword_end then -- end x 22.3 y 23.3
 												expect_field_count (line, 5);
 
 												-- extract the end position starting at field 2 of line
-												pac_line.end_point := to_position (line, 2);
+												board_line.end_point := to_position (line, 2);
 
 											elsif kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
@@ -5230,13 +5232,13 @@ package body et_project is
 												expect_field_count (line, 5);
 
 												-- extract the start position starting at field 2 of line
-												pac_line.start_point := to_position (line, 2);
+												board_line.start_point := to_position (line, 2);
 												
 											elsif kw = keyword_end then -- end x 22.3 y 23.3
 												expect_field_count (line, 5);
 
 												-- extract the end position starting at field 2 of line
-												pac_line.end_point := to_position (line, 2);
+												board_line.end_point := to_position (line, 2);
 
 											else
 												invalid_keyword (kw);
@@ -5252,13 +5254,13 @@ package body et_project is
 												expect_field_count (line, 5);
 
 												-- extract the start position starting at field 2 of line
-												pac_line.start_point := to_position (line, 2);
+												board_line.start_point := to_position (line, 2);
 												
 											elsif kw = keyword_end then -- end x 22.3 y 23.3
 												expect_field_count (line, 5);
 
 												-- extract the end position starting at field 2 of line
-												pac_line.end_point := to_position (line, 2);
+												board_line.end_point := to_position (line, 2);
 
 											else
 												invalid_keyword (kw);
@@ -5277,13 +5279,13 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2 of line
-										pac_line.start_point := to_position (line, 2);
+										board_line.start_point := to_position (line, 2);
 										
 									elsif kw = keyword_end then -- end x 22.3 y 23.3
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2 of line
-										pac_line.end_point := to_position (line, 2);
+										board_line.end_point := to_position (line, 2);
 
 									else
 										invalid_keyword (kw);
@@ -5299,13 +5301,13 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2 of line
-										pac_line.start_point := to_position (line, 2);
+										board_line.start_point := to_position (line, 2);
 										
 									elsif kw = keyword_end then -- end x 22.3 y 23.3
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2 of line
-										pac_line.end_point := to_position (line, 2);
+										board_line.end_point := to_position (line, 2);
 
 									elsif kw = keyword_layers then -- layers 2..16
 										
@@ -5327,13 +5329,13 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2 of line
-										pac_line.start_point := to_position (line, 2);
+										board_line.start_point := to_position (line, 2);
 										
 									elsif kw = keyword_end then -- end x 22.3 y 23.3
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2 of line
-										pac_line.end_point := to_position (line, 2);
+										board_line.end_point := to_position (line, 2);
 
 									else
 										invalid_keyword (kw);
@@ -5349,13 +5351,13 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2 of line
-										pac_line.start_point := to_position (line, 2);
+										board_line.start_point := to_position (line, 2);
 										
 									elsif kw = keyword_end then -- end x 22.3 y 23.3
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2 of line
-										pac_line.end_point := to_position (line, 2);
+										board_line.end_point := to_position (line, 2);
 
 									else
 										invalid_keyword (kw);
@@ -5371,13 +5373,13 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2 of line
-										pac_line.start_point := to_position (line, 2);
+										board_line.start_point := to_position (line, 2);
 										
 									elsif kw = keyword_end then -- end x 22.3 y 23.3
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2 of line
-										pac_line.end_point := to_position (line, 2);
+										board_line.end_point := to_position (line, 2);
 
 									else
 										invalid_keyword (kw);
@@ -5401,19 +5403,19 @@ package body et_project is
 												expect_field_count (line, 5);
 
 												-- extract the center position starting at field 2 of line
-												pac_arc.center := to_position (line, 2);
+												board_arc.center := to_position (line, 2);
 												
 											elsif kw = keyword_start then -- start x 22.3 y 23.3
 												expect_field_count (line, 5);
 
 												-- extract the start position starting at field 2 of line
-												pac_arc.start_point := to_position (line, 2);
+												board_arc.start_point := to_position (line, 2);
 												
 											elsif kw = keyword_end then -- end x 22.3 y 23.3
 												expect_field_count (line, 5);
 
 												-- extract the end position starting at field 2 of line
-												pac_arc.end_point := to_position (line, 2);
+												board_arc.end_point := to_position (line, 2);
 
 											elsif kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
@@ -5433,19 +5435,19 @@ package body et_project is
 												expect_field_count (line, 5);
 
 												-- extract the center position starting at field 2 of line
-												pac_arc.center := to_position (line, 2);
+												board_arc.center := to_position (line, 2);
 												
 											elsif kw = keyword_start then -- start x 22.3 y 23.3
 												expect_field_count (line, 5);
 
 												-- extract the start position starting at field 2 of line
-												pac_arc.start_point := to_position (line, 2);
+												board_arc.start_point := to_position (line, 2);
 												
 											elsif kw = keyword_end then -- end x 22.3 y 23.3
 												expect_field_count (line, 5);
 
 												-- extract the end position starting at field 2 of line
-												pac_arc.end_point := to_position (line, 2);
+												board_arc.end_point := to_position (line, 2);
 												
 											else
 												invalid_keyword (kw);
@@ -5461,19 +5463,19 @@ package body et_project is
 												expect_field_count (line, 5);
 
 												-- extract the center position starting at field 2 of line
-												pac_arc.center := to_position (line, 2);
+												board_arc.center := to_position (line, 2);
 												
 											elsif kw = keyword_start then -- start x 22.3 y 23.3
 												expect_field_count (line, 5);
 
 												-- extract the start position starting at field 2 of line
-												pac_arc.start_point := to_position (line, 2);
+												board_arc.start_point := to_position (line, 2);
 												
 											elsif kw = keyword_end then -- end x 22.3 y 23.3
 												expect_field_count (line, 5);
 
 												-- extract the end position starting at field 2 of line
-												pac_arc.end_point := to_position (line, 2);
+												board_arc.end_point := to_position (line, 2);
 
 											else
 												invalid_keyword (kw);
@@ -5492,19 +5494,19 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the center position starting at field 2 of line
-										pac_arc.center := to_position (line, 2);
+										board_arc.center := to_position (line, 2);
 										
 									elsif kw = keyword_start then -- start x 22.3 y 23.3
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2 of line
-										pac_arc.start_point := to_position (line, 2);
+										board_arc.start_point := to_position (line, 2);
 										
 									elsif kw = keyword_end then -- end x 22.3 y 23.3
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2 of line
-										pac_arc.end_point := to_position (line, 2);
+										board_arc.end_point := to_position (line, 2);
 								
 									else
 										invalid_keyword (kw);
@@ -5520,19 +5522,19 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the center position starting at field 2 of line
-										pac_arc.center := to_position (line, 2);
+										board_arc.center := to_position (line, 2);
 										
 									elsif kw = keyword_start then -- start x 22.3 y 23.3
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2 of line
-										pac_arc.start_point := to_position (line, 2);
+										board_arc.start_point := to_position (line, 2);
 										
 									elsif kw = keyword_end then -- end x 22.3 y 23.3
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2 of line
-										pac_arc.end_point := to_position (line, 2);
+										board_arc.end_point := to_position (line, 2);
 
 									elsif kw = keyword_layers then -- layers 1 14 3
 
@@ -5555,19 +5557,19 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the center position starting at field 2 of line
-										pac_arc.center := to_position (line, 2);
+										board_arc.center := to_position (line, 2);
 										
 									elsif kw = keyword_start then -- start x 22.3 y 23.3
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2 of line
-										pac_arc.start_point := to_position (line, 2);
+										board_arc.start_point := to_position (line, 2);
 										
 									elsif kw = keyword_end then -- end x 22.3 y 23.3
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2 of line
-										pac_arc.end_point := to_position (line, 2);
+										board_arc.end_point := to_position (line, 2);
 
 									else
 										invalid_keyword (kw);
@@ -5583,19 +5585,19 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the center position starting at field 2 of line
-										pac_arc.center := to_position (line, 2);
+										board_arc.center := to_position (line, 2);
 										
 									elsif kw = keyword_start then -- start x 22.3 y 23.3
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2 of line
-										pac_arc.start_point := to_position (line, 2);
+										board_arc.start_point := to_position (line, 2);
 										
 									elsif kw = keyword_end then -- end x 22.3 y 23.3
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2 of line
-										pac_arc.end_point := to_position (line, 2);
+										board_arc.end_point := to_position (line, 2);
 
 									else
 										invalid_keyword (kw);
@@ -5611,19 +5613,19 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the center position starting at field 2 of line
-										pac_arc.center := to_position (line, 2);
+										board_arc.center := to_position (line, 2);
 										
 									elsif kw = keyword_start then -- start x 22.3 y 23.3
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2 of line
-										pac_arc.start_point := to_position (line, 2);
+										board_arc.start_point := to_position (line, 2);
 										
 									elsif kw = keyword_end then -- end x 22.3 y 23.3
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2 of line
-										pac_arc.end_point := to_position (line, 2);
+										board_arc.end_point := to_position (line, 2);
 
 									else
 										invalid_keyword (kw);
@@ -5647,11 +5649,11 @@ package body et_project is
 												expect_field_count (line, 5);
 
 												-- extract the center position starting at field 2 of line
-												pac_circle.center := to_position (line, 2);
+												board_circle.center := to_position (line, 2);
 												
 											elsif kw = keyword_radius then -- radius 22
 												expect_field_count (line, 2);
-												pac_circle.radius := to_distance (f (line, 2));
+												board_circle.radius := to_distance (f (line, 2));
 												
 											elsif kw = keyword_width then -- width 0.5
 												expect_field_count (line, 2);
@@ -5687,11 +5689,11 @@ package body et_project is
 												expect_field_count (line, 5);
 
 												-- extract the center position starting at field 2 of line
-												pac_circle.center := to_position (line, 2);
+												board_circle.center := to_position (line, 2);
 												
 											elsif kw = keyword_radius then -- radius 22
 												expect_field_count (line, 2);
-												pac_circle.radius := to_distance (f (line, 2));
+												board_circle.radius := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -5747,11 +5749,11 @@ package body et_project is
 												expect_field_count (line, 5);
 
 												-- extract the center position starting at field 2 of line
-												pac_circle.center := to_position (line, 2);
+												board_circle.center := to_position (line, 2);
 												
 											elsif kw = keyword_radius then -- radius 22
 												expect_field_count (line, 2);
-												pac_circle.radius := to_distance (f (line, 2));
+												board_circle.radius := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -5770,11 +5772,11 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the center position starting at field 2 of line
-										pac_circle.center := to_position (line, 2);
+										board_circle.center := to_position (line, 2);
 										
 									elsif kw = keyword_radius then -- radius 22
 										expect_field_count (line, 2);
-										pac_circle.radius := to_distance (f (line, 2));
+										board_circle.radius := to_distance (f (line, 2));
 								
 									else
 										invalid_keyword (kw);
@@ -5790,11 +5792,11 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the center position starting at field 2 of line
-										pac_circle.center := to_position (line, 2);
+										board_circle.center := to_position (line, 2);
 										
 									elsif kw = keyword_radius then -- radius 22
 										expect_field_count (line, 2);
-										pac_circle.radius := to_distance (f (line, 2));
+										board_circle.radius := to_distance (f (line, 2));
 										
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);													
@@ -5833,11 +5835,11 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the center position starting at field 2 of line
-										pac_circle.center := to_position (line, 2);
+										board_circle.center := to_position (line, 2);
 										
 									elsif kw = keyword_radius then -- radius 22
 										expect_field_count (line, 2);
-										pac_circle.radius := to_distance (f (line, 2));
+										board_circle.radius := to_distance (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -5853,12 +5855,12 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the center position starting at field 2 of line
-										pac_circle.center := to_position (line, 2);
+										board_circle.center := to_position (line, 2);
 										
 									elsif kw = keyword_radius then -- radius 22.3
 										expect_field_count (line, 2);
 
-										pac_circle.radius := to_distance (f (line, 2));
+										board_circle.radius := to_distance (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -5874,11 +5876,11 @@ package body et_project is
 										expect_field_count (line, 5);
 
 										-- extract the center position starting at field 2 of line
-										pac_circle.center := to_position (line, 2);
+										board_circle.center := to_position (line, 2);
 										
 									elsif kw = keyword_radius then -- radius 22
 										expect_field_count (line, 2);
-										pac_circle.radius := to_distance (f (line, 2));
+										board_circle.radius := to_distance (f (line, 2));
 								
 									else
 										invalid_keyword (kw);
