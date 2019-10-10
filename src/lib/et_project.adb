@@ -852,6 +852,8 @@ package body et_project is
 	procedure circle_end   is begin section_mark (section_circle, FOOTER); end;			
 	procedure fill_zone_begin is begin section_mark (section_fill_zone, HEADER); end;
 	procedure fill_zone_end   is begin section_mark (section_fill_zone, FOOTER); end;
+	procedure cutout_zone_begin is begin section_mark (section_cutout_zone, HEADER); end;
+	procedure cutout_zone_end   is begin section_mark (section_cutout_zone, FOOTER); end;
 	procedure contours_begin is begin section_mark (section_contours, HEADER); end;
 	procedure contours_end   is begin section_mark (section_contours, FOOTER); end;
 	procedure text_begin is begin section_mark (section_text, HEADER); end;
@@ -1079,6 +1081,17 @@ package body et_project is
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
 		fill_zone_end;
 	end write_polygon;
+
+	procedure write_cutout (cursor : in et_packages.pac_keepout_cutouts.cursor) is 
+		use et_packages;
+		use pac_keepout_cutouts;
+	begin
+		cutout_zone_begin;
+		write_easing (element (cursor).easing);
+		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		cutout_zone_end;
+	end;
+
 	
 -- STOP MASK
 	procedure write_line (cursor : in et_packages.type_stop_lines.cursor) is 
@@ -1126,6 +1139,16 @@ package body et_project is
 		fill_zone_end;
 	end write_polygon;
 
+	procedure write_cutout (cursor : in et_packages.pac_stop_cutouts.cursor) is 
+		use et_packages;
+		use pac_stop_cutouts;
+	begin
+		cutout_zone_begin;
+		write_easing (element (cursor).easing);
+		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		cutout_zone_end;
+	end;
+	
 -- STENCIL (OR SOLDER PASTE MASK)
 	procedure write_line (cursor : in et_packages.type_stencil_lines.cursor) is 
 		use et_packages;
@@ -1172,6 +1195,16 @@ package body et_project is
 		fill_zone_end;
 	end write_polygon;
 
+	procedure write_cutout (cursor : in et_packages.pac_stencil_cutouts.cursor) is 
+		use et_packages;
+		use pac_stencil_cutouts;
+	begin
+		cutout_zone_begin;
+		write_easing (element (cursor).easing);
+		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		cutout_zone_end;
+	end;
+	
 -- ROUTE RESTRICT
 	procedure write_line (cursor : in et_packages.type_route_restrict_lines.cursor) is 
 		use et_packages;
@@ -1220,6 +1253,18 @@ package body et_project is
 		fill_zone_end;
 	end write_polygon;
 
+	procedure write_cutout (cursor : in et_packages.pac_route_restrict_cutouts.cursor) is 
+		use et_packages;
+		use pac_route_restrict_cutouts;
+	begin
+		cutout_zone_begin;
+		write_signal_layers (element (cursor).layers);
+		write_easing (element (cursor).easing);
+		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		cutout_zone_end;
+	end;
+
+	
 -- VIA RESTRICT
 	procedure write_line (cursor : in et_packages.type_via_restrict_lines.cursor) is 
 		use et_packages;
@@ -1271,6 +1316,16 @@ package body et_project is
 		fill_zone_end;
 	end write_polygon;
 
+	procedure write_cutout (cursor : in et_packages.pac_via_restrict_cutouts.cursor) is 
+		use et_packages;
+		use pac_via_restrict_cutouts;
+	begin
+		cutout_zone_begin;
+		write_signal_layers (element (cursor).layers);
+		write_easing (element (cursor).easing);
+		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		cutout_zone_end;
+	end;
 	
 -- BOARD CONTOUR
 	procedure write_line (cursor : in et_packages.type_pcb_contour_lines.cursor) is 
@@ -1388,6 +1443,16 @@ package body et_project is
 
 	end write_polygon;
 
+	procedure write_cutout (cursor : in et_packages.pac_silk_cutouts.cursor) is 
+		use et_packages;
+		use pac_silk_cutouts;
+	begin
+		cutout_zone_begin;
+		write_easing (element (cursor).easing);
+		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		cutout_zone_end;
+	end;
+	
 -- ASSEMBLY DOCUMENTATION
 	procedure write_line (cursor : in et_packages.type_doc_lines.cursor) is 
 		use et_packages;
@@ -1439,6 +1504,16 @@ package body et_project is
 		fill_zone_end;
 	end write_polygon;
 
+	procedure write_cutout (cursor : in et_packages.pac_doc_cutouts.cursor) is 
+		use et_packages;
+		use pac_doc_cutouts;
+	begin
+		cutout_zone_begin;
+		write_easing (element (cursor).easing);
+		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		cutout_zone_end;
+	end;
+	
 	procedure save_rig_configuration (
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		rig_conf_name	: in type_rig_configuration_file_name.bounded_string; -- demo, low_cost, fully_equipped
@@ -1847,6 +1922,7 @@ package body et_project is
 			end query_strands;
 
 			procedure query_route (
+			-- This is about routed tracks/traces and zones in the board:
 				net_name	: in type_net_name.bounded_string;
 				net			: in et_schematic.type_net) is
 				use et_packages;
@@ -1864,9 +1940,12 @@ package body et_project is
 				use pac_vias;
 				via_cursor : pac_vias.cursor := net.route.vias.first;
 
-				use pac_signal_polygons_solid; use pac_signal_polygons_hatched;				
+				use pac_signal_polygons_solid; 
+				use pac_signal_polygons_hatched;
+				use pac_copper_cutouts;
 				polygon_solid_cursor : pac_signal_polygons_solid.cursor := net.route.polygons_2.solid.first;
 				polygon_hatched_cursor : pac_signal_polygons_hatched.cursor := net.route.polygons_2.hatched.first;
+				cutout_zone_cursor : pac_copper_cutouts.cursor := net.route.cutouts.first;
 				
 			begin -- query_route
 				section_mark (section_route, HEADER);
@@ -1909,7 +1988,8 @@ package body et_project is
 					section_mark (section_via, FOOTER);
 					next (via_cursor);
 				end loop;
-				
+
+				-- solid fill zones
 				while polygon_solid_cursor /= pac_signal_polygons_solid.no_element loop
 					fill_zone_begin;
 
@@ -1938,6 +2018,7 @@ package body et_project is
 					next (polygon_solid_cursor);
 				end loop;
 
+				-- hatched fill zones
 				while polygon_hatched_cursor /= pac_signal_polygons_hatched.no_element loop
 					fill_zone_begin;
 
@@ -1966,6 +2047,16 @@ package body et_project is
 					write_polygon_segments (shapes.type_polygon_base (element (polygon_hatched_cursor)));
 					fill_zone_end;
 					next (polygon_hatched_cursor);
+				end loop;
+
+				-- cutout zones
+				while cutout_zone_cursor /= pac_copper_cutouts.no_element loop
+					cutout_zone_begin;
+					write_signal_layer (element (cutout_zone_cursor).layer);
+					write_easing (element (cutout_zone_cursor).easing);
+					write_polygon_segments (shapes.type_polygon_base (element (cutout_zone_cursor)));
+					cutout_zone_end;
+					next (cutout_zone_cursor);
 				end loop;
 				
 				section_mark (section_route, FOOTER);
@@ -2377,19 +2468,14 @@ package body et_project is
 			use type_via_restrict_circles;
 			use type_via_restrict_polygons;
 
-			use pac_copper_lines;
-			use pac_copper_arcs;
-			use pac_copper_circles;
-			use pac_copper_polygons_floating_solid;
-			use pac_copper_polygons_floating_hatched;			
 			use pac_texts;
-			use type_text_placeholders_copper;
 
 			use et_pcb.type_pcb_contour_lines;
 			use et_pcb.type_pcb_contour_arcs;
 			use et_pcb.type_pcb_contour_circles;
 			
 			-- general stuff
+			use type_text_placeholders_copper;
 			procedure write_placeholder (cursor : in et_pcb.pac_text_placeholders.cursor) is
 			begin
 				placeholder_begin;
@@ -2398,7 +2484,8 @@ package body et_project is
 				placeholder_end;
 			end write_placeholder;
 
-			-- COPPER (NON-ELECTRIC)
+			-- COPPER (NON-ELECTRIC) in any signal layers
+			use pac_copper_lines;
 			procedure write_line (cursor : in pac_copper_lines.cursor) is begin
 				line_begin;
 				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
@@ -2406,8 +2493,9 @@ package body et_project is
 				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
 				line_end;
-			end write_line;
+			end;
 
+			use pac_copper_arcs;
 			procedure write_arc (cursor : in pac_copper_arcs.cursor) is begin
 				arc_begin;
 				write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -2416,8 +2504,9 @@ package body et_project is
 				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
 				arc_end;
-			end write_arc;
+			end;
 
+			use pac_copper_circles;
 			procedure write_circle (cursor : in pac_copper_circles.cursor) is begin
 				circle_begin;
 				write (keyword => keyword_center, parameters => position (element (cursor).center));
@@ -2425,8 +2514,10 @@ package body et_project is
 				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
 				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
 				circle_end;
-			end write_circle;
-			
+			end;
+
+			-- solid fill zones in copper
+			use pac_copper_polygons_floating_solid;
 			procedure write_polygon (cursor : in pac_copper_polygons_floating_solid.cursor) is begin
 				fill_zone_begin;
 
@@ -2443,8 +2534,10 @@ package body et_project is
 				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
 
 				fill_zone_end;
-			end write_polygon;
+			end;
 
+			-- hatched fill zones in copper
+			use pac_copper_polygons_floating_hatched;
 			procedure write_polygon (cursor : in pac_copper_polygons_floating_hatched.cursor) is begin
 				fill_zone_begin;
 
@@ -2462,10 +2555,20 @@ package body et_project is
 				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
 
 				fill_zone_end;
-			end write_polygon;
-			
-			procedure write_text (cursor : in pac_texts.cursor) is -- copper texts in board !
-			begin
+			end;
+
+			-- cutout zones in any signal layers
+			use pac_copper_cutouts;
+			procedure write_cutout (cursor : in pac_copper_cutouts.cursor) is begin
+				cutout_zone_begin;
+				write_signal_layer (element (cursor).layer);
+				write_easing (element (cursor).easing);
+				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+				cutout_zone_end;
+			end;
+
+			-- texts any signal layers
+			procedure write_text (cursor : in pac_texts.cursor) is begin
 				text_begin;
 				write (keyword => keyword_content, parameters => et_libraries.to_string (element (cursor).content));
 				write_text_properties (element (cursor));
@@ -2473,14 +2576,22 @@ package body et_project is
 				text_end;
 			end write_text;
 
-			procedure write_placeholder (cursor : in type_text_placeholders_copper.cursor) is -- placeholders in board copper !
-			begin
+			-- text placeholders in any signal layers
+			procedure write_placeholder (cursor : in type_text_placeholders_copper.cursor) is begin
 				placeholder_begin;
 				write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));
 				write_text_properties (element (cursor));
 				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
 				placeholder_end;
 			end write_placeholder;
+
+			use et_packages.pac_silk_cutouts;
+			use et_packages.pac_doc_cutouts;
+			use et_packages.pac_stencil_cutouts;
+			use et_packages.pac_stop_cutouts;
+			use et_packages.pac_keepout_cutouts;
+			use et_packages.pac_route_restrict_cutouts;
+			use et_packages.pac_via_restrict_cutouts;
 			
 		begin -- query_board
 			section_mark (section_board, HEADER);
@@ -2493,6 +2604,7 @@ package body et_project is
 				iterate (element (module_cursor).board.silk_screen.top.arcs, write_arc'access);
 				iterate (element (module_cursor).board.silk_screen.top.circles, write_circle'access);
 				iterate (element (module_cursor).board.silk_screen.top.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.silk_screen.top.cutouts, write_cutout'access);
 				iterate (element (module_cursor).board.silk_screen.top.texts, write_text'access);
 				iterate (element (module_cursor).board.silk_screen.top.placeholders, write_placeholder'access);
 				section_mark (section_top, FOOTER);
@@ -2502,6 +2614,7 @@ package body et_project is
 				iterate (element (module_cursor).board.silk_screen.bottom.arcs, write_arc'access);
 				iterate (element (module_cursor).board.silk_screen.bottom.circles, write_circle'access);
 				iterate (element (module_cursor).board.silk_screen.bottom.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.silk_screen.bottom.cutouts, write_cutout'access);
 				iterate (element (module_cursor).board.silk_screen.bottom.texts, write_text'access);
 				iterate (element (module_cursor).board.silk_screen.bottom.placeholders, write_placeholder'access);
 				section_mark (section_bottom, FOOTER);
@@ -2516,6 +2629,7 @@ package body et_project is
 				iterate (element (module_cursor).board.assy_doc.top.arcs, write_arc'access);
 				iterate (element (module_cursor).board.assy_doc.top.circles, write_circle'access);
 				iterate (element (module_cursor).board.assy_doc.top.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.assy_doc.top.cutouts, write_cutout'access);
 				iterate (element (module_cursor).board.assy_doc.top.texts, write_text'access);
 				iterate (element (module_cursor).board.assy_doc.top.placeholders, write_placeholder'access);
 				section_mark (section_top, FOOTER);
@@ -2525,6 +2639,7 @@ package body et_project is
 				iterate (element (module_cursor).board.assy_doc.bottom.arcs, write_arc'access);
 				iterate (element (module_cursor).board.assy_doc.bottom.circles, write_circle'access);
 				iterate (element (module_cursor).board.assy_doc.bottom.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.assy_doc.bottom.cutouts, write_cutout'access);
 				iterate (element (module_cursor).board.assy_doc.bottom.texts, write_text'access);
 				iterate (element (module_cursor).board.assy_doc.bottom.placeholders, write_placeholder'access);
 				section_mark (section_bottom, FOOTER);
@@ -2539,6 +2654,7 @@ package body et_project is
 				iterate (element (module_cursor).board.stencil.top.arcs, write_arc'access);
 				iterate (element (module_cursor).board.stencil.top.circles, write_circle'access);
 				iterate (element (module_cursor).board.stencil.top.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.stencil.top.cutouts, write_cutout'access);
 				section_mark (section_top, FOOTER);
 
 				section_mark (section_bottom, HEADER);
@@ -2546,7 +2662,8 @@ package body et_project is
 				iterate (element (module_cursor).board.stencil.bottom.arcs, write_arc'access);
 				iterate (element (module_cursor).board.stencil.bottom.circles, write_circle'access);
 				iterate (element (module_cursor).board.stencil.bottom.polygons, write_polygon'access);
-				section_mark (section_bottom, FOOTER);
+				iterate (element (module_cursor).board.stencil.bottom.cutouts, write_cutout'access);
+			section_mark (section_bottom, FOOTER);
 
 			section_mark (section_stencil, FOOTER);
 
@@ -2558,6 +2675,7 @@ package body et_project is
 				iterate (element (module_cursor).board.stop_mask.top.arcs, write_arc'access);
 				iterate (element (module_cursor).board.stop_mask.top.circles, write_circle'access);
 				iterate (element (module_cursor).board.stop_mask.top.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.stop_mask.top.cutouts, write_cutout'access);
 				iterate (element (module_cursor).board.stop_mask.top.texts, write_text'access);			
 				section_mark (section_top, FOOTER);
 
@@ -2566,6 +2684,7 @@ package body et_project is
 				iterate (element (module_cursor).board.stop_mask.bottom.arcs, write_arc'access);
 				iterate (element (module_cursor).board.stop_mask.bottom.circles, write_circle'access);
 				iterate (element (module_cursor).board.stop_mask.bottom.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.stop_mask.bottom.cutouts, write_cutout'access);
 				iterate (element (module_cursor).board.stop_mask.bottom.texts, write_text'access);
 				section_mark (section_bottom, FOOTER);
 
@@ -2579,6 +2698,7 @@ package body et_project is
 				iterate (element (module_cursor).board.keepout.top.arcs, write_arc'access);
 				iterate (element (module_cursor).board.keepout.top.circles, write_circle'access);
 				iterate (element (module_cursor).board.keepout.top.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.keepout.top.cutouts, write_cutout'access);
 				-- CS iterate (et_schematic.element (module_cursor).board.keepout.top.texts, write_text'access);
 				section_mark (section_top, FOOTER);
 
@@ -2587,6 +2707,7 @@ package body et_project is
 				iterate (element (module_cursor).board.keepout.bottom.arcs, write_arc'access);
 				iterate (element (module_cursor).board.keepout.bottom.circles, write_circle'access);
 				iterate (element (module_cursor).board.keepout.bottom.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.keepout.bottom.cutouts, write_cutout'access);
 				-- CS iterate (et_schematic.element (module_cursor).board.keepout.bottom.texts, write_text'access);
 				section_mark (section_bottom, FOOTER);
 
@@ -2598,6 +2719,7 @@ package body et_project is
 				iterate (element (module_cursor).board.route_restrict.arcs, write_arc'access);
 				iterate (element (module_cursor).board.route_restrict.circles, write_circle'access);
 				iterate (element (module_cursor).board.route_restrict.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.route_restrict.cutouts, write_cutout'access);
 				-- CS iterate (et_schematic.element (module_cursor).board.route_restrict.texts, write_text'access);
 			section_mark (section_route_restrict, FOOTER);
 
@@ -2607,6 +2729,7 @@ package body et_project is
 				iterate (element (module_cursor).board.via_restrict.arcs, write_arc'access);
 				iterate (element (module_cursor).board.via_restrict.circles, write_circle'access);
 				iterate (element (module_cursor).board.via_restrict.polygons, write_polygon'access);
+				iterate (element (module_cursor).board.via_restrict.cutouts, write_cutout'access);
 				-- CS iterate (et_schematic.element (module_cursor).board.via_restrict.texts, write_text'access);
 			section_mark (section_via_restrict, FOOTER);
 
@@ -2617,6 +2740,7 @@ package body et_project is
 				iterate (element (module_cursor).board.copper.circles, write_circle'access);
 				iterate (element (module_cursor).board.copper.polygons.solid, write_polygon'access);
 				iterate (element (module_cursor).board.copper.polygons.hatched, write_polygon'access);
+				iterate (element (module_cursor).board.copper.cutouts, write_cutout'access);			
 				iterate (element (module_cursor).board.copper.texts, write_text'access);
 				iterate (element (module_cursor).board.copper.placeholders, write_placeholder'access);
 			section_mark (section_copper, FOOTER);
@@ -11282,8 +11406,9 @@ package body et_project is
 						new_item	=> (shapes.type_polygon_base (polygon_2) with
 										easing	=> easing,
 										layer	=> signal_layer));
-				end;
 
+					board_reset_polygon; -- clean up for next cutout zone
+				end;
 				
 			begin -- execute_section
 				case stack.current is
