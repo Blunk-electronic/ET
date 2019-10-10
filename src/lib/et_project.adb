@@ -9232,14 +9232,6 @@ package body et_project is
 		netchanger_id	: submodules.type_netchanger_id := submodules.type_netchanger_id'first;
 					
 		-- general board stuff
-		type type_line is new et_packages.shapes.type_line with null record;
-		board_line : type_line;
-
-		type type_arc is new et_packages.shapes.type_arc with null record;
-		board_arc : type_arc;
-
-		type type_circle is new et_packages.shapes.type_circle with null record;
-		board_circle : type_circle;
 
 		board_circle_fillable_width					: et_packages.type_general_line_width := et_packages.type_general_line_width'first;
 		board_circle_fillable_filled				: et_packages.shapes.type_filled := et_packages.shapes.type_filled'first;
@@ -11277,7 +11269,7 @@ package body et_project is
 					
 				end insert_assembly_variant;
 
-				procedure add_polygon_line (line : in out type_line) is
+				procedure add_polygon_line (line : in out type_board_line) is
 					use et_packages.shapes;
 					use et_packages.shapes.pac_polygon_lines;
 
@@ -11291,7 +11283,7 @@ package body et_project is
 					line := (others => <>);
 				end;
 
-				procedure add_polygon_arc (arc : in out type_arc) is
+				procedure add_polygon_arc (arc : in out type_board_arc) is
 					use et_packages.shapes;
 					use et_packages.shapes.pac_polygon_arcs;
 
@@ -11305,7 +11297,7 @@ package body et_project is
 					arc := (others => <>);
 				end;
 
-				procedure add_polygon_circe (circle : in out type_circle) is
+				procedure add_polygon_circe (circle : in out type_board_circle) is
 					use et_packages.shapes;
 					use et_packages.shapes.pac_polygon_circles;
 
