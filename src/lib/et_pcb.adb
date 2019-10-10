@@ -174,10 +174,29 @@ package body et_pcb is
 	function to_string (priority_level : in type_polygon_priority) return string is begin
 		return type_polygon_priority'image (priority_level);
 	end to_string;
-	
+
 	function to_polygon_priority (priority_level : in string) return type_polygon_priority is begin
 		return type_polygon_priority'value (priority_level);
 	end to_polygon_priority;
+
+
+	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is begin
+		return latin_1.space & to_lower (type_polygon_pad_connection'image (polygon_pad_connection));
+	end to_string;
+
+	function to_pad_connection (connection : in string) return type_polygon_pad_connection is begin
+		return type_polygon_pad_connection'value (connection);
+	end to_pad_connection;
+	
+
+	function to_string (polygon_pad_technology : in type_polygon_pad_technology) return string is begin
+		return latin_1.space & to_lower (type_polygon_pad_technology'image (polygon_pad_technology));
+	end to_string;
+
+	function to_pad_technology (technology : in string) return type_polygon_pad_technology is begin
+		return type_polygon_pad_technology'value (technology);
+	end to_pad_technology;
+
 	
 
 	function package_position (position : in type_package_position) return string is

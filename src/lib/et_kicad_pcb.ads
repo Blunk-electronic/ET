@@ -729,8 +729,8 @@ package et_kicad_pcb is
 	
 
 	-- Polygons may be connected with THT pads only or all pad technologies
-	subtype type_polygon_pad_technology is et_packages.type_polygon_pad_technology 
-		range et_packages.THT_ONLY .. et_packages.SMT_AND_THT;
+	subtype type_polygon_pad_technology is et_pcb.type_polygon_pad_technology 
+		range et_pcb.THT_ONLY .. et_pcb.SMT_AND_THT;
 
 -- POLYGON (or fill zone)
 	-- Corner points are collected in an ordered set.
@@ -769,8 +769,8 @@ package et_kicad_pcb is
 		filled				: boolean; -- CS probably no need
 		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"
 		arc_segments		: natural := 0; -- CS subtype ? -- only 16 or 32 allowed
-		thermal_gap			: et_packages.type_polygon_thermal_gap := et_packages.type_polygon_thermal_gap'first;
-		thermal_width		: et_packages.type_polygon_thermal_width := et_packages.type_polygon_thermal_width'first; -- spoke width
+		thermal_gap			: et_pcb.type_polygon_thermal_gap := et_pcb.type_polygon_thermal_gap'first;
+		thermal_width		: et_pcb.type_polygon_thermal_width := et_pcb.type_polygon_thermal_width'first; -- spoke width
 		pad_technology		: type_polygon_pad_technology := type_polygon_pad_technology'last;
 		pad_connection		: type_polygon_pad_connection := type_polygon_pad_connection'first;
 	end record;

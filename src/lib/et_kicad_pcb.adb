@@ -7554,7 +7554,7 @@ package body et_kicad_pcb is
 								when THERMAL =>
 									declare
 										use et_packages;
-										p : et_pcb.type_copper_polygon_solid (THERMAL);
+										p : et_pcb.type_copper_polygon_solid (et_pcb.THERMAL);
 									begin
 										p.width_min	:= element (polygon_cursor).min_thickness;
 										p.isolation := element (polygon_cursor).isolation_gap;
@@ -7579,7 +7579,7 @@ package body et_kicad_pcb is
 								when SOLID =>
 									declare
 										use et_packages;
-										p : et_pcb.type_copper_polygon_solid (SOLID);
+										p : et_pcb.type_copper_polygon_solid (et_pcb.SOLID);
 									begin
 										p.width_min	:= element (polygon_cursor).min_thickness;
 										p.isolation := element (polygon_cursor).isolation_gap;

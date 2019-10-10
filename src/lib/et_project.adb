@@ -957,7 +957,7 @@ package body et_project is
 
 	procedure write_thermal (thermal : in et_pcb.type_thermal) is
 		use et_pcb_coordinates.geometry;
-		use et_packages;
+		use et_pcb;
 	begin
 		write (keyword => keyword_pad_technology, parameters => to_string (thermal.technology));
 		write (keyword => keyword_thermal_width , parameters => to_string (thermal.width));
@@ -1002,14 +1002,14 @@ package body et_project is
 		write (keyword => keyword_filled, space => true, parameters => to_string (filled));
 	end;
 	
-	procedure write_pad_connection (connection : in et_packages.type_polygon_pad_connection) is
-		use et_packages;
+	procedure write_pad_connection (connection : in et_pcb.type_polygon_pad_connection) is
+		use et_pcb;
 	begin
 		write (keyword => keyword_pad_connection, parameters => to_string (connection));
 	end;
 
-	procedure write_pad_technology (techno : in et_packages.type_polygon_pad_technology) is
-		use et_packages;
+	procedure write_pad_technology (techno : in et_pcb.type_polygon_pad_technology) is
+		use et_pcb;
 	begin
 		write (keyword => keyword_pad_technology, parameters => to_string (techno));
 	end;	
@@ -9141,7 +9141,7 @@ package body et_project is
 		type type_polygon_2 is new et_packages.shapes.type_polygon_base with null record;
 		polygon_2 : type_polygon_2; -- CS rename to type_polygon
 
-		polygon_pad_connection	: et_packages.type_polygon_pad_connection := et_packages.type_polygon_pad_connection'first;
+		polygon_pad_connection	: et_pcb.type_polygon_pad_connection := et_pcb.type_polygon_pad_connection'first;
 		polygon_priority		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
 		polygon_isolation		: et_packages.type_track_clearance := et_packages.type_track_clearance'first;
 		
@@ -9166,7 +9166,7 @@ package body et_project is
 			hatching				:= (others => <>);
 			easing 					:= (others => <>);
 			
-			polygon_pad_connection	:= type_polygon_pad_connection'first;
+			polygon_pad_connection	:= et_pcb.type_polygon_pad_connection'first;
 			polygon_priority		:= et_pcb.type_polygon_priority'first;
 			polygon_isolation		:= et_packages.type_track_clearance'first;
 
@@ -11323,7 +11323,7 @@ package body et_project is
 						use et_packages;
 
 						procedure connection_thermal is
-							p : et_pcb.type_copper_polygon_solid (connection => et_packages.THERMAL);
+							p : et_pcb.type_copper_polygon_solid (connection => et_pcb.THERMAL);
 						begin
 							p.segments := polygon_2.segments;
 							
@@ -11342,7 +11342,7 @@ package body et_project is
 						end;
 
 						procedure connection_solid is
-							p : et_pcb.type_copper_polygon_solid (connection => et_packages.SOLID);
+							p : et_pcb.type_copper_polygon_solid (connection => et_pcb.SOLID);
 						begin
 							p.segments := polygon_2.segments;
 							
@@ -11363,8 +11363,8 @@ package body et_project is
 						
 					begin -- solid_polygon
 						case polygon_pad_connection is
-							when et_packages.THERMAL => connection_thermal;
-							when SOLID => connection_solid;
+							when et_pcb.THERMAL => connection_thermal;
+							when et_pcb.SOLID => connection_solid;
 						end case;
 					end solid_polygon;
 
@@ -11373,7 +11373,7 @@ package body et_project is
 						use et_packages;
 
 						procedure connection_thermal is
-							p : et_pcb.type_copper_polygon_hatched (connection => et_packages.THERMAL);
+							p : et_pcb.type_copper_polygon_hatched (connection => et_pcb.THERMAL);
 						begin
 							p.segments := polygon_2.segments;
 							
@@ -11392,7 +11392,7 @@ package body et_project is
 						end;
 
 						procedure connection_solid is
-							p : et_pcb.type_copper_polygon_hatched (connection => et_packages.SOLID);
+							p : et_pcb.type_copper_polygon_hatched (connection => et_pcb.SOLID);
 						begin
 							p.segments := polygon_2.segments;
 							
@@ -11413,8 +11413,8 @@ package body et_project is
 						
 					begin -- hatched_polygon
 						case polygon_pad_connection is
-							when et_packages.THERMAL => connection_thermal;
-							when SOLID => connection_solid;
+							when et_pcb.THERMAL => connection_thermal;
+							when et_pcb.SOLID => connection_solid;
 						end case;
 					end hatched_polygon;
 
@@ -13671,6 +13671,7 @@ package body et_project is
 								declare
 									use et_packages;
 									use et_pcb_coordinates.geometry;
+									use et_pcb;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag

@@ -292,21 +292,6 @@ package body et_packages is
 		return type_terminal_tht_hole'value (tht_hole);
 	end to_tht_hole;
 	
-	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is begin
-		return latin_1.space & to_lower (type_polygon_pad_connection'image (polygon_pad_connection));
-	end to_string;
-
-	function to_pad_connection (connection : in string) return type_polygon_pad_connection is begin
-		return type_polygon_pad_connection'value (connection);
-	end to_pad_connection;
-	
-	function to_string (polygon_pad_technology : in type_polygon_pad_technology) return string is begin
-		return latin_1.space & to_lower (type_polygon_pad_technology'image (polygon_pad_technology));
-	end to_string;
-
-	function to_pad_technology (technology : in string) return type_polygon_pad_technology is begin
-		return type_polygon_pad_technology'value (technology);
-	end to_pad_technology;
 	
 	function to_string (circle : in type_fillable_circle) return string is begin
 		case circle.filled is
