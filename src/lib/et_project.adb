@@ -2494,31 +2494,27 @@ package body et_project is
 			use pac_copper_lines;
 			procedure write_line (cursor : in pac_copper_lines.cursor) is begin
 				line_begin;
-				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
+				write_line (element (cursor));
+				write_width (element (cursor).width);
+				write_signal_layer (element (cursor).layer);
 				line_end;
 			end;
 
 			use pac_copper_arcs;
 			procedure write_arc (cursor : in pac_copper_arcs.cursor) is begin
 				arc_begin;
-				write (keyword => keyword_center, parameters => position (element (cursor).center));
-				write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-				write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-				write (keyword => keyword_width, parameters => to_string (element (cursor).width));
-				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
+				write_arc (element (cursor));
+				write_width (element (cursor).width);
+				write_signal_layer (element (cursor).layer);
 				arc_end;
 			end;
 
 			use pac_copper_circles;
 			procedure write_circle (cursor : in pac_copper_circles.cursor) is begin
 				circle_begin;
-				write (keyword => keyword_center, parameters => position (element (cursor).center));
-				write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
-				write (keyword => keyword_width , parameters => to_string (element (cursor).width));
-				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
+				write_circle (element (cursor));
+				write_width (element (cursor).width);
+				write_signal_layer (element (cursor).layer);
 				circle_end;
 			end;
 
