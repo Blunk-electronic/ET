@@ -1844,6 +1844,7 @@ package body et_project is
 					end query_junctions;
 					
 					procedure query_device_ports (segment : in type_net_segment) is
+						use et_libraries;
 						port_cursor : type_ports_device.cursor := segment.ports_devices.first;
 					begin -- query_device_ports
 						while port_cursor /= type_ports_device.no_element loop
@@ -1857,6 +1858,7 @@ package body et_project is
 					end query_device_ports;
 
 					procedure query_submodule_ports (segment : in type_net_segment) is
+						use et_libraries;
 						port_cursor : type_ports_submodule.cursor := segment.ports_submodules.first;
 					begin -- query_submodule_ports
 						while port_cursor /= type_ports_submodule.no_element loop
@@ -1872,6 +1874,7 @@ package body et_project is
 					end query_submodule_ports;
 					
 					procedure query_netchanger_ports (segment : in type_net_segment) is
+						use et_libraries;
 						port_cursor : type_ports_netchanger.cursor := segment.ports_netchangers.first;
 					begin
 						while port_cursor /= type_ports_netchanger.no_element loop
@@ -2160,7 +2163,7 @@ package body et_project is
 				procedure write_placeholder (placeholder_cursor : in pac_text_placeholders.cursor) is 
 				begin
 					section_mark (section_placeholder, HEADER);
-					write (keyword => keyword_layer, parameters => to_string (layer));
+					write (keyword => et_pcb_stack.keyword_layer, parameters => to_string (layer));
 					write (keyword => keyword_meaning, parameters => to_string (element (placeholder_cursor).meaning));
 					write_text_properties_with_face (element (placeholder_cursor), face);
 					section_mark (section_placeholder, FOOTER);
@@ -2250,6 +2253,8 @@ package body et_project is
 						return "";
 					end if;
 				end;
+
+				use et_libraries;
 				
 			begin -- query_devices
 				while device_cursor /= assembly_variants.type_devices.no_element loop
@@ -2335,7 +2340,7 @@ package body et_project is
 				write (keyword => keyword_position_in_schematic, parameters => position (element (cursor).position_sch)); -- position_in_schematic sheet 1 x 147.32 y 96.97
 				write (keyword => keyword_rotation_in_schematic, parameters => geometry.to_string (geometry.rot (element (cursor).position_sch))); -- rotation_in_schematic 90.0
 				write (keyword => keyword_position_in_board, parameters => position (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
-				write (keyword => keyword_layer, parameters => et_pcb_stack.to_string (element (cursor).layer)); -- layer 2
+				write (keyword => et_pcb_stack.keyword_layer, parameters => et_pcb_stack.to_string (element (cursor).layer)); -- layer 2
 				section_mark (section_netchanger, FOOTER);
 			end query_netchanger;
 			
@@ -5300,6 +5305,7 @@ package body et_project is
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								declare
 									kw : string := f (line, 1);
+									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_start then -- start x 22.3 y 23.3
@@ -5521,6 +5527,7 @@ package body et_project is
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								declare
 									kw : string := f (line, 1);
+									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_center then -- center x 150 y 45
@@ -5791,6 +5798,7 @@ package body et_project is
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								declare
 									kw : string := f (line, 1);
+									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_center then -- center x 150 y 45
@@ -5950,6 +5958,7 @@ package body et_project is
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								declare
 									kw : string := f (line, 1);
+									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_layers then -- layers 1 14 3
@@ -6059,6 +6068,7 @@ package body et_project is
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								declare
 									kw : string := f (line, 1);
+									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_filled then -- filled yes/no
@@ -6212,7 +6222,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										tht_drill_size := to_distance (f (line,2));
 										
-									elsif kw = keyword_face then -- face top/bottom
+									elsif kw = et_pcb_coordinates.keyword_face then -- face top/bottom
 										expect_field_count (line, 2);
 										smt_pad_face := et_pcb_coordinates.to_face (f (line,2));
 
@@ -6776,7 +6786,7 @@ package body et_project is
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 1 y 2
+									if kw = shapes.keyword_center then -- center x 1 y 2
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
@@ -6798,7 +6808,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_arc.width := to_distance (f (line, 2));
 
-									elsif kw = keyword_radius then
+									elsif kw = shapes.keyword_radius then
 										expect_field_count (line, 2);
 										symbol_arc.radius := to_distance (f (line, 2));
 										
@@ -6817,7 +6827,7 @@ package body et_project is
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 1 y 2
+									if kw = shapes.keyword_center then -- center x 1 y 2
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
@@ -6827,7 +6837,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_circle.width := to_distance (f (line, 2));
 
-									elsif kw = keyword_radius then -- radius 5
+									elsif kw = shapes.keyword_radius then -- radius 5
 										expect_field_count (line, 2);
 										symbol_circle.radius := to_distance (f (line, 2));
 
@@ -7152,7 +7162,7 @@ package body et_project is
 				if f (line, place) = keyword_terminal then
 					terminal := to_terminal_name (f (line, place + 1)); -- 14
 
-				-- After the keyowrd "unit" must come the unit name:
+				-- After the keyword "unit" must come the unit name:
 				elsif f (line, place) = keyword_unit then 
 					unit := to_unit_name (f (line, place + 1)); -- 5
 
@@ -7984,7 +7994,7 @@ package body et_project is
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 1 y 2
+									if kw = shapes.keyword_center then -- center x 1 y 2
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
@@ -8006,7 +8016,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_arc.width := to_distance (f (line, 2));
 
-									elsif kw = keyword_radius then
+									elsif kw = shapes.keyword_radius then
 										expect_field_count (line, 2);
 										symbol_arc.radius := to_distance (f (line, 2));
 										
@@ -8025,7 +8035,7 @@ package body et_project is
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 1 y 2
+									if kw = shapes.keyword_center then -- center x 1 y 2
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
@@ -8035,7 +8045,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_circle.width := to_distance (f (line, 2));
 
-									elsif kw = keyword_radius then -- radius 5
+									elsif kw = shapes.keyword_radius then -- radius 5
 										expect_field_count (line, 2);
 										symbol_circle.radius := to_distance (f (line, 2));
 
@@ -8768,7 +8778,7 @@ package body et_project is
 
 				procedure write_arc (cursor : in type_pad_arcs.cursor) is begin
 					arc_begin;
-					write (keyword => keyword_center, parameters => position (element (cursor).center));
+					write (keyword => shapes.keyword_center, parameters => position (element (cursor).center));
 					write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 					write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
 					arc_end;
@@ -8776,8 +8786,8 @@ package body et_project is
 
 				procedure write_circle (cursor : in type_pad_circles.cursor) is begin
 					circle_begin;
-					write (keyword => keyword_center, parameters => position (element (cursor).center));
-					write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+					write (keyword => shapes.keyword_center, parameters => position (element (cursor).center));
+					write (keyword => shapes.keyword_radius, parameters => to_string (element (cursor).radius));
 					circle_end;
 				end write_circle;
 
@@ -8858,7 +8868,7 @@ package body et_project is
 						write_pad_shape (element (terminal_cursor).pad_shape);
 						section_mark (section_pad_contours_smt, FOOTER);
 						
-						write (keyword => keyword_face, parameters => et_pcb_coordinates.to_string (element (terminal_cursor).face));
+						write (keyword => et_pcb_coordinates.keyword_face, parameters => et_pcb_coordinates.to_string (element (terminal_cursor).face));
 						write (keyword => keyword_stop_mask, parameters => to_string (element (terminal_cursor).stop_mask));
 						write (keyword => keyword_solder_paste, parameters => to_string (element (terminal_cursor).solder_paste));	
 				end case;
@@ -9377,6 +9387,7 @@ package body et_project is
 
 		procedure read_board_arc is
 			kw : string := f (line, 1);
+			use et_packages.shapes;
 			use et_pcb_coordinates.geometry;
 		begin
 			if kw = keyword_start then -- start x 22.3 y 23.3
@@ -9404,6 +9415,7 @@ package body et_project is
 
 		procedure read_board_circle is
 			kw : string := f (line, 1);
+			use et_packages.shapes;
 			use et_pcb_coordinates.geometry;
 		begin
 			-- CS: In the following: set a corresponding parameter-found-flag
@@ -12620,6 +12632,7 @@ package body et_project is
 						case stack.parent is
 							when SEC_ASSEMBLY_VARIANTS =>
 								declare
+									use et_libraries;
 									kw : string 	:= f (line, 1);
 									device_name		: et_libraries.type_device_name; -- R1
 									device			: access assembly_variants.type_device;
@@ -12986,6 +12999,7 @@ package body et_project is
 								-- the port is appended to the corresponding port collection 
 								-- immediately when the line is read. See main code of process_line.
 								declare
+									use et_libraries;
 									kw : string := f (line, 1);
 								begin
 									if kw = keyword_device then -- device R1 port 1
@@ -13126,6 +13140,7 @@ package body et_project is
 							when SEC_ROUTE =>	
 								declare
 									kw : string := f (line, 1);
+									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_start then -- start x 22.3 y 23.3
@@ -13183,6 +13198,7 @@ package body et_project is
 								
 								declare
 									kw : string := f (line, 1);
+									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_layers then -- layers 1 14 3
@@ -13199,6 +13215,7 @@ package body et_project is
 							when SEC_COPPER =>
 								declare
 									kw : string := f (line, 1);
+									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_start then -- start x 22.3 y 23.3
@@ -13252,6 +13269,8 @@ package body et_project is
 							when SEC_ROUTE =>
 								declare
 									kw : string := f (line, 1);
+									use et_packages.shapes;
+									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_start then -- start x 22.3 y 23.3
@@ -13315,6 +13334,7 @@ package body et_project is
 								
 								declare
 									kw : string := f (line, 1);
+									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_layers then -- layers 1 14 3
@@ -13332,6 +13352,8 @@ package body et_project is
 							when SEC_COPPER =>
 								declare
 									kw : string := f (line, 1);
+									use et_packages.shapes;
+									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_center then -- center x 22.3 y 23.3
@@ -13367,6 +13389,7 @@ package body et_project is
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								declare
 									kw : string := f (line, 1);
+									use et_packages.shapes;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_center then -- center x 150 y 45
@@ -13451,6 +13474,7 @@ package body et_project is
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								-- CS call procedure read_board_circle ?
 								declare
+									use et_pcb_stack;
 									use et_packages;
 									use et_packages.shapes;
 									use et_pcb_coordinates.geometry;
@@ -13487,6 +13511,7 @@ package body et_project is
 								declare
 									use et_packages;
 									use et_packages.shapes;
+									use et_pcb_stack;
 									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
@@ -13532,6 +13557,7 @@ package body et_project is
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								declare
 									use et_pcb_coordinates.geometry;
+									use et_packages.shapes;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -13563,6 +13589,7 @@ package body et_project is
 								declare
 									use et_packages;
 									use et_pcb_coordinates.geometry;
+									use et_pcb_stack;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -13620,6 +13647,7 @@ package body et_project is
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								declare
+									use et_pcb_stack;
 									use et_packages;
 									use et_packages.shapes;
 									use et_pcb_coordinates.geometry;
@@ -13641,6 +13669,7 @@ package body et_project is
 								declare
 									use et_packages;
 									use et_packages.shapes;									
+									use et_pcb_stack;
 									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
@@ -13672,6 +13701,7 @@ package body et_project is
 									use et_packages;
 									use et_pcb_coordinates.geometry;
 									use et_pcb;
+									use et_pcb_stack;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -13788,6 +13818,7 @@ package body et_project is
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 								declare
+									use et_pcb_stack;
 									use et_packages;
 									use et_packages.shapes;
 									use et_pcb_coordinates.geometry;
@@ -13813,6 +13844,7 @@ package body et_project is
 								declare
 									use et_packages;
 									use et_packages.shapes;									
+									use et_pcb_stack;
 									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
@@ -13877,7 +13909,7 @@ package body et_project is
 										-- extract the position starting at field 2 of line
 										route_via.position := to_position (line, 2);
 
-									elsif kw = keyword_diameter then -- diameter 0.35
+									elsif kw = shapes.keyword_diameter then -- diameter 0.35
 										expect_field_count (line, 2);
 										route_via.diameter := to_distance (f (line, 2));
 
@@ -14138,6 +14170,7 @@ package body et_project is
 							when SEC_COPPER =>
 								declare
 									use et_pcb_coordinates.geometry;
+									use et_pcb_stack;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -14274,6 +14307,7 @@ package body et_project is
 									when SEC_PACKAGE => -- in layout
 										declare
 											use et_packages;
+											use et_pcb_stack;
 											use et_pcb_coordinates.geometry;
 											kw : string := f (line, 1);
 										begin
@@ -14410,6 +14444,7 @@ package body et_project is
 							when SEC_COPPER =>
 								declare
 									use et_pcb_coordinates.geometry;
+									use et_pcb_stack;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -14509,6 +14544,7 @@ package body et_project is
 							when SEC_NETCHANGERS =>
 								declare
 									kw : string := f (line, 1);
+									use et_pcb_stack;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then -- name 1, 2, 304, ...

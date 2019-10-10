@@ -61,6 +61,8 @@ package et_pcb_stack is
 	keyword_conductor	: constant string := "conductor";
 	keyword_dielectric	: constant string := "dielectric";	
 	keyword_bottom		: constant string := "bottom";	
+	keyword_layer		: constant string := "layer";	
+	keyword_layers		: constant string := "layers";
 	
 	signal_layer_top : constant positive := 1;
 	signal_layer_bot : constant positive := 100;

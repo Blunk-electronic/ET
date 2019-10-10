@@ -288,6 +288,9 @@ package et_geometry is
 			return boolean; 
 		
 	-- ARC
+		keyword_center		: constant string := "center";		
+		keyword_radius		: constant string := "radius";		
+
 		type type_arc is abstract tagged record
 			center			: type_point;
 			start_point		: type_point;
@@ -315,6 +318,8 @@ package et_geometry is
 
 		
 	-- CIRCLE
+		keyword_diameter	: constant string := "diameter";
+		
 		type type_circle is abstract tagged record -- CS rename to type_circle_base
 			center			: type_point;
 			radius  		: type_distance_positive := zero;

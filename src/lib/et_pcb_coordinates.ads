@@ -57,6 +57,8 @@ with et_geometry;
 
 package et_pcb_coordinates is
 
+	keyword_face	: constant string := "face";	
+	
 	type type_face is (TOP, BOTTOM);
 
 	face_default : constant type_face := TOP;

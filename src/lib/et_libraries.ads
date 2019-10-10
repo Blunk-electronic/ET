@@ -183,6 +183,11 @@ package et_libraries is
 	
 	
 -- TERMINALS
+
+	keyword_terminal				: constant string := "terminal";
+	keyword_terminal_name_visible	: constant string := "terminal_name_visible";
+	keyword_terminal_name_size		: constant string := "terminal_name_size";
+
 	
 	subtype type_terminal_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
 	terminal_name_text_size_default : constant type_terminal_name_text_size := 1.3;
@@ -194,7 +199,22 @@ package et_libraries is
 	
 	
 -- PORTS
-
+	keyword_port					: constant string := "port";
+	keyword_port_name_visible		: constant string := "port_name_visible";
+	keyword_port_name_size			: constant string := "port_name_size";
+	keyword_length					: constant string := "length";
+	keyword_level					: constant string := "level";	
+	keyword_sensitivity_edge		: constant string := "sensitivity_edge";
+	keyword_sensitivity_level		: constant string := "sensitivity_level";
+	keyword_inverted				: constant string := "inverted";
+	keyword_weakness				: constant string := "weakness";
+	keyword_tristate				: constant string := "tristate";	
+	keyword_output_inverted			: constant string := "output_inverted";
+	keyword_output_weakness			: constant string := "output_weakness";
+	keyword_output_tristate			: constant string := "output_tristate";
+	keyword_input_sensitivity_edge	: constant string := "input_sensitivity_edge";
+	keyword_input_sensitivity_level	: constant string := "input_sensitivity_level";
+	
 	-- A port is something where a net can be attached to.
 	-- The name of a port represents the function of the port like (A14 or RST_N)
 	subtype type_port_length is type_distance range 0.0 .. 20.0; -- unit is millimeters. CS: reasonable limits ?
@@ -428,6 +448,8 @@ package et_libraries is
 	
 
 -- DEVICE NAMES
+	keyword_device : constant string := "device";
+
 	-- A device name consists of a prefix (like R, C, IC, ..)
 	-- and a consecutive number. Both form something like "IC702"
 	device_name_prefix_characters : character_set := to_set (span => ('A','Z'));
@@ -644,7 +666,10 @@ package et_libraries is
 		end case;
 	end record;
 
-
+	
+	keyword_unit		: constant string := "unit";		
+	keyword_swap_level	: constant string := "swap_level";
+	keyword_add_level	: constant string := "add_level";
 
 	unit_name_length_max : constant natural := 50;	
 	-- CS unit_name_characters, length check, character check
@@ -765,6 +790,8 @@ package et_libraries is
 
 
 	-- To handle names of package models like libraries/packages/smd/SOT23.pac use this:
+	keyword_package_model : constant string := "package_model";
+	
 	package type_package_model_file is new generic_bounded_length (path_length_max);
 	function to_string (name : in type_package_model_file.bounded_string) return string;
 	function to_file_name (name : in string) return type_package_model_file.bounded_string;

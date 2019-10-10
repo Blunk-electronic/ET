@@ -806,6 +806,15 @@ package et_packages is
 		top		: type_pad_outline; -- The pad shape on the top side
 		bottom	: type_pad_outline; -- is not nessecarily the same as on the bottom side.
 	end record;
+
+	keyword_stop_mask		: constant string := "stop_mask";
+	keyword_solder_paste	: constant string := "solder_paste";
+
+	keyword_pad_shape			: constant string := "pad_shape";	
+	keyword_width_inner_layers	: constant string := "width_inner_layers";
+	keyword_assembly_technology	: constant string := "technology";
+	keyword_tht_hole			: constant string := "hole";	
+	keyword_drill_size			: constant string := "drill_size";
 	
 	type type_terminal (
 		technology	: type_assembly_technology; -- smt/tht
