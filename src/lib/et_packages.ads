@@ -344,7 +344,7 @@ package et_packages is
 	package pac_copper_polygons_hatched is new doubly_linked_lists (type_copper_polygon_hatched);
 
 	-- A cutout-polygon used in copper layers:
-	package pac_copper_polygons_cutout is new doubly_linked_lists (type_cutout_zone);
+	package pac_copper_polygons_cutout is new doubly_linked_lists (type_cutout_zone); -- CS rename to pac_copper_cutouts
 
 	
 	text_polygon_priority_level	: constant string (1..14) := "priority_level"; -- CS move to et_pcb
