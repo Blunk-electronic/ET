@@ -816,7 +816,6 @@ package et_packages is
 		case technology is
 			when THT =>
 				-- The shape of the pad on top and bottom side.
-				-- CS: Currently we assume the shape to be the same on top and bottom side.
 				pad_shape_tht : type_pad_outline_tht; 
 
 				-- This is the width of the copper surrounding the hole in inner layers.

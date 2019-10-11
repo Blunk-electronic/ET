@@ -3651,9 +3651,7 @@ package body et_project is
 		pac_text				: et_packages.type_text_with_content;
 		pac_text_placeholder	: et_packages.type_text_placeholder;
 
-		terminal_name			: et_libraries.type_terminal_name.bounded_string;
-		terminal_technology		: et_packages.type_assembly_technology := et_packages.assembly_technology_default;
--- 		pad_shape_polygon		: type_pad_polygon; -- for polygons that outline a pad
+
 		terminal_position		: et_pcb_coordinates.geometry.type_position := origin_zero_rotation;
 
 		tht_width_inner_layers	: et_pcb_coordinates.type_distance := zero;
@@ -3661,6 +3659,8 @@ package body et_project is
 		tht_drill_size			: et_packages.type_drill_size := et_packages.type_drill_size'first;
 		tht_millings			: et_packages.type_pcb_contour_plated;
 
+		terminal_name			: et_libraries.type_terminal_name.bounded_string;
+		terminal_technology		: et_packages.type_assembly_technology := et_packages.assembly_technology_default;
 		tht_pad_shape			: et_packages.type_pad_outline_tht;		
 		smt_pad_shape			: et_packages.type_pad_outline;
 
@@ -4212,26 +4212,6 @@ package body et_project is
 					reset_board_circle;
 				end;
 
-				procedure build_tht_pad is begin
-					null; -- CS
--- 					type_pad_polygons.append (
--- 						container	=> tht_pad_shape.top.polygons,
-					-- 						new_item	=> pad_shape_polygon);
-
-					reset_polygon;
-				end;
-
-				
-				procedure build_smt_pad is begin
-					null; -- CS
--- 								type_pad_polygons.append (
--- 									container	=> smt_pad_shape.polygons,
--- 									new_item	=> pad_shape_polygon);
--- 
--- 								-- clean up for next polygon
--- 								pad_shape_polygon := (others => <>);
-				end;
-				
 			begin -- execute_section
 				case stack.current is
 
@@ -5012,13 +4992,14 @@ package body et_project is
 
 					when SEC_PAD_CONTOURS_SMT =>
 						case stack.parent is
-							when SEC_TERMINAL => smt_pad_shape := (shapes.type_polygon_base (polygon) with null record);
+							when SEC_TERMINAL => 
+								smt_pad_shape := (shapes.type_polygon_base (polygon) with null record);
 							when others => invalid_section;
 						end case;
 
 					when SEC_PAD_CONTOURS_THT =>
 						case stack.parent is
-							when SEC_TERMINAL => build_tht_pad;
+							when SEC_TERMINAL => null;
 							when others => invalid_section;
 						end case;
 
