@@ -3653,7 +3653,7 @@ package body et_project is
 
 		terminal_name			: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology		: et_packages.type_assembly_technology := et_packages.assembly_technology_default;
-		pad_shape_polygon		: type_pad_polygon; -- for polygons that outline a pad
+-- 		pad_shape_polygon		: type_pad_polygon; -- for polygons that outline a pad
 		terminal_position		: et_pcb_coordinates.geometry.type_position := origin_zero_rotation;
 		tht_pad_shape			: et_packages.type_pad_outline_tht;
 		tht_width_inner_layers	: et_pcb_coordinates.type_distance := zero;
@@ -4208,6 +4208,64 @@ package body et_project is
 
 					reset_board_circle;
 				end;
+
+				procedure append_tht_pad_line (face : in et_pcb_coordinates.type_face) is begin
+					null; -- CS										
+-- 										type_pad_lines.append (
+-- 											container	=> tht_pad_shape.top.lines,
+-- 											new_item	=> (shapes.type_line (board_line) with null record));
+
+										-- clean up for next line
+-- 										reset_board_line;
+				end;
+
+				procedure append_tht_pad_arc (face : in et_pcb_coordinates.type_face) is begin
+					null; -- CS
+				end;
+
+				procedure append_tht_pad_circle (face : in et_pcb_coordinates.type_face) is begin
+					null; -- CS
+				end;
+				
+				procedure build_tht_pad is begin
+					null; -- CS
+-- 					type_pad_polygons.append (
+-- 						container	=> tht_pad_shape.top.polygons,
+					-- 						new_item	=> pad_shape_polygon);
+
+					reset_polygon;
+				end;
+
+				procedure append_smt_pad_line is begin
+					null;
+-- 								type_pad_lines.append (
+-- 									container	=> smt_pad_shape.lines,
+-- 									new_item	=> (shapes.type_line (board_line) with null record));
+-- 
+-- 								-- clean up for next line
+-- 								reset_board_line;
+
+					
+				end;
+
+				procedure append_smt_pad_arc is begin
+					null;
+				end;
+
+				procedure append_smt_pad_circle is begin
+					null;
+				end;
+
+				
+				procedure build_smt_pad is begin
+					null; -- CS
+-- 								type_pad_polygons.append (
+-- 									container	=> smt_pad_shape.polygons,
+-- 									new_item	=> pad_shape_polygon);
+-- 
+-- 								-- clean up for next polygon
+-- 								pad_shape_polygon := (others => <>);
+				end;
 				
 			begin -- execute_section
 				case stack.current is
@@ -4291,12 +4349,7 @@ package body et_project is
 										reset_line_width;
 										
 									when SEC_PAD_CONTOURS_THT =>
-										type_pad_lines.append (
-											container	=> tht_pad_shape.top.lines,
-											new_item	=> (shapes.type_line (board_line) with null record));
-
-										-- clean up for next line
-										reset_board_line;
+										append_tht_pad_line (et_pcb_coordinates.TOP);
 										
 									when others => invalid_section;
 								end case;
@@ -4359,12 +4412,7 @@ package body et_project is
 										reset_line_width;
 
 									when SEC_PAD_CONTOURS_THT =>
-										type_pad_lines.append (
-											container	=> tht_pad_shape.bottom.lines,
-											new_item	=> (shapes.type_line (board_line) with null record));
-
-										-- clean up for next line
-										reset_board_line;
+										append_tht_pad_line (et_pcb_coordinates.BOTTOM);
 
 									when others => invalid_section;
 								end case;
@@ -4402,13 +4450,7 @@ package body et_project is
 								et_pcb_stack.type_signal_layers.clear (signal_layers);
 								
 							when SEC_PAD_CONTOURS_SMT =>
-								
-								type_pad_lines.append (
-									container	=> smt_pad_shape.lines,
-									new_item	=> (shapes.type_line (board_line) with null record));
-
-								-- clean up for next line
-								reset_board_line;
+								append_smt_pad_line;
 
 							when SEC_MILLINGS =>
 
@@ -4484,12 +4526,7 @@ package body et_project is
 										reset_line_width;
 
 									when SEC_PAD_CONTOURS_THT =>
-										type_pad_arcs.append (
-											container	=> tht_pad_shape.top.arcs,
-											new_item	=> (shapes.type_arc (board_arc) with null record));
-
-										-- clean up for next arc
-										reset_board_arc;
+										append_tht_pad_arc (et_pcb_coordinates.TOP);
 										
 									when others => invalid_section;
 								end case;
@@ -4552,12 +4589,7 @@ package body et_project is
 										reset_line_width;
 
 									when SEC_PAD_CONTOURS_THT =>
-										type_pad_arcs.append (
-											container	=> tht_pad_shape.bottom.arcs,
-											new_item	=> (shapes.type_arc (board_arc) with null record));
-
-										-- clean up for next arc
-										reset_board_arc;
+										append_tht_pad_arc (et_pcb_coordinates.BOTTOM);
 										
 									when others => invalid_section;
 								end case;
@@ -4593,12 +4625,7 @@ package body et_project is
 								et_pcb_stack.type_signal_layers.clear (signal_layers);
 
 							when SEC_PAD_CONTOURS_SMT =>
-								type_pad_arcs.append (
-									container	=> smt_pad_shape.arcs,
-									new_item	=> (shapes.type_arc (board_arc) with null record));
-
-								-- clean up for next arc
-								reset_board_arc;
+								append_smt_pad_arc;
 
 							when SEC_MILLINGS =>
 								
@@ -4663,12 +4690,7 @@ package body et_project is
 										reset_circle_fillable; -- clean up for next circle
 										
 									when SEC_PAD_CONTOURS_THT =>
-										type_pad_circles.append (
-											container	=> tht_pad_shape.top.circles,
-											new_item	=> (shapes.type_circle (board_circle) with null record));
-
-										-- clean up for next circle
-										reset_board_circle;
+										append_tht_pad_circle (et_pcb_coordinates.TOP);
 										
 									when others => invalid_section;
 								end case;
@@ -4720,12 +4742,7 @@ package body et_project is
 										reset_circle_fillable; -- clean up for next circle
 
 									when SEC_PAD_CONTOURS_THT =>
-										type_pad_circles.append (
-											container	=> tht_pad_shape.bottom.circles,
-											new_item	=> (shapes.type_circle (board_circle) with null record));
-
-										-- clean up for next circle
-										reset_board_circle;
+										append_tht_pad_circle (et_pcb_coordinates.BOTTOM);
 										
 									when others => invalid_section;
 								end case;
@@ -4758,12 +4775,7 @@ package body et_project is
 								et_pcb_stack.type_signal_layers.clear (signal_layers);
 
 							when SEC_PAD_CONTOURS_SMT =>
-								type_pad_circles.append (
-									container	=> smt_pad_shape.circles,
-									new_item	=> (shapes.type_circle (board_circle) with null record));
-
-								-- clean up for next circle
-								reset_board_circle;
+								append_smt_pad_circle;
 
 							when SEC_MILLINGS =>
 								et_packages.type_pcb_contour_circles.append (
@@ -4799,15 +4811,6 @@ package body et_project is
 
 									when SEC_COPPER =>
 										append_copper_polygon_top;
-
-									when SEC_PAD_CONTOURS_THT =>
-
-										type_pad_polygons.append (
-											container	=> tht_pad_shape.top.polygons,
-											new_item	=> pad_shape_polygon);
-
-										-- clean up for next polygon
-										pad_shape_polygon := (others => <>);
 										
 									when others => invalid_section;
 								end case;
@@ -4831,15 +4834,6 @@ package body et_project is
 
 									when SEC_COPPER =>
 										append_copper_polygon_bottom;
-
-									when SEC_PAD_CONTOURS_THT =>
-
-										type_pad_polygons.append (
-											container	=> tht_pad_shape.bottom.polygons,
-											new_item	=> pad_shape_polygon);
-
-										-- clean up for next polygon
-										pad_shape_polygon := (others => <>);
 										
 									when others => invalid_section;
 								end case;
@@ -4850,15 +4844,6 @@ package body et_project is
 							when SEC_VIA_RESTRICT =>
 								append_via_restrict_polygon;
 
-							when SEC_PAD_CONTOURS_SMT =>
-
-								type_pad_polygons.append (
-									container	=> smt_pad_shape.polygons,
-									new_item	=> pad_shape_polygon);
-
-								-- clean up for next polygon
-								pad_shape_polygon := (others => <>);
-								
 							when others => invalid_section;
 						end case;
 
@@ -5056,12 +5041,24 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
-					when SEC_PAD_CONTOURS_SMT | SEC_PAD_CONTOURS_THT | SEC_MILLINGS =>
+					when SEC_PAD_CONTOURS_SMT =>
+						case stack.parent is
+							when SEC_TERMINAL => build_smt_pad;
+							when others => invalid_section;
+						end case;
+
+					when SEC_PAD_CONTOURS_THT =>
+						case stack.parent is
+							when SEC_TERMINAL => build_tht_pad;
+							when others => invalid_section;
+						end case;
+
+					when SEC_MILLINGS =>
 						case stack.parent is
 							when SEC_TERMINAL => null;
 							when others => invalid_section;
 						end case;
-
+						
 					when SEC_INIT => raise constraint_error;
 						
 				end case;
@@ -8764,50 +8761,52 @@ package body et_project is
 			terminal_cursor : type_terminals.cursor := packge.terminals.first;
 
 			procedure write_pad_shape (pad_shape : in type_pad_outline) is
-				use type_pad_lines;
-				use type_pad_arcs;
-				use type_pad_circles;
-				use type_pad_polygons;
-
-				procedure write_line (cursor : in type_pad_lines.cursor) is begin
-					line_begin;
-					write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-					write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-					line_end;
-				end write_line;
-
-				procedure write_arc (cursor : in type_pad_arcs.cursor) is begin
-					arc_begin;
-					write (keyword => shapes.keyword_center, parameters => position (element (cursor).center));
-					write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-					write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
-					arc_end;
-				end write_arc;
-
-				procedure write_circle (cursor : in type_pad_circles.cursor) is begin
-					circle_begin;
-					write (keyword => shapes.keyword_center, parameters => position (element (cursor).center));
-					write (keyword => shapes.keyword_radius, parameters => to_string (element (cursor).radius));
-					circle_end;
-				end write_circle;
-
-				procedure write_polygon (cursor : in type_pad_polygons.cursor) is 
-					procedure query_points (polygon : in type_pad_polygon) is 
-						use et_packages.type_polygon_points;
-					begin
-						iterate (polygon.corners, write_polygon_corners'access);
-					end query_points;
-				begin -- write_polygon
-					fill_zone_begin;
-					query_element (cursor, query_points'access);
-					fill_zone_end;
-				end write_polygon;
+-- 				use type_pad_lines;
+-- 				use type_pad_arcs;
+-- 				use type_pad_circles;
+-- 				use type_pad_polygons;
+-- 
+-- 				procedure write_line (cursor : in type_pad_lines.cursor) is begin
+-- 					line_begin;
+-- 					write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+-- 					write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+-- 					line_end;
+-- 				end write_line;
+-- 
+-- 				procedure write_arc (cursor : in type_pad_arcs.cursor) is begin
+-- 					arc_begin;
+-- 					write (keyword => shapes.keyword_center, parameters => position (element (cursor).center));
+-- 					write (keyword => keyword_start, parameters => position (element (cursor).start_point));
+-- 					write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+-- 					arc_end;
+-- 				end write_arc;
+-- 
+-- 				procedure write_circle (cursor : in type_pad_circles.cursor) is begin
+-- 					circle_begin;
+-- 					write (keyword => shapes.keyword_center, parameters => position (element (cursor).center));
+-- 					write (keyword => shapes.keyword_radius, parameters => to_string (element (cursor).radius));
+-- 					circle_end;
+-- 				end write_circle;
+-- 
+-- 				procedure write_polygon (cursor : in type_pad_polygons.cursor) is 
+-- 					procedure query_points (polygon : in type_pad_polygon) is 
+-- 						use et_packages.type_polygon_points;
+-- 					begin
+-- 						iterate (polygon.corners, write_polygon_corners'access);
+-- 					end query_points;
+-- 				begin -- write_polygon
+-- 					fill_zone_begin;
+-- 					query_element (cursor, query_points'access);
+-- 					fill_zone_end;
+-- 				end write_polygon;
 									
 			begin --write_pad_shape
-				iterate (pad_shape.lines, write_line'access);
-				iterate (pad_shape.arcs, write_arc'access);
-				iterate (pad_shape.circles, write_circle'access);
-				iterate (pad_shape.polygons, write_polygon'access);
+				-- CS
+				null;
+-- 				iterate (pad_shape.lines, write_line'access);
+-- 				iterate (pad_shape.arcs, write_arc'access);
+-- 				iterate (pad_shape.circles, write_circle'access);
+-- 				iterate (pad_shape.polygons, write_polygon'access);
 			end write_pad_shape;
 
 			procedure write_plated_millings (millings : in type_pcb_contour_plated) is

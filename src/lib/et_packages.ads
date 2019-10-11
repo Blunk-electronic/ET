@@ -784,24 +784,26 @@ package et_packages is
 	function to_tht_hole (tht_hole : in string) return type_terminal_tht_hole;
 
 	
-	-- A pad outline consists of lines, arcs, circles, polygons:
-	type type_pad_line is new type_line with null record;
-	type type_pad_arc is new type_arc with null record;
-	type type_pad_circle is new type_circle with null record;
-	type type_pad_polygon is record corners : type_polygon_points.set; end record;
+-- 	-- A pad outline consists of lines, arcs, circles, polygons:
+-- 	type type_pad_line is new type_line with null record;
+-- 	type type_pad_arc is new type_arc with null record;
+-- 	type type_pad_circle is new type_circle with null record;
+-- 	type type_pad_polygon is record corners : type_polygon_points.set; end record;
 
-	package type_pad_lines is new doubly_linked_lists (type_pad_line);
-	package type_pad_arcs is new doubly_linked_lists (type_pad_arc);
-	package type_pad_circles is new doubly_linked_lists (type_pad_circle);
-	package type_pad_polygons is new doubly_linked_lists (type_pad_polygon);
+-- 	package type_pad_lines is new doubly_linked_lists (type_pad_line);
+-- 	package type_pad_arcs is new doubly_linked_lists (type_pad_arc);
+-- 	package type_pad_circles is new doubly_linked_lists (type_pad_circle);
+-- 	package type_pad_polygons is new doubly_linked_lists (type_pad_polygon);
 	
-	type type_pad_outline is record
-		lines 		: type_pad_lines.list;
-		arcs		: type_pad_arcs.list;
-		circles		: type_pad_circles.list;
-		polygons	: type_pad_polygons.list; 
-	end record;	
+-- 	type type_pad_outline is record
+-- 		lines 		: type_pad_lines.list;
+-- 		arcs		: type_pad_arcs.list;
+-- 		circles		: type_pad_circles.list;
+-- 		polygons	: type_pad_polygons.list; 
+-- 	end record;	
 
+	type type_pad_outline is new shapes.type_polygon_base with null record;
+	
 	type type_pad_outline_tht is record
 		top		: type_pad_outline; -- The pad shape on the top side
 		bottom	: type_pad_outline; -- is not nessecarily the same as on the bottom side.

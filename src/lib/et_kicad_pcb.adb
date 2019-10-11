@@ -367,18 +367,17 @@ package body et_kicad_pcb is
 		offset		: in type_point)	-- the offset of the pad from the center
 		return et_packages.type_pad_outline is
 
-		use et_pcb_coordinates;
-		use et_packages;
-		use type_pad_circles;
+		use et_packages.shapes;
+		use pac_polygon_circles;
 
-		circle : type_pad_circle;
-
+		circle : type_polygon_circle;
 		shape : et_packages.type_pad_outline; -- to be returned
 	begin
 		circle.center := type_point (position);
 		circle.radius := diameter / 2.0;
 		move (circle.center, offset);
-		append (shape.circles, circle);
+		append (shape.segments.circles, circle);
+		
 		return shape;
 	end to_pad_shape_circle;
 
@@ -392,12 +391,12 @@ package body et_kicad_pcb is
 		offset		: in type_point)			-- the offset of the pad from the center
 		return et_packages.type_pad_outline is
 
-		use et_packages;
-		use type_pad_lines;
+		use et_packages.shapes;
+		use pac_polygon_lines;
 		use et_pcb_coordinates;
 		use geometry;
 
-		shape : type_pad_outline; -- to be returned
+		shape : et_packages.type_pad_outline; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
 		--angle : constant type_angle := get_angle (center);
@@ -415,8 +414,8 @@ package body et_kicad_pcb is
 		p21, p22 : type_point;
 
 		-- These are the four lines we need for the rectangular pad contour:
-		line_1, line_2 : type_pad_line; -- left line, right line
-		line_3, line_4 : type_pad_line; -- upper line, lower line
+		line_1, line_2 : type_polygon_line; -- left line, right line
+		line_3, line_4 : type_polygon_line; -- upper line, lower line
 
 	begin -- to_pad_shape_rectangle
 		-- set supportive cornert points
@@ -457,10 +456,10 @@ package body et_kicad_pcb is
 		line_4.end_point := p22;
 		
 		-- build shape
-		shape.lines.append (line_1);
-		shape.lines.append (line_2);
-		shape.lines.append (line_3);
-		shape.lines.append (line_4);
+		shape.segments.lines.append (line_1);
+		shape.segments.lines.append (line_2);
+		shape.segments.lines.append (line_3);
+		shape.segments.lines.append (line_4);
 		
 		return shape;
 	end to_pad_shape_rectangle;
@@ -475,8 +474,9 @@ package body et_kicad_pcb is
 		return et_packages.type_pad_outline is
 
 		use et_packages;
-		use type_pad_lines;
-		use type_pad_arcs;		
+		use et_packages.shapes;
+		use pac_polygon_lines;
+		use pac_polygon_arcs;		
 		use et_pcb_coordinates;
 		use geometry;
 
@@ -501,8 +501,8 @@ package body et_kicad_pcb is
 		p41, p42 : type_point; -- center of upper/lower arc
 
 		-- These are the two lines and the two arcs we need for the oval pad contour:
-		line_1, line_2 : type_pad_line; -- left line, right line
-		arc_1, arc_2 : type_pad_arc; -- upper arc, lower arc
+		line_1, line_2 : type_polygon_line; -- left line, right line
+		arc_1, arc_2 : type_polygon_arc; -- upper arc, lower arc
 		
 	begin -- to_pad_shape_oval
 
@@ -555,10 +555,10 @@ package body et_kicad_pcb is
 		arc_2.end_point := p22;
 
 		-- build shape
-		shape.lines.append (line_1);
-		shape.lines.append (line_2);
-		shape.arcs.append (arc_1);
-		shape.arcs.append (arc_2);				
+		shape.segments.lines.append (line_1);
+		shape.segments.lines.append (line_2);
+		shape.segments.arcs.append (arc_1);
+		shape.segments.arcs.append (arc_2);				
 		
 		return shape;
 	end to_pad_shape_oval;

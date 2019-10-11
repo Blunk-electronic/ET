@@ -849,37 +849,37 @@ package body et_packages is
 		use et_libraries;
 		log_threshold_1 : type_log_level := log_threshold + 1;
 
-		use type_pad_lines;
-		use type_pad_arcs;
-		use type_pad_circles;
-		use type_pad_polygons;		
+-- 		use type_pad_lines;
+-- 		use type_pad_arcs;
+-- 		use type_pad_circles;
+-- 		use type_pad_polygons;		
 		
-		procedure line (cursor : in type_pad_lines.cursor) is begin
-			log (text => to_string (shapes.type_line (element (cursor))), level => log_threshold + 1);
-		end line;
-
-		procedure arc (cursor : in type_pad_arcs.cursor) is begin
-			log (text => to_string (shapes.type_arc (element (cursor))), level => log_threshold + 1);
-		end arc;
-		
-		procedure circle (cursor : in type_pad_circles.cursor) is begin
-			log (text => to_string (shapes.type_circle (element (cursor))), level => log_threshold + 1);
-		end circle;
-
-		procedure polygon (cursor : in type_pad_polygons.cursor) is 
-			use type_polygon_points;
-			points : type_polygon_points.set := element (cursor).corners;
-
-			procedure point (cursor : in type_polygon_points.cursor) is begin
-				log (text => to_string (element (cursor)), level => log_threshold + 1);	
-			end point;
-	
-		begin -- polygon
-			log (text => "polygon with corners", level => log_threshold + 1);
-			log_indentation_up;
-			iterate (points, point'access);
-			log_indentation_down;
-		end polygon;
+-- 		procedure line (cursor : in type_pad_lines.cursor) is begin
+-- 			log (text => to_string (shapes.type_line (element (cursor))), level => log_threshold + 1);
+-- 		end line;
+-- 
+-- 		procedure arc (cursor : in type_pad_arcs.cursor) is begin
+-- 			log (text => to_string (shapes.type_arc (element (cursor))), level => log_threshold + 1);
+-- 		end arc;
+-- 		
+-- 		procedure circle (cursor : in type_pad_circles.cursor) is begin
+-- 			log (text => to_string (shapes.type_circle (element (cursor))), level => log_threshold + 1);
+-- 		end circle;
+-- 
+-- 		procedure polygon (cursor : in type_pad_polygons.cursor) is 
+-- 			use type_polygon_points;
+-- 			points : type_polygon_points.set := element (cursor).corners;
+-- 
+-- 			procedure point (cursor : in type_polygon_points.cursor) is begin
+-- 				log (text => to_string (element (cursor)), level => log_threshold + 1);	
+-- 			end point;
+-- 	
+-- 		begin -- polygon
+-- 			log (text => "polygon with corners", level => log_threshold + 1);
+-- 			log_indentation_up;
+-- 			iterate (points, point'access);
+-- 			log_indentation_down;
+-- 		end polygon;
 			
 	begin -- terminal_properties
 		log (text => "terminal name " & to_string (name)
@@ -895,16 +895,16 @@ package body et_packages is
 				
 				-- log pad_shape_top/bottom
 				log (text => "pad contour top", level => log_threshold + 1);
-				iterate (terminal.pad_shape_tht.top.lines, line'access);
-				iterate (terminal.pad_shape_tht.top.arcs, arc'access);
-				iterate (terminal.pad_shape_tht.top.circles, circle'access);
-				iterate (terminal.pad_shape_tht.top.polygons, polygon'access);
+-- 				iterate (terminal.pad_shape_tht.top.lines, line'access);
+-- 				iterate (terminal.pad_shape_tht.top.arcs, arc'access);
+-- 				iterate (terminal.pad_shape_tht.top.circles, circle'access);
+-- 				iterate (terminal.pad_shape_tht.top.polygons, polygon'access);
 
 				log (text => "pad contour bottom", level => log_threshold + 1);
-				iterate (terminal.pad_shape_tht.bottom.lines, line'access);
-				iterate (terminal.pad_shape_tht.bottom.arcs, arc'access);
-				iterate (terminal.pad_shape_tht.bottom.circles, circle'access);
-				iterate (terminal.pad_shape_tht.bottom.polygons, polygon'access);
+-- 				iterate (terminal.pad_shape_tht.bottom.lines, line'access);
+-- 				iterate (terminal.pad_shape_tht.bottom.arcs, arc'access);
+-- 				iterate (terminal.pad_shape_tht.bottom.circles, circle'access);
+-- 				iterate (terminal.pad_shape_tht.bottom.polygons, polygon'access);
 				
 				log (text => "copper width of inner layers" & to_string (terminal.width_inner_layers), level => log_threshold_1);
 
@@ -924,10 +924,10 @@ package body et_packages is
 				
 				-- log pad_shape
 				log (text => "pad contour", level => log_threshold + 1);
-				iterate (terminal.pad_shape.lines, line'access);
-				iterate (terminal.pad_shape.arcs, arc'access);
-				iterate (terminal.pad_shape.circles, circle'access);
-				iterate (terminal.pad_shape.polygons, polygon'access);
+-- 				iterate (terminal.pad_shape.lines, line'access);
+-- 				iterate (terminal.pad_shape.arcs, arc'access);
+-- 				iterate (terminal.pad_shape.circles, circle'access);
+-- 				iterate (terminal.pad_shape.polygons, polygon'access);
 				
 				log (text => "face" & to_string (terminal.face), level => log_threshold_1);
 				log (text => "stop mask" & to_string (terminal.stop_mask), level => log_threshold_1);
