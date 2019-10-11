@@ -6057,8 +6057,6 @@ package body et_project is
 											end if;
 										end;
 
-									when SEC_PAD_CONTOURS_THT => null;
-										
 									when others => invalid_section;
 								end case;
 										
@@ -6083,8 +6081,6 @@ package body et_project is
 									end if;
 								end;
 
-							when SEC_PAD_CONTOURS_SMT => null;
-							
 							when others => invalid_section;
 						end case;
 						

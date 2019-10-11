@@ -1,12 +1,12 @@
-# SYSTEM ET package
-# date 2018-11-06T09:31:48
-# ======================================================================================================================================================
+-- SYSTEM ET package
+-- date 2018-11-06T09:31:48
+-- ======================================================================================================================================================
 
 description "blahab"
 appearance real/virtual
 technology SMT/THT
 
-[COPPER BEGIN] # non-electric !
+[COPPER BEGIN] -- non-electric !
 	[TOP BEGIN]
 		[LINE BEGIN]
 			start x 22.3
@@ -30,22 +30,6 @@ technology SMT/THT
 			hatching_line_width 0.3
 			hatching_line_spacing 1
 		[CIRCLE END]
-		
-		[POLYGON BEGIN]
-			priority 0
-			isolation 0.800
-			corner_easing none/chamfer/fillet
-			easing_radius 0.3
-			fill_style solid,hatched,cutout
-			hatching_line_width 0.3
-			hatching_line_spacing 1
-			min_width 0.3
-			[CORNERS BEGIN]
-				position x 123.54 y 2.7
-				position x 133.54 y 335.3
-				position x 523.54 y 6.7
-			[CORNERS END]
-		[POLYGON END]
 
 		[TEXT BEGIN]
 			position x 40 y 20 rotation 0
@@ -83,18 +67,6 @@ technology SMT/THT
 			hatching_line_spacing 1
 		[CIRCLE END]
 		
-		[POLYGON BEGIN]
-			corner_easing none/chamfer/fillet
-			easing_radius 0.3
-			fill_style solid,hatched,cutout
-			hatching_line_width 0.3
-			hatching_line_spacing 1
-			[CORNERS BEGIN]
-				position x 123.54 y 2.7
-				position x 133.54 y 335.3
-				position x 523.54 y 6.7
-			[CORNERS END]
-		[POLYGON END]
 	[TOP END]
 [KEEPOUT END]
 
@@ -133,19 +105,6 @@ technology SMT/THT
 		hatching_line_spacing 1
 	[CIRCLE END]
 	
-	[POLYGON BEGIN]
-		layers 2 15	
-		corner_easing none/chamfer/fillet
-		easing_radius 0.3
-		fill_style solid,hatched,cutout
-		hatching_line_width 0.3
-		hatching_line_spacing 1
-		[CORNERS BEGIN]
-			position x 123.54 y 2.7
-			position x 133.54 y 335.3
-			position x 523.54 y 6.7
-		[CORNERS END]
-	[POLYGON END]
 [ROUTE_RESTRICT END]
 
 [VIA_RESTRICT BEGIN]
@@ -204,20 +163,7 @@ technology SMT/THT
 			hatching_line_width 0.3
 			hatching_line_spacing 1
 		[CIRCLE END]
-		
-		[POLYGON BEGIN]
-			fill_style solid,hatched,cutout
-			corner_easing none/chamfer/fillet
-			easing_radius 0.3
-			hatching_line_width 0.3
-			hatching_line_spacing 1
-			[CORNERS BEGIN]
-				position x 123.54 y 2.7
-				position x 133.54 y 335.3
-				position x 523.54 y 6.7
-			[CORNERS END]
-		[POLYGON END]
-		
+
 		[TEXT BEGIN]
 			position x 40 y 20 rotation 0
 			size width 1.000 height 1.000
@@ -250,6 +196,7 @@ technology SMT/THT
 		name 6
 		technology tht
 		position x 12.700 y 0.000 rotation 0
+		
 		[PAD_CONTOURS_THT BEGIN]
 			[TOP BEGIN]
 				[LINE BEGIN]
@@ -270,14 +217,8 @@ technology SMT/THT
 					start x -0.900 y -0.800
 					end x 1.100 y -0.800
 				[ARC END]
-				[POLYGON BEGIN]
-					[CORNERS BEGIN]
-						position x 123.54 y 2.7
-						position x 133.54 y 335.3
-						position x 523.54 y 6.7
-					[CORNERS END]
-				[POLYGON END]
 			[TOP END]
+
 			[BOTTOM BEGIN]
 				[LINE BEGIN]
 					start x -0.900 y 1.200
@@ -297,33 +238,24 @@ technology SMT/THT
 					start x -0.900 y -0.800
 					end x 1.100 y -0.800
 				[ARC END]
-				[POLYGON BEGIN]
-					[CORNERS BEGIN]
-						position x 123.54 y 2.7
-						position x 133.54 y 335.3
-						position x 523.54 y 6.7
-					[CORNERS END]
-				[POLYGON END]
 			[BOTTOM END]
 		[PAD_CONTOURS_THT END]
+
 		width_inner_layers 1.000
-		hole milled/milled
-		#drill_size 1.000 #if hole drilled
+		hole milled/drilled
+		--drill_size 1.000 #if hole drilled
 		[MILLINGS BEGIN]
 			[LINE BEGIN]
 				start x -0.400 y 1.200
 				end x -0.400 y -0.800
-				locked no
 			[LINE END]
 			[LINE BEGIN]
 				start x 0.600 y 1.200
 				end x 0.600 y -0.800
-				locked no
 			[LINE END]
 			[LINE BEGIN]
 				start x -0.400 y 1.200
 				end x 0.600 y 1.200
-				locked no
 			[LINE END]
 			[CIRCLE BEGIN]
 				center x 45 y 4.2
@@ -332,7 +264,6 @@ technology SMT/THT
 			[LINE BEGIN]
 				start x -0.400 y -0.800
 				end x 0.600 y -0.800
-				locked no
 			[LINE END]
 			[ARC BEGIN]
 				center x 0.100 y 1.200
@@ -369,13 +300,6 @@ technology SMT/THT
 				center x 0.000 y 0.700
 				radius 1
 			[CIRCLE END]
-			[POLYGON BEGIN]
-				[CORNERS BEGIN]
-					position x 123.54 y 2.7
-					position x 133.54 y 335.3
-					position x 523.54 y 6.7
-				[CORNERS END]
-			[POLYGON END]
 		[PAD_CONTOURS_SMT END]
 		face top
 		stop_mask open
