@@ -400,13 +400,7 @@ package et_packages is
 				case fill_style is
 					when SOLID => null;
 					when HATCHED =>
-						-- CS use type_hatching here:
-						
-						-- the width of the circumfence and the hatching lines:
-						hatching_line_width	: type_general_line_width := hatching_line_width_default;
-
-						-- the space between the hatching lines:
-						hatching_spacing	: type_general_line_width := hatching_spacing_default;
+						hatching : type_hatching;
 				end case;
 				
 		end case;

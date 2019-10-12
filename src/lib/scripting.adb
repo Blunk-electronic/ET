@@ -2095,16 +2095,19 @@ package body scripting is
 												module_name 	=> module,
 												face			=> to_face (f (5)),
 												circle			=> 
-															(
-															filled		=> YES,
-															fill_style	=> HATCHED,
-															center	=> type_point (set (
-																		x => to_distance (f (8)),
-																		y => to_distance (f (9)))),
-															radius	=> to_distance (f (10)),
-															hatching_line_width	=> to_distance (f (11)),
-															hatching_spacing	=> to_distance (f (12))
-															),
+														(
+														filled		=> YES,
+														fill_style	=> HATCHED,
+														center		=> type_point (set (
+																	x => to_distance (f (8)),
+																	y => to_distance (f (9)))),
+														radius		=> to_distance (f (10)),
+														hatching	=> (
+																	width	=> to_distance (f (11)),
+																	spacing	=> to_distance (f (12)),
+																	others	=> <>
+																	)
+														),
 												log_threshold	=> log_threshold + 1);
 
 										when others => expect_fill_style (HATCHED, 7);
@@ -2253,16 +2256,19 @@ package body scripting is
 												module_name 	=> module,
 												face			=> to_face (f (5)),
 												circle			=> 
-															(
-															filled		=> YES,
-															fill_style	=> HATCHED,
-															center	=> type_point (set (
-																		x => to_distance (f (8)),
-																		y => to_distance (f (9)))),
-															radius	=> to_distance (f (10)),
-															hatching_line_width	=> to_distance (f (11)),
-															hatching_spacing	=> to_distance (f (12))
-															),
+														(
+														filled		=> YES,
+														fill_style	=> HATCHED,
+														center		=> type_point (set (
+																	x => to_distance (f (8)),
+																	y => to_distance (f (9)))),
+														radius		=> to_distance (f (10)),
+														hatching	=> (
+																	width	=> to_distance (f (11)),
+																	spacing	=> to_distance (f (12)),
+																	others	=> <>
+																	)
+														),
 												log_threshold	=> log_threshold + 1);
 
 										when others => expect_fill_style (HATCHED, 7);
@@ -2936,16 +2942,19 @@ package body scripting is
 																module_name 	=> module,
 																face			=> to_face (f (5)),
 																circle			=> 
-																			(
-																			filled		=> YES,
-																			fill_style	=> HATCHED,
-																			center	=> type_point (set (
-																						x => to_distance (f (8)),
-																						y => to_distance (f (9)))),
-																			radius	=> to_distance (f (10)),
-																			hatching_line_width	=> to_distance (f (11)),
-																			hatching_spacing	=> to_distance (f (12))
-																			),
+																		(
+																		filled		=> YES,
+																		fill_style	=> HATCHED,
+																		center		=> type_point (set (
+																					x => to_distance (f (8)),
+																					y => to_distance (f (9)))),
+																		radius		=> to_distance (f (10)),
+																		hatching	=> (
+																					width	=> to_distance (f (11)),
+																					spacing	=> to_distance (f (12)),
+																					others	=> <>
+																					)
+																		),
 																log_threshold	=> log_threshold + 1);
 
 														when others =>
@@ -3107,16 +3116,20 @@ package body scripting is
 																module_name 	=> module,
 																face			=> to_face (f (5)),
 																circle			=> 
-																			(
-																			filled		=> YES,
-																			fill_style	=> HATCHED,
-																			center	=> type_point (set (
-																						x => to_distance (f (8)),
-																						y => to_distance (f (9)))),
-																			radius	=> to_distance (f (10)),
-																			hatching_line_width	=> to_distance (f (11)),
-																			hatching_spacing	=> to_distance (f (12))
-																			),
+																		(
+																		filled		=> YES,
+																		fill_style	=> HATCHED,
+																		center		=> type_point (set (
+																					x => to_distance (f (8)),
+																					y => to_distance (f (9)))),
+																		radius		=> to_distance (f (10)),
+
+																		hatching	=> (
+																					width	=> to_distance (f (11)),
+																					spacing	=> to_distance (f (12)),
+																					others	=> <>
+																					)
+																		),
 																log_threshold	=> log_threshold + 1);
 
 														when others =>
