@@ -3535,6 +3535,7 @@ package body et_project is
 	
 	
 -- BASIC GEOMETRIC OBJECTS USED IN PACKAGES AND BOARDS
+	
 	type type_board_line is new et_packages.shapes.type_line with null record;
 	board_line : type_board_line;
 	procedure reset_board_line is begin board_line := (others => <>); end;
@@ -3565,6 +3566,24 @@ package body et_project is
 	polygon_priority		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
 	thermal					: et_pcb.type_thermal;
 	signal_layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
+
+
+	board_line_width : et_packages.type_general_line_width := et_packages.type_general_line_width'first;
+
+	procedure reset_board_circle_fillable is 
+		use et_packages;
+		use et_packages.shapes;
+	begin 
+		board_circle			:= (others => <>);
+		board_line_width		:= type_general_line_width'first;
+		board_object_filled		:= type_filled'first;
+		board_object_fill_style	:= fill_style_default;
+		board_object_hatching	:= (others => <>);
+	end;
+
+
+
+
 	
 	procedure board_reset_polygon is
 	-- This procdure resets polygon properties to their defaults.
@@ -9181,44 +9200,27 @@ package body et_project is
 					
 		-- general board stuff
 
-		board_circle_fillable_width					: et_packages.type_general_line_width := et_packages.type_general_line_width'first;
-		board_circle_fillable_filled				: et_packages.shapes.type_filled := et_packages.shapes.type_filled'first;
-		board_circle_fillable_fill_style			: et_packages.type_fill_style := et_packages.fill_style_default;
-		board_circle_fillable_hatching_line_width 	: et_packages.type_general_line_width := et_packages.type_general_line_width'first;
-		board_circle_fillable_hatching_spacing		: et_packages.type_general_line_width := et_packages.type_general_line_width'first;
-
-		procedure reset_board_circle_fillable is 
-			use et_packages;
-			use et_packages.shapes;
-		begin 
-			board_circle								:= (others => <>);
-			board_circle_fillable_width					:= type_general_line_width'first;
-			board_circle_fillable_filled				:= type_filled'first;
-			board_circle_fillable_fill_style			:= fill_style_default;
-			board_circle_fillable_hatching_line_width 	:= type_general_line_width'first;
-			board_circle_fillable_hatching_spacing		:= type_general_line_width'first;			
-		end;
 
 		function make_fillable_circle return et_packages.type_fillable_circle is 
 			use et_packages;
 		begin
 			return to_fillable_circle (
 				circle 				=> shapes.type_circle (board_circle),
-				filled				=> board_circle_fillable_filled,
-				fill_style			=> board_circle_fillable_fill_style,
-				circumfence_width	=> board_circle_fillable_width,
-				hatching_line_width	=> board_circle_fillable_hatching_line_width,
-				hatching_spacing	=> board_circle_fillable_hatching_spacing);
+				filled				=> board_object_filled,
+				fill_style			=> board_object_fill_style,
+				circumfence_width	=> board_line_width,
+				hatching_line_width	=> board_object_hatching.width,
+				hatching_spacing	=> board_object_hatching.spacing);
 		end;
 
 		function make_fillable_circle_solid return et_packages.type_fillable_circle_solid is
 			use et_packages;
 		begin
-			return (shapes.type_circle (board_circle) with board_circle_fillable_filled);
+			return (shapes.type_circle (board_circle) with board_object_filled);
 		end;
 
 		
-		board_line_width : et_packages.type_general_line_width := et_packages.type_general_line_width'first;
+
 
 		board_text : et_packages.type_text_with_content;
 		board_text_placeholder : et_pcb.type_text_placeholder;
@@ -13375,23 +13377,23 @@ package body et_project is
 											-- CS: In the following: set a corresponding parameter-found-flag
 											if kw = keyword_width then -- circumfence line width 0.5
 												expect_field_count (line, 2);
-												board_circle_fillable_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+												board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
 											elsif kw = keyword_filled then -- filled yes/no
 												expect_field_count (line, 2);													
-												board_circle_fillable_filled := to_filled (f (line, 2));
+												board_object_filled := to_filled (f (line, 2));
 
 											elsif kw = keyword_fill_style then -- fill_style solid/hatched
 												expect_field_count (line, 2);													
-												board_circle_fillable_fill_style := to_fill_style (f (line, 2));
+												board_object_fill_style := to_fill_style (f (line, 2));
 
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												board_circle_fillable_hatching_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+												board_object_hatching.width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
-												board_circle_fillable_hatching_spacing := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+												board_object_hatching.spacing := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -13426,7 +13428,7 @@ package body et_project is
 										
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);													
-										board_circle_fillable_filled := to_filled (f (line, 2));
+										board_object_filled := to_filled (f (line, 2));
 
 									elsif kw = keyword_layers then -- layers 1 14 3
 
