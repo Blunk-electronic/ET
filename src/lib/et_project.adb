@@ -3560,10 +3560,36 @@ package body et_project is
 	polygon_isolation : et_packages.type_track_clearance := et_packages.type_track_clearance'first;
 	polygon_width_min : et_packages.type_track_width := et_packages.type_track_width'first;
 
-	-- board relevant only
+	-- board relevant only:
 	polygon_pad_connection	: et_pcb.type_polygon_pad_connection := et_pcb.type_polygon_pad_connection'first;
 	polygon_priority		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
+	thermal					: et_pcb.type_thermal;
+	signal_layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
+	
+	procedure board_reset_polygon is
+	-- This procdure resets polygon properties to their defaults.
+	-- This procdure is used by both package and board parsing procedures read_package and read_module_file.
+	-- Some properties have no meaning in packages as remarked below.
+		use et_packages;
+		use et_packages.shapes;
+		use et_pcb_stack;
+	begin
+		polygon					:= (others => <>);
 
+		board_object_filled		:= filled_default;
+		board_object_fill_style	:= fill_style_default;
+		board_object_hatching	:= (others => <>);
+		board_object_easing 	:= (others => <>);
+		
+		polygon_pad_connection	:= et_pcb.type_polygon_pad_connection'first; -- board relevant only
+		polygon_priority		:= et_pcb.type_polygon_priority'first;  -- board relevant only
+		polygon_isolation		:= et_packages.type_track_clearance'first;
+		polygon_width_min		:= type_track_width'first;
+
+		signal_layer			:= type_signal_layer'first;  -- board relevant only
+
+		thermal					:= (others => <>); -- board relevant only
+	end;
 	
 	procedure read_package (
 	-- Opens the package file and stores the package in container et_libraries.packages.
@@ -3646,15 +3672,6 @@ package body et_project is
 		
 		pac_circle_copper		: et_packages.type_copper_circle;
 		procedure reset_circle_copper is begin pac_circle_copper := (others => <>); end;		
-		
-
-		procedure reset_polygon is begin 
-			polygon	:= (others => <>);
-
-			board_object_fill_style	:= fill_style_default;
-			board_object_hatching	:= (others => <>);
-			board_object_easing		:= (others => <>);
-		end;
 
 		pac_text				: et_packages.type_text_with_content;
 		pac_text_placeholder	: et_packages.type_text_placeholder;
@@ -3776,8 +3793,7 @@ package body et_project is
 												hatching	=> board_object_hatching));
 					end case;
 					
-					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_silk_polygon_bottom is begin
@@ -3800,7 +3816,7 @@ package body et_project is
 					end case;
 					
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_assy_doc_polygon_top is begin
@@ -3822,7 +3838,7 @@ package body et_project is
 					end case;
 					
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_assy_doc_polygon_bottom is begin
@@ -3845,7 +3861,7 @@ package body et_project is
 					end case;
 					
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_keepout_polygon_top is begin
@@ -3855,7 +3871,7 @@ package body et_project is
 										filled	=> board_object_filled));
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_keepout_polygon_bottom is begin
@@ -3865,7 +3881,7 @@ package body et_project is
 										filled	=> board_object_filled));
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_stencil_polygon_top is begin
@@ -3887,7 +3903,7 @@ package body et_project is
 					end case;
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_stencil_polygon_bottom is begin
@@ -3909,7 +3925,7 @@ package body et_project is
 					end case;
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_stop_polygon_top is begin
@@ -3931,7 +3947,7 @@ package body et_project is
 					end case;
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 				
 				procedure append_stop_polygon_bottom is begin
@@ -3953,7 +3969,7 @@ package body et_project is
 					end case;
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_copper_polygon_top is begin
@@ -3979,7 +3995,7 @@ package body et_project is
 					end case;
 										
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_copper_polygon_bottom is begin
@@ -4005,7 +4021,7 @@ package body et_project is
 					end case;
 										
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_route_restrict_polygon is begin
@@ -4016,7 +4032,7 @@ package body et_project is
 										layers	=> signal_layers));
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 
 					et_pcb_stack.type_signal_layers.clear (signal_layers);
 				end;
@@ -4029,7 +4045,7 @@ package body et_project is
 										layers	=> signal_layers));
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 
 					et_pcb_stack.type_signal_layers.clear (signal_layers);
 				end;
@@ -4042,7 +4058,7 @@ package body et_project is
 										easing => board_object_easing));
 					
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_silk_cutout_bottom is begin
@@ -4052,7 +4068,7 @@ package body et_project is
 										easing => board_object_easing));
 					
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_assy_doc_cutout_top is begin
@@ -4062,7 +4078,7 @@ package body et_project is
 										easing => board_object_easing));
 					
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_assy_doc_cutout_bottom is begin
@@ -4072,7 +4088,7 @@ package body et_project is
 										easing => board_object_easing));
 					
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_keepout_cutout_top is begin
@@ -4082,7 +4098,7 @@ package body et_project is
 										easing => board_object_easing));
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_keepout_cutout_bottom is begin
@@ -4092,7 +4108,7 @@ package body et_project is
 										easing => board_object_easing));
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_stencil_cutout_top is begin
@@ -4102,7 +4118,7 @@ package body et_project is
 										easing => board_object_easing));
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_stencil_cutout_bottom is begin
@@ -4112,7 +4128,7 @@ package body et_project is
 										easing => board_object_easing));
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_stop_cutout_top is begin
@@ -4122,7 +4138,7 @@ package body et_project is
 										easing => board_object_easing));
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 				
 				procedure append_stop_cutout_bottom is begin
@@ -4132,7 +4148,7 @@ package body et_project is
 										easing => board_object_easing));
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_copper_cutout_top is begin
@@ -4142,7 +4158,7 @@ package body et_project is
 										easing => board_object_easing));
 										
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_copper_cutout_bottom is begin
@@ -4152,7 +4168,7 @@ package body et_project is
 										easing => board_object_easing));
 										
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 				end;
 
 				procedure append_route_restrict_cutout is begin
@@ -4163,7 +4179,7 @@ package body et_project is
 										layers => signal_layers));
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 
 					et_pcb_stack.type_signal_layers.clear (signal_layers);
 				end;
@@ -4176,7 +4192,7 @@ package body et_project is
 										layers => signal_layers));
 
 					-- clean up for next polygon
-					reset_polygon;
+					board_reset_polygon;
 
 					et_pcb_stack.type_signal_layers.clear (signal_layers);
 				end;
@@ -9095,35 +9111,13 @@ package body et_project is
 		route_via		: et_pcb.type_via;  -- CS element of route. maybe no need
 
 		
-		signal_layer	: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 
-		thermal : et_pcb.type_thermal;
+
+
 		
 		frame_template_schematic	: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frm
 		-- CS frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
 		frame_template_board		: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frm
-
-		procedure board_reset_polygon is
-			use et_packages;
-			use et_packages.shapes;
-			use et_pcb_stack;
-		begin
-			polygon					:= (others => <>);
-
-			board_object_filled		:= filled_default;
-			board_object_fill_style				:= fill_style_default;
-			board_object_hatching				:= (others => <>);
-			board_object_easing 					:= (others => <>);
-			
-			polygon_pad_connection	:= et_pcb.type_polygon_pad_connection'first;
-			polygon_priority		:= et_pcb.type_polygon_priority'first;
-			polygon_isolation		:= et_packages.type_track_clearance'first;
-
-			signal_layer			:= type_signal_layer'first;
-			polygon_width_min		:= type_track_width'first;
-
-			thermal					:= (others => <>);
-		end;
 
 		-- submodules
 		submodule_port			: submodules.type_submodule_port;
