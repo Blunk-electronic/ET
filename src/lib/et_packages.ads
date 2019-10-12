@@ -730,11 +730,14 @@ package et_packages is
 		circles	: type_pcb_contour_circles.list;
 	end record;
 	
-	type type_pcb_contour_plated is record
-		lines 	: type_pcb_contour_lines.list;
-		arcs	: type_pcb_contour_arcs.list;
-		circles	: type_pcb_contour_circles.list;
-	end record;
+-- 	type type_pcb_contour_plated is record
+-- 		lines 	: type_pcb_contour_lines.list;
+-- 		arcs	: type_pcb_contour_arcs.list;
+-- 		circles	: type_pcb_contour_circles.list;
+	-- 	end record;
+	
+	type type_pcb_contour_plated is new shapes.type_polygon_base with null record;
+	-- CS rename to type_plated_millings ?
 	
 	procedure log_plated_millings (
 		millings 		: in type_pcb_contour_plated;

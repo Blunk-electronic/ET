@@ -3590,9 +3590,6 @@ package body et_project is
 	begin
 		return (et_packages.shapes.type_circle (board_circle) with board_filled);
 	end;
-
-
-
 	
 	procedure board_reset_polygon is
 	-- This procdure resets polygon properties to their defaults.
@@ -3678,7 +3675,7 @@ package body et_project is
 
 		terminal_position		: et_pcb_coordinates.geometry.type_position := origin_zero_rotation;
 
-		tht_width_inner_layers	: et_pcb_coordinates.type_distance := zero;
+		tht_width_inner_layers	: et_pcb_coordinates.type_distance := zero; -- CS rework
 		tht_hole				: et_packages.type_terminal_tht_hole := et_packages.terminal_tht_hole_default;
 		tht_drill_size			: et_packages.type_drill_size := et_packages.type_drill_size'first;
 		tht_millings			: et_packages.type_pcb_contour_plated;
@@ -4255,6 +4252,7 @@ package body et_project is
 
 							when SEC_PAD_CONTOURS_THT => 
 								tht_pad_shape.top := (shapes.type_polygon_base (polygon) with null record);
+								board_reset_polygon;
 
 							when others => invalid_section;
 						end case;
@@ -4266,7 +4264,8 @@ package body et_project is
 
 							when SEC_PAD_CONTOURS_THT =>
 								tht_pad_shape.bottom := (shapes.type_polygon_base (polygon) with null record);
-
+								board_reset_polygon;
+								
 							when others => invalid_section;
 						end case;
 						
@@ -4430,14 +4429,7 @@ package body et_project is
 								
 							when SEC_PAD_CONTOURS_SMT => add_polygon_line (board_line);
 
-							when SEC_MILLINGS =>
-
-								et_packages.type_pcb_contour_lines.append (
-									container	=> tht_millings.lines,
-									new_item	=> (shapes.type_line (board_line) with null record));
-								
-								-- clean up for next line
-								board_reset_line;
+							when SEC_MILLINGS => add_polygon_line (board_line);
 
 							when SEC_CONTOURS => add_polygon_line (board_line);
 								
@@ -4602,14 +4594,7 @@ package body et_project is
 
 							when SEC_PAD_CONTOURS_SMT => add_polygon_arc (board_arc);
 
-							when SEC_MILLINGS =>
-								
-								et_packages.type_pcb_contour_arcs.append (
-									container	=> tht_millings.arcs,
-									new_item	=> (shapes.type_arc (board_arc) with null record));
-								
-								-- clean up for next arc
-								board_reset_arc;
+							when SEC_MILLINGS => add_polygon_arc (board_arc);
 
 							when SEC_CONTOURS => add_polygon_arc (board_arc);
 								
@@ -4749,13 +4734,7 @@ package body et_project is
 
 							when SEC_PAD_CONTOURS_SMT => add_polygon_circle (board_circle);
 
-							when SEC_MILLINGS =>
-								et_packages.type_pcb_contour_circles.append (
-									container	=> tht_millings.circles,
-									new_item	=> (shapes.type_circle (board_circle) with null record));
-								
-								-- clean up for next circle
-								board_reset_circle;
+							when SEC_MILLINGS => add_polygon_circle (board_circle);
 
 							when SEC_CONTOURS => add_polygon_circle (board_circle);
 								
@@ -5017,6 +4996,8 @@ package body et_project is
 						case stack.parent is
 							when SEC_TERMINAL => 
 								smt_pad_shape := (shapes.type_polygon_base (polygon) with null record);
+								board_reset_polygon;
+								
 							when others => invalid_section;
 						end case;
 
@@ -5028,7 +5009,10 @@ package body et_project is
 
 					when SEC_MILLINGS =>
 						case stack.parent is
-							when SEC_TERMINAL => null;
+							when SEC_TERMINAL => 
+								tht_millings := (shapes.type_polygon_base (polygon) with null record);
+								board_reset_polygon;
+								
 							when others => invalid_section;
 						end case;
 						
@@ -8779,14 +8763,16 @@ package body et_project is
 			end write_pad_shape;
 
 			procedure write_plated_millings (millings : in type_pcb_contour_plated) is
-				use type_pcb_contour_lines;
-				use type_pcb_contour_arcs;
-				use type_pcb_contour_circles;
+-- 				use type_pcb_contour_lines;
+-- 				use type_pcb_contour_arcs;
+-- 				use type_pcb_contour_circles;
 			begin
+				-- CS
+				null;
 				section_mark (section_pad_millings, HEADER);
-				iterate (millings.lines, write_line'access);
-				iterate (millings.arcs, write_arc'access);
-				iterate (millings.circles, write_circle'access);
+-- 				iterate (millings.lines, write_line'access);
+-- 				iterate (millings.arcs, write_arc'access);
+-- 				iterate (millings.circles, write_circle'access);
 				section_mark (section_pad_millings, FOOTER);
 			end write_plated_millings;
 			
@@ -9108,10 +9094,6 @@ package body et_project is
 		route_line 		: et_pcb.type_copper_line; -- CS element of route. maybe no need
 		route_arc		: et_pcb.type_copper_arc;  -- CS element of route. maybe no need
 		route_via		: et_pcb.type_via;  -- CS element of route. maybe no need
-
-		
-
-
 
 		
 		frame_template_schematic	: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frm

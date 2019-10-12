@@ -570,13 +570,13 @@ package body et_kicad_pcb is
 		size_x		: in et_packages.type_pad_size;	-- the size in x of the hole
 		size_y		: in et_packages.type_pad_size;	-- the size in y of the hole
 		offset		: in type_point)			-- the offset of the pad from the center
-		return et_packages.type_pcb_contour_lines.list is
+		return et_packages.shapes.pac_polygon_lines.list is
 
-		use et_packages;
+		use et_packages.shapes;
 		use et_pcb_coordinates;
 		use geometry;
 
-		lines : type_pcb_contour_lines.list; -- to be returned
+		lines : pac_polygon_lines.list; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
 		angle : constant type_rotation := rot (center);
@@ -593,8 +593,8 @@ package body et_kicad_pcb is
 		p21, p22 : type_point;
 
 		-- These are the four lines we need for the rectangular pad contour:
-		line_1, line_2 : type_pcb_contour_line; -- left line, right line
-		line_3, line_4 : type_pcb_contour_line; -- upper line, lower line
+		line_1, line_2 : type_polygon_line; -- left line, right line
+		line_3, line_4 : type_polygon_line; -- upper line, lower line
 
 	begin -- to_pad_milling_contour
 		-- set supportive cornert points
@@ -2177,14 +2177,20 @@ package body et_kicad_pcb is
 									width_inner_layers	=> terminal_copper_width_inner_layers,
 
 									-- The plated millings of the hole is a list of lines.
-									millings => (lines 	=> to_pad_milling_contour (
-											center		=> terminal_position,
-											size_x		=> terminal_milling_size_x,
-											size_y		=> terminal_milling_size_y,
-											offset		=> terminal_pad_drill_offset),
+									millings => 
+										(
+										segments => 
+											(
+											lines	=> to_pad_milling_contour (
+												center	=> terminal_position,
+												size_x	=> terminal_milling_size_x,
+												size_y	=> terminal_milling_size_y,
+												offset	=> terminal_pad_drill_offset),
 
-										-- KiCad does not allow arcs or circles for plated millings.
-										others	=> <>)
+											-- KiCad does not allow arcs or circles for plated millings.
+											others	=> <>
+											)
+										)
 								));
 					end case;
 				end insert_tht;
@@ -6650,15 +6656,21 @@ package body et_kicad_pcb is
 									width_inner_layers	=> terminal_copper_width_inner_layers,
 
 									-- The plated millings of the hole is a list of lines.
-									millings => (lines 	=> to_pad_milling_contour (
-											center		=> terminal_position,
-											size_x		=> terminal_milling_size_x,
-											size_y		=> terminal_milling_size_y,
-											offset		=> terminal_pad_drill_offset),
+									millings => 
+										(
+										segments =>
+											(
+											lines 	=> to_pad_milling_contour (
+												center => terminal_position,
+												size_x => terminal_milling_size_x,
+												size_y => terminal_milling_size_y,
+												offset => terminal_pad_drill_offset),
 
-										-- KiCad does not allow arcs or circles for plated millings.
-										others	=> <>),
-
+											-- KiCad does not allow arcs or circles for plated millings.
+											others	=> <>
+											)
+										),
+										
 									-- the pad is connected with a certain net
 									net_name			=> terminal_net_name
 								));
