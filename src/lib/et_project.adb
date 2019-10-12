@@ -3530,11 +3530,11 @@ package body et_project is
 	end to_fillable_circle;
 
 
-	-- basic geometric objects used in schematic and symbols
+-- BASIC GEOMETRIC OBJECTS USED IN SYMBOLS AND SCHEMATICS
 	schematic_object_filled : et_schematic.shapes.type_filled := et_schematic.shapes.filled_default;		
 	
 	
-	-- basic geometric objects used in packages and boards
+-- BASIC GEOMETRIC OBJECTS USED IN PACKAGES AND BOARDS
 	type type_board_line is new et_packages.shapes.type_line with null record;
 	board_line : type_board_line;
 	procedure reset_board_line is begin board_line := (others => <>); end;
@@ -3551,7 +3551,7 @@ package body et_project is
 	board_object_filled : et_packages.shapes.type_filled := et_packages.shapes.filled_default;
 
 	board_object_hatching : et_packages.type_hatching;
-	easing : et_packages.type_polygon_easing;
+	board_object_easing : et_packages.type_polygon_easing;
 
 	
 	type type_polygon is new et_packages.shapes.type_polygon_base with null record;
@@ -3560,6 +3560,9 @@ package body et_project is
 	polygon_isolation : et_packages.type_track_clearance := et_packages.type_track_clearance'first;
 	polygon_width_min : et_packages.type_track_width := et_packages.type_track_width'first;
 
+	-- board relevant only
+	polygon_pad_connection	: et_pcb.type_polygon_pad_connection := et_pcb.type_polygon_pad_connection'first;
+	polygon_priority		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
 
 	
 	procedure read_package (
@@ -3644,15 +3647,13 @@ package body et_project is
 		pac_circle_copper		: et_packages.type_copper_circle;
 		procedure reset_circle_copper is begin pac_circle_copper := (others => <>); end;		
 		
--- 		hatching : type_hatching;
--- 		easing : type_polygon_easing;
 
 		procedure reset_polygon is begin 
 			polygon	:= (others => <>);
 
 			board_object_fill_style	:= fill_style_default;
 			board_object_hatching	:= (others => <>);
-			easing		:= (others => <>);
+			board_object_easing		:= (others => <>);
 		end;
 
 		pac_text				: et_packages.type_text_with_content;
@@ -3763,7 +3764,7 @@ package body et_project is
 								container	=> packge.silk_screen.top.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with
 												fill_style 	=> SOLID,
-												easing 		=> easing
+												easing 		=> board_object_easing
 											   ));
 
 						when HATCHED =>
@@ -3771,7 +3772,7 @@ package body et_project is
 								container	=> packge.silk_screen.top.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with 
 												fill_style 	=> HATCHED,
-												easing 		=> easing,
+												easing 		=> board_object_easing,
 												hatching	=> board_object_hatching));
 					end case;
 					
@@ -3786,7 +3787,7 @@ package body et_project is
 								container	=> packge.silk_screen.bottom.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with 
 												fill_style	=> SOLID,
-												easing		=> easing
+												easing		=> board_object_easing
 											   ));
 
 						when HATCHED =>
@@ -3794,7 +3795,7 @@ package body et_project is
 								container	=> packge.silk_screen.bottom.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with 
 												fill_style	=> HATCHED,
-												easing		=> easing,
+												easing		=> board_object_easing,
 												hatching	=> board_object_hatching));
 					end case;
 					
@@ -3808,7 +3809,7 @@ package body et_project is
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.top.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with 
-												easing		=> easing,
+												easing		=> board_object_easing,
 												fill_style	=> SOLID));
 
 						when HATCHED =>
@@ -3816,7 +3817,7 @@ package body et_project is
 								container	=> packge.assembly_documentation.top.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with 
 												fill_style	=> HATCHED,
-												easing		=> easing,
+												easing		=> board_object_easing,
 												hatching 	=> board_object_hatching));
 					end case;
 					
@@ -3830,7 +3831,7 @@ package body et_project is
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.bottom.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with 
-												easing 		=> easing,
+												easing 		=> board_object_easing,
 												fill_style	=> SOLID));
 
 						when HATCHED =>
@@ -3838,7 +3839,7 @@ package body et_project is
 								container	=> packge.assembly_documentation.bottom.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with 
 												fill_style	=> HATCHED,
-												easing		=> easing,
+												easing		=> board_object_easing,
 												hatching	=> board_object_hatching));
 
 					end case;
@@ -3874,14 +3875,14 @@ package body et_project is
 								container	=> packge.stencil.top.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
-										easing		=> easing));
+										easing		=> board_object_easing));
 
 						when HATCHED =>
 							type_stencil_polygons.append (
 								container	=> packge.stencil.top.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
-										easing		=> easing,
+										easing		=> board_object_easing,
 										hatching	=> board_object_hatching));
 					end case;
 
@@ -3896,14 +3897,14 @@ package body et_project is
 								container	=> packge.stencil.bottom.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
-										easing		=> easing));
+										easing		=> board_object_easing));
 
 						when HATCHED =>
 							type_stencil_polygons.append (
 								container	=> packge.stencil.bottom.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
-										easing		=> easing,
+										easing		=> board_object_easing,
 										hatching	=> board_object_hatching));
 					end case;
 
@@ -3918,14 +3919,14 @@ package body et_project is
 								container	=> packge.stop_mask.top.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
-										easing		=> easing));
+										easing		=> board_object_easing));
 
 						when HATCHED =>
 							type_stop_polygons.append (
 								container	=> packge.stop_mask.top.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
-										easing		=> easing,
+										easing		=> board_object_easing,
 										hatching	=> board_object_hatching));
 					end case;
 
@@ -3940,14 +3941,14 @@ package body et_project is
 								container	=> packge.stop_mask.bottom.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
-										easing		=> easing));
+										easing		=> board_object_easing));
 
 						when HATCHED =>
 							type_stop_polygons.append (
 								container	=> packge.stop_mask.bottom.polygons, 
 								new_item	=> (shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
-										easing		=> easing,
+										easing		=> board_object_easing,
 										hatching	=> board_object_hatching));
 					end case;
 
@@ -3962,7 +3963,7 @@ package body et_project is
 								container	=> packge.copper.top.polygons.solid, 
 								new_item	=> (shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
-										easing		=> easing,
+										easing		=> board_object_easing,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 
@@ -3971,7 +3972,7 @@ package body et_project is
 								container	=> packge.copper.top.polygons.hatched, 
 								new_item	=> (shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
-										easing		=> easing,
+										easing		=> board_object_easing,
 										hatching	=> board_object_hatching,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
@@ -3988,7 +3989,7 @@ package body et_project is
 								container	=> packge.copper.bottom.polygons.solid, 
 								new_item	=> (shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
-										easing		=> easing,
+										easing		=> board_object_easing,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 
@@ -3997,7 +3998,7 @@ package body et_project is
 								container	=> packge.copper.bottom.polygons.hatched, 
 								new_item	=> (shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
-										easing		=> easing,
+										easing		=> board_object_easing,
 										hatching	=> board_object_hatching,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
@@ -4038,7 +4039,7 @@ package body et_project is
 					pac_silk_cutouts.append (
 						container	=> packge.silk_screen.top.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon) with
-										easing => easing));
+										easing => board_object_easing));
 					
 					-- clean up for next polygon
 					reset_polygon;
@@ -4048,7 +4049,7 @@ package body et_project is
 					pac_silk_cutouts.append (
 						container	=> packge.silk_screen.bottom.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon) with
-										easing => easing));
+										easing => board_object_easing));
 					
 					-- clean up for next polygon
 					reset_polygon;
@@ -4058,7 +4059,7 @@ package body et_project is
 					pac_doc_cutouts.append (
 						container	=> packge.assembly_documentation.top.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon) with 
-										easing => easing));
+										easing => board_object_easing));
 					
 					-- clean up for next polygon
 					reset_polygon;
@@ -4068,7 +4069,7 @@ package body et_project is
 					pac_doc_cutouts.append (
 						container	=> packge.assembly_documentation.bottom.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon) with 
-										easing => easing));
+										easing => board_object_easing));
 					
 					-- clean up for next polygon
 					reset_polygon;
@@ -4078,7 +4079,7 @@ package body et_project is
 					pac_keepout_cutouts.append (
 						container	=> packge.keepout.top.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon) with 
-										easing => easing));
+										easing => board_object_easing));
 
 					-- clean up for next polygon
 					reset_polygon;
@@ -4088,7 +4089,7 @@ package body et_project is
 					pac_keepout_cutouts.append (
 						container	=> packge.keepout.bottom.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon) with 
-										easing => easing));
+										easing => board_object_easing));
 
 					-- clean up for next polygon
 					reset_polygon;
@@ -4098,7 +4099,7 @@ package body et_project is
 					pac_stencil_cutouts.append (
 						container	=> packge.stencil.top.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon) with
-										easing => easing));
+										easing => board_object_easing));
 
 					-- clean up for next polygon
 					reset_polygon;
@@ -4108,7 +4109,7 @@ package body et_project is
 					pac_stencil_cutouts.append (
 						container	=> packge.stencil.top.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon) with
-										easing => easing));
+										easing => board_object_easing));
 
 					-- clean up for next polygon
 					reset_polygon;
@@ -4118,7 +4119,7 @@ package body et_project is
 					pac_stop_cutouts.append (
 						container	=> packge.stop_mask.top.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon) with
-										easing => easing));
+										easing => board_object_easing));
 
 					-- clean up for next polygon
 					reset_polygon;
@@ -4128,7 +4129,7 @@ package body et_project is
 					pac_stop_cutouts.append (
 						container	=> packge.stop_mask.bottom.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon) with
-										easing => easing));
+										easing => board_object_easing));
 
 					-- clean up for next polygon
 					reset_polygon;
@@ -4138,7 +4139,7 @@ package body et_project is
 					et_packages.pac_copper_cutouts.append (
 						container	=> packge.copper.top.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon) with
-										easing => easing));
+										easing => board_object_easing));
 										
 					-- clean up for next polygon
 					reset_polygon;
@@ -4148,7 +4149,7 @@ package body et_project is
 					et_packages.pac_copper_cutouts.append (
 						container	=> packge.copper.bottom.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon) with
-										easing => easing));
+										easing => board_object_easing));
 										
 					-- clean up for next polygon
 					reset_polygon;
@@ -4158,7 +4159,7 @@ package body et_project is
 					pac_route_restrict_cutouts.append (
 						container	=> packge.route_restrict.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon) with 
-										easing => easing,
+										easing => board_object_easing,
 										layers => signal_layers));
 
 					-- clean up for next polygon
@@ -4171,7 +4172,7 @@ package body et_project is
 					pac_via_restrict_cutouts.append (
 						container	=> packge.via_restrict.cutouts, 
 						new_item	=> (shapes.type_polygon_base (polygon) with 
-										easing => easing,
+										easing => board_object_easing,
 										layers => signal_layers));
 
 					-- clean up for next polygon
@@ -5869,11 +5870,11 @@ package body et_project is
 											-- CS: In the following: set a corresponding parameter-found-flag
 											if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 												expect_field_count (line, 2);													
-												easing.style := to_corner_easing (f (line, 2));
+												board_object_easing.style := to_corner_easing (f (line, 2));
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
-												easing.radius := to_distance (f (line, 2));
+												board_object_easing.radius := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -5895,11 +5896,11 @@ package body et_project is
 											-- CS: In the following: set a corresponding parameter-found-flag
 											if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 												expect_field_count (line, 2);													
-												easing.style := to_corner_easing (f (line, 2));
+												board_object_easing.style := to_corner_easing (f (line, 2));
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
-												easing.radius := to_distance (f (line, 2));
+												board_object_easing.radius := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -5945,11 +5946,11 @@ package body et_project is
 
 											elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 												expect_field_count (line, 2);													
-												easing.style := to_corner_easing (f (line, 2));
+												board_object_easing.style := to_corner_easing (f (line, 2));
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
-												easing.radius := to_distance (f (line, 2));
+												board_object_easing.radius := to_distance (f (line, 2));
 												
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
@@ -5987,11 +5988,11 @@ package body et_project is
 
 											elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 												expect_field_count (line, 2);													
-												easing.style := to_corner_easing (f (line, 2));
+												board_object_easing.style := to_corner_easing (f (line, 2));
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
-												easing.radius := to_distance (f (line, 2));
+												board_object_easing.radius := to_distance (f (line, 2));
 												
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
@@ -9087,17 +9088,12 @@ package body et_project is
 
 		net_netchanger_port : netlists.type_port_netchanger;
 		net_netchanger_ports : netlists.type_ports_netchanger.set;
-
--- 		hatching : et_packages.type_hatching;
--- 		easing : et_packages.type_polygon_easing;
 		
 		route			: et_pcb.type_route;
 		route_line 		: et_pcb.type_copper_line; -- CS element of route. maybe no need
 		route_arc		: et_pcb.type_copper_arc;  -- CS element of route. maybe no need
 		route_via		: et_pcb.type_via;  -- CS element of route. maybe no need
 
-		polygon_pad_connection	: et_pcb.type_polygon_pad_connection := et_pcb.type_polygon_pad_connection'first;
-		polygon_priority		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
 		
 		signal_layer	: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 
@@ -9117,7 +9113,7 @@ package body et_project is
 			board_object_filled		:= filled_default;
 			board_object_fill_style				:= fill_style_default;
 			board_object_hatching				:= (others => <>);
-			easing 					:= (others => <>);
+			board_object_easing 					:= (others => <>);
 			
 			polygon_pad_connection	:= et_pcb.type_polygon_pad_connection'first;
 			polygon_priority		:= et_pcb.type_polygon_priority'first;
@@ -10130,14 +10126,14 @@ package body et_project is
 										container	=> module.board.silk_screen.top.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with 
 														fill_style 	=> SOLID,
-														easing		=> easing));
+														easing		=> board_object_easing));
 
 								when HATCHED =>
 									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.top.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with 
 														fill_style	=> HATCHED,
-														easing		=> easing,
+														easing		=> board_object_easing,
 														hatching	=> board_object_hatching));
 							end case;
 						end;
@@ -10149,14 +10145,14 @@ package body et_project is
 										container	=> module.board.silk_screen.bottom.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with 
 														fill_style 	=> SOLID,
-														easing		=> easing));
+														easing		=> board_object_easing));
 
 								when HATCHED =>
 									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.bottom.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with 
 														fill_style	=> HATCHED,
-														easing		=> easing,
+														easing		=> board_object_easing,
 														hatching	=> board_object_hatching));
 							end case;
 						end;
@@ -10167,7 +10163,7 @@ package body et_project is
 									pac_doc_polygons.append (
 										container	=> module.board.assy_doc.top.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with 
-														easing		=> easing,
+														easing		=> board_object_easing,
 														fill_style 	=> SOLID));
 
 								when HATCHED =>
@@ -10175,7 +10171,7 @@ package body et_project is
 										container	=> module.board.assy_doc.top.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with 
 														fill_style	=> HATCHED,
-														easing		=> easing,
+														easing		=> board_object_easing,
 														hatching	=> board_object_hatching));
 							end case;
 						end;
@@ -10186,7 +10182,7 @@ package body et_project is
 									pac_doc_polygons.append (
 										container	=> module.board.assy_doc.bottom.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with 
-														easing		=> easing,
+														easing		=> board_object_easing,
 														fill_style 	=> SOLID));
 
 								when HATCHED =>
@@ -10194,7 +10190,7 @@ package body et_project is
 										container	=> module.board.assy_doc.bottom.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with 
 														fill_style	=> HATCHED,
-														easing		=> easing,
+														easing		=> board_object_easing,
 														hatching	=> board_object_hatching));
 							end case;
 						end;
@@ -10220,14 +10216,14 @@ package body et_project is
 										container	=> module.board.stencil.top.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with
 														fill_style	=> SOLID,
-														easing		=> easing));
+														easing		=> board_object_easing));
 
 								when HATCHED =>
 									type_stencil_polygons.append (
 										container	=> module.board.stencil.top.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with
 														fill_style	=> HATCHED,
-														easing		=> easing,
+														easing		=> board_object_easing,
 														hatching	=> board_object_hatching));
 							end case;
 						end;
@@ -10239,14 +10235,14 @@ package body et_project is
 										container	=> module.board.stencil.bottom.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with
 														fill_style	=> SOLID,
-														easing		=> easing));
+														easing		=> board_object_easing));
 
 								when HATCHED =>
 									type_stencil_polygons.append (
 										container	=> module.board.stencil.bottom.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with
 														fill_style	=> HATCHED,
-														easing		=> easing,
+														easing		=> board_object_easing,
 														hatching	=> board_object_hatching));
 							end case;
 						end;
@@ -10258,14 +10254,14 @@ package body et_project is
 										container	=> module.board.stop_mask.top.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with
 														fill_style	=> SOLID,
-														easing		=> easing));
+														easing		=> board_object_easing));
 
 								when HATCHED =>
 									type_stop_polygons.append (
 										container	=> module.board.stop_mask.top.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with
 														fill_style	=> HATCHED,
-														easing		=> easing,
+														easing		=> board_object_easing,
 														hatching	=> board_object_hatching));
 							end case;
 						end;
@@ -10277,14 +10273,14 @@ package body et_project is
 										container	=> module.board.stop_mask.bottom.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with
 														fill_style	=> SOLID,
-														easing		=> easing));
+														easing		=> board_object_easing));
 
 								when HATCHED =>
 									type_stop_polygons.append (
 										container	=> module.board.stop_mask.bottom.polygons,
 										new_item	=> (shapes.type_polygon_base (polygon) with
 														fill_style	=> HATCHED,
-														easing		=> easing,
+														easing		=> board_object_easing,
 														hatching	=> board_object_hatching));
 							end case;
 						end;
@@ -10360,70 +10356,70 @@ package body et_project is
 							pac_silk_cutouts.append (
 								container	=> module.board.silk_screen.top.cutouts,
 								new_item	=> (shapes.type_polygon_base (polygon) with 
-											easing		=> easing));
+											easing		=> board_object_easing));
 						end;
 
 						procedure append_silk_cutout_bottom is begin
 							pac_silk_cutouts.append (
 								container	=> module.board.silk_screen.bottom.cutouts,
 								new_item	=> (shapes.type_polygon_base (polygon) with 
-											easing		=> easing));
+											easing		=> board_object_easing));
 						end;
 						
 						procedure append_assy_doc_cutout_top is begin
 							pac_doc_cutouts.append (
 								container	=> module.board.assy_doc.top.cutouts,
 								new_item	=> (shapes.type_polygon_base (polygon) with 
-												easing		=> easing));
+												easing		=> board_object_easing));
 						end;
 
 						procedure append_assy_doc_cutout_bottom is begin
 							pac_doc_cutouts.append (
 								container	=> module.board.assy_doc.bottom.cutouts,
 								new_item	=> (shapes.type_polygon_base (polygon) with 
-												easing		=> easing));
+												easing		=> board_object_easing));
 						end;
 
 						procedure append_keepout_cutout_top is begin
 							pac_keepout_cutouts.append (
 								container	=> module.board.keepout.top.cutouts, 
 								new_item	=> (shapes.type_polygon_base (polygon) with
-												easing		=> easing));
+												easing		=> board_object_easing));
 						end;
 
 						procedure append_keepout_cutout_bottom is begin
 							pac_keepout_cutouts.append (
 								container	=> module.board.keepout.bottom.cutouts, 
 								new_item	=> (shapes.type_polygon_base (polygon) with
-												easing		=> easing));
+												easing		=> board_object_easing));
 						end;
 
 						procedure append_stencil_cutout_top is begin
 							pac_stencil_cutouts.append (
 								container	=> module.board.stencil.top.cutouts,
 								new_item	=> (shapes.type_polygon_base (polygon) with
-												easing		=> easing));
+												easing		=> board_object_easing));
 						end;
 
 						procedure append_stencil_cutout_bottom is begin
 							pac_stencil_cutouts.append (
 								container	=> module.board.stencil.bottom.cutouts,
 								new_item	=> (shapes.type_polygon_base (polygon) with
-												easing		=> easing));
+												easing		=> board_object_easing));
 						end;
 
 						procedure append_stop_cutout_top is begin
 							pac_stop_cutouts.append (
 								container	=> module.board.stop_mask.top.cutouts,
 								new_item	=> (shapes.type_polygon_base (polygon) with
-												easing		=> easing));
+												easing		=> board_object_easing));
 						end;
 
 						procedure append_stop_cutout_bottom is begin
 							pac_stop_cutouts.append (
 								container	=> module.board.stop_mask.bottom.cutouts,
 								new_item	=> (shapes.type_polygon_base (polygon) with
-												easing		=> easing));
+												easing		=> board_object_easing));
 						end;
 						
 					begin -- do_it
@@ -10491,7 +10487,7 @@ package body et_project is
 						pac_via_restrict_cutouts.append (
 							container	=> module.board.via_restrict.cutouts,
 							new_item	=> (shapes.type_polygon_base (polygon) with 
-											easing	=> easing,
+											easing	=> board_object_easing,
 											layers	=> signal_layers));
 					end do_it;
 										
@@ -10519,7 +10515,7 @@ package body et_project is
 						pac_route_restrict_cutouts.append (
 							container	=> module.board.route_restrict.cutouts,
 							new_item	=> (shapes.type_polygon_base (polygon) with 
-											easing	=> easing,
+											easing	=> board_object_easing,
 											layers	=> signal_layers));
 					end do_it;
 										
@@ -10548,7 +10544,7 @@ package body et_project is
 						et_pcb.pac_copper_cutouts.append (
 							container	=> module.board.copper.cutouts,
 							new_item	=> (type_polygon_base (polygon) with
-									easing			=> easing,
+									easing			=> board_object_easing,
 									layer			=> signal_layer));
 					end do_it;
 										
@@ -10951,7 +10947,7 @@ package body et_project is
 									container	=> module.board.copper.polygons.solid,
 									new_item	=> (type_polygon_base (polygon) with
 											fill_style 		=> SOLID,
-											easing			=> easing,
+											easing			=> board_object_easing,
 											priority_level	=> polygon_priority,
 											isolation		=> polygon_isolation,
 											layer			=> signal_layer,
@@ -10963,7 +10959,7 @@ package body et_project is
 									container	=> module.board.copper.polygons.hatched,
 									new_item	=> (type_polygon_base (polygon) with
 											fill_style 		=> HATCHED,
-											easing			=> easing,
+											easing			=> board_object_easing,
 											priority_level	=> polygon_priority,
 											isolation		=> polygon_isolation,
 											layer			=> signal_layer,
@@ -11282,7 +11278,7 @@ package body et_project is
 						begin
 							p.segments := polygon.segments;
 							
-							p.easing := easing;
+							p.easing := board_object_easing;
 							
 							p.width_min	:= polygon_width_min;
 							p.isolation	:= polygon_isolation;
@@ -11301,7 +11297,7 @@ package body et_project is
 						begin
 							p.segments := polygon.segments;
 							
-							p.easing := easing;
+							p.easing := board_object_easing;
 							
 							p.width_min	:= polygon_width_min;
 							p.isolation	:= polygon_isolation;
@@ -11332,7 +11328,7 @@ package body et_project is
 						begin
 							p.segments := polygon.segments;
 							
-							p.easing := easing;
+							p.easing := board_object_easing;
 							
 							p.width_min	:= polygon_width_min;
 							p.isolation	:= polygon_isolation;
@@ -11351,7 +11347,7 @@ package body et_project is
 						begin
 							p.segments := polygon.segments;
 							
-							p.easing := easing;
+							p.easing := board_object_easing;
 							
 							p.width_min	:= polygon_width_min;
 							p.isolation	:= polygon_isolation;
@@ -11388,7 +11384,7 @@ package body et_project is
 					et_pcb.pac_copper_cutouts.append (
 						container	=> route.cutouts,
 						new_item	=> (shapes.type_polygon_base (polygon) with
-										easing	=> easing,
+										easing	=> board_object_easing,
 										layer	=> signal_layer));
 
 					board_reset_polygon; -- clean up for next cutout zone
@@ -13538,11 +13534,11 @@ package body et_project is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 										expect_field_count (line, 2);
-										easing.style := to_corner_easing (f (line, 2));
+										board_object_easing.style := to_corner_easing (f (line, 2));
 
 									elsif kw = keyword_easing_radius then -- easing_radius 0.3
 										expect_field_count (line, 2);
-										easing.radius := to_distance (f (line, 2));
+										board_object_easing.radius := to_distance (f (line, 2));
 
 									elsif kw = keyword_layer then -- layer 2
 										expect_field_count (line, 2);
@@ -13566,11 +13562,11 @@ package body et_project is
 											-- CS: In the following: set a corresponding parameter-found-flag
 											if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 												expect_field_count (line, 2);													
-												easing.style := to_corner_easing (f (line, 2));
+												board_object_easing.style := to_corner_easing (f (line, 2));
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
-												easing.radius := to_distance (f (line, 2));
+												board_object_easing.radius := to_distance (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -13619,11 +13615,11 @@ package body et_project is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 										expect_field_count (line, 2);													
-										easing.style := to_corner_easing (f (line, 2));
+										board_object_easing.style := to_corner_easing (f (line, 2));
 
 									elsif kw = keyword_easing_radius then -- easing_radius 0.4
 										expect_field_count (line, 2);													
-										easing.radius := to_distance (f (line, 2));
+										board_object_easing.radius := to_distance (f (line, 2));
 										
 									elsif kw = keyword_layer then -- layer 1
 										expect_field_count (line, 2);
@@ -13658,11 +13654,11 @@ package body et_project is
 										
 									elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 										expect_field_count (line, 2);
-										easing.style := to_corner_easing (f (line, 2));
+										board_object_easing.style := to_corner_easing (f (line, 2));
 
 									elsif kw = keyword_easing_radius then -- easing_radius 0.3
 										expect_field_count (line, 2);
-										easing.radius := to_distance (f (line, 2));
+										board_object_easing.radius := to_distance (f (line, 2));
 
 									elsif kw = keyword_fill_style then -- fill_style solid,hatched
 										expect_field_count (line, 2);
@@ -13722,11 +13718,11 @@ package body et_project is
 
 											elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 												expect_field_count (line, 2);													
-												easing.style := to_corner_easing (f (line, 2));
+												board_object_easing.style := to_corner_easing (f (line, 2));
 
 											elsif kw = keyword_easing_radius then -- easing_radius 0.4
 												expect_field_count (line, 2);													
-												easing.radius := to_distance (f (line, 2));
+												board_object_easing.radius := to_distance (f (line, 2));
 												
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
@@ -13798,11 +13794,11 @@ package body et_project is
 
 									elsif kw = keyword_corner_easing then -- corner_easing none/chamfer/fillet
 										expect_field_count (line, 2);													
-										easing.style := to_corner_easing (f (line, 2));
+										board_object_easing.style := to_corner_easing (f (line, 2));
 
 									elsif kw = keyword_easing_radius then -- easing_radius 0.4
 										expect_field_count (line, 2);													
-										easing.radius := to_distance (f (line, 2));
+										board_object_easing.radius := to_distance (f (line, 2));
 										
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													
