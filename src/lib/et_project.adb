@@ -9926,7 +9926,7 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next board line
-					board_line := (others => <>);
+					reset_board_line;
 					board_line_width := type_general_line_width'first;
 				end insert_line;
 
@@ -10011,7 +10011,7 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next board arc
-					board_arc := (others => <>);
+					reset_board_arc;
 					board_line_width := type_general_line_width'first;
 				end insert_arc;
 
@@ -10733,7 +10733,7 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next board line
-					board_line := (others => <>);
+					reset_board_line;
 					board_line_width := type_general_line_width'first;
 					clear (signal_layers);
 				end insert_line_route_restrict;
@@ -10760,7 +10760,7 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next board line
-					board_arc := (others => <>);
+					reset_board_arc;
 					board_line_width := type_general_line_width'first;
 					clear (signal_layers);
 				end insert_arc_route_restrict;
@@ -10786,7 +10786,7 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next board line
-					board_circle := (others => <>);
+					reset_board_circle;
 					clear (signal_layers);
 				end insert_circle_route_restrict;
 
@@ -10840,7 +10840,7 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next board line
-					board_line := (others => <>);
+					reset_board_line;
 					board_line_width := type_general_line_width'first;
 					clear (signal_layers);
 				end insert_line_via_restrict;
@@ -10867,7 +10867,7 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next board line
-					board_arc := (others => <>);
+					reset_board_arc;
 					board_line_width := type_general_line_width'first;
 					clear (signal_layers);
 				end insert_arc_via_restrict;
@@ -10893,7 +10893,7 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next board line
-					board_circle := (others => <>);
+					reset_board_circle;
 					clear (signal_layers);
 				end insert_circle_via_restrict;
 
@@ -11102,7 +11102,7 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next pcb contour line
-					board_line := (others => <>);
+					reset_board_line;
 					lock_status := et_pcb.type_locked'first;
 				end insert_line_contour;
 				
@@ -11125,7 +11125,7 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next pcb contour arc
-					board_arc := (others => <>);
+					reset_board_arc;
 					lock_status := et_pcb.type_locked'first;
 				end insert_arc_contour;
 
