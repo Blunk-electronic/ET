@@ -302,9 +302,6 @@ package et_packages is
 
 
 	
-	-- Corner points are collected in an ordered set.
-	-- This prevents placing two identical points on top of each other.
-	package type_polygon_points is new ordered_sets (type_point); -- CS remove
 
 
 	

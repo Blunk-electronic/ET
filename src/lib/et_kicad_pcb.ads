@@ -735,11 +735,12 @@ package et_kicad_pcb is
 -- POLYGON (or fill zone)
 	-- Corner points are collected in an ordered set.
 	-- This prevents placing two identical points on top of each other.
+	package type_polygon_points is new ordered_sets (type_point);
 
 	-- CS unify the follwing three polygon types and use composite types:
 	
 	type type_polygon_base is abstract tagged record
-		corners				: et_packages.type_polygon_points.set;
+		corners				: type_polygon_points.set;
 		fill_style			: et_packages.type_fill_style := et_packages.SOLID; -- a polygon is always filled
 		hatching_line_width	: et_packages.type_track_width := et_packages.hatching_line_width_default; -- the with of the lines
 		hatching_spacing	: et_packages.type_track_clearance := et_packages.hatching_spacing_default; -- the space between the lines

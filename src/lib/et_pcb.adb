@@ -327,9 +327,6 @@ package body et_pcb is
 		cursor			: in pac_copper_polygons_floating_solid.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use pac_copper_polygons_floating_solid;
-		use type_polygon_points;
-		points : type_polygon_points.set;
-		point_cursor : type_polygon_points.cursor;
 	begin
 		-- general stuff
 		log (text => "polygon" & 

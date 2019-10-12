@@ -1020,12 +1020,6 @@ package body et_project is
 		write (keyword => keyword_layers, space => true, parameters => to_string (layers));
 	end;
 	
-	procedure write_polygon_corners (pc : in et_packages.type_polygon_points.cursor) is
-		use et_packages.type_polygon_points;
-	begin
-		write (keyword => keyword_position, parameters => position (element (pc)));
-	end write_polygon_corners;
-
 	procedure write_circle_fillable (circle : in et_packages.type_fillable_circle) is 
 		use et_packages;
 		use et_packages.shapes;
