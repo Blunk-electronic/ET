@@ -258,10 +258,10 @@ package et_packages is
 	
 	type type_hatching is record
 		-- the width of the border line
-		border_width	: type_distance_positive := 1.0;
+		border_width : type_distance_positive := 1.0;
 		
 		-- the with of the lines inside the area:
-		width	: type_distance_positive := hatching_line_width_default; -- CS rename to line_width
+		line_width : type_distance_positive := hatching_line_width_default;
 
 		-- the space between the lines inside the area:
 		spacing	: type_distance_positive := hatching_spacing_default;
@@ -280,7 +280,7 @@ package et_packages is
 	easing_radius_max : constant type_distance_positive := 100.0;
 	subtype type_easing_radius is type_distance_positive range type_distance_positive'first .. easing_radius_max;
 
-	type type_polygon_easing is record -- CS rename to type_easing because it is general
+	type type_easing is record
 		style	: type_corner_easing := NONE;
 		radius	: type_easing_radius := zero; -- center of circle at corner point
 	end record;
@@ -288,7 +288,7 @@ package et_packages is
 	
 	-- POLYGON
 	type type_polygon (fill_style : type_fill_style) is new type_polygon_base with record
-		easing : type_polygon_easing;
+		easing : type_easing;
 		
 		case fill_style is
 			when SOLID		=> null;
@@ -297,7 +297,7 @@ package et_packages is
 	end record;
 
 	type type_cutout_zone is new type_polygon_base with record
-		easing : type_polygon_easing;
+		easing : type_easing;
 	end record;
 
 
@@ -394,7 +394,7 @@ package et_packages is
 		case filled is
 			when NO => 
 				-- the line width of the circumfence:
-				width : type_general_line_width := type_general_line_width'first; -- CS rename to width_circumfence
+				border_width : type_general_line_width := type_general_line_width'first;
 
 			when YES =>
 				case fill_style is

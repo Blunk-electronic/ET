@@ -1992,25 +1992,25 @@ package body et_kicad_pcb is
 				case circle.layer is
 					when TOP_SILK =>
 						silk_screen.top.circles.append ((shapes.type_circle (circle) with 
-							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 						
 						circle_silk_screen_properties (TOP, silk_screen.top.circles.last, log_threshold + 1);
 						
 					when BOT_SILK =>
 						silk_screen.bottom.circles.append ((shapes.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 						
 						circle_silk_screen_properties (BOTTOM, silk_screen.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_ASSY =>
 						assy_doc.top.circles.append ((shapes.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 
 						circle_assy_doc_properties (TOP, assy_doc.top.circles.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
 						assy_doc.bottom.circles.append ((shapes.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 
 						circle_assy_doc_properties (BOTTOM, assy_doc.bottom.circles.last, log_threshold + 1);
 						
@@ -2038,25 +2038,25 @@ package body et_kicad_pcb is
 						
 					when TOP_STOP =>
 						stop_mask.top.circles.append ((shapes.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 
 						circle_stop_mask_properties (TOP, stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						stop_mask.bottom.circles.append ((shapes.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 						
 						circle_stop_mask_properties (BOTTOM, stop_mask.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_PASTE =>
 						stencil.top.circles.append ((shapes.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 
 						circle_stencil_properties (TOP, stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						stencil.bottom.circles.append ((shapes.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => circle.width, others => <>)); 
 
 						circle_stencil_properties (BOTTOM, stencil.bottom.circles.last, log_threshold + 1);
 
@@ -6169,49 +6169,49 @@ package body et_kicad_pcb is
 				case board_circle.layer is
 					when TOP_SILK =>
 						board.silk_screen.top.circles.append ((shapes.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 						
 						circle_silk_screen_properties (TOP, board.silk_screen.top.circles.last, log_threshold + 1);
 
 					when BOT_SILK =>
 						board.silk_screen.bottom.circles.append ((shapes.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_silk_screen_properties (BOTTOM, board.silk_screen.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_ASSY =>
 						board.assy_doc.top.circles.append ((shapes.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_assy_doc_properties (TOP, board.assy_doc.top.circles.last, log_threshold + 1);
 
 					when BOT_ASSY =>
 						board.assy_doc.bottom.circles.append ((shapes.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_assy_doc_properties (BOTTOM, board.assy_doc.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_PASTE =>
 						board.stencil.top.circles.append ((shapes.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_stencil_properties (TOP, board.stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						board.stencil.bottom.circles.append ((shapes.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_stencil_properties (BOTTOM, board.stencil.bottom.circles.last, log_threshold + 1);
 
 					when TOP_STOP =>
 						board.stop_mask.top.circles.append ((shapes.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_stop_mask_properties (TOP, board.stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						board.stop_mask.bottom.circles.append ((shapes.type_circle (board_circle) with
-							filled => NO, fill_style => fill_style_default, width => board_circle.width, others => <>));
+							filled => NO, fill_style => fill_style_default, border_width => board_circle.width, others => <>));
 
 						circle_stop_mask_properties (BOTTOM, board.stop_mask.bottom.circles.last, log_threshold + 1);
 						
@@ -6458,25 +6458,25 @@ package body et_kicad_pcb is
 				case package_circle.layer is
 					when TOP_SILK =>
 						package_silk_screen.top.circles.append ((shapes.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 
 						circle_silk_screen_properties (TOP, package_silk_screen.top.circles.last, log_threshold + 1);
 						
 					when BOT_SILK =>
 						package_silk_screen.bottom.circles.append ((shapes.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_silk_screen_properties (BOTTOM, package_silk_screen.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_ASSY =>
 						package_assy_doc.top.circles.append ((shapes.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 
 						circle_assy_doc_properties (TOP, package_assy_doc.top.circles.last, log_threshold + 1);
 						
 					when BOT_ASSY =>
 						package_assy_doc.bottom.circles.append ((shapes.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_assy_doc_properties (BOTTOM, package_assy_doc.bottom.circles.last, log_threshold + 1);
 						
@@ -6504,25 +6504,25 @@ package body et_kicad_pcb is
 						
 					when TOP_STOP =>
 						package_stop_mask.top.circles.append ((shapes.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 
 						circle_stop_mask_properties (TOP, package_stop_mask.top.circles.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						package_stop_mask.bottom.circles.append ((shapes.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_stop_mask_properties (BOTTOM, package_stop_mask.bottom.circles.last, log_threshold + 1);
 						
 					when TOP_PASTE =>
 						package_stencil.top.circles.append ((shapes.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_stencil_properties (TOP, package_stencil.top.circles.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						package_stencil.bottom.circles.append ((shapes.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => package_circle.width, others => <>)); 
 						
 						circle_stencil_properties (BOTTOM, package_stencil.bottom.circles.last, log_threshold + 1);
 

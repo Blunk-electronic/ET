@@ -2031,15 +2031,15 @@ package body scripting is
 										module_name 	=> module,
 										face			=> to_face (f (5)),
 										circle			=> 
-													(
-													filled		=> NO,
-													fill_style	=> fill_style_default, -- don't care here
-													width	=> to_distance (f (7)),
-													center	=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-													radius	=> to_distance (f (10))
-													),
+												(
+												filled			=> NO,
+												fill_style		=> fill_style_default, -- don't care here
+												border_width	=> to_distance (f (7)),
+												center			=> type_point (set (
+																	x => to_distance (f (8)),
+																	y => to_distance (f (9)))),
+												radius			=> to_distance (f (10))
+												),
 										log_threshold	=> log_threshold + 1);
 								else
 									
@@ -2103,8 +2103,8 @@ package body scripting is
 																	y => to_distance (f (9)))),
 														radius		=> to_distance (f (10)),
 														hatching	=> (
-																	width	=> to_distance (f (11)),
-																	spacing	=> to_distance (f (12)),
+																	line_width	=> to_distance (f (11)),
+																	spacing		=> to_distance (f (12)),
 																	others	=> <>
 																	)
 														),
@@ -2192,15 +2192,15 @@ package body scripting is
 										module_name 	=> module,
 										face			=> to_face (f (5)),
 										circle			=> 
-													(
-													filled		=> NO,
-													fill_style	=> fill_style_default, -- don't care here
-													width	=> to_distance (f (7)),
-													center	=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-													radius	=> to_distance (f (10))
-													),
+												(
+												filled			=> NO,
+												fill_style		=> fill_style_default, -- don't care here
+												border_width	=> to_distance (f (7)),
+												center			=> type_point (set (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+												radius			=> to_distance (f (10))
+												),
 										log_threshold	=> log_threshold + 1);
 								else
 									
@@ -2264,9 +2264,9 @@ package body scripting is
 																	y => to_distance (f (9)))),
 														radius		=> to_distance (f (10)),
 														hatching	=> (
-																	width	=> to_distance (f (11)),
-																	spacing	=> to_distance (f (12)),
-																	others	=> <>
+																	line_width	=> to_distance (f (11)),
+																	spacing		=> to_distance (f (12)),
+																	others		=> <>
 																	)
 														),
 												log_threshold	=> log_threshold + 1);
@@ -2875,15 +2875,15 @@ package body scripting is
 														module_name 	=> module,
 														face			=> to_face (f (5)),
 														circle			=> 
-																	(
-																	filled		=> NO,
-																	fill_style	=> fill_style_default, -- don't care here
-																	width	=> to_distance (f (7)),
-																	center	=> type_point (set (
-																				x => to_distance (f (8)),
-																				y => to_distance (f (9)))),
-																	radius	=> to_distance (f (10))
-																	),
+																(
+																filled			=> NO,
+																fill_style		=> fill_style_default, -- don't care here
+																border_width	=> to_distance (f (7)),
+																center			=> type_point (set (
+																			x => to_distance (f (8)),
+																			y => to_distance (f (9)))),
+																radius			=> to_distance (f (10))
+																),
 														log_threshold	=> log_threshold + 1);
 												else
 													
@@ -2950,9 +2950,9 @@ package body scripting is
 																					y => to_distance (f (9)))),
 																		radius		=> to_distance (f (10)),
 																		hatching	=> (
-																					width	=> to_distance (f (11)),
-																					spacing	=> to_distance (f (12)),
-																					others	=> <>
+																					line_width	=> to_distance (f (11)),
+																					spacing		=> to_distance (f (12)),
+																					others		=> <>
 																					)
 																		),
 																log_threshold	=> log_threshold + 1);
@@ -3049,15 +3049,15 @@ package body scripting is
 														module_name 	=> module,
 														face			=> to_face (f (5)),
 														circle			=> 
-																	(
-																	filled		=> NO,
-																	fill_style	=> fill_style_default, -- don't care here
-																	width	=> to_distance (f (7)),
-																	center	=> type_point (set (
-																				x => to_distance (f (8)),
-																				y => to_distance (f (9)))),
-																	radius	=> to_distance (f (10))
-																	),
+																(
+																filled			=> NO,
+																fill_style		=> fill_style_default, -- don't care here
+																border_width	=> to_distance (f (7)),
+																center			=> type_point (set (
+																			x => to_distance (f (8)),
+																			y => to_distance (f (9)))),
+																radius			=> to_distance (f (10))
+																),
 														log_threshold	=> log_threshold + 1);
 												else
 													
@@ -3125,9 +3125,9 @@ package body scripting is
 																		radius		=> to_distance (f (10)),
 
 																		hatching	=> (
-																					width	=> to_distance (f (11)),
-																					spacing	=> to_distance (f (12)),
-																					others	=> <>
+																					line_width	=> to_distance (f (11)),
+																					spacing		=> to_distance (f (12)),
+																					others		=> <>
 																					)
 																		),
 																log_threshold	=> log_threshold + 1);

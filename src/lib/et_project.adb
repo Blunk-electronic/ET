@@ -942,12 +942,12 @@ package body et_project is
 		use et_packages;
 		use et_pcb_coordinates.geometry;
 	begin
-		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.width));
+		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));
 		write (keyword => keyword_hatching_line_spacing, parameters => to_string (hatching.spacing));
 		-- CS border width
 	end;
 
-	procedure write_easing (easing: in et_packages.type_polygon_easing) is
+	procedure write_easing (easing: in et_packages.type_easing) is
 		use et_pcb_coordinates.geometry;
 		use et_packages;
 	begin
@@ -1036,7 +1036,7 @@ package body et_project is
 		write (keyword => keyword_filled, parameters => latin_1.space & to_string (circle.filled));
 		case circle.filled is
 			when NO =>
-				write (keyword => keyword_width, parameters => to_string (circle.width));
+				write (keyword => keyword_width, parameters => to_string (circle.border_width));
 				
 			when YES =>
 				write (keyword => keyword_fill_style, parameters => latin_1.space & to_string (circle.fill_style));
@@ -1044,7 +1044,7 @@ package body et_project is
 				case circle.fill_style is
 					when SOLID => null;
 					when HATCHED =>
-						write (keyword => keyword_hatching_line_width  , parameters => to_string (circle.hatching.width));
+						write (keyword => keyword_hatching_line_width  , parameters => to_string (circle.hatching.line_width));
 						write (keyword => keyword_hatching_line_spacing, parameters => to_string (circle.hatching.spacing));
 				end case;
 
@@ -3506,9 +3506,9 @@ package body et_project is
 		case filled is
 			when NO =>
 				return (circle with
-					filled		=> NO,
-					fill_style	=> fill_style,
-					width		=> circumfence_width);
+					filled			=> NO,
+					fill_style		=> fill_style,
+					border_width	=> circumfence_width);
 				
 			when YES =>
 				case fill_style is
@@ -3550,7 +3550,7 @@ package body et_project is
 	board_filled : et_packages.shapes.type_filled := et_packages.shapes.filled_default;
 
 	board_hatching : et_packages.type_hatching;
-	board_easing : et_packages.type_polygon_easing;
+	board_easing : et_packages.type_easing;
 
 	
 	type type_polygon is new et_packages.shapes.type_polygon_base with null record;
@@ -5657,7 +5657,7 @@ package body et_project is
 
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												board_hatching.width := to_distance (f (line, 2));
+												board_hatching.line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
@@ -5797,7 +5797,7 @@ package body et_project is
 
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													
-										board_hatching.width := to_distance (f (line, 2));
+										board_hatching.line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 										expect_field_count (line, 2);													
@@ -5975,7 +5975,7 @@ package body et_project is
 												
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												board_hatching.width := to_distance (f (line, 2));
+												board_hatching.line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
@@ -6017,7 +6017,7 @@ package body et_project is
 												
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												board_hatching.width := to_distance (f (line, 2));
+												board_hatching.line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
@@ -13352,7 +13352,7 @@ package body et_project is
 
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												board_hatching.width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+												board_hatching.line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
@@ -13625,7 +13625,7 @@ package body et_project is
 
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 1
 										expect_field_count (line, 2);
-										board_hatching.width := to_distance (f (line, 2));
+										board_hatching.line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 1
 										expect_field_count (line, 2);
@@ -13685,7 +13685,7 @@ package body et_project is
 												
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												board_hatching.width := to_distance (f (line, 2));
+												board_hatching.line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
@@ -13761,7 +13761,7 @@ package body et_project is
 										
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													
-										board_hatching.width := to_distance (f (line, 2));
+										board_hatching.line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 										expect_field_count (line, 2);													
