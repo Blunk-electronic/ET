@@ -737,29 +737,12 @@ package et_kicad_pcb is
 	-- This prevents placing two identical points on top of each other.
 	package type_polygon_points is new ordered_sets (type_point);
 
-	-- CS unify the follwing three polygon types and use composite types:
-	
-	type type_polygon_base is abstract tagged record
-		corners				: type_polygon_points.set;
-		fill_style			: et_packages.type_fill_style := et_packages.SOLID; -- a polygon is always filled
-		hatching_line_width	: et_packages.type_track_width := et_packages.hatching_line_width_default; -- the with of the lines
-		hatching_spacing	: et_packages.type_track_clearance := et_packages.hatching_spacing_default; -- the space between the lines
-		corner_easing		: et_packages.type_corner_easing := et_packages.NONE;
-		easing_radius		: et_packages.type_easing_radius := zero; -- center of circle at corner point
-		-- CS locked : type_locked;
-	end record;
-
-	type type_copper_polygon is new type_polygon_base with record
-		priority_level		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
-		isolation_gap		: et_packages.type_track_clearance := et_packages.type_track_clearance'first; -- the space between foreign pads and the polygon
-	end record;
-
 	type type_polygon_pad_connection is (THERMAL, SOLID, NONE);
 
 	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string;
 	function to_pad_connection (connection : in string) return type_polygon_pad_connection;
 	
-	type type_polygon is new type_copper_polygon with record
+	type type_polygon is record
 		net_name			: et_general.type_net_name.bounded_string; -- if name is empty, the polygon is not connected to any net
 		net_id				: type_net_id; -- if id is 0, the polygon is not connected to any net
 		layer				: type_signal_layer_id;
@@ -774,6 +757,19 @@ package et_kicad_pcb is
 		thermal_width		: et_pcb.type_polygon_thermal_width := et_pcb.type_polygon_thermal_width'first; -- spoke width
 		pad_technology		: type_polygon_pad_technology := type_polygon_pad_technology'last;
 		pad_connection		: type_polygon_pad_connection := type_polygon_pad_connection'first;
+		priority_level		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
+		isolation_gap		: et_packages.type_track_clearance := et_packages.type_track_clearance'first; -- the space between foreign pads and the polygon
+
+		corners				: type_polygon_points.set;
+		
+		fill_style			: et_packages.type_fill_style := et_packages.SOLID; -- a polygon is always filled
+		
+		hatching_line_width	: et_packages.type_track_width := et_packages.hatching_line_width_default; -- the with of the lines
+		hatching_spacing	: et_packages.type_track_clearance := et_packages.hatching_spacing_default; -- the space between the lines
+		
+		corner_easing		: et_packages.type_corner_easing := et_packages.NONE;
+		easing_radius		: et_packages.type_easing_radius := zero; -- center of circle at corner point
+
 	end record;
 
 	package type_polygons is new doubly_linked_lists (type_polygon);
