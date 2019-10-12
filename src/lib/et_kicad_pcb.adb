@@ -5629,7 +5629,9 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => to_polygon_hatch_style (to_string (arg));
-								when 2 => polygon.hatching_line_width := to_distance (to_string (arg));
+								when 2 => 
+									polygon.hatching.line_width := to_distance (to_string (arg));
+									polygon.hatching.border_width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -5724,7 +5726,7 @@ package body et_kicad_pcb is
 						when SEC_SMOOTHING =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => polygon.corner_easing := to_corner_easing (to_string (arg));
+								when 1 => polygon.easing.style := to_corner_easing (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -5732,7 +5734,7 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								-- the corner easing radius applies for both chamfer and fillet type.
-								when 1 => polygon.easing_radius := to_distance (to_string (arg));
+								when 1 => polygon.easing.radius := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
@@ -7013,8 +7015,8 @@ package body et_kicad_pcb is
 					 " " & keyword_isolation & to_string (polygon.isolation_gap) &
 					 " filled " & boolean'image (polygon.filled) & -- CS use constant
 					 " fill_mode_segment " & boolean'image (polygon.fill_mode_segment) &
-					 " smooting/easing" & to_string (polygon.corner_easing) &
-					 " " & keyword_easing_radius & to_string (polygon.easing_radius) &
+					 " smoothing/easing" & to_string (polygon.easing.style) &
+					 " " & keyword_easing_radius & to_string (polygon.easing.radius) &
 					 " arc_segments" & natural'image (polygon.arc_segments) & -- CS use constant
 					 " " & text_polygon_thermal_gap & to_string (polygon.thermal_gap) &
 					 " " & text_polygon_thermal_width & to_string (polygon.thermal_width) &

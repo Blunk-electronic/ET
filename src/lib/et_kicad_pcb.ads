@@ -759,17 +759,10 @@ package et_kicad_pcb is
 		pad_connection		: type_polygon_pad_connection := type_polygon_pad_connection'first;
 		priority_level		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
 		isolation_gap		: et_packages.type_track_clearance := et_packages.type_track_clearance'first; -- the space between foreign pads and the polygon
-
 		corners				: type_polygon_points.set;
-		
 		fill_style			: et_packages.type_fill_style := et_packages.SOLID; -- a polygon is always filled
-		
-		hatching_line_width	: et_packages.type_track_width := et_packages.hatching_line_width_default; -- the with of the lines
-		hatching_spacing	: et_packages.type_track_clearance := et_packages.hatching_spacing_default; -- the space between the lines
-		
-		corner_easing		: et_packages.type_corner_easing := et_packages.NONE;
-		easing_radius		: et_packages.type_easing_radius := zero; -- center of circle at corner point
-
+		hatching			: et_packages.type_hatching;
+		easing				: et_packages.type_easing;
 	end record;
 
 	package type_polygons is new doubly_linked_lists (type_polygon);
