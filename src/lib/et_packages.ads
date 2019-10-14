@@ -720,7 +720,12 @@ package et_packages is
 	end record;
 
 	
--- PCB CONTOUR
+-- PCB CONTOURS
+
+	-- The outline of a pcb is a collction of lines, arcs and circles.
+	-- Unlike plated millings of terminals (see below) one can not assume a single
+	-- circumfence. There may be circles, rectangles and other objects that are not
+	-- nessecarily connected with each other. DON'T try to model the pcb outline with a polygon !
 	type type_pcb_contour_line is new type_line with null record;
 	package type_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
 	
@@ -735,18 +740,14 @@ package et_packages is
 		arcs	: type_pcb_contour_arcs.list;
 		circles	: type_pcb_contour_circles.list;
 	end record;
+
 	
--- 	type type_pcb_contour_plated is record
--- 		lines 	: type_pcb_contour_lines.list;
--- 		arcs	: type_pcb_contour_arcs.list;
--- 		circles	: type_pcb_contour_circles.list;
-	-- 	end record;
-	
-	type type_pcb_contour_plated is new shapes.type_polygon_base with null record;
-	-- CS rename to type_plated_millings ?
-	
+-- PLATED MILLINGS OF TERMINALS	
+	-- Plated millings as used by terminals. These structures have closed circumfence.
+	type type_plated_millings is new shapes.type_polygon_base with null record;
+
 	procedure log_plated_millings (
-		millings 		: in type_pcb_contour_plated;
+		millings 		: in type_plated_millings;
 		log_threshold	: in et_string_processing.type_log_level);
 
 	type type_package_appearance is (
@@ -829,7 +830,7 @@ package et_packages is
 						drill_size : type_drill_size;
 						
 					when MILLED =>
-						millings : type_pcb_contour_plated;
+						millings : type_plated_millings;
 				end case;
 				
 			when SMT =>
@@ -889,7 +890,7 @@ package et_packages is
 
 		-- Plated millings. NOTE: NOT FOR SLITTED HOLES ! See type_terminal instead.
 		-- CS: currently no need for such things
-		--pcb_contour_plated 		: type_pcb_contour_plated;
+		--pcb_contour_plated 		: type_plated_millings;
 		
 		technology				: type_assembly_technology; -- set by majority of terminals
 		

@@ -225,7 +225,7 @@ package body et_packages is
 	end to_directory;
 
 	procedure log_plated_millings (
-		millings 		: in type_pcb_contour_plated;
+		millings 		: in type_plated_millings;
 		log_threshold	: in et_string_processing.type_log_level)
 		is
 -- 		use type_pcb_contour_lines;

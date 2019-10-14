@@ -3678,7 +3678,7 @@ package body et_project is
 		tht_width_inner_layers	: et_pcb_coordinates.type_distance := zero; -- CS rework
 		tht_hole				: et_packages.type_terminal_tht_hole := et_packages.terminal_tht_hole_default;
 		tht_drill_size			: et_packages.type_drill_size := et_packages.type_drill_size'first;
-		tht_millings			: et_packages.type_pcb_contour_plated;
+		tht_millings			: et_packages.type_plated_millings;
 
 		terminal_name			: et_libraries.type_terminal_name.bounded_string;
 		terminal_technology		: et_packages.type_assembly_technology := et_packages.assembly_technology_default;
@@ -8713,7 +8713,7 @@ package body et_project is
 			use type_terminals;
 			terminal_cursor : type_terminals.cursor := packge.terminals.first;
 
-			procedure write_plated_millings (millings : in type_pcb_contour_plated) is begin
+			procedure write_plated_millings (millings : in type_plated_millings) is begin
 				section_mark (section_pad_millings, HEADER);
 				write_polygon_segments (shapes.type_polygon_base (millings));
 				section_mark (section_pad_millings, FOOTER);
