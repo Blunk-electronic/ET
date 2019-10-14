@@ -1743,10 +1743,10 @@ package body et_kicad_to_native is
 			begin -- move_contour
 				
 				-- LINES
-				lines_cursor := module.board.contour.lines.first;
+				lines_cursor := module.board.contours.lines.first;
 				while lines_cursor /= et_pcb.type_pcb_contour_lines.no_element loop
 					et_pcb.type_pcb_contour_lines.update_element (
-						container	=> module.board.contour.lines,
+						container	=> module.board.contours.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
 					
@@ -1754,10 +1754,10 @@ package body et_kicad_to_native is
 				end loop;
 
 				-- ARCS
-				arcs_cursor := module.board.contour.arcs.first;
+				arcs_cursor := module.board.contours.arcs.first;
 				while arcs_cursor /= et_pcb.type_pcb_contour_arcs.no_element loop
 					et_pcb.type_pcb_contour_arcs.update_element (
-						container	=> module.board.contour.arcs,
+						container	=> module.board.contours.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
 					
@@ -1765,10 +1765,10 @@ package body et_kicad_to_native is
 				end loop;
 
 				-- CIRCLES TOP
-				circles_cursor := module.board.contour.circles.first;
+				circles_cursor := module.board.contours.circles.first;
 				while circles_cursor /= et_pcb.type_pcb_contour_circles.no_element loop
 					et_pcb.type_pcb_contour_circles.update_element (
-						container	=> module.board.contour.circles,
+						container	=> module.board.contours.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
 					

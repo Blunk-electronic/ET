@@ -506,7 +506,7 @@ package et_project is
 	
 	type type_section_name_module is (
 		SEC_BOARD_LAYER_STACK,
-		SEC_CONTOURS,
+		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUTOUT_ZONE,
 		SEC_DRAWING_GRID,
 		SEC_FILL_ZONE,
@@ -629,7 +629,7 @@ package et_project is
 		);
 
 	type type_section_name_package is (
-		SEC_CONTOURS,
+		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUTOUT_ZONE,
 		SEC_INIT,
 		SEC_TOP,

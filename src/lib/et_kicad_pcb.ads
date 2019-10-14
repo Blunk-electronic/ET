@@ -788,7 +788,7 @@ package et_kicad_pcb is
 		stencil		: et_packages.type_stencil_both_sides;
 		stop_mask	: et_pcb.type_stop_mask_both_sides;
 		keepout		: et_packages.type_keepout_both_sides;		
-		contour		: et_pcb.type_pcb_contour;
+		contours	: et_pcb.type_pcb_contours;
 		copper		: et_pcb.type_copper; -- non-electric. used for texts only
 		-- other non-electric graphic objects in signal layers are not allowed in kicad
 

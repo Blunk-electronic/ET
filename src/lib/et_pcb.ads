@@ -188,7 +188,7 @@ package et_pcb is
 	package type_pcb_contour_circles is new doubly_linked_lists (type_pcb_contour_circle);
 
 	
-	type type_pcb_contour is record -- PCB contour defined for the PCB as a whole
+	type type_pcb_contours is record -- PCB contour defined for the PCB as a whole
 		lines 	: type_pcb_contour_lines.list;
 		arcs	: type_pcb_contour_arcs.list;
 		circles	: type_pcb_contour_circles.list;
@@ -569,7 +569,7 @@ package et_pcb is
 		route_restrict	: type_route_restrict;
 		via_restrict	: type_via_restrict;
 		copper			: type_copper; -- non-electric copper stuff, incl. floating polygons !
-		contour			: type_pcb_contour;
+		contours		: type_pcb_contours;
 	end record;
 
 	

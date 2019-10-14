@@ -6154,8 +6154,8 @@ package body et_kicad_pcb is
 						arc_keepout_properties (BOTTOM, board.keepout.bottom.arcs.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
-						board.contour.arcs.append ((shapes.type_arc (board_arc) with locked => NO));
-						arc_pcb_contour_properties (board.contour.arcs.last, log_threshold + 1);
+						board.contours.arcs.append ((shapes.type_arc (board_arc) with locked => NO));
+						arc_pcb_contour_properties (board.contours.arcs.last, log_threshold + 1);
 						
 					when others => invalid_layer;
 				end case;
@@ -6234,8 +6234,8 @@ package body et_kicad_pcb is
 						circle_keepout_properties (BOTTOM, board.keepout.bottom.circles.last, log_threshold + 1);
 						
 					when EDGE_CUTS =>
-						board.contour.circles.append ((shapes.type_circle (board_circle) with locked => NO));
-						circle_pcb_contour_properties (board.contour.circles.last, log_threshold + 1);
+						board.contours.circles.append ((shapes.type_circle (board_circle) with locked => NO));
+						circle_pcb_contour_properties (board.contours.circles.last, log_threshold + 1);
 						
 					when others => invalid_layer;
 				end case;
@@ -6301,8 +6301,8 @@ package body et_kicad_pcb is
 
 						
 					when EDGE_CUTS =>
-						board.contour.lines.append ((shapes.type_line (board_line) with locked => NO));
-						line_pcb_contour_properties (board.contour.lines.last, log_threshold + 1);
+						board.contours.lines.append ((shapes.type_line (board_line) with locked => NO));
+						line_pcb_contour_properties (board.contours.lines.last, log_threshold + 1);
 
 					when others => invalid_layer;
 				end case;
@@ -7941,7 +7941,7 @@ package body et_kicad_pcb is
 				module.board.stencil 		:= board.stencil;
 				module.board.stop_mask 		:= board.stop_mask;
 				module.board.keepout 		:= board.keepout;
-				module.board.contour 		:= board.contour;
+				module.board.contours 		:= board.contours;
 
 				-- segments, vias and polygons (only those polygons that are connected with a net)
 				log_indentation_up;

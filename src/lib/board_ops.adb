@@ -2307,7 +2307,7 @@ package body board_ops is
 			use et_pcb.type_pcb_contour_lines;
 		begin
 			append (
-				container	=> module.board.contour.lines,
+				container	=> module.board.contours.lines,
 				new_item	=> line);
 		end;
 							   
@@ -2343,7 +2343,7 @@ package body board_ops is
 			use et_pcb.type_pcb_contour_arcs;
 		begin
 			append (
-				container	=> module.board.contour.arcs,
+				container	=> module.board.contours.arcs,
 				new_item	=> arc);
 		end;
 							   
@@ -2379,7 +2379,7 @@ package body board_ops is
 			use et_pcb.type_pcb_contour_circles;
 		begin
 			append (
-				container	=> module.board.contour.circles,
+				container	=> module.board.contours.circles,
 				new_item	=> circle);
 		end;
 							   
@@ -2418,16 +2418,16 @@ package body board_ops is
 			use et_pcb.type_pcb_contour_lines;
 			use et_pcb.type_pcb_contour_arcs;
 			use et_pcb.type_pcb_contour_circles;
-			line_cursor   : et_pcb.type_pcb_contour_lines.cursor   := module.board.contour.lines.first;
-			arc_cursor    : et_pcb.type_pcb_contour_arcs.cursor    := module.board.contour.arcs.first;
-			circle_cursor : et_pcb.type_pcb_contour_circles.cursor := module.board.contour.circles.first;
+			line_cursor   : et_pcb.type_pcb_contour_lines.cursor   := module.board.contours.lines.first;
+			arc_cursor    : et_pcb.type_pcb_contour_arcs.cursor    := module.board.contours.arcs.first;
+			circle_cursor : et_pcb.type_pcb_contour_circles.cursor := module.board.contours.circles.first;
 
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 		begin
 			-- first search for a matching segment among the lines
 			while line_cursor /= et_pcb.type_pcb_contour_lines.no_element loop
 				if on_line (point, element (line_cursor), accuracy) then
-					delete (module.board.contour.lines, line_cursor);
+					delete (module.board.contours.lines, line_cursor);
 					deleted := true;
 					exit;
 				end if;
@@ -2439,7 +2439,7 @@ package body board_ops is
 				while arc_cursor /= et_pcb.type_pcb_contour_arcs.no_element loop
 					
 					if on_arc (point, element (arc_cursor), accuracy) then
-						delete (module.board.contour.arcs, arc_cursor);
+						delete (module.board.contours.arcs, arc_cursor);
 						deleted := true;
 						exit;
 					end if;
@@ -2453,7 +2453,7 @@ package body board_ops is
 				while circle_cursor /= et_pcb.type_pcb_contour_circles.no_element loop
 					
 					if on_circle (point, element (circle_cursor), accuracy) then
-						delete (module.board.contour.circles, circle_cursor);
+						delete (module.board.contours.circles, circle_cursor);
 						deleted := true;
 						exit;
 					end if;

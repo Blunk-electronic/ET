@@ -2753,9 +2753,9 @@ package body et_project is
 
 			-- BOARD CONTOUR
 			section_mark (section_pcb_contours, HEADER);
-				iterate (element (module_cursor).board.contour.lines, write_line'access);
-				iterate (element (module_cursor).board.contour.arcs, write_arc'access);
-				iterate (element (module_cursor).board.contour.circles, write_circle'access);
+				iterate (element (module_cursor).board.contours.lines, write_line'access);
+				iterate (element (module_cursor).board.contours.arcs, write_arc'access);
+				iterate (element (module_cursor).board.contours.circles, write_circle'access);
 			section_mark (section_pcb_contours, FOOTER);
 			
 			---BOARD END-----
@@ -10975,7 +10975,7 @@ package body et_project is
 						module		: in out et_schematic.type_module) is
 					begin
 						type_pcb_contour_lines.append (
-							container	=> module.board.contour.lines,
+							container	=> module.board.contours.lines,
 							new_item	=> (et_packages.shapes.type_line (board_line) with lock_status));
 					end do_it;
 										
@@ -10998,7 +10998,7 @@ package body et_project is
 						module		: in out et_schematic.type_module) is
 					begin
 						type_pcb_contour_arcs.append (
-							container	=> module.board.contour.arcs,
+							container	=> module.board.contours.arcs,
 							new_item	=> (et_packages.shapes.type_arc (board_arc) with lock_status));
 					end do_it;
 										
@@ -11021,7 +11021,7 @@ package body et_project is
 						module		: in out et_schematic.type_module) is
 					begin
 						type_pcb_contour_circles.append (
-							container	=> module.board.contour.circles,
+							container	=> module.board.contours.circles,
 							new_item	=> board_circle_contour);
 					end do_it;
 										
