@@ -1370,7 +1370,7 @@ package body et_project is
 	begin
 		line_begin;
 		write_line (element (cursor));
-		write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
+		write (keyword => keyword_locked, space => true, parameters => to_string (element (cursor).locked));
 		line_end;
 	end write_line;
 	
@@ -12952,7 +12952,7 @@ package body et_project is
 					when SEC_LINE =>
 						case stack.parent is
 
-							when SEC_CONTOURS => read_board_line;
+							when SEC_CONTOURS => read_board_line; -- of a cutout or fill zone
 
 							when SEC_ROUTE =>	
 								declare
@@ -13059,8 +13059,7 @@ package body et_project is
 									end if;
 								end;
 
-							when SEC_PCB_CONTOURS_NON_PLATED =>
-								read_board_line;
+							when SEC_PCB_CONTOURS_NON_PLATED => read_board_line;
 								
 								declare
 									kw : string := f (line, 1);
