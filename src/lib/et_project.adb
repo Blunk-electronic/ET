@@ -8678,7 +8678,7 @@ package body et_project is
 			section_mark (section_via_restrict, FOOTER);			
 		end write_via_restrict;
 
-		procedure write_contour is 
+		procedure write_contour is -- about PCB contours
 			use type_pcb_contour_lines;
 			use type_pcb_contour_arcs;
 			use type_pcb_contour_circles;
@@ -8713,66 +8713,9 @@ package body et_project is
 			use type_terminals;
 			terminal_cursor : type_terminals.cursor := packge.terminals.first;
 
-			procedure write_pad_shape (pad_shape : in type_pad_outline) is
--- 				use type_pad_lines;
--- 				use type_pad_arcs;
--- 				use type_pad_circles;
--- 				use type_pad_polygons;
--- 
--- 				procedure write_line (cursor : in type_pad_lines.cursor) is begin
--- 					line_begin;
--- 					write (keyword => keyword_start, parameters => position (element (cursor).start_point));
--- 					write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
--- 					line_end;
--- 				end write_line;
--- 
--- 				procedure write_arc (cursor : in type_pad_arcs.cursor) is begin
--- 					arc_begin;
--- 					write (keyword => shapes.keyword_center, parameters => position (element (cursor).center));
--- 					write (keyword => keyword_start, parameters => position (element (cursor).start_point));
--- 					write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
--- 					arc_end;
--- 				end write_arc;
--- 
--- 				procedure write_circle (cursor : in type_pad_circles.cursor) is begin
--- 					circle_begin;
--- 					write (keyword => shapes.keyword_center, parameters => position (element (cursor).center));
--- 					write (keyword => shapes.keyword_radius, parameters => to_string (element (cursor).radius));
--- 					circle_end;
--- 				end write_circle;
--- 
--- 				procedure write_polygon (cursor : in type_pad_polygons.cursor) is 
--- 					procedure query_points (polygon : in type_pad_polygon) is 
--- 						use et_packages.type_polygon_points;
--- 					begin
--- 						iterate (polygon.corners, write_polygon_corners'access);
--- 					end query_points;
--- 				begin -- write_polygon
--- 					fill_zone_begin;
--- 					query_element (cursor, query_points'access);
--- 					fill_zone_end;
--- 				end write_polygon;
-									
-			begin --write_pad_shape
-				-- CS
-				null;
--- 				iterate (pad_shape.lines, write_line'access);
--- 				iterate (pad_shape.arcs, write_arc'access);
--- 				iterate (pad_shape.circles, write_circle'access);
--- 				iterate (pad_shape.polygons, write_polygon'access);
-			end write_pad_shape;
-
-			procedure write_plated_millings (millings : in type_pcb_contour_plated) is
--- 				use type_pcb_contour_lines;
--- 				use type_pcb_contour_arcs;
--- 				use type_pcb_contour_circles;
-			begin
-				-- CS
-				null;
+			procedure write_plated_millings (millings : in type_pcb_contour_plated) is begin
 				section_mark (section_pad_millings, HEADER);
--- 				iterate (millings.lines, write_line'access);
--- 				iterate (millings.arcs, write_arc'access);
--- 				iterate (millings.circles, write_circle'access);
+				write_polygon_segments (shapes.type_polygon_base (millings));
 				section_mark (section_pad_millings, FOOTER);
 			end write_plated_millings;
 			
@@ -8791,12 +8734,12 @@ package body et_project is
 						section_mark (section_pad_contours_tht, HEADER);
 						
 						section_mark (section_top, HEADER);
-						write_pad_shape (element (terminal_cursor).pad_shape_tht.top);
+						write_polygon_segments (shapes.type_polygon_base (element (terminal_cursor).pad_shape_tht.top));
 						section_mark (section_top, FOOTER);
 
 						-- pad contour bottom
 						section_mark (section_bottom, HEADER);
-						write_pad_shape (element (terminal_cursor).pad_shape_tht.bottom);
+						write_polygon_segments (shapes.type_polygon_base (element (terminal_cursor).pad_shape_tht.bottom));
 						section_mark (section_bottom, FOOTER);
 						
 						section_mark (section_pad_contours_tht, FOOTER);
@@ -8819,7 +8762,7 @@ package body et_project is
 					when SMT =>
 						-- pad contour
 						section_mark (section_pad_contours_smt, HEADER);
-						write_pad_shape (element (terminal_cursor).pad_shape);
+						write_polygon_segments (shapes.type_polygon_base (element (terminal_cursor).pad_shape));
 						section_mark (section_pad_contours_smt, FOOTER);
 						
 						write (keyword => et_pcb_coordinates.keyword_face, parameters => et_pcb_coordinates.to_string (element (terminal_cursor).face));
