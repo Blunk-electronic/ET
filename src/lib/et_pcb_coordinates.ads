@@ -100,8 +100,8 @@ package et_pcb_coordinates is
 		return type_distance;
 	
 	-- PCB thickness (limited to reasonable range. CS adjust if required)
-	pcb_thickness_min : constant type_distance := 0.1;
-	pcb_thickness_max : constant type_distance := 20.0;	
+	pcb_thickness_min : constant geometry.type_distance_positive := 0.1;
+	pcb_thickness_max : constant geometry.type_distance_positive := 20.0;	
 	subtype type_pcb_thickness is type_distance_total range pcb_thickness_min .. pcb_thickness_max;
 	
 	type type_package_position is new geometry.type_position with private;

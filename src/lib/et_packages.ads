@@ -99,7 +99,7 @@ package et_packages is
 	-- Checks whether given line width is in range of type_text_line_width
 
 
-	subtype type_general_line_width is type_distance range line_width_min .. line_width_max;
+	subtype type_general_line_width is type_distance_positive range line_width_min .. line_width_max;
 
 	procedure validate_general_line_width (width : in type_distance);
 	-- Checks whether given line width is in range of type_general_line_width
@@ -107,8 +107,8 @@ package et_packages is
 
 	
 	-- We fit the via diameter (incl. microvias) in a reasonable range via a subtype:
-	drill_size_min : constant type_distance := 0.05;
-	drill_size_max : constant type_distance := 10.0;
+	drill_size_min : constant type_distance_positive := 0.05;
+	drill_size_max : constant type_distance_positive := 10.0;
 	subtype type_drill_size is type_distance range drill_size_min .. drill_size_max;
 
 	procedure validate_drill_size (drill : in type_distance);
@@ -123,38 +123,44 @@ package et_packages is
 
 	function to_string (drill : in type_drill) return string;
 	-- returns the properties of the given drill as string.
-	
-	pad_size_min : constant type_distance := 0.05;
-	pad_size_max : constant type_distance := 10.0;
-	subtype type_pad_size is type_distance range pad_size_min .. pad_size_max;
-
-	procedure validate_pad_size (size : in type_distance);
-	-- Checks whether given pad size is in range of type_pad_size
 
 
-	pad_drill_offset_min : constant type_distance := zero;
-	pad_drill_offset_max : constant type_distance := pad_size_max * 0.5;
-	subtype type_pad_drill_offset is type_distance range pad_drill_offset_min .. pad_drill_offset_max;
-	
-	
-	
 	-- COPPER STRUCTURES GENERAL
 	copper_structure_size_min : constant type_distance := 0.05;
 	copper_clearance_min : constant type_distance := copper_structure_size_min;
-
-
 	
+
 	-- SIGNALS
-	subtype type_track_clearance is type_distance range copper_clearance_min .. type_distance'last;
+	subtype type_track_clearance is type_distance_positive range copper_clearance_min .. type_distance'last;
 
 	procedure validate_track_clearance (clearance : in type_distance);
 	-- Checks whether the given track clearance is in range of type_track_clearance.
 
 	track_width_max : constant type_distance := 100.0;
-	subtype type_track_width is type_distance range copper_structure_size_min .. track_width_max;
+	subtype type_track_width is type_distance_positive range copper_structure_size_min .. track_width_max;
 
 	procedure validate_track_width (track_width : in type_distance);
 	-- Checks whether the given track width is in range of type_track_width.
+
+	
+	
+	pad_size_min : constant type_track_width := 0.05;
+	pad_size_max : constant type_track_width := 10.0;
+	subtype type_pad_size is type_distance_positive range pad_size_min .. pad_size_max;
+
+	procedure validate_pad_size (size : in type_distance);
+	-- Checks whether given pad size is in range of type_pad_size
+
+
+	pad_drill_offset_min : constant type_distance_positive := zero;
+	pad_drill_offset_max : constant type_distance_positive := pad_size_max * 0.5;
+	subtype type_pad_drill_offset is type_distance_positive range pad_drill_offset_min .. pad_drill_offset_max;
+	
+	
+	
+
+
+	
 
 
 	-- RESTRING
@@ -816,7 +822,7 @@ package et_packages is
 				-- Since the hole can be of any shape we do not speak about restring.
 				-- The shape of the copper area around the hole is the same as the shape of the 
 				-- hole. No further contours possible.
-				width_inner_layers : et_pcb_coordinates.type_distance; -- CS use subtype for reasonable range
+				width_inner_layers : type_track_width;
 				
 				case tht_hole is
 					when DRILLED =>
