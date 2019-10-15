@@ -5997,9 +5997,6 @@ package body et_project is
 
 		line : et_string_processing.type_fields_of_line;
 
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
-		
 		-- This is the section stack of the symbol model. 
 		-- Here we track the sections. On entering a section, its name is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
@@ -6766,9 +6763,6 @@ package body et_project is
 
 		line : et_string_processing.type_fields_of_line;
 
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
-		
 		-- This is the section stack of the device model. 
 		-- Here we track the sections. On entering a section, its name is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
@@ -12839,37 +12833,21 @@ package body et_project is
 								end;
 
 							when SEC_PCB_CONTOURS_NON_PLATED =>
-								declare
-									kw : string := f (line, 1);
-									use et_packages.shapes;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 150 y 45
-										expect_field_count (line, 5);
-
-										-- extract the center position starting at field 2 of line
-										board_arc.center := to_position (line, 2);
-										
-									elsif kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2 of line
-										board_arc.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										board_arc.end_point := to_position (line, 2);
-								
-									elsif kw = keyword_locked then -- locked no
-										expect_field_count (line, 2);
-										lock_status := et_pcb.to_lock_status (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
+								if not read_board_arc (line) then
+									declare
+										kw : string := f (line, 1);
+										use et_packages.shapes;
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_locked then -- locked no
+											expect_field_count (line, 2);
+											lock_status := et_pcb.to_lock_status (f (line, 2));
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+								end if;
 								
 							when others => invalid_section;
 						end case;
@@ -12926,41 +12904,34 @@ package body et_project is
 								end case;
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								-- CS call procedure read_board_circle ?
-								declare
-									use et_pcb_stack;
-									use et_packages;
-									use et_packages.shapes;
-									use et_pcb_coordinates.geometry;
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 150 y 45
-										expect_field_count (line, 5);
+								if not read_board_circle (line) then
 
-										-- extract the center position starting at field 2 of line
-										board_circle.center := to_position (line, 2);
-										
-									elsif kw = keyword_radius then -- radius 22
-										expect_field_count (line, 2);
-										board_circle.radius := to_distance (f (line, 2));
-										
-									elsif kw = keyword_filled then -- filled yes/no
-										expect_field_count (line, 2);													
-										board_filled := to_filled (f (line, 2));
+									declare
+										use et_pcb_stack;
+										use et_packages;
+										use et_packages.shapes;
+										use et_pcb_coordinates.geometry;
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_filled then -- filled yes/no
+											expect_field_count (line, 2);													
+											board_filled := to_filled (f (line, 2));
 
-									elsif kw = keyword_layers then -- layers 1 14 3
+										elsif kw = keyword_layers then -- layers 1 14 3
 
-										-- there must be at least two fields:
-										expect_field_count (line => line, count_expected => 2, warn => false);
+											-- there must be at least two fields:
+											expect_field_count (line => line, count_expected => 2, warn => false);
 
-										signal_layers := to_layers (line);
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
+											signal_layers := to_layers (line);
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
 
+								end if;
+								
 							when SEC_COPPER =>
 								declare
 									use et_packages;
@@ -13009,30 +12980,22 @@ package body et_project is
 								end;
 
 							when SEC_PCB_CONTOURS_NON_PLATED =>
-								declare
-									use et_pcb_coordinates.geometry;
-									use et_packages.shapes;
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 150 y 45
-										expect_field_count (line, 5);
-
-										-- extract the center position starting at field 2 of line
-										board_circle_contour.center := to_position (line, 2);
-										
-									elsif kw = keyword_radius then -- radius 22
-										expect_field_count (line, 2);
-										board_circle_contour.radius := to_distance (f (line, 2));
-								
-									elsif kw = keyword_locked then -- locked no
-										expect_field_count (line, 2);
-										board_circle_contour.locked := et_pcb.to_lock_status (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
+								if not read_board_circle (line) then
+									declare
+										use et_pcb_coordinates.geometry;
+										use et_packages.shapes;
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_locked then -- locked no
+											expect_field_count (line, 2);
+											board_circle_contour.locked := et_pcb.to_lock_status (f (line, 2));
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+								end if;
 								
 							when others => invalid_section;
 						end case;
