@@ -5324,194 +5324,55 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_start then -- start x 22.3 y 23.3
-												expect_field_count (line, 5);
 
-												-- extract the start position starting at field 2 of line
-												board_line.start_point := to_position (line, 2);
-												
-											elsif kw = keyword_end then -- end x 22.3 y 23.3
-												expect_field_count (line, 5);
-
-												-- extract the end position starting at field 2 of line
-												board_line.end_point := to_position (line, 2);
-
-											elsif kw = keyword_width then -- width 0.5
-												expect_field_count (line, 2);
-												pac_line_width := to_distance (f (line, 2));
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
-
-									when SEC_KEEPOUT =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_start then -- start x 22.3 y 23.3
-												expect_field_count (line, 5);
-
-												-- extract the start position starting at field 2 of line
-												board_line.start_point := to_position (line, 2);
-												
-											elsif kw = keyword_end then -- end x 22.3 y 23.3
-												expect_field_count (line, 5);
-
-												-- extract the end position starting at field 2 of line
-												board_line.end_point := to_position (line, 2);
-
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
+										if not read_board_line (line) then
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_width then -- width 0.5
+													expect_field_count (line, 2);
+													pac_line_width := to_distance (f (line, 2));
+													
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+										end if;
 										
-									when SEC_PAD_CONTOURS_THT =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_start then -- start x 22.3 y 23.3
-												expect_field_count (line, 5);
-
-												-- extract the start position starting at field 2 of line
-												board_line.start_point := to_position (line, 2);
-												
-											elsif kw = keyword_end then -- end x 22.3 y 23.3
-												expect_field_count (line, 5);
-
-												-- extract the end position starting at field 2 of line
-												board_line.end_point := to_position (line, 2);
-
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
+									when SEC_KEEPOUT => read_board_line (line);
+										
+									when SEC_PAD_CONTOURS_THT => read_board_line (line);
 
 									when others => invalid_section;
 								end case;
 
-							when SEC_PCB_CONTOURS_NON_PLATED =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2 of line
-										board_line.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										board_line.end_point := to_position (line, 2);
-
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
+							when SEC_PCB_CONTOURS_NON_PLATED => read_board_line (line);
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								declare
-									kw : string := f (line, 1);
-									use et_pcb_stack;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
+								if not read_board_line (line) then
+									declare
+										kw : string := f (line, 1);
+										use et_pcb_stack;
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_layers then -- layers 2..16
+											
+											-- there must be at least two fields:
+											expect_field_count (line => line, count_expected => 2, warn => false);
+											signal_layers := to_layers (line);
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+								end if;
+								
+							when SEC_PAD_CONTOURS_SMT => read_board_line (line);
 
-										-- extract the start position starting at field 2 of line
-										board_line.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
+							when SEC_MILLINGS => read_board_line (line);
 
-										-- extract the end position starting at field 2 of line
-										board_line.end_point := to_position (line, 2);
-
-									elsif kw = keyword_layers then -- layers 2..16
-										
-										-- there must be at least two fields:
-										expect_field_count (line => line, count_expected => 2, warn => false);
-										signal_layers := to_layers (line);
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
-							when SEC_PAD_CONTOURS_SMT =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2 of line
-										board_line.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										board_line.end_point := to_position (line, 2);
-
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
-							when SEC_MILLINGS =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2 of line
-										board_line.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										board_line.end_point := to_position (line, 2);
-
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
-							when SEC_CONTOURS =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2 of line
-										board_line.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										board_line.end_point := to_position (line, 2);
-
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
+							when SEC_CONTOURS => read_board_line (line);
 								
 							when others => invalid_section;
 						end case;
@@ -5522,243 +5383,56 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_COPPER | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_center then -- center x 150 y 45
-												expect_field_count (line, 5);
 
-												-- extract the center position starting at field 2 of line
-												board_arc.center := to_position (line, 2);
-												
-											elsif kw = keyword_start then -- start x 22.3 y 23.3
-												expect_field_count (line, 5);
-
-												-- extract the start position starting at field 2 of line
-												board_arc.start_point := to_position (line, 2);
-												
-											elsif kw = keyword_end then -- end x 22.3 y 23.3
-												expect_field_count (line, 5);
-
-												-- extract the end position starting at field 2 of line
-												board_arc.end_point := to_position (line, 2);
-
-											elsif kw = keyword_width then -- width 0.5
-												expect_field_count (line, 2);
-												pac_line_width := to_distance (f (line, 2));
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
-
-									when SEC_KEEPOUT =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_center then -- center x 150 y 45
-												expect_field_count (line, 5);
-
-												-- extract the center position starting at field 2 of line
-												board_arc.center := to_position (line, 2);
-												
-											elsif kw = keyword_start then -- start x 22.3 y 23.3
-												expect_field_count (line, 5);
-
-												-- extract the start position starting at field 2 of line
-												board_arc.start_point := to_position (line, 2);
-												
-											elsif kw = keyword_end then -- end x 22.3 y 23.3
-												expect_field_count (line, 5);
-
-												-- extract the end position starting at field 2 of line
-												board_arc.end_point := to_position (line, 2);
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
+										if not read_board_arc (line) then
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_width then -- width 0.5
+													expect_field_count (line, 2);
+													pac_line_width := to_distance (f (line, 2));
+													
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+										end if;
 										
-									when SEC_PAD_CONTOURS_THT =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_center then -- center x 150 y 45
-												expect_field_count (line, 5);
-
-												-- extract the center position starting at field 2 of line
-												board_arc.center := to_position (line, 2);
-												
-											elsif kw = keyword_start then -- start x 22.3 y 23.3
-												expect_field_count (line, 5);
-
-												-- extract the start position starting at field 2 of line
-												board_arc.start_point := to_position (line, 2);
-												
-											elsif kw = keyword_end then -- end x 22.3 y 23.3
-												expect_field_count (line, 5);
-
-												-- extract the end position starting at field 2 of line
-												board_arc.end_point := to_position (line, 2);
-
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
+									when SEC_KEEPOUT => read_board_arc (line);
+										
+									when SEC_PAD_CONTOURS_THT => read_board_arc (line);
 										
 									when others => invalid_section;
 								end case;
 
-							when SEC_PCB_CONTOURS_NON_PLATED =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 150 y 45
-										expect_field_count (line, 5);
-
-										-- extract the center position starting at field 2 of line
-										board_arc.center := to_position (line, 2);
-										
-									elsif kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2 of line
-										board_arc.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										board_arc.end_point := to_position (line, 2);
-								
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
+							when SEC_PCB_CONTOURS_NON_PLATED => read_board_arc (line);
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								declare
-									kw : string := f (line, 1);
-									use et_pcb_stack;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 150 y 45
-										expect_field_count (line, 5);
+								if not read_board_arc (line) then
+									declare
+										kw : string := f (line, 1);
+										use et_pcb_stack;
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_layers then -- layers 1 14 3
 
-										-- extract the center position starting at field 2 of line
-										board_arc.center := to_position (line, 2);
-										
-									elsif kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
+											-- there must be at least two fields:
+											expect_field_count (line => line, count_expected => 2, warn => false);
 
-										-- extract the start position starting at field 2 of line
-										board_arc.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
+											signal_layers := to_layers (line);
 
-										-- extract the end position starting at field 2 of line
-										board_arc.end_point := to_position (line, 2);
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+								end if;
+								
+							when SEC_PAD_CONTOURS_SMT => read_board_arc (line);
 
-									elsif kw = keyword_layers then -- layers 1 14 3
+							when SEC_MILLINGS => read_board_arc (line);
 
-										-- there must be at least two fields:
-										expect_field_count (line => line, count_expected => 2, warn => false);
-
-										signal_layers := to_layers (line);
-
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
-							when SEC_PAD_CONTOURS_SMT =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 150 y 45
-										expect_field_count (line, 5);
-
-										-- extract the center position starting at field 2 of line
-										board_arc.center := to_position (line, 2);
-										
-									elsif kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2 of line
-										board_arc.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										board_arc.end_point := to_position (line, 2);
-
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
-							when SEC_MILLINGS =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 150 y 45
-										expect_field_count (line, 5);
-
-										-- extract the center position starting at field 2 of line
-										board_arc.center := to_position (line, 2);
-										
-									elsif kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2 of line
-										board_arc.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										board_arc.end_point := to_position (line, 2);
-
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
-							when SEC_CONTOURS =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 150 y 45
-										expect_field_count (line, 5);
-
-										-- extract the center position starting at field 2 of line
-										board_arc.center := to_position (line, 2);
-										
-									elsif kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2 of line
-										board_arc.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										board_arc.end_point := to_position (line, 2);
-
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
+							when SEC_CONTOURS => read_board_arc (line);
 								
 							when others => invalid_section;
 						end case;
@@ -5769,252 +5443,119 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_center then -- center x 150 y 45
-												expect_field_count (line, 5);
+										if not read_board_circle (line) then
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_width then -- width 0.5
+													expect_field_count (line, 2);
+													board_line_width := to_distance (f (line, 2));
 
-												-- extract the center position starting at field 2 of line
-												board_circle.center := to_position (line, 2);
-												
-											elsif kw = keyword_radius then -- radius 22
-												expect_field_count (line, 2);
-												board_circle.radius := to_distance (f (line, 2));
-												
-											elsif kw = keyword_width then -- width 0.5
-												expect_field_count (line, 2);
-												board_line_width := to_distance (f (line, 2));
+												elsif kw = keyword_filled then -- filled yes/no
+													expect_field_count (line, 2);													
+													board_filled := to_filled (f (line, 2));
 
-											elsif kw = keyword_filled then -- filled yes/no
-												expect_field_count (line, 2);													
-												board_filled := to_filled (f (line, 2));
+												elsif kw = keyword_fill_style then -- fill_style solid/hatched
+													expect_field_count (line, 2);													
+													board_fill_style := to_fill_style (f (line, 2));
 
-											elsif kw = keyword_fill_style then -- fill_style solid/hatched
-												expect_field_count (line, 2);													
-												board_fill_style := to_fill_style (f (line, 2));
+												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+													expect_field_count (line, 2);													
+													board_hatching.line_width := to_distance (f (line, 2));
 
-											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-												expect_field_count (line, 2);													
-												board_hatching.line_width := to_distance (f (line, 2));
-
-											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
-												expect_field_count (line, 2);													
-												board_hatching.spacing := to_distance (f (line, 2));
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
-
-									when SEC_KEEPOUT =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_center then -- center x 150 y 45
-												expect_field_count (line, 5);
-
-												-- extract the center position starting at field 2 of line
-												board_circle.center := to_position (line, 2);
-												
-											elsif kw = keyword_radius then -- radius 22
-												expect_field_count (line, 2);
-												board_circle.radius := to_distance (f (line, 2));
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
+												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+													expect_field_count (line, 2);													
+													board_hatching.spacing := to_distance (f (line, 2));
+													
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+										end if;
+										
+									when SEC_KEEPOUT => read_board_circle (line);
 										
 									when SEC_COPPER => -- NON-ELECTRIC !!
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_center then -- center x 22.3 y 23.3
-												expect_field_count (line, 5);
+										if not read_board_circle (line) then
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_width then -- width 0.5
+													expect_field_count (line, 2);
+													pac_circle_copper.width := to_distance (f (line, 2));
 
-												-- extract the start position starting at field 2 of line
-												pac_circle_copper.center := to_position (line, 2);
-											
-											elsif kw = keyword_radius then -- radius 213
-												expect_field_count (line, 2);
-												pac_circle_copper.radius := to_distance (f (line, 2));
+												elsif kw = keyword_filled then -- filled yes/no
+													expect_field_count (line, 2);													
+													pac_circle_copper.filled := to_filled (f (line, 2));
 
-											elsif kw = keyword_width then -- width 0.5
-												expect_field_count (line, 2);
-												pac_circle_copper.width := to_distance (f (line, 2));
+												elsif kw = keyword_fill_style then -- fill_style solid/hatched
+													expect_field_count (line, 2);													
+													pac_circle_copper.fill_style := to_fill_style (f (line, 2));
 
-											elsif kw = keyword_filled then -- filled yes/no
-												expect_field_count (line, 2);													
-												pac_circle_copper.filled := to_filled (f (line, 2));
+												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+													expect_field_count (line, 2);													
+													pac_circle_copper.hatching_line_width := to_distance (f (line, 2));
 
-											elsif kw = keyword_fill_style then -- fill_style solid/hatched
-												expect_field_count (line, 2);													
-												pac_circle_copper.fill_style := to_fill_style (f (line, 2));
-
-											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-												expect_field_count (line, 2);													
-												pac_circle_copper.hatching_line_width := to_distance (f (line, 2));
-
-											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
-												expect_field_count (line, 2);													
-												pac_circle_copper.hatching_spacing := to_distance (f (line, 2));
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
-
-									when SEC_PAD_CONTOURS_THT =>
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_center then -- center x 150 y 45
-												expect_field_count (line, 5);
-
-												-- extract the center position starting at field 2 of line
-												board_circle.center := to_position (line, 2);
-												
-											elsif kw = keyword_radius then -- radius 22
-												expect_field_count (line, 2);
-												board_circle.radius := to_distance (f (line, 2));
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
+												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+													expect_field_count (line, 2);													
+													pac_circle_copper.hatching_spacing := to_distance (f (line, 2));
+													
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+										end if;
+										
+									when SEC_PAD_CONTOURS_THT => read_board_circle (line);
 										
 									when others => invalid_section;
 								end case;
 
-							when SEC_PCB_CONTOURS_NON_PLATED =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 150 y 45
-										expect_field_count (line, 5);
-
-										-- extract the center position starting at field 2 of line
-										board_circle.center := to_position (line, 2);
-										
-									elsif kw = keyword_radius then -- radius 22
-										expect_field_count (line, 2);
-										board_circle.radius := to_distance (f (line, 2));
-								
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
+							when SEC_PCB_CONTOURS_NON_PLATED => read_board_circle (line);
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								declare
-									kw : string := f (line, 1);
-									use et_pcb_stack;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 150 y 45
-										expect_field_count (line, 5);
+								if not read_board_circle (line) then
+									declare
+										kw : string := f (line, 1);
+										use et_pcb_stack;
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_filled then -- filled yes/no
+											expect_field_count (line, 2);													
+											board_filled := to_filled (f (line, 2));
 
-										-- extract the center position starting at field 2 of line
-										board_circle.center := to_position (line, 2);
-										
-									elsif kw = keyword_radius then -- radius 22
-										expect_field_count (line, 2);
-										board_circle.radius := to_distance (f (line, 2));
-										
-									elsif kw = keyword_filled then -- filled yes/no
-										expect_field_count (line, 2);													
-										board_filled := to_filled (f (line, 2));
+										elsif kw = keyword_fill_style then -- fill_style solid/hatched
+											expect_field_count (line, 2);													
+											board_fill_style := to_fill_style (f (line, 2));
 
-									elsif kw = keyword_fill_style then -- fill_style solid/hatched
-										expect_field_count (line, 2);													
-										board_fill_style := to_fill_style (f (line, 2));
+										elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+											expect_field_count (line, 2);													
+											board_hatching.line_width := to_distance (f (line, 2));
 
-									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-										expect_field_count (line, 2);													
-										board_hatching.line_width := to_distance (f (line, 2));
+										elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+											expect_field_count (line, 2);													
+											board_hatching.spacing := to_distance (f (line, 2));
 
-									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
-										expect_field_count (line, 2);													
-										board_hatching.spacing := to_distance (f (line, 2));
+										elsif kw = keyword_layers then -- layers 1 14 3
 
-									elsif kw = keyword_layers then -- layers 1 14 3
+											-- there must be at least two fields:
+											expect_field_count (line => line, count_expected => 2, warn => false);
 
-										-- there must be at least two fields:
-										expect_field_count (line => line, count_expected => 2, warn => false);
-
-										signal_layers := to_layers (line);
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
-							when SEC_PAD_CONTOURS_SMT =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 150 y 45
-										expect_field_count (line, 5);
-
-										-- extract the center position starting at field 2 of line
-										board_circle.center := to_position (line, 2);
-										
-									elsif kw = keyword_radius then -- radius 22
-										expect_field_count (line, 2);
-										board_circle.radius := to_distance (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
-							when SEC_MILLINGS =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 150 y 45
-										expect_field_count (line, 5);
-
-										-- extract the center position starting at field 2 of line
-										board_circle.center := to_position (line, 2);
-										
-									elsif kw = keyword_radius then -- radius 22.3
-										expect_field_count (line, 2);
-
-										board_circle.radius := to_distance (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
-							when SEC_CONTOURS =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 150 y 45
-										expect_field_count (line, 5);
-
-										-- extract the center position starting at field 2 of line
-										board_circle.center := to_position (line, 2);
-										
-									elsif kw = keyword_radius then -- radius 22
-										expect_field_count (line, 2);
-										board_circle.radius := to_distance (f (line, 2));
+											signal_layers := to_layers (line);
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+								end if;
 								
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
+							when SEC_PAD_CONTOURS_SMT => read_board_circle (line);
+
+							when SEC_MILLINGS => read_board_circle (line);
+
+							when SEC_CONTOURS => read_board_circle (line);
 								
 							when others => invalid_section;
 						end case;
