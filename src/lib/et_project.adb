@@ -3522,6 +3522,11 @@ package body et_project is
 	end to_fillable_circle;
 
 
+	-- This function returns the string at position in given line:
+	function f (line : in et_string_processing.type_fields_of_line; position : in positive) return string 
+		renames et_string_processing.field;
+	
+
 -- BASIC GEOMETRIC OBJECTS USED IN SYMBOLS AND SCHEMATICS
 	schematic_object_filled : et_schematic.shapes.type_filled := et_schematic.shapes.filled_default;		
 	
@@ -3540,6 +3545,166 @@ package body et_project is
 	board_circle : type_board_circle;
 	procedure board_reset_circle is begin board_circle := (others => <>); end;
 
+	procedure read_board_line (line : et_string_processing.type_fields_of_line) is
+	-- Reads start and end point of the board_line. If the statement is invalid then an error issued.
+		kw : string := f (line, 1);
+		use et_pcb_coordinates.geometry;
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_start then -- start x 22.3 y 23.3
+			expect_field_count (line, 5);
+
+			-- extract the start position starting at field 2 of line
+			board_line.start_point := to_position (line, 2);
+			
+		elsif kw = keyword_end then -- end x 22.3 y 23.3
+			expect_field_count (line, 5);
+
+			-- extract the end position starting at field 2 of line
+			board_line.end_point := to_position (line, 2);
+			
+		else
+			invalid_keyword (kw);
+		end if;
+	end;
+
+	function read_board_line (line : et_string_processing.type_fields_of_line) return boolean is
+	-- Reads start and end point of the board_line. If the statement is invalid then it returns a false.
+		kw : string := f (line, 1);
+		use et_pcb_coordinates.geometry;
+	begin
+		if kw = keyword_start then -- start x 22.3 y 23.3
+			expect_field_count (line, 5);
+
+			-- extract the start position starting at field 2 of line
+			board_line.start_point := to_position (line, 2);
+			return true;
+			
+		elsif kw = keyword_end then -- end x 22.3 y 23.3
+			expect_field_count (line, 5);
+
+			-- extract the end position starting at field 2 of line
+			board_line.end_point := to_position (line, 2);
+			return true;
+		else
+			return false;
+		end if;
+	end;
+	
+	procedure read_board_arc (line : et_string_processing.type_fields_of_line) is
+	-- Reads start and end point of the board_arc. If the statement is invalid then an error issued.
+		kw : string := f (line, 1);
+		use et_packages.shapes;
+		use et_pcb_coordinates.geometry;
+	begin
+		if kw = keyword_start then -- start x 22.3 y 23.3
+			expect_field_count (line, 5);
+
+			-- extract the start position starting at field 2 of line
+			board_arc.start_point := to_position (line, 2);
+
+		elsif kw = keyword_end then -- end x 22.3 y 23.3
+			expect_field_count (line, 5);
+
+			-- extract the end position starting at field 2 of line
+			board_arc.end_point := to_position (line, 2);
+			
+		elsif kw = keyword_center then -- center x 22.3 y 23.3
+			expect_field_count (line, 5);
+
+			-- extract the center position starting at field 2 of line
+			board_arc.center := to_position (line, 2);
+
+		else
+			invalid_keyword (kw);
+		end if;
+	end;
+
+	function read_board_arc (line : et_string_processing.type_fields_of_line) return boolean is
+	-- Reads start and end point of the board_arc. If the statement is invalid then it returns a false.
+		kw : string := f (line, 1);
+		use et_packages.shapes;
+		use et_pcb_coordinates.geometry;
+	begin
+		if kw = keyword_start then -- start x 22.3 y 23.3
+			expect_field_count (line, 5);
+
+			-- extract the start position starting at field 2 of line
+			board_arc.start_point := to_position (line, 2);
+
+			return true;
+
+		elsif kw = keyword_end then -- end x 22.3 y 23.3
+			expect_field_count (line, 5);
+
+			-- extract the end position starting at field 2 of line
+			board_arc.end_point := to_position (line, 2);
+
+			return true;
+			
+		elsif kw = keyword_center then -- center x 22.3 y 23.3
+			expect_field_count (line, 5);
+
+			-- extract the center position starting at field 2 of line
+			board_arc.center := to_position (line, 2);
+
+			return true;
+		else
+			return false;
+		end if;
+	end;
+	
+	procedure read_board_circle (line : et_string_processing.type_fields_of_line) is
+	-- Reads start and end point of the board_circle. If the statement is invalid then an error issued.
+		kw : string := f (line, 1);
+		use et_packages.shapes;
+		use et_pcb_coordinates.geometry;
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_center then -- center x 150 y 45
+			expect_field_count (line, 5);
+
+			-- extract the center position starting at field 2 of line
+			board_circle.center := to_position (line, 2);
+			
+		elsif kw = keyword_radius then -- radius 22
+			expect_field_count (line, 2);
+			
+			board_circle.radius := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+		else
+			invalid_keyword (kw);
+		end if;
+	end;
+
+	function read_board_circle (line : et_string_processing.type_fields_of_line) return boolean is
+	-- Reads start and end point of the board_circle. If the statement is invalid then it returns a false.
+		kw : string := f (line, 1);
+		use et_packages.shapes;
+		use et_pcb_coordinates.geometry;
+	begin
+		-- CS: In the following: set a corresponding parameter-found-flag
+		if kw = keyword_center then -- center x 150 y 45
+			expect_field_count (line, 5);
+
+			-- extract the center position starting at field 2 of line
+			board_circle.center := to_position (line, 2);
+
+			return true;
+			
+		elsif kw = keyword_radius then -- radius 22
+			expect_field_count (line, 2);
+			
+			board_circle.radius := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+
+			return true;
+			
+		else
+			return false;
+		end if;
+	end;
+
+
+	
 	board_fill_style : et_packages.type_fill_style := et_packages.fill_style_default;
 	board_filled : et_packages.shapes.type_filled := et_packages.shapes.filled_default;
 
@@ -3630,9 +3795,6 @@ package body et_project is
 
 		line : et_string_processing.type_fields_of_line;
 
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
-
 		-- This is the section stack of the package model. 
 		-- Here we track the sections. On entering a section, its name is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
@@ -3642,7 +3804,7 @@ package body et_project is
 			max 	=> max_section_depth);
 
 		function to_string (section : in type_section_name_package) return string is
-		-- Converts a section like SEC_MILLINGS to a string "millings".
+		-- Converts a section like SEC_KEEPOUT to a string "keepout".
 			len : positive := type_section_name_package'image (section)'length;
 		begin
 			return to_lower (type_section_name_package'image (section) (5..len));
@@ -8867,9 +9029,6 @@ package body et_project is
 
 		line : et_string_processing.type_fields_of_line;
 
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
-		
 		-- This is the section stack of the module. 
 		-- Here we track the sections. On entering a section, its name is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
@@ -9180,164 +9339,7 @@ package body et_project is
 			end if;
 		end;
 		
-		procedure read_board_line (line : et_string_processing.type_fields_of_line) is
-		-- Reads start and end point of a type_line. If the statement is invalid then an error issued.
-			kw : string := f (line, 1);
-			use et_pcb_coordinates.geometry;
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_start then -- start x 22.3 y 23.3
-				expect_field_count (line, 5);
 
-				-- extract the start position starting at field 2 of line
-				board_line.start_point := to_position (line, 2);
-				
-			elsif kw = keyword_end then -- end x 22.3 y 23.3
-				expect_field_count (line, 5);
-
-				-- extract the end position starting at field 2 of line
-				board_line.end_point := to_position (line, 2);
-				
-			else
-				invalid_keyword (kw);
-			end if;
-		end;
-
-		function read_board_line (line : et_string_processing.type_fields_of_line) return boolean is
-		-- Reads start and end point of a line. If the statement is invalid then it returns a false.
-			kw : string := f (line, 1);
-			use et_pcb_coordinates.geometry;
-		begin
-			if kw = keyword_start then -- start x 22.3 y 23.3
-				expect_field_count (line, 5);
-
-				-- extract the start position starting at field 2 of line
-				board_line.start_point := to_position (line, 2);
-				return true;
-				
-			elsif kw = keyword_end then -- end x 22.3 y 23.3
-				expect_field_count (line, 5);
-
-				-- extract the end position starting at field 2 of line
-				board_line.end_point := to_position (line, 2);
-				return true;
-			else
-				return false;
-			end if;
-		end;
-		
-		procedure read_board_arc (line : et_string_processing.type_fields_of_line) is
-		-- Reads start and end point of an arc. If the statement is invalid then an error issued.
-			kw : string := f (line, 1);
-			use et_packages.shapes;
-			use et_pcb_coordinates.geometry;
-		begin
-			if kw = keyword_start then -- start x 22.3 y 23.3
-				expect_field_count (line, 5);
-
-				-- extract the start position starting at field 2 of line
-				board_arc.start_point := to_position (line, 2);
-
-			elsif kw = keyword_end then -- end x 22.3 y 23.3
-				expect_field_count (line, 5);
-
-				-- extract the end position starting at field 2 of line
-				board_arc.end_point := to_position (line, 2);
-				
-			elsif kw = keyword_center then -- center x 22.3 y 23.3
-				expect_field_count (line, 5);
-
-				-- extract the center position starting at field 2 of line
-				board_arc.center := to_position (line, 2);
-
-			else
-				invalid_keyword (kw);
-			end if;
-		end;
-
-		function read_board_arc (line : et_string_processing.type_fields_of_line) return boolean is
-		-- Reads start and end point of an arc. If the statement is invalid then it returns a false.
-			kw : string := f (line, 1);
-			use et_packages.shapes;
-			use et_pcb_coordinates.geometry;
-		begin
-			if kw = keyword_start then -- start x 22.3 y 23.3
-				expect_field_count (line, 5);
-
-				-- extract the start position starting at field 2 of line
-				board_arc.start_point := to_position (line, 2);
-
-				return true;
-
-			elsif kw = keyword_end then -- end x 22.3 y 23.3
-				expect_field_count (line, 5);
-
-				-- extract the end position starting at field 2 of line
-				board_arc.end_point := to_position (line, 2);
-
-				return true;
-				
-			elsif kw = keyword_center then -- center x 22.3 y 23.3
-				expect_field_count (line, 5);
-
-				-- extract the center position starting at field 2 of line
-				board_arc.center := to_position (line, 2);
-
-				return true;
-			else
-				return false;
-			end if;
-		end;
-		
-		procedure read_board_circle (line : et_string_processing.type_fields_of_line) is
-		-- Reads start and end point of a circle. If the statement is invalid then an error issued.
-			kw : string := f (line, 1);
-			use et_packages.shapes;
-			use et_pcb_coordinates.geometry;
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_center then -- center x 150 y 45
-				expect_field_count (line, 5);
-
-				-- extract the center position starting at field 2 of line
-				board_circle.center := to_position (line, 2);
-				
-			elsif kw = keyword_radius then -- radius 22
-				expect_field_count (line, 2);
-				
-				board_circle.radius := et_pcb_coordinates.geometry.to_distance (f (line, 2));
-			else
-				invalid_keyword (kw);
-			end if;
-		end;
-
-		function read_board_circle (line : et_string_processing.type_fields_of_line) return boolean is
-		-- Reads start and end point of a circle. If the statement is invalid then it returns a false.
-			kw : string := f (line, 1);
-			use et_packages.shapes;
-			use et_pcb_coordinates.geometry;
-		begin
-			-- CS: In the following: set a corresponding parameter-found-flag
-			if kw = keyword_center then -- center x 150 y 45
-				expect_field_count (line, 5);
-
-				-- extract the center position starting at field 2 of line
-				board_circle.center := to_position (line, 2);
-
-				return true;
-				
-			elsif kw = keyword_radius then -- radius 22
-				expect_field_count (line, 2);
-				
-				board_circle.radius := et_pcb_coordinates.geometry.to_distance (f (line, 2));
-
-				return true;
-				
-			else
-				return false;
-			end if;
-		end;
-		
 		procedure process_line is 
 
 			procedure execute_section is
