@@ -5507,11 +5507,11 @@ package body et_project is
 
 												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 													expect_field_count (line, 2);													
-													pac_circle_copper.hatching_line_width := to_distance (f (line, 2));
+													pac_circle_copper.hatching.line_width := to_distance (f (line, 2));
 
 												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 													expect_field_count (line, 2);													
-													pac_circle_copper.hatching_spacing := to_distance (f (line, 2));
+													pac_circle_copper.hatching.spacing := to_distance (f (line, 2));
 													
 												else
 													invalid_keyword (kw);
@@ -10548,6 +10548,7 @@ package body et_project is
 							new_item	=> (et_packages.shapes.type_circle (board_circle) with
 											width	=> board_line_width,
 											layer	=> signal_layer,
+											hatching=> board_hatching,
 											others	=> <> -- CS
 										   ));
 					end;
