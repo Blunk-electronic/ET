@@ -3723,9 +3723,15 @@ package body et_project is
 	polygon_priority		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
 	thermal					: et_pcb.type_thermal;
 	signal_layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
-
+	board_lock_status		: et_pcb.type_locked := et_pcb.NO;
 
 	board_line_width : et_packages.type_general_line_width := et_packages.type_general_line_width'first;
+
+	procedure board_reset_line_width is 
+		use et_packages;
+	begin 
+		board_line_width := type_general_line_width'first; 
+	end;
 
 	-- package and board relevant:	
 	procedure board_reset_circle_fillable is 
@@ -3733,10 +3739,11 @@ package body et_project is
 		use et_packages.shapes;
 	begin 
 		board_circle		:= (others => <>);
-		board_line_width	:= type_general_line_width'first;
 		board_filled		:= type_filled'first;
 		board_fill_style	:= fill_style_default;
 		board_hatching		:= (others => <>);
+		
+		board_reset_line_width;
 	end;
 
 	function board_make_fillable_circle return et_packages.type_fillable_circle is 
@@ -3755,6 +3762,46 @@ package body et_project is
 	begin
 		return (et_packages.shapes.type_circle (board_circle) with board_filled);
 	end;
+
+	procedure add_polygon_line (line : in out type_board_line) is
+		use et_packages.shapes;
+		use et_packages.shapes.pac_polygon_lines;
+
+		-- make a polygon line:
+		l : type_polygon_line := (et_packages.shapes.type_line (line) with others => <>);
+	begin
+		-- collect the polygon line 
+		append (polygon.segments.lines, l);
+
+		board_reset_line;
+	end;
+
+	procedure add_polygon_arc (arc : in out type_board_arc) is
+		use et_packages.shapes;
+		use et_packages.shapes.pac_polygon_arcs;
+
+		-- make a polygon arc:
+		a : type_polygon_arc := (et_packages.shapes.type_arc (arc) with others => <>);
+	begin
+		-- collect the polygon line 
+		append (polygon.segments.arcs, a);
+
+		board_reset_arc;
+	end;
+
+	procedure add_polygon_circle (circle : in out type_board_circle) is
+		use et_packages.shapes;
+		use et_packages.shapes.pac_polygon_circles;
+
+		-- make a polygon circle:
+		c : type_polygon_circle := (et_packages.shapes.type_circle (circle) with others => <>);
+	begin
+		-- collect the polygon line 
+		append (polygon.segments.circles, c);
+
+		board_reset_circle;
+	end;
+
 	
 	procedure board_reset_polygon is
 	-- This procdure resets polygon properties to their defaults.
@@ -3821,9 +3868,6 @@ package body et_project is
 		-- model has been read. See main of this procedure.
 		pac_description			: type_package_description.bounded_string; 
 		pac_technology			: type_assembly_technology := assembly_technology_default;
-		
-		pac_line_width			: type_general_line_width := type_general_line_width'first;
-		procedure reset_line_width is begin pac_line_width := type_general_line_width'first; end;
 		
 		signal_layers : et_pcb_stack.type_signal_layers.set;
 -- 		lock_status 			: et_pcb.type_locked := lock_status_default;
@@ -4355,45 +4399,6 @@ package body et_project is
 					et_pcb_stack.type_signal_layers.clear (signal_layers);
 				end;
 
-				procedure add_polygon_line (line : in out type_board_line) is
-					use et_packages.shapes;
-					use et_packages.shapes.pac_polygon_lines;
-
-					-- make a polygon line:
-					l : type_polygon_line := (et_packages.shapes.type_line (line) with others => <>);
-				begin
-					-- collect the polygon line 
-					append (polygon.segments.lines, l);
-
-					board_reset_line;
-				end;
-
-				procedure add_polygon_arc (arc : in out type_board_arc) is
-					use et_packages.shapes;
-					use et_packages.shapes.pac_polygon_arcs;
-
-					-- make a polygon arc:
-					a : type_polygon_arc := (et_packages.shapes.type_arc (arc) with others => <>);
-				begin
-					-- collect the polygon line 
-					append (polygon.segments.arcs, a);
-
-					board_reset_arc;
-				end;
-
-				procedure add_polygon_circle (circle : in out type_board_circle) is
-					use et_packages.shapes;
-					use et_packages.shapes.pac_polygon_circles;
-
-					-- make a polygon circle:
-					c : type_polygon_circle := (et_packages.shapes.type_circle (circle) with others => <>);
-				begin
-					-- collect the polygon line 
-					append (polygon.segments.circles, c);
-
-					board_reset_circle;
-				end;
-
 			begin -- execute_section
 				case stack.current is
 
@@ -4439,47 +4444,47 @@ package body et_project is
 
 										type_copper_lines.append (
 											container	=> packge.copper.top.lines, 
-											new_item	=> (shapes.type_line (board_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_SILK_SCREEN => 
 										type_silk_lines.append (
 											container	=> packge.silk_screen.top.lines, 
-											new_item	=> (shapes.type_line (board_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_lines.append (
 											container	=> packge.assembly_documentation.top.lines, 
-											new_item	=> (shapes.type_line (board_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_STENCIL =>
 										type_stencil_lines.append (
 											container	=> packge.stencil.top.lines, 
-											new_item	=> (shapes.type_line (board_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_STOP_MASK =>
 										type_stop_lines.append (
 											container	=> packge.stop_mask.top.lines, 
-											new_item	=> (shapes.type_line (board_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_KEEPOUT =>
 										type_keepout_lines.append (
@@ -4488,7 +4493,6 @@ package body et_project is
 
 										-- clean up for next line
 										board_reset_line;
-										reset_line_width;
 										
 									when SEC_PAD_CONTOURS_THT => add_polygon_line (board_line);
 										
@@ -4501,47 +4505,47 @@ package body et_project is
 
 										type_copper_lines.append (
 											container	=> packge.copper.bottom.lines, 
-											new_item	=> (shapes.type_line (board_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_SILK_SCREEN => 
 										type_silk_lines.append (
 											container	=> packge.silk_screen.bottom.lines, 
-											new_item	=> (shapes.type_line (board_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
-										reset_line_width;
+										board_reset_line_width;
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_lines.append (
 											container	=> packge.assembly_documentation.bottom.lines, 
-											new_item	=> (shapes.type_line (board_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_STENCIL =>
 										type_stencil_lines.append (
 											container	=> packge.stencil.bottom.lines, 
-											new_item	=> (shapes.type_line (board_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
-										reset_line_width;
+										board_reset_line_width;
 										
 									when SEC_STOP_MASK =>
 										type_stop_lines.append (
 											container	=> packge.stop_mask.bottom.lines, 
-											new_item	=> (shapes.type_line (board_line) with pac_line_width));
+											new_item	=> (shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_KEEPOUT =>
 										type_keepout_lines.append (
@@ -4550,7 +4554,6 @@ package body et_project is
 
 										-- clean up for next line
 										board_reset_line;
-										reset_line_width;
 
 									when SEC_PAD_CONTOURS_THT => add_polygon_line (board_line);
 
@@ -4586,7 +4589,6 @@ package body et_project is
 
 								-- clean up for next line
 								board_reset_line;
-								reset_line_width;
 								et_pcb_stack.type_signal_layers.clear (signal_layers);
 								
 							when SEC_PAD_CONTOURS_SMT => add_polygon_line (board_line);
@@ -4606,47 +4608,47 @@ package body et_project is
 
 										type_copper_arcs.append (
 											container	=> packge.copper.top.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_SILK_SCREEN => 
 										type_silk_arcs.append (
 											container	=> packge.silk_screen.top.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_arcs.append (
 											container	=> packge.assembly_documentation.top.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_STENCIL =>
 										type_stencil_arcs.append (
 											container	=> packge.stencil.top.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_STOP_MASK =>
 										type_stop_arcs.append (
 											container	=> packge.stop_mask.top.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_KEEPOUT =>
 										type_keepout_arcs.append (
@@ -4655,7 +4657,6 @@ package body et_project is
 
 										-- clean up for next arc
 										board_reset_arc;
-										reset_line_width;
 
 									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
 										
@@ -4668,47 +4669,47 @@ package body et_project is
 
 										type_copper_arcs.append (
 											container	=> packge.copper.bottom.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_SILK_SCREEN => 
 										type_silk_arcs.append (
 											container	=> packge.silk_screen.bottom.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
-										reset_line_width;
+										board_reset_line_width;
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_arcs.append (
 											container	=> packge.assembly_documentation.bottom.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_STENCIL =>
 										type_stencil_arcs.append (
 											container	=> packge.stencil.bottom.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
-										reset_line_width;
+										board_reset_line_width;
 										
 									when SEC_STOP_MASK =>
 										type_stop_arcs.append (
 											container	=> packge.stop_mask.bottom.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with pac_line_width));
+											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
-										reset_line_width;
+										board_reset_line_width;
 
 									when SEC_KEEPOUT =>
 										type_keepout_arcs.append (
@@ -4717,7 +4718,6 @@ package body et_project is
 
 										-- clean up for next arc
 										board_reset_arc;
-										reset_line_width;
 
 									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
 										
@@ -4751,7 +4751,6 @@ package body et_project is
 
 								-- clean up for next arc
 								board_reset_arc;
-								reset_line_width;
 								et_pcb_stack.type_signal_layers.clear (signal_layers);
 
 							when SEC_PAD_CONTOURS_SMT => add_polygon_arc (board_arc);
@@ -5332,7 +5331,7 @@ package body et_project is
 												-- CS: In the following: set a corresponding parameter-found-flag
 												if kw = keyword_width then -- width 0.5
 													expect_field_count (line, 2);
-													pac_line_width := to_distance (f (line, 2));
+													board_line_width := to_distance (f (line, 2));
 													
 												else
 													invalid_keyword (kw);
@@ -5391,7 +5390,7 @@ package body et_project is
 												-- CS: In the following: set a corresponding parameter-found-flag
 												if kw = keyword_width then -- width 0.5
 													expect_field_count (line, 2);
-													pac_line_width := to_distance (f (line, 2));
+													board_line_width := to_distance (f (line, 2));
 													
 												else
 													invalid_keyword (kw);
@@ -8814,9 +8813,6 @@ package body et_project is
 		board_track_circle : et_pcb.type_copper_circle;
 		board_text_copper : et_pcb.type_text;
 		board_text_copper_placeholder : et_pcb.type_text_placeholder_copper;
-		board_circle_contour : et_pcb.type_pcb_contour_circle;
-
-		lock_status : et_pcb.type_locked := et_pcb.type_locked'first;
 
 		net_junctions : et_schematic.type_junctions;
 		
@@ -9434,7 +9430,7 @@ package body et_project is
 
 					-- clean up for next board line
 					board_reset_line;
-					board_line_width := type_general_line_width'first;
+					board_reset_line_width;
 				end insert_line;
 
 				procedure insert_arc (
@@ -9519,7 +9515,7 @@ package body et_project is
 
 					-- clean up for next board arc
 					board_reset_arc;
-					board_line_width := type_general_line_width'first;
+					board_reset_line_width;
 				end insert_arc;
 
 				procedure insert_circle (
@@ -10241,7 +10237,6 @@ package body et_project is
 
 					-- clean up for next board line
 					board_reset_line;
-					board_line_width := type_general_line_width'first;
 					clear (signal_layers);
 				end insert_line_route_restrict;
 				
@@ -10268,7 +10263,7 @@ package body et_project is
 
 					-- clean up for next board line
 					board_reset_arc;
-					board_line_width := type_general_line_width'first;
+
 					clear (signal_layers);
 				end insert_arc_route_restrict;
 
@@ -10348,7 +10343,7 @@ package body et_project is
 
 					-- clean up for next board line
 					board_reset_line;
-					board_line_width := type_general_line_width'first;
+
 					clear (signal_layers);
 				end insert_line_via_restrict;
 
@@ -10375,7 +10370,7 @@ package body et_project is
 
 					-- clean up for next board line
 					board_reset_arc;
-					board_line_width := type_general_line_width'first;
+
 					clear (signal_layers);
 				end insert_arc_via_restrict;
 
@@ -10401,6 +10396,7 @@ package body et_project is
 
 					-- clean up for next board line
 					board_reset_circle;
+
 					clear (signal_layers);
 				end insert_circle_via_restrict;
 
@@ -10599,7 +10595,7 @@ package body et_project is
 					begin
 						type_pcb_contour_lines.append (
 							container	=> module.board.contours.lines,
-							new_item	=> (et_packages.shapes.type_line (board_line) with lock_status));
+							new_item	=> (et_packages.shapes.type_line (board_line) with board_lock_status));
 					end do_it;
 										
 				begin -- insert_line_contour
@@ -10610,7 +10606,7 @@ package body et_project is
 
 					-- clean up for next pcb contour line
 					board_reset_line;
-					lock_status := et_pcb.type_locked'first;
+					board_lock_status := et_pcb.type_locked'first;
 				end insert_line_contour;
 				
 				procedure insert_arc_contour is
@@ -10622,7 +10618,7 @@ package body et_project is
 					begin
 						type_pcb_contour_arcs.append (
 							container	=> module.board.contours.arcs,
-							new_item	=> (et_packages.shapes.type_arc (board_arc) with lock_status));
+							new_item	=> (et_packages.shapes.type_arc (board_arc) with board_lock_status));
 					end do_it;
 										
 				begin -- insert_arc_contour
@@ -10633,7 +10629,7 @@ package body et_project is
 
 					-- clean up for next pcb contour arc
 					board_reset_arc;
-					lock_status := et_pcb.type_locked'first;
+					board_lock_status := et_pcb.type_locked'first;
 				end insert_arc_contour;
 
 				procedure insert_circle_contour is
@@ -10645,7 +10641,7 @@ package body et_project is
 					begin
 						type_pcb_contour_circles.append (
 							container	=> module.board.contours.circles,
-							new_item	=> board_circle_contour);
+							new_item	=> (et_packages.shapes.type_circle (board_circle) with board_lock_status));
 					end do_it;
 										
 				begin -- insert_circle_contour
@@ -10655,7 +10651,8 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next pcb contour circle
-					board_circle_contour := (others => <>);
+					board_reset_circle;
+					board_lock_status := et_pcb.type_locked'first;
 				end insert_circle_contour;
 
 				procedure insert_netchanger (
@@ -10724,48 +10721,6 @@ package body et_project is
 					assembly_variant_submodules := type_submodules.empty_map;
 					
 				end insert_assembly_variant;
-
-				procedure add_polygon_line (line : in out type_board_line) is
-					use et_packages.shapes;
-					use et_packages.shapes.pac_polygon_lines;
-
-					-- make a polygon line:
-					l : type_polygon_line := (et_packages.shapes.type_line (line) with others => <>);
-				begin
-					-- collect the polygon line 
-					append (polygon.segments.lines, l);
-
-					-- reset line
-					line := (others => <>);
-				end;
-
-				procedure add_polygon_arc (arc : in out type_board_arc) is
-					use et_packages.shapes;
-					use et_packages.shapes.pac_polygon_arcs;
-
-					-- make a polygon arc:
-					a : type_polygon_arc := (et_packages.shapes.type_arc (arc) with others => <>);
-				begin
-					-- collect the polygon line 
-					append (polygon.segments.arcs, a);
-
-					-- reset arc
-					arc := (others => <>);
-				end;
-
-				procedure add_polygon_circle (circle : in out type_board_circle) is
-					use et_packages.shapes;
-					use et_packages.shapes.pac_polygon_circles;
-
-					-- make a polygon circle:
-					c : type_polygon_circle := (et_packages.shapes.type_circle (circle) with others => <>);
-				begin
-					-- collect the polygon line 
-					append (polygon.segments.circles, c);
-
-					-- reset circle
-					circle := (others => <>);
-				end;
 
 				procedure build_route_polygon is
 					use et_packages.shapes;
@@ -12692,7 +12647,7 @@ package body et_project is
 										-- CS: In the following: set a corresponding parameter-found-flag
 										if kw = keyword_locked then -- locked no
 											expect_field_count (line, 2);
-											lock_status := et_pcb.to_lock_status (f (line, 2));
+											board_lock_status := et_pcb.to_lock_status (f (line, 2));
 											
 										else
 											invalid_keyword (kw);
@@ -12841,7 +12796,7 @@ package body et_project is
 										-- CS: In the following: set a corresponding parameter-found-flag
 										if kw = keyword_locked then -- locked no
 											expect_field_count (line, 2);
-											lock_status := et_pcb.to_lock_status (f (line, 2));
+											board_lock_status := et_pcb.to_lock_status (f (line, 2));
 											
 										else
 											invalid_keyword (kw);
@@ -12989,7 +12944,7 @@ package body et_project is
 										-- CS: In the following: set a corresponding parameter-found-flag
 										if kw = keyword_locked then -- locked no
 											expect_field_count (line, 2);
-											board_circle_contour.locked := et_pcb.to_lock_status (f (line, 2));
+											board_lock_status := et_pcb.to_lock_status (f (line, 2));
 											
 										else
 											invalid_keyword (kw);
