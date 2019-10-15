@@ -322,7 +322,7 @@ package et_packages is
 	end record;
 	package type_copper_arcs is new doubly_linked_lists (type_copper_arc);
 
-	type type_copper_circle is new type_circle with record
+	type type_copper_circle is new type_circle with record -- CS use type_hatching
 		width				: type_track_width := type_track_width'first;
 		filled 				: type_filled := NO;
 		fill_style			: type_fill_style := SOLID; -- don't care if filled is false

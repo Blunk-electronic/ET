@@ -8818,9 +8818,7 @@ package body et_project is
 		board_layer : et_pcb_stack.type_layer;
 		board_layers : et_pcb_stack.package_layers.vector;
 		
-		board_track_line : et_pcb.type_copper_line;
-		board_track_arc : et_pcb.type_copper_arc;
-		board_track_circle : et_pcb.type_copper_circle;
+-- 		board_track_circle : et_pcb.type_copper_circle;
 		board_text_copper : et_pcb.type_text;
 		board_text_copper_placeholder : et_pcb.type_text_placeholder_copper;
 
@@ -10486,7 +10484,7 @@ package body et_project is
 					board_reset_polygon;
 				end insert_polygon_copper;
 
-				procedure insert_line_track is
+				procedure insert_line_track is -- about freetracks
 					use et_pcb;
 					
 					procedure do_it (
@@ -10495,8 +10493,10 @@ package body et_project is
 					begin
 						pac_copper_lines.append (
 							container	=> module.board.copper.lines,
-							new_item	=> board_track_line);
-					end do_it;
+							new_item	=> (et_packages.shapes.type_line (board_line) with
+											width	=> board_line_width,
+											layer	=> signal_layer));
+					end;
 										
 				begin -- insert_line_track
 					update_element (
@@ -10505,7 +10505,9 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next track line
-					board_track_line := (others => <>);
+					board_reset_line;
+					board_reset_line_width;
+					board_reset_signal_layer;
 				end insert_line_track;
 
 				procedure insert_arc_track is
@@ -10517,8 +10519,10 @@ package body et_project is
 					begin
 						pac_copper_arcs.append (
 							container	=> module.board.copper.arcs,
-							new_item	=> board_track_arc);
-					end do_it;
+							new_item	=> (et_packages.shapes.type_arc (board_arc) with
+											width	=> board_line_width,
+											layer	=> signal_layer));
+					end;
 										
 				begin -- insert_arc_track
 					update_element (
@@ -10527,7 +10531,9 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next track arc
-					board_track_arc := (others => <>);
+					board_reset_arc;
+					board_reset_line_width;
+					board_reset_signal_layer;
 				end insert_arc_track;
 
 				procedure insert_circle_track is
@@ -10539,8 +10545,12 @@ package body et_project is
 					begin
 						pac_copper_circles.append (
 							container	=> module.board.copper.circles,
-							new_item	=> board_track_circle);
-					end do_it;
+							new_item	=> (et_packages.shapes.type_circle (board_circle) with
+											width	=> board_line_width,
+											layer	=> signal_layer,
+											others	=> <> -- CS
+										   ));
+					end;
 										
 				begin -- insert_circle_track
 					update_element (
@@ -10549,7 +10559,10 @@ package body et_project is
 						process		=> do_it'access);
 
 					-- clean up for next track circle
-					board_track_circle := (others => <>);
+					board_reset_circle;
+					board_reset_line_width;
+					board_reset_signal_layer;
+					-- CS reset other properites
 				end insert_circle_track;
 
 				procedure insert_board_text is
@@ -12623,35 +12636,25 @@ package body et_project is
 								end if;
 								
 							when SEC_COPPER =>
-								declare
-									kw : string := f (line, 1);
-									use et_pcb_stack;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
+								if not read_board_line (line) then
+									declare
+										kw : string := f (line, 1);
+										use et_pcb_stack;
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_width then -- width 0.5
+											expect_field_count (line, 2);
+											board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
-										-- extract the start position starting at field 2 of line
-										board_track_line.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										board_track_line.end_point := to_position (line, 2);
-
-									elsif kw = keyword_width then -- width 0.5
-										expect_field_count (line, 2);
-										board_track_line.width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
-
-									elsif kw = keyword_layer then -- layer 1
-										expect_field_count (line, 2);
-										board_track_line.layer := et_pcb_stack.to_signal_layer (f (line, 2));
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
+										elsif kw = keyword_layer then -- layer 1
+											expect_field_count (line, 2);
+											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+								end if;
+								
 							when SEC_PCB_CONTOURS_NON_PLATED => 
 
 								if not read_board_line (line) then
@@ -12749,42 +12752,26 @@ package body et_project is
 								end if;
 								
 							when SEC_COPPER =>
-								declare
-									kw : string := f (line, 1);
-									use et_packages.shapes;
-									use et_pcb_stack;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 22.3 y 23.3
-										expect_field_count (line, 5);
+								if not read_board_arc (line) then
+									declare
+										kw : string := f (line, 1);
+										use et_packages.shapes;
+										use et_pcb_stack;
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_width then -- width 0.5
+											expect_field_count (line, 2);
+											board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
-										-- extract the start position starting at field 2 of line
-										board_track_arc.center := to_position (line, 2);
-									
-									elsif kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the start position starting at field 2 of line
-										board_track_arc.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										board_track_arc.end_point := to_position (line, 2);
-
-									elsif kw = keyword_width then -- width 0.5
-										expect_field_count (line, 2);
-										board_track_arc.width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
-
-									elsif kw = keyword_layer then -- layer 1
-										expect_field_count (line, 2);
-										board_track_arc.layer := et_pcb_stack.to_signal_layer (f (line, 2));
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
+										elsif kw = keyword_layer then -- layer 1
+											expect_field_count (line, 2);
+											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+								end if;
+								
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								if not read_board_arc (line) then
 									declare
@@ -12886,52 +12873,44 @@ package body et_project is
 								end if;
 								
 							when SEC_COPPER =>
-								declare
-									use et_packages;
-									use et_packages.shapes;
-									use et_pcb_stack;
-									use et_pcb_coordinates.geometry;
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_center then -- center x 22.3 y 23.3
-										expect_field_count (line, 5);
+								if not read_board_circle (line) then
+									declare
+										use et_packages;
+										use et_packages.shapes;
+										use et_pcb_stack;
+										use et_pcb_coordinates.geometry;
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_width then -- width 0.5
+											expect_field_count (line, 2);
+											board_line_width := to_distance (f (line, 2));
 
-										-- extract the start position starting at field 2 of line
-										board_track_circle.center := to_position (line, 2);
-									
-									elsif kw = keyword_radius then -- radius 213
-										expect_field_count (line, 2);
-										board_track_circle.radius := to_distance (f (line, 2));
+										elsif kw = keyword_filled then -- filled yes/no
+											expect_field_count (line, 2);													
+											board_filled := to_filled (f (line, 2));
 
-									elsif kw = keyword_width then -- width 0.5
-										expect_field_count (line, 2);
-										board_track_circle.width := to_distance (f (line, 2));
+										elsif kw = keyword_fill_style then -- fill_style solid/hatched
+											expect_field_count (line, 2);													
+											board_fill_style := to_fill_style (f (line, 2));
 
-									elsif kw = keyword_filled then -- filled yes/no
-										expect_field_count (line, 2);													
-										board_track_circle.filled := to_filled (f (line, 2));
+										elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+											expect_field_count (line, 2);													
+											board_hatching.line_width := to_distance (f (line, 2));
 
-									elsif kw = keyword_fill_style then -- fill_style solid/hatched
-										expect_field_count (line, 2);													
-										board_track_circle.fill_style := to_fill_style (f (line, 2));
-
-									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-										expect_field_count (line, 2);													
-										board_track_circle.hatching_line_width := to_distance (f (line, 2));
-
-									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
-										expect_field_count (line, 2);													
-										board_track_circle.hatching_spacing := to_distance (f (line, 2));
-										
-									elsif kw = keyword_layer then -- layer 1
-										expect_field_count (line, 2);
-										board_track_circle.layer := et_pcb_stack.to_signal_layer (f (line, 2));
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
+										elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+											expect_field_count (line, 2);													
+											board_hatching.spacing := to_distance (f (line, 2));
+											
+										elsif kw = keyword_layer then -- layer 1
+											expect_field_count (line, 2);
+											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+								end if;
+								
 							when SEC_PCB_CONTOURS_NON_PLATED =>
 								if not read_board_circle (line) then
 									declare
