@@ -9180,7 +9180,8 @@ package body et_project is
 			end if;
 		end;
 		
-		procedure read_board_line is
+		procedure read_board_line (line : et_string_processing.type_fields_of_line) is
+		-- Reads start and end point of a type_line. If the statement is invalid then an error issued.
 			kw : string := f (line, 1);
 			use et_pcb_coordinates.geometry;
 		begin
@@ -9202,7 +9203,31 @@ package body et_project is
 			end if;
 		end;
 
-		procedure read_board_arc is
+		function read_board_line (line : et_string_processing.type_fields_of_line) return boolean is
+		-- Reads start and end point of a line. If the statement is invalid then it returns a false.
+			kw : string := f (line, 1);
+			use et_pcb_coordinates.geometry;
+		begin
+			if kw = keyword_start then -- start x 22.3 y 23.3
+				expect_field_count (line, 5);
+
+				-- extract the start position starting at field 2 of line
+				board_line.start_point := to_position (line, 2);
+				return true;
+				
+			elsif kw = keyword_end then -- end x 22.3 y 23.3
+				expect_field_count (line, 5);
+
+				-- extract the end position starting at field 2 of line
+				board_line.end_point := to_position (line, 2);
+				return true;
+			else
+				return false;
+			end if;
+		end;
+		
+		procedure read_board_arc (line : et_string_processing.type_fields_of_line) is
+		-- Reads start and end point of an arc. If the statement is invalid then an error issued.
 			kw : string := f (line, 1);
 			use et_packages.shapes;
 			use et_pcb_coordinates.geometry;
@@ -9230,7 +9255,42 @@ package body et_project is
 			end if;
 		end;
 
-		procedure read_board_circle is
+		function read_board_arc (line : et_string_processing.type_fields_of_line) return boolean is
+		-- Reads start and end point of an arc. If the statement is invalid then it returns a false.
+			kw : string := f (line, 1);
+			use et_packages.shapes;
+			use et_pcb_coordinates.geometry;
+		begin
+			if kw = keyword_start then -- start x 22.3 y 23.3
+				expect_field_count (line, 5);
+
+				-- extract the start position starting at field 2 of line
+				board_arc.start_point := to_position (line, 2);
+
+				return true;
+
+			elsif kw = keyword_end then -- end x 22.3 y 23.3
+				expect_field_count (line, 5);
+
+				-- extract the end position starting at field 2 of line
+				board_arc.end_point := to_position (line, 2);
+
+				return true;
+				
+			elsif kw = keyword_center then -- center x 22.3 y 23.3
+				expect_field_count (line, 5);
+
+				-- extract the center position starting at field 2 of line
+				board_arc.center := to_position (line, 2);
+
+				return true;
+			else
+				return false;
+			end if;
+		end;
+		
+		procedure read_board_circle (line : et_string_processing.type_fields_of_line) is
+		-- Reads start and end point of a circle. If the statement is invalid then an error issued.
 			kw : string := f (line, 1);
 			use et_packages.shapes;
 			use et_pcb_coordinates.geometry;
@@ -9251,6 +9311,32 @@ package body et_project is
 			end if;
 		end;
 
+		function read_board_circle (line : et_string_processing.type_fields_of_line) return boolean is
+		-- Reads start and end point of a circle. If the statement is invalid then it returns a false.
+			kw : string := f (line, 1);
+			use et_packages.shapes;
+			use et_pcb_coordinates.geometry;
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_center then -- center x 150 y 45
+				expect_field_count (line, 5);
+
+				-- extract the center position starting at field 2 of line
+				board_circle.center := to_position (line, 2);
+
+				return true;
+				
+			elsif kw = keyword_radius then -- radius 22
+				expect_field_count (line, 2);
+				
+				board_circle.radius := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+
+				return true;
+				
+			else
+				return false;
+			end if;
+		end;
 		
 		procedure process_line is 
 
@@ -12952,8 +13038,8 @@ package body et_project is
 					when SEC_LINE =>
 						case stack.parent is
 
-							when SEC_CONTOURS => read_board_line; -- of a cutout or fill zone
-
+							when SEC_CONTOURS => read_board_line (line); -- of a cutout or fill zone
+								
 							when SEC_ROUTE =>	
 								declare
 									kw : string := f (line, 1);
@@ -12990,45 +13076,46 @@ package body et_project is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK =>
 
-										read_board_line;
+										if not read_board_line (line) then
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_width then -- width 0.5
+													expect_field_count (line, 2);
+													board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+													
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
+										end if;
 										
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_width then -- width 0.5
-												expect_field_count (line, 2);
-												board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
-
-									when SEC_KEEPOUT => read_board_line;
+									when SEC_KEEPOUT => read_board_line (line);
 										
 									when others => invalid_section;
 								end case;
 								
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								read_board_line;
 								
-								declare
-									kw : string := f (line, 1);
-									use et_pcb_stack;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_layers then -- layers 1 14 3
+								if not read_board_line (line) then
+									declare
+										kw : string := f (line, 1);
+										use et_pcb_stack;
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_layers then -- layers 1 14 3
 
-										-- there must be at least two fields:
-										expect_field_count (line => line, count_expected => 2, warn => false);
+											-- there must be at least two fields:
+											expect_field_count (line => line, count_expected => 2, warn => false);
 
-										signal_layers := to_layers (line);
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
+											signal_layers := to_layers (line);
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+								end if;
+								
 							when SEC_COPPER =>
 								declare
 									kw : string := f (line, 1);
@@ -13059,20 +13146,22 @@ package body et_project is
 									end if;
 								end;
 
-							when SEC_PCB_CONTOURS_NON_PLATED => read_board_line;
-								
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_locked then -- locked no
-										expect_field_count (line, 2);
-										lock_status := et_pcb.to_lock_status (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
+							when SEC_PCB_CONTOURS_NON_PLATED => 
+
+								if not read_board_line (line) then
+									declare
+										kw : string := f (line, 1);
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_locked then -- locked no
+											expect_field_count (line, 2);
+											lock_status := et_pcb.to_lock_status (f (line, 2));
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+								end if;
 								
 							when others => invalid_section;
 						end case;
@@ -13080,7 +13169,7 @@ package body et_project is
 					when SEC_ARC =>
 						case stack.parent is
 
-							when SEC_CONTOURS => read_board_arc;
+							when SEC_CONTOURS => read_board_arc (line);
 							
 							when SEC_ROUTE =>
 								declare
@@ -13125,46 +13214,50 @@ package body et_project is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK =>
 
-										read_board_arc;
+										if not read_board_arc (line) then
 										
-										declare
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_width then -- width 0.5
-												expect_field_count (line, 2);
-												board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
+											declare
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_width then -- width 0.5
+													expect_field_count (line, 2);
+													board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+													
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
 
-									when SEC_KEEPOUT => read_board_arc;
+										end if;
+										
+									when SEC_KEEPOUT => read_board_arc (line);
 										
 									when others => invalid_section;
 								end case;
 
 							when SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-								read_board_arc;
+								if not read_board_arc (line) then
 								
-								declare
-									kw : string := f (line, 1);
-									use et_pcb_stack;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_layers then -- layers 1 14 3
+									declare
+										kw : string := f (line, 1);
+										use et_pcb_stack;
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_layers then -- layers 1 14 3
 
-										-- there must be at least two fields:
-										expect_field_count (line => line, count_expected => 2, warn => false);
+											-- there must be at least two fields:
+											expect_field_count (line => line, count_expected => 2, warn => false);
 
-										signal_layers := to_layers (line);
+											signal_layers := to_layers (line);
 
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
 
+								end if;
+								
 							when SEC_COPPER =>
 								declare
 									kw : string := f (line, 1);
@@ -13241,47 +13334,49 @@ package body et_project is
 					when SEC_CIRCLE =>
 						case stack.parent is
 
-							when SEC_CONTOURS => read_board_circle;
+							when SEC_CONTOURS => read_board_circle (line);
 							
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK =>
 
-										read_board_circle;
+										if not read_board_circle (line) then
 										
-										declare
-											use et_packages;
-											use et_packages.shapes;
-											kw : string := f (line, 1);
-										begin
-											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = keyword_width then -- circumfence line width 0.5
-												expect_field_count (line, 2);
-												board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+											declare
+												use et_packages;
+												use et_packages.shapes;
+												kw : string := f (line, 1);
+											begin
+												-- CS: In the following: set a corresponding parameter-found-flag
+												if kw = keyword_width then -- circumfence line width 0.5
+													expect_field_count (line, 2);
+													board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
-											elsif kw = keyword_filled then -- filled yes/no
-												expect_field_count (line, 2);													
-												board_filled := to_filled (f (line, 2));
+												elsif kw = keyword_filled then -- filled yes/no
+													expect_field_count (line, 2);													
+													board_filled := to_filled (f (line, 2));
 
-											elsif kw = keyword_fill_style then -- fill_style solid/hatched
-												expect_field_count (line, 2);													
-												board_fill_style := to_fill_style (f (line, 2));
+												elsif kw = keyword_fill_style then -- fill_style solid/hatched
+													expect_field_count (line, 2);													
+													board_fill_style := to_fill_style (f (line, 2));
 
-											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
-												expect_field_count (line, 2);													
-												board_hatching.line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
+													expect_field_count (line, 2);													
+													board_hatching.line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
-											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
-												expect_field_count (line, 2);													
-												board_hatching.spacing := et_pcb_coordinates.geometry.to_distance (f (line, 2));
-												
-											else
-												invalid_keyword (kw);
-											end if;
-										end;
+												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
+													expect_field_count (line, 2);													
+													board_hatching.spacing := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+													
+												else
+													invalid_keyword (kw);
+												end if;
+											end;
 
-									when SEC_KEEPOUT => read_board_circle;
+										end if;
+										
+									when SEC_KEEPOUT => read_board_circle (line);
 										
 									when others => invalid_section;
 
