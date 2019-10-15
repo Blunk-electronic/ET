@@ -3725,6 +3725,12 @@ package body et_project is
 	signal_layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 	board_lock_status		: et_pcb.type_locked := et_pcb.NO;
 
+	procedure board_reset_lock_status is
+		use et_pcb;
+	begin
+		board_lock_status := NO;
+	end;
+	
 	board_line_width : et_packages.type_general_line_width := et_packages.type_general_line_width'first;
 
 	procedure board_reset_line_width is 
@@ -3870,7 +3876,6 @@ package body et_project is
 		pac_technology			: type_assembly_technology := assembly_technology_default;
 		
 		signal_layers : et_pcb_stack.type_signal_layers.set;
--- 		lock_status 			: et_pcb.type_locked := lock_status_default;
 		
 		pac_circle_copper		: et_packages.type_copper_circle;
 		procedure reset_circle_copper is begin pac_circle_copper := (others => <>); end;		
@@ -10606,7 +10611,7 @@ package body et_project is
 
 					-- clean up for next pcb contour line
 					board_reset_line;
-					board_lock_status := et_pcb.type_locked'first;
+					board_reset_lock_status;
 				end insert_line_contour;
 				
 				procedure insert_arc_contour is
@@ -10629,7 +10634,7 @@ package body et_project is
 
 					-- clean up for next pcb contour arc
 					board_reset_arc;
-					board_lock_status := et_pcb.type_locked'first;
+					board_reset_lock_status;
 				end insert_arc_contour;
 
 				procedure insert_circle_contour is
@@ -10652,7 +10657,7 @@ package body et_project is
 
 					-- clean up for next pcb contour circle
 					board_reset_circle;
-					board_lock_status := et_pcb.type_locked'first;
+					board_reset_lock_status;
 				end insert_circle_contour;
 
 				procedure insert_netchanger (
