@@ -3723,6 +3723,13 @@ package body et_project is
 	polygon_priority		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
 	thermal					: et_pcb.type_thermal;
 	signal_layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
+
+	procedure board_reset_signal_layer is 
+		use et_pcb_stack;
+	begin
+		signal_layer := type_signal_layer'first;
+	end;
+	
 	board_lock_status		: et_pcb.type_locked := et_pcb.NO;
 
 	procedure board_reset_lock_status is
@@ -8731,10 +8738,8 @@ package body et_project is
 		net_netchanger_port : netlists.type_port_netchanger;
 		net_netchanger_ports : netlists.type_ports_netchanger.set;
 		
-		route			: et_pcb.type_route;
-		route_line 		: et_pcb.type_copper_line; -- CS element of route. maybe no need
-		route_arc		: et_pcb.type_copper_arc;  -- CS element of route. maybe no need
-		route_via		: et_pcb.type_via;  -- CS element of route. maybe no need
+		route		: et_pcb.type_route;
+		route_via	: et_pcb.type_via;
 
 		
 		frame_template_schematic	: et_libraries.type_frame_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frm
@@ -11103,8 +11108,15 @@ package body et_project is
 							when SEC_ROUTE =>
 
 								-- insert line in route.lines
-								et_pcb.pac_copper_lines.append (route.lines, route_line);
-								route_line := (others => <>); -- clean up for next line
+								et_pcb.pac_copper_lines.append (
+									container	=> route.lines,
+									new_item	=> (et_packages.shapes.type_line (board_line) with
+											width	=> board_line_width,
+											layer	=> signal_layer));
+									
+								board_reset_line;
+								board_reset_line_width;
+								board_reset_signal_layer;
 
 							when SEC_TOP =>
 								case stack.parent (degree => 2) is
@@ -11186,11 +11198,18 @@ package body et_project is
 							when SEC_CONTOURS => add_polygon_arc (board_arc);
 
 							when SEC_ROUTE =>
-								
-								-- insert arc in route.arcs
-								et_pcb.pac_copper_arcs.append (route.arcs, route_arc);
-								route_arc := (others => <>); -- clean up for next arc
 
+								-- insert arc in route.arcs
+								et_pcb.pac_copper_arcs.append (
+									container	=> route.arcs,
+									new_item	=> (et_packages.shapes.type_arc (board_arc) with
+											width	=> board_line_width,
+											layer	=> signal_layer));
+									
+								board_reset_arc;
+								board_reset_line_width;
+								board_reset_signal_layer;
+								
 							when SEC_TOP =>
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN =>
@@ -12537,37 +12556,27 @@ package body et_project is
 
 							when SEC_CONTOURS => read_board_line (line); -- of a cutout or fill zone
 								
-							when SEC_ROUTE =>	
-								declare
-									kw : string := f (line, 1);
-									use et_pcb_stack;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
+							when SEC_ROUTE =>
+								if not read_board_line (line) then
+									declare
+										kw : string := f (line, 1);
+										use et_pcb_stack;
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_layer then -- layer 2
+											expect_field_count (line, 2);
+											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
-										-- extract the start position starting at field 2 of line
-										route_line.start_point := to_position (line, 2);
-										
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										route_line.end_point := to_position (line, 2);
-
-									elsif kw = keyword_layer then -- layer 2
-										expect_field_count (line, 2);
-										route_line.layer := et_pcb_stack.to_signal_layer (f (line, 2));
-
-									elsif kw = keyword_width then -- width 0.5
-										expect_field_count (line, 2);
-										route_line.width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
+										elsif kw = keyword_width then -- width 0.5
+											expect_field_count (line, 2);
+											board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+								end if;
+								
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
@@ -12669,43 +12678,27 @@ package body et_project is
 							when SEC_CONTOURS => read_board_arc (line);
 							
 							when SEC_ROUTE =>
-								declare
-									kw : string := f (line, 1);
-									use et_packages.shapes;
-									use et_pcb_stack;
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_start then -- start x 22.3 y 23.3
-										expect_field_count (line, 5);
+								if not read_board_arc (line) then
+									declare
+										kw : string := f (line, 1);
+										use et_packages.shapes;
+										use et_pcb_stack;
+									begin
+										-- CS: In the following: set a corresponding parameter-found-flag
+										if kw = keyword_layer then -- layer 2
+											expect_field_count (line, 2);
+											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
-										-- extract the start position starting at field 2 of line
-										route_arc.start_point := to_position (line, 2);
-
-									elsif kw = keyword_end then -- end x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the end position starting at field 2 of line
-										route_arc.end_point := to_position (line, 2);
-										
-									elsif kw = keyword_center then -- center x 22.3 y 23.3
-										expect_field_count (line, 5);
-
-										-- extract the center position starting at field 2 of line
-										route_arc.center := to_position (line, 2);
-
-									elsif kw = keyword_layer then -- layer 2
-										expect_field_count (line, 2);
-										route_arc.layer := et_pcb_stack.to_signal_layer (f (line, 2));
-
-									elsif kw = keyword_width then -- width 0.5
-										expect_field_count (line, 2);
-										route_arc.width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
-										
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
+										elsif kw = keyword_width then -- width 0.5
+											expect_field_count (line, 2);
+											board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
+											
+										else
+											invalid_keyword (kw);
+										end if;
+									end;
+								end if;
+									
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
