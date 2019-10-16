@@ -232,21 +232,58 @@ package body et_kicad_to_native is
 			use et_pcb_coordinates;
 			use geometry;
 			new_y : et_pcb_coordinates.type_distance;
-		begin -- move
+		begin
 			new_y := layout_sheet_height - y (point);
 			set (Y, new_y, point);
 		end move;
 
 		procedure move (polygon : in out et_packages.shapes.type_polygon_base'class) is
-			use et_pcb_coordinates.geometry;
--- 			offset : type_point := origin;
--- 			new_y : type_distance := -1.0 * layout_sheet_height;
+		-- Moves the segments of a polygon from the kicad frame to the ET native frame.
+			use et_packages.shapes;
+			use pac_polygon_lines;
+			use pac_polygon_arcs;
+			use pac_polygon_circles;
+
+			procedure move (cursor : in pac_polygon_lines.cursor) is 
+				procedure mv (line : in out type_polygon_line) is begin 
+					move (line.start_point);
+					move (line.end_point);
+				end;
+			begin
+				update_element (
+					container	=> polygon.segments.lines,
+					position	=> cursor,
+					process		=> mv'access);
+			end;
+
+			procedure move (cursor : in pac_polygon_arcs.cursor) is
+				procedure mv (arc : in out type_polygon_arc) is begin
+					move (arc.start_point);
+					move (arc.end_point); 
+					move (arc.center); 
+				end;
+			begin
+				update_element (
+					container	=> polygon.segments.arcs,
+					position	=> cursor,
+					process		=> mv'access);
+			end;
+
+			procedure move (cursor : in pac_polygon_circles.cursor) is 
+				procedure mv (circle : in out type_polygon_circle) is begin 
+					move (circle.center); 
+				end;
+			begin
+				update_element (
+					container	=> polygon.segments.circles,
+					position	=> cursor,
+					process		=> mv'access);
+			end;
+			
 		begin
--- 			offset := type_point (set (x => zero, y => new_y));
-			
--- 			et_packages.shapes.move (polygon, offset);
-			
-			null; -- CS
+			iterate (polygon.segments.lines, move'access);
+			iterate (polygon.segments.arcs, move'access);
+			iterate (polygon.segments.circles, move'access);
 		end;
 			
 		procedure flatten_notes (
@@ -763,7 +800,7 @@ package body et_kicad_to_native is
 				use type_texts_with_content;
 				texts_cursor : type_texts_with_content.cursor;
 				
-				board_silk_screen : constant string (1..18) := "board silk screen ";
+				board_silk_screen : constant string := "board silk screen ";
 				
 				procedure move_line (line : in out type_silk_line) is begin
 					log (text => board_silk_screen & "line", level => log_threshold + log_threshold_add);
@@ -828,7 +865,6 @@ package body et_kicad_to_native is
 							
 					log_indentation_down;
 				end move_text;
-
 
 			begin -- move_silk_screen
 				
@@ -960,7 +996,7 @@ package body et_kicad_to_native is
 				use type_texts_with_content;
 				texts_cursor : type_texts_with_content.cursor;
 				
-				doc : constant string (1..29) := "board assembly documentation ";
+				doc : constant string := "board assembly documentation ";
 				
 				procedure move_line (line : in out type_doc_line) is begin
 					log (text => doc & "line", level => log_threshold + log_threshold_add);
@@ -1026,7 +1062,6 @@ package body et_kicad_to_native is
 							
 					log_indentation_down;
 				end move_text;
-
 
 			begin -- move_assembly_documentation
 				
@@ -1155,7 +1190,7 @@ package body et_kicad_to_native is
 				use type_stencil_polygons;
 				polygons_cursor : type_stencil_polygons.cursor;
 
-				stencil : constant string (1..14) := "board stencil ";
+				stencil : constant string := "board stencil ";
 				
 				procedure move_line (line : in out type_stencil_line) is
 					use et_pcb;
@@ -1319,7 +1354,7 @@ package body et_kicad_to_native is
 				use type_texts_with_content;
 				texts_cursor : type_texts_with_content.cursor;
 				
-				stop : constant string (1..16) := "board stop mask ";
+				stop : constant string := "board stop mask ";
 				
 				procedure move_line (line : in out type_stop_line) is
 					use et_pcb;
@@ -1518,7 +1553,7 @@ package body et_kicad_to_native is
 				use type_keepout_polygons;
 				polygons_cursor : type_keepout_polygons.cursor;
 
-				keepout : constant string (1..14) := "board keepout ";
+				keepout : constant string := "board keepout ";
 				
 				procedure move_line (line : in out type_keepout_line) is
 					use et_pcb;
@@ -1690,7 +1725,7 @@ package body et_kicad_to_native is
 				use et_pcb.type_pcb_contour_circles;
 				circles_cursor : et_pcb.type_pcb_contour_circles.cursor;
 
-				contour : constant string (1..14) := "board contour ";
+				contour : constant string := "board contour ";
 				
 				procedure move_line (line : in out et_pcb.type_pcb_contour_line) is
 					use et_pcb;
@@ -1776,7 +1811,6 @@ package body et_kicad_to_native is
 				end loop;
 
 			end move_contour;
-
 			
 			procedure move_copper is
 				use et_pcb.pac_copper_lines;
@@ -1800,7 +1834,7 @@ package body et_kicad_to_native is
 				use et_pcb.type_text_placeholders_copper;
 				placeholders_cursor : et_pcb.type_text_placeholders_copper.cursor;
 				
-				board_copper : constant string (1..13) := "board copper ";
+				board_copper : constant string := "board copper ";
 				
 				procedure move_line (line : in out et_pcb.type_copper_line) is
 					use et_pcb;
@@ -1850,94 +1884,14 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 
-				procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_floating_solid) is
-					use et_pcb_coordinates;
-					use et_pcb_coordinates.geometry;
--- CS
--- 					use type_polygon_points;
--- 					point_cursor : type_polygon_points.cursor := polygon.corners.first;
--- 					new_points : type_polygon_points.set;
-
--- 					procedure get_point (point : in type_point) is
--- 					-- Reads a corner point, copies it, moves the copy and inserts the moved
--- 					-- copy in a new set "new_points".
--- 						new_point : type_point := point; -- copy given point
--- 					begin
--- 						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
--- 						move (new_point); -- move copied point
--- 						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
--- 
--- 						-- insert new point in new_points:
--- 						type_polygon_points.insert (
--- 							container	=> new_points,
--- 							new_item	=> new_point);
--- 						
--- 					end get_point;
-					
-				begin -- move_polygon
+				procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_floating_solid) is begin
 					log (text => board_copper & "solid polygon segments", level => log_threshold + log_threshold_add);
-					log_indentation_up;
-
--- 					-- loop through polygon corner points and read one after another:
--- 					while point_cursor /= type_polygon_points.no_element loop
--- 
--- 						type_polygon_points.query_element (
--- 							position	=> point_cursor,
--- 							process		=> get_point'access);
--- 						
--- 						next (point_cursor);
--- 					end loop;
-
-					-- Now the new set of polygon corner points is available in "new_points".
-					-- new_points replaces the old list of points:
--- 					polygon.corners := new_points;
-					
-					log_indentation_down;
+					move (polygon);
 				end move_polygon;
 
-				procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_floating_hatched) is
-					use et_pcb_coordinates;
-					use et_pcb_coordinates.geometry;
--- CS
--- 					use type_polygon_points;
--- 					point_cursor : type_polygon_points.cursor := polygon.corners.first;
--- 					new_points : type_polygon_points.set;
-
--- 					procedure get_point (point : in type_point) is
--- 					-- Reads a corner point, copies it, moves the copy and inserts the moved
--- 					-- copy in a new set "new_points".
--- 						new_point : type_point := point; -- copy given point
--- 					begin
--- 						log (text => before & to_string (new_point), level => log_threshold + log_threshold_add);
--- 						move (new_point); -- move copied point
--- 						log (text => now & to_string (new_point), level => log_threshold + log_threshold_add);
--- 
--- 						-- insert new point in new_points:
--- 						type_polygon_points.insert (
--- 							container	=> new_points,
--- 							new_item	=> new_point);
--- 						
--- 					end get_point;
-					
-				begin -- move_polygon
+				procedure move_polygon (polygon : in out et_pcb.type_copper_polygon_floating_hatched) is begin
 					log (text => board_copper & "hatched polygon segments", level => log_threshold + log_threshold_add);
-					log_indentation_up;
-
--- 					-- loop through polygon corner points and read one after another:
--- 					while point_cursor /= type_polygon_points.no_element loop
--- 
--- 						type_polygon_points.query_element (
--- 							position	=> point_cursor,
--- 							process		=> get_point'access);
--- 						
--- 						next (point_cursor);
--- 					end loop;
-
-					-- Now the new set of polygon corner points is available in "new_points".
-					-- new_points replaces the old list of points:
--- 					polygon.corners := new_points;
-					
-					log_indentation_down;
+					move (polygon);
 				end move_polygon;
 				
 				procedure move_text (text : in out et_pcb.type_text) is
@@ -2008,6 +1962,7 @@ package body et_kicad_to_native is
 				end loop;
 
 				-- POLYGONS
+				-- solid
 				polygons_solid_cursor := module.board.copper.polygons.solid.first;
 				while polygons_solid_cursor /= et_pcb.pac_copper_polygons_floating_solid.no_element loop
 					et_pcb.pac_copper_polygons_floating_solid.update_element (
@@ -2018,6 +1973,7 @@ package body et_kicad_to_native is
 					next (polygons_solid_cursor);
 				end loop;
 
+				-- hatched
 				polygons_hatched_cursor := module.board.copper.polygons.hatched.first;
 				while polygons_hatched_cursor /= et_pcb.pac_copper_polygons_floating_hatched.no_element loop
 					et_pcb.pac_copper_polygons_floating_hatched.update_element (
@@ -2049,7 +2005,6 @@ package body et_kicad_to_native is
 
 					next (texts_cursor);
 				end loop;
-
 				
 			end move_copper;
 
@@ -2060,7 +2015,7 @@ package body et_kicad_to_native is
 			move_stop_mask;
 			move_keepout;
 			move_contour;
-			move_copper; -- non-electric copper stuff !!!
+			move_copper; -- non-electric copper stuff !!! (like freetracks)
 		end move_general_board_stuff;
 
 		procedure flatten_netlist (

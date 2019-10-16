@@ -326,10 +326,6 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
--- 		type type_circle is new type_circle_base with record
--- 			filled	: type_filled;
--- 		end record;
-
 		
 		function on_circle (
 		-- Returns true if the given point sits on the given circle circumfence.
@@ -356,13 +352,13 @@ package et_geometry is
 
 	-- POLYGON
 		type type_polygon_line is new type_line with null record;
-		package pac_polygon_lines is new doubly_linked_lists (type_polygon_line); -- CS consider a set
+		package pac_polygon_lines is new doubly_linked_lists (type_polygon_line);
 
 		type type_polygon_arc is new type_arc with null record;
-		package pac_polygon_arcs is new doubly_linked_lists (type_polygon_arc);  -- CS consider a set
+		package pac_polygon_arcs is new doubly_linked_lists (type_polygon_arc);
 
 		type type_polygon_circle is new type_circle with null record;
-		package pac_polygon_circles is new doubly_linked_lists (type_polygon_circle);  -- CS consider a set
+		package pac_polygon_circles is new doubly_linked_lists (type_polygon_circle);
 
 		type type_polygon_segments is record
 			lines	: pac_polygon_lines.list;
@@ -375,10 +371,6 @@ package et_geometry is
 			segments	: type_polygon_segments;
 		end record;
 		
--- 		procedure move (
--- 			polygon : in out type_polygon_base;
--- 			offset	: in type_point);
-
 		type type_polygon is new type_polygon_base with record
 			filled	: type_filled;
 		end record;
