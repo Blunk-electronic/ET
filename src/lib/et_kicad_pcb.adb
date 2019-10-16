@@ -7284,6 +7284,39 @@ package body et_kicad_pcb is
 		return board;
 	end to_board;
 
+	function corners_to_lines (corners : type_polygon_points.set)
+		return et_packages.shapes.pac_polygon_lines.list is
+	-- The polygon in kicad is a set of points. This set is here converted
+	-- to a list of lines. This implies that the kicad polygon must have at least
+	-- two corners, and the number of corners must be even. Otherwise an exception arises here.
+		use type_polygon_points;
+		corner : type_polygon_points.cursor := corners.first;
+		
+		use et_packages.shapes.pac_polygon_lines;
+		lines : pac_polygon_lines.list; -- to be returned
+		line : type_polygon_line;
+
+	begin
+		while corner /= corners.last loop -- type_polygon_points.no_element loop
+			line.start_point := element (corner);
+			line.end_point := element (next (corner));
+			append (lines, line);
+			
+			next (corner);
+		end loop;
+
+		-- corner now points to the last point
+
+		-- The last line starts where corner points at.
+		line.start_point := element (corner);
+
+		-- The last line ends at the first point.
+		line.end_point := element (corners.first);
+		
+		append (lines, line);
+		
+		return lines;
+	end;
 	
 	procedure read_board (
 	-- Reads the board file. Copies general board stuff to the schematic module.
@@ -7558,7 +7591,7 @@ package body et_kicad_pcb is
 					-- Append polygons to route.polygons
 					while polygon_cursor /= type_polygons.no_element loop
 						if element (polygon_cursor).net_id = net_id then
-						-- Transfer kicad polygon to et polygon.
+						-- Transfer kicad polygon to native ET polygon.
 						-- The polygon is appended to route.polygons.
 
 							-- These properites of kicad polygons are discarded as there is no need for them:
@@ -7575,7 +7608,7 @@ package body et_kicad_pcb is
 										p.priority_level := element (polygon_cursor).priority_level;
 										
 										-- Translate the kicad layer id to the ET signal layer:
-										-- kicad signal layer are numbered from 0..31, ET signal layers are numbered from 1..n.
+										-- kicad signal layers are numbered from 0..31, ET signal layers are numbered from 1..n.
 										-- The bottom layer in kicad is always number 31. Top layer is number 0.
 										-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
 										p.layer := et_pcb_stack.type_signal_layer (element (polygon_cursor).layer + 1);
@@ -7585,8 +7618,9 @@ package body et_kicad_pcb is
 													gap			=> element (polygon_cursor).thermal_gap,
 													width		=> element (polygon_cursor).thermal_width);
 
-										-- CS make lines from element (polygon_cursor).corners
-
+										-- convert the polygon corner point to a list of lines:
+										p.segments.lines := corners_to_lines (element (polygon_cursor).corners);
+										
 										route.polygons_2.solid.append (p);																					  
 									end;
 									
@@ -7607,7 +7641,8 @@ package body et_kicad_pcb is
 										
 										p.technology := element (polygon_cursor).pad_technology;
 
-										-- CS make lines from element (polygon_cursor).corners
+										-- convert the polygon corner point to a list of lines:
+										p.segments.lines := corners_to_lines (element (polygon_cursor).corners);
 
 										route.polygons_2.solid.append (p);																					  
 									end;
@@ -7906,9 +7941,13 @@ package body et_kicad_pcb is
 							-- net_id, timestamp, hatch_style, hatch_width, filled, fill_mode_segment, arc_segments
 							
 							module.board.copper.polygons.solid.append (
-								--new_item => (et_packages.type_copper_polygon (element (polygon_cursor)) with
 								new_item => (
-									-- CS make lines from element (polygon_cursor).corners,
+
+									-- convert the polygon corner point to a list of lines:
+									segments	=> (
+												lines => corners_to_lines (element (polygon_cursor).corners),
+												others => <>),
+												
 									fill_style	=> et_packages.SOLID,
 									width_min	=> element (polygon_cursor).min_thickness,
 
