@@ -230,7 +230,7 @@ package et_pcb is
 	type type_copper_circle is new et_packages.type_copper_circle with record
 		layer	: type_signal_layer;
 	end record;
-	package pac_copper_circles is new doubly_linked_lists (type_copper_circle);
+	package pac_copper_circles is new indefinite_doubly_linked_lists (type_copper_circle);
 	
 
 

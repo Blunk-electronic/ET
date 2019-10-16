@@ -1046,6 +1046,66 @@ package body et_project is
 		circle_end;
 	end write_circle_fillable;
 
+	-- CS unify the follwing two procedures write_circle_copper:
+	procedure write_circle_copper (circle : in et_packages.type_copper_circle) is 
+	-- Writes the properties of a circle in copper as used in a package.
+		use et_packages;
+		use et_packages.shapes;
+		use et_pcb_coordinates.geometry;		
+	begin
+		circle_begin;
+		write_circle (circle);
+		write (keyword => keyword_filled, parameters => latin_1.space & to_string (circle.filled));
+		case circle.filled is
+			when NO =>
+				write (keyword => keyword_width, parameters => to_string (circle.border_width));
+				
+			when YES =>
+				write (keyword => keyword_fill_style, parameters => latin_1.space & to_string (circle.fill_style));
+
+				case circle.fill_style is
+					when SOLID => null;
+					when HATCHED =>
+						write (keyword => keyword_hatching_line_width  , parameters => to_string (circle.hatching.line_width));
+						write (keyword => keyword_hatching_line_spacing, parameters => to_string (circle.hatching.spacing));
+				end case;
+
+		end case;
+		circle_end;
+	end write_circle_copper;
+
+	procedure write_circle_copper (circle : in et_pcb.type_copper_circle) is 
+	-- Writes the properties of a circle in copper as used in a freetrack.		
+		use et_packages;
+		use et_packages.shapes;
+		use et_pcb_coordinates.geometry;		
+	begin
+		circle_begin;
+		write_circle (circle);
+		write_signal_layer (circle.layer);
+
+		-- the signal layer:
+		write (keyword => keyword_filled, parameters => latin_1.space & to_string (circle.filled));
+		
+		case circle.filled is
+			when NO =>
+				write (keyword => keyword_width, parameters => to_string (circle.border_width));
+				
+			when YES =>
+				write (keyword => keyword_fill_style, parameters => latin_1.space & to_string (circle.fill_style));
+
+				case circle.fill_style is
+					when SOLID => null;
+					when HATCHED =>
+						write (keyword => keyword_hatching_line_width  , parameters => to_string (circle.hatching.line_width));
+						write (keyword => keyword_hatching_line_spacing, parameters => to_string (circle.hatching.spacing));
+				end case;
+
+		end case;
+		circle_end;
+	end write_circle_copper;
+
+	
 -- KEEPOUT
 	procedure write_line (cursor : in et_packages.type_keepout_lines.cursor) is
 		use et_packages.type_keepout_lines;
@@ -2513,13 +2573,9 @@ package body et_project is
 				arc_end;
 			end;
 
-			use pac_copper_circles;
-			procedure write_circle (cursor : in pac_copper_circles.cursor) is begin
-				circle_begin;
-				write_circle (element (cursor));
-				write_width (element (cursor).width);
-				write_signal_layer (element (cursor).layer);
-				circle_end;
+			use et_pcb.pac_copper_circles;
+			procedure write_circle (cursor : in et_pcb.pac_copper_circles.cursor) is begin
+				write_circle_copper (element (cursor));
 			end;
 
 			-- solid fill zones in copper
@@ -3709,6 +3765,7 @@ package body et_project is
 	board_filled : et_packages.shapes.type_filled := et_packages.shapes.filled_default;
 
 	board_hatching : et_packages.type_hatching;
+	board_hatching_copper : et_packages.type_hatching_copper;
 	board_easing : et_packages.type_easing;
 
 	
@@ -3776,6 +3833,33 @@ package body et_project is
 		return (et_packages.shapes.type_circle (board_circle) with board_filled);
 	end;
 
+	function board_make_copper_circle return et_packages.type_copper_circle is
+		use et_packages;
+		use et_packages.shapes;
+	begin
+		case board_filled is
+			when NO =>
+				return (shapes.type_circle (board_circle) with 
+					filled			=> NO,
+					fill_style		=> SOLID, -- don't care here
+					border_width	=> board_line_width);
+
+			when YES =>
+				case board_fill_style is
+					when SOLID =>
+						return (shapes.type_circle (board_circle) with 
+							filled		=> YES,
+							fill_style	=> SOLID);
+
+					when HATCHED =>
+						return (shapes.type_circle (board_circle) with
+							filled		=> YES,
+							fill_style	=> HATCHED,
+							hatching 	=> board_hatching_copper);
+				end case;
+		end case;
+	end;
+			
 	procedure add_polygon_line (line : in out type_board_line) is
 		use et_packages.shapes;
 		use et_packages.shapes.pac_polygon_lines;
@@ -3884,8 +3968,8 @@ package body et_project is
 		
 		signal_layers : et_pcb_stack.type_signal_layers.set;
 		
-		pac_circle_copper		: et_packages.type_copper_circle;
-		procedure reset_circle_copper is begin pac_circle_copper := (others => <>); end;		
+-- 		pac_circle_copper		: et_packages.type_copper_circle;
+-- 		procedure reset_circle_copper is begin pac_circle_copper := (others => <>); end;		
 
 		pac_text				: et_packages.type_text_with_content;
 		pac_text_placeholder	: et_packages.type_text_placeholder;
@@ -4780,12 +4864,9 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
-										type_copper_circles.append (
+										et_packages.pac_copper_circles.append (
 											container	=> packge.copper.top.circles, 
-											new_item	=> pac_circle_copper);
-
-										-- clean up for next circle
-										pac_circle_copper := (others => <>);
+											new_item	=> board_make_copper_circle);
 
 									when SEC_SILK_SCREEN => 
 										type_silk_circles.append (
@@ -4831,12 +4912,9 @@ package body et_project is
 								case stack.parent (degree => 2) is
 									when SEC_COPPER => -- NON-ELECTRIC !!
 
-										type_copper_circles.append (
+										et_packages.pac_copper_circles.append (
 											container	=> packge.copper.bottom.circles, 
-											new_item	=> pac_circle_copper);
-
-										-- clean up for next circle
-										pac_circle_copper := (others => <>);
+											new_item	=> board_make_copper_circle);
 
 									when SEC_SILK_SCREEN => 
 										type_silk_circles.append (
@@ -5495,23 +5573,26 @@ package body et_project is
 												-- CS: In the following: set a corresponding parameter-found-flag
 												if kw = keyword_width then -- width 0.5
 													expect_field_count (line, 2);
-													pac_circle_copper.width := to_distance (f (line, 2));
+													board_line_width := to_distance (f (line, 2));
 
 												elsif kw = keyword_filled then -- filled yes/no
 													expect_field_count (line, 2);													
-													pac_circle_copper.filled := to_filled (f (line, 2));
+													board_filled := to_filled (f (line, 2));
 
 												elsif kw = keyword_fill_style then -- fill_style solid/hatched
 													expect_field_count (line, 2);													
-													pac_circle_copper.fill_style := to_fill_style (f (line, 2));
+													board_fill_style := to_fill_style (f (line, 2));
 
 												elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 													expect_field_count (line, 2);													
-													pac_circle_copper.hatching.line_width := to_distance (f (line, 2));
+													board_hatching_copper.line_width := to_distance (f (line, 2));
+
+												elsif kw = keyword_hatching_border_width then -- hatching_border_width 1.0
+													board_hatching_copper.border_width := to_distance (f (line, 2));
 
 												elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 													expect_field_count (line, 2);													
-													pac_circle_copper.hatching.spacing := to_distance (f (line, 2));
+													board_hatching_copper.spacing := to_distance (f (line, 2));
 													
 												else
 													invalid_keyword (kw);
@@ -8110,12 +8191,9 @@ package body et_project is
 				arc_end;
 			end write_arc;
 
-			use type_copper_circles;
-			procedure write_circle (cursor : in type_copper_circles.cursor) is begin
-				circle_begin;
-				write_circle (element (cursor));
-				write_width (element (cursor).width);
-				circle_end;
+			use et_packages.pac_copper_circles;
+			procedure write_circle (cursor : in et_packages.pac_copper_circles.cursor) is begin
+				write_circle_copper (element (cursor));
 			end write_circle;
 
 			use pac_copper_polygons_solid;
@@ -10510,7 +10588,7 @@ package body et_project is
 					board_reset_signal_layer;
 				end insert_line_track;
 
-				procedure insert_arc_track is
+				procedure insert_arc_track is -- about freetracks
 					use et_pcb;
 					
 					procedure do_it (
@@ -10536,7 +10614,7 @@ package body et_project is
 					board_reset_signal_layer;
 				end insert_arc_track;
 
-				procedure insert_circle_track is
+				procedure insert_circle_track is -- about freetracks
 					use et_pcb;
 					
 					procedure do_it (
@@ -10545,12 +10623,7 @@ package body et_project is
 					begin
 						pac_copper_circles.append (
 							container	=> module.board.copper.circles,
-							new_item	=> (et_packages.shapes.type_circle (board_circle) with
-											width	=> board_line_width,
-											layer	=> signal_layer,
-											hatching=> board_hatching,
-											others	=> <> -- CS
-										   ));
+							new_item	=> (board_make_copper_circle with signal_layer));
 					end;
 										
 				begin -- insert_circle_track

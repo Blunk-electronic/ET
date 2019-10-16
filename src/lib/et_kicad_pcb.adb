@@ -2026,13 +2026,13 @@ package body et_kicad_pcb is
 						
 					when TOP_COPPER => 
 						copper.top.circles.append ((shapes.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>));
+							filled => NO, fill_style => fill_style_default, border_width => circle.width));
 						
 						circle_copper_properties (TOP, copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
 						copper.bottom.circles.append ((shapes.type_circle (circle) with
-							filled => NO, fill_style => fill_style_default, width => circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => circle.width));
 						
 						circle_copper_properties (BOTTOM, copper.bottom.circles.last, log_threshold + 1);
 						
@@ -6500,13 +6500,13 @@ package body et_kicad_pcb is
 						
 					when TOP_COPPER => 
 						package_copper.top.circles.append ((shapes.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>)); 
+							filled => NO, fill_style => fill_style_default, border_width => package_circle.width));
 
 						circle_copper_properties (TOP, package_copper.top.circles.last, log_threshold + 1);
 
 					when BOT_COPPER => 
 						package_copper.bottom.circles.append ((shapes.type_circle (package_circle) with
-							filled => NO, fill_style => fill_style_default, width => package_circle.width, others => <>));
+							filled => NO, fill_style => fill_style_default, border_width => package_circle.width));
 
 						circle_copper_properties (BOTTOM, package_copper.bottom.circles.last, log_threshold + 1);
 						

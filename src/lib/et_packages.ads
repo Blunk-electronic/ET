@@ -256,6 +256,7 @@ package et_packages is
 
 	-- HATCHING OF OBJECTS WITH CLOSED CIRCUMFENCE
 	keyword_hatching_line_width		: constant string := "hatching_line_width";
+	keyword_hatching_border_width	: constant string := "hatching_border_width";	
 	keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";		
 
 	hatching_line_width_default : constant type_distance_positive := 0.2;
@@ -271,6 +272,17 @@ package et_packages is
 
 		-- the space between the lines inside the area:
 		spacing	: type_distance_positive := hatching_spacing_default;
+	end record;
+
+	type type_hatching_copper is record
+		-- the width of the border line
+		border_width : type_track_width := type_track_width'first;
+		
+		-- the with of the lines inside the area:
+		line_width : type_track_width := type_track_width'first;
+
+		-- the space between the lines inside the area:
+		spacing	: type_track_clearance := type_track_clearance'last;
 	end record;
 
 	
@@ -322,15 +334,29 @@ package et_packages is
 	end record;
 	package type_copper_arcs is new doubly_linked_lists (type_copper_arc);
 
-	type type_copper_circle is new type_circle with record
-		width				: type_track_width := type_track_width'first;
-		filled 				: type_filled := NO;
-		fill_style			: type_fill_style := SOLID; -- don't care if filled is false
-		hatching			: type_hatching;
+	type type_copper_circle (
+		filled		: type_filled;
+		fill_style	: type_fill_style -- don't care if filled is NO
+		)
+		is new type_circle with record
+		case filled is
+			when NO => 
+				-- the line width of the circumfence:
+				border_width : type_track_width := type_track_width'first;
+
+			when YES =>
+				case fill_style is
+					when SOLID => null;
+					when HATCHED =>
+						hatching : type_hatching_copper;
+				end case;
+				
+		end case;
 	end record;
-	package type_copper_circles is new doubly_linked_lists (type_copper_circle);
+	package pac_copper_circles is new indefinite_doubly_linked_lists (type_copper_circle);
 
 
+	
 	-- the space between foreign pads and the polygon outline
 	keyword_isolation : constant string := "isolation";
 
@@ -369,7 +395,7 @@ package et_packages is
 	type type_copper is record 
 		lines 		: type_copper_lines.list;
 		arcs		: type_copper_arcs.list;
-		circles		: type_copper_circles.list;
+		circles		: pac_copper_circles.list;
 		polygons	: type_copper_polygons;
 		cutouts		: pac_copper_cutouts.list;
 		texts		: type_texts_with_content.list;
@@ -388,7 +414,7 @@ package et_packages is
 
 
 	-- This circle type is used by silk screen, assembly doc, stop mask, stencil
-	type type_fillable_circle ( -- CS rework
+	type type_fillable_circle (
 		filled		: type_filled;
 		fill_style	: type_fill_style -- don't care if filled is NO
 		)
@@ -954,7 +980,7 @@ package et_packages is
 	procedure circle_copper_properties (
 	-- Logs the properties of the given circle of copper
 		face			: in type_face;
-		cursor			: in type_copper_circles.cursor;
+		cursor			: in pac_copper_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level);
 
 	

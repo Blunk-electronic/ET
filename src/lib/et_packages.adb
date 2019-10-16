@@ -422,16 +422,36 @@ package body et_packages is
 	procedure circle_copper_properties (
 	-- Logs the properties of the given circle of copper
 		face			: in type_face;
-		cursor			: in type_copper_circles.cursor;
+		cursor			: in pac_copper_circles.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use type_copper_circles;
-		circle : type_copper_circle;
+		use pac_copper_circles;
 	begin
-		circle := element (cursor);
-		log (text => "copper circle face" & to_string (face) & latin_1.space 
-			 & to_string (type_circle (circle))
-			 & " width" & to_string (circle.width)
-			 & " filled" & to_string (circle.filled), level => log_threshold);
+		case element (cursor).filled is
+			when NO =>
+				log (text => "copper circle face" & to_string (face) & latin_1.space 
+					& to_string (type_circle (element (cursor)))
+					& " filled" & to_string (element (cursor).filled)
+					& " border width" & to_string (element (cursor).border_width),
+					level => log_threshold);
+
+			when YES =>
+				case element (cursor).fill_style is
+					when SOLID =>
+						log (text => "copper circle face" & to_string (face) & latin_1.space 
+							& to_string (type_circle (element (cursor)))
+							& " fill style" & to_string (element (cursor).fill_style),
+							level => log_threshold);
+
+					when HATCHED =>
+						log (text => "copper circle face" & to_string (face) & latin_1.space 
+							& to_string (type_circle (element (cursor)))
+							& " fill style" & to_string (element (cursor).fill_style),
+							-- CS show hatching details
+							level => log_threshold);
+						
+				end case;
+		end case;
+		
 	end circle_copper_properties;
 	
 -- PROPERTIES OF OBJECTS IN SILK SCREEN
