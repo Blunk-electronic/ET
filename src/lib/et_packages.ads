@@ -323,12 +323,17 @@ package et_packages is
 			when HATCHED	=> hatching : type_hatching_copper;
 		end case;
 	end record;
-	
+
+	-- There are cutout zones (in layers not relevant for CAM) that have no easing:
 	type type_cutout_zone is new type_polygon_base with record
-		easing : type_easing;
+		easing : type_easing; -- CS remove
 	end record;
 
-
+-- 	-- There are cutout zones (in copper, silk screen, assy doc) that require easing:	
+-- 	type type_cutout_zone is new type_polygon_base with record -- CS rename to type_cutout_zone_easing
+-- 		easing : type_easing;
+-- 	end record;
+	-- CS use it
 	
 
 
