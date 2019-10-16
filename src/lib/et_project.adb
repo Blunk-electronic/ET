@@ -3976,9 +3976,6 @@ package body et_project is
 		pac_technology			: type_assembly_technology := assembly_technology_default;
 		
 		signal_layers : et_pcb_stack.type_signal_layers.set;
-		
--- 		pac_circle_copper		: et_packages.type_copper_circle;
--- 		procedure reset_circle_copper is begin pac_circle_copper := (others => <>); end;		
 
 		pac_text				: et_packages.type_text_with_content;
 		pac_text_placeholder	: et_packages.type_text_placeholder;
@@ -3986,7 +3983,7 @@ package body et_project is
 
 		terminal_position		: et_pcb_coordinates.geometry.type_position := origin_zero_rotation;
 
-		tht_width_inner_layers	: et_pcb_coordinates.type_distance := zero; -- CS rework
+		tht_width_inner_layers	: et_packages.type_track_width := et_packages.type_track_width'first;
 		tht_hole				: et_packages.type_terminal_tht_hole := et_packages.terminal_tht_hole_default;
 		tht_drill_size			: et_packages.type_drill_size := et_packages.type_drill_size'first;
 		tht_millings			: et_packages.type_plated_millings;
@@ -4069,7 +4066,7 @@ package body et_project is
 			smt_solder_paste := solder_paste_status_default;
 			tht_pad_shape := (others => <>);
 			tht_hole := terminal_tht_hole_default;
-			tht_width_inner_layers := zero;
+			tht_width_inner_layers := et_packages.type_track_width'first;
 			tht_drill_size := type_drill_size'first;
 			
 		end build_terminal;
