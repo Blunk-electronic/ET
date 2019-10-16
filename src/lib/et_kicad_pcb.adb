@@ -6991,20 +6991,14 @@ package body et_kicad_pcb is
 				use et_packages;
 				use type_polygon_points;
 				point_cursor : type_polygon_points.cursor;
-				inserted : boolean := true;
 			begin
-				polygon.corners.insert (
-					new_item	=> polygon_point,
-					inserted	=> inserted,
-					position	=> point_cursor
-					);
-
-				if inserted then
+				if not contains (polygon.corners, polygon_point) then
 					log (text => "polygon corner point at" & to_string (polygon_point), level => log_threshold + 3);
 				else
-					log (ERROR, "multiple polygon corner points at" & to_string (polygon_point), console => true);
-					raise constraint_error;
+					log (WARNING, "multiple polygon corner points at" & to_string (polygon_point));
 				end if;
+
+				polygon.corners.append (polygon_point);
 				
 			end add_polygon_corner_point;
 
@@ -7284,9 +7278,9 @@ package body et_kicad_pcb is
 		return board;
 	end to_board;
 
-	function corners_to_lines (corners : type_polygon_points.set)
+	function corners_to_lines (corners : type_polygon_points.list)
 		return et_packages.shapes.pac_polygon_lines.list is
-	-- The polygon in kicad is a set of points. This set is here converted
+	-- The polygon in kicad is a list of points. This list is here converted
 	-- to a list of lines. This implies that the kicad polygon must have at least
 	-- two corners, and the number of corners must be even. Otherwise an exception arises here.
 		use type_polygon_points;

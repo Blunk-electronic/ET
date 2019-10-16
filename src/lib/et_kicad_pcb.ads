@@ -733,9 +733,9 @@ package et_kicad_pcb is
 		range et_pcb.THT_ONLY .. et_pcb.SMT_AND_THT;
 
 -- POLYGON (or fill zone)
-	-- Corner points are collected in an ordered set.
-	-- This prevents placing two identical points on top of each other.
-	package type_polygon_points is new ordered_sets (type_point);
+
+	-- Corner points are collected in a simple list.
+	package type_polygon_points is new doubly_linked_lists (type_point);
 
 	type type_polygon_pad_connection is (THERMAL, SOLID, NONE);
 
@@ -759,7 +759,7 @@ package et_kicad_pcb is
 		pad_connection		: type_polygon_pad_connection := type_polygon_pad_connection'first;
 		priority_level		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
 		isolation_gap		: et_packages.type_track_clearance := et_packages.type_track_clearance'first; -- the space between foreign pads and the polygon
-		corners				: type_polygon_points.set;
+		corners				: type_polygon_points.list;
 		fill_style			: et_packages.type_fill_style := et_packages.SOLID; -- a polygon is always filled
 		hatching			: et_packages.type_hatching;
 		easing				: et_packages.type_easing;
