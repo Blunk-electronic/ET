@@ -944,9 +944,18 @@ package body et_project is
 	begin
 		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));
 		write (keyword => keyword_hatching_line_spacing, parameters => to_string (hatching.spacing));
-		-- CS border width
+		write (keyword => keyword_hatching_border_width, parameters => to_string (hatching.border_width));
 	end;
 
+	procedure write_hatching (hatching : in et_packages.type_hatching_copper) is
+		use et_packages;
+		use et_pcb_coordinates.geometry;
+	begin
+		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));
+		write (keyword => keyword_hatching_line_spacing, parameters => to_string (hatching.spacing));
+		write (keyword => keyword_hatching_border_width, parameters => to_string (hatching.border_width));
+	end;
+	
 	procedure write_easing (easing: in et_packages.type_easing) is
 		use et_pcb_coordinates.geometry;
 		use et_packages;
@@ -4287,7 +4296,7 @@ package body et_project is
 								new_item	=> (shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
-										hatching	=> board_hatching,
+										hatching	=> board_hatching_copper,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 					end case;
@@ -4313,7 +4322,7 @@ package body et_project is
 								new_item	=> (shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
-										hatching	=> board_hatching,
+										hatching	=> board_hatching_copper,
 										width_min 	=> polygon_width_min,
 										isolation	=> polygon_isolation));
 					end case;
@@ -5790,12 +5799,16 @@ package body et_project is
 												
 											elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 												expect_field_count (line, 2);													
-												board_hatching.line_width := to_distance (f (line, 2));
+												board_hatching_copper.line_width := to_distance (f (line, 2));
 
 											elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 												expect_field_count (line, 2);													
-												board_hatching.spacing := to_distance (f (line, 2));
+												board_hatching_copper.spacing := to_distance (f (line, 2));
 
+											elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
+												expect_field_count (line, 2);													
+												board_hatching_copper.border_width := to_distance (f (line, 2));
+												
 											elsif kw = keyword_isolation then -- isolation 0.5
 												expect_field_count (line, 2);
 												polygon_isolation := to_distance (f (line, 2));
@@ -12970,11 +12983,15 @@ package body et_project is
 
 										elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 											expect_field_count (line, 2);													
-											board_hatching.line_width := to_distance (f (line, 2));
+											board_hatching_copper.line_width := to_distance (f (line, 2));
 
 										elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 											expect_field_count (line, 2);													
-											board_hatching.spacing := to_distance (f (line, 2));
+											board_hatching_copper.spacing := to_distance (f (line, 2));
+
+										elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
+											expect_field_count (line, 2);													
+											board_hatching_copper.border_width := to_distance (f (line, 2));
 											
 										elsif kw = keyword_layer then -- layer 1
 											expect_field_count (line, 2);
@@ -13150,12 +13167,16 @@ package body et_project is
 
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 1
 										expect_field_count (line, 2);
-										board_hatching.line_width := to_distance (f (line, 2));
+										board_hatching_copper.line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 1
 										expect_field_count (line, 2);
-										board_hatching.spacing := to_distance (f (line, 2));
+										board_hatching_copper.spacing := to_distance (f (line, 2));
 
+									elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
+										expect_field_count (line, 2);
+										board_hatching_copper.border_width := to_distance (f (line, 2));
+										
 									elsif kw = keyword_layer then -- layer 2
 										expect_field_count (line, 2);
 										signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
@@ -13286,12 +13307,16 @@ package body et_project is
 										
 									elsif kw = keyword_hatching_line_width then -- hatching_line_width 0.3
 										expect_field_count (line, 2);													
-										board_hatching.line_width := to_distance (f (line, 2));
+										board_hatching_copper.line_width := to_distance (f (line, 2));
 
 									elsif kw = keyword_hatching_line_spacing then -- hatching_line_spacing 0.3
 										expect_field_count (line, 2);													
-										board_hatching.spacing := to_distance (f (line, 2));
+										board_hatching_copper.spacing := to_distance (f (line, 2));
 
+									elsif kw = keyword_hatching_border_width then -- hatching_border_width 1
+										expect_field_count (line, 2);													
+										board_hatching_copper.border_width := to_distance (f (line, 2));
+										
 									elsif kw = keyword_min_width then -- min_width 0.5
 										expect_field_count (line, 2);
 										polygon_width_min := to_distance (f (line, 2));

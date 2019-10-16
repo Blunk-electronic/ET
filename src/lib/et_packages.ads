@@ -314,6 +314,16 @@ package et_packages is
 		end case;
 	end record;
 
+	-- Polygons in copper have a dedicated type hatching:
+	type type_polygon_copper (fill_style : type_fill_style) is new type_polygon_base with record
+		easing : type_easing;
+		
+		case fill_style is
+			when SOLID		=> null;
+			when HATCHED	=> hatching : type_hatching_copper;
+		end case;
+	end record;
+	
 	type type_cutout_zone is new type_polygon_base with record
 		easing : type_easing;
 	end record;
@@ -363,14 +373,14 @@ package et_packages is
 	-- the minimal width of a polygon
 	keyword_min_width : constant string := "min_width";
 	
-	type type_copper_polygon_solid is new type_polygon (fill_style => SOLID) with record
+	type type_copper_polygon_solid is new type_polygon_copper (fill_style => SOLID) with record
 		width_min : type_track_width; -- the minimum width
 		isolation : type_track_clearance := type_track_clearance'first; 
 	end record;
 
 	package pac_copper_polygons_solid is new doubly_linked_lists (type_copper_polygon_solid);
 
-	type type_copper_polygon_hatched is new type_polygon (fill_style => HATCHED) with record
+	type type_copper_polygon_hatched is new type_polygon_copper (fill_style => HATCHED) with record
 		width_min : type_track_width; -- the minimum width
 		isolation : type_track_clearance := type_track_clearance'first;
 	end record;
