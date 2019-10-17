@@ -71,6 +71,7 @@ with et_import;
 with et_export;
 with et_csv;
 with conventions;
+with et_text;
 
 package body et_kicad is
 
@@ -925,28 +926,30 @@ package body et_kicad is
 				raise;
 	end to_field_orientation;
 	
-	function to_alignment_horizontal (text : in string) return et_libraries.type_text_alignment_horizontal is
+	function to_alignment_horizontal (text : in string) return et_text.type_text_alignment_horizontal is
 	-- Converts a horizontal kicad text alignment to type_text_alignment_horizontal.
-		a : et_libraries.type_text_alignment_horizontal;
+		use et_text;
+		a : et_text.type_text_alignment_horizontal;
 	begin
 		case type_field_alignment_horizontal'value(text) is
-			when L => a := et_libraries.left;
-			when C => a := et_libraries.center;
-			when R => a := et_libraries.right;
+			when L => a := LEFT;
+			when C => a := CENTER;
+			when R => a := RIGHT;
 		end case;
 		return a;
 	end to_alignment_horizontal;
 
-	function to_alignment_vertical (text : in string) return et_libraries.type_text_alignment_vertical is
+	function to_alignment_vertical (text : in string) return et_text.type_text_alignment_vertical is
 	-- Converts a vertical kicad text alignment to type_text_alignment_vertical.
 	-- The given text is something like CNN. We are interested in the first character only.
-		a : et_libraries.type_text_alignment_vertical;
+		use et_text;
+		a : type_text_alignment_vertical;
 		s : string (1..1) := text(text'first..text'first);
 	begin
 		case type_field_alignment_vertical'value(s) is
-			when T => a := et_libraries.top;
-			when C => a := et_libraries.center;
-			when B => a := et_libraries.bottom;
+			when T => a := TOP;
+			when C => a := CENTER;
+			when B => a := BOTTOM;
 		end case;
 		return a;
 	end to_alignment_vertical;
@@ -13815,11 +13818,7 @@ package body et_kicad is
 			--log (text => "visible " & to_lower (et_libraries.type_text_visible'image (note.visible)));
 
 			-- alignment
-			log (text => "alignment (hor/vert) "
-				& to_lower (et_libraries.type_text_alignment_horizontal'image (note.alignment.horizontal))
-				& "/"
-				& to_lower (et_libraries.type_text_alignment_vertical'image (note.alignment.vertical)));
-
+			log (text => et_text.to_string (note.alignment));
 		end if;
 		
 		log_indentation_down;

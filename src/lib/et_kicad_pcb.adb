@@ -65,7 +65,7 @@ with et_pcb;
 with et_pcb_stack;
 with et_pcb_coordinates;
 with et_string_processing;		use et_string_processing;
-
+with et_text;
 with et_kicad;
 
 package body et_kicad_pcb is
@@ -2342,6 +2342,7 @@ package body et_kicad_pcb is
 			procedure insert_fp_text is 
 				use et_packages;
 				use et_libraries;
+				use et_text;
 			begin
 					
 				-- Since there is no alignment information provided, use default values:
@@ -6855,6 +6856,7 @@ package body et_kicad_pcb is
 			procedure insert_fp_text is 
 				use et_packages;
 				use et_libraries;
+				use et_text;
 			begin
 				
 				-- Since there is no alignment information provided, use default values:
