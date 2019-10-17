@@ -71,5 +71,32 @@ package general_rw is
 	type type_section_mark is (HEADER, FOOTER);	
 
 	procedure section_mark (section : in string; mark : in type_section_mark);
+
+	section_line	: constant string := "[LINE";
+	section_arc		: constant string := "[ARC";
+	section_circle	: constant string := "[CIRCLE";
+	
+	procedure line_begin;
+	procedure line_end;			
+	procedure arc_begin;
+	procedure arc_end;
+	procedure circle_begin;
+	procedure circle_end;			
+
+	section_text		: constant string := "[TEXT";
+	section_placeholder	: constant string := "[PLACEHOLDER";
+	
+	procedure text_begin;
+	procedure text_end;
+	procedure placeholder_begin;
+	procedure placeholder_end;
+
+	
+	procedure write (
+		keyword 	: in string;
+		parameters	: in string;
+		space 		: in boolean := false;
+		wrap		: in boolean := false);
+
 	
 end general_rw;

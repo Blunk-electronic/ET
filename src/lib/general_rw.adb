@@ -102,5 +102,42 @@ package body general_rw is
 				put_line (tab_depth * tab & section & space & section_end);
 		end case;
 	end section_mark;
+
+	procedure line_begin is begin section_mark (section_line, HEADER); end;
+	procedure line_end   is begin section_mark (section_line, FOOTER); end;			
+	procedure arc_begin  is begin section_mark (section_arc , HEADER); end;
+	procedure arc_end    is begin section_mark (section_arc , FOOTER); end;
+	procedure circle_begin is begin section_mark (section_circle, HEADER); end;
+	procedure circle_end   is begin section_mark (section_circle, FOOTER); end;			
+
+	procedure text_begin is begin section_mark (section_text, HEADER); end;
+	procedure text_end   is begin section_mark (section_text, FOOTER); end;
+	procedure placeholder_begin is begin section_mark (section_placeholder, HEADER); end;
+	procedure placeholder_end   is begin section_mark (section_placeholder, FOOTER); end;
+	
+	procedure write (
+		keyword 	: in string;
+		parameters	: in string;
+		space 		: in boolean := false;
+		wrap		: in boolean := false) is 
+		parameters_wrapped : string (1..parameters'length + 2);
+	begin -- write
+		if wrap then
+			parameters_wrapped := latin_1.quotation & parameters & latin_1.quotation;
+		end if;
+					
+		if wrap then
+			-- If wrapping required, a space is always between keyword and parameters
+			put_line (tab_depth * tab & keyword & latin_1.space & parameters_wrapped);
+		else
+			case space is
+				when true =>
+					put_line (tab_depth * tab & keyword & latin_1.space & parameters);
+				when false =>
+					put_line (tab_depth * tab & keyword & parameters);
+			end case;
+		end if;
+	end write;	
+
 	
 end general_rw;

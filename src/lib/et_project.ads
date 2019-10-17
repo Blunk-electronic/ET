@@ -357,7 +357,6 @@ package et_project is
 	keyword_pos_y					: constant string := "y"; -- CS remove		
 	keyword_submodule				: constant string := "submodule";
 	keyword_netchanger				: constant string := "netchanger";		
-	keyword_width					: constant string := "width";
 	keyword_height					: constant string := "height";	
 	keyword_template				: constant string := "template";
 	keyword_model					: constant string := "model";				
@@ -417,10 +416,6 @@ package et_project is
 	section_route				: constant string := "[ROUTE";
 
 	section_lines				: constant string := "[LINES";
-	section_line				: constant string := "[LINE";
-
-	section_arc					: constant string := "[ARC";
-	section_circle				: constant string := "[CIRCLE";
 	
 	section_fill_zone			: constant string := "[FILL_ZONE";
 	section_cutout_zone			: constant string := "[CUTOUT_ZONE";

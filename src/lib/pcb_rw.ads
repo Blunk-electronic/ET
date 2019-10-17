@@ -46,6 +46,43 @@ with et_pcb_stack;
 
 package pcb_rw is
 
+	keyword_width : constant string := "width";	
+	
+	procedure write_width (width : in et_packages.type_track_width);	
+
+	procedure write_line (line : in et_packages.shapes.type_line'class);
+	-- writes start and end point of a line
+
+	procedure write_arc (arc : in et_packages.shapes.type_arc'class);
+	-- writes center, start and end point of an arc
+
+	procedure write_circle (circle : in et_packages.shapes.type_circle'class);
+	-- writes center and radius of a circle
+
+	
+	procedure write_hatching (hatching : in et_packages.type_hatching);
+	procedure write_hatching (hatching : in et_packages.type_hatching_copper);
+	procedure write_easing (easing: in et_packages.type_easing);
+	procedure write_thermal (thermal : in et_pcb.type_thermal);
+	procedure write_width_min (width : in et_packages.type_track_width);
+	procedure write_isolation (iso : in et_packages.type_track_clearance);
+	procedure write_priority (prio : in et_pcb.type_polygon_priority);
+	procedure write_signal_layer (layer : in et_pcb_stack.type_signal_layer);
+	procedure write_fill_stlye (fill_style : in et_packages.type_fill_style);
+	procedure write_fill_status (filled : in et_packages.shapes.type_filled);
+	procedure write_pad_connection (connection : in et_pcb.type_polygon_pad_connection);
+	procedure write_pad_technology (techno : in et_pcb.type_polygon_pad_technology);	
+	procedure write_signal_layers (layers : in et_pcb_stack.type_signal_layers.set);
+	procedure write_circle_fillable (circle : in et_packages.type_fillable_circle);
+	procedure write_circle_copper (circle : in et_packages.type_copper_circle);
+	procedure write_circle_copper (circle : in et_pcb.type_copper_circle);	
+	
+	
+	procedure write_polygon_segments (polygon : in et_packages.shapes.type_polygon_base);
+	-- writes the segments of a polygon (lines, arcs and circles)
+
+	
+	
 	function to_position ( -- CS combine with next function to_position using the tag test ?
 	-- Returns a type_point_2d in the the layout.
 		line : in et_string_processing.type_fields_of_line; -- "start x 44.5 y 53.5"
@@ -58,6 +95,12 @@ package pcb_rw is
 		from : in positive)
 		return et_pcb_coordinates.geometry.type_position;
 
+	function position (point : et_pcb_coordinates.geometry.type_point'class) return string;
+	
+	function to_grid (
+		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
+		from : in positive)
+		return et_pcb_coordinates.geometry.type_grid;
 	
 	
 -- BASIC GEOMETRIC OBJECTS USED IN SYMBOLS AND SCHEMATICS

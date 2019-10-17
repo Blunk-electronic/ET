@@ -193,41 +193,6 @@ package body et_project is
 		return grid;
 	end to_grid;
 
-	function to_grid (
-		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
-		from : in positive)
-		return et_pcb_coordinates.geometry.type_grid is
-		use et_string_processing;
-		use et_pcb_coordinates.geometry;
-		
-		grid : et_pcb_coordinates.geometry.type_grid; -- to be returned
-
-		place : positive := from; -- the field being read from given line
-
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
-		
-	begin
-		while place <= positive (field_count (line)) loop
-
-			-- We expect after the x the corresponding value for x
-			if f (line, place) = keyword_pos_x then
-				grid.x := to_distance (f (line, place + 1));
-
-			-- We expect after the y the corresponding value for y
-			elsif f (line, place) = keyword_pos_y then
-				grid.y := to_distance (f (line, place + 1));
-
-			else
-				invalid_keyword (f (line, place));
-			end if;
-					
-			place := place + 2;
-		end loop;
-		
-		return grid;
-	end to_grid;
-	
 	function port_connected (
 	-- Returns true if given port of netchanger is connected with any net.
 		module	: in type_modules.cursor;
@@ -472,30 +437,6 @@ package body et_project is
 		return r;
 	end compare_connectors;
 	
-	procedure write (
-		keyword 	: in string;
-		parameters	: in string;
-		space 		: in boolean := false;
-		wrap		: in boolean := false) is 
-		parameters_wrapped : string (1..parameters'length + 2);
-	begin -- write
-		if wrap then
-			parameters_wrapped := latin_1.quotation & parameters & latin_1.quotation;
-		end if;
-					
-		if wrap then
-			-- If wrapping required, a space is always between keyword and parameters
-			put_line (tab_depth * tab & keyword & latin_1.space & parameters_wrapped);
-		else
-			case space is
-				when true =>
-					put_line (tab_depth * tab & keyword & latin_1.space & parameters);
-				when false =>
-					put_line (tab_depth * tab & keyword & parameters);
-			end case;
-		end if;
-	end write;	
-
 	procedure create_supplementary_directories (
 		path			: in string;
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -735,34 +676,6 @@ package body et_project is
 -- 		end if;
 -- 	end rotation;
 
-	function position (point : et_pcb_coordinates.geometry.type_point'class) return string is
-		use et_pcb_coordinates;
-		use et_pcb_coordinates.geometry;
-		use ada.tags;
-
-		xy : constant string := space & keyword_pos_x & to_string (x (point)) 
-				& space & keyword_pos_y & to_string (y (point));
-	begin
-		if point'tag = et_pcb_coordinates.geometry.type_point'tag then
-			return xy;
-			-- position x 162.560 y 98.240
-			
-		elsif point'tag = et_pcb_coordinates.geometry.type_position'tag then
-			return xy 
-				& space & keyword_rotation & to_string (rot (et_pcb_coordinates.geometry.type_position (point)));
-				-- position x 162.560 y 98.240 rotation 180.00
-			
-		elsif point'tag = type_package_position'tag then
-			return xy
-				& space & keyword_rotation & to_string (rot (et_pcb_coordinates.geometry.type_position (point)))
-				& space & keyword_face & to_string (get_face (type_package_position (point)));
-				-- position x 162.560 y 98.240 rotation 180.00 face top
-		else
-			return xy;
-		end if;
-
-	end position;
-	
 	procedure write_text_properties (text : in et_libraries.type_text_basic'class) is
 		use et_coordinates.geometry;
 	begin
@@ -826,23 +739,12 @@ package body et_project is
 		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
 	end write_text_properties_with_face;
 		
-	
-	procedure line_begin is begin section_mark (section_line, HEADER); end;
-	procedure line_end   is begin section_mark (section_line, FOOTER); end;			
-	procedure arc_begin  is begin section_mark (section_arc , HEADER); end;
-	procedure arc_end    is begin section_mark (section_arc , FOOTER); end;
-	procedure circle_begin is begin section_mark (section_circle, HEADER); end;
-	procedure circle_end   is begin section_mark (section_circle, FOOTER); end;			
 	procedure fill_zone_begin is begin section_mark (section_fill_zone, HEADER); end;
 	procedure fill_zone_end   is begin section_mark (section_fill_zone, FOOTER); end;
 	procedure cutout_zone_begin is begin section_mark (section_cutout_zone, HEADER); end;
 	procedure cutout_zone_end   is begin section_mark (section_cutout_zone, FOOTER); end;
 	procedure contours_begin is begin section_mark (section_contours, HEADER); end;
 	procedure contours_end   is begin section_mark (section_contours, FOOTER); end;
-	procedure text_begin is begin section_mark (section_text, HEADER); end;
-	procedure text_end   is begin section_mark (section_text, FOOTER); end;
-	procedure placeholder_begin is begin section_mark (section_placeholder, HEADER); end;
-	procedure placeholder_end   is begin section_mark (section_placeholder, FOOTER); end;
 	
 	procedure write_text (cursor : in et_packages.type_texts_with_content.cursor) is
 		use et_packages.type_texts_with_content;
@@ -854,248 +756,7 @@ package body et_project is
 		text_end;
 	end write_text;
 
-	procedure write_width (width : in et_packages.type_track_width) is 
-		use et_pcb_coordinates.geometry;
-	begin
-		write (keyword => keyword_width, parameters => to_string (width));
-	end;
-	
-	procedure write_line (line : in et_packages.shapes.type_line'class) is
-	-- writes start and end point of a line
-		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;		
-	begin
-		write (keyword => keyword_start, parameters => position (line.start_point));
-		write (keyword => keyword_end  , parameters => position (line.end_point));
-	end write_line;
 
-	procedure write_arc (arc : in et_packages.shapes.type_arc'class) is 
-	-- writes center, start and end point of an arc
-		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;		
-	begin
-		write (keyword => keyword_center, parameters => position (arc.center));
-		write (keyword => keyword_start, parameters => position (arc.start_point));
-		write (keyword => keyword_end  , parameters => position (arc.end_point));
-	end write_arc;
-
-	procedure write_circle (circle : in et_packages.shapes.type_circle'class) is 
-	-- writes center and radius of a circle
-		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;		
-	begin
-		write (keyword => keyword_center, parameters => position (circle.center));
-		write (keyword => keyword_radius, parameters => to_string (circle.radius));
-	end write_circle;
-		
-	procedure write_polygon_segments (polygon : in et_packages.shapes.type_polygon_base) is
-	-- writes the segments of a polygon (lines, arcs and circles)
-		use et_packages;
-		use shapes.pac_polygon_lines;
-		use shapes.pac_polygon_arcs;
-		use shapes.pac_polygon_circles;		
-		
-		procedure write_line (cursor : in shapes.pac_polygon_lines.cursor) is begin
-			line_begin;
-			write_line (element (cursor));
-			line_end;
-		end;
-
-		procedure write_arc (cursor : in shapes.pac_polygon_arcs.cursor) is begin
-			arc_begin;
-			write_arc (element (cursor));
-			arc_end;
-		end;
-
-		procedure write_circle (cursor : in shapes.pac_polygon_circles.cursor) is begin
-			circle_begin;
-			write_circle (element (cursor));
-			circle_end;
-		end;
-
-	begin
-		iterate (polygon.segments.lines, write_line'access);
-		iterate (polygon.segments.arcs, write_arc'access);
-		iterate (polygon.segments.circles, write_circle'access);		
-	end write_polygon_segments;
-
-	procedure write_hatching (hatching : in et_packages.type_hatching) is
-		use et_packages;
-		use et_pcb_coordinates.geometry;
-	begin
-		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));
-		write (keyword => keyword_hatching_line_spacing, parameters => to_string (hatching.spacing));
-		write (keyword => keyword_hatching_border_width, parameters => to_string (hatching.border_width));
-	end;
-
-	procedure write_hatching (hatching : in et_packages.type_hatching_copper) is
-		use et_packages;
-		use et_pcb_coordinates.geometry;
-	begin
-		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));
-		write (keyword => keyword_hatching_line_spacing, parameters => to_string (hatching.spacing));
-		write (keyword => keyword_hatching_border_width, parameters => to_string (hatching.border_width));
-	end;
-	
-	procedure write_easing (easing: in et_packages.type_easing) is
-		use et_pcb_coordinates.geometry;
-		use et_packages;
-	begin
-		write (keyword => keyword_corner_easing, space => true, parameters => to_string (easing.style));
-		write (keyword => keyword_easing_radius, parameters => to_string (easing.radius));
-	end;
-
-	procedure write_thermal (thermal : in et_pcb.type_thermal) is
-		use et_pcb_coordinates.geometry;
-		use et_pcb;
-	begin
-		write (keyword => keyword_pad_technology, parameters => to_string (thermal.technology));
-		write (keyword => keyword_thermal_width , parameters => to_string (thermal.width));
-		write (keyword => keyword_thermal_gap   , parameters => to_string (thermal.gap));	
-	end;
-
-	procedure write_width_min (width : in et_packages.type_track_width) is 
-		use et_packages;
-		use et_pcb_coordinates.geometry;
-	begin
-		write (keyword => keyword_min_width, parameters => to_string (width));
-	end;
-
-	procedure write_isolation (iso : in et_packages.type_track_clearance) is 
-		use et_packages;
-		use et_pcb_coordinates.geometry;
-	begin
-		write (keyword => keyword_isolation, parameters => to_string (iso));
-	end;
-
-	procedure write_priority (prio : in et_pcb.type_polygon_priority) is
-		use et_pcb;
-	begin
-		write (keyword => keyword_priority , parameters => to_string (prio));
-	end;
-
-	procedure write_signal_layer (layer : in et_pcb_stack.type_signal_layer) is 
-		use et_pcb_stack;
-	begin
-		write (keyword => keyword_layer, space => true, parameters => to_string (layer));
-	end;
-
-	procedure write_fill_stlye (fill_style : in et_packages.type_fill_style) is
-		use et_packages;
-	begin
-		write (keyword => keyword_fill_style, space => true, parameters => to_string (fill_style));
-	end;
-
-	procedure write_fill_status (filled : in et_packages.shapes.type_filled) is
-		use et_packages.shapes;
-	begin
-		write (keyword => keyword_filled, space => true, parameters => to_string (filled));
-	end;
-	
-	procedure write_pad_connection (connection : in et_pcb.type_polygon_pad_connection) is
-		use et_pcb;
-	begin
-		write (keyword => keyword_pad_connection, parameters => to_string (connection));
-	end;
-
-	procedure write_pad_technology (techno : in et_pcb.type_polygon_pad_technology) is
-		use et_pcb;
-	begin
-		write (keyword => keyword_pad_technology, parameters => to_string (techno));
-	end;	
-
-	procedure write_signal_layers (layers : in et_pcb_stack.type_signal_layers.set) is
-		use et_pcb_stack;
-	begin
-		write (keyword => keyword_layers, space => true, parameters => to_string (layers));
-	end;
-	
-	procedure write_circle_fillable (circle : in et_packages.type_fillable_circle) is 
-		use et_packages;
-		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;		
-	begin
-		circle_begin;
-		write_circle (circle);
-		write (keyword => keyword_filled, parameters => latin_1.space & to_string (circle.filled));
-		case circle.filled is
-			when NO =>
-				write (keyword => keyword_width, parameters => to_string (circle.border_width));
-				
-			when YES =>
-				write (keyword => keyword_fill_style, parameters => latin_1.space & to_string (circle.fill_style));
-
-				case circle.fill_style is
-					when SOLID => null;
-					when HATCHED =>
-						write (keyword => keyword_hatching_line_width  , parameters => to_string (circle.hatching.line_width));
-						write (keyword => keyword_hatching_line_spacing, parameters => to_string (circle.hatching.spacing));
-				end case;
-
-		end case;
-		circle_end;
-	end write_circle_fillable;
-
-	-- CS unify the follwing two procedures write_circle_copper:
-	procedure write_circle_copper (circle : in et_packages.type_copper_circle) is 
-	-- Writes the properties of a circle in copper as used in a package.
-		use et_packages;
-		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;		
-	begin
-		circle_begin;
-		write_circle (circle);
-		write (keyword => keyword_filled, parameters => latin_1.space & to_string (circle.filled));
-		case circle.filled is
-			when NO =>
-				write (keyword => keyword_width, parameters => to_string (circle.border_width));
-				
-			when YES =>
-				write (keyword => keyword_fill_style, parameters => latin_1.space & to_string (circle.fill_style));
-
-				case circle.fill_style is
-					when SOLID => null;
-					when HATCHED =>
-						write (keyword => keyword_hatching_line_width  , parameters => to_string (circle.hatching.line_width));
-						write (keyword => keyword_hatching_line_spacing, parameters => to_string (circle.hatching.spacing));
-				end case;
-
-		end case;
-		circle_end;
-	end write_circle_copper;
-
-	procedure write_circle_copper (circle : in et_pcb.type_copper_circle) is 
-	-- Writes the properties of a circle in copper as used in a freetrack.		
-		use et_packages;
-		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;		
-	begin
-		circle_begin;
-		write_circle (circle);
-		write_signal_layer (circle.layer);
-
-		-- the signal layer:
-		write (keyword => keyword_filled, parameters => latin_1.space & to_string (circle.filled));
-		
-		case circle.filled is
-			when NO =>
-				write (keyword => keyword_width, parameters => to_string (circle.border_width));
-				
-			when YES =>
-				write (keyword => keyword_fill_style, parameters => latin_1.space & to_string (circle.fill_style));
-
-				case circle.fill_style is
-					when SOLID => null;
-					when HATCHED =>
-						write (keyword => keyword_hatching_line_width  , parameters => to_string (circle.hatching.line_width));
-						write (keyword => keyword_hatching_line_spacing, parameters => to_string (circle.hatching.spacing));
-				end case;
-
-		end case;
-		circle_end;
-	end write_circle_copper;
-
-	
 -- KEEPOUT
 	procedure write_line (cursor : in et_packages.type_keepout_lines.cursor) is
 		use et_packages.type_keepout_lines;
@@ -1667,6 +1328,7 @@ package body et_project is
 		log_threshold		: in et_string_processing.type_log_level) is 
 		use et_string_processing;
 		use type_modules;
+		use general_rw;
 		
 		module_file_handle : ada.text_io.file_type;
 
