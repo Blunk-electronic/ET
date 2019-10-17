@@ -366,9 +366,6 @@ package et_project is
 	keyword_variant					: constant string := "variant";
 	keyword_mirrored				: constant string := "mirrored";
 	keyword_meaning					: constant string := "meaning";
-	keyword_alignment				: constant string := "alignment";
-	keyword_horizontal				: constant string := "horizontal";
-	keyword_vertical				: constant string := "vertical";		
 	keyword_hidden					: constant string := "hidden";		
 	keyword_sheet					: constant string := "sheet";
 	keyword_position_in_board		: constant string := "position_in_board";

@@ -99,9 +99,7 @@ package body et_pcb is
 			& to_string (text.dimensions.width) & latin_1.space & axis_separator & to_string (text.dimensions.height)
 			& " line width" & to_string (text.line_width)
 			& " rotation" & to_string (rot (text.position))
-			& et_libraries.to_string (text.alignment)
-			-- CS & " hidden " & boolean'image (text.hidden)
-			;
+			& et_packages.text.to_string (text.alignment);
 	end text_properties;
 	
 	function to_string (meaning : in type_text_meaning_copper) return string is begin

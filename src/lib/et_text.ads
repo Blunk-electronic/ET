@@ -35,7 +35,7 @@
 --   history of changes:
 --
 
-
+with et_string_processing;
 
 package et_text is
 	
@@ -68,6 +68,33 @@ package et_text is
 
 		procedure validate_text_line_width (width : in type_distance);
 		-- Checks whether given line width is in range of type_text_line_width
+
+		
+	-- TEXT ALIGNMENT
+		keyword_alignment	: constant string := "alignment";
+		keyword_horizontal	: constant string := "horizontal";
+		keyword_vertical	: constant string := "vertical";		
+
+		
+		type type_text_alignment_horizontal is (LEFT, CENTER, RIGHT);
+		function to_string (alignment : in type_text_alignment_horizontal) return string;
+		function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal;
+		
+		type type_text_alignment_vertical is (TOP, CENTER, BOTTOM);
+		function to_string (alignment : in type_text_alignment_vertical) return string;
+		function to_alignment_vertical (alignment : in string) return type_text_alignment_vertical;
+		
+		type type_text_alignment is record
+			horizontal	: type_text_alignment_horizontal := CENTER;
+			vertical	: type_text_alignment_vertical := CENTER;
+		end record;
+
+		function to_alignment (
+			line : in et_string_processing.type_fields_of_line; -- "alignment horizontal center vertical center"
+			from : in positive)
+			return type_text_alignment;
+		
+		function to_string (alignment : in type_text_alignment) return string;
 
 		
 		

@@ -153,30 +153,30 @@ package body et_libraries is
 		return type_text_style'value (style);
 	end to_text_style;
 	
-	-- TEXT ALIGNMENT
-	function to_string (alignment : in type_text_alignment_horizontal) return string is begin
-		return latin_1.space & to_lower (type_text_alignment_horizontal'image (alignment));
-	end to_string;
-
-	function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal is begin
-		return type_text_alignment_horizontal'value (alignment);
-	end to_alignment_horizontal;
-	
-	function to_string (alignment : in type_text_alignment_vertical) return string is begin
-		return latin_1.space & to_lower (type_text_alignment_vertical'image (alignment));
-	end to_string;
-
-	function to_alignment_vertical (alignment : in string) return type_text_alignment_vertical is begin
-		return type_text_alignment_vertical'value (alignment);
-	end to_alignment_vertical;
-	
-	function to_string (alignment : in type_text_alignment) return string is
-	begin
-		return " alignment (hor./vert.) "
-			& to_string (alignment.horizontal)
-			& " / "
-			& to_string (alignment.vertical);
-	end to_string;
+-- 	-- TEXT ALIGNMENT
+-- 	function to_string (alignment : in type_text_alignment_horizontal) return string is begin
+-- 		return latin_1.space & to_lower (type_text_alignment_horizontal'image (alignment));
+-- 	end to_string;
+-- 
+-- 	function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal is begin
+-- 		return type_text_alignment_horizontal'value (alignment);
+-- 	end to_alignment_horizontal;
+-- 	
+-- 	function to_string (alignment : in type_text_alignment_vertical) return string is begin
+-- 		return latin_1.space & to_lower (type_text_alignment_vertical'image (alignment));
+-- 	end to_string;
+-- 
+-- 	function to_alignment_vertical (alignment : in string) return type_text_alignment_vertical is begin
+-- 		return type_text_alignment_vertical'value (alignment);
+-- 	end to_alignment_vertical;
+-- 	
+-- 	function to_string (alignment : in type_text_alignment) return string is
+-- 	begin
+-- 		return " alignment (hor./vert.) "
+-- 			& to_string (alignment.horizontal)
+-- 			& " / "
+-- 			& to_string (alignment.vertical);
+-- 	end to_string;
 
 	function to_string (direction : in type_port_direction) return string is begin
 		return latin_1.space & to_lower (type_port_direction'image (direction));
@@ -604,10 +604,7 @@ package body et_libraries is
 		--	& to_lower (et_libraries.type_text_visible'image (placeholder.visible)), level => log_threshold);
 
 		-- alignment
-		log (text => "alignment (hor/vert) "
-			& to_lower (et_libraries.type_text_alignment_horizontal'image (placeholder.alignment.horizontal))
-			& "/"
-			& to_lower (et_libraries.type_text_alignment_vertical'image (placeholder.alignment.vertical)),
+		log (text => text.to_string (placeholder.alignment),
 			level => log_threshold);
 
 		log_indentation_down;
@@ -657,12 +654,9 @@ package body et_libraries is
 		--	level => log_threshold + 1);
 
 		-- alignment
-		log (text => "alignment (horizontal/vertical) "
-			& to_lower (et_libraries.type_text_alignment_horizontal'image (text.alignment.horizontal))
-			& "/"
-			& to_lower (et_libraries.type_text_alignment_vertical'image (text.alignment.vertical)),
+		log (text => et_libraries.text.to_string (text.alignment),
 			level => log_threshold + 1);
-
+				
 -- 		log_indentation_down;
 		log_indentation_down;
 	end write_text_properies;

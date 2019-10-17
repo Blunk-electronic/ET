@@ -185,7 +185,7 @@ package et_packages is
 	-- TEXT
 	type type_text is new text.type_text with record
 		position	: type_position;
-		alignment	: et_libraries.type_text_alignment;
+		alignment	: text.type_text_alignment;
 		-- CS locked : type_locked;		
 	end record;
 
@@ -206,7 +206,7 @@ package et_packages is
 	-- There can be lots of placeholders of this kind. So they are stored in a list:	
 	package pac_text_placeholders is new doubly_linked_lists (type_text_placeholder);
 
-	-- Placeholders for device name (or reference) and value can be placed in
+	-- Placeholders for device name and value can be placed in
 	-- silk screen or assembly documentation only:
 	type type_placeholder_package_layer is (SILK_SCREEN, ASSEMBLY_DOCUMENTATION);
 	function to_string (layer : in type_placeholder_package_layer) return string;

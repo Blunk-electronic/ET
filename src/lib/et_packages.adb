@@ -154,7 +154,7 @@ package body et_packages is
 			& to_string (text.dimensions.width) & latin_1.space & axis_separator & to_string (text.dimensions.height)
 			& " line width" & to_string (text.line_width)
 			& " rotation" & to_string (rot (text.position))
-			& et_libraries.to_string (text.alignment)
+			& et_packages.text.to_string (text.alignment)
 			-- CS & " hidden " & boolean'image (text.hidden)
 			;
 	end text_properties;
