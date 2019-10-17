@@ -3,6 +3,7 @@ TARGET = et
 VPATH = include
 
 OBJS = $(TARGET).o \
+	et_text.o \
 	general_rw.o \
 	pcb_rw.o \
 	et_geometry.o \

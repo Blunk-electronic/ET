@@ -58,6 +58,7 @@ with et_libraries;				--use et_libraries;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
+with et_text;
 
 package et_packages is
 	use geometry;
@@ -78,9 +79,15 @@ package et_packages is
 -- 	function to_directory (directory_name : in string) return type_directory_name.bounded_string;
 -- 	-- Converts a string to a type_directory_name.
 
-	text_size_min : constant type_distance := 1.0;
-	text_size_max : constant type_distance := 100.0;
-	subtype type_text_size is type_distance range text_size_min .. text_size_max;
+	-- Instantiation of the text package:
+	package text is new et_text.text (
+		type_distance	=> type_distance_positive, 
+		type_rotation	=> type_rotation);
+
+	
+-- 	text_size_min : constant type_distance := 1.0;
+-- 	text_size_max : constant type_distance := 100.0;
+-- 	subtype type_text_size is type_distance range text_size_min .. text_size_max;
 
 	type type_text_dimensions is record
 		width	: type_text_size := text_size_min;
