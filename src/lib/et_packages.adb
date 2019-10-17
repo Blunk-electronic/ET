@@ -54,6 +54,7 @@ with ada.containers.ordered_sets;
 with ada.exceptions;
 
 with et_string_processing;		use et_string_processing;
+with et_text;
 
 package body et_packages is
 	use shapes;
@@ -154,7 +155,7 @@ package body et_packages is
 			& to_string (text.dimensions.width) & latin_1.space & axis_separator & to_string (text.dimensions.height)
 			& " line width" & to_string (text.line_width)
 			& " rotation" & to_string (rot (text.position))
-			& et_packages.text.to_string (text.alignment)
+			& et_text.to_string (text.alignment)
 			-- CS & " hidden " & boolean'image (text.hidden)
 			;
 	end text_properties;

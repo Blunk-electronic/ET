@@ -67,7 +67,7 @@ with submodules;
 with assembly_variants;
 with material;
 with netlists;
-
+with et_text;
 with general_rw;				use general_rw;
 with pcb_rw;					use pcb_rw;
 
@@ -669,6 +669,7 @@ package body et_project is
 
 	procedure write_text_properties (t : in et_libraries.type_text_basic'class) is
 		use et_libraries.text;
+		use et_text;
 	begin
 		write (keyword => keyword_size, parameters => to_string (t.size));
 		write (keyword => et_libraries.keyword_line_width, parameters => to_string (t.line_width));
@@ -684,6 +685,7 @@ package body et_project is
 	procedure write_text_properties (t : in et_packages.type_text'class) is
 		use et_packages;
 		use et_pcb_coordinates.geometry;
+		use et_text;
 	begin
 -- 		write (keyword => keyword_position, parameters => position (text.position) & 
 -- 			space & keyword_rotation & to_string (get_angle (text.position))
@@ -696,9 +698,9 @@ package body et_project is
 		   & space & keyword_height & to_string (t.dimensions.height)); -- size width 1.000 height 1.000
 		
 		write (keyword => keyword_line_width, parameters => to_string (t.line_width));
-		write (keyword => text.keyword_alignment, parameters => space &
-			text.keyword_horizontal & text.to_string (t.alignment.horizontal) & space &
-			text.keyword_vertical   & text.to_string (t.alignment.vertical)
+		write (keyword => keyword_alignment, parameters => space &
+			keyword_horizontal & to_string (t.alignment.horizontal) & space &
+			keyword_vertical   & to_string (t.alignment.vertical)
 				);
 		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
 	end write_text_properties;
@@ -710,6 +712,7 @@ package body et_project is
 		use et_packages;
 		use et_pcb_coordinates;
 		use et_pcb_coordinates.geometry;
+		use et_text;
 	begin
 		write (keyword => keyword_position, parameters => position (t.position) & 
 			space & keyword_face & to_string (face)); -- position x 0.000 y 5.555 rotation 0.00 face top
@@ -723,9 +726,9 @@ package body et_project is
 			   & space & keyword_height & to_string (t.dimensions.height)); -- size width 1.000 height 1.000
 		
 		write (keyword => keyword_line_width, parameters => to_string (t.line_width));
-		write (keyword => text.keyword_alignment, parameters => space &
-				text.keyword_horizontal & text.to_string (t.alignment.horizontal) & space &
-				text.keyword_vertical   & text.to_string (t.alignment.vertical)
+		write (keyword => keyword_alignment, parameters => space &
+				keyword_horizontal & to_string (t.alignment.horizontal) & space &
+				keyword_vertical   & to_string (t.alignment.vertical)
 				);
 		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
 	end write_text_properties_with_face;
@@ -4475,11 +4478,11 @@ package body et_project is
 												expect_field_count (line, 2);
 												pac_text.line_width := to_distance (f (line, 2));
 
-											elsif kw = et_packages.text.keyword_alignment then -- alignment horizontal center vertical center
+											elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 												expect_field_count (line, 5);
 
 												-- extract alignment starting at field 2
-												pac_text.alignment := et_packages.text.to_alignment (line, 2);
+												pac_text.alignment := et_text.to_alignment (line, 2);
 												
 											elsif kw = keyword_content then -- content "blabla"
 												expect_field_count (line, 2); -- actual content in quotes !
@@ -4522,11 +4525,11 @@ package body et_project is
 												expect_field_count (line, 2);
 												pac_text_placeholder.line_width := to_distance (f (line, 2));
 
-											elsif kw = et_packages.text.keyword_alignment then -- alignment horizontal center vertical center
+											elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 												expect_field_count (line, 5);
 
 												-- extract alignment starting at field 2
-												pac_text_placeholder.alignment := et_packages.text.to_alignment (line, 2);
+												pac_text_placeholder.alignment := et_text.to_alignment (line, 2);
 												
 											elsif kw = keyword_meaning then -- meaning reference, value, purpose
 												expect_field_count (line, 2);
@@ -5235,9 +5238,9 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_text_base.style := et_libraries.to_text_style (f (line, 2));
 
-									elsif kw = et_libraries.text.keyword_alignment then -- alignment horizontal center vertical center
+									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
-										symbol_text_base.alignment := et_libraries.text.to_alignment (line, 2);
+										symbol_text_base.alignment := et_text.to_alignment (line, 2);
 
 									else
 										invalid_keyword (kw);
@@ -5280,9 +5283,9 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_text_base.style := et_libraries.to_text_style (f (line, 2));
 
-									elsif kw = et_libraries.text.keyword_alignment then -- alignment horizontal center vertical center
+									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
-										symbol_text_base.alignment := et_libraries.text.to_alignment (line, 2);
+										symbol_text_base.alignment := et_text.to_alignment (line, 2);
 
 									else
 										invalid_keyword (kw);
@@ -6446,9 +6449,9 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_text_base.style := et_libraries.to_text_style (f (line, 2));
 
-									elsif kw = et_libraries.text.keyword_alignment then -- alignment horizontal center vertical center
+									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
-										symbol_text_base.alignment := et_libraries.text.to_alignment (line, 2);
+										symbol_text_base.alignment := et_text.to_alignment (line, 2);
 
 									else
 										invalid_keyword (kw);
@@ -6497,9 +6500,9 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_text_base.style := et_libraries.to_text_style (f (line, 2));
 
-									elsif kw = et_libraries.text.keyword_alignment then -- alignment horizontal center vertical center
+									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
-										symbol_text_base.alignment := et_libraries.text.to_alignment (line, 2);
+										symbol_text_base.alignment := et_text.to_alignment (line, 2);
 
 									else
 										invalid_keyword (kw);
@@ -12156,11 +12159,11 @@ package body et_project is
 										expect_field_count (line, 2);
 										note.style := et_libraries.to_text_style (f (line, 2));
 
-									elsif kw = et_libraries.text.keyword_alignment then -- alignment horizontal center vertical center
+									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
 
 										-- extract alignment starting at field 2
-										note.alignment := et_libraries.text.to_alignment (line, 2);
+										note.alignment := et_text.to_alignment (line, 2);
 										
 									else
 										invalid_keyword (kw);
@@ -12191,11 +12194,11 @@ package body et_project is
 												expect_field_count (line, 2);
 												board_text.line_width := to_distance (f (line, 2));
 
-											elsif kw = et_packages.text.keyword_alignment then -- alignment horizontal center vertical center
+											elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 												expect_field_count (line, 5);
 
 												-- extract alignment starting at field 2
-												board_text.alignment := et_packages.text.to_alignment (line, 2);
+												board_text.alignment := et_text.to_alignment (line, 2);
 												
 											elsif kw = keyword_content then -- content "WATER KETTLE CONTROL"
 												expect_field_count (line, 2); -- actual content in quotes !
@@ -12232,11 +12235,11 @@ package body et_project is
 										expect_field_count (line, 2);
 										board_text_copper.line_width := to_distance (f (line, 2));
 
-									elsif kw = et_packages.text.keyword_alignment then -- alignment horizontal center vertical center
+									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
 
 										-- extract alignment starting at field 2
-										board_text_copper.alignment := et_packages.text.to_alignment (line, 2);
+										board_text_copper.alignment := et_text.to_alignment (line, 2);
 										
 									elsif kw = keyword_content then -- content "TOP", "L2", "BOT"
 										expect_field_count (line, 2); -- actual content in quotes !
@@ -12379,11 +12382,11 @@ package body et_project is
 
 												device_text_placeholder.line_width := to_distance (f (line, 2));
 
-											elsif kw = et_packages.text.keyword_alignment then -- alignment horizontal center vertical center
+											elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 												expect_field_count (line, 5);
 
 												-- extract alignment of placeholder starting at field 2
-												device_text_placeholder.alignment := et_packages.text.to_alignment (line, 2);
+												device_text_placeholder.alignment := et_text.to_alignment (line, 2);
 												
 											else
 												invalid_keyword (kw);
@@ -12427,11 +12430,11 @@ package body et_project is
 
 												unit_placeholder.style := et_libraries.to_text_style (f (line, 2));
 
-											elsif kw = et_libraries.text.keyword_alignment then -- alignment horizontal center vertical center
+											elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 												expect_field_count (line, 5);
 
 												-- extract alignment of placeholder starting at field 2
-												unit_placeholder.alignment := et_libraries.text.to_alignment (line, 2);
+												unit_placeholder.alignment := et_text.to_alignment (line, 2);
 												
 											else
 												invalid_keyword (kw);
@@ -12465,11 +12468,11 @@ package body et_project is
 												expect_field_count (line, 2);
 												board_text_placeholder.line_width := to_distance (f (line, 2));
 
-											elsif kw = et_packages.text.keyword_alignment then -- alignment horizontal center vertical center
+											elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 												expect_field_count (line, 5);
 
 												-- extract alignment starting at field 2
-												board_text_placeholder.alignment := et_packages.text.to_alignment (line, 2);
+												board_text_placeholder.alignment := et_text.to_alignment (line, 2);
 												
 											elsif kw = keyword_meaning then -- meaning project_name
 												expect_field_count (line, 2);
@@ -12506,11 +12509,11 @@ package body et_project is
 										expect_field_count (line, 2);
 										board_text_copper_placeholder.line_width := to_distance (f (line, 2));
 
-									elsif kw = et_packages.text.keyword_alignment then -- alignment horizontal center vertical center
+									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
 
 										-- extract alignment starting at field 2
-										board_text_copper_placeholder.alignment := et_packages.text.to_alignment (line, 2);
+										board_text_copper_placeholder.alignment := et_text.to_alignment (line, 2);
 										
 									elsif kw = keyword_meaning then -- meaning revision/project_name/...
 										expect_field_count (line, 2);

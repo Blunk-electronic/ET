@@ -52,6 +52,7 @@ with ada.exceptions; 			use ada.exceptions;
 with et_string_processing;
 with et_coordinates;
 with et_import;
+with et_text;
 
 package body et_libraries is
 
@@ -604,7 +605,7 @@ package body et_libraries is
 		--	& to_lower (et_libraries.type_text_visible'image (placeholder.visible)), level => log_threshold);
 
 		-- alignment
-		log (text => text.to_string (placeholder.alignment),
+		log (text => et_text.to_string (placeholder.alignment),
 			level => log_threshold);
 
 		log_indentation_down;
@@ -654,7 +655,7 @@ package body et_libraries is
 		--	level => log_threshold + 1);
 
 		-- alignment
-		log (text => et_libraries.text.to_string (text.alignment),
+		log (text => et_text.to_string (text.alignment),
 			level => log_threshold + 1);
 				
 -- 		log_indentation_down;

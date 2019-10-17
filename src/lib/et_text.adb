@@ -43,6 +43,70 @@ with et_string_processing;
 
 package body et_text is
 
+-- TEXT ALIGNMENT
+	function to_string (alignment : in type_text_alignment_horizontal) return string is begin
+		return latin_1.space & to_lower (type_text_alignment_horizontal'image (alignment));
+	end to_string;
+
+	function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal is begin
+		return type_text_alignment_horizontal'value (alignment);
+	end to_alignment_horizontal;
+	
+	function to_string (alignment : in type_text_alignment_vertical) return string is begin
+		return latin_1.space & to_lower (type_text_alignment_vertical'image (alignment));
+	end to_string;
+
+	function to_alignment_vertical (alignment : in string) return type_text_alignment_vertical is begin
+		return type_text_alignment_vertical'value (alignment);
+	end to_alignment_vertical;
+
+	function to_alignment (
+		line : in et_string_processing.type_fields_of_line; -- "alignment horizontal center vertical center"
+		from : in positive)
+		return type_text_alignment is
+
+		use et_string_processing;
+
+		function f (line : in type_fields_of_line; position : in positive) return string 
+			renames et_string_processing.field;
+		
+		alignment : type_text_alignment; -- to be returned
+
+		place : positive := from; -- the field being read from given line
+
+		-- CS: flags to detect missing sheet, x or y
+	begin
+		while place <= positive (field_count (line)) loop
+
+			-- We expect after the "horizontal" the horizontal alignment
+			if f (line, place) = keyword_horizontal then
+				alignment.horizontal := to_alignment_horizontal (f (line, place + 1));
+
+			-- We expect after the "vertical" the vertical alignment
+			elsif f (line, place) = keyword_vertical then
+				alignment.vertical := to_alignment_vertical (f (line, place + 1));
+				
+			else
+				log (ERROR, "alignment invalid: " & (f (line, place)));
+				raise constraint_error;
+			end if;
+				
+			place := place + 2;
+		end loop;
+		
+		return alignment;
+	end to_alignment;
+
+	
+	function to_string (alignment : in type_text_alignment) return string is
+	begin
+		return " alignment (hor./vert.) "
+			& to_string (alignment.horizontal)
+			& " / "
+			& to_string (alignment.vertical);
+	end to_string;
+
+	
 	package body text is
 		use et_string_processing;
 
@@ -80,68 +144,6 @@ package body et_text is
 		end validate_text_line_width;
 
 
-	-- TEXT ALIGNMENT
-		function to_string (alignment : in type_text_alignment_horizontal) return string is begin
-			return latin_1.space & to_lower (type_text_alignment_horizontal'image (alignment));
-		end to_string;
-
-		function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal is begin
-			return type_text_alignment_horizontal'value (alignment);
-		end to_alignment_horizontal;
-		
-		function to_string (alignment : in type_text_alignment_vertical) return string is begin
-			return latin_1.space & to_lower (type_text_alignment_vertical'image (alignment));
-		end to_string;
-
-		function to_alignment_vertical (alignment : in string) return type_text_alignment_vertical is begin
-			return type_text_alignment_vertical'value (alignment);
-		end to_alignment_vertical;
-
-		function to_alignment (
-			line : in et_string_processing.type_fields_of_line; -- "alignment horizontal center vertical center"
-			from : in positive)
-			return type_text_alignment is
-
-			use et_string_processing;
-
-			function f (line : in type_fields_of_line; position : in positive) return string 
-				renames et_string_processing.field;
-			
-			alignment : type_text_alignment; -- to be returned
-
-			place : positive := from; -- the field being read from given line
-
-			-- CS: flags to detect missing sheet, x or y
-		begin
-			while place <= positive (field_count (line)) loop
-
-				-- We expect after the "horizontal" the horizontal alignment
-				if f (line, place) = keyword_horizontal then
-					alignment.horizontal := to_alignment_horizontal (f (line, place + 1));
-
-				-- We expect after the "vertical" the vertical alignment
-				elsif f (line, place) = keyword_vertical then
-					alignment.vertical := to_alignment_vertical (f (line, place + 1));
-					
-				else
-					log (ERROR, "alignment invalid: " & (f (line, place)));
-					raise constraint_error;
-				end if;
-					
-				place := place + 2;
-			end loop;
-			
-			return alignment;
-		end to_alignment;
-
-		
-		function to_string (alignment : in type_text_alignment) return string is
-		begin
-			return " alignment (hor./vert.) "
-				& to_string (alignment.horizontal)
-				& " / "
-				& to_string (alignment.vertical);
-		end to_string;
 
 
 

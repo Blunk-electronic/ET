@@ -77,7 +77,7 @@ package et_libraries is
 -- TEXT & FIELDS
 	
 	-- Instantiation of the text package:
-	package text is new et_text.text (
+	package text is new et_text.text ( -- CS rename to pac_text
 		type_distance	=> type_distance_positive);
 
 	-- Texts of any kind must have a size between 0.1 and 50mm
@@ -103,21 +103,6 @@ package et_libraries is
 	function to_text_style (style : in string) return type_text_style;
 	
 	--type type_text_visible is (YES, NO);
-	
--- 	type type_text_alignment_horizontal is (LEFT, CENTER, RIGHT);
--- 	function to_string (alignment : in type_text_alignment_horizontal) return string;
--- 	function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal;
--- 	
--- 	type type_text_alignment_vertical is (TOP, CENTER, BOTTOM);
--- 	function to_string (alignment : in type_text_alignment_vertical) return string;
--- 	function to_alignment_vertical (alignment : in string) return type_text_alignment_vertical;
--- 	
--- 	type type_text_alignment is record
--- 		horizontal	: type_text_alignment_horizontal := CENTER;
--- 		vertical	: type_text_alignment_vertical := CENTER;
--- 	end record;
--- 
--- 	function to_string (alignment : in type_text_alignment) return string;
 	
 	type type_text_meaning is (
 		NAME,			-- for things like R301 or X9
@@ -146,7 +131,7 @@ package et_libraries is
         style		: type_text_style := type_text_style'first;
         line_width	: type_text_line_width := type_text_line_width'first; -- CS: use a general type_line_width ?
         rotation	: type_rotation_text := 0.0;
-		alignment	: text.type_text_alignment;
+		alignment	: et_text.type_text_alignment;
 	end record;
 
 	-- A text may have up to 200 characters which seems sufficient for now.

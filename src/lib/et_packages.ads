@@ -80,31 +80,14 @@ package et_packages is
 -- 	-- Converts a string to a type_directory_name.
 
 	-- Instantiation of the text package:
-	package text is new et_text.text (
+	package text is new et_text.text ( -- CS rename to pac_text
 		type_distance	=> type_distance_positive);
 -- 		type_rotation	=> type_rotation);
 
 	
--- 	text_size_min : constant type_distance := 1.0;
--- 	text_size_max : constant type_distance := 100.0;
--- 	subtype type_text_size is type_distance range text_size_min .. text_size_max;
-
--- 	type type_text_dimensions is record
--- 		width	: type_text_size := text_size_min;
--- 		height	: type_text_size := text_size_min;
--- 	end record;
-
--- 	procedure validate_text_size (size : in type_distance);
--- 	-- Checks whether given text size is in range of type_text_size.
-
 	keyword_line_width : constant string := "line_width";	
 	line_width_min : constant type_distance := 0.15;
 	line_width_max : constant type_distance := 10.0;
--- 	subtype type_text_line_width is type_distance range line_width_min .. line_width_max;
--- 
--- 	procedure validate_text_line_width (width : in type_distance);
--- 	-- Checks whether given line width is in range of type_text_line_width
-
 
 	subtype type_general_line_width is type_distance_positive range line_width_min .. line_width_max;
 
@@ -185,7 +168,7 @@ package et_packages is
 	-- TEXT
 	type type_text is new text.type_text with record
 		position	: type_position;
-		alignment	: text.type_text_alignment;
+		alignment	: et_text.type_text_alignment;
 		-- CS locked : type_locked;		
 	end record;
 
