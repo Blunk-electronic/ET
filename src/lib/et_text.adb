@@ -35,13 +35,59 @@
 --   history of changes:
 --
 
+with et_string_processing;
+
 package body et_text is
 
 	package body text is
+		use et_string_processing;
+
+		function to_string (size : in type_distance) return string is begin
+			return type_distance'image (size);
+		end;
+
+-- 		function to_string (rotation : in type_rotation) return string is begin
+-- 			return type_rotation'image (rotation);
+-- 		end;
+
+		
+		procedure validate_text_size (size : in type_distance) is
+		-- Checks whether given text size is in range of type_text_size.
+		begin
+			if size not in type_text_size then
+				log (ERROR, "text size invalid ! Allowed range is" 
+					& to_string (type_text_size'first) & " .."
+					& to_string (type_text_size'last),
+					console => true);
+				raise constraint_error;
+			end if;
+		end validate_text_size;
+
+		procedure validate_text_line_width (width : in type_distance) is
+		-- Checks whether given line width is in range of type_text_line_width
+		begin
+			if width not in type_text_line_width then
+				log (ERROR, "line width invalid ! Allowed range is" 
+					& to_string (type_text_line_width'first) & " .."
+					& to_string (type_text_line_width'last),
+					console => true);
+				raise constraint_error;
+			end if;
+		end validate_text_line_width;
 
 
-		procedure dummy is begin null; end;
-
+		function text_properties (text : in type_text) return string is
+		-- Returns the properties of the given text in a long single string.
+		begin
+			return --to_string (text.position) & latin_1.space
+				"size (width/height)" 
+				& to_string (text.dimensions.width) & " / " & to_string (text.dimensions.height)
+				& " line width" & to_string (text.line_width)
+-- 				& " rotation" & to_string (rot (text.position))
+-- CS				& et_libraries.to_string (text.alignment)
+				;
+		end text_properties;
+		
 	end text;
 
 end et_text;

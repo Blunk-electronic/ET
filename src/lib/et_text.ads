@@ -35,11 +35,13 @@
 --   history of changes:
 --
 
+
+
 package et_text is
 	
 	generic
 		type type_distance is delta <>;
-		type type_rotation is delta <>;
+-- 		type type_rotation is delta <>;
 		
 	package text is
 
@@ -47,9 +49,38 @@ package et_text is
 		text_size_max : constant type_distance := 100.0;
 		subtype type_text_size is type_distance range text_size_min .. text_size_max;
 		
+		type type_text_dimensions is record
+			width	: type_text_size := text_size_min;
+			height	: type_text_size := text_size_min;
+		end record;
+
+		function to_string (size : in type_distance) return string;
+-- 		function to_string (rotation : in type_rotation) return string;
+		
+		procedure validate_text_size (size : in type_distance);
+		-- Checks whether given text size is in range of type_text_size.
 
 
-		procedure dummy;
+		keyword_line_width : constant string := "line_width";	
+		line_width_min : constant type_distance := 0.15;
+		line_width_max : constant type_distance := 10.0;
+		subtype type_text_line_width is type_distance range line_width_min .. line_width_max;
+
+		procedure validate_text_line_width (width : in type_distance);
+		-- Checks whether given line width is in range of type_text_line_width
+
+		
+		
+		type type_text is abstract tagged record
+			dimensions	: type_text_dimensions;
+			line_width	: type_text_line_width := type_text_line_width'first;
+-- 			alignment	: et_libraries.type_text_alignment;
+
+		end record;
+
+		function text_properties (text : in type_text) return string;
+		-- Returns the properties of the given text in a long single string.	
+
 			
 	-- 	private
 

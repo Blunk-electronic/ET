@@ -6952,7 +6952,7 @@ package body et_kicad_pcb is
 					new_item	=> segment);
 
 				log (text => "segment " & to_string (shapes.type_line (segment)) & -- start and end point
-					 " width" & to_string (segment.width) &
+					 " width" & geometry.to_string (segment.width) &
 					 " layer" & to_string (segment.layer) &
 					 " net_id" & to_string (segment.net_id) &
 					 " status " & type_segment_status.to_string (segment.status),
@@ -6976,7 +6976,7 @@ package body et_kicad_pcb is
 					new_item	=> via);
 
 				log (text => "via" & to_string (type_drill (via)) & -- position and drill diameter
-					" diameter_total" & to_string (via.diameter_total) &
+					" diameter_total" & geometry.to_string (via.diameter_total) &
 					" layer_start" & to_string (via.layer_start) &
 					" layer_end" & to_string (via.layer_end) &
 					" net_id" & to_string (via.net_id) &
@@ -7017,15 +7017,15 @@ package body et_kicad_pcb is
 					 -- So there is no need to output this stuff here.
 					 --" hatch_width" & to_string (polygon.hatch_width) & -- CS use constant for "hatch width" ?
 					 --" hatch_style" & to_string (polygon.hatch_style) & -- CS use constant for "hatch stlye" ?
-					 " min_thickness/" & text_polygon_width_min & to_string (polygon.min_thickness) &
-					 " " & keyword_isolation & to_string (polygon.isolation_gap) &
+					 " min_thickness/" & text_polygon_width_min & geometry.to_string (polygon.min_thickness) &
+					 " " & keyword_isolation & geometry.to_string (polygon.isolation_gap) &
 					 " filled " & boolean'image (polygon.filled) & -- CS use constant
 					 " fill_mode_segment " & boolean'image (polygon.fill_mode_segment) &
 					 " smoothing/easing" & to_string (polygon.easing.style) &
-					 " " & keyword_easing_radius & to_string (polygon.easing.radius) &
+					 " " & keyword_easing_radius & geometry.to_string (polygon.easing.radius) &
 					 " arc_segments" & natural'image (polygon.arc_segments) & -- CS use constant
-					 " " & text_polygon_thermal_gap & to_string (polygon.thermal_gap) &
-					 " " & text_polygon_thermal_width & to_string (polygon.thermal_width) &
+					 " " & text_polygon_thermal_gap & geometry.to_string (polygon.thermal_gap) &
+					 " " & text_polygon_thermal_width & geometry.to_string (polygon.thermal_width) &
 					 " " & text_polygon_pad_connection & to_string (polygon.pad_connection) &
 					 " " & text_polygon_pad_technology & to_string (polygon.pad_technology),
 					 level => log_threshold + 3);

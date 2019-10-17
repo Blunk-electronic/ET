@@ -2535,14 +2535,14 @@ package body et_project is
 	function to_dimensions (
 		line : in et_string_processing.type_fields_of_line; -- "size width 30 height 40"
 		from : in positive)
-		return et_packages.type_text_dimensions is
+		return et_packages.text.type_text_dimensions is
 		use et_pcb_coordinates.geometry;
 		use et_string_processing;
 
 		function f (line : in type_fields_of_line; position : in positive) return string 
 			renames et_string_processing.field;
 		
-		dim : et_packages.type_text_dimensions; -- to be returned
+		dim : et_packages.text.type_text_dimensions; -- to be returned
 		place : positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing x or y

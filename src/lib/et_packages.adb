@@ -64,17 +64,6 @@ package body et_packages is
 		return type_directory_name.to_string (directory_name);
 	end to_string;
 
-	procedure validate_text_size (size : in type_distance) is
-	-- Checks whether given text size is in range of type_text_size.
-	begin
-		if size not in type_text_size then
-			log (ERROR, "text size invalid ! Allowed range is" 
-				 & to_string (type_text_size'first) & " .."
-				 & to_string (type_text_size'last),
-				 console => true);
-			raise constraint_error;
-		end if;
-	end validate_text_size;
 
 	procedure validate_general_line_width (width : in type_distance) is
 	-- Checks whether given line width is in range of type_general_line_width
@@ -88,17 +77,6 @@ package body et_packages is
 		end if;
 	end validate_general_line_width;
 
-	procedure validate_text_line_width (width : in type_distance) is
-	-- Checks whether given line width is in range of type_text_line_width
-	begin
-		if width not in type_text_line_width then
-			log (ERROR, "line width invalid ! Allowed range is" 
-				 & to_string (type_text_line_width'first) & " .."
-				 & to_string (type_text_line_width'last),
-				 console => true);
-			raise constraint_error;
-		end if;
-	end validate_text_line_width;
 
 	procedure validate_drill_size (drill : in type_distance) is
 	-- Checks whether given drill size is in range of type_drill_size
@@ -166,12 +144,11 @@ package body et_packages is
 		end if;
 	end validate_restring_width;
 
-
-	
 	
 	function text_properties (text : in type_text) return string is
 	-- Returns the properties of the given text in a long single string.
 	begin
+		-- CS use text_properties in generic package text
 		return to_string (text.position) & latin_1.space
 			& "size (width" & axis_separator & "height)" 
 			& to_string (text.dimensions.width) & latin_1.space & axis_separator & to_string (text.dimensions.height)
