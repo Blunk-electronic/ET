@@ -47,6 +47,7 @@ with et_pcb_stack;
 package pcb_rw is
 
 	keyword_width : constant string := "width";	
+	keyword_locked : constant string := "locked"; -- layout related
 	
 	procedure write_width (width : in et_packages.type_track_width);	
 
@@ -210,6 +211,76 @@ package pcb_rw is
 	-- This procdure resets polygon properties to their defaults.
 	-- This procdure is used by both package and board parsing procedures read_package and read_module_file.
 	-- Some properties have no meaning in packages as remarked below.
+
+	section_fill_zone	: constant string := "[FILL_ZONE";
+	section_cutout_zone	: constant string := "[CUTOUT_ZONE";
+	section_contours	: constant string := "[CONTOURS";
+
+	procedure fill_zone_begin;
+	procedure fill_zone_end;
+	procedure cutout_zone_begin;
+	procedure cutout_zone_end;
+	procedure contours_begin;
+	procedure contours_end;
+
+
+-- SILK SCREEN
+	procedure write_line (cursor : in et_packages.type_silk_lines.cursor);
+	procedure write_arc (cursor : in et_packages.type_silk_arcs.cursor);
+	procedure write_circle (cursor : in et_packages.type_silk_circles.cursor);	
+	procedure write_polygon (cursor : in et_packages.pac_silk_polygons.cursor);
+	procedure write_cutout (cursor : in et_packages.pac_silk_cutouts.cursor);
+
+-- ASSEMBLY DOCUMENTATION
+	procedure write_line (cursor : in et_packages.type_doc_lines.cursor);
+	procedure write_arc (cursor : in et_packages.type_doc_arcs.cursor);
+	procedure write_circle (cursor : in et_packages.type_doc_circles.cursor);	
+	procedure write_polygon (cursor : in et_packages.pac_doc_polygons.cursor);
+	procedure write_cutout (cursor : in et_packages.pac_doc_cutouts.cursor);
+	
+-- KEEPOUT
+	procedure write_line (cursor : in et_packages.type_keepout_lines.cursor);
+	procedure write_arc (cursor : in et_packages.type_keepout_arcs.cursor);
+	procedure write_circle (cursor : in et_packages.type_keepout_circles.cursor);
+	procedure write_polygon (cursor : in et_packages.type_keepout_polygons.cursor);
+	procedure write_cutout (cursor : in et_packages.pac_keepout_cutouts.cursor);
+
+-- STOP MASK
+	procedure write_line (cursor : in et_packages.type_stop_lines.cursor);
+	procedure write_arc (cursor : in et_packages.type_stop_arcs.cursor);
+	procedure write_circle (cursor : in et_packages.type_stop_circles.cursor);
+	procedure write_polygon (cursor : in et_packages.type_stop_polygons.cursor);
+	procedure write_cutout (cursor : in et_packages.pac_stop_cutouts.cursor);
+
+-- STENCIL (OR SOLDER PASTE MASK)
+	procedure write_line (cursor : in et_packages.type_stencil_lines.cursor);
+	procedure write_arc (cursor : in et_packages.type_stencil_arcs.cursor);
+	procedure write_circle (cursor : in et_packages.type_stencil_circles.cursor);	
+	procedure write_polygon (cursor : in et_packages.type_stencil_polygons.cursor);
+	procedure write_cutout (cursor : in et_packages.pac_stencil_cutouts.cursor);
+	
+-- ROUTE RESTRICT
+	procedure write_line (cursor : in et_packages.type_route_restrict_lines.cursor);
+	procedure write_arc (cursor : in et_packages.type_route_restrict_arcs.cursor);
+	procedure write_circle (cursor : in et_packages.type_route_restrict_circles.cursor);	
+	procedure write_polygon (cursor : in et_packages.type_route_restrict_polygons.cursor);
+	procedure write_cutout (cursor : in et_packages.pac_route_restrict_cutouts.cursor);
+
+-- VIA RESTRICT
+	procedure write_line (cursor : in et_packages.type_via_restrict_lines.cursor);
+	procedure write_arc (cursor : in et_packages.type_via_restrict_arcs.cursor);
+	procedure write_circle (cursor : in et_packages.type_via_restrict_circles.cursor);	
+	procedure write_polygon (cursor : in et_packages.type_via_restrict_polygons.cursor);
+	procedure write_cutout (cursor : in et_packages.pac_via_restrict_cutouts.cursor);
+	
+
+-- BOARD CONTOUR
+	procedure write_line (cursor : in et_packages.type_pcb_contour_lines.cursor);
+	procedure write_arc (cursor : in et_packages.type_pcb_contour_arcs.cursor);
+	procedure write_circle (cursor : in et_packages.type_pcb_contour_circles.cursor);	
+	procedure write_line (cursor : in et_pcb.type_pcb_contour_lines.cursor);	
+	procedure write_arc (cursor : in et_pcb.type_pcb_contour_arcs.cursor);
+	procedure write_circle (cursor : in et_pcb.type_pcb_contour_circles.cursor);
 
 	
 end pcb_rw;

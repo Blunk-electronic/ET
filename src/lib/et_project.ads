@@ -375,7 +375,7 @@ package et_project is
 	keyword_position_in_schematic	: constant string := "position_in_schematic";	
 	keyword_view_mode				: constant string := "view_mode";
 	keyword_content					: constant string := "content";
-	keyword_locked					: constant string := "locked";
+
 	keyword_prefix					: constant string := "prefix";	
 	keyword_commissioned			: constant string := "commissioned";
 	keyword_updated					: constant string := "updated";
@@ -417,9 +417,6 @@ package et_project is
 
 	section_lines				: constant string := "[LINES";
 	
-	section_fill_zone			: constant string := "[FILL_ZONE";
-	section_cutout_zone			: constant string := "[CUTOUT_ZONE";
-	section_contours			: constant string := "[CONTOURS";
 	
 	section_via					: constant string := "[VIA";
 	
