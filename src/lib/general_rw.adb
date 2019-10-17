@@ -35,6 +35,12 @@
 --   history of changes:
 --
 
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
+with ada.strings; 				use ada.strings;
+with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.text_io;				use ada.text_io;
 with et_string_processing;
 
 package body general_rw is
@@ -79,4 +85,22 @@ package body general_rw is
 		raise constraint_error;
 	end;
 
+-- INDENTATION
+	procedure tab_depth_up is begin tab_depth := tab_depth + 1; end tab_depth_up;
+	procedure tab_depth_down is begin tab_depth := tab_depth - 1; end tab_depth_down;
+	procedure reset_tab_depth is begin tab_depth := type_tab_depth'first; end reset_tab_depth;
+
+	procedure section_mark (section : in string; mark : in type_section_mark) is begin
+	-- Make sure the current_output is set properly.
+		case mark is
+			when HEADER =>
+				--new_line;
+				put_line (tab_depth * tab & section & space & section_begin);
+				tab_depth_up;
+			when FOOTER =>
+				tab_depth_down;
+				put_line (tab_depth * tab & section & space & section_end);
+		end case;
+	end section_mark;
+	
 end general_rw;

@@ -74,6 +74,8 @@ with module_rw;					use module_rw;
 package body et_project is
 
 	use et_general.type_net_name;
+
+	space : character renames ada.characters.latin_1.space;
 	
 	function expand (
 	-- Translates a file name like $HOME/libraries/devices/7400.dev to
@@ -470,23 +472,6 @@ package body et_project is
 		return r;
 	end compare_connectors;
 	
-	procedure tab_depth_up is begin tab_depth := tab_depth + 1; end tab_depth_up;
-	procedure tab_depth_down is begin tab_depth := tab_depth - 1; end tab_depth_down;
-	procedure reset_tab_depth is begin tab_depth := type_tab_depth'first; end reset_tab_depth;
-
-	procedure section_mark (section : in string; mark : in type_section_mark) is begin
-	-- Make sure the current_output is set properly.
-		case mark is
-			when HEADER =>
-				--new_line;
-				put_line (tab_depth * tab & section & space & section_begin);
-				tab_depth_up;
-			when FOOTER =>
-				tab_depth_down;
-				put_line (tab_depth * tab & section & space & section_end);
-		end case;
-	end section_mark;
-
 	procedure write (
 		keyword 	: in string;
 		parameters	: in string;

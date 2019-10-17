@@ -35,6 +35,8 @@
 --   history of changes:
 --
 
+with ada.characters;			--use ada.characters
+with ada.characters.latin_1;
 with ada.containers;            use ada.containers;
 
 with et_string_processing;
@@ -50,6 +52,24 @@ package general_rw is
 		warn			: in boolean := true); 		-- warn if too many fields
 
 	procedure invalid_keyword (word : in string);
+
+	section_begin	: constant string := "BEGIN]";	
+	section_end		: constant string := "END]";
 	
+
+-- INDENTATION
+	subtype type_tab_depth is natural range natural'first .. 9;
+	tab_depth : type_tab_depth := type_tab_depth'first;
+	
+	tab : character renames et_string_processing.tabulator;
+	space : character renames ada.characters.latin_1.space;
+
+	procedure tab_depth_up;
+	procedure tab_depth_down;
+	procedure reset_tab_depth;
+
+	type type_section_mark is (HEADER, FOOTER);	
+
+	procedure section_mark (section : in string; mark : in type_section_mark);
 	
 end general_rw;

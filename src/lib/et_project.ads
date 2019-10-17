@@ -267,17 +267,7 @@ package et_project is
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		project_path	: in type_et_project_path.bounded_string; 	-- /home/user/et_projects
 		log_threshold	: in et_string_processing.type_log_level);
-
 	
-	subtype type_tab_depth is natural range natural'first .. 9;
-	tab_depth : type_tab_depth := type_tab_depth'first;
-	
-	tab : character renames et_string_processing.tabulator;
-	space : character renames ada.characters.latin_1.space;
-
-	
-	type type_section_mark is (HEADER, FOOTER);
-
 	procedure save_rig_configuration (
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
 		rig_conf_name	: in type_rig_configuration_file_name.bounded_string; -- demo, low_cost, fully_equipped
@@ -394,8 +384,8 @@ package et_project is
 	keyword_file					: constant string := "file";
 	keyword_not_mounted				: constant string := "not_mounted";
 	
-	section_begin				: constant string := "BEGIN]";	
-	section_end					: constant string := "END]";
+	section_begin				: constant string := "BEGIN]";	-- CS remove
+	section_end					: constant string := "END]"; -- CS remove
 
 	section_module_instances	: constant string := "[MODULE_INSTANCES";
 	section_module_connections	: constant string := "[MODULE_CONNECTIONS";
