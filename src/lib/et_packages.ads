@@ -182,7 +182,7 @@ package et_packages is
 
 
 	
-	-- TEXT IN GENERAL
+	-- TEXT
 	type type_text is new text.type_text with record
 		position	: type_position;
 		alignment	: et_libraries.type_text_alignment;
