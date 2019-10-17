@@ -57,7 +57,15 @@ package general_rw is
 	section_end		: constant string := "END]";
 	
 
--- INDENTATION
+-- SECTIONS AND INDENTATION
+	function write_top_level_reached return string;
+	function write_enter_section return string;
+	function write_return_to_section return string;
+	function write_missing_begin_end return string;
+	function write_section_stack_not_empty return string;
+	
+	procedure invalid_section;
+
 	subtype type_tab_depth is natural range natural'first .. 9;
 	tab_depth : type_tab_depth := type_tab_depth'first;
 	

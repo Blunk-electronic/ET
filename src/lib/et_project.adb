@@ -667,15 +667,6 @@ package body et_project is
 		end if;
 	end position;
 
--- 	function rotation (angle : in et_coordinates.type_rotation) return string is 
--- 	begin
--- 		if angle < zero_rotation then
--- 			return latin_1.space & et_coordinates.type_rotation'image (angle);
--- 		else
--- 			return et_coordinates.type_rotation'image (angle);
--- 		end if;
--- 	end rotation;
-
 	procedure write_text_properties (text : in et_libraries.type_text_basic'class) is
 		use et_coordinates.geometry;
 	begin
@@ -2421,25 +2412,6 @@ package body et_project is
 			raise;
 		
 	end save_device;
-
-	function write_top_level_reached return string is begin return "top level reached"; end;
-
-	function write_enter_section return string is begin return "entering section "; end;
-
-	function write_return_to_section return string is begin return "returning to section "; end;
-
-	function write_missing_begin_end return string is begin 
-		return "missing " & section_begin & " or " & section_end & " after section name !"; end;
-
-	function write_section_stack_not_empty return string is begin
-		return "section stack not empty !"; end;
-	
-	procedure invalid_section is 
-		use et_string_processing;
-	begin
-		log (ERROR, "invalid section name !", console => true);
-		raise constraint_error;
-	end;
 
 	function to_position (
 		line : in et_string_processing.type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
