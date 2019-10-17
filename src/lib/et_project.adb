@@ -68,6 +68,9 @@ with assembly_variants;
 with material;
 with netlists;
 
+with general_rw;				use general_rw;
+with module_rw;					use module_rw;
+
 package body et_project is
 
 	use et_general.type_net_name;
@@ -153,13 +156,6 @@ package body et_project is
 		return find (modules, name);
 	end;
 
-	procedure invalid_keyword (word : in string) is 
-		use et_string_processing;
-	begin
-		log (ERROR, "invalid keyword '" & word & "' !", console => true);
-		raise constraint_error;
-	end;
-	
 	function to_grid (
 		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
 		from : in positive)
@@ -2081,11 +2077,11 @@ package body et_project is
 					write_fill_stlye (SOLID);
 
 					case element (polygon_solid_cursor).connection is
-						when THERMAL => 
+						when et_pcb.THERMAL => 
 							write_pad_connection (element (polygon_solid_cursor).connection);
 							write_thermal (element (polygon_solid_cursor).thermal);
 			
-						when SOLID =>
+						when et_pcb.SOLID =>
 							write_pad_technology (element (polygon_solid_cursor).technology);
 							
 					end case;
@@ -2112,11 +2108,11 @@ package body et_project is
 					write_hatching (element (polygon_hatched_cursor).hatching);
 
 					case element (polygon_hatched_cursor).connection is
-						when THERMAL => 
+						when et_pcb.THERMAL => 
 							write_pad_connection (element (polygon_hatched_cursor).connection);
 							write_thermal (element (polygon_hatched_cursor).thermal);
 			
-						when SOLID =>
+						when et_pcb.SOLID =>
 							write_pad_technology (element (polygon_hatched_cursor).technology);
 
 					end case;
@@ -3110,35 +3106,6 @@ package body et_project is
 		iterate (symbol.ports, write_port'access);
 		section_mark (section_ports, FOOTER);
 	end write_symbol;
-
-
-	procedure expect_field_count (
-		line			: in et_string_processing.type_fields_of_line;	-- the list of fields of the line
-		count_expected	: in count_type;			-- the min. number of fields to expect
-		warn			: in boolean := true) 		-- warn if too many fields
-		is 
-		use et_string_processing;
-		count_found : constant count_type := field_count (line);
-
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
-		
-		f1 : string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
-	begin
-		if count_found = count_expected then null; -- fine, field count as expected
-		
-		elsif count_found < count_expected then -- less fields than expected
-			log (ERROR, "missing parameter for '" & f1 & "' !", console => true);
-			raise constraint_error;
-			
-		elsif count_found > count_expected then -- more fields than expeced
-			if warn then
-				log (WARNING, affected_line (line) & "excessive parameters after '" &
-					f (line, positive (count_expected)) & "' ignored !");
-			end if;
-		end if;
-		
-	end expect_field_count;
 	
 	procedure save_device (
 	-- Saves the given device model in a file specified by name.
@@ -3383,91 +3350,6 @@ package body et_project is
 		return alignment;
 	end to_alignment;
 
-	function to_position ( -- CS combine with next function to_position using the tag test ?
-	-- Returns a type_point_2d in the the layout.
-		line : in et_string_processing.type_fields_of_line; -- "start x 44.5 y 53.5"
-		from : in positive)
-		return et_pcb_coordinates.geometry.type_point is
-		use et_pcb_coordinates;
-		use et_pcb_coordinates.geometry;
-		use et_string_processing;
-
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
-		
-		point : et_pcb_coordinates.geometry.type_point; -- to be returned
-		place : positive := from; -- the field being read from given line
-
-		-- CS: flags to detect missing sheet, x or y
-	begin
-		while place <= positive (field_count (line)) loop
-
-			-- We expect after the x the corresponding value for x
-			if f (line, place) = keyword_pos_x then
-				set (
-					point	=> point,
-					axis	=> X,
-					value 	=> to_distance (f (line, place + 1)));
-
-			-- We expect after the y the corresponding value for y
-			elsif f (line, place) = keyword_pos_y then
-				set (
-					point	=> point,
-					axis 	=> Y,
-					value 	=> to_distance (f (line, place + 1)));
-
-			else
-				invalid_keyword (f (line, place));
-			end if;
-				
-			place := place + 2;
-		end loop;
-		
-		return point;
-	end to_position;
-		
-	function to_position (
-	-- Returns a type_position in the layout.
-		line : in et_string_processing.type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
-		from : in positive)
-		return et_pcb_coordinates.geometry.type_position is
-
-		use et_pcb_coordinates;
-		use et_pcb_coordinates.geometry;
-		use et_string_processing;
-		
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
-		
-		point : et_pcb_coordinates.geometry.type_position; -- to be returned
-		place : positive := from; -- the field being read from given line
-
-		-- CS: flags to detect missing sheet, x or y
-	begin
-		while place <= positive (field_count (line)) loop
-
-			-- We expect after the x the corresponding value for x
-			if f (line, place) = keyword_pos_x then
-				set (point => point, axis => X, value => to_distance (f (line, place + 1)));
-
-			-- We expect after the y the corresponding value for y
-			elsif f (line, place) = keyword_pos_y then
-				set (point => point, axis => Y, value => to_distance (f (line, place + 1)));
-
-			-- We expect after "rotation" the corresponding value for the rotation
-			elsif f (line, place) = keyword_rotation then
-				set (point, to_rotation (f (line, place + 1)));
-				
-			else
-				invalid_keyword (f (line, place));
-			end if;
-				
-			place := place + 2;
-		end loop;
-		
-		return point;
-	end to_position;
-
 	function to_layers (
 	-- Converts a line like "layers 1 4 17" to a set of signal layers.
 	-- Issues warning if a layer number occurs more than once.
@@ -3547,393 +3429,6 @@ package body et_project is
 		return dim;
 	end to_dimensions;
 
-	function to_fillable_circle (
-	-- Composes a fillable circle from the given parameters. 
-	-- Filled and fill_style are discriminants. Depending on them some parameters
-	-- matter or not. See spec for type_fillable_circle.
-		circle				: in et_packages.shapes.type_circle;
-		filled				: in et_packages.shapes.type_filled;
-		fill_style			: in et_packages.type_fill_style;
-		circumfence_width	: in et_packages.type_general_line_width;
-		hatching			: in et_packages.type_hatching)
-		return et_packages.type_fillable_circle is
-
-		use et_packages;
-		use et_packages.shapes;
-
-	begin -- to_fillable_circle
-		case filled is
-			when NO =>
-				return (circle with
-					filled			=> NO,
-					fill_style		=> fill_style,
-					border_width	=> circumfence_width);
-				
-			when YES =>
-				case fill_style is
-					when SOLID =>
-						return (circle with
-							filled		=> YES,
-							fill_style	=> SOLID);
-
-					when HATCHED =>
-						return (circle with
-							filled				=> YES,
-							fill_style			=> HATCHED,
-							hatching			=> hatching);
-
-				end case;
-		end case;
-	end to_fillable_circle;
-
-
-	-- This function returns the string at position in given line:
-	function f (line : in et_string_processing.type_fields_of_line; position : in positive) return string 
-		renames et_string_processing.field;
-	
-
--- BASIC GEOMETRIC OBJECTS USED IN SYMBOLS AND SCHEMATICS
-	schematic_object_filled : et_schematic.shapes.type_filled := et_schematic.shapes.filled_default;		
-	
-	
--- BASIC GEOMETRIC OBJECTS USED IN PACKAGES AND BOARDS
-	
-	type type_board_line is new et_packages.shapes.type_line with null record;
-	board_line : type_board_line;
-	procedure board_reset_line is begin board_line := (others => <>); end;
-
-	type type_board_arc is new et_packages.shapes.type_arc with null record;
-	board_arc : type_board_arc;
-	procedure board_reset_arc is begin board_arc := (others => <>); end;
-
-	type type_board_circle is new et_packages.shapes.type_circle with null record;
-	board_circle : type_board_circle;
-	procedure board_reset_circle is begin board_circle := (others => <>); end;
-
-	procedure read_board_line (line : et_string_processing.type_fields_of_line) is
-	-- Reads start and end point of the board_line. If the statement is invalid then an error issued.
-		kw : string := f (line, 1);
-		use et_pcb_coordinates.geometry;
-	begin
-		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_start then -- start x 22.3 y 23.3
-			expect_field_count (line, 5);
-
-			-- extract the start position starting at field 2 of line
-			board_line.start_point := to_position (line, 2);
-			
-		elsif kw = keyword_end then -- end x 22.3 y 23.3
-			expect_field_count (line, 5);
-
-			-- extract the end position starting at field 2 of line
-			board_line.end_point := to_position (line, 2);
-			
-		else
-			invalid_keyword (kw);
-		end if;
-	end;
-
-	function read_board_line (line : et_string_processing.type_fields_of_line) return boolean is
-	-- Reads start and end point of the board_line. If the statement is invalid then it returns a false.
-		kw : string := f (line, 1);
-		use et_pcb_coordinates.geometry;
-	begin
-		if kw = keyword_start then -- start x 22.3 y 23.3
-			expect_field_count (line, 5);
-
-			-- extract the start position starting at field 2 of line
-			board_line.start_point := to_position (line, 2);
-			return true;
-			
-		elsif kw = keyword_end then -- end x 22.3 y 23.3
-			expect_field_count (line, 5);
-
-			-- extract the end position starting at field 2 of line
-			board_line.end_point := to_position (line, 2);
-			return true;
-		else
-			return false;
-		end if;
-	end;
-	
-	procedure read_board_arc (line : et_string_processing.type_fields_of_line) is
-	-- Reads start and end point of the board_arc. If the statement is invalid then an error issued.
-		kw : string := f (line, 1);
-		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;
-	begin
-		if kw = keyword_start then -- start x 22.3 y 23.3
-			expect_field_count (line, 5);
-
-			-- extract the start position starting at field 2 of line
-			board_arc.start_point := to_position (line, 2);
-
-		elsif kw = keyword_end then -- end x 22.3 y 23.3
-			expect_field_count (line, 5);
-
-			-- extract the end position starting at field 2 of line
-			board_arc.end_point := to_position (line, 2);
-			
-		elsif kw = keyword_center then -- center x 22.3 y 23.3
-			expect_field_count (line, 5);
-
-			-- extract the center position starting at field 2 of line
-			board_arc.center := to_position (line, 2);
-
-		else
-			invalid_keyword (kw);
-		end if;
-	end;
-
-	function read_board_arc (line : et_string_processing.type_fields_of_line) return boolean is
-	-- Reads start and end point of the board_arc. If the statement is invalid then it returns a false.
-		kw : string := f (line, 1);
-		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;
-	begin
-		if kw = keyword_start then -- start x 22.3 y 23.3
-			expect_field_count (line, 5);
-
-			-- extract the start position starting at field 2 of line
-			board_arc.start_point := to_position (line, 2);
-
-			return true;
-
-		elsif kw = keyword_end then -- end x 22.3 y 23.3
-			expect_field_count (line, 5);
-
-			-- extract the end position starting at field 2 of line
-			board_arc.end_point := to_position (line, 2);
-
-			return true;
-			
-		elsif kw = keyword_center then -- center x 22.3 y 23.3
-			expect_field_count (line, 5);
-
-			-- extract the center position starting at field 2 of line
-			board_arc.center := to_position (line, 2);
-
-			return true;
-		else
-			return false;
-		end if;
-	end;
-	
-	procedure read_board_circle (line : et_string_processing.type_fields_of_line) is
-	-- Reads start and end point of the board_circle. If the statement is invalid then an error issued.
-		kw : string := f (line, 1);
-		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;
-	begin
-		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_center then -- center x 150 y 45
-			expect_field_count (line, 5);
-
-			-- extract the center position starting at field 2 of line
-			board_circle.center := to_position (line, 2);
-			
-		elsif kw = keyword_radius then -- radius 22
-			expect_field_count (line, 2);
-			
-			board_circle.radius := et_pcb_coordinates.geometry.to_distance (f (line, 2));
-		else
-			invalid_keyword (kw);
-		end if;
-	end;
-
-	function read_board_circle (line : et_string_processing.type_fields_of_line) return boolean is
-	-- Reads start and end point of the board_circle. If the statement is invalid then it returns a false.
-		kw : string := f (line, 1);
-		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;
-	begin
-		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_center then -- center x 150 y 45
-			expect_field_count (line, 5);
-
-			-- extract the center position starting at field 2 of line
-			board_circle.center := to_position (line, 2);
-
-			return true;
-			
-		elsif kw = keyword_radius then -- radius 22
-			expect_field_count (line, 2);
-			
-			board_circle.radius := et_pcb_coordinates.geometry.to_distance (f (line, 2));
-
-			return true;
-			
-		else
-			return false;
-		end if;
-	end;
-
-
-	
-	board_fill_style : et_packages.type_fill_style := et_packages.fill_style_default;
-	board_filled : et_packages.shapes.type_filled := et_packages.shapes.filled_default;
-
-	board_hatching : et_packages.type_hatching;
-	board_hatching_copper : et_packages.type_hatching_copper;
-	board_easing : et_packages.type_easing;
-
-	
-	type type_polygon is new et_packages.shapes.type_polygon_base with null record;
-	polygon : type_polygon;
-	
-	polygon_isolation : et_packages.type_track_clearance := et_packages.type_track_clearance'first;
-	polygon_width_min : et_packages.type_track_width := et_packages.type_track_width'first;
-
-	-- board relevant only:
-	polygon_pad_connection	: et_pcb.type_polygon_pad_connection := et_pcb.type_polygon_pad_connection'first;
-	polygon_priority		: et_pcb.type_polygon_priority := et_pcb.type_polygon_priority'first;
-	thermal					: et_pcb.type_thermal;
-	signal_layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
-
-	procedure board_reset_signal_layer is 
-		use et_pcb_stack;
-	begin
-		signal_layer := type_signal_layer'first;
-	end;
-	
-	board_lock_status		: et_pcb.type_locked := et_pcb.NO;
-
-	procedure board_reset_lock_status is
-		use et_pcb;
-	begin
-		board_lock_status := NO;
-	end;
-	
-	board_line_width : et_packages.type_general_line_width := et_packages.type_general_line_width'first;
-
-	procedure board_reset_line_width is 
-		use et_packages;
-	begin 
-		board_line_width := type_general_line_width'first; 
-	end;
-
-	-- package and board relevant:	
-	procedure board_reset_circle_fillable is 
-		use et_packages;
-		use et_packages.shapes;
-	begin 
-		board_circle		:= (others => <>);
-		board_filled		:= type_filled'first;
-		board_fill_style	:= fill_style_default;
-		board_hatching		:= (others => <>);
-		
-		board_reset_line_width;
-	end;
-
-	function board_make_fillable_circle return et_packages.type_fillable_circle is 
-		use et_packages;
-	begin
-		return to_fillable_circle (
-			circle 				=> shapes.type_circle (board_circle),
-			filled				=> board_filled,
-			fill_style			=> board_fill_style,
-			circumfence_width	=> board_line_width,
-			hatching			=> board_hatching);
-	end;
-
-	function board_make_fillable_circle_solid return et_packages.type_fillable_circle_solid is 
-		use et_packages;
-	begin
-		return (et_packages.shapes.type_circle (board_circle) with board_filled);
-	end;
-
-	function board_make_copper_circle return et_packages.type_copper_circle is
-		use et_packages;
-		use et_packages.shapes;
-	begin
-		case board_filled is
-			when NO =>
-				return (shapes.type_circle (board_circle) with 
-					filled			=> NO,
-					fill_style		=> SOLID, -- don't care here
-					border_width	=> board_line_width);
-
-			when YES =>
-				case board_fill_style is
-					when SOLID =>
-						return (shapes.type_circle (board_circle) with 
-							filled		=> YES,
-							fill_style	=> SOLID);
-
-					when HATCHED =>
-						return (shapes.type_circle (board_circle) with
-							filled		=> YES,
-							fill_style	=> HATCHED,
-							hatching 	=> board_hatching_copper);
-				end case;
-		end case;
-	end;
-			
-	procedure add_polygon_line (line : in out type_board_line) is
-		use et_packages.shapes;
-		use et_packages.shapes.pac_polygon_lines;
-
-		-- make a polygon line:
-		l : type_polygon_line := (et_packages.shapes.type_line (line) with others => <>);
-	begin
-		-- collect the polygon line 
-		append (polygon.segments.lines, l);
-
-		board_reset_line;
-	end;
-
-	procedure add_polygon_arc (arc : in out type_board_arc) is
-		use et_packages.shapes;
-		use et_packages.shapes.pac_polygon_arcs;
-
-		-- make a polygon arc:
-		a : type_polygon_arc := (et_packages.shapes.type_arc (arc) with others => <>);
-	begin
-		-- collect the polygon line 
-		append (polygon.segments.arcs, a);
-
-		board_reset_arc;
-	end;
-
-	procedure add_polygon_circle (circle : in out type_board_circle) is
-		use et_packages.shapes;
-		use et_packages.shapes.pac_polygon_circles;
-
-		-- make a polygon circle:
-		c : type_polygon_circle := (et_packages.shapes.type_circle (circle) with others => <>);
-	begin
-		-- collect the polygon line 
-		append (polygon.segments.circles, c);
-
-		board_reset_circle;
-	end;
-
-	
-	procedure board_reset_polygon is
-	-- This procdure resets polygon properties to their defaults.
-	-- This procdure is used by both package and board parsing procedures read_package and read_module_file.
-	-- Some properties have no meaning in packages as remarked below.
-		use et_packages;
-		use et_packages.shapes;
-		use et_pcb_stack;
-	begin
-		polygon				:= (others => <>);
-
-		board_filled		:= filled_default;
-		board_fill_style	:= fill_style_default;
-		board_hatching		:= (others => <>);
-		board_easing 		:= (others => <>);
-		
-		polygon_pad_connection	:= et_pcb.type_polygon_pad_connection'first; -- board relevant only
-		polygon_priority		:= et_pcb.type_polygon_priority'first;  -- board relevant only
-		polygon_isolation		:= et_packages.type_track_clearance'first;
-		polygon_width_min		:= type_track_width'first;
-
-		signal_layer			:= type_signal_layer'first;  -- board relevant only
-
-		thermal					:= (others => <>); -- board relevant only
-	end;
-	
 	procedure read_package (
 	-- Opens the package file and stores the package in container et_libraries.packages.
 		file_name 		: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
@@ -13184,7 +12679,7 @@ package body et_project is
 
 									elsif kw = keyword_pad_technology then -- pad_technology smt_only/tht_only/smt_and_tht
 										expect_field_count (line, 2);
-										thermal.technology := to_pad_technology (f (line, 2));
+										module_rw.thermal.technology := to_pad_technology (f (line, 2));
 
 									elsif kw = keyword_pad_connection then -- pad_connection thermal/solid
 										expect_field_count (line, 2);
@@ -13192,11 +12687,11 @@ package body et_project is
 										
 									elsif kw = keyword_thermal_width then -- thermal_width 0.3
 										expect_field_count (line, 2);
-										thermal.width := to_distance (f (line, 2));
+										module_rw.thermal.width := to_distance (f (line, 2));
 
 									elsif kw = keyword_thermal_gap then -- thermal_gap 0.7
 										expect_field_count (line, 2);
-										thermal.gap := to_distance (f (line, 2));
+										module_rw.thermal.gap := to_distance (f (line, 2));
 
 									else
 										invalid_keyword (kw);

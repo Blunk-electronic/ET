@@ -71,10 +71,16 @@ package et_geometry is
 		function x (point : in type_point'class) return type_distance; -- CS class attr. not required ?
 		function y (point : in type_point'class) return type_distance;		
 
+		keyword_pos_x : constant string := "x";
+		keyword_pos_y : constant string := "y";		
+
+		
 		function mil_to_distance (mil : in string) return type_distance;
 		-- Converts a mil number (given as a string) to millimeters.	
 
 		function distance_to_mil (distance : in type_distance) return string;
+
+		keyword_rotation : constant string := "rotation";
 		
 		axis_separator : constant string := "/";
 		point_preamble : constant string := " (x" & axis_separator & "y) ";
@@ -241,6 +247,10 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
+		keyword_start	: constant string := "start";
+		keyword_end		: constant string := "end";
+
+		
 		-- A line is divided into three zones. Their width is the ratio
 		-- of line length and the zone_division_factor.
 		-- 
