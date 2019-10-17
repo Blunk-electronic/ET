@@ -69,7 +69,7 @@ with material;
 with netlists;
 
 with general_rw;				use general_rw;
-with module_rw;					use module_rw;
+with pcb_rw;					use pcb_rw;
 
 package body et_project is
 
@@ -12664,7 +12664,7 @@ package body et_project is
 
 									elsif kw = keyword_pad_technology then -- pad_technology smt_only/tht_only/smt_and_tht
 										expect_field_count (line, 2);
-										module_rw.thermal.technology := to_pad_technology (f (line, 2));
+										pcb_rw.thermal.technology := to_pad_technology (f (line, 2));
 
 									elsif kw = keyword_pad_connection then -- pad_connection thermal/solid
 										expect_field_count (line, 2);
@@ -12672,11 +12672,11 @@ package body et_project is
 										
 									elsif kw = keyword_thermal_width then -- thermal_width 0.3
 										expect_field_count (line, 2);
-										module_rw.thermal.width := to_distance (f (line, 2));
+										pcb_rw.thermal.width := to_distance (f (line, 2));
 
 									elsif kw = keyword_thermal_gap then -- thermal_gap 0.7
 										expect_field_count (line, 2);
-										module_rw.thermal.gap := to_distance (f (line, 2));
+										pcb_rw.thermal.gap := to_distance (f (line, 2));
 
 									else
 										invalid_keyword (kw);

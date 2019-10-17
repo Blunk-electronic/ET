@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              MODULE_RW                                   --
+--                                PCB_RW                                    --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -43,7 +43,7 @@ with et_pcb;
 with et_pcb_stack;
 with general_rw;				use general_rw;
 
-package body module_rw is
+package body pcb_rw is
 
 	function to_position ( -- CS combine with next function to_position using the tag test ?
 	-- Returns a type_point_2d in the the layout.
@@ -487,4 +487,4 @@ package body module_rw is
 
 
 
-end module_rw;
+end pcb_rw;

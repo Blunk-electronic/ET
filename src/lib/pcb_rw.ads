@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              MODULE_RW                                   --
+--                               PCB_RW                                     --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -44,7 +44,7 @@ with et_pcb;
 with et_pcb_coordinates;
 with et_pcb_stack;
 
-package module_rw is
+package pcb_rw is
 
 	function to_position ( -- CS combine with next function to_position using the tag test ?
 	-- Returns a type_point_2d in the the layout.
@@ -169,4 +169,4 @@ package module_rw is
 	-- Some properties have no meaning in packages as remarked below.
 
 	
-end module_rw;
+end pcb_rw;
