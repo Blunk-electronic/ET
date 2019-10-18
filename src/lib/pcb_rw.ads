@@ -357,6 +357,10 @@ package pcb_rw is
 		SEC_PACKAGE_3D_CONTOURS
 		);
 
+	procedure save_package (
+		name			: in string; -- libraries/devices/resistor.pac
+		packge			: in et_packages.type_package; -- the actual device model
+		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure read_package (
 	-- Opens the package file and stores the package in container et_libraries.packages.

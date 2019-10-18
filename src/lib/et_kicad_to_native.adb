@@ -67,6 +67,7 @@ with et_csv;
 with material;
 with netlists;
 with et_text;
+with pcb_rw;
 
 package body et_kicad_to_native is
 
@@ -3661,7 +3662,7 @@ package body et_kicad_to_native is
 			procedure save_package (package_cursor : in et_packages.type_packages.cursor) is
 				use et_libraries.type_package_model_file;
 			begin
-				et_project.save_package (
+				pcb_rw.save_package (
 					-- package name like: 
 					-- /home/user/et_projects/imported_from_kicad/blood_sample_analyzer/libraries/packages/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.pac
 					name	=> to_string (path) & gnat.directory_operations.dir_separator & to_string (key (package_cursor)),

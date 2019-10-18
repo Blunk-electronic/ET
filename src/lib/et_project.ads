@@ -304,10 +304,6 @@ package et_project is
 		symbol			: in et_libraries.type_symbol; -- the actual symbol model
 		log_threshold	: in et_string_processing.type_log_level);
 	
-	procedure save_package (
-		name			: in string; -- libraries/devices/resistor.pac
-		packge			: in et_packages.type_package; -- the actual device model
-		log_threshold	: in et_string_processing.type_log_level);
 
 	
 
