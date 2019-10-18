@@ -110,7 +110,12 @@ package pcb_rw is
 		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
 		from : in positive)
 		return et_pcb_coordinates.geometry.type_grid;
-	
+
+	function to_layers (
+	-- Converts a line like "layers 1 4 17" to a set of signal layers.
+	-- Issues warning if a layer number occurs more than once.
+		line : in et_string_processing.type_fields_of_line) -- layers 1 3 17
+		return et_pcb_stack.type_signal_layers.set;	
 	
 -- BASIC GEOMETRIC OBJECTS USED IN SYMBOLS AND SCHEMATICS
 	schematic_object_filled : et_schematic.shapes.type_filled := et_schematic.shapes.filled_default;		

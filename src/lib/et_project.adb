@@ -2396,50 +2396,6 @@ package body et_project is
 		return point;
 	end to_position;
 
-	function to_layers (
-	-- Converts a line like "layers 1 4 17" to a set of signal layers.
-	-- Issues warning if a layer number occurs more than once.
-		line : in et_string_processing.type_fields_of_line) -- layers 1 3 17
-		return et_pcb_stack.type_signal_layers.set is
-
-		use et_pcb;
-		use et_pcb_stack;
-		use et_pcb_stack.type_signal_layers;
-		use et_string_processing;
-
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
-		
-		layers 		: type_signal_layers.set; -- to be returned
-		cursor 		: type_signal_layers.cursor;
-		inserted	: boolean;
-		layer 		: type_signal_layer;
-		place 		: positive := 2; -- we start reading the layer numbers with field 2
-	begin
-		while place <= positive (field_count (line)) loop
-
-			-- get the layer number from current place
-			layer := to_signal_layer (f (line, place));
-
-			-- insert the layer number in the container "layers"
-			insert (
-				container	=> layers,
-				new_item	=> layer,
-				inserted	=> inserted,
-				position	=> cursor);
-
-			-- warn if layer already in container
-			if not inserted then
-				log (WARNING, affected_line (line) & "signal layer" & to_string (layer) 
-					& " specified multiple times !");
-			end if;
-			
-			place := place + 1; -- advance to next place
-		end loop;
-		
-		return layers;
-	end to_layers;
-
 	procedure read_package (
 	-- Opens the package file and stores the package in container et_libraries.packages.
 		file_name 		: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
