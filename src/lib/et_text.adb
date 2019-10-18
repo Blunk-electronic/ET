@@ -100,7 +100,7 @@ package body et_text is
 	
 	function to_string (alignment : in type_text_alignment) return string is
 	begin
-		return " alignment (hor./vert.) "
+		return "alignment (hor./vert.) "
 			& to_string (alignment.horizontal)
 			& " / "
 			& to_string (alignment.vertical);

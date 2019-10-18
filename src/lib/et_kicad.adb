@@ -7242,7 +7242,9 @@ package body et_kicad is
 
 				-- The label header "Text Notes 3400 2800 0 60 Italic 12" and the next line like
 				-- "ERC32 Test Board" is read here. It contains the actual text.
-			
+
+				use et_libraries.pac_text;
+				
 				note : type_text; -- the text note being built
 				rotation : et_coordinates.type_rotation;
 
@@ -7286,7 +7288,14 @@ package body et_kicad is
 				note.size := et_libraries.to_text_size (mil_to_distance (et_string_processing.field (et_kicad.line,6)));
 				
 				note.style := to_text_style (style_in => et_string_processing.field (et_kicad.line,7), text => true);
-				note.line_width := mil_to_distance (et_string_processing.field (et_kicad.line,8));
+
+				-- If the line width is too small, assume default and issue warning:
+				if mil_to_distance (et_string_processing.field (et_kicad.line,8)) < type_text_line_width'first then
+					log (WARNING, "Line width too small. Defaulting to minimal width !");
+					note.line_width := type_text_line_width'first;
+				else
+					note.line_width := mil_to_distance (et_string_processing.field (et_kicad.line,8));
+				end if;
 
 				next (line_cursor);
 
@@ -13816,7 +13825,7 @@ package body et_kicad is
 			log (text => "line width" & et_libraries.type_text_line_width'image (note.line_width));
 
 			-- rotation
-			log (text => geometry.to_string (note.rotation));
+			log (text => "rotation" & geometry.to_string (note.rotation));
 
 			-- visible
 			--log (text => "visible " & to_lower (et_libraries.type_text_visible'image (note.visible)));
