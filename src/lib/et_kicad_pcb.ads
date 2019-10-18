@@ -410,11 +410,11 @@ package et_kicad_pcb is
 		micro_via_min_size	: type_via_diameter;	-- micro vias
 		micro_via_min_drill	: et_packages.type_drill_size;		-- micro vias
 		pcb_text_width		: type_text_line_width;	-- all kinds of texts (no matter what layer)
-		pcb_text_size_x		: type_text_size;
-		pcb_text_size_y		: type_text_size;		
+		pcb_text_size_x		: et_packages.text.type_text_size;
+		pcb_text_size_y		: et_packages.text.type_text_size;		
 		module_edge_width	: et_packages.type_general_line_width;
-		module_text_size_x	: type_text_size;
-		module_text_size_y	: type_text_size;
+		module_text_size_x	: et_packages.text.type_text_size;
+		module_text_size_y	: et_packages.text.type_text_size;
 		module_text_width	: type_text_line_width; -- line width
 		pad_size_x			: et_packages.type_pad_size;
 		pad_size_y			: et_packages.type_pad_size;

@@ -278,7 +278,7 @@ package body et_packages is
 			when NO =>
 				return
 					shapes.to_string (type_circle (circle)) &
-					latin_1.space & keyword_line_width & to_string (circle.border_width);
+					latin_1.space & et_text.keyword_line_width & to_string (circle.border_width);
 
 			when YES =>
 				case circle.fill_style is

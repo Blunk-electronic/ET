@@ -4474,7 +4474,7 @@ package body et_project is
 												-- extract text dimensions starting at field 2
 												pac_text.dimensions := to_dimensions (line, 2);
 
-											elsif kw = keyword_line_width then -- line_width 0.1
+											elsif kw = et_text.keyword_line_width then -- line_width 0.1
 												expect_field_count (line, 2);
 												pac_text.line_width := to_distance (f (line, 2));
 
@@ -4521,7 +4521,7 @@ package body et_project is
 												-- extract text dimensions starting at field 2
 												pac_text_placeholder.dimensions := to_dimensions (line, 2);
 
-											elsif kw = keyword_line_width then -- line_width 0.1
+											elsif kw = et_text.keyword_line_width then -- line_width 0.1
 												expect_field_count (line, 2);
 												pac_text_placeholder.line_width := to_distance (f (line, 2));
 
@@ -12190,7 +12190,7 @@ package body et_project is
 												-- extract text dimensions starting at field 2
 												board_text.dimensions := to_dimensions (line, 2);
 
-											elsif kw = et_packages.keyword_line_width then -- line_width 0.1
+											elsif kw = et_text.keyword_line_width then -- line_width 0.1
 												expect_field_count (line, 2);
 												board_text.line_width := to_distance (f (line, 2));
 
@@ -12231,7 +12231,7 @@ package body et_project is
 										-- extract text dimensions starting at field 2
 										board_text_copper.dimensions := to_dimensions (line, 2);
 
-									elsif kw = et_packages.keyword_line_width then -- line_width 0.1
+									elsif kw = et_text.keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);
 										board_text_copper.line_width := to_distance (f (line, 2));
 
@@ -12377,7 +12377,7 @@ package body et_project is
 												-- extract dimensions of placeholder text starting at field 2
 												device_text_placeholder.dimensions := to_dimensions (line, 2);
 
-											elsif kw = keyword_line_width then -- line_width 0.15
+											elsif kw = et_text.keyword_line_width then -- line_width 0.15
 												expect_field_count (line, 2);
 
 												device_text_placeholder.line_width := to_distance (f (line, 2));
@@ -12464,7 +12464,7 @@ package body et_project is
 												-- extract text dimensions starting at field 2
 												board_text_placeholder.dimensions := to_dimensions (line, 2);
 
-											elsif kw = et_packages.keyword_line_width then -- line_width 0.1
+											elsif kw = et_text.keyword_line_width then -- line_width 0.1
 												expect_field_count (line, 2);
 												board_text_placeholder.line_width := to_distance (f (line, 2));
 
@@ -12505,7 +12505,7 @@ package body et_project is
 										-- extract text dimensions starting at field 2
 										board_text_copper_placeholder.dimensions := to_dimensions (line, 2);
 
-									elsif kw = et_packages.keyword_line_width then -- line_width 0.1
+									elsif kw = et_text.keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);
 										board_text_copper_placeholder.line_width := to_distance (f (line, 2));
 

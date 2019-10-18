@@ -76,13 +76,22 @@ package et_libraries is
 
 -- TEXT & FIELDS
 	
-	-- Instantiation of the text package:
-	package text is new et_text.text ( -- CS rename to pac_text
-		type_distance	=> type_distance_positive);
 
 	-- Texts of any kind must have a size between 0.1 and 50mm
 	subtype type_text_size is type_distance range 0.1 .. 50.0; -- unit is mm
 
+	subtype type_text_line_width is type_distance range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
+
+	-- Instantiation of the text package:
+	package text is new et_text.text ( -- CS rename to pac_text
+		type_distance	=> type_distance_positive,
+		size_min		=> type_text_size'first,
+		size_max		=> type_text_size'last,
+		line_width_min	=> type_text_line_width'first,
+		line_width_max	=> type_text_line_width'last
+		);
+
+	
 	text_size_default : constant type_text_size := 1.3;
 
 	function to_text_size (size : in type_distance) return type_text_size;
@@ -93,7 +102,6 @@ package et_libraries is
 -- 		preamble	: in boolean := true) return string;
 -- 	-- Returns the given text size as string.
 
-	subtype type_text_line_width is type_distance range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
 
 	--function to_string (width : in type_text_line_width) return string;
 	-- Returns the given line width as string.
