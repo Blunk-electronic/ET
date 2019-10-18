@@ -94,8 +94,7 @@ package et_text is
 		type type_text is abstract tagged record
 			dimensions	: type_text_dimensions;
 			line_width	: type_text_line_width := type_text_line_width'first;
--- 			alignment	: et_libraries.type_text_alignment;
-
+			alignment	: type_text_alignment;
 		end record;
 
 		function text_properties (text : in type_text) return string;

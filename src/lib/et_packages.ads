@@ -175,7 +175,6 @@ package et_packages is
 	-- TEXT
 	type type_text is new text.type_text with record
 		position	: type_position;
-		alignment	: et_text.type_text_alignment;
 		-- CS locked : type_locked;		
 	end record;
 
