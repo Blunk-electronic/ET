@@ -127,9 +127,6 @@ package body et_project is
 		grid : et_coordinates.geometry.type_grid; -- to be returned
 
 		place : positive := from; -- the field being read from given line
-
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
 		
 	begin
 		while place <= positive (field_count (line)) loop
