@@ -46,10 +46,14 @@ with et_pcb_coordinates;
 with et_pcb_stack;
 
 package pcb_rw is
-
+	
+	section_board				: constant string	:= "[BOARD";
 	section_top					: constant string	:= "[TOP";
 	section_bottom				: constant string	:= "[BOTTOM";
-
+	section_board_layer_stack	: constant string 	:= "[BOARD_LAYER_STACK";
+	section_via					: constant string	:= "[VIA";
+	
+	section_route				: constant string 	:= "[ROUTE";	
 	section_silk_screen			: constant string	:= "[SILK_SCREEN";
 	section_assembly_doc		: constant string	:= "[ASSEMBLY_DOCUMENTATION";
 	section_stencil				: constant string	:= "[STENCIL";

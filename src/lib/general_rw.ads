@@ -55,12 +55,17 @@ package general_rw is
 
 	section_begin	: constant string := "BEGIN]";	
 	section_end		: constant string := "END]";
+
+	section_drawing_grid		: constant string := "[DRAWING_GRID";
 	
 	keyword_name				: constant string := "name";
 	keyword_appearance			: constant string := "appearance";
 	keyword_description			: constant string := "description";
 	keyword_meaning				: constant string := "meaning";
-	keyword_class					: constant string := "class";
+	keyword_class				: constant string := "class";
+	keyword_value				: constant string := "value";
+	keyword_partcode			: constant string := "partcode";	
+	keyword_purpose				: constant string := "purpose";	
 
 	
 -- SECTIONS AND INDENTATION
@@ -97,7 +102,13 @@ package general_rw is
 	procedure circle_end;			
 
 	section_text		: constant string := "[TEXT";
-	section_placeholder	: constant string := "[PLACEHOLDER";
+	section_texts		: constant string := "[TEXTS";
+	
+	section_placeholder		: constant string := "[PLACEHOLDER";
+	section_placeholders	: constant string := "[PLACEHOLDERS";	
+
+	section_package			: constant string := "[PACKAGE";	
+
 	
 	procedure text_begin;
 	procedure text_end;

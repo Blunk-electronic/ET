@@ -335,9 +335,6 @@ package et_project is
 	keyword_height					: constant string := "height";	
 	keyword_template				: constant string := "template";
 	keyword_model					: constant string := "model";				
-	keyword_value					: constant string := "value";
-	keyword_partcode				: constant string := "partcode";	
-	keyword_purpose					: constant string := "purpose";	
 	keyword_variant					: constant string := "variant";
 	keyword_mirrored				: constant string := "mirrored";
 
@@ -353,9 +350,6 @@ package et_project is
 	keyword_author					: constant string := "author";
 	keyword_file					: constant string := "file";
 	keyword_not_mounted				: constant string := "not_mounted";
-	
-	section_begin				: constant string := "BEGIN]";	-- CS remove
-	section_end					: constant string := "END]"; -- CS remove
 
 	section_module_instances	: constant string := "[MODULE_INSTANCES";
 	section_module_connections	: constant string := "[MODULE_CONNECTIONS";
@@ -365,10 +359,6 @@ package et_project is
 	
 	section_net_classes			: constant string := "[NET_CLASSES";
 	section_net_class			: constant string := "[NET_CLASS";
-
-	section_drawing_grid		: constant string := "[DRAWING_GRID";
-
-	section_board_layer_stack	: constant string := "[BOARD_LAYER_STACK";
 	
 	section_nets				: constant string := "[NETS";
 	section_net					: constant string := "[NET";
@@ -384,62 +374,39 @@ package et_project is
 
 	section_port				: constant string := "[PORT";
 	
-	section_route				: constant string := "[ROUTE";
-
-	section_lines				: constant string := "[LINES";
-	
-	
-	section_via					: constant string := "[VIA";
-	
 	section_submodules			: constant string := "[SUBMODULES";
-
 	section_submodule			: constant string := "[SUBMODULE";
 
 	section_drawing_frames		: constant string := "[DRAWING_FRAMES";
 
-	section_schematic			: constant string	:= "[SCHEMATIC";
+	section_schematic			: constant string := "[SCHEMATIC";
 
-	section_board				: constant string	:= "[BOARD";
+	section_devices				: constant string := "[DEVICES";
+	section_device				: constant string := "[DEVICE";
 
-	section_devices				: constant string	:= "[DEVICES";
-	section_device				: constant string	:= "[DEVICE";
-
-	section_assembly_variants	: constant string	:= "[ASSEMBLY_VARIANTS";
-	section_assembly_variant	: constant string	:= "[VARIANT";	
+	section_assembly_variants	: constant string := "[ASSEMBLY_VARIANTS";
+	section_assembly_variant	: constant string := "[VARIANT";	
 	
-	section_netchangers			: constant string 	:= "[NETCHANGERS";
-	section_netchanger			: constant string 	:= "[NETCHANGER";
+	section_netchangers			: constant string := "[NETCHANGERS";
+	section_netchanger			: constant string := "[NETCHANGER";
 	
-	section_units				: constant string	:= "[UNITS";
-	section_unit				: constant string	:= "[UNIT";
+	section_units				: constant string := "[UNITS";
+	section_unit				: constant string := "[UNIT";
 
-	section_texts				: constant string	:= "[TEXTS";
-	section_text				: constant string	:= "[TEXT";
+	section_variants			: constant string := "[VARIANTS";
+	section_variant				: constant string := "[VARIANT";
 
-	section_placeholders		: constant string	:= "[PLACEHOLDERS";	
-	section_placeholder			: constant string	:= "[PLACEHOLDER";
-	section_package				: constant string	:= "[PACKAGE";
-
+	section_terminal_port_map	: constant string := "[TERMINAL_PORT_MAP";
+	section_units_internal		: constant string := "[UNITS_INTERNAL";
+	section_units_external		: constant string := "[UNITS_EXTERNAL";
 	
-
-	section_variants			: constant string	:= "[VARIANTS";
-	section_variant				: constant string	:= "[VARIANT";
-
-	section_terminal_port_map	: constant string	:= "[TERMINAL_PORT_MAP";
-	section_units_internal		: constant string	:= "[UNITS_INTERNAL";
-	section_units_external		: constant string	:= "[UNITS_EXTERNAL";
+	section_symbol				: constant string := "[SYMBOL";
+	section_draw				: constant string := "[DRAW";
 	
-	section_symbol				: constant string	:= "[SYMBOL";
-	section_draw				: constant string	:= "[DRAW";
+	section_ports				: constant string := "[PORTS";
+	section_port_begin			: constant string := "[PORT";
 	
-	section_ports				: constant string	:= "[PORTS";
-	section_port_begin			: constant string	:= "[PORT";
-
-	section_terminals			: constant string	:= "[TERMINALS"; -- CS remove ?
-	section_terminal			: constant string	:= "[TERMINAL"; -- CS remove ?
-	
-	
-	section_title_block			: constant string	:= "[TITLE_BLOCK";
+	section_title_block			: constant string := "[TITLE_BLOCK";
 	
 	type type_section_name_module is (
 		SEC_BOARD_LAYER_STACK,
