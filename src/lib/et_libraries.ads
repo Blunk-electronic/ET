@@ -78,23 +78,31 @@ package et_libraries is
 	
 
 	-- Texts of any kind must have a size between 0.1 and 50mm
-	subtype type_text_size is type_distance range 0.1 .. 50.0; -- unit is mm
+-- 	subtype type_text_size is type_distance range 0.1 .. 50.0; -- unit is mm
 
-	subtype type_text_line_width is type_distance range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
-
+	text_size_min : constant type_distance_positive := 1.0;
+	text_size_max : constant type_distance_positive := 50.0;
+	text_size_default : constant type_distance_positive := 1.3;
+	
+	subtype type_text_line_width is type_distance_positive range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
+	text_line_width_min : constant type_distance_positive := 0.1;
+	text_line_width_max : constant type_distance_positive := 5.0;
+	text_line_width_default : constant type_distance_positive := 0.3; 
+	
 	-- Instantiation of the text package:
-	package text is new et_text.text ( -- CS rename to pac_text
-		type_distance	=> type_distance_positive,
-		size_min		=> type_text_size'first,
-		size_max		=> type_text_size'last,
-		line_width_min	=> type_text_line_width'first,
-		line_width_max	=> type_text_line_width'last
+	package pac_text is new et_text.text (
+		type_distance		=> type_distance_positive,
+		size_min			=> text_size_min,
+		size_max			=> text_size_max,
+		size_default		=> text_size_default,
+		line_width_min		=> text_line_width_min,
+		line_width_max		=> text_line_width_max,
+		line_width_default	=> text_line_width_default
 		);
 
 	
-	text_size_default : constant type_text_size := 1.3;
 
-	function to_text_size (size : in type_distance) return type_text_size;
+	function to_text_size (size : in type_distance) return pac_text.type_text_size;
 	-- Converts given distance to type_text_size. Raises error on excessive text size.
 	
 -- 	function to_string (
@@ -134,12 +142,9 @@ package et_libraries is
 	-- Converts a string to a type_placeholder_text_size.
 	
 	-- These are basic properties a text has got:
-	type type_text_basic is tagged record
-        size    	: type_text_size := text_size_default;
+	type type_text_basic is new pac_text.type_text with record
         style		: type_text_style := type_text_style'first;
-        line_width	: type_text_line_width := type_text_line_width'first; -- CS: use a general type_line_width ?
         rotation	: type_rotation_text := 0.0;
-		alignment	: et_text.type_text_alignment;
 	end record;
 
 	-- A text may have up to 200 characters which seems sufficient for now.
@@ -952,7 +957,7 @@ package et_libraries is
 		meaning			: type_title_block_text_meaning;
  		coordinates		: type_point;
 		text			: type_title_block_text_content.bounded_string; -- CS: rename to content
- 		size			: et_libraries.type_text_size;
+ 		size			: pac_text.type_text_size;
  		rotation		: et_coordinates.type_rotation;
 		-- CS: font, ...
  	end record;
@@ -978,7 +983,7 @@ package et_libraries is
 	type type_frame_text is record
 		coordinates		: type_point; -- CS rename to position
 		text			: character_set := et_string_processing.general_characters; -- CS rename to content
-		size			: et_libraries.type_text_size;
+		size			: pac_text.type_text_size;
 		rotation		: et_coordinates.type_rotation;
 		-- CS: font, ...
 	end record;

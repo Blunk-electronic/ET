@@ -1942,7 +1942,7 @@ package body conventions is
 
 	procedure check_schematic_text_size (
 		category 	: in type_text_schematic;
-		size		: in et_libraries.type_text_size) is
+		size		: in et_libraries.pac_text.type_text_size) is
 	-- Checks the given text size by its category. Does nothing if no text sizes
 	-- specified in configuration file in section TEXT_SIZES_SCHEMATIC.
 		use et_string_processing;
@@ -2651,7 +2651,7 @@ package body conventions is
 			unit		: type_unit_of_measurement;
 
 			text		: type_text_schematic;
-			size		: et_libraries.type_text_size;
+			size		: et_libraries.pac_text.type_text_size;
 
 			partcode_keyword	: type_partcode_keyword.bounded_string;
 			partcode_section	: type_partcode_section;

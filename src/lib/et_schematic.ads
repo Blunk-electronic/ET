@@ -222,7 +222,7 @@ package et_schematic is
 	type type_net_label_base is tagged record
 		position	: et_coordinates.geometry.type_point;
 		rotation	: et_coordinates.type_rotation_text := et_coordinates.geometry.zero_rotation;
-        size		: et_libraries.type_text_size := et_libraries.text_size_default;
+        size		: et_libraries.pac_text.type_text_size := et_libraries.text_size_default;
         style		: et_libraries.type_text_style := et_libraries.type_text_style'first;
 		width		: et_libraries.type_text_line_width := et_libraries.type_text_line_width'first;
 	end record;

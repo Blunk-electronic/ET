@@ -698,7 +698,7 @@ package et_kicad is
 		coordinates	: et_coordinates.geometry.type_point;
 		rotation	: et_coordinates.type_rotation;
         text		: et_general.type_net_name.bounded_string;
-        size		: et_libraries.type_text_size;
+        size		: et_libraries.pac_text.type_text_size;
         style		: et_libraries.type_text_style;
         width		: et_libraries.type_text_line_width;
 		processed	: boolean := false; -- used for associating label with net segment
@@ -1189,7 +1189,7 @@ package et_kicad is
 	-- It serves as link between a hierachical net and the parent module.
 	type type_hierarchic_sheet_port is record
 		direction	: type_port_direction;
-		text_size	: et_libraries.type_text_size;
+		text_size	: et_libraries.pac_text.type_text_size;
 		coordinates	: et_coordinates.geometry.type_point;
         orientation	: et_coordinates.type_rotation;
         processed   : boolean; -- used when linking hierarchic nets
@@ -1208,8 +1208,8 @@ package et_kicad is
 	end record;
 	
 	type type_hierarchic_sheet is record
-        text_size_of_name   : et_libraries.type_text_size;
-        text_size_of_file   : et_libraries.type_text_size;
+        text_size_of_name   : et_libraries.pac_text.type_text_size;
+        text_size_of_file   : et_libraries.pac_text.type_text_size;
 		coordinates		    : type_position;
         size_x, size_y      : et_coordinates.type_distance; -- size x/y of the box
 		timestamp           : type_timestamp;

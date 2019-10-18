@@ -668,7 +668,7 @@ package body et_project is
 	end position;
 
 	procedure write_text_properties (t : in et_libraries.type_text_basic'class) is
-		use et_libraries.text;
+		use et_libraries.pac_text;
 		use et_text;
 	begin
 		write (keyword => keyword_size, parameters => to_string (t.size));

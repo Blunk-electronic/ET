@@ -6750,7 +6750,7 @@ package body et_kicad is
 				use et_libraries;
 				use conventions;
 
-				text_size : type_text_size; -- temporarily storage of a text size before being checked
+				text_size : pac_text.type_text_size; -- temporarily storage of a text size before being checked
 			
 				function to_direction (dir_in : in string) return type_port_direction is
 				-- Converts a string to type_port_direction.
@@ -7406,7 +7406,7 @@ package body et_kicad is
 				function to_field return et_libraries.type_text is
 				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
 					text_position : type_point;
-					size : type_text_size;
+					size : pac_text.type_text_size;
 				begin
 					-- test if the field content is longer than allowed:
 					check_text_content_length (et_string_processing.field (et_kicad.line,3));
@@ -7433,7 +7433,7 @@ package body et_kicad is
 										
 						size		=> size,
 						style		=> to_text_style (style_in => et_string_processing.field (et_kicad.line,10), text => false),
-						line_width	=> type_text_line_width'first,
+						line_width	=> et_libraries.text_line_width_default,
 
 						-- build text visibility
 						--visible		=> to_field_visible (
@@ -13803,7 +13803,7 @@ package body et_kicad is
 		if log_level >= log_threshold + 1 then
 			
 			-- size
-			log (text => "size" & et_libraries.type_text_size'image (note.size));
+			log (text => "size" & pac_text.to_string (note.size));
 
 			-- style
 			log (text => "style " & to_lower(et_libraries.type_text_style'image (note.style)));

@@ -110,7 +110,7 @@ package body et_libraries is
 	end to_string;
 
 	function to_string ( -- CS remove
-		size		: in type_text_size;
+		size		: in pac_text.type_text_size;
 		preamble	: in boolean := true) return string is
 	-- Returns the given text size as string.
 	begin
@@ -121,18 +121,18 @@ package body et_libraries is
 		end if;
 	end to_string;
 
-	function to_text_size (size : in type_distance) return type_text_size is
+	function to_text_size (size : in type_distance) return pac_text.type_text_size is
 	-- Converts given distance to type_text_size. Raises error on excessive text size.
 		use et_string_processing;
 	begin
-		if size not in type_text_size then
+		if size not in pac_text.type_text_size then
 			log (ERROR, "text " 
 				 & to_string (size => size, preamble => true)  
 				 & " out of range !",
 				 console => true);
 
-			log (text => "Allowed range is " & to_string (type_text_size'first, preamble => false) & " .. "
-				 & to_string (type_text_size'last, preamble => false),
+			log (text => "Allowed range is " & to_string (pac_text.type_text_size'first, preamble => false) & " .. "
+				 & to_string (pac_text.type_text_size'last, preamble => false),
 				 console => true);
 
 			raise constraint_error;

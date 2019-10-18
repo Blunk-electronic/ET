@@ -79,19 +79,23 @@ package et_packages is
 -- 	function to_directory (directory_name : in string) return type_directory_name.bounded_string;
 -- 	-- Converts a string to a type_directory_name.
 
-	text_size_min : constant type_distance := 1.0;
-	text_size_max : constant type_distance := 100.0;
-
-	line_width_min : constant type_distance := 0.15;
-	line_width_max : constant type_distance := 10.0;
+	text_size_min : constant type_distance_positive := 1.0;
+	text_size_max : constant type_distance_positive := 100.0;
+	text_size_default : constant type_distance_positive := 1.5;
+	
+	line_width_min : constant type_distance_positive := 0.15;
+	line_width_max : constant type_distance_positive := 10.0;
+	line_width_default : constant type_distance_positive := 0.15;
 	
 	-- Instantiation of the text package:
-	package text is new et_text.text ( -- CS rename to pac_text
-		type_distance	=> type_distance_positive,
-		size_min		=> text_size_min,
-		size_max		=> text_size_max,
-		line_width_min	=> line_width_min,
-		line_width_max	=> line_width_max
+	package pac_text is new et_text.text (
+		type_distance		=> type_distance_positive,
+		size_min			=> text_size_min,
+		size_max			=> text_size_max,
+		size_default		=> text_size_default,
+		line_width_min		=> line_width_min,
+		line_width_max		=> line_width_max,
+		line_width_default	=> line_width_default
 		);
 
 	subtype type_general_line_width is type_distance_positive range line_width_min .. line_width_max;
@@ -173,7 +177,7 @@ package et_packages is
 
 	
 	-- TEXT
-	type type_text is new text.type_text with record
+	type type_text is new pac_text.type_text with record
 		position	: type_position;
 		-- CS locked : type_locked;		
 	end record;

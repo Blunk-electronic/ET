@@ -71,8 +71,8 @@ package et_text is
 	
 	generic
 		type type_distance is delta <>;
-		size_min, size_max : type_distance;
-		line_width_min, line_width_max : type_distance;
+		size_min, size_max, size_default : type_distance;
+		line_width_min, line_width_max, line_width_default : type_distance;
 	package text is
 
 		subtype type_text_size is type_distance range size_min .. size_max;
@@ -87,8 +87,8 @@ package et_text is
 		-- Checks whether given line width is in range of type_text_line_width
 		
 		type type_text is abstract tagged record
-			size		: type_text_size;
-			line_width	: type_text_line_width := type_text_line_width'first;
+			size		: type_text_size := size_default;
+			line_width	: type_text_line_width := line_width_default;
 			alignment	: type_text_alignment;
 		end record;
 
