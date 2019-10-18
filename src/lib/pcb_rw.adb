@@ -44,15 +44,16 @@ with ada.text_io;				use ada.text_io;
 with ada.tags;
 
 with ada.exceptions;
-with ada.directories;
-with gnat.directory_operations;
 
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_libraries;
 with et_general;				use et_general;
-with et_pcb_coordinates;
+
+with et_pcb_coordinates;		use et_pcb_coordinates;
+use et_pcb_coordinates.geometry;
+
 with et_string_processing;
 with et_packages;
 with et_pcb;
@@ -65,8 +66,6 @@ package body pcb_rw is
 
 	procedure write_text_properties (t : in et_packages.type_text'class) is
 		use et_packages;
-		use et_pcb_coordinates.geometry;
-		use et_text;
 	begin
 -- 		write (keyword => keyword_position, parameters => position (text.position) & 
 -- 			space & keyword_rotation & to_string (get_angle (text.position))
@@ -90,9 +89,6 @@ package body pcb_rw is
 		face	: in et_pcb_coordinates.type_face) 
 		is
 		use et_packages;
-		use et_pcb_coordinates;
-		use et_pcb_coordinates.geometry;
-		use et_text;
 	begin
 		write (keyword => keyword_position, parameters => position (t.position) & 
 			space & keyword_face & to_string (face)); -- position x 0.000 y 5.555 rotation 0.00 face top
@@ -122,16 +118,13 @@ package body pcb_rw is
 		text_end;
 	end write_text;
 	
-	procedure write_width (width : in et_packages.type_track_width) is 
-		use et_pcb_coordinates.geometry;
-	begin
+	procedure write_width (width : in et_packages.type_track_width) is begin
 		write (keyword => keyword_width, parameters => to_string (width));
 	end;
 
 	procedure write_line (line : in et_packages.shapes.type_line'class) is
 	-- writes start and end point of a line
 		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;		
 	begin
 		write (keyword => keyword_start, parameters => position (line.start_point));
 		write (keyword => keyword_end  , parameters => position (line.end_point));
@@ -140,7 +133,6 @@ package body pcb_rw is
 	procedure write_arc (arc : in et_packages.shapes.type_arc'class) is 
 	-- writes center, start and end point of an arc
 		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;		
 	begin
 		write (keyword => keyword_center, parameters => position (arc.center));
 		write (keyword => keyword_start, parameters => position (arc.start_point));
@@ -150,7 +142,6 @@ package body pcb_rw is
 	procedure write_circle (circle : in et_packages.shapes.type_circle'class) is 
 	-- writes center and radius of a circle
 		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;		
 	begin
 		write (keyword => keyword_center, parameters => position (circle.center));
 		write (keyword => keyword_radius, parameters => to_string (circle.radius));
@@ -159,7 +150,6 @@ package body pcb_rw is
 	
 	procedure write_hatching (hatching : in et_packages.type_hatching) is
 		use et_packages;
-		use et_pcb_coordinates.geometry;
 	begin
 		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));
 		write (keyword => keyword_hatching_line_spacing, parameters => to_string (hatching.spacing));
@@ -168,7 +158,6 @@ package body pcb_rw is
 
 	procedure write_hatching (hatching : in et_packages.type_hatching_copper) is
 		use et_packages;
-		use et_pcb_coordinates.geometry;
 	begin
 		write (keyword => keyword_hatching_line_width  , parameters => to_string (hatching.line_width));
 		write (keyword => keyword_hatching_line_spacing, parameters => to_string (hatching.spacing));
@@ -176,7 +165,6 @@ package body pcb_rw is
 	end;
 	
 	procedure write_easing (easing: in et_packages.type_easing) is
-		use et_pcb_coordinates.geometry;
 		use et_packages;
 	begin
 		write (keyword => keyword_corner_easing, space => true, parameters => to_string (easing.style));
@@ -184,7 +172,6 @@ package body pcb_rw is
 	end;
 
 	procedure write_thermal (thermal : in et_pcb.type_thermal) is
-		use et_pcb_coordinates.geometry;
 		use et_pcb;
 	begin
 		write (keyword => keyword_pad_technology, parameters => to_string (thermal.technology));
@@ -194,14 +181,12 @@ package body pcb_rw is
 
 	procedure write_width_min (width : in et_packages.type_track_width) is 
 		use et_packages;
-		use et_pcb_coordinates.geometry;
 	begin
 		write (keyword => keyword_min_width, parameters => to_string (width));
 	end;
 
 	procedure write_isolation (iso : in et_packages.type_track_clearance) is 
 		use et_packages;
-		use et_pcb_coordinates.geometry;
 	begin
 		write (keyword => keyword_isolation, parameters => to_string (iso));
 	end;
@@ -251,7 +236,6 @@ package body pcb_rw is
 	procedure write_circle_fillable (circle : in et_packages.type_fillable_circle) is 
 		use et_packages;
 		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
 		write_circle (circle);
@@ -279,7 +263,6 @@ package body pcb_rw is
 	-- Writes the properties of a circle in copper as used in a package.
 		use et_packages;
 		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
 		write_circle (circle);
@@ -306,7 +289,6 @@ package body pcb_rw is
 	-- Writes the properties of a circle in copper as used in a freetrack.		
 		use et_packages;
 		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
 		write_circle (circle);
@@ -374,9 +356,6 @@ package body pcb_rw is
 		from : in positive)
 		return et_pcb_coordinates.geometry.type_point is
 		
-		use et_general;
-		use et_pcb_coordinates;
-		use et_pcb_coordinates.geometry;
 		use et_string_processing;
 
 		point : et_pcb_coordinates.geometry.type_point; -- to be returned
@@ -416,13 +395,7 @@ package body pcb_rw is
 		from : in positive)
 		return et_pcb_coordinates.geometry.type_position is
 
-		use et_general;
-		use et_pcb_coordinates;
-		use et_pcb_coordinates.geometry;
 		use et_string_processing;
-		
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
 		
 		point : et_pcb_coordinates.geometry.type_position; -- to be returned
 		place : positive := from; -- the field being read from given line
@@ -454,8 +427,6 @@ package body pcb_rw is
 	end to_position;
 
 	function position (point : et_pcb_coordinates.geometry.type_point'class) return string is
-		use et_pcb_coordinates;
-		use et_pcb_coordinates.geometry;
 		use ada.tags;
 
 		xy : constant string := space & keyword_pos_x & to_string (x (point)) 
@@ -486,7 +457,6 @@ package body pcb_rw is
 		from : in positive)
 		return et_pcb_coordinates.geometry.type_grid is
 		use et_string_processing;
-		use et_pcb_coordinates.geometry;
 		
 		grid : et_pcb_coordinates.geometry.type_grid; -- to be returned
 
@@ -524,9 +494,6 @@ package body pcb_rw is
 		use et_pcb_stack.type_signal_layers;
 		use et_string_processing;
 
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
-		
 		layers 		: type_signal_layers.set; -- to be returned
 		cursor 		: type_signal_layers.cursor;
 		inserted	: boolean;
@@ -612,7 +579,6 @@ package body pcb_rw is
 	procedure read_board_line (line : et_string_processing.type_fields_of_line) is
 	-- Reads start and end point of the board_line. If the statement is invalid then an error issued.
 		kw : string := f (line, 1);
-		use et_pcb_coordinates.geometry;
 		use et_packages.shapes;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -637,7 +603,6 @@ package body pcb_rw is
 	-- Reads start and end point of the board_line. If the statement is invalid then it returns a false.
 		kw : string := f (line, 1);
 		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
 			expect_field_count (line, 5);
@@ -662,7 +627,6 @@ package body pcb_rw is
 	-- Reads start and end point of the board_arc. If the statement is invalid then an error issued.
 		kw : string := f (line, 1);
 		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
 			expect_field_count (line, 5);
@@ -691,7 +655,6 @@ package body pcb_rw is
 	-- Reads start and end point of the board_arc. If the statement is invalid then it returns a false.
 		kw : string := f (line, 1);
 		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
 			expect_field_count (line, 5);
@@ -726,7 +689,6 @@ package body pcb_rw is
 	-- Reads start and end point of the board_circle. If the statement is invalid then an error issued.
 		kw : string := f (line, 1);
 		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_center then -- center x 150 y 45
@@ -748,7 +710,6 @@ package body pcb_rw is
 	-- Reads start and end point of the board_circle. If the statement is invalid then it returns a false.
 		kw : string := f (line, 1);
 		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_center then -- center x 150 y 45
@@ -922,7 +883,6 @@ package body pcb_rw is
 	procedure write_line (cursor : in et_packages.type_silk_lines.cursor) is 
 		use et_packages;
 		use type_silk_lines;
-		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
 		write_line (element (cursor));		
@@ -933,7 +893,6 @@ package body pcb_rw is
 	procedure write_arc (cursor : in et_packages.type_silk_arcs.cursor) is 
 		use et_packages;
 		use type_silk_arcs;
-		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
 		write_arc (element (cursor));
@@ -984,7 +943,6 @@ package body pcb_rw is
 	procedure write_line (cursor : in et_packages.type_doc_lines.cursor) is 
 		use et_packages;
 		use type_doc_lines;
-		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
 		write_line (element (cursor));		
@@ -995,7 +953,6 @@ package body pcb_rw is
 	procedure write_arc (cursor : in et_packages.type_doc_arcs.cursor) is 
 		use et_packages;
 		use type_doc_arcs;
-		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
 		write_arc (element (cursor));
@@ -1044,7 +1001,6 @@ package body pcb_rw is
 -- KEEPOUT
 	procedure write_line (cursor : in et_packages.type_keepout_lines.cursor) is
 		use et_packages.type_keepout_lines;
-		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
 		write_line (element (cursor));
@@ -1053,7 +1009,6 @@ package body pcb_rw is
 
 	procedure write_arc (cursor : in et_packages.type_keepout_arcs.cursor) is 
 		use et_packages.type_keepout_arcs;
-		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
 		write_arc (element (cursor));
@@ -1063,7 +1018,6 @@ package body pcb_rw is
 	procedure write_circle (cursor : in et_packages.type_keepout_circles.cursor) is 
 		use et_packages;
 		use et_packages.shapes;
-		use et_pcb_coordinates.geometry;		
 		use type_keepout_circles;
 	begin
 		circle_begin;
@@ -1096,7 +1050,6 @@ package body pcb_rw is
 	procedure write_line (cursor : in et_packages.type_stop_lines.cursor) is 
 		use et_packages;
 		use type_stop_lines;
-		use et_pcb_coordinates.geometry;
 	begin
 		line_begin;
 		write_line (element (cursor));
@@ -1107,7 +1060,6 @@ package body pcb_rw is
 	procedure write_arc (cursor : in et_packages.type_stop_arcs.cursor) is 
 		use et_packages;
 		use type_stop_arcs;
-		use et_pcb_coordinates.geometry;
 	begin
 		arc_begin;
 		write_arc (element (cursor));
@@ -1152,7 +1104,6 @@ package body pcb_rw is
 	procedure write_line (cursor : in et_packages.type_stencil_lines.cursor) is 
 		use et_packages;
 		use type_stencil_lines;
-		use et_pcb_coordinates.geometry;
 	begin
 		line_begin;
 		write_line (element (cursor));
@@ -1163,7 +1114,6 @@ package body pcb_rw is
 	procedure write_arc (cursor : in et_packages.type_stencil_arcs.cursor) is 
 		use et_packages;
 		use type_stencil_arcs;
-		use et_pcb_coordinates.geometry;
 	begin
 		arc_begin;
 		write_arc (element (cursor));
@@ -1209,7 +1159,6 @@ package body pcb_rw is
 		use et_packages;
 		use et_pcb_stack;
 		use type_route_restrict_lines;
-		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
 		write_line (element (cursor));
@@ -1221,7 +1170,6 @@ package body pcb_rw is
 		use et_packages;
 		use et_pcb_stack;
 		use type_route_restrict_arcs;
-		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
 		write_arc (element (cursor));		
@@ -1232,7 +1180,6 @@ package body pcb_rw is
 	procedure write_circle (cursor : in et_packages.type_route_restrict_circles.cursor) is 
 		use et_packages;
 		use type_route_restrict_circles;
-		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
 		write_circle (element (cursor));
@@ -1268,7 +1215,6 @@ package body pcb_rw is
 		use et_packages;
 		use et_pcb_stack;
 		use type_via_restrict_lines;
-		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
 		write_line (element (cursor));		
@@ -1280,7 +1226,6 @@ package body pcb_rw is
 		use et_packages;
 		use et_pcb_stack;
 		use type_via_restrict_arcs;
-		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
 		write_arc (element (cursor));
@@ -1293,7 +1238,6 @@ package body pcb_rw is
 		use et_packages.shapes;		
 		use et_pcb_stack;		
 		use type_via_restrict_circles;
-		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
 		write_circle (element (cursor));
@@ -1329,7 +1273,6 @@ package body pcb_rw is
 	procedure write_line (cursor : in et_packages.type_pcb_contour_lines.cursor) is 
 		use et_packages;
 		use type_pcb_contour_lines;
-		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
 		write_line (element (cursor));
@@ -1339,7 +1282,6 @@ package body pcb_rw is
 	procedure write_arc (cursor : in et_packages.type_pcb_contour_arcs.cursor) is 
 		use et_packages;
 		use type_pcb_contour_arcs;
-		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
 		write_arc (element (cursor));
@@ -1359,7 +1301,6 @@ package body pcb_rw is
 	procedure write_line (cursor : in et_pcb.type_pcb_contour_lines.cursor) is 
 		use et_pcb;
 		use type_pcb_contour_lines;
-		use et_pcb_coordinates.geometry;		
 	begin
 		line_begin;
 		write_line (element (cursor));
@@ -1370,7 +1311,6 @@ package body pcb_rw is
 	procedure write_arc (cursor : in et_pcb.type_pcb_contour_arcs.cursor) is 
 		use et_pcb;
 		use type_pcb_contour_arcs;
-		use et_pcb_coordinates.geometry;		
 	begin
 		arc_begin;
 		write_arc (element (cursor));
@@ -1381,7 +1321,6 @@ package body pcb_rw is
 	procedure write_circle (cursor : in et_pcb.type_pcb_contour_circles.cursor) is 
 		use et_pcb;
 		use type_pcb_contour_circles;
-		use et_pcb_coordinates.geometry;		
 	begin
 		circle_begin;
 		write_circle (element (cursor));
@@ -1397,7 +1336,6 @@ package body pcb_rw is
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_packages;
-		use et_pcb_coordinates.geometry;
 		
 		file_handle : ada.text_io.file_type;
 		
@@ -1867,7 +1805,6 @@ package body pcb_rw is
 		use et_packages;
 		use et_packages.shapes;
 		use et_pcb;
-		use et_pcb_coordinates.geometry;
 		
 		file_handle : ada.text_io.file_type;
 
