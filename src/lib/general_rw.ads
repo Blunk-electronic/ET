@@ -76,7 +76,6 @@ package general_rw is
 	tab_depth : type_tab_depth := type_tab_depth'first;
 	
 	tab : character renames et_string_processing.tabulator;
-	space : character renames ada.characters.latin_1.space;
 
 	procedure tab_depth_up;
 	procedure tab_depth_down;

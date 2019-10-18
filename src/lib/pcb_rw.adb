@@ -36,7 +36,7 @@
 --
 
 with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.latin_1;	--use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
@@ -78,8 +78,8 @@ package body pcb_rw is
 		write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
 		
 		write (keyword => keyword_line_width, parameters => to_string (t.line_width));
-		write (keyword => keyword_alignment, parameters => general_rw.space &
-			keyword_horizontal & to_string (t.alignment.horizontal) & general_rw.space &
+		write (keyword => keyword_alignment, parameters => space &
+			keyword_horizontal & to_string (t.alignment.horizontal) & space &
 			keyword_vertical   & to_string (t.alignment.vertical)
 				);
 		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
@@ -95,7 +95,7 @@ package body pcb_rw is
 		use et_text;
 	begin
 		write (keyword => keyword_position, parameters => position (t.position) & 
-			general_rw.space & keyword_face & to_string (face)); -- position x 0.000 y 5.555 rotation 0.00 face top
+			space & keyword_face & to_string (face)); -- position x 0.000 y 5.555 rotation 0.00 face top
 
 		-- CS this could be more elegant way. did not get it working
 		-- 		write (keyword => keyword_position, parameters => 
@@ -105,11 +105,11 @@ package body pcb_rw is
 		write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
 		
 		write (keyword => keyword_line_width, parameters => to_string (t.line_width));
-		write (keyword => keyword_alignment, parameters => general_rw.space &
-				keyword_horizontal & to_string (t.alignment.horizontal) & general_rw.space &
+		write (keyword => keyword_alignment, parameters => space &
+				keyword_horizontal & to_string (t.alignment.horizontal) & space &
 				keyword_vertical   & to_string (t.alignment.vertical)
 				);
-		-- CS write (keyword => keyword_hidden, parameters => general_rw.space & to_lower (boolean'image (text.hidden)));
+		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
 	end write_text_properties_with_face;
 
 	procedure write_text (cursor : in et_packages.type_texts_with_content.cursor) is
@@ -255,13 +255,13 @@ package body pcb_rw is
 	begin
 		circle_begin;
 		write_circle (circle);
-		write (keyword => keyword_filled, parameters => general_rw.space & to_string (circle.filled));
+		write (keyword => keyword_filled, parameters => space & to_string (circle.filled));
 		case circle.filled is
 			when NO =>
 				write (keyword => keyword_width, parameters => to_string (circle.border_width));
 				
 			when YES =>
-				write (keyword => keyword_fill_style, parameters => general_rw.space & to_string (circle.fill_style));
+				write (keyword => keyword_fill_style, parameters => space & to_string (circle.fill_style));
 
 				case circle.fill_style is
 					when SOLID => null;
@@ -283,13 +283,13 @@ package body pcb_rw is
 	begin
 		circle_begin;
 		write_circle (circle);
-		write (keyword => keyword_filled, parameters => general_rw.space & to_string (circle.filled));
+		write (keyword => keyword_filled, parameters => space & to_string (circle.filled));
 		case circle.filled is
 			when NO =>
 				write (keyword => keyword_width, parameters => to_string (circle.border_width));
 				
 			when YES =>
-				write (keyword => keyword_fill_style, parameters => general_rw.space & to_string (circle.fill_style));
+				write (keyword => keyword_fill_style, parameters => space & to_string (circle.fill_style));
 
 				case circle.fill_style is
 					when SOLID => null;
@@ -313,14 +313,14 @@ package body pcb_rw is
 		write_signal_layer (circle.layer);
 
 		-- the signal layer:
-		write (keyword => keyword_filled, parameters => general_rw.space & to_string (circle.filled));
+		write (keyword => keyword_filled, parameters => space & to_string (circle.filled));
 		
 		case circle.filled is
 			when NO =>
 				write (keyword => keyword_width, parameters => to_string (circle.border_width));
 				
 			when YES =>
-				write (keyword => keyword_fill_style, parameters => general_rw.space & to_string (circle.fill_style));
+				write (keyword => keyword_fill_style, parameters => space & to_string (circle.fill_style));
 
 				case circle.fill_style is
 					when SOLID => null;
@@ -458,8 +458,8 @@ package body pcb_rw is
 		use et_pcb_coordinates.geometry;
 		use ada.tags;
 
-		xy : constant string := general_rw.space & keyword_pos_x & to_string (x (point)) 
-				& general_rw.space & keyword_pos_y & to_string (y (point));
+		xy : constant string := space & keyword_pos_x & to_string (x (point)) 
+				& space & keyword_pos_y & to_string (y (point));
 	begin
 		if point'tag = et_pcb_coordinates.geometry.type_point'tag then
 			return xy;
@@ -467,13 +467,13 @@ package body pcb_rw is
 			
 		elsif point'tag = et_pcb_coordinates.geometry.type_position'tag then
 			return xy 
-				& general_rw.space & keyword_rotation & to_string (rot (et_pcb_coordinates.geometry.type_position (point)));
+				& space & keyword_rotation & to_string (rot (et_pcb_coordinates.geometry.type_position (point)));
 				-- position x 162.560 y 98.240 rotation 180.00
 			
 		elsif point'tag = type_package_position'tag then
 			return xy
-				& general_rw.space & keyword_rotation & to_string (rot (et_pcb_coordinates.geometry.type_position (point)))
-				& general_rw.space & keyword_face & to_string (get_face (type_package_position (point)));
+				& space & keyword_rotation & to_string (rot (et_pcb_coordinates.geometry.type_position (point)))
+				& space & keyword_face & to_string (get_face (type_package_position (point)));
 				-- position x 162.560 y 98.240 rotation 180.00 face top
 		else
 			return xy;
@@ -1742,7 +1742,7 @@ package body pcb_rw is
 			
 			while terminal_cursor /= type_terminals.no_element loop
 				section_mark (section_terminal, HEADER);
-				write (keyword => keyword_name, parameters => general_rw.space & et_libraries.to_string (key (terminal_cursor)));
+				write (keyword => keyword_name, parameters => space & et_libraries.to_string (key (terminal_cursor)));
 				write (keyword => keyword_assembly_technology, parameters => to_string (element (terminal_cursor).technology));
 				write (keyword => keyword_position, parameters => position (element (terminal_cursor).position));
 				
@@ -3929,7 +3929,7 @@ package body pcb_rw is
 			end if;
 
 			exception when event: others =>
-				log (text => "file " & et_libraries.to_string (file_name) & latin_1.space 
+				log (text => "file " & et_libraries.to_string (file_name) & space 
 					 & affected_line (line) & to_string (line), console => true);
 				raise;
 			
@@ -3967,7 +3967,7 @@ package body pcb_rw is
 					number			=> ada.text_io.line (current_input),
 					comment_mark 	=> comment_mark,
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> latin_1.space); -- fields are separated by space
+					ifs 			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if field_count (line) > 0 then

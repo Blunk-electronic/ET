@@ -36,7 +36,7 @@
 --
 
 with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.latin_1;	--use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
@@ -76,8 +76,6 @@ package body et_project is
 
 	use et_general.type_net_name;
 
-	space : character renames ada.characters.latin_1.space;
-	
 	
 	function to_string (project_name : in type_project_name.bounded_string) return string is
 	begin
@@ -1365,7 +1363,7 @@ package body et_project is
 					use type_device_purpose;
 				begin
 					if length (element (device_cursor).purpose) > 0 then
-						return latin_1.space & keyword_purpose & latin_1.space &
+						return space & keyword_purpose & space &
 							enclose_in_quotes (
 								text_in => et_libraries.to_string (element (device_cursor).purpose),
 								quote	=> latin_1.quotation);
@@ -1383,17 +1381,17 @@ package body et_project is
 							write (
 								keyword		=> keyword_device,
 								parameters	=> et_libraries.to_string (key (device_cursor)) & 
-												latin_1.space & keyword_not_mounted,
+												space & keyword_not_mounted,
 								space 		=> true);
 
 						when YES =>
 							write (
 								keyword		=> keyword_device,
 								parameters	=> et_libraries.to_string (key (device_cursor)) & 
-									latin_1.space &
-									keyword_value & latin_1.space &
+									space &
+									keyword_value & space &
 									et_libraries.to_string (element (device_cursor).value) &
-									latin_1.space & keyword_partcode & latin_1.space &
+									space & keyword_partcode & space &
 									material.to_string (element (device_cursor).partcode) &
 									purpose,
 								space 		=> true);
@@ -1415,7 +1413,7 @@ package body et_project is
 					write (
 						keyword		=> keyword_submodule,
 						parameters	=> et_general.to_string (key (submodule_cursor)) &
-										latin_1.space & keyword_variant & latin_1.space &
+										space & keyword_variant & space &
 										to_variant (element (submodule_cursor).variant),
 						space		=> true);
 					
@@ -3045,7 +3043,7 @@ package body et_project is
 			end if;
 
 			exception when event: others =>
-				log (text => "file " & to_string (file_name) & latin_1.space 
+				log (text => "file " & to_string (file_name) & space 
 					 & affected_line (line) & to_string (line), console => true);
 				raise;
 			
@@ -3083,7 +3081,7 @@ package body et_project is
 					number			=> ada.text_io.line (current_input),
 					comment_mark 	=> comment_mark,
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> latin_1.space); -- fields are separated by space
+					ifs 			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if field_count (line) > 0 then
@@ -4268,7 +4266,7 @@ package body et_project is
 			end if;
 
 			exception when event: others =>
-				log (text => "file " & to_string (file_name) & latin_1.space 
+				log (text => "file " & to_string (file_name) & space 
 					 & affected_line (line) & to_string (line), console => true);
 				raise;
 			
@@ -4318,7 +4316,7 @@ package body et_project is
 					number			=> ada.text_io.line (current_input),
 					comment_mark 	=> comment_mark,
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> latin_1.space); -- fields are separated by space
+					ifs 			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if field_count (line) > 0 then
@@ -9835,7 +9833,7 @@ package body et_project is
 			end if;
 
 			exception when event: others =>
-				log (text => "file " & file_name & latin_1.space 
+				log (text => "file " & file_name & space 
 					& affected_line (line) & to_string (line), console => true);
 				raise;
 			
@@ -10018,7 +10016,7 @@ package body et_project is
 						number			=> ada.text_io.line (current_input),
 						comment_mark 	=> comment_mark,
 						delimiter_wrap	=> true, -- strings are enclosed in quotations
-						ifs 			=> latin_1.space); -- fields are separated by space
+						ifs 			=> space); -- fields are separated by space
 
 					-- we are interested in lines that contain something. emtpy lines are skipped:
 					if field_count (line) > 0 then
@@ -10530,7 +10528,7 @@ package body et_project is
 				end if;
 
 				exception when event: others =>
-					log (text => "file " & file_name & latin_1.space & affected_line (line) 
+					log (text => "file " & file_name & space & affected_line (line) 
 						 & to_string (line), console => true);
 					raise;
 				
@@ -10567,7 +10565,7 @@ package body et_project is
 					number			=> ada.text_io.line (current_input),
 					comment_mark 	=> comment_mark, -- comments start with "--"
 					delimiter_wrap	=> true, -- strings are enclosed in quotations
-					ifs 			=> latin_1.space); -- fields are separated by space
+					ifs 			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
 				if field_count (line) > 0 then
