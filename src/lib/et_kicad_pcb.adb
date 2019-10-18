@@ -2792,9 +2792,10 @@ package body et_kicad_pcb is
 
 					-- Store a single line in variable "line" (see et_string_processing.ads)
 					line := et_string_processing.read_line (
-								line 	=> get_line,
-								number 	=> ada.text_io.line (current_input),
-								ifs 	=> latin_1.space); -- fields are separated by space
+						line 			=> get_line,
+						comment_mark	=> et_kicad.comment_mark,
+						number 			=> ada.text_io.line (current_input),
+						ifs 			=> latin_1.space); -- fields are separated by space
 
 					-- insert line in container "lines"
 					if field_count (line) > 0 then -- we skip empty or commented lines
@@ -8124,9 +8125,10 @@ package body et_kicad_pcb is
 			while not end_of_file loop
 				-- log (get_line);
 
-				-- Store a single line in variable "line" (see et_string_processing.ads)
+				-- Store a single line in variable "line"
 				line := et_string_processing.read_line (
 						line 			=> get_line,
+						comment_mark	=> et_kicad.comment_mark,
 						test_whole_line	=> false, -- comment marks at begin of line matter
 						number 			=> ada.text_io.line (current_input),
 						ifs 			=> latin_1.space); -- fields are separated by space

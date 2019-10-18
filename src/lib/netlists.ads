@@ -59,6 +59,9 @@ with et_string_processing;		use et_string_processing;
 
 
 package netlists is
+
+	comment_mark : constant string := "#";
+
 	
 	-- Whenever we deal with netlist files this type should be used:
 	file_name_length_max : constant positive := 100; -- CS: should suffice for now

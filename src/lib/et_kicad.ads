@@ -819,7 +819,7 @@ package et_kicad is
 	-- Leaves the module_cursor pointing where the module was inserted.
 
 -- COMMENT MARKS
-	comment_mark							: constant string (1..1) := "#";
+	comment_mark							: constant string := "#";
 
 -- PROJECT FILE RELATED KEYWORDS AND VARIABLES
     project_header_eeschema                 : constant string (1..10) := "[eeschema]";

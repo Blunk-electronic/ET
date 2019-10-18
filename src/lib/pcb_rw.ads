@@ -37,6 +37,7 @@
 
 with ada.containers;            use ada.containers;
 
+with et_libraries;
 with et_schematic;
 with et_string_processing;
 with et_packages;
@@ -46,6 +47,37 @@ with et_pcb_stack;
 
 package pcb_rw is
 
+	section_top					: constant string	:= "[TOP";
+	section_bottom				: constant string	:= "[BOTTOM";
+
+	section_silk_screen			: constant string	:= "[SILK_SCREEN";
+	section_assembly_doc		: constant string	:= "[ASSEMBLY_DOCUMENTATION";
+	section_stencil				: constant string	:= "[STENCIL";
+	section_stop_mask			: constant string	:= "[STOP_MASK";
+	section_keepout				: constant string	:= "[KEEPOUT";
+	section_route_restrict		: constant string	:= "[ROUTE_RESTRICT";
+	section_via_restrict		: constant string	:= "[VIA_RESTRICT";
+	section_copper				: constant string	:= "[COPPER";
+	section_pcb_contours		: constant string	:= "[PCB_CONTOURS_NON_PLATED";
+	--section_pcb_contours_plated	: constant string	:= "[PCB_CONTOURS_PLATED"; 
+	section_pac_3d_contours		: constant string	:= "[PACKAGE_3D_CONTOURS";
+
+	section_pad_contours_smt	: constant string	:= "[PAD_CONTOURS_SMT";
+	section_pad_contours_tht	: constant string	:= "[PAD_CONTOURS_THT";	
+	section_pad_millings		: constant string	:= "[MILLINGS";
+
+	section_terminals			: constant string	:= "[TERMINALS";
+	section_terminal			: constant string	:= "[TERMINAL";
+	
+
+	keyword_clearance				: constant string := "clearance";
+	keyword_track_width_min			: constant string := "track_width_min";
+	keyword_via_drill_min			: constant string := "via_drill_min";
+	keyword_via_restring_min		: constant string := "via_restring_min";	
+	keyword_micro_via_drill_min		: constant string := "micro_via_drill_min";
+	keyword_micro_via_restring_min	: constant string := "micro_via_restring_min";	
+	
+	
 	procedure write_text_properties (t : in et_packages.type_text'class);
 	
 	procedure write_text_properties_with_face (
@@ -294,6 +326,42 @@ package pcb_rw is
 	procedure write_line (cursor : in et_pcb.type_pcb_contour_lines.cursor);	
 	procedure write_arc (cursor : in et_pcb.type_pcb_contour_arcs.cursor);
 	procedure write_circle (cursor : in et_pcb.type_pcb_contour_circles.cursor);
+
+
+	type type_section_name_package is (
+		SEC_CONTOURS, -- of fill and cutout zones
+		SEC_CUTOUT_ZONE,
+		SEC_INIT,
+		SEC_TOP,
+		SEC_BOTTOM,
+		SEC_LINE,
+		SEC_ARC,
+		SEC_CIRCLE,
+		SEC_SILK_SCREEN,
+		SEC_ASSEMBLY_DOCUMENTATION,
+		SEC_KEEPOUT,
+		SEC_COPPER,
+		SEC_STOP_MASK,
+		SEC_STENCIL,
+		SEC_ROUTE_RESTRICT,
+		SEC_VIA_RESTRICT,
+		SEC_PCB_CONTOURS_NON_PLATED,
+		SEC_TERMINALS,
+		SEC_TERMINAL,
+		SEC_PAD_CONTOURS_SMT,
+		SEC_PAD_CONTOURS_THT,		
+		SEC_MILLINGS,
+		SEC_TEXT,
+		SEC_PLACEHOLDER,
+		SEC_FILL_ZONE,
+		SEC_PACKAGE_3D_CONTOURS
+		);
+
+	
+	procedure read_package (
+	-- Opens the package file and stores the package in container et_libraries.packages.
+		file_name 		: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		log_threshold	: in et_string_processing.type_log_level);
 
 	
 end pcb_rw;

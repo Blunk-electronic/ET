@@ -53,6 +53,15 @@ package et_general is
 	system_name				: constant string := "SYSTEM ET";
 
 	system_name_cmd_line	: constant string := "et ";
+
+
+	function expand (
+	-- Translates a file name like $HOME/libraries/devices/7400.dev to
+	-- /home/user/libraries/devices/7400.dev
+	-- CS: works on unix/linux only
+		name_in			: in string) -- $HOME/libraries/devices/7400.dev
+		--log_threshold	: et_string_processing.type_log_level)
+		return string;
 	
 -- FILES, EXTENSIONS AND DIRECTORY NAMES
 

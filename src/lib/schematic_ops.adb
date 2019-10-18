@@ -7750,7 +7750,7 @@ package body schematic_ops is
 
 		module_cursor : type_modules.cursor; -- points to the module
 
-		full_file_name : constant string := et_project.expand (submodules.to_string (file));
+		full_file_name : constant string := expand (submodules.to_string (file));
 		
 		use submodules;
 
@@ -9659,7 +9659,7 @@ package body schematic_ops is
 
 		module_cursor : type_modules.cursor; -- points to the module
 
-		full_file_name : constant string := et_project.expand (submodules.to_string (file));
+		full_file_name : constant string := expand (submodules.to_string (file));
 		
 		use submodules;
 

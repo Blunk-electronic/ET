@@ -37,13 +37,58 @@
 
 with ada.text_io;				use ada.text_io;
 with ada.strings; 				use ada.strings;
+with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.directories;
+with gnat.directory_operations;
+
 with et_string_processing;
 
 package body et_general is
+
+	function expand (
+	-- Translates a file name like $HOME/libraries/devices/7400.dev to
+	-- /home/user/libraries/devices/7400.dev
+	-- CS: works on unix/linux only
+		name_in			: in string) -- $HOME/libraries/devices/7400.dev
+		--log_threshold	: et_string_processing.type_log_level)
+		return string is
+
+		prefix : constant string := ("$"); -- CS: windows ? (like %home%)
+		separator : constant string := (1 * gnat.directory_operations.dir_separator); -- /\
+		
+		place_prefix, place_separator : natural := 0;
+		--use gnat.directory_operations;
+		--use et_string_processing;
+		
+-- 		function do_it (path : in string) return string is begin
+-- 			log ("full path is " & path, log_threshold + 1);
+-- 			return path;
+-- 		end;
+		
+	begin -- expand
+		place_prefix := index (name_in, prefix);
+		place_separator := index (name_in, separator);
+
+		if place_prefix = 0 then -- no environment variable found
+			return name_in; -- return given name as it is
+		else
+			-- name contains an environment variable
+			--log_indentation_up;
+			
+			--log ("expanding " & name_in, log_threshold);
+			-- CS test_vars (name_in); -- test if environment variables exist
+			
+			--log_indentation_down;
+			
+			--return do_it (gnat.directory_operations.expand_path (name_in));
+			return gnat.directory_operations.expand_path (name_in);
+		end if;
+
+	end expand;
+
 	
 	function remove_extension (file_name : in string) return string is
 	-- Removes from a string like templates/clock_generator.mod the extension so that

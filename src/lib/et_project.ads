@@ -87,14 +87,6 @@ package et_project is
 	directory_documentation	: constant string := "documentation";
 	directory_miscellaneous	: constant string := "miscellaneous";		
 
-	function expand (
-	-- Translates a file name like $HOME/libraries/devices/7400.dev to
-	-- /home/user/libraries/devices/7400.dev
-	-- CS: works on unix/linux only
-		name_in			: in string) -- $HOME/libraries/devices/7400.dev
-		--log_threshold	: et_string_processing.type_log_level)
-		return string;
-	
 	subtype type_file_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
 	file_name_text_size_default : constant type_file_name_text_size := 1.3;
 
@@ -332,15 +324,9 @@ package et_project is
 	keyword_purpose_B				: constant string := "purpose_B";	
 	keyword_net_comparator			: constant string := "net_comparator";
 	keyword_net_comparator_warn_only: constant string := "warn_only";
-	keyword_name					: constant string := "name";
-	keyword_description				: constant string := "description";
-	keyword_clearance				: constant string := "clearance";		
-	keyword_track_width_min			: constant string := "track_width_min";
-	keyword_via_drill_min			: constant string := "via_drill_min";
-	keyword_via_restring_min		: constant string := "via_restring_min";	
-	keyword_micro_via_drill_min		: constant string := "micro_via_drill_min";
-	keyword_micro_via_restring_min	: constant string := "micro_via_restring_min";	
-	keyword_class					: constant string := "class";
+
+
+
 	keyword_scope					: constant string := "scope";	
 	keyword_flipped					: constant string := "flipped";
 	keyword_rotation_in_schematic	: constant string := "rotation_in_schematic";
@@ -358,7 +344,7 @@ package et_project is
 	keyword_purpose					: constant string := "purpose";	
 	keyword_variant					: constant string := "variant";
 	keyword_mirrored				: constant string := "mirrored";
-	keyword_meaning					: constant string := "meaning";
+
 	keyword_hidden					: constant string := "hidden"; -- CS ?
 	keyword_sheet					: constant string := "sheet";
 	keyword_position_in_board		: constant string := "position_in_board";
@@ -438,20 +424,7 @@ package et_project is
 	section_placeholder			: constant string	:= "[PLACEHOLDER";
 	section_package				: constant string	:= "[PACKAGE";
 
-	section_silk_screen			: constant string	:= "[SILK_SCREEN";
-	section_assembly_doc		: constant string	:= "[ASSEMBLY_DOCUMENTATION";
-	section_stencil				: constant string	:= "[STENCIL";
-	section_stop_mask			: constant string	:= "[STOP_MASK";
-	section_keepout				: constant string	:= "[KEEPOUT";
-	section_route_restrict		: constant string	:= "[ROUTE_RESTRICT";
-	section_via_restrict		: constant string	:= "[VIA_RESTRICT";
-	section_copper				: constant string	:= "[COPPER";
-	section_pcb_contours		: constant string	:= "[PCB_CONTOURS_NON_PLATED";
-	--section_pcb_contours_plated	: constant string	:= "[PCB_CONTOURS_PLATED"; 
-	section_pac_3d_contours		: constant string	:= "[PACKAGE_3D_CONTOURS";
 	
-	section_top					: constant string	:= "[TOP";
-	section_bottom				: constant string	:= "[BOTTOM";
 
 	section_variants			: constant string	:= "[VARIANTS";
 	section_variant				: constant string	:= "[VARIANT";
@@ -466,12 +439,9 @@ package et_project is
 	section_ports				: constant string	:= "[PORTS";
 	section_port_begin			: constant string	:= "[PORT";
 
-	section_terminals			: constant string	:= "[TERMINALS";
-	section_terminal			: constant string	:= "[TERMINAL";
+	section_terminals			: constant string	:= "[TERMINALS"; -- CS remove ?
+	section_terminal			: constant string	:= "[TERMINAL"; -- CS remove ?
 	
-	section_pad_contours_smt	: constant string	:= "[PAD_CONTOURS_SMT";
-	section_pad_contours_tht	: constant string	:= "[PAD_CONTOURS_THT";	
-	section_pad_millings		: constant string	:= "[MILLINGS";
 	
 	section_title_block			: constant string	:= "[TITLE_BLOCK";
 	
@@ -599,34 +569,6 @@ package et_project is
 		SEC_PORT
 		);
 
-	type type_section_name_package is (
-		SEC_CONTOURS, -- of fill and cutout zones
-		SEC_CUTOUT_ZONE,
-		SEC_INIT,
-		SEC_TOP,
-		SEC_BOTTOM,
-		SEC_LINE,
-		SEC_ARC,
-		SEC_CIRCLE,
-		SEC_SILK_SCREEN,
-		SEC_ASSEMBLY_DOCUMENTATION,
-		SEC_KEEPOUT,
-		SEC_COPPER,
-		SEC_STOP_MASK,
-		SEC_STENCIL,
-		SEC_ROUTE_RESTRICT,
-		SEC_VIA_RESTRICT,
-		SEC_PCB_CONTOURS_NON_PLATED,
-		SEC_TERMINALS,
-		SEC_TERMINAL,
-		SEC_PAD_CONTOURS_SMT,
-		SEC_PAD_CONTOURS_THT,		
-		SEC_MILLINGS,
-		SEC_TEXT,
-		SEC_PLACEHOLDER,
-		SEC_FILL_ZONE,
-		SEC_PACKAGE_3D_CONTOURS
-		);
 	
 
 	function exists (
@@ -718,7 +660,7 @@ package et_project is
 	
 -- GENERICS
 	
-	generic
+	generic -- CS remove. is in general_rw.
 		max : positive;
 		type item is private;
 	package stack_lifo is

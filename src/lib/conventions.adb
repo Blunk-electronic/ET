@@ -2893,7 +2893,7 @@ package body conventions is
 				line := et_string_processing.read_line (
 					line			=> get_line,
 					number			=> ada.text_io.line (current_input),
-					comment_mark	=> et_string_processing.comment_mark,
+					comment_mark	=> comment_mark,
 					delimiter_wrap	=> true, -- if connector purpose is given in quotations
 					ifs 			=> latin_1.space); -- fields are separated by space
 

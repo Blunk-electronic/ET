@@ -41,6 +41,11 @@ with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.text_io;				use ada.text_io;
+
+with ada.exceptions;
+with ada.directories;
+with gnat.directory_operations;
+
 with et_string_processing;
 
 package body general_rw is
@@ -58,9 +63,6 @@ package body general_rw is
 		use et_string_processing;
 		count_found : constant count_type := field_count (line);
 
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
-		
 		f1 : string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
 	begin
 		if count_found = count_expected then null; -- fine, field count as expected
@@ -156,6 +158,62 @@ package body general_rw is
 			end case;
 		end if;
 	end write;	
+
+
+
+	
+-- GENERICS
+	
+	package body stack_lifo is
+		s : array (1..max) of item;
+		top : natural range 0..max;
+
+		procedure push (x : in item) is
+		begin
+			top := top + 1;
+			s (top) := x;
+		end push;
+
+		procedure pop is
+		begin
+			top := top - 1;
+		end pop;
+		
+		function pop return item is
+		begin
+			top := top - 1;
+			return s (top + 1);
+		end pop;
+
+		function depth return natural is
+		begin
+			return top;
+		end depth;
+
+		procedure init is
+		begin
+			top := 0;
+		end init;
+
+		function empty return boolean is
+		begin
+			if top = 0 then return true;
+			else return false;
+			end if;
+		end empty;
+		
+		function current return item is 
+		begin
+			return s (top);
+		end current;
+		
+		function parent (degree : in natural := 1) return item is
+		begin
+			--return s (top - 1);
+			return s (top - degree);
+		end parent;
+		
+	end stack_lifo;
 
 	
 end general_rw;

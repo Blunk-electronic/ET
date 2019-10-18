@@ -42,8 +42,8 @@ with ada.containers;            use ada.containers;
 with et_string_processing;
 
 package general_rw is
-
-
+	comment_mark : constant string := ("--");
+									  
 	function f (line : in et_string_processing.type_fields_of_line; position : in positive) return string;
 
 	procedure expect_field_count (
@@ -56,7 +56,13 @@ package general_rw is
 	section_begin	: constant string := "BEGIN]";	
 	section_end		: constant string := "END]";
 	
+	keyword_name				: constant string := "name";
+	keyword_appearance			: constant string := "appearance";
+	keyword_description			: constant string := "description";
+	keyword_meaning				: constant string := "meaning";
+	keyword_class					: constant string := "class";
 
+	
 -- SECTIONS AND INDENTATION
 	function write_top_level_reached return string;
 	function write_enter_section return string;
@@ -105,6 +111,25 @@ package general_rw is
 		parameters	: in string;
 		space 		: in boolean := false;
 		wrap		: in boolean := false);
+
+
+
+-- GENERICS
+	
+	generic
+		max : positive;
+		type item is private;
+	package stack_lifo is
+		procedure push (x : in item);
+		procedure pop;
+		function pop return item;
+		function depth return natural;
+		procedure init;
+		function empty return boolean;
+		function current return item;
+		function parent (degree : in natural := 1) return item;
+		
+	end stack_lifo;
 
 	
 end general_rw;

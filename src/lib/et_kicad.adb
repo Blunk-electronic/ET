@@ -819,7 +819,12 @@ package body et_kicad is
 	begin
 		return et_kicad_general.type_library_name.to_bounded_string (
 			et_string_processing.field (
-				read_line (line => text, ifs => latin_1.colon), position => 1) -- the part before the colon
+				read_line (
+					line 			=> text, 
+					comment_mark	=> comment_mark,
+					ifs				=> latin_1.colon
+					),
+				position => 1) -- the part before the colon
 				);
 	end library_name;
 
@@ -833,7 +838,12 @@ package body et_kicad is
 	begin
 		return et_libraries.type_component_package_name.to_bounded_string (
 			et_string_processing.field (
-				read_line (line => text, ifs => latin_1.colon), position => 2) -- the part after the colon
+				read_line (
+					line			=> text,
+					comment_mark	=> comment_mark,
+					ifs 			=> latin_1.colon
+					),
+				position => 2) -- the part after the colon
 				);
 	end package_name;
 
@@ -2105,8 +2115,9 @@ package body et_kicad is
 							validate_component_package_name (
 								type_component_package_name.to_bounded_string (et_string_processing.field (
 									line => read_line ( -- CS use function package_name
-										line	=> content (field_package), -- bel_ic:S_SO14
-										ifs		=> latin_1.colon),
+										line			=> content (field_package), -- bel_ic:S_SO14
+										comment_mark	=> comment_mark,
+										ifs				=> latin_1.colon),
 									position => 2))); -- the block after the colon
 
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_package.size);
@@ -5058,6 +5069,7 @@ package body et_kicad is
 								line 			=> get_line,
 								test_whole_line	=> false, -- comment marks at begin of line matter
 								number 			=> ada.text_io.line (current_input),
+								comment_mark	=> comment_mark,
 								ifs 			=> latin_1.space); -- fields are separated by space
 
 						-- insert line in container "lines"

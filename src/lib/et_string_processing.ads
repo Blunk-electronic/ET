@@ -115,7 +115,7 @@ package et_string_processing is
 	
 -- CHARACTERS IN NOTES, TEXT, LABELS, ...
 
-	comment_mark : constant string (1..1) := "#";
+-- 	comment_mark : constant string (1..1) := "#";
 	
 	-- Since we want designs readable and portable in as many languages as possible we accept only those characters:
 	general_characters : character_set := 
@@ -228,11 +228,11 @@ package et_string_processing is
 	-- whose components are hidden. The can only be accessed by special functions and procedures. See below.
 	type type_fields_of_line is private;
 
-	function read_line(
+	function read_line (
 	-- Breaks down a given string and returns a type_fields_of_line.
 		line			: in string; -- the line to be broken down
 		number			: in positive_count := positive_count'first; -- the line number	
-		comment_mark	: in string := et_string_processing.comment_mark; -- the comment mark like "--" or "#"
+		comment_mark	: in string; -- the comment mark like "--" or "#"
 		test_whole_line	: in boolean := true; -- when false, cares for the comment mark at line begin only
 												 -- further comment marks are ignored
 		ifs				: in character := latin_1.space;	-- field separator
