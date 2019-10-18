@@ -551,26 +551,6 @@ package body et_libraries is
 		return type_placeholder_text_size'value (text);
 	end to_component_attribute_text_size;
 
-	function to_string (text_content : in type_text_content.bounded_string) return string is begin
-		return type_text_content.to_string (text_content);
-	end to_string;
-
-	function to_content (content : in string) return type_text_content.bounded_string is begin
-		return type_text_content.to_bounded_string (content);
-	end to_content;
-
-	
-	procedure check_text_content_length (content : in string) is
-	-- Tests if the content is longer than allowed.
-		use et_string_processing;
-	begin
-		if content'length > text_length_max then
-			log (ERROR, "max. number of characters for a text field is" 
-				 & positive'image (text_length_max) & " !",
-				 console => true);
-			raise constraint_error;
-		end if;
-	end check_text_content_length;
 	
 	procedure write_placeholder_properties (
 	-- Writes the properties of the given placeholder.
@@ -618,6 +598,7 @@ package body et_libraries is
 		log_threshold : in et_string_processing.type_log_level) is
 
 		use et_string_processing;
+		use et_text;
 	begin
 -- 		log_indentation_up;
 		
@@ -626,8 +607,8 @@ package body et_libraries is
 		log_indentation_up;
 		
 		-- content
-		if et_libraries.type_text_content.length (text.content) > 0 then
-			log (text => "content '" & et_libraries.type_text_content.to_string(text.content) & "'",
+		if type_text_content.length (text.content) > 0 then
+			log (text => "content '" & et_text.to_string (text.content) & "'",
 				level => log_threshold);
 		else
 			log (text => "no content", level => log_threshold);
@@ -665,10 +646,10 @@ package body et_libraries is
 
 	function content (text : in type_text) return string is
 	-- Returns the content of the given text as string.
-		c : type_text_content.bounded_string;
+		c : et_text.type_text_content.bounded_string;
 	begin
 		c := text.content;
-		return type_text_content.to_string (c);
+		return et_text.to_string (c);
 	end content;
 
 	function to_string (value : in type_value.bounded_string) return string is

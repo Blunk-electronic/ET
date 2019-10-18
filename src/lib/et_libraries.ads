@@ -147,15 +147,7 @@ package et_libraries is
         rotation	: type_rotation_text := 0.0;
 	end record;
 
-	-- A text may have up to 200 characters which seems sufficient for now.
- 	text_length_max : constant natural := 200;
-	package type_text_content is new generic_bounded_length (text_length_max); use type_text_content;
 
-	function to_string (text_content : in type_text_content.bounded_string) return string;
-	function to_content (content : in string) return type_text_content.bounded_string;
-	
-	procedure check_text_content_length (content : in string);
-	-- Tests if the content is not longer than allowed.
 	
 	-- This is a placeholder for a text. It does not have content yet, but a meaning:
 	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with record
@@ -169,7 +161,7 @@ package et_libraries is
 	
 	-- This is a real text with its content:
 	type type_text is new type_text_placeholder with record
-        content		: type_text_content.bounded_string;
+        content		: et_text.type_text_content.bounded_string;
 	end record;
 
 	
@@ -270,7 +262,7 @@ package et_libraries is
 	-- Converts a string to type_port_name_text_size.
 
 	-- line width
-	keyword_line_width : constant string := "line_width";
+	keyword_line_width : constant string := "line_width"; -- NOTE: do not confuse with text line width !
 	subtype type_line_width is type_distance; -- CS reasonable positive range
 	
 	line_width_port_default : constant type_line_width := 0.2;

@@ -66,6 +66,7 @@ with et_export;
 with et_csv;
 with material;
 with netlists;
+with et_text;
 
 package body et_kicad_to_native is
 
@@ -298,7 +299,7 @@ package body et_kicad_to_native is
 				use et_coordinates;				
 				use kicad_coordinates;
 			begin
-				log (text => "note '" & et_libraries.to_string (note.content) & "'", level => log_threshold + 3);
+				log (text => "note '" & et_text.to_string (note.content) & "'", level => log_threshold + 3);
 				log_indentation_up;
 				
 				log (text => before & to_string (position => note.position, scope => SHEET),

@@ -66,6 +66,7 @@ with numbering;
 with material;
 with netlists;
 with et_geometry;
+with et_text;
 
 package et_schematic is
 	use et_general.type_net_name;
@@ -80,7 +81,7 @@ package et_schematic is
 	-- A text/note in the schematic:
 	type type_text is new et_libraries.type_text_basic with record
 		position	: et_coordinates.type_position;
-		content		: et_libraries.type_text_content.bounded_string;
+		content		: et_text.type_text_content.bounded_string;
 	end record;
 
 	package type_texts is new doubly_linked_lists (type_text);

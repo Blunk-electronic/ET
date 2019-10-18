@@ -106,6 +106,30 @@ package body et_text is
 			& to_string (alignment.vertical);
 	end to_string;
 
+
+	function to_string (text_content : in type_text_content.bounded_string) return string is begin
+		return type_text_content.to_string (text_content);
+	end to_string;
+
+	function to_content (content : in string) return type_text_content.bounded_string is begin
+		return type_text_content.to_bounded_string (content);
+	end to_content;
+
+	
+	procedure check_text_content_length (content : in string) is
+	-- Tests if the content is longer than allowed.
+		use et_string_processing;
+	begin
+		if content'length > text_length_max then
+			log (ERROR, "max. number of characters for a text field is" 
+				 & positive'image (text_length_max) & " !",
+				 console => true);
+			raise constraint_error;
+		end if;
+	end check_text_content_length;
+
+
+	
 	
 	package body text is
 		use et_string_processing;

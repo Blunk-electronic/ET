@@ -44,9 +44,70 @@ with et_packages;
 with et_pcb;
 with et_pcb_stack;
 with general_rw;				use general_rw;
+with et_geometry;				use et_geometry;
+with et_text;					use et_text;
 
 package body pcb_rw is
 
+	procedure write_text_properties (t : in et_packages.type_text'class) is
+		use et_packages;
+		use et_pcb_coordinates.geometry;
+		use et_text;
+	begin
+-- 		write (keyword => keyword_position, parameters => position (text.position) & 
+-- 			space & keyword_rotation & to_string (get_angle (text.position))
+-- 			  ); -- position x 0.000 y 5.555 rotation 0.00
+
+		write (keyword => keyword_position, parameters => position (t.position));
+			-- position x 0.000 y 5.555 rotation 0.00
+		
+		write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
+		
+		write (keyword => keyword_line_width, parameters => to_string (t.line_width));
+		write (keyword => keyword_alignment, parameters => space &
+			keyword_horizontal & to_string (t.alignment.horizontal) & space &
+			keyword_vertical   & to_string (t.alignment.vertical)
+				);
+		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
+	end write_text_properties;
+
+	procedure write_text_properties_with_face (
+		t		: in et_packages.type_text'class;
+		face	: in et_pcb_coordinates.type_face) 
+		is
+		use et_packages;
+		use et_pcb_coordinates;
+		use et_pcb_coordinates.geometry;
+		use et_text;
+	begin
+		write (keyword => keyword_position, parameters => position (t.position) & 
+			space & keyword_face & to_string (face)); -- position x 0.000 y 5.555 rotation 0.00 face top
+
+		-- CS this could be more elegant way. did not get it working
+		-- 		write (keyword => keyword_position, parameters => 
+		-- 			   position (type_position (text.position with face => face))
+		-- 			  );
+		
+		write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
+		
+		write (keyword => keyword_line_width, parameters => to_string (t.line_width));
+		write (keyword => keyword_alignment, parameters => space &
+				keyword_horizontal & to_string (t.alignment.horizontal) & space &
+				keyword_vertical   & to_string (t.alignment.vertical)
+				);
+		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
+	end write_text_properties_with_face;
+
+	procedure write_text (cursor : in et_packages.type_texts_with_content.cursor) is
+		use et_packages.type_texts_with_content;
+	begin
+		text_begin;
+		write (keyword => keyword_content, space => true, wrap => true,
+			parameters => to_string (element (cursor).content));
+		write_text_properties (element (cursor));
+		text_end;
+	end write_text;
+	
 	procedure write_width (width : in et_packages.type_track_width) is 
 		use et_pcb_coordinates.geometry;
 	begin

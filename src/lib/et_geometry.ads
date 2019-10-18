@@ -41,6 +41,18 @@ with et_general;				use et_general;
 
 package et_geometry is
 
+	keyword_position	: constant string := "position";
+	keyword_pos_x 		: constant string := "x";
+	keyword_pos_y 		: constant string := "y";		
+	keyword_rotation 	: constant string := "rotation";
+	keyword_start		: constant string := "start";
+	keyword_end			: constant string := "end";
+	keyword_center		: constant string := "center";		
+	keyword_radius		: constant string := "radius";		
+	keyword_diameter	: constant string := "diameter";
+	keyword_filled 		: constant string := "filled";		
+		
+	
 	generic
 		type type_distance is delta <>;
 		type type_rotation is delta <>;
@@ -71,8 +83,6 @@ package et_geometry is
 		function x (point : in type_point'class) return type_distance; -- CS class attr. not required ?
 		function y (point : in type_point'class) return type_distance;		
 
-		keyword_pos_x : constant string := "x";
-		keyword_pos_y : constant string := "y";		
 
 		
 		function mil_to_distance (mil : in string) return type_distance;
@@ -80,7 +90,6 @@ package et_geometry is
 
 		function distance_to_mil (distance : in type_distance) return string;
 
-		keyword_rotation : constant string := "rotation";
 		
 		axis_separator : constant string := "/";
 		point_preamble : constant string := " (x" & axis_separator & "y) ";
@@ -237,7 +246,6 @@ package et_geometry is
 		function to_filled (filled : in string) return type_filled;
 		filled_default : constant type_filled := NO;
 
-		keyword_filled : constant string := "filled";
 
 		
 	-- LINE
@@ -247,10 +255,6 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
-		keyword_start	: constant string := "start";
-		keyword_end		: constant string := "end";
-
-		
 		-- A line is divided into three zones. Their width is the ratio
 		-- of line length and the zone_division_factor.
 		-- 
@@ -298,9 +302,6 @@ package et_geometry is
 			return boolean; 
 		
 	-- ARC
-		keyword_center		: constant string := "center";		
-		keyword_radius		: constant string := "radius";		
-
 		type type_arc is abstract tagged record
 			center			: type_point;
 			start_point		: type_point;
@@ -328,8 +329,6 @@ package et_geometry is
 
 		
 	-- CIRCLE
-		keyword_diameter	: constant string := "diameter";
-		
 		type type_circle is abstract tagged record -- CS rename to type_circle_base
 			center			: type_point;
 			radius  		: type_distance_positive := zero;

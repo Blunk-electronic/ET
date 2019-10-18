@@ -70,7 +70,7 @@ with assembly_variants;
 with pick_and_place;
 with material;
 with netlists;
-
+with et_geometry;		use et_geometry; -- due to frequently used keywords
 
 package body scripting is
 	
@@ -192,7 +192,7 @@ package body scripting is
 	end;
 
 	procedure expect_keyword_filled (field : in count_type) is begin
-		log (ERROR, "Expect keyword " & enclose_in_quotes (et_packages.shapes.keyword_filled) &
+		log (ERROR, "Expect keyword " & enclose_in_quotes (et_geometry.keyword_filled) &
 			" in field no." & count_type'image (field) & " !",
 			 console => true);
 		raise constraint_error;

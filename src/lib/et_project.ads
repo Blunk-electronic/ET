@@ -342,18 +342,12 @@ package et_project is
 	keyword_micro_via_restring_min	: constant string := "micro_via_restring_min";	
 	keyword_class					: constant string := "class";
 	keyword_scope					: constant string := "scope";	
-	keyword_position				: constant string := "position";
 	keyword_flipped					: constant string := "flipped";
-	keyword_start					: constant string := "start"; -- CS remove
-	keyword_end						: constant string := "end"; -- CS remove
-	keyword_rotation				: constant string := "rotation"; -- CS remove
 	keyword_rotation_in_schematic	: constant string := "rotation_in_schematic";
 	keyword_style					: constant string := "style";
 	keyword_appearance				: constant string := "appearance";
 	keyword_direction				: constant string := "direction";			
 	keyword_junction				: constant string := "junction";
-	keyword_pos_x					: constant string := "x"; -- CS remove
-	keyword_pos_y					: constant string := "y"; -- CS remove		
 	keyword_submodule				: constant string := "submodule";
 	keyword_netchanger				: constant string := "netchanger";		
 	keyword_height					: constant string := "height";	
@@ -365,12 +359,11 @@ package et_project is
 	keyword_variant					: constant string := "variant";
 	keyword_mirrored				: constant string := "mirrored";
 	keyword_meaning					: constant string := "meaning";
-	keyword_hidden					: constant string := "hidden";		
+	keyword_hidden					: constant string := "hidden"; -- CS ?
 	keyword_sheet					: constant string := "sheet";
 	keyword_position_in_board		: constant string := "position_in_board";
 	keyword_position_in_schematic	: constant string := "position_in_schematic";	
 	keyword_view_mode				: constant string := "view_mode";
-	keyword_content					: constant string := "content";
 
 	keyword_prefix					: constant string := "prefix";	
 	keyword_commissioned			: constant string := "commissioned";

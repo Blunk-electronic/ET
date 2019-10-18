@@ -67,7 +67,8 @@ with submodules;
 with assembly_variants;
 with material;
 with netlists;
-with et_text;
+with et_text;					use et_text;
+with et_geometry;				use et_geometry;
 with general_rw;				use general_rw;
 with pcb_rw;					use pcb_rw;
 
@@ -681,65 +682,7 @@ package body et_project is
 				);
 		--write (keyword => keyword_hidden, parameters => et_libraries.to_string (text.visible)); -- CS: no need. probably useless
 	end write_text_properties;
-
-	procedure write_text_properties (t : in et_packages.type_text'class) is
-		use et_packages;
-		use et_pcb_coordinates.geometry;
-		use et_text;
-	begin
--- 		write (keyword => keyword_position, parameters => position (text.position) & 
--- 			space & keyword_rotation & to_string (get_angle (text.position))
--- 			  ); -- position x 0.000 y 5.555 rotation 0.00
-
-		write (keyword => keyword_position, parameters => position (t.position));
-			-- position x 0.000 y 5.555 rotation 0.00
 		
-		write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
-		
-		write (keyword => keyword_line_width, parameters => to_string (t.line_width));
-		write (keyword => keyword_alignment, parameters => space &
-			keyword_horizontal & to_string (t.alignment.horizontal) & space &
-			keyword_vertical   & to_string (t.alignment.vertical)
-				);
-		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
-	end write_text_properties;
-
-	procedure write_text_properties_with_face (
-		t		: in et_packages.type_text'class;
-		face	: in et_pcb_coordinates.type_face) 
-		is
-		use et_packages;
-		use et_pcb_coordinates;
-		use et_pcb_coordinates.geometry;
-		use et_text;
-	begin
-		write (keyword => keyword_position, parameters => position (t.position) & 
-			space & keyword_face & to_string (face)); -- position x 0.000 y 5.555 rotation 0.00 face top
-
-		-- CS this could be more elegant way. did not get it working
-		-- 		write (keyword => keyword_position, parameters => 
-		-- 			   position (type_position (text.position with face => face))
-		-- 			  );
-		
-		write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
-		
-		write (keyword => keyword_line_width, parameters => to_string (t.line_width));
-		write (keyword => keyword_alignment, parameters => space &
-				keyword_horizontal & to_string (t.alignment.horizontal) & space &
-				keyword_vertical   & to_string (t.alignment.vertical)
-				);
-		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
-	end write_text_properties_with_face;
-		
-	procedure write_text (cursor : in et_packages.type_texts_with_content.cursor) is
-		use et_packages.type_texts_with_content;
-	begin
-		text_begin;
-		write (keyword => keyword_content, space => true, wrap => true,
-			   parameters => et_libraries.to_string (element (cursor).content));
-		write_text_properties (element (cursor));
-		text_end;
-	end write_text;
 	
 	procedure save_rig_configuration (
 		project_name	: in type_project_name.bounded_string;		-- blood_sample_analyzer
@@ -1032,7 +975,7 @@ package body et_project is
 								write (keyword => keyword_rotation, parameters => to_string (element (label_cursor).rotation));
 								write (keyword => et_text.keyword_size, parameters => to_string (element (label_cursor).size));
 								write (keyword => keyword_style, parameters => to_string (element (label_cursor).style));
-								write (keyword => keyword_line_width, parameters => to_string (element (label_cursor).width));
+								write (keyword => et_libraries.keyword_line_width, parameters => to_string (element (label_cursor).width));
 
 								write (keyword => keyword_appearance, parameters =>
 									et_schematic.to_string (appearance => element (label_cursor).appearance));
@@ -1616,7 +1559,7 @@ package body et_project is
 				write (keyword => keyword_file, space => true, parameters => type_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
 
 				write (keyword => keyword_position, parameters => position (element (submodule_cursor).position));
-				write (keyword => keyword_size, parameters => 
+				write (keyword => submodules.keyword_size, parameters => 
 					space & keyword_pos_x & to_string (element (submodule_cursor).size.x) &
 					space & keyword_pos_y & to_string (element (submodule_cursor).size.y)); -- size x 50 y 70
 				
@@ -1646,7 +1589,7 @@ package body et_project is
 				section_mark (section_text, HEADER);
 				write (keyword => keyword_position, parameters => position (element (text_cursor).position));
 				write (keyword => keyword_content, space => true, wrap => true,
-					   parameters => et_libraries.to_string (element (text_cursor).content));
+					   parameters => to_string (element (text_cursor).content));
 				write_text_properties (element (text_cursor));
 				section_mark (section_text, FOOTER);
 			end write;
@@ -1795,7 +1738,7 @@ package body et_project is
 			-- texts any signal layers
 			procedure write_text (cursor : in pac_texts.cursor) is begin
 				text_begin;
-				write (keyword => keyword_content, parameters => et_libraries.to_string (element (cursor).content));
+				write (keyword => keyword_content, parameters => to_string (element (cursor).content));
 				write_text_properties (element (cursor));
 				write (keyword => keyword_layer, parameters => to_string (element (cursor).layer));
 				text_end;
@@ -4447,7 +4390,7 @@ package body et_project is
 												
 											elsif kw = keyword_content then -- content "blabla"
 												expect_field_count (line, 2); -- actual content in quotes !
-												pac_text.content := et_libraries.to_content (f (line, 2));
+												pac_text.content := et_text.to_content (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -4681,7 +4624,7 @@ package body et_project is
 		symbol_circle		: et_libraries.type_circle;
 		symbol_text_base	: et_libraries.type_text_basic;
 		symbol_text_position: et_coordinates.geometry.type_point;
-		symbol_text_content	: et_libraries.type_text_content.bounded_string;
+		symbol_text_content	: et_text.type_text_content.bounded_string;
 		symbol_placeholder_meaning : et_libraries.type_text_meaning := text_meaning_default;
 		
 		port					: et_libraries.type_port_base;
@@ -5097,7 +5040,7 @@ package body et_project is
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = shapes.keyword_center then -- center x 1 y 2
+									if kw = keyword_center then -- center x 1 y 2
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
@@ -5119,7 +5062,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_arc.width := to_distance (f (line, 2));
 
-									elsif kw = shapes.keyword_radius then
+									elsif kw = keyword_radius then
 										expect_field_count (line, 2);
 										symbol_arc.radius := to_distance (f (line, 2));
 										
@@ -5138,7 +5081,7 @@ package body et_project is
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = shapes.keyword_center then -- center x 1 y 2
+									if kw = keyword_center then -- center x 1 y 2
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
@@ -5148,11 +5091,11 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_circle.width := to_distance (f (line, 2));
 
-									elsif kw = shapes.keyword_radius then -- radius 5
+									elsif kw = keyword_radius then -- radius 5
 										expect_field_count (line, 2);
 										symbol_circle.radius := to_distance (f (line, 2));
 
-									elsif kw = et_libraries.shapes.keyword_filled then -- filled yes/no
+									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);
 										symbol_circle.filled := et_libraries.to_circle_filled (f (line, 2));
 										
@@ -5179,13 +5122,13 @@ package body et_project is
 
 									elsif kw = keyword_content then -- content "dummy NAND gate"
 										expect_field_count (line, 2);
-										symbol_text_content := et_libraries.to_content (f (line, 2));
+										symbol_text_content := et_text.to_content (f (line, 2));
 
 									elsif kw = et_text.keyword_size then -- size 5
 										expect_field_count (line, 2);
 										symbol_text_base.size := to_distance (f (line, 2));
 
-									elsif kw = keyword_line_width then -- line_width 0.2
+									elsif kw = et_text.keyword_line_width then -- line_width 0.2
 										expect_field_count (line, 2);
 										symbol_text_base.line_width := to_distance (f (line, 2));
 
@@ -5230,7 +5173,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_text_base.size := to_distance (f (line, 2));
 
-									elsif kw = keyword_line_width then -- line_width 0.2
+									elsif kw = et_text.keyword_line_width then -- line_width 0.2
 										expect_field_count (line, 2);
 										symbol_text_base.line_width := to_distance (f (line, 2));
 
@@ -5547,7 +5490,7 @@ package body et_project is
 		symbol_circle		: et_libraries.type_circle;
 		symbol_text_base	: et_libraries.type_text_basic;
 		symbol_text_position: et_coordinates.geometry.type_point;
-		symbol_text_content	: et_libraries.type_text_content.bounded_string;
+		symbol_text_content	: et_text.type_text_content.bounded_string;
 		symbol_placeholder_meaning : et_libraries.type_text_meaning := text_meaning_default;
 		
 		port					: et_libraries.type_port_base;
@@ -6302,7 +6245,7 @@ package body et_project is
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = shapes.keyword_center then -- center x 1 y 2
+									if kw = keyword_center then -- center x 1 y 2
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
@@ -6324,7 +6267,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_arc.width := to_distance (f (line, 2));
 
-									elsif kw = shapes.keyword_radius then
+									elsif kw = keyword_radius then
 										expect_field_count (line, 2);
 										symbol_arc.radius := to_distance (f (line, 2));
 										
@@ -6343,7 +6286,7 @@ package body et_project is
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = shapes.keyword_center then -- center x 1 y 2
+									if kw = keyword_center then -- center x 1 y 2
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
@@ -6353,11 +6296,11 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_circle.width := to_distance (f (line, 2));
 
-									elsif kw = shapes.keyword_radius then -- radius 5
+									elsif kw = keyword_radius then -- radius 5
 										expect_field_count (line, 2);
 										symbol_circle.radius := to_distance (f (line, 2));
 
-									elsif kw = et_libraries.shapes.keyword_filled then -- filled yes/no
+									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);
 										symbol_circle.filled := et_libraries.to_circle_filled (f (line, 2));
 										
@@ -6390,13 +6333,13 @@ package body et_project is
 
 									elsif kw = keyword_content then -- content "dummy NAND gate"
 										expect_field_count (line, 2);
-										symbol_text_content := et_libraries.to_content (f (line, 2));
+										symbol_text_content := et_text.to_content (f (line, 2));
 
 									elsif kw = et_text.keyword_size then -- size 5
 										expect_field_count (line, 2);
 										symbol_text_base.size := to_distance (f (line, 2));
 
-									elsif kw = keyword_line_width then -- line_width 0.2
+									elsif kw = et_text.keyword_line_width then -- line_width 0.2
 										expect_field_count (line, 2);
 										symbol_text_base.line_width := to_distance (f (line, 2));
 
@@ -6447,7 +6390,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_text_base.size := to_distance (f (line, 2));
 
-									elsif kw = keyword_line_width then -- line_width 0.2
+									elsif kw = et_text.keyword_line_width then -- line_width 0.2
 										expect_field_count (line, 2);
 										symbol_text_base.line_width := to_distance (f (line, 2));
 
@@ -11913,7 +11856,7 @@ package body et_project is
 										-- extract the position starting at field 2 of line
 										route_via.position := to_position (line, 2);
 
-									elsif kw = shapes.keyword_diameter then -- diameter 0.35
+									elsif kw = keyword_diameter then -- diameter 0.35
 										expect_field_count (line, 2);
 										route_via.diameter := to_distance (f (line, 2));
 
@@ -12100,7 +12043,7 @@ package body et_project is
 
 									elsif kw = keyword_content then -- content "DUMMY TEXT IN CORE MODULE"
 										expect_field_count (line, 2); -- actual content in quotes !
-										note.content := et_libraries.to_content (f (line, 2));
+										note.content := et_text.to_content (f (line, 2));
 
 									elsif kw = et_text.keyword_size then -- size 1.4
 										expect_field_count (line, 2);
@@ -12159,7 +12102,7 @@ package body et_project is
 												
 											elsif kw = keyword_content then -- content "WATER KETTLE CONTROL"
 												expect_field_count (line, 2); -- actual content in quotes !
-												board_text.content := et_libraries.to_content (f (line, 2));
+												board_text.content := et_text.to_content (f (line, 2));
 												
 											else
 												invalid_keyword (kw);
@@ -12198,7 +12141,7 @@ package body et_project is
 										
 									elsif kw = keyword_content then -- content "TOP", "L2", "BOT"
 										expect_field_count (line, 2); -- actual content in quotes !
-										board_text_copper.content := et_libraries.to_content (f (line, 2));
+										board_text_copper.content := et_text.to_content (f (line, 2));
 
 									elsif kw = keyword_layer then -- layer 15
 										expect_field_count (line, 2);

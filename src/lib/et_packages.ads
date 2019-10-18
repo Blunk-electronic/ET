@@ -228,7 +228,7 @@ package et_packages is
 
 	-- TEXTS WITH CONTENT
 	type type_text_with_content is new type_text with record
-		content : et_libraries.type_text_content.bounded_string;
+		content : et_text.type_text_content.bounded_string;
 	end record;
 
 	package type_texts_with_content is new doubly_linked_lists (type_text_with_content);

@@ -46,6 +46,14 @@ with et_pcb_stack;
 
 package pcb_rw is
 
+	procedure write_text_properties (t : in et_packages.type_text'class);
+	
+	procedure write_text_properties_with_face (
+		t		: in et_packages.type_text'class;
+		face	: in et_pcb_coordinates.type_face);
+
+	procedure write_text (cursor : in et_packages.type_texts_with_content.cursor);
+	
 	keyword_width : constant string := "width";	
 	keyword_locked : constant string := "locked"; -- layout related
 	

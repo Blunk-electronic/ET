@@ -57,6 +57,7 @@ with et_packages;
 with et_pcb;
 with et_pcb_coordinates;
 with et_kicad_general;			use et_kicad_general;
+with et_text;
 
 package et_kicad_pcb is
 
@@ -536,7 +537,7 @@ package et_kicad_pcb is
 	-- silk screen, assembly doc, ...
 	-- When inserting the text in the final package, it is decomposed again.
 	type type_text_package is new et_packages.type_text with record
-		content	: et_libraries.type_text_content.bounded_string;
+		content	: et_text.type_text_content.bounded_string;
 		layer	: type_layer_abbrevation;
 		meaning	: type_fp_text_meaning;
 	end record;
@@ -547,7 +548,7 @@ package et_kicad_pcb is
 	-- copper, silk screen, assembly doc, ...
 	-- When inserting the text in the board, it is decomposed again.	
 	type type_text_board is new et_packages.type_text with record
-		content	: et_libraries.type_text_content.bounded_string;
+		content	: et_text.type_text_content.bounded_string;
 		layer	: type_layer_id; -- 0 .. 49 (ALL layers)
 	end record;
 

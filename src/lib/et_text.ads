@@ -35,11 +35,13 @@
 --   history of changes:
 --
 
+with ada.strings.bounded; 		use ada.strings.bounded;
+
 with et_string_processing;
 
 package et_text is
 
-	-- TEXT ALIGNMENT
+-- TEXT ALIGNMENT
 	keyword_alignment	: constant string := "alignment";
 	keyword_horizontal	: constant string := "horizontal";
 	keyword_vertical	: constant string := "vertical";		
@@ -65,9 +67,27 @@ package et_text is
 	
 	function to_string (alignment : in type_text_alignment) return string;
 
+
+-- TEXT CONTENT
+	-- A text may have up to 200 characters which seems sufficient for now.
+	keyword_content : constant string := "content";
 	
+	text_length_max : constant natural := 200;
+	package type_text_content is new generic_bounded_length (text_length_max);
+
+	function to_string (text_content : in type_text_content.bounded_string) return string;
+	function to_content (content : in string) return type_text_content.bounded_string;
+	
+	procedure check_text_content_length (content : in string);
+	-- Tests if the content is not longer than allowed.
+
+
 	keyword_line_width	: constant string := "line_width";	
 	keyword_size		: constant string := "size";
+
+	
+
+
 	
 	generic
 		type type_distance is delta <>;

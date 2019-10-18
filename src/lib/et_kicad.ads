@@ -58,6 +58,7 @@ with et_coordinates;
 with et_pcb_coordinates;
 with et_libraries;
 with et_string_processing;
+with et_text;
 
 package et_kicad is
 	
@@ -1433,7 +1434,7 @@ package et_kicad is
 	-- A text/note in the schematic:
 	type type_text is new et_libraries.type_text_basic with record
 		position	: kicad_coordinates.type_position;
-		content		: et_libraries.type_text_content.bounded_string;
+		content		: et_text.type_text_content.bounded_string;
 	end record;
 
 	procedure write_note_properties (

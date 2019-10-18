@@ -1100,7 +1100,7 @@ package body et_kicad_pcb is
 
 			use type_argument;
 			use et_libraries;
-			use et_libraries.type_text_content;
+			use et_text.type_text_content;
 			use et_pcb_coordinates;
 			use geometry;
 		
@@ -3748,7 +3748,7 @@ package body et_kicad_pcb is
 
 			use type_argument;
 			use et_libraries;
-			use et_libraries.type_text_content;
+			use et_text.type_text_content;
 			use et_pcb_coordinates;
 			use geometry;
 			
@@ -5820,7 +5820,7 @@ package body et_kicad_pcb is
 			end invalid_layer_value;
 
 			procedure invalid_layer_user is begin
-				log (ERROR, "user text " & et_libraries.to_string (package_text.content) 
+				log (ERROR, "user text " & et_text.to_string (package_text.content) 
 					 & " must be in a silk screen or fabrication layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_user;

@@ -1727,13 +1727,13 @@ package body et_kicad is
 					return a;
 				end to_style;
 
-				function to_content (text_in : in string) return type_text_content.bounded_string is
+				function to_content (text_in : in string) return et_text.type_text_content.bounded_string is
 				-- Replaces tildss in given string by space and returns a type_text_content.bounded_string.
 					t : string (1..text_in'length) := text_in; -- copy given text to t
 				begin
 					-- replace tildes in given text by spaces.
 					translate (t, et_string_processing.tilde_to_space'access);
-					return type_text_content.to_bounded_string (t);
+					return et_text.type_text_content.to_bounded_string (t);
 				end to_content;
 
 				use et_coordinates;
@@ -1957,7 +1957,8 @@ package body et_kicad is
 			-- NOTE: The contextual validation takes place in procedure check_text_fields.
 				use et_coordinates;
 				use geometry;
-				use et_libraries.type_text_content;
+				use et_text;
+				use et_text.type_text_content;
 
 				-- instantiate a text field as speficied by given parameter meaning
 				text : et_libraries.type_text (meaning);
@@ -7292,7 +7293,7 @@ package body et_kicad is
 				-- get note text from a line like "hello\ntest". NOTE "\n" represents a line break
 				-- CS: store lines in a list of lines instead ?
 				-- CS: Currently we store the line as it is in tmp_note.text
-				note.content := et_libraries.type_text_content.to_bounded_string (to_string (line));
+				note.content := et_text.to_content (to_string (line));
 
 				write_note_properties (note, log_threshold);
 				
@@ -7407,6 +7408,8 @@ package body et_kicad is
 				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
 					text_position : type_point;
 					size : pac_text.type_text_size;
+
+					use et_text;
 				begin
 					-- test if the field content is longer than allowed:
 					check_text_content_length (et_string_processing.field (et_kicad.line,3));
@@ -7423,7 +7426,7 @@ package body et_kicad is
 						meaning 	=> to_text_meaning (line => et_kicad.line, schematic => true),
 
 						-- read content like "N701" or "NetChanger" from field position 3
-						content		=> type_text_content.to_bounded_string (et_string_processing.field (et_kicad.line,3)),
+						content		=> to_content (et_string_processing.field (et_kicad.line,3)),
 
 						-- read rotation like "H"
 						rotation	=> to_field_orientation (et_string_processing.field (et_kicad.line,4)),
@@ -7488,7 +7491,7 @@ package body et_kicad is
 							if element (timestamp_cursor) = current_schematic.timestamp then
 								
 								reference := alt_ref.reference;
-								field_reference.content := et_libraries.type_text_content.to_bounded_string (et_libraries.to_string (alt_ref.reference));
+								field_reference.content := et_text.to_content (et_libraries.to_string (alt_ref.reference));
 								suitable_reference_found := true;
 
 								log (text => "update due to hierachic structure: " &
@@ -13787,6 +13790,7 @@ package body et_kicad is
 		use et_string_processing;
 		use et_coordinates;
 		use et_libraries;
+		use et_text;
 	begin
 		log (text => "text note" & to_string (
 			position => note.position, scope => kicad_coordinates.XY), level => log_threshold);
@@ -13794,8 +13798,8 @@ package body et_kicad is
 		log_indentation_up;
 
 		-- content
-		if et_libraries.type_text_content.length (note.content) > 0 then
-			log (text => "content '" & type_text_content.to_string (note.content) & "'", level => log_threshold);
+		if type_text_content.length (note.content) > 0 then
+			log (text => "content '" & to_string (note.content) & "'", level => log_threshold);
 		else
 			log (text => et_string_processing.message_warning & "no content !", level => log_threshold); 
 		end if;
@@ -13806,7 +13810,7 @@ package body et_kicad is
 			log (text => "size" & pac_text.to_string (note.size));
 
 			-- style
-			log (text => "style " & to_lower(et_libraries.type_text_style'image (note.style)));
+			log (text => "style " & to_lower (et_libraries.type_text_style'image (note.style)));
 
 			-- line width
 			log (text => "line width" & et_libraries.type_text_line_width'image (note.line_width));

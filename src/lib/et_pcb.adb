@@ -56,7 +56,7 @@ with ada.exceptions;
 with et_libraries;
 with et_packages;
 with et_string_processing;		use et_string_processing;
-with et_text;
+with et_text;					use et_text;
 
 package body et_pcb is
 	use shapes;
@@ -221,13 +221,12 @@ package body et_pcb is
 	-- Logs the properties of the given text of copper
 		cursor			: in pac_texts.cursor;
 		log_threshold 	: in et_string_processing.type_log_level) is
-		use et_libraries.type_text_content;
 		use pac_texts;
 		text : type_text;
 	begin
 		text := element (cursor);
 		log (text => "copper text signal layer" & to_string (text.layer) & latin_1.space
-			& "content '" & to_string (text.content) & "'", level => log_threshold
+			& "content '" & et_text.to_string (text.content) & "'", level => log_threshold
 			);
 
 		log_indentation_up;
