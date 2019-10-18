@@ -62,6 +62,8 @@ package submodules is
 	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
 
 	subtype type_submodule_edge_length is type_distance range 10.0 .. 1000.0;
+
+	keyword_size		: constant string := "size";
 	
 	type type_submodule_size is record
 		x, y : type_submodule_edge_length; -- size x/y of the box

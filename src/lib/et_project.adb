@@ -694,8 +694,7 @@ package body et_project is
 		write (keyword => keyword_position, parameters => position (t.position));
 			-- position x 0.000 y 5.555 rotation 0.00
 		
-		write (keyword => keyword_size, parameters => space & keyword_width & to_string (t.dimensions.width) 
-		   & space & keyword_height & to_string (t.dimensions.height)); -- size width 1.000 height 1.000
+		write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
 		
 		write (keyword => keyword_line_width, parameters => to_string (t.line_width));
 		write (keyword => keyword_alignment, parameters => space &
@@ -722,8 +721,7 @@ package body et_project is
 		-- 			   position (type_position (text.position with face => face))
 		-- 			  );
 		
-		write (keyword => keyword_size, parameters => space & keyword_width & to_string (t.dimensions.width) 
-			   & space & keyword_height & to_string (t.dimensions.height)); -- size width 1.000 height 1.000
+		write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
 		
 		write (keyword => keyword_line_width, parameters => to_string (t.line_width));
 		write (keyword => keyword_alignment, parameters => space &
@@ -1032,7 +1030,7 @@ package body et_project is
 								
 								write (keyword => keyword_position, parameters => position (element (label_cursor).position));
 								write (keyword => keyword_rotation, parameters => to_string (element (label_cursor).rotation));
-								write (keyword => keyword_size, parameters => to_string (element (label_cursor).size));
+								write (keyword => et_text.keyword_size, parameters => to_string (element (label_cursor).size));
 								write (keyword => keyword_style, parameters => to_string (element (label_cursor).style));
 								write (keyword => keyword_line_width, parameters => to_string (element (label_cursor).width));
 
@@ -2498,41 +2496,6 @@ package body et_project is
 		
 		return layers;
 	end to_layers;
-
-	function to_dimensions (
-		line : in et_string_processing.type_fields_of_line; -- "size width 30 height 40"
-		from : in positive)
-		return et_packages.text.type_text_dimensions is
-		use et_pcb_coordinates.geometry;
-		use et_string_processing;
-
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
-		
-		dim : et_packages.text.type_text_dimensions; -- to be returned
-		place : positive := from; -- the field being read from given line
-
-		-- CS: flags to detect missing x or y
-	begin
-		while place <= positive (field_count (line)) loop
-
-			-- We expect after the "width" the corresponding value for the text width
-			if f (line, place) = keyword_width then
-				dim.width := to_distance (f (line, place + 1));
-
-			-- We expect after the "height" the corresponding value for the text height
-			elsif f (line, place) = keyword_height then
-				dim.height := to_distance (f (line, place + 1));
-
-			else
-				invalid_keyword (f (line, place));
-			end if;
-				
-			place := place + 2;
-		end loop;
-		
-		return dim;
-	end to_dimensions;
 
 	procedure read_package (
 	-- Opens the package file and stores the package in container et_libraries.packages.
@@ -4468,11 +4431,9 @@ package body et_project is
 												-- extract position of note starting at field 2
 												pac_text.position := to_position (line, 2);
 
-											elsif kw = keyword_size then -- size width 1.000 height 1.000
-												expect_field_count (line, 5);
-
-												-- extract text dimensions starting at field 2
-												pac_text.dimensions := to_dimensions (line, 2);
+											elsif kw = et_text.keyword_size then -- size 1.000
+												expect_field_count (line, 2);
+												pac_text.size := to_distance (f (line, 2));
 
 											elsif kw = et_text.keyword_line_width then -- line_width 0.1
 												expect_field_count (line, 2);
@@ -4515,11 +4476,9 @@ package body et_project is
 												-- extract position of note starting at field 2
 												pac_text_placeholder.position := to_position (line, 2);
 
-											elsif kw = keyword_size then -- size width 1.000 height 1.000
-												expect_field_count (line, 5);
-
-												-- extract text dimensions starting at field 2
-												pac_text_placeholder.dimensions := to_dimensions (line, 2);
+											elsif kw = et_text.keyword_size then -- size 1.000
+												expect_field_count (line, 2);
+												pac_text_placeholder.size := to_distance (f (line, 2));
 
 											elsif kw = et_text.keyword_line_width then -- line_width 0.1
 												expect_field_count (line, 2);
@@ -5222,7 +5181,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_text_content := et_libraries.to_content (f (line, 2));
 
-									elsif kw = keyword_size then -- size 5
+									elsif kw = et_text.keyword_size then -- size 5
 										expect_field_count (line, 2);
 										symbol_text_base.size := to_distance (f (line, 2));
 
@@ -5267,7 +5226,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_placeholder_meaning := et_libraries.to_text_meaning (f (line, 2));
 
-									elsif kw = keyword_size then -- size 5
+									elsif kw = et_text.keyword_size then -- size 5
 										expect_field_count (line, 2);
 										symbol_text_base.size := to_distance (f (line, 2));
 
@@ -6433,7 +6392,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_text_content := et_libraries.to_content (f (line, 2));
 
-									elsif kw = keyword_size then -- size 5
+									elsif kw = et_text.keyword_size then -- size 5
 										expect_field_count (line, 2);
 										symbol_text_base.size := to_distance (f (line, 2));
 
@@ -6484,7 +6443,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										symbol_placeholder_meaning := et_libraries.to_text_meaning (f (line, 2));
 
-									elsif kw = keyword_size then -- size 5
+									elsif kw = et_text.keyword_size then -- size 5
 										expect_field_count (line, 2);
 										symbol_text_base.size := to_distance (f (line, 2));
 
@@ -11220,7 +11179,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										net_label.rotation := geometry.to_rotation (f (line, 2));
 
-									elsif kw = keyword_size then -- size 1.3
+									elsif kw = et_text.keyword_size then -- size 1.3
 										expect_field_count (line, 2);
 										net_label.size := geometry.to_distance (f (line, 2));
 
@@ -12003,7 +11962,7 @@ package body et_project is
 										-- extract position of submodule starting at field 2
 										submodule.position := to_position (line, 2);
 
-									elsif kw = keyword_size then -- size x 30 y 30
+									elsif kw = submodules.keyword_size then -- size x 30 y 30
 										expect_field_count (line, 5);
 
 										-- extract size of submodule starting at field 2
@@ -12143,7 +12102,7 @@ package body et_project is
 										expect_field_count (line, 2); -- actual content in quotes !
 										note.content := et_libraries.to_content (f (line, 2));
 
-									elsif kw = keyword_size then -- size 1.4
+									elsif kw = et_text.keyword_size then -- size 1.4
 										expect_field_count (line, 2);
 										note.size := to_distance (f (line, 2));
 
@@ -12184,11 +12143,9 @@ package body et_project is
 												-- extract position of note starting at field 2
 												board_text.position := to_position (line, 2);
 
-											elsif kw = keyword_size then -- size width 1.000 height 1.000
-												expect_field_count (line, 5);
-
-												-- extract text dimensions starting at field 2
-												board_text.dimensions := to_dimensions (line, 2);
+											elsif kw = et_text.keyword_size then -- size 1.000
+												expect_field_count (line, 2);
+												board_text.size := to_distance (f (line, 2));
 
 											elsif kw = et_text.keyword_line_width then -- line_width 0.1
 												expect_field_count (line, 2);
@@ -12225,11 +12182,9 @@ package body et_project is
 										-- extract position of note starting at field 2
 										board_text_copper.position := to_position (line, 2);
 
-									elsif kw = keyword_size then -- size width 1.000 height 1.000
-										expect_field_count (line, 5);
-
-										-- extract text dimensions starting at field 2
-										board_text_copper.dimensions := to_dimensions (line, 2);
+									elsif kw = et_text.keyword_size then -- size 1.000
+										expect_field_count (line, 2);
+										board_text_copper.size := to_distance (f (line, 2));
 
 									elsif kw = et_text.keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);
@@ -12371,11 +12326,9 @@ package body et_project is
 												-- extract position of placeholder starting at field 2
 												device_text_placeholder_position := to_position (line, 2);
 
-											elsif kw = keyword_size then -- size width 3.000 height 5
-												expect_field_count (line, 5);
-
-												-- extract dimensions of placeholder text starting at field 2
-												device_text_placeholder.dimensions := to_dimensions (line, 2);
+											elsif kw = et_text.keyword_size then -- size 5
+												expect_field_count (line, 2);
+												device_text_placeholder.size := to_distance (f (line, 2));
 
 											elsif kw = et_text.keyword_line_width then -- line_width 0.15
 												expect_field_count (line, 2);
@@ -12409,10 +12362,8 @@ package body et_project is
 												-- extract position of placeholder starting at field 2
 												unit_placeholder_position := to_position (line, 2);
 
-											elsif kw = keyword_size then -- size 3.0
+											elsif kw = et_text.keyword_size then -- size 3.0
 												expect_field_count (line, 2);
-
-												-- extract dimensions of placeholder text starting at field 2
 												unit_placeholder.size := to_distance (f (line, 2));
 
 											elsif kw = et_libraries.keyword_line_width then -- line_width 0.15
@@ -12458,11 +12409,9 @@ package body et_project is
 												-- extract position of note starting at field 2
 												board_text_placeholder.position := to_position (line, 2);
 
-											elsif kw = keyword_size then -- size width 1.000 height 1.000
-												expect_field_count (line, 5);
-
-												-- extract text dimensions starting at field 2
-												board_text_placeholder.dimensions := to_dimensions (line, 2);
+											elsif kw = et_text.keyword_size then -- size 1.000
+												expect_field_count (line, 2);
+												board_text_placeholder.size := to_distance (f (line, 2));
 
 											elsif kw = et_text.keyword_line_width then -- line_width 0.1
 												expect_field_count (line, 2);
@@ -12499,11 +12448,9 @@ package body et_project is
 										-- extract position of note starting at field 2
 										board_text_copper_placeholder.position := to_position (line, 2);
 
-									elsif kw = keyword_size then -- size width 1.000 height 1.000
-										expect_field_count (line, 5);
-
-										-- extract text dimensions starting at field 2
-										board_text_copper_placeholder.dimensions := to_dimensions (line, 2);
+									elsif kw = et_text.keyword_size then -- size 1.000
+										expect_field_count (line, 2);
+										board_text_copper_placeholder.size := to_distance (f (line, 2));
 
 									elsif kw = et_text.keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);

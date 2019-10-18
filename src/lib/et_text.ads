@@ -66,8 +66,8 @@ package et_text is
 	function to_string (alignment : in type_text_alignment) return string;
 
 	
-	keyword_line_width : constant string := "line_width";	
-
+	keyword_line_width	: constant string := "line_width";	
+	keyword_size		: constant string := "size";
 	
 	generic
 		type type_distance is delta <>;
@@ -78,11 +78,6 @@ package et_text is
 		subtype type_text_size is type_distance range size_min .. size_max;
 		subtype type_text_line_width is type_distance range line_width_min .. line_width_max;
 		
-		type type_text_dimensions is record
-			width	: type_text_size := type_text_size'first;
-			height	: type_text_size := type_text_size'last;
-		end record;
-
 		function to_string (size : in type_distance) return string;
 		
 		procedure validate_text_size (size : in type_distance);
@@ -92,7 +87,7 @@ package et_text is
 		-- Checks whether given line width is in range of type_text_line_width
 		
 		type type_text is abstract tagged record
-			dimensions	: type_text_dimensions;
+			size		: type_text_size;
 			line_width	: type_text_line_width := type_text_line_width'first;
 			alignment	: type_text_alignment;
 		end record;

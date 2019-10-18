@@ -152,11 +152,11 @@ package body et_text is
 		-- Returns the properties of the given text in a long single string.
 		begin
 			return --to_string (text.position) & latin_1.space
-				"size (width/height)" 
-				& to_string (text.dimensions.width) & " / " & to_string (text.dimensions.height)
+				"size" 
+				& to_string (text.size)
 				& " line width" & to_string (text.line_width)
 -- 				& " rotation" & to_string (rot (text.position))
--- CS				& et_libraries.to_string (text.alignment)
+				& to_string (text.alignment)
 				;
 		end text_properties;
 		

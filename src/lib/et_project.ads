@@ -348,7 +348,6 @@ package et_project is
 	keyword_end						: constant string := "end"; -- CS remove
 	keyword_rotation				: constant string := "rotation"; -- CS remove
 	keyword_rotation_in_schematic	: constant string := "rotation_in_schematic";
-	keyword_size					: constant string := "size";
 	keyword_style					: constant string := "style";
 	keyword_appearance				: constant string := "appearance";
 	keyword_direction				: constant string := "direction";			

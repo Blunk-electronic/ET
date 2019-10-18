@@ -96,8 +96,8 @@ package body et_pcb is
 	-- Returns the properties of the given text in a long single string.
 	begin
 		return to_string (text.position) & latin_1.space
-			& "size (width" & axis_separator & "height)" 
-			& to_string (text.dimensions.width) & latin_1.space & axis_separator & to_string (text.dimensions.height)
+			& "size" 
+			& to_string (text.size)
 			& " line width" & to_string (text.line_width)
 			& " rotation" & to_string (rot (text.position))
 			& et_text.to_string (text.alignment);

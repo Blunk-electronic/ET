@@ -1630,8 +1630,8 @@ package body et_kicad_pcb is
 						when SEC_FONT =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => text.dimensions.width := to_distance (to_string (arg));
-								when 2 => text.dimensions.height := to_distance (to_string (arg));
+								when 1 => null; -- CS the text width provided by the first argument is ignored.
+								when 2 => text.size := to_distance (to_string (arg)); -- text height becomes text size
 								when others => too_many_arguments;
 							end case;
 
@@ -4357,11 +4357,11 @@ package body et_kicad_pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									package_text.dimensions.width := to_distance (to_string (arg));
-									board_text.dimensions.width := to_distance (to_string (arg));
+									null; -- CS the text width provided by the first argument is ignored.
 								when 2 => 
-									package_text.dimensions.height := to_distance (to_string (arg));
-									board_text.dimensions.height := to_distance (to_string (arg));
+									-- height becomes size
+									package_text.size := to_distance (to_string (arg)); 
+									board_text.size := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 
