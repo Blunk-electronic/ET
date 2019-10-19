@@ -66,7 +66,7 @@ with numbering;
 with conventions;
 with material;
 with netlists;
--- with et_geometry;
+with device_rw;
 
 package body schematic_ops is
 
@@ -3787,7 +3787,7 @@ package body schematic_ops is
 
 		-- Read the device file and store it in container et_libraries.devices.
 		-- If the device is already in et_libraries.devices, nothing happpens.
-		et_project.read_device_file (
+		device_rw.read_device_file (
 			file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
 			log_threshold	=> log_threshold + 1);
 

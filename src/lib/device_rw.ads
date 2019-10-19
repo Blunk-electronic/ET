@@ -1,0 +1,93 @@
+------------------------------------------------------------------------------
+--                                                                          --
+--                              SYSTEM ET                                   --
+--                                                                          --
+--                              DEVICE_RW                                   --
+--                                                                          --
+--                               S p e c                                    --
+--                                                                          --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--                                                                          --
+--    This program is free software: you can redistribute it and/or modify  --
+--    it under the terms of the GNU General Public License as published by  --
+--    the Free Software Foundation, either version 3 of the License, or     --
+--    (at your option) any later version.                                   --
+--                                                                          --
+--    This program is distributed in the hope that it will be useful,       --
+--    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
+--    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
+--    GNU General Public License for more details.                          --
+--                                                                          --
+--    You should have received a copy of the GNU General Public License     --
+--    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+------------------------------------------------------------------------------
+
+--   For correct displaying set tab with in your edtior to 4.
+
+--   The two letters "CS" indicate a "construction site" where things are not
+--   finished yet or intended for the future.
+
+--   Please send your questions and comments to:
+--
+--   info@blunk-electronic.de
+--   or visit <http://www.blunk-electronic.de> for more contact data
+--
+--   history of changes:
+--
+
+with ada.containers;            use ada.containers;
+
+with et_libraries;
+with et_schematic;
+with et_string_processing;
+with et_coordinates;
+
+package device_rw is
+
+	keyword_file				: constant string := "file";
+	keyword_prefix				: constant string := "prefix";		
+	
+	section_symbol				: constant string := "[SYMBOL";
+	section_variant				: constant string := "[VARIANT";
+	section_variants			: constant string := "[VARIANTS";
+	section_terminal_port_map	: constant string := "[TERMINAL_PORT_MAP";
+
+	section_unit				: constant string := "[UNIT";
+	section_units_internal		: constant string := "[UNITS_INTERNAL";
+	section_units_external		: constant string := "[UNITS_EXTERNAL";
+
+
+	
+	type type_section_name_device is (
+		SEC_INIT,
+		SEC_VARIANTS,
+		SEC_VARIANT,
+		SEC_TERMINAL_PORT_MAP,
+		SEC_UNITS_INTERNAL,
+		SEC_UNIT,
+		SEC_SYMBOL,
+		SEC_DRAW,
+		SEC_LINE,
+		SEC_ARC,
+		SEC_CIRCLE,
+		SEC_TEXTS,
+		SEC_TEXT,
+		SEC_PLACEHOLDER,		
+		SEC_PLACEHOLDERS,
+		SEC_PORTS,
+		SEC_PORT,
+		SEC_UNITS_EXTERNAL
+		);
+
+	procedure save_device (
+		name			: in string; -- libraries/devices/resistor.dev
+		device			: in et_libraries.type_device; -- the actual device model
+		log_threshold	: in et_string_processing.type_log_level);
+
+	procedure read_device_file (
+	-- Opens the device and stores it in container et_libraries.devices.
+		file_name 		: in et_libraries.type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
+		log_threshold	: in et_string_processing.type_log_level);
+
+	
+end device_rw;

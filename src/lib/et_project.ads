@@ -283,15 +283,6 @@ package et_project is
 	-- Saves the given module in the module file of the given project.
 	-- If module_name not provided, the module will be named after the given project_name.
 
-	procedure save_device (
-		name			: in string; -- libraries/devices/resistor.dev
-		device			: in et_libraries.type_device; -- the actual device model
-		log_threshold	: in et_string_processing.type_log_level);
-
-	procedure read_device_file (
-	-- Opens the device and stores it in container et_libraries.devices.
-		file_name 		: in et_libraries.type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
-		log_threshold	: in et_string_processing.type_log_level);
 	
 	
 
@@ -331,11 +322,11 @@ package et_project is
 	keyword_hidden					: constant string := "hidden"; -- CS ?
 
 
-	keyword_prefix					: constant string := "prefix";	
+
 	keyword_commissioned			: constant string := "commissioned";
 	keyword_updated					: constant string := "updated";
 	keyword_author					: constant string := "author";
-	keyword_file					: constant string := "file";
+
 	keyword_not_mounted				: constant string := "not_mounted";
 
 	section_module_instances	: constant string := "[MODULE_INSTANCES";
@@ -378,16 +369,8 @@ package et_project is
 	section_netchanger			: constant string := "[NETCHANGER";
 	
 	section_units				: constant string := "[UNITS";
-	section_unit				: constant string := "[UNIT";
-
-	section_variants			: constant string := "[VARIANTS";
-	section_variant				: constant string := "[VARIANT";
-
-	section_terminal_port_map	: constant string := "[TERMINAL_PORT_MAP";
-	section_units_internal		: constant string := "[UNITS_INTERNAL";
-	section_units_external		: constant string := "[UNITS_EXTERNAL";
 	
-	section_symbol				: constant string := "[SYMBOL";
+
 
 	section_port_begin			: constant string := "[PORT";
 	
@@ -482,26 +465,6 @@ package et_project is
 		destination		: in type_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in et_string_processing.type_log_level);
 	
-	type type_section_name_device is (
-		SEC_INIT,
-		SEC_VARIANTS,
-		SEC_VARIANT,
-		SEC_TERMINAL_PORT_MAP,
-		SEC_UNITS_INTERNAL,
-		SEC_UNIT,
-		SEC_SYMBOL,
-		SEC_DRAW,
-		SEC_LINE,
-		SEC_ARC,
-		SEC_CIRCLE,
-		SEC_TEXTS,
-		SEC_TEXT,
-		SEC_PLACEHOLDER,		
-		SEC_PLACEHOLDERS,
-		SEC_PORTS,
-		SEC_PORT,
-		SEC_UNITS_EXTERNAL
-		);
 
 
 	

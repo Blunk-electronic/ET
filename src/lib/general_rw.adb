@@ -36,7 +36,7 @@
 --
 
 with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	--use ada.characters.latin_1;
+with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
@@ -47,12 +47,13 @@ with ada.exceptions;
 with et_string_processing;
 
 package body general_rw is
-
 	
 	-- This function returns the string at position in given line:
+	-- It is frequently used when reading lines of files.
 	function f (line : in et_string_processing.type_fields_of_line; position : in positive) return string 
 		renames et_string_processing.field;
 
+	
 	procedure expect_field_count (
 		line			: in et_string_processing.type_fields_of_line;	-- the list of fields of the line
 		count_expected	: in count_type;			-- the min. number of fields to expect

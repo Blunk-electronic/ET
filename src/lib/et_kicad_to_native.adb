@@ -68,6 +68,7 @@ with material;
 with netlists;
 with et_text;
 with pcb_rw;
+with device_rw;
 
 package body et_kicad_to_native is
 
@@ -3647,7 +3648,7 @@ package body et_kicad_to_native is
 			procedure save_device (device_cursor : in et_libraries.type_devices.cursor) is
 				use et_libraries;
 			begin
-				et_project.save_device (
+				device_rw.save_device (
 					-- library name like: 
 					-- /home/user/et_projects/imported_from_kicad/blood_sample_analyzer/libraries/devices/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.dev
 					name	=> to_string (path) & gnat.directory_operations.dir_separator & to_string (key (device_cursor)),
