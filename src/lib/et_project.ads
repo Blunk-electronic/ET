@@ -293,11 +293,6 @@ package et_project is
 		file_name 		: in et_libraries.type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		log_threshold	: in et_string_processing.type_log_level);
 	
-	procedure save_symbol (
-	-- Saves the given symbol model in a file specified by name.
-		name			: in string; -- libraries/symbols/resistor.sym
-		symbol			: in et_libraries.type_symbol; -- the actual symbol model
-		log_threshold	: in et_string_processing.type_log_level);
 	
 
 	

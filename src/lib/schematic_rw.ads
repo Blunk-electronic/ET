@@ -90,6 +90,16 @@ package schematic_rw is
 		SEC_PORTS,
 		SEC_PORT
 		);
+
+	procedure write_symbol ( 
+		symbol			: in et_libraries.type_symbol;
+		log_threshold	: in et_string_processing.type_log_level);
+	
+	procedure save_symbol (
+	-- Saves the given symbol model in a file specified by name.
+		name			: in string; -- libraries/symbols/resistor.sym
+		symbol			: in et_libraries.type_symbol; -- the actual symbol model
+		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure read_symbol (
 	-- Opens the symbol file and stores the symbol in container et_libraries.symbols.
