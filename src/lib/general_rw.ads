@@ -56,17 +56,17 @@ package general_rw is
 	section_begin	: constant string := "BEGIN]";	
 	section_end		: constant string := "END]";
 
-	section_drawing_grid		: constant string := "[DRAWING_GRID";
+	section_drawing_grid	: constant string := "[DRAWING_GRID";
 	
-	keyword_name				: constant string := "name";
-	keyword_appearance			: constant string := "appearance";
-	keyword_description			: constant string := "description";
-	keyword_meaning				: constant string := "meaning";
-	keyword_class				: constant string := "class";
-	keyword_value				: constant string := "value";
-	keyword_partcode			: constant string := "partcode";	
-	keyword_purpose				: constant string := "purpose";	
-
+	keyword_name			: constant string := "name";
+	keyword_appearance		: constant string := "appearance";
+	keyword_description		: constant string := "description";
+	keyword_meaning			: constant string := "meaning";
+	keyword_class			: constant string := "class";
+	keyword_value			: constant string := "value";
+	keyword_partcode		: constant string := "partcode";	
+	keyword_purpose			: constant string := "purpose";	
+	keyword_width 			: constant string := "width";	
 	
 -- SECTIONS AND INDENTATION
 	function write_top_level_reached return string;

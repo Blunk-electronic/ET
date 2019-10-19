@@ -38,7 +38,6 @@
 with ada.containers;            use ada.containers;
 
 with et_libraries;
-with et_schematic;
 with et_string_processing;
 with et_packages;
 with et_pcb;
@@ -90,7 +89,6 @@ package pcb_rw is
 
 	procedure write_text (cursor : in et_packages.type_texts_with_content.cursor);
 	
-	keyword_width : constant string := "width";	
 	keyword_locked : constant string := "locked"; -- layout related
 	
 	procedure write_width (width : in et_packages.type_track_width);	
@@ -153,8 +151,6 @@ package pcb_rw is
 		line : in et_string_processing.type_fields_of_line) -- layers 1 3 17
 		return et_pcb_stack.type_signal_layers.set;	
 	
--- BASIC GEOMETRIC OBJECTS USED IN SYMBOLS AND SCHEMATICS
-	schematic_object_filled : et_schematic.shapes.type_filled := et_schematic.shapes.filled_default;		
 
 
 -- BASIC GEOMETRIC OBJECTS USED IN PACKAGES AND BOARDS

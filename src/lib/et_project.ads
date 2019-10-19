@@ -288,11 +288,6 @@ package et_project is
 		device			: in et_libraries.type_device; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level);
 
-	procedure read_symbol (
-	-- Opens the symbol file and stores the symbol in container et_libraries.symbols.
-		file_name 		: in et_libraries.type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
-		log_threshold	: in et_string_processing.type_log_level);
-    
 	procedure read_device_file (
 	-- Opens the device and stores it in container et_libraries.devices.
 		file_name 		: in et_libraries.type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
@@ -326,9 +321,9 @@ package et_project is
 	keyword_scope					: constant string := "scope";	
 	keyword_flipped					: constant string := "flipped";
 	keyword_rotation_in_schematic	: constant string := "rotation_in_schematic";
-	keyword_style					: constant string := "style";
+
 	keyword_appearance				: constant string := "appearance";
-	keyword_direction				: constant string := "direction";			
+
 	keyword_junction				: constant string := "junction";
 	keyword_submodule				: constant string := "submodule";
 	keyword_netchanger				: constant string := "netchanger";		
@@ -339,10 +334,7 @@ package et_project is
 	keyword_mirrored				: constant string := "mirrored";
 
 	keyword_hidden					: constant string := "hidden"; -- CS ?
-	keyword_sheet					: constant string := "sheet";
-	keyword_position_in_board		: constant string := "position_in_board";
-	keyword_position_in_schematic	: constant string := "position_in_schematic";	
-	keyword_view_mode				: constant string := "view_mode";
+
 
 	keyword_prefix					: constant string := "prefix";	
 	keyword_commissioned			: constant string := "commissioned";
@@ -372,7 +364,7 @@ package et_project is
 	section_labels				: constant string := "[LABELS";
 	section_label				: constant string := "[LABEL";
 
-	section_port				: constant string := "[PORT";
+
 	
 	section_submodules			: constant string := "[SUBMODULES";
 	section_submodule			: constant string := "[SUBMODULE";
@@ -401,9 +393,7 @@ package et_project is
 	section_units_external		: constant string := "[UNITS_EXTERNAL";
 	
 	section_symbol				: constant string := "[SYMBOL";
-	section_draw				: constant string := "[DRAW";
-	
-	section_ports				: constant string := "[PORTS";
+
 	section_port_begin			: constant string := "[PORT";
 	
 	section_title_block			: constant string := "[TITLE_BLOCK";
@@ -518,19 +508,6 @@ package et_project is
 		SEC_UNITS_EXTERNAL
 		);
 
-	type type_section_name_symbol is (
-		SEC_INIT,
-		SEC_DRAW,
-		SEC_LINE,
-		SEC_ARC,
-		SEC_CIRCLE,
-		SEC_TEXTS,
-		SEC_TEXT,
-		SEC_PLACEHOLDER,		
-		SEC_PLACEHOLDERS,
-		SEC_PORTS,
-		SEC_PORT
-		);
 
 	
 

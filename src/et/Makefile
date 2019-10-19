@@ -5,6 +5,7 @@ VPATH = include
 OBJS = $(TARGET).o \
 	et_text.o \
 	general_rw.o \
+	schematic_rw.o \
 	pcb_rw.o \
 	et_geometry.o \
 	et_pcb_coordinates.o \
