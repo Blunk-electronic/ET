@@ -555,24 +555,6 @@ package et_project is
 -- 		device	: in et_libraries.type_device_name; -- IC40
 -- 		return et_libraries.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 							   
-	
--- GENERICS
-	
-	generic -- CS remove. is in general_rw.
-		max : positive;
-		type item is private;
-	package stack_lifo is
-		procedure push (x : in item);
-		procedure pop;
-		function pop return item;
-		function depth return natural;
-		procedure init;
-		function empty return boolean;
-		function current return item;
-		function parent (degree : in natural := 1) return item;
-		
-	end stack_lifo;
-	
 end et_project;
 
 -- Soli Deo Gloria
