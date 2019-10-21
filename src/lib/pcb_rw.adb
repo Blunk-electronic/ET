@@ -922,9 +922,11 @@ package body pcb_rw is
 
 			when others => null;
 		end case;
-			
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
 
+		contours_begin;		
+		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		contours_end;
+		
 		fill_zone_end;
 
 	end write_polygon;
@@ -935,7 +937,11 @@ package body pcb_rw is
 	begin
 		cutout_zone_begin;
 		write_easing (element (cursor).easing);
+
+		contours_begin;
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		contours_end;
+
 		cutout_zone_end;
 	end;
 
@@ -982,9 +988,11 @@ package body pcb_rw is
 
 			when others => null;
 		end case;
-			
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
 
+		contours_begin;		
+		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		contours_end;
+		
 		fill_zone_end;
 	end write_polygon;
 
@@ -994,7 +1002,11 @@ package body pcb_rw is
 	begin
 		cutout_zone_begin;
 		write_easing (element (cursor).easing);
+
+		contours_begin;
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		contours_end;
+		
 		cutout_zone_end;
 	end;
 	
@@ -1032,7 +1044,11 @@ package body pcb_rw is
 	begin
 		fill_zone_begin;
 		write_fill_status (element (cursor).filled);
+
+		contours_begin;
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		contours_end;
+
 		fill_zone_end;
 	end write_polygon;
 
@@ -1041,8 +1057,11 @@ package body pcb_rw is
 		use pac_keepout_cutouts;
 	begin
 		cutout_zone_begin;
-		write_easing (element (cursor).easing);
+		
+		contours_begin;
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		contours_end;
+		
 		cutout_zone_end;
 	end;
 
@@ -1081,12 +1100,15 @@ package body pcb_rw is
 		fill_zone_begin;
 		write_easing (element (cursor).easing);
 		write_fill_stlye (element (cursor).fill_style);
-					  
+		
 		if element (cursor).fill_style = HATCHED then
 			write_hatching (element (cursor).hatching);
 		end if;
 
+		contours_begin;		
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		contours_begin;
+		
 		fill_zone_end;
 	end write_polygon;
 
@@ -1096,7 +1118,11 @@ package body pcb_rw is
 	begin
 		cutout_zone_begin;
 		write_easing (element (cursor).easing);
+
+		contours_begin;
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		contours_end;
+		
 		cutout_zone_end;
 	end;
 
@@ -1140,7 +1166,10 @@ package body pcb_rw is
 			write_hatching (element (cursor).hatching);
 		end if;
 
+		contours_begin;
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		contours_end;
+		
 		fill_zone_end;
 	end write_polygon;
 
@@ -1150,7 +1179,11 @@ package body pcb_rw is
 	begin
 		cutout_zone_begin;
 		write_easing (element (cursor).easing);
+
+		contours_begin;
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		contours_end;
+		
 		cutout_zone_end;
 	end;
 
@@ -1195,7 +1228,11 @@ package body pcb_rw is
 		fill_zone_begin;
 		write_fill_status (element (cursor).filled);
 		write_signal_layers (element (cursor).layers);
+
+		contours_begin;
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		contours_end;
+		
 		fill_zone_end;
 	end write_polygon;
 
@@ -1205,8 +1242,11 @@ package body pcb_rw is
 	begin
 		cutout_zone_begin;
 		write_signal_layers (element (cursor).layers);
-		write_easing (element (cursor).easing);
+
+		contours_begin;
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		contours_end;
+		
 		cutout_zone_end;
 	end;
 
@@ -1254,7 +1294,11 @@ package body pcb_rw is
 		fill_zone_begin;
 		write_fill_status (element (cursor).filled);
 		write_signal_layers (element (cursor).layers);			
+
+		contours_begin;
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		contours_end;
+		
 		fill_zone_end;
 	end write_polygon;
 
@@ -1264,8 +1308,11 @@ package body pcb_rw is
 	begin
 		cutout_zone_begin;
 		write_signal_layers (element (cursor).layers);
-		write_easing (element (cursor).easing);
+		
+		contours_begin;
 		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		contours_end;
+		
 		cutout_zone_end;
 	end;
 
@@ -1376,8 +1423,11 @@ package body pcb_rw is
 				write_isolation (element (cursor).isolation);
 
 				write_fill_stlye (element (cursor).fill_style);
-
+				
+				contours_begin;
 				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+				contours_end;
+				
 				fill_zone_end;
 			end write_polygon;
 
@@ -1391,17 +1441,23 @@ package body pcb_rw is
 
 				write_fill_stlye (element (cursor).fill_style);
 				write_hatching (element (cursor).hatching);
-				
-				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
 
+				contours_begin;
+				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+				contours_end;
+				
 				fill_zone_end;
 			end write_polygon;
 
 			use pac_copper_cutouts;
 			procedure write_cutout (cursor : in pac_copper_cutouts.cursor) is begin
 				cutout_zone_begin;
-				write_easing (element (cursor).easing);				
+				write_easing (element (cursor).easing);
+
+				contours_begin;
 				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+				contours_end;
+				
 				cutout_zone_end;
 			end;
 			
@@ -3674,7 +3730,7 @@ package body pcb_rw is
 												expect_field_count (line, 2);
 												polygon_isolation := to_distance (f (line, 2));
 
-											elsif kw = keyword_width then -- width 0.5
+											elsif kw = keyword_min_width then -- min_width 0.5
 												expect_field_count (line, 2);
 												polygon_width_min := to_distance (f (line, 2));
 												
