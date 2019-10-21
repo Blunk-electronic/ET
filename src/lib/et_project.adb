@@ -7681,7 +7681,9 @@ package body et_project is
 		
 	end delete_module;
 	
-	procedure open_project (log_threshold : in et_string_processing.type_log_level) is
+	procedure open_project (
+		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
+		log_threshold 	: in et_string_processing.type_log_level) is
 	-- Enters the project directory specified by project_name.
 	-- Searches for rig configuration files (*.conf), reads them and stores configurations in et_project.rigs.
 	-- Searches for module files (*.mod), reads them and stores modules in et_project.modules.

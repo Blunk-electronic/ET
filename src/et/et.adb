@@ -62,6 +62,7 @@ with et_kicad_pcb;
 with et_kicad_to_native;
 with et_project;
 with scripting;
+with pcb_rw;
 
 procedure et is
 
@@ -70,9 +71,13 @@ procedure et is
 
 	project_name_create		: et_project.type_project_name.bounded_string; -- the project to be created
 	project_name_import		: et_project.type_project_name.bounded_string; -- the project to be imported
+	project_name_open 		: et_project.type_project_name.bounded_string; -- the project to be opened
 	project_name_save_as	: et_project.type_project_name.bounded_string; -- the "save as" name of the project
-
-	package_name_open		: et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+	
+	package_name_create		: et_libraries.type_package_model_file.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
+	package_name_import		: et_libraries.type_package_model_file.bounded_string; -- the package to be imported
+	package_name_open		: et_libraries.type_package_model_file.bounded_string; -- the package to be opened
+	package_name_save_as	: et_libraries.type_package_model_file.bounded_string; -- the package to be saved as
 	
 	script_name	: scripting.type_script_name.bounded_string;
 	
@@ -134,7 +139,7 @@ procedure et is
 						
 					elsif full_switch = switch_native_project_open then
 						log (text => arg & full_switch & space & parameter);
-						project_name := et_project.to_project_name (remove_trailing_directory_separator (parameter));
+						project_name_open := et_project.to_project_name (remove_trailing_directory_separator (parameter));
 
 					elsif full_switch = switch_native_project_save_as then
 						log (text => arg & full_switch & space & parameter);
@@ -143,15 +148,15 @@ procedure et is
 
 					elsif full_switch = switch_native_package_create then
 						log (text => arg & full_switch & space & parameter);
--- 						project_name_create := et_project.to_project_name (remove_trailing_directory_separator (parameter));
+						package_name_create := et_libraries.to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
 						
 					elsif full_switch = switch_native_package_open then
 						log (text => arg & full_switch & space & parameter);
--- 						project_name := et_project.to_project_name (remove_trailing_directory_separator (parameter));
+						package_name_open := et_libraries.to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
 
 					elsif full_switch = switch_native_package_save_as then
 						log (text => arg & full_switch & space & parameter);
--- 						project_name_save_as := et_project.to_project_name (remove_trailing_directory_separator (parameter));
+						package_name_save_as := et_libraries.to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
 
 						
 					elsif full_switch = switch_execute_script then
@@ -217,7 +222,6 @@ procedure et is
 	end create_report_directory;
 
 	procedure import_project is
-	-- CAUTION: uses the global variable project_name_import !!!
 	-- As a result of the import, a native project is created in the work_directory (ET/...).
 		use et_schematic;
 		use et_project.type_project_name;
@@ -285,6 +289,7 @@ procedure et is
 		use et_project.type_project_name;
 		use scripting.type_script_name;
 		use conventions.type_conventions_file_name;
+		use et_libraries.type_package_model_file;
 
 		procedure read_configuration_file is begin
 			if length (conv_file_name_use) > 0 then
@@ -320,10 +325,10 @@ procedure et is
 				read_configuration_file;
 				import_project;
 
-			-- Otherwise a native project will be opened:				
-			elsif length (et_project.project_name) > 0 then
+			-- Otherwise a native project will be opened:
+			elsif length (project_name_open) > 0 then
 				read_configuration_file;
-				et_project.open_project (log_threshold => 0);
+				et_project.open_project (project_name_open, log_threshold => 0);
 
 				-- If operator whishes to execute a script on the native project:
 				if length (script_name) > 0 then
@@ -350,6 +355,18 @@ procedure et is
 				if length (project_name_save_as) > 0 then
 					et_project.save_project (project_name_save_as, log_threshold => 0);
 				end if;
+
+			elsif length (package_name_create) > 0 then
+				null; -- CS
+
+			elsif length (package_name_import) > 0 then
+				null; -- CS
+
+			elsif length (package_name_open) > 0 then
+				pcb_rw.read_package (package_name_open, log_threshold => 0);
+
+			elsif length (package_name_save_as) > 0 then
+				null; -- CS
 			end if;
 			
 		end if;

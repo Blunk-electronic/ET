@@ -64,18 +64,18 @@ package et_project is
 	comment_mark : constant string := ("--");
 	
 	-- after importing a foreign project, native ET projects are created here:
-	directory_import		: constant string (1..9)	:= "et_import";
+	directory_import		: constant string := "et_import";
 
 	-- native ET projects live in a parent folder
-	directory_projects		: constant string (1..8)	:= "projects";
+	directory_projects		: constant string := "projects";
 
 	-- native library directories
-	directory_libraries 				: constant string (1..9) 	:= "libraries";	
-	directory_libraries_devices			: constant string (1..7) 	:= "devices";
-	directory_libraries_symbols			: constant string (1..7) 	:= "symbols";
-	directory_libraries_packages		: constant string (1..8) 	:= "packages";	
+	directory_libraries 				: constant string := "libraries";	
+	directory_libraries_devices			: constant string := "devices";
+	directory_libraries_symbols			: constant string := "symbols";
+	directory_libraries_packages		: constant string := "packages";	
 
-	directory_libraries_schemlets		: constant string (1..9) 	:= "schemlets";
+	directory_libraries_schemlets		: constant string := "schemlets";
 	
 	-- supplementary stuff of a project
 -- 	directory_dru			: constant string := "design_rules";
@@ -101,7 +101,6 @@ package et_project is
 	
 	project_name_max : constant natural := 100;
 	package type_project_name is new generic_bounded_length (project_name_max);
-	project_name : type_project_name.bounded_string; -- the name of the current native project (or the rig)
 	
 	function to_string (project_name : in type_project_name.bounded_string) return string;
 	function to_project_name (name : in string) return type_project_name.bounded_string;
@@ -456,7 +455,9 @@ package et_project is
 		module_name		: in type_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in et_string_processing.type_log_level);
 	
-	procedure open_project (log_threshold : in et_string_processing.type_log_level);
+	procedure open_project (
+		project_name 	: in type_project_name.bounded_string; -- blood_sample_analyzer
+		log_threshold 	: in et_string_processing.type_log_level);
 	-- Enters the project directory specified by project_name.
 	-- Searches for rig configuration files (*.conf), reads them and stores configurations in et_project.rigs.
 	-- Searches for module files (*.mod), reads them and stores modules in et_project.modules.
