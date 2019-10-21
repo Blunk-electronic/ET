@@ -153,11 +153,15 @@ package body et_general is
 	begin
 		put_line ("available commandline switches:");
 		put_line (dash & switch_version);
+
 		put_line (dash & switch_native_project_create);
 		put_line (dash & switch_native_project_open);
-		put_line (dash & switch_native_package_open);		
 		put_line (dash & switch_native_project_save_as);
+
+		put_line (dash & switch_native_package_create);
+		put_line (dash & switch_native_package_open);		
 		put_line (dash & switch_native_package_save_as);
+
 		put_line (dash & switch_execute_script);
 		put_line (dash & switch_make_default_conv);
 		put_line (dash & switch_import_project);

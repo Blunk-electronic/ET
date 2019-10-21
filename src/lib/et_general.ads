@@ -105,13 +105,17 @@ package et_general is
 	switch_log_level				: constant string := "-log-level";
 	switch_help						: constant string := "-help";
 	switch_make_default_conv		: constant string := "-make_conventions";
+	
 	switch_import_project			: constant string := "-import-project";
 	switch_import_format			: constant string := "-import-format";
 	switch_conventions				: constant string := "-conventions";
-	switch_native_project_create	: constant string := "-create";	
+	
+	switch_native_project_create	: constant string := "-create-project";	
 	switch_native_project_open		: constant string := "-open-project";
-	switch_native_package_open		: constant string := "-open-package";	
 	switch_native_project_save_as	: constant string := "-save-project-as";
+
+	switch_native_package_create	: constant string := "-create-package";		
+	switch_native_package_open		: constant string := "-open-package";	
 	switch_native_package_save_as	: constant string := "-save-package-as";	
 	switch_execute_script			: constant string := "-script";
 

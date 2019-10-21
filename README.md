@@ -79,7 +79,7 @@ To create a new project like 'my_new_et_project' run this command. CAUTION: An a
 of the same name will be deleted without warning !
 
 ```sh
-$ et --create my_new_et_project/
+$ et --create-project my_new_et_project/
 ```
 
 
@@ -113,6 +113,14 @@ The project can also be saved under a different name at a different place:
 ```sh
 $ et --conventions conventions.txt --open-project /home/user/ecad/my_et_project/ --save-project-as /home/user/tmp/eval --log-level 2
 ```
+
+#### Creating an ET native package (or footprint)
+To create a native package drawing like 'S_0805.pac' run this command: 
+
+```sh
+$ et --create-package libraries/packages/S_0805.pac
+```
+
 
 #### Opening an ET native package (or footprint)
 To open a native package drawing like 'S_0805.pac' run this command: 

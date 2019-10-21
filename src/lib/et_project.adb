@@ -7688,9 +7688,6 @@ package body et_project is
 		use et_string_processing;
 		use ada.directories;
 
-		function f (line : in type_fields_of_line; position : in positive) return string 
-			renames et_string_processing.field;
-		
 		-- We need a backup of the current working directory. When this procedure finishes,
 		-- the working directory must restored.
 		current_working_directory : string := current_directory;

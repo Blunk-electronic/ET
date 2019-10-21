@@ -52,6 +52,7 @@ with ada.directories;			use ada.directories;
 with et_general;
 with et_string_processing;		use et_string_processing;
 with et_coordinates;
+with et_libraries;
 with et_schematic;
 with et_import;
 with et_export;
@@ -71,6 +72,8 @@ procedure et is
 	project_name_import		: et_project.type_project_name.bounded_string; -- the project to be imported
 	project_name_save_as	: et_project.type_project_name.bounded_string; -- the "save as" name of the project
 
+	package_name_open		: et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+	
 	script_name	: scripting.type_script_name.bounded_string;
 	
 	procedure get_commandline_arguments is
@@ -89,9 +92,15 @@ procedure et is
 						& latin_1.space & switch_import_project & latin_1.equals_sign
 						& latin_1.space & switch_import_format & latin_1.equals_sign
 						& latin_1.space & switch_conventions & latin_1.equals_sign
+						
 						& latin_1.space & switch_native_project_create & latin_1.equals_sign
 						& latin_1.space & switch_native_project_open & latin_1.equals_sign
 						& latin_1.space & switch_native_project_save_as & latin_1.equals_sign
+
+						& latin_1.space & switch_native_package_create & latin_1.equals_sign
+						& latin_1.space & switch_native_package_open & latin_1.equals_sign						
+						& latin_1.space & switch_native_package_save_as & latin_1.equals_sign
+						
 						& latin_1.space & switch_execute_script & latin_1.equals_sign
 					) is
 
@@ -118,6 +127,7 @@ procedure et is
 						log (text => arg & full_switch & space & parameter);
 						conv_file_name_use := conventions.type_conventions_file_name.to_bounded_string (parameter);
 
+						
 					elsif full_switch = switch_native_project_create then
 						log (text => arg & full_switch & space & parameter);
 						project_name_create := et_project.to_project_name (remove_trailing_directory_separator (parameter));
@@ -130,6 +140,20 @@ procedure et is
 						log (text => arg & full_switch & space & parameter);
 						project_name_save_as := et_project.to_project_name (remove_trailing_directory_separator (parameter));
 
+
+					elsif full_switch = switch_native_package_create then
+						log (text => arg & full_switch & space & parameter);
+-- 						project_name_create := et_project.to_project_name (remove_trailing_directory_separator (parameter));
+						
+					elsif full_switch = switch_native_package_open then
+						log (text => arg & full_switch & space & parameter);
+-- 						project_name := et_project.to_project_name (remove_trailing_directory_separator (parameter));
+
+					elsif full_switch = switch_native_package_save_as then
+						log (text => arg & full_switch & space & parameter);
+-- 						project_name_save_as := et_project.to_project_name (remove_trailing_directory_separator (parameter));
+
+						
 					elsif full_switch = switch_execute_script then
 						log (text => arg & full_switch & space & parameter);
 						script_name := scripting.to_script_name (parameter);
