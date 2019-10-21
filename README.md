@@ -114,11 +114,16 @@ The project can also be saved under a different name at a different place:
 $ et --conventions conventions.txt --open-project /home/user/ecad/my_et_project/ --save-project-as /home/user/tmp/eval --log-level 2
 ```
 
+Opening a project includes syntax checking. See the report for details.
+
+
 #### Creating an ET native package (or footprint)
+Packages can be real or virtual. Virtual components are things like testpoints or edge connectors.
+The newly created package should be saved right away.
 To create a native package drawing like 'S_0805.pac' run this command: 
 
 ```sh
-$ et --create-package libraries/packages/S_0805.pac
+$ et --create-package libraries/packages/S_0805.pac --appearance real --save-package-as tmp/dummy_S_0805.pac
 ```
 
 
@@ -134,6 +139,7 @@ The package can also be saved under a different name at a different place:
 ```sh
 $ et --open-package libraries/packages/S_0805.pac --save-package-as tmp/dummy_S_0805.pac
 ```
+Opening a package includes syntax checking. See the report for details.
 
 
 #### Executing scripts

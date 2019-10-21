@@ -80,6 +80,7 @@ procedure et is
 	package_name_import		: et_libraries.type_package_model_file.bounded_string; -- the package to be imported
 	package_name_open		: et_libraries.type_package_model_file.bounded_string; -- the package to be opened
 	package_name_save_as	: et_libraries.type_package_model_file.bounded_string; -- the package to be saved as
+	package_appearance		: et_packages.type_package_appearance := et_packages.REAL; -- virtual/real. mostly real.
 	
 	script_name	: scripting.type_script_name.bounded_string;
 	
@@ -105,6 +106,7 @@ procedure et is
 						& latin_1.space & switch_native_project_save_as & latin_1.equals_sign
 
 						& latin_1.space & switch_native_package_create & latin_1.equals_sign
+						& latin_1.space & switch_package_appearance & latin_1.equals_sign
 						& latin_1.space & switch_native_package_open & latin_1.equals_sign						
 						& latin_1.space & switch_native_package_save_as & latin_1.equals_sign
 						
@@ -151,6 +153,10 @@ procedure et is
 					elsif full_switch = switch_native_package_create then
 						log (text => arg & full_switch & space & parameter);
 						package_name_create := et_libraries.to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
+
+					elsif full_switch = switch_package_appearance then -- virtual/real
+						log (text => arg & full_switch & space & parameter);
+						package_appearance := et_packages.to_appearance (parameter);
 						
 					elsif full_switch = switch_native_package_open then
 						log (text => arg & full_switch & space & parameter);
@@ -287,6 +293,17 @@ procedure et is
 
 	end import_project;
 
+	procedure save_package_as is 
+		use et_libraries.type_package_model_file;
+	begin
+		if length (package_name_save_as) > 0 then
+			pcb_rw.save_package (
+				file_name 		=> package_name_save_as,
+				packge			=> et_packages.type_packages.last_element (et_packages.packages),
+				log_threshold	=> 0);
+		end if;
+	end;
+	
 	procedure process_commandline_arguments is
 		use et_project.type_project_name;
 		use scripting.type_script_name;
@@ -359,7 +376,10 @@ procedure et is
 				end if;
 
 			elsif length (package_name_create) > 0 then
-				null; -- CS
+				pcb_rw.create_package (package_name_create, package_appearance, log_threshold => 0);
+
+				-- optionally the package can be saved under a different name
+				save_package_as;
 
 			elsif length (package_name_import) > 0 then
 				null; -- CS
@@ -367,12 +387,8 @@ procedure et is
 			elsif length (package_name_open) > 0 then
 				pcb_rw.read_package (package_name_open, log_threshold => 0);
 
-				if length (package_name_save_as) > 0 then
-					pcb_rw.save_package (
-						file_name 		=> package_name_save_as,
-						packge			=> et_packages.type_packages.last_element (et_packages.packages),
-						log_threshold	=> 0);
-				end if;
+				-- optionally the package can be saved under a different name
+				save_package_as;
 			end if;
 			
 		end if;

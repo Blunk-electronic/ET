@@ -1376,8 +1376,45 @@ package body pcb_rw is
 	end write_circle;
 
 
+	procedure create_package (
+	-- Creates a package and stores the package in container et_packages.packages.								 								 
+		package_name 	: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		appearance		: in et_packages.type_package_appearance;
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_string_processing;
+		use et_packages;
+	begin
+		log (text => "creating package " & et_libraries.to_string (package_name) & " ...", level => log_threshold);
+		log_indentation_up;
+		log (text => "appearance " & et_packages.to_string (appearance) & " ...", level => log_threshold);
+		
+		-- Test if package already exists. If already exists, issue warning and exit.
+		if type_packages.contains (packages, package_name) then
+			log (WARNING, text => "package already exists -> skipped", level => log_threshold + 1);
+		else
+			case appearance is
+				when REAL =>
+					type_packages.insert (
+						container	=> packages,
+						key			=> package_name,
+						new_item	=> (appearance => REAL, others => <>)
+						);
+
+				when VIRTUAL =>
+					type_packages.insert (
+						container	=> packages,
+						key			=> package_name,
+						new_item	=> (appearance => VIRTUAL, others => <>)
+						);
+			end case;					
+		end if;
+
+		log_indentation_down;
+	end create_package;
+	
+
 	procedure save_package (
-	-- Saves the given package model in a file specified by name.
+	-- Saves the given package model in a file specified by file_name.
 		file_name 		: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac							   
 		packge			: in et_packages.type_package; -- the actual package model
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -1812,7 +1849,7 @@ package body pcb_rw is
 		write (keyword => keyword_description, space => true, wrap => true, 
 			   parameters => to_string (packge.description));
 
-		write (keyword => keyword_appearance, parameters => to_string (packge.appearance));
+		write (keyword => keyword_appearance, space => true, parameters => to_string (packge.appearance));
 		write (keyword => keyword_assembly_technology, parameters => to_string (packge.technology));
 
 		write_silk_screen;
@@ -1855,7 +1892,7 @@ package body pcb_rw is
 
 	
 	procedure read_package (
-	-- Opens the package file and stores the package in container et_libraries.packages.
+	-- Opens the package file and stores the package in container et_packages.packages.
 		file_name 		: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;

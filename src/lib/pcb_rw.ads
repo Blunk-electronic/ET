@@ -357,13 +357,20 @@ package pcb_rw is
 		SEC_PACKAGE_3D_CONTOURS
 		);
 
+	procedure create_package (
+	-- Creates a package and stores the package in container et_packages.packages.								 
+		package_name 	: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		appearance		: in et_packages.type_package_appearance;
+		log_threshold	: in et_string_processing.type_log_level);
+
 	procedure save_package (
-		file_name 		: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac							   
+	-- Saves the given package model in a file specified by file_name.							   
+		file_name 		: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		packge			: in et_packages.type_package; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure read_package (
-	-- Opens the package file and stores the package in container et_libraries.packages.
+	-- Opens the package file and stores the package in container et_packages.packages.
 		file_name 		: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		log_threshold	: in et_string_processing.type_log_level);
 

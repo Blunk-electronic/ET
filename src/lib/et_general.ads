@@ -117,6 +117,7 @@ package et_general is
 	switch_native_package_create	: constant string := "-create-package";		
 	switch_native_package_open		: constant string := "-open-package";	
 	switch_native_package_save_as	: constant string := "-save-package-as";	
+	switch_package_appearance		: constant string := "-appearance";
 	switch_execute_script			: constant string := "-script";
 
 

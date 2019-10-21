@@ -930,7 +930,7 @@ package et_packages is
 		-- CS: currently no need for such things
 		--pcb_contour_plated 		: type_plated_millings;
 		
-		technology				: type_assembly_technology; -- set by majority of terminals
+		technology				: type_assembly_technology := SMT; -- set by majority of terminals
 		
 		-- Only REAL packages have 3d contours:
 		case appearance is
