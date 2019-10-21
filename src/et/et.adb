@@ -62,6 +62,8 @@ with et_kicad_pcb;
 with et_kicad_to_native;
 with et_project;
 with scripting;
+
+with et_packages;
 with pcb_rw;
 
 procedure et is
@@ -365,8 +367,12 @@ procedure et is
 			elsif length (package_name_open) > 0 then
 				pcb_rw.read_package (package_name_open, log_threshold => 0);
 
-			elsif length (package_name_save_as) > 0 then
-				null; -- CS
+				if length (package_name_save_as) > 0 then
+					pcb_rw.save_package (
+						file_name 		=> package_name_save_as,
+						packge			=> et_packages.type_packages.last_element (et_packages.packages),
+						log_threshold	=> 0);
+				end if;
 			end if;
 			
 		end if;
