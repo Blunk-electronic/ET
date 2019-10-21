@@ -3666,10 +3666,11 @@ package body et_kicad_to_native is
 				pcb_rw.save_package (
 					-- package name like: 
 					-- /home/user/et_projects/imported_from_kicad/blood_sample_analyzer/libraries/packages/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.pac
-					name	=> to_string (path) & gnat.directory_operations.dir_separator & to_string (key (package_cursor)),
+					file_name		=> et_libraries.to_file_name (
+						to_string (path) & gnat.directory_operations.dir_separator & to_string (key (package_cursor))),
 
 					-- the package model itself:
-					packge	=> element (package_cursor),
+					packge			=> element (package_cursor),
 					log_threshold	=> log_threshold + 1); 
 			end save_package;
 			

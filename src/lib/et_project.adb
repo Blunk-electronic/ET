@@ -8197,10 +8197,11 @@ package body et_project is
 			save_package (
 				-- package name like: 
 				-- /home/user/ecad/blood_sample_analyzer/libraries/packages/bel_connector_and_jumper_FEMALE_01X06.pac
-				name	=> to_string (path) & gnat.directory_operations.dir_separator & to_string (key (package_cursor)),
+				file_name		=> et_libraries.to_file_name 
+					(to_string (path) & gnat.directory_operations.dir_separator & to_string (key (package_cursor))),
 
 				-- the package model itself:
-				packge	=> element (package_cursor),
+				packge			=> element (package_cursor),
 				log_threshold	=> log_threshold + 1); 
 		end save_package;
 		

@@ -1331,11 +1331,12 @@ package body pcb_rw is
 
 	procedure save_package (
 	-- Saves the given package model in a file specified by name.
-		name			: in string; -- libraries/packages/resistor.pac
+		file_name 		: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac							   
 		packge			: in et_packages.type_package; -- the actual package model
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_packages;
+		use et_libraries.type_package_model_file;
 		
 		file_handle : ada.text_io.file_type;
 		
@@ -1735,12 +1736,12 @@ package body pcb_rw is
 		end write_terminals;
 		
 	begin -- save_package
-		log (text => name, level => log_threshold);
+		log (text => to_string (file_name), level => log_threshold);
 
 		create (
 			file 	=> file_handle,
 			mode	=> out_file,
-			name	=> name);
+			name	=> to_string (file_name));
 
 		set_output (file_handle);
 		

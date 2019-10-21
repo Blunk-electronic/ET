@@ -358,7 +358,7 @@ package pcb_rw is
 		);
 
 	procedure save_package (
-		name			: in string; -- libraries/devices/resistor.pac
+		file_name 		: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac							   
 		packge			: in et_packages.type_package; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level);
 	
