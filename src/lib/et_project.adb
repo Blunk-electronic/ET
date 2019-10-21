@@ -1075,7 +1075,10 @@ package body et_project is
 							
 					end case;
 
+					contours_begin;
 					write_polygon_segments (shapes.type_polygon_base (element (polygon_solid_cursor)));
+					contours_end;
+					
 					fill_zone_end;
 					next (polygon_solid_cursor);
 				end loop;
@@ -1106,7 +1109,10 @@ package body et_project is
 
 					end case;
 
+					contours_begin;
 					write_polygon_segments (shapes.type_polygon_base (element (polygon_hatched_cursor)));
+					contours_end;
+					
 					fill_zone_end;
 					next (polygon_hatched_cursor);
 				end loop;
@@ -1116,7 +1122,11 @@ package body et_project is
 					cutout_zone_begin;
 					write_signal_layer (element (cutout_zone_cursor).layer);
 					write_easing (element (cutout_zone_cursor).easing);
+
+					contours_begin;
 					write_polygon_segments (shapes.type_polygon_base (element (cutout_zone_cursor)));
+					contours_end;
+					
 					cutout_zone_end;
 					next (cutout_zone_cursor);
 				end loop;
