@@ -102,15 +102,17 @@ package et_general is
 -- COMMAND LINE SWITCHES (long switches)
 	--switch_about			: constant string (1..7) := "--about"; -- CS
 	switch_version					: constant string := "-version";
-	switch_log_level				: constant string := "-log_level";
+	switch_log_level				: constant string := "-log-level";
 	switch_help						: constant string := "-help";
 	switch_make_default_conv		: constant string := "-make_conventions";
-	switch_import_project			: constant string := "-import_project";
-	switch_import_format			: constant string := "-import_format";
+	switch_import_project			: constant string := "-import-project";
+	switch_import_format			: constant string := "-import-format";
 	switch_conventions				: constant string := "-conventions";
 	switch_native_project_create	: constant string := "-create";	
-	switch_native_project_open		: constant string := "-open";
-	switch_native_project_save_as	: constant string := "-save_as";		
+	switch_native_project_open		: constant string := "-open-project";
+	switch_native_package_open		: constant string := "-open-package";	
+	switch_native_project_save_as	: constant string := "-save-project-as";
+	switch_native_package_save_as	: constant string := "-save-package-as";	
 	switch_execute_script			: constant string := "-script";
 
 
@@ -143,11 +145,11 @@ package et_general is
 	
 -- NET NAMES
     -- If the name of a strand can not be identified, we default to the well proved "N$" notation:
-	anonymous_net_name_prefix : constant string (1..2) := "N$";
+	anonymous_net_name_prefix : constant string := "N$";
 
 	-- The name of a net may have 100 characters which seems sufficient for now.
 	net_name_characters : character_set := to_set (ranges => (('A','Z'),('0','9'))) or to_set ("_-#");
-	net_inversion_mark : constant string (1..1) := "#";
+	net_inversion_mark : constant string := "#";
  	net_name_length_max : constant natural := 100;
 	package type_net_name is new generic_bounded_length (net_name_length_max); use type_net_name;
 

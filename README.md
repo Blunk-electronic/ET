@@ -46,16 +46,18 @@ For everything ET does you will find in the current working directory a folder n
 To import a single KiCad V5 design into a native project 'my_et_project' run this command: 
 
 ```sh
-$ et --import_format kicad_v5 --import_project my_kicad_project/
+$ et --import-format kicad_v5 --import-project my_kicad_project/
 ```
 
 Optionally provide a log level for debugging:
 
 ```sh 
-$ et --import_format kicad_v5 --import_project my_kicad_project/ --log_level 2
+$ et --import-format kicad_v5 --import-project my_kicad_project/ --log-level 2
 ```
 
 ET creates in the current working directory a folder named "ET/et_import" where you find the now native project.
+Inside the project you will find a directory named 'libraries' where the imported component libraries
+associated with the project live. 
 There is also an import report where log messages can be found. See "ET/reports". Depending on the log level this report
 contains more or less debug information.
 
@@ -66,7 +68,7 @@ not mandatory. This step can be omitted. If so, lots of design checks wil not be
 Change into the root directory of your projects and generate a conventions with this command:
 
 ```sh
-$ et --make_conventions conventions.txt
+$ et --make-conventions conventions.txt
 ```
 
 This file can now be found in the root directory of your projects. Edit it according to your customs.
@@ -85,38 +87,52 @@ $ et --create my_new_et_project/
 To open a native project like 'my_et_project' run this command: 
 
 ```sh
-$ et --open my_et_project/
+$ et --open-project my_et_project/
 ```
 
 Or if the project lives somewhere else:
 
 ```sh
-$ et --open /home/user/ecad/my_et_project/
+$ et --open-project /home/user/ecad/my_et_project/
 ```
 
 A log level can also be passed:
 
 ```sh
-$ et --open /home/user/ecad/my_et_project/ --log_level 2
+$ et --open-project /home/user/ecad/my_et_project/ --log-level 2
 ```
 
 If a conventions file is available run:
 
 ```sh
-$ et --conventions conventions.txt --open /home/user/ecad/my_et_project/ --log_level 2
+$ et --conventions conventions.txt --open-project /home/user/ecad/my_et_project/ --log-level 2
 ```
 
 The project can also be saved under a different name at a different place:
 
 ```sh
-$ et --conventions conventions.txt --open /home/user/ecad/my_et_project/ --save_as /home/user/tmp/eval --log_level 2
+$ et --conventions conventions.txt --open-project /home/user/ecad/my_et_project/ --save-project-as /home/user/tmp/eval --log-level 2
 ```
+
+#### Opening an ET native package (or footprint)
+To open a native package drawing like 'S_0805.pac' run this command: 
+
+```sh
+$ et --open-package libraries/packages/S_0805.pac
+```
+
+The package can also be saved under a different name at a different place:
+
+```sh
+$ et --open-package libraries/packages/S_0805.pac --save-package-as tmp/dummy_S_0805.pac
+```
+
 
 #### Executing scripts
 ET has an internal script processor that reads and executes a script file. The scripting feature allows manipulating designs without GUI:
 
 ```sh
-$ et --open my_et_project/ --script my_et_project/my_script.scr --save_as modified_project --log_level 2
+$ et --open-project my_et_project/ --script my_et_project/my_script.scr --save-project-as modified_project --log-level 2
 ```
 
 Find the script processor command set [here](script_command_set.md).
