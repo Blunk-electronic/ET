@@ -69,6 +69,7 @@ with netlists;
 with et_text;
 with pcb_rw;
 with device_rw;
+with et_symbols;
 
 package body et_kicad_to_native is
 
@@ -412,7 +413,7 @@ package body et_kicad_to_native is
 
 				procedure move_package is
 				-- moves the position of the package in layout
-					use et_libraries;
+					use et_symbols;
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
 				begin
@@ -2049,7 +2050,7 @@ package body et_kicad_to_native is
 					
 					log (text => et_libraries.to_string (port.reference)
 						& " port "
-						& et_libraries.to_string (port.name), level => log_threshold + 4);
+						& et_symbols.to_string (port.name), level => log_threshold + 4);
 					log_indentation_up;
 
 					-- show old position
@@ -2332,8 +2333,10 @@ package body et_kicad_to_native is
 				unit_cursor_native	: et_schematic.type_units.cursor;
 				unit_inserted		: boolean;
 
-				unit_native_virtual	: et_schematic.type_unit (et_libraries.SCH);
-				unit_native_real	: et_schematic.type_unit (et_libraries.SCH_PCB);
+				unit_native_virtual	: et_schematic.type_unit (et_symbols.SCH);
+				unit_native_real	: et_schematic.type_unit (et_symbols.SCH_PCB);
+
+				use et_symbols;
 			begin -- copy_units
 				log_indentation_up;
 				
@@ -2347,14 +2350,14 @@ package body et_kicad_to_native is
 					-- and adding stuff of real components (if real device).
 					-- Kicad stuff like "alternative representation", package name, datasheet is discarded.
 					case element (component_cursor_kicad).appearance is
-						when et_libraries.SCH => -- virtual device
+						when SCH => -- virtual device
 
 							unit_native_virtual := (
 								mirror		=> element (unit_cursor_kicad).mirror,
 								position	=> to_native_coordinates (
 												point		=> element (unit_cursor_kicad).position,
 												rotation 	=> element (unit_cursor_kicad).rotation),
-								appearance	=> et_libraries.SCH);
+								appearance	=> SCH);
 							
 							et_schematic.type_units.insert (
 								container	=> component.units,
@@ -2363,14 +2366,14 @@ package body et_kicad_to_native is
 								inserted	=> unit_inserted,
 								new_item	=> unit_native_virtual);
 
-						when et_libraries.SCH_PCB => -- real device
+						when SCH_PCB => -- real device
 
 							unit_native_real := (
 								mirror		=> element (unit_cursor_kicad).mirror,
 								position	=> to_native_coordinates (
 												point		=> element (unit_cursor_kicad).position,
 												rotation 	=> element (unit_cursor_kicad).rotation),
-								appearance	=> et_libraries.SCH_PCB,
+								appearance	=> SCH_PCB,
 							
 								-- and stuff that comes with a real device:
 									
@@ -2378,7 +2381,7 @@ package body et_kicad_to_native is
 								value		=> element (unit_cursor_kicad).value,
 												
 								-- create a placeholder for purpose because kicad does not know such a thing
-								purpose		=> (meaning => et_libraries.PURPOSE, others => <>)
+								purpose		=> (meaning => PURPOSE, others => <>)
 								);
 							
 							et_schematic.type_units.insert (
@@ -2396,6 +2399,8 @@ package body et_kicad_to_native is
 				log_indentation_down;
 			end copy_units;
 
+			use et_symbols;
+			
 		begin -- copy_components
 			-- load a copy of kicad schematic components
 			components_kicad := element (module_cursor_kicad).components;
@@ -2410,14 +2415,14 @@ package body et_kicad_to_native is
 				-- component in the native schematic module.
 				-- Kicad stuff like the boolean power_flag is ignored.
 				case element (component_cursor_kicad).appearance is
-					when et_libraries.SCH =>
+					when SCH =>
 						
 						et_schematic.type_devices.insert (
 							container	=> module.devices,
 							key			=> key (component_cursor_kicad), -- PWR04, FLG01
 							position	=> component_cursor_native,
 							new_item	=> (
-								appearance			=> et_libraries.SCH,
+								appearance			=> SCH,
 
 								-- The link to the device model is a composition of path,file and generic name:
 								model				=> concatenate_lib_name_and_generic_name (
@@ -2430,13 +2435,13 @@ package body et_kicad_to_native is
 
 							inserted	=> component_inserted); -- should always be true
 
-					when et_libraries.SCH_PCB => null;
+					when SCH_PCB =>
 						et_schematic.type_devices.insert (
 							container	=> module.devices,
 							key			=> key (component_cursor_kicad), -- IC308, R12
 							position	=> component_cursor_native,
 							new_item	=> (
-								appearance			=> et_libraries.SCH_PCB,
+								appearance			=> SCH_PCB,
 
 								-- The link to the device model is a composition of path,file and generic name:
 								model				=> concatenate_lib_name_and_generic_name (
@@ -2663,6 +2668,7 @@ package body et_kicad_to_native is
 					use et_coordinates;
 					use geometry;
 					use shapes;
+
 					distance : shapes.type_distance_point_line;
 				begin -- read_ports
 					log_indentation_up;
@@ -2709,7 +2715,7 @@ package body et_kicad_to_native is
 							if (not distance.out_of_range) and distance.distance = zero then
 								log (text => et_libraries.to_string (element (port_cursor_kicad).reference) 
 									 & " port "
-									 & et_libraries.to_string (element (port_cursor_kicad).name)
+									 & et_symbols.to_string (element (port_cursor_kicad).name)
 									 & kicad_coordinates.to_string (
 											position	=> element (port_cursor_kicad).coordinates,
 											scope		=> kicad_coordinates.XY),
@@ -2718,8 +2724,8 @@ package body et_kicad_to_native is
 								et_schematic.type_ports_device.insert (
 									container	=> ports_of_segment,
 									new_item	=> (
-											device_name	=> element (port_cursor_kicad).reference,
-											port_name	=> element (port_cursor_kicad).name));
+										device_name	=> element (port_cursor_kicad).reference,
+										port_name	=> element (port_cursor_kicad).name));
 							end if;
 
 						end if;
@@ -2878,7 +2884,8 @@ package body et_kicad_to_native is
 			procedure query_components (
 				library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- lbr/logig.lib
 				library			: in et_kicad.type_components_library.map) is
-
+				
+				use et_symbols;
 				use et_kicad.type_components_library;
 				component_cursor : et_kicad.type_components_library.cursor := library.first;
 
@@ -2907,16 +2914,15 @@ package body et_kicad_to_native is
 					-- This cursor points to a native ET unit.
 					unit_cursor : et_libraries.type_units_internal.cursor;
 					inserted	: boolean;
-
+					
 					procedure copy_ports (
 						unit_name	: in et_libraries.type_unit_name.bounded_string;
 						unit		: in out et_libraries.type_unit_internal) is
 
 						function to_level (style : in et_kicad.type_port_style) 
 						-- Maps from kicad port style to native port characteristic.
-							return et_libraries.type_sensitivity_level is 
+							return et_symbols.type_sensitivity_level is 
 							use et_kicad;
-							use et_libraries;
 						begin
 							case style is
 								when INVERTED | INVISIBLE_INVERTED | INVISIBLE_INPUT_LOW |
@@ -2928,9 +2934,8 @@ package body et_kicad_to_native is
 
 						function to_edge (style : in et_kicad.type_port_style) 
 						-- Maps from kicad port style to native port characteristic.
-							return et_libraries.type_sensitivity_edge is 
+							return et_symbols.type_sensitivity_edge is 
 							use et_kicad;
-							use et_libraries;
 						begin
 							case style is
 								when CLOCK | INVISIBLE_CLOCK | RISING_EDGE_CLK |
@@ -2945,9 +2950,8 @@ package body et_kicad_to_native is
 
 						function to_inverted (style : in et_kicad.type_port_style) 
 						-- Maps from kicad port style to native port characteristic.
-							return et_libraries.type_output_inverted is 
+							return et_symbols.type_output_inverted is 
 							use et_kicad;
-							use et_libraries;
 						begin
 							case style is
 								when INVERTED | OUTPUT_LOW | INVISIBLE_INVERTED | 
@@ -2962,9 +2966,8 @@ package body et_kicad_to_native is
 						use et_kicad.type_ports_library;
 						port_cursor_kicad : et_kicad.type_ports_library.cursor := ports_kicad.first;
 
-						use et_libraries;
 						port_inserted : boolean;
-						port_cursor : et_libraries.type_ports.cursor;
+						port_cursor : type_ports.cursor;
 						
 					begin -- copy_ports
 						-- Loop in kicad ports and append them to the current native unit portlist.
@@ -2976,32 +2979,32 @@ package body et_kicad_to_native is
 
 							case element (port_cursor_kicad).direction is
 								when et_kicad.PASSIVE | et_kicad.UNKNOWN =>
-									et_libraries.type_ports.insert (
+									type_ports.insert (
 										container	=> unit.symbol.ports,
 										key			=> element (port_cursor_kicad).name,
 										position	=> port_cursor,
 										inserted	=> port_inserted,
-										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
-											direction			=> et_libraries.PASSIVE));
+										new_item	=> (type_port_base (element (port_cursor_kicad)) with
+											direction			=> PASSIVE));
 
 								when et_kicad.INPUT =>
 									case element (port_cursor_kicad).style is
 										when et_kicad.NON_LOGIC | et_kicad.INVISIBLE_NON_LOGIC =>
-											et_libraries.type_ports.insert (
+											type_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
 												inserted	=> port_inserted,
-												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+												new_item	=> (type_port_base (element (port_cursor_kicad)) with
 													direction			=> INPUT_ANALOG));
 
 										when others => -- all other styles indicate a digital input
-											et_libraries.type_ports.insert (
+											type_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,																			   
 												position	=> port_cursor,
 												inserted	=> port_inserted,
-												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+												new_item	=> (type_port_base (element (port_cursor_kicad)) with
 													direction			=> INPUT_DIGITAL,
 													sensitivity_edge	=> to_edge (element (port_cursor_kicad).style),
 													sensitivity_level	=> to_level (element (port_cursor_kicad).style)));
@@ -3010,23 +3013,23 @@ package body et_kicad_to_native is
 								when et_kicad.OUTPUT =>
 									case element (port_cursor_kicad).style is
 										when et_kicad.NON_LOGIC | et_kicad.INVISIBLE_NON_LOGIC =>
-											et_libraries.type_ports.insert (
+											type_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
 												inserted	=> port_inserted,
-												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+												new_item	=> (type_port_base (element (port_cursor_kicad)) with
 													direction				=> OUTPUT_ANALOG,
 													output_analog_tristate	=> NO,
 													output_analog_weakness	=> NONE));
 
 										when others => -- all other styles indicate a digital output
-											et_libraries.type_ports.insert (
+											type_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
 												inserted	=> port_inserted,
-												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+												new_item	=> (type_port_base (element (port_cursor_kicad)) with
 													direction				=> OUTPUT_DIGITAL,
 													output_digital_inverted => to_inverted (element (port_cursor_kicad).style),
 													output_digital_tristate => NO,											
@@ -3036,23 +3039,23 @@ package body et_kicad_to_native is
 								when et_kicad.TRISTATE =>
 									case element (port_cursor_kicad).style is
 										when et_kicad.NON_LOGIC | et_kicad.INVISIBLE_NON_LOGIC =>
-											et_libraries.type_ports.insert (
+											type_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
 												inserted	=> port_inserted,
-												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+												new_item	=> (type_port_base (element (port_cursor_kicad)) with
 													direction				=> OUTPUT_ANALOG,
 													output_analog_tristate	=> YES,
 													output_analog_weakness	=> NONE));
 											
 										when others => -- all other styles indicate a digital output
-											et_libraries.type_ports.insert (
+											type_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
 												inserted	=> port_inserted,
-												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+												new_item	=> (type_port_base (element (port_cursor_kicad)) with
 													direction				=> OUTPUT_DIGITAL,
 													output_digital_inverted => to_inverted (element (port_cursor_kicad).style),
 													output_digital_tristate => YES,
@@ -3062,23 +3065,23 @@ package body et_kicad_to_native is
 								when et_kicad.WEAK0 =>
 									case element (port_cursor_kicad).style is
 										when et_kicad.NON_LOGIC | et_kicad.INVISIBLE_NON_LOGIC =>
-											et_libraries.type_ports.insert (
+											type_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
 												inserted	=> port_inserted,
-												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+												new_item	=> (type_port_base (element (port_cursor_kicad)) with
 													direction				=> OUTPUT_ANALOG,
 													output_analog_tristate	=> NO,
 													output_analog_weakness	=> WEAK0));
 											
 										when others => -- all other styles indicate a digital output
-											et_libraries.type_ports.insert (
+											type_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
 												inserted	=> port_inserted,
-												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+												new_item	=> (type_port_base (element (port_cursor_kicad)) with
 													direction				=> OUTPUT_DIGITAL,
 													output_digital_inverted	=> to_inverted (element (port_cursor_kicad).style),
 													output_digital_tristate	=> NO,
@@ -3088,23 +3091,23 @@ package body et_kicad_to_native is
 								when et_kicad.WEAK1 =>
 									case element (port_cursor_kicad).style is
 										when et_kicad.NON_LOGIC | et_kicad.INVISIBLE_NON_LOGIC =>
-											et_libraries.type_ports.insert (
+											type_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
 												inserted	=> port_inserted,
-												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+												new_item	=> (type_port_base (element (port_cursor_kicad)) with
 													direction				=> OUTPUT_ANALOG,
 													output_analog_tristate	=> NO,
 													output_analog_weakness	=> WEAK1));
 											
 										when others => -- all other styles indicate a digital output
-											et_libraries.type_ports.insert (
+											type_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
 												inserted	=> port_inserted,
-												new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+												new_item	=> (type_port_base (element (port_cursor_kicad)) with
 													direction				=> OUTPUT_DIGITAL,
 													output_digital_inverted	=> to_inverted (element (port_cursor_kicad).style),
 													output_digital_tristate	=> NO,
@@ -3112,12 +3115,12 @@ package body et_kicad_to_native is
 									end case;
 									
 								when et_kicad.BIDIR =>
-									et_libraries.type_ports.insert (
+									type_ports.insert (
 										container	=> unit.symbol.ports,
 										key			=> element (port_cursor_kicad).name,
 										position	=> port_cursor,
 										inserted	=> port_inserted,
-										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+										new_item	=> (type_port_base (element (port_cursor_kicad)) with
 											direction			=> BIDIR_DIGITAL,
 											output_inverted		=> to_inverted (element (port_cursor_kicad).style),
 											output_tristate		=> NO,
@@ -3126,34 +3129,34 @@ package body et_kicad_to_native is
 											input_sensitivity_level	=> to_level (element (port_cursor_kicad).style)));
 
 								when et_kicad.POWER_OUT =>
-									et_libraries.type_ports.insert (
+									type_ports.insert (
 										container	=> unit.symbol.ports,
 										key			=> element (port_cursor_kicad).name,
 										position	=> port_cursor,
 										inserted	=> port_inserted,
-										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+										new_item	=> (type_port_base (element (port_cursor_kicad)) with
 											direction			=> POWER_OUT,
 											level				=> LEVEL_ZERO)); 
 											-- CS: The level could be reasoned from the port name such as +12V or -5V.
 
 								when et_kicad.POWER_IN =>
-									et_libraries.type_ports.insert (
+									type_ports.insert (
 										container	=> unit.symbol.ports,
 										key			=> element (port_cursor_kicad).name,
 										position	=> port_cursor,
 										inserted	=> port_inserted,
-										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+										new_item	=> (type_port_base (element (port_cursor_kicad)) with
 											direction			=> POWER_IN,
 											level				=> LEVEL_ZERO)); 
 											-- CS: The level could be reasoned from the port name such as +12V or -5V.
 
 								when et_kicad.NOT_CONNECTED =>
-									et_libraries.type_ports.insert (
+									type_ports.insert (
 										container	=> unit.symbol.ports,
 										key			=> element (port_cursor_kicad).name,
 										position	=> port_cursor,
 										inserted	=> port_inserted,
-										new_item	=> (et_libraries.type_port_base (element (port_cursor_kicad)) with
+										new_item	=> (type_port_base (element (port_cursor_kicad)) with
 											direction			=> NOT_CONNECTED));
 
 									-- NOTE: The kicad port_name_offset is discarded here.
@@ -3165,28 +3168,29 @@ package body et_kicad_to_native is
 					end copy_ports;
 
 					function convert_shapes (shapes : in et_kicad.type_symbol_shapes) 
-						return et_libraries.type_shapes is
+						return et_symbols.type_shapes is
 
-						native_shapes : et_libraries.type_shapes;
+						use et_symbols;
+						native_shapes : et_symbols.type_shapes;
 
 						procedure copy_line (cursor : in et_kicad.type_symbol_lines.cursor) is begin
-							et_libraries.type_lines.append (
+							type_lines.append (
 								container	=> native_shapes.lines,
 								new_item	=> et_kicad.type_symbol_lines.element (cursor));
 						end;
 
 						procedure copy_arc (cursor : in et_kicad.type_symbol_arcs.cursor) is begin
-							et_libraries.type_arcs.append (
+							type_arcs.append (
 								container	=> native_shapes.arcs,
-								new_item	=> et_libraries.type_arc (et_kicad.type_symbol_arcs.element (cursor)));
+								new_item	=> type_arc (et_kicad.type_symbol_arcs.element (cursor)));
 						end;
 
 						procedure copy_circle (cursor : in et_kicad.type_symbol_circles.cursor) is begin
-							et_libraries.type_circles.append (
+							type_circles.append (
 								container	=> native_shapes.circles,
 								new_item	=> (
-									et_libraries.type_circle_base (et_kicad.type_symbol_circles.element (cursor))
-									with filled => et_libraries.NO));
+									type_circle_base (et_kicad.type_symbol_circles.element (cursor))
+									with filled => NO));
 						end;						
 
 						procedure copy_polyline (cursor : in et_kicad.type_symbol_polylines.cursor) is 
@@ -3201,7 +3205,7 @@ package body et_kicad_to_native is
 							point_cursor : type_symbol_points.cursor := polyline.points.first;
 
 							-- This is the native line that will be appended to native.shapes.lines:
-							line : et_libraries.type_line := (width => polyline.width, others => <>);
+							line : type_line := (width => polyline.width, others => <>);
 
 							-- This flag indicates whether a start or an end point of a line is expected:
 							start : boolean := true; -- when start point -> true, when end point -> false
@@ -3223,7 +3227,7 @@ package body et_kicad_to_native is
 										start := true; -- up next: start point
 
 										-- append line to collection of native lines
-										et_libraries.type_lines.append (
+										et_symbols.type_lines.append (
 											container	=> native_shapes.lines,
 											new_item	=> line);
 
@@ -3247,12 +3251,12 @@ package body et_kicad_to_native is
 							rectangle : type_symbol_rectangle := type_symbol_rectangles.element (cursor);
 
 							-- This is the native line that will be appended to native_shapes.lines:
-							line : et_libraries.type_line := (width => rectangle.width, others => <>);
+							line : type_line := (width => rectangle.width, others => <>);
 							width, height : et_coordinates.type_distance;
 							corner_C, corner_D : geometry.type_point;
 							
 							procedure append_line is begin
-								et_libraries.type_lines.append (
+								et_symbols.type_lines.append (
 									container	=> native_shapes.lines,
 									new_item	=> line);
 							end;
@@ -3320,7 +3324,7 @@ package body et_kicad_to_native is
 
 						-- create internal units
 						case element (unit_cursor_kicad).appearance is
-							when et_libraries.SCH_PCB => -- real
+							when SCH_PCB => -- real
 						
 								et_libraries.type_units_internal.insert (
 									container	=> device.units_internal,
@@ -3328,43 +3332,43 @@ package body et_kicad_to_native is
 									position	=> unit_cursor, -- set unit_cursor for later updating the current unit
 									inserted	=> inserted,
 									new_item	=> (
-										appearance	=> et_libraries.SCH_PCB, -- real !
+										appearance	=> SCH_PCB, -- real !
 										position	=> element (unit_cursor_kicad).coordinates,
 										swap_level	=> <>,
 										add_level	=> <>, -- CS depends on the "global" flag. When true add_level should be "request"
 
 										-- If the unit is real, then the symbol is real too:
-										symbol		=> (et_libraries.type_symbol_base (element (unit_cursor_kicad).symbol)
+										symbol		=> (type_symbol_base (element (unit_cursor_kicad).symbol)
 														with 
 															shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes),
-															appearance	=> et_libraries.SCH_PCB,
-															ports		=> et_libraries.type_ports.empty_map, 			-- ports will come later
+															appearance	=> SCH_PCB,
+															ports		=> type_ports.empty_map, -- ports will come later
 															name		=> element (unit_cursor_kicad).symbol.name, 	-- placeholder
 															value		=> element (unit_cursor_kicad).symbol.value,	-- placeholder
 															purpose		=> ( -- we must invent a placeholder for purpose since kicad does not know such a thing
-																	meaning	=> et_libraries.PURPOSE,
+																	meaning	=> PURPOSE,
 																	others 	=> <>))
 															-- NOTE: Other placeholders (fields in kicad) discarded here.
 										));
 
-							when et_libraries.SCH => -- virtual
+							when SCH => -- virtual
 								et_libraries.type_units_internal.insert (
 									container	=> device.units_internal,
 									key			=> key (unit_cursor_kicad), -- the name of the unit
 									position	=> unit_cursor, -- set unit_cursor for later updating the current unit
 									inserted	=> inserted,
 									new_item	=> (
-										appearance	=> et_libraries.SCH, -- virtual !
+										appearance	=> SCH, -- virtual !
 										position	=> element (unit_cursor_kicad).coordinates,
 										swap_level	=> <>,
 										add_level	=> <>, -- CS depends on the "global" flag. When true add_level should be "request"
 
 										-- If the unit is virtual, then the symbol is virtual too:
-										symbol		=> (et_libraries.type_symbol_base (element (unit_cursor_kicad).symbol)
+										symbol		=> (type_symbol_base (element (unit_cursor_kicad).symbol)
 														with 
 															shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes),
-															appearance	=> et_libraries.SCH,
-															ports		=> et_libraries.type_ports.empty_map) -- ports will come later
+															appearance	=> SCH,
+															ports		=> type_ports.empty_map) -- ports will come later
 															-- NOTE: Other placeholders discarded here.
 										));
 
@@ -3436,14 +3440,14 @@ package body et_kicad_to_native is
 					log_indentation_up;
 
 					case element (component_cursor).appearance is
-						when et_libraries.SCH =>
+						when SCH =>
 							et_libraries.type_devices.insert (
 								container	=> et_libraries.devices,
 								position	=> device_cursor,
 								inserted	=> inserted,
 								key			=> device_model,
 								new_item	=> (
-									appearance		=> et_libraries.SCH,
+									appearance		=> SCH,
 									prefix 			=> remove_leading_hash (element (component_cursor).prefix),
 									units_internal	=> <>, -- internal units will come later
 									units_external	=> <> -- kicad components do not have external symbols
@@ -3451,14 +3455,14 @@ package body et_kicad_to_native is
 									-- NOTE: KiCad power_flag is discarded.
 								));
 
-						when et_libraries.SCH_PCB =>
+						when SCH_PCB =>
 							et_libraries.type_devices.insert (
 								container	=> et_libraries.devices,
 								position	=> device_cursor,
 								inserted	=> inserted,
 								key			=> device_model,
 								new_item	=> (
-									appearance		=> et_libraries.SCH_PCB,
+									appearance		=> SCH_PCB,
 									prefix 			=> element (component_cursor).prefix,
 									value			=> element (component_cursor).value,
 									units_internal	=> <>, -- internal units will come later

@@ -67,7 +67,7 @@ with assembly_variants;
 with pick_and_place;
 with submodules;
 with numbering;
-
+with et_symbols;
 
 package body board_ops is
 
@@ -621,6 +621,7 @@ package body board_ops is
 
 						use et_schematic.type_devices;
 						use assembly_variants.type_devices;
+						use et_symbols;
 
 					begin -- query_properties_default
 
@@ -659,6 +660,8 @@ package body board_ops is
 						use et_schematic.type_devices;
 						alt_dev_cursor : assembly_variants.type_devices.cursor;
 						use assembly_variants.type_devices;
+						use et_symbols;
+						
 					begin -- query_properties_variants
 
 						-- the device must be real (appearance SCH_PCB)

@@ -64,6 +64,7 @@ with et_export;
 with et_import;
 with et_csv;
 with material;
+with et_symbols;
 
 package body conventions is
 
@@ -1942,7 +1943,7 @@ package body conventions is
 
 	procedure check_schematic_text_size (
 		category 	: in type_text_schematic;
-		size		: in et_libraries.pac_text.type_text_size) is
+		size		: in et_symbols.pac_text.type_text_size) is
 	-- Checks the given text size by its category. Does nothing if no text sizes
 	-- specified in configuration file in section TEXT_SIZES_SCHEMATIC.
 		use et_string_processing;
@@ -2542,9 +2543,9 @@ package body conventions is
 		put_line (comment & "category" & latin_1.space & "mm");
 		new_line;		
 		put_line (to_string (NET_LABEL)	& to_string (et_schematic.net_label_text_size_default));
-		put_line (to_string (PORT_NAME) & to_string (et_libraries.port_name_text_size_default));
-		put_line (to_string (TERMINAL_NAME) & to_string (et_libraries.terminal_name_text_size_default));
-		put_line (to_string (COMPONENT_ATTRIBUTE) & to_string (et_libraries.placeholder_text_size_default));
+		put_line (to_string (PORT_NAME) & to_string (et_symbols.port_name_text_size_default));
+		put_line (to_string (TERMINAL_NAME) & to_string (et_symbols.terminal_name_text_size_default));
+		put_line (to_string (COMPONENT_ATTRIBUTE) & to_string (et_symbols.placeholder_text_size_default));
 		put_line (to_string (SHEET_NAME) & to_string (et_project.sheet_name_text_size_default));
 		put_line (to_string (conventions.FILE_NAME) & to_string (et_project.file_name_text_size_default));
 		
@@ -2632,6 +2633,7 @@ package body conventions is
 			subtype type_column is positive range 1..8;
 		
 			use et_libraries;
+			use et_symbols;
 			use et_coordinates;
 
 			procedure test_multiple_occurences is begin
@@ -2651,7 +2653,7 @@ package body conventions is
 			unit		: type_unit_of_measurement;
 
 			text		: type_text_schematic;
-			size		: et_libraries.pac_text.type_text_size;
+			size		: et_symbols.pac_text.type_text_size;
 
 			partcode_keyword	: type_partcode_keyword.bounded_string;
 			partcode_section	: type_partcode_section;

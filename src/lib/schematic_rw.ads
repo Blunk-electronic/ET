@@ -41,6 +41,7 @@ with et_libraries;
 with et_schematic;
 with et_string_processing;
 with et_coordinates;
+with et_symbols;
 
 package schematic_rw is
 
@@ -75,7 +76,7 @@ package schematic_rw is
 		from : in positive)
 		return et_coordinates.geometry.type_point;
 	
-	procedure write_text_properties (t : in et_libraries.type_text_basic'class);
+	procedure write_text_properties (t : in et_symbols.type_text_basic'class);
 
 	type type_section_name_symbol is (
 		SEC_INIT,
@@ -92,18 +93,18 @@ package schematic_rw is
 		);
 
 	procedure write_symbol ( 
-		symbol			: in et_libraries.type_symbol;
+		symbol			: in et_symbols.type_symbol;
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure save_symbol (
 	-- Saves the given symbol model in a file specified by name.
 		name			: in string; -- libraries/symbols/resistor.sym
-		symbol			: in et_libraries.type_symbol; -- the actual symbol model
+		symbol			: in et_symbols.type_symbol; -- the actual symbol model
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure read_symbol (
 	-- Opens the symbol file and stores the symbol in container et_libraries.symbols.
-		file_name 		: in et_libraries.type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+		file_name 		: in et_symbols.type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		log_threshold	: in et_string_processing.type_log_level);
 
 	

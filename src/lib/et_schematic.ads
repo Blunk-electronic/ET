@@ -67,6 +67,7 @@ with material;
 with netlists;
 with et_geometry;
 with et_text;
+with et_symbols;
 
 package et_schematic is
 	use et_general.type_net_name;
@@ -79,7 +80,7 @@ package et_schematic is
 -- TEXT FIELD
 
 	-- A text/note in the schematic:
-	type type_text is new et_libraries.type_text_basic with record
+	type type_text is new et_symbols.type_text_basic with record
 		position	: et_coordinates.type_position;
 		content		: et_text.type_text_content.bounded_string;
 	end record;
@@ -102,8 +103,8 @@ package et_schematic is
 	
 	-- In a schematic we handle only virtual devices (like GND symbols)
 	-- and those which appear in both schematic an layout (so called real devices):
-	subtype type_appearance_schematic is et_libraries.type_device_appearance 
-		range et_libraries.SCH .. et_libraries.SCH_PCB;
+	subtype type_appearance_schematic is et_symbols.type_device_appearance 
+		range et_symbols.SCH .. et_symbols.SCH_PCB;
 
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a device.
@@ -112,11 +113,11 @@ package et_schematic is
 		position	: et_coordinates.type_position; -- incl. rotation and sheet number
 		mirror		: type_mirror := NO;
 		case appearance is
-			when et_libraries.SCH => null; -- CS
-			when et_libraries.SCH_PCB =>
-				name	: et_libraries.type_text_placeholder (meaning => et_libraries.NAME);
-				value	: et_libraries.type_text_placeholder (meaning => et_libraries.VALUE);
-				purpose	: et_libraries.type_text_placeholder (meaning => et_libraries.PURPOSE); -- to be filled in schematic later by the user
+			when et_symbols.SCH => null; -- CS
+			when et_symbols.SCH_PCB =>
+				name	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
+				value	: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
+				purpose	: et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE); -- to be filled in schematic later by the user
 		end case;
 		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
 		-- basic coordinates (x/y). Via the unit position the sheet number can be obtained.
@@ -146,7 +147,7 @@ package et_schematic is
 		
 		case appearance is
 			-- If a device appears in both schematic and layout it has got:
-			when et_libraries.sch_pcb => 
+			when et_symbols.SCH_PCB => 
 				value		: et_libraries.type_value.bounded_string; -- 470R
 				partcode	: material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 				purpose		: et_libraries.type_device_purpose.bounded_string; -- brightness_control
@@ -162,7 +163,7 @@ package et_schematic is
 
 				-- CS flags that signal whether partcode, purpose, bom are displayed or not.
 				
-			when et_libraries.sch => 
+			when et_symbols.SCH => 
 				null;
 				
 			when others => null; -- CS
@@ -185,7 +186,7 @@ package et_schematic is
 	-- This is the port of a device as it appears in a net segment:
 	type type_port_device is record
 		device_name	: et_libraries.type_device_name;
-		port_name	: et_libraries.type_port_name.bounded_string;
+		port_name	: et_symbols.type_port_name.bounded_string;
 		-- CS unit name ?
 	end record;
 
@@ -223,9 +224,9 @@ package et_schematic is
 	type type_net_label_base is tagged record
 		position	: et_coordinates.geometry.type_point;
 		rotation	: et_coordinates.type_rotation_text := et_coordinates.geometry.zero_rotation;
-        size		: et_libraries.pac_text.type_text_size := et_libraries.text_size_default;
-        style		: et_libraries.type_text_style := et_libraries.type_text_style'first;
-		width		: et_libraries.type_text_line_width := et_libraries.type_text_line_width'first;
+        size		: et_symbols.pac_text.type_text_size := et_symbols.text_size_default;
+        style		: et_symbols.type_text_style := et_symbols.type_text_style'first;
+		width		: et_symbols.type_text_line_width := et_symbols.type_text_line_width'first;
 	end record;
 	
 	type type_net_label (appearance : type_net_label_appearance) is new type_net_label_base with record

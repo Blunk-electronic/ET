@@ -54,6 +54,7 @@ with et_libraries;			use et_libraries;
 with et_pcb;
 with et_pcb_stack;
 with et_pcb_coordinates;
+with et_symbols;
 
 package submodules is
 
@@ -152,7 +153,7 @@ package submodules is
 	
 	type type_netchanger_port is record
 		position	: et_coordinates.geometry.type_point;
-		length		: type_port_length; 
+		length		: et_symbols.type_port_length; 
 		rotation	: et_coordinates.type_rotation;
 	end record;
 
@@ -171,12 +172,12 @@ package submodules is
 						rotation	=> 180.0);
 
 		-- the arc that connects the ports
-		arc	: et_libraries.type_arc := (
+		arc	: et_symbols.type_arc := (
 						center		=> et_coordinates.geometry.type_point (geometry.set (x => 0.0, y => 0.0)),
 						radius		=> 5.0,
 						start_point	=> et_coordinates.geometry.type_point (geometry.set (x => -5.0, y => 0.0)),
 						end_point	=> et_coordinates.geometry.type_point (geometry.set (x =>  5.0, y => 0.0)),
-						width		=> line_width_port_default);
+						width		=> et_symbols.line_width_port_default);
 	end record;
 
 	type type_netchanger is record

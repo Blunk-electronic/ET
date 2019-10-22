@@ -52,6 +52,7 @@ with et_schematic;
 with et_import;
 with material;
 with et_string_processing;
+with et_symbols;
 
 package conventions is
 
@@ -380,7 +381,7 @@ package conventions is
 
 	procedure check_schematic_text_size (
 		category 	: in type_text_schematic;
-		size		: in et_libraries.pac_text.type_text_size);
+		size		: in et_symbols.pac_text.type_text_size);
 	-- Checks the given text size by its category.
 
 

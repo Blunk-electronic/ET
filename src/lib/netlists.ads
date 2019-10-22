@@ -55,7 +55,7 @@ with et_libraries;
 with submodules;
 with assembly_variants;
 with et_string_processing;		use et_string_processing;
-
+with et_symbols;
 
 
 package netlists is
@@ -74,10 +74,10 @@ package netlists is
 
 
 	-- For ERC of netlists the connected devices are modelled by this type:
-	type type_device_port_extended (direction : et_libraries.type_port_direction) is record
+	type type_device_port_extended (direction : et_symbols.type_port_direction) is record
 		device			: et_libraries.type_device_name; -- IC4		
-		port			: et_libraries.type_port_name.bounded_string; -- CLOCK, CE, VDD, GND
-		characteristics	: et_libraries.type_port (direction); -- direction, sensitivity, ...
+		port			: et_symbols.type_port_name.bounded_string; -- CLOCK, CE, VDD, GND
+		characteristics	: et_symbols.type_port (direction); -- direction, sensitivity, ...
 		terminal		: et_libraries.type_terminal_name.bounded_string; -- H4, 1, 16
 	end record;
 	

@@ -4,6 +4,7 @@ VPATH = include
 
 OBJS = $(TARGET).o \
 	et_text.o \
+	et_symbols.o \
 	general_rw.o \
 	schematic_rw.o \
 	device_rw.o \

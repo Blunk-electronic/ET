@@ -72,6 +72,7 @@ with et_export;
 with et_csv;
 with conventions;
 with et_text;
+with et_symbols;
 
 package body et_kicad is
 
@@ -180,6 +181,7 @@ package body et_kicad is
 		use et_string_processing;
 		use et_coordinates;
 		use et_coordinates.geometry;
+		use et_symbols;
 	begin
 		log_indentation_up;
 		
@@ -212,26 +214,26 @@ package body et_kicad is
 		log_indentation_up;
 
 			-- reference
-			et_libraries.write_placeholder_properties (
+			write_placeholder_properties (
 				placeholder		=> type_units_schematic.element (unit).reference,
 				log_threshold	=> log_threshold + 1);
 
 			-- value
-			et_libraries.write_placeholder_properties (
+			write_placeholder_properties (
 				placeholder		=> type_units_schematic.element (unit).value,
 				log_threshold	=> log_threshold + 1);
 
 			-- some placeholders exist depending on the component appearance
 			case type_units_schematic.element (unit).appearance is
-				when et_libraries.sch_pcb =>
+				when SCH_PCB =>
 					
 					-- package/footprint
-					et_libraries.write_placeholder_properties (
+					write_placeholder_properties (
 						placeholder		=> type_units_schematic.element (unit).packge,
 						log_threshold	=> log_threshold + 1);
 
 					-- datasheet
-					et_libraries.write_placeholder_properties (
+					write_placeholder_properties (
 						placeholder		=> type_units_schematic.element (unit).datasheet,
 						log_threshold	=> log_threshold + 1);
 
@@ -429,6 +431,7 @@ package body et_kicad is
 
 		use et_string_processing;
 		use et_libraries;
+		use et_symbols;
 	begin
 		-- reference (serves as key in list of components)
 		log (text => "component " & to_string (type_components_schematic.key (component)) & " properties",
@@ -447,12 +450,12 @@ package body et_kicad is
 			& to_string (type_components_schematic.element (component).value), level => log_threshold);
 
 		-- appearance
-		log (text => to_string (type_components_schematic.element(component).appearance, verbose => true),
+		log (text => to_string (type_components_schematic.element (component).appearance, verbose => true),
 			 level => log_threshold);
 
 		-- depending on the component appearance there is more to report:
 		case type_components_schematic.element(component).appearance is
-			when sch_pcb =>
+			when SCH_PCB =>
 
 -- 				-- package
 -- 				log (text => "package " 
@@ -497,7 +500,7 @@ package body et_kicad is
 		use et_coordinates;
 	begin
 		return "reference " & et_libraries.to_string (port.reference) 
-			& " port " & et_libraries.to_string (port.name)
+			& " port " & et_symbols.to_string (port.name)
 			& " coordinates " & to_string (position => port.coordinates, scope => module);
 	end to_string;
 
@@ -508,6 +511,7 @@ package body et_kicad is
 	-- CS: needs verification !
 		result : boolean := false;
 		use et_libraries;
+		use et_symbols;
 		use et_schematic;
 	begin
 		-- First we compare the component reference.
@@ -600,7 +604,7 @@ package body et_kicad is
 	
 	function component_appearance (cursor : in type_components_library.cursor)
 	-- Returns the component appearance where cursor points to.
-		return et_libraries.type_device_appearance is
+		return et_symbols.type_device_appearance is
 	begin
 		return type_components_library.element (cursor).appearance;
 	end component_appearance;

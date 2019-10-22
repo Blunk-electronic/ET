@@ -1,0 +1,512 @@
+------------------------------------------------------------------------------
+--                                                                          --
+--                             SYSTEM ET                                    --
+--                                                                          --
+--                              SYMBOLS                                     --
+--                                                                          --
+--                              S p e c                                     --
+--                                                                          --
+--         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--                                                                          --
+--    This program is free software: you can redistribute it and/or modify  --
+--    it under the terms of the GNU General Public License as published by  --
+--    the Free Software Foundation, either version 3 of the License, or     --
+--    (at your option) any later version.                                   --
+--                                                                          --
+--    This program is distributed in the hope that it will be useful,       --
+--    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
+--    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
+--    GNU General Public License for more details.                          --
+--                                                                          --
+--    You should have received a copy of the GNU General Public License     --
+--    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+------------------------------------------------------------------------------
+
+--   For correct displaying set tab width in your edtior to 4.
+
+--   The two letters "CS" indicate a "construction site" where things are not
+--   finished yet or intended for the future.
+
+--   Please send your questions and comments to:
+--
+--   info@blunk-electronic.de
+--   or visit <http://www.blunk-electronic.de> for more contact data
+--
+--   history of changes:
+--
+with ada.text_io;				use ada.text_io;
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
+
+with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.containers; 			use ada.containers;
+
+with ada.containers.doubly_linked_lists;
+with ada.containers.indefinite_doubly_linked_lists;
+with ada.containers.ordered_maps;
+with ada.containers.indefinite_ordered_maps;
+with ada.containers.ordered_sets;
+--with ada.containers.vectors;
+
+with et_coordinates;			use et_coordinates;
+with et_geometry;
+with et_string_processing;
+with et_general;
+with et_text;
+
+package et_symbols is
+
+	use geometry;
+
+
+-- TEXT
+
+	text_size_min : constant type_distance_positive := 1.0;
+	text_size_max : constant type_distance_positive := 50.0;
+	text_size_default : constant type_distance_positive := 1.3;
+	
+	subtype type_text_line_width is type_distance_positive range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
+	text_line_width_min : constant type_distance_positive := 0.1;
+	text_line_width_max : constant type_distance_positive := 5.0;
+	text_line_width_default : constant type_distance_positive := 0.3; 
+	
+	-- Instantiation of the text package:
+	package pac_text is new et_text.text (
+		type_distance		=> type_distance_positive,
+		size_min			=> text_size_min,
+		size_max			=> text_size_max,
+		size_default		=> text_size_default,
+		line_width_min		=> text_line_width_min,
+		line_width_max		=> text_line_width_max,
+		line_width_default	=> text_line_width_default
+		);
+
+	
+	function to_text_size (size : in type_distance) return pac_text.type_text_size;
+	-- Converts given distance to type_text_size. Raises error on excessive text size.
+	
+
+	type type_text_style is (NORMAL, ITALIC, BOLD, ITALIC_BOLD);
+	function to_string (style : in type_text_style) return string;
+	function to_text_style (style : in string) return type_text_style;
+	
+
+	
+	type type_text_meaning is (
+		NAME,			-- for things like R301 or X9
+		VALUE,			-- for component values like "200R"
+		PACKGE,			-- for component packages like SOT23
+		DATASHEET,		-- for url to datasheet
+		PURPOSE,		-- for the purpose of the component in the design.
+		MISC); -- CS: others ?
+	-- CS: The type_text_meaning covers more than actually required by ET.
+	-- It also includes text meanings of kicad. Rework required !
+	
+	text_meaning_default : constant type_text_meaning := MISC;
+	
+	function to_string (meaning : in type_text_meaning) return string;
+	function to_text_meaning (meaning : in string) return type_text_meaning;
+
+
+	
+
+	
+	subtype type_placeholder_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
+	placeholder_text_size_default : constant type_placeholder_text_size := 1.3;
+
+	function to_component_attribute_text_size (text : in string) return type_placeholder_text_size;
+	-- Converts a string to a type_placeholder_text_size.
+	
+	-- These are basic properties a text has got:
+	type type_text_basic is new pac_text.type_text with record
+        style		: type_text_style := type_text_style'first;
+        rotation	: type_rotation_text := 0.0;
+	end record;
+
+
+	
+	-- This is a placeholder for a text. It does not have content yet, but a meaning:
+	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with record
+		position : type_point;
+	end record;
+
+	procedure write_placeholder_properties (
+	-- Writes the properties of the given placeholder.
+		placeholder		: in type_text_placeholder;
+		log_threshold	: in et_string_processing.type_log_level);
+	
+	-- This is a real text with its content:
+	type type_text is new type_text_placeholder with record
+        content		: et_text.type_text_content.bounded_string;
+	end record;
+
+	
+
+	procedure write_text_properies (
+	-- Outputs the properties of the given text.
+		text 			: in type_text;
+		log_threshold	: in et_string_processing.type_log_level);
+
+	function content (text : in type_text) return string;
+	-- Returns the content of the given text as string.
+
+
+	
+	
+-- TERMINALS
+
+	keyword_terminal				: constant string := "terminal";
+	keyword_terminal_name_visible	: constant string := "terminal_name_visible";
+	keyword_terminal_name_size		: constant string := "terminal_name_size";
+
+	
+	subtype type_terminal_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
+	terminal_name_text_size_default : constant type_terminal_name_text_size := 1.3;
+
+	function to_terminal_name_text_size (text : in string) return type_terminal_name_text_size;
+	-- Converts a string to type_terminal_name_text_size.
+
+
+	
+	
+-- PORTS
+	keyword_port					: constant string := "port";
+	keyword_port_name_visible		: constant string := "port_name_visible";
+	keyword_port_name_size			: constant string := "port_name_size";
+	keyword_length					: constant string := "length";
+	keyword_level					: constant string := "level";	
+	keyword_sensitivity_edge		: constant string := "sensitivity_edge";
+	keyword_sensitivity_level		: constant string := "sensitivity_level";
+	keyword_inverted				: constant string := "inverted";
+	keyword_weakness				: constant string := "weakness";
+	keyword_tristate				: constant string := "tristate";	
+	keyword_output_inverted			: constant string := "output_inverted";
+	keyword_output_weakness			: constant string := "output_weakness";
+	keyword_output_tristate			: constant string := "output_tristate";
+	keyword_input_sensitivity_edge	: constant string := "input_sensitivity_edge";
+	keyword_input_sensitivity_level	: constant string := "input_sensitivity_level";
+	
+	-- A port is something where a net can be attached to.
+	-- The name of a port represents the function of the port like (A14 or RST_N)
+	subtype type_port_length is type_distance range 0.0 .. 20.0; -- unit is millimeters. CS: reasonable limits ?
+	
+	-- The port has an electrical direction:
+	type type_port_direction is (
+		PASSIVE,		-- almost all passive components like resistors, capacitors, .. have such ports
+
+		INPUT_ANALOG,	-- signal input analog
+		INPUT_DIGITAL,	-- signal input digital
+
+		OUTPUT_ANALOG,	-- signal output analog		
+		OUTPUT_DIGITAL,	-- signal outputs
+
+		BIDIR_DIGITAL,	-- bidirectional ports
+		-- CS BIDIR_ANALOG, ??
+
+		POWER_OUT,		-- a power source like power symbol (VCC, GND, ..)
+		POWER_IN,		-- a power sink like power ports of ICs
+
+		NOT_CONNECTED	-- advised by manufacturer to be left unconnected
+		);
+
+	port_direction_default : constant type_port_direction := OUTPUT_ANALOG; 
+	-- CS: should be the one with the most severe implications.
+	
+	function to_string (direction : in type_port_direction) return string;
+	function to_port_direction (direction : in string) return type_port_direction;
+	
+	type type_port_name_visible is (YES, NO);
+	function to_string (visible : in type_port_name_visible) return string;
+	function to_port_name_visible (visible : in string) return type_port_name_visible;	
+	
+	type type_terminal_name_visible is (YES, NO);
+	function to_string (visible : in type_terminal_name_visible) return string;	
+	function to_terminal_name_visible (visible : in string) return type_terminal_name_visible;
+	
+ 	port_name_length_max : constant natural := 100;
+	package type_port_name is new generic_bounded_length (port_name_length_max);
+	use type_port_name;
+
+	function to_string (port : in type_port_name.bounded_string) return string;
+	function to_port_name (name : in string) return type_port_name.bounded_string;
+	
+	subtype type_port_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
+	port_name_text_size_default : constant type_port_name_text_size := 1.3;
+
+	function to_port_name_text_size (text : in string) return type_port_name_text_size;
+	-- Converts a string to type_port_name_text_size.
+
+
+	
+	-- line width
+	keyword_line_width : constant string := "line_width"; -- NOTE: do not confuse with text line width !
+	subtype type_line_width is type_distance; -- CS reasonable positive range
+	
+	line_width_port_default : constant type_line_width := 0.2;
+	
+	type type_port_base is tagged record 	-- CS: set defaults	
+		position			: type_point;
+		length				: type_port_length; 
+		-- CS line_width	: type_line_width := line_width_port_default;
+		rotation			: type_rotation := 0.0;
+		
+		port_name_visible		: type_port_name_visible;
+		port_name_size			: type_port_name_text_size;
+		
+		terminal_name_visible	: type_terminal_name_visible;
+		terminal_name_size		: type_terminal_name_text_size;
+		-- CS: port swap level ? -> would require a derived new type
+	end record;
+
+	-- Sensitity of inputs:
+	type type_sensitivity_edge is (
+		NONE, 		-- passive and analog
+		RISING,		-- digital
+		FALLING,	-- digital
+		ANY			-- digtial
+		);
+	
+	sensitivity_edge_default : constant type_sensitivity_edge := NONE;
+	function to_string (sensitivity : in type_sensitivity_edge) return string;
+	function to_sensitivity_edge (sensitivity : in string) return type_sensitivity_edge;
+
+	type type_sensitivity_level is (NONE, LOW, HIGH); -- CS NONE required ?
+	sensitivity_level_default : constant type_sensitivity_level := HIGH; -- CS good idea ?
+	function to_string (sensitivity : in type_sensitivity_level) return string;
+	function to_sensitivity_level (sensitivity : in string) return type_sensitivity_level;
+	
+	type type_output_inverted is (NO, YES);
+	output_inverted_default : constant type_output_inverted := NO;
+	function to_string (inverted : in type_output_inverted) return string;
+	function to_output_inverted (inverted : in string) return type_output_inverted;
+
+	type type_output_weakness is (
+		NONE, -- push-pull
+		WEAK0, WEAK1, -- requires external pull-down/up resistor
+		PULL0, PULL1  -- internal pull-down/up resistor
+		);
+	output_weakness_default : constant type_output_weakness := NONE;
+	function to_string (weakness : in type_output_weakness) return string;
+	function to_output_weakness (weakness : in string) return type_output_weakness;
+
+	type type_output_tristate is (NO, YES);
+	output_tristate_default : constant type_output_tristate := NO;
+	function to_string (tristate : in type_output_tristate) return string;
+	function to_output_tristate (tristate : in string) return type_output_tristate;
+
+	
+	type type_power_level is (LEVEL_ZERO, LEVEL_POSITIVE, LEVEL_NEGATIVE);
+	-- The prefix "LEVEL_" is a workaround because GNAT regards "POSITIVE" as keyword.
+	-- CAUTION: Adapt functions to_string and to_power_level when changing anything here !
+	
+	port_power_level_default : constant type_power_level := LEVEL_ZERO;
+
+	function to_string (level : in type_power_level) return string;
+	-- Converts the power level (like LEVEL_POSITIVE) to a string (like positive).
+	-- The prefix LEVEL_ is removed.
+	
+	function to_power_level (level : in string) return type_power_level;	
+	-- Converts the power level (like positive) to power level (like LEVEL_POSITIVE).
+	-- The prefix LEVEL_ is prepended.
+
+
+	
+	type type_port (direction : type_port_direction) is new type_port_base with record 
+		case direction is
+			when INPUT_DIGITAL =>
+				sensitivity_edge		: type_sensitivity_edge;
+				sensitivity_level		: type_sensitivity_level;
+
+			when OUTPUT_ANALOG =>
+				output_analog_tristate	: type_output_tristate;
+				output_analog_weakness	: type_output_weakness;
+				
+			when OUTPUT_DIGITAL =>
+				output_digital_inverted	: type_output_inverted;
+				output_digital_tristate	: type_output_tristate;
+				output_digital_weakness	: type_output_weakness;
+				
+			when BIDIR_DIGITAL =>
+				output_inverted			: type_output_inverted;
+				output_tristate			: type_output_tristate;				
+				output_weakness			: type_output_weakness;
+				input_sensitivity_edge	: type_sensitivity_edge;
+				input_sensitivity_level	: type_sensitivity_level;
+				
+			when POWER_OUT | POWER_IN =>
+				level	: type_power_level;
+				
+			when others => null;
+		end case;
+	end record;
+	
+	-- Ports of a symbol are collected in a map. A map because a port with a certain name
+	-- like GND may exist only once in the symbol. Te symbol is an abstraction of a
+	-- function block within a device. It does not matter how many GND terminals exist
+	-- at the package (footprint):
+	package type_ports is new indefinite_ordered_maps (
+		key_type		=> type_port_name.bounded_string, -- CLOCK, CE, VDD, GND
+		element_type	=> type_port);
+
+	
+	
+
+	
+
+	
+	
+	
+-- APPEARANCE	
+	type type_device_appearance is ( -- CS rename to type_appearance
+		sch,		-- a device that exists in the schematic only (like power symbols)
+		sch_pcb,	-- a device that exists in both schematic and soldered on a pcb
+		pcb			-- a device that exists on the pcb only (like a fiducial)		
+		-- CS: cable 
+		-- CS: wire
+		-- ...
+		);
+
+	function to_string (
+		appearance	: in type_device_appearance;
+		verbose		: in boolean := false)
+		return string;
+	-- Returns the given device appearance as string.
+
+	function to_appearance (appearance : in string) return type_device_appearance;
+	
+
+
+	
+
+
+	-- Instantiation of the generic shapes package et_geometry.shapes_2d:
+	package shapes is new et_geometry.shapes_2d (geometry => et_coordinates.geometry);
+	use shapes;
+	
+
+
+	-- lines
+	type type_line is new shapes.type_line with record
+		width		: type_line_width;
+	end record;
+	package type_lines is new doubly_linked_lists (type_line);
+
+	-- Arcs
+	type type_arc is new shapes.type_arc with record
+		radius		: type_distance_positive; -- CS really required ?
+		width		: type_line_width;
+	end record;
+	package type_arcs is new doubly_linked_lists (type_arc);
+
+	type type_circle_filled is (NO, YES);
+	function to_string (filled : in type_circle_filled) return string;
+	function to_circle_filled (filled : in string) return type_circle_filled;
+	
+	-- Circles
+	type type_circle_base is new shapes.type_circle with record
+		width		: type_line_width;
+	end record;
+
+	type type_circle is new type_circle_base with record
+		filled		: type_circle_filled := NO;
+	end record;
+	package type_circles is new doubly_linked_lists (type_circle);
+
+	-- Shapes are wrapped in a the type_shapes:
+	type type_shapes is record
+		lines		: type_lines.list 		:= type_lines.empty_list;
+		arcs 		: type_arcs.list		:= type_arcs.empty_list;
+		circles		: type_circles.list		:= type_circles.empty_list;
+	end record;
+
+
+	
+-- SYMBOLS AND UNITS
+
+	-- In schematics things like resistors, capactors and inductors are called "symbols".
+	-- Since they are frequently used we store such things in symbol libraries like bel_primitives.sym.
+	-- The symbol name is something very general like "NAND", "Resistor", "Switch"
+
+	-- A device has one or more units. A unit is a subsection of a device.
+	-- There are internal units, which exist for the particular device exclusively. 
+	-- An internal unit has a symbol and further properties like a swap level.
+	-- There are external units, which are used for frequently used symbols like resistors or capacitors.
+	-- An external unit is just a reference to a symbol library, the symbol name therein and other properties
+	-- like swap level.	
+	-- The unit name is something like "I/O Bank 3", "PWR" or "Switch 1" "Switch 2"
+
+	-- Texts may be embedded in a symbol like "counter" or "&". So far they have the meaning "misc".
+	-- CS: strings and texts within a unit symbol serve for documentation only. As long as
+	-- there is no dedicated enumeration value available we choose "misc".
+	-- CS: The meaning could be something like "documentation" some day.
+	type type_symbol_text is new type_text (meaning => MISC) with null record;
+	package type_symbol_texts is new doubly_linked_lists (type_symbol_text);
+
+	type type_symbol_base is tagged record		
+		texts : type_symbol_texts.list; -- the collection of texts (meaning misc)
+	end record;
+
+	type type_symbol (appearance : type_device_appearance) is new type_symbol_base with record
+		shapes	: type_shapes; -- the collection of shapes
+		ports	: type_ports.map;
+		case appearance is
+			when SCH_PCB =>
+				-- Placeholders for device wide texts. To be filled with content when 
+				-- a symbol is placed in the schematic:
+				name	: type_text_placeholder (meaning => et_symbols.NAME);
+				value	: type_text_placeholder (meaning => et_symbols.VALUE);
+				purpose : type_text_placeholder (meaning => et_symbols.PURPOSE);
+			when SCH => null;				
+			when others => null; -- CS
+		end case;
+	end record;
+
+	
+
+	-- SYMBOLS
+	symbol_file_name_length_max : constant natural := 500;
+	package type_symbol_model_file is new generic_bounded_length (symbol_file_name_length_max);
+	function to_string (name : in type_symbol_model_file.bounded_string) return string;
+	function to_file_name (name : in string) return type_symbol_model_file.bounded_string;
+	
+
+
+	
+
+	
+
+	
+
+	
+	
+-- STORAGE
+	
+	package type_symbols is new indefinite_ordered_maps (
+		key_type		=> type_symbol_model_file.bounded_string, -- ../libraries/symbols/NAND.sym
+		"<"				=> type_symbol_model_file."<",
+		element_type	=> type_symbol);
+
+	symbol_library_file_extension : constant string := "sym";
+
+	-- HERE RIG WIDE SYMBOLS ARE KEPT:	
+	symbols : type_symbols.map;
+
+	function locate (symbol : in type_symbol_model_file.bounded_string) -- ../libraries/symbols/NAND.sym
+		return type_symbols.cursor;
+
+	
+
+	
+
+	
+		
+end et_symbols;
+
+-- Soli Deo Gloria
+
+-- For God so loved the world that he gave 
+-- his one and only Son, that whoever believes in him 
+-- shall not perish but have eternal life.
+-- The Bible, John 3.16

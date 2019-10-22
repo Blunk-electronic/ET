@@ -63,7 +63,7 @@ with pcb_rw;
 with conventions;
 with et_geometry;				use et_geometry;
 with et_text;					--use et_text;
-
+with et_symbols;
 
 package body device_rw is
 
@@ -74,6 +74,7 @@ package body device_rw is
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_libraries;
+		use et_symbols;
 		file_handle : ada.text_io.file_type;
 
 		use type_component_variants;
@@ -222,6 +223,7 @@ package body device_rw is
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_libraries;
+		use et_symbols;
 		use geometry;
 		use et_text;
 		file_handle : ada.text_io.file_type;
@@ -346,23 +348,26 @@ package body device_rw is
 		unit_symbol			: access type_symbol;
 		units_internal		: type_units_internal.map;
 		units_external		: type_units_external.map;
-		symbol_line			: et_libraries.type_line;
-		symbol_arc			: et_libraries.type_arc;
-		symbol_circle		: et_libraries.type_circle;
-		symbol_text_base	: et_libraries.type_text_basic;
+
+		-- CS move to schematic_rw
+		symbol_line			: type_line;
+		symbol_arc			: type_arc;
+		symbol_circle		: type_circle;
+		symbol_text_base	: type_text_basic;
+		
 		symbol_text_position: et_coordinates.geometry.type_point;
 		symbol_text_content	: et_text.type_text_content.bounded_string;
-		symbol_placeholder_meaning : et_libraries.type_text_meaning := text_meaning_default;
+		symbol_placeholder_meaning : et_symbols.type_text_meaning := text_meaning_default;
 		
-		port					: et_libraries.type_port_base;
-		port_name				: et_libraries.type_port_name.bounded_string;
-		port_direction			: et_libraries.type_port_direction := port_direction_default;
-		port_sensitivity_edge	: et_libraries.type_sensitivity_edge := sensitivity_edge_default;
-		port_sensitivity_level	: et_libraries.type_sensitivity_level := sensitivity_level_default;
-		port_output_inverted	: et_libraries.type_output_inverted := output_inverted_default;
-		port_output_tristate	: et_libraries.type_output_tristate := output_tristate_default;
-		port_output_weakness	: et_libraries.type_output_weakness := output_weakness_default;
-		port_power_level		: et_libraries.type_power_level := port_power_level_default;
+		port					: type_port_base;
+		port_name				: type_port_name.bounded_string;
+		port_direction			: type_port_direction := port_direction_default;
+		port_sensitivity_edge	: type_sensitivity_edge := sensitivity_edge_default;
+		port_sensitivity_level	: type_sensitivity_level := sensitivity_level_default;
+		port_output_inverted	: type_output_inverted := output_inverted_default;
+		port_output_tristate	: type_output_tristate := output_tristate_default;
+		port_output_weakness	: type_output_weakness := output_weakness_default;
+		port_power_level		: type_power_level := port_power_level_default;
 
 		unit_external : type_unit_external;
 
@@ -659,7 +664,7 @@ package body device_rw is
 							when SEC_DRAW => 
 
 								-- append symbol_line to unit_symbol
-								et_libraries.type_lines.append (
+								type_lines.append (
 									container	=> unit_symbol.shapes.lines,
 									new_item	=> symbol_line);
 
@@ -674,7 +679,7 @@ package body device_rw is
 							when SEC_DRAW =>
 
 								-- append symbol_arc to unit_symbol
-								et_libraries.type_arcs.append (
+								type_arcs.append (
 									container	=> unit_symbol.shapes.arcs,
 									new_item	=> symbol_arc);
 
@@ -689,7 +694,7 @@ package body device_rw is
 							when SEC_DRAW =>
 
 								-- append symbol_circle to unit_symbol
-								et_libraries.type_circles.append (
+								type_circles.append (
 									container	=> unit_symbol.shapes.circles,
 									new_item	=> symbol_circle);
 
@@ -750,7 +755,7 @@ package body device_rw is
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);
 
-									when et_libraries.VALUE =>
+									when et_symbols.VALUE =>
 										unit_symbol.value := (symbol_text_base with 
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);
@@ -901,7 +906,7 @@ package body device_rw is
 
 							elsif kw = keyword_appearance then -- appearance sch_pcb
 								expect_field_count (line, 2);
-								appearance := et_libraries.to_appearance (f (line,2));
+								appearance := to_appearance (f (line,2));
 								log (text => "appearance" & to_string (appearance), level => log_threshold + 1);								
 
 							elsif kw = keyword_partcode then -- partcode IC_PAC_S_SO14_VAL_
@@ -980,14 +985,14 @@ package body device_rw is
 										-- The symbol assumes the appearance of the device.
 										-- The symbol will be copied to the current unit later.
 										case appearance is
-											when et_libraries.SCH =>
-												unit_symbol := new et_libraries.type_symbol' (
-													appearance	=> et_libraries.SCH,
+											when SCH =>
+												unit_symbol := new type_symbol' (
+													appearance	=> SCH,
 													others		=> <>);
 
-											when et_libraries.SCH_PCB =>
-												unit_symbol := new et_libraries.type_symbol' (
-													appearance	=> et_libraries.SCH_PCB,
+											when SCH_PCB =>
+												unit_symbol := new type_symbol' (
+													appearance	=> SCH_PCB,
 													others		=> <>);
 
 											when others => 
@@ -1163,7 +1168,7 @@ package body device_rw is
 
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);
-										symbol_circle.filled := et_libraries.to_circle_filled (f (line, 2));
+										symbol_circle.filled := to_circle_filled (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -1210,7 +1215,7 @@ package body device_rw is
 										
 									elsif kw = keyword_style then -- style italic
 										expect_field_count (line, 2);
-										symbol_text_base.style := et_libraries.to_text_style (f (line, 2));
+										symbol_text_base.style := to_text_style (f (line, 2));
 
 									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
@@ -1245,7 +1250,7 @@ package body device_rw is
 
 									elsif kw = keyword_meaning then -- meaning reference
 										expect_field_count (line, 2);
-										symbol_placeholder_meaning := et_libraries.to_text_meaning (f (line, 2));
+										symbol_placeholder_meaning := to_text_meaning (f (line, 2));
 
 									elsif kw = et_text.keyword_size then -- size 5
 										expect_field_count (line, 2);
@@ -1261,7 +1266,7 @@ package body device_rw is
 										
 									elsif kw = keyword_style then -- style italic
 										expect_field_count (line, 2);
-										symbol_text_base.style := et_libraries.to_text_style (f (line, 2));
+										symbol_text_base.style := to_text_style (f (line, 2));
 
 									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
@@ -1296,7 +1301,7 @@ package body device_rw is
 
 									elsif kw = keyword_name then -- name I1A
 										expect_field_count (line, 2);
-										port_name := et_libraries.to_port_name (f (line, 2));
+										port_name := to_port_name (f (line, 2));
 
 									elsif kw = keyword_length then -- length 5
 										expect_field_count (line, 2);
@@ -1308,7 +1313,7 @@ package body device_rw is
 										
 									elsif kw = keyword_port_name_visible then -- port_name_visible yes/no
 										expect_field_count (line, 2);
-										port.port_name_visible := et_libraries.to_port_name_visible (f (line, 2));
+										port.port_name_visible := to_port_name_visible (f (line, 2));
 
 									elsif kw = keyword_port_name_size then -- port_name_size 2.0
 										expect_field_count (line, 2);
@@ -1316,7 +1321,7 @@ package body device_rw is
 
 									elsif kw = keyword_terminal_name_visible then -- terminal_name_visible yes/no
 										expect_field_count (line, 2);
-										port.terminal_name_visible := et_libraries.to_terminal_name_visible (f (line, 2));
+										port.terminal_name_visible := to_terminal_name_visible (f (line, 2));
 
 									elsif kw = keyword_terminal_name_size then -- terminal_name_size 2.0
 										expect_field_count (line, 2);
@@ -1324,31 +1329,31 @@ package body device_rw is
 
 									elsif kw = keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
 										expect_field_count (line, 2);
-										port_direction := et_libraries.to_port_direction (f (line, 2));
+										port_direction := to_port_direction (f (line, 2));
 
 									elsif kw = keyword_sensitivity_edge then -- sensitivity_edge rising/falling/any
 										expect_field_count (line, 2);
-										port_sensitivity_edge := et_libraries.to_sensitivity_edge (f (line, 2));
+										port_sensitivity_edge := to_sensitivity_edge (f (line, 2));
 
 									elsif kw = keyword_sensitivity_level then -- sensitivity_level high/low
 										expect_field_count (line, 2);
-										port_sensitivity_level := et_libraries.to_sensitivity_level (f (line, 2));
+										port_sensitivity_level := to_sensitivity_level (f (line, 2));
 
 									elsif kw = keyword_inverted then -- inverted yes/no
 										expect_field_count (line, 2);
-										port_output_inverted := et_libraries.to_output_inverted (f (line, 2));
+										port_output_inverted := to_output_inverted (f (line, 2));
 
 									elsif kw = keyword_tristate then -- tristate yes/no
 										expect_field_count (line, 2);
-										port_output_tristate := et_libraries.to_output_tristate (f (line, 2));
+										port_output_tristate := to_output_tristate (f (line, 2));
 
 									elsif kw = keyword_level then -- level positive/negative/zero
 										expect_field_count (line, 2);
-										port_power_level := et_libraries.to_power_level (f (line, 2));
+										port_power_level := to_power_level (f (line, 2));
 
 									elsif kw = keyword_weakness then -- weakness none/pull0/weak1 ...
 										expect_field_count (line, 2);
-										port_output_weakness := et_libraries.to_output_weakness (f (line, 2));
+										port_output_weakness := to_output_weakness (f (line, 2));
 										
 									else
 										invalid_keyword (kw);

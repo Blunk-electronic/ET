@@ -73,6 +73,7 @@ with general_rw;				use general_rw;
 with pcb_rw;					use pcb_rw;
 with schematic_rw;				use schematic_rw;
 with device_rw;					use device_rw;
+with et_symbols;
 
 package body et_project is
 
@@ -852,7 +853,7 @@ package body et_project is
 					procedure query_labels (segment : in type_net_segment) is
 						use type_net_labels;
 						label_cursor : type_net_labels.cursor := segment.labels.first;
-						use et_libraries;
+						use et_symbols;
 					begin -- query_labels
 						if not is_empty (segment.labels) then
 							section_mark (section_labels, HEADER);
@@ -863,7 +864,7 @@ package body et_project is
 								write (keyword => keyword_rotation, parameters => to_string (element (label_cursor).rotation));
 								write (keyword => et_text.keyword_size, parameters => to_string (element (label_cursor).size));
 								write (keyword => keyword_style, parameters => to_string (element (label_cursor).style));
-								write (keyword => et_libraries.keyword_line_width, parameters => to_string (element (label_cursor).width));
+								write (keyword => et_text.keyword_line_width, parameters => to_string (element (label_cursor).width));
 
 								write (keyword => keyword_appearance, parameters =>
 									et_schematic.to_string (appearance => element (label_cursor).appearance));
@@ -892,6 +893,7 @@ package body et_project is
 					end query_junctions;
 					
 					procedure query_device_ports (segment : in type_net_segment) is
+						use et_symbols;
 						use et_libraries;
 						port_cursor : type_ports_device.cursor := segment.ports_devices.first;
 					begin -- query_device_ports
@@ -899,14 +901,14 @@ package body et_project is
 							write (keyword => keyword_device, parameters => 
 								space & et_libraries.to_string (element (port_cursor).device_name)
 								& space & keyword_port & space
-								& et_libraries.to_string (element (port_cursor).port_name)
+								& to_string (element (port_cursor).port_name)
 								); -- device IC1 port A
 							next (port_cursor);
 						end loop;
 					end query_device_ports;
 
 					procedure query_submodule_ports (segment : in type_net_segment) is
-						use et_libraries;
+						use et_symbols;
 						port_cursor : type_ports_submodule.cursor := segment.ports_submodules.first;
 					begin -- query_submodule_ports
 						while port_cursor /= type_ports_submodule.no_element loop
@@ -922,7 +924,7 @@ package body et_project is
 					end query_submodule_ports;
 					
 					procedure query_netchanger_ports (segment : in type_net_segment) is
-						use et_libraries;
+						use et_symbols;
 						port_cursor : type_ports_netchanger.cursor := segment.ports_netchangers.first;
 					begin
 						while port_cursor /= type_ports_netchanger.no_element loop
@@ -1161,6 +1163,7 @@ package body et_project is
 
 		procedure query_devices is		
 			use et_schematic;
+			use et_symbols;
 			use type_devices;
 
 			procedure query_units (device_name : in et_libraries.type_device_name; device : in et_schematic.type_device) is
@@ -1169,10 +1172,9 @@ package body et_project is
 
 				use et_coordinates.geometry;
 				
-				procedure write_placeholder (ph : in et_libraries.type_text_placeholder) is
-				begin
+				procedure write_placeholder (ph : in type_text_placeholder) is begin
 					section_mark (section_placeholder, HEADER);
-					write (keyword => keyword_meaning, parameters => et_libraries.to_string (ph.meaning));
+					write (keyword => keyword_meaning, parameters => to_string (ph.meaning));
 					write (keyword => keyword_position, parameters => position (ph.position));
 					write_text_properties (ph);
 					section_mark (section_placeholder, FOOTER);
@@ -1190,7 +1192,7 @@ package body et_project is
 					write (keyword => keyword_rotation, parameters => to_string (rot (element (unit_cursor).position))); -- rotation 180.0
 					write (keyword => keyword_mirrored, parameters => to_string (element (unit_cursor).mirror, verbose => false)); -- x_axis, y_axis, none
 
-					if element (unit_cursor).appearance = et_libraries.SCH_PCB then
+					if element (unit_cursor).appearance = SCH_PCB then
 						section_mark (section_placeholders, HEADER);
 						
 						write_placeholder (element (unit_cursor).name);
@@ -1250,11 +1252,11 @@ package body et_project is
 			procedure write (device_cursor : in type_devices.cursor) is begin
 				section_mark (section_device, HEADER);
 				write (keyword => keyword_name, parameters => et_libraries.to_string (key (device_cursor)), space => true);
-				write (keyword => keyword_appearance, parameters => et_libraries.to_string (element (device_cursor).appearance));
+				write (keyword => keyword_appearance, parameters => to_string (element (device_cursor).appearance));
 				write (keyword => keyword_model, parameters => et_libraries.to_string (element (device_cursor).model), space => true);
 
 				case element (device_cursor).appearance is
-					when et_libraries.SCH_PCB =>
+					when SCH_PCB =>
 						write (keyword => keyword_value   , parameters => et_libraries.to_string (element (device_cursor).value), space => true);
 						write (keyword => keyword_variant , parameters => et_libraries.to_string (element (device_cursor).variant), space => true);
 						write (keyword => keyword_partcode, parameters => material.to_string (element (device_cursor).partcode), space => true);
@@ -1272,7 +1274,7 @@ package body et_project is
 						query_element (device_cursor, query_placeholders'access);
 						section_mark (section_package, FOOTER);
 						
-					when et_libraries.SCH => null;
+					when SCH => null;
 				end case;
 
 				query_element (device_cursor, query_units'access);
@@ -2201,12 +2203,12 @@ package body et_project is
 		device_text_placeholders	: et_packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
 
 		-- temporarily placeholders of unit reference (IC12), value (7400) and purpose (clock buffer)
-		unit_placeholder			: et_libraries.type_text_basic;
+		unit_placeholder			: et_symbols.type_text_basic;
 		unit_placeholder_position	: et_coordinates.geometry.type_point;
-		unit_placeholder_meaning	: et_libraries.type_text_meaning := et_libraries.type_text_meaning'first;
-		unit_placeholder_reference	: et_libraries.type_text_placeholder (meaning => et_libraries.NAME);
-		unit_placeholder_value		: et_libraries.type_text_placeholder (meaning => et_libraries.VALUE);
-		unit_placeholder_purpose	: et_libraries.type_text_placeholder (meaning => et_libraries.PURPOSE);
+		unit_placeholder_meaning	: et_symbols.type_text_meaning := et_symbols.text_meaning_default;
+		unit_placeholder_reference	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
+		unit_placeholder_value		: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
+		unit_placeholder_purpose	: et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE);
 
 		-- temporarily a netchanger is stored here:
 		netchanger		: submodules.type_netchanger;
@@ -2516,7 +2518,7 @@ package body et_project is
 				end insert_package_placeholder;
 
 				procedure insert_unit is 
-					use et_libraries;
+					use et_symbols;
 				begin
 					log_indentation_up;
 					-- log (text => "unit " & to_string (device_unit_name), log_threshold + 1);
@@ -2530,15 +2532,8 @@ package body et_project is
 							et_schematic.type_units.insert (
 								container	=> device_units,
 								key			=> device_unit_name,
--- 								new_item	=> (device_unit with 
--- 												position	=> device_unit_position,
--- 												appearance	=> et_libraries.SCH));
 								new_item	=> (
--- 									rotation	=> device_unit_rotation,
--- 									mirror		=> device_unit_mirror,
--- 									position	=> device_unit_position,
--- 									appearance	=> et_libraries.SCH));
-									appearance	=> et_libraries.SCH,
+									appearance	=> SCH,
 									mirror		=> device_unit_mirror,
 									position	=> device_unit_position));
 												   
@@ -2547,13 +2542,11 @@ package body et_project is
 							et_schematic.type_units.insert (
 								container	=> device_units,
 								key			=> device_unit_name,
--- 								new_item	=> (device_unit with
 								new_item	=> (
--- 									rotation	=> device_unit_rotation,
 									mirror		=> device_unit_mirror,
 
 									position	=> device_unit_position,
-									appearance	=> et_libraries.SCH_PCB,
+									appearance	=> SCH_PCB,
 
 									-- The placeholders for reference, value and purpose have
 									-- been built and can now be assigned to the unit:
@@ -2564,7 +2557,7 @@ package body et_project is
 
 					-- clean up for next unit
 					device_unit_position := zero_position;
-					device_unit_name := unit_name_default;
+					device_unit_name := et_libraries.unit_name_default;
 					--device_unit := (others => <>);
 					device_unit_mirror := et_schematic.NO;
 					--device_unit_rotation := geometry.zero_rotation;
@@ -2578,7 +2571,7 @@ package body et_project is
 				-- Builds a placeholder from unit_placeholder_meaning, unit_placeholder_position and unit_placeholder.
 				-- Depending on the meaning of the placeholder it becomes a placeholder 
 				-- for the reference (like R4), the value (like 100R) or the purpose (like "brightness control").
-					use et_libraries;
+					use et_symbols;
 				begin
 					case unit_placeholder_meaning is
 						when NAME =>
@@ -2603,7 +2596,7 @@ package body et_project is
 
 					-- clean up for next placeholder
 					unit_placeholder := (others => <>);
-					unit_placeholder_meaning := et_libraries.type_text_meaning'first;
+					unit_placeholder_meaning := text_meaning_default;
 					unit_placeholder_position := geometry.origin;
 					
 				end build_unit_placeholder;
@@ -2612,6 +2605,7 @@ package body et_project is
 					module_name	: in type_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 					use et_schematic;
+					use et_symbols;
 					use et_libraries;
 					device_cursor : et_schematic.type_devices.cursor;
 					inserted : boolean;
@@ -2679,7 +2673,7 @@ package body et_project is
 					device.model := device_model;
 
 					-- assign appearance specific temporarily variables and write log information
-					if device.appearance = et_libraries.SCH_PCB then
+					if device.appearance = SCH_PCB then
 
 						if not et_libraries.value_characters_valid (device_value) then
 							log (WARNING, "value of " & et_libraries.to_string (device_name) &
@@ -2734,7 +2728,7 @@ package body et_project is
 					-- read the device model (like ../libraries/transistor/pnp.dev)
 					read_device_file (device.model, log_threshold + 2);
 
-					if device.appearance = et_libraries.SCH_PCB then
+					if device.appearance = SCH_PCB then
 						conventions.validate_partcode (
 							partcode		=> device.partcode,
 							device_name		=> device_name,
@@ -5834,6 +5828,7 @@ package body et_project is
 								-- immediately when the line is read. See main code of process_line.
 								declare
 									use et_libraries;
+									use et_symbols;
 									kw : string := f (line, 1);
 								begin
 									if kw = keyword_device then -- device R1 port 1
@@ -5842,13 +5837,13 @@ package body et_project is
 										net_device_port.device_name := et_libraries.to_device_name (f (line, 2)); -- IC3
 
 										if f (line, 3) = keyword_port then -- port
-											net_device_port.port_name := et_libraries.to_port_name (f (line, 4)); -- CE
+											net_device_port.port_name := to_port_name (f (line, 4)); -- CE
 
 											-- Insert port in port collection of device ports. First make sure it is
 											-- not already in the net segment.
 											if et_schematic.type_ports_device.contains (net_device_ports, net_device_port) then
 												log (ERROR, "device " & et_libraries.to_string (net_device_port.device_name) &
-													" port " & et_libraries.to_string (net_device_port.port_name) & 
+													" port " & to_string (net_device_port.port_name) & 
 													" already in net segment !", console => true);
 												raise constraint_error;
 											end if;
@@ -5944,9 +5939,9 @@ package body et_project is
 
 									elsif kw = keyword_style then -- style normal
 										expect_field_count (line, 2);
-										net_label.style := et_libraries.to_text_style (f (line, 2));
+										net_label.style := et_symbols.to_text_style (f (line, 2));
 
-									elsif kw = et_libraries.keyword_line_width then -- line_width 0.1
+									elsif kw = et_text.keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);
 										net_label.width := et_coordinates.geometry.to_distance (f (line, 2));
 
@@ -6865,7 +6860,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										note.size := to_distance (f (line, 2));
 
-									elsif kw = et_libraries.keyword_line_width then -- line_width 0.1
+									elsif kw = et_text.keyword_line_width then -- line_width 0.1
 										expect_field_count (line, 2);
 										note.line_width := to_distance (f (line, 2));
 
@@ -6875,7 +6870,7 @@ package body et_project is
 
 									elsif kw = keyword_style then -- stlye normal/italic
 										expect_field_count (line, 2);
-										note.style := et_libraries.to_text_style (f (line, 2));
+										note.style := et_symbols.to_text_style (f (line, 2));
 
 									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
@@ -6975,6 +6970,7 @@ package body et_project is
 						case stack.parent is
 							when SEC_DEVICES =>
 								declare
+									use et_symbols;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -6986,17 +6982,17 @@ package body et_project is
 									-- created where pointer "device" is pointing at:
 									elsif kw = keyword_appearance then -- sch_pcb, sch
 										expect_field_count (line, 2);
-										device_appearance := et_libraries.to_appearance (f (line, 2));
+										device_appearance := to_appearance (f (line, 2));
 
 										case device_appearance is
-											when et_libraries.SCH =>
+											when SCH =>
 												device := new et_schematic.type_device'(
-													appearance	=> et_libraries.SCH,
+													appearance	=> SCH,
 													others		=> <>);
 
-											when et_libraries.SCH_PCB =>
+											when SCH_PCB =>
 												device := new et_schematic.type_device'(
-													appearance	=> et_libraries.SCH_PCB,
+													appearance	=> SCH_PCB,
 													others		=> <>);
 										end case;
 												
@@ -7113,7 +7109,7 @@ package body et_project is
 											-- CS: In the following: set a corresponding parameter-found-flag
 											if kw = keyword_meaning then -- meaning reference, value or purpose
 												expect_field_count (line, 2);
-												unit_placeholder_meaning := et_libraries.to_text_meaning (f (line, 2));
+												unit_placeholder_meaning := et_symbols.to_text_meaning (f (line, 2));
 												
 											elsif kw = keyword_position then -- position x 0.000 y 5.555
 												expect_field_count (line, 5);
@@ -7125,7 +7121,7 @@ package body et_project is
 												expect_field_count (line, 2);
 												unit_placeholder.size := to_distance (f (line, 2));
 
-											elsif kw = et_libraries.keyword_line_width then -- line_width 0.15
+											elsif kw = et_text.keyword_line_width then -- line_width 0.15
 												expect_field_count (line, 2);
 
 												unit_placeholder.line_width := to_distance (f (line, 2));
@@ -7138,7 +7134,7 @@ package body et_project is
 											elsif kw = keyword_style then -- stlye italic
 												expect_field_count (line, 2);
 
-												unit_placeholder.style := et_libraries.to_text_style (f (line, 2));
+												unit_placeholder.style := et_symbols.to_text_style (f (line, 2));
 
 											elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 												expect_field_count (line, 5);

@@ -58,6 +58,7 @@ with et_string_processing;
 with general_rw;				use general_rw;
 with et_geometry;				use et_geometry;
 with et_text;					--use et_text;
+with et_symbols;
 
 package body schematic_rw is
 
@@ -150,14 +151,15 @@ package body schematic_rw is
 		return point;
 	end to_position;
 	
-	procedure write_text_properties (t : in et_libraries.type_text_basic'class) is
-		use et_libraries.pac_text;
+	procedure write_text_properties (t : in et_symbols.type_text_basic'class) is
+		use et_symbols;
+		use et_symbols.pac_text;
 		use et_text;
 	begin
-		write (keyword => keyword_size, parameters => et_libraries.pac_text.to_string (t.size));
-		write (keyword => et_libraries.keyword_line_width, parameters => et_libraries.pac_text.to_string (t.line_width));
+		write (keyword => keyword_size, parameters => pac_text.to_string (t.size));
+		write (keyword => et_text.keyword_line_width, parameters => pac_text.to_string (t.line_width));
 		write (keyword => keyword_rotation, parameters => geometry.to_string (t.rotation));
-		write (keyword => keyword_style, parameters => et_libraries.to_string (t.style));
+		write (keyword => keyword_style, parameters => to_string (t.style));
 		write (keyword => keyword_alignment, parameters => space &
 				keyword_horizontal & to_string (t.alignment.horizontal) & space &
 				keyword_vertical   & to_string (t.alignment.vertical)
@@ -166,10 +168,10 @@ package body schematic_rw is
 	end write_text_properties;
 
 	procedure write_symbol ( 
-		symbol			: in et_libraries.type_symbol;
+		symbol			: in et_symbols.type_symbol;
 		log_threshold	: in et_string_processing.type_log_level) is
-		use et_libraries;
-		use et_libraries.shapes;
+		use et_symbols;
+		use et_symbols.shapes;
 		use et_text;
 
 		use type_lines;
@@ -215,7 +217,7 @@ package body schematic_rw is
 
 		procedure write_placeholders is begin
 			case symbol.appearance is
-				when et_libraries.SCH_PCB =>
+				when SCH_PCB =>
 
 					section_mark (section_placeholders, HEADER);
 					
@@ -288,7 +290,7 @@ package body schematic_rw is
 		
 	begin -- write_symbol
 		-- appearance
-		write (keyword => keyword_appearance, parameters => et_libraries.to_string (symbol.appearance));
+		write (keyword => keyword_appearance, parameters => to_string (symbol.appearance));
 		
 		-- draw section begin
 		section_mark (section_draw, HEADER);
@@ -325,7 +327,7 @@ package body schematic_rw is
 	procedure save_symbol ( -- CS: testing requried
 	-- Saves the given symbol model in a file specified by name.
 		name			: in string; -- libraries/symbols/resistor.sym
-		symbol			: in et_libraries.type_symbol; -- the actual symbol model
+		symbol			: in et_symbols.type_symbol; -- the actual symbol model
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		file_handle : ada.text_io.file_type;
@@ -369,11 +371,11 @@ package body schematic_rw is
 	
 	procedure read_symbol (
 	-- Opens the symbol file and stores the symbol in container et_libraries.symbols.
-		file_name 		: in et_libraries.type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+		file_name 		: in et_symbols.type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_coordinates.geometry;
 		use et_string_processing;
-		use et_libraries;
+		use et_symbols;
 		use et_text;
 		
 		file_handle : ada.text_io.file_type;
@@ -399,23 +401,24 @@ package body schematic_rw is
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		appearance			: type_device_appearance; -- sch, sch_pcb
 		symbol				: access type_symbol;
-		symbol_line			: et_libraries.type_line;
-		symbol_arc			: et_libraries.type_arc;
-		symbol_circle		: et_libraries.type_circle;
-		symbol_text_base	: et_libraries.type_text_basic;
-		symbol_text_position: et_coordinates.geometry.type_point;
-		symbol_text_content	: et_text.type_text_content.bounded_string;
-		symbol_placeholder_meaning : et_libraries.type_text_meaning := text_meaning_default;
+		symbol_line			: type_line;
+		symbol_arc			: type_arc;
+		symbol_circle		: type_circle;
+		symbol_text_base	: type_text_basic;
 		
-		port					: et_libraries.type_port_base;
-		port_name				: et_libraries.type_port_name.bounded_string;
-		port_direction			: et_libraries.type_port_direction := port_direction_default;
-		port_sensitivity_edge	: et_libraries.type_sensitivity_edge := sensitivity_edge_default;
-		port_sensitivity_level	: et_libraries.type_sensitivity_level := sensitivity_level_default;
-		port_output_inverted	: et_libraries.type_output_inverted := output_inverted_default;
-		port_output_tristate	: et_libraries.type_output_tristate := output_tristate_default;
-		port_output_weakness	: et_libraries.type_output_weakness := output_weakness_default;
-		port_power_level		: et_libraries.type_power_level := port_power_level_default;
+		symbol_text_position		: et_coordinates.geometry.type_point;
+		symbol_text_content			: et_text.type_text_content.bounded_string;
+		symbol_placeholder_meaning	: type_text_meaning := text_meaning_default;
+		
+		port					: type_port_base;
+		port_name				: type_port_name.bounded_string;
+		port_direction			: type_port_direction := port_direction_default;
+		port_sensitivity_edge	: type_sensitivity_edge := sensitivity_edge_default;
+		port_sensitivity_level	: type_sensitivity_level := sensitivity_level_default;
+		port_output_inverted	: type_output_inverted := output_inverted_default;
+		port_output_tristate	: type_output_tristate := output_tristate_default;
+		port_output_weakness	: type_output_weakness := output_weakness_default;
+		port_power_level		: type_power_level := port_power_level_default;
 
 		procedure insert_port is 
 			inserted	: boolean;
@@ -564,7 +567,7 @@ package body schematic_rw is
 							when SEC_DRAW => 
 
 								-- append symbol_line to unit_symbol
-								et_libraries.type_lines.append (
+								type_lines.append (
 									container	=> symbol.shapes.lines,
 									new_item	=> symbol_line);
 
@@ -579,7 +582,7 @@ package body schematic_rw is
 							when SEC_DRAW =>
 
 								-- append symbol_arc to unit_symbol
-								et_libraries.type_arcs.append (
+								type_arcs.append (
 									container	=> symbol.shapes.arcs,
 									new_item	=> symbol_arc);
 
@@ -594,7 +597,7 @@ package body schematic_rw is
 							when SEC_DRAW =>
 
 								-- append symbol_circle to unit_symbol
-								et_libraries.type_circles.append (
+								type_circles.append (
 									container	=> symbol.shapes.circles,
 									new_item	=> symbol_circle);
 
@@ -643,7 +646,7 @@ package body schematic_rw is
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);
 
-									when et_libraries.VALUE =>
+									when VALUE =>
 										symbol.value := (symbol_text_base with 
 											position	=> symbol_text_position,
 											meaning		=> symbol_placeholder_meaning);
@@ -751,19 +754,19 @@ package body schematic_rw is
 							-- CS: In the following: set a corresponding parameter-found-flag
 							if kw = keyword_appearance then -- appearance sch_pcb
 								expect_field_count (line, 2);
-								appearance := et_libraries.to_appearance (f (line,2));
+								appearance := to_appearance (f (line,2));
 -- 								log (text => "appearance" & to_string (appearance), level => log_threshold + 1);								
 
 								-- Create a new symbol where pointer "symbol" is pointing at.
 								case appearance is
-									when et_libraries.SCH =>
-										symbol := new et_libraries.type_symbol' (
-											appearance	=> et_libraries.SCH,
+									when SCH =>
+										symbol := new type_symbol' (
+											appearance	=> SCH,
 											others		=> <>);
 
-									when et_libraries.SCH_PCB =>
-										symbol := new et_libraries.type_symbol' (
-											appearance	=> et_libraries.SCH_PCB,
+									when SCH_PCB =>
+										symbol := new type_symbol' (
+											appearance	=> SCH_PCB,
 											others		=> <>);
 
 									when others => 
@@ -877,7 +880,7 @@ package body schematic_rw is
 
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);
-										symbol_circle.filled := et_libraries.to_circle_filled (f (line, 2));
+										symbol_circle.filled := to_circle_filled (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -918,7 +921,7 @@ package body schematic_rw is
 										
 									elsif kw = keyword_style then -- style italic
 										expect_field_count (line, 2);
-										symbol_text_base.style := et_libraries.to_text_style (f (line, 2));
+										symbol_text_base.style := to_text_style (f (line, 2));
 
 									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
@@ -947,7 +950,7 @@ package body schematic_rw is
 
 									elsif kw = keyword_meaning then -- meaning reference
 										expect_field_count (line, 2);
-										symbol_placeholder_meaning := et_libraries.to_text_meaning (f (line, 2));
+										symbol_placeholder_meaning := to_text_meaning (f (line, 2));
 
 									elsif kw = et_text.keyword_size then -- size 5
 										expect_field_count (line, 2);
@@ -963,7 +966,7 @@ package body schematic_rw is
 										
 									elsif kw = keyword_style then -- style italic
 										expect_field_count (line, 2);
-										symbol_text_base.style := et_libraries.to_text_style (f (line, 2));
+										symbol_text_base.style := to_text_style (f (line, 2));
 
 									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
@@ -992,7 +995,7 @@ package body schematic_rw is
 
 									elsif kw = keyword_name then -- name I1A
 										expect_field_count (line, 2);
-										port_name := et_libraries.to_port_name (f (line, 2));
+										port_name := to_port_name (f (line, 2));
 
 									elsif kw = keyword_length then -- length 5
 										expect_field_count (line, 2);
@@ -1004,7 +1007,7 @@ package body schematic_rw is
 										
 									elsif kw = keyword_port_name_visible then -- port_name_visible yes/no
 										expect_field_count (line, 2);
-										port.port_name_visible := et_libraries.to_port_name_visible (f (line, 2));
+										port.port_name_visible := to_port_name_visible (f (line, 2));
 
 									elsif kw = keyword_port_name_size then -- port_name_size 2.0
 										expect_field_count (line, 2);
@@ -1012,7 +1015,7 @@ package body schematic_rw is
 
 									elsif kw = keyword_terminal_name_visible then -- terminal_name_visible yes/no
 										expect_field_count (line, 2);
-										port.terminal_name_visible := et_libraries.to_terminal_name_visible (f (line, 2));
+										port.terminal_name_visible := to_terminal_name_visible (f (line, 2));
 
 									elsif kw = keyword_terminal_name_size then -- terminal_name_size 2.0
 										expect_field_count (line, 2);
@@ -1020,31 +1023,31 @@ package body schematic_rw is
 
 									elsif kw = keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
 										expect_field_count (line, 2);
-										port_direction := et_libraries.to_port_direction (f (line, 2));
+										port_direction := to_port_direction (f (line, 2));
 
 									elsif kw = keyword_sensitivity_edge then -- sensitivity_edge rising/falling/any
 										expect_field_count (line, 2);
-										port_sensitivity_edge := et_libraries.to_sensitivity_edge (f (line, 2));
+										port_sensitivity_edge := to_sensitivity_edge (f (line, 2));
 
 									elsif kw = keyword_sensitivity_level then -- sensitivity_level high/low
 										expect_field_count (line, 2);
-										port_sensitivity_level := et_libraries.to_sensitivity_level (f (line, 2));
+										port_sensitivity_level := to_sensitivity_level (f (line, 2));
 
 									elsif kw = keyword_inverted then -- inverted yes/no
 										expect_field_count (line, 2);
-										port_output_inverted := et_libraries.to_output_inverted (f (line, 2));
+										port_output_inverted := to_output_inverted (f (line, 2));
 
 									elsif kw = keyword_tristate then -- tristate yes/no
 										expect_field_count (line, 2);
-										port_output_tristate := et_libraries.to_output_tristate (f (line, 2));
+										port_output_tristate := to_output_tristate (f (line, 2));
 
 									elsif kw = keyword_level then -- level positive/negative/zero
 										expect_field_count (line, 2);
-										port_power_level := et_libraries.to_power_level (f (line, 2));
+										port_power_level := to_power_level (f (line, 2));
 
 									elsif kw = keyword_weakness then -- weakness none/pull0/weak1 ...
 										expect_field_count (line, 2);
-										port_output_weakness := et_libraries.to_output_weakness (f (line, 2));
+										port_output_weakness := to_output_weakness (f (line, 2));
 										
 									else
 										invalid_keyword (kw);
@@ -1071,9 +1074,9 @@ package body schematic_rw is
 		log (text => "reading symbol " & to_string (file_name) & " ...", level => log_threshold);
 		log_indentation_up;
 		
-		-- test if container et_libraries.symbols already contains the symbol
+		-- test if container et_symbols.symbols already contains the symbol
 		-- named "file_name". If so, there would be no need to read the file_name again.
-		if et_libraries.type_symbols.contains (et_libraries.symbols, file_name) then
+		if type_symbols.contains (symbols, file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			
@@ -1112,9 +1115,9 @@ package body schematic_rw is
 			set_input (previous_input);
 			close (file_handle);
 
-			-- Insert the symbol (accessed by pointer symbol) in et_libraries.symbols:
-			et_libraries.type_symbols.insert (
-				container	=> et_libraries.symbols, 
+			-- Insert the symbol (accessed by pointer symbol) in et_symbols.symbols:
+			type_symbols.insert (
+				container	=> symbols, 
 				key			=> file_name, -- libraries/symbols/nand.sym
 				new_item	=> symbol.all);
 

@@ -59,6 +59,7 @@ with et_pcb_coordinates;
 with et_libraries;
 with et_string_processing;
 with et_text;
+with et_symbols;
 
 package et_kicad is
 	
@@ -169,18 +170,18 @@ package et_kicad is
 		rotation	: et_coordinates.type_rotation := et_coordinates.geometry.zero_rotation;
 		mirror		: et_schematic.type_mirror := et_schematic.NO;
 		position	: kicad_coordinates.type_position;		
-		reference	: et_libraries.type_text_placeholder (meaning => et_libraries.NAME);
-		value		: et_libraries.type_text_placeholder (meaning => et_libraries.value);
+		reference	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
+		value		: et_symbols.type_text_placeholder (meaning => et_symbols.value);
 		
 		timestamp	: et_kicad_general.type_timestamp;
 		alt_repres	: type_de_morgan_representation;
 
 		-- Some placeholders of a unit are available when the component appears in both schematic and layout:
 		case appearance is
-			when et_libraries.sch => null; -- CS
-			when et_libraries.sch_pcb =>
-				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.packge); -- like "SOT23"
-				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.datasheet); -- might be useful for some special components
+			when et_symbols.sch => null; -- CS
+			when et_symbols.sch_pcb =>
+				packge		: et_symbols.type_text_placeholder (meaning => et_symbols.packge); -- like "SOT23"
+				datasheet	: et_symbols.type_text_placeholder (meaning => et_symbols.datasheet); -- might be useful for some special components
 		end case;
 		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
 		-- basic coordinates (x/y). Via the unit position the sheet and module
@@ -292,8 +293,8 @@ package et_kicad is
 	-- Returns the given port direction as string.
 
 	
-	type type_port_library is new et_libraries.type_port_base with record 	-- CS: set defaults
-		name		: et_libraries.type_port_name.bounded_string; -- like CLOCK or CE
+	type type_port_library is new et_symbols.type_port_base with record 	-- CS: set defaults
+		name		: et_symbols.type_port_name.bounded_string; -- like CLOCK or CE
 		direction 	: type_port_direction;
 		style 		: type_port_style := NONE;
 
@@ -320,8 +321,8 @@ package et_kicad is
 	
 	-- lines of a symbol:
 	package type_symbol_lines is new doubly_linked_lists (
-		element_type	=> et_libraries.type_line,
-		"="				=> et_libraries."=");
+		element_type	=> et_symbols.type_line,
+		"="				=> et_symbols."=");
 
 	-- polylines of a symbol:
 	-- A polyline is a list of points. Their interconnections have a width and a fill.
@@ -333,7 +334,7 @@ package et_kicad is
 		"="				=> et_coordinates.geometry."=");
 
 	type type_symbol_polyline is record
-		width	: et_libraries.type_line_width;
+		width	: et_symbols.type_line_width;
 		fill	: type_fill;
 		points	: type_symbol_points.list;
 	end record;
@@ -344,13 +345,13 @@ package et_kicad is
 	type type_symbol_rectangle is record
 		corner_A	: et_coordinates.geometry.type_point;
 		corner_B	: et_coordinates.geometry.type_point;
-		width		: et_libraries.type_line_width;
+		width		: et_symbols.type_line_width;
 		fill		: type_fill;
 	end record;
 	package type_symbol_rectangles is new doubly_linked_lists (type_symbol_rectangle);	
 	
 	-- arcs of a symbol:
-	type type_symbol_arc is new et_libraries.type_arc with record
+	type type_symbol_arc is new et_symbols.type_arc with record
 		start_angle		: et_coordinates.type_rotation;
 		end_angle		: et_coordinates.type_rotation;
  		fill			: type_fill;
@@ -358,7 +359,7 @@ package et_kicad is
 	package type_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
 
 	-- circles of a symbol:
-	type type_symbol_circle is new et_libraries.type_circle_base with record
+	type type_symbol_circle is new et_symbols.type_circle_base with record
 		fill			: type_fill;
 	end record;
 	package type_symbol_circles is new doubly_linked_lists (type_symbol_circle);
@@ -377,25 +378,25 @@ package et_kicad is
 		PORT, 
 		TEXT); -- text embedded in a symbol
 	
-	type type_symbol (appearance : et_libraries.type_device_appearance) is new et_libraries.type_symbol_base with record
+	type type_symbol (appearance : et_symbols.type_device_appearance) is new et_symbols.type_symbol_base with record
 		shapes	: type_symbol_shapes; -- the collection of shapes		
 		ports	: type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol
 
 		-- Placeholders for component wide texts. To be filled with content when a symbol is placed in the schematic:
-		name	: et_libraries.type_text_placeholder (meaning => et_libraries.NAME);
-		value	: et_libraries.type_text_placeholder (meaning => et_libraries.VALUE);
+		name	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
+		value	: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
 		
 		-- Symbols have text placeholders according to the appearance of the component:		
 		case appearance is
-			when et_libraries.SCH_PCB =>
-				packge		: et_libraries.type_text_placeholder (meaning => et_libraries.PACKGE);
-				datasheet	: et_libraries.type_text_placeholder (meaning => et_libraries.DATASHEET);
+			when et_symbols.SCH_PCB =>
+				packge		: et_symbols.type_text_placeholder (meaning => et_symbols.PACKGE);
+				datasheet	: et_symbols.type_text_placeholder (meaning => et_symbols.DATASHEET);
 			when others => null;
 		end case;
 	end record;
 
 	-- a component unit in the library
-	type type_unit_library (appearance : et_libraries.type_device_appearance) is record
+	type type_unit_library (appearance : et_symbols.type_device_appearance) is record
 		symbol		: type_symbol (appearance);
 		coordinates	: et_coordinates.geometry.type_point;
 		-- Units that harbor component wide pins have this flag set.
@@ -428,7 +429,7 @@ package et_kicad is
 
 	
 	-- This is a component as it appears in the library:.
-	type type_component_library (appearance : et_libraries.type_device_appearance) is record
+	type type_component_library (appearance : et_symbols.type_device_appearance) is record
 		prefix			: et_libraries.type_device_name_prefix.bounded_string; -- R, C, IC, ...
 		value			: et_libraries.type_value.bounded_string; -- 74LS00
 		units			: type_units_library.map := type_units_library.empty_map;
@@ -441,12 +442,12 @@ package et_kicad is
 			-- those components enforce net names (like GND or P3V3). Power flags do not
 			-- enforce net names. In order to distinguish them from regular power symbols the
 			-- power_flag is provided.
-			when et_libraries.SCH => 
+			when et_symbols.SCH => 
 				power_flag		: type_power_flag := NO;
 
 			-- If a component appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
-			when et_libraries.SCH_PCB => 
+			when et_symbols.SCH_PCB => 
 				package_filter	: type_package_filter.set := type_package_filter.empty_set;
 				datasheet		: type_component_datasheet.bounded_string;
 				variants		: et_libraries.type_component_variants.map;
@@ -508,7 +509,7 @@ package et_kicad is
 	
 	function component_appearance (cursor : in type_components_library.cursor)
 	-- Returns the component appearance where cursor points to.
-		return et_libraries.type_device_appearance;
+		return et_symbols.type_device_appearance;
 
 	function to_package_name (
 		library_name	: in type_device_library_name.bounded_string; -- ../libraries/transistors.lib
@@ -543,7 +544,7 @@ package et_kicad is
 		units			: type_units_schematic.map; -- PWR, A, B, ...
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
-			when et_libraries.sch_pcb => 
+			when et_symbols.SCH_PCB => 
 				datasheet			: type_component_datasheet.bounded_string;
 				variant				: et_libraries.type_component_variant_name.bounded_string; -- D, N
 
@@ -557,7 +558,7 @@ package et_kicad is
 			-- those component may enforce net names (like GND or P3V3). Power flags do not
 			-- enforce net names. In order to distinguish them from regular power symbols the
 			-- power_flag is provided.
-			when et_libraries.sch => 
+			when et_symbols.SCH => 
 				power_flag	: type_power_flag := NO;
 				
 			when others => null; -- CS
@@ -625,7 +626,7 @@ package et_kicad is
 	
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
-		name			: et_libraries.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
+		name			: et_symbols.type_port_name.bounded_string; -- the port name like GPIO1, GPIO2
 		coordinates 	: type_position;
 		direction		: type_port_direction; -- example: "passive"
 		style			: type_port_style;
@@ -672,7 +673,7 @@ package et_kicad is
 	type type_port_of_module is record
 		module		: type_submodule_name.bounded_string;			-- nucleo_core_3
 		reference	: et_libraries.type_device_name;		-- N409
-		name		: et_libraries.type_port_name.bounded_string;	-- 2
+		name		: et_symbols.type_port_name.bounded_string;	-- 2
 	end record;
 	
 	-- This is a set of ports as we need in the netlist.
@@ -699,9 +700,9 @@ package et_kicad is
 		coordinates	: et_coordinates.geometry.type_point;
 		rotation	: et_coordinates.type_rotation;
         text		: et_general.type_net_name.bounded_string;
-        size		: et_libraries.pac_text.type_text_size;
-        style		: et_libraries.type_text_style;
-        width		: et_libraries.type_text_line_width;
+        size		: et_symbols.pac_text.type_text_size;
+        style		: et_symbols.type_text_style;
+        width		: et_symbols.type_text_line_width;
 		processed	: boolean := false; -- used for associating label with net segment
 		case label_appearance is
 			when et_schematic.TAG => 
@@ -1190,7 +1191,7 @@ package et_kicad is
 	-- It serves as link between a hierachical net and the parent module.
 	type type_hierarchic_sheet_port is record
 		direction	: type_port_direction;
-		text_size	: et_libraries.pac_text.type_text_size;
+		text_size	: et_symbols.pac_text.type_text_size;
 		coordinates	: et_coordinates.geometry.type_point;
         orientation	: et_coordinates.type_rotation;
         processed   : boolean; -- used when linking hierarchic nets
@@ -1209,8 +1210,8 @@ package et_kicad is
 	end record;
 	
 	type type_hierarchic_sheet is record
-        text_size_of_name   : et_libraries.pac_text.type_text_size;
-        text_size_of_file   : et_libraries.pac_text.type_text_size;
+        text_size_of_name   : et_symbols.pac_text.type_text_size;
+        text_size_of_file   : et_symbols.pac_text.type_text_size;
 		coordinates		    : type_position;
         size_x, size_y      : et_coordinates.type_distance; -- size x/y of the box
 		timestamp           : type_timestamp;
@@ -1432,7 +1433,7 @@ package et_kicad is
 
 	
 	-- A text/note in the schematic:
-	type type_text is new et_libraries.type_text_basic with record
+	type type_text is new et_symbols.type_text_basic with record
 		position	: kicad_coordinates.type_position;
 		content		: et_text.type_text_content.bounded_string;
 	end record;

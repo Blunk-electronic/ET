@@ -58,6 +58,7 @@ with assembly_variants;
 with numbering;
 with material;
 with netlists;
+with et_symbols;
 
 package schematic_ops is
 	use geometry;
@@ -110,7 +111,7 @@ package schematic_ops is
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
-		meaning			: in et_libraries.type_text_meaning; -- name, value, purpose
+		meaning			: in et_symbols.type_text_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level);
 
 	procedure rotate_unit (
@@ -131,7 +132,7 @@ package schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		rotation		: in et_coordinates.type_rotation_text; -- absolute ! -- 90
-		meaning			: in et_libraries.type_text_meaning; -- name, value, purpose		
+		meaning			: in et_symbols.type_text_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level);
 
 	-- CS move to et_schematic ?
@@ -142,8 +143,8 @@ package schematic_ops is
 
 	-- CS move to et_schematic ?	
 	package type_drags_of_ports is new ada.containers.ordered_maps (
-		key_type		=> type_port_name.bounded_string,
-		"<"				=> type_port_name."<",
+		key_type		=> et_symbols.type_port_name.bounded_string,
+		"<"				=> et_symbols.type_port_name."<",
 		element_type	=> type_drag);
 	
 	procedure drag_unit (
@@ -189,7 +190,7 @@ package schematic_ops is
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		port_name		: in type_port_name.bounded_string) -- CE
+		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
 		return boolean;
 	
 	function exists_device_unit_port (
@@ -198,7 +199,7 @@ package schematic_ops is
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string := to_unit_name (""); -- A
-		port_name		: in type_port_name.bounded_string := to_port_name ("")) -- CE		
+		port_name		: in et_symbols.type_port_name.bounded_string := et_symbols.to_port_name ("")) -- CE		
 		return boolean;						
 
 	function exists_submodule_port (
@@ -622,7 +623,7 @@ package schematic_ops is
 	-- in case exception occurs here.
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		port_name		: in type_port_name.bounded_string) -- CE
+		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
 		return et_libraries.type_port_properties_access;
 	
 	procedure make_netlists (

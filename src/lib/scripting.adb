@@ -71,6 +71,7 @@ with pick_and_place;
 with material;
 with netlists;
 with et_geometry;		use et_geometry; -- due to frequently used keywords
+with et_symbols;
 
 package body scripting is
 	
@@ -966,7 +967,7 @@ package body scripting is
 								point			=> type_point (set (
 													x => to_distance (f (8)),
 													y => to_distance (f (9)))),
-								meaning			=> et_libraries.NAME,
+								meaning			=> et_symbols.NAME,
 								log_threshold	=> log_threshold + 1
 								);
 
@@ -980,7 +981,7 @@ package body scripting is
 								point			=> type_point (set (
 													x => to_distance (f (8)),
 													y => to_distance (f (9)))),
-								meaning			=> et_libraries.VALUE,
+								meaning			=> et_symbols.VALUE,
 								log_threshold	=> log_threshold + 1
 								);
 
@@ -1015,7 +1016,7 @@ package body scripting is
 								point			=> type_point (set (
 													x => to_distance (f (8)),
 													y => to_distance (f (9)))),
-								meaning			=> et_libraries.PURPOSE,
+								meaning			=> et_symbols.PURPOSE,
 								log_threshold	=> log_threshold + 1
 								);
 
@@ -1441,7 +1442,7 @@ package body scripting is
 								device_name		=> to_device_name (f (5)), -- IC1
 								unit_name		=> to_unit_name (f (6)), -- A
 								rotation		=> to_rotation (f (7)), -- 90
-								meaning			=> et_libraries.NAME,
+								meaning			=> et_symbols.NAME,
 								log_threshold	=> log_threshold + 1
 								);
 
@@ -1452,7 +1453,7 @@ package body scripting is
 								device_name		=> to_device_name (f (5)), -- IC1
 								unit_name		=> to_unit_name (f (6)), -- A
 								rotation		=> to_rotation (f (7)), -- 90
-								meaning			=> et_libraries.VALUE,
+								meaning			=> et_symbols.VALUE,
 								log_threshold	=> log_threshold + 1
 								);
 
@@ -1463,7 +1464,7 @@ package body scripting is
 								device_name		=> to_device_name (f (5)), -- IC1
 								unit_name		=> to_unit_name (f (6)), -- A
 								rotation		=> to_rotation (f (7)), -- 90
-								meaning			=> et_libraries.PURPOSE,
+								meaning			=> et_symbols.PURPOSE,
 								log_threshold	=> log_threshold + 1
 								);
 
