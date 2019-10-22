@@ -72,7 +72,7 @@ with et_export;
 with et_csv;
 with conventions;
 with et_text;
-with et_symbols;
+with et_symbols;				use et_symbols;
 
 package body et_kicad is
 
@@ -858,9 +858,9 @@ package body et_kicad is
 	-- the function whether we are dealing with schematic or library fields.
 		line : in type_fields_of_line;
 		schematic : in boolean) -- set false if it is about fields in a library, true if it is about a schematic field	
-		return et_libraries.type_text_meaning is
+		return type_text_meaning is
 
-		meaning : et_libraries.type_text_meaning := et_libraries.MISC;
+		meaning : type_text_meaning := MISC;
 
 		function strip_f ( text : in string) return string is
 		-- removes the heading character from the given string.
@@ -882,10 +882,10 @@ package body et_kicad is
 					-- Then we test the field id.
 					-- The field id must be mapped to the actual field meaning:
 					case type_component_field_id'value (et_string_processing.field (line,2)) is -- "0.."
-						when component_field_reference		=> meaning := et_libraries.NAME;
-						when component_field_value			=> meaning := et_libraries.VALUE;
-						when component_field_package		=> meaning := et_libraries.PACKGE;
-						when component_field_datasheet		=> meaning := et_libraries.DATASHEET;
+						when component_field_reference	=> meaning := NAME;
+						when component_field_value		=> meaning := VALUE;
+						when component_field_package	=> meaning := PACKGE;
+						when component_field_datasheet	=> meaning := DATASHEET;
 						when others => null;
 					end case;
 
@@ -901,10 +901,10 @@ package body et_kicad is
 				if strip_id (et_string_processing.field (line,1)) = component_field_identifier then
 				
 					case type_component_field_id'value (strip_f (et_string_processing.field (line,1))) is
-						when component_field_reference		=> meaning := et_libraries.NAME;
-						when component_field_value			=> meaning := et_libraries.VALUE;
-						when component_field_package		=> meaning := et_libraries.PACKGE;
-						when component_field_datasheet		=> meaning := et_libraries.DATASHEET;
+						when component_field_reference	=> meaning := NAME;
+						when component_field_value		=> meaning := VALUE;
+						when component_field_package	=> meaning := PACKGE;
+						when component_field_datasheet	=> meaning := DATASHEET;
 						when others => null;
 					end case;
 
@@ -976,9 +976,9 @@ package body et_kicad is
 		text : in boolean -- true if it is about the style of a text, false if it is about the style of a field
 		-- Explanation: The style of a text is something like "~" or "Italic".
 		-- The style of a field comes with the letters 2 and 3 of a string like CNN.
-		) return et_libraries.type_text_style is
+		) return type_text_style is
 		
-		a : et_libraries.type_text_style;
+		a : type_text_style;
 		s_field : string (1..2);
 	
 		procedure invalid_style is
@@ -991,20 +991,20 @@ package body et_kicad is
 		case text is
 			when true =>
 				if style_in = text_schematic_style_normal then
-					a := et_libraries.type_text_style'first;
+					a := type_text_style'first;
 				elsif style_in = text_schematic_style_italic then
-					a := et_libraries.italic;
+					a := ITALIC;
 				else
 					invalid_style;
 				end if;
 				
 			when false =>
-				s_field := style_in(style_in'first+1..style_in'last);
+				s_field := style_in (style_in'first + 1 .. style_in'last);
 				
-				if    s_field = field_style_default then 		a := et_libraries.type_text_style'first;
-				elsif s_field = field_style_bold then 			a := et_libraries.bold;
-				elsif s_field = field_style_italic then 		a := et_libraries.italic;
-				elsif s_field = field_style_italic_bold then 	a := et_libraries.italic_bold;
+				if    s_field = field_style_default then 		a := type_text_style'first;
+				elsif s_field = field_style_bold then 			a := BOLD;
+				elsif s_field = field_style_italic then 		a := ITALIC;
+				elsif s_field = field_style_italic_bold then 	a := ITALIC_BOLD;
 				else
 					invalid_style;
 				end if;
@@ -1065,9 +1065,9 @@ package body et_kicad is
 	-- example: DEF 74LS00 IC 0 30 Y Y 4 F N
 	-- In a schematic it is defined by a hash sign:
 	-- example: L P3V3 #PWR07
-		return et_libraries.type_device_appearance is
+		return type_device_appearance is
 		
-		comp_app	: et_libraries.type_device_appearance;
+		comp_app	: type_device_appearance;
 		lca			: type_library_component_appearance;
 
 		procedure invalid_appearance is
@@ -1322,10 +1322,10 @@ package body et_kicad is
 			tmp_unit_add_level	: type_unit_add_level := type_unit_add_level'first; -- CS: rename to unit_add_level
 			tmp_unit_global		: boolean := false; -- specifies if a unit harbors component wide pins (such as power supply) -- CS: rename to unit_global
 			
-			field_reference		: et_libraries.type_text (meaning => NAME); -- CS: should be field_prefix as it contains just the prefix 
-			field_value			: et_libraries.type_text (meaning => value);
-			field_package		: et_libraries.type_text (meaning => packge);
-			field_datasheet		: et_libraries.type_text (meaning => datasheet);
+			field_reference		: et_symbols.type_text (meaning => NAME); -- CS: should be field_prefix as it contains just the prefix 
+			field_value			: et_symbols.type_text (meaning => value);
+			field_package		: et_symbols.type_text (meaning => packge);
+			field_datasheet		: et_symbols.type_text (meaning => datasheet);
 
 			-- "field found flags" go true once the corresponding field was detected
 			-- Evaluated by procedure check_text_fields.
@@ -1964,7 +1964,7 @@ package body et_kicad is
 			function to_field (
 				line 	: in type_fields_of_line;
 				meaning	: in type_text_meaning) 
-				return et_libraries.type_text is
+				return et_symbols.type_text is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
 			-- the meaning as given in parameter "meaning".
 			-- Checks basic properties of text fields (allowed charactes, text size, aligment, ...)
@@ -1975,7 +1975,7 @@ package body et_kicad is
 				use et_text.type_text_content;
 
 				-- instantiate a text field as speficied by given parameter meaning
-				text : et_libraries.type_text (meaning);
+				text : et_symbols.type_text (meaning);
 
 			begin -- to_field
 				-- field #:
@@ -2061,7 +2061,7 @@ package body et_kicad is
 				-- CS: check vert aligment.
 				-- CS: check style.
 			
-				procedure missing_field (meaning : in et_libraries.type_text_meaning) is 
+				procedure missing_field (meaning : in type_text_meaning) is 
 				begin
 					log (ERROR, "text field " & to_string (meaning) & " missing !",
 						console => true);
@@ -2846,33 +2846,33 @@ package body et_kicad is
 						field_prefix_found := true;
 						field_reference := to_field (line => line, meaning => NAME);
 						-- for the log:
-						write_text_properies (et_libraries.type_text (field_reference), log_threshold + 1);
+						write_text_properies (et_symbols.type_text (field_reference), log_threshold + 1);
 
 					-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
-					when value =>
+					when VALUE =>
 						field_value_found := true;
 						field_value := to_field (line => line, meaning => VALUE);
 						
 						-- for the log:
-						write_text_properies (et_libraries.type_text (field_value), log_threshold + 1);
+						write_text_properies (et_symbols.type_text (field_value), log_threshold + 1);
 
 					-- If we have a footprint field like "F2 "bel_resistors:S_0805" 0 -100 50 H V C CNN"
 					-- NOTE: the part before the colon is the containing library. The part after the colon 
 					-- is the actual footprint/package name.
-					when packge =>
+					when PACKGE =>
 
 						field_package_found := true;
 						field_package := to_field (line => line, meaning => packge);
 						-- for the log:
-						write_text_properies (et_libraries.type_text (field_package), log_threshold + 1);
+						write_text_properies (et_symbols.type_text (field_package), log_threshold + 1);
 
 					-- If we have a datasheet field like "F3 "" 0 -100 50 H V C CNN"
-					when datasheet =>
+					when DATASHEET =>
 
 						field_datasheet_found := true;
 						field_datasheet := to_field (line => line, meaning => datasheet);
 						-- for the log:
-						write_text_properies (et_libraries.type_text (field_datasheet), log_threshold + 1);
+						write_text_properies (et_symbols.type_text (field_datasheet), log_threshold + 1);
 
 					when others => null;
 						-- CS: warning about illegal fields ?
@@ -7125,7 +7125,7 @@ package body et_kicad is
 				label.rotation := to_angle (et_string_processing.field (et_kicad.line,5));
 				label.size := mil_to_distance (et_string_processing.field (et_kicad.line,6));
 				label.style := to_text_style (style_in => et_string_processing.field (et_kicad.line,7), text => true);
-				label.width := et_libraries.type_text_line_width'value (et_string_processing.field (et_kicad.line,8));
+				label.width := type_text_line_width'value (et_string_processing.field (et_kicad.line,8));
 
 				next (line_cursor);
 
@@ -7209,7 +7209,7 @@ package body et_kicad is
 				-- build text attributes from size, font and line width
 				label.size := mil_to_distance (et_string_processing.field (et_kicad.line,6));
 				label.style := to_text_style (style_in => et_string_processing.field (et_kicad.line,8), text => true);
-				label.width := et_libraries.type_text_line_width'value (et_string_processing.field (et_kicad.line,9));
+				label.width := type_text_line_width'value (et_string_processing.field (et_kicad.line,9));
 
 				next (line_cursor);
 
@@ -7259,7 +7259,7 @@ package body et_kicad is
 				-- The label header "Text Notes 3400 2800 0 60 Italic 12" and the next line like
 				-- "ERC32 Test Board" is read here. It contains the actual text.
 
-				use et_libraries.pac_text;
+				use et_symbols.pac_text;
 				
 				note : type_text; -- the text note being built
 				rotation : et_coordinates.type_rotation;
@@ -7301,14 +7301,14 @@ package body et_kicad is
 				end if;
 
 				-- set text size and check for excessive size
-				note.size := et_libraries.to_text_size (mil_to_distance (et_string_processing.field (et_kicad.line,6)));
+				note.size := to_text_size (mil_to_distance (et_string_processing.field (et_kicad.line,6)));
 				
 				note.style := to_text_style (style_in => et_string_processing.field (et_kicad.line,7), text => true);
 
 				-- If the line width is too small, assume default and issue warning:
-				if mil_to_distance (et_string_processing.field (et_kicad.line,8)) < type_text_line_width'first then
+				if mil_to_distance (et_string_processing.field (et_kicad.line,8)) < pac_text.type_text_line_width'first then
 					log (WARNING, "Line width too small. Defaulting to minimal width !");
-					note.line_width := type_text_line_width'first;
+					note.line_width := pac_text.type_text_line_width'first;
 				else
 					note.line_width := mil_to_distance (et_string_processing.field (et_kicad.line,8));
 				end if;
@@ -7401,7 +7401,7 @@ package body et_kicad is
 				use et_string_processing;
 
 				reference					: type_device_name;	-- like IC5	
-				appearance					: type_device_appearance := et_libraries.sch; -- CS: why this default ?
+				appearance					: type_device_appearance := SCH; -- CS: why this default ?
 				generic_name_in_lbr			: type_component_generic_name.bounded_string; -- like TRANSISTOR_PNP
 
 				-- V5:
@@ -7424,12 +7424,12 @@ package body et_kicad is
 
 				-- These are the actual fields that descibe the component more detailled.
 				-- They are contextual validated once the given lines are read completely.
-				field_reference		: et_libraries.type_text (meaning => NAME); -- like IC5 (redundant information with referenc, see above)
-				field_value			: et_libraries.type_text (meaning => VALUE);	-- like 74LS00
-				field_package		: et_libraries.type_text (meaning => PACKGE); -- like "bel_primiteves:S_SOT23"
-				field_datasheet		: et_libraries.type_text (meaning => DATASHEET); -- might be useful for some special components
+				field_reference		: et_symbols.type_text (meaning => NAME); -- like IC5 (redundant information with referenc, see above)
+				field_value			: et_symbols.type_text (meaning => VALUE);	-- like 74LS00
+				field_package		: et_symbols.type_text (meaning => PACKGE); -- like "bel_primiteves:S_SOT23"
+				field_datasheet		: et_symbols.type_text (meaning => DATASHEET); -- might be useful for some special components
 			
-				function to_field return et_libraries.type_text is
+				function to_field return et_symbols.type_text is
 				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
 					text_position : type_point;
 					size : pac_text.type_text_size;
@@ -7461,7 +7461,7 @@ package body et_kicad is
 										
 						size		=> size,
 						style		=> to_text_style (style_in => et_string_processing.field (et_kicad.line,10), text => false),
-						line_width	=> et_libraries.text_line_width_default,
+						line_width	=> text_line_width_default,
 
 						-- build text visibility
 						--visible		=> to_field_visible (
@@ -7482,14 +7482,14 @@ package body et_kicad is
 
 					use conventions;
 				
-					procedure missing_field (m : in et_libraries.type_text_meaning) is 
+					procedure missing_field (m : in type_text_meaning) is 
 					begin
 						log (ERROR,
 								"component " & to_string (reference) 
 								& latin_1.space
 								& to_string (position => position)
 								& latin_1.lf
-								& "text field " & et_libraries.to_string (m) & " missing !",
+								& "text field " & to_string (m) & " missing !",
 							console => true);
 						
 						raise constraint_error;
@@ -7550,7 +7550,7 @@ package body et_kicad is
 					-- NOTE: the reference prefix has been checked already in main of procedure make_component
 					log (text => "reference", level => log_threshold + 1);
 					if not field_reference_found then
-						missing_field (et_libraries.NAME);
+						missing_field (NAME);
 						-- CS: use missing_field (text_reference.meaning); -- apply this to other calls of missing_field too
 					else
 						-- If alternative references have been found, they must be looked up according to the
@@ -7566,10 +7566,10 @@ package body et_kicad is
 						if type_alternative_references.is_empty (alternative_references) then -- no alternative references
 							log (text => "reference " & et_libraries.to_string (reference), level => log_threshold + 1);
 							
-							if et_libraries.to_string (reference) /= et_libraries.content (field_reference) then
+							if et_libraries.to_string (reference) /= content (field_reference) then
 								log (ERROR, "reference mismatch ! Header reads " 
 									& et_libraries.to_string (reference) & " but field contains " 
-									& et_libraries.content (field_reference),
+									& content (field_reference),
 									console => true);
 								raise constraint_error;
 							end if;
@@ -7584,7 +7584,7 @@ package body et_kicad is
 					-- value
 					log (text => "value", level => log_threshold + 1);
 					if not field_value_found then
-						missing_field (et_libraries.value);
+						missing_field (VALUE);
 					else
 						check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_value.size);
 					end if;
@@ -7593,12 +7593,12 @@ package body et_kicad is
 					-- fields to be checked. If it is about a virtual component, those 
 					-- fields are ignored and thus NOT checked:
 					case appearance is
-						when sch_pcb =>
+						when SCH_PCB =>
 								
 							-- package
 							log (text => "package/footprint", level => log_threshold + 1);
 							if not field_package_found then
-								missing_field (et_libraries.packge);
+								missing_field (PACKGE);
 							else
 								check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_package.size);
 								-- CS: check content of field_package
@@ -7614,7 +7614,7 @@ package body et_kicad is
 							-- datasheet
 							log (text => "datasheet", level => log_threshold + 1);
 							if not field_datasheet_found then
-								missing_field (et_libraries.datasheet);
+								missing_field (DATASHEET);
 							else
 								check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_datasheet.size);
 								-- CS: check content of field_datasheet
@@ -8339,7 +8339,7 @@ package body et_kicad is
 						-- might be overwritten once alternative references are found in this sheet.
 						case appearance is
 						
-							when et_libraries.sch => 
+							when SCH => 
 								-- We have a line like "L P3V3 #PWR07".
 								-- Build a reference type from the given reference string.
 								-- Afterward we validate the prefix of the reference. It must be
@@ -8351,7 +8351,7 @@ package body et_kicad is
 								log (text => "reference " & to_string (reference) & " (preliminary)", level => log_threshold);
 								validate_prefix (reference);
 
-							when et_libraries.sch_pcb =>
+							when SCH_PCB =>
 								-- we have a line like "L 74LS00 IC13"
 								-- -- Build a reference type from the given reference string.
 								-- Afterward we validate the prefix of the reference. 
@@ -8364,7 +8364,6 @@ package body et_kicad is
 								log (text => "reference " & to_string (reference) & " (preliminary)", level => log_threshold);
 								
 							when others => -- CS: This should never happen. A subtype of type_device_appearance could be a solution.
-								null;
 								raise constraint_error;
 								
 						end case;
@@ -9179,7 +9178,8 @@ package body et_kicad is
 	begin
 		-- Only vitual components have the power flag property. 
 		-- For real components the return is always false;
-		if et_libraries."=" (type_components_library.element (cursor).appearance, et_libraries.SCH) then
+-- 		if et_libraries."=" (type_components_library.element (cursor).appearance, et_libraries.SCH) then
+		if type_components_library.element (cursor).appearance = SCH then
 			--log (text => "virtual component");
 			--if type_components.element (cursor).power_flag then
 			--	log (text => "power flag on");
@@ -10468,7 +10468,7 @@ package body et_kicad is
 				-- prematurely with a return value "true". If no suitable port found, 
 				-- returns "false".
 					port_cursor_secondary : type_ports.cursor := ports.first;
-					use et_libraries.type_port_name;
+					use type_port_name;
 					use et_schematic;
 				begin
 					-- search the portlist but skip the port of origin
@@ -12075,7 +12075,7 @@ package body et_kicad is
 			
 					-- log reference, port and direction (all in one line)
 					log (text => "reference " & et_libraries.to_string (element (port_cursor).reference)
-						& " port " & et_libraries.to_string (element (port_cursor).name)
+						& " port " & to_string (element (port_cursor).name)
 						& to_string (element (port_cursor).direction, preamble => true),
 						level => log_threshold + 3);
 
@@ -12101,20 +12101,21 @@ package body et_kicad is
 
 					-- Count ports by component category (address real components only)
 					--if element (port_cursor).appearance = et_libraries.sch_pcb then
-					if et_libraries."=" (element (port_cursor).appearance, et_libraries.sch_pcb) then
+					--if et_libraries."=" (element (port_cursor).appearance, et_libraries.sch_pcb) then
+					if element (port_cursor).appearance = SCH_PCB then
 						case category (element (port_cursor).reference) is
 
 							-- count "connectives"
-							when connector			=> increment (connector_count);
-							when testpoint			=> increment (testpoint_count);
-							when jumper				=> increment (jumper_count);
-							when switch				=> increment (switch_count);
+							when CONNECTOR			=> increment (connector_count);
+							when TESTPOINT			=> increment (testpoint_count);
+							when JUMPER				=> increment (jumper_count);
+							when SWITCH				=> increment (switch_count);
 
 							-- count resistors
-							when resistor			=> increment (resistor_count);
-							when resistor_network	=> increment (resistor_count);
+							when RESISTOR			=> increment (resistor_count);
+							when RESISTOR_NETWORK	=> increment (resistor_count);
 							
-							when integrated_circuit	=> increment (ic_count);
+							when INTEGRATED_CIRCUIT	=> increment (ic_count);
 							
 							when others 			=> increment (others_count);
 						end case;
@@ -12290,7 +12291,7 @@ package body et_kicad is
 				net_name	: in type_net_name.bounded_string;
 				ports		: in type_ports_with_reference.set) is
 				port_cursor : type_ports_with_reference.cursor;
-				use et_libraries.type_port_name;
+				use type_port_name;
 				use type_ports_with_reference;
 			begin -- query_ports
 				log (text => "querying ports ...", level => log_threshold + 2);
@@ -12347,7 +12348,7 @@ package body et_kicad is
 				-- If no port was found, issue warning.
 				if not net_found then
 					log (WARNING, "module " & to_string (module_name) 
-						& " port " & et_libraries.to_string (port.name) & " is not connected with any net !");
+						& " port " & to_string (port.name) & " is not connected with any net !");
 				end if;
 					
 			else
@@ -12359,7 +12360,7 @@ package body et_kicad is
 		
 	begin -- connected_net
 		log (text => "locating in module " & to_string (port.module) & " net connected with " 
-			& et_libraries.to_string (port.reference) & " port " & et_libraries.to_string (port.name) & " ...",
+			& et_libraries.to_string (port.reference) & " port " & to_string (port.name) & " ...",
 			level => log_threshold);
 		log_indentation_up;
 
@@ -12520,7 +12521,7 @@ package body et_kicad is
 									
 										log_indentation_up;
 										log (text => "probing " & et_libraries.to_string (component) 
-											& " port " & et_libraries.to_string (element (port_cursor).name)
+											& " port " & to_string (element (port_cursor).name)
 											& latin_1.space
 											& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
 											level => log_threshold + 5);
@@ -12530,7 +12531,7 @@ package body et_kicad is
 											log_indentation_up;
 										
 											log (text => "connected with " & et_libraries.to_string (component) 
-												& " port " & et_libraries.to_string (element (port_cursor).name)
+												& " port " & to_string (element (port_cursor).name)
 												& latin_1.space
 												& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
 												level => log_threshold + 3);
@@ -12876,7 +12877,7 @@ package body et_kicad is
 						variant_name 	: in et_libraries.type_component_variant_name.bounded_string;
 						variant 		: in et_libraries.type_component_variant) is
 						use et_libraries.type_terminal_port_map;
-						use et_libraries.type_port_name;
+						use type_port_name;
 						terminal_cursor : et_libraries.type_terminal_port_map.cursor := variant.terminal_port_map.first;
 						terminal_found : boolean := false;
 					begin
