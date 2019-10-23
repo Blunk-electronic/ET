@@ -171,12 +171,9 @@ package et_kicad is
 		VALUE,			-- for component values like "200R"
 		PACKGE,			-- for component packages like SOT23
 		DATASHEET,		-- for url to datasheet
-		PURPOSE,		-- for the purpose of the component in the design.
-		MISC); -- CS: others ?
-	-- CS: The type_text_meaning covers more than actually required by ET.
-	-- It also includes text meanings of kicad. Rework required !
+		PURPOSE);		-- for the purpose of the component in the design.
 	
-	text_meaning_default : constant type_text_meaning := MISC;
+	text_meaning_default : constant type_text_meaning := NAME;
 	
 	function to_string (meaning : in type_text_meaning) return string;
 	function to_text_meaning (meaning : in string) return type_text_meaning;
@@ -232,7 +229,8 @@ package et_kicad is
 	
 	
 	-- A kicad unit:
-	type type_unit_schematic (appearance : et_schematic.type_appearance_schematic) is record
+	type type_unit_schematic is record
+		appearance	: et_schematic.type_appearance_schematic;
 		rotation	: et_coordinates.type_rotation := et_coordinates.geometry.zero_rotation;
 		mirror		: et_schematic.type_mirror := et_schematic.NO;
 		position	: kicad_coordinates.type_position;		
@@ -256,7 +254,7 @@ package et_kicad is
 	
 	-- Units of a component are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
-	package type_units_schematic is new indefinite_ordered_maps (
+	package type_units_schematic is new ordered_maps (
 		key_type		=> et_libraries.type_unit_name.bounded_string,
 		"<"				=> et_libraries.type_unit_name."<",
 		element_type	=> type_unit_schematic);

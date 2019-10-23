@@ -879,7 +879,7 @@ package body et_kicad is
 		schematic	: in boolean) -- set false if it is about fields in a library, true if it is about a schematic field	
 		return type_text_meaning is
 
-		meaning : type_text_meaning := MISC;
+		meaning : type_text_meaning := NAME;
 
 		function strip_f ( text : in string) return string is
 		-- removes the heading character from the given string.
