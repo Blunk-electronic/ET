@@ -67,6 +67,7 @@ with conventions;
 with material;
 with netlists;
 with device_rw;
+with et_symbols;			--use et_symbols;
 
 package body schematic_ops is
 
@@ -213,6 +214,7 @@ package body schematic_ops is
 		use et_pcb_coordinates;
 		use et_pcb_coordinates.geometry;
 		use et_schematic.type_devices;
+		use et_symbols;
 	begin
 		if element (device_cursor).appearance = SCH_PCB then
 			log (text => "location in board:" & 
@@ -251,7 +253,7 @@ package body schematic_ops is
 	-- Deletes ports of the given device in nets.
 		module			: in type_modules.cursor;		-- the module
 		device			: in type_device_name;			-- the device
-		ports			: in et_libraries.type_ports.map := et_libraries.type_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
+		ports			: in et_symbols.type_ports.map := et_symbols.type_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
 		sheets			: in type_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
 		log_threshold	: in type_log_level) is
 
@@ -284,6 +286,7 @@ package body schematic_ops is
 									ports_new : type_ports_device.set;
 									
 									procedure query_port (port_cursor : in type_ports_device.cursor) is
+										use et_symbols;
 										port : type_port_device := element (port_cursor); -- take a copy of the port
 									begin -- query_port
 										if port.device_name = device then -- on match just report the port and skip it
@@ -291,7 +294,7 @@ package body schematic_ops is
 											log_indentation_up;
 											
 											if dedicated_ports then
-												if et_libraries.type_ports.contains (ports, port.port_name) then
+												if et_symbols.type_ports.contains (ports, port.port_name) then
 													log (text => "delete port " & to_string (port.port_name), level => log_threshold + 3);
 												else
 													ports_new.insert (port); -- all other ports are collected in ports_new.
@@ -365,7 +368,7 @@ package body schematic_ops is
 
 		-- If ports are provided, we have to delete exactly those in list "ports".
 		-- The flag dedicated_ports is later required in order to do this job:
-		if et_libraries.type_ports.length (ports) > 0 then
+		if et_symbols.type_ports.length (ports) > 0 then
 			dedicated_ports := true;
 		end if;
 		
@@ -445,9 +448,10 @@ package body schematic_ops is
 	-- to the center of the unit.
 		device_cursor	: in et_schematic.type_devices.cursor;
 		unit_name		: in type_unit_name.bounded_string)
-		return et_libraries.type_ports.map is
+		return et_symbols.type_ports.map is
 
-		ports : et_libraries.type_ports.map; -- to be returned
+		use et_symbols;
+		ports : et_symbols.type_ports.map; -- to be returned
 		
 		model : type_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
 		device_cursor_lib : et_libraries.type_devices.cursor;
@@ -495,7 +499,7 @@ package body schematic_ops is
 				-- Fetch the ports of the external unit.
 				-- CS: constraint_error arises here if symbol model could not be located.
 				type_symbols.query_element (
-					position	=> et_libraries.type_symbols.find (et_libraries.symbols, sym_model),
+					position	=> type_symbols.find (symbols, sym_model),
 					process		=> query_symbol'access);
 			end if;
 			
@@ -517,7 +521,7 @@ package body schematic_ops is
 			process		=> query_external_units'access);
 
 		-- If unit could not be found among external units then look up the internal units:
-		if et_libraries.type_ports.length (ports) = 0 then
+		if et_symbols.type_ports.length (ports) = 0 then
 
 			-- Query internal units of device (in library):
 			et_libraries.type_devices.query_element (
@@ -526,7 +530,7 @@ package body schematic_ops is
 		end if;
 
 		-- If still no ports found, we have a problem:
-		if et_libraries.type_ports.length (ports) = 0 then
+		if et_symbols.type_ports.length (ports) = 0 then
 			raise constraint_error;
 		end if;
 		
@@ -542,10 +546,11 @@ package body schematic_ops is
 
 	procedure move_ports ( -- CS move to et_libraries
 	-- Moves the given unit ports by given offset.
-		ports	: in out et_libraries.type_ports.map; -- the portlist
+		ports	: in out et_symbols.type_ports.map; -- the portlist
 		offset	: in et_coordinates.type_position) -- the offset (only x/y matters)
 		is
-		use et_libraries.type_ports;
+		use et_symbols;
+		use et_symbols.type_ports;
 
 		procedure move (
 			name	: in type_port_name.bounded_string;
@@ -554,7 +559,7 @@ package body schematic_ops is
 			move (port.position, offset);
 		end;
 
-		procedure query_port (cursor : in et_libraries.type_ports.cursor) is begin
+		procedure query_port (cursor : in et_symbols.type_ports.cursor) is begin
 			update_element (
 				container	=> ports,
 				position	=> cursor,
@@ -569,7 +574,7 @@ package body schematic_ops is
 	-- Returns the sheet/x/y position of the given device and port.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC34
-		port_name		: in type_port_name.bounded_string; -- CE
+		port_name		: in et_symbols.type_port_name.bounded_string; -- CE
 		log_threshold	: in type_log_level)
 		return et_coordinates.type_position is
 
@@ -592,9 +597,9 @@ package body schematic_ops is
 				unit_cursor : type_units.cursor := device.units.first;
 				unit_name : type_unit_name.bounded_string;
 				
-				use et_libraries.type_ports;
-				ports : et_libraries.type_ports.map;
-				port_cursor : et_libraries.type_ports.cursor;
+				use et_symbols.type_ports;
+				ports : et_symbols.type_ports.map;
+				port_cursor : et_symbols.type_ports.cursor;
 			begin
 				-- Locate unit in schematic device:
 				while unit_cursor /= type_units.no_element loop
@@ -651,6 +656,8 @@ package body schematic_ops is
 				device_not_found (device_name);
 			end if;
 		end query_devices;
+
+		use et_symbols;
 		
 	begin -- position
 		log (text => "module " & to_string (module_name) &
@@ -852,7 +859,7 @@ package body schematic_ops is
 			-- There will be only one unit in this container.
 			position_of_unit : type_unit_positions.map;
 
-			ports : et_libraries.type_ports.map;
+			ports : et_symbols.type_ports.map;
 
 			procedure query_units (
 				device_name	: in type_device_name;
@@ -1001,7 +1008,7 @@ package body schematic_ops is
 	-- jet and probably not a good idea.
 		module			: in type_modules.cursor;		-- the module
 		device			: in type_device_name;			-- the device
-		ports			: in et_libraries.type_ports.map; -- the ports to be inserted
+		ports			: in et_symbols.type_ports.map; -- the ports to be inserted
 		sheet			: in type_sheet;	-- the sheet to look at
 		log_threshold	: in type_log_level) is
 
@@ -1020,8 +1027,9 @@ package body schematic_ops is
 					use type_strands;
 					strand_cursor : type_strands.cursor;
 
-					use et_libraries.type_ports;
-					port_cursor : et_libraries.type_ports.cursor := ports.first;
+					use et_symbols;
+					use et_symbols.type_ports;
+					port_cursor : et_symbols.type_ports.cursor := ports.first;
 
 					port_processed : boolean;
 					
@@ -1079,7 +1087,7 @@ package body schematic_ops is
 				
 				begin -- query_strands
 					-- loop in portlist
-					while port_cursor /= et_libraries.type_ports.no_element loop
+					while port_cursor /= et_symbols.type_ports.no_element loop
 						-- CS: If the current net is not on the targeted sheet then this log message
 						-- is issued many times without providing any useful information. Rework required:
 						log (text => "probing port " & to_string (key (port_cursor)), level => log_threshold + 1);
@@ -1172,7 +1180,7 @@ package body schematic_ops is
 
 			position_of_unit_new : et_coordinates.type_position;
 
-			ports : et_libraries.type_ports.map;
+			ports : et_symbols.type_ports.map;
 
 			procedure query_units (
 				device_name	: in type_device_name;
@@ -1310,11 +1318,13 @@ package body schematic_ops is
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
-		meaning			: in et_libraries.type_text_meaning; -- name, value, purpose
+		meaning			: in et_symbols.type_text_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
+		use et_symbols;
+		
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
@@ -1439,10 +1449,11 @@ package body schematic_ops is
 
 	procedure rotate_ports ( -- CS move to et_libraries
 	-- Rotates the given unit ports by given angle around the origin.
-		ports	: in out et_libraries.type_ports.map; -- the portlist
-		angle	: in et_coordinates.type_rotation) -- 90
-		is
-		use et_libraries.type_ports;
+		ports	: in out et_symbols.type_ports.map; -- the portlist
+		angle	: in et_coordinates.type_rotation) is -- 90
+
+		use et_symbols;
+		use et_symbols.type_ports;
 
 		procedure rotate (
 			name	: in type_port_name.bounded_string;
@@ -1451,7 +1462,7 @@ package body schematic_ops is
 			geometry.rotate (port.position, angle);
 		end;
 
-		procedure query_port (cursor : in et_libraries.type_ports.cursor) is begin
+		procedure query_port (cursor : in et_symbols.type_ports.cursor) is begin
 			update_element (
 				container	=> ports,
 				position	=> cursor,
@@ -1484,7 +1495,7 @@ package body schematic_ops is
 			position_of_unit : et_coordinates.type_position;
 			rotation_before : et_coordinates.type_rotation;
 
-			ports_lib, ports_scratch : et_libraries.type_ports.map;
+			ports_lib, ports_scratch : et_symbols.type_ports.map;
 
 			procedure query_units (
 				device_name	: in type_device_name;
@@ -1654,11 +1665,13 @@ package body schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		rotation		: in et_coordinates.type_rotation_text; -- absolute ! -- 90
-		meaning			: in et_libraries.type_text_meaning; -- name, value, purpose		
+		meaning			: in et_symbols.type_text_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module being modified
 
+		use et_symbols;
+		
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
@@ -1676,7 +1689,7 @@ package body schematic_ops is
 					unit	: in out type_unit) is
 				begin -- rotate_placeholder
 					case meaning is
-						when et_libraries.NAME =>
+						when et_symbols.NAME =>
 							unit.name.rotation := rotation;
 							
 						when VALUE =>
@@ -1755,6 +1768,7 @@ package body schematic_ops is
 
 			procedure query_net (net_cursor : in type_nets.cursor) is
 				use type_nets;
+				use et_symbols;
 
 				procedure query_strands (
 					net_name	: in type_net_name.bounded_string;
@@ -2011,12 +2025,13 @@ package body schematic_ops is
 		-- The criteria for movement are: no netchanger port, no device port, no submodule ports there.
 		-- The only port allowed at a individual drag point is the port-to-be-dragged itself.
 			location 	: in et_coordinates.type_position; -- only sheet number matters
-			unit_ports	: in et_libraries.type_ports.map)
+			unit_ports	: in et_symbols.type_ports.map)
 			is
-			use et_libraries.type_ports;
-			port_cursor : et_libraries.type_ports.cursor := unit_ports.first;
+			use et_symbols;
+			use et_symbols.type_ports;
+			port_cursor : et_symbols.type_ports.cursor := unit_ports.first;
 
-			procedure test_point (port_cursor : in et_libraries.type_ports.cursor) is
+			procedure test_point (port_cursor : in et_symbols.type_ports.cursor) is
 				point : et_coordinates.type_position; -- the point
 				ports : type_ports;
 				port : et_schematic.type_port_device;
@@ -2073,7 +2088,7 @@ package body schematic_ops is
 			log (text => "movable test ...", level => log_threshold + 1);
 			log_indentation_up;
 
-			while port_cursor /= et_libraries.type_ports.no_element loop
+			while port_cursor /= et_symbols.type_ports.no_element loop
 				test_point (port_cursor);
 				next (port_cursor);
 			end loop;
@@ -2084,8 +2099,8 @@ package body schematic_ops is
 		function make_drag_list ( 
 		-- Merges the two maps ports_old and ports_new to a drag list.
 		-- The resulting drag list tells which port is to be moved from old to new position.
-			ports_old : in et_libraries.type_ports.map;
-			ports_new : in et_libraries.type_ports.map) 
+			ports_old : in et_symbols.type_ports.map;
+			ports_new : in et_symbols.type_ports.map) 
 			return type_drags_of_ports.map is
 			use type_drags_of_ports;
 			drag_list : type_drags_of_ports.map;
@@ -2093,13 +2108,13 @@ package body schematic_ops is
 			-- ports_old and ports_new are both equally long and contain 
 			-- equal keys (the port names). So we use two cursors and advance them
 			-- simultaneously in a loop (see below).
-			use et_libraries.type_ports;
-			cursor_old : et_libraries.type_ports.cursor := ports_old.first;
-			cursor_new : et_libraries.type_ports.cursor := ports_new.first;
+			use et_symbols.type_ports;
+			cursor_old : et_symbols.type_ports.cursor := ports_old.first;
+			cursor_new : et_symbols.type_ports.cursor := ports_new.first;
 		begin
 			-- Loop in ports_old, copy the key to the drag list.
 			-- Take the old position from ports_old and the new position from ports_new:
-			while cursor_old /= et_libraries.type_ports.no_element loop
+			while cursor_old /= et_symbols.type_ports.no_element loop
 				insert (
 					container	=> drag_list,
 					key			=> key (cursor_old), -- the port name
@@ -2127,7 +2142,7 @@ package body schematic_ops is
 			position_of_unit_old : et_coordinates.type_position;	
 			position_of_unit_new : et_coordinates.type_position;
 
-			ports, ports_old, ports_new : et_libraries.type_ports.map;
+			ports, ports_old, ports_new : et_symbols.type_ports.map;
 
 			procedure query_unit_location (
 				device_name	: in type_device_name;
@@ -2503,6 +2518,8 @@ package body schematic_ops is
 			begin
 				device.value := value;
 			end;
+
+			use et_symbols;
 			
 		begin -- query_devices
 			-- locate the device
@@ -2578,6 +2595,8 @@ package body schematic_ops is
 			begin
 				device.purpose := purpose;
 			end;
+
+			use et_symbols;
 			
 		begin -- query_devices
 			-- locate the device
@@ -2644,6 +2663,8 @@ package body schematic_ops is
 			begin
 				device.partcode := partcode;
 			end;
+
+			use et_symbols;
 			
 		begin -- query_devices
 			-- locate the device
@@ -2692,7 +2713,7 @@ package body schematic_ops is
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		port_name		: in type_port_name.bounded_string) -- CE
+		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
 		return boolean is
 
 		result : boolean := false; -- to be returned. goes true once the target has been found
@@ -2704,14 +2725,16 @@ package body schematic_ops is
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor;
 
+			use et_symbols;
+			
 			procedure query_units (
 				device_name	: in type_device_name;
 				device		: in et_schematic.type_device) is
 				use et_schematic.type_units;
 				unit_cursor : et_schematic.type_units.cursor := device.units.first;
-				use et_libraries.type_ports;
-				ports : et_libraries.type_ports.map;
-				use et_libraries.type_port_name;
+				use et_symbols.type_ports;
+				ports : et_symbols.type_ports.map;
+				use type_port_name;
 			begin
 				while unit_cursor /= type_units.no_element loop
 					--log (text => "unit " & type_unit_name.to_string (key (unit_cursor)));
@@ -2757,7 +2780,7 @@ package body schematic_ops is
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string := to_unit_name (""); -- A
-		port_name		: in type_port_name.bounded_string := to_port_name ("")) -- CE
+		port_name		: in et_symbols.type_port_name.bounded_string := et_symbols.to_port_name ("")) -- CE
 		return boolean is
 
 		result : boolean := false; -- to be returned, goes true once the target has been found
@@ -2769,13 +2792,15 @@ package body schematic_ops is
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor;
 
+			use et_symbols;
+			
 			procedure query_units (
 				device_name	: in type_device_name;
 				device		: in et_schematic.type_device) is
 				use et_schematic.type_units;
-				use et_libraries.type_ports;
-				ports : et_libraries.type_ports.map;
-				use et_libraries.type_port_name;
+				use et_symbols.type_ports;
+				ports : et_symbols.type_ports.map;
+				use type_port_name;
 			begin
 				if contains (device.units, unit_name) then
 					if length (port_name) > 0 then -- search for port in unit
@@ -2941,6 +2966,7 @@ package body schematic_ops is
 						-- Queries the positions of the device ports in the old_segment. 
 						-- By the position assigns the ports to the new segments. 
 							use type_ports_device;
+							use et_symbols;
 
 							procedure query_ports (cursor : in type_ports_device.cursor) is
 								device_name 	: type_device_name; -- IC23
@@ -3535,6 +3561,8 @@ package body schematic_ops is
 		use et_libraries.type_devices;
 		device_cursor_lib : et_libraries.type_devices.cursor; -- points to the device in the library
 
+		use et_symbols;
+		
 		procedure add (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
@@ -3593,9 +3621,9 @@ package body schematic_ops is
 			-- The unit to be added is accessed by unit_cursors.ext.
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
-				use et_libraries.type_symbols;
-				symbol_cursor : et_libraries.type_symbols.cursor;
-				symbol_file : et_libraries.type_symbol_model_file.bounded_string; -- *.sym
+				use type_symbols;
+				symbol_cursor : type_symbols.cursor;
+				symbol_file : type_symbol_model_file.bounded_string; -- *.sym
 			begin
 				log (text => "adding external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 				
@@ -3616,7 +3644,7 @@ package body schematic_ops is
 						
 						-- Locate the external symbol in container "symbols".
 						-- The key into symbols is the file name (*.sym).
-						symbol_cursor := et_libraries.type_symbols.find (symbols, symbol_file);
+						symbol_cursor := find (symbols, symbol_file);
 
 						-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
 						-- and constraint_error would arise here:
@@ -3638,7 +3666,7 @@ package body schematic_ops is
 
 			end add_unit_external;
 
-			ports : et_libraries.type_ports.map;
+			ports : et_symbols.type_ports.map;
 			
 		begin -- add
 			log (text => "adding device " & to_string (next_name), level => log_threshold + 1);
@@ -3818,6 +3846,7 @@ package body schematic_ops is
 			use et_schematic.type_devices;
 			device_cursor_sch : et_schematic.type_devices.cursor;
 
+			use et_symbols;
 			use et_libraries.type_devices;
 			device_cursor_lib : et_libraries.type_devices.cursor; -- points to the device in the library
 			
@@ -3826,7 +3855,7 @@ package body schematic_ops is
 			inserted : boolean;
 
 			unit_cursors : type_unit_cursors_lib;
-			ports : et_libraries.type_ports.map;
+			ports : et_symbols.type_ports.map;
 
 			use et_libraries.type_units_internal;
 			use et_libraries.type_units_external;
@@ -3873,9 +3902,9 @@ package body schematic_ops is
 			-- The unit to be added is accessed by unit_cursors.ext.
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
-				use et_libraries.type_symbols;
-				symbol_cursor : et_libraries.type_symbols.cursor;
-				symbol_file : et_libraries.type_symbol_model_file.bounded_string; -- *.sym
+				use type_symbols;
+				symbol_cursor : type_symbols.cursor;
+				symbol_file : type_symbol_model_file.bounded_string; -- *.sym
 			begin
 				log (text => "adding external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 				
@@ -3896,7 +3925,7 @@ package body schematic_ops is
 						
 						-- Locate the external symbol in container "symbols".
 						-- The key into symbols is the file name (*.sym).
-						symbol_cursor := et_libraries.type_symbols.find (symbols, symbol_file);
+						symbol_cursor := find (symbols, symbol_file);
 
 						-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
 						-- and constraint_error would arise here:
@@ -4097,6 +4126,7 @@ package body schematic_ops is
 			-- The unit to be added is accessed by unit_cursors.int.
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
+				use et_symbols;
 			begin
 				log (text => "adding internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
 				
@@ -4134,9 +4164,10 @@ package body schematic_ops is
 			-- The unit to be added is accessed by unit_cursors.ext.
 				device_name	: in type_device_name;
 				device		: in out et_schematic.type_device) is
-				use et_libraries.type_symbols;
-				symbol_cursor : et_libraries.type_symbols.cursor;
-				symbol_file : et_libraries.type_symbol_model_file.bounded_string; -- *.sym
+				use et_symbols;
+				use et_symbols.type_symbols;
+				symbol_cursor : type_symbols.cursor;
+				symbol_file : type_symbol_model_file.bounded_string; -- *.sym
 			begin
 				log (text => "adding external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 				
@@ -4157,7 +4188,7 @@ package body schematic_ops is
 						
 						-- Locate the external symbol in container "symbols".
 						-- The key into symbols is the file name (*.sym).
-						symbol_cursor := et_libraries.type_symbols.find (symbols, symbol_file);
+						symbol_cursor := find (symbols, symbol_file);
 
 						-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
 						-- and constraint_error would arise here:
@@ -4179,7 +4210,7 @@ package body schematic_ops is
 
 			end add_unit_external;
 
-			ports : et_libraries.type_ports.map; -- the positions of the unit ports
+			ports : et_symbols.type_ports.map; -- the positions of the unit ports
 			
 		begin -- query_devices
 			if contains (module.devices, device_name) then -- device exists in schematic
@@ -6043,10 +6074,11 @@ package body schematic_ops is
 					use et_libraries.type_unit_name;
 					unit_position : et_coordinates.type_position;
 -- 					unit_rotation : et_coordinates.type_rotation;
-					ports : et_libraries.type_ports.map;
+					ports : et_symbols.type_ports.map;
 
-					procedure query_port (port_cursor : in et_libraries.type_ports.cursor) is
-						use et_libraries.type_ports;
+					procedure query_port (port_cursor : in et_symbols.type_ports.cursor) is
+						use et_symbols;
+						use et_symbols.type_ports;
 					begin
 						log (text => "port " & to_string (key (port_cursor)) &
 							 " at" & to_string (element (port_cursor).position),
@@ -6090,7 +6122,7 @@ package body schematic_ops is
 
 						move_ports (ports, unit_position);
 
-						et_libraries.type_ports.iterate (ports, query_port'access);
+						et_symbols.type_ports.iterate (ports, query_port'access);
 
 						log_indentation_down;
 					end if;
@@ -11679,6 +11711,7 @@ package body schematic_ops is
 
 						use et_schematic.type_devices;
 						use assembly_variants.type_devices;
+						use et_symbols;
 					begin -- query_properties_default
 
 						-- the device must be real (appearance SCH_PCB)
@@ -11700,9 +11733,9 @@ package body schematic_ops is
 									container	=> bill_of_material,
 									key			=> device_name, -- IC4, R3
 									new_item	=> (
-										value		=> element (cursor_schematic).value,
-										partcode	=> element (cursor_schematic).partcode,
-										purpose		=> element (cursor_schematic).purpose,
+										value		=> element (cursor_schematic).VALUE,
+										partcode	=> element (cursor_schematic).PARTCODE,
+										purpose		=> element (cursor_schematic).PURPOSE,
 										packge		=> et_schematic.package_model (cursor_schematic)),
 									position	=> cursor_bom,
 									inserted	=> inserted);
@@ -11719,6 +11752,7 @@ package body schematic_ops is
 						use et_schematic.type_devices;
 						alt_dev_cursor : assembly_variants.type_devices.cursor;
 						use assembly_variants.type_devices;
+						use et_symbols;
 					begin -- query_properties_variants
 
 						-- the device must be real (appearance SCH_PCB)
@@ -12033,14 +12067,16 @@ package body schematic_ops is
 	-- in case exception occurs here.
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		port_name		: in type_port_name.bounded_string) -- CE
+		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
 		return et_libraries.type_port_properties_access is
 
 		properties : type_port_properties_access; -- to be returned
 		
 		terminal_name : et_libraries.type_terminal_name.bounded_string;
-		port_direction : et_libraries.type_port_direction := et_libraries.PASSIVE;
-		port_properties_cursor : et_libraries.type_ports.cursor;
+
+		use et_symbols;
+		port_direction : type_port_direction := PASSIVE;
+		port_properties_cursor : et_symbols.type_ports.cursor;
 
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
@@ -12081,7 +12117,7 @@ package body schematic_ops is
 				
 			end query_variants;
 
-			use et_libraries.type_ports;
+			use et_symbols.type_ports;
 			
 		begin -- query_devices
 			-- locate device in schematic
@@ -12766,15 +12802,16 @@ package body schematic_ops is
 
 			procedure collect_device_port (
 				port	: in type_port_device;
-				net		: in type_net_name.bounded_string)
-			is begin
+				net		: in type_net_name.bounded_string) is 
+				use et_symbols;
+			begin
 			-- Collect device ports. exception will be raised of port occurs more than once.
 				insert (device_port_collector, port);
 
 				exception when event: others =>
 					log (ERROR, "net " & to_string (net) &
 						" device " & et_libraries.to_string (port.device_name) &
-						" port " & et_libraries.to_string (port.port_name) &
+						" port " & to_string (port.port_name) &
 						" already used !",
 						console => true);
 					-- CS: show the net, sheet, xy where the port is in use already
@@ -12848,9 +12885,11 @@ package body schematic_ops is
 							procedure query_segment (segment_cursor : in type_net_segments.cursor) is
 
 								procedure query_ports_devices (segment : in type_net_segment) is
-									procedure query_port (port_cursor : in type_ports_device.cursor) is begin
+									procedure query_port (port_cursor : in type_ports_device.cursor) is 
+										use et_symbols;
+									begin
 										log (text => "device " & et_libraries.to_string (element (port_cursor).device_name) &
-											 " port " & et_libraries.to_string (element (port_cursor).port_name), level => log_threshold + 4);
+											 " port " & to_string (element (port_cursor).port_name), level => log_threshold + 4);
 
 										if not exists_device_port (
 											module_cursor	=> module_cursor,
@@ -12860,7 +12899,7 @@ package body schematic_ops is
 											error;
 											
 											log (ERROR, "device " & et_libraries.to_string (element (port_cursor).device_name) &
-												 " port " & et_libraries.to_string (element (port_cursor).port_name) &
+												 " port " & to_string (element (port_cursor).port_name) &
 												 " does not exist !");
 										end if;
 

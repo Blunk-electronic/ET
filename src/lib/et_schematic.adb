@@ -56,6 +56,7 @@ with et_export;
 with et_import;
 with et_csv;
 with et_packages;
+with et_symbols;
 
 package body et_schematic is
 	use et_coordinates.geometry;
@@ -68,7 +69,7 @@ package body et_schematic is
 
 	function "<" (left, right : in type_port_device) return boolean is
 		use et_libraries;
-		use et_libraries.type_port_name;
+		use et_symbols.type_port_name;
 	begin
 		if left.device_name < right.device_name then
 			return true;

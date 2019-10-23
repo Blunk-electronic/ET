@@ -67,6 +67,7 @@ with et_pcb_coordinates;
 with et_string_processing;		use et_string_processing;
 with et_text;
 with et_kicad;
+with et_symbols;
 
 package body et_kicad_pcb is
 
@@ -7966,6 +7967,8 @@ package body et_kicad_pcb is
 					end loop;
 					
 				end transfer_floating_polygons;
+
+				use et_symbols;
 				
 			begin -- add_board_objects
 				-- General board stuff (not related to any components) is
@@ -8018,7 +8021,8 @@ package body et_kicad_pcb is
 
 					-- We are interested in real components only. Virtual schematic components
 					-- do not appear in a board and thus are skipped.
-					if et_libraries."=" (element (component_cursor).appearance, et_libraries.sch_pcb) then
+					--if et_libraries."=" (element (component_cursor).appearance, et_libraries.sch_pcb) then
+					if element (component_cursor).appearance = SCH_PCB then
 
 						-- set package reference as the component reference (from schematic)
 						package_reference := key (component_cursor);
@@ -8085,7 +8089,6 @@ package body et_kicad_pcb is
 				log_indentation_down;
 				
 			end add_board_objects;
-
 			
 		begin -- merge_board_and_schematic
 			log (text => "merging board and schematic ...", level => log_threshold + 1);

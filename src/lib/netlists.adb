@@ -66,6 +66,7 @@ with et_csv;					use et_csv;
 -- with et_pcb_coordinates;
 with submodules;
 -- with numbering;
+with et_symbols;
 
 package body netlists is
 	
@@ -79,7 +80,7 @@ package body netlists is
 
 	function "<" (left, right : in type_device_port_extended) return boolean is
 		use et_libraries;
-		use type_port_name;
+		use et_symbols.type_port_name;
 		result : boolean := false;
 	begin
 		if left.device < right.device then
@@ -789,11 +790,12 @@ package body netlists is
 			procedure query_device (port_cursor : in type_device_ports_extended.cursor) is
 			-- Writes the device port in the netlist file.
 				use type_device_ports_extended;
+				use et_symbols;
 			begin
 				put_line (netlist_handle, -- IC1 CE input H5
 					et_libraries.to_string (element (port_cursor).device) & latin_1.space &
-					et_libraries.to_string (element (port_cursor).port) & latin_1.space &
-					et_libraries.to_string (element (port_cursor).direction) & latin_1.space &
+					to_string (element (port_cursor).port) & latin_1.space &
+					to_string (element (port_cursor).direction) & latin_1.space &
 					et_libraries.to_string (element (port_cursor).terminal) & latin_1.space);
 					-- CS .characteristics
 			end;

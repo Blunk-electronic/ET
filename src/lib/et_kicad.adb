@@ -12968,11 +12968,12 @@ package body et_kicad is
 	begin -- to_terminal
 		log (text => "locating in module " & to_string (module) & " terminal (according to package variant) for " 
 			& et_libraries.to_string (port.reference) 
-			& " port " & et_libraries.to_string (port.name) & " ...", level => log_threshold);
+			& " port " & to_string (port.name) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		-- Abort if given port is not a real component.
-		if et_libraries."=" (port.appearance, et_libraries.sch_pcb) then -- real component
+		--if et_libraries."=" (port.appearance, et_libraries.sch_pcb) then -- real component
+		if port.appearance = SCH_PCB then -- real component			
 
 			query_element (
 				position	=> find (modules, module), -- sets indirectly the cursor to the module
@@ -13045,7 +13046,7 @@ package body et_kicad is
 						variant_name 	: in et_libraries.type_component_variant_name.bounded_string;
 						variant 		: in et_libraries.type_component_variant) is
 						use et_libraries.type_terminal_port_map;
-						use et_libraries.type_port_name;
+						use type_port_name;
 						terminal_cursor : et_libraries.type_terminal_port_map.cursor;
 					begin -- locate_terminal
 						terminal_cursor := variant.terminal_port_map.find (terminal);
@@ -13056,7 +13057,7 @@ package body et_kicad is
 							port.reference := reference; -- the given component reference
 							port.name := element (terminal_cursor).name; -- the port name
 							
-							log (text => "port name " & et_libraries.to_string (port.name), level => log_threshold + 4);
+							log (text => "port name " & et_symbols.to_string (port.name), level => log_threshold + 4);
 						else
 							log (ERROR, "terminal " & et_libraries.to_string (terminal) & " not found !",
 								 console => true);
@@ -13240,12 +13241,12 @@ package body et_kicad is
 							-- Depending on the appearance of the component we output just the 
 							-- port name or both the terminal name and the port name.
 							case port.appearance is
-								when et_libraries.sch_pcb =>
+								when SCH_PCB =>
 									terminal := to_terminal (port, module_name, log_threshold + 3); -- fetch the terminal
 									log (text => to_string (port => port) 
 										& et_libraries.to_string (terminal, show_unit => true, preamble => true));
 
-								when et_libraries.sch =>
+								when SCH =>
 									log (text => to_string (port => port));
 							end case;
 								
@@ -13338,7 +13339,8 @@ package body et_kicad is
 					while type_ports_with_reference."/=" (port_cursor, type_ports_with_reference.no_element) loop
 						port := type_ports_with_reference.element (port_cursor); -- load the port
 					
-						if et_libraries."=" (port.appearance, et_libraries.sch_pcb) then
+						--if et_libraries."=" (port.appearance, et_libraries.sch_pcb) then
+						if port.appearance = SCH_PCB then
 							ports_real.insert (port); -- insert real port in list to be returned
 
 							-- log terminal
@@ -13836,10 +13838,10 @@ package body et_kicad is
 			log (text => "size" & pac_text.to_string (note.size));
 
 			-- style
-			log (text => "style " & to_lower (et_libraries.type_text_style'image (note.style)));
+			log (text => "style " & to_lower (to_string (note.style)));
 
 			-- line width
-			log (text => "line width" & et_libraries.type_text_line_width'image (note.line_width));
+			log (text => "line width" & pac_text.to_string (note.line_width));
 
 			-- rotation
 			log (text => "rotation" & geometry.to_string (note.rotation));
