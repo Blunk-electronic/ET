@@ -166,21 +166,22 @@ package et_kicad is
 	type type_de_morgan_representation is (NO, YES);
 
 
-	type type_text_meaning is (
+	-- Placeholders for texts have a meaning:
+	type type_placeholder_meaning is (
 		NAME,			-- for things like R301 or X9
 		VALUE,			-- for component values like "200R"
 		PACKGE,			-- for component packages like SOT23
 		DATASHEET,		-- for url to datasheet
 		PURPOSE);		-- for the purpose of the component in the design.
 	
-	text_meaning_default : constant type_text_meaning := NAME;
+	placeholder_meaning_default : constant type_placeholder_meaning := NAME;
 	
-	function to_string (meaning : in type_text_meaning) return string;
-	function to_text_meaning (meaning : in string) return type_text_meaning;
+	function to_string (meaning : in type_placeholder_meaning) return string;
+	function to_meaning (meaning : in string) return type_placeholder_meaning;
 
 
-	text_size_min : constant et_coordinates.geometry.type_distance_positive := 1.0;
-	text_size_max : constant et_coordinates.geometry.type_distance_positive := 50.0;
+	text_size_min : constant et_coordinates.geometry.type_distance_positive := 0.1;
+	text_size_max : constant et_coordinates.geometry.type_distance_positive := 100.0;
 	text_size_default : constant et_coordinates.geometry.type_distance_positive := 1.3;
 	
 	subtype type_text_line_width is et_coordinates.geometry.type_distance_positive range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
@@ -206,22 +207,13 @@ package et_kicad is
 		rotation	: et_coordinates.type_rotation := 0.0;
 	end record;
 
-	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with record
+	type type_text_placeholder (meaning : type_placeholder_meaning) is new type_text_basic with record
 		position	: et_coordinates.geometry.type_point;		
 	end record;	
-	
--- 	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with record
--- 		position : type_point;
--- 	end record;	
-
--- 	type type_text is new type_text_placeholder with record
---         content		: et_text.type_text_content.bounded_string;
--- 	end record;	
 	
 	-- A text/note in the schematic:
 	type type_text is new type_text_basic with record
 		position	: kicad_coordinates.type_position;
--- 		content		: et_text.type_text_content.bounded_string;
 	end record;
 
 	function content (text : in type_text_placeholder) return string;

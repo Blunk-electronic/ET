@@ -120,13 +120,13 @@ package body et_kicad is
 	end module_not_found;
 
 	
-	function to_string (meaning : in type_text_meaning) return string is begin
-		return to_lower (type_text_meaning'image (meaning));
-	end to_string;
+	function to_string (meaning : in type_placeholder_meaning) return string is begin
+		return to_lower (type_placeholder_meaning'image (meaning));
+	end;
 
-	function to_text_meaning (meaning : in string) return type_text_meaning is begin
-		return type_text_meaning'value (meaning);
-	end to_text_meaning;
+	function to_meaning (meaning : in string) return type_placeholder_meaning is begin
+		return type_placeholder_meaning'value (meaning);
+	end;
 
 	function content (text : in type_text_placeholder) return string is
 	-- Returns the content of the given text placeholder as string.
@@ -877,9 +877,9 @@ package body et_kicad is
 	-- the function whether we are dealing with schematic or library fields.
 		line 		: in type_fields_of_line;
 		schematic	: in boolean) -- set false if it is about fields in a library, true if it is about a schematic field	
-		return type_text_meaning is
+		return type_placeholder_meaning is
 
-		meaning : type_text_meaning := NAME;
+		meaning : type_placeholder_meaning := placeholder_meaning_default;
 
 		function strip_f ( text : in string) return string is
 		-- removes the heading character from the given string.
@@ -1982,7 +1982,7 @@ package body et_kicad is
 					
 			function to_field (
 				line 	: in type_fields_of_line;
-				meaning	: in type_text_meaning) 
+				meaning	: in type_placeholder_meaning) 
 				return type_text_placeholder is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
 			-- the meaning as given in parameter "meaning".
@@ -2080,7 +2080,7 @@ package body et_kicad is
 				-- CS: check vert aligment.
 				-- CS: check style.
 			
-				procedure missing_field (meaning : in type_text_meaning) is 
+				procedure missing_field (meaning : in type_placeholder_meaning) is 
 				begin
 					log (ERROR, "text field " & to_string (meaning) & " missing !",
 						console => true);
@@ -7499,7 +7499,7 @@ package body et_kicad is
 
 					use conventions;
 				
-					procedure missing_field (m : in type_text_meaning) is begin
+					procedure missing_field (m : in type_placeholder_meaning) is begin
 						log (ERROR,
 								"component " & to_string (reference) 
 								& latin_1.space
