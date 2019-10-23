@@ -2509,6 +2509,9 @@ package body et_kicad is
 					-- The component text fields as given in the component section look like "F0 "IC" 0 50 50 H V C BIB".
 					-- The content (in this example "IC") is not relevant here as it applies for the whole component.
 					-- We convert the kicad text placeholder to a native text placeholder (omitting the content).
+
+					-- The kicad placeholders are now converted to ET native placeholders:
+					
 					unit.symbol.name := (
 							meaning		=> NAME,
 							position	=> field_reference.position,
@@ -8052,8 +8055,8 @@ package body et_kicad is
 									timestamp		=> timestamp,
 									alt_repres		=> alternative_representation,
 
-									-- placeholders:
-									-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
+									-- The kicad placeholders are now converted to ET native placeholders:
+								
 									reference		=> (
 											meaning		=> NAME,
 											position	=> field_reference.position,
