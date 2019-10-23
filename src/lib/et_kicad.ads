@@ -165,6 +165,72 @@ package et_kicad is
 	-- Units may have alternative representations such as de_Morgan
 	type type_de_morgan_representation is (NO, YES);
 
+
+	type type_text_meaning is (
+		NAME,			-- for things like R301 or X9
+		VALUE,			-- for component values like "200R"
+		PACKGE,			-- for component packages like SOT23
+		DATASHEET,		-- for url to datasheet
+		PURPOSE,		-- for the purpose of the component in the design.
+		MISC); -- CS: others ?
+	-- CS: The type_text_meaning covers more than actually required by ET.
+	-- It also includes text meanings of kicad. Rework required !
+	
+	text_meaning_default : constant type_text_meaning := MISC;
+	
+	function to_string (meaning : in type_text_meaning) return string;
+	function to_text_meaning (meaning : in string) return type_text_meaning;
+
+
+	text_size_min : constant et_coordinates.geometry.type_distance_positive := 1.0;
+	text_size_max : constant et_coordinates.geometry.type_distance_positive := 50.0;
+	text_size_default : constant et_coordinates.geometry.type_distance_positive := 1.3;
+	
+	subtype type_text_line_width is et_coordinates.geometry.type_distance_positive range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
+	text_line_width_min : constant et_coordinates.geometry.type_distance_positive := 0.1;
+	text_line_width_max : constant et_coordinates.geometry.type_distance_positive := 5.0;
+	text_line_width_default : constant et_coordinates.geometry.type_distance_positive := 0.3; 
+	
+	-- Instantiation of the text package:
+	package pac_text is new et_text.text (
+		type_distance		=> et_coordinates.geometry.type_distance_positive,
+		size_min			=> text_size_min,
+		size_max			=> text_size_max,
+		size_default		=> text_size_default,
+		line_width_min		=> text_line_width_min,
+		line_width_max		=> text_line_width_max,
+		line_width_default	=> text_line_width_default
+		);
+
+	-- These are basic properties a text has got:
+	type type_text_basic is new pac_text.type_text with record
+		style		: et_symbols.type_text_style := et_symbols.type_text_style'first;
+		content		: et_text.type_text_content.bounded_string;		
+		rotation	: et_coordinates.type_rotation := 0.0;
+	end record;
+
+	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with record
+		position	: et_coordinates.geometry.type_point;		
+	end record;	
+	
+-- 	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with record
+-- 		position : type_point;
+-- 	end record;	
+
+-- 	type type_text is new type_text_placeholder with record
+--         content		: et_text.type_text_content.bounded_string;
+-- 	end record;	
+	
+	-- A text/note in the schematic:
+	type type_text is new type_text_basic with record
+		position	: kicad_coordinates.type_position;
+-- 		content		: et_text.type_text_content.bounded_string;
+	end record;
+
+	function content (text : in type_text_placeholder) return string;
+	-- Returns the content of the given text placeholder as string.
+	
+	
 	-- A kicad unit:
 	type type_unit_schematic (appearance : et_schematic.type_appearance_schematic) is record
 		rotation	: et_coordinates.type_rotation := et_coordinates.geometry.zero_rotation;
@@ -1432,11 +1498,7 @@ package et_kicad is
 -- 		return natural;
 
 	
-	-- A text/note in the schematic:
-	type type_text is new et_symbols.type_text_basic with record
-		position	: kicad_coordinates.type_position;
-		content		: et_text.type_text_content.bounded_string;
-	end record;
+
 
 	procedure write_note_properties (
 		note			: in type_text;

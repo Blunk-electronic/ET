@@ -119,6 +119,24 @@ package body et_kicad is
 		raise constraint_error;
 	end module_not_found;
 
+	
+	function to_string (meaning : in type_text_meaning) return string is begin
+		return to_lower (type_text_meaning'image (meaning));
+	end to_string;
+
+	function to_text_meaning (meaning : in string) return type_text_meaning is begin
+		return type_text_meaning'value (meaning);
+	end to_text_meaning;
+
+	function content (text : in type_text_placeholder) return string is
+	-- Returns the content of the given text placeholder as string.
+		c : et_text.type_text_content.bounded_string;
+	begin
+		c := text.content;
+		return et_text.to_string (c);
+	end content;
+	
+	
 	function unit_exists (
 	-- Returns true if the unit with the given name exists in the given list of units.
 		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
@@ -856,8 +874,8 @@ package body et_kicad is
 	-- Extracts from a component field like "F0 "IC" 0 50 50 H V C CNN" its meaning.
 	-- Since the fields start different in libaray and schematic we also need a flag that tells
 	-- the function whether we are dealing with schematic or library fields.
-		line : in type_fields_of_line;
-		schematic : in boolean) -- set false if it is about fields in a library, true if it is about a schematic field	
+		line 		: in type_fields_of_line;
+		schematic	: in boolean) -- set false if it is about fields in a library, true if it is about a schematic field	
 		return type_text_meaning is
 
 		meaning : type_text_meaning := MISC;
@@ -1322,10 +1340,10 @@ package body et_kicad is
 			tmp_unit_add_level	: type_unit_add_level := type_unit_add_level'first; -- CS: rename to unit_add_level
 			tmp_unit_global		: boolean := false; -- specifies if a unit harbors component wide pins (such as power supply) -- CS: rename to unit_global
 			
-			field_reference		: et_symbols.type_text (meaning => NAME); -- CS: should be field_prefix as it contains just the prefix 
-			field_value			: et_symbols.type_text (meaning => value);
-			field_package		: et_symbols.type_text (meaning => packge);
-			field_datasheet		: et_symbols.type_text (meaning => datasheet);
+			field_reference		: type_text_placeholder (meaning => NAME); -- CS: should be field_prefix as it contains just the prefix 
+			field_value			: type_text_placeholder (meaning => VALUE);
+			field_package		: type_text_placeholder (meaning => PACKGE);
+			field_datasheet		: type_text_placeholder (meaning => DATASHEET);
 
 			-- "field found flags" go true once the corresponding field was detected
 			-- Evaluated by procedure check_text_fields.
@@ -1964,7 +1982,7 @@ package body et_kicad is
 			function to_field (
 				line 	: in type_fields_of_line;
 				meaning	: in type_text_meaning) 
-				return et_symbols.type_text is
+				return type_text_placeholder is
 			-- Reads general text field properties from subfields 3..9 and returns a type_text with 
 			-- the meaning as given in parameter "meaning".
 			-- Checks basic properties of text fields (allowed charactes, text size, aligment, ...)
@@ -1975,7 +1993,7 @@ package body et_kicad is
 				use et_text.type_text_content;
 
 				-- instantiate a text field as speficied by given parameter meaning
-				text : et_symbols.type_text (meaning);
+				text : type_text_placeholder (meaning);
 
 			begin -- to_field
 				-- field #:
@@ -2490,19 +2508,46 @@ package body et_kicad is
 					-- For the unit we are interested in the properties of the component text fields.
 					-- The component text fields as given in the component section look like "F0 "IC" 0 50 50 H V C BIB".
 					-- The content (in this example "IC") is not relevant here as it applies for the whole component.
-					-- We convert the text field downward to a type_text_basic (which strips off the content) first.
-					-- Then we convert the type_text_basic upward to type_text_placeholder by providing the meaning:
-					unit.symbol.name := (type_text_basic (field_reference)
-										with meaning => NAME, position => field_reference.position);
-					unit.symbol.value := (type_text_basic (field_value)
-										with meaning => VALUE, position => field_value.position);
+					-- We convert the kicad text placeholder to a native text placeholder (omitting the content).
+					unit.symbol.name := (
+							meaning		=> NAME,
+							position	=> field_reference.position,
+							style		=> field_reference.style,
+							rotation	=> field_reference.rotation,
+							size		=> field_reference.size,
+							line_width	=> field_reference.line_width,
+							alignment	=> field_reference.alignment);
+
+					unit.symbol.value := (
+							meaning		=> VALUE,
+							position	=> field_value.position,
+							style		=> field_value.style,
+							rotation	=> field_value.rotation,
+							size		=> field_value.size,
+							line_width	=> field_value.line_width,
+							alignment	=> field_value.alignment);
 
 					case unit.symbol.appearance is
-						when sch_pcb =>
-							unit.symbol.packge := (type_text_basic (field_package)		
-										with meaning => PACKGE, position => field_package.position);
-							unit.symbol.datasheet := (type_text_basic (field_datasheet)	
-										with meaning => DATASHEET, position => field_datasheet.position);
+						when SCH_PCB =>
+
+							unit.symbol.packge := (
+									meaning		=> PACKGE,
+									position	=> field_package.position,
+									style		=> field_package.style,
+									rotation	=> field_package.rotation,
+									size		=> field_package.size,
+									line_width	=> field_package.line_width,
+									alignment	=> field_package.alignment);
+
+							unit.symbol.datasheet := (
+									meaning		=> DATASHEET,
+									position	=> field_datasheet.position,
+									style		=> field_datasheet.style,
+									rotation	=> field_datasheet.rotation,
+									size		=> field_datasheet.size,
+									line_width	=> field_datasheet.line_width,
+									alignment	=> field_datasheet.alignment);
+							
 						when others => null;
 					end case;
 				end set;
@@ -2845,16 +2890,11 @@ package body et_kicad is
 
 						field_prefix_found := true;
 						field_reference := to_field (line => line, meaning => NAME);
-						-- for the log:
-						write_text_properies (et_symbols.type_text (field_reference), log_threshold + 1);
 
 					-- If we have a value field like "F1 "74LS00" 0 -100 50 H V C CNN"
 					when VALUE =>
 						field_value_found := true;
 						field_value := to_field (line => line, meaning => VALUE);
-						
-						-- for the log:
-						write_text_properies (et_symbols.type_text (field_value), log_threshold + 1);
 
 					-- If we have a footprint field like "F2 "bel_resistors:S_0805" 0 -100 50 H V C CNN"
 					-- NOTE: the part before the colon is the containing library. The part after the colon 
@@ -2863,16 +2903,12 @@ package body et_kicad is
 
 						field_package_found := true;
 						field_package := to_field (line => line, meaning => packge);
-						-- for the log:
-						write_text_properies (et_symbols.type_text (field_package), log_threshold + 1);
 
 					-- If we have a datasheet field like "F3 "" 0 -100 50 H V C CNN"
 					when DATASHEET =>
 
 						field_datasheet_found := true;
 						field_datasheet := to_field (line => line, meaning => datasheet);
-						-- for the log:
-						write_text_properies (et_symbols.type_text (field_datasheet), log_threshold + 1);
 
 					when others => null;
 						-- CS: warning about illegal fields ?
@@ -7422,15 +7458,15 @@ package body et_kicad is
 				field_package_found			: boolean := false;
 				field_datasheet_found		: boolean := false;
 
-				-- These are the actual fields that descibe the component more detailled.
+				-- These are the actual fields that describe the component more detailled.
 				-- They are contextual validated once the given lines are read completely.
-				field_reference		: et_symbols.type_text (meaning => NAME); -- like IC5 (redundant information with referenc, see above)
-				field_value			: et_symbols.type_text (meaning => VALUE);	-- like 74LS00
-				field_package		: et_symbols.type_text (meaning => PACKGE); -- like "bel_primiteves:S_SOT23"
-				field_datasheet		: et_symbols.type_text (meaning => DATASHEET); -- might be useful for some special components
+				field_reference		: type_text_placeholder (meaning => NAME); -- like IC5 (redundant information with referenc, see above)
+				field_value			: type_text_placeholder (meaning => VALUE);	-- like 74LS00
+				field_package		: type_text_placeholder (meaning => PACKGE); -- like "bel_primiteves:S_SOT23"
+				field_datasheet		: type_text_placeholder (meaning => DATASHEET); -- might be useful for some special components
 			
-				function to_field return et_symbols.type_text is
-				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text
+				function to_field return type_text_placeholder is
+				-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text_placeholder
 					text_position : type_point;
 					size : pac_text.type_text_size;
 
@@ -7482,8 +7518,7 @@ package body et_kicad is
 
 					use conventions;
 				
-					procedure missing_field (m : in type_text_meaning) is 
-					begin
+					procedure missing_field (m : in type_text_meaning) is begin
 						log (ERROR,
 								"component " & to_string (reference) 
 								& latin_1.space
@@ -7638,7 +7673,6 @@ package body et_kicad is
 								raise;
 
 				end check_text_fields;
-
 
 				function generic_name_to_library (
 				-- Returns the full name of the library where given generic component is contained.
@@ -7952,7 +7986,6 @@ package body et_kicad is
 							raise constraint_error;
 					
 				end insert_component;
-				
 
 				procedure insert_unit is 
 				-- Inserts a unit into the unit list of a component. The text fields around a unit are placeholders.
@@ -7966,7 +7999,7 @@ package body et_kicad is
 					
 					case appearance is
 
-						when sch =>
+						when SCH =>
 
 							add_unit (
 								--reference	=> reference,
@@ -7982,21 +8015,36 @@ package body et_kicad is
 									alt_repres		=> alternative_representation,
 
 									-- placeholders:
-									-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
-									reference		=> (type_text_basic (field_reference)
-														with meaning => field_reference.meaning, position => field_reference.position),
-									value			=> (type_text_basic (field_value)
-														with meaning => field_value.meaning, position => field_value.position)),
+									reference		=> (
+											meaning		=> NAME,
+											position	=> field_reference.position,
+											style		=> field_reference.style,
+											rotation	=> field_reference.rotation,
+											size		=> field_reference.size,
+											line_width	=> field_reference.line_width,
+											alignment	=> field_reference.alignment),
+
+									value			=> (
+											meaning		=> VALUE,
+											position	=> field_value.position,
+											style		=> field_value.style,
+											rotation	=> field_value.rotation,
+											size		=> field_value.size,
+											line_width	=> field_value.line_width,
+											alignment	=> field_value.alignment)
+											),
 								
 								log_threshold => log_threshold + 2);
 												
 
-						when sch_pcb =>
+						when SCH_PCB =>
 
-							add_unit (
+							add_unit 
+								(
 								reference	=> reference,
 								unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...	
-								unit 		=> (
+								unit 		=> 
+									(
 									appearance		=> sch_pcb,
 									position		=> position,
 									rotation		=> orientation,
@@ -8006,16 +8054,45 @@ package body et_kicad is
 
 									-- placeholders:
 									-- Convert tmp_component_text_* to a placeholder while maintaining the text meaning.
-									reference		=> (type_text_basic (field_reference)
-														with meaning => field_reference.meaning, position => field_reference.position),
-									value			=> (type_text_basic (field_value)
-														with meaning => field_value.meaning, position => field_value.position),
-									packge			=> (type_text_basic (field_package)
-														with meaning => field_package.meaning, position => field_package.position),
-									datasheet		=> (type_text_basic (field_datasheet)
-														with meaning => field_datasheet.meaning, position => field_datasheet.position)),
+									reference		=> (
+											meaning		=> NAME,
+											position	=> field_reference.position,
+											style		=> field_reference.style,
+											rotation	=> field_reference.rotation,
+											size		=> field_reference.size,
+											line_width	=> field_reference.line_width,
+											alignment	=> field_reference.alignment),
+
+									value			=> (
+											meaning		=> VALUE,
+											position	=> field_value.position,
+											style		=> field_value.style,
+											rotation	=> field_value.rotation,
+											size		=> field_value.size,
+											line_width	=> field_value.line_width,
+											alignment	=> field_value.alignment),
+
+									packge			=> (
+											meaning		=> VALUE,
+											position	=> field_package.position,
+											style		=> field_package.style,
+											rotation	=> field_package.rotation,
+											size		=> field_package.size,
+											line_width	=> field_package.line_width,
+											alignment	=> field_package.alignment),
+
+									datasheet		=> (
+											meaning		=> VALUE,
+											position	=> field_datasheet.position,
+											style		=> field_datasheet.style,
+											rotation	=> field_datasheet.rotation,
+											size		=> field_datasheet.size,
+											line_width	=> field_datasheet.line_width,
+											alignment	=> field_datasheet.alignment)
+									),
 								
-								log_threshold => log_threshold + 2);
+								log_threshold => log_threshold + 2
+								);
 
 						when others => null; -- CS
 					end case;
