@@ -94,37 +94,29 @@ package et_symbols is
 	
 
 	-- Text placeholders have a meaning:
-	type type_text_meaning is (
+	type type_placeholder_meaning is (
 		NAME,	-- for things like R301 or X9
 		VALUE,	-- for component values like "200R"
 		PURPOSE	-- for the purpose of the component in the design.
 		);
 	
-	text_meaning_default : constant type_text_meaning := NAME;
+	placeholder_meaning_default : constant type_placeholder_meaning := NAME;
 	
-	function to_string (meaning : in type_text_meaning) return string;
-	function to_text_meaning (meaning : in string) return type_text_meaning;
+	function to_string (meaning : in type_placeholder_meaning) return string;
+	function to_meaning (meaning : in string) return type_placeholder_meaning;
 
-
-	
 
 	
-	subtype type_placeholder_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
-	placeholder_text_size_default : constant type_placeholder_text_size := 1.3;
 
-	function to_component_attribute_text_size (text : in string) return type_placeholder_text_size;
-	-- Converts a string to a type_placeholder_text_size.
 	
 	-- These are basic properties a text has got:
 	type type_text_basic is new pac_text.type_text with record
         style		: type_text_style := type_text_style'first;
         rotation	: type_rotation_text := 0.0;
 	end record;
-
-
 	
 	-- This is a placeholder for a text. It does not have content yet, but a meaning:
-	type type_text_placeholder (meaning : type_text_meaning) is new type_text_basic with record
+	type type_text_placeholder (meaning : type_placeholder_meaning) is new type_text_basic with record
 		position : type_point;
 	end record;
 
@@ -134,7 +126,7 @@ package et_symbols is
 		log_threshold	: in et_string_processing.type_log_level);
 
 	
-	-- This is a real text with content:
+	-- This is a real text with content (used for things like "counter" or "decoder"
 	type type_text is new type_text_basic with record
 		position	: type_point;		
         content		: et_text.type_text_content.bounded_string;
@@ -152,6 +144,8 @@ package et_symbols is
 
 	package type_texts is new doubly_linked_lists (type_text);
 	
+
+
 	
 -- TERMINALS
 
@@ -160,11 +154,6 @@ package et_symbols is
 	keyword_terminal_name_size		: constant string := "terminal_name_size";
 
 	
-	subtype type_terminal_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
-	terminal_name_text_size_default : constant type_terminal_name_text_size := 1.3;
-
-	function to_terminal_name_text_size (text : in string) return type_terminal_name_text_size;
-	-- Converts a string to type_terminal_name_text_size.
 
 
 	
@@ -230,13 +219,6 @@ package et_symbols is
 	function to_string (port : in type_port_name.bounded_string) return string;
 	function to_port_name (name : in string) return type_port_name.bounded_string;
 	
-	subtype type_port_name_text_size is type_distance range 1.0 .. 5.0; -- unit is mm
-	port_name_text_size_default : constant type_port_name_text_size := 1.3;
-
-	function to_port_name_text_size (text : in string) return type_port_name_text_size;
-	-- Converts a string to type_port_name_text_size.
-
-
 	
 	-- line width
 	keyword_line_width : constant string := "line_width"; -- NOTE: do not confuse with text line width !
@@ -251,10 +233,10 @@ package et_symbols is
 		rotation			: type_rotation := 0.0;
 		
 		port_name_visible		: type_port_name_visible;
-		port_name_size			: type_port_name_text_size;
+		port_name_size			: pac_text.type_text_size := text_size_default;
 		
 		terminal_name_visible	: type_terminal_name_visible;
-		terminal_name_size		: type_terminal_name_text_size;
+		terminal_name_size		: pac_text.type_text_size := text_size_default;
 		-- CS: port swap level ? -> would require a derived new type
 	end record;
 

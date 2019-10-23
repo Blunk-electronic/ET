@@ -357,7 +357,7 @@ package body device_rw is
 		
 		symbol_text_position: et_coordinates.geometry.type_point;
 		symbol_text_content	: et_text.type_text_content.bounded_string;
-		symbol_placeholder_meaning : et_symbols.type_text_meaning := text_meaning_default;
+		symbol_placeholder_meaning : et_symbols.type_placeholder_meaning := placeholder_meaning_default;
 		
 		port					: type_port_base;
 		port_name				: type_port_name.bounded_string;
@@ -774,7 +774,7 @@ package body device_rw is
 								-- clean up for next symbol text placeholder
 								symbol_text_base := (others => <>);
 								symbol_text_position := origin;
-								symbol_placeholder_meaning := text_meaning_default;
+								symbol_placeholder_meaning := placeholder_meaning_default;
 							
 							when others => invalid_section;
 						end case;
@@ -1249,7 +1249,7 @@ package body device_rw is
 
 									elsif kw = keyword_meaning then -- meaning reference
 										expect_field_count (line, 2);
-										symbol_placeholder_meaning := to_text_meaning (f (line, 2));
+										symbol_placeholder_meaning := to_meaning (f (line, 2));
 
 									elsif kw = et_text.keyword_size then -- size 5
 										expect_field_count (line, 2);

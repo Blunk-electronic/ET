@@ -2543,9 +2543,9 @@ package body conventions is
 		put_line (comment & "category" & latin_1.space & "mm");
 		new_line;		
 		put_line (to_string (NET_LABEL)	& to_string (et_schematic.net_label_text_size_default));
-		put_line (to_string (PORT_NAME) & to_string (et_symbols.port_name_text_size_default));
-		put_line (to_string (TERMINAL_NAME) & to_string (et_symbols.terminal_name_text_size_default));
-		put_line (to_string (COMPONENT_ATTRIBUTE) & to_string (et_symbols.placeholder_text_size_default));
+		put_line (to_string (PORT_NAME) & to_string (et_symbols.text_size_default));
+		put_line (to_string (TERMINAL_NAME) & to_string (et_symbols.text_size_default));
+		put_line (to_string (COMPONENT_ATTRIBUTE) & to_string (et_symbols.text_size_default));
 		put_line (to_string (SHEET_NAME) & to_string (et_project.sheet_name_text_size_default));
 		put_line (to_string (conventions.FILE_NAME) & to_string (et_project.file_name_text_size_default));
 		
@@ -2635,7 +2635,8 @@ package body conventions is
 			use et_libraries;
 			use et_symbols;
 			use et_coordinates;
-
+			use et_coordinates.geometry;
+			
 			procedure test_multiple_occurences is begin
 				if not inserted then
 					log (WARNING, affected_line (element (line_cursor)) & "multiple occurence of assignment ! Entry ignored !");
@@ -2795,13 +2796,13 @@ package body conventions is
 								size := et_schematic.to_net_label_text_size (et_string_processing.field (element (line_cursor), 2));
 
 							when PORT_NAME =>
-								size := to_port_name_text_size (et_string_processing.field (element (line_cursor), 2));
+								size := to_distance (et_string_processing.field (element (line_cursor), 2));
 
 							when TERMINAL_NAME =>
-								size := to_terminal_name_text_size (et_string_processing.field (element (line_cursor), 2));
+								size := to_distance (et_string_processing.field (element (line_cursor), 2));
 
 							when COMPONENT_ATTRIBUTE =>
-								size := to_component_attribute_text_size (et_string_processing.field (element (line_cursor), 2));
+								size := to_distance (et_string_processing.field (element (line_cursor), 2));
 
 							when SHEET_NAME =>
 								size := et_project.to_sheet_name_text_size (et_string_processing.field (element (line_cursor), 2));

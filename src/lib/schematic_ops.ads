@@ -111,7 +111,7 @@ package schematic_ops is
 		unit_name		: in type_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_point; -- x/y
-		meaning			: in et_symbols.type_text_meaning; -- name, value, purpose
+		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level);
 
 	procedure rotate_unit (
@@ -132,7 +132,7 @@ package schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
 		rotation		: in et_coordinates.type_rotation_text; -- absolute ! -- 90
-		meaning			: in et_symbols.type_text_meaning; -- name, value, purpose		
+		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level);
 
 	-- CS move to et_schematic ?

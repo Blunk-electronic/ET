@@ -102,21 +102,15 @@ package body et_symbols is
 
 
 
-	function to_string (meaning : in type_text_meaning) return string is begin
-		return to_lower (type_text_meaning'image (meaning));
-	end to_string;
+	function to_string (meaning : in type_placeholder_meaning) return string is begin
+		return to_lower (type_placeholder_meaning'image (meaning));
+	end;
 
-	function to_text_meaning (meaning : in string) return type_text_meaning is begin
-		return type_text_meaning'value (meaning);
-	end to_text_meaning;
+	function to_meaning (meaning : in string) return type_placeholder_meaning is begin
+		return type_placeholder_meaning'value (meaning);
+	end;
 
 
-
-	function to_component_attribute_text_size (text : in string) return type_placeholder_text_size is
-	-- Converts a string to a type_placeholder_text_size.
-	begin
-		return type_placeholder_text_size'value (text);
-	end to_component_attribute_text_size;
 
 
 
@@ -218,11 +212,6 @@ package body et_symbols is
 
 	
 
-	function to_terminal_name_text_size (text : in string) return type_terminal_name_text_size is begin
-		return type_terminal_name_text_size'value (text);
-	end to_terminal_name_text_size;
-
-
 	
 	
 	function to_string (direction : in type_port_direction) return string is begin
@@ -265,12 +254,7 @@ package body et_symbols is
 		return type_port_name.to_bounded_string (name);
 	end to_port_name;
 
-
-
 	
-	function to_port_name_text_size (text : in string) return type_port_name_text_size is begin
-		return type_port_name_text_size'value (text);
-	end;
 
 
 
