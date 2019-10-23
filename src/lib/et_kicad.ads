@@ -237,23 +237,13 @@ package et_kicad is
 		mirror		: et_schematic.type_mirror := et_schematic.NO;
 		position	: kicad_coordinates.type_position;		
 
-		-- We use the native type for a text placeholder here:
+		-- We use the native type for a text placeholder here.
+		-- Placeholders for datasheet and package have no meaning here.
 		reference	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
 		value		: et_symbols.type_text_placeholder (meaning => et_symbols.value);
 		
 		timestamp	: et_kicad_general.type_timestamp;
 		alt_repres	: type_de_morgan_representation;
-
-		-- Some placeholders of a unit are available when the component appears in both schematic and layout:
-		case appearance is
-			when et_symbols.sch => null; -- CS
-			when et_symbols.sch_pcb => null; -- CS
--- 				packge		: et_symbols.type_text_placeholder (meaning => et_symbols.packge); -- like "SOT23"
--- 				datasheet	: et_symbols.type_text_placeholder (meaning => et_symbols.datasheet); -- might be useful for some special components
-		end case;
-		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
-		-- basic coordinates (x/y). Via the unit position the sheet and module
-		-- name can be obtained.
 	end record;
 
 	procedure add_unit (
@@ -446,27 +436,21 @@ package et_kicad is
 		PORT, 
 		TEXT); -- text embedded in a symbol
 	
-	type type_symbol (appearance : et_symbols.type_device_appearance) is new et_symbols.type_symbol_base with record
-		shapes	: type_symbol_shapes; -- the collection of shapes		
-		ports	: type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol
+	type type_symbol is new et_symbols.type_symbol_base with record
+		appearance	: et_symbols.type_device_appearance;
+		shapes		: type_symbol_shapes; -- the collection of shapes		
+		ports		: type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol
 
 		-- Placeholders for component wide texts. To be filled with content when a symbol is placed in the schematic:
-		-- We use the native type for a text placeholder here:
+		-- We use the native type for a text placeholder here. 
+		-- For things like package or datasheet no placeholder is requried. They have no meaning here.
 		name	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
 		value	: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
-		
-		-- Symbols have text placeholders according to the appearance of the component:		
-		case appearance is
-			when et_symbols.SCH_PCB => null; -- CS
--- 				packge		: et_symbols.type_text_placeholder (meaning => et_symbols.PACKGE);
--- 				datasheet	: et_symbols.type_text_placeholder (meaning => et_symbols.DATASHEET);
-			when others => null;
-		end case;
 	end record;
 
 	-- a component unit in the library
 	type type_unit_library (appearance : et_symbols.type_device_appearance) is record
-		symbol		: type_symbol (appearance);
+		symbol		: type_symbol := (appearance => appearance, others => <>);
 		coordinates	: et_coordinates.geometry.type_point;
 		-- Units that harbor component wide pins have this flag set.
 		-- Usually units with power supply pins exclusively.

@@ -2531,30 +2531,6 @@ package body et_kicad is
 							line_width	=> field_value.line_width,
 							alignment	=> field_value.alignment);
 
-					case unit.symbol.appearance is
-						when SCH_PCB =>
-							null;
-
--- 							unit.symbol.packge := (
--- 									meaning		=> PACKGE,
--- 									position	=> field_package.position,
--- 									style		=> field_package.style,
--- 									rotation	=> field_package.rotation,
--- 									size		=> field_package.size,
--- 									line_width	=> field_package.line_width,
--- 									alignment	=> field_package.alignment);
--- 
--- 							unit.symbol.datasheet := (
--- 									meaning		=> DATASHEET,
--- 									position	=> field_datasheet.position,
--- 									style		=> field_datasheet.style,
--- 									rotation	=> field_datasheet.rotation,
--- 									size		=> field_datasheet.size,
--- 									line_width	=> field_datasheet.line_width,
--- 									alignment	=> field_datasheet.alignment);
-							
-						when others => null;
-					end case;
 				end set;
 				
 				procedure locate_unit (
@@ -8074,26 +8050,7 @@ package body et_kicad is
 											size		=> field_value.size,
 											line_width	=> field_value.line_width,
 											alignment	=> field_value.alignment)
-
--- 									packge			=> (
--- 											meaning		=> VALUE,
--- 											position	=> field_package.position,
--- 											style		=> field_package.style,
--- 											rotation	=> field_package.rotation,
--- 											size		=> field_package.size,
--- 											line_width	=> field_package.line_width,
--- 											alignment	=> field_package.alignment),
--- 
--- 									datasheet		=> (
--- 											meaning		=> VALUE,
--- 											position	=> field_datasheet.position,
--- 											style		=> field_datasheet.style,
--- 											rotation	=> field_datasheet.rotation,
--- 											size		=> field_datasheet.size,
--- 											line_width	=> field_datasheet.line_width,
--- 											alignment	=> field_datasheet.alignment)
 									),
-								
 								log_threshold => log_threshold + 2
 								);
 
