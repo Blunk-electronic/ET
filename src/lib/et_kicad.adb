@@ -244,16 +244,17 @@ package body et_kicad is
 			-- some placeholders exist depending on the component appearance
 			case type_units_schematic.element (unit).appearance is
 				when SCH_PCB =>
+					null;
 					
-					-- package/footprint
-					write_placeholder_properties (
-						placeholder		=> type_units_schematic.element (unit).packge,
-						log_threshold	=> log_threshold + 1);
-
-					-- datasheet
-					write_placeholder_properties (
-						placeholder		=> type_units_schematic.element (unit).datasheet,
-						log_threshold	=> log_threshold + 1);
+-- 					-- package/footprint
+-- 					write_placeholder_properties (
+-- 						placeholder		=> type_units_schematic.element (unit).packge,
+-- 						log_threshold	=> log_threshold + 1);
+-- 
+-- 					-- datasheet
+-- 					write_placeholder_properties (
+-- 						placeholder		=> type_units_schematic.element (unit).datasheet,
+-- 						log_threshold	=> log_threshold + 1);
 
 				when others => null;
 			end case;
@@ -1358,7 +1359,7 @@ package body et_kicad is
 			tmp_draw_rectangle	: type_symbol_rectangle;
 			tmp_draw_arc		: type_symbol_arc;
 			tmp_draw_circle 	: type_symbol_circle;
-			tmp_draw_text		: type_symbol_text;
+			tmp_draw_text		: et_symbols.type_text;
 			tmp_draw_port		: type_port_library;
 
 			-- The terminal-port map of the current component is stored here temporarily.
@@ -1702,9 +1703,9 @@ package body et_kicad is
 				return arc;
 			end to_arc;
 	
-			function to_text (line : in et_string_processing.type_fields_of_line) return type_symbol_text is
+			function to_text (line : in et_string_processing.type_fields_of_line) return et_symbols.type_text is
 			-- Returns from the given fields of a text a type_symbol_text.
-				text	: type_symbol_text;
+				text : et_symbols.type_text;
 
 				-- A text is defined by a string like "T 0 0 300 60 0 0 0 leuchtdiode Normal 0 C C"
 				-- Space characters whitin the actual text are replaced by tilde as in this example:
@@ -2532,24 +2533,25 @@ package body et_kicad is
 
 					case unit.symbol.appearance is
 						when SCH_PCB =>
+							null;
 
-							unit.symbol.packge := (
-									meaning		=> PACKGE,
-									position	=> field_package.position,
-									style		=> field_package.style,
-									rotation	=> field_package.rotation,
-									size		=> field_package.size,
-									line_width	=> field_package.line_width,
-									alignment	=> field_package.alignment);
-
-							unit.symbol.datasheet := (
-									meaning		=> DATASHEET,
-									position	=> field_datasheet.position,
-									style		=> field_datasheet.style,
-									rotation	=> field_datasheet.rotation,
-									size		=> field_datasheet.size,
-									line_width	=> field_datasheet.line_width,
-									alignment	=> field_datasheet.alignment);
+-- 							unit.symbol.packge := (
+-- 									meaning		=> PACKGE,
+-- 									position	=> field_package.position,
+-- 									style		=> field_package.style,
+-- 									rotation	=> field_package.rotation,
+-- 									size		=> field_package.size,
+-- 									line_width	=> field_package.line_width,
+-- 									alignment	=> field_package.alignment);
+-- 
+-- 							unit.symbol.datasheet := (
+-- 									meaning		=> DATASHEET,
+-- 									position	=> field_datasheet.position,
+-- 									style		=> field_datasheet.style,
+-- 									rotation	=> field_datasheet.rotation,
+-- 									size		=> field_datasheet.size,
+-- 									line_width	=> field_datasheet.line_width,
+-- 									alignment	=> field_datasheet.alignment);
 							
 						when others => null;
 					end case;
@@ -8005,7 +8007,6 @@ package body et_kicad is
 						when SCH =>
 
 							add_unit (
-								--reference	=> reference,
 								reference	=> remove_leading_hash (reference), -- #PWR03 becomes PWR03
 								unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...	
 								unit 		=> (
@@ -8013,7 +8014,6 @@ package body et_kicad is
 									position		=> position,
 									rotation		=> orientation,
 									mirror			=> mirror,
-									--name			=> unit_name,
 									timestamp		=> timestamp,
 									alt_repres		=> alternative_representation,
 
@@ -8073,25 +8073,25 @@ package body et_kicad is
 											rotation	=> field_value.rotation,
 											size		=> field_value.size,
 											line_width	=> field_value.line_width,
-											alignment	=> field_value.alignment),
+											alignment	=> field_value.alignment)
 
-									packge			=> (
-											meaning		=> VALUE,
-											position	=> field_package.position,
-											style		=> field_package.style,
-											rotation	=> field_package.rotation,
-											size		=> field_package.size,
-											line_width	=> field_package.line_width,
-											alignment	=> field_package.alignment),
-
-									datasheet		=> (
-											meaning		=> VALUE,
-											position	=> field_datasheet.position,
-											style		=> field_datasheet.style,
-											rotation	=> field_datasheet.rotation,
-											size		=> field_datasheet.size,
-											line_width	=> field_datasheet.line_width,
-											alignment	=> field_datasheet.alignment)
+-- 									packge			=> (
+-- 											meaning		=> VALUE,
+-- 											position	=> field_package.position,
+-- 											style		=> field_package.style,
+-- 											rotation	=> field_package.rotation,
+-- 											size		=> field_package.size,
+-- 											line_width	=> field_package.line_width,
+-- 											alignment	=> field_package.alignment),
+-- 
+-- 									datasheet		=> (
+-- 											meaning		=> VALUE,
+-- 											position	=> field_datasheet.position,
+-- 											style		=> field_datasheet.style,
+-- 											rotation	=> field_datasheet.rotation,
+-- 											size		=> field_datasheet.size,
+-- 											line_width	=> field_datasheet.line_width,
+-- 											alignment	=> field_datasheet.alignment)
 									),
 								
 								log_threshold => log_threshold + 2

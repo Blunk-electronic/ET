@@ -247,9 +247,9 @@ package et_kicad is
 		-- Some placeholders of a unit are available when the component appears in both schematic and layout:
 		case appearance is
 			when et_symbols.sch => null; -- CS
-			when et_symbols.sch_pcb =>
-				packge		: et_symbols.type_text_placeholder (meaning => et_symbols.packge); -- like "SOT23"
-				datasheet	: et_symbols.type_text_placeholder (meaning => et_symbols.datasheet); -- might be useful for some special components
+			when et_symbols.sch_pcb => null; -- CS
+-- 				packge		: et_symbols.type_text_placeholder (meaning => et_symbols.packge); -- like "SOT23"
+-- 				datasheet	: et_symbols.type_text_placeholder (meaning => et_symbols.datasheet); -- might be useful for some special components
 		end case;
 		-- NOTE: The placeholders are defined in et_libraries. Thus they have only
 		-- basic coordinates (x/y). Via the unit position the sheet and module
@@ -457,9 +457,9 @@ package et_kicad is
 		
 		-- Symbols have text placeholders according to the appearance of the component:		
 		case appearance is
-			when et_symbols.SCH_PCB =>
-				packge		: et_symbols.type_text_placeholder (meaning => et_symbols.PACKGE);
-				datasheet	: et_symbols.type_text_placeholder (meaning => et_symbols.DATASHEET);
+			when et_symbols.SCH_PCB => null; -- CS
+-- 				packge		: et_symbols.type_text_placeholder (meaning => et_symbols.PACKGE);
+-- 				datasheet	: et_symbols.type_text_placeholder (meaning => et_symbols.DATASHEET);
 			when others => null;
 		end case;
 	end record;

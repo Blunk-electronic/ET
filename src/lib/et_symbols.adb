@@ -167,10 +167,6 @@ package body et_symbols is
 		use et_string_processing;
 		use et_text;
 	begin
--- 		log_indentation_up;
-		
-		-- meaning
-		log (text => "field/attribute" & to_string (text.meaning), level => log_threshold);
 		log_indentation_up;
 		
 		-- content

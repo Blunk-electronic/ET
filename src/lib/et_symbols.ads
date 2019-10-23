@@ -93,18 +93,14 @@ package et_symbols is
 	function to_text_style (style : in string) return type_text_style;
 	
 
-	
+	-- Text placeholders have a meaning:
 	type type_text_meaning is (
-		NAME,			-- for things like R301 or X9
-		VALUE,			-- for component values like "200R"
-		PACKGE,			-- for component packages like SOT23
-		DATASHEET,		-- for url to datasheet
-		PURPOSE,		-- for the purpose of the component in the design.
-		MISC); -- CS: others ?
-	-- CS: The type_text_meaning covers more than actually required by ET.
-	-- It also includes text meanings of kicad. Rework required !
+		NAME,	-- for things like R301 or X9
+		VALUE,	-- for component values like "200R"
+		PURPOSE	-- for the purpose of the component in the design.
+		);
 	
-	text_meaning_default : constant type_text_meaning := MISC;
+	text_meaning_default : constant type_text_meaning := NAME;
 	
 	function to_string (meaning : in type_text_meaning) return string;
 	function to_text_meaning (meaning : in string) return type_text_meaning;
@@ -136,12 +132,13 @@ package et_symbols is
 	-- Writes the properties of the given placeholder.
 		placeholder		: in type_text_placeholder;
 		log_threshold	: in et_string_processing.type_log_level);
+
 	
-	-- This is a real text with its content:
-	type type_text is new type_text_placeholder with record
+	-- This is a real text with content:
+	type type_text is new type_text_basic with record
+		position	: type_point;		
         content		: et_text.type_text_content.bounded_string;
 	end record;
-
 	
 
 	procedure write_text_properies (
@@ -153,6 +150,7 @@ package et_symbols is
 	-- Returns the content of the given text as string.
 
 
+	package type_texts is new doubly_linked_lists (type_text);
 	
 	
 -- TERMINALS
@@ -437,15 +435,8 @@ package et_symbols is
 	-- like swap level.	
 	-- The unit name is something like "I/O Bank 3", "PWR" or "Switch 1" "Switch 2"
 
-	-- Texts may be embedded in a symbol like "counter" or "&". So far they have the meaning "misc".
-	-- CS: strings and texts within a unit symbol serve for documentation only. As long as
-	-- there is no dedicated enumeration value available we choose "misc".
-	-- CS: The meaning could be something like "documentation" some day.
-	type type_symbol_text is new type_text (meaning => MISC) with null record;
-	package type_symbol_texts is new doubly_linked_lists (type_symbol_text);
-
 	type type_symbol_base is tagged record		
-		texts : type_symbol_texts.list; -- the collection of texts (meaning misc)
+		texts : type_texts.list; -- the collection of texts
 	end record;
 
 	type type_symbol (appearance : type_device_appearance) is new type_symbol_base with record

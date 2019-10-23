@@ -715,12 +715,11 @@ package body device_rw is
 							when SEC_TEXTS =>
 
 								-- append symbol text to symbol
-								type_symbol_texts.append (
+								type_texts.append (
 									container	=> unit_symbol.texts,
 									new_item	=> (symbol_text_base with
-											meaning		=> MISC,
-											content		=> symbol_text_content,
-											position	=> symbol_text_position));
+										content		=> symbol_text_content,
+										position	=> symbol_text_position));
 
 								-- clean up for next symbol text
 								symbol_text_base := (others => <>);
