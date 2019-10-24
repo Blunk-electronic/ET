@@ -72,6 +72,7 @@ with material;
 with netlists;
 with et_geometry;		use et_geometry; -- due to frequently used keywords
 with et_symbols;
+with et_devices;
 
 package body scripting is
 	
@@ -358,6 +359,7 @@ package body scripting is
 			use schematic_ops;
 			use et_coordinates;
 			use geometry;
+			use et_devices;
 		begin
 			case verb is
 				when ADD =>
@@ -1120,7 +1122,7 @@ package body scripting is
 								purpose : type_device_purpose.bounded_string; -- brightness_control
 							begin
 								-- validate value
-								value := et_libraries.to_value (f (7));
+								value := to_value (f (7));
 
 								-- validate partcode
 								partcode := material.to_partcode (f (8));
@@ -1579,7 +1581,7 @@ package body scripting is
 								value : type_value.bounded_string; -- 470R
 							begin
 								-- validate value
-								value := et_libraries.to_value (f (6));
+								value := to_value (f (6));
 
 								-- set the value
 								schematic_ops.set_value

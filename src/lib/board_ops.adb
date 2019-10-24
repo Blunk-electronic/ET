@@ -68,6 +68,7 @@ with pick_and_place;
 with submodules;
 with numbering;
 with et_symbols;
+with et_packages;
 
 package body board_ops is
 
@@ -1030,7 +1031,7 @@ package body board_ops is
 	-- The device must be real (appearance SCH_PCB).
 		module_cursor	: in et_project.type_modules.cursor;
 		device_cursor	: in et_schematic.type_devices.cursor; -- IC45
-		terminal_name	: in et_libraries.type_terminal_name.bounded_string) -- H7, 14
+		terminal_name	: in et_packages.type_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position is
 		use et_pcb;
 

@@ -67,17 +67,17 @@ package body et_libraries is
 		return latin_1.space & type_person_name.to_string (person);
 	end to_string;
 
-	function to_string ( -- CS remove
-		size		: in pac_text.type_text_size;
-		preamble	: in boolean := true) return string is
-	-- Returns the given text size as string.
-	begin
-		if preamble then
-			return "size " & geometry.to_string (size);
-		else
-			return geometry.to_string (size);
-		end if;
-	end to_string;
+-- 	function to_string ( -- CS remove
+-- 		size		: in pac_text.type_text_size;
+-- 		preamble	: in boolean := true) return string is
+-- 	-- Returns the given text size as string.
+-- 	begin
+-- 		if preamble then
+-- 			return "size " & geometry.to_string (size);
+-- 		else
+-- 			return geometry.to_string (size);
+-- 		end if;
+-- 	end to_string;
 
 
 
@@ -230,7 +230,7 @@ package body et_libraries is
 		d : positive;
 		digit : natural := 0;
 
-		use et_libraries.type_device_name_prefix;
+		use type_device_name_prefix;
 
 	begin -- to_device_name
 		-- assemble prefix
@@ -317,8 +317,7 @@ package body et_libraries is
 	-- Returns true if left equals right.
 	-- Example: if IC4 = IC4 then return true.
 		result : boolean := false;
-		use et_libraries;
-		use et_libraries.type_device_name_prefix;
+		use type_device_name_prefix;
 	begin
 		-- First we compare the prefix. If prefixes are equal, we compare the id.
 		-- If either of them does not match, the result is set false.

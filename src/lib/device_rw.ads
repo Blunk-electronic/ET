@@ -42,6 +42,10 @@ with et_schematic;
 with et_string_processing;
 with et_coordinates;
 
+with et_symbols;
+with et_devices;				use et_devices;
+with et_packages;				use et_packages;
+
 package device_rw is
 
 	keyword_file				: constant string := "file";
@@ -81,12 +85,12 @@ package device_rw is
 
 	procedure save_device (
 		name			: in string; -- libraries/devices/resistor.dev
-		device			: in et_libraries.type_device; -- the actual device model
+		device			: in type_device; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level);
 
 	procedure read_device_file (
 	-- Opens the device and stores it in container et_libraries.devices.
-		file_name 		: in et_libraries.type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
+		file_name 		: in type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		log_threshold	: in et_string_processing.type_log_level);
 
 	

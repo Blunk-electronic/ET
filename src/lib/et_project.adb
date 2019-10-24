@@ -74,6 +74,7 @@ with pcb_rw;					use pcb_rw;
 with schematic_rw;				use schematic_rw;
 with device_rw;					use device_rw;
 with et_symbols;
+with et_devices;
 
 package body et_project is
 
@@ -1180,13 +1181,13 @@ package body et_project is
 					section_mark (section_placeholder, FOOTER);
 				end write_placeholder;
 
-				use et_libraries;
+				use et_devices;
 				
 			begin -- query_units
 				section_mark (section_units, HEADER);
 				while unit_cursor /= type_units.no_element loop
 					section_mark (section_unit, HEADER);
-					write (keyword => keyword_name, parameters => et_libraries.to_string (key (unit_cursor)), space => true);
+					write (keyword => keyword_name, parameters => to_string (key (unit_cursor)), space => true);
 					write (keyword => keyword_position, parameters => position (element (unit_cursor).position)); -- position sheet 1 x 147.32 y 96.97
 					--write (keyword => keyword_rotation, parameters => to_string (element (unit_cursor).rotation)); -- rotation 180.0
 					write (keyword => keyword_rotation, parameters => to_string (rot (element (unit_cursor).position))); -- rotation 180.0
@@ -1249,16 +1250,18 @@ package body et_project is
 				section_mark (section_placeholders, FOOTER);				
 			end query_placeholders;
 
-			procedure write (device_cursor : in type_devices.cursor) is begin
+			procedure write (device_cursor : in type_devices.cursor) is 
+				use et_devices;
+			begin
 				section_mark (section_device, HEADER);
 				write (keyword => keyword_name, parameters => et_libraries.to_string (key (device_cursor)), space => true);
 				write (keyword => keyword_appearance, parameters => to_string (element (device_cursor).appearance));
-				write (keyword => keyword_model, parameters => et_libraries.to_string (element (device_cursor).model), space => true);
+				write (keyword => keyword_model, parameters => to_string (element (device_cursor).model), space => true);
 
 				case element (device_cursor).appearance is
 					when SCH_PCB =>
-						write (keyword => keyword_value   , parameters => et_libraries.to_string (element (device_cursor).value), space => true);
-						write (keyword => keyword_variant , parameters => et_libraries.to_string (element (device_cursor).variant), space => true);
+						write (keyword => keyword_value   , parameters => to_string (element (device_cursor).value), space => true);
+						write (keyword => keyword_variant , parameters => to_string (element (device_cursor).variant), space => true);
 						write (keyword => keyword_partcode, parameters => material.to_string (element (device_cursor).partcode), space => true);
 						write (keyword => keyword_purpose , parameters => et_libraries.to_string (element (device_cursor).purpose), space => true, wrap => true);
 						
@@ -1314,25 +1317,25 @@ package body et_project is
 					end if;
 				end;
 
-				use et_libraries;
+				use et_devices;
 				
 			begin -- query_devices
 				while device_cursor /= assembly_variants.type_devices.no_element loop
 					case element (device_cursor).mounted is
 						when NO =>
 							write (
-								keyword		=> keyword_device,
+								keyword		=> et_libraries.keyword_device,
 								parameters	=> et_libraries.to_string (key (device_cursor)) & 
 												space & keyword_not_mounted,
 								space 		=> true);
 
 						when YES =>
 							write (
-								keyword		=> keyword_device,
+								keyword		=> et_libraries.keyword_device,
 								parameters	=> et_libraries.to_string (key (device_cursor)) & 
 									space &
 									keyword_value & space &
-									et_libraries.to_string (element (device_cursor).value) &
+									to_string (element (device_cursor).value) &
 									space & keyword_partcode & space &
 									material.to_string (element (device_cursor).partcode) &
 									purpose,
@@ -2167,13 +2170,13 @@ package body et_project is
 		device					: access et_schematic.type_device;
 		
 		device_name				: et_libraries.type_device_name; -- C12
-		device_model			: et_libraries.type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
-		device_value			: et_libraries.type_value.bounded_string; -- 470R
+		device_model			: et_devices.type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
+		device_value			: et_devices.type_value.bounded_string; -- 470R
 		device_appearance		: et_schematic.type_appearance_schematic;
 		--device_unit				: et_schematic.type_unit;
 		--device_unit_rotation	: et_coordinates.type_rotation := geometry.zero_rotation;
 		device_unit_mirror		: et_schematic.type_mirror := et_schematic.NO;
-		device_unit_name		: et_libraries.type_unit_name.bounded_string; -- GPIO_BANK_1
+		device_unit_name		: et_devices.type_unit_name.bounded_string; -- GPIO_BANK_1
 		device_unit_position	: et_coordinates.type_position; -- x,y,sheet,rotation
 
 		-- assembly variants
@@ -2187,7 +2190,7 @@ package body et_project is
 		
 		device_partcode			: material.type_partcode.bounded_string;
 		device_purpose			: et_libraries.type_device_purpose.bounded_string;
-		device_variant			: et_libraries.type_component_variant_name.bounded_string; -- D, N
+		device_variant			: et_devices.type_component_variant_name.bounded_string; -- D, N
 		device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
 		device_flipped			: et_pcb.type_flipped := et_pcb.flipped_default;
 
@@ -2557,7 +2560,7 @@ package body et_project is
 
 					-- clean up for next unit
 					device_unit_position := zero_position;
-					device_unit_name := et_libraries.unit_name_default;
+					device_unit_name := et_devices.unit_name_default;
 					--device_unit := (others => <>);
 					device_unit_mirror := et_schematic.NO;
 					--device_unit_rotation := geometry.zero_rotation;
@@ -2605,8 +2608,9 @@ package body et_project is
 					module_name	: in type_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 					use et_schematic;
-					use et_symbols;
 					use et_libraries;
+					use et_symbols;
+					use et_devices;
 					device_cursor : et_schematic.type_devices.cursor;
 					inserted : boolean;
 
@@ -2614,11 +2618,11 @@ package body et_project is
 					-- Derives package name from device.model and device.variant.
 					-- Checks if variant exits in device.model.
 						name : type_component_package_name.bounded_string; -- S_SO14 -- to be returned
-						device_cursor : et_libraries.type_devices.cursor;
+						device_cursor : et_devices.type_devices.cursor;
 
 						procedure query_variants (
 							model	: in type_device_model_file.bounded_string; -- libraries/devices/7400.dev
-							dev_lib	: in et_libraries.type_device) -- a device in the library 
+							dev_lib	: in et_devices.type_device) -- a device in the library 
 							is
 							use type_component_variants;
 							variant_cursor : type_component_variants.cursor;
@@ -2636,7 +2640,7 @@ package body et_project is
 									" not available in device model " & to_string (model) & " !", console => true);
 								raise constraint_error;
 							else
-								name := to_package_name (base_name (to_string (element (variant_cursor).package_model)));
+								name := to_package_name (base_name (et_packages.to_string (element (variant_cursor).package_model)));
 							end if;
 						end;
 						
@@ -2646,12 +2650,12 @@ package body et_project is
 								" in device model " & to_string (device.model) & " ... ", level => log_threshold + 2);
 
 						-- Locate the device in the library. CS: It should be there, otherwise exception arises here:
-						device_cursor := et_libraries.type_devices.find (
-							container	=> et_libraries.devices,
+						device_cursor := et_devices.type_devices.find (
+							container	=> et_devices.devices,
 							key			=> device.model); -- libraries/devices/7400.dev
 
 						-- Query package variants
-						et_libraries.type_devices.query_element (
+						et_devices.type_devices.query_element (
 							position	=> device_cursor,
 							process		=> query_variants'access);
 						
@@ -2675,15 +2679,15 @@ package body et_project is
 					-- assign appearance specific temporarily variables and write log information
 					if device.appearance = SCH_PCB then
 
-						if not et_libraries.value_characters_valid (device_value) then
+						if not value_characters_valid (device_value) then
 							log (WARNING, "value of " & et_libraries.to_string (device_name) &
 								 " contains invalid characters !");
 							log_indentation_reset;
 							value_invalid (to_string (device_value));
 						end if;
 						
-						log (text => "value " & et_libraries.to_string (device_value), level => log_threshold + 2);
-						device.value	:= device_value;
+						log (text => "value " & to_string (device_value), level => log_threshold + 2);
+						device.value := device_value;
 						if not conventions.value_valid (device_value, prefix (device_name)) then
 							log (WARNING, "value of " & et_libraries.to_string (device_name) &
 								" not conformant with conventions !");
@@ -2705,8 +2709,8 @@ package body et_project is
 							purpose_invalid (to_string (device_purpose));
 						end if;
 
-						log (text => "variant " & et_libraries.to_string (device_variant), level => log_threshold + 2);
-						et_libraries.check_variant_name_characters (device_variant);
+						log (text => "variant " & to_string (device_variant), level => log_threshold + 2);
+						check_variant_name_characters (device_variant);
 						device.variant	:= device_variant;
 
 						-- CS: warn operator if provided but ignored due to the fact that device is virtual
@@ -5460,7 +5464,7 @@ package body et_project is
 						case stack.parent is
 							when SEC_ASSEMBLY_VARIANTS =>
 								declare
-									use et_libraries;
+									use et_devices;
 									kw : string 	:= f (line, 1);
 									device_name		: et_libraries.type_device_name; -- R1
 									device			: access assembly_variants.type_device;
@@ -5485,7 +5489,7 @@ package body et_project is
 									-- a line like "device R1 value 270R partcode 12345" or		
 									-- a line like "device R1 value 270R partcode 12345 purpose "set temperature""
 									-- tells whether a device is mounted or not.
-									elsif kw = keyword_device then
+									elsif kw = et_libraries.keyword_device then
 
 										-- there must be at least 3 fields:
 										expect_field_count (line, 3, warn => false);
@@ -5519,7 +5523,7 @@ package body et_project is
 											expect_field_count (line, 6, warn => false);
 
 											-- read and validate value
-											device.value := et_libraries.to_value (f (line, 4));
+											device.value := to_value (f (line, 4));
 
 											-- read partcode
 											if f (line, 5) = keyword_partcode then
@@ -6971,6 +6975,7 @@ package body et_project is
 							when SEC_DEVICES =>
 								declare
 									use et_symbols;
+									use et_devices;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -7000,16 +7005,16 @@ package body et_project is
 										expect_field_count (line, 2);
 
 										-- validate value
-										device_value := et_libraries.to_value (f (line, 2));
+										device_value := to_value (f (line, 2));
 
 									elsif kw = keyword_model then -- model /models/capacitor.dev
 										expect_field_count (line, 2);
-										device_model := et_libraries.to_file_name (f (line, 2));
+										device_model := to_file_name (f (line, 2));
 										
 									elsif kw = keyword_variant then -- variant S_0805, N, D
 										expect_field_count (line, 2);
-										et_libraries.check_variant_name_length (f (line, 2));
-										device_variant := et_libraries.to_component_variant_name (f (line, 2));
+										check_variant_name_length (f (line, 2));
+										device_variant := to_component_variant_name (f (line, 2));
 
 									elsif kw = keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
 										expect_field_count (line, 2);
@@ -7244,12 +7249,13 @@ package body et_project is
 						case stack.parent is
 							when SEC_UNITS =>
 								declare
+									use et_devices;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then -- name 1, GPIO_BANK_1, ...
 										expect_field_count (line, 2);
-										device_unit_name := et_libraries.to_unit_name (f (line, 2));
+										device_unit_name := to_unit_name (f (line, 2));
 										
 									elsif kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
 										expect_field_count (line, 7);
@@ -8180,10 +8186,10 @@ package body et_project is
 				compose (type_et_project_path.to_string (project_path), type_project_name.to_string (project_name)));
 		-- Path now contains something like /home/user/ecad/blood_sample_analyzer
 		
-		use et_libraries.type_devices;
+		use et_devices;
 
-		procedure save_device (device_cursor : in et_libraries.type_devices.cursor) is
-			use et_libraries;
+		procedure save_device (device_cursor : in type_devices.cursor) is 
+			use type_devices;
 		begin
 			save_device (
 				-- library name like: 

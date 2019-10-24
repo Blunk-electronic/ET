@@ -61,6 +61,7 @@ with et_pcb_stack;
 with general_rw;				use general_rw;
 with et_geometry;				use et_geometry;
 with et_text;					use et_text;
+with et_packages;
 
 package body pcb_rw is
 
@@ -1378,15 +1379,15 @@ package body pcb_rw is
 
 	procedure create_package (
 	-- Creates a package and stores the package in container et_packages.packages.								 								 
-		package_name 	: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		package_name 	: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		appearance		: in et_packages.type_package_appearance;
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_packages;
 	begin
-		log (text => "creating package " & et_libraries.to_string (package_name) & " ...", level => log_threshold);
+		log (text => "creating package " & to_string (package_name) & " ...", level => log_threshold);
 		log_indentation_up;
-		log (text => "appearance " & et_packages.to_string (appearance) & " ...", level => log_threshold);
+		log (text => "appearance " & to_string (appearance) & " ...", level => log_threshold);
 		
 		-- Test if package already exists. If already exists, issue warning and exit.
 		if type_packages.contains (packages, package_name) then
@@ -1415,12 +1416,12 @@ package body pcb_rw is
 
 	procedure save_package (
 	-- Saves the given package model in a file specified by file_name.
-		file_name 		: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac							   
+		file_name 		: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac							   
 		packge			: in et_packages.type_package; -- the actual package model
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_packages;
-		use et_libraries.type_package_model_file;
+		use type_package_model_file;
 		
 		file_handle : ada.text_io.file_type;
 		
@@ -1759,7 +1760,8 @@ package body pcb_rw is
 			section_mark (section_pac_3d_contours, FOOTER);
 		end write_package_contour;
 
-		procedure write_terminals is 
+		procedure write_terminals is
+			use et_packages;
 			use type_terminals;
 			terminal_cursor : type_terminals.cursor := packge.terminals.first;
 
@@ -1774,7 +1776,7 @@ package body pcb_rw is
 			
 			while terminal_cursor /= type_terminals.no_element loop
 				section_mark (section_terminal, HEADER);
-				write (keyword => keyword_name, parameters => space & et_libraries.to_string (key (terminal_cursor)));
+				write (keyword => keyword_name, parameters => space & to_string (key (terminal_cursor)));
 				write (keyword => keyword_assembly_technology, parameters => to_string (element (terminal_cursor).technology));
 				write (keyword => keyword_position, parameters => position (element (terminal_cursor).position));
 				
@@ -1829,12 +1831,12 @@ package body pcb_rw is
 		end write_terminals;
 		
 	begin -- save_package
-		log (text => to_string (file_name), level => log_threshold);
+		log (text => et_packages.to_string (file_name), level => log_threshold);
 
 		create (
 			file 	=> file_handle,
 			mode	=> out_file,
-			name	=> to_string (file_name));
+			name	=> et_packages.to_string (file_name));
 
 		set_output (file_handle);
 		
@@ -1893,7 +1895,7 @@ package body pcb_rw is
 	
 	procedure read_package (
 	-- Opens the package file and stores the package in container et_packages.packages.
-		file_name 		: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		file_name 		: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_packages;
@@ -1932,7 +1934,7 @@ package body pcb_rw is
 		pac_description			: type_package_description.bounded_string; 
 		pac_technology			: type_assembly_technology := assembly_technology_default;
 		
-		signal_layers : et_pcb_stack.type_signal_layers.set;
+		signal_layers			: et_pcb_stack.type_signal_layers.set;
 
 		pac_text				: et_packages.type_text_with_content;
 		pac_text_placeholder	: et_packages.type_text_placeholder;
@@ -1945,7 +1947,7 @@ package body pcb_rw is
 		tht_drill_size			: et_packages.type_drill_size := et_packages.type_drill_size'first;
 		tht_millings			: et_packages.type_plated_millings;
 
-		terminal_name			: et_libraries.type_terminal_name.bounded_string;
+		terminal_name			: et_packages.type_terminal_name.bounded_string;
 		terminal_technology		: et_packages.type_assembly_technology := et_packages.assembly_technology_default;
 		tht_pad_shape			: et_packages.type_pad_outline_tht;		
 		smt_pad_shape			: et_packages.type_pad_outline;
@@ -2011,7 +2013,7 @@ package body pcb_rw is
 			end case;
 
 			if not inserted then
-				log (ERROR, "terminal" & et_libraries.to_string (terminal_name) 
+				log (ERROR, "terminal" & to_string (terminal_name) 
 					 & " already used !", console => true);
 				raise constraint_error;
 			end if;
@@ -3908,7 +3910,7 @@ package body pcb_rw is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then -- name 1,2,H7
 										expect_field_count (line, 2);
-										terminal_name := et_libraries.to_terminal_name (f (line,2));
+										terminal_name := to_terminal_name (f (line,2));
 
 									elsif kw = keyword_assembly_technology then -- technology tht
 										expect_field_count (line, 2);
@@ -3960,7 +3962,7 @@ package body pcb_rw is
 			end if;
 
 			exception when event: others =>
-				log (text => "file " & et_libraries.to_string (file_name) & space 
+				log (text => "file " & to_string (file_name) & space 
 					 & affected_line (line) & to_string (line), console => true);
 				raise;
 			
@@ -3970,7 +3972,7 @@ package body pcb_rw is
 		
 	begin -- read_package
 		log_indentation_up;
-		log (text => "reading package " & et_libraries.to_string (file_name) & " ...", level => log_threshold);
+		log (text => "reading package " & to_string (file_name) & " ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- test if container et_pcb.packages already contains the package
@@ -3983,7 +3985,7 @@ package body pcb_rw is
 			open (
 				file => file_handle,
 				mode => in_file, 
-				name => expand (et_libraries.to_string (file_name)));
+				name => expand (to_string (file_name)));
 
 			set_input (file_handle);
 			

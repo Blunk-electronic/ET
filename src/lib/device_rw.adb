@@ -663,7 +663,7 @@ package body device_rw is
 							when SEC_DRAW => 
 
 								-- append symbol_line to unit_symbol
-								type_lines.append (
+								et_symbols.type_lines.append (
 									container	=> unit_symbol.shapes.lines,
 									new_item	=> symbol_line);
 
@@ -678,7 +678,7 @@ package body device_rw is
 							when SEC_DRAW =>
 
 								-- append symbol_arc to unit_symbol
-								type_arcs.append (
+								et_symbols.type_arcs.append (
 									container	=> unit_symbol.shapes.arcs,
 									new_item	=> symbol_arc);
 
@@ -693,7 +693,7 @@ package body device_rw is
 							when SEC_DRAW =>
 
 								-- append symbol_circle to unit_symbol
-								type_circles.append (
+								et_symbols.type_circles.append (
 									container	=> unit_symbol.shapes.circles,
 									new_item	=> symbol_circle);
 
@@ -943,8 +943,8 @@ package body device_rw is
 
 										-- The given path is something like libraries/packages/S_SO14.pac.
 										-- Check if the package name like S_SO14 is too long or contains invalid characters.
-										check_package_name_length (ada.directories.base_name (f (line, 2)));
-										check_package_name_characters (to_package_name (ada.directories.base_name (f (line, 2))));
+										et_libraries.check_package_name_length (ada.directories.base_name (f (line, 2)));
+										et_libraries.check_package_name_characters (et_libraries.to_package_name (ada.directories.base_name (f (line, 2))));
 
 										variant.package_model := to_file_name (f (line,2));
 										log (text => "package model " & to_string (variant.package_model), level => log_threshold + 1);

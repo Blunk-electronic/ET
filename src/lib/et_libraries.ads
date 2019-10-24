@@ -180,8 +180,7 @@ package et_libraries is
 
 	
 -- PACKAGES
-
-	-- CS used by kicad only ?
+	-- CS move to et_package
 	
 	-- A package is something like "SOT32" or "NDIP14". It is a more or less standardized (JEDEC)
 	-- designator for the housing or the case of an electronical component. The package name is independed of
