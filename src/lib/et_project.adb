@@ -8201,16 +8201,18 @@ package body et_project is
 				log_threshold	=> log_threshold + 1); 
 		end save_device;
 
-		use et_packages.type_packages;
+		use et_packages;
 		
-		procedure save_package (package_cursor : in et_packages.type_packages.cursor) is
-			use et_libraries.type_package_model_file;
+		procedure save_package (package_cursor : in type_packages.cursor) is
+			use type_package_model_file;
+			use type_packages;
 		begin
 			save_package (
 				-- package name like: 
 				-- /home/user/ecad/blood_sample_analyzer/libraries/packages/bel_connector_and_jumper_FEMALE_01X06.pac
-				file_name		=> et_libraries.to_file_name 
-					(to_string (path) & gnat.directory_operations.dir_separator & to_string (key (package_cursor))),
+				file_name		=> to_file_name (
+					to_string (path) & gnat.directory_operations.dir_separator &
+					type_package_model_file.to_string (key (package_cursor))),
 
 				-- the package model itself:
 				packge			=> element (package_cursor),
@@ -8223,12 +8225,12 @@ package body et_project is
 
 		log (text => "devices ...", level => log_threshold + 1);
 		log_indentation_up;
-		iterate (et_libraries.devices, save_device'access);
+		type_devices.iterate (devices, save_device'access);
 		log_indentation_down;
 		
 		log (text => "packages ...", level => log_threshold + 1);
 		log_indentation_up;
-		iterate (et_packages.packages, save_package'access);
+		type_packages.iterate (packages, save_package'access);
 		log_indentation_down;
 
 		log_indentation_down;			

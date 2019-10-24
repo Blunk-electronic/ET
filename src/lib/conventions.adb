@@ -65,6 +65,7 @@ with et_import;
 with et_csv;
 with material;
 with et_symbols;
+with et_devices;
 
 package body conventions is
 
@@ -806,11 +807,12 @@ package body conventions is
 		end if;
 	end component_prefixes_specified;
 	
-	function category (prefix : in et_libraries.type_device_name_prefix.bounded_string) return
+	function category (prefix : in et_devices.type_device_name_prefix.bounded_string) return
 		type_device_category is
 	-- Returns the category of the given component prefix. If no category could be
 	-- found, returns category UNKNOWN.
-		use et_libraries.type_device_name_prefix;
+		use et_devices;
+		use et_devices.type_device_name_prefix;
 		use type_component_prefixes;
 
 		prefix_cursor : type_component_prefixes.cursor;
@@ -822,7 +824,7 @@ package body conventions is
 		-- Otherwise return the respecitve category.
 		if prefix_cursor = type_component_prefixes.no_element then
 			log (WARNING, "category of prefix " 
-				 & et_libraries.to_string (prefix)
+				 & et_devices.to_string (prefix)
 				 & latin_1.space
 				 & to_string (UNKNOWN) & " !");
 			return UNKNOWN;
@@ -836,7 +838,7 @@ package body conventions is
 		type_device_category is
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
-		use et_libraries.type_device_name_prefix;
+		use et_devices.type_device_name_prefix;
 		use type_component_prefixes;
 
 		prefix_cursor : type_component_prefixes.cursor;
@@ -1884,7 +1886,7 @@ package body conventions is
 	end;
 	
 	function requires_operator_interaction (
-		prefix : in et_libraries.type_device_name_prefix.bounded_string) 
+		prefix : in et_devices.type_device_name_prefix.bounded_string) 
 		return type_component_requires_operator_interaction is
 	-- Returns YES is given prefix requires operator interaction.
 	-- Returns NO if prefixs does not require interaction or if no prefixes
@@ -2122,12 +2124,13 @@ package body conventions is
 	-- The root of a partcode in general is something like R_PAC_S_0805_VAL_ .
 	-- If optionally the value is provided, it gets appended which would result
 	-- in something like R_PAC_S_0805_VAL_100R.
-		prefix		: in et_libraries.type_device_name_prefix.bounded_string;			-- R
+		prefix		: in et_devices.type_device_name_prefix.bounded_string;			-- R
 		packge		: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
-		value 		: in et_libraries.type_value.bounded_string := et_libraries.type_value.to_bounded_string ("")) -- 100R
+		value 		: in et_devices.type_value.bounded_string := et_devices.type_value.to_bounded_string ("")) -- 100R
 		return material.type_partcode.bounded_string is
 
 		use et_libraries;
+		use et_devices;
 		use type_device_name_prefix;
 		use type_component_package_name;
 		use type_value;
@@ -2135,7 +2138,7 @@ package body conventions is
 
 	begin
 		return to_bounded_string (
-			et_libraries.to_string (prefix)	-- R
+			et_devices.to_string (prefix)	-- R
 			& partcode_keyword_separator	-- _
 			& to_partcode_keyword (COMPONENT_PACKAGE) -- PAC
 			& partcode_keyword_separator			-- _
@@ -2143,7 +2146,7 @@ package body conventions is
 			& partcode_keyword_separator			-- _
 			& to_partcode_keyword (COMPONENT_VALUE) -- VAL
 			& partcode_keyword_separator			-- _
-			& et_libraries.to_string (value)		-- 100R
+			& et_devices.to_string (value)		-- 100R
 			);
 	end compose_partcode_root;
 
@@ -2278,7 +2281,7 @@ package body conventions is
 		partcode		: in material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		device_name		: in et_libraries.type_device_name;						-- R45
 		packge			: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
-		value 			: in et_libraries.type_value.bounded_string;			-- 100R
+		value 			: in et_devices.type_value.bounded_string;			-- 100R
 		log_threshold	: in et_string_processing.type_log_level)
 		is
 
@@ -2633,6 +2636,7 @@ package body conventions is
 			subtype type_column is positive range 1..8;
 		
 			use et_libraries;
+			use et_devices;
 			use et_symbols;
 			use et_coordinates;
 			use et_coordinates.geometry;
@@ -2973,8 +2977,8 @@ package body conventions is
 	-- in the configuration file, this test does nothing.
 	-- Returns false if any violation has been detected.							 
 	-- CS: If value is 10,0R outputs the same warning multiple times. Rework required.
-		value 	: in et_libraries.type_value.bounded_string; -- 100R, 1A5
-		prefix	: in et_libraries.type_device_name_prefix.bounded_string) -- R, F
+		value 	: in et_devices.type_value.bounded_string; -- 100R, 1A5
+		prefix	: in et_devices.type_device_name_prefix.bounded_string) -- R, F
 		return boolean is
 
 		-- This flag goes false once an error has been detected.
@@ -2982,12 +2986,14 @@ package body conventions is
 		
 		use et_libraries;
 		use et_string_processing;
-
+		use et_devices;
+		use type_value;
+		
 		component_category : type_device_category;
 		value_length : natural := type_value.length (value);
 
 		procedure value_invalid is begin
-			log (WARNING, "value " & enclose_in_quotes (to_string (value)) &
+			log (WARNING, "value " & enclose_in_quotes (et_devices.to_string (value)) &
 				" invalid ! Check unit of measurement !");
 			result := false;			
 		end;
@@ -3010,7 +3016,6 @@ package body conventions is
 		
 			use type_unit_abbrevation;
 			use type_units_of_measurement;
-			use type_value;
 		
 			function valid (unit : in type_unit_of_measurement) 
 				return boolean is
@@ -3181,11 +3186,11 @@ package body conventions is
 	end value_valid;
 
 	
-	function prefix_valid (prefix : in et_libraries.type_device_name_prefix.bounded_string) return boolean is
+	function prefix_valid (prefix : in et_devices.type_device_name_prefix.bounded_string) return boolean is
 	-- Tests if the given reference has a valid prefix as specified in the configuration file.
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
-		use et_libraries.type_device_name_prefix;
+		use et_devices.type_device_name_prefix;
 		use type_component_prefixes;
 		result : boolean := true;
 	begin
@@ -3204,7 +3209,7 @@ package body conventions is
 	-- Tests if the given reference has a valid prefix as specified in the configuration file.
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
-		use et_libraries.type_device_name_prefix;
+		use et_devices.type_device_name_prefix;
 		use type_component_prefixes;
 		result : boolean := true;
 	begin

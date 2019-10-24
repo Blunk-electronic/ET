@@ -72,7 +72,10 @@ with et_export;
 with et_csv;
 with conventions;
 with et_text;
+
+with et_packages;
 with et_symbols;				use et_symbols;
+with et_devices;
 
 package body et_kicad is
 
@@ -12862,7 +12865,7 @@ package body et_kicad is
 		port 			: in type_port_with_reference;
 		module			: in type_submodule_name.bounded_string; -- the name of the module
 		log_threshold 	: in et_string_processing.type_log_level) -- see et_libraries spec
-		return et_libraries.type_terminal is
+		return et_devices.type_terminal is
 	-- Returns the terminal and unit name of the given port in a composite type.
 	-- Raises error if given port is of a virtual component (appearance sch).
 
@@ -12879,7 +12882,7 @@ package body et_kicad is
 		use type_modules;
 		use et_string_processing;
 		use et_coordinates;
-		terminal : et_libraries.type_terminal; -- to be returned
+		terminal : et_devices.type_terminal; -- to be returned
 
 		procedure locate_component_in_schematic (
 			module_name : in type_submodule_name.bounded_string;
@@ -13244,7 +13247,7 @@ package body et_kicad is
 			net_cursor 	: type_netlist.cursor;
 			port_cursor : type_ports_with_reference.cursor;
 			port 		: type_port_with_reference;
-			terminal 	: et_libraries.type_terminal;
+			terminal 	: et_packages.type_terminal;
 			port_count 	: count_type;
 		begin
 			log (text => "locating net ... ", level => log_threshold + 1);
@@ -13356,7 +13359,7 @@ package body et_kicad is
 			port_cursor : type_ports_with_reference.cursor;
 			ports_all 	: type_ports_with_reference.set; -- all ports of the net
 			port 		: type_port_with_reference;
-			terminal 	: et_libraries.type_terminal;
+			terminal 	: et_devices.type_terminal;
 		begin
 			log (text => "locating net ... ", level => log_threshold + 1);
 			log_indentation_up;
@@ -13382,7 +13385,7 @@ package body et_kicad is
 
 							-- log terminal
 							terminal := to_terminal (port, module_name, log_threshold + 2); -- fetch the terminal
-							log (text => to_string (port) & et_libraries.to_string (
+							log (text => to_string (port) & et_devices.to_string (
 									terminal, show_unit => true, preamble => true),
 								 level => log_threshold + 2);
 						end if;
