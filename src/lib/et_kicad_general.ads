@@ -45,7 +45,8 @@ with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.vectors;
 
-with et_libraries;
+with et_packages;
+with et_devices;
 
 package et_kicad_general is
 
@@ -61,8 +62,8 @@ package et_kicad_general is
 -- LIBRARIES
 	-- To handle library paths we (mis)use type_device_model_file 
 	-- and type_package_model_file under different names:
-	package type_package_library_name renames et_libraries.type_package_model_file;
-	package type_device_library_name renames et_libraries.type_device_model_file;
+	package type_package_library_name renames et_packages.type_package_model_file;
+	package type_device_library_name renames et_devices.type_device_model_file;
 
 	library_name_length_max : constant natural := 100; -- CS: increase if necessary
 	

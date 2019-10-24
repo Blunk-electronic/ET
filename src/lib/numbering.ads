@@ -54,13 +54,16 @@ with et_coordinates;
 with et_libraries;				use et_libraries;
 with et_string_processing;		use et_string_processing;
 
+with et_devices;
+
+
 package numbering is
 
 	procedure dummy;
 	
 	type type_device is record
 		name	: type_device_name; -- R56, IC4
-		unit	: type_unit_name.bounded_string; -- 1, A, B, ...
+		unit	: et_devices.type_unit_name.bounded_string; -- 1, A, B, ...
 		done	: boolean := false; -- indicates whether the device has been renumbered
 	end record;
 

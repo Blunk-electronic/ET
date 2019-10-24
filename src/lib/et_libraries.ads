@@ -55,13 +55,15 @@ with et_geometry;
 with et_string_processing;
 with et_general;
 with et_text;
-with et_symbols;				use et_symbols;
+-- with et_symbols;				use et_symbols;
+-- with et_packages;				use et_packages;
+with et_devices;				use et_devices;
 
 package et_libraries is
 
-	use geometry;
-
 	path_length_max : constant natural := 500; -- CS: increase if necessary
+
+
 	
 	
 	-- The name of the person who has drawn, checked or approved something may have 100 characters which seems sufficient for now.
@@ -72,46 +74,13 @@ package et_libraries is
 	-- Returns the given person name as string.
 
 
-----------
 
 
-	
--- DEVICE VALUES
-	-- The device value is something like 330R or 100n or 74LS00
-	value_length_max : constant positive := 50;
 
-	-- Define the characters that are allowed for a value:
-	value_characters : character_set := 
-		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) 
-		or to_set ('_')
-		or to_set ('-');
-	
-	package type_value is new generic_bounded_length (value_length_max);
 
-	function to_string (value : in type_value.bounded_string) return string;
-	
-	function value_length_valid (value : in string) return boolean;
-	-- Tests if the given value is longer than allowed. Returns false if too long.
-	-- Returns true if length is in allowed range.
 
-	function truncate (value : in string) return type_value.bounded_string;
-	
-	function value_characters_valid (
-		value		: in type_value.bounded_string;
-		characters	: in character_set := value_characters)
-		return boolean;
-	-- Tests if the given value contains only valid characters as specified
-	-- by given character set. Returns false if invalid character found.
-	-- Issues warning.	
 
-	procedure value_invalid (value : in string);
-	-- Issues error message and raises constraint error.
 
-	function to_value (
-	-- Tests the given value for length and invalid characters.
-		value						: in string;
-		error_on_invalid_character	: in boolean := true)
-		return type_value.bounded_string;
 	
 
 -- DEVICE PURPOSE
@@ -146,28 +115,13 @@ package et_libraries is
 		return type_device_purpose.bounded_string;
 	
 
+
+	
 -- DEVICE NAMES
 	keyword_device : constant string := "device";
-
-	-- A device name consists of a prefix (like R, C, IC, ..)
-	-- and a consecutive number. Both form something like "IC702"
-	device_name_prefix_characters : character_set := to_set (span => ('A','Z'));
-	device_name_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
-	package type_device_name_prefix is new generic_bounded_length (device_name_prefix_length_max);
-	use type_device_name_prefix;
-
-	function to_string (prefix : in type_device_name_prefix.bounded_string) return string;
-	function to_prefix (prefix : in string) return type_device_name_prefix.bounded_string;
-
-	procedure check_prefix_length (prefix : in string);
-	-- Tests if the given prefix is longer than allowed.
-	
-	procedure check_prefix_characters (prefix : in type_device_name_prefix.bounded_string);
-	-- Tests if the given prefix contains only valid characters.
-	-- Raises exception if invalid character found.
 	
 	type type_device_name_element is (PREFIX, ID);
-	device_name_prefix_default : constant type_device_name_prefix.bounded_string := to_bounded_string("?");
+	device_name_prefix_default : constant type_device_name_prefix.bounded_string := type_device_name_prefix.to_bounded_string ("?");
 
 	subtype type_device_name_index is natural range natural'first .. 99_999; -- R1..R99999, IC1..IC99999 should be enough
 	device_name_index_default : constant type_device_name_index := 0;
@@ -226,6 +180,8 @@ package et_libraries is
 
 	
 -- PACKAGES
+
+	-- CS used by kicad only ?
 	
 	-- A package is something like "SOT32" or "NDIP14". It is a more or less standardized (JEDEC)
 	-- designator for the housing or the case of an electronical component. The package name is independed of
@@ -258,255 +214,15 @@ package et_libraries is
 	-- Raises exception if invalid character found.
 	
 
--- TERMINALS
-	type type_terminal_count is new count_type; -- CS: limit to a reasonable range ?
 
-	function to_string (terminals : in type_terminal_count) return string;
-	-- Returns the given number of terminals as string.
-
-
-	-- Instantiation of the generic shapes package et_geometry.shapes_2d:
-	package shapes is new et_geometry.shapes_2d (geometry => et_coordinates.geometry);
-	use shapes;
-	
 
 
 	
 
-	keyword_unit		: constant string := "unit";		
-	keyword_swap_level	: constant string := "swap_level";
-	keyword_add_level	: constant string := "add_level";
-
-	unit_name_length_max : constant natural := 50;	
-	-- CS unit_name_characters, length check, character check
-	package type_unit_name is new generic_bounded_length (unit_name_length_max); use type_unit_name;
-
-	unit_name_default : constant type_unit_name.bounded_string := type_unit_name.to_bounded_string ("");
-	
-	function to_string (unit_name : in type_unit_name.bounded_string) return string;
-	function to_unit_name (unit_name : in string) return type_unit_name.bounded_string;
-	
-	unit_swap_level_max : constant natural := 10;
-	type type_unit_swap_level is new natural range 0..unit_swap_level_max;
-	unit_swap_level_default : constant := type_unit_swap_level'first;
-
-	function to_string (swap_level : in type_unit_swap_level) return string;
-	function to_swap_level (swap_level : in string) return type_unit_swap_level;	
-
-	type type_unit_add_level is (
-		NEXT, 		-- should be default. for things like logic gates, multi-OP-Amps, ...
-		REQUEST, 	-- for power supply 
-		CAN,		-- OPTIONAl units. things like relay contacts
-		ALWAYS,		-- units that SHOULD be used always
-		MUST);		-- units that MUST be used. things like relay coils.
-
-	unit_add_level_default : constant type_unit_add_level := type_unit_add_level'first;
-	
-	function to_string (add_level : in type_unit_add_level) return string;
-	function to_add_level (add_level : in string) return type_unit_add_level;
-	
-	-- An internal unit is a symbol with a swap level.
-	-- An internal unit is owned by the particular device exclusively.
-	type type_unit_internal (appearance : type_device_appearance) is record
-		symbol		: type_symbol (appearance);
-		position	: type_point; -- the position of the unit inside the device editor
-		swap_level	: type_unit_swap_level := unit_swap_level_default;
-		add_level	: type_unit_add_level := type_unit_add_level'first;
-	end record;
-
-	-- Internal units are collected in a map:
-	package type_units_internal is new indefinite_ordered_maps (
-		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
-		element_type	=> type_unit_internal);
-
-	-- An external unit has a reference and a swap level.
-    type type_unit_external is record
-        -- file is the link to the symbol in container "symbols":
-        file		: type_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym -- CS rename to model
-        
-		position	: type_point := origin; -- the position within the device editor
-		swap_level	: type_unit_swap_level := unit_swap_level_default;
-		add_level	: type_unit_add_level := type_unit_add_level'first;
-	end record;
-
-	-- External units are collected in a map;
-	package type_units_external is new ordered_maps (
-		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3"
-		element_type	=> type_unit_external);
 
 
--- TERMINALS	
-	-- A terminal is the physical point where electrical energy comes in or out of the device.
-	-- Other CAE systems refer to "pins" or "pads". In order to use only a single word
-	-- we further-on speak about "terminals".
-	-- The name of a terminal may have 10 characters which seems sufficient for now.
-	-- CS: character set, length check, charcter check
- 	terminal_name_length_max : constant natural := 10;
-	package type_terminal_name is new generic_bounded_length (terminal_name_length_max);
-	use type_terminal_name;
-
-	function to_string (terminal : in type_terminal_name.bounded_string) return string;
-	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string;
-	
--- PACKAGE VARIANTS
-	-- The variant is usually a suffix in a device value, given by its manufacturer. The variant is a manufacturer
-	-- specific abbrevation for the package a device comes with.
-	-- Example: An opamp made by TI can be the type TL084N or TL084D. N means the NDIP14 package
-	-- whereas D means the SO14 package.
-	-- If a device has package variants, a suffix after the component type indicates the package
-	-- The variant name is manufacturer specific. example: TL084D or TL084N
-	-- device package variant names like "N" or "D" are stored in bounded strings.
-	component_variant_name_characters : character_set := 
-		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set ("_-"); -- CS rename to package_variant_name_characters
-	
-	component_variant_name_length_max : constant positive := 50;
-	package type_component_variant_name is new generic_bounded_length (component_variant_name_length_max);
-	use type_component_variant_name;
-
-	function to_string (package_variant : in type_component_variant_name.bounded_string) return string;
-	-- converts a type_component_variant_name to a string.
-	
-	function to_component_variant_name (variant_name : in string) 
-		return type_component_variant_name.bounded_string;
-	-- converts a string to a variant name
-
-	procedure check_variant_name_length (variant_name : in string);
-	-- tests if the given variant name is not longer than allowed
-	
-	procedure check_variant_name_characters (
-		variant		: in type_component_variant_name.bounded_string;
-		characters	: in character_set := component_variant_name_characters);
-	-- Tests if the given variant name contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
-
-	type type_port_in_terminal_port_map is record
-		name	: type_port_name.bounded_string; -- CLK, CE, VSS
-		unit	: type_unit_name.bounded_string; -- GPIO_BANK_3
-	end record;
-	
-	package type_terminal_port_map is new ordered_maps (
-		key_type 		=> type_terminal_name.bounded_string, -- H7, 14
-		element_type 	=> type_port_in_terminal_port_map); -- unit A, OE1
 
 
-	-- To handle names of package models like libraries/packages/smd/SOT23.pac use this:
-	keyword_package_model : constant string := "package_model";
-	
-	package type_package_model_file is new generic_bounded_length (path_length_max);
-	function to_string (name : in type_package_model_file.bounded_string) return string;
-	function to_file_name (name : in string) return type_package_model_file.bounded_string;
-	
-	type type_component_variant is record -- CS rename to type_package_variant
-		package_model		: type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
-		terminal_port_map	: type_terminal_port_map.map; -- which port is connected with with terminal
-	end record;
-
-	package type_component_variants is new ordered_maps ( -- CS rename to type_package_variants
-		key_type 		=> type_component_variant_name.bounded_string, -- D, N
-		element_type 	=> type_component_variant);
-
-	type type_terminal is record
-		name	: type_terminal_name.bounded_string; -- H7
-		unit	: type_unit_name.bounded_string; -- IO-BANK1
-		port	: type_port_name.bounded_string; -- GPIO3
-	end record;
-
-	function to_string (
-		terminal	: in type_terminal;
-		show_unit	: in boolean := false;
-		preamble	: in boolean := true)
-		return string;
-	-- Returns the given terminal as string. 
-	-- If show_unit is true, the unit name is output.
-	-- If preamble is true, each property of the terminal is headed by a short preamble.
-	
-
-
--- DEVICES
-	type type_device (appearance : type_device_appearance) is record
-		prefix			: type_device_name_prefix.bounded_string; -- R, C, IC, ...
-		units_internal	: type_units_internal.map := type_units_internal.empty_map;
-		units_external	: type_units_external.map := type_units_external.empty_map;
-
-		case appearance is
-
-			-- If a device appears in the schematic only, it is a virtual component 
-			-- and thus does not have any package variants.
-			-- Such components are power symbols. Later when building netlists
-			-- those components enforce net names (like GND or P3V3).
-			when sch => 
-				null;
-
-			-- If a device appears in both schematic and layout it comes 
-			-- with at least one package/footprint variant. We store variants in a map.
-			when sch_pcb => 
-				value		: type_value.bounded_string; -- 74LS00
-				--partcode	: type_component_partcode.bounded_string;
-				variants	: type_component_variants.map;
-				
-			when others => null; -- CS
-		end case;
-
-	end record;
-
-	
-	
-
--- DEVICES
-	package type_device_model_file is new generic_bounded_length (path_length_max); -- ../lbr/logic_ttl/7400.dev
-	function to_string (name : in type_device_model_file.bounded_string) return string;
-	function to_file_name (name : in string) return type_device_model_file.bounded_string;
-	
-	package type_devices is new indefinite_ordered_maps (
-		key_type 		=> type_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
-		"<"				=> type_device_model_file."<",
-		element_type	=> type_device);
-
-	device_library_file_extension : constant string := "dev";
-
-	-- HERE RIG WIDE DEVICES ARE KEPT:
-	devices : type_devices.map;
-
-	function variant_available (
-	-- Returns true if given device provides the given package variant.								   
-	-- The given device must be real. Means appearance SCH_PCB.
-		device_cursor	: in type_devices.cursor;
-		variant			: in type_component_variant_name.bounded_string)  -- D, N
-		return boolean;
-
-	function locate_device (model : in type_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
-	-- Locates the given generic device in container "devices".
-		return type_devices.cursor;
-	
-	function package_model (
-	-- Returns the name of the package model of the given device according to the given variant.
-	-- The given device must be real. Means appearance SCH_PCB.							  
-		device_cursor	: in type_devices.cursor;
-		variant			: in type_component_variant_name.bounded_string) -- D, N
-		return type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
-		
--- 	function terminal_name (
--- 	-- Returns the name of the terminal name of the given device according to the given variant.
--- 	-- The given device must be real. Means appearance SCH_PCB.							  
--- 		device_cursor	: in type_devices.cursor;
--- 		port_name		: in type_port_name.bounded_string;
--- 		variant			: in type_component_variant_name.bounded_string) -- D, N
--- 		return type_terminal_name.bounded_string; -- 14, H4
-
-	-- Used for netlists:
-	type type_port_properties (direction : type_port_direction) is record
-		terminal	: type_terminal_name.bounded_string; -- H4, 1, 16
-		properties	: type_port (direction);
-	end record;
-
-	function properties (
-	-- Returns the poperties of the given port of the given device.
-		device_cursor	: in type_devices.cursor;
-		port_name		: in type_port_name.bounded_string)
-		return type_ports.cursor;
-
-	type type_port_properties_access is access type_port_properties;	
 	
 -- DRAWING FRAME
 
@@ -520,10 +236,10 @@ package et_libraries is
 	function to_string (name : in type_frame_template_name.bounded_string) return string;
 	function to_template_name (name : in string) return type_frame_template_name.bounded_string;
 	
-    type type_title_block_line is record
-		coordinates_start : type_point;
-		coordinates_end   : type_point;
-    end record;
+    type type_title_block_line is null record; -- CS
+-- 		coordinates_start : type_point;
+-- 		coordinates_end   : type_point;
+--     end record;
 
 	package type_title_block_lines is new doubly_linked_lists (type_title_block_line);
     
@@ -539,9 +255,9 @@ package et_libraries is
 	
 	type type_title_block_text is record
 		meaning			: type_title_block_text_meaning;
- 		coordinates		: type_point;
+-- CS 		coordinates		: type_point; 
 		text			: type_title_block_text_content.bounded_string; -- CS: rename to content
- 		size			: pac_text.type_text_size;
+ 		size			: natural; -- CS pac_text.type_text_size;
  		rotation		: et_coordinates.type_rotation;
 		-- CS: font, ...
  	end record;
@@ -550,24 +266,24 @@ package et_libraries is
 
     -- the final title block
     type type_title_block is record
-        coordinates     : type_point; -- CS rename to position
+--  CS       coordinates     : type_point; -- CS rename to position
         lines           : type_title_block_lines.list;
         texts           : type_title_block_texts.list;
     end record;
 
     -- A drawing frame consists of straight lines and texts.
     -- The text is a character at the x/y border that helps to locate objects.
-    type type_frame_line is record
-		coordinates_start : type_point;
-        coordinates_end   : type_point;
-	end record;
+    type type_frame_line is null record; -- CS
+-- 		coordinates_start : type_point;
+--         coordinates_end   : type_point;
+-- 	end record;
 	
 	package type_frame_lines is new doubly_linked_lists (type_frame_line);
 
 	type type_frame_text is record
-		coordinates		: type_point; -- CS rename to position
+-- CS		coordinates		: type_point; -- CS rename to position
 		text			: character_set := et_string_processing.general_characters; -- CS rename to content
-		size			: pac_text.type_text_size;
+		size			: natural; -- CS pac_text.type_text_size;
 		rotation		: et_coordinates.type_rotation;
 		-- CS: font, ...
 	end record;

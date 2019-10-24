@@ -57,6 +57,8 @@ with et_string_processing;		use et_string_processing;
 -- with et_pcb_coordinates;
 -- with submodules;
 -- with numbering;
+with et_devices;
+with et_packages;
 
 package material is
 
@@ -103,8 +105,8 @@ package material is
 	function to_file_name (name : in string) return type_file_name.bounded_string;
 
 	type type_device is record
-		value		: et_libraries.type_value.bounded_string;			-- 7400
-		packge		: et_libraries.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+		value		: et_devices.type_value.bounded_string;			-- 7400
+		packge		: et_packages.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		partcode	: type_partcode.bounded_string; 		-- IC_PAC_S_SO16_VAL7400
 		purpose		: et_libraries.type_device_purpose.bounded_string; 	-- brightness_control
 	end record;

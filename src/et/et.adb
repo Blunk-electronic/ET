@@ -52,7 +52,7 @@ with ada.directories;			use ada.directories;
 with et_general;
 with et_string_processing;		use et_string_processing;
 with et_coordinates;
-with et_libraries;
+with et_packages;
 with et_schematic;
 with et_import;
 with et_export;
@@ -76,10 +76,10 @@ procedure et is
 	project_name_open 		: et_project.type_project_name.bounded_string; -- the project to be opened
 	project_name_save_as	: et_project.type_project_name.bounded_string; -- the "save as" name of the project
 	
-	package_name_create		: et_libraries.type_package_model_file.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
-	package_name_import		: et_libraries.type_package_model_file.bounded_string; -- the package to be imported
-	package_name_open		: et_libraries.type_package_model_file.bounded_string; -- the package to be opened
-	package_name_save_as	: et_libraries.type_package_model_file.bounded_string; -- the package to be saved as
+	package_name_create		: et_packages.type_package_model_file.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
+	package_name_import		: et_packages.type_package_model_file.bounded_string; -- the package to be imported
+	package_name_open		: et_packages.type_package_model_file.bounded_string; -- the package to be opened
+	package_name_save_as	: et_packages.type_package_model_file.bounded_string; -- the package to be saved as
 	package_appearance		: et_packages.type_package_appearance := et_packages.REAL; -- virtual/real. mostly real.
 	
 	script_name	: scripting.type_script_name.bounded_string;
@@ -152,7 +152,7 @@ procedure et is
 
 					elsif full_switch = switch_native_package_create then
 						log (text => arg & full_switch & space & parameter);
-						package_name_create := et_libraries.to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
+						package_name_create := et_packages.to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
 
 					elsif full_switch = switch_package_appearance then -- virtual/real
 						log (text => arg & full_switch & space & parameter);
@@ -160,11 +160,11 @@ procedure et is
 						
 					elsif full_switch = switch_native_package_open then
 						log (text => arg & full_switch & space & parameter);
-						package_name_open := et_libraries.to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
+						package_name_open := et_packages.to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
 
 					elsif full_switch = switch_native_package_save_as then
 						log (text => arg & full_switch & space & parameter);
-						package_name_save_as := et_libraries.to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
+						package_name_save_as := et_packages.to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
 
 						
 					elsif full_switch = switch_execute_script then
@@ -294,7 +294,7 @@ procedure et is
 	end import_project;
 
 	procedure save_package_as is 
-		use et_libraries.type_package_model_file;
+		use et_packages.type_package_model_file;
 	begin
 		if length (package_name_save_as) > 0 then
 			pcb_rw.save_package (
@@ -308,7 +308,7 @@ procedure et is
 		use et_project.type_project_name;
 		use scripting.type_script_name;
 		use conventions.type_conventions_file_name;
-		use et_libraries.type_package_model_file;
+		use et_packages.type_package_model_file;
 
 		procedure read_configuration_file is begin
 			if length (conv_file_name_use) > 0 then

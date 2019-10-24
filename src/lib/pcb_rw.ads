@@ -359,19 +359,19 @@ package pcb_rw is
 
 	procedure create_package (
 	-- Creates a package and stores the package in container et_packages.packages.								 
-		package_name 	: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		package_name 	: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		appearance		: in et_packages.type_package_appearance;
 		log_threshold	: in et_string_processing.type_log_level);
 
 	procedure save_package (
 	-- Saves the given package model in a file specified by file_name.							   
-		file_name 		: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		file_name 		: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		packge			: in et_packages.type_package; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure read_package (
 	-- Opens the package file and stores the package in container et_packages.packages.
-		file_name 		: in et_libraries.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
+		file_name 		: in et_packages.type_package_model_file.bounded_string; -- libraries/packages/S_SO14.pac
 		log_threshold	: in et_string_processing.type_log_level);
 
 	

@@ -60,6 +60,7 @@ with et_libraries;
 with et_string_processing;
 with et_text;
 with et_symbols;
+with et_devices;
 
 package et_kicad is
 	
@@ -239,7 +240,7 @@ package et_kicad is
 	procedure add_unit (
 	-- Adds a unit into the given commponent.
 		reference		: in et_libraries.type_device_name;
-		unit_name		: in et_libraries.type_unit_name.bounded_string;
+		unit_name		: in et_devices.type_unit_name.bounded_string;
 		unit 			: in type_unit_schematic;
 		log_threshold	: in et_string_processing.type_log_level);
 
@@ -247,13 +248,13 @@ package et_kicad is
 	-- Units of a component are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
 	package type_units_schematic is new ordered_maps (
-		key_type		=> et_libraries.type_unit_name.bounded_string,
-		"<"				=> et_libraries.type_unit_name."<",
+		key_type		=> et_devices.type_unit_name.bounded_string,
+		"<"				=> et_devices.type_unit_name."<",
 		element_type	=> type_unit_schematic);
 
 	function unit_exists (
 	-- Returns true if the unit with the given name exists in the given list of units.
-		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		name	: in et_devices.type_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return boolean;
 
@@ -261,7 +262,7 @@ package et_kicad is
 	-- Returns the coordinates of the unit with the given name.
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
-		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		name	: in et_devices.type_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return type_position;
 	
@@ -269,7 +270,7 @@ package et_kicad is
 	-- Returns the mirror style of the given unit.
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
-		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		name	: in et_devices.type_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
 		return et_schematic.type_mirror;
 	
@@ -277,7 +278,7 @@ package et_kicad is
 	-- Returns the orientation of the given unit.
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
-		name 	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		name 	: in et_devices.type_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
 		return et_coordinates.type_rotation;
 	
@@ -449,8 +450,8 @@ package et_kicad is
 	end record;
 
 	package type_units_library is new indefinite_ordered_maps (
-		key_type		=> et_libraries.type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
-		"<"				=> et_libraries.type_unit_name."<",
+		key_type		=> et_devices.type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
+		"<"				=> et_devices.type_unit_name."<",
 		element_type	=> type_unit_library);
 
 	-- For some components (not all !) it is helpful to have an URL to the datasheet.
@@ -473,8 +474,8 @@ package et_kicad is
 	
 	-- This is a component as it appears in the library:.
 	type type_component_library (appearance : et_symbols.type_device_appearance) is record
-		prefix			: et_libraries.type_device_name_prefix.bounded_string; -- R, C, IC, ...
-		value			: et_libraries.type_value.bounded_string; -- 74LS00
+		prefix			: et_devices.type_device_name_prefix.bounded_string; -- R, C, IC, ...
+		value			: et_devices.type_value.bounded_string; -- 74LS00
 		units			: type_units_library.map := type_units_library.empty_map;
 
 		case appearance is
@@ -493,7 +494,7 @@ package et_kicad is
 			when et_symbols.SCH_PCB => 
 				package_filter	: type_package_filter.set := type_package_filter.empty_set;
 				datasheet		: type_component_datasheet.bounded_string;
-				variants		: et_libraries.type_component_variants.map;
+				variants		: et_devices.type_component_variants.map;
 				
 			when others => null; -- CS
 		end case;
@@ -557,7 +558,7 @@ package et_kicad is
 	function to_package_name (
 		library_name	: in type_device_library_name.bounded_string; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
-		package_variant	: in et_libraries.type_component_variant_name.bounded_string) -- N, D
+		package_variant	: in et_devices.type_component_variant_name.bounded_string) -- N, D
 		return et_libraries.type_component_package_name.bounded_string;
 	-- Returns the package name of the given component. 
 
@@ -573,7 +574,7 @@ package et_kicad is
 	type type_alternative_reference is record
 		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
 		reference	: et_libraries.type_device_name; -- R452
-		part		: et_libraries.type_unit_name.bounded_string; -- CS is this about a unit name ? currently written but never read
+		part		: et_devices.type_unit_name.bounded_string; -- CS is this about a unit name ? currently written but never read
 	end record;
 
 	package type_alternative_references is new doubly_linked_lists (type_alternative_reference);
@@ -583,13 +584,13 @@ package et_kicad is
 		library_name	: type_device_library_name.bounded_string; -- lib name like ../libraries/transistors.lib
 		generic_name	: type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		alt_references	: type_alternative_references.list;
-		value			: et_libraries.type_value.bounded_string; -- 470R
+		value			: et_devices.type_value.bounded_string; -- 470R
 		units			: type_units_schematic.map; -- PWR, A, B, ...
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
 			when et_symbols.SCH_PCB => 
 				datasheet			: type_component_datasheet.bounded_string;
-				variant				: et_libraries.type_component_variant_name.bounded_string; -- D, N
+				variant				: et_devices.type_component_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for reference and value.
@@ -703,7 +704,7 @@ package et_kicad is
 		port 			: in type_port_with_reference;
 		module			: in type_submodule_name.bounded_string; -- the name of the module 
 		log_threshold 	: in et_string_processing.type_log_level)
-		return et_libraries.type_terminal;
+		return et_packages.type_terminal;
 	-- Returns the terminal and unit name of the given port in a composite type.
 	-- Raises error if given port is of a virtual component (appearance sch).
 
@@ -1159,7 +1160,7 @@ package et_kicad is
 	power_symbol_prefix : constant string (1..4) := "#PWR";	
 
 	-- These are the characters allowed for a component prefix:
-	component_prefix_characters : character_set := et_libraries.device_name_prefix_characters
+	component_prefix_characters : character_set := et_devices.device_name_prefix_characters
 		or to_set (schematic_component_power_symbol_prefix);
 
 	-- These characters are allowed for a component reference. 
@@ -1439,7 +1440,7 @@ package et_kicad is
 	function terminal_count (
 		reference		: in et_libraries.type_device_name;
 		log_threshold	: in et_string_processing.type_log_level)
-		return et_libraries.type_terminal_count;
+		return et_devices.type_terminal_count;
 	-- Returns the number of terminals of the given component reference.
 	-- Requires module_cursor (global variable) to point to the current module.
 	
@@ -1447,7 +1448,7 @@ package et_kicad is
 	-- Returns the name of the net connected with the given component and terminal.
 		module			: in type_submodule_name.bounded_string;	-- nucleo_core
 		reference		: in et_libraries.type_device_name;	-- IC45
-		terminal		: in et_libraries.type_terminal_name.bounded_string; -- E14
+		terminal		: in et_packages.type_terminal_name.bounded_string; -- E14
 		log_threshold	: in et_string_processing.type_log_level)		
 		return et_general.type_net_name.bounded_string;
 

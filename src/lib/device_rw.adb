@@ -49,7 +49,7 @@ with ada.exceptions;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
-with et_libraries;
+-- with et_libraries;
 with material;
 with et_general;				use et_general;
 
@@ -64,16 +64,17 @@ with conventions;
 with et_geometry;				use et_geometry;
 with et_text;					--use et_text;
 with et_symbols;
+with et_devices;				use et_devices;
+with et_packages;				use et_packages;
 
 package body device_rw is
 
 	procedure save_device (
 	-- Saves the given device model in a file specified by name.
 		name			: in string; -- libraries/devices/resistor.dev
-		device			: in et_libraries.type_device; -- the actual device model
+		device			: in type_device; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
-		use et_libraries;
 		use et_symbols;
 		file_handle : ada.text_io.file_type;
 
@@ -218,11 +219,10 @@ package body device_rw is
 	end save_device;
 	
 	procedure read_device_file (
-	-- Opens the device and stores it in container et_libraries.devices.
-		file_name 		: in et_libraries.type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
+	-- Opens the device and stores it in container devices.
+		file_name 		: in type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
-		use et_libraries;
 		use et_symbols;
 		use geometry;
 		use et_text;
@@ -256,7 +256,6 @@ package body device_rw is
 		terminal_port_map	: type_terminal_port_map.map;
 
 		procedure insert_terminal (line : in type_fields_of_line) is -- terminal 14 unit 5 VCC
-			use et_libraries;
 			use type_terminal_port_map;
 			inserted	: boolean;
 			position	: type_terminal_port_map.cursor;
@@ -319,7 +318,7 @@ package body device_rw is
 			inserted : boolean;
 			position : type_component_variants.cursor;
 		begin
-			et_libraries.check_variant_name_characters (variant_name);
+			check_variant_name_characters (variant_name);
 
 			insert (
 				container	=> variants,
@@ -632,7 +631,7 @@ package body device_rw is
 								variant.terminal_port_map := terminal_port_map;
 
 								-- clean up temporarily terminal_port_map for next variant
-								et_libraries.type_terminal_port_map.clear (terminal_port_map);
+								type_terminal_port_map.clear (terminal_port_map);
 							when others => invalid_section;
 						end case;
 
@@ -875,9 +874,9 @@ package body device_rw is
 							-- CS: In the following: set a corresponding parameter-found-flag
 							if kw = keyword_prefix then -- prefix IC
 								expect_field_count (line, 2);
-								et_libraries.check_prefix_length (f (line,2));
-								prefix := et_libraries.to_prefix (f (line,2));
-								et_libraries.check_prefix_characters (prefix);
+								check_prefix_length (f (line,2));
+								prefix := to_prefix (f (line,2));
+								check_prefix_characters (prefix);
 								log (text => "prefix " & to_string (prefix), level => log_threshold + 1);
 								
 								if not conventions.prefix_valid (prefix) then
@@ -890,11 +889,11 @@ package body device_rw is
 								expect_field_count (line, 2);
 
 								-- validate value
-								value := et_libraries.to_value (
+								value := to_value (
 										value						=> f (line, 2),
 										error_on_invalid_character	=> false);
 
-								if not et_libraries.value_characters_valid (value) then
+								if not value_characters_valid (value) then
 									log (WARNING, "default value in device model " &
 										 to_string (file_name) & " contains invalid characters !");
 									log_indentation_reset;
@@ -935,8 +934,8 @@ package body device_rw is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then -- name D
 										expect_field_count (line, 2);
-										et_libraries.check_variant_name_length (f (line, 2));
-										variant_name := et_libraries.to_component_variant_name (f (line,2));
+										check_variant_name_length (f (line, 2));
+										variant_name := to_component_variant_name (f (line,2));
 										log (text => "variant " & to_string (variant_name), level => log_threshold + 1);
 										
 									elsif kw = keyword_package_model then -- package_model libraries/packages/S_SO14.pac
@@ -947,7 +946,7 @@ package body device_rw is
 										check_package_name_length (ada.directories.base_name (f (line, 2)));
 										check_package_name_characters (to_package_name (ada.directories.base_name (f (line, 2))));
 
-										variant.package_model := et_libraries.to_file_name (f (line,2));
+										variant.package_model := to_file_name (f (line,2));
 										log (text => "package model " & to_string (variant.package_model), level => log_threshold + 1);
 										
 									else
@@ -978,7 +977,7 @@ package body device_rw is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then
 										expect_field_count (line, 2);
-										unit_name := et_libraries.to_unit_name (f (line,2));
+										unit_name := to_unit_name (f (line,2));
 
 										-- Create a new symbol where unit_symbol is pointing at.
 										-- The symbol assumes the appearance of the device.
@@ -1026,7 +1025,7 @@ package body device_rw is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then -- name A, B, ...
 										expect_field_count (line, 2);
-										unit_name := et_libraries.to_unit_name (f (line,2));
+										unit_name := to_unit_name (f (line,2));
 
 									elsif kw = keyword_position then -- position x 0.00 y 0.00
 										expect_field_count (line, 5);
@@ -1379,9 +1378,9 @@ package body device_rw is
 		log (text => "reading device model " & to_string (file_name) & " ...", level => log_threshold);
 		log_indentation_up;
 		
-		-- test if container et_libraries.devices already contains a model
+		-- test if container devices already contains a model
 		-- named "file_name". If so, there would be no need to read the file_name again.
-		if et_libraries.type_devices.contains (et_libraries.devices, file_name) then
+		if type_devices.contains (devices, file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			-- If the model file is to be read, first check if the file exists.
@@ -1432,14 +1431,14 @@ package body device_rw is
 			set_input (previous_input);
 			close (file_handle);
 
-			-- Assemble final device and insert it in et_libraries.devices:
+			-- Assemble final device and insert it in devices:
 			case appearance is
 				when SCH_PCB => -- a real device
 
 					-- If a value was specified (via an entry like "value 100R),
 					-- check if it meets certain conventions regarding its prefix.
 					-- The prefix gives information about the category of the device:
-					if et_libraries.type_value.length (value) > 0 then
+					if type_value.length (value) > 0 then
 						if not conventions.value_valid (value, prefix) then
 							log (WARNING, "default value of device model " &
 								to_string (file_name) & 
@@ -1447,8 +1446,8 @@ package body device_rw is
 						end if;
 					end if;
 
-					et_libraries.type_devices.insert (
-						container	=> et_libraries.devices, 
+					type_devices.insert (
+						container	=> devices, 
 						key			=> file_name, -- libraries/devices/7400.dev
 						new_item	=> (
 								appearance		=> SCH_PCB,
@@ -1460,8 +1459,8 @@ package body device_rw is
 								variants		=> variants));
 
 				when SCH => -- virtual device
-					et_libraries.type_devices.insert (
-						container	=> et_libraries.devices, 
+					type_devices.insert (
+						container	=> devices, 
 						key			=> file_name, -- libraries/devices/power_gnd.dev
 						new_item	=> (
 								appearance		=> SCH,

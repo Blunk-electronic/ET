@@ -58,6 +58,8 @@ with et_pcb;
 with et_pcb_coordinates;
 with et_kicad_general;			use et_kicad_general;
 with et_text;
+with et_packages;
+with et_devices;
 
 package et_kicad_pcb is
 
@@ -639,9 +641,9 @@ package et_kicad_pcb is
 
 	-- the list of terminals of a package:
 	package type_terminals is new indefinite_ordered_maps (
-		key_type		=> et_libraries.type_terminal_name.bounded_string,
+		key_type		=> et_packages.type_terminal_name.bounded_string,
 		element_type	=> type_terminal,
-		"<"				=> et_libraries.type_terminal_name."<");
+		"<"				=> et_packages.type_terminal_name."<");
 
 
 
@@ -652,7 +654,7 @@ package et_kicad_pcb is
 		assembly_documentation	: et_packages.type_assembly_documentation_both_sides;
 		terminals				: type_terminals.map; -- terminals with net names
 		time_edit				: type_timestamp;
-		value					: et_libraries.type_value.bounded_string;
+		value					: et_devices.type_value.bounded_string;
 		position				: et_pcb_coordinates.type_package_position; -- incl. angle, face
 	end record;
 
@@ -812,7 +814,7 @@ package et_kicad_pcb is
 
 	function terminal_count (
 		packge : in type_package_library_name.bounded_string) -- ../lbr/bel_ic/S_SO14
-		return et_libraries.type_terminal_count;
+		return et_devices.type_terminal_count;
 	
 	function terminal_port_map_fits (
 	-- Used when terminal_port_maps are to be used for packages.
@@ -820,7 +822,7 @@ package et_kicad_pcb is
 	-- Returns true if the terminal_port_map fits on the given package.
 		library_name		: in type_package_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
 		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
-		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
+		terminal_port_map	: in et_devices.type_terminal_port_map.map) 
 		return boolean;
 
 -- 	procedure to_native (log_threshold : in et_string_processing.type_log_level);

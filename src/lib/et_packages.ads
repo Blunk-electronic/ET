@@ -54,7 +54,7 @@ with ada.containers.ordered_sets;
 
 with et_general;
 with et_string_processing;
-with et_libraries;				--use et_libraries;
+-- with et_libraries;				--use et_libraries;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
@@ -68,8 +68,16 @@ package et_packages is
 		element_type => et_string_processing.type_fields_of_line,
 		"=" => et_string_processing.lines_equally);
 	
-	use et_libraries.type_component_package_name;
+-- 	use et_libraries.type_component_package_name;
 
+
+	package_model_file_name_length_max : constant positive := 300;
+	package type_package_model_file is new generic_bounded_length (package_model_file_name_length_max);
+	function to_string (name : in type_package_model_file.bounded_string) return string;
+	function to_file_name (name : in string) return type_package_model_file.bounded_string;
+	
+
+	
 	directory_name_length_max : constant positive := 200;
 	package type_directory_name is new generic_bounded_length (directory_name_length_max);
 
@@ -880,18 +888,30 @@ package et_packages is
 		end case;
 	end record;
 
+
+	-- A terminal is the physical point where electrical energy comes in or out of the device.
+	-- Other CAE systems refer to "pins" or "pads". In order to use only a single word
+	-- we further-on speak about "terminals".
+	-- The name of a terminal may have 10 characters which seems sufficient for now.
+	-- CS: character set, length check, charcter check
+ 	terminal_name_length_max : constant natural := 10;
+	package type_terminal_name is new generic_bounded_length (terminal_name_length_max);
+	use type_terminal_name;
+
+	function to_string (terminal : in type_terminal_name.bounded_string) return string;
+	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string;
 	
 
 	procedure terminal_properties (
 	-- Logs the properties of the given terminal.
 		terminal		: in type_terminal;
-		name			: in et_libraries.type_terminal_name.bounded_string;
+		name			: in type_terminal_name.bounded_string;
 		log_threshold 	: in et_string_processing.type_log_level);
 	
 	package type_terminals is new indefinite_ordered_maps (
-		key_type		=> et_libraries.type_terminal_name.bounded_string, -- H7, 14
+		key_type		=> type_terminal_name.bounded_string, -- H7, 14
 		element_type	=> type_terminal,
-		"<"				=> et_libraries.type_terminal_name."<");
+		"<"				=> type_terminal_name."<");
 
 
 	package_description_length_max : constant positive := 200;
@@ -954,8 +974,8 @@ package et_packages is
 
 	-- packages
 	package type_packages is new indefinite_ordered_maps (
-		key_type		=> et_libraries.type_package_model_file.bounded_string, -- ../lbr/smd/SO15.pac
-		"<"				=> et_libraries.type_package_model_file."<",
+		key_type		=> type_package_model_file.bounded_string, -- ../lbr/smd/SO15.pac
+		"<"				=> type_package_model_file."<",
 		element_type	=> type_package);
 
 	library_file_extension : constant string := "pac";
@@ -963,16 +983,16 @@ package et_packages is
 	-- HERE RIG WIDE PACKAGES ARE KEPT:
 	packages : type_packages.map;
 
-	function locate_package_model (model_name : in et_libraries.type_package_model_file.bounded_string) -- ../lbr/smd/SO15.pac
+	function locate_package_model (model_name : in type_package_model_file.bounded_string) -- ../lbr/smd/SO15.pac
 	-- Returns a cursor to the given package model.
 		return type_packages.cursor;
 	
-	function is_real (package_name : in et_libraries.type_package_model_file.bounded_string) return boolean;
+	function is_real (package_name : in type_package_model_file.bounded_string) return boolean;
 	-- Returns true if the given package is real (means it has a height).
 
 	function terminal_properties (
 		cursor		: in type_packages.cursor;
-		terminal	: in et_libraries.type_terminal_name.bounded_string)  -- H4, 14
+		terminal	: in type_terminal_name.bounded_string)  -- H4, 14
 		return type_terminals.cursor;
 	-- Returns a cursor to the requested terminal (with all its properties) within the given package model.
 

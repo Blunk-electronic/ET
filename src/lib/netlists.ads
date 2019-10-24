@@ -56,6 +56,7 @@ with submodules;
 with assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_symbols;
+with et_packages;
 
 
 package netlists is
@@ -78,7 +79,7 @@ package netlists is
 		device			: et_libraries.type_device_name; -- IC4		
 		port			: et_symbols.type_port_name.bounded_string; -- CLOCK, CE, VDD, GND
 		characteristics	: et_symbols.type_port (direction); -- direction, sensitivity, ...
-		terminal		: et_libraries.type_terminal_name.bounded_string; -- H4, 1, 16
+		terminal		: et_packages.type_terminal_name.bounded_string; -- H4, 1, 16
 	end record;
 	
 	function "<" (left, right : in type_device_port_extended) return boolean;

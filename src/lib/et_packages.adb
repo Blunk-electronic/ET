@@ -59,6 +59,20 @@ with et_text;
 package body et_packages is
 	use shapes;
 
+	function to_string (name : in type_package_model_file.bounded_string) 
+		return string is
+	begin
+		return type_package_model_file.to_string (name);
+	end;
+
+	function to_file_name (name : in string) 
+		return type_package_model_file.bounded_string is
+	begin
+		return type_package_model_file.to_bounded_string (name);
+	end;
+
+
+	
 	function to_string (directory_name : in type_directory_name.bounded_string) return string is
 	-- Converts a directory name to a string.
 	begin
@@ -296,6 +310,14 @@ package body et_packages is
 				end case;
 		end case;
 	end;
+
+	function to_string (terminal : in type_terminal_name.bounded_string) return string is begin
+		return type_terminal_name.to_string (terminal);
+	end;
+
+	function to_terminal_name (terminal : in string) return type_terminal_name.bounded_string is begin
+		return type_terminal_name.to_bounded_string (terminal);
+	end;
 	
 	function to_string (
 		description : in type_package_description.bounded_string;
@@ -324,14 +346,14 @@ package body et_packages is
 		return type_package_tags.to_bounded_string (tags);
 	end to_package_tags;
 
-	function locate_package_model (model_name : in et_libraries.type_package_model_file.bounded_string) -- ../lbr/smd/SO15.pac
+	function locate_package_model (model_name : in type_package_model_file.bounded_string) -- ../lbr/smd/SO15.pac
 	-- Returns a cursor to the given package model.		
 		return type_packages.cursor is
 	begin
 		return type_packages.find (packages, model_name);
 	end;
 	
-	function is_real (package_name : in et_libraries.type_package_model_file.bounded_string) return boolean is
+	function is_real (package_name : in type_package_model_file.bounded_string) return boolean is
 	-- Returns true if the given package is real (means it has a height).
 		use type_packages;
 		cursor : type_packages.cursor;
@@ -347,13 +369,13 @@ package body et_packages is
 
 	function terminal_properties (
 		cursor		: in type_packages.cursor;
-		terminal	: in et_libraries.type_terminal_name.bounded_string) -- H4, 14
+		terminal	: in type_terminal_name.bounded_string) -- H4, 14
 		return type_terminals.cursor is
 	-- Returns a cursor to the requested terminal (with all its properties) within the given package model.
 		terminal_cursor : type_terminals.cursor;
 
 		procedure query_terminals (
-			model_name	: in et_libraries.type_package_model_file.bounded_string;
+			model_name	: in type_package_model_file.bounded_string;
 			model		: in type_package) is
 			use type_terminals;
 		begin
@@ -843,10 +865,9 @@ package body et_packages is
 	procedure terminal_properties (
 	-- Logs the properties of the given terminal.
 		terminal		: in type_terminal;
-		name			: in et_libraries.type_terminal_name.bounded_string;
+		name			: in type_terminal_name.bounded_string;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		use et_pcb_coordinates;
-		use et_libraries;
 		log_threshold_1 : type_log_level := log_threshold + 1;
 
 -- 		use type_pad_lines;

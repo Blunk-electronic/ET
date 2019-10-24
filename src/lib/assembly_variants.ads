@@ -50,6 +50,7 @@ with et_general;
 with et_libraries;				--use et_libraries;
 with material;
 with et_string_processing;		use et_string_processing;
+with et_devices;
 
 package assembly_variants is
 
@@ -67,7 +68,7 @@ package assembly_variants is
 	type type_device (mounted : type_mounted) is record
 		case mounted is
 			when YES =>
-				value		: et_libraries.type_value.bounded_string; -- 470R
+				value		: et_devices.type_value.bounded_string; -- 470R
 				partcode	: material.type_partcode.bounded_string;
 				purpose		: et_libraries.type_device_purpose.bounded_string;
 

@@ -68,6 +68,7 @@ with netlists;
 with et_geometry;
 with et_text;
 with et_symbols;
+with et_devices;
 
 package et_schematic is
 	use et_general.type_net_name;
@@ -126,13 +127,13 @@ package et_schematic is
 	-- Units of a device are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
 	package type_units is new indefinite_ordered_maps (
-		key_type		=> et_libraries.type_unit_name.bounded_string,
-		"<" 			=> et_libraries.type_unit_name."<",
+		key_type		=> et_devices.type_unit_name.bounded_string,
+		"<" 			=> et_devices.type_unit_name."<",
 		element_type 	=> type_unit);
 
 	package type_unit_positions is new ordered_maps (
-		key_type		=> et_libraries.type_unit_name.bounded_string, -- A, B, IO_BANK_1
-		"<" 			=> et_libraries.type_unit_name."<",
+		key_type		=> et_devices.type_unit_name.bounded_string, -- A, B, IO_BANK_1
+		"<" 			=> et_devices.type_unit_name."<",
 		element_type	=> et_coordinates.type_position, -- sheet, x, y
 		"="				=> et_coordinates."=");
 
@@ -142,16 +143,16 @@ package et_schematic is
 
 	-- This is a device as it appears in the schematic.
 	type type_device (appearance : type_appearance_schematic) is record
-		model	: et_libraries.type_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
+		model	: et_devices.type_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
 		units	: type_units.map; -- PWR, A, B, ...
 		
 		case appearance is
 			-- If a device appears in both schematic and layout it has got:
 			when et_symbols.SCH_PCB => 
-				value		: et_libraries.type_value.bounded_string; -- 470R
+				value		: et_devices.type_value.bounded_string; -- 470R
 				partcode	: material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 				purpose		: et_libraries.type_device_purpose.bounded_string; -- brightness_control
-				variant		: et_libraries.type_component_variant_name.bounded_string; -- D, N
+				variant		: et_devices.type_component_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for name, value and purpose.
@@ -322,7 +323,7 @@ package et_schematic is
  		element_type	=> type_device);
 
 	function package_model (device : in type_devices.cursor)
-		return et_libraries.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+		return et_packages.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 	-- Returns the name of the package model of the given device.
 	-- The given device must have appearance SCH_PCB. Otherwise constraint error arises here.	
 
