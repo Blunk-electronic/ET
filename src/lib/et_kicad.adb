@@ -9160,7 +9160,7 @@ package body et_kicad is
 				check_orphaned_no_connection_flags (log_threshold + 1);
 
 				-- make netlists
--- 				make_netlists (log_threshold + 1);
+				make_netlists (log_threshold + 1);
 
 				-- import layout(s)
 				log_indentation_reset;
@@ -12439,297 +12439,297 @@ package body et_kicad is
 
 
 	
--- 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
--- 	-- Builds the netlists of all modules. 
--- 	-- Currently there is only one module. kicad does not support multiple modules at the same time.
--- 	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
--- 	-- Virtual components are filtered out on exporting the netlist in a file.
--- 	-- Bases on the portlists and nets/strands information of the module.
--- 	-- Detects if a junction is missing where a port is connected with a net.
--- 	
--- 		use et_string_processing;
--- 		use type_modules;
--- 		use et_coordinates;
--- 
--- 		function make_netlist return type_netlist.map is
--- 		-- Generates the netlist of the current module (indicated by module_cursor).
--- 		-- module.portlists provide the port coordinates. 
--- 		-- module.nets provides the strands and nets.
--- 		-- With this information we make the netlist of the current module.
--- 		
--- 			-- the netlist being built. it is returnd to the calling unit.
--- 			netlist : type_netlist.map;
--- 
--- 			procedure query_nets (
--- 			-- Tests if a net of the given module is connected to any component port.
--- 			-- Creates a net in the netlist (type_module.netlist) with the same name 
--- 			-- as the net being examined (type_module.nets).
--- 			-- Component ports connected with the net are collected in portlist of the 
--- 			-- net being built (see procedure add_port below).
--- 				module_name	: in type_submodule_name.bounded_string;
--- 				module		: in type_module) is
--- 
--- 				use type_nets;
--- 				net_cursor 		: type_nets.cursor := module.nets.first; -- points to the net being read
--- 				net_in_netlist	: type_netlist.cursor; -- points to the net being built in the netlist
--- 				net_created		: boolean := false; -- goes true once the net has been created in the netlist
--- 				
--- 				procedure query_strands (
--- 				-- Tests if a strand of the given net is connected to any component port.
--- 					net_name	: in type_net_name.bounded_string;
--- 					net			: in type_net) is
--- 					use type_strands;
--- 					strand_cursor : type_strands.cursor := net.strands.first; -- points to the first strand of the net
--- 
--- 					procedure query_segments (strand : in type_strand) is
--- 					-- Tests the net segments of the given strand if they are connected with any component ports.
--- 					-- For every segment, all component ports must be tested.
--- 						use type_net_segments;
--- 						segment : type_net_segments.cursor := strand.segments.first; -- points to the segment being read
--- 						use type_portlists;
--- 						component_cursor : type_portlists.cursor; -- points to the component being read
--- 
--- 						procedure query_ports (
--- 						-- Tests the ports of the given component if they sit on the current net segment.
--- 							component	: in et_libraries.type_device_name;
--- 							ports		: in type_ports.list) is
--- 							use type_ports;
--- 							port_cursor : type_ports.cursor := ports.first; -- points to the first port of the component
--- 
--- 							procedure mark_port_as_connected is
--- 							-- mark port in portlist as connected
--- 							
--- 								procedure locate_component (
--- 								-- Locates the component within the portlist of the submodule
--- 									module_name	: in type_submodule_name.bounded_string;
--- 									module 		: in out type_module) is
--- 	
--- 									procedure locate_port (
--- 									-- Locates the port of the component
--- 										component	: in et_libraries.type_device_name;
--- 										ports		: in out type_ports.list) is
--- 
--- 										procedure mark_it (port : in out type_port) is
--- 										begin
--- 											port.connected := YES;
--- 										end mark_it;
--- 											
--- 									begin -- locate_port
--- 										update_element (
--- 											container	=> ports,
--- 											position	=> port_cursor,
--- 											process		=> mark_it'access);
--- 									end locate_port;
--- 										
--- 								begin -- locate_component 
--- 									type_portlists.update_element (
--- 										container	=> module.portlists,
--- 										position	=> component_cursor,
--- 										process 	=> locate_port'access);
--- 								end locate_component;
--- 									
--- 							begin -- mark_port_as_connected
--- 								-- locate the submodule in the rig
--- 								update_element (
--- 									container	=> modules,
--- 									position	=> module_cursor,
--- 									process		=> locate_component'access);
--- 							end mark_port_as_connected;
--- 							
--- 							procedure add_port (
--- 							-- Adds the port (indicated by cursor "port" to the portlist of the net being built.
--- 								net_name	: in type_net_name.bounded_string;
--- 								ports		: in out type_ports_with_reference.set) is
--- 								inserted : boolean;
--- 								cursor : type_ports_with_reference.cursor;
--- 							begin -- add_port
--- 								-- If a port sits on the point where two segments meet, the same port should be inserted only once.
--- 								-- Thus we have the obligatory flag "inserted". 
--- 								type_ports_with_reference.insert (
--- 									container	=> ports,
--- 									position	=> cursor,
--- 									inserted	=> inserted,
--- 									-- We add the port and extend it with the component reference.
--- 									new_item	=> (element (port_cursor) with component));
--- 
--- 								if not inserted then -- port already in net
--- 									log_indentation_up;
--- 									log (text => "already processed -> skipped", level => log_threshold + 3);
--- 									log_indentation_down;
--- 								end if;
--- 							end add_port;
--- 
--- 						begin -- query_ports
--- 							while port_cursor /= type_ports.no_element loop
--- 
--- 								-- Probe only those ports (in the portlists) which are in the same 
--- 								-- path and at the same sheet as the port.
--- 								-- Probing other ports would be a waste of time.
--- 								if same_path_and_sheet (
--- 									left => strand.position, 
--- 									right => element (port_cursor).coordinates ) then
--- 
--- 									--if et_schematic."=" (element (port_cursor).connected, et_schematic.NO) then
--- 									if element (port_cursor).connected = NO then
--- 									
--- 										log_indentation_up;
--- 										log (text => "probing " & et_libraries.to_string (component) 
--- 											& " port " & to_string (element (port_cursor).name)
--- 											& latin_1.space
--- 											& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
--- 											level => log_threshold + 5);
--- 
--- 										-- test if port sits on segment
--- 										if port_connected_with_segment (element (port_cursor), element (segment)) then
--- 											log_indentation_up;
--- 										
--- 											log (text => "connected with " & et_libraries.to_string (component) 
--- 												& " port " & to_string (element (port_cursor).name)
--- 												& latin_1.space
--- 												& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
--- 												level => log_threshold + 3);
--- 											
--- 											log_indentation_down;
--- 
--- 											-- add port to the net being built
--- 											type_netlist.update_element (
--- 												container	=> netlist,
--- 												position	=> net_in_netlist,
--- 												process		=> add_port'access);
--- 
--- 											-- Mark the port (in the portlists) as connected.
--- 											-- Why ? A port can be connected to ONLY ONE net. So once it is
--- 											-- detected here, it would be a wast of computing time to 
--- 											-- test if the port is connected to other nets.
--- 											mark_port_as_connected;
--- 										end if;
--- 											
--- 										log_indentation_down;
--- 									end if;
--- 								end if;
--- 
--- 								next (port_cursor);
--- 							end loop;
--- 						end query_ports;
--- 						
--- 					begin -- query_segments
--- 						log_indentation_up;
--- 					
--- 						while segment /= type_net_segments.no_element loop
--- 
--- 							log (text => "segment " & to_string (
--- 									type_net_segment_base (element (segment))), 
--- 								 level => log_threshold + 4);
--- 
--- 							-- reset the component cursor, then loop in the component list 
--- 							component_cursor := module.portlists.first;	-- points to the component being read
--- 							while component_cursor /= type_portlists.no_element loop
--- 
--- 								-- query the ports of the component
--- 								type_portlists.query_element (
--- 									position	=> component_cursor,
--- 									process		=> query_ports'access);
--- 
--- 								next (component_cursor);
--- 							end loop;
--- 							
--- 							next (segment);
--- 						end loop;
--- 							
--- 						log_indentation_down;	
--- 					end query_segments;
--- 
--- 				begin -- query_strands
--- 					log_indentation_up;
--- 				
--- 					while strand_cursor /= type_strands.no_element loop
--- 
--- 						-- log strand coordinates
--- 						log (text => "strand " & to_string (element (strand_cursor).position, 
--- 									scope => kicad_coordinates.MODULE),
--- 							 level => log_threshold + 3);
--- 
--- 						query_element (
--- 							position	=> strand_cursor,
--- 							process		=> query_segments'access);
--- 				
--- 						next (strand_cursor);
--- 					end loop;
--- 						
--- 					log_indentation_down;
--- 				end query_strands;
--- 
--- 			begin -- query_nets
--- 				log_indentation_up;
--- 			
--- 				while net_cursor /= type_nets.no_element loop
--- 
--- 					-- log the name of the net being built
--- 					log (text => et_general.to_string (key (net_cursor)), level => log_threshold + 2);
--- 				
--- 					-- create net in netlist
--- 					type_netlist.insert (
--- 						container	=> netlist,
--- 						key 		=> key (net_cursor),
--- 						new_item 	=> type_ports_with_reference.empty_set,
--- 						position 	=> net_in_netlist,
--- 						inserted 	=> net_created);
--- 
--- 					-- CS: evaluate flag net_created ?
--- 
--- 					-- search for ports connected with the net being built
--- 					query_element (
--- 						position	=> net_cursor,
--- 						process		=> query_strands'access);
--- 
--- 					next (net_cursor);
--- 				end loop;
--- 
--- 				log_indentation_down;	
--- 			end query_nets;
--- 					
--- 		begin -- make_netlist (NOTE: singluar !)
--- 			query_element (
--- 				position 	=> module_cursor,
--- 				process 	=> query_nets'access);
--- 
--- 			return netlist;
--- 		end make_netlist;
--- 
--- 		procedure add_netlist (
--- 			module_name	: in type_submodule_name.bounded_string;
--- 			module		: in out type_module) is
--- 		begin
--- 			module.netlist := make_netlist;
--- 		end add_netlist;
--- 
--- 	begin -- make_netlists (note plural !)
--- 		log (text => "building netlists ...", level => log_threshold);
--- 		log_indentation_up;
--- 		
--- 		-- We start with the first module of the modules.
--- 		--first_module;
--- 		module_cursor := type_modules.first (modules);
--- 
--- 		-- Process one module after another.
--- 		-- module_cursor points to the module.
--- 		while module_cursor /= type_modules.no_element loop
--- 			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
--- 			log_indentation_up;
--- 			
--- 			update_element (
--- 				container	=> modules,
--- 				position	=> module_cursor,
--- 				process		=> add_netlist'access);
--- 
--- 			log (text => "net count total" & count_type'image (net_count), level => log_threshold + 1);
--- 			log_indentation_down;
--- 			
--- 			next (module_cursor);
--- 		end loop;
--- 
--- 		log_indentation_down;
--- 	end make_netlists;
+	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
+	-- Builds the netlists of all modules. 
+	-- Currently there is only one module. kicad does not support multiple modules at the same time.
+	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
+	-- Virtual components are filtered out on exporting the netlist in a file.
+	-- Bases on the portlists and nets/strands information of the module.
+	-- Detects if a junction is missing where a port is connected with a net.
+	
+		use et_string_processing;
+		use type_modules;
+		use et_coordinates;
+
+		function make_netlist return type_netlist.map is
+		-- Generates the netlist of the current module (indicated by module_cursor).
+		-- module.portlists provide the port coordinates. 
+		-- module.nets provides the strands and nets.
+		-- With this information we make the netlist of the current module.
+		
+			-- the netlist being built. it is returnd to the calling unit.
+			netlist : type_netlist.map;
+
+			procedure query_nets (
+			-- Tests if a net of the given module is connected to any component port.
+			-- Creates a net in the netlist (type_module.netlist) with the same name 
+			-- as the net being examined (type_module.nets).
+			-- Component ports connected with the net are collected in portlist of the 
+			-- net being built (see procedure add_port below).
+				module_name	: in type_submodule_name.bounded_string;
+				module		: in type_module) is
+
+				use type_nets;
+				net_cursor 		: type_nets.cursor := module.nets.first; -- points to the net being read
+				net_in_netlist	: type_netlist.cursor; -- points to the net being built in the netlist
+				net_created		: boolean := false; -- goes true once the net has been created in the netlist
+				
+				procedure query_strands (
+				-- Tests if a strand of the given net is connected to any component port.
+					net_name	: in type_net_name.bounded_string;
+					net			: in type_net) is
+					use type_strands;
+					strand_cursor : type_strands.cursor := net.strands.first; -- points to the first strand of the net
+
+					procedure query_segments (strand : in type_strand) is
+					-- Tests the net segments of the given strand if they are connected with any component ports.
+					-- For every segment, all component ports must be tested.
+						use type_net_segments;
+						segment : type_net_segments.cursor := strand.segments.first; -- points to the segment being read
+						use type_portlists;
+						component_cursor : type_portlists.cursor; -- points to the component being read
+
+						procedure query_ports (
+						-- Tests the ports of the given component if they sit on the current net segment.
+							component	: in et_libraries.type_device_name;
+							ports		: in type_ports.list) is
+							use type_ports;
+							port_cursor : type_ports.cursor := ports.first; -- points to the first port of the component
+
+							procedure mark_port_as_connected is
+							-- mark port in portlist as connected
+							
+								procedure locate_component (
+								-- Locates the component within the portlist of the submodule
+									module_name	: in type_submodule_name.bounded_string;
+									module 		: in out type_module) is
+	
+									procedure locate_port (
+									-- Locates the port of the component
+										component	: in et_libraries.type_device_name;
+										ports		: in out type_ports.list) is
+
+										procedure mark_it (port : in out type_port) is
+										begin
+											port.connected := YES;
+										end mark_it;
+											
+									begin -- locate_port
+										update_element (
+											container	=> ports,
+											position	=> port_cursor,
+											process		=> mark_it'access);
+									end locate_port;
+										
+								begin -- locate_component 
+									type_portlists.update_element (
+										container	=> module.portlists,
+										position	=> component_cursor,
+										process 	=> locate_port'access);
+								end locate_component;
+									
+							begin -- mark_port_as_connected
+								-- locate the submodule in the rig
+								update_element (
+									container	=> modules,
+									position	=> module_cursor,
+									process		=> locate_component'access);
+							end mark_port_as_connected;
+							
+							procedure add_port (
+							-- Adds the port (indicated by cursor "port" to the portlist of the net being built.
+								net_name	: in type_net_name.bounded_string;
+								ports		: in out type_ports_with_reference.set) is
+								inserted : boolean;
+								cursor : type_ports_with_reference.cursor;
+							begin -- add_port
+								-- If a port sits on the point where two segments meet, the same port should be inserted only once.
+								-- Thus we have the obligatory flag "inserted". 
+								type_ports_with_reference.insert (
+									container	=> ports,
+									position	=> cursor,
+									inserted	=> inserted,
+									-- We add the port and extend it with the component reference.
+									new_item	=> (element (port_cursor) with component));
+
+								if not inserted then -- port already in net
+									log_indentation_up;
+									log (text => "already processed -> skipped", level => log_threshold + 3);
+									log_indentation_down;
+								end if;
+							end add_port;
+
+						begin -- query_ports
+							while port_cursor /= type_ports.no_element loop
+
+								-- Probe only those ports (in the portlists) which are in the same 
+								-- path and at the same sheet as the port.
+								-- Probing other ports would be a waste of time.
+								if same_path_and_sheet (
+									left => strand.position, 
+									right => element (port_cursor).coordinates ) then
+
+									--if et_schematic."=" (element (port_cursor).connected, et_schematic.NO) then
+									if element (port_cursor).connected = NO then
+									
+										log_indentation_up;
+										log (text => "probing " & et_libraries.to_string (component) 
+											& " port " & to_string (element (port_cursor).name)
+											& latin_1.space
+											& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
+											level => log_threshold + 5);
+
+										-- test if port sits on segment
+										if port_connected_with_segment (element (port_cursor), element (segment)) then
+											log_indentation_up;
+										
+											log (text => "connected with " & et_libraries.to_string (component) 
+												& " port " & to_string (element (port_cursor).name)
+												& latin_1.space
+												& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
+												level => log_threshold + 3);
+											
+											log_indentation_down;
+
+											-- add port to the net being built
+											type_netlist.update_element (
+												container	=> netlist,
+												position	=> net_in_netlist,
+												process		=> add_port'access);
+
+											-- Mark the port (in the portlists) as connected.
+											-- Why ? A port can be connected to ONLY ONE net. So once it is
+											-- detected here, it would be a wast of computing time to 
+											-- test if the port is connected to other nets.
+											mark_port_as_connected;
+										end if;
+											
+										log_indentation_down;
+									end if;
+								end if;
+
+								next (port_cursor);
+							end loop;
+						end query_ports;
+						
+					begin -- query_segments
+						log_indentation_up;
+					
+						while segment /= type_net_segments.no_element loop
+
+							log (text => "segment " & to_string (
+									type_net_segment_base (element (segment))), 
+								 level => log_threshold + 4);
+
+							-- reset the component cursor, then loop in the component list 
+							component_cursor := module.portlists.first;	-- points to the component being read
+							while component_cursor /= type_portlists.no_element loop
+
+								-- query the ports of the component
+								type_portlists.query_element (
+									position	=> component_cursor,
+									process		=> query_ports'access);
+
+								next (component_cursor);
+							end loop;
+							
+							next (segment);
+						end loop;
+							
+						log_indentation_down;	
+					end query_segments;
+
+				begin -- query_strands
+					log_indentation_up;
+				
+					while strand_cursor /= type_strands.no_element loop
+
+						-- log strand coordinates
+						log (text => "strand " & to_string (element (strand_cursor).position, 
+									scope => kicad_coordinates.MODULE),
+							 level => log_threshold + 3);
+
+						query_element (
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+				
+						next (strand_cursor);
+					end loop;
+						
+					log_indentation_down;
+				end query_strands;
+
+			begin -- query_nets
+				log_indentation_up;
+			
+				while net_cursor /= type_nets.no_element loop
+
+					-- log the name of the net being built
+					log (text => et_general.to_string (key (net_cursor)), level => log_threshold + 2);
+				
+					-- create net in netlist
+					type_netlist.insert (
+						container	=> netlist,
+						key 		=> key (net_cursor),
+						new_item 	=> type_ports_with_reference.empty_set,
+						position 	=> net_in_netlist,
+						inserted 	=> net_created);
+
+					-- CS: evaluate flag net_created ?
+
+					-- search for ports connected with the net being built
+					query_element (
+						position	=> net_cursor,
+						process		=> query_strands'access);
+
+					next (net_cursor);
+				end loop;
+
+				log_indentation_down;	
+			end query_nets;
+					
+		begin -- make_netlist (NOTE: singluar !)
+			query_element (
+				position 	=> module_cursor,
+				process 	=> query_nets'access);
+
+			return netlist;
+		end make_netlist;
+
+		procedure add_netlist (
+			module_name	: in type_submodule_name.bounded_string;
+			module		: in out type_module) is
+		begin
+			module.netlist := make_netlist;
+		end add_netlist;
+
+	begin -- make_netlists (note plural !)
+		log (text => "building netlists ...", level => log_threshold);
+		log_indentation_up;
+		
+		-- We start with the first module of the modules.
+		--first_module;
+		module_cursor := type_modules.first (modules);
+
+		-- Process one module after another.
+		-- module_cursor points to the module.
+		while module_cursor /= type_modules.no_element loop
+			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
+			log_indentation_up;
+			
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> add_netlist'access);
+
+			log (text => "net count total" & count_type'image (net_count), level => log_threshold + 1);
+			log_indentation_down;
+			
+			next (module_cursor);
+		end loop;
+
+		log_indentation_down;
+	end make_netlists;
 	
 
 	

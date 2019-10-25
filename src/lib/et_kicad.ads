@@ -173,9 +173,9 @@ package et_kicad is
 		VALUE,			-- for component values like "200R"
 		PACKGE,			-- for component packages like SOT23
 		DATASHEET,		-- for url to datasheet
-		PURPOSE);		-- for the purpose of the component in the design.
+		MISC);
 	
-	placeholder_meaning_default : constant type_placeholder_meaning := NAME;
+	placeholder_meaning_default : constant type_placeholder_meaning := MISC;
 	
 	function to_string (meaning : in type_placeholder_meaning) return string;
 	function to_meaning (meaning : in string) return type_placeholder_meaning;
@@ -1429,7 +1429,7 @@ package et_kicad is
 	-- is to be returned.
 	-- If no net connected with the given port, an empty string is returned.
 	
--- 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level);
+	procedure make_netlists (log_threshold : in et_string_processing.type_log_level);
 	-- Builds the netlists of all modules.
 	-- Currently there is only one module. kicad does not support multiple modules at the same time.	
 	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
