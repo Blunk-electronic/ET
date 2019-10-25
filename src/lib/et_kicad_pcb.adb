@@ -68,6 +68,7 @@ with et_string_processing;		use et_string_processing;
 with et_text;
 with et_kicad;
 with et_symbols;
+with et_devices;
 
 package body et_kicad_pcb is
 
@@ -144,12 +145,12 @@ package body et_kicad_pcb is
 					-- Test if library exists. package_libraries hosts libraries by their full name.
 					-- So the library to test is formed by the current directory name, the given library name
 					-- and the package_library_directory_extension (*.pretty)
-					full_library_name := to_file_name (ada.directories.compose (
+					full_library_name := et_packages.to_file_name (ada.directories.compose (
 						containing_directory	=> to_string (element (dir_cursor)),
 						name					=> et_kicad_general.to_string (library_name),
 						extension				=> package_library_directory_extension (2..package_library_directory_extension'last))); 
 
-					log (text => "searching in " & et_libraries.to_string (full_library_name) & " ...", level => log_threshold + 1);
+					log (text => "searching in " & et_packages.to_string (full_library_name) & " ...", level => log_threshold + 1);
 					
 					lib_cursor := et_kicad_pcb.type_libraries.find (
 						container	=> package_libraries,
@@ -183,9 +184,9 @@ package body et_kicad_pcb is
 					-- On match, open the library (by its uri).
 					if element (fp_lib_table_cursor).lib_name = library_name then
 
-						full_library_name := to_file_name (to_string (element (fp_lib_table_cursor).lib_uri));
+						full_library_name := et_packages.to_file_name (et_devices.to_string (element (fp_lib_table_cursor).lib_uri));
 
-						log (text => "searching in " & et_libraries.to_string (full_library_name) & " ...", level => log_threshold + 1);
+						log (text => "searching in " & et_packages.to_string (full_library_name) & " ...", level => log_threshold + 1);
 						
 						-- locate the library by full name (uri)
 						lib_cursor := et_kicad_pcb.type_libraries.find (
@@ -795,8 +796,8 @@ package body et_kicad_pcb is
 		-- Temporarily we need lots of variables for terminal properties.
 		-- Later when the final terminals are assigned to the package, these variables
 		-- compose the final terminal.
-		terminal_name 		: et_libraries.type_terminal_name.bounded_string;
-		terminal_technology	: type_assembly_technology;
+		terminal_name 			: et_packages.type_terminal_name.bounded_string;
+		terminal_technology		: type_assembly_technology;
 		terminal_pad_shape_tht 	: type_pad_shape_tht;
 		terminal_pad_shape_smt 	: type_pad_shape_smt;
 
@@ -2334,7 +2335,7 @@ package body et_kicad_pcb is
 						name			=> et_packages.type_terminals.key (terminal_cursor),
 						log_threshold	=> log_threshold + 1);
 				else
-					log (ERROR, "duplicated terminal " & et_libraries.to_string (terminal_name) & " !", console => true);
+					log (ERROR, "duplicated terminal " & et_packages.to_string (terminal_name) & " !", console => true);
 					raise constraint_error;
 				end if;
 
@@ -3013,6 +3014,7 @@ package body et_kicad_pcb is
 	-- Returns a default device name with an empty prefix and and id 0.
 	-- Used to initialize a component reference.	
 		use et_libraries;
+		use et_devices;
 	begin
 		return ((
 			prefix		=> type_device_name_prefix.to_bounded_string (""),
@@ -3288,7 +3290,7 @@ package body et_kicad_pcb is
 
 		package_text 		: type_text_package;
 		package_reference 	: et_libraries.type_device_name := default_component_reference;
-		package_value 		: et_libraries.type_value.bounded_string;
+		package_value 		: et_devices.type_value.bounded_string;
 
 		package_time_stamp	: type_timestamp; -- temporarily storage of package timestamp
 		package_time_edit	: type_timestamp; -- temporarily storage of package time of edit
@@ -3317,7 +3319,7 @@ package body et_kicad_pcb is
 		-- Temporarily we need lots of variables for terminal properties.
 		-- Later when the final terminals are assigned to the package, these variables
 		-- compose the final terminal.
-		terminal_name 			: et_libraries.type_terminal_name.bounded_string;
+		terminal_name 			: et_packages.type_terminal_name.bounded_string;
 		terminal_technology		: type_assembly_technology;
 		terminal_pad_shape_tht 	: type_pad_shape_tht;
 		terminal_pad_shape_smt 	: type_pad_shape_smt;
@@ -4221,13 +4223,13 @@ package body et_kicad_pcb is
 											package_text.content := to_bounded_string (to_string (arg));
 											-- CS character check
 
-											if not value_length_valid (to_string (arg)) then 
+											if not et_devices.value_length_valid (to_string (arg)) then 
 												null; -- CS write something useful
 											end if;
 											
-											package_value := et_libraries.to_value (to_string (arg));
+											package_value := et_devices.to_value (to_string (arg));
 											
-											if not value_characters_valid (package_value) then
+											if not et_devices.value_characters_valid (package_value) then
 												null; -- CS write something useful
 											end if;
 											
@@ -5818,7 +5820,7 @@ package body et_kicad_pcb is
 			end invalid_layer_reference;
 
 			procedure invalid_layer_value is begin
-				log (WARNING, "value " & et_libraries.to_string (package_value) & " should be in a fabrication layer !");
+				log (WARNING, "value " & et_devices.to_string (package_value) & " should be in a fabrication layer !");
 			end invalid_layer_value;
 
 			procedure invalid_layer_user is begin
@@ -5836,7 +5838,7 @@ package body et_kicad_pcb is
 			-- Warns operator if a terminal is not connected to a net.
 				if length (terminal_net_name) = 0 then
 					log (WARNING, et_libraries.to_string (package_reference) & latin_1.space
-						 & et_libraries.to_string (terminal_name) & " not connected with a net !");
+						 & et_packages.to_string (terminal_name) & " not connected with a net !");
 				end if;
 			end warn_on_missing_net;
 			
@@ -5941,7 +5943,7 @@ package body et_kicad_pcb is
 
 					-- reset reference and value
 					package_reference := default_component_reference;
-					package_value := et_libraries.to_value ("");
+					package_value := et_devices.to_value ("");
 
 					-- delete list of terminals
 					terminals.clear;
@@ -6849,7 +6851,7 @@ package body et_kicad_pcb is
 					init_terminal_net_name; -- in case the next terminal has no net connected
 
 				else -- terminal could not be inserted
-					log (ERROR, "duplicated terminal " & et_libraries.to_string (terminal_name) & " !", console => true);
+					log (ERROR, "duplicated terminal " & et_packages.to_string (terminal_name) & " !", console => true);
 					raise constraint_error;
 				end if;
 					
@@ -7355,7 +7357,7 @@ package body et_kicad_pcb is
 			-- The information required is sotred in the terminals of a package.
 			-- Example: (pad 1 smd rect (at -2.925 -3.81) (size 2 0.6) (layers F.Cu F.Paste F.Mask) (net 1 /IN))
 				reference	: in et_libraries.type_device_name;	-- IC45
-				terminal	: in et_libraries.type_terminal_name.bounded_string) -- G7
+				terminal	: in et_packages.type_terminal_name.bounded_string) -- G7
 				return type_net_name.bounded_string is
 				net : type_net_name.bounded_string; -- to be returned
 
@@ -7384,7 +7386,7 @@ package body et_kicad_pcb is
 						net := element (terminal_cursor).net_name;
 					else
 						log (ERROR, "component reference " & et_libraries.to_string (reference) &
-							" terminal " & et_libraries.to_string (terminal) &
+							" terminal " & et_packages.to_string (terminal) &
 							 " not found in board !",
 							console => true);
 						raise constraint_error;
@@ -7433,7 +7435,7 @@ package body et_kicad_pcb is
 					use et_kicad.type_ports_with_reference;
 					portlist : et_kicad.type_ports_with_reference.set;
 					port : et_kicad.type_port_with_reference;
-					terminal : et_libraries.type_terminal;
+					terminal : et_devices.type_terminal;
 					net_name_in_board : type_net_name.bounded_string;
 				begin -- to_net_id
 
@@ -7806,7 +7808,7 @@ package body et_kicad_pcb is
 						package_cursor	: type_packages_board.cursor := board.packages.first;
 						package_name	: et_libraries.type_device_name;
 						terminal_found	: boolean := false;
-						terminal_name	: et_libraries.type_terminal_name.bounded_string;
+						terminal_name	: et_packages.type_terminal_name.bounded_string;
 
 						procedure query_terminals (
 							package_name	: in et_libraries.type_device_name;
@@ -8038,7 +8040,7 @@ package body et_kicad_pcb is
 
 							-- Make sure the value in schematic matches value in layout.
 							-- On mismatch -> error and abort
-							if et_libraries.type_value."=" (
+							if et_devices.type_value."=" (
 								element (component_cursor).value, -- value in schematic
 								element (package_cursor).value) then -- value in layout
 
@@ -8062,8 +8064,8 @@ package body et_kicad_pcb is
 								
 							else -- value mismatch
 								log (ERROR, "value of " & et_libraries.to_string (package_reference) &
-									 " mismatch ! In schematic: " & et_libraries.to_string (element (component_cursor).value) &
-									 " in layout: " & et_libraries.to_string (element (package_cursor).value),
+									 " mismatch ! In schematic: " & et_devices.to_string (element (component_cursor).value) &
+									 " in layout: " & et_devices.to_string (element (package_cursor).value),
 									console => true);
 								raise constraint_error;
 							end if;
@@ -8203,7 +8205,7 @@ package body et_kicad_pcb is
 	-- Returns true if the terminal_port_map fits on the given package.
 		library_name		: in type_package_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
 		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
-		terminal_port_map	: in et_libraries.type_terminal_port_map.map) 
+		terminal_port_map	: in et_devices.type_terminal_port_map.map) 
 		return boolean is
 
 		use type_libraries;
@@ -8213,24 +8215,24 @@ package body et_kicad_pcb is
 		-- Test if the terminals of the terminal_port_map are also in the given package.
 		-- Raises constraint_error if a terminal could not be found in the package.
 			use et_packages.type_terminals; -- the terminals of the package
-			use et_libraries.type_terminal_port_map;
+			use et_devices.type_terminal_port_map;
 		
 			-- This cursor points to the terminal in the terminal_port_map
-			terminal_cursor : et_libraries.type_terminal_port_map.cursor; 
+			terminal_cursor : et_devices.type_terminal_port_map.cursor; 
 
 			-- For temporarily storage of a terminal name:
-			terminal_name_in_map : et_libraries.type_terminal_name.bounded_string;
+			terminal_name_in_map : et_packages.type_terminal_name.bounded_string;
 		begin -- validate_terminals
 			-- Loop in terminal_port_map. Test each terminal whether it occurs
 			-- in the package_terminals.
 			terminal_cursor := terminal_port_map.first;
-			while terminal_cursor /= et_libraries.type_terminal_port_map.no_element loop
+			while terminal_cursor /= et_devices.type_terminal_port_map.no_element loop
 				terminal_name_in_map := key (terminal_cursor);
 
 				if package_terminals.find (terminal_name_in_map) = et_packages.type_terminals.no_element then
 					log (ERROR, "package " & et_libraries.to_string (packge => package_name)
 						 & " does not have a terminal '" 
-						 & et_libraries.to_string (terminal_name_in_map) & "' !", console => true);
+						 & et_packages.to_string (terminal_name_in_map) & "' !", console => true);
 					raise constraint_error;
 				end if;
 				
@@ -8247,11 +8249,11 @@ package body et_kicad_pcb is
 
 			use type_packages_library;
 			use et_packages.type_terminals;
-			use et_libraries.type_terminal_port_map;
-			terminals : et_libraries.type_terminal_count;
+			use et_devices.type_terminal_port_map;
+			terminals : et_devices.type_terminal_count;
 		begin
 			if is_empty (packages) then
-				log (ERROR, "package library " & et_libraries.to_string (library_name)
+				log (ERROR, "package library " & et_packages.to_string (library_name)
 					 & " is empty !", console => true);
 				raise constraint_error;
 			else
@@ -8259,15 +8261,15 @@ package body et_kicad_pcb is
 				package_cursor := packages.find (package_name);
 				if package_cursor = type_packages_library.no_element then
 					log (ERROR, "package " & et_libraries.to_string (packge => package_name)
-						& " not found in library " & et_libraries.to_string (library_name)
+						& " not found in library " & et_packages.to_string (library_name)
 						& " !", console => true);
 					raise constraint_error;
 				else
 					-- load the total number of terminals the package provides
-					terminals := et_libraries.type_terminal_count (length (element (package_cursor).terminals));
+					terminals := et_devices.type_terminal_count (length (element (package_cursor).terminals));
 
 					-- If the package has less terminals than the given terminal_port_map abort:
-					if et_libraries."<" (terminals, et_libraries.type_terminal_count (length (terminal_port_map))) then
+					if et_devices."<" (terminals, et_devices.type_terminal_count (length (terminal_port_map))) then
 						log (ERROR, "package " & et_libraries.to_string (packge => package_name)
 							& " as too little terminals !",
 							console => true);
@@ -8287,7 +8289,7 @@ package body et_kicad_pcb is
 			library_cursor := package_libraries.find (library_name);
 
 			if library_cursor = type_libraries.no_element then
-				log (ERROR, "package library " & et_libraries.to_string (library_name)
+				log (ERROR, "package library " & et_packages.to_string (library_name)
 					 --& " not found in " & et_libraries.to_string (et_libraries.library_group)
 					 & " not found"
 					 & " !", console => true);
@@ -8318,14 +8320,14 @@ package body et_kicad_pcb is
 	function terminal_count (
 	-- Returns the number of terminals of the given package in the given library.
 		packge : in type_package_library_name.bounded_string) -- ../lbr/bel_ic.pretty/S_SO14
-		return et_libraries.type_terminal_count is
+		return et_devices.type_terminal_count is
 
 		library_name : type_package_library_name.bounded_string;
 		package_name : et_libraries.type_component_package_name.bounded_string;
 		
 		use type_libraries;
 		
-		terminals : et_libraries.type_terminal_count; -- to be returned
+		terminals : et_devices.type_terminal_count; -- to be returned
 		library_cursor : type_libraries.cursor; -- points to the library
 
 		procedure locate_package (
@@ -8339,20 +8341,20 @@ package body et_kicad_pcb is
 			package_cursor := packages.find (package_name);
 
 			-- get number of terminals
-			terminals := et_libraries.type_terminal_count (length (element (package_cursor).terminals));
+			terminals := et_devices.type_terminal_count (length (element (package_cursor).terminals));
 		end locate_package;
 		
 	begin -- terminal_count
 
 		-- extract the library and package name from the given package
-		package_name := et_libraries.to_package_name (ada.directories.simple_name (et_libraries.to_string (packge))); -- S_SO14
-		library_name := et_libraries.to_file_name (ada.directories.containing_directory (et_libraries.to_string (packge))); -- ../lbr/bel_ic.pretty
+		package_name := et_libraries.to_package_name (ada.directories.simple_name (et_packages.to_string (packge))); -- S_SO14
+		library_name := et_packages.to_file_name (ada.directories.containing_directory (et_packages.to_string (packge))); -- ../lbr/bel_ic.pretty
 		
 		-- locate the library
 		library_cursor := type_libraries.find (package_libraries, library_name);
 
 		if library_cursor = type_libraries.no_element then
-			log (ERROR, et_libraries.to_string (library_name) & " not found !", console => true);
+			log (ERROR, et_packages.to_string (library_name) & " not found !", console => true);
 			raise constraint_error;
 		else
 			-- query packages in library
