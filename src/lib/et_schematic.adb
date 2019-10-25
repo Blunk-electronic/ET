@@ -57,6 +57,7 @@ with et_import;
 with et_csv;
 with et_packages;
 with et_symbols;
+with et_devices;
 
 package body et_schematic is
 	use et_coordinates.geometry;
@@ -234,12 +235,12 @@ package body et_schematic is
 	end ports;
 	
 	function package_model (device : in type_devices.cursor)
-		return et_libraries.type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac
+		return et_packages.type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac
 	-- Returns the name of the package model of the given device.
 	-- The given device must have appearance SCH_PCB. Otherwise constraint error arises here.
-		device_model : et_libraries.type_device_model_file.bounded_string;
-		device_cursor_lib : et_libraries.type_devices.cursor;
-		device_variant : et_libraries.type_component_variant_name.bounded_string; -- N, D
+		device_model		: et_devices.type_device_model_file.bounded_string;
+		device_cursor_lib	: et_devices.type_devices.cursor;
+		device_variant		: et_devices.type_component_variant_name.bounded_string; -- N, D
 	begin
 		-- load package variant of given device
 		device_variant := type_devices.element (device).variant;
@@ -248,15 +249,15 @@ package body et_schematic is
 		device_model := type_devices.element (device).model;
 
 		-- locate the generic device model in the device library
-		device_cursor_lib := et_libraries.locate_device (device_model);
+		device_cursor_lib := et_devices.locate_device (device_model);
 		
-		return et_libraries.package_model (device_cursor_lib, device_variant);
+		return et_devices.package_model (device_cursor_lib, device_variant);
 	end package_model;
 
 	function has_real_package (device : in type_devices.cursor) return boolean is
 	-- Returns true if the given device has a real package.
 	-- The given device must have appearance SCH_PCB. Otherwise constraint error arises here.
-		package_name : et_libraries.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
+		package_name : et_packages.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 	begin
 		-- get the package name of the given device:
 		package_name := package_model (device);

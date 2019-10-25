@@ -67,6 +67,7 @@ with et_csv;					use et_csv;
 with submodules;
 -- with numbering;
 with et_symbols;
+with et_packages;
 
 package body netlists is
 	
@@ -796,7 +797,7 @@ package body netlists is
 					et_libraries.to_string (element (port_cursor).device) & latin_1.space &
 					to_string (element (port_cursor).port) & latin_1.space &
 					to_string (element (port_cursor).direction) & latin_1.space &
-					et_libraries.to_string (element (port_cursor).terminal) & latin_1.space);
+					et_packages.to_string (element (port_cursor).terminal) & latin_1.space);
 					-- CS .characteristics
 			end;
 

@@ -63,6 +63,8 @@ with assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_export;
 with et_csv;					use et_csv;
+with et_packages;
+with et_devices;
 -- with et_pcb_coordinates;
 -- with submodules;
 -- with numbering;
@@ -218,6 +220,8 @@ package body material is
 
 			procedure query_device (cursor : in type_devices.cursor) is
 				use type_devices;
+				use et_devices;
+				use et_packages;
 				use et_libraries;
 			begin
 				put_field (file => bom_handle, text => to_string (key (cursor))); -- R4
@@ -276,6 +280,8 @@ package body material is
 			procedure query_device (cursor : in type_devices.cursor) is
 				use type_devices;
 				use et_libraries;
+				use et_devices;
+				use et_packages;
 			begin
 				put_field (file => bom_handle); -- CS item number
 				put_field (file => bom_handle, text => to_string (key (cursor))); -- R4
