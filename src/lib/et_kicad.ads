@@ -704,7 +704,7 @@ package et_kicad is
 		port 			: in type_port_with_reference;
 		module			: in type_submodule_name.bounded_string; -- the name of the module 
 		log_threshold 	: in et_string_processing.type_log_level)
-		return et_packages.type_terminal;
+		return et_devices.type_terminal;
 	-- Returns the terminal and unit name of the given port in a composite type.
 	-- Raises error if given port is of a virtual component (appearance sch).
 
@@ -1429,7 +1429,7 @@ package et_kicad is
 	-- is to be returned.
 	-- If no net connected with the given port, an empty string is returned.
 	
-	procedure make_netlists (log_threshold : in et_string_processing.type_log_level);
+-- 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level);
 	-- Builds the netlists of all modules.
 	-- Currently there is only one module. kicad does not support multiple modules at the same time.	
 	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.

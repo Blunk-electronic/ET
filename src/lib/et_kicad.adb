@@ -142,7 +142,7 @@ package body et_kicad is
 	
 	function unit_exists (
 	-- Returns true if the unit with the given name exists in the given list of units.
-		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		name	: in et_devices.type_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return boolean is
 		use type_units_schematic;
@@ -158,7 +158,7 @@ package body et_kicad is
 	-- Returns the coordinates of the unit with the given name.
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
-		name 	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		name 	: in et_devices.type_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
 		return kicad_coordinates.type_position is
 		unit_cursor : type_units_schematic.cursor;
@@ -171,7 +171,7 @@ package body et_kicad is
 	-- Returns the mirror style of the given unit.
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
-		name 	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		name 	: in et_devices.type_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
 		return et_schematic.type_mirror is
 		unit_cursor : type_units_schematic.cursor;
@@ -184,7 +184,7 @@ package body et_kicad is
 	-- Returns the orientation of the given unit.
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
-		name	: in et_libraries.type_unit_name.bounded_string; -- the unit being inquired
+		name	: in et_devices.type_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return et_coordinates.type_rotation is
 		unit_cursor : type_units_schematic.cursor;
@@ -203,12 +203,13 @@ package body et_kicad is
 		use et_coordinates;
 		use et_coordinates.geometry;
 		use et_symbols;
+		use et_devices;
 	begin
 		log_indentation_up;
 		
 		-- unit name
 		log (text => "properties of unit " 
-			& et_libraries.to_string (type_units_schematic.key (unit)), level => log_threshold);
+			& to_string (type_units_schematic.key (unit)), level => log_threshold);
 
 		log_indentation_up;
 		
@@ -310,12 +311,12 @@ package body et_kicad is
 	end units_of_component;
 
 	procedure check_prefix_characters (
-		prefix 		: in et_libraries.type_device_name_prefix.bounded_string;
+		prefix 		: in et_devices.type_device_name_prefix.bounded_string;
 		characters	: in character_set) is
 	-- Tests if the given prefix contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
 		use et_string_processing;
-		use et_libraries.type_device_name_prefix;
+		use et_devices.type_device_name_prefix;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
@@ -343,7 +344,9 @@ package body et_kicad is
 		text_in			: in string;
 		leading_hash	: in boolean := false
 		) return et_libraries.type_device_name is
+		
 		use et_libraries;
+		use et_devices;
 
 		-- justify given text_in on the left
 		text_in_justified : string (1 .. text_in'length) := text_in;
@@ -368,8 +371,8 @@ package body et_kicad is
 		d : positive;
 		digit : natural := 0;
 
-		use et_libraries.type_device_name_prefix;
-	begin -- to_component_reference
+		use et_devices.type_device_name_prefix;
+	begin
 		-- assemble prefix
 		for i in text_in_justified'first .. text_in_justified'last loop
 			c := text_in_justified (i);
@@ -454,6 +457,7 @@ package body et_kicad is
 		use et_string_processing;
 		use et_libraries;
 		use et_symbols;
+		use et_devices;
 	begin
 		-- reference (serves as key in list of components)
 		log (text => "component " & to_string (type_components_schematic.key (component)) & " properties",
@@ -499,7 +503,7 @@ package body et_kicad is
 	function to_package_name (
 		library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
-		package_variant	: in et_libraries.type_component_variant_name.bounded_string) -- N, D
+		package_variant	: in et_devices.type_component_variant_name.bounded_string) -- N, D
 		return et_libraries.type_component_package_name.bounded_string is
 	-- Returns the package name for of the given component.
 		package_name : et_libraries.type_component_package_name.bounded_string; -- to be returned
@@ -616,6 +620,7 @@ package body et_kicad is
 		is
 		use et_string_processing;
 		use et_libraries;
+		use et_devices;
 	begin
 		log (ERROR, "component " & to_string (reference) -- CS: output coordinates
 			& " has no generic model " & to_string (generic_name)
@@ -675,7 +680,7 @@ package body et_kicad is
 		port_cursor : type_ports_library.cursor; -- to be returned
 
 		procedure locate (
-			name : in et_libraries.type_unit_name.bounded_string;
+			name : in et_devices.type_unit_name.bounded_string;
 			unit : in type_unit_library) is
 
 			use type_ports_library;
@@ -687,7 +692,7 @@ package body et_kicad is
 			-- In case the unit has no ports, abort.
 			if port_cursor = type_ports_library.no_element then
 				log (WARNING, "generic unit " 
-						& et_libraries.to_string (unit_name => type_units_library.key (unit_cursor)) 
+						& et_devices.to_string (unit_name => type_units_library.key (unit_cursor)) 
 						& " has no ports !");
 					--console => true);
 				--CS raise constraint_error;
@@ -783,11 +788,11 @@ package body et_kicad is
 		raise constraint_error;
 	end invalid_field;
 
-	procedure validate_prefix (prefix : in et_libraries.type_device_name_prefix.bounded_string) is
+	procedure validate_prefix (prefix : in et_devices.type_device_name_prefix.bounded_string) is
 	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
 		use et_string_processing;
-		use et_libraries.type_device_name_prefix;
+		use et_devices.type_device_name_prefix;
 	begin
 		if to_string (prefix) = power_flag_prefix or to_string (prefix) = power_symbol_prefix then
 			null;
@@ -806,7 +811,8 @@ package body et_kicad is
 	procedure validate_prefix (reference : in et_libraries.type_device_name) is
 	-- Tests if the given reference has a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
-		use et_libraries.type_device_name_prefix;
+		use et_libraries;
+		use et_devices.type_device_name_prefix;
 	begin
 		if to_string (reference.prefix) = power_flag_prefix or to_string (reference.prefix) = power_symbol_prefix then
 			null;
@@ -1197,7 +1203,7 @@ package body et_kicad is
 	function to_power_flag (reference : in et_libraries.type_device_name) 
 		return type_power_flag is
 	-- If the given component reference is one that belongs to a "power flag" returns YES.
-		use et_libraries;
+		use et_devices;
 		use type_device_name_prefix;
 	begin
 		--log (text => et_schematic.to_string (reference));
@@ -1294,7 +1300,9 @@ package body et_kicad is
 	
 	procedure read_components_libraries (log_threshold : in type_log_level) is
 	-- Reads component libraries.
-		
+
+		use et_packages;
+		use et_devices;
         use et_libraries; -- most of the following stuff is specified there
 		use type_full_library_names;
 
@@ -1318,8 +1326,8 @@ package body et_kicad is
 			component_entered : boolean := false; 
 
 			-- The subsection of a component is indicated by variable active_section:			
-			type type_active_section is ( none, fields, footprints, draw);
-			active_section : type_active_section := none; 
+			type type_active_section is (NONE, FIELDS, FOOTPRINTS, DRAW);
+			active_section : type_active_section := NONE; 
 
 			-- This flag is used when ports are added to an extra unit (supply symbols).
 			-- It is initialzed by procedure init_temp_variables on entering a component section.
@@ -2022,7 +2030,7 @@ package body et_kicad is
 					
 					when VALUE =>
 						declare
-							value : et_libraries.type_value.bounded_string;
+							value : type_value.bounded_string;
 						begin
 							value := to_value (
 									value 						=> content (text),
@@ -2128,8 +2136,8 @@ package body et_kicad is
 							missing_field (field_reference.meaning);
 						else
 							check_prefix_characters (
-								prefix => tmp_prefix,
-								characters => et_libraries.device_name_prefix_characters);
+								prefix 		=> tmp_prefix,
+								characters	=> device_name_prefix_characters);
 							
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_reference.size);
 						end if;
@@ -2192,7 +2200,7 @@ package body et_kicad is
 			-- for later inserting the units:
 				key			: in type_device_library_name.bounded_string;
 				components	: in out type_components_library.map) is
-			begin -- insert_component
+			begin
 
 -- 				-- For the logfile write the component name.
 -- 				-- If the component contains more than one unit, write number of units.
@@ -3348,12 +3356,14 @@ package body et_kicad is
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
 		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
 		log_threshold		: in et_string_processing.type_log_level)
-		return et_libraries.type_component_variant_name.bounded_string is 					-- D
+		return et_devices.type_component_variant_name.bounded_string is 					-- D
 
 		use et_libraries;
 		library_cursor : type_libraries.cursor; -- points to the component library
 		
 		use et_string_processing;
+
+		use et_devices;
 		variant : type_component_variant_name.bounded_string; -- variant name to be returned
 		
 		-- temporarily here the name of the package library is stored:
@@ -3397,8 +3407,8 @@ package body et_kicad is
 					--if element (variant_cursor).packge.library = full_package_library_name and
 					--	element (variant_cursor).packge.name = package_name then 
 
-					if element (variant_cursor).package_model = to_file_name (compose (
-							containing_directory	=> et_libraries.to_string (full_package_library_name),
+					if element (variant_cursor).package_model = et_packages.to_file_name (compose (
+							containing_directory	=> et_packages.to_string (full_package_library_name),
 							name					=> et_libraries.to_string (package_name))) then
 						
 						log (text => "variant " 
@@ -3442,8 +3452,8 @@ package body et_kicad is
 -- 							packge 				=> (library		=> full_package_library_name,
 -- 													name 		=> package_name),
 
-							package_model => to_file_name (compose (
-								containing_directory	=> et_libraries.to_string (full_package_library_name),
+							package_model => et_packages.to_file_name (compose (
+								containing_directory	=> et_packages.to_string (full_package_library_name),
 								name					=> et_libraries.to_string (package_name))),
 							
 							terminal_port_map	=> element (variant_cursor).terminal_port_map
@@ -4609,8 +4619,9 @@ package body et_kicad is
 				-- If a library was found, a same-named empty library is created in the container tmp_component_libraries.
 					lib_cursor : type_lib_table.cursor := sym_lib_tables.first;
 					use type_lib_table;
+					use et_devices;
 					uri : type_device_library_name.bounded_string;
-				begin -- locate_component_libraries
+				begin
 					log (text => "locating libraries ...", level => log_threshold + 1);
 					log_indentation_up;
 
@@ -4648,7 +4659,7 @@ package body et_kicad is
 				-- If a library was found, a same-named empty library is created in the container et_kicad_pcb.package_libraries.
 					lib_cursor : type_lib_table.cursor := fp_lib_tables.first;
 					use type_lib_table;
-					
+
 					uri : type_device_library_name.bounded_string; 
 					-- CS: not really correct. see spec for type_lib_table_entry
 					
@@ -4658,15 +4669,15 @@ package body et_kicad is
 
 					while lib_cursor /= type_lib_table.no_element loop
 						uri := element (lib_cursor).lib_uri; -- get full name like /home/user/kicad_libs/bel_ic.pretty
-						log (text => to_string (uri), level => log_threshold + 2);
+						log (text => et_devices.to_string (uri), level => log_threshold + 2);
 
 						-- Test if library file exists:
-						if ada.directories.exists (to_string (uri)) then
+						if ada.directories.exists (et_devices.to_string (uri)) then
 
 							-- create empty package/footprint library
 							et_kicad_pcb.type_libraries.insert (
 								container	=> et_kicad_pcb.package_libraries,
-								key 		=> to_file_name (to_string (uri)),
+								key 		=> et_packages.to_file_name (et_devices.to_string (uri)),
 								new_item	=> et_kicad_pcb.type_packages_library.empty_map
 								); 
 
@@ -4675,7 +4686,7 @@ package body et_kicad is
 							
 						-- raise alarm and abort if library file not found
 						else
-							log (ERROR, "library " & to_string (uri) 
+							log (ERROR, "library " & et_devices.to_string (uri) 
 								 & " not found !", console => true);
 							raise constraint_error;
 						end if;
@@ -4988,7 +4999,7 @@ package body et_kicad is
 										case section.arg_counter is
 											when 0 => null;
 											when 1 =>
-												lib_uri := to_file_name (to_string (arg));
+												lib_uri := et_devices.to_file_name (to_string (arg));
 											when others => too_many_arguments;
 										end case;
 
@@ -5048,7 +5059,7 @@ package body et_kicad is
 											 & type_lib_type'image (lib_type)
 											 & " path "
 											 -- CS options and description
-											 & to_string (lib_uri), 
+											 & et_devices.to_string (lib_uri), 
 											level => log_threshold + 2); 
 
 										type_lib_table.append (
@@ -5225,7 +5236,7 @@ package body et_kicad is
 
 						else -- entry already in local table -> warning and skip
 							warning_on_multiple_entry_in_lib_table (
-								to_string (element (cursor).lib_uri));
+								et_devices.to_string (element (cursor).lib_uri));
 						end if;
 						
 						next (cursor);
@@ -5260,7 +5271,7 @@ package body et_kicad is
 
 						else -- entry already in local table -> warning and skip
 							warning_on_multiple_entry_in_lib_table (
-								to_string (element (cursor).lib_uri));
+								et_devices.to_string (element (cursor).lib_uri));
 						end if;
 						
 						next (cursor);
@@ -7417,6 +7428,7 @@ package body et_kicad is
 			--  1    0    0   1  -- orientation 180, mirror |
 			--  1    0    0   1  -- orientation -90, mirror |
 
+				use et_devices;
 				use et_libraries;
 				use et_string_processing;
 
@@ -7709,7 +7721,7 @@ package body et_kicad is
 					while lib_cursor /= type_libraries.no_element loop
 						log_indentation_up;
 						log (text => "probing " 
-							 & et_libraries.to_string (key (lib_cursor)) 
+							 & et_devices.to_string (key (lib_cursor)) 
 							 & " ...", level => log_threshold + 1);
 
 						query_element (
@@ -8069,7 +8081,7 @@ package body et_kicad is
 				-- "2    6000 4000"
 				begin -- verify_unit_name_and_position
 					
-					if et_libraries.to_string (unit_name) /= et_string_processing.field (line,1) then
+					if et_devices.to_string (unit_name) /= et_string_processing.field (line,1) then
 						log (ERROR, "invalid unit name '" & et_string_processing.field (line,1) & "'", console => true);
 						raise constraint_error;
 					end if;
@@ -8245,7 +8257,7 @@ package body et_kicad is
 				
 					path	: et_string_processing.type_fields_of_line; -- 59F17F77 5A991798
 					ref		: et_libraries.type_device_name; -- #PWR03
-					unit	: et_libraries.type_unit_name.bounded_string; -- 1 -- CS is this really about unit names ?
+					unit	: type_unit_name.bounded_string; -- 1 -- CS is this really about unit names ?
 
 					path_segment : type_timestamp;
 					alt_ref_path : type_alternative_reference_path.list;
@@ -8290,7 +8302,7 @@ package body et_kicad is
 					
 					-- extract the part name (CS unit name ?) from field 4: example Part="1
 					-- NOTE: the trailing double quote is already gone.
-					unit := et_libraries.to_unit_name (et_string_processing.field (line, 4) (7 .. (et_string_processing.field (line, 4)'last)));
+					unit := to_unit_name (et_string_processing.field (line, 4) (7 .. (et_string_processing.field (line, 4)'last)));
 
 					-- Now all components of the alternative reference are ready.
 					-- Append the new alternative reference to list alternative_references:
@@ -8466,9 +8478,9 @@ package body et_kicad is
 								field_value := to_field;
 
 								declare
-									value : et_libraries.type_value.bounded_string;
+									value : et_devices.type_value.bounded_string;
 								begin
-									value := to_value (
+									value := et_devices.to_value (
 											value 						=> content (field_value),
 											error_on_invalid_character	=> false);
 									-- For the operators convenice no error is raised if invalid
@@ -9148,7 +9160,7 @@ package body et_kicad is
 				check_orphaned_no_connection_flags (log_threshold + 1);
 
 				-- make netlists
-				make_netlists (log_threshold + 1);
+-- 				make_netlists (log_threshold + 1);
 
 				-- import layout(s)
 				log_indentation_reset;
@@ -9885,7 +9897,7 @@ package body et_kicad is
 				position	=> lib_cursor,
 				process		=> locate'access);
 		else
-			log (WARNING, "library " & et_libraries.to_string (library) & " not found !");
+			log (WARNING, "library " & et_devices.to_string (library) & " not found !");
 			-- CS: raise constraint_error ?
 		end if;
 
@@ -9964,6 +9976,7 @@ package body et_kicad is
 		-- NOTE: The library contains the relative (x/y) positions of the ports.
 			use type_ports_library;
 			use et_schematic;
+			use et_devices;
 		
 			-- The unit cursor of the component advances through the units stored in the library.
 			unit_cursor : type_units_library.cursor;
@@ -10350,7 +10363,7 @@ package body et_kicad is
 			-- log particular library to be searched in.
 			log (text => "generic name " 
 					& to_string (element (component_cursor_sch).generic_name) 
-					& " in " & to_string (element (component_cursor_sch).library_name),
+					& " in " & et_devices.to_string (element (component_cursor_sch).library_name),
 					level => log_threshold + 2);
 
 			-- Set cursor of the generic model in library. If cursor is empty, the component
@@ -10651,13 +10664,13 @@ package body et_kicad is
 						use type_units_schematic;
 						unit_cursor : type_units_schematic.cursor := component.units.first;
 						unit_deployed : boolean := false;
-						use et_libraries.type_unit_name;
+						use et_devices.type_unit_name;
 						use et_import;
 
 						function unit_not_deployed return string is
 						begin
 							return et_libraries.to_string (key (component_sch)) 
-								& " unit " & et_libraries.to_string (key (unit))
+								& " unit " & to_string (key (unit))
 								& " not deployed !";
 						end unit_not_deployed;
 		
@@ -10718,7 +10731,7 @@ package body et_kicad is
 					
 				begin -- query_units_lib
 					while unit /= type_units_library.no_element loop
-						log (text => "unit " & et_libraries.to_string (key (unit)) 
+						log (text => "unit " & et_devices.to_string (key (unit)) 
 							 --& et_libraries.to_string (element (unit).add_level), level => log_threshold + 2);
 							 , level => log_threshold + 2);
 
@@ -10778,7 +10791,7 @@ package body et_kicad is
 			while component_sch /= type_components_schematic.no_element loop
 
 				log (text => et_libraries.to_string (key (component_sch)) & " in " 
-					& et_libraries.to_string (element (component_sch).library_name), level => log_threshold + 1);
+					& et_devices.to_string (element (component_sch).library_name), level => log_threshold + 1);
 
 				-- Set library cursor so that it points to the library of the generic model.
 				library_cursor := type_libraries.find (
@@ -11088,7 +11101,7 @@ package body et_kicad is
 	procedure add_unit (
 	-- Adds a unit to the given commponent.
 		reference		: in et_libraries.type_device_name;
-		unit_name		: in et_libraries.type_unit_name.bounded_string;
+		unit_name		: in et_devices.type_unit_name.bounded_string;
 		unit 			: in type_unit_schematic;
 		log_threshold	: in et_string_processing.type_log_level) is
 
@@ -11112,7 +11125,7 @@ package body et_kicad is
 				write_unit_properties (unit => cursor, log_threshold => log_threshold + 1);
 			else -- not inserted, unit already in component -> failure
 				log (ERROR, "component " & et_libraries.to_string (reference) &
-					 " unit " & et_libraries.to_string (unit_name) & " used multiple times !" &
+					 " unit " & et_devices.to_string (unit_name) & " used multiple times !" &
 					 " Make sure " & et_libraries.to_string (reference) & " exists ONLY ONCE !",
 					console	=> true);
 
@@ -12426,311 +12439,311 @@ package body et_kicad is
 
 
 	
-	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
-	-- Builds the netlists of all modules. 
-	-- Currently there is only one module. kicad does not support multiple modules at the same time.
-	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
-	-- Virtual components are filtered out on exporting the netlist in a file.
-	-- Bases on the portlists and nets/strands information of the module.
-	-- Detects if a junction is missing where a port is connected with a net.
-	
-		use et_string_processing;
-		use type_modules;
-		use et_coordinates;
-
-		function make_netlist return type_netlist.map is
-		-- Generates the netlist of the current module (indicated by module_cursor).
-		-- module.portlists provide the port coordinates. 
-		-- module.nets provides the strands and nets.
-		-- With this information we make the netlist of the current module.
-		
-			-- the netlist being built. it is returnd to the calling unit.
-			netlist : type_netlist.map;
-
-			procedure query_nets (
-			-- Tests if a net of the given module is connected to any component port.
-			-- Creates a net in the netlist (type_module.netlist) with the same name 
-			-- as the net being examined (type_module.nets).
-			-- Component ports connected with the net are collected in portlist of the 
-			-- net being built (see procedure add_port below).
-				module_name	: in type_submodule_name.bounded_string;
-				module		: in type_module) is
-
-				use type_nets;
-				net_cursor 		: type_nets.cursor := module.nets.first; -- points to the net being read
-				net_in_netlist	: type_netlist.cursor; -- points to the net being built in the netlist
-				net_created		: boolean := false; -- goes true once the net has been created in the netlist
-				
-				procedure query_strands (
-				-- Tests if a strand of the given net is connected to any component port.
-					net_name	: in type_net_name.bounded_string;
-					net			: in type_net) is
-					use type_strands;
-					strand_cursor : type_strands.cursor := net.strands.first; -- points to the first strand of the net
-
-					procedure query_segments (strand : in type_strand) is
-					-- Tests the net segments of the given strand if they are connected with any component ports.
-					-- For every segment, all component ports must be tested.
-						use type_net_segments;
-						segment : type_net_segments.cursor := strand.segments.first; -- points to the segment being read
-						use type_portlists;
-						component_cursor : type_portlists.cursor; -- points to the component being read
-
-						procedure query_ports (
-						-- Tests the ports of the given component if they sit on the current net segment.
-							component	: in et_libraries.type_device_name;
-							ports		: in type_ports.list) is
-							use type_ports;
-							port_cursor : type_ports.cursor := ports.first; -- points to the first port of the component
-
-							procedure mark_port_as_connected is
-							-- mark port in portlist as connected
-							
-								procedure locate_component (
-								-- Locates the component within the portlist of the submodule
-									module_name	: in type_submodule_name.bounded_string;
-									module 		: in out type_module) is
-	
-									procedure locate_port (
-									-- Locates the port of the component
-										component	: in et_libraries.type_device_name;
-										ports		: in out type_ports.list) is
-
-										procedure mark_it (port : in out type_port) is
-										begin
-											port.connected := YES;
-										end mark_it;
-											
-									begin -- locate_port
-										update_element (
-											container	=> ports,
-											position	=> port_cursor,
-											process		=> mark_it'access);
-									end locate_port;
-										
-								begin -- locate_component 
-									type_portlists.update_element (
-										container	=> module.portlists,
-										position	=> component_cursor,
-										process 	=> locate_port'access);
-								end locate_component;
-									
-							begin -- mark_port_as_connected
-								-- locate the submodule in the rig
-								update_element (
-									container	=> modules,
-									position	=> module_cursor,
-									process		=> locate_component'access);
-							end mark_port_as_connected;
-							
-							procedure add_port (
-							-- Adds the port (indicated by cursor "port" to the portlist of the net being built.
-								net_name	: in type_net_name.bounded_string;
-								ports		: in out type_ports_with_reference.set) is
-								inserted : boolean;
-								cursor : type_ports_with_reference.cursor;
-							begin -- add_port
-								-- If a port sits on the point where two segments meet, the same port should be inserted only once.
-								-- Thus we have the obligatory flag "inserted". 
-								type_ports_with_reference.insert (
-									container	=> ports,
-									position	=> cursor,
-									inserted	=> inserted,
-									-- We add the port and extend it with the component reference.
-									new_item	=> (element (port_cursor) with component));
-
-								if not inserted then -- port already in net
-									log_indentation_up;
-									log (text => "already processed -> skipped", level => log_threshold + 3);
-									log_indentation_down;
-								end if;
-							end add_port;
-
-						begin -- query_ports
-							while port_cursor /= type_ports.no_element loop
-
-								-- Probe only those ports (in the portlists) which are in the same 
-								-- path and at the same sheet as the port.
-								-- Probing other ports would be a waste of time.
-								if same_path_and_sheet (
-									left => strand.position, 
-									right => element (port_cursor).coordinates ) then
-
-									--if et_schematic."=" (element (port_cursor).connected, et_schematic.NO) then
-									if element (port_cursor).connected = NO then
-									
-										log_indentation_up;
-										log (text => "probing " & et_libraries.to_string (component) 
-											& " port " & to_string (element (port_cursor).name)
-											& latin_1.space
-											& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
-											level => log_threshold + 5);
-
-										-- test if port sits on segment
-										if port_connected_with_segment (element (port_cursor), element (segment)) then
-											log_indentation_up;
-										
-											log (text => "connected with " & et_libraries.to_string (component) 
-												& " port " & to_string (element (port_cursor).name)
-												& latin_1.space
-												& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
-												level => log_threshold + 3);
-											
-											log_indentation_down;
-
-											-- add port to the net being built
-											type_netlist.update_element (
-												container	=> netlist,
-												position	=> net_in_netlist,
-												process		=> add_port'access);
-
-											-- Mark the port (in the portlists) as connected.
-											-- Why ? A port can be connected to ONLY ONE net. So once it is
-											-- detected here, it would be a wast of computing time to 
-											-- test if the port is connected to other nets.
-											mark_port_as_connected;
-										end if;
-											
-										log_indentation_down;
-									end if;
-								end if;
-
-								next (port_cursor);
-							end loop;
-						end query_ports;
-						
-					begin -- query_segments
-						log_indentation_up;
-					
-						while segment /= type_net_segments.no_element loop
-
-							log (text => "segment " & to_string (
-									type_net_segment_base (element (segment))), 
-								 level => log_threshold + 4);
-
-							-- reset the component cursor, then loop in the component list 
-							component_cursor := module.portlists.first;	-- points to the component being read
-							while component_cursor /= type_portlists.no_element loop
-
-								-- query the ports of the component
-								type_portlists.query_element (
-									position	=> component_cursor,
-									process		=> query_ports'access);
-
-								next (component_cursor);
-							end loop;
-							
-							next (segment);
-						end loop;
-							
-						log_indentation_down;	
-					end query_segments;
-
-				begin -- query_strands
-					log_indentation_up;
-				
-					while strand_cursor /= type_strands.no_element loop
-
-						-- log strand coordinates
-						log (text => "strand " & to_string (element (strand_cursor).position, 
-									scope => kicad_coordinates.MODULE),
-							 level => log_threshold + 3);
-
-						query_element (
-							position	=> strand_cursor,
-							process		=> query_segments'access);
-				
-						next (strand_cursor);
-					end loop;
-						
-					log_indentation_down;
-				end query_strands;
-
-			begin -- query_nets
-				log_indentation_up;
-			
-				while net_cursor /= type_nets.no_element loop
-
-					-- log the name of the net being built
-					log (text => et_general.to_string (key (net_cursor)), level => log_threshold + 2);
-				
-					-- create net in netlist
-					type_netlist.insert (
-						container	=> netlist,
-						key 		=> key (net_cursor),
-						new_item 	=> type_ports_with_reference.empty_set,
-						position 	=> net_in_netlist,
-						inserted 	=> net_created);
-
-					-- CS: evaluate flag net_created ?
-
-					-- search for ports connected with the net being built
-					query_element (
-						position	=> net_cursor,
-						process		=> query_strands'access);
-
-					next (net_cursor);
-				end loop;
-
-				log_indentation_down;	
-			end query_nets;
-					
-		begin -- make_netlist (NOTE: singluar !)
-			query_element (
-				position 	=> module_cursor,
-				process 	=> query_nets'access);
-
-			return netlist;
-		end make_netlist;
-
-		procedure add_netlist (
-			module_name	: in type_submodule_name.bounded_string;
-			module		: in out type_module) is
-		begin
-			module.netlist := make_netlist;
-		end add_netlist;
-
-	begin -- make_netlists (note plural !)
-		log (text => "building netlists ...", level => log_threshold);
-		log_indentation_up;
-		
-		-- We start with the first module of the modules.
-		--first_module;
-		module_cursor := type_modules.first (modules);
-
-		-- Process one module after another.
-		-- module_cursor points to the module.
-		while module_cursor /= type_modules.no_element loop
-			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
-			log_indentation_up;
-			
-			update_element (
-				container	=> modules,
-				position	=> module_cursor,
-				process		=> add_netlist'access);
-
-			log (text => "net count total" & count_type'image (net_count), level => log_threshold + 1);
-			log_indentation_down;
-			
-			next (module_cursor);
-		end loop;
-
-		log_indentation_down;
-	end make_netlists;
+-- 	procedure make_netlists (log_threshold : in et_string_processing.type_log_level) is
+-- 	-- Builds the netlists of all modules. 
+-- 	-- Currently there is only one module. kicad does not support multiple modules at the same time.
+-- 	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
+-- 	-- Virtual components are filtered out on exporting the netlist in a file.
+-- 	-- Bases on the portlists and nets/strands information of the module.
+-- 	-- Detects if a junction is missing where a port is connected with a net.
+-- 	
+-- 		use et_string_processing;
+-- 		use type_modules;
+-- 		use et_coordinates;
+-- 
+-- 		function make_netlist return type_netlist.map is
+-- 		-- Generates the netlist of the current module (indicated by module_cursor).
+-- 		-- module.portlists provide the port coordinates. 
+-- 		-- module.nets provides the strands and nets.
+-- 		-- With this information we make the netlist of the current module.
+-- 		
+-- 			-- the netlist being built. it is returnd to the calling unit.
+-- 			netlist : type_netlist.map;
+-- 
+-- 			procedure query_nets (
+-- 			-- Tests if a net of the given module is connected to any component port.
+-- 			-- Creates a net in the netlist (type_module.netlist) with the same name 
+-- 			-- as the net being examined (type_module.nets).
+-- 			-- Component ports connected with the net are collected in portlist of the 
+-- 			-- net being built (see procedure add_port below).
+-- 				module_name	: in type_submodule_name.bounded_string;
+-- 				module		: in type_module) is
+-- 
+-- 				use type_nets;
+-- 				net_cursor 		: type_nets.cursor := module.nets.first; -- points to the net being read
+-- 				net_in_netlist	: type_netlist.cursor; -- points to the net being built in the netlist
+-- 				net_created		: boolean := false; -- goes true once the net has been created in the netlist
+-- 				
+-- 				procedure query_strands (
+-- 				-- Tests if a strand of the given net is connected to any component port.
+-- 					net_name	: in type_net_name.bounded_string;
+-- 					net			: in type_net) is
+-- 					use type_strands;
+-- 					strand_cursor : type_strands.cursor := net.strands.first; -- points to the first strand of the net
+-- 
+-- 					procedure query_segments (strand : in type_strand) is
+-- 					-- Tests the net segments of the given strand if they are connected with any component ports.
+-- 					-- For every segment, all component ports must be tested.
+-- 						use type_net_segments;
+-- 						segment : type_net_segments.cursor := strand.segments.first; -- points to the segment being read
+-- 						use type_portlists;
+-- 						component_cursor : type_portlists.cursor; -- points to the component being read
+-- 
+-- 						procedure query_ports (
+-- 						-- Tests the ports of the given component if they sit on the current net segment.
+-- 							component	: in et_libraries.type_device_name;
+-- 							ports		: in type_ports.list) is
+-- 							use type_ports;
+-- 							port_cursor : type_ports.cursor := ports.first; -- points to the first port of the component
+-- 
+-- 							procedure mark_port_as_connected is
+-- 							-- mark port in portlist as connected
+-- 							
+-- 								procedure locate_component (
+-- 								-- Locates the component within the portlist of the submodule
+-- 									module_name	: in type_submodule_name.bounded_string;
+-- 									module 		: in out type_module) is
+-- 	
+-- 									procedure locate_port (
+-- 									-- Locates the port of the component
+-- 										component	: in et_libraries.type_device_name;
+-- 										ports		: in out type_ports.list) is
+-- 
+-- 										procedure mark_it (port : in out type_port) is
+-- 										begin
+-- 											port.connected := YES;
+-- 										end mark_it;
+-- 											
+-- 									begin -- locate_port
+-- 										update_element (
+-- 											container	=> ports,
+-- 											position	=> port_cursor,
+-- 											process		=> mark_it'access);
+-- 									end locate_port;
+-- 										
+-- 								begin -- locate_component 
+-- 									type_portlists.update_element (
+-- 										container	=> module.portlists,
+-- 										position	=> component_cursor,
+-- 										process 	=> locate_port'access);
+-- 								end locate_component;
+-- 									
+-- 							begin -- mark_port_as_connected
+-- 								-- locate the submodule in the rig
+-- 								update_element (
+-- 									container	=> modules,
+-- 									position	=> module_cursor,
+-- 									process		=> locate_component'access);
+-- 							end mark_port_as_connected;
+-- 							
+-- 							procedure add_port (
+-- 							-- Adds the port (indicated by cursor "port" to the portlist of the net being built.
+-- 								net_name	: in type_net_name.bounded_string;
+-- 								ports		: in out type_ports_with_reference.set) is
+-- 								inserted : boolean;
+-- 								cursor : type_ports_with_reference.cursor;
+-- 							begin -- add_port
+-- 								-- If a port sits on the point where two segments meet, the same port should be inserted only once.
+-- 								-- Thus we have the obligatory flag "inserted". 
+-- 								type_ports_with_reference.insert (
+-- 									container	=> ports,
+-- 									position	=> cursor,
+-- 									inserted	=> inserted,
+-- 									-- We add the port and extend it with the component reference.
+-- 									new_item	=> (element (port_cursor) with component));
+-- 
+-- 								if not inserted then -- port already in net
+-- 									log_indentation_up;
+-- 									log (text => "already processed -> skipped", level => log_threshold + 3);
+-- 									log_indentation_down;
+-- 								end if;
+-- 							end add_port;
+-- 
+-- 						begin -- query_ports
+-- 							while port_cursor /= type_ports.no_element loop
+-- 
+-- 								-- Probe only those ports (in the portlists) which are in the same 
+-- 								-- path and at the same sheet as the port.
+-- 								-- Probing other ports would be a waste of time.
+-- 								if same_path_and_sheet (
+-- 									left => strand.position, 
+-- 									right => element (port_cursor).coordinates ) then
+-- 
+-- 									--if et_schematic."=" (element (port_cursor).connected, et_schematic.NO) then
+-- 									if element (port_cursor).connected = NO then
+-- 									
+-- 										log_indentation_up;
+-- 										log (text => "probing " & et_libraries.to_string (component) 
+-- 											& " port " & to_string (element (port_cursor).name)
+-- 											& latin_1.space
+-- 											& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
+-- 											level => log_threshold + 5);
+-- 
+-- 										-- test if port sits on segment
+-- 										if port_connected_with_segment (element (port_cursor), element (segment)) then
+-- 											log_indentation_up;
+-- 										
+-- 											log (text => "connected with " & et_libraries.to_string (component) 
+-- 												& " port " & to_string (element (port_cursor).name)
+-- 												& latin_1.space
+-- 												& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
+-- 												level => log_threshold + 3);
+-- 											
+-- 											log_indentation_down;
+-- 
+-- 											-- add port to the net being built
+-- 											type_netlist.update_element (
+-- 												container	=> netlist,
+-- 												position	=> net_in_netlist,
+-- 												process		=> add_port'access);
+-- 
+-- 											-- Mark the port (in the portlists) as connected.
+-- 											-- Why ? A port can be connected to ONLY ONE net. So once it is
+-- 											-- detected here, it would be a wast of computing time to 
+-- 											-- test if the port is connected to other nets.
+-- 											mark_port_as_connected;
+-- 										end if;
+-- 											
+-- 										log_indentation_down;
+-- 									end if;
+-- 								end if;
+-- 
+-- 								next (port_cursor);
+-- 							end loop;
+-- 						end query_ports;
+-- 						
+-- 					begin -- query_segments
+-- 						log_indentation_up;
+-- 					
+-- 						while segment /= type_net_segments.no_element loop
+-- 
+-- 							log (text => "segment " & to_string (
+-- 									type_net_segment_base (element (segment))), 
+-- 								 level => log_threshold + 4);
+-- 
+-- 							-- reset the component cursor, then loop in the component list 
+-- 							component_cursor := module.portlists.first;	-- points to the component being read
+-- 							while component_cursor /= type_portlists.no_element loop
+-- 
+-- 								-- query the ports of the component
+-- 								type_portlists.query_element (
+-- 									position	=> component_cursor,
+-- 									process		=> query_ports'access);
+-- 
+-- 								next (component_cursor);
+-- 							end loop;
+-- 							
+-- 							next (segment);
+-- 						end loop;
+-- 							
+-- 						log_indentation_down;	
+-- 					end query_segments;
+-- 
+-- 				begin -- query_strands
+-- 					log_indentation_up;
+-- 				
+-- 					while strand_cursor /= type_strands.no_element loop
+-- 
+-- 						-- log strand coordinates
+-- 						log (text => "strand " & to_string (element (strand_cursor).position, 
+-- 									scope => kicad_coordinates.MODULE),
+-- 							 level => log_threshold + 3);
+-- 
+-- 						query_element (
+-- 							position	=> strand_cursor,
+-- 							process		=> query_segments'access);
+-- 				
+-- 						next (strand_cursor);
+-- 					end loop;
+-- 						
+-- 					log_indentation_down;
+-- 				end query_strands;
+-- 
+-- 			begin -- query_nets
+-- 				log_indentation_up;
+-- 			
+-- 				while net_cursor /= type_nets.no_element loop
+-- 
+-- 					-- log the name of the net being built
+-- 					log (text => et_general.to_string (key (net_cursor)), level => log_threshold + 2);
+-- 				
+-- 					-- create net in netlist
+-- 					type_netlist.insert (
+-- 						container	=> netlist,
+-- 						key 		=> key (net_cursor),
+-- 						new_item 	=> type_ports_with_reference.empty_set,
+-- 						position 	=> net_in_netlist,
+-- 						inserted 	=> net_created);
+-- 
+-- 					-- CS: evaluate flag net_created ?
+-- 
+-- 					-- search for ports connected with the net being built
+-- 					query_element (
+-- 						position	=> net_cursor,
+-- 						process		=> query_strands'access);
+-- 
+-- 					next (net_cursor);
+-- 				end loop;
+-- 
+-- 				log_indentation_down;	
+-- 			end query_nets;
+-- 					
+-- 		begin -- make_netlist (NOTE: singluar !)
+-- 			query_element (
+-- 				position 	=> module_cursor,
+-- 				process 	=> query_nets'access);
+-- 
+-- 			return netlist;
+-- 		end make_netlist;
+-- 
+-- 		procedure add_netlist (
+-- 			module_name	: in type_submodule_name.bounded_string;
+-- 			module		: in out type_module) is
+-- 		begin
+-- 			module.netlist := make_netlist;
+-- 		end add_netlist;
+-- 
+-- 	begin -- make_netlists (note plural !)
+-- 		log (text => "building netlists ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 		
+-- 		-- We start with the first module of the modules.
+-- 		--first_module;
+-- 		module_cursor := type_modules.first (modules);
+-- 
+-- 		-- Process one module after another.
+-- 		-- module_cursor points to the module.
+-- 		while module_cursor /= type_modules.no_element loop
+-- 			log (text => "module " & to_string (key (module_cursor)), level => log_threshold);
+-- 			log_indentation_up;
+-- 			
+-- 			update_element (
+-- 				container	=> modules,
+-- 				position	=> module_cursor,
+-- 				process		=> add_netlist'access);
+-- 
+-- 			log (text => "net count total" & count_type'image (net_count), level => log_threshold + 1);
+-- 			log_indentation_down;
+-- 			
+-- 			next (module_cursor);
+-- 		end loop;
+-- 
+-- 		log_indentation_down;
+-- 	end make_netlists;
 	
 
 	
 	function terminal_count (
 		reference		: in et_libraries.type_device_name;
 		log_threshold	: in et_string_processing.type_log_level)
-		return et_libraries.type_terminal_count is
+		return et_devices.type_terminal_count is
 	-- Returns the number of terminals of the given component reference.
 	-- Requires module_cursor (global variable) to point to the current module.
 
 		use type_modules;
 		use et_string_processing;
 		use et_coordinates;
-		terminals : et_libraries.type_terminal_count; -- to be returned
+		terminals : et_devices.type_terminal_count; -- to be returned
 
 		procedure locate_component_in_schematic (
 			module_name : in type_submodule_name.bounded_string;
@@ -12741,7 +12754,7 @@ package body et_kicad is
 			
 			library_name	: et_kicad_general.type_device_library_name.bounded_string;
 			generic_name	: type_component_generic_name.bounded_string;
-			package_variant	: et_libraries.type_component_variant_name.bounded_string;
+			package_variant	: et_devices.type_component_variant_name.bounded_string;
 
 			library_cursor	: type_libraries.cursor;
 
@@ -12756,12 +12769,12 @@ package body et_kicad is
 				-- Looks up the list of variants of the component.
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) is
-					use et_libraries.type_component_variants;
+					use et_devices.type_component_variants;
 					use et_import;
 
-					variant_cursor : et_libraries.type_component_variants.cursor;
+					variant_cursor : et_devices.type_component_variants.cursor;
 				begin -- query_variants
-					log (text => "locating variant " & et_libraries.type_component_variant_name.to_string (package_variant)
+					log (text => "locating variant " & et_devices.type_component_variant_name.to_string (package_variant)
 						& " ...", level => log_threshold + 3);
 					log_indentation_up;
 
@@ -12799,7 +12812,7 @@ package body et_kicad is
 				
 			begin -- locate_component_in_library
 				log (text => "locating generic component " & to_string (generic_name) 
-						& " in library " & et_libraries.to_string (library_name) 
+						& " in library " & et_devices.to_string (library_name) 
 						& " ...", level => log_threshold + 2);
 				log_indentation_up;
 
@@ -12811,7 +12824,7 @@ package body et_kicad is
 				-- be started over with a tilde prepended to the generic_name.
 				if component_cursor = type_components_library.no_element then
 					case et_import.cad_format is
-						when et_import.kicad_v4 =>
+						when et_import.KICAD_V4 =>
 							-- search for generic name ~NETCHANGER
 							component_cursor := components.find (prepend_tilde (generic_name));
 						when others => null; -- CS kicad_v5 ?
@@ -12893,7 +12906,7 @@ package body et_kicad is
 			
 			library_name	: et_kicad_general.type_device_library_name.bounded_string;
 			generic_name	: type_component_generic_name.bounded_string;
-			package_variant	: et_libraries.type_component_variant_name.bounded_string;
+			package_variant	: et_devices.type_component_variant_name.bounded_string;
 
 			--use type_libraries;
 			library_cursor	: type_libraries.cursor;
@@ -12909,22 +12922,22 @@ package body et_kicad is
 				-- Looks up the list of variants of the component.
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) is
-					use et_libraries.type_component_variants;
+					use et_devices.type_component_variants;
 
-					variant_cursor : et_libraries.type_component_variants.cursor;
+					variant_cursor : et_devices.type_component_variants.cursor;
 
 					procedure locate_terminal (
-						variant_name 	: in et_libraries.type_component_variant_name.bounded_string;
-						variant 		: in et_libraries.type_component_variant) is
-						use et_libraries.type_terminal_port_map;
+						variant_name 	: in et_devices.type_component_variant_name.bounded_string;
+						variant 		: in et_devices.type_component_variant) is
+						use et_devices.type_terminal_port_map;
 						use type_port_name;
-						terminal_cursor : et_libraries.type_terminal_port_map.cursor := variant.terminal_port_map.first;
+						terminal_cursor : et_devices.type_terminal_port_map.cursor := variant.terminal_port_map.first;
 						terminal_found : boolean := false;
 					begin
 						-- Search in terminal_port_map for the given port name.
 						-- On first match load the terminal which is a composite of
 						-- terminal name and unit name (see spec of type_port_in_port_terminal_map)
-						while terminal_cursor /= et_libraries.type_terminal_port_map.no_element loop
+						while terminal_cursor /= et_devices.type_terminal_port_map.no_element loop
 							if element (terminal_cursor).name = port.name then
 								terminal.name := key (terminal_cursor); -- to be returned
 								terminal.unit := element (terminal_cursor).unit; -- to be returned
@@ -12940,7 +12953,7 @@ package body et_kicad is
 					end locate_terminal;
 					
 				begin -- query_variants
-					log (text => "locating variant " & et_libraries.to_string (package_variant)
+					log (text => "locating variant " & et_devices.to_string (package_variant)
 						& " ...", level => log_threshold + 3);
 					log_indentation_up;
 
@@ -12948,16 +12961,16 @@ package body et_kicad is
 					-- CS Otherwise an exception would occur here:
 					variant_cursor := component.variants.find (package_variant);
 
-					query_element (
-						position => variant_cursor,
-						process => locate_terminal'access);
+					et_devices.type_component_variants.query_element (
+						position	=> variant_cursor,
+						process		=> locate_terminal'access);
 
 					log_indentation_down;	
 				end query_variants;
 				
 			begin -- locate_component_in_library
 				log (text => "locating generic component " & to_string (generic_name) 
-						& " in library " & et_libraries.to_string (library_name) 
+						& " in library " & et_devices.to_string (library_name) 
 						& " ...", level => log_threshold + 2);
 				log_indentation_up;
 
@@ -13033,7 +13046,7 @@ package body et_kicad is
 	-- Returns the name of the net connected with the given component and terminal.
 		module			: in type_submodule_name.bounded_string; -- nucleo_core
 		reference		: in et_libraries.type_device_name;	-- IC45
-		terminal		: in et_libraries.type_terminal_name.bounded_string; -- E14
+		terminal		: in et_packages.type_terminal_name.bounded_string; -- E14
 		log_threshold	: in et_string_processing.type_log_level)		
 		return type_net_name.bounded_string is
 
@@ -13061,7 +13074,7 @@ package body et_kicad is
 
 			library_name	: et_kicad_general.type_device_library_name.bounded_string;
 			generic_name	: type_component_generic_name.bounded_string;
-			package_variant	: et_libraries.type_component_variant_name.bounded_string;
+			package_variant	: et_devices.type_component_variant_name.bounded_string;
 
 			library_cursor	: type_libraries.cursor;
 
@@ -13078,19 +13091,19 @@ package body et_kicad is
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) is
 				
-					use et_libraries.type_component_variants;
-					variant_cursor : et_libraries.type_component_variants.cursor;
+					use et_devices.type_component_variants;
+					variant_cursor : et_devices.type_component_variants.cursor;
 
 					procedure locate_terminal (
 					-- Locates the given terminal in the package variant.
-						variant_name 	: in et_libraries.type_component_variant_name.bounded_string;
-						variant 		: in et_libraries.type_component_variant) is
-						use et_libraries.type_terminal_port_map;
+						variant_name 	: in et_devices.type_component_variant_name.bounded_string;
+						variant 		: in et_devices.type_component_variant) is
+						use et_devices.type_terminal_port_map;
 						use type_port_name;
-						terminal_cursor : et_libraries.type_terminal_port_map.cursor;
+						terminal_cursor : et_devices.type_terminal_port_map.cursor;
 					begin -- locate_terminal
 						terminal_cursor := variant.terminal_port_map.find (terminal);
-						if terminal_cursor /= et_libraries.type_terminal_port_map.no_element then -- given terminal found
+						if terminal_cursor /= et_devices.type_terminal_port_map.no_element then -- given terminal found
 
 							-- set the intermediate variable "port". see declarations above.
 							port.module := connected_net.module; -- the name of the given module
@@ -13099,21 +13112,21 @@ package body et_kicad is
 							
 							log (text => "port name " & et_symbols.to_string (port.name), level => log_threshold + 4);
 						else
-							log (ERROR, "terminal " & et_libraries.to_string (terminal) & " not found !",
+							log (ERROR, "terminal " & et_packages.to_string (terminal) & " not found !",
 								 console => true);
 							raise constraint_error;
 						end if;
 					end locate_terminal;
 					
 				begin -- query_variants
-					log (text => "locating variant " & et_libraries.to_string (package_variant) & " ...", level => log_threshold + 3);
+					log (text => "locating variant " & et_devices.to_string (package_variant) & " ...", level => log_threshold + 3);
 					log_indentation_up;
 
 					variant_cursor := component.variants.find (package_variant);
 
 					-- Locate the given terminal in the variant.
 					-- The variant should be found (because the component has been inserted in the library earlier).
-					if variant_cursor /= et_libraries.type_component_variants.no_element then
+					if variant_cursor /= et_devices.type_component_variants.no_element then
 
 						-- locate the given terminal in the package variant
 						query_element (
@@ -13121,7 +13134,7 @@ package body et_kicad is
 							process 	=> locate_terminal'access);
 
 					else
-						log (ERROR, "package variant " & et_libraries.to_string (key (variant_cursor)) &
+						log (ERROR, "package variant " & et_devices.to_string (key (variant_cursor)) &
 							" not found !", console => true);
 						raise constraint_error;
 					end if;
@@ -13130,7 +13143,7 @@ package body et_kicad is
 				
 			begin -- locate_component_in_library
 				log (text => "locating generic component " & to_string (generic_name) 
-						& " in library " & et_libraries.to_string (library_name) & " ...", level => log_threshold + 2);
+						& " in library " & et_devices.to_string (library_name) & " ...", level => log_threshold + 2);
 				log_indentation_up;
 
 				-- Set the component_cursor right away to the position of the generic component
@@ -13141,7 +13154,7 @@ package body et_kicad is
 				-- be started over with a tilde prepended to the generic_name.
 				if component_cursor = type_components_library.no_element then
 					case et_import.cad_format is
-						when et_import.kicad_v4 =>
+						when et_import.KICAD_V4 =>
 							-- search for generic name ~NETCHANGER
 							component_cursor := components.find (prepend_tilde (generic_name));
 						when others => null; -- CS kicad_v5 ?
@@ -13183,7 +13196,7 @@ package body et_kicad is
 						position	=> library_cursor,
 						process		=> locate_component_in_library'access);
 				else -- library not found -> abort
-					log (ERROR, "library " & et_libraries.to_string (library_name) & " not found !", console => true);
+					log (ERROR, "library " & et_devices.to_string (library_name) & " not found !", console => true);
 					raise constraint_error;
 				end if;
 
@@ -13197,7 +13210,7 @@ package body et_kicad is
 
 	begin -- connected_net
 		log (text => "locating in module " & to_string (module) & " net connected with " 
-			& et_libraries.to_string (reference) & " terminal " & et_libraries.to_string (terminal) & " ...", level => log_threshold);
+			& et_libraries.to_string (reference) & " terminal " & et_packages.to_string (terminal) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		module_cursor := find (modules, module); -- set the cursor to the module
@@ -13247,7 +13260,7 @@ package body et_kicad is
 			net_cursor 	: type_netlist.cursor;
 			port_cursor : type_ports_with_reference.cursor;
 			port 		: type_port_with_reference;
-			terminal 	: et_packages.type_terminal;
+			terminal 	: et_devices.type_terminal;
 			port_count 	: count_type;
 		begin
 			log (text => "locating net ... ", level => log_threshold + 1);
@@ -13284,7 +13297,7 @@ package body et_kicad is
 								when SCH_PCB =>
 									terminal := to_terminal (port, module_name, log_threshold + 3); -- fetch the terminal
 									log (text => to_string (port => port) 
-										& et_libraries.to_string (terminal, show_unit => true, preamble => true));
+										& et_devices.to_string (terminal, show_unit => true, preamble => true));
 
 								when SCH =>
 									log (text => to_string (port => port));
