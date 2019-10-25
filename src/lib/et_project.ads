@@ -58,7 +58,7 @@ with assembly_variants;
 with et_packages;
 with et_pcb;
 with et_pcb_stack;
-with et_devices;
+with et_devices;				use et_devices;
 
 package et_project is
 	comment_mark : constant string := ("--");
@@ -482,7 +482,7 @@ package et_project is
 	-- Returns true if the given module provides the given device.
 	-- The module being searched in must be in the rig already.						
 		module	: in type_modules.cursor;
-		device	: in et_libraries.type_device_name)
+		device	: in type_device_name)
 		return boolean;
 	
 	function exists (
@@ -518,7 +518,7 @@ package et_project is
 	-- - The device must exist in the module.
 		module	: in type_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
-		device	: in et_libraries.type_device_name)
+		device	: in type_device_name)
 		return boolean;
 
 	function alternative_device (
@@ -532,7 +532,7 @@ package et_project is
 	--   otherwise the return is no_element.
 		module	: in type_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
-		device	: in et_libraries.type_device_name)
+		device	: in type_device_name)
 		return assembly_variants.type_devices.cursor;
 
 	function alternative_submodule (

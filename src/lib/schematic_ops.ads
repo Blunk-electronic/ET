@@ -230,7 +230,7 @@ package schematic_ops is
 	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.
 		module_cursor	: in type_modules.cursor;
 		prefix			: in et_devices.type_device_name_prefix.bounded_string) -- C
-		return et_libraries.type_device_name; -- C2
+		return et_devices.type_device_name; -- C2
 	
 	procedure add_device (
 	-- Adds a device to the schematic. The unit is determined by the unit add levels.
@@ -583,7 +583,7 @@ package schematic_ops is
 	procedure renumber_devices (
 	-- Renumbers devices according to the sheet number.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		step_width		: in et_libraries.type_device_name_index;
+		step_width		: in et_devices.type_device_name_index;
 		log_threshold	: in type_log_level);
 
 	procedure autoset_device_name_offsets (
@@ -607,7 +607,7 @@ package schematic_ops is
 	procedure apply_offset (
 	-- Adds the offset to the device index of the given device_name.
 		device_name		: in out type_device_name; -- IC3
-		offset			: in et_libraries.type_device_name_index; -- 100
+		offset			: in et_devices.type_device_name_index; -- 100
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure make_boms (

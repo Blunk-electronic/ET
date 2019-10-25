@@ -53,7 +53,7 @@ with et_import;
 with material;
 with et_string_processing;
 with et_symbols;
-with et_devices;
+with et_devices;				use et_devices;
 with et_packages;
 
 package conventions is
@@ -206,7 +206,7 @@ package conventions is
 	-- Returns the category of the given component prefix. If no category could be
 	-- found, returns category UNKNOWN.
 	
-	function category (reference : in et_libraries.type_device_name) return
+	function category (reference : in type_device_name) return
 		type_device_category;
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
@@ -466,7 +466,7 @@ package conventions is
 	--  - If partcode keywords are specified in the conventions file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
 		partcode		: in material.type_partcode.bounded_string;		-- R_PAC_S_0805_VAL_100R
-		device_name		: in et_libraries.type_device_name;						-- R45
+		device_name		: in type_device_name;						-- R45
 		packge			: in et_packages.type_component_package_name.bounded_string;	-- S_0805
 		value 			: in et_devices.type_value.bounded_string; 			-- 100R
 		log_threshold	: in et_string_processing.type_log_level);
@@ -503,7 +503,7 @@ package conventions is
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
 	
-	function prefix_valid (reference : in et_libraries.type_device_name) return boolean;
+	function prefix_valid (reference : in type_device_name) return boolean;
 	-- Tests if the given reference has a valid prefix as specified in the conventions file.
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.

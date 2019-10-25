@@ -78,11 +78,6 @@ package et_schematic is
 	use shapes;
 
 
-
-
-
-
-	
 -- TEXT FIELD
 
 	-- A text/note in the schematic:
@@ -191,7 +186,7 @@ package et_schematic is
 	
 	-- This is the port of a device as it appears in a net segment:
 	type type_port_device is record
-		device_name	: et_libraries.type_device_name;
+		device_name	: et_devices.type_device_name;
 		port_name	: et_symbols.type_port_name.bounded_string;
 		-- CS unit name ?
 	end record;
@@ -323,8 +318,8 @@ package et_schematic is
 
 	-- The devices of a module are collected in a map.
  	package type_devices is new indefinite_ordered_maps (
-		key_type		=> et_libraries.type_device_name, -- something like "IC43"
-		"<"				=> et_libraries."<",
+		key_type		=> et_devices.type_device_name, -- something like "IC43"
+		"<"				=> et_devices."<",
  		element_type	=> type_device);
 
 	function package_model (device : in type_devices.cursor)

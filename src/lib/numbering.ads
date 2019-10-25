@@ -54,7 +54,7 @@ with et_coordinates;
 with et_libraries;				use et_libraries;
 with et_string_processing;		use et_string_processing;
 
-with et_devices;
+with et_devices;				use et_devices;
 
 
 package numbering is
@@ -74,8 +74,8 @@ package numbering is
 		element_type	=> type_device);
 
 	type type_index_range is record
-		lowest	: et_libraries.type_device_name_index := et_libraries.type_device_name_index'last; -- "last" is not a bug
-		highest	: et_libraries.type_device_name_index := et_libraries.type_device_name_index'first; -- "first" is not a bug	
+		lowest	: type_device_name_index := type_device_name_index'last; -- "last" is not a bug
+		highest	: type_device_name_index := type_device_name_index'first; -- "first" is not a bug	
 	end record;
 
 	function to_index_range (
@@ -92,7 +92,7 @@ package numbering is
 	type type_module is record
 		name				: type_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
 		instance			: type_module_instance_name.bounded_string; -- AMP_2, DRV1
-		device_names_offset	: et_libraries.type_device_name_index := et_libraries.type_device_name_index'first;	-- R88 turns to R1088
+		device_names_offset	: type_device_name_index := type_device_name_index'first;	-- R88 turns to R1088
 	end record;
 
 	function "<" (left, right : in type_module) return boolean;
