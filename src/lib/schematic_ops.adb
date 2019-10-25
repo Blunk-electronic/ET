@@ -36,7 +36,7 @@
 --
 
 with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.latin_1;	--use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
@@ -68,6 +68,7 @@ with material;
 with netlists;
 with device_rw;
 with et_symbols;			--use et_symbols;
+with et_devices;			use et_devices;
 
 package body schematic_ops is
 
@@ -195,7 +196,7 @@ package body schematic_ops is
 		procedure write (cursor : in type_unit_positions.cursor) is begin
 			log (text => 
 				"unit " &
-				et_libraries.to_string (type_unit_positions.key (cursor)) & -- unit name
+				to_string (type_unit_positions.key (cursor)) & -- unit name
 				et_coordinates.to_string (position => type_unit_positions.element (cursor)), -- sheet x y
 				level => log_threshold);
 		end;
@@ -454,11 +455,11 @@ package body schematic_ops is
 		ports : et_symbols.type_ports.map; -- to be returned
 		
 		model : type_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
-		device_cursor_lib : et_libraries.type_devices.cursor;
+		device_cursor_lib : et_devices.type_devices.cursor;
 
 		procedure query_internal_units (
 			model	: in type_device_model_file.bounded_string;
-			device	: in et_libraries.type_device) is
+			device	: in et_devices.type_device) is
 			use type_units_internal;
 			unit_cursor : type_units_internal.cursor;
 		begin -- query_internal_units
@@ -473,7 +474,7 @@ package body schematic_ops is
 
 		procedure query_external_units (
 			model	: in type_device_model_file.bounded_string;
-			device	: in et_libraries.type_device) is
+			device	: in et_devices.type_device) is
 			use type_units_external;
 			unit_cursor : type_units_external.cursor;
 			sym_model : type_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
@@ -512,11 +513,11 @@ package body schematic_ops is
 
 		-- Get cursor to device in device library (the model name is the key into the device library).
 		-- CS: constraint_error will arise here if no associated device exists.
-		device_cursor_lib := et_libraries.type_devices.find (et_libraries.devices, model);
+		device_cursor_lib := et_devices.type_devices.find (et_devices.devices, model);
 
 		-- Query external units of device (in library). It is most likely that
 		-- the unit is among the external units:
-		et_libraries.type_devices.query_element (
+		et_devices.type_devices.query_element (
 			position	=> device_cursor_lib,
 			process		=> query_external_units'access);
 
@@ -524,7 +525,7 @@ package body schematic_ops is
 		if et_symbols.type_ports.length (ports) = 0 then
 
 			-- Query internal units of device (in library):
-			et_libraries.type_devices.query_element (
+			et_devices.type_devices.query_element (
 				position	=> device_cursor_lib,
 				process		=> query_internal_units'access);
 		end if;
@@ -2721,7 +2722,7 @@ package body schematic_ops is
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
 			module		: in type_module) is
-			use et_libraries.type_unit_name;
+			use type_unit_name;
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor;
 
@@ -2788,7 +2789,7 @@ package body schematic_ops is
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
 			module		: in type_module) is
-			use et_libraries.type_unit_name;
+			use type_unit_name;
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor;
 
@@ -3267,7 +3268,7 @@ package body schematic_ops is
 	-- Returns for the given device prefix the next available device name in the module.
 	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.
 		module_cursor	: in type_modules.cursor;
-		prefix			: in et_libraries.type_device_name_prefix.bounded_string) -- C
+		prefix			: in type_device_name_prefix.bounded_string) -- C
 		return et_libraries.type_device_name is -- C2
 		
 		next_name : et_libraries.type_device_name; -- to be returned
@@ -3280,7 +3281,7 @@ package body schematic_ops is
 			module		: in type_module) is
 			use et_schematic.type_devices;
 			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
-			use et_libraries.type_device_name_prefix;
+			use type_device_name_prefix;
 
 			-- We start the search with index 1. Not 0 because this would result in a zero based
 			-- numbering order. Index zero is allowed but not automatically choosen.
@@ -3322,11 +3323,11 @@ package body schematic_ops is
 	end next_device_name;
 
 	type type_unit_cursors_lib is record
-		int : et_libraries.type_units_internal.cursor;
-		ext : et_libraries.type_units_external.cursor;
+		int : type_units_internal.cursor;
+		ext : type_units_external.cursor;
 	end record;
 
-	function first_unit (device_cursor : in et_libraries.type_devices.cursor) return type_unit_cursors_lib is
+	function first_unit (device_cursor : in et_devices.type_devices.cursor) return type_unit_cursors_lib is
 	-- Returns the cursor of the first internal or external unit. Searches first in internal and
 	-- then in external units. The search order is further-on determined
 	-- by the add levels of the units. Priority is add level MUST, then ALWAYS, then NEXT, then REQUEST, then CAN.
@@ -3334,16 +3335,16 @@ package body schematic_ops is
 	-- If no suitable external unit found, the cursor of external units in the return is no_element.
 		cursors : type_unit_cursors_lib; -- to be returned
 		use et_libraries;
-		use et_libraries.type_devices;
-		use et_libraries.type_units_internal;
-		use et_libraries.type_units_external;
+		use et_devices.type_devices;
+		use type_units_internal;
+		use type_units_external;
 
 		procedure query_units (
 			device_name	: in type_device_model_file.bounded_string;
-			device		: in et_libraries.type_device) is
+			device		: in et_devices.type_device) is
 
-			function first_internal (add_level : in et_libraries.type_unit_add_level) 
-				return et_libraries.type_units_internal.cursor is
+			function first_internal (add_level : in type_unit_add_level) 
+				return et_devices.type_units_internal.cursor is
 			-- Searches for a unit with given add_level. Returns the cursor of that unit.
 			-- If no suitable unit found, returns cursor with no_element.
 				cursor : type_units_internal.cursor := device.units_internal.first;
@@ -3358,8 +3359,8 @@ package body schematic_ops is
 				return type_units_internal.no_element;
 			end;
 
-			function first_external (add_level : in et_libraries.type_unit_add_level) 
-				return et_libraries.type_units_external.cursor is
+			function first_external (add_level : in type_unit_add_level) 
+				return et_devices.type_units_external.cursor is
 			-- Searches for a unit with given add_level. Returns the cursor of that unit.
 			-- If no suitable unit found, returns cursor with no_element.
 				cursor : type_units_external.cursor := device.units_external.first;
@@ -3392,7 +3393,7 @@ package body schematic_ops is
 
 						-- if no REQUEST-unit found, search for a CAN-unit
 						if cursors.int = type_units_internal.no_element then
-							cursors.int := first_internal (et_libraries.CAN);
+							cursors.int := first_internal (CAN);
 						end if;
 					end if;					
 				end if;
@@ -3418,7 +3419,7 @@ package body schematic_ops is
 
 							-- if no REQUEST-unit found, search for a CAN-unit
 							if cursors.ext = type_units_external.no_element then
-								cursors.ext := first_external (et_libraries.CAN);
+								cursors.ext := first_external (CAN);
 							end if;
 						end if;					
 					end if;
@@ -3444,21 +3445,21 @@ package body schematic_ops is
 
 	function any_unit (
 	-- Returns the cursor of the desired internal or external unit.
-		device_cursor	: in et_libraries.type_devices.cursor;
+		device_cursor	: in et_devices.type_devices.cursor;
 		unit_name		: in type_unit_name.bounded_string)
 		return type_unit_cursors_lib is
 
 		cursors : type_unit_cursors_lib; -- to be returned
 		
 		use et_libraries;
-		use et_libraries.type_devices;
-		use et_libraries.type_unit_name;
-		use et_libraries.type_units_internal;
-		use et_libraries.type_units_external;
+		use et_devices.type_devices;
+		use type_unit_name;
+		use type_units_internal;
+		use type_units_external;
 
 		procedure query_units (
 			device_name	: in type_device_model_file.bounded_string;
-			device		: in et_libraries.type_device) is
+			device		: in et_devices.type_device) is
 		begin -- query_units
 			-- First search among the internal units:
 			cursors.int := device.units_internal.first;
@@ -3484,7 +3485,7 @@ package body schematic_ops is
 				
 				-- if no suitable external unit found, we have a problem:
 				if cursors.ext = type_units_external.no_element then
-					log (ERROR, "unit " & et_libraries.to_string (unit_name) &
+					log (ERROR, "unit " & et_devices.to_string (unit_name) &
 						 " not found in device model !", console => true);
 					raise constraint_error;
 				end if;
@@ -3505,12 +3506,12 @@ package body schematic_ops is
 	function placeholders_of_package (
 	-- Returns the placeholders of the package of a device. The package is indirectly selected
 	-- by the given variant name. The given device is accessed by the given device cursor.
-		device	: in et_libraries.type_devices.cursor;
-		variant	: in et_libraries.type_component_variant_name.bounded_string) -- N, D, S_0805
+		device	: in et_devices.type_devices.cursor;
+		variant	: in type_component_variant_name.bounded_string) -- N, D, S_0805
 		return et_packages.type_text_placeholders is
-		use et_libraries;
-		use et_libraries.type_devices;
-		use et_libraries.type_component_variants;
+		use et_packages;
+		use et_devices.type_devices;
+		use type_component_variants;
 		placeholders		: et_packages.type_text_placeholders; -- to be returned
 
 		-- fetch the package variants available for the given device:
@@ -3550,7 +3551,7 @@ package body schematic_ops is
 	-- If the given variant is empty (zero length) the the device is assumed to be virtual.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
-		variant			: in et_libraries.type_component_variant_name.bounded_string; -- N, D, S_0805
+		variant			: in type_component_variant_name.bounded_string; -- N, D, S_0805
 		place			: in et_coordinates.type_position; -- sheet/x/y,rotation
 		log_threshold	: in type_log_level) is
 
@@ -3558,8 +3559,8 @@ package body schematic_ops is
 		
 		module_cursor : type_modules.cursor; -- points to the targeted module
 
-		use et_libraries.type_devices;
-		device_cursor_lib : et_libraries.type_devices.cursor; -- points to the device in the library
+		use et_devices.type_devices;
+		device_cursor_lib : et_devices.type_devices.cursor; -- points to the device in the library
 
 		use et_symbols;
 		
@@ -3576,8 +3577,8 @@ package body schematic_ops is
 
 			unit_cursors : type_unit_cursors_lib;
 
-			use et_libraries.type_units_internal;
-			use et_libraries.type_units_external;
+			use type_units_internal;
+			use type_units_external;
 
 			procedure add_unit_internal (
 			-- Add an internal unit to the schematic device.
@@ -3820,7 +3821,7 @@ package body schematic_ops is
 			log_threshold	=> log_threshold + 1);
 
 		-- locate the device in the library
-		device_cursor_lib := find (et_libraries.devices, device_model);
+		device_cursor_lib := find (et_devices.devices, device_model);
 		
 		update_element (
 			container	=> modules,
@@ -3847,8 +3848,8 @@ package body schematic_ops is
 			device_cursor_sch : et_schematic.type_devices.cursor;
 
 			use et_symbols;
-			use et_libraries.type_devices;
-			device_cursor_lib : et_libraries.type_devices.cursor; -- points to the device in the library
+			use et_devices.type_devices;
+			device_cursor_lib : et_devices.type_devices.cursor; -- points to the device in the library
 			
 			-- the next available device name:
 			next_name : et_libraries.type_device_name;
@@ -3857,8 +3858,8 @@ package body schematic_ops is
 			unit_cursors : type_unit_cursors_lib;
 			ports : et_symbols.type_ports.map;
 
-			use et_libraries.type_units_internal;
-			use et_libraries.type_units_external;
+			use type_units_internal;
+			use type_units_external;
 			
 			procedure add_unit_internal (
 			-- Add an internal unit to the schematic device.
@@ -3994,7 +3995,7 @@ package body schematic_ops is
 				end case;
 
 				-- locate the device in the library
-				device_cursor_lib := find (et_libraries.devices, element (device_cursor_sch).model);
+				device_cursor_lib := find (et_devices.devices, element (device_cursor_sch).model);
 
 				-- Add first available unit (according to search order specified in function first_unit)
 				-- to device in schematic.
@@ -4114,12 +4115,12 @@ package body schematic_ops is
 			end query_units_in_use;
 
 			device_model : type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
-			device_cursor_lib : et_libraries.type_devices.cursor;
+			device_cursor_lib : et_devices.type_devices.cursor;
 			unit_cursors : type_unit_cursors_lib;
 
-			use et_libraries.type_units_external;
-			use et_libraries.type_units_internal;
-			use et_libraries.type_devices;
+			use type_units_external;
+			use type_units_internal;
+			use et_devices.type_devices;
 			
 			procedure add_unit_internal (
 			-- Add an internal unit to the schematic device.
@@ -4225,7 +4226,7 @@ package body schematic_ops is
 
 				-- Locate the device model in the library:
 				device_model := element (device_cursor_sch).model;
-				device_cursor_lib := et_libraries.type_devices.find (et_libraries.devices, device_model);
+				device_cursor_lib := et_devices.type_devices.find (et_devices.devices, device_model);
 
 				-- Get cursor to the desired unit in device model.
 				-- The unit can be internal or external.
@@ -6071,7 +6072,7 @@ package body schematic_ops is
 
 				procedure query_units (unit_cursor : in et_schematic.type_units.cursor) is
 					use et_schematic.type_units;
-					use et_libraries.type_unit_name;
+					use type_unit_name;
 					unit_position : et_coordinates.type_position;
 -- 					unit_rotation : et_coordinates.type_rotation;
 					ports : et_symbols.type_ports.map;
@@ -11821,7 +11822,8 @@ package body schematic_ops is
 											conventions.validate_partcode (
 												partcode		=> material.type_devices.element (cursor_bom).partcode,
 												device_name		=> device_name,
-												packge			=> to_package_name (ada.directories.base_name (to_string (material.type_devices.element (cursor_bom).packge))),
+												packge			=> et_libraries.to_package_name (ada.directories.base_name 
+																	(et_packages.to_string (material.type_devices.element (cursor_bom).packge))),
 												value			=> material.type_devices.element (cursor_bom).value,
 												log_threshold	=> log_threshold + 3);
 
@@ -12068,28 +12070,30 @@ package body schematic_ops is
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
-		return et_libraries.type_port_properties_access is
+		return et_devices.type_port_properties_access is
 
 		properties : type_port_properties_access; -- to be returned
 		
-		terminal_name : et_libraries.type_terminal_name.bounded_string;
+		terminal_name : et_packages.type_terminal_name.bounded_string;
 
 		use et_symbols;
 		port_direction : type_port_direction := PASSIVE;
 		port_properties_cursor : et_symbols.type_ports.cursor;
 
+		use et_devices;
+		
 		procedure query_devices (
 			module_name	: in type_module_name.bounded_string;
 			module		: in type_module) is
 			use et_schematic.type_devices;
-			device_cursor_sch : et_schematic.type_devices.cursor;
-			variant : et_libraries.type_component_variant_name.bounded_string; -- D, N
-			device_cursor_lib : et_libraries.type_devices.cursor;
+			device_cursor_sch	: et_schematic.type_devices.cursor;
+			variant 			: type_component_variant_name.bounded_string; -- D, N
+			device_cursor_lib	: et_devices.type_devices.cursor;
 
 			procedure query_variants (
 				model	: in type_device_model_file.bounded_string;
-				device	: in et_libraries.type_device) is
-				variant_cursor : et_libraries.type_component_variants.cursor;
+				device	: in et_devices.type_device) is
+				variant_cursor : type_component_variants.cursor;
 
 				procedure query_ports (
 					variant_name	: in type_component_variant_name.bounded_string;
@@ -12128,16 +12132,16 @@ package body schematic_ops is
 				variant := element (device_cursor_sch).variant;
 
 				-- get the name of the device model (or the generic name)
-				device_cursor_lib := et_libraries.locate_device (element (device_cursor_sch).model);
+				device_cursor_lib := locate_device (element (device_cursor_sch).model);
 
 				-- Get the name of the terminal (the pin or pad) according to the device variant.
 				-- Store it in variable terminal_name:
-				et_libraries.type_devices.query_element (
+				et_devices.type_devices.query_element (
 					position	=> device_cursor_lib,
 					process		=> query_variants'access);
 
 				-- Get the electrical properties of the port of the current device:
-				port_properties_cursor := et_libraries.properties (device_cursor_lib, port_name);
+				port_properties_cursor := et_devices.properties (device_cursor_lib, port_name);
 
 				-- Create the port where pointer "properties" is pointing at.
 				-- It is created with the direction obtained from port_properties_cursor:
@@ -12180,8 +12184,8 @@ package body schematic_ops is
 		use et_schematic.type_ports_device;
 		
 		procedure query_ports (port_cursor : in et_schematic.type_ports_device.cursor) is
-			port_sch : et_schematic.type_port_device := element (port_cursor);
-			more_properties : et_libraries.type_port_properties_access;
+			port_sch		: et_schematic.type_port_device := element (port_cursor);
+			more_properties	: type_port_properties_access;
 		begin
 			-- get further properties of the current port
 			more_properties := port_properties (module_cursor, port_sch.device_name, port_sch.port_name);
