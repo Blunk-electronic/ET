@@ -11822,7 +11822,7 @@ package body schematic_ops is
 											conventions.validate_partcode (
 												partcode		=> material.type_devices.element (cursor_bom).partcode,
 												device_name		=> device_name,
-												packge			=> et_libraries.to_package_name (ada.directories.base_name 
+												packge			=> et_packages.to_package_name (ada.directories.base_name 
 																	(et_packages.to_string (material.type_devices.element (cursor_bom).packge))),
 												value			=> material.type_devices.element (cursor_bom).value,
 												log_threshold	=> log_threshold + 3);

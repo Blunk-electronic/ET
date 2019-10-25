@@ -64,6 +64,7 @@ with et_export;
 with et_import;
 with et_csv;
 with material;
+with et_packages;
 with et_symbols;
 with et_devices;
 
@@ -2125,12 +2126,13 @@ package body conventions is
 	-- If optionally the value is provided, it gets appended which would result
 	-- in something like R_PAC_S_0805_VAL_100R.
 		prefix		: in et_devices.type_device_name_prefix.bounded_string;			-- R
-		packge		: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
+		packge		: in et_packages.type_component_package_name.bounded_string;	-- S_0805
 		value 		: in et_devices.type_value.bounded_string := et_devices.type_value.to_bounded_string ("")) -- 100R
 		return material.type_partcode.bounded_string is
 
 		use et_libraries;
 		use et_devices;
+		use et_packages;
 		use type_device_name_prefix;
 		use type_component_package_name;
 		use type_value;
@@ -2142,7 +2144,7 @@ package body conventions is
 			& partcode_keyword_separator	-- _
 			& to_partcode_keyword (COMPONENT_PACKAGE) -- PAC
 			& partcode_keyword_separator			-- _
-			& et_libraries.to_string (packge)		-- S_0805
+			& et_packages.to_string (packge)		-- S_0805
 			& partcode_keyword_separator			-- _
 			& to_partcode_keyword (COMPONENT_VALUE) -- VAL
 			& partcode_keyword_separator			-- _
@@ -2280,7 +2282,7 @@ package body conventions is
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
 		partcode		: in material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		device_name		: in et_libraries.type_device_name;						-- R45
-		packge			: in et_libraries.type_component_package_name.bounded_string;	-- S_0805
+		packge			: in et_packages.type_component_package_name.bounded_string;	-- S_0805
 		value 			: in et_devices.type_value.bounded_string;			-- 100R
 		log_threshold	: in et_string_processing.type_log_level)
 		is

@@ -943,8 +943,8 @@ package body device_rw is
 
 										-- The given path is something like libraries/packages/S_SO14.pac.
 										-- Check if the package name like S_SO14 is too long or contains invalid characters.
-										et_libraries.check_package_name_length (ada.directories.base_name (f (line, 2)));
-										et_libraries.check_package_name_characters (et_libraries.to_package_name (ada.directories.base_name (f (line, 2))));
+										check_package_name_length (ada.directories.base_name (f (line, 2)));
+										check_package_name_characters (to_package_name (ada.directories.base_name (f (line, 2))));
 
 										variant.package_model := to_file_name (f (line,2));
 										log (text => "package model " & to_string (variant.package_model), level => log_threshold + 1);

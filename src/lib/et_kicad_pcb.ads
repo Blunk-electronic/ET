@@ -97,7 +97,7 @@ package et_kicad_pcb is
 
 	function full_library_name (
 		library_name	: in type_library_name.bounded_string; -- bel_logic
-		package_name 	: in et_libraries.type_component_package_name.bounded_string; -- S_SO14
+		package_name 	: in et_packages.type_component_package_name.bounded_string; -- S_SO14
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_package_library_name.bounded_string;
 	-- Returns the first library directory (in search_list_project_lib_dirs) that
@@ -572,8 +572,8 @@ package et_kicad_pcb is
 	
 	-- Lots of packages (in a library) can be collected in a map:
 	package type_packages_library is new indefinite_ordered_maps (
-		key_type 		=> et_libraries.type_component_package_name.bounded_string, -- S_SO14, T_0207
-		"<"				=> et_libraries.type_component_package_name."<",
+		key_type 		=> et_packages.type_component_package_name.bounded_string, -- S_SO14, T_0207
+		"<"				=> et_packages.type_component_package_name."<",
 		element_type 	=> type_package_library);
 	
 	package type_libraries is new ordered_maps (
@@ -821,7 +821,7 @@ package et_kicad_pcb is
 	-- The given package is specified by the library name and package name.
 	-- Returns true if the terminal_port_map fits on the given package.
 		library_name		: in type_package_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
-		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
+		package_name 		: in et_packages.type_component_package_name.bounded_string;	-- S_SO14
 		terminal_port_map	: in et_devices.type_terminal_port_map.map) 
 		return boolean;
 

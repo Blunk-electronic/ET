@@ -504,9 +504,9 @@ package body et_kicad is
 		library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in et_devices.type_component_variant_name.bounded_string) -- N, D
-		return et_libraries.type_component_package_name.bounded_string is
+		return et_packages.type_component_package_name.bounded_string is
 	-- Returns the package name for of the given component.
-		package_name : et_libraries.type_component_package_name.bounded_string; -- to be returned
+		package_name : et_packages.type_component_package_name.bounded_string; -- to be returned
 	begin -- to_package_name
 		-- CS
 		return package_name;
@@ -865,10 +865,10 @@ package body et_kicad is
 		return type_library_directory.to_string (dir);
 	end to_string;
 	
-	function package_name (text : in string) return et_libraries.type_component_package_name.bounded_string is
+	function package_name (text : in string) return et_packages.type_component_package_name.bounded_string is
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
 	begin
-		return et_libraries.type_component_package_name.to_bounded_string (
+		return et_packages.type_component_package_name.to_bounded_string (
 			et_string_processing.field (
 				read_line (
 					line			=> text,
@@ -1278,9 +1278,9 @@ package body et_kicad is
 	end prepend_tilde;
 
 	procedure validate_component_package_name 
-		(name : in et_libraries.type_component_package_name.bounded_string) is
+		(name : in et_packages.type_component_package_name.bounded_string) is
 	-- Tests if the given component package name meets certain conventions.
-		use et_libraries.type_component_package_name;
+		use et_packages.type_component_package_name;
 		use et_string_processing;
 		
 		procedure no_package is
@@ -1292,7 +1292,7 @@ package body et_kicad is
 			
 	begin -- validate_component_package_name
 		if length (name) > 0 then
-			et_libraries.check_package_name_characters (name, component_package_name_characters);
+			et_packages.check_package_name_characters (name, component_package_name_characters);
 		else
 			no_package;
 		end if;
@@ -3354,7 +3354,7 @@ package body et_kicad is
 		component_library 	: in et_kicad_general.type_device_library_name.bounded_string; 	-- ../lbr/bel_logic.lib
 		generic_name 		: in type_component_generic_name.bounded_string; 				-- 7400
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
-		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
+		package_name 		: in et_packages.type_component_package_name.bounded_string;	-- S_SO14
 		log_threshold		: in et_string_processing.type_log_level)
 		return et_devices.type_component_variant_name.bounded_string is 					-- D
 
@@ -3369,6 +3369,8 @@ package body et_kicad is
 		-- temporarily here the name of the package library is stored:
 		use type_package_library_name;
 		full_package_library_name : type_package_library_name.bounded_string; -- ../lbr/bel_ic
+
+		use et_packages;
 		
 		procedure locate_component (
 		-- Locates the given generic component in the component libraray.
@@ -3409,7 +3411,7 @@ package body et_kicad is
 
 					if element (variant_cursor).package_model = et_packages.to_file_name (compose (
 							containing_directory	=> et_packages.to_string (full_package_library_name),
-							name					=> et_libraries.to_string (package_name))) then
+							name					=> et_packages.to_string (package_name))) then
 						
 						log (text => "variant " 
 							& to_string (package_variant => key (variant_cursor)) 
@@ -3454,7 +3456,7 @@ package body et_kicad is
 
 							package_model => et_packages.to_file_name (compose (
 								containing_directory	=> et_packages.to_string (full_package_library_name),
-								name					=> et_libraries.to_string (package_name))),
+								name					=> et_packages.to_string (package_name))),
 							
 							terminal_port_map	=> element (variant_cursor).terminal_port_map
 							);
@@ -7638,8 +7640,8 @@ package body et_kicad is
 								-- make sure the library exists. mind search order of footprint libraries
 
 								-- check/validate package name (length, characters, ...)
-								check_package_name_length (to_string (package_name (content (field_package))));
-								check_package_name_characters (package_name (content (field_package)));
+								et_packages.check_package_name_length (et_packages.to_string (package_name (content (field_package))));
+								et_packages.check_package_name_characters (package_name (content (field_package)));
 							end if;
 
 							-- datasheet
@@ -8492,10 +8494,10 @@ package body et_kicad is
 							when component_field_package =>
 								field_package_found := true;
 								field_package := to_field;
-								check_package_name_length (content (field_package));
-								check_package_name_characters (
-									packge => type_component_package_name.to_bounded_string (content (field_package)),
-									characters => et_kicad.component_package_name_characters);
+								et_packages.check_package_name_length (content (field_package));
+								et_packages.check_package_name_characters (
+									packge		=> et_packages.type_component_package_name.to_bounded_string (content (field_package)),
+									characters	=> et_kicad.component_package_name_characters);
 								
 							when component_field_datasheet =>
 								field_datasheet_found := true;

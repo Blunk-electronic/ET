@@ -2611,6 +2611,8 @@ package body et_project is
 					use et_libraries;
 					use et_symbols;
 					use et_devices;
+					use et_packages;
+					
 					device_cursor : et_schematic.type_devices.cursor;
 					inserted : boolean;
 

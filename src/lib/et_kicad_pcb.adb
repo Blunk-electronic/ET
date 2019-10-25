@@ -79,7 +79,7 @@ package body et_kicad_pcb is
 
 	function full_library_name (
 		library_name	: in type_library_name.bounded_string; -- bel_logic
-		package_name 	: in et_libraries.type_component_package_name.bounded_string; -- S_SO14
+		package_name 	: in et_packages.type_component_package_name.bounded_string; -- S_SO14
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_package_library_name.bounded_string is
 	-- Returns the full library name of the library that
@@ -101,6 +101,7 @@ package body et_kicad_pcb is
 		use et_import;
 		use type_project_lib_dirs;
 		use et_libraries;
+		use et_packages;
 		use type_package_library_name;
 		use ada.directories;
 
@@ -656,8 +657,8 @@ package body et_kicad_pcb is
 		use et_packages.type_lines;
 
 		-- Extract the actual package name (like S_0201) from the given file name:
-		package_name : et_libraries.type_component_package_name.bounded_string :=
-			et_libraries.to_package_name (ada.directories.base_name (file_name)); 
+		package_name : type_component_package_name.bounded_string :=
+			to_package_name (ada.directories.base_name (file_name)); 
 
 		function path_and_file_name return string is
 		-- returns the path and file name. used for error messages.
@@ -3273,7 +3274,7 @@ package body et_kicad_pcb is
 		section_polygon_entered : boolean;
 		
 		-- PACKAGES
-		package_name 			: et_libraries.type_component_package_name.bounded_string;
+		package_name 			: et_packages.type_component_package_name.bounded_string;
 		package_library_name	: et_kicad_general.type_library_name.bounded_string;
 		package_position		: et_pcb_coordinates.type_package_position;
 		
@@ -8204,7 +8205,7 @@ package body et_kicad_pcb is
 	-- The given package is specified by the library name and package name.
 	-- Returns true if the terminal_port_map fits on the given package.
 		library_name		: in type_package_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
-		package_name 		: in et_libraries.type_component_package_name.bounded_string;	-- S_SO14
+		package_name 		: in et_packages.type_component_package_name.bounded_string;	-- S_SO14
 		terminal_port_map	: in et_devices.type_terminal_port_map.map) 
 		return boolean is
 
@@ -8230,7 +8231,7 @@ package body et_kicad_pcb is
 				terminal_name_in_map := key (terminal_cursor);
 
 				if package_terminals.find (terminal_name_in_map) = et_packages.type_terminals.no_element then
-					log (ERROR, "package " & et_libraries.to_string (packge => package_name)
+					log (ERROR, "package " & et_packages.to_string (packge => package_name)
 						 & " does not have a terminal '" 
 						 & et_packages.to_string (terminal_name_in_map) & "' !", console => true);
 					raise constraint_error;
@@ -8260,7 +8261,7 @@ package body et_kicad_pcb is
 				-- locate the package
 				package_cursor := packages.find (package_name);
 				if package_cursor = type_packages_library.no_element then
-					log (ERROR, "package " & et_libraries.to_string (packge => package_name)
+					log (ERROR, "package " & et_packages.to_string (packge => package_name)
 						& " not found in library " & et_packages.to_string (library_name)
 						& " !", console => true);
 					raise constraint_error;
@@ -8270,8 +8271,8 @@ package body et_kicad_pcb is
 
 					-- If the package has less terminals than the given terminal_port_map abort:
 					if et_devices."<" (terminals, et_devices.type_terminal_count (length (terminal_port_map))) then
-						log (ERROR, "package " & et_libraries.to_string (packge => package_name)
-							& " as too little terminals !",
+						log (ERROR, "package " & et_packages.to_string (packge => package_name)
+							& " as too few terminals !",
 							console => true);
 						raise constraint_error;
 					else
@@ -8323,7 +8324,7 @@ package body et_kicad_pcb is
 		return et_devices.type_terminal_count is
 
 		library_name : type_package_library_name.bounded_string;
-		package_name : et_libraries.type_component_package_name.bounded_string;
+		package_name : et_packages.type_component_package_name.bounded_string;
 		
 		use type_libraries;
 		
@@ -8347,7 +8348,7 @@ package body et_kicad_pcb is
 	begin -- terminal_count
 
 		-- extract the library and package name from the given package
-		package_name := et_libraries.to_package_name (ada.directories.simple_name (et_packages.to_string (packge))); -- S_SO14
+		package_name := et_packages.to_package_name (ada.directories.simple_name (et_packages.to_string (packge))); -- S_SO14
 		library_name := et_packages.to_file_name (ada.directories.containing_directory (et_packages.to_string (packge))); -- ../lbr/bel_ic.pretty
 		
 		-- locate the library

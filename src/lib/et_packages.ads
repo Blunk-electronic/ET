@@ -71,6 +71,43 @@ package et_packages is
 -- 	use et_libraries.type_component_package_name;
 
 
+-- PACKAGES
+	-- CS rename stuff
+	
+	-- A package is something like "SOT32" or "NDIP14". It is a more or less standardized (JEDEC)
+	-- designator for the housing or the case of an electronical component. The package name is independed of
+	-- the actual purpose of a device. An LED can have an SOT23 package and a transistor can also come in an SOT23.
+
+	-- device package names like "SOT23" or "TO220" are stored in bounded strings:
+	component_package_name_characters : character_set := to_set 
+		(ranges => (('a','z'),('A','Z'),('0','9'))) 
+		or to_set('.')
+		or to_set('_'); 
+
+	component_package_name_length_max : constant positive := 100;
+	package type_component_package_name is new generic_bounded_length (component_package_name_length_max);
+
+	function to_string (packge : in type_component_package_name.bounded_string) return string;
+	-- Returns the given package name as as string.
+	-- CS: provide a parameter that turns the preamble on/off
+
+	function to_package_name (package_name : in string) return type_component_package_name.bounded_string;
+	-- Converts a string to a type_component_package_name.
+	
+	procedure check_package_name_length (packge : in string);
+	-- Tests if the given package name is longer than allowed.
+	
+	procedure check_package_name_characters (
+		packge		: in type_component_package_name.bounded_string;
+		characters	: in character_set := component_package_name_characters);
+	-- Tests if the given package name contains only valid characters as specified
+	-- by given character set.
+	-- Raises exception if invalid character found.
+
+
+
+	
+
 	package_model_file_name_length_max : constant positive := 300;
 	package type_package_model_file is new generic_bounded_length (package_model_file_name_length_max);
 	function to_string (name : in type_package_model_file.bounded_string) return string;

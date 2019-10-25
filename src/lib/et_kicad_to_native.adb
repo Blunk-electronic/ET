@@ -3520,7 +3520,7 @@ package body et_kicad_to_native is
 
 				use et_kicad_pcb.type_packages_library;
 				package_cursor_kicad	: et_kicad_pcb.type_packages_library.cursor := library.first;
-				package_name			: et_libraries.type_component_package_name.bounded_string;
+				package_name			: et_packages.type_component_package_name.bounded_string;
 				package_model			: et_packages.type_package_model_file.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
 
 				use et_packages.type_packages;
@@ -3535,7 +3535,7 @@ package body et_kicad_to_native is
 					-- build the new native package model name
 					package_model := et_packages.to_file_name (compose (
 								containing_directory	=> et_packages.to_string (library_name), -- projects/lbr/smd_packages.pretty
-								name					=> et_libraries.to_string (package_name))); -- S_0805
+								name					=> et_packages.to_string (package_name))); -- S_0805
 
 					-- replace . and / in package_model 
 					package_model := rename_package_model (package_model);
