@@ -59,7 +59,7 @@ with numbering;
 with material;
 with netlists;
 with et_symbols;
-with et_devices;
+with et_devices;				use et_devices;
 
 package schematic_ops is
 	use geometry;
@@ -177,7 +177,7 @@ package schematic_ops is
 	-- Sets the purpose of a device.
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
-		purpose				: in type_device_purpose.bounded_string; -- brightness_control
+		purpose				: in et_devices.type_device_purpose.bounded_string; -- brightness_control
 		log_threshold		: in type_log_level);
 
 	procedure set_partcode (

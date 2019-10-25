@@ -70,7 +70,7 @@ package assembly_variants is
 			when YES =>
 				value		: et_devices.type_value.bounded_string; -- 470R
 				partcode	: material.type_partcode.bounded_string;
-				purpose		: et_libraries.type_device_purpose.bounded_string;
+				purpose		: et_devices.type_device_purpose.bounded_string;
 
 			when NO =>
 				null;

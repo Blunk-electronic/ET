@@ -323,7 +323,7 @@ package body et_project is
 	function compare_connectors (left, right : in type_connector) return boolean is
 	-- Returns true if left connector comes before right connector.
 	-- Returns false if connectors are equal.
-		use et_libraries.type_device_purpose;
+		use et_devices.type_device_purpose;
 		use type_module_instance_name;
 		r : boolean := false; -- to be returned
 	begin
@@ -607,10 +607,10 @@ package body et_project is
 		begin
 			section_mark (section_connector, HEADER);
 			write (keyword => keyword_instance_A, space => true, parameters => to_string (con.instance_A));
-			write (keyword => keyword_purpose_A, space => true, wrap => true, parameters => et_libraries.to_string (con.purpose_A));
+			write (keyword => keyword_purpose_A, space => true, wrap => true, parameters => et_devices.to_string (con.purpose_A));
 			new_line;
 			write (keyword => keyword_instance_B, space => true, parameters => to_string (con.instance_B));
-			write (keyword => keyword_purpose_B, space => true, wrap => true, parameters => et_libraries.to_string (con.purpose_B));
+			write (keyword => keyword_purpose_B, space => true, wrap => true, parameters => et_devices.to_string (con.purpose_B));
 
 			-- CS: net comparator, warnings
 			
@@ -1263,7 +1263,7 @@ package body et_project is
 						write (keyword => keyword_value   , parameters => to_string (element (device_cursor).value), space => true);
 						write (keyword => keyword_variant , parameters => to_string (element (device_cursor).variant), space => true);
 						write (keyword => keyword_partcode, parameters => material.to_string (element (device_cursor).partcode), space => true);
-						write (keyword => keyword_purpose , parameters => et_libraries.to_string (element (device_cursor).purpose), space => true, wrap => true);
+						write (keyword => keyword_purpose , parameters => to_string (element (device_cursor).purpose), space => true, wrap => true);
 						
 						section_mark (section_package, HEADER);
 
@@ -1304,13 +1304,13 @@ package body et_project is
 				device_cursor : assembly_variants.type_devices.cursor := variant.devices.first;
 
 				function purpose return string is 
-					use et_libraries;
+					use et_devices;
 					use type_device_purpose;
 				begin
 					if length (element (device_cursor).purpose) > 0 then
 						return space & keyword_purpose & space &
 							enclose_in_quotes (
-								text_in => et_libraries.to_string (element (device_cursor).purpose),
+								text_in => et_devices.to_string (element (device_cursor).purpose),
 								quote	=> latin_1.quotation);
 					else
 						return "";
@@ -2189,7 +2189,7 @@ package body et_project is
 		device_units			: et_schematic.type_units.map; -- PWR, A, B, ...
 		
 		device_partcode			: material.type_partcode.bounded_string;
-		device_purpose			: et_libraries.type_device_purpose.bounded_string;
+		device_purpose			: et_devices.type_device_purpose.bounded_string;
 		device_variant			: et_devices.type_component_variant_name.bounded_string; -- D, N
 		device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
 		device_flipped			: et_pcb.type_flipped := et_pcb.flipped_default;
@@ -2701,8 +2701,8 @@ package body et_project is
 							material.partcode_invalid (material.to_string (device_partcode));
 						end if;
 
-						log (text => "purpose " & et_libraries.to_string (device_purpose), level => log_threshold + 2);
-						if et_libraries.purpose_characters_valid (device_purpose) then
+						log (text => "purpose " & to_string (device_purpose), level => log_threshold + 2);
+						if purpose_characters_valid (device_purpose) then
 							device.purpose	:= device_purpose;
 						else
 							log_indentation_reset;
@@ -5541,7 +5541,7 @@ package body et_project is
 												if f (line, 7) = keyword_purpose then
 
 													-- validate purpose
-													device.purpose := et_libraries.to_purpose (f (line, 8));
+													device.purpose := to_purpose (f (line, 8));
 
 												else -- keyword purpose not found
 													log (ERROR, "expect keyword " & enclose_in_quotes (keyword_purpose) &
@@ -7026,7 +7026,7 @@ package body et_project is
 										expect_field_count (line, 2);
 
 										-- validate purpose
-										device_purpose := et_libraries.to_purpose (f (line, 2));
+										device_purpose := to_purpose (f (line, 2));
 									else
 										invalid_keyword (kw);
 									end if;
@@ -7751,11 +7751,11 @@ package body et_project is
 				instance_name := to_instance_name ("");
 			end clear_module_instance;
 			
-			purpose_A, purpose_B : et_libraries.type_device_purpose.bounded_string; -- power_in, power_out
+			purpose_A, purpose_B : et_devices.type_device_purpose.bounded_string; -- power_in, power_out
 			instance_A, instance_B : type_module_instance_name.bounded_string; -- DRV_1, PWR
 
 			procedure clear_connector is begin
-				purpose_A := et_libraries.type_device_purpose.to_bounded_string ("");
+				purpose_A := et_devices.type_device_purpose.to_bounded_string ("");
 				purpose_A := purpose_B;
 				instance_A := to_instance_name ("");
 				instance_B := instance_A;
@@ -7798,7 +7798,7 @@ package body et_project is
 						rig			: in out type_rig) is
 						connection_inserted : boolean;
 						connection_cursor : type_module_connectors.cursor;
-						use et_libraries.type_device_purpose;
+						use et_devices.type_device_purpose;
 						use et_general.type_module_instance_name;
 					begin
 						-- If NONE of the four elements that make a module connection is specified,
@@ -8012,6 +8012,7 @@ package body et_project is
 							case stack.parent is
 								when SEC_MODULE_CONNECTIONS =>
 									declare
+										use et_devices;
 										kw : string := f (line, 1);
 									begin
 										if kw = keyword_instance_A then
@@ -8025,12 +8026,12 @@ package body et_project is
 											
 										elsif kw = keyword_purpose_A then
 											expect_field_count (line, 2);
-											purpose_A := et_libraries.to_purpose (f (line,2));
+											purpose_A := to_purpose (f (line,2));
 											-- CS: test if a connector with this purpose exists in the instance
 											
 										elsif kw = keyword_purpose_B then
 											expect_field_count (line, 2);
-											purpose_B := et_libraries.to_purpose (f (line,2));
+											purpose_B := to_purpose (f (line,2));
 											-- CS: test if a connector with this purpose exists in the instance
 											
 										-- CS: net comparator and warning on/off

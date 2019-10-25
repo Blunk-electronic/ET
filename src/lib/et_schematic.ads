@@ -77,6 +77,11 @@ package et_schematic is
 	package shapes is new et_geometry.shapes_2d (geometry => et_coordinates.geometry);
 	use shapes;
 
+
+
+
+
+
 	
 -- TEXT FIELD
 
@@ -151,7 +156,7 @@ package et_schematic is
 			when et_symbols.SCH_PCB => 
 				value		: et_devices.type_value.bounded_string; -- 470R
 				partcode	: material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-				purpose		: et_libraries.type_device_purpose.bounded_string; -- brightness_control
+				purpose		: et_devices.type_device_purpose.bounded_string; -- brightness_control
 				variant		: et_devices.type_component_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position

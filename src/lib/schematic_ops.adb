@@ -9988,7 +9988,7 @@ package body schematic_ops is
 			if length (purpose) = 0 then
 				return "";
 			else
-				return " purpose " & enclose_in_quotes (et_libraries.to_string (purpose));
+				return " purpose " & enclose_in_quotes (et_devices.to_string (purpose));
 			end if;
 		end;
 

@@ -61,6 +61,10 @@ with et_devices;
 
 package body et_schematic is
 	use et_coordinates.geometry;
+
+
+
+
 	
 	function to_net_label_text_size (text : in string) return type_net_label_text_size is
 	-- Converts a string to type_net_label_text_size.

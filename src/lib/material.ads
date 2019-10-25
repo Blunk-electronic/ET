@@ -108,7 +108,7 @@ package material is
 		value		: et_devices.type_value.bounded_string;			-- 7400
 		packge		: et_packages.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		partcode	: type_partcode.bounded_string; 		-- IC_PAC_S_SO16_VAL7400
-		purpose		: et_libraries.type_device_purpose.bounded_string; 	-- brightness_control
+		purpose		: et_devices.type_device_purpose.bounded_string; 	-- brightness_control
 	end record;
 
 	package type_devices is new ordered_maps (
