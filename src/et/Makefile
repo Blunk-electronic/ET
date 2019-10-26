@@ -3,6 +3,7 @@ TARGET = et
 VPATH = include
 
 OBJS = $(TARGET).o \
+	et_frames.o \
 	et_text.o \
 	et_devices.o \
 	et_symbols.o \
