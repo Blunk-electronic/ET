@@ -56,18 +56,13 @@ with gnat.directory_operations;
 with ada.exceptions;
 
 with et_general;				use et_general;
--- 
--- with et_coordinates;
--- with et_libraries;
 with assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_export;
 with et_csv;					use et_csv;
 with et_packages;
-with et_devices;
--- with et_pcb_coordinates;
--- with submodules;
--- with numbering;
+with et_devices;				use et_devices;
+
 
 package body material is
 
@@ -220,9 +215,7 @@ package body material is
 
 			procedure query_device (cursor : in type_devices.cursor) is
 				use type_devices;
-				use et_devices;
 				use et_packages;
-				use et_libraries;
 			begin
 				put_field (file => bom_handle, text => to_string (key (cursor))); -- R4
 				put_field (file => bom_handle, text => to_string (element (cursor).value)); -- 100R
@@ -279,8 +272,6 @@ package body material is
 
 			procedure query_device (cursor : in type_devices.cursor) is
 				use type_devices;
-				use et_libraries;
-				use et_devices;
 				use et_packages;
 			begin
 				put_field (file => bom_handle); -- CS item number

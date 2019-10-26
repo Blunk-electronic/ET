@@ -41,17 +41,13 @@ with ada.text_io;				use ada.text_io;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
--- with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
--- with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.multiway_trees;
--- with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_sets;
 
 with et_general;				use et_general;
-with et_libraries;
 with submodules;
 with assembly_variants;
 with et_string_processing;		use et_string_processing;

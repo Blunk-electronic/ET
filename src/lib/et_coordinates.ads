@@ -153,14 +153,6 @@ package et_coordinates is
 	procedure set_sheet (position : in out type_position; sheet : in type_sheet);
 	-- Sets the sheet number in given position.
 
--- 	package frames is new et_frames.frames (shapes => shapes);
-	
--- 	function paper_dimension (
--- 	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
--- 		paper_size	: in type_paper_size;
--- 		orientation	: in type_paper_orientation := LANDSCAPE;
--- 		axis		: in type_axis_2d)
--- 		return type_distance_xy;
 
 	
 	private 

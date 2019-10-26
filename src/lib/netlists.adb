@@ -57,15 +57,10 @@ with ada.exceptions;
 
 with et_general;				use et_general;
 with et_export;
--- 
--- with et_coordinates;
--- with et_libraries;
 with assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_csv;					use et_csv;
--- with et_pcb_coordinates;
 with submodules;
--- with numbering;
 with et_symbols;
 with et_packages;
 with et_devices;				use et_devices;
@@ -81,7 +76,6 @@ package body netlists is
 	end;
 
 	function "<" (left, right : in type_device_port_extended) return boolean is
-		use et_libraries;
 		use et_symbols.type_port_name;
 		result : boolean := false;
 	begin

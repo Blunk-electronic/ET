@@ -47,10 +47,9 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
 with et_general;
-with et_libraries;				--use et_libraries;
 with material;
 with et_string_processing;		use et_string_processing;
-with et_devices;
+with et_devices;				use et_devices;
 
 package assembly_variants is
 
@@ -68,9 +67,9 @@ package assembly_variants is
 	type type_device (mounted : type_mounted) is record
 		case mounted is
 			when YES =>
-				value		: et_devices.type_value.bounded_string; -- 470R
+				value		: type_value.bounded_string; -- 470R
 				partcode	: material.type_partcode.bounded_string;
-				purpose		: et_devices.type_device_purpose.bounded_string;
+				purpose		: type_device_purpose.bounded_string;
 
 			when NO =>
 				null;
@@ -79,8 +78,7 @@ package assembly_variants is
 
 	-- Variants of devices are collected in a map.
 	package type_devices is new indefinite_ordered_maps (
-		key_type		=> et_devices.type_device_name, -- something like "IC43"
-		"<"				=> et_devices."<",
+		key_type		=> type_device_name, -- something like "IC43"
  		element_type	=> type_device);
 
 	use type_devices;
@@ -113,7 +111,7 @@ package assembly_variants is
 		element_type	=> type_variant);
 
 	function is_mounted (
-		device	: in et_devices.type_device_name; -- IC1
+		device	: in type_device_name; -- IC1
 		variant	: in type_variants.cursor)
 		return boolean;
 	-- Returns true if the given device is to be mounted according to given assembly variant.

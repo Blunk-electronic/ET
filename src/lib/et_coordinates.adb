@@ -49,7 +49,6 @@ with ada.exceptions;
 with ada.numerics.generic_elementary_functions;
 with et_string_processing;
 with et_general;
--- with et_frames;					use et_frames;
 
 package body et_coordinates is
 	pragma assertion_policy (check);

@@ -49,15 +49,8 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;				use et_general;
--- 
--- with et_coordinates;
-with et_libraries;
 with et_string_processing;		use et_string_processing;
--- with et_pcb;
--- with et_pcb_coordinates;
--- with submodules;
--- with numbering;
-with et_devices;
+with et_devices;				use et_devices;
 with et_packages;
 
 package material is
@@ -105,15 +98,14 @@ package material is
 	function to_file_name (name : in string) return type_file_name.bounded_string;
 
 	type type_device is record
-		value		: et_devices.type_value.bounded_string;			-- 7400
+		value		: type_value.bounded_string;			-- 7400
 		packge		: et_packages.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		partcode	: type_partcode.bounded_string; 		-- IC_PAC_S_SO16_VAL7400
-		purpose		: et_devices.type_device_purpose.bounded_string; 	-- brightness_control
+		purpose		: type_device_purpose.bounded_string; 	-- brightness_control
 	end record;
 
 	package type_devices is new ordered_maps (
-		key_type		=> et_devices.type_device_name, -- IC4
-		"<"				=> et_devices."<",
+		key_type		=> type_device_name, -- IC4
 		element_type	=> type_device);
 
 	type type_bom_format is (
