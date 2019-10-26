@@ -68,6 +68,7 @@ with submodules;
 -- with numbering;
 with et_symbols;
 with et_packages;
+with et_devices;				use et_devices;
 
 package body netlists is
 	
@@ -794,7 +795,7 @@ package body netlists is
 				use et_symbols;
 			begin
 				put_line (netlist_handle, -- IC1 CE input H5
-					et_libraries.to_string (element (port_cursor).device) & latin_1.space &
+					to_string (element (port_cursor).device) & latin_1.space &
 					to_string (element (port_cursor).port) & latin_1.space &
 					to_string (element (port_cursor).direction) & latin_1.space &
 					et_packages.to_string (element (port_cursor).terminal) & latin_1.space);

@@ -318,7 +318,6 @@ package body et_devices is
 	-- Leading zeroes in the id are removed. R002 becomes R2.
 		text_in : in string)
 		return type_device_name is
-		use et_libraries;
 
 		-- justify given text_in on the left
 		text_in_justified : string (1 .. text_in'length) := text_in;

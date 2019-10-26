@@ -74,7 +74,7 @@ with pcb_rw;					use pcb_rw;
 with schematic_rw;				use schematic_rw;
 with device_rw;					use device_rw;
 with et_symbols;
-with et_devices;
+with et_devices;				use et_devices;
 
 package body et_project is
 
@@ -900,7 +900,7 @@ package body et_project is
 					begin -- query_device_ports
 						while port_cursor /= type_ports_device.no_element loop
 							write (keyword => keyword_device, parameters => 
-								space & et_libraries.to_string (element (port_cursor).device_name)
+								space & to_string (element (port_cursor).device_name)
 								& space & keyword_port & space
 								& to_string (element (port_cursor).port_name)
 								); -- device IC1 port A
@@ -1165,9 +1165,9 @@ package body et_project is
 		procedure query_devices is		
 			use et_schematic;
 			use et_symbols;
-			use type_devices;
+			use et_schematic.type_devices;
 
-			procedure query_units (device_name : in et_libraries.type_device_name; device : in et_schematic.type_device) is
+			procedure query_units (device_name : in type_device_name; device : in et_schematic.type_device) is
 				use et_schematic.type_units;
 				unit_cursor : type_units.cursor := device.units.first;
 
@@ -1211,7 +1211,7 @@ package body et_project is
 			end query_units;
 
 			procedure query_placeholders (
-				device_name : in et_libraries.type_device_name;
+				device_name : in type_device_name;
 				device 		: in et_schematic.type_device) is
 				use et_pcb_coordinates;
 				use et_packages;
@@ -1250,11 +1250,9 @@ package body et_project is
 				section_mark (section_placeholders, FOOTER);				
 			end query_placeholders;
 
-			procedure write (device_cursor : in type_devices.cursor) is 
-				use et_devices;
-			begin
+			procedure write (device_cursor : in et_schematic.type_devices.cursor) is begin
 				section_mark (section_device, HEADER);
-				write (keyword => keyword_name, parameters => et_libraries.to_string (key (device_cursor)), space => true);
+				write (keyword => keyword_name, parameters => to_string (key (device_cursor)), space => true);
 				write (keyword => keyword_appearance, parameters => to_string (element (device_cursor).appearance));
 				write (keyword => keyword_model, parameters => to_string (element (device_cursor).model), space => true);
 
@@ -1324,15 +1322,15 @@ package body et_project is
 					case element (device_cursor).mounted is
 						when NO =>
 							write (
-								keyword		=> et_libraries.keyword_device,
-								parameters	=> et_libraries.to_string (key (device_cursor)) & 
+								keyword		=> keyword_device,
+								parameters	=> to_string (key (device_cursor)) & 
 												space & keyword_not_mounted,
 								space 		=> true);
 
 						when YES =>
 							write (
-								keyword		=> et_libraries.keyword_device,
-								parameters	=> et_libraries.to_string (key (device_cursor)) & 
+								keyword		=> keyword_device,
+								parameters	=> to_string (key (device_cursor)) & 
 									space &
 									keyword_value & space &
 									to_string (element (device_cursor).value) &
@@ -2169,14 +2167,14 @@ package body et_project is
 		-- The temporarily device will exist where "device" points at:
 		device					: access et_schematic.type_device;
 		
-		device_name				: et_libraries.type_device_name; -- C12
-		device_model			: et_devices.type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
-		device_value			: et_devices.type_value.bounded_string; -- 470R
+		device_name				: type_device_name; -- C12
+		device_model			: type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
+		device_value			: type_value.bounded_string; -- 470R
 		device_appearance		: et_schematic.type_appearance_schematic;
 		--device_unit				: et_schematic.type_unit;
 		--device_unit_rotation	: et_coordinates.type_rotation := geometry.zero_rotation;
 		device_unit_mirror		: et_schematic.type_mirror := et_schematic.NO;
-		device_unit_name		: et_devices.type_unit_name.bounded_string; -- GPIO_BANK_1
+		device_unit_name		: type_unit_name.bounded_string; -- GPIO_BANK_1
 		device_unit_position	: et_coordinates.type_position; -- x,y,sheet,rotation
 
 		-- assembly variants
@@ -2666,7 +2664,7 @@ package body et_project is
 					end get_package_name;
 					
 				begin -- insert_device
-					log (text => "device " & et_libraries.to_string (device_name), level => log_threshold + 1);
+					log (text => "device " & to_string (device_name), level => log_threshold + 1);
 					log_indentation_up;
 
 					if not conventions.prefix_valid (device_name) then 
@@ -2682,7 +2680,7 @@ package body et_project is
 					if device.appearance = SCH_PCB then
 
 						if not value_characters_valid (device_value) then
-							log (WARNING, "value of " & et_libraries.to_string (device_name) &
+							log (WARNING, "value of " & to_string (device_name) &
 								 " contains invalid characters !");
 							log_indentation_reset;
 							value_invalid (to_string (device_value));
@@ -2691,7 +2689,7 @@ package body et_project is
 						log (text => "value " & to_string (device_value), level => log_threshold + 2);
 						device.value := device_value;
 						if not conventions.value_valid (device_value, prefix (device_name)) then
-							log (WARNING, "value of " & et_libraries.to_string (device_name) &
+							log (WARNING, "value of " & to_string (device_name) &
 								" not conformant with conventions !");
 						end if;
 
@@ -2726,7 +2724,7 @@ package body et_project is
 						new_item	=> device.all);
 
 					if not inserted then
-						log (ERROR, "device name " & et_libraries.to_string (device_name) & " already used !",
+						log (ERROR, "device name " & to_string (device_name) & " already used !",
 								console => true);
 						raise constraint_error;
 					end if;
@@ -4142,7 +4140,7 @@ package body et_project is
 					-- clean up for next assembly variant
 					assembly_variant_name := to_variant ("");
 					assembly_variant_description := to_unbounded_string ("");
-					assembly_variant_devices := type_devices.empty_map;
+					assembly_variant_devices := assembly_variants.type_devices.empty_map;
 					assembly_variant_submodules := type_submodules.empty_map;
 					
 				end insert_assembly_variant;
@@ -5468,7 +5466,7 @@ package body et_project is
 								declare
 									use et_devices;
 									kw : string 	:= f (line, 1);
-									device_name		: et_libraries.type_device_name; -- R1
+									device_name		: type_device_name; -- R1
 									device			: access assembly_variants.type_device;
 									device_cursor	: assembly_variants.type_devices.cursor;
 									
@@ -5491,17 +5489,17 @@ package body et_project is
 									-- a line like "device R1 value 270R partcode 12345" or		
 									-- a line like "device R1 value 270R partcode 12345 purpose "set temperature""
 									-- tells whether a device is mounted or not.
-									elsif kw = et_libraries.keyword_device then
+									elsif kw = keyword_device then
 
 										-- there must be at least 3 fields:
 										expect_field_count (line, 3, warn => false);
 										
-										device_name := et_libraries.to_device_name (f (line, 2));
+										device_name := to_device_name (f (line, 2));
 
 										-- test whether device exists
 										if not exists (module_cursor, device_name) then
 											log (ERROR, "device " &
-												 enclose_in_quotes (et_libraries.to_string (device_name)) &
+												 enclose_in_quotes (to_string (device_name)) &
 												 " does not exist !", console => true);
 											raise constraint_error;
 										end if;
@@ -5570,7 +5568,7 @@ package body et_project is
 										-- Raise error if device occurs more than once:
 										if not inserted then
 											log (ERROR, "device " &
-												 enclose_in_quotes (et_libraries.to_string (device_name)) &
+												 enclose_in_quotes (to_string (device_name)) &
 												 " already specified !", console => true);
 											raise constraint_error;
 										end if;
@@ -5840,7 +5838,7 @@ package body et_project is
 									if kw = keyword_device then -- device R1 port 1
 										expect_field_count (line, 4);
 
-										net_device_port.device_name := et_libraries.to_device_name (f (line, 2)); -- IC3
+										net_device_port.device_name := to_device_name (f (line, 2)); -- IC3
 
 										if f (line, 3) = keyword_port then -- port
 											net_device_port.port_name := to_port_name (f (line, 4)); -- CE
@@ -5848,7 +5846,7 @@ package body et_project is
 											-- Insert port in port collection of device ports. First make sure it is
 											-- not already in the net segment.
 											if et_schematic.type_ports_device.contains (net_device_ports, net_device_port) then
-												log (ERROR, "device " & et_libraries.to_string (net_device_port.device_name) &
+												log (ERROR, "device " & to_string (net_device_port.device_name) &
 													" port " & to_string (net_device_port.port_name) & 
 													" already in net segment !", console => true);
 												raise constraint_error;
@@ -6983,7 +6981,7 @@ package body et_project is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then -- name C12
 										expect_field_count (line, 2);
-										device_name := et_libraries.to_device_name (f (line, 2));
+										device_name := to_device_name (f (line, 2));
 
 									-- As soon as the appearance becomes clear, a temporarily device is
 									-- created where pointer "device" is pointing at:
@@ -8422,7 +8420,7 @@ package body et_project is
 	-- Returns true if the given module provides the given device.
 	-- The module being searched in must be in the rig already.						
 		module	: in type_modules.cursor;
-		device	: in et_libraries.type_device_name)
+		device	: in type_device_name)
 		return boolean is
 
 		device_found : boolean := false; -- to be returned
@@ -8580,7 +8578,7 @@ package body et_project is
 	-- - The device must exist in the module.
 		module	: in type_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
-		device	: in et_libraries.type_device_name)
+		device	: in type_device_name)
 		return boolean is
 
 		result : boolean := false; -- to be returned
@@ -8645,7 +8643,7 @@ package body et_project is
 	--   otherwise the return is no_element.
 		module	: in type_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
-		device	: in et_libraries.type_device_name)
+		device	: in type_device_name)
 		return assembly_variants.type_devices.cursor is
 
 		cursor : assembly_variants.type_devices.cursor; -- to be returned;

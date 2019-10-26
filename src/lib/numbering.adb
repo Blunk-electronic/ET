@@ -50,6 +50,7 @@ with ada.containers;            use ada.containers;
 
 with et_general;				use et_general;
 -- with et_string_processing;		use et_string_processing;
+with et_devices;				use et_devices;
 
 package body numbering is
 
@@ -83,8 +84,8 @@ package body numbering is
 		index_range	: in type_index_range) return string is
 	begin
 		return ("module " & enclose_in_quotes (to_string (module_name)) &
-			" range" & et_libraries.to_string (index_range.lowest) &
-			" .." & et_libraries.to_string (index_range.highest));
+			" range" & to_string (index_range.lowest) &
+			" .." & to_string (index_range.highest));
 	end to_index_range;
 
 	function below (left, right : in type_index_range) return boolean is begin

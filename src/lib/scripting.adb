@@ -72,7 +72,7 @@ with material;
 with netlists;
 with et_geometry;		use et_geometry; -- due to frequently used keywords
 with et_symbols;
-with et_devices;
+with et_devices;		use et_devices;
 
 package body scripting is
 	

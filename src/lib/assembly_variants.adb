@@ -62,6 +62,7 @@ with et_project;				use et_project;
 with submodules;
 with conventions;
 with et_geometry;
+with et_devices;				use et_devices;
 
 package body assembly_variants is
 
@@ -74,7 +75,7 @@ package body assembly_variants is
 	end;
 
 	function is_mounted (
-		device	: in et_libraries.type_device_name; -- IC1
+		device	: in type_device_name; -- IC1
 		variant	: in type_variants.cursor)
 		return boolean is
 	-- Returns true if the given device is to be mounted according to given assembly variant.

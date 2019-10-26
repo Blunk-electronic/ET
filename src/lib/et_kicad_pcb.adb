@@ -68,7 +68,7 @@ with et_string_processing;		use et_string_processing;
 with et_text;
 with et_kicad;
 with et_symbols;
-with et_devices;
+with et_devices;				use et_devices;
 
 package body et_kicad_pcb is
 
@@ -3011,7 +3011,7 @@ package body et_kicad_pcb is
 		return type_layer_meaning'value (meaning);
 	end to_layer_meaning;
 
-	function default_component_reference return et_libraries.type_device_name is
+	function default_component_reference return type_device_name is
 	-- Returns a default device name with an empty prefix and and id 0.
 	-- Used to initialize a component reference.	
 		use et_libraries;
@@ -3290,7 +3290,7 @@ package body et_kicad_pcb is
 		package_appearance 	: type_package_appearance := REAL;
 
 		package_text 		: type_text_package;
-		package_reference 	: et_libraries.type_device_name := default_component_reference;
+		package_reference 	: type_device_name := default_component_reference;
 		package_value 		: et_devices.type_value.bounded_string;
 
 		package_time_stamp	: type_timestamp; -- temporarily storage of package timestamp
@@ -5816,12 +5816,12 @@ package body et_kicad_pcb is
 -- 			use et_libraries;
 
 			procedure invalid_layer_reference is begin
-				log (ERROR, "reference " & et_libraries.to_string (package_reference) & " must be in a silk screen layer !", console => true);
+				log (ERROR, "reference " & to_string (package_reference) & " must be in a silk screen layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_reference;
 
 			procedure invalid_layer_value is begin
-				log (WARNING, "value " & et_devices.to_string (package_value) & " should be in a fabrication layer !");
+				log (WARNING, "value " & to_string (package_value) & " should be in a fabrication layer !");
 			end invalid_layer_value;
 
 			procedure invalid_layer_user is begin
@@ -5838,7 +5838,7 @@ package body et_kicad_pcb is
 			procedure warn_on_missing_net is begin
 			-- Warns operator if a terminal is not connected to a net.
 				if length (terminal_net_name) = 0 then
-					log (WARNING, et_libraries.to_string (package_reference) & latin_1.space
+					log (WARNING, to_string (package_reference) & latin_1.space
 						 & et_packages.to_string (terminal_name) & " not connected with a net !");
 				end if;
 			end warn_on_missing_net;
@@ -5925,7 +5925,7 @@ package body et_kicad_pcb is
 				if package_inserted then
 
 					-- log package coordinates
-					log (text => "package " & et_libraries.to_string (package_reference)
+					log (text => "package " & to_string (package_reference)
 						 & et_pcb.package_position (package_position), -- this is a function that returns package coordinates !
 						 level => log_threshold + 1);
 					
@@ -5998,7 +5998,7 @@ package body et_kicad_pcb is
 					package_copper.bottom.texts.clear;
 
 				else
-					log (ERROR, "package " & et_libraries.to_string (package_reference) 
+					log (ERROR, "package " & to_string (package_reference) 
 						& et_pcb.package_position (package_position)
 						& " already used !",
 						 console => true);
@@ -7357,7 +7357,7 @@ package body et_kicad_pcb is
 			-- Returns for the given component reference and terminal the name of the attached net.
 			-- The information required is sotred in the terminals of a package.
 			-- Example: (pad 1 smd rect (at -2.925 -3.81) (size 2 0.6) (layers F.Cu F.Paste F.Mask) (net 1 /IN))
-				reference	: in et_libraries.type_device_name;	-- IC45
+				reference	: in type_device_name;	-- IC45
 				terminal	: in et_packages.type_terminal_name.bounded_string) -- G7
 				return type_net_name.bounded_string is
 				net : type_net_name.bounded_string; -- to be returned
@@ -7386,14 +7386,14 @@ package body et_kicad_pcb is
 					if terminal_cursor /= type_terminals.no_element then -- terminal found
 						net := element (terminal_cursor).net_name;
 					else
-						log (ERROR, "component reference " & et_libraries.to_string (reference) &
+						log (ERROR, "component reference " & to_string (reference) &
 							" terminal " & et_packages.to_string (terminal) &
 							 " not found in board !",
 							console => true);
 						raise constraint_error;
 					end if;
 				else -- component package does not exist
-					log (ERROR, "component reference " & et_libraries.to_string (reference) &
+					log (ERROR, "component reference " & to_string (reference) &
 						 " not found in board !",
 						 console => true);
 					raise constraint_error;
@@ -7422,7 +7422,7 @@ package body et_kicad_pcb is
 
 				use type_packages_board;
 				package_cursor		: type_packages_board.cursor;
-				package_reference	: et_libraries.type_device_name;
+				package_reference	: type_device_name;
 				package_position	: et_pcb_coordinates.type_package_position;
 
 				text_placeholders	: et_packages.type_text_placeholders;
@@ -7678,7 +7678,7 @@ package body et_kicad_pcb is
 
 				procedure update_component_in_schematic (
 				-- Updates the component in the schematic with position, text placeholders
-					comp_ref	: in et_libraries.type_device_name;
+					comp_ref	: in type_device_name;
 					component	: in out et_kicad.type_component_schematic) is
 				begin
 					component.position := package_position;
@@ -7693,7 +7693,7 @@ package body et_kicad_pcb is
 					placeholders : type_text_placeholders; -- to be returned
 
 					procedure query_placeholders (
-						comp_reference	: in et_libraries.type_device_name;
+						comp_reference	: in type_device_name;
 						comp_package	: in type_package_board) is
 
 						use et_packages.pac_text_placeholders;
@@ -7807,12 +7807,12 @@ package body et_kicad_pcb is
 						net_name_out : type_net_name.bounded_string; -- to be returned
 
 						package_cursor	: type_packages_board.cursor := board.packages.first;
-						package_name	: et_libraries.type_device_name;
+						package_name	: type_device_name;
 						terminal_found	: boolean := false;
 						terminal_name	: et_packages.type_terminal_name.bounded_string;
 
 						procedure query_terminals (
-							package_name	: in et_libraries.type_device_name;
+							package_name	: in type_device_name;
 							packge			: in type_package_board) is
 							use type_terminals;
 							terminal_cursor : type_terminals.cursor := packge.terminals.first;
@@ -8047,7 +8047,7 @@ package body et_kicad_pcb is
 
 								package_position := element (package_cursor).position;
 
-								log (text => "package " & et_libraries.to_string (package_reference) &
+								log (text => "package " & to_string (package_reference) &
 									et_pcb.package_position (package_position), level => log_threshold + 2);
 
 								-- Extract the text placeholders for reference and value from the 
@@ -8064,15 +8064,15 @@ package body et_kicad_pcb is
 
 								
 							else -- value mismatch
-								log (ERROR, "value of " & et_libraries.to_string (package_reference) &
-									 " mismatch ! In schematic: " & et_devices.to_string (element (component_cursor).value) &
-									 " in layout: " & et_devices.to_string (element (package_cursor).value),
+								log (ERROR, "value of " & to_string (package_reference) &
+									 " mismatch ! In schematic: " & to_string (element (component_cursor).value) &
+									 " in layout: " & to_string (element (package_cursor).value),
 									console => true);
 								raise constraint_error;
 							end if;
 								
 						else -- package not found in layout
-							log (ERROR, "package " & et_libraries.to_string (package_reference) &
+							log (ERROR, "package " & to_string (package_reference) &
 								 " not found in the board !", console => true);
 							raise constraint_error;
 						end if;

@@ -70,7 +70,7 @@ with et_text;
 with pcb_rw;
 with device_rw;
 with et_symbols;
-with et_devices;
+with et_devices;				use et_devices;
 
 package body et_kicad_to_native is
 
@@ -385,7 +385,7 @@ package body et_kicad_to_native is
 			component_cursor : et_kicad.type_components_schematic.cursor := module.components.first;
 
 			procedure query_units (
-				reference	: in et_libraries.type_device_name;
+				reference	: in type_device_name;
 				component	: in out et_kicad.type_component_schematic) is
 				use et_coordinates;
 				use et_kicad.type_units_schematic;
@@ -434,7 +434,7 @@ package body et_kicad_to_native is
 				end move_package;
 				
 			begin -- query_units
-				log (text => et_libraries.to_string (key (component_cursor)), level => log_threshold + 3);
+				log (text => to_string (key (component_cursor)), level => log_threshold + 3);
 				log_indentation_up;
 
 				while unit_cursor /= et_kicad.type_units_schematic.no_element loop
@@ -2049,7 +2049,7 @@ package body et_kicad_to_native is
 				while port_cursor /= et_kicad.type_ports_with_reference.no_element loop
 					port := element (port_cursor); -- load the port as it currently is
 					
-					log (text => et_libraries.to_string (port.reference)
+					log (text => to_string (port.reference)
 						& " port "
 						& et_symbols.to_string (port.name), level => log_threshold + 4);
 					log_indentation_up;
@@ -2324,7 +2324,7 @@ package body et_kicad_to_native is
 
 			procedure copy_units (
 			-- Copies the kicad units to the native component.
-				reference	: in et_libraries.type_device_name;
+				reference	: in type_device_name;
 				component	: in out et_schematic.type_device) is
 
 				use et_kicad.type_units_schematic;
@@ -2411,7 +2411,7 @@ package body et_kicad_to_native is
 			component_cursor_kicad := components_kicad.first;
 			while component_cursor_kicad /= et_kicad.type_components_schematic.no_element loop
 
-				log (text => "component " & et_libraries.to_string (key (component_cursor_kicad)), level => log_threshold + 2);
+				log (text => "component " & to_string (key (component_cursor_kicad)), level => log_threshold + 2);
 				
 				-- depending on the appearance of the kicad component, we create a virtual or real 
 				-- component in the native schematic module.
@@ -2715,7 +2715,7 @@ package body et_kicad_to_native is
 							
 							-- If port sits on segment, append it to ports_of_segment.
 							if (not distance.out_of_range) and distance.distance = zero then
-								log (text => et_libraries.to_string (element (port_cursor_kicad).reference) 
+								log (text => to_string (element (port_cursor_kicad).reference) 
 									 & " port "
 									 & et_symbols.to_string (element (port_cursor_kicad).name)
 									 & kicad_coordinates.to_string (
@@ -3438,7 +3438,7 @@ package body et_kicad_to_native is
 					device_model := concatenate_lib_name_and_generic_name (component_library_name, generic_name); -- ../lbr/logic_ttl/7400.dev
 
 					-- Create a new device model in container et_libraries.devices:
-					log (text => "device model " & to_string (device_model), level => log_threshold + 3);
+					log (text => "device model " & et_devices.to_string (device_model), level => log_threshold + 3);
 					log_indentation_up;
 
 					case element (component_cursor).appearance is
@@ -3567,7 +3567,7 @@ package body et_kicad_to_native is
 			-- Loop in kicad component libraries:
 			while component_library_cursor /= et_kicad.type_libraries.no_element loop
 				component_library_name := key (component_library_cursor);
-				log (text => "component library " & to_string (component_library_name), level => log_threshold + 2);
+				log (text => "component library " & et_devices.to_string (component_library_name), level => log_threshold + 2);
 
 				log_indentation_up;
 				

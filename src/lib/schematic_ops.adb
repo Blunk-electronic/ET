@@ -3269,9 +3269,9 @@ package body schematic_ops is
 	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.
 		module_cursor	: in type_modules.cursor;
 		prefix			: in type_device_name_prefix.bounded_string) -- C
-		return et_libraries.type_device_name is -- C2
+		return type_device_name is -- C2
 		
-		next_name : et_libraries.type_device_name; -- to be returned
+		next_name : type_device_name; -- to be returned
 
 		procedure search_gap (
 		-- Searches for the lowest available device name. Looks at devices
@@ -3285,12 +3285,12 @@ package body schematic_ops is
 
 			-- We start the search with index 1. Not 0 because this would result in a zero based
 			-- numbering order. Index zero is allowed but not automatically choosen.
-			index_expected : et_libraries.type_device_name_index := type_device_name_index'first + 1;
+			index_expected : type_device_name_index := type_device_name_index'first + 1;
 
 			gap_found : boolean := false; -- goes true once a gap has been found
 		begin -- search_gap
 			while device_cursor /= et_schematic.type_devices.no_element loop
-				if et_libraries.prefix (key (device_cursor)) = prefix then -- category match
+				if et_devices.prefix (key (device_cursor)) = prefix then -- category match
 					
 					if index (key (device_cursor)) /= index_expected then -- we have a gap
 
@@ -3572,7 +3572,7 @@ package body schematic_ops is
 			inserted : boolean;
 
 			-- build the next available device name:
-			next_name : et_libraries.type_device_name := 
+			next_name : type_device_name := 
 				next_device_name (module_cursor, element (device_cursor_lib).prefix);
 
 			unit_cursors : type_unit_cursors_lib;
@@ -3852,7 +3852,7 @@ package body schematic_ops is
 			device_cursor_lib : et_devices.type_devices.cursor; -- points to the device in the library
 			
 			-- the next available device name:
-			next_name : et_libraries.type_device_name;
+			next_name : type_device_name;
 			inserted : boolean;
 
 			unit_cursors : type_unit_cursors_lib;
@@ -10601,7 +10601,7 @@ package body schematic_ops is
 	procedure renumber_devices (
 	-- Renumbers devices according to the sheet number.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		step_width		: in et_libraries.type_device_name_index;
+		step_width		: in type_device_name_index;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -10742,7 +10742,7 @@ package body schematic_ops is
 	begin -- renumber_devices
 		log (text => "module " & to_string (module_name) &
 			" renumbering devices." &
-			" step width per sheet" & et_libraries.to_string (step_width),
+			" step width per sheet" & to_string (step_width),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -10828,8 +10828,8 @@ package body schematic_ops is
 				log (WARNING, "no devices found in module " &
 					 enclose_in_quotes (to_string (module_name)) & " !");
 
-				index_range.lowest := et_libraries.type_device_name_index'first;
-				index_range.highest := et_libraries.type_device_name_index'first;
+				index_range.lowest := type_device_name_index'first;
+				index_range.highest := type_device_name_index'first;
 
 			end if;
 
@@ -10895,9 +10895,9 @@ package body schematic_ops is
 		-- It increases each time a submodule is entered by procedure set_offset.
 		-- The increase is the highest index used by that submodule.
 		-- The next submodule will then get an offset of index_max + 1.
-		index_max : et_libraries.type_device_name_index := 0;
+		index_max : type_device_name_index := 0;
 
-		procedure increase_index_max (index : in et_libraries.type_device_name_index) is begin
+		procedure increase_index_max (index : in type_device_name_index) is begin
 			index_max := index_max + index;
 		end;
 		
@@ -10917,7 +10917,7 @@ package body schematic_ops is
 				log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 					" submodule instance " & enclose_in_quotes (to_string (module_instance)) &
 					" setting device names offset to" &
-					et_libraries.to_string (module.device_names_offset),
+					to_string (module.device_names_offset),
 					level => log_threshold + 2);
 			end;
 			
@@ -10950,7 +10950,7 @@ package body schematic_ops is
 				-- index used by the current submodule:
 				increase_index_max (module_range.highest);
 				
-				log (text => "index max" & et_libraries.to_string (index_max), level => log_threshold + 1);
+				log (text => "index max" & to_string (index_max), level => log_threshold + 1);
 				
 				if first_child (tree_cursor) = numbering.type_modules.no_element then 
 					-- no submodules on the current level. means we can't go deeper.
@@ -11058,7 +11058,7 @@ package body schematic_ops is
 		-- Show the index range used by the top module:
 		log (text => "top" & to_index_range (module_name, query_range (module_name)), level => log_threshold + 1);
 
-		log (text => "index max" & et_libraries.to_string (index_max), level => log_threshold + 1);
+		log (text => "index max" & to_string (index_max), level => log_threshold + 1);
 		
 		-- take a copy of the submodule tree of the given top module:
 		submod_tree := element (module_cursor).submod_tree;
@@ -11101,7 +11101,7 @@ package body schematic_ops is
 				use numbering.type_modules;
 			begin
 				log (text => "instance " & to_string (element (cursor).instance) &
-					 " offset " & et_libraries.to_string (element (cursor).device_names_offset),
+					 " offset " & to_string (element (cursor).device_names_offset),
 					 level => log_threshold
 					);
 			end query;
@@ -11162,7 +11162,7 @@ package body schematic_ops is
 					new_item	=> (
 							name				=> submod_name,
 							instance			=> submod_instance,
-							device_names_offset	=> et_libraries.type_device_name_index'first
+							device_names_offset	=> type_device_name_index'first
 							), -- templates/CLOCK_GENERATOR OSC1 100
 					position	=> tree_cursor
 					);
@@ -11239,7 +11239,7 @@ package body schematic_ops is
 	procedure apply_offset (
 	-- Adds the offset to the device index of the given device_name.
 		device_name		: in out type_device_name; -- IC3
-		offset			: in et_libraries.type_device_name_index; -- 100
+		offset			: in type_device_name_index; -- 100
 		log_threshold	: in et_string_processing.type_log_level) is
 		device_name_instance : type_device_name;
 	begin
@@ -11284,13 +11284,13 @@ package body schematic_ops is
 -- 		-- If offset is zero, we are dealing with the top module.
 -- 			module_cursor	: in type_modules.cursor;
 -- 			variant			: in type_variant_name.bounded_string;
--- 			offset			: in et_libraries.type_device_name_index) is
+-- 			offset			: in type_device_name_index) is
 -- 			
 -- 			procedure query_devices (
 -- 				module_name	: in type_module_name.bounded_string;
 -- 				module		: in et_schematic.type_module) is
 -- 
--- 				device_name : et_libraries.type_device_name;
+-- 				device_name : type_device_name;
 -- 				inserted : boolean;
 -- 				
 -- 				procedure test_inserted is begin
@@ -11498,7 +11498,7 @@ package body schematic_ops is
 -- 			module_name 	: type_module_name.bounded_string; -- motor_driver
 -- 			parent_name 	: type_module_name.bounded_string; -- water_pump
 -- 			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
--- 			offset			: et_libraries.type_device_name_index;
+-- 			offset			: type_device_name_index;
 -- 
 -- 			use assembly_variants.type_submodules;
 -- 			alt_submod : assembly_variants.type_submodules.cursor;
@@ -11682,13 +11682,13 @@ package body schematic_ops is
 			-- If offset is zero, we are dealing with the top module.
 				module_cursor	: in type_modules.cursor;
 				variant			: in type_variant_name.bounded_string;
-				offset			: in et_libraries.type_device_name_index) is
+				offset			: in type_device_name_index) is
 				
 				procedure query_devices (
 					module_name	: in type_module_name.bounded_string;
 					module		: in et_schematic.type_module) is
 
-					device_name : et_libraries.type_device_name;
+					device_name : type_device_name;
 					inserted : boolean;
 					
 					procedure test_inserted is begin
@@ -11841,7 +11841,7 @@ package body schematic_ops is
 						log (text => "collecting devices from module " &
 								enclose_in_quotes (to_string (module_name)) &
 								" default variant by applying device index offset" & 
-								et_libraries.to_string (offset), -- 100
+								to_string (offset), -- 100
 							level => log_threshold + 1);
 						
 						log_indentation_up;
@@ -11856,7 +11856,7 @@ package body schematic_ops is
 								enclose_in_quotes (to_string (module_name)) &
 								" variant " & enclose_in_quotes (to_variant (variant)) &
 								" by applying device index offset" & 
-								et_libraries.to_string (offset), -- 100
+								to_string (offset), -- 100
 							level => log_threshold + 1);
 						
 						log_indentation_up;
@@ -11899,7 +11899,7 @@ package body schematic_ops is
 				module_name 	: type_module_name.bounded_string; -- motor_driver
 				parent_name 	: type_module_name.bounded_string; -- water_pump
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-				offset			: et_libraries.type_device_name_index;
+				offset			: type_device_name_index;
 
 				use assembly_variants.type_submodules;
 				alt_submod : assembly_variants.type_submodules.cursor;
@@ -12323,7 +12323,7 @@ package body schematic_ops is
 				module_cursor	: in et_project.type_modules.cursor;
 				variant			: in type_variant_name.bounded_string;
 				prefix			: in et_general.type_net_name.bounded_string; -- DRV3/OSC1/
-				offset			: in et_libraries.type_device_name_index) is
+				offset			: in type_device_name_index) is
 
 				use assembly_variants.type_variants;
 				variant_cursor : assembly_variants.type_variants.cursor;
@@ -12484,7 +12484,7 @@ package body schematic_ops is
 				module_name 	: type_module_name.bounded_string; -- motor_driver
 				parent_name 	: type_module_name.bounded_string; -- water_pump
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-				offset			: et_libraries.type_device_name_index;
+				offset			: type_device_name_index;
 
 				use assembly_variants.type_submodules;
 				alt_submod : assembly_variants.type_submodules.cursor;
@@ -12814,7 +12814,7 @@ package body schematic_ops is
 
 				exception when event: others =>
 					log (ERROR, "net " & to_string (net) &
-						" device " & et_libraries.to_string (port.device_name) &
+						" device " & to_string (port.device_name) &
 						" port " & to_string (port.port_name) &
 						" already used !",
 						console => true);
@@ -12892,7 +12892,7 @@ package body schematic_ops is
 									procedure query_port (port_cursor : in type_ports_device.cursor) is 
 										use et_symbols;
 									begin
-										log (text => "device " & et_libraries.to_string (element (port_cursor).device_name) &
+										log (text => "device " & to_string (element (port_cursor).device_name) &
 											 " port " & to_string (element (port_cursor).port_name), level => log_threshold + 4);
 
 										if not exists_device_port (
@@ -12902,7 +12902,7 @@ package body schematic_ops is
 
 											error;
 											
-											log (ERROR, "device " & et_libraries.to_string (element (port_cursor).device_name) &
+											log (ERROR, "device " & to_string (element (port_cursor).device_name) &
 												 " port " & to_string (element (port_cursor).port_name) &
 												 " does not exist !");
 										end if;

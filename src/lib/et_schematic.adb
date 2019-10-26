@@ -57,7 +57,7 @@ with et_import;
 with et_csv;
 with et_packages;
 with et_symbols;
-with et_devices;
+with et_devices;				use et_devices;
 
 package body et_schematic is
 	use et_coordinates.geometry;
@@ -73,7 +73,6 @@ package body et_schematic is
 	end to_net_label_text_size;
 
 	function "<" (left, right : in type_port_device) return boolean is
-		use et_libraries;
 		use et_symbols.type_port_name;
 	begin
 		if left.device_name < right.device_name then

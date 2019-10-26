@@ -66,7 +66,7 @@ with et_csv;
 with material;
 with et_packages;
 with et_symbols;
-with et_devices;
+with et_devices;			use et_devices;
 
 package body conventions is
 
@@ -835,11 +835,11 @@ package body conventions is
 	end category;
 
 	
-	function category (reference : in et_libraries.type_device_name) return
+	function category (reference : in type_device_name) return
 		type_device_category is
 	-- Returns the category of the given component reference. If no category could be
 	-- found, returns category UNKNOWN.
-		use et_devices.type_device_name_prefix;
+		use type_device_name_prefix;
 		use type_component_prefixes;
 
 		prefix_cursor : type_component_prefixes.cursor;
@@ -851,7 +851,7 @@ package body conventions is
 		-- Otherwise return the respecitve category.
 		if prefix_cursor = type_component_prefixes.no_element then
 			log (WARNING, " category of device " 
-				 & et_libraries.to_string (reference)
+				 & to_string (reference)
 				 & latin_1.space & to_string (UNKNOWN) & " !");
 			return UNKNOWN;
 		else
@@ -2281,9 +2281,9 @@ package body conventions is
 	--  - If partcode keywords are specified in the configuration file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
 		partcode		: in material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-		device_name		: in et_libraries.type_device_name;						-- R45
+		device_name		: in type_device_name;						-- R45
 		packge			: in et_packages.type_component_package_name.bounded_string;	-- S_0805
-		value 			: in et_devices.type_value.bounded_string;			-- 100R
+		value 			: in type_value.bounded_string;			-- 100R
 		log_threshold	: in et_string_processing.type_log_level)
 		is
 
@@ -2294,7 +2294,7 @@ package body conventions is
 		partcode_root : material.type_partcode.bounded_string;
 		
 		procedure partcode_invalid is begin
-			log (WARNING, "device " & et_libraries.to_string (device_name)
+			log (WARNING, "device " & to_string (device_name)
 				 & " partcode invalid ! Found " & enclose_in_quotes (to_string (partcode)) &
 				". Expected " & enclose_in_quotes (to_string (partcode_root)) & " !");
 		end partcode_invalid;
@@ -3199,7 +3199,7 @@ package body conventions is
 		-- if there are prefixes specified, test if the given particular prefix is among them
 		if component_prefixes_specified then
 			if component_prefixes.find (prefix) = type_component_prefixes.no_element then
-				log (WARNING, "invalid prefix " & to_string (prefix) & " !");
+				log (WARNING, "invalid prefix " & et_devices.to_string (prefix) & " !");
 				result := false;
 			end if;
 		end if;
@@ -3207,11 +3207,11 @@ package body conventions is
 		return result;
 	end prefix_valid;
 	
-	function prefix_valid (reference : in et_libraries.type_device_name) return boolean is
+	function prefix_valid (reference : in type_device_name) return boolean is
 	-- Tests if the given reference has a valid prefix as specified in the configuration file.
 	-- Raises warning if not and returns false. 
 	-- Returns true if no prefixes specified or if prefix is valid.
-		use et_devices.type_device_name_prefix;
+		use type_device_name_prefix;
 		use type_component_prefixes;
 		result : boolean := true;
 	begin
@@ -3219,7 +3219,7 @@ package body conventions is
 		if component_prefixes_specified then
 			if component_prefixes.find (reference.prefix) = type_component_prefixes.no_element then
 				log (WARNING, "invalid prefix in device name "
-					 & et_libraries.to_string (reference) & " !");
+					 & et_devices.to_string (reference) & " !");
 				result := false;
 			end if;
 		end if;

@@ -58,6 +58,7 @@ with et_string_processing;		use et_string_processing;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 -- with submodules;
 -- with numbering;
+with et_devices;				use et_devices;
 
 package pick_and_place is
 
@@ -77,8 +78,7 @@ package pick_and_place is
 	end record;
 
 	package type_devices is new ordered_maps (
-		key_type		=> et_libraries.type_device_name, -- IC4
-		"<"				=> et_libraries."<",
+		key_type		=> type_device_name, -- IC4
 		element_type	=> type_device);
 
 	type type_pnp_format is (

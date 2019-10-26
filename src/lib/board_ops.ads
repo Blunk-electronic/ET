@@ -60,6 +60,7 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 -- with submodules;
 with assembly_variants;
 with pick_and_place;
+with et_devices;				use et_devices;
 
 package board_ops is
 

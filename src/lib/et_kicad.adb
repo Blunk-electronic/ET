@@ -75,7 +75,7 @@ with et_text;
 
 with et_packages;
 with et_symbols;				use et_symbols;
-with et_devices;
+with et_devices;				use et_devices;
 
 package body et_kicad is
 
@@ -295,7 +295,7 @@ package body et_kicad is
 		u : type_units_schematic.map;
 
 		procedure locate (
-			name		: in et_libraries.type_device_name;
+			name		: in type_device_name;
 			component	: in type_component_schematic) is
 		begin
 			-- copy the units of the component to the return value
@@ -311,7 +311,7 @@ package body et_kicad is
 	end units_of_component;
 
 	procedure check_prefix_characters (
-		prefix 		: in et_devices.type_device_name_prefix.bounded_string;
+		prefix 		: in type_device_name_prefix.bounded_string;
 		characters	: in character_set) is
 	-- Tests if the given prefix contains only valid characters as specified
 	-- by given character set. Raises exception if invalid character found.
@@ -325,7 +325,7 @@ package body et_kicad is
 			test	=> outside);
 
 		if invalid_character_position > 0 then
-			log (ERROR, "component prefix " & to_string (prefix) 
+			log (ERROR, "component prefix " & et_devices.to_string (prefix) 
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position),
 				console => true
@@ -343,7 +343,7 @@ package body et_kicad is
 	-- Leading zeroes in the id are removed. R002 becomes R2.
 		text_in			: in string;
 		leading_hash	: in boolean := false
-		) return et_libraries.type_device_name is
+		) return type_device_name is
 		
 		use et_libraries;
 		use et_devices;
@@ -442,7 +442,7 @@ package body et_kicad is
 
 	
 	function component_reference (cursor : in type_components_schematic.cursor) 
-		return et_libraries.type_device_name is
+		return type_device_name is
 	-- Returns the component reference where cursor points to.
 	begin
 		return type_components_schematic.key (cursor);
@@ -457,7 +457,7 @@ package body et_kicad is
 		use et_string_processing;
 		use et_libraries;
 		use et_symbols;
-		use et_devices;
+
 	begin
 		-- reference (serves as key in list of components)
 		log (text => "component " & to_string (type_components_schematic.key (component)) & " properties",
@@ -525,7 +525,7 @@ package body et_kicad is
 	-- Returns the properties of the given port as string.
 		use et_coordinates;
 	begin
-		return "reference " & et_libraries.to_string (port.reference) 
+		return "reference " & to_string (port.reference) 
 			& " port " & et_symbols.to_string (port.name)
 			& " coordinates " & to_string (position => port.coordinates, scope => module);
 	end to_string;
@@ -614,13 +614,12 @@ package body et_kicad is
 
 
 	procedure no_generic_model_found (
-		reference		: in et_libraries.type_device_name; -- IC303
+		reference		: in type_device_name; -- IC303
 		library			: in et_kicad_general.type_device_library_name.bounded_string; -- ../lib/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string) -- TRANSISTOR_NPN
 		is
 		use et_string_processing;
 		use et_libraries;
-		use et_devices;
 	begin
 		log (ERROR, "component " & to_string (reference) -- CS: output coordinates
 			& " has no generic model " & to_string (generic_name)
@@ -788,17 +787,18 @@ package body et_kicad is
 		raise constraint_error;
 	end invalid_field;
 
-	procedure validate_prefix (prefix : in et_devices.type_device_name_prefix.bounded_string) is
+	procedure validate_prefix (prefix : in type_device_name_prefix.bounded_string) is
 	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
 		use et_string_processing;
-		use et_devices.type_device_name_prefix;
+		use type_device_name_prefix;
 	begin
-		if to_string (prefix) = power_flag_prefix or to_string (prefix) = power_symbol_prefix then
+		if et_devices.to_string (prefix) = power_flag_prefix 
+			or et_devices.to_string (prefix) = power_symbol_prefix then
 			null;
 		else
 			log (ERROR, "invalid prefix "
-				 & to_string (prefix) & " !"
+				 & et_devices.to_string (prefix) & " !"
 				 & " Expected " 
 				 & power_flag_prefix & " or "
 				 & power_symbol_prefix & " !",
@@ -808,17 +808,18 @@ package body et_kicad is
 		end if;
 	end validate_prefix;
 
-	procedure validate_prefix (reference : in et_libraries.type_device_name) is
+	procedure validate_prefix (reference : in type_device_name) is
 	-- Tests if the given reference has a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
 		use et_libraries;
-		use et_devices.type_device_name_prefix;
+		use type_device_name_prefix;
 	begin
-		if to_string (reference.prefix) = power_flag_prefix or to_string (reference.prefix) = power_symbol_prefix then
+		if et_devices.to_string (reference.prefix) = power_flag_prefix 
+			or et_devices.to_string (reference.prefix) = power_symbol_prefix then
 			null;
 		else
 			log (ERROR, "invalid prefix in component reference "
-				 & et_libraries.to_string (reference) & " !"
+				 & et_devices.to_string (reference) & " !"
 				 & " Expected " 
 				 & power_flag_prefix & " or "
 				 & power_symbol_prefix & " !",
@@ -1200,14 +1201,13 @@ package body et_kicad is
 		-- CS: exception handler
 	end to_degrees;
 
-	function to_power_flag (reference : in et_libraries.type_device_name) 
+	function to_power_flag (reference : in type_device_name) 
 		return type_power_flag is
 	-- If the given component reference is one that belongs to a "power flag" returns YES.
-		use et_devices;
 		use type_device_name_prefix;
 	begin
 		--log (text => et_schematic.to_string (reference));
-		if et_libraries.prefix (reference) = power_flag_prefix then
+		if prefix (reference) = power_flag_prefix then
 			--log (text => "power flag on");
 			return YES;
 		else
@@ -7549,11 +7549,11 @@ package body et_kicad is
 							if element (timestamp_cursor) = current_schematic.timestamp then
 								
 								reference := alt_ref.reference;
-								field_reference.content := et_text.to_content (et_libraries.to_string (alt_ref.reference));
+								field_reference.content := et_text.to_content (to_string (alt_ref.reference));
 								suitable_reference_found := true;
 
 								log (text => "update due to hierachic structure: " &
-									 et_libraries.to_string (reference), 
+									 to_string (reference), 
 									 level => make_component.log_threshold);
 							end if;
 						end query_path;
@@ -7597,11 +7597,11 @@ package body et_kicad is
 							-- F 0 "IC1" H 4100 4050 50  0000 C BIB <- text_reference
 
 						if type_alternative_references.is_empty (alternative_references) then -- no alternative references
-							log (text => "reference " & et_libraries.to_string (reference), level => log_threshold + 1);
+							log (text => "reference " & to_string (reference), level => log_threshold + 1);
 							
-							if et_libraries.to_string (reference) /= content (field_reference) then
+							if to_string (reference) /= content (field_reference) then
 								log (ERROR, "reference mismatch ! Header reads " 
-									& et_libraries.to_string (reference) & " but field contains " 
+									& to_string (reference) & " but field contains " 
 									& content (field_reference),
 									console => true);
 								raise constraint_error;
@@ -7663,7 +7663,7 @@ package body et_kicad is
 						when event:
 							others =>
 								log (ERROR, 
-									"invalid field in component " & et_libraries.to_string (reference)
+									"invalid field in component " & to_string (reference)
 									& to_string (position => position),
 									console => true);
 								log (text => ada.exceptions.exception_message (event), console => true);
@@ -7749,7 +7749,7 @@ package body et_kicad is
 						return key (lib_cursor);
 					else
 						log (ERROR, "for component "  
-							& et_libraries.to_string (reference)
+							& to_string (reference)
 							& " no generic model in any library found !",
 							console => true);
 						raise constraint_error;
@@ -7822,7 +7822,7 @@ package body et_kicad is
 						return full_name;
 					else
 						log (ERROR, "for component "  
-							& et_libraries.to_string (reference)
+							& to_string (reference)
 							& " no generic model in any library named '" & et_kicad_general.to_string (component_library_name) 
 							& "' found !",
 							console => true);
@@ -7832,14 +7832,14 @@ package body et_kicad is
 				end full_name_of_component_library;
 
 
-				function remove_leading_hash (reference : in et_libraries.type_device_name) return
+				function remove_leading_hash (reference : in type_device_name) return
 				-- Removes from a reference like #PWR04 the leading hash character.
 				-- CS: This function should be applied on virtual components (such as power flags or power symbols) only.
 				-- The assumption is that their prefix always starts with a hash character.
-					et_libraries.type_device_name is
+					type_device_name is
 					use et_libraries;
 					use type_device_name_prefix;
-					reference_out : et_libraries.type_device_name := reference; -- to be returned -- like PWR04
+					reference_out : type_device_name := reference; -- to be returned -- like PWR04
 				begin
 					--log (text => "renaming " & to_string (reference_out));
 					--log (text => "length" & positive'image (length (reference_out.prefix)));
@@ -7978,7 +7978,7 @@ package body et_kicad is
 					
 					exception
 						when constraint_error =>
-							log (ERROR, "component " & et_libraries.to_string (reference)
+							log (ERROR, "component " & to_string (reference)
 									& " " & kicad_coordinates.to_string (position => position),
 								console => true);
 							raise constraint_error;
@@ -8258,7 +8258,7 @@ package body et_kicad is
 				-- to the list alternative_references.
 				
 					path	: et_string_processing.type_fields_of_line; -- 59F17F77 5A991798
-					ref		: et_libraries.type_device_name; -- #PWR03
+					ref		: type_device_name; -- #PWR03
 					unit	: type_unit_name.bounded_string; -- 1 -- CS is this really about unit names ?
 
 					path_segment : type_timestamp;
@@ -9252,7 +9252,7 @@ package body et_kicad is
 -- 	-- Returns the purpose of the given component in the given module.
 -- 	-- If no purpose specified for the component, an empty string is returned.
 -- 		module_name		: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
--- 		reference		: in et_libraries.type_device_name; -- X701
+-- 		reference		: in type_device_name; -- X701
 -- 		log_threshold	: in et_string_processing.type_log_level)
 -- 		return et_libraries.type_component_purpose.bounded_string is
 -- 
@@ -9364,7 +9364,7 @@ package body et_kicad is
 		port_cursor : type_ports.cursor;
 	
 		procedure set_cursor (
-			name 	: in et_libraries.type_device_name;
+			name 	: in type_device_name;
 			ports	: in type_ports.list) is
 		begin
 			port_cursor := type_ports.first (ports);
@@ -9690,7 +9690,7 @@ package body et_kicad is
 				component := first (portlists);
 				while component /= type_portlists.no_element loop
 					log_indentation_up;
-					log (text => "probing component " & et_libraries.to_string (key (component)), level => log_threshold + 4);
+					log (text => "probing component " & to_string (key (component)), level => log_threshold + 4);
 
 					-- LOOP IN PORTLIST (of component)
 					port := first_port (component);
@@ -9714,7 +9714,7 @@ package body et_kicad is
 								-- If strand has a name already, its scope must be global
 								-- because power-in ports are allowed in global strands exclusively !
 								if anonymous (element (strand).name) then
-									log (text => "component " & et_libraries.to_string (key (component)) 
+									log (text => "component " & to_string (key (component)) 
 										& " port name " & to_string (element (port).name) 
 										& " is a power input -> port name sets strand name", level => log_threshold + 2);
 
@@ -9727,7 +9727,7 @@ package body et_kicad is
 								-- If strand has been given a name already (for example by previous power-in ports) AND
 								-- if strand name differs from name of current power-in port -> warning
 								elsif et_general.to_string (element (strand).name) /= to_string (element (port).name) then
-									log (WARNING, "component " & et_libraries.to_string (key (component)) 
+									log (WARNING, "component " & to_string (key (component)) 
 										& " POWER IN port " & to_string (element (port).name) 
 										& " at" & to_string (element (port).coordinates, module)
 										& " conflicts with net " & et_general.to_string (element (strand).name) & " !");
@@ -9736,7 +9736,7 @@ package body et_kicad is
 								-- If strand has a name and is local or hierarchic -> error and abort
 								--elsif et_schematic."/=" (element (strand).scope, et_schematic.global) then
 								elsif element (strand).scope /= GLOBAL then
-									log (ERROR, "component " & et_libraries.to_string (key (component)) 
+									log (ERROR, "component " & to_string (key (component)) 
 										& " POWER IN port " & to_string (element (port).name) 
 										& " at" & to_string (element (port).coordinates, module)
 										& " conflicts with " & to_string (element (strand).scope) 
@@ -9962,7 +9962,7 @@ package body et_kicad is
 
 		-- The component reference in the schematic (like R44 or IC34)
 		-- is tempoarily held here:
-		component_reference	: et_libraries.type_device_name;
+		component_reference	: type_device_name;
 	
 		-- This component cursor points to the library component being processed.
 		use type_components_library;
@@ -10344,7 +10344,7 @@ package body et_kicad is
 		
 			-- log component by its reference		
 			component_reference := et_kicad.component_reference (component_cursor_sch);
-			log (text => "reference " & et_libraries.to_string (component_reference), level => log_threshold + 1);
+			log (text => "reference " & to_string (component_reference), level => log_threshold + 1);
 			
 			-- Insert component in portlists. for the moment the portlist of this component is empty.
 			-- After that the component_cursor_portlists points to the component. This cursor will
@@ -10425,7 +10425,7 @@ package body et_kicad is
 			portlist_cursor : type_portlists.cursor := module.portlists.first;
 
 			procedure query_ports (
-				component	: in et_libraries.type_device_name;
+				component	: in type_device_name;
 				ports 		: in type_ports.list) is
 				port_cursor : type_ports.cursor := ports.first;
 				use type_ports;
@@ -10661,18 +10661,17 @@ package body et_kicad is
 					unit : type_units_library.cursor := component.units.first;
 
 					procedure query_units_sch (
-						component_name	: in et_libraries.type_device_name;
+						component_name	: in type_device_name;
 						component 		: in type_component_schematic) is
 						use type_units_schematic;
 						unit_cursor : type_units_schematic.cursor := component.units.first;
 						unit_deployed : boolean := false;
-						use et_devices.type_unit_name;
+						use type_unit_name;
 						use et_import;
 
-						function unit_not_deployed return string is
-						begin
-							return et_libraries.to_string (key (component_sch)) 
-								& " unit " & to_string (key (unit))
+						function unit_not_deployed return string is begin
+							return to_string (key (component_sch)) 
+								& " unit " & et_devices.to_string (key (unit))
 								& " not deployed !";
 						end unit_not_deployed;
 		
@@ -10792,8 +10791,8 @@ package body et_kicad is
 		begin -- query_schematic_components
 			while component_sch /= type_components_schematic.no_element loop
 
-				log (text => et_libraries.to_string (key (component_sch)) & " in " 
-					& et_devices.to_string (element (component_sch).library_name), level => log_threshold + 1);
+				log (text => to_string (key (component_sch)) & " in " 
+					& to_string (element (component_sch).library_name), level => log_threshold + 1);
 
 				-- Set library cursor so that it points to the library of the generic model.
 				library_cursor := type_libraries.find (
@@ -11066,7 +11065,7 @@ package body et_kicad is
 	-- CS: This assumption may not apply for all CAE systems. Currently we
 	-- consider only kicad. In other cases the "inserted" check (see below) 
 	-- must be enabled via an argument.
-		reference		: in et_libraries.type_device_name;
+		reference		: in type_device_name;
 		component		: in type_component_schematic;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		
@@ -11102,13 +11101,13 @@ package body et_kicad is
 	
 	procedure add_unit (
 	-- Adds a unit to the given commponent.
-		reference		: in et_libraries.type_device_name;
+		reference		: in type_device_name;
 		unit_name		: in et_devices.type_unit_name.bounded_string;
 		unit 			: in type_unit_schematic;
 		log_threshold	: in et_string_processing.type_log_level) is
 
 		procedure add (
-			reference	: in et_libraries.type_device_name;
+			reference	: in type_device_name;
 			component	: in out type_component_schematic) is
 
 			inserted	: boolean := false;
@@ -11126,9 +11125,9 @@ package body et_kicad is
 			if inserted then -- fine. unit was inserted successfully
 				write_unit_properties (unit => cursor, log_threshold => log_threshold + 1);
 			else -- not inserted, unit already in component -> failure
-				log (ERROR, "component " & et_libraries.to_string (reference) &
-					 " unit " & et_devices.to_string (unit_name) & " used multiple times !" &
-					 " Make sure " & et_libraries.to_string (reference) & " exists ONLY ONCE !",
+				log (ERROR, "component " & to_string (reference) &
+					 " unit " & to_string (unit_name) & " used multiple times !" &
+					 " Make sure " & to_string (reference) & " exists ONLY ONCE !",
 					console	=> true);
 
 				raise constraint_error;
@@ -11606,7 +11605,7 @@ package body et_kicad is
 					
 					procedure query_ports (
 					-- Query ports. Exit prematurely once a port was found.
-						component	: in et_libraries.type_device_name;
+						component	: in type_device_name;
 						ports 		: in type_ports.list) is
 						port_cursor : type_ports.cursor := ports.first;
 						use type_ports;
@@ -11860,7 +11859,7 @@ package body et_kicad is
 				flag_orphaned : boolean := true;
 				
 				procedure query_ports (
-					component 	: in et_libraries.type_device_name;
+					component 	: in type_device_name;
 					ports 		: in type_ports.list) is
 					port_cursor : type_ports.cursor := ports.first;
 					use type_ports;
@@ -12129,7 +12128,7 @@ package body et_kicad is
 				while port_cursor /= type_ports_with_reference.no_element loop
 			
 					-- log reference, port and direction (all in one line)
-					log (text => "reference " & et_libraries.to_string (element (port_cursor).reference)
+					log (text => "reference " & to_string (element (port_cursor).reference)
 						& " port " & to_string (element (port_cursor).name)
 						& to_string (element (port_cursor).direction, preamble => true),
 						level => log_threshold + 3);
@@ -12360,8 +12359,7 @@ package body et_kicad is
 					while port_cursor /= type_ports_with_reference.no_element loop
 						log (text => to_string (element (port_cursor)), level => log_threshold + 3); -- show port name
 
-						--if element (port_cursor).reference = port.reference then
-						if et_libraries."=" (element (port_cursor).reference, port.reference) then
+						if element (port_cursor).reference = port.reference then
 							if element (port_cursor).name = port.name then
 								net_found := true;
 								net_name_to_return := net_name;
@@ -12415,7 +12413,7 @@ package body et_kicad is
 		
 	begin -- connected_net
 		log (text => "locating in module " & to_string (port.module) & " net connected with " 
-			& et_libraries.to_string (port.reference) & " port " & to_string (port.name) & " ...",
+			& to_string (port.reference) & " port " & to_string (port.name) & " ...",
 			level => log_threshold);
 		log_indentation_up;
 
@@ -12493,7 +12491,7 @@ package body et_kicad is
 
 						procedure query_ports (
 						-- Tests the ports of the given component if they sit on the current net segment.
-							component	: in et_libraries.type_device_name;
+							component	: in type_device_name;
 							ports		: in type_ports.list) is
 							use type_ports;
 							port_cursor : type_ports.cursor := ports.first; -- points to the first port of the component
@@ -12508,7 +12506,7 @@ package body et_kicad is
 	
 									procedure locate_port (
 									-- Locates the port of the component
-										component	: in et_libraries.type_device_name;
+										component	: in type_device_name;
 										ports		: in out type_ports.list) is
 
 										procedure mark_it (port : in out type_port) is
@@ -12575,7 +12573,7 @@ package body et_kicad is
 									if element (port_cursor).connected = NO then
 									
 										log_indentation_up;
-										log (text => "probing " & et_libraries.to_string (component) 
+										log (text => "probing " & to_string (component) 
 											& " port " & to_string (element (port_cursor).name)
 											& latin_1.space
 											& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
@@ -12585,7 +12583,7 @@ package body et_kicad is
 										if port_connected_with_segment (element (port_cursor), element (segment)) then
 											log_indentation_up;
 										
-											log (text => "connected with " & et_libraries.to_string (component) 
+											log (text => "connected with " & to_string (component) 
 												& " port " & to_string (element (port_cursor).name)
 												& latin_1.space
 												& to_string (position => element (port_cursor).coordinates, scope => kicad_coordinates.MODULE),
@@ -12736,7 +12734,7 @@ package body et_kicad is
 
 	
 	function terminal_count (
-		reference		: in et_libraries.type_device_name;
+		reference		: in type_device_name;
 		log_threshold	: in et_string_processing.type_log_level)
 		return et_devices.type_terminal_count is
 	-- Returns the number of terminals of the given component reference.
@@ -12863,7 +12861,7 @@ package body et_kicad is
 		end locate_component_in_schematic;
 		
 	begin -- terminal_count
-		log (text => "fetching terminal count of " & et_libraries.to_string (reference) & " ...", level => log_threshold);
+		log (text => "fetching terminal count of " & to_string (reference) & " ...", level => log_threshold);
 		log_indentation_up;
 		
 		query_element (
@@ -13022,7 +13020,7 @@ package body et_kicad is
 	
 	begin -- to_terminal
 		log (text => "locating in module " & to_string (module) & " terminal (according to package variant) for " 
-			& et_libraries.to_string (port.reference) 
+			& to_string (port.reference) 
 			& " port " & to_string (port.name) & " ...", level => log_threshold);
 		log_indentation_up;
 
@@ -13035,7 +13033,7 @@ package body et_kicad is
 				process		=> locate_component_in_schematic'access);
 			
 		else -- abort
-			log (ERROR, et_libraries.to_string (port.reference) 
+			log (ERROR, to_string (port.reference) 
 				& " is a virtual component and thus has no package !");
 			raise constraint_error;
 		end if;
@@ -13047,7 +13045,7 @@ package body et_kicad is
 	function connected_net (
 	-- Returns the name of the net connected with the given component and terminal.
 		module			: in type_submodule_name.bounded_string; -- nucleo_core
-		reference		: in et_libraries.type_device_name;	-- IC45
+		reference		: in type_device_name;	-- IC45
 		terminal		: in et_packages.type_terminal_name.bounded_string; -- E14
 		log_threshold	: in et_string_processing.type_log_level)		
 		return type_net_name.bounded_string is
@@ -13076,7 +13074,7 @@ package body et_kicad is
 
 			library_name	: et_kicad_general.type_device_library_name.bounded_string;
 			generic_name	: type_component_generic_name.bounded_string;
-			package_variant	: et_devices.type_component_variant_name.bounded_string;
+			package_variant	: type_component_variant_name.bounded_string;
 
 			library_cursor	: type_libraries.cursor;
 
@@ -13094,18 +13092,18 @@ package body et_kicad is
 					component 	: in type_component_library) is
 				
 					use et_devices.type_component_variants;
-					variant_cursor : et_devices.type_component_variants.cursor;
+					variant_cursor : type_component_variants.cursor;
 
 					procedure locate_terminal (
 					-- Locates the given terminal in the package variant.
 						variant_name 	: in et_devices.type_component_variant_name.bounded_string;
 						variant 		: in et_devices.type_component_variant) is
-						use et_devices.type_terminal_port_map;
+						use type_terminal_port_map;
 						use type_port_name;
-						terminal_cursor : et_devices.type_terminal_port_map.cursor;
+						terminal_cursor : type_terminal_port_map.cursor;
 					begin -- locate_terminal
 						terminal_cursor := variant.terminal_port_map.find (terminal);
-						if terminal_cursor /= et_devices.type_terminal_port_map.no_element then -- given terminal found
+						if terminal_cursor /= type_terminal_port_map.no_element then -- given terminal found
 
 							-- set the intermediate variable "port". see declarations above.
 							port.module := connected_net.module; -- the name of the given module
@@ -13121,14 +13119,14 @@ package body et_kicad is
 					end locate_terminal;
 					
 				begin -- query_variants
-					log (text => "locating variant " & et_devices.to_string (package_variant) & " ...", level => log_threshold + 3);
+					log (text => "locating variant " & to_string (package_variant) & " ...", level => log_threshold + 3);
 					log_indentation_up;
 
 					variant_cursor := component.variants.find (package_variant);
 
 					-- Locate the given terminal in the variant.
 					-- The variant should be found (because the component has been inserted in the library earlier).
-					if variant_cursor /= et_devices.type_component_variants.no_element then
+					if variant_cursor /= type_component_variants.no_element then
 
 						-- locate the given terminal in the package variant
 						query_element (
@@ -13136,7 +13134,7 @@ package body et_kicad is
 							process 	=> locate_terminal'access);
 
 					else
-						log (ERROR, "package variant " & et_devices.to_string (key (variant_cursor)) &
+						log (ERROR, "package variant " & to_string (key (variant_cursor)) &
 							" not found !", console => true);
 						raise constraint_error;
 					end if;
@@ -13145,7 +13143,7 @@ package body et_kicad is
 				
 			begin -- locate_component_in_library
 				log (text => "locating generic component " & to_string (generic_name) 
-						& " in library " & et_devices.to_string (library_name) & " ...", level => log_threshold + 2);
+						& " in library " & to_string (library_name) & " ...", level => log_threshold + 2);
 				log_indentation_up;
 
 				-- Set the component_cursor right away to the position of the generic component
@@ -13170,7 +13168,7 @@ package body et_kicad is
 						process 	=> query_variants'access);
 					
 				else -- generic model not found -> abort
-					log (ERROR, "generic model for " & et_libraries.to_string (reference) & " not found !", console => true);
+					log (ERROR, "generic model for " & to_string (reference) & " not found !", console => true);
 					raise constraint_error;
 				end if;
 					
@@ -13203,7 +13201,7 @@ package body et_kicad is
 				end if;
 
 			else -- component nof found in schematic -> abort
-				log (ERROR, "component " & et_libraries.to_string (reference) & " not found !", console => true);
+				log (ERROR, "component " & to_string (reference) & " not found !", console => true);
 				raise constraint_error;
 			end if;
 				
@@ -13212,7 +13210,7 @@ package body et_kicad is
 
 	begin -- connected_net
 		log (text => "locating in module " & to_string (module) & " net connected with " 
-			& et_libraries.to_string (reference) & " terminal " & et_packages.to_string (terminal) & " ...", level => log_threshold);
+			& to_string (reference) & " terminal " & et_packages.to_string (terminal) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		module_cursor := find (modules, module); -- set the cursor to the module
@@ -13661,7 +13659,7 @@ package body et_kicad is
 -- 			portlist : type_portlists.cursor := module.portlists.first;
 -- 
 -- 			procedure count (
--- 				component	: in et_libraries.type_device_name;
+-- 				component	: in type_device_name;
 -- 				ports		: in type_ports.list) is
 -- 				port : type_ports.cursor := ports.first;
 -- 				use type_ports;

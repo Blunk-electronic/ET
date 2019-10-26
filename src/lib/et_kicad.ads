@@ -60,7 +60,7 @@ with et_libraries;
 with et_string_processing;
 with et_text;
 with et_symbols;
-with et_devices;
+with et_devices;			use et_devices;
 
 package et_kicad is
 	
@@ -625,7 +625,7 @@ package et_kicad is
  		element_type 	=> type_component_schematic);
 
 	function component_reference (cursor : in type_components_schematic.cursor) 
-		return et_devices.type_device_name;
+		return type_device_name;
 	-- Returns the component reference where cursor points to.
 	
 	
@@ -641,7 +641,7 @@ package et_kicad is
 	-- Leading zeroes in the id are removed. R002 becomes R2.
 		text_in			: in string;
 		leading_hash	: in boolean := false)
-		return et_devices.type_device_name;
+		return type_device_name;
 
 	
 	procedure write_component_properties (

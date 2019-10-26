@@ -69,6 +69,7 @@ with submodules;
 with numbering;
 with et_symbols;
 with et_packages;
+with et_devices;				use et_devices;
 
 package body board_ops is
 
@@ -560,7 +561,6 @@ package body board_ops is
 		use assembly_variants.type_variants;
 		use et_general.type_variant_name;
 
-
 		procedure make_for_variant (variant_name : in type_variant_name.bounded_string) is
 			
 			-- Here we collect the pick and place data in the first step. It will then
@@ -575,7 +575,7 @@ package body board_ops is
 			-- The submodule position in the parent module is added to the device position.
 				module_cursor		: in type_modules.cursor;
 				variant				: in type_variant_name.bounded_string;
-				offset				: in et_libraries.type_device_name_index;
+				offset				: in type_device_name_index;
 				position_in_board	: in type_position) -- submod pos. in parent
 			is
 
@@ -590,7 +590,7 @@ package body board_ops is
 					module_name	: in type_module_name.bounded_string;
 					module		: in et_schematic.type_module) is
 
-					device_name : et_libraries.type_device_name;
+					device_name : type_device_name;
 					inserted : boolean;
 
 					function apply_position_in_board (position_generic : in type_package_position) return
@@ -737,7 +737,7 @@ package body board_ops is
 						log (text => "collecting devices from module " &
 								enclose_in_quotes (to_string (module_name)) &
 								" default variant by applying device index offset" & 
-								et_libraries.to_string (offset), -- 100
+								et_devices.to_string (offset), -- 100
 							level => log_threshold + 1);
 
 						log_position_in_board;
@@ -754,7 +754,7 @@ package body board_ops is
 								enclose_in_quotes (to_string (module_name)) &
 								" variant " & enclose_in_quotes (to_variant (variant)) &
 								" by applying device index offset" & 
-								et_libraries.to_string (offset), -- 100
+								et_devices.to_string (offset), -- 100
 							level => log_threshold + 1);
 
 						log_position_in_board;
@@ -807,7 +807,7 @@ package body board_ops is
 				module_name 	: type_module_name.bounded_string; -- motor_driver
 				parent_name 	: type_module_name.bounded_string; -- water_pump
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-				offset			: et_libraries.type_device_name_index;
+				offset			: et_devices.type_device_name_index;
 
 				use assembly_variants.type_submodules;
 				alt_submod : assembly_variants.type_submodules.cursor;
