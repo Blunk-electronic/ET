@@ -124,16 +124,6 @@ package et_general is
 	procedure show_cdl_switches;
 	-- Outputs the command line switches that initiate something.
 	
--- PAPER SIZES
-    type type_paper_size is (A3, A4); -- CS: others ?
-    paper_size_default : type_paper_size := A4;
-
-	function to_paper_size (paper_size : in string) return type_paper_size;
-	-- converts a string to type_paper_size
-
-	function to_string (paper_size : in type_paper_size) return string;
-
-	type type_paper_orientation is (PORTRAIT, LANDSCAPE);
 
 -- AXIS
 	type type_axis is (X, Y, Z);

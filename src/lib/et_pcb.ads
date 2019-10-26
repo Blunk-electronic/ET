@@ -59,10 +59,14 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;
 with et_packages;				use et_packages;
 with et_pcb_stack;				use et_pcb_stack;
+with et_frames;
 
 package et_pcb is
 	use et_pcb_coordinates.geometry;
 	use et_packages.shapes;
+
+	package frames is new et_frames.frames (shapes => et_packages.shapes);
+	
 	
 	-- VIAS
 	type type_micro_vias_allowed is (NO, YES);
@@ -208,10 +212,10 @@ package et_pcb is
 
 	function on_segment (
 	-- Returns true if the given point sits on the given line of copper.
-		point			: in geometry.type_point; -- x/y
-		layer			: in type_signal_layer;
-		line			: in pac_copper_lines.cursor;
-		accuracy		: in geometry.type_accuracy)
+		point		: in et_pcb_coordinates.geometry.type_point; -- x/y
+		layer		: in type_signal_layer;
+		line		: in pac_copper_lines.cursor;
+		accuracy	: in et_pcb_coordinates.geometry.type_accuracy)
 		return boolean;
 	
 	type type_copper_arc is new et_packages.type_copper_arc with record
@@ -221,7 +225,7 @@ package et_pcb is
 
 	function on_segment (
 	-- Returns true if the given point sits on the given arc of copper.
-		point			: in geometry.type_point; -- x/y
+		point			: in et_pcb_coordinates.geometry.type_point; -- x/y
 		layer			: in type_signal_layer;
 		arc				: in pac_copper_arcs.cursor;
 		accuracy		: in et_pcb_coordinates.type_distance)

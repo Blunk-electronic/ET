@@ -49,6 +49,7 @@ with ada.exceptions;
 with ada.numerics.generic_elementary_functions;
 with et_string_processing;
 with et_general;
+-- with et_frames;					use et_frames;
 
 package body et_coordinates is
 	pragma assertion_policy (check);
@@ -216,52 +217,6 @@ package body et_coordinates is
 		position.sheet := sheet;
 	end set_sheet;
 
-	function paper_dimension (
-	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
-		paper_size	: in et_general.type_paper_size;
-		orientation	: in et_general.type_paper_orientation := et_general.LANDSCAPE;
-		axis		: in type_axis_2d)
-		return type_distance_xy is
-
-		dimension : type_distance;
-		use et_general;
-	
-	begin
-		case orientation is
-			when LANDSCAPE =>
-				case paper_size is 
-					when A3 =>
-						case axis is
-							when X => dimension := paper_size_A3_x;
-							when Y => dimension := paper_size_A3_y;
-						end case;
-
-					when A4 =>
-						case axis is
-							when X => dimension := paper_size_A4_x;
-							when Y => dimension := paper_size_A4_y;
-						end case;
-				end case;
-
-			when PORTRAIT =>
-				case paper_size is 
-					when A3 =>
-						case axis is
-							when X => dimension := paper_size_A3_y;
-							when Y => dimension := paper_size_A3_x;
-						end case;
-
-					when A4 =>
-						case axis is
-							when X => dimension := paper_size_A4_y;
-							when Y => dimension := paper_size_A4_x;
-						end case;
-				end case;
-
-		end case;
-
-		return dimension;
-	end paper_dimension;
 
 	
 end et_coordinates;

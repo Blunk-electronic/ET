@@ -69,6 +69,7 @@ with et_text;
 with et_kicad;
 with et_symbols;
 with et_devices;				use et_devices;
+with et_frames;					use et_frames;
 
 package body et_kicad_pcb is
 
@@ -3994,7 +3995,7 @@ package body et_kicad_pcb is
 						when SEC_PAGE =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => board.paper_size := et_general.to_paper_size (to_string (arg)); -- A4
+								when 1 => board.paper_size := to_paper_size (to_string (arg)); -- A4
 								when others => too_many_arguments;
 							end case;
 
@@ -7070,7 +7071,7 @@ package body et_kicad_pcb is
 							null; -- CS log general information
 
 						when SEC_PAGE =>
-							log (text => "paper size " & et_general.to_string (board.paper_size), level => log_threshold + 1);
+							log (text => "paper size " & to_string (board.paper_size), level => log_threshold + 1);
 
 						when SEC_LAYERS =>
 							null; -- nothing to do. work already done on leaving SEC_LAYER_ID

@@ -168,16 +168,7 @@ package body et_general is
 		put_line ("For additional switches and examples see <https://github.com/Blunk-electronic/ET>");
 	end show_cdl_switches;
 
-	function to_paper_size (paper_size : in string) return type_paper_size is
-	-- converts a string to type_paper_size
-	begin
-		return type_paper_size'value (paper_size);
-	end to_paper_size;
-	
-	function to_string (paper_size : in type_paper_size) return string is
-	begin
-		return type_paper_size'image (paper_size);
-	end to_string;
+
 
 -- AXIS
 	function to_string (axis : in type_axis) return string is begin

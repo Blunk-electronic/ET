@@ -76,6 +76,7 @@ with et_text;
 with et_packages;
 with et_symbols;				use et_symbols;
 with et_devices;				use et_devices;
+with et_frames;					use et_frames;
 
 package body et_kicad is
 
@@ -6627,7 +6628,7 @@ package body et_kicad is
 
 				-- read drawing frame dimensions from a line like "$Descr A4 11693 8268"
 				-- CS test field count				
-				frame.paper_size	:= et_general.to_paper_size (et_string_processing.field (et_kicad.line,2));
+				frame.paper_size	:= to_paper_size (et_string_processing.field (et_kicad.line,2));
 
 				-- The sheet size seems to be ignored by kicad. Only the paper_size matters.
 				frame.size_x		:= mil_to_distance (et_string_processing.field (et_kicad.line,3)); 

@@ -34,21 +34,67 @@
 --
 --   history of changes:
 --
--- with ada.containers; 			use ada.containers;
--- with ada.containers.doubly_linked_lists;
-
--- with et_general;				use et_general;
--- with et_geometry;
 
 package body et_frames is
 
-		
+	function to_paper_size (paper_size : in string) return type_paper_size is begin
+		return type_paper_size'value (paper_size);
+	end;
+	
+	function to_string (paper_size : in type_paper_size) return string is begin
+		return type_paper_size'image (paper_size);
+	end;
 	
 		
 	package body frames is
--- 		use shapes;
 
-		procedure dummy is begin null; end;
+		function paper_dimension (
+		-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
+			paper_size	: in type_paper_size;
+			orientation	: in type_paper_orientation := LANDSCAPE;
+			axis		: in type_axis_2d)
+			return type_distance_positive is
+
+			dimension : type_distance_positive;
+		
+		begin
+			case orientation is
+				when LANDSCAPE =>
+					case paper_size is 
+						when A3 =>
+							case axis is
+								when X => dimension := paper_size_A3_x;
+								when Y => dimension := paper_size_A3_y;
+							end case;
+
+						when A4 =>
+							case axis is
+								when X => dimension := paper_size_A4_x;
+								when Y => dimension := paper_size_A4_y;
+							end case;
+					end case;
+
+				when PORTRAIT =>
+					case paper_size is 
+						when A3 =>
+							case axis is
+								when X => dimension := paper_size_A3_y;
+								when Y => dimension := paper_size_A3_x;
+							end case;
+
+						when A4 =>
+							case axis is
+								when X => dimension := paper_size_A4_y;
+								when Y => dimension := paper_size_A4_x;
+							end case;
+					end case;
+
+			end case;
+
+			return dimension;
+		end paper_dimension;
+
+
 		
 	end frames;
 	

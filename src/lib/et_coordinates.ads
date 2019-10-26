@@ -48,6 +48,7 @@ with ada.containers.doubly_linked_lists;
 with et_string_processing;
 with et_general;				use et_general;
 with et_geometry;
+-- with et_frames;					use et_frames;
 
 -- with system.assertions;
 
@@ -152,20 +153,14 @@ package et_coordinates is
 	procedure set_sheet (position : in out type_position; sheet : in type_sheet);
 	-- Sets the sheet number in given position.
 
-	-- PAPER SIZES
-	-- As default we assume landscape format for all sheets.
-	paper_size_A3_x : constant et_coordinates.type_distance := 420.0; -- CS use a common anchestor type and default value with sizes defined in et_pcb_coordinates.ads.
-	paper_size_A3_y : constant et_coordinates.type_distance := 297.0;
+-- 	package frames is new et_frames.frames (shapes => shapes);
 	
-	paper_size_A4_x : constant et_coordinates.type_distance := 297.0;
-	paper_size_A4_y : constant et_coordinates.type_distance := 210.0;
-
-	function paper_dimension (
-	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
-		paper_size	: in et_general.type_paper_size;
-		orientation	: in et_general.type_paper_orientation := et_general.LANDSCAPE;
-		axis		: in type_axis_2d)
-		return type_distance_xy;
+-- 	function paper_dimension (
+-- 	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
+-- 		paper_size	: in type_paper_size;
+-- 		orientation	: in type_paper_orientation := LANDSCAPE;
+-- 		axis		: in type_axis_2d)
+-- 		return type_distance_xy;
 
 	
 	private 

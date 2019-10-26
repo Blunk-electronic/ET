@@ -71,6 +71,7 @@ with pcb_rw;
 with device_rw;
 with et_symbols;
 with et_devices;				use et_devices;
+with et_frames;					use et_frames;
 
 package body et_kicad_to_native is
 
@@ -110,10 +111,10 @@ package body et_kicad_to_native is
 		
 		function paper_size_of_schematic_sheet (sheet_number : in et_coordinates.type_sheet)
 		-- Returns for a given sheet number the respective paper size.
-			return et_general.type_paper_size is
+			return type_paper_size is
 
 			-- This is to be returned. In case no paper size was found, use the default value of type_paper_size.
-			size : et_general.type_paper_size := et_general.type_paper_size'first;
+			size : type_paper_size := paper_size_default;
 
 			sheet_found : boolean := false; -- goes true once the given sheet has been found
 		
@@ -159,7 +160,7 @@ package body et_kicad_to_native is
 			use et_coordinates;
 			use geometry;
 			sheet_number 		: et_coordinates.type_sheet;
-			sheet_paper_size	: et_general.type_paper_size;
+			sheet_paper_size	: type_paper_size;
 			sheet_height		: et_coordinates.type_distance_xy;
 			new_y				: et_coordinates.type_distance_xy;
 		begin -- move
@@ -170,7 +171,7 @@ package body et_kicad_to_native is
 			sheet_paper_size	:= paper_size_of_schematic_sheet (sheet_number);
 
 			-- get the paper height of the sheet
-			sheet_height		:= paper_dimension (axis => Y, paper_size => sheet_paper_size);
+			sheet_height		:= et_schematic.frames.paper_dimension (axis => Y, paper_size => sheet_paper_size);
 
 			-- calculate the new y position
 			--new_y				:= sheet_height - distance (axis => Y, point => point);
@@ -192,7 +193,7 @@ package body et_kicad_to_native is
 			use et_coordinates;
 			use geometry;
 			sheet_number 		: et_coordinates.type_sheet;
-			sheet_paper_size	: et_general.type_paper_size;
+			sheet_paper_size	: type_paper_size;
 			sheet_height		: et_coordinates.type_distance_xy;
 			new_y				: et_coordinates.type_distance_xy;
 		begin -- move
@@ -203,7 +204,7 @@ package body et_kicad_to_native is
 			sheet_paper_size	:= paper_size_of_schematic_sheet (sheet_number);
 
 			-- get the paper height of the sheet
-			sheet_height		:= paper_dimension (axis => Y, paper_size => sheet_paper_size);
+			sheet_height		:= et_schematic.frames.paper_dimension (axis => Y, paper_size => sheet_paper_size);
 
 			-- calculate the new y position
 			--new_y				:= sheet_height - distance_y (point_actual);
@@ -219,15 +220,15 @@ package body et_kicad_to_native is
 		-- Sets the layout_sheet_height depending on the paper size of the layout sheet.
 			-- The paper size of a board/layout drawing:
 			use et_pcb_coordinates;
-			board_paper_size : et_general.type_paper_size;
+			board_paper_size : type_paper_size;
 		begin -- prepare_layout_y_movements
 			-- Fetch the paper size of the current layout design:
 			board_paper_size := element (module_cursor).board.paper_size;
 			
-			log (text => "layout paper size " & et_general.to_string (board_paper_size), level => log_threshold + 2);
+			log (text => "layout paper size " & to_string (board_paper_size), level => log_threshold + 2);
 			
 			-- get the paper height of the sheet
-			layout_sheet_height := paper_dimension (axis => Y, paper_size => board_paper_size);
+			layout_sheet_height := et_pcb.frames.paper_dimension (axis => Y, paper_size => board_paper_size);
 		end prepare_layout_y_movements;
 
 		procedure move (point : in out et_pcb_coordinates.geometry.type_point'class) is

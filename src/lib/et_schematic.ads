@@ -69,6 +69,7 @@ with et_geometry;
 with et_text;
 with et_symbols;
 with et_devices;
+with et_frames;
 
 package et_schematic is
 	use et_general.type_net_name;
@@ -77,7 +78,8 @@ package et_schematic is
 	package shapes is new et_geometry.shapes_2d (geometry => et_coordinates.geometry);
 	use shapes;
 
-
+	package frames is new et_frames.frames (shapes => shapes);
+	
 -- TEXT FIELD
 
 	-- A text/note in the schematic:

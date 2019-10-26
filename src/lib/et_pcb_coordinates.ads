@@ -54,6 +54,7 @@ with et_coordinates;
 with et_string_processing;
 
 with et_geometry;
+-- with et_frames;					use et_frames;
 
 package et_pcb_coordinates is
 
@@ -81,23 +82,6 @@ package et_pcb_coordinates is
 		type_distance	=> type_distance_total,
 		type_rotation 	=> type_rotation);
 	
-	--use geometry;
-	
-	
-	-- PAPER SIZES
-	-- As default we assume LANDSCAPE format for all sheets.
-	paper_size_A3_x : constant type_distance := 420.0; -- CS use a common anchestor type and default value with sizes defined in et_coordinates.ads.
-	paper_size_A3_y : constant type_distance := 297.0;
-	
-	paper_size_A4_x : constant type_distance := 297.0;
-	paper_size_A4_y : constant type_distance := 210.0;
-
-	function paper_dimension ( -- CS make generic
-	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
-		paper_size	: in et_general.type_paper_size;
-		orientation	: in et_general.type_paper_orientation := et_general.LANDSCAPE;
-		axis		: in type_axis_2d)
-		return type_distance;
 	
 	-- PCB thickness (limited to reasonable range. CS adjust if required)
 	pcb_thickness_min : constant geometry.type_distance_positive := 0.1;

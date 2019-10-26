@@ -61,6 +61,7 @@ with et_string_processing;
 with et_text;
 with et_symbols;
 with et_devices;			use et_devices;
+with et_frames;
 
 package et_kicad is
 	
@@ -1458,7 +1459,7 @@ package et_kicad is
 
 	-- This is general board stuff:
 	type type_board is new et_pcb.type_board with record
-		paper_size	: et_general.type_paper_size;
+		paper_size	: et_frames.type_paper_size;
 	end record;
 
 -- 	procedure multiple_purpose_warning ( -- CS move to et_schematic or et_project

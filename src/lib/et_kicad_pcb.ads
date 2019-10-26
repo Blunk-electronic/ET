@@ -60,6 +60,7 @@ with et_kicad_general;			use et_kicad_general;
 with et_text;
 with et_packages;
 with et_devices;
+with et_frames;
 
 package et_kicad_pcb is
 
@@ -781,7 +782,7 @@ package et_kicad_pcb is
 		general		: type_general_board_info;
 		setup		: type_board_setup; -- DRC stuff
 		plot		: type_plot_setup; -- CAM job (there is only one)
-		paper_size 	: et_general.type_paper_size;
+		paper_size 	: et_frames.type_paper_size;
 		layers		: type_layers.map;
 		netlist		: type_netlist.set;
 		net_classes	: type_net_classes.map;

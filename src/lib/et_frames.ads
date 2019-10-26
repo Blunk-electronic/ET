@@ -34,25 +34,46 @@
 --
 --   history of changes:
 --
--- with ada.containers; 			use ada.containers;
--- with ada.containers.doubly_linked_lists;
 
--- with et_general;				use et_general;
-
+with et_general;				use et_general;
 with et_geometry;
 
 package et_frames is
 
-		
+-- PAPER SIZES
+    type type_paper_size is (A3, A4); -- CS: others ?
+    paper_size_default : constant type_paper_size := A4;
+
+	function to_paper_size (paper_size : in string) return type_paper_size;
+	function to_string (paper_size : in type_paper_size) return string;
+
+	type type_paper_orientation is (PORTRAIT, LANDSCAPE);
+	
 	
 	generic
 		with package shapes is new et_geometry.shapes_2d (<>);
 		
 	package frames is
+		use shapes.geometry;
 		use shapes;
 
-		procedure dummy;
+		-- PAPER SIZES
+		-- As default we assume landscape format for all sheets.
+		paper_size_A3_x : constant type_distance_positive := 420.0;
+		paper_size_A3_y : constant type_distance_positive := 297.0;
 		
+		paper_size_A4_x : constant type_distance_positive := 297.0;
+		paper_size_A4_y : constant type_distance_positive := 210.0;
+
+		function paper_dimension (
+		-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
+			paper_size	: in type_paper_size;
+			orientation	: in type_paper_orientation := LANDSCAPE;
+			axis		: in type_axis_2d)
+			return type_distance_positive;
+
+
+	
 	end frames;
 	
 	

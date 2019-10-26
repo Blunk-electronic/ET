@@ -56,6 +56,7 @@ with et_string_processing;
 with et_general;
 with et_text;
 with et_devices;				use et_devices;
+with et_frames;					use et_frames;
 
 package et_libraries is
 
@@ -127,7 +128,7 @@ package et_libraries is
 	-- the final drawing frame
 	-- NOTE: The native drawing frame has its lower left corner at position x/y 0/0. always.
     type type_frame is tagged record
-        paper_size      : et_general.type_paper_size; -- the size of the paper
+        paper_size      : type_paper_size; -- the size of the paper
         size_x, size_y  : et_coordinates.type_distance; -- the dimensions of the frame (should fit into paper_size) 
         lines           : type_frame_lines.list;
 		texts           : type_frame_texts.list;
