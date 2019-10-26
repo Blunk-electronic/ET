@@ -513,7 +513,7 @@ package body schematic_ops is
 
 		-- Get cursor to device in device library (the model name is the key into the device library).
 		-- CS: constraint_error will arise here if no associated device exists.
-		device_cursor_lib := et_devices.type_devices.find (et_devices.devices, model);
+		device_cursor_lib := et_devices.type_devices.find (devices, model);
 
 		-- Query external units of device (in library). It is most likely that
 		-- the unit is among the external units:
@@ -3344,7 +3344,7 @@ package body schematic_ops is
 			device		: in et_devices.type_device) is
 
 			function first_internal (add_level : in type_unit_add_level) 
-				return et_devices.type_units_internal.cursor is
+				return type_units_internal.cursor is
 			-- Searches for a unit with given add_level. Returns the cursor of that unit.
 			-- If no suitable unit found, returns cursor with no_element.
 				cursor : type_units_internal.cursor := device.units_internal.first;
@@ -3360,7 +3360,7 @@ package body schematic_ops is
 			end;
 
 			function first_external (add_level : in type_unit_add_level) 
-				return et_devices.type_units_external.cursor is
+				return type_units_external.cursor is
 			-- Searches for a unit with given add_level. Returns the cursor of that unit.
 			-- If no suitable unit found, returns cursor with no_element.
 				cursor : type_units_external.cursor := device.units_external.first;
@@ -12070,7 +12070,7 @@ package body schematic_ops is
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
-		return et_devices.type_port_properties_access is
+		return type_port_properties_access is
 
 		properties : type_port_properties_access; -- to be returned
 		
