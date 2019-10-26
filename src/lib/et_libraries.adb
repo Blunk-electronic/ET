@@ -59,31 +59,6 @@ with et_devices;				use et_devices;
 package body et_libraries is
 
 
-	
-	
-	function to_string (person : in type_person_name.bounded_string) return string is
-	-- Returns the given person name as string.
-	begin
-		return latin_1.space & type_person_name.to_string (person);
-	end to_string;
-
--- 	function to_string ( -- CS remove
--- 		size		: in pac_text.type_text_size;
--- 		preamble	: in boolean := true) return string is
--- 	-- Returns the given text size as string.
--- 	begin
--- 		if preamble then
--- 			return "size " & geometry.to_string (size);
--- 		else
--- 			return geometry.to_string (size);
--- 		end if;
--- 	end to_string;
-
-	
-
-	
-
-	
 
 
 	function to_string (name : in type_frame_template_name.bounded_string) return string is begin

@@ -55,33 +55,10 @@ with et_geometry;
 with et_string_processing;
 with et_general;
 with et_text;
--- with et_symbols;				use et_symbols;
--- with et_packages;				use et_packages;
 with et_devices;				use et_devices;
 
 package et_libraries is
 
-	path_length_max : constant natural := 500; -- CS: increase if necessary
-
-
-	
-	
-	-- The name of the person who has drawn, checked or approved something may have 100 characters which seems sufficient for now.
- 	person_name_length : constant natural := 100;
-	package type_person_name is new generic_bounded_length (person_name_length);
-
-	function to_string (person : in type_person_name.bounded_string) return string;
-	-- Returns the given person name as string.
-
-
-
-
-
-
-
-
-	
--- DRAWING FRAME
 
 	-- $ET_FRAMES/drawing_frame_version_1.frm
 	frame_template_name_length_max : constant positive := 300;
