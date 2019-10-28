@@ -171,7 +171,7 @@ package body et_kicad_to_native is
 			sheet_paper_size	:= paper_size_of_schematic_sheet (sheet_number);
 
 			-- get the paper height of the sheet
-			sheet_height		:= et_schematic.frames.paper_dimension (axis => Y, paper_size => sheet_paper_size);
+			sheet_height		:= et_schematic.pac_frames.paper_dimension (axis => Y, paper_size => sheet_paper_size);
 
 			-- calculate the new y position
 			--new_y				:= sheet_height - distance (axis => Y, point => point);
@@ -204,7 +204,7 @@ package body et_kicad_to_native is
 			sheet_paper_size	:= paper_size_of_schematic_sheet (sheet_number);
 
 			-- get the paper height of the sheet
-			sheet_height		:= et_schematic.frames.paper_dimension (axis => Y, paper_size => sheet_paper_size);
+			sheet_height		:= et_schematic.pac_frames.paper_dimension (axis => Y, paper_size => sheet_paper_size);
 
 			-- calculate the new y position
 			--new_y				:= sheet_height - distance_y (point_actual);
@@ -2863,8 +2863,8 @@ package body et_kicad_to_native is
 		-- CS: not completed yet.
 		-- For the time being the native module gets dummy templates assigned.
 		begin
-			module.frame_template_schematic := et_libraries.frame_template_name_dummy;
-			module.frame_template_board := et_libraries.frame_template_name_dummy;
+			module.frame_template_schematic := frame_template_name_dummy;
+			module.frame_template_board := frame_template_name_dummy;
 		end copy_frames;
 		
 		procedure copy_libraries (

@@ -60,16 +60,7 @@ package body et_libraries is
 
 
 
-
-	function to_string (name : in type_frame_template_name.bounded_string) return string is begin
-		return type_frame_template_name.to_string (name);
-	end to_string;
-	
-	function to_template_name (name : in string) return type_frame_template_name.bounded_string is begin
-		return type_frame_template_name.to_bounded_string (name);
-	end to_template_name;
-	
-
+	procedure dummy is begin null; end;
 
 	
 	

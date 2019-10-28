@@ -284,7 +284,8 @@ package et_packages is
 
 
 	-- Instantiation of the generic shapes package et_geometry.shapes_2d:
-	package shapes is new et_geometry.shapes_2d (geometry => et_pcb_coordinates.geometry);
+	package shapes is new et_geometry.shapes_2d ( -- CS rename to pac_shapes
+		geometry => et_pcb_coordinates.geometry);
 	use shapes;
 	
 

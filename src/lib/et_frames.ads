@@ -35,8 +35,16 @@
 --   history of changes:
 --
 
+with ada.strings.bounded; 		use ada.strings.bounded;
+
+with ada.containers; 			use ada.containers;
+with ada.containers.doubly_linked_lists;
+
+
 with et_general;				use et_general;
 with et_geometry;
+with et_text;
+
 
 package et_frames is
 
@@ -48,14 +56,35 @@ package et_frames is
 	function to_string (paper_size : in type_paper_size) return string;
 
 	type type_paper_orientation is (PORTRAIT, LANDSCAPE);
+
+	
+	-- $ET_FRAMES/drawing_frame_version_1.frm
+	frame_template_fil_name_length_max : constant positive := 300;
+	package type_frame_template_name is new generic_bounded_length (frame_template_fil_name_length_max);
+
+	frame_template_name_dummy : constant type_frame_template_name.bounded_string := 
+		type_frame_template_name.to_bounded_string ("dummy_frame");
+	
+	function to_string (name : in type_frame_template_name.bounded_string) return string;
+	function to_template_name (name : in string) return type_frame_template_name.bounded_string;
+
+
+	type type_title_block_text_meaning is ( 
+		PROJECT, TITLE, 
+        DRAWN_BY, CHECKED_BY, APPROVED_BY, 
+        DRAWN_DATE, CHECKED_DATE, APPROVED_DATE,
+        COMPANY,
+		REVISION, MISC);
 	
 	
 	generic
 		with package shapes is new et_geometry.shapes_2d (<>);
+		with package text is new et_text.text (<>);
 		
 	package frames is
 		use shapes.geometry;
 		use shapes;
+		use text;
 
 		-- PAPER SIZES
 		-- As default we assume landscape format for all sheets.
@@ -72,8 +101,36 @@ package et_frames is
 			axis		: in type_axis_2d)
 			return type_distance_positive;
 
+		
+		type type_title_block_text is new text.type_text with record
+			meaning			: type_title_block_text_meaning;
+			position		: type_point; -- relative to the position of the title block
+			content			: et_text.type_text_content.bounded_string;
+			rotation		: type_rotation;
+			-- CS: font, ...
+		end record;
 
-	
+		package pac_title_block_texts is new doubly_linked_lists (type_title_block_text);
+		
+		type type_line is new shapes.type_line with null record;
+		package pac_lines is new doubly_linked_lists (type_line);
+
+		type type_title_block is record
+			position	: type_point; -- relative to the position of the frame
+			lines		: pac_lines.list;
+			texts		: pac_title_block_texts.list;
+		end record;
+
+		-- the final drawing frame
+		-- NOTE: The native drawing frame has its lower left corner at position x/y 0/0. always.
+		type type_frame is tagged record
+			paper_size      : type_paper_size; -- the size of the paper
+			orientation		: type_paper_orientation := LANDSCAPE;
+			lines           : pac_lines.list;
+			title_block		: type_title_block;
+		end record;
+
+		
 	end frames;
 	
 	

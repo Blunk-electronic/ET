@@ -45,7 +45,18 @@ package body et_frames is
 		return type_paper_size'image (paper_size);
 	end;
 	
-		
+
+
+	function to_string (name : in type_frame_template_name.bounded_string) return string is begin
+		return type_frame_template_name.to_string (name);
+	end to_string;
+	
+	function to_template_name (name : in string) return type_frame_template_name.bounded_string is begin
+		return type_frame_template_name.to_bounded_string (name);
+	end to_template_name;
+	
+
+	
 	package body frames is
 
 		function paper_dimension (
