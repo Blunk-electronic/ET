@@ -62,10 +62,6 @@ with et_text;
 package et_packages is
 	use geometry;
 	
-	-- If lines of a file are to be collected we use this simple list:
-	package type_lines is new doubly_linked_lists (
-		element_type => et_string_processing.type_fields_of_line,
-		"=" => et_string_processing.lines_equally);
 	
 
 
