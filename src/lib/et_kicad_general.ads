@@ -56,24 +56,20 @@ package et_kicad_general is
 
 	-- If lines of a file are to be collected we use this simple list:
 	package pac_lines_of_file is new doubly_linked_lists (
-		element_type	=> et_string_processing.type_fields_of_line,
-		"=" 			=> et_string_processing.lines_equally);
+		element_type	=> type_fields_of_line,
+		"=" 			=> lines_equally);
 
--- 	function get_line return et_string_processing.type_fields_of_line;
 
--- -- 	lines : pac_lines_of_file.list := pac_lines_of_file.empty_list;
--- 	line_cursor : pac_lines_of_file.cursor;
-
-	
 	
 	-- TIMESTAMP
 	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	
 	type type_timestamp is new string (1..8); -- like "3459A3C1"
-	timestamp_default : type_timestamp := "00000000";
+	timestamp_default : constant type_timestamp := "00000000";
+	
 	procedure check_timestamp (timestamp : in type_timestamp);
 	-- Checks the given timestamp for valid characters and plausible time.
 
--- LIBRARIES
+	-- LIBRARIES
 	-- To handle library paths we (mis)use type_device_model_file 
 	-- and type_package_model_file under different names:
 	package type_package_library_name renames et_packages.type_package_model_file;

@@ -70,37 +70,6 @@ with et_csv;
 
 package body et_kicad_general is
 
-
--- 
--- 	procedure clear (lines : in out pac_lines_of_file.list) is -- CS no parameter required
--- 	-- CS procedure clear is
--- 	begin
--- 		pac_lines_of_file.clear (lines);
--- 	end clear;
-
--- 	procedure add (line : in type_fields_of_line) is
--- 	begin
--- 		lines.append (line);
--- 	end add;
-	
--- 	function first (lines : in pac_lines_of_file.list) return pac_lines_of_file.cursor is
--- 	begin
--- 		return pac_lines_of_file.first (lines);
--- 	end first;
-
--- 	procedure next (line : in out pac_lines_of_file.cursor) is
--- 	begin
--- 		pac_lines_of_file.next (line);
--- 	end next;
-
--- 	function get_line return et_string_processing.type_fields_of_line is
--- 	begin
--- 		return pac_lines_of_file.element (line_cursor);
--- 	end;
-
-
-
-	
 	
 	procedure check_timestamp (timestamp : in type_timestamp) is
 	-- Checks the given timestamp for valid characters and plausible time.

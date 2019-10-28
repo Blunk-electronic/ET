@@ -2787,7 +2787,6 @@ package body et_kicad_pcb is
 				-- read lines of model file
 				set_input (library_handle);
 				while not end_of_file loop
--- 					log (get_line);
 
 					-- Store a single line in variable "line" (see et_string_processing.ads)
 					line := et_string_processing.read_line (
@@ -8365,18 +8364,6 @@ package body et_kicad_pcb is
 
 	end terminal_count;
 	
-
--- 	procedure to_native (log_threshold : in et_string_processing.type_log_level) is
--- 	-- Converts the packages (from package_libraries) to native packages.
--- 	-- NOTE: Packages of the board (incl. their deviations from the package_libraries) are ignored !
--- 	begin
--- 		log (text => "packages ...", level => log_threshold);
--- 		log_indentation_up;
--- -- CS
--- -- 
--- 		log_indentation_down;
--- 	end to_native;
-
 	
 end et_kicad_pcb;
 

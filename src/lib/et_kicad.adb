@@ -7430,7 +7430,7 @@ package body et_kicad is
 
 					return (
 						-- read text field meaning
-						meaning 	=> to_text_meaning (line => line, schematic => true),
+						meaning 	=> to_text_meaning (line => element (line_cursor), schematic => true),
 
 						-- read content like "N701" or "NetChanger" from field position 3
 						content		=> to_content (f (element (line_cursor), 3)),
@@ -8296,7 +8296,7 @@ package body et_kicad is
 				line_cursor := pac_lines_of_file.first (lines);
 				while line_cursor /= pac_lines_of_file.no_element loop
 
-					log (text => "component line: " & to_string (line), level => log_threshold + 6);
+					log (text => "component line: " & to_string (element (line_cursor)), level => log_threshold + 6);
 
 					-- V4: 
 					--	- Read component generic name and annotation from a line like "L NetChanger N1".
@@ -8397,7 +8397,7 @@ package body et_kicad is
 
 					-- Read alternative reference like "AR Path="/59EF082F" Ref="N23"  Part="1"
 					elsif f (element (line_cursor), 1) = schematic_component_identifier_path then -- "AR"
-						add_alternative_reference (line);
+						add_alternative_reference (element (line_cursor));
 
 					-- read unit fields 0..2 from lines like:
 					-- 			"F 0 "N701" H 2600 2100 39  0000 C CNN"
@@ -8460,13 +8460,13 @@ package body et_kicad is
 						-- followed by the unit mirror style and the unit orientation in a line like
 						-- "1    0    0    -1"
 
-						case field_count (line) is
+						case field_count (element (line_cursor)) is
 							when 3 => -- we have the unit name and its x/y position.
 								-- We verify if unit name and position match the values read earlier:
-								verify_unit_name_and_position (line);
+								verify_unit_name_and_position (element (line_cursor));
 							
-							when 4 => null; -- we have the unit mirror style and orientation
-								build_unit_orientation_and_mirror_style (line);
+							when 4 => -- we have the unit mirror style and orientation
+								build_unit_orientation_and_mirror_style (element (line_cursor));
 							
 							when others => 
 								raise constraint_error; -- CS: write useful message
