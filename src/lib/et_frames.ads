@@ -102,7 +102,7 @@ package et_frames is
 			return type_distance_positive;
 
 		
-		type type_title_block_text is new text.type_text with record
+		type type_text is new text.type_text with record
 			meaning			: type_title_block_text_meaning;
 			position		: type_point; -- relative to the position of the title block
 			content			: et_text.type_text_content.bounded_string;
@@ -110,7 +110,7 @@ package et_frames is
 			-- CS: font, ...
 		end record;
 
-		package pac_title_block_texts is new doubly_linked_lists (type_title_block_text);
+		package pac_texts is new doubly_linked_lists (type_text);
 		
 		type type_line is new shapes.type_line with null record;
 		package pac_lines is new doubly_linked_lists (type_line);
@@ -118,7 +118,7 @@ package et_frames is
 		type type_title_block is record
 			position	: type_point; -- relative to the position of the frame
 			lines		: pac_lines.list;
-			texts		: pac_title_block_texts.list;
+			texts		: pac_texts.list;
 		end record;
 
 		-- the final drawing frame

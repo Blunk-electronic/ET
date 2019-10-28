@@ -6588,8 +6588,8 @@ package body et_kicad is
 			
 				-- These are the components of the title block. At the end
 				-- of this procedure they are assembled to a final title block:
-				title_block_text 	: et_schematic.pac_frames.type_title_block_text; -- a single text within the title block
-				title_block_texts 	: et_schematic.pac_frames.pac_title_block_texts.list; -- a list of title block texts
+				title_block_text 	: et_schematic.pac_frames.type_text; -- a single text within the title block
+				title_block_texts 	: et_schematic.pac_frames.pac_texts.list; -- a list of title block texts
 				--title_block 		: et_libraries.type_title_block; -- a full title block
 				
 				-- If the description reveals there is more than one sheet, we have a hierarchic design. Means we
@@ -6689,7 +6689,7 @@ package body et_kicad is
 					-- CS test field count
 					title_block_text.content := to_content ((et_string_processing.field (et_kicad.line,2)));
 					
-					pac_title_block_texts.append (title_block_texts, title_block_text);
+					pac_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
@@ -6702,7 +6702,7 @@ package body et_kicad is
 					title_block_text.meaning := DRAWN_DATE;
 					title_block_text.content := to_content (et_string_processing.field (et_kicad.line,2));
 
-					pac_title_block_texts.append (title_block_texts, title_block_text);
+					pac_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
@@ -6715,7 +6715,7 @@ package body et_kicad is
 					title_block_text.meaning := REVISION;
 					title_block_text.content := to_content (et_string_processing.field (et_kicad.line,2));
 					
-					pac_title_block_texts.append (title_block_texts, title_block_text);
+					pac_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
@@ -6728,7 +6728,7 @@ package body et_kicad is
 					title_block_text.meaning := COMPANY;
 					title_block_text.content := to_content (et_string_processing.field (et_kicad.line,2));
 
-					pac_title_block_texts.append (title_block_texts, title_block_text);
+					pac_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
@@ -6745,7 +6745,7 @@ package body et_kicad is
 					title_block_text.meaning := MISC;
 					title_block_text.content := to_content (et_string_processing.field (et_kicad.line,2));
 
-					pac_title_block_texts.append (title_block_texts, title_block_text);
+					pac_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				-- FINALIZE
@@ -6755,7 +6755,7 @@ package body et_kicad is
 				-- See comment above in header of this procedure.
 
 				-- purge temporarily texts
-				pac_title_block_texts.clear (title_block_texts);
+				pac_texts.clear (title_block_texts);
 
 				-- append temporarily drawing frame to module
 				add_frame (frame);
