@@ -6592,12 +6592,16 @@ package body et_kicad is
 				lines 			: in type_lines.list;
 				log_threshold	: in type_log_level) is
 
-				frame : type_frame; -- a single drawing frame
+				use et_text;
+				use et_frames;
+				use et_schematic.pac_frames;
+				
+				frame : type_frame; -- a single drawing frame. see type in et_kicad.ads
 			
 				-- These are the components of the title block. At the end
 				-- of this procedure they are assembled to a final title block:
-				title_block_text 	: et_libraries.type_title_block_text; -- a single text within the title block
-				title_block_texts 	: et_libraries.type_title_block_texts.list; -- a list of title block texts
+				title_block_text 	: et_schematic.pac_frames.type_title_block_text; -- a single text within the title block
+				title_block_texts 	: et_schematic.pac_frames.pac_title_block_texts.list; -- a list of title block texts
 				--title_block 		: et_libraries.type_title_block; -- a full title block
 				
 				-- If the description reveals there is more than one sheet, we have a hierarchic design. Means we
@@ -6618,7 +6622,7 @@ package body et_kicad is
 				-- Comment4 ""
 				-- $EndDescr
 				
-				use type_lines;
+				use type_lines; -- this is about text fields (nothing to do with geometry)
 			
 			begin -- make_drawing_frame
 				log (text => "making drawing frame ...", level => log_threshold);
@@ -6628,11 +6632,11 @@ package body et_kicad is
 
 				-- read drawing frame dimensions from a line like "$Descr A4 11693 8268"
 				-- CS test field count				
-				frame.paper_size	:= to_paper_size (et_string_processing.field (et_kicad.line,2));
+				frame.paper_size := to_paper_size (et_string_processing.field (et_kicad.line,2));
 
 				-- The sheet size seems to be ignored by kicad. Only the paper_size matters.
-				frame.size_x		:= mil_to_distance (et_string_processing.field (et_kicad.line,3)); 
-				frame.size_y 		:= mil_to_distance (et_string_processing.field (et_kicad.line,4)); 
+-- 				frame.size_x		:= mil_to_distance (et_string_processing.field (et_kicad.line,3)); 
+-- 				frame.size_y 		:= mil_to_distance (et_string_processing.field (et_kicad.line,4)); 
 				
 				--frame.coordinates.path := path_to_submodule;
 				set_path (frame.coordinates, path_to_sheet);
@@ -6692,13 +6696,12 @@ package body et_kicad is
 				if et_string_processing.field (et_kicad.line,1) = schematic_keyword_title then                        
 					log (text => "sheet title", level => log_threshold + 1);
 					
-					title_block_text.meaning := et_libraries.TITLE;
+					title_block_text.meaning := TITLE;
 
-					-- CS test field count										
-					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string (
-												  (et_string_processing.field (et_kicad.line,2)));
+					-- CS test field count
+					title_block_text.content := to_content ((et_string_processing.field (et_kicad.line,2)));
 					
-					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
+					pac_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
@@ -6708,11 +6711,10 @@ package body et_kicad is
 					log (text => "sheet date", level => log_threshold + 1);
 					
 					-- CS test field count					
-					title_block_text.meaning := et_libraries.DRAWN_DATE;
-					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string (
-												(et_string_processing.field (et_kicad.line,2)));
+					title_block_text.meaning := DRAWN_DATE;
+					title_block_text.content := to_content (et_string_processing.field (et_kicad.line,2));
 
-					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
+					pac_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
@@ -6722,11 +6724,10 @@ package body et_kicad is
 					log (text => "sheet revision", level => log_threshold + 1);
 					
 					-- CS test field count					
-					title_block_text.meaning := et_libraries.REVISION;
-					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string (
-												(et_string_processing.field (et_kicad.line,2)));
+					title_block_text.meaning := REVISION;
+					title_block_text.content := to_content (et_string_processing.field (et_kicad.line,2));
 					
-					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
+					pac_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
@@ -6736,11 +6737,10 @@ package body et_kicad is
 					log (text => "sheet company name", level => log_threshold + 1);
 					
 					-- CS test field count					
-					title_block_text.meaning := et_libraries.COMPANY;
-					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string (
-												(et_string_processing.field (et_kicad.line,2)));
+					title_block_text.meaning := COMPANY;
+					title_block_text.content := to_content (et_string_processing.field (et_kicad.line,2));
 
-					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
+					pac_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				next (line_cursor);
@@ -6754,11 +6754,10 @@ package body et_kicad is
 					log (text => "sheet comment", level => log_threshold + 1);
 					
 					-- CS test field count
-					title_block_text.meaning := et_libraries.MISC;
-					title_block_text.text := et_libraries.type_title_block_text_content.to_bounded_string (
-												(et_string_processing.field (et_kicad.line,2)));
+					title_block_text.meaning := MISC;
+					title_block_text.content := to_content (et_string_processing.field (et_kicad.line,2));
 
-					et_libraries.type_title_block_texts.append (title_block_texts, title_block_text);
+					pac_title_block_texts.append (title_block_texts, title_block_text);
 				end if;
 
 				-- FINALIZE
@@ -6768,7 +6767,7 @@ package body et_kicad is
 				-- See comment above in header of this procedure.
 
 				-- purge temporarily texts
-				et_libraries.type_title_block_texts.clear (title_block_texts);
+				pac_title_block_texts.clear (title_block_texts);
 
 				-- append temporarily drawing frame to module
 				add_frame (frame);

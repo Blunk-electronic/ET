@@ -1388,7 +1388,8 @@ package et_kicad is
 		sheet	: in type_schematic_file_name.bounded_string);
 
 	
-	type type_frame is new et_libraries.type_frame with record
+	--	type type_frame is new et_libraries.type_frame with record
+	type type_frame is new et_schematic.pac_frames.type_frame with record	
 		coordinates : type_position; -- the position of the frame -- CS rename to position
 	end record;
 
@@ -1396,7 +1397,7 @@ package et_kicad is
 	-- Inserts a drawing frame in the module (indicated by module_cursor).
 		frame	: in type_frame);
 	
-    -- there are lots of drawing frames in a schematic contained in a list
+--     there are lots of drawing frames in a schematic contained in a list
 	package type_frames is new doubly_linked_lists (type_frame);
 	
 
