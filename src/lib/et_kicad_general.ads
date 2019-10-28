@@ -48,9 +48,23 @@ with ada.containers.vectors;
 with et_packages;
 with et_devices;
 
+with et_string_processing;		use et_string_processing;
+
 package et_kicad_general is
 
 	system_name	: constant string (1..5) := "KiCad";
+
+	-- If lines of a file are to be collected we use this simple list:
+	package pac_lines_of_file is new doubly_linked_lists (
+		element_type	=> et_string_processing.type_fields_of_line,
+		"=" 			=> et_string_processing.lines_equally);
+
+-- 	function get_line return et_string_processing.type_fields_of_line;
+
+-- -- 	lines : pac_lines_of_file.list := pac_lines_of_file.empty_list;
+-- 	line_cursor : pac_lines_of_file.cursor;
+
+	
 	
 	-- TIMESTAMP
 	timestamp_characters : character_set := to_set (ranges => (('A','F'),('0','9'))); -- CS: upper case letters only	
@@ -79,6 +93,9 @@ package et_kicad_general is
 	function to_string (library_name : in type_library_name.bounded_string) return string;
 	-- Returns the given library name as string.
 
+
+
+	
 end et_kicad_general;
 
 -- Soli Deo Gloria

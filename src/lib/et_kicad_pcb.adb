@@ -646,22 +646,16 @@ package body et_kicad_pcb is
 	end to_pad_milling_contour;
 
 	
-	-- If lines of a file are to be collected we use this simple list:
-	package type_lines is new doubly_linked_lists (
-		element_type	=> et_string_processing.type_fields_of_line,
-		"=" 			=> et_string_processing.lines_equally);
-
-
 	
 	function to_package_model (
 	-- Builds a package model from the given lines.
 		file_name		: in string; -- S_0201.kicad_mod
-		lines			: in type_lines.list;
+		lines			: in pac_lines_of_file.list;
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_package_library is
 
 		use et_packages;
-		use type_lines;
+		use pac_lines_of_file;
 
 		-- Extract the actual package name (like S_0201) from the given file name:
 		package_name : type_component_package_name.bounded_string :=
@@ -676,7 +670,7 @@ package body et_kicad_pcb is
 		end path_and_file_name;
 		
 		-- This cursor points to the line being processed (in the list of lines given in "lines"):
-		line_cursor : type_lines.cursor := lines.first;
+		line_cursor : pac_lines_of_file.cursor := lines.first;
 
 		opening_bracket : constant character := '(';
 		closing_bracket : constant character := ')';
@@ -958,7 +952,7 @@ package body et_kicad_pcb is
 		-- Fetches a new line from the given list of lines (see header of procedure to_package_model).
 		begin
 			next (line_cursor);
-			if line_cursor /= type_lines.no_element then
+			if line_cursor /= pac_lines_of_file.no_element then
 
 				-- Since a single line in container "lines" (where line_cursor points to) is a list 
 				-- of strings itself, we convert them first to a fixed string and then to a bounded string.
@@ -2758,8 +2752,8 @@ package body et_kicad_pcb is
 			library_handle : ada.text_io.file_type;
 			line : type_fields_of_line; -- a line of a package model
 
-			use type_lines;
-			lines : type_lines.list; -- all lines of a single package model
+			use pac_lines_of_file;
+			lines : pac_lines_of_file.list; -- all lines of a single package model
 
 		begin -- read_packages
 			log (text => "reading package names in " & current_directory & " ...", level => log_threshold + 3);
@@ -3026,7 +3020,7 @@ package body et_kicad_pcb is
 	
 	function to_board (
 		file_name		: in string; -- pwr_supply.kicad_pcb
-		lines			: in type_lines.list;
+		lines			: in pac_lines_of_file.list;
 		log_threshold	: in et_string_processing.type_log_level) 
 		return et_kicad_pcb.type_board is
 
@@ -3034,10 +3028,10 @@ package body et_kicad_pcb is
 
 		use et_pcb;
 		use et_packages;
-		use type_lines;
+		use pac_lines_of_file;
 
 		-- This cursor points to the line being processed (in the list of lines given in "lines"):
-		line_cursor : type_lines.cursor := lines.first;
+		line_cursor : pac_lines_of_file.cursor := lines.first;
 
 		opening_bracket : constant character := '(';
 		closing_bracket : constant character := ')';
@@ -3460,7 +3454,7 @@ package body et_kicad_pcb is
 		-- Fetches a new line from the given list of lines (see header of procedure to_board).
 		begin
 			next (line_cursor);
-			if line_cursor /= type_lines.no_element then
+			if line_cursor /= pac_lines_of_file.no_element then
 
 				-- Since a single line in container "lines" (where line_cursor points to) is a list 
 				-- of strings itself, we convert them first to a fixed string and then to a bounded string.
@@ -7326,8 +7320,8 @@ package body et_kicad_pcb is
 		board_handle : ada.text_io.file_type;
 		line : type_fields_of_line; -- a line of the board file
 
-		use type_lines;
-		lines : type_lines.list; -- all lines of the board file
+		use pac_lines_of_file;
+		lines : pac_lines_of_file.list; -- all lines of the board file
 
 		-- Here the board data goes. 
 		-- CS: If Kicad supports multi boards some day, this must become a list of boards.

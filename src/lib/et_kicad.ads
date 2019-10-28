@@ -68,14 +68,6 @@ package et_kicad is
 
 	project_file_handle : ada.text_io.file_type;
 	
-	-- If lines of a file are to be collected we use this simple list:
-	package type_lines is new doubly_linked_lists (
-		element_type => et_string_processing.type_fields_of_line,
-		"=" => et_string_processing.lines_equally);
-
-	lines : type_lines.list := type_lines.empty_list;
-	line_cursor : type_lines.cursor;
-	
     encoding_default 					: constant string (1..5) := "utf-8";	
 
 	file_extension_project   			: constant string (1..3) := "pro";
