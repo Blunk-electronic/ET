@@ -54,7 +54,6 @@ with ada.containers.ordered_sets;
 
 with et_general;
 with et_string_processing;
--- with et_libraries;				--use et_libraries;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
@@ -68,7 +67,6 @@ package et_packages is
 		element_type => et_string_processing.type_fields_of_line,
 		"=" => et_string_processing.lines_equally);
 	
--- 	use et_libraries.type_component_package_name;
 
 
 -- PACKAGES

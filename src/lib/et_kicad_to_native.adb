@@ -48,7 +48,6 @@ with ada.exceptions; 			use ada.exceptions;
 with gnat.source_info;
 
 with et_coordinates;
-with et_libraries;
 with et_schematic;
 
 with et_general;				use et_general;
@@ -2255,7 +2254,6 @@ package body et_kicad_to_native is
 			-- like: libraries/devices/__#__#lbr#bel_logic_7400.dev
 			return et_devices.type_device_model_file.bounded_string is
 
-			use et_libraries;
 			use et_kicad_general.type_device_library_name;
 			dir : et_kicad_general.type_device_library_name.bounded_string; -- ../../lbr
 			name : et_devices.type_device_model_file.bounded_string; -- to be returned -- libraries/devices/__#__#lbr#bel_logic_7400.dev

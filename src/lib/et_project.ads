@@ -49,7 +49,6 @@ with ada.containers.ordered_sets;
 
 with et_general;				use et_general;
 with et_coordinates;			use et_coordinates;
-with et_libraries;
 with et_string_processing;
 with et_schematic;
 with submodules;

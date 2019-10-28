@@ -57,7 +57,6 @@ with et_project;
 
 with et_coordinates;
 with et_pcb_coordinates;
-with et_libraries;				use et_libraries;
 with et_schematic;
 with schematic_ops;
 with et_packages;

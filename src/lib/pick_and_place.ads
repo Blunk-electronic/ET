@@ -49,9 +49,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;				use et_general;
--- 
--- with et_coordinates;
-with et_libraries;
+
 -- with assembly_variants;
 with et_string_processing;		use et_string_processing;
 -- with et_pcb;

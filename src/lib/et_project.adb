@@ -54,7 +54,6 @@ with ada.containers.ordered_maps;
 with et_general;				use et_general;
 with et_coordinates;
 with et_string_processing;
-with et_libraries;
 with et_export;
 with et_import;
 with et_schematic;
@@ -896,7 +895,6 @@ package body et_project is
 					
 					procedure query_device_ports (segment : in type_net_segment) is
 						use et_symbols;
-						use et_libraries;
 						port_cursor : type_ports_device.cursor := segment.ports_devices.first;
 					begin -- query_device_ports
 						while port_cursor /= type_ports_device.no_element loop
@@ -2607,7 +2605,6 @@ package body et_project is
 					module_name	: in type_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
 					use et_schematic;
-					use et_libraries;
 					use et_symbols;
 					use et_devices;
 					use et_packages;
@@ -5832,7 +5829,6 @@ package body et_project is
 								-- the port is appended to the corresponding port collection 
 								-- immediately when the line is read. See main code of process_line.
 								declare
-									use et_libraries;
 									use et_symbols;
 									kw : string := f (line, 1);
 								begin

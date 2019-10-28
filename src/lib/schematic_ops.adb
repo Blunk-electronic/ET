@@ -55,7 +55,6 @@ with ada.containers.ordered_maps;
 with et_general;				use et_general;
 with et_coordinates;
 with et_string_processing;		use et_string_processing;
-with et_libraries;				--use et_libraries;
 with et_schematic;				use et_schematic;
 with et_pcb;
 with et_packages;
@@ -3334,7 +3333,6 @@ package body schematic_ops is
 	-- If no suitable internal unit found, the cursor of internal units in the return is no_element.
 	-- If no suitable external unit found, the cursor of external units in the return is no_element.
 		cursors : type_unit_cursors_lib; -- to be returned
-		use et_libraries;
 		use et_devices.type_devices;
 		use type_units_internal;
 		use type_units_external;
@@ -3451,7 +3449,6 @@ package body schematic_ops is
 
 		cursors : type_unit_cursors_lib; -- to be returned
 		
-		use et_libraries;
 		use et_devices.type_devices;
 		use type_unit_name;
 		use type_units_internal;
@@ -10626,7 +10623,6 @@ package body schematic_ops is
 			use et_coordinates;
 			sheet_before, sheet_now : type_sheet := type_sheet'first;
 
-			use et_libraries;
 			index_on_sheet : type_device_name_index := type_device_name_index'first;
 			device_index : type_device_name_index;
 

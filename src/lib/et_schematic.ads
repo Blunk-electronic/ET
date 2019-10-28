@@ -55,7 +55,6 @@ with ada.containers.ordered_sets;
 with et_general;				use et_general;
 
 with et_coordinates;
-with et_libraries;
 with assembly_variants;
 with et_string_processing;
 with et_packages;

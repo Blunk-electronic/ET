@@ -53,7 +53,6 @@ with ada.containers.ordered_sets;
 
 with ada.exceptions;
 
-with et_libraries;
 with et_packages;
 with et_string_processing;		use et_string_processing;
 with et_text;					use et_text;

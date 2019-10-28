@@ -18,7 +18,6 @@ OBJS = $(TARGET).o \
 	et_pcb_stack.o \
 	board_ops.o \
 	scripting.o \
-	et_libraries.o \
 	et_project.o \
 	et_coordinates.o \
 	conventions.o \

@@ -57,7 +57,6 @@ with ada.exceptions;
 with et_general;				use et_general;
 with et_import;
 with kicad_coordinates;
-with et_libraries;
 with et_schematic;
 with et_kicad_general;			use et_kicad_general;
 with et_packages;
@@ -101,7 +100,6 @@ package body et_kicad_pcb is
 		use et_kicad;
 		use et_import;
 		use type_project_lib_dirs;
-		use et_libraries;
 		use et_packages;
 		use type_package_library_name;
 		use ada.directories;
@@ -663,7 +661,6 @@ package body et_kicad_pcb is
 
 		function path_and_file_name return string is
 		-- returns the path and file name. used for error messages.
-			use et_libraries;
 		begin
 			--return "file " & ada.directories.compose (
 			--	to_string (library_group), file_name);
@@ -1103,7 +1100,6 @@ package body et_kicad_pcb is
 			end_of_arg : integer; -- may become negative if no terminating character present
 
 			use type_argument;
-			use et_libraries;
 			use et_text.type_text_content;
 			use et_pcb_coordinates;
 			use geometry;
@@ -1878,7 +1874,6 @@ package body et_kicad_pcb is
 		-- set earlier (when processing the arguments. see procedure read_arg).
 		-- Restores the previous section.
 			use et_pcb_coordinates;
--- 			use et_libraries;
 
 			procedure invalid_layer is begin
 				log (ERROR, "invalid layer for this object !", console => true);
@@ -2345,7 +2340,6 @@ package body et_kicad_pcb is
 
 			procedure insert_fp_text is 
 				use et_packages;
-				use et_libraries;
 				use et_text;
 			begin
 					
@@ -2715,7 +2709,6 @@ package body et_kicad_pcb is
 		log_threshold 	: in et_string_processing.type_log_level) is
 
 		use ada.directories;
-		use et_libraries;
 		use et_general;
 		use et_general.type_directory_entries;
 		use et_packages;
@@ -3015,7 +3008,6 @@ package body et_kicad_pcb is
 	function default_component_reference return type_device_name is
 	-- Returns a default device name with an empty prefix and and id 0.
 	-- Used to initialize a component reference.	
-		use et_libraries;
 		use et_devices;
 	begin
 		return ((
@@ -3753,7 +3745,6 @@ package body et_kicad_pcb is
 			end_of_arg : integer; -- may become negative if no terminating character present
 
 			use type_argument;
-			use et_libraries;
 			use et_text.type_text_content;
 			use et_pcb_coordinates;
 			use geometry;
@@ -5814,7 +5805,6 @@ package body et_kicad_pcb is
 		-- set earlier (when processing the arguments. see procedure read_arg).
 		-- Restores the previous section.
 			use et_pcb_coordinates;
--- 			use et_libraries;
 
 			procedure invalid_layer_reference is begin
 				log (ERROR, "reference " & to_string (package_reference) & " must be in a silk screen layer !", console => true);
@@ -6861,7 +6851,6 @@ package body et_kicad_pcb is
 
 			procedure insert_fp_text is 
 				use et_packages;
-				use et_libraries;
 				use et_text;
 			begin
 				

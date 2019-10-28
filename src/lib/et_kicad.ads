@@ -56,7 +56,6 @@ with et_kicad_pcb;
 with et_import;
 with et_coordinates;
 with et_pcb_coordinates;
-with et_libraries;
 with et_string_processing;
 with et_text;
 with et_symbols;

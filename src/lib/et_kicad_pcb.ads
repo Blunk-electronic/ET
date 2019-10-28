@@ -50,7 +50,6 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_string_processing;
-with et_libraries;
 with et_schematic;
 with et_general;
 with et_packages;

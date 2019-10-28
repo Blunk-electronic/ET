@@ -55,7 +55,6 @@ with ada.exceptions; 			use ada.exceptions;
 with ada.environment_variables;
 
 with et_coordinates;
-with et_libraries;
 with et_schematic;
 with et_geometry;
 
@@ -346,7 +345,6 @@ package body et_kicad is
 		leading_hash	: in boolean := false
 		) return type_device_name is
 		
-		use et_libraries;
 		use et_devices;
 
 		-- justify given text_in on the left
@@ -456,7 +454,6 @@ package body et_kicad is
 		log_threshold 	: in et_string_processing.type_log_level) is
 
 		use et_string_processing;
-		use et_libraries;
 		use et_symbols;
 
 	begin
@@ -537,7 +534,6 @@ package body et_kicad is
 	-- If left equals right, the return is false.	
 	-- CS: needs verification !
 		result : boolean := false;
-		use et_libraries;
 		use et_symbols;
 		use et_schematic;
 	begin
@@ -620,7 +616,6 @@ package body et_kicad is
 		generic_name	: in type_component_generic_name.bounded_string) -- TRANSISTOR_NPN
 		is
 		use et_string_processing;
-		use et_libraries;
 	begin
 		log (ERROR, "component " & to_string (reference) -- CS: output coordinates
 			& " has no generic model " & to_string (generic_name)
@@ -812,7 +807,6 @@ package body et_kicad is
 	procedure validate_prefix (reference : in type_device_name) is
 	-- Tests if the given reference has a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
-		use et_libraries;
 		use type_device_name_prefix;
 	begin
 		if et_devices.to_string (reference.prefix) = power_flag_prefix 
@@ -1107,8 +1101,6 @@ package body et_kicad is
 			raise constraint_error;
 		end invalid_appearance;	
 
-		use et_libraries;
-
 	begin -- to_appearance
 		case schematic is
 
@@ -1181,7 +1173,6 @@ package body et_kicad is
 	-- Converts a given angle as string to type_rotation.
 		
 		a_in  : type_angle; -- unit is tenth of degrees -3599 .. 3599
-		use et_libraries;
 
 		-- For the conversion we need an intermediate real type
 		type type_angle_real is digits 5 range -3599.0 .. 3599.0;
@@ -1304,7 +1295,6 @@ package body et_kicad is
 
 		use et_packages;
 		use et_devices;
-        use et_libraries; -- most of the following stuff is specified there
 		use type_full_library_names;
 
 		-- This is the library cursor. It points to the library being processed (in the list tmp_component_libraries):
@@ -2129,7 +2119,7 @@ package body et_kicad is
 						-- This is a real component.
 
 						-- Since this is a real component. we do the prefix character check 
-						-- against the default character set for prefixes as specified in et_libraries.
+						-- against the default character set for prefixes as specified in et_devices.
 						-- Afterward we validate the prefix. The prefixes for real components are specified
 						-- in the et configuration file (see conventions).						
 						log (text => "prefix", level => log_threshold + 1);
@@ -3359,7 +3349,6 @@ package body et_kicad is
 		log_threshold		: in et_string_processing.type_log_level)
 		return et_devices.type_component_variant_name.bounded_string is 					-- D
 
-		use et_libraries;
 		library_cursor : type_libraries.cursor; -- points to the component library
 		
 		use et_string_processing;
@@ -4321,7 +4310,6 @@ package body et_kicad is
 			
 			line : type_fields_of_line;
 			
-			use et_libraries;
 			use et_schematic;
 
 			procedure read_proj_v4 is
@@ -6797,7 +6785,6 @@ package body et_kicad is
 
 				use type_lines;
 				use type_submodule_name;
-				use et_libraries;
 				use conventions;
 
 				text_size : pac_text.type_text_size; -- temporarily storage of a text size before being checked
@@ -7431,7 +7418,6 @@ package body et_kicad is
 			--  1    0    0   1  -- orientation -90, mirror |
 
 				use et_devices;
-				use et_libraries;
 				use et_string_processing;
 
 				reference					: type_device_name;	-- like IC5	
@@ -7837,7 +7823,6 @@ package body et_kicad is
 				-- CS: This function should be applied on virtual components (such as power flags or power symbols) only.
 				-- The assumption is that their prefix always starts with a hash character.
 					type_device_name is
-					use et_libraries;
 					use type_device_name_prefix;
 					reference_out : type_device_name := reference; -- to be returned -- like PWR04
 				begin
@@ -9650,7 +9635,6 @@ package body et_kicad is
 		portlists : type_portlists.map := type_portlists.empty_map;
 
 		use et_coordinates;
-		use et_libraries;
 		
 		strand		: type_strands.cursor := first_strand;
 		segment		: type_net_segments.cursor;
@@ -9952,7 +9936,6 @@ package body et_kicad is
 		component_inserted			: boolean;
 		component_cursor_portlists	: type_portlists.cursor; -- points to the portlist being built
 	
-		use et_libraries;
 		use type_full_library_names;
 		use et_string_processing;
 
@@ -13870,7 +13853,6 @@ package body et_kicad is
 	-- Writes the properties of the given note
 		use et_string_processing;
 		use et_coordinates;
-		use et_libraries;
 		use et_text;
 	begin
 		log (text => "text note" & to_string (

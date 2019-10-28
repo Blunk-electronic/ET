@@ -56,10 +56,6 @@ with gnat.directory_operations;
 with ada.exceptions;
 
 with et_general;				use et_general;
--- 
--- with et_coordinates;
--- with et_libraries;
--- with assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_export;
 with et_csv;					use et_csv;
@@ -141,7 +137,6 @@ package body pick_and_place is
 
 			procedure query_device (cursor : in type_devices.cursor) is
 				use type_devices;
-				use et_libraries;
 				use et_pcb_coordinates.geometry;
 			begin
 				put_field (file => pnp_handle); -- CS item number

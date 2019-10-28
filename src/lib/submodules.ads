@@ -41,16 +41,12 @@
 -- with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
--- with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
--- with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
--- with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;
 with et_coordinates;		use et_coordinates;
-with et_libraries;			use et_libraries;
 with et_pcb;
 with et_pcb_stack;
 with et_pcb_coordinates;
@@ -58,8 +54,6 @@ with et_symbols;
 
 package submodules is
 
--- 	use geometry;
-	
 	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
 
 	subtype type_submodule_edge_length is type_distance range 10.0 .. 1000.0;

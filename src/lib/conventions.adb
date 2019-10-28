@@ -56,7 +56,6 @@ with ada.exceptions;
 
 with et_general;
 with et_coordinates;
-with et_libraries;
 with et_schematic;
 with et_project;
 with et_string_processing;		use et_string_processing;
@@ -2130,7 +2129,6 @@ package body conventions is
 		value 		: in et_devices.type_value.bounded_string := et_devices.type_value.to_bounded_string ("")) -- 100R
 		return material.type_partcode.bounded_string is
 
-		use et_libraries;
 		use et_devices;
 		use et_packages;
 		use type_device_name_prefix;
@@ -2637,7 +2635,6 @@ package body conventions is
 			-- we deal with columns and need to index them
 			subtype type_column is positive range 1..8;
 		
-			use et_libraries;
 			use et_devices;
 			use et_symbols;
 			use et_coordinates;
@@ -2986,7 +2983,6 @@ package body conventions is
 		-- This flag goes false once an error has been detected.
 		result : boolean := true;
 		
-		use et_libraries;
 		use et_string_processing;
 		use et_devices;
 		use type_value;

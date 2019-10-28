@@ -48,7 +48,6 @@ with ada.containers.ordered_sets;
 
 with et_general;
 with et_coordinates;
-with et_libraries;
 with et_string_processing;
 with et_pcb;
 with et_pcb_coordinates;

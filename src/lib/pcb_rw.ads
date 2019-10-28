@@ -37,7 +37,6 @@
 
 with ada.containers;            use ada.containers;
 
-with et_libraries;
 with et_string_processing;
 with et_packages;
 with et_pcb;

@@ -48,7 +48,6 @@ with ada.exceptions;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
-with et_libraries;
 with et_general;				use et_general;
 
 with et_coordinates;			use et_coordinates;

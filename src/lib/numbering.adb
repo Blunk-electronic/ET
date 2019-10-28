@@ -54,8 +54,6 @@ with et_devices;				use et_devices;
 
 package body numbering is
 
-	procedure dummy is begin null; end;
-
 	function "<" (left, right : in type_module) return boolean is
 		use type_module_name;
 		use type_module_instance_name;

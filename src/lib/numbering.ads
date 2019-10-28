@@ -51,7 +51,6 @@ with ada.containers.multiway_trees;
 with et_general;				use et_general;
 
 with et_coordinates;
-with et_libraries;				use et_libraries;
 with et_string_processing;		use et_string_processing;
 
 with et_devices;				use et_devices;
@@ -59,8 +58,6 @@ with et_devices;				use et_devices;
 
 package numbering is
 
-	procedure dummy;
-	
 	type type_device is record
 		name	: type_device_name; -- R56, IC4
 		unit	: et_devices.type_unit_name.bounded_string; -- 1, A, B, ...
