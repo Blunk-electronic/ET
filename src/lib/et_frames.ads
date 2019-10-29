@@ -36,7 +36,7 @@
 --
 
 with ada.strings.bounded; 		use ada.strings.bounded;
-
+with ada.strings.maps;			use ada.strings.maps;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
@@ -67,6 +67,15 @@ package et_frames is
 	
 	function to_string (name : in type_frame_template_name.bounded_string) return string;
 	function to_template_name (name : in string) return type_frame_template_name.bounded_string;
+
+	-- A drawing frame is divided in columns and rows:
+	type type_rows is new positive range 1..26;
+
+	type type_sectors is record
+		columns : character_set := to_set (span => ('A','Z')); 
+		rows	: type_rows := type_rows'first;
+	end record;
+
 
 	
 	generic
@@ -150,6 +159,7 @@ package et_frames is
 		-- NOTE: The native drawing frame has its lower left corner at position x/y 0/0. always.
 		type type_frame is tagged record
 			paper_size      : type_paper_size; -- the size of the paper
+			sectors			: type_sectors;
 			orientation		: type_paper_orientation := LANDSCAPE;
 			lines           : pac_lines.list;
 		end record;
