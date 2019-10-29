@@ -39,7 +39,7 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
-
+with ada.containers.indefinite_doubly_linked_lists;
 
 with et_general;				use et_general;
 with et_geometry;
@@ -68,14 +68,6 @@ package et_frames is
 	function to_string (name : in type_frame_template_name.bounded_string) return string;
 	function to_template_name (name : in string) return type_frame_template_name.bounded_string;
 
-
-	type type_title_block_text_meaning is ( 
-		PROJECT, TITLE, 
-        DRAWN_BY, CHECKED_BY, APPROVED_BY, 
-        DRAWN_DATE, CHECKED_DATE, APPROVED_DATE,
-        COMPANY,
-		REVISION, MISC);
-	
 	
 	generic
 		with package shapes is new et_geometry.shapes_2d (<>);
@@ -102,28 +94,55 @@ package et_frames is
 			return type_distance_positive;
 
 		
-		type type_text is new text.type_text with record
-			meaning			: type_title_block_text_meaning;
-			position		: type_point; -- relative to the position of the title block
-			content			: et_text.type_text_content.bounded_string;
-			rotation		: type_rotation;
-			-- CS: font, ...
-		end record;
-
-		package pac_texts is new doubly_linked_lists (type_text);
-		
 		type type_line is new shapes.type_line with null record;
 		package pac_lines is new doubly_linked_lists (type_line);
 
+		
+		type type_text_placeholder is new text.type_text with record
+			position	: type_point; -- x/y relative to the position of the title block
+			rotation	: type_rotation;
+			-- CS: font, ...
+		end record;
+		
+		type type_text_placeholders is record
+			company		: type_text_placeholder;
+			customer	: type_text_placeholder;			
+
+			project		: type_text_placeholder;
+			file		: type_text_placeholder;
+			revision	: type_text_placeholder;
+
+			description	: type_text_placeholder;
+			comment		: type_text_placeholder;
+			
+			drawn_by	: type_text_placeholder;
+			checked_by	: type_text_placeholder;
+			approved_by	: type_text_placeholder;
+
+			drawn_date		: type_text_placeholder;
+			checked_date	: type_text_placeholder;
+			approved_date	: type_text_placeholder;
+
+			created_date	: type_text_placeholder;
+			edited_date		: type_text_placeholder;
+		end record;
+		
+		type type_text is new type_text_placeholder with record
+			content		: et_text.type_text_content.bounded_string;
+		end record;
+		
+		package pac_texts is new doubly_linked_lists (type_text);
+
 		type type_title_block is record
-			position	: type_point; -- relative to the position of the frame
-			lines		: pac_lines.list;
-			texts		: pac_texts.list;
+			position		: type_point; -- relative to the position of the frame
+			lines			: pac_lines.list;
+			placeholders	: type_text_placeholders;
+			texts			: pac_texts.list;
 		end record;
 
 		-- the final drawing frame
 		-- NOTE: The native drawing frame has its lower left corner at position x/y 0/0. always.
-		type type_frame is tagged record
+		type type_frame is tagged record -- CS no need for tagged
 			paper_size      : type_paper_size; -- the size of the paper
 			orientation		: type_paper_orientation := LANDSCAPE;
 			lines           : pac_lines.list;

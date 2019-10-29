@@ -6551,19 +6551,13 @@ package body et_kicad is
 				lines 			: in pac_lines_of_file.list;
 				log_threshold	: in type_log_level) is
 
-				use et_text;
-				use et_frames;
-				use et_schematic.pac_frames;
+				-- use et_text;
+				-- use et_frames;
+				-- use et_schematic.pac_frames;
 				
 				frame : type_frame; -- a single drawing frame. see type in et_kicad.ads
 			
-				-- These are the components of the title block. At the end
-				-- of this procedure they are assembled to a final title block:
-				title_block_text 	: et_schematic.pac_frames.type_text; -- a single text within the title block
-				title_block_texts 	: et_schematic.pac_frames.pac_texts.list; -- a list of title block texts
-				--title_block 		: et_libraries.type_title_block; -- a full title block
-				
-				-- If the description reveals there is more than one sheet, we have a hierarchic design. Means we
+				-- If the description reveals that there is more than one sheet, we have a hierarchic design. Means we
 				-- need to read follwing sheet sections.
 				-- The sheet_number_current obtained here serves as part of the coordinates of objects found on this sheet.
 				-- The sheet description looks like this:
@@ -6580,6 +6574,10 @@ package body et_kicad is
 				-- Comment3 ""
 				-- Comment4 ""
 				-- $EndDescr
+
+				-- NOTE: The problem with the attributes title, date, rev, comp is that they apply for individual sheets and
+				-- are thus not project wide.
+				-- CS: These attributes are currently lost during conversion.
 				
 			begin -- make_drawing_frame
 				log (text => "making drawing frame ...", level => log_threshold);
@@ -6653,12 +6651,10 @@ package body et_kicad is
 				if f (element (line_cursor), 1) = schematic_keyword_title then
 					log (text => "sheet title", level => log_threshold + 1);
 					
-					title_block_text.meaning := TITLE;
-
 					-- CS test field count
-					title_block_text.content := to_content ((f (element (line_cursor), 2)));
+					-- x := to_content ((f (element (line_cursor), 2)));
 					
-					pac_texts.append (title_block_texts, title_block_text);
+					-- CS set sheet specific description
 				end if;
 
 				next (line_cursor);
@@ -6668,10 +6664,10 @@ package body et_kicad is
 					log (text => "sheet date", level => log_threshold + 1);
 					
 					-- CS test field count					
-					title_block_text.meaning := DRAWN_DATE;
-					title_block_text.content := to_content (f (element (line_cursor), 2));
+					-- x := to_content (f (element (line_cursor), 2));
 
-					pac_texts.append (title_block_texts, title_block_text);
+					-- CS What shall we do with the sheet date ? Since we do a conversion from kicad to ET
+					-- this information seems to get lost anyway.
 				end if;
 
 				next (line_cursor);
@@ -6681,10 +6677,9 @@ package body et_kicad is
 					log (text => "sheet revision", level => log_threshold + 1);
 					
 					-- CS test field count					
-					title_block_text.meaning := REVISION;
-					title_block_text.content := to_content (f (element (line_cursor), 2));
+					-- x := to_content (f (element (line_cursor), 2));
 					
-					pac_texts.append (title_block_texts, title_block_text);
+					-- CS set the module revision
 				end if;
 
 				next (line_cursor);
@@ -6694,10 +6689,9 @@ package body et_kicad is
 					log (text => "sheet company name", level => log_threshold + 1);
 					
 					-- CS test field count					
-					title_block_text.meaning := COMPANY;
-					title_block_text.content := to_content (f (element (line_cursor), 2));
+					-- x := to_content (f (element (line_cursor), 2));
 
-					pac_texts.append (title_block_texts, title_block_text);
+					-- CS set the module company name
 				end if;
 
 				next (line_cursor);
@@ -6711,20 +6705,16 @@ package body et_kicad is
 					log (text => "sheet comment", level => log_threshold + 1);
 					
 					-- CS test field count
-					title_block_text.meaning := MISC;
-					title_block_text.content := to_content (f (element (line_cursor), 2));
+					-- x := to_content (f (element (line_cursor), 2));
 
-					pac_texts.append (title_block_texts, title_block_text);
+					-- CS set the sheet specific comment
 				end if;
 
-				-- FINALIZE
-				frame.title_block.texts := title_block_texts; -- assign collected texts list to temporarily title block
+
 				-- CS: x/y coordinates and list of lines of a title block are kicad built-in things and 
 				-- thus not available here. -> x/y assume default values (0/0).
 				-- See comment above in header of this procedure.
 
-				-- purge temporarily texts
-				pac_texts.clear (title_block_texts);
 
 				-- append temporarily drawing frame to module
 				add_frame (frame);
