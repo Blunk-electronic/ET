@@ -69,6 +69,7 @@ with et_text;
 with et_symbols;
 with et_devices;
 with et_frames;				use et_frames;
+with et_schematic_sheets;
 
 package et_schematic is
 	use et_general.type_net_name;
@@ -321,7 +322,6 @@ package et_schematic is
 
 
 	
--- MODULE
 
 	-- The devices of a module are collected in a map.
  	package type_devices is new indefinite_ordered_maps (
@@ -348,8 +348,8 @@ package et_schematic is
 		element_type	=> netlists.type_netlist.tree, -- provides info on primary and secondary net dependencies
 		"="				=> netlists.type_netlist."=");
 
-
 	
+-- MODULE
 	type type_module is record
 		grid			: type_grid; -- the drawing grid of the schematic
 
