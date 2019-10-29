@@ -104,8 +104,9 @@ package et_frames is
 			-- CS: font, ...
 		end record;
 
-		-- These placeholders are required in both schematic and layout frames.
-		-- The user may use them or not.
+		-- These basic placeholders are required in both schematic and layout frames.
+		-- The user may use them or not. In the schematic these placeholders are
+		-- replaced by the module or project wide attributes:
 		type type_text_placeholders is record
 			company			: type_text_placeholder;
 			customer		: type_text_placeholder;

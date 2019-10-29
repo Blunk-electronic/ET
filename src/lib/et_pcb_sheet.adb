@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           SCHEMATIC SHEETS                               --
+--                              PCB SHEET                                   --
 --                                                                          --
---                               S p e c                                    --
+--                              B o d y                                     --
 --                                                                          --
 --         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
 --                                                                          --
@@ -36,58 +36,11 @@
 --
 --   ToDo: 
 
-with ada.containers;            use ada.containers;
-with ada.containers.ordered_maps;
+package body et_pcb_sheet is
 
-with et_geometry;
-with et_coordinates;		use et_coordinates;
-with et_symbols;
-with et_text;				use et_text;
-with et_frames;				use et_frames;
-
-package et_schematic_sheets is
-
-	use et_coordinates.geometry;
-	use type_text_content;
-
-	package pac_shapes is new et_geometry.shapes_2d (
-		geometry	=> et_coordinates.geometry);
-	
-	package pac_frames is new et_frames.frames (
-		shapes	=> pac_shapes,
-		text	=> et_symbols.pac_text);
-	
-	
-	procedure dummy;
-
--- FRAMES
-	use pac_frames;
-
-	-- The title block of a schematic sheet requires a placeholder for the 
-	-- description of the sheet:
-	type type_text_placeholders is record
-		description	: type_text_placeholder;
-	end record;
-	
-	type type_title_block is new pac_frames.type_title_block with record
-		additional_placeholders : type_text_placeholders;		
-	end record;
-
-	-- This is the drawing frame used in a schematic:
-	type type_frame is new pac_frames.type_frame with record
-		title_block : type_title_block;
-	end record;
-
-
-	
--- DESCRIPTIONS INDIVIDUAL SHEETS
-	package pac_descriptions is new ordered_maps (
-		key_type		=> et_coordinates.type_sheet,
-		element_type	=> et_text.type_text_content.bounded_string);
-
-
+	procedure dummy is begin null; end;
 		
-end et_schematic_sheets;
+end et_pcb_sheet;
 
 -- Soli Deo Gloria
 

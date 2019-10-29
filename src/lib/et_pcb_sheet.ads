@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           SCHEMATIC SHEETS                               --
+--                              PCB SHEET                                   --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,58 +36,53 @@
 --
 --   ToDo: 
 
-with ada.containers;            use ada.containers;
-with ada.containers.ordered_maps;
-
 with et_geometry;
-with et_coordinates;		use et_coordinates;
-with et_symbols;
+with et_pcb_coordinates;	use et_pcb_coordinates;
+with et_packages;
 with et_text;				use et_text;
 with et_frames;				use et_frames;
 
-package et_schematic_sheets is
+package et_pcb_sheet is
 
-	use et_coordinates.geometry;
+	use et_pcb_coordinates.geometry;
 	use type_text_content;
 
 	package pac_shapes is new et_geometry.shapes_2d (
-		geometry	=> et_coordinates.geometry);
+		geometry	=> et_pcb_coordinates.geometry);
 	
 	package pac_frames is new et_frames.frames (
 		shapes	=> pac_shapes,
-		text	=> et_symbols.pac_text);
+		text	=> et_packages.pac_text);
 	
+	use pac_frames;
 	
 	procedure dummy;
 
--- FRAMES
-	use pac_frames;
 
-	-- The title block of a schematic sheet requires a placeholder for the 
-	-- description of the sheet:
+	
+-- FRAMES
+
 	type type_text_placeholders is record
-		description	: type_text_placeholder;
+		silk_screen, assy_doc, 
+
+		keepout, plated_millings, pcb_outline, 
+
+		route_restrict, via_restrict, signal_layer	: type_text_placeholder;
+		-- CS add more
 	end record;
 	
+	-- The title block of the single layout sheet requires additional placeholders:
 	type type_title_block is new pac_frames.type_title_block with record
-		additional_placeholders : type_text_placeholders;		
+		additional_placeholders : type_text_placeholders;
 	end record;
 
-	-- This is the drawing frame used in a schematic:
+	-- This is the drawing frame used in a pcb layout:
 	type type_frame is new pac_frames.type_frame with record
 		title_block : type_title_block;
 	end record;
 
-
-	
--- DESCRIPTIONS INDIVIDUAL SHEETS
-	package pac_descriptions is new ordered_maps (
-		key_type		=> et_coordinates.type_sheet,
-		element_type	=> et_text.type_text_content.bounded_string);
-
-
 		
-end et_schematic_sheets;
+end et_pcb_sheet;
 
 -- Soli Deo Gloria
 

@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         SCHEMATIC SHEEETS                                --
+--                          SCHEMATIC SHEETS                                --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
@@ -36,19 +36,6 @@
 --
 --   ToDo: 
 
-with ada.text_io;				use ada.text_io;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded;       use ada.strings.bounded;
-with ada.containers;            use ada.containers;
-with ada.containers.vectors;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
-
--- with et_general;				use et_general;
-
 with et_coordinates;		use et_coordinates;
 with et_text;				use et_text;
 with et_frames;				use et_frames;
@@ -56,7 +43,6 @@ with et_frames;				use et_frames;
 package body et_schematic_sheets is
 
 	procedure dummy is begin null; end;
-
 		
 end et_schematic_sheets;
 
