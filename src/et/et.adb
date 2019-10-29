@@ -54,6 +54,7 @@ with et_string_processing;		use et_string_processing;
 with et_coordinates;
 with et_packages;
 with et_schematic;
+with et_schematic_sheets;
 with et_import;
 with et_export;
 with conventions;

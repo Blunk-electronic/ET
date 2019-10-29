@@ -48,6 +48,7 @@ with ada.containers.vectors;
 with et_general;
 with et_project;
 with et_schematic;
+with et_schematic_sheets;
 with et_packages;
 with et_pcb;
 with et_kicad_general;			use et_kicad_general;
@@ -1380,7 +1381,7 @@ package et_kicad is
 
 	
 	--	type type_frame is new et_libraries.type_frame with record
-	type type_frame is new et_schematic.pac_frames.type_frame with record	
+	type type_frame is new et_schematic_sheets.pac_frames.type_frame with record	
 		coordinates : type_position; -- the position of the frame -- CS rename to position
 	end record;
 

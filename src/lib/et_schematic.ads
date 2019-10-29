@@ -76,15 +76,10 @@ package et_schematic is
 	use et_coordinates.geometry;
 
 	package shapes is new et_geometry.shapes_2d ( -- CS rename to pac_shapes
-		geometry	=> et_coordinates.geometry
-		);
+		geometry => et_coordinates.geometry);
 	
 	use shapes;
 
-	package pac_frames is new et_frames.frames (
-		shapes	=> et_schematic.shapes,
-		text	=> et_symbols.pac_text
-		);
 	
 -- TEXT FIELD
 
@@ -351,6 +346,9 @@ package et_schematic is
 	
 -- MODULE
 	type type_module is record
+		description			: et_text.type_text_content.bounded_string; -- a short description of the module
+		description_sheets	: et_schematic_sheets.pac_descriptions.map;
+		
 		grid			: type_grid; -- the drawing grid of the schematic
 
 		board_available	: type_board_available := FALSE;

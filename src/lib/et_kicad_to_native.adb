@@ -49,6 +49,7 @@ with gnat.source_info;
 
 with et_coordinates;
 with et_schematic;
+with et_schematic_sheets;
 
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
@@ -170,7 +171,7 @@ package body et_kicad_to_native is
 			sheet_paper_size	:= paper_size_of_schematic_sheet (sheet_number);
 
 			-- get the paper height of the sheet
-			sheet_height		:= et_schematic.pac_frames.paper_dimension (axis => Y, paper_size => sheet_paper_size);
+			sheet_height		:= et_schematic_sheets.pac_frames.paper_dimension (axis => Y, paper_size => sheet_paper_size);
 
 			-- calculate the new y position
 			--new_y				:= sheet_height - distance (axis => Y, point => point);
@@ -203,7 +204,7 @@ package body et_kicad_to_native is
 			sheet_paper_size	:= paper_size_of_schematic_sheet (sheet_number);
 
 			-- get the paper height of the sheet
-			sheet_height		:= et_schematic.pac_frames.paper_dimension (axis => Y, paper_size => sheet_paper_size);
+			sheet_height		:= et_schematic_sheets.pac_frames.paper_dimension (axis => Y, paper_size => sheet_paper_size);
 
 			-- calculate the new y position
 			--new_y				:= sheet_height - distance_y (point_actual);

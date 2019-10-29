@@ -48,7 +48,9 @@ with ada.containers.ordered_sets;
 
 -- with et_general;				use et_general;
 
+with et_geometry;
 with et_coordinates;		use et_coordinates;
+with et_symbols;
 with et_text;				use et_text;
 with et_frames;				use et_frames;
 
@@ -57,18 +59,37 @@ package et_schematic_sheets is
 	use et_coordinates.geometry;
 	use type_text_content;
 
-	procedure dummy;
+	package pac_shapes is new et_geometry.shapes_2d (
+		geometry	=> et_coordinates.geometry);
 	
---DESCRIPTIONS OF MODULE AND INDIVIDUAL SHEETS
-	package pac_sheet_descriptions is new ordered_maps (
+	package pac_frames is new et_frames.frames (
+		shapes	=> pac_shapes,
+		text	=> et_symbols.pac_text);
+	
+	
+	procedure dummy;
+
+-- FRAMES
+	use pac_frames;
+
+	-- The title block of a schematic sheet requires a placeholder for the 
+	-- description of the sheet.
+	type type_title_block is new pac_frames.type_title_block with record
+		description	: type_text_placeholder;
+	end record;
+
+	-- This is the drawing frame used in a schematic:
+	type type_frame is new pac_frames.type_frame with record
+		title_block : type_title_block;
+	end record;
+
+
+	
+-- DESCRIPTIONS INDIVIDUAL SHEETS
+	package pac_descriptions is new ordered_maps (
 		key_type		=> et_coordinates.type_sheet,
 		element_type	=> et_text.type_text_content.bounded_string);
 
-	type type_module_description is record
-		general	: et_text.type_text_content.bounded_string;
-		sheets	: pac_sheet_descriptions.map;
-	end record;
-		
 
 		
 end et_schematic_sheets;
