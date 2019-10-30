@@ -479,7 +479,7 @@ package et_kicad is
 			-- those components enforce net names (like GND or P3V3). Power flags do not
 			-- enforce net names. In order to distinguish them from regular power symbols the
 			-- power_flag is provided.
-			when et_symbols.SCH => 
+			when et_symbols.VIRTUAL => 
 				power_flag		: type_power_flag := NO;
 
 			-- If a component appears in both schematic and layout it comes 
@@ -489,7 +489,6 @@ package et_kicad is
 				datasheet		: type_component_datasheet.bounded_string;
 				variants		: et_devices.type_component_variants.map;
 				
-			when others => null; -- CS
 		end case;
 
 	end record;
@@ -595,10 +594,9 @@ package et_kicad is
 			-- those component may enforce net names (like GND or P3V3). Power flags do not
 			-- enforce net names. In order to distinguish them from regular power symbols the
 			-- power_flag is provided.
-			when et_symbols.SCH => 
+			when et_symbols.VIRTUAL => 
 				power_flag	: type_power_flag := NO;
-				
-			when others => null; -- CS
+
 		end case;
 	end record;
 

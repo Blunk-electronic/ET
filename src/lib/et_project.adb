@@ -1274,7 +1274,7 @@ package body et_project is
 						query_element (device_cursor, query_placeholders'access);
 						section_mark (section_package, FOOTER);
 						
-					when SCH => null;
+					when VIRTUAL => null;
 				end case;
 
 				query_element (device_cursor, query_units'access);
@@ -2530,12 +2530,12 @@ package body et_project is
 					-- is inserted in the unit list of the device.
 					
 					case device_appearance is
-						when SCH =>
+						when VIRTUAL =>
 							et_schematic.type_units.insert (
 								container	=> device_units,
 								key			=> device_unit_name,
 								new_item	=> (
-									appearance	=> SCH,
+									appearance	=> VIRTUAL,
 									mirror		=> device_unit_mirror,
 									position	=> device_unit_position));
 												   
@@ -6989,9 +6989,9 @@ package body et_project is
 										device_appearance := to_appearance (f (line, 2));
 
 										case device_appearance is
-											when SCH =>
+											when VIRTUAL =>
 												device := new et_schematic.type_device'(
-													appearance	=> SCH,
+													appearance	=> VIRTUAL,
 													others		=> <>);
 
 											when SCH_PCB =>

@@ -338,8 +338,8 @@ package body et_symbols is
 	begin
 		if verbose then
 			case appearance is
-				when sch =>
-					return ("appears in schematic only (virtual component)");
+				when VIRTUAL =>
+					return ("appears in schematic only (virtual device)");
 				when sch_pcb =>
 					return ("appears in schematic and layout");
 			end case;

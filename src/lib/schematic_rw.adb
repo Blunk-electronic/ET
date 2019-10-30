@@ -757,18 +757,15 @@ package body schematic_rw is
 
 								-- Create a new symbol where pointer "symbol" is pointing at.
 								case appearance is
-									when SCH =>
+									when VIRTUAL =>
 										symbol := new type_symbol' (
-											appearance	=> SCH,
+											appearance	=> VIRTUAL,
 											others		=> <>);
 
 									when SCH_PCB =>
 										symbol := new type_symbol' (
 											appearance	=> SCH_PCB,
 											others		=> <>);
-
-									when others => 
-										raise constraint_error; -- CS
 
 								end case;
 								

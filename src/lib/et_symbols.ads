@@ -339,7 +339,7 @@ package et_symbols is
 	
 -- APPEARANCE	
 	type type_appearance is (
-		sch,		-- a device that exists in the schematic only (like power symbols)
+		VIRTUAL,	-- a device that exists in the schematic only (like power symbols)
 		sch_pcb	-- a device that exists in both schematic and soldered on a pcb
 -- 		pcb			-- a device that exists on the pcb only (like a fiducial)		
 		-- CS: cable 
@@ -430,8 +430,8 @@ package et_symbols is
 				name	: type_text_placeholder (meaning => et_symbols.NAME);
 				value	: type_text_placeholder (meaning => et_symbols.VALUE);
 				purpose : type_text_placeholder (meaning => et_symbols.PURPOSE);
-			when SCH => null;				
-			when others => null; -- CS
+
+			when VIRTUAL => null;				
 		end case;
 	end record;
 

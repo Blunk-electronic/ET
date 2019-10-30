@@ -379,14 +379,14 @@ package body device_rw is
 			-- Depending on the appearance of the device, a unit with the same
 			-- appearance is inserted in units_internal.
 			case appearance is 
-				when SCH =>
+				when VIRTUAL =>
 					type_units_internal.insert (
 						container	=> units_internal,
 						position	=> position,
 						inserted	=> inserted,
 						key			=> unit_name,
 						new_item	=> (
-								appearance	=> SCH,
+								appearance	=> VIRTUAL,
 								symbol		=> unit_symbol.all,
 								position	=> unit_position,
 								swap_level	=> unit_swap_level,
@@ -983,9 +983,9 @@ package body device_rw is
 										-- The symbol assumes the appearance of the device.
 										-- The symbol will be copied to the current unit later.
 										case appearance is
-											when SCH =>
+											when VIRTUAL =>
 												unit_symbol := new type_symbol' (
-													appearance	=> SCH,
+													appearance	=> VIRTUAL,
 													others		=> <>);
 
 											when SCH_PCB =>
@@ -1458,12 +1458,12 @@ package body device_rw is
 								--partcode		=> partcode,
 								variants		=> variants));
 
-				when SCH => -- virtual device
+				when VIRTUAL =>
 					type_devices.insert (
 						container	=> devices, 
 						key			=> file_name, -- libraries/devices/power_gnd.dev
 						new_item	=> (
-								appearance		=> SCH,
+								appearance		=> VIRTUAL,
 								prefix			=> prefix, -- PWR
 								units_internal	=> units_internal,
 								units_external	=> units_external));

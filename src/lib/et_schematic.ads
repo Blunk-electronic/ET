@@ -107,7 +107,7 @@ package et_schematic is
 	-- In a schematic we handle only virtual devices (like GND symbols)
 	-- and those which appear in both schematic an layout (so called real devices):
 	subtype type_appearance_schematic is et_symbols.type_appearance 
-		range et_symbols.SCH .. et_symbols.SCH_PCB;
+		range et_symbols.VIRTUAL .. et_symbols.SCH_PCB;
 
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a device.
@@ -116,7 +116,7 @@ package et_schematic is
 		position	: et_coordinates.type_position; -- incl. rotation and sheet number
 		mirror		: type_mirror := NO;
 		case appearance is
-			when et_symbols.SCH => null; -- CS
+			when et_symbols.VIRTUAL => null; -- CS
 			when et_symbols.SCH_PCB =>
 				name	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
 				value	: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
@@ -166,10 +166,8 @@ package et_schematic is
 
 				-- CS flags that signal whether partcode, purpose, bom are displayed or not.
 				
-			when et_symbols.SCH => 
-				null;
-				
-			when others => null; -- CS
+			when et_symbols.VIRTUAL => null;
+
 		end case;
 	end record;
 

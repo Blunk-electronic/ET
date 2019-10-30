@@ -1083,7 +1083,7 @@ package body et_kicad is
 				-- character of the 3rd subfield is a hash sign.
 				if f (line,3) (f (line,3)'first) 
 					= schematic_component_power_symbol_prefix then
-					comp_app := sch;
+					comp_app := VIRTUAL;
 				else
 					comp_app := sch_pcb;
 				end if;
@@ -1098,7 +1098,7 @@ package body et_kicad is
 					when N =>
 						comp_app := sch_pcb;
 					when P => 
-						comp_app := sch;
+						comp_app := VIRTUAL;
 				end case;
 		end case;
 		
@@ -2129,7 +2129,7 @@ package body et_kicad is
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_datasheet.size);
 						end if;
 
-					when sch =>
+					when VIRTUAL =>
 						-- Since this is a virtual component, we do the prefix character check
 						-- against the Kicad specific character set for prefixes. see et_kicad.ads.
 						-- Afterward we validate the prefix. The prefixes for virtual components
@@ -2170,7 +2170,7 @@ package body et_kicad is
 				check_text_fields (log_threshold + 2);
 
 				case tmp_appearance is
-					when sch =>
+					when VIRTUAL =>
 
 						-- we insert into the given components list a new component
 						type_components_library.insert(
@@ -2179,26 +2179,26 @@ package body et_kicad is
 							position	=> comp_cursor,
 							inserted	=> comp_inserted,
 							new_item	=> (
-								appearance		=> sch,
+								appearance	=> VIRTUAL,
 
 								-- Whether the component is a power flag can be reasoned by the prefix.
 								-- At library level there is no indexed prefix. Power flags have just 
 								-- the prefix "#FLG". So we can provide an arbitrary index for the conversion
 								-- function "to_power_flag".
-								power_flag		=> to_power_flag (to_component_reference (
+								power_flag	=> to_power_flag (to_component_reference (
 											text_in			=> to_string (tmp_prefix) & "0", -- #FLG0
 											leading_hash	=> true)),
 
-								prefix			=> tmp_prefix,
-								value			=> to_value (
-													value => content (field_value),
-													error_on_invalid_character => false
-													),
+								prefix		=> tmp_prefix,
+								value		=> to_value (
+												value => content (field_value),
+												error_on_invalid_character => false
+												),
 												-- For the operators convenice no error is raised if invalid
 												-- character found. This was the design gets imported but with
 												-- (lots of) warnings.
 								
-								units			=> type_units_library.empty_map
+								units		=> type_units_library.empty_map
 								)
 							);
 						
@@ -7371,7 +7371,7 @@ package body et_kicad is
 				use et_string_processing;
 
 				reference					: type_device_name;	-- like IC5	
-				appearance					: type_appearance := SCH; -- CS: why this default ?
+				appearance					: type_appearance := VIRTUAL; -- CS: why this default ?
 				generic_name_in_lbr			: type_component_generic_name.bounded_string; -- like TRANSISTOR_PNP
 
 				-- V5:
@@ -7831,12 +7831,12 @@ package body et_kicad is
 					
 					case appearance is
 						
-						when sch => -- we have a line like "L P3V3 #PWR07"
+						when VIRTUAL => -- we have a line like "L P3V3 #PWR07"
 					
 							add_component (
 								reference	=> remove_leading_hash (reference), -- #PWR03 becomes PWR03
 								component	=> (
-									appearance		=> sch,
+									appearance		=> VIRTUAL,
 
 									-- Whether the component is a "power flag" can be reasoned from its reference:
 									power_flag		=> to_power_flag (reference),
@@ -7902,10 +7902,6 @@ package body et_kicad is
 									raise constraint_error;
 								end if;
 
-						when others => -- CS: This should never happen. A subtype of type_device_appearance could be a solution.
-							null;
-							raise constraint_error;
-							
 					end case;
 
 					log_indentation_down;
@@ -7931,13 +7927,13 @@ package body et_kicad is
 					
 					case appearance is
 
-						when SCH =>
+						when VIRTUAL =>
 
 							add_unit (
 								reference	=> remove_leading_hash (reference), -- #PWR03 becomes PWR03
 								unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...	
 								unit 		=> (
-									appearance		=> sch,
+									appearance		=> VIRTUAL,
 									position		=> position,
 									rotation		=> orientation,
 									mirror			=> mirror,
@@ -8323,7 +8319,7 @@ package body et_kicad is
 						-- might be overwritten once alternative references are found in this sheet.
 						case appearance is
 						
-							when SCH => 
+							when VIRTUAL => 
 								-- We have a line like "L P3V3 #PWR07".
 								-- Build a reference type from the given reference string.
 								-- Afterward we validate the prefix of the reference. It must be
@@ -8346,9 +8342,6 @@ package body et_kicad is
 									leading_hash	=> false);
 
 								log (text => "reference " & to_string (reference) & " (preliminary)", level => log_threshold);
-								
-							when others => -- CS: This should never happen. A subtype of type_device_appearance could be a solution.
-								raise constraint_error;
 								
 						end case;
 									
@@ -9164,7 +9157,7 @@ package body et_kicad is
 		-- Only vitual components have the power flag property. 
 		-- For real components the return is always false;
 -- 		if et_libraries."=" (type_components_library.element (cursor).appearance, et_libraries.SCH) then
-		if type_components_library.element (cursor).appearance = SCH then
+		if type_components_library.element (cursor).appearance = VIRTUAL then
 			--log (text => "virtual component");
 			--if type_components.element (cursor).power_flag then
 			--	log (text => "power flag on");
@@ -10020,7 +10013,7 @@ package body et_kicad is
 					-- This action depends on the appearance of the schematic component being processed.
 					-- For example: only virtual components can be power_flags.
 					case element (component_cursor_sch).appearance is
-						when sch =>
+						when VIRTUAL =>
 							type_ports.append (
 								container => ports,
 								new_item => (
@@ -13228,7 +13221,7 @@ package body et_kicad is
 									log (text => to_string (port => port) 
 										& et_devices.to_string (terminal, show_unit => true, preamble => true));
 
-								when SCH =>
+								when VIRTUAL =>
 									log (text => to_string (port => port));
 							end case;
 								

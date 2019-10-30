@@ -391,7 +391,7 @@ package et_devices is
 			-- and thus does not have any package variants.
 			-- Such components are power symbols. Later when building netlists
 			-- those components enforce net names (like GND or P3V3).
-			when sch => 
+			when VIRTUAL => 
 				null;
 
 			-- If a device appears in both schematic and layout it comes 
@@ -401,7 +401,6 @@ package et_devices is
 				--partcode	: type_component_partcode.bounded_string;
 				variants	: type_component_variants.map;
 				
-			when others => null; -- CS
 		end case;
 
 	end record;

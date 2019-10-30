@@ -2335,7 +2335,7 @@ package body et_kicad_to_native is
 				unit_cursor_native	: et_schematic.type_units.cursor;
 				unit_inserted		: boolean;
 
-				unit_native_virtual	: et_schematic.type_unit (et_symbols.SCH);
+				unit_native_virtual	: et_schematic.type_unit (et_symbols.VIRTUAL);
 				unit_native_real	: et_schematic.type_unit (et_symbols.SCH_PCB);
 
 				use et_symbols;
@@ -2352,14 +2352,14 @@ package body et_kicad_to_native is
 					-- and adding stuff of real components (if real device).
 					-- Kicad stuff like "alternative representation", package name, datasheet is discarded.
 					case element (component_cursor_kicad).appearance is
-						when SCH => -- virtual device
+						when VIRTUAL =>
 
 							unit_native_virtual := (
 								mirror		=> element (unit_cursor_kicad).mirror,
 								position	=> to_native_coordinates (
 												point		=> element (unit_cursor_kicad).position,
 												rotation 	=> element (unit_cursor_kicad).rotation),
-								appearance	=> SCH);
+								appearance	=> VIRTUAL);
 							
 							et_schematic.type_units.insert (
 								container	=> component.units,
@@ -2417,23 +2417,23 @@ package body et_kicad_to_native is
 				-- component in the native schematic module.
 				-- Kicad stuff like the boolean power_flag is ignored.
 				case element (component_cursor_kicad).appearance is
-					when SCH =>
+					when VIRTUAL =>
 						
 						et_schematic.type_devices.insert (
 							container	=> module.devices,
 							key			=> key (component_cursor_kicad), -- PWR04, FLG01
 							position	=> component_cursor_native,
 							new_item	=> (
-								appearance			=> SCH,
+								appearance	=> VIRTUAL,
 
 								-- The link to the device model is a composition of path,file and generic name:
-								model				=> concatenate_lib_name_and_generic_name (
-														library	=> element (component_cursor_kicad).library_name,
-														device	=> element (component_cursor_kicad).generic_name),
+								model		=> concatenate_lib_name_and_generic_name (
+												library	=> element (component_cursor_kicad).library_name,
+												device	=> element (component_cursor_kicad).generic_name),
 
 								-- NOTE: The value of virtual components (like power symbols) is discarded here.
 								
-								others 				=> <>), -- unit list is empty at this time
+								others 		=> <>), -- unit list is empty at this time
 
 							inserted	=> component_inserted); -- should always be true
 
@@ -2443,17 +2443,17 @@ package body et_kicad_to_native is
 							key			=> key (component_cursor_kicad), -- IC308, R12
 							position	=> component_cursor_native,
 							new_item	=> (
-								appearance			=> SCH_PCB,
+								appearance	=> SCH_PCB,
 
 								-- The link to the device model is a composition of path,file and generic name:
-								model				=> concatenate_lib_name_and_generic_name (
-														library	=> element (component_cursor_kicad).library_name,
-														device	=> element (component_cursor_kicad).generic_name),
+								model		=> concatenate_lib_name_and_generic_name (
+												library	=> element (component_cursor_kicad).library_name,
+												device	=> element (component_cursor_kicad).generic_name),
 
-								value				=> element (component_cursor_kicad).value,
-								partcode			=> material.to_partcode (material.partcode_default), -- not provided by kicad
-								purpose				=> et_devices.to_purpose (et_devices.purpose_default), -- not provided by kicad
-								variant				=> element (component_cursor_kicad).variant,
+								value		=> element (component_cursor_kicad).value,
+								partcode	=> material.to_partcode (material.partcode_default), -- not provided by kicad
+								purpose		=> et_devices.to_purpose (et_devices.purpose_default), -- not provided by kicad
+								variant		=> element (component_cursor_kicad).variant,
 
 								position			=> element (component_cursor_kicad).position,
 								text_placeholders	=> element (component_cursor_kicad).text_placeholders,
@@ -3356,14 +3356,14 @@ package body et_kicad_to_native is
 															-- NOTE: Other placeholders (fields in kicad) discarded here.
 										));
 
-							when SCH => -- virtual
+							when VIRTUAL =>
 								et_devices.type_units_internal.insert (
 									container	=> device.units_internal,
 									key			=> key (unit_cursor_kicad), -- the name of the unit
 									position	=> unit_cursor, -- set unit_cursor for later updating the current unit
 									inserted	=> inserted,
 									new_item	=> (
-										appearance	=> SCH, -- virtual !
+										appearance	=> VIRTUAL, -- !!
 										position	=> element (unit_cursor_kicad).coordinates,
 										swap_level	=> <>,
 										add_level	=> <>, -- CS depends on the "global" flag. When true add_level should be "request"
@@ -3372,7 +3372,7 @@ package body et_kicad_to_native is
 										symbol		=> (type_symbol_base (element (unit_cursor_kicad).symbol)
 														with 
 															shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes),
-															appearance	=> SCH,
+															appearance	=> VIRTUAL,
 															ports		=> type_ports.empty_map) -- ports will come later
 															-- NOTE: Other placeholders discarded here.
 										));
@@ -3445,14 +3445,14 @@ package body et_kicad_to_native is
 					log_indentation_up;
 
 					case element (component_cursor).appearance is
-						when SCH =>
+						when VIRTUAL =>
 							et_devices.type_devices.insert (
 								container	=> et_devices.devices,
 								position	=> device_cursor,
 								inserted	=> inserted,
 								key			=> device_model,
 								new_item	=> (
-									appearance		=> SCH,
+									appearance		=> VIRTUAL,
 									prefix 			=> remove_leading_hash (element (component_cursor).prefix),
 									units_internal	=> <>, -- internal units will come later
 									units_external	=> <> -- kicad components do not have external symbols
@@ -3492,8 +3492,6 @@ package body et_kicad_to_native is
 										process		=> rename_package_model_in_variants'access);
 								end if;
 									
-						when others =>
-							raise constraint_error;
 					end case;
 
 					-- If multiple designs are converted, a particular device might be 

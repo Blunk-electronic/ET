@@ -3586,12 +3586,12 @@ package body schematic_ops is
 				log (text => "adding internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
 				
 				case element (device_cursor_lib).appearance is
-					when SCH =>
+					when VIRTUAL =>
 						type_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.int), -- the unit name like A, B
 							new_item	=> (
-								appearance	=> SCH,
+								appearance	=> VIRTUAL,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 								others 		=> <>)
 								);
@@ -3626,12 +3626,12 @@ package body schematic_ops is
 				log (text => "adding external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 				
 				case element (device_cursor_lib).appearance is
-					when SCH =>
+					when VIRTUAL =>
 						type_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.ext), -- the unit name like A, B
 							new_item	=> (
-								appearance	=> SCH,
+								appearance	=> VIRTUAL,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
 								others 		=> <>)
 								);
@@ -3671,14 +3671,14 @@ package body schematic_ops is
 			log_indentation_up;
 			
 			case element (device_cursor_lib).appearance is
-				when SCH =>
+				when VIRTUAL =>
 					et_schematic.type_devices.insert (
 						container	=> module.devices,
 						inserted	=> inserted,
 						position	=> device_cursor_sch,
 						key			=> next_name,
 						new_item	=> (
-							appearance 	=> SCH,
+							appearance 	=> VIRTUAL,
 							model		=> key (device_cursor_lib),
 							units		=> type_units.empty_map
 							));
@@ -3867,12 +3867,12 @@ package body schematic_ops is
 				log (text => "adding internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
 				
 				case element (device_cursor_lib).appearance is
-					when SCH =>
+					when VIRTUAL =>
 						type_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.int), -- the unit name like A, B
 							new_item	=> (
-								appearance	=> SCH,
+								appearance	=> VIRTUAL,
 								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 								others 		=> <>)
 								);
@@ -3907,12 +3907,12 @@ package body schematic_ops is
 				log (text => "adding external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 				
 				case element (device_cursor_lib).appearance is
-					when SCH =>
+					when VIRTUAL =>
 						type_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.ext), -- the unit name like A, B
 							new_item	=> (
-								appearance	=> SCH,
+								appearance	=> VIRTUAL,
 								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 								others 		=> <>)
 								);
@@ -3960,14 +3960,14 @@ package body schematic_ops is
 				-- Create a new device. Copy lots of properties from the original device.
 				-- The unit list is empty for the time being:
 				case element (device_cursor_sch).appearance is
-					when SCH =>
+					when VIRTUAL =>
 						et_schematic.type_devices.insert (
 							container	=> module.devices,
 							inserted	=> inserted,
 							position	=> device_cursor_sch,
 							key			=> next_name,
 							new_item	=> (
-								appearance 	=> SCH,
+								appearance 	=> VIRTUAL,
 								model		=> element (device_cursor_sch).model,
 								units		=> type_units.empty_map
 								));
@@ -4129,12 +4129,12 @@ package body schematic_ops is
 				log (text => "adding internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
 				
 				case element (device_cursor_lib).appearance is
-					when SCH =>
+					when VIRTUAL =>
 						type_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.int), -- the unit name like A, B
 							new_item	=> (
-								appearance	=> SCH,
+								appearance	=> VIRTUAL,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 								others 		=> <>)
 								);
@@ -4170,12 +4170,12 @@ package body schematic_ops is
 				log (text => "adding external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 				
 				case element (device_cursor_lib).appearance is
-					when SCH =>
+					when VIRTUAL =>
 						type_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.ext), -- the unit name like A, B
 							new_item	=> (
-								appearance	=> SCH,
+								appearance	=> VIRTUAL,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 								others 		=> <>)
 								);
