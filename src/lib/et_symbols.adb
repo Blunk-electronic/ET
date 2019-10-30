@@ -342,8 +342,6 @@ package body et_symbols is
 					return ("appears in schematic only (virtual component)");
 				when sch_pcb =>
 					return ("appears in schematic and layout");
-				when pcb =>
-					return ("appears in layout only (mechanical component)");
 			end case;
 		else
 			return latin_1.space & to_lower (type_appearance'image (appearance));

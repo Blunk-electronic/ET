@@ -2147,8 +2147,6 @@ package body et_kicad is
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_reference.size);
 						end if;
 
-					when pcb => null; --CS
-						
 				end case;
 				
 				log_indentation_down;

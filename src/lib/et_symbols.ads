@@ -340,8 +340,8 @@ package et_symbols is
 -- APPEARANCE	
 	type type_appearance is (
 		sch,		-- a device that exists in the schematic only (like power symbols)
-		sch_pcb,	-- a device that exists in both schematic and soldered on a pcb
-		pcb			-- a device that exists on the pcb only (like a fiducial)		
+		sch_pcb	-- a device that exists in both schematic and soldered on a pcb
+-- 		pcb			-- a device that exists on the pcb only (like a fiducial)		
 		-- CS: cable 
 		-- CS: wire
 		-- ...
