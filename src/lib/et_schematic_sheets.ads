@@ -67,6 +67,7 @@ package et_schematic_sheets is
 	-- description of the sheet:
 	type type_text_placeholders is record
 		description	: type_text_placeholder;
+		category	: type_text_placeholder; -- development, routing, product
 	end record;
 	
 	type type_title_block is new pac_frames.type_title_block with record
@@ -78,13 +79,24 @@ package et_schematic_sheets is
 		title_block : type_title_block;
 	end record;
 
+	type type_sheet_category is (
+		DEVELOPMENT,
+		ROUTING,
+		PRODUCT
+		);
 
-	
+	sheet_category_default : constant type_sheet_category := DEVELOPMENT;
+		
+	type type_description is record
+		content			: et_text.type_text_content.bounded_string;
+		sheet_category	: type_sheet_category := sheet_category_default;
+	end record;
+		
 	-- For each sheet a description is required. The descriptions 
 	-- are ordered by the sheet numbers:
 	package pac_descriptions is new ordered_maps (
 		key_type		=> et_coordinates.type_sheet,
-		element_type	=> et_text.type_text_content.bounded_string);
+		element_type	=> type_description);
 
 
 	-- The final drawing frames:

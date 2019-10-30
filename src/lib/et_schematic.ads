@@ -359,11 +359,7 @@ package et_schematic is
 		submods			: submodules.type_submodules.map;		-- instances of submodules (boxes)
 		netchangers		: submodules.type_netchangers.map;		-- netchangers
 		
-		-- CS: handle sheet description via a composite type consisting of template name and a bounded string
-		-- CS: move to et_pcb and make it a selector of board ?
-		
 		texts       	: type_texts.list; -- general notes, not related to drawing frames !
-		-- CS: images
 
 		-- the nets of the module (incl. routing information from the board):
 		nets 	    	: type_nets.map;
@@ -383,6 +379,8 @@ package et_schematic is
 		-- Provide information on primary nets and their subordinated secondary nets per 
 		-- assembly variant.
 		netlists		: type_netlists.map; -- variant name and netlist
+
+		-- CS: images
 	end record;
 
 
