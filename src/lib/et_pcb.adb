@@ -110,14 +110,6 @@ package body et_pcb is
 		return type_text_meaning_copper'value (meaning);
 	end to_meaning;
 	
-	function to_string (meaning : in type_text_meaning) return string is begin
-		return latin_1.space & to_lower (type_text_meaning'image (meaning));
-	end to_string;
-
-	function to_meaning (meaning : in string) return type_text_meaning is begin
-		return type_text_meaning'value (meaning);
-	end to_meaning;
-	
 	function on_segment (
 	-- Returns true if the given point sits on the given line of copper.
 		point			: in et_pcb_coordinates.geometry.type_point; -- x/y

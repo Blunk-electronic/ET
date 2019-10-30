@@ -115,9 +115,14 @@ package et_pcb is
 
 	
 		
-	-- PLACEHOLDERS FOR TEXTS IN COPPER LAYERS
+-- PLACEHOLDERS FOR TEXTS IN COPPER LAYERS
 	type type_text_meaning_copper is (
-		PROJECT_NAME,
+		COMPANY,
+		CUSTOMER,
+		PARTCODE,
+		DRAWING_NUMBER,
+		ASSEMBLY_VARIANT,
+		PROJECT,
 		REVISION,
 		SIGNAL_LAYER_ID,
 		SIGNAL_NAME
@@ -137,27 +142,9 @@ package et_pcb is
 
 	
 	
--- PLACEHOLDERS FOR TEXTS
-	type type_text_meaning is (
-		PROJECT_NAME,
-		PROJECT_STATUS,
-		DRAWING_NUMBER,
-		DRAWING_STATUS,
-		PERSON_NAME_DRAWN,
-		PERSON_NAME_CHECKED,
-		PERSON_NAME_APPROVED,
-		DATE_DRAWN,
-		DATE_CHECKED,
-		DATE_APPROVED,
-		CUSTOMER,
-		REVISION
-		);
-		-- CS should be defined via configuration file:
-
-	function to_string (meaning : in type_text_meaning) return string;
-	function to_meaning (meaning : in string) return type_text_meaning;
+-- PLACEHOLDERS FOR TEXTS IN NON-COPPER LAYERS
+	subtype type_text_meaning is type_text_meaning_copper range COMPANY .. REVISION;
 	
-	-- TEXT PLACEHOLDERS
 	type type_text_placeholder is new type_text with record
 		meaning : type_text_meaning;
 	end record;

@@ -68,12 +68,13 @@ package et_frames is
 	function to_string (name : in type_frame_template_name.bounded_string) return string;
 	function to_template_name (name : in string) return type_frame_template_name.bounded_string;
 
-	-- A drawing frame is divided in columns and rows:
-	type type_rows is new positive range 1..26;
+	-- A drawing frame is divided in columns and rows. The columns run from 1 to maximal 26.
+	-- The rows run from A to Z.
+	type type_columns is new positive range 1..26;
 
 	type type_sectors is record
-		columns : character_set := to_set (span => ('A','Z')); 
-		rows	: type_rows := type_rows'first;
+		rows	: character_set := to_set (span => ('A','Z')); 
+		columns	: type_columns := type_columns'first;
 	end record;
 
 

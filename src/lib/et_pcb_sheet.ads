@@ -62,6 +62,8 @@ package et_pcb_sheet is
 	
 -- FRAMES
 
+	-- Placeholders required for CAM output. They are filled by fixed keywords like "assembly documentation" 
+	-- or "silk screen" automatically.
 	type type_text_placeholders is record
 		silk_screen, assy_doc, 
 
