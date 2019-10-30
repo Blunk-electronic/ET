@@ -107,7 +107,7 @@ package et_schematic is
 	-- In a schematic we handle only virtual devices (like GND symbols)
 	-- and those which appear in both schematic an layout (so called real devices):
 	subtype type_appearance_schematic is et_symbols.type_appearance 
-		range et_symbols.VIRTUAL .. et_symbols.SCH_PCB;
+		range et_symbols.VIRTUAL .. et_symbols.PCB;
 
 	-- In a schematic we find units spread all over.
 	-- A unit is a subsection of a device.
@@ -117,7 +117,7 @@ package et_schematic is
 		mirror		: type_mirror := NO;
 		case appearance is
 			when et_symbols.VIRTUAL => null; -- CS
-			when et_symbols.SCH_PCB =>
+			when et_symbols.PCB =>
 				name	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
 				value	: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
 				purpose	: et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE); -- to be filled in schematic later by the user
@@ -150,7 +150,7 @@ package et_schematic is
 		
 		case appearance is
 			-- If a device appears in both schematic and layout it has got:
-			when et_symbols.SCH_PCB => 
+			when et_symbols.PCB => 
 				value		: et_devices.type_value.bounded_string; -- 470R
 				partcode	: material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 				purpose		: et_devices.type_device_purpose.bounded_string; -- brightness_control

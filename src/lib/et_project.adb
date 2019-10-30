@@ -1192,7 +1192,7 @@ package body et_project is
 					write (keyword => keyword_rotation, parameters => to_string (rot (element (unit_cursor).position))); -- rotation 180.0
 					write (keyword => keyword_mirrored, parameters => to_string (element (unit_cursor).mirror, verbose => false)); -- x_axis, y_axis, none
 
-					if element (unit_cursor).appearance = SCH_PCB then
+					if element (unit_cursor).appearance = PCB then
 						section_mark (section_placeholders, HEADER);
 						
 						write_placeholder (element (unit_cursor).name);
@@ -1256,7 +1256,7 @@ package body et_project is
 				write (keyword => keyword_model, parameters => to_string (element (device_cursor).model), space => true);
 
 				case element (device_cursor).appearance is
-					when SCH_PCB =>
+					when PCB =>
 						write (keyword => keyword_value   , parameters => to_string (element (device_cursor).value), space => true);
 						write (keyword => keyword_variant , parameters => to_string (element (device_cursor).variant), space => true);
 						write (keyword => keyword_partcode, parameters => material.to_string (element (device_cursor).partcode), space => true);
@@ -2539,7 +2539,7 @@ package body et_project is
 									mirror		=> device_unit_mirror,
 									position	=> device_unit_position));
 												   
-						when SCH_PCB =>
+						when PCB =>
 							-- A unit of a real device has placeholders:
 							et_schematic.type_units.insert (
 								container	=> device_units,
@@ -2548,7 +2548,7 @@ package body et_project is
 									mirror		=> device_unit_mirror,
 
 									position	=> device_unit_position,
-									appearance	=> SCH_PCB,
+									appearance	=> PCB,
 
 									-- The placeholders for reference, value and purpose have
 									-- been built and can now be assigned to the unit:
@@ -2677,7 +2677,7 @@ package body et_project is
 					device.model := device_model;
 
 					-- assign appearance specific temporarily variables and write log information
-					if device.appearance = SCH_PCB then
+					if device.appearance = PCB then
 
 						if not value_characters_valid (device_value) then
 							log (WARNING, "value of " & to_string (device_name) &
@@ -2732,7 +2732,7 @@ package body et_project is
 					-- read the device model (like ../libraries/transistor/pnp.dev)
 					read_device_file (device.model, log_threshold + 2);
 
-					if device.appearance = SCH_PCB then
+					if device.appearance = PCB then
 						conventions.validate_partcode (
 							partcode		=> device.partcode,
 							device_name		=> device_name,
@@ -6994,9 +6994,9 @@ package body et_project is
 													appearance	=> VIRTUAL,
 													others		=> <>);
 
-											when SCH_PCB =>
+											when PCB =>
 												device := new et_schematic.type_device'(
-													appearance	=> SCH_PCB,
+													appearance	=> PCB,
 													others		=> <>);
 										end case;
 												

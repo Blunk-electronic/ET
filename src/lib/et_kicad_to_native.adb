@@ -419,7 +419,7 @@ package body et_kicad_to_native is
 					use et_pcb_coordinates;
 					use et_pcb_coordinates.geometry;
 				begin
-					if component.appearance = SCH_PCB then
+					if component.appearance = PCB then
 						log_indentation_up;
 						
 						log (text => "package", level => log_threshold + 4);
@@ -2336,7 +2336,7 @@ package body et_kicad_to_native is
 				unit_inserted		: boolean;
 
 				unit_native_virtual	: et_schematic.type_unit (et_symbols.VIRTUAL);
-				unit_native_real	: et_schematic.type_unit (et_symbols.SCH_PCB);
+				unit_native_real	: et_schematic.type_unit (et_symbols.PCB);
 
 				use et_symbols;
 			begin -- copy_units
@@ -2368,14 +2368,14 @@ package body et_kicad_to_native is
 								inserted	=> unit_inserted,
 								new_item	=> unit_native_virtual);
 
-						when SCH_PCB => -- real device
+						when PCB => -- real device
 
 							unit_native_real := (
 								mirror		=> element (unit_cursor_kicad).mirror,
 								position	=> to_native_coordinates (
 												point		=> element (unit_cursor_kicad).position,
 												rotation 	=> element (unit_cursor_kicad).rotation),
-								appearance	=> SCH_PCB,
+								appearance	=> PCB,
 							
 								-- and stuff that comes with a real device:
 									
@@ -2437,13 +2437,13 @@ package body et_kicad_to_native is
 
 							inserted	=> component_inserted); -- should always be true
 
-					when SCH_PCB =>
+					when PCB =>
 						et_schematic.type_devices.insert (
 							container	=> module.devices,
 							key			=> key (component_cursor_kicad), -- IC308, R12
 							position	=> component_cursor_native,
 							new_item	=> (
-								appearance	=> SCH_PCB,
+								appearance	=> PCB,
 
 								-- The link to the device model is a composition of path,file and generic name:
 								model		=> concatenate_lib_name_and_generic_name (
@@ -3329,7 +3329,7 @@ package body et_kicad_to_native is
 
 						-- create internal units
 						case element (unit_cursor_kicad).appearance is
-							when SCH_PCB => -- real
+							when PCB => -- real
 						
 								et_devices.type_units_internal.insert (
 									container	=> device.units_internal,
@@ -3337,23 +3337,23 @@ package body et_kicad_to_native is
 									position	=> unit_cursor, -- set unit_cursor for later updating the current unit
 									inserted	=> inserted,
 									new_item	=> (
-										appearance	=> SCH_PCB, -- real !
+										appearance	=> PCB, -- real !
 										position	=> element (unit_cursor_kicad).coordinates,
 										swap_level	=> <>,
 										add_level	=> <>, -- CS depends on the "global" flag. When true add_level should be "request"
 
 										-- If the unit is real, then the symbol is real too:
 										symbol		=> (type_symbol_base (element (unit_cursor_kicad).symbol)
-														with 
-															shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes),
-															appearance	=> SCH_PCB,
-															ports		=> type_ports.empty_map, -- ports will come later
-															name		=> element (unit_cursor_kicad).symbol.name, 	-- placeholder
-															value		=> element (unit_cursor_kicad).symbol.value,	-- placeholder
-															purpose		=> ( -- we must invent a placeholder for purpose since kicad does not know such a thing
-																	meaning	=> PURPOSE,
-																	others 	=> <>))
-															-- NOTE: Other placeholders (fields in kicad) discarded here.
+											with 
+												shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes),
+												appearance	=> PCB,
+												ports		=> type_ports.empty_map, -- ports will come later
+												name		=> element (unit_cursor_kicad).symbol.name, 	-- placeholder
+												value		=> element (unit_cursor_kicad).symbol.value,	-- placeholder
+												purpose		=> ( -- we must invent a placeholder for purpose since kicad does not know such a thing
+														meaning	=> PURPOSE,
+														others 	=> <>))
+												-- NOTE: Other placeholders (fields in kicad) discarded here.
 										));
 
 							when VIRTUAL =>
@@ -3370,14 +3370,13 @@ package body et_kicad_to_native is
 
 										-- If the unit is virtual, then the symbol is virtual too:
 										symbol		=> (type_symbol_base (element (unit_cursor_kicad).symbol)
-														with 
-															shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes),
-															appearance	=> VIRTUAL,
-															ports		=> type_ports.empty_map) -- ports will come later
-															-- NOTE: Other placeholders discarded here.
+											with 
+												shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes),
+												appearance	=> VIRTUAL,
+												ports		=> type_ports.empty_map) -- ports will come later
+												-- NOTE: Other placeholders discarded here.
 										));
 
-							when others => raise constraint_error; -- CS
 						end case;
 								
 						-- copy ports 
@@ -3460,14 +3459,14 @@ package body et_kicad_to_native is
 									-- NOTE: KiCad power_flag is discarded.
 								));
 
-						when SCH_PCB =>
+						when PCB =>
 							et_devices.type_devices.insert (
 								container	=> et_devices.devices,
 								position	=> device_cursor,
 								inserted	=> inserted,
 								key			=> device_model,
 								new_item	=> (
-									appearance		=> SCH_PCB,
+									appearance		=> PCB,
 									prefix 			=> element (component_cursor).prefix,
 									value			=> element (component_cursor).value,
 									units_internal	=> <>, -- internal units will come later

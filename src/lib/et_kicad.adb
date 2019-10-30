@@ -251,7 +251,7 @@ package body et_kicad is
 
 			-- some placeholders exist depending on the component appearance
 			case type_units_schematic.element (unit).appearance is
-				when SCH_PCB =>
+				when PCB =>
 					null;
 					
 -- 					-- package/footprint
@@ -483,7 +483,7 @@ package body et_kicad is
 
 		-- depending on the component appearance there is more to report:
 		case type_components_schematic.element(component).appearance is
-			when SCH_PCB =>
+			when PCB =>
 
 -- 				-- package
 -- 				log (text => "package " 
@@ -1085,7 +1085,7 @@ package body et_kicad is
 					= schematic_component_power_symbol_prefix then
 					comp_app := VIRTUAL;
 				else
-					comp_app := sch_pcb;
+					comp_app := PCB;
 				end if;
 				
 			when false =>
@@ -1096,7 +1096,7 @@ package body et_kicad is
 				-- Evaluate lca and set comp_app accordingly.
 				case lca is
 					when N =>
-						comp_app := sch_pcb;
+						comp_app := PCB;
 					when P => 
 						comp_app := VIRTUAL;
 				end case;
@@ -2088,7 +2088,7 @@ package body et_kicad is
 				
 				-- appearance specific fields:
 				case tmp_appearance is
-					when sch_pcb =>
+					when PCB =>
 						-- This is a real component.
 
 						-- Since this is a real component. we do the prefix character check 
@@ -2202,7 +2202,7 @@ package body et_kicad is
 								)
 							);
 						
-					when sch_pcb =>
+					when PCB =>
 
 						-- we insert into the given components list a new component
 						type_components_library.insert(
@@ -2211,7 +2211,7 @@ package body et_kicad is
 							position	=> comp_cursor,
 							inserted	=> comp_inserted,
 							new_item	=> (
-								appearance		=> sch_pcb,
+								appearance		=> PCB,
 								prefix			=> tmp_prefix,
 								value			=> to_value (content (field_value)),
 								units			=> type_units_library.empty_map,
@@ -2222,11 +2222,6 @@ package body et_kicad is
 								)
 							);
 
-
-					when others =>
-						null; -- CS -- should not happen at all
-						raise constraint_error;
-						
 				end case;
 
 				-- Raise alarm if compoenent is already in the libaray.
@@ -2895,7 +2890,7 @@ package body et_kicad is
 						full_package_library_name : type_package_library_name.bounded_string;
 					begin
 						case component.appearance is
-							when sch_pcb => -- real component
+							when PCB => -- real component
 
 								-- The name of the default variant is the package
 								-- name itself (instead of an empty string or a string like "default"):
@@ -3089,7 +3084,7 @@ package body et_kicad is
 								set_text_placeholder_properties;
 
 								-- If this is a real component, build package variant from tmp_terminal_port_map
-								if tmp_appearance = sch_pcb then
+								if tmp_appearance = PCB then
 									build_package_variant;
 								end if;
 								
@@ -7562,7 +7557,7 @@ package body et_kicad is
 					-- fields to be checked. If it is about a virtual component, those 
 					-- fields are ignored and thus NOT checked:
 					case appearance is
-						when SCH_PCB =>
+						when PCB =>
 								
 							-- package
 							log (text => "package/footprint", level => log_threshold + 1);
@@ -7856,12 +7851,12 @@ package body et_kicad is
 									units 			=> type_units_schematic.empty_map),
 								log_threshold => log_threshold + 2);
 
-						when sch_pcb => -- we have a line like "L 74LS00 U1"
+						when PCB => -- we have a line like "L 74LS00 U1"
 
 							add_component ( 
 								reference => reference,
 								component => (
-									appearance		=> sch_pcb,
+									appearance		=> PCB,
 
 									library_name	=> full_component_library_name, -- ../lbr/bel_logic.lib
 									generic_name	=> generic_name_in_lbr,
@@ -7963,7 +7958,7 @@ package body et_kicad is
 								log_threshold => log_threshold + 2);
 												
 
-						when SCH_PCB =>
+						when PCB =>
 
 							add_unit 
 								(
@@ -7971,7 +7966,7 @@ package body et_kicad is
 								unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...	
 								unit 		=> 
 									(
-									appearance		=> sch_pcb,
+									appearance		=> PCB,
 									position		=> position,
 									rotation		=> orientation,
 									mirror			=> mirror,
@@ -8001,7 +7996,6 @@ package body et_kicad is
 								log_threshold => log_threshold + 2
 								);
 
-						when others => null; -- CS
 					end case;
 
 					log_indentation_down;
@@ -8331,7 +8325,7 @@ package body et_kicad is
 								log (text => "reference " & to_string (reference) & " (preliminary)", level => log_threshold);
 								validate_prefix (reference);
 
-							when SCH_PCB =>
+							when PCB =>
 								-- we have a line like "L 74LS00 IC13"
 								-- -- Build a reference type from the given reference string.
 								-- Afterward we validate the prefix of the reference. 
@@ -10041,7 +10035,7 @@ package body et_kicad is
 									connected	=> no -- used by netlist generator (procedure make_netlists)
 									));
 
-						when sch_pcb =>
+						when PCB =>
 							type_ports.append (
 								container => ports,
 								new_item => (
@@ -12078,7 +12072,7 @@ package body et_kicad is
 					-- Count ports by component category (address real components only)
 					--if element (port_cursor).appearance = et_libraries.sch_pcb then
 					--if et_libraries."=" (element (port_cursor).appearance, et_libraries.sch_pcb) then
-					if element (port_cursor).appearance = SCH_PCB then
+					if element (port_cursor).appearance = PCB then
 						case category (element (port_cursor).reference) is
 
 							-- count "connectives"
@@ -12948,7 +12942,7 @@ package body et_kicad is
 
 		-- Abort if given port is not a real component.
 		--if et_libraries."=" (port.appearance, et_libraries.sch_pcb) then -- real component
-		if port.appearance = SCH_PCB then -- real component			
+		if port.appearance = PCB then -- real component			
 
 			query_element (
 				position	=> find (modules, module), -- sets indirectly the cursor to the module
@@ -13216,7 +13210,7 @@ package body et_kicad is
 							-- Depending on the appearance of the component we output just the 
 							-- port name or both the terminal name and the port name.
 							case port.appearance is
-								when SCH_PCB =>
+								when PCB =>
 									terminal := to_terminal (port, module_name, log_threshold + 3); -- fetch the terminal
 									log (text => to_string (port => port) 
 										& et_devices.to_string (terminal, show_unit => true, preamble => true));
@@ -13314,8 +13308,7 @@ package body et_kicad is
 					while type_ports_with_reference."/=" (port_cursor, type_ports_with_reference.no_element) loop
 						port := type_ports_with_reference.element (port_cursor); -- load the port
 					
-						--if et_libraries."=" (port.appearance, et_libraries.sch_pcb) then
-						if port.appearance = SCH_PCB then
+						if port.appearance = PCB then
 							ports_real.insert (port); -- insert real port in list to be returned
 
 							-- log terminal

@@ -216,7 +216,7 @@ package body schematic_rw is
 
 		procedure write_placeholders is begin
 			case symbol.appearance is
-				when SCH_PCB =>
+				when PCB =>
 
 					section_mark (section_placeholders, HEADER);
 					
@@ -313,7 +313,7 @@ package body schematic_rw is
 		section_mark (section_texts, FOOTER);
 
 		-- PLACEHOLDERS
-		if symbol.appearance = SCH_PCB then
+		if symbol.appearance = PCB then
 			write_placeholders;
 		end if;
 
@@ -762,9 +762,9 @@ package body schematic_rw is
 											appearance	=> VIRTUAL,
 											others		=> <>);
 
-									when SCH_PCB =>
+									when PCB =>
 										symbol := new type_symbol' (
-											appearance	=> SCH_PCB,
+											appearance	=> PCB,
 											others		=> <>);
 
 								end case;

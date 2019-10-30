@@ -155,7 +155,7 @@ package body device_rw is
 
 		-- package variants
 		case device.appearance is
-			when SCH_PCB =>
+			when PCB =>
 				write (keyword => keyword_value, space => true, parameters => to_string (device.value));
 				--write (keyword => keyword_partcode, space => true, parameters => to_string (device.partcode));
 
@@ -175,6 +175,7 @@ package body device_rw is
 				end loop;
 
 				section_mark (section_variants, FOOTER);
+				
 			when others => null;				
 		end case;
 
@@ -392,20 +393,19 @@ package body device_rw is
 								swap_level	=> unit_swap_level,
 								add_level	=> unit_add_level));
 
-				when SCH_PCB =>
+				when PCB =>
 					type_units_internal.insert (
 						container	=> units_internal,
 						position	=> position,
 						inserted	=> inserted,
 						key			=> unit_name,
 						new_item	=> (
-								appearance	=> SCH_PCB,
+								appearance	=> PCB,
 								symbol		=> unit_symbol.all,
 								position	=> unit_position,
 								swap_level	=> unit_swap_level,
 								add_level	=> unit_add_level));
 
-				when others => null; -- CS
 			end case;
 
 			-- A unit name must occur only once. 
@@ -988,9 +988,9 @@ package body device_rw is
 													appearance	=> VIRTUAL,
 													others		=> <>);
 
-											when SCH_PCB =>
+											when PCB =>
 												unit_symbol := new type_symbol' (
-													appearance	=> SCH_PCB,
+													appearance	=> PCB,
 													others		=> <>);
 
 											when others => 
@@ -1433,7 +1433,7 @@ package body device_rw is
 
 			-- Assemble final device and insert it in devices:
 			case appearance is
-				when SCH_PCB => -- a real device
+				when PCB => -- a real device
 
 					-- If a value was specified (via an entry like "value 100R),
 					-- check if it meets certain conventions regarding its prefix.
@@ -1450,7 +1450,7 @@ package body device_rw is
 						container	=> devices, 
 						key			=> file_name, -- libraries/devices/7400.dev
 						new_item	=> (
-								appearance		=> SCH_PCB,
+								appearance		=> PCB,
 								prefix			=> prefix, -- IC
 								units_internal	=> units_internal,
 								units_external	=> units_external,
@@ -1468,7 +1468,6 @@ package body device_rw is
 								units_internal	=> units_internal,
 								units_external	=> units_external));
 
-				when others => null; -- CS
 			end case;
 		end if;
 

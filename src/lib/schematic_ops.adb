@@ -216,7 +216,7 @@ package body schematic_ops is
 		use et_schematic.type_devices;
 		use et_symbols;
 	begin
-		if element (device_cursor).appearance = SCH_PCB then
+		if element (device_cursor).appearance = PCB then
 			log (text => "location in board:" & 
 				to_string (et_pcb_coordinates.geometry.type_point (element (device_cursor).position)) &
 				" face" & 
@@ -2528,7 +2528,7 @@ package body schematic_ops is
 			if device_cursor /= et_schematic.type_devices.no_element then -- the device should be there
 
 				-- Only real devices have a value. Issue warning if targeted device is virtual.
-				if element (device_cursor).appearance = SCH_PCB then
+				if element (device_cursor).appearance = PCB then
 
 					-- Check value regarding the device category:
 					if conventions.value_valid (value, prefix (device_name)) then 
@@ -2605,7 +2605,7 @@ package body schematic_ops is
 			if device_cursor /= et_schematic.type_devices.no_element then -- the device should be there
 
 				-- Only real devices have a purpose. Issue warning if targeted device is virtual.
-				if element (device_cursor).appearance = SCH_PCB then
+				if element (device_cursor).appearance = PCB then
 
 					update_element (
 						container	=> module.devices,
@@ -2673,7 +2673,7 @@ package body schematic_ops is
 			if device_cursor /= et_schematic.type_devices.no_element then -- the device should be there
 
 				-- Only real devices have a purpose. Issue warning if targeted device is virtual.
-				if element (device_cursor).appearance = SCH_PCB then
+				if element (device_cursor).appearance = PCB then
 
 					update_element (
 						container	=> module.devices,
@@ -3596,12 +3596,12 @@ package body schematic_ops is
 								others 		=> <>)
 								);
 						
-					when SCH_PCB =>
+					when PCB =>
 						type_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
 							new_item	=> (
-								appearance	=> SCH_PCB,
+								appearance	=> PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 								name		=> element (unit_cursors.int).symbol.name, -- placeholder for device name
 								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
@@ -3609,7 +3609,6 @@ package body schematic_ops is
 								others 		=> <>)
 								);
 						
-					when others => null; -- CS
 				end case;
 				
 			end add_unit_internal;
@@ -3636,7 +3635,7 @@ package body schematic_ops is
 								others 		=> <>)
 								);
 						
-					when SCH_PCB =>
+					when PCB =>
 						-- The symbol file name is provided by unit_cursors.ext.
 						symbol_file := element (unit_cursors.ext).file; -- *.sym
 						
@@ -3651,7 +3650,7 @@ package body schematic_ops is
 							container	=> device.units,
 							key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
 							new_item	=> (
-								appearance	=> SCH_PCB,
+								appearance	=> PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y)
 								name		=> element (symbol_cursor).name,	-- placeholder for device name
 								value		=> element (symbol_cursor).value,	-- placeholder for device value
@@ -3659,7 +3658,6 @@ package body schematic_ops is
 								others 		=> <>)
 								);
 
-					when others => null; -- CS
 				end case;
 
 			end add_unit_external;
@@ -3683,7 +3681,7 @@ package body schematic_ops is
 							units		=> type_units.empty_map
 							));
 
-				when SCH_PCB =>
+				when PCB =>
 					-- A real device requires a package variant.
 					if type_component_variant_name.length (variant) > 0 then
 
@@ -3694,7 +3692,7 @@ package body schematic_ops is
 								position	=> device_cursor_sch,
 								key			=> next_name,
 								new_item	=> (
-									appearance 	=> SCH_PCB,
+									appearance 	=> PCB,
 									model		=> key (device_cursor_lib),
 									units		=> type_units.empty_map,
 									value		=> element (device_cursor_lib).value, -- if predefined in dev. model
@@ -3720,7 +3718,6 @@ package body schematic_ops is
 						raise constraint_error;
 					end if;
 					
-				when others => null; -- CS
 			end case;
 
 			-- Add first available unit (according to search order specified in function first_unit)
@@ -3877,20 +3874,18 @@ package body schematic_ops is
 								others 		=> <>)
 								);
 						
-					when SCH_PCB =>
+					when PCB =>
 						type_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
 							new_item	=> (
-								appearance	=> SCH_PCB,
+								appearance	=> PCB,
 								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 								name		=> element (unit_cursors.int).symbol.name, 		-- placeholder for device name
 								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
 								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
 								others 		=> <>)
 								);
-						
-					when others => null; -- CS
 				end case;
 				
 			end add_unit_internal;
@@ -3917,7 +3912,7 @@ package body schematic_ops is
 								others 		=> <>)
 								);
 						
-					when SCH_PCB =>
+					when PCB =>
 						-- The symbol file name is provided by unit_cursors.ext.
 						symbol_file := element (unit_cursors.ext).file; -- *.sym
 						
@@ -3932,15 +3927,13 @@ package body schematic_ops is
 							container	=> device.units,
 							key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
 							new_item	=> (
-								appearance	=> SCH_PCB,
+								appearance	=> PCB,
 								position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 								name		=> element (symbol_cursor).name,	-- placeholder for device name
 								value		=> element (symbol_cursor).value,	-- placeholder for device value
 								purpose		=> element (symbol_cursor).purpose,	-- placeholder for device purpose
 								others 		=> <>)
 								);
-
-					when others => null; -- CS
 				end case;
 
 			end add_unit_external;
@@ -3972,14 +3965,14 @@ package body schematic_ops is
 								units		=> type_units.empty_map
 								));
 
-					when SCH_PCB =>
+					when PCB =>
 						et_schematic.type_devices.insert (
 							container	=> module.devices,
 							inserted	=> inserted,
 							position	=> device_cursor_sch,
 							key			=> next_name,
 							new_item	=> (
-								appearance 	=> SCH_PCB,
+								appearance 	=> PCB,
 								model		=> element (device_cursor_sch).model,
 								units		=> type_units.empty_map,
 								value		=> element (device_cursor_sch).value, -- if predefined in dev. model
@@ -4139,20 +4132,18 @@ package body schematic_ops is
 								others 		=> <>)
 								);
 						
-					when SCH_PCB =>
+					when PCB =>
 						type_units.insert (
 							container	=> device.units,
 							key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
 							new_item	=> (
-								appearance	=> SCH_PCB,
+								appearance	=> PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 								name		=> element (unit_cursors.int).symbol.name, 		-- placeholder for device name
 								value		=> element (unit_cursors.int).symbol.value,		-- placeholder for device value
 								purpose		=> element (unit_cursors.int).symbol.purpose,	-- placeholder for device purpose
 								others 		=> <>)
 								);
-						
-					when others => null; -- CS
 				end case;
 				
 			end add_unit_internal;
@@ -4180,7 +4171,7 @@ package body schematic_ops is
 								others 		=> <>)
 								);
 						
-					when SCH_PCB =>
+					when PCB =>
 						-- The symbol file name is provided by unit_cursors.ext.
 						symbol_file := element (unit_cursors.ext).file; -- *.sym
 						
@@ -4195,15 +4186,13 @@ package body schematic_ops is
 							container	=> device.units,
 							key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
 							new_item	=> (
-								appearance	=> SCH_PCB,
+								appearance	=> PCB,
 								position	=> place, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 								name		=> element (symbol_cursor).name,	-- placeholder for device name
 								value		=> element (symbol_cursor).value,	-- placeholder for device value
 								purpose		=> element (symbol_cursor).purpose,	-- placeholder for device purpose
 								others 		=> <>)
 								);
-
-					when others => null; -- CS
 				end case;
 
 			end add_unit_external;
@@ -11712,7 +11701,7 @@ package body schematic_ops is
 					begin -- query_properties_default
 
 						-- the device must be real (appearance SCH_PCB)
-						if element (cursor_schematic).appearance = SCH_PCB then -- skip virtual devices
+						if element (cursor_schematic).appearance = PCB then -- skip virtual devices
 
 							-- the package must be real
 							if has_real_package (cursor_schematic) then
@@ -11753,7 +11742,7 @@ package body schematic_ops is
 					begin -- query_properties_variants
 
 						-- the device must be real (appearance SCH_PCB)
-						if element (cursor_schematic).appearance = SCH_PCB then -- skip virtual devices
+						if element (cursor_schematic).appearance = PCB then -- skip virtual devices
 
 							-- the package must be real
 							if has_real_package (cursor_schematic) then

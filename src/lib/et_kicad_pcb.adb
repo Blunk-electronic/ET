@@ -8015,8 +8015,7 @@ package body et_kicad_pcb is
 
 					-- We are interested in real components only. Virtual schematic components
 					-- do not appear in a board and thus are skipped.
-					--if et_libraries."=" (element (component_cursor).appearance, et_libraries.sch_pcb) then
-					if element (component_cursor).appearance = SCH_PCB then
+					if element (component_cursor).appearance = PCB then
 
 						-- set package reference as the component reference (from schematic)
 						package_reference := key (component_cursor);

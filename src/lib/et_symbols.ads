@@ -340,8 +340,7 @@ package et_symbols is
 -- APPEARANCE	
 	type type_appearance is (
 		VIRTUAL,	-- a device that exists in the schematic only (like power symbols)
-		sch_pcb	-- a device that exists in both schematic and soldered on a pcb
--- 		pcb			-- a device that exists on the pcb only (like a fiducial)		
+		PCB			-- a device that exists in both schematic and soldered on a pcb
 		-- CS: cable 
 		-- CS: wire
 		-- ...
@@ -424,7 +423,7 @@ package et_symbols is
 		shapes	: type_shapes; -- the collection of shapes
 		ports	: type_ports.map;
 		case appearance is
-			when SCH_PCB =>
+			when PCB =>
 				-- Placeholders for device wide texts. To be filled with content when 
 				-- a symbol is placed in the schematic:
 				name	: type_text_placeholder (meaning => et_symbols.NAME);

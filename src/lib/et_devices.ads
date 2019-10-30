@@ -396,7 +396,7 @@ package et_devices is
 
 			-- If a device appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
-			when sch_pcb => 
+			when PCB => 
 				value		: type_value.bounded_string; -- 74LS00
 				--partcode	: type_component_partcode.bounded_string;
 				variants	: type_component_variants.map;

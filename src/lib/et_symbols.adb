@@ -340,7 +340,7 @@ package body et_symbols is
 			case appearance is
 				when VIRTUAL =>
 					return ("appears in schematic only (virtual device)");
-				when sch_pcb =>
+				when PCB =>
 					return ("appears in schematic and layout");
 			end case;
 		else

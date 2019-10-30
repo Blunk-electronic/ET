@@ -484,7 +484,7 @@ package et_kicad is
 
 			-- If a component appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
-			when et_symbols.SCH_PCB => 
+			when et_symbols.PCB => 
 				package_filter	: type_package_filter.set := type_package_filter.empty_set;
 				datasheet		: type_component_datasheet.bounded_string;
 				variants		: et_devices.type_component_variants.map;
@@ -580,7 +580,7 @@ package et_kicad is
 		units			: type_units_schematic.map; -- PWR, A, B, ...
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
-			when et_symbols.SCH_PCB => 
+			when et_symbols.PCB => 
 				datasheet			: type_component_datasheet.bounded_string;
 				variant				: et_devices.type_component_variant_name.bounded_string; -- D, N
 
