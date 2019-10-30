@@ -121,7 +121,8 @@ package et_frames is
 			customer		: type_text_placeholder;
 			partcode		: type_text_placeholder;
 			drawing_number	: type_text_placeholder;
-
+			assembly_variant: type_text_placeholder; -- CS good idea to have it here ?
+			
 			project		: type_text_placeholder;
 			file		: type_text_placeholder;
 			revision	: type_text_placeholder;
