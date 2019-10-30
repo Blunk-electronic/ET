@@ -1,0 +1,3 @@
+et --open-project submoduletest/ --script submoduletest/board.scr --save-project-as test
+
+et --import-project hierarchy_1/ --import-format kicad_v4 --log-level 4
