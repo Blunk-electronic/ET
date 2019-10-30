@@ -57,7 +57,7 @@ package schematic_rw is
 	section_ports				: constant string := "[PORTS";
 	
 -- BASIC GEOMETRIC OBJECTS USED IN SYMBOLS AND SCHEMATICS
-	schematic_object_filled : et_schematic.shapes.type_filled := et_schematic.shapes.filled_default;		
+	schematic_object_filled : et_schematic.pac_shapes.type_filled := et_schematic.pac_shapes.filled_default;		
 
 	
 	function to_grid (

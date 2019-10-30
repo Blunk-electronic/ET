@@ -981,7 +981,7 @@ package body schematic_ops is
 		)
 		return boolean is
 		use et_coordinates.geometry;
-		use et_schematic.shapes;
+		use et_schematic.pac_shapes;
 		dist : type_distance_point_line;
 		use type_net_segments;
 	begin
@@ -6294,10 +6294,10 @@ package body schematic_ops is
 
 		function movable (
 			segment	: in type_net_segment;
-			zone	: in et_schematic.shapes.type_line_zone) 
+			zone	: in et_schematic.pac_shapes.type_line_zone) 
 			return boolean is
 
-			use et_schematic.shapes;
+			use et_schematic.pac_shapes;
 			
 			result : boolean := true; -- to be returned. true means the zone is movable.
 			-- Goes false once a port has been found in the given zone.
@@ -6450,7 +6450,7 @@ package body schematic_ops is
 					segment_cursor_target : type_net_segments.cursor;
 					target_segment_before : type_net_segment;
 
-					use et_schematic.shapes;
+					use et_schematic.pac_shapes;
 					zone : type_line_zone;
 
 					procedure move_targeted_segment (segment : in out type_net_segment) is begin

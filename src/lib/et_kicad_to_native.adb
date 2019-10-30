@@ -2669,10 +2669,10 @@ package body et_kicad_to_native is
 
 					use et_coordinates;
 					use geometry;
-					use shapes;
+					use pac_shapes;
 
-					distance : shapes.type_distance_point_line;
-				begin -- read_ports
+					distance : pac_shapes.type_distance_point_line;
+				begin
 					log_indentation_up;
 					
 					-- get all ports connected with the current net (in the kicad module):
@@ -2702,12 +2702,12 @@ package body et_kicad_to_native is
 
 							-- CS this is a workaround in order to provide a line for function distance_point_line:
 							declare
-								type type_line_scratch is new shapes.type_line with null record;
+								type type_line_scratch is new pac_shapes.type_line with null record;
 								line : type_line_scratch := (
 									start_point	=> geometry.type_point (segment.coordinates_start), 
 									end_point	=> geometry.type_point (segment.coordinates_end));
 							begin
-								distance := et_schematic.shapes.distance_point_line (
+								distance := et_schematic.pac_shapes.distance_point_line (
 									point 		=> type_point (element (port_cursor_kicad).coordinates),
 									line 		=> type_line (line),
 									line_range	=> WITH_END_POINTS);

@@ -74,10 +74,10 @@ package et_schematic is
 	use et_general.type_net_name;
 	use et_coordinates.geometry;
 
-	package shapes is new et_geometry.shapes_2d ( -- CS rename to pac_shapes
+	package pac_shapes is new et_geometry.shapes_2d (
 		geometry => et_coordinates.geometry);
 	
-	use shapes;
+	use pac_shapes;
 
 	
 -- TEXT FIELD
@@ -258,7 +258,7 @@ package et_schematic is
 		end_point	: boolean := false;
 	end record;
 
-	type type_net_segment is new shapes.type_line with record
+	type type_net_segment is new pac_shapes.type_line with record
 		labels				: type_net_labels.list;
 		junctions			: type_junctions;
 		ports_devices		: type_ports_device.set;
