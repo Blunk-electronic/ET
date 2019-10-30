@@ -398,7 +398,7 @@ package body schematic_rw is
 		end to_string;
 		
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
-		appearance			: type_device_appearance; -- sch, sch_pcb
+		appearance			: type_appearance;
 		symbol				: access type_symbol;
 		symbol_line			: type_line;
 		symbol_arc			: type_arc;

@@ -275,7 +275,7 @@ package et_devices is
 	
 	-- An internal unit is a symbol with a swap level.
 	-- An internal unit is owned by the particular device exclusively.
-	type type_unit_internal (appearance : type_device_appearance) is record
+	type type_unit_internal (appearance : type_appearance) is record
 		symbol		: type_symbol (appearance);
 		position	: et_coordinates.geometry.type_point; -- the position of the unit inside the device editor
 		swap_level	: type_unit_swap_level := unit_swap_level_default;
@@ -380,7 +380,7 @@ package et_devices is
 
 
 -- DEVICES
-	type type_device (appearance : type_device_appearance) is record
+	type type_device (appearance : type_appearance) is record
 		prefix			: type_device_name_prefix.bounded_string; -- R, C, IC, ...
 		units_internal	: type_units_internal.map := type_units_internal.empty_map;
 		units_external	: type_units_external.map := type_units_external.empty_map;

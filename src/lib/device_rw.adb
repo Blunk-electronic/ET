@@ -248,7 +248,7 @@ package body device_rw is
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		prefix				: type_device_name_prefix.bounded_string; -- T, IC
 		value				: type_value.bounded_string; -- BC548
-		appearance			: type_device_appearance; -- sch, sch_pcb
+		appearance			: type_appearance; -- sch, sch_pcb
 		partcode			: material.type_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
 		variant				: type_component_variant;
 		variant_name		: type_component_variant_name.bounded_string; -- N, D

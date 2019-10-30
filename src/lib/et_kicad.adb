@@ -630,7 +630,7 @@ package body et_kicad is
 	
 	function component_appearance (cursor : in type_components_library.cursor)
 	-- Returns the component appearance where cursor points to.
-		return et_symbols.type_device_appearance is
+		return et_symbols.type_appearance is
 	begin
 		return type_components_library.element (cursor).appearance;
 	end component_appearance;
@@ -1063,9 +1063,9 @@ package body et_kicad is
 	-- example: DEF 74LS00 IC 0 30 Y Y 4 F N
 	-- In a schematic it is defined by a hash sign:
 	-- example: L P3V3 #PWR07
-		return type_device_appearance is
+		return type_appearance is
 		
-		comp_app	: type_device_appearance;
+		comp_app	: type_appearance;
 		lca			: type_library_component_appearance;
 
 		procedure invalid_appearance is
@@ -1302,7 +1302,7 @@ package body et_kicad is
 			-- These properties apply for the whole component (means for all its units):
 			tmp_component_name		: type_component_generic_name.bounded_string; -- 74LS00 -- CS: rename to generic_name
 			tmp_prefix				: type_device_name_prefix.bounded_string; -- IC -- CS: rename to prefix
-			tmp_appearance			: type_device_appearance; -- CS: rename to appearance
+			tmp_appearance			: type_appearance; -- CS: rename to appearance
 
 			tmp_port_name_visible		: type_port_name_visible;
 			tmp_terminal_name_visible	: type_terminal_name_visible;
@@ -7373,7 +7373,7 @@ package body et_kicad is
 				use et_string_processing;
 
 				reference					: type_device_name;	-- like IC5	
-				appearance					: type_device_appearance := SCH; -- CS: why this default ?
+				appearance					: type_appearance := SCH; -- CS: why this default ?
 				generic_name_in_lbr			: type_component_generic_name.bounded_string; -- like TRANSISTOR_PNP
 
 				-- V5:

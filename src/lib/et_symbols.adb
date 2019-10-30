@@ -331,7 +331,7 @@ package body et_symbols is
 
 
 	function to_string (
-		appearance	: in type_device_appearance;
+		appearance	: in type_appearance;
 		verbose		: in boolean := false)
 		return string is
 	-- Returns the given component appearance as string.
@@ -346,12 +346,12 @@ package body et_symbols is
 					return ("appears in layout only (mechanical component)");
 			end case;
 		else
-			return latin_1.space & to_lower (type_device_appearance'image (appearance));
+			return latin_1.space & to_lower (type_appearance'image (appearance));
 		end if;
 	end to_string;
 
-	function to_appearance (appearance : in string) return type_device_appearance is begin
-		return type_device_appearance'value (appearance);
+	function to_appearance (appearance : in string) return type_appearance is begin
+		return type_appearance'value (appearance);
 	end to_appearance;	
 
 

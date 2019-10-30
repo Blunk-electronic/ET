@@ -89,7 +89,7 @@ procedure et is
 	symbol_name_create		: et_symbols.type_symbol_model_file.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
 	symbol_name_open		: et_symbols.type_symbol_model_file.bounded_string; -- the symbol to be opened
 	symbol_name_save_as		: et_symbols.type_symbol_model_file.bounded_string; -- the symbol to be saved as
-	symbol_appearance		: et_symbols.type_device_appearance; -- CS default
+	symbol_appearance		: et_symbols.type_appearance; -- CS default
 	
 	script_name	: scripting.type_script_name.bounded_string;
 	

@@ -338,7 +338,7 @@ package et_symbols is
 	
 	
 -- APPEARANCE	
-	type type_device_appearance is ( -- CS rename to type_appearance
+	type type_appearance is (
 		sch,		-- a device that exists in the schematic only (like power symbols)
 		sch_pcb,	-- a device that exists in both schematic and soldered on a pcb
 		pcb			-- a device that exists on the pcb only (like a fiducial)		
@@ -348,12 +348,12 @@ package et_symbols is
 		);
 
 	function to_string (
-		appearance	: in type_device_appearance;
+		appearance	: in type_appearance;
 		verbose		: in boolean := false)
 		return string;
 	-- Returns the given device appearance as string.
 
-	function to_appearance (appearance : in string) return type_device_appearance;
+	function to_appearance (appearance : in string) return type_appearance;
 	
 
 
@@ -420,7 +420,7 @@ package et_symbols is
 		texts : type_texts.list; -- the collection of texts
 	end record;
 
-	type type_symbol (appearance : type_device_appearance) is new type_symbol_base with record
+	type type_symbol (appearance : type_appearance) is new type_symbol_base with record
 		shapes	: type_shapes; -- the collection of shapes
 		ports	: type_ports.map;
 		case appearance is
