@@ -361,7 +361,7 @@ package et_symbols is
 
 
 	-- Instantiation of the generic shapes package et_geometry.shapes_2d:
-	package shapes is new et_geometry.shapes_2d (geometry => et_coordinates.geometry);
+	package shapes is new et_geometry.shapes_2d (geometry => et_coordinates.geometry); -- CS rename to pac_shapes
 	use shapes;
 	
 
@@ -435,9 +435,13 @@ package et_symbols is
 		end case;
 	end record;
 
+
+
+
 	
 
-	-- SYMBOLS
+-- FILE NAMES
+
 	symbol_file_name_length_max : constant natural := 500;
 	package type_symbol_model_file is new generic_bounded_length (symbol_file_name_length_max);
 	function to_string (name : in type_symbol_model_file.bounded_string) return string;

@@ -142,6 +142,36 @@ $ et --open-package libraries/packages/S_0805.pac --save-package-as tmp/dummy_S_
 Opening a package includes syntax checking. See the report for details.
 
 
+
+
+#### Creating an ET native symbol
+A symbol is an abstraction of a component in the schematic. 
+Symbols can represent a virtual component such as a GND-symbol
+or something real like a resistor that is mounted on the PCB.
+The newly created symbols should be saved right away.
+To create a native symbolg like 'opamp.sym' run this command: 
+
+```sh
+$ et --create-symbol libraries/symbols/opamp.sym --appearance pcb --save-package-as tmp/dummy_opamp.sym
+```
+
+#### Opening an ET native symbol
+To open a native symbol drawing like 'opamp.sym' run this command: 
+
+```sh
+$ et --open-symbol libraries/symbols/opamp.sym
+```
+
+The symbol can also be saved under a different name at a different place:
+
+```sh
+$ et --open-symbol libraries/symbols/opamp.sym --save-symbol-as tmp/dummy_opam.sym
+```
+Opening a symbol includes syntax checking. See the report for details.
+
+
+
+
 #### Executing scripts
 ET has an internal script processor that reads and executes a script file. The scripting feature allows manipulating designs without GUI:
 

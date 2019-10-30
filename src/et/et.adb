@@ -67,6 +67,9 @@ with scripting;
 with et_packages;
 with pcb_rw;
 
+with et_symbols;
+
+
 procedure et is
 
 	conv_file_name_create	: conventions.type_conventions_file_name.bounded_string;
@@ -82,6 +85,11 @@ procedure et is
 	package_name_open		: et_packages.type_package_model_file.bounded_string; -- the package to be opened
 	package_name_save_as	: et_packages.type_package_model_file.bounded_string; -- the package to be saved as
 	package_appearance		: et_packages.type_package_appearance := et_packages.REAL; -- virtual/real. mostly real.
+
+	symbol_name_create		: et_symbols.type_symbol_model_file.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
+	symbol_name_open		: et_symbols.type_symbol_model_file.bounded_string; -- the symbol to be opened
+	symbol_name_save_as		: et_symbols.type_symbol_model_file.bounded_string; -- the symbol to be saved as
+	symbol_appearance		: et_symbols.type_device_appearance; -- CS default
 	
 	script_name	: scripting.type_script_name.bounded_string;
 	
@@ -109,6 +117,10 @@ procedure et is
 						& latin_1.space & switch_package_appearance & latin_1.equals_sign
 						& latin_1.space & switch_native_package_open & latin_1.equals_sign						
 						& latin_1.space & switch_native_package_save_as & latin_1.equals_sign
+
+						& latin_1.space & switch_native_symbol_create & latin_1.equals_sign
+						& latin_1.space & switch_native_symbol_open & latin_1.equals_sign						
+						& latin_1.space & switch_native_symbol_save_as & latin_1.equals_sign
 						
 						& latin_1.space & switch_execute_script & latin_1.equals_sign
 					) is
@@ -136,7 +148,8 @@ procedure et is
 						log (text => arg & full_switch & space & parameter);
 						conv_file_name_use := conventions.type_conventions_file_name.to_bounded_string (parameter);
 
-						
+
+					-- project
 					elsif full_switch = switch_native_project_create then
 						log (text => arg & full_switch & space & parameter);
 						project_name_create := et_project.to_project_name (remove_trailing_directory_separator (parameter));
@@ -150,6 +163,7 @@ procedure et is
 						project_name_save_as := et_project.to_project_name (remove_trailing_directory_separator (parameter));
 
 
+					-- package
 					elsif full_switch = switch_native_package_create then
 						log (text => arg & full_switch & space & parameter);
 						package_name_create := et_packages.to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
@@ -166,7 +180,24 @@ procedure et is
 						log (text => arg & full_switch & space & parameter);
 						package_name_save_as := et_packages.to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
 
+					-- symbol
+					elsif full_switch = switch_native_symbol_create then
+						log (text => arg & full_switch & space & parameter);
+						symbol_name_create := et_symbols.to_file_name (parameter); -- libraries/symbols/nand.sym
+
+					elsif full_switch = switch_symbol_appearance then -- virtual, pcb
+						log (text => arg & full_switch & space & parameter);
+						symbol_appearance := et_symbols.to_appearance (parameter);
 						
+					elsif full_switch = switch_native_symbol_open then
+						log (text => arg & full_switch & space & parameter);
+						symbol_name_open := et_symbols.to_file_name (parameter); -- libraries/symbols/nand.sym
+
+					elsif full_switch = switch_native_symbol_save_as then
+						log (text => arg & full_switch & space & parameter);
+						symbol_name_save_as := et_symbols.to_file_name (parameter);
+
+					-- script
 					elsif full_switch = switch_execute_script then
 						log (text => arg & full_switch & space & parameter);
 						script_name := scripting.to_script_name (parameter);
@@ -291,6 +322,7 @@ procedure et is
 	procedure save_package_as is 
 		use et_packages.type_package_model_file;
 	begin
+		 -- if package_name_save_as is empty nothing happens
 		if length (package_name_save_as) > 0 then
 			pcb_rw.save_package (
 				file_name 		=> package_name_save_as,
@@ -304,14 +336,15 @@ procedure et is
 		use scripting.type_script_name;
 		use conventions.type_conventions_file_name;
 		use et_packages.type_package_model_file;
-
+		use et_symbols.type_symbol_model_file;
+		
 		procedure read_configuration_file is begin
 			if length (conv_file_name_use) > 0 then
 				conventions.read_conventions (
 					file_name		=> conv_file_name_use,
 					log_threshold	=> 0);
 			end if;
-		end read_configuration_file;
+		end;
 
 		exit_code_script : scripting.type_exit_code;
 		
@@ -370,11 +403,12 @@ procedure et is
 					et_project.save_project (project_name_save_as, log_threshold => 0);
 				end if;
 
+			-- package
 			elsif length (package_name_create) > 0 then
 				pcb_rw.create_package (package_name_create, package_appearance, log_threshold => 0);
 
 				-- optionally the package can be saved under a different name
-				save_package_as;
+				save_package_as;  -- if package_name_save_as is empty nothing happens
 
 			elsif length (package_name_import) > 0 then
 				null; -- CS
@@ -383,7 +417,18 @@ procedure et is
 				pcb_rw.read_package (package_name_open, log_threshold => 0);
 
 				-- optionally the package can be saved under a different name
-				save_package_as;
+				save_package_as; -- if package_name_save_as is empty nothing happens
+
+			-- symbol
+			elsif length (symbol_name_create) > 0 then
+				null; -- CS
+
+				-- save_symbol_as;
+
+			elsif length (symbol_name_open) > 0 then
+				null; -- CS
+
+				-- save_symbol_as;
 			end if;
 			
 		end if;

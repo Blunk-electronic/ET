@@ -149,7 +149,7 @@ package body et_general is
 
 	procedure show_cdl_switches is
 	-- Outputs the command line switches that initiate something.
-		dash : constant character := latin_1.hyphen;
+		dash : constant character := hyphen;
 	begin
 		put_line ("available commandline switches:");
 		put_line (dash & switch_version);
@@ -162,6 +162,10 @@ package body et_general is
 		put_line (dash & switch_native_package_open);		
 		put_line (dash & switch_native_package_save_as);
 
+		put_line (dash & switch_native_symbol_create);
+		put_line (dash & switch_native_symbol_open);		
+		put_line (dash & switch_native_symbol_save_as);
+		
 		put_line (dash & switch_execute_script);
 		put_line (dash & switch_make_default_conv);
 		put_line (dash & switch_import_project);
