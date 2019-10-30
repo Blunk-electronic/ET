@@ -80,11 +80,22 @@ package et_schematic_sheets is
 
 
 	
--- DESCRIPTIONS INDIVIDUAL SHEETS
+	-- For each sheet a description is required. The descriptions 
+	-- are ordered by the sheet numbers:
 	package pac_descriptions is new ordered_maps (
 		key_type		=> et_coordinates.type_sheet,
 		element_type	=> et_text.type_text_content.bounded_string);
 
+
+	-- The final drawing frames:
+	type type_frames is record
+		template		: type_frame_template_name.bounded_string := frame_template_name_dummy;
+			-- like $ET_FRAMES/drawing_frame_A4_landscape.frm
+
+		frame			: type_frame; -- lines, title block
+		
+		descriptions	: pac_descriptions.map;
+	end record;
 
 		
 end et_schematic_sheets;

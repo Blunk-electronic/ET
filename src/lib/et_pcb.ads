@@ -59,6 +59,7 @@ with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_geometry;
 with et_packages;				use et_packages;
 with et_pcb_stack;				use et_pcb_stack;
+with et_pcb_sheet;
 with et_frames;
 
 package et_pcb is
@@ -565,6 +566,7 @@ package et_pcb is
 
 	-- This is general board stuff:
 	type type_board is tagged record
+		frame			: et_pcb_sheet.type_frame; -- incl. template name
 		grid			: type_grid;  -- the drawing grid of the board
 		stack			: et_pcb_stack.type_stack;	-- the layer stack
 		silk_screen		: type_silk_screen_both_sides;

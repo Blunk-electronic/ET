@@ -78,6 +78,9 @@ package et_pcb_sheet is
 
 	-- This is the drawing frame used in a pcb layout:
 	type type_frame is new pac_frames.type_frame with record
+		template	: type_frame_template_name.bounded_string := frame_template_name_dummy;
+			-- like $ET_FRAMES/drawing_frame_A3_landscape.frm
+
 		title_block : type_title_block;
 	end record;
 

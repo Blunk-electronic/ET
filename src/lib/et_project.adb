@@ -1414,23 +1414,25 @@ package body et_project is
 			use et_frames;
 			use type_frame_template_name;
 		begin
+			-- schematic frames:
 			section_mark (section_drawing_frames, HEADER);
-			section_mark (section_schematic, HEADER);			
+			section_mark (section_schematic, HEADER);
 			write (
 				keyword 	=> keyword_template, 
 				space 		=> true, 
-				parameters	=> et_frames.to_string (element (module_cursor).frame_template_schematic));
+				parameters	=> et_frames.to_string (element (module_cursor).frames.template));
 			
 			-- CS frame count ?
 			-- CS description ?
 			
 			section_mark (section_schematic, FOOTER);			
 
+			-- board frame:
 			section_mark (section_board, HEADER);			
 			write (
 				keyword		=> keyword_template, 
 				space 		=> true, 
-				parameters	=> et_frames.to_string (element (module_cursor).frame_template_board));
+				parameters	=> et_frames.to_string (element (module_cursor).board.frame.template));
 			section_mark (section_board, FOOTER);			
 			
 			section_mark (section_drawing_frames, FOOTER);
@@ -2452,7 +2454,7 @@ package body et_project is
 					module		: in out et_schematic.type_module) is
 				begin
 					log (text => "drawing frame schematic " & et_frames.to_string (frame_template_schematic), level => log_threshold + 1);
-					module.frame_template_schematic := frame_template_schematic;
+					module.frames.template := frame_template_schematic;
 				end set_frame_schematic;
 				
 				procedure set_frame_board (
@@ -2460,7 +2462,7 @@ package body et_project is
 					module		: in out et_schematic.type_module) is
 				begin
 					log (text => "drawing frame board " & et_frames.to_string (frame_template_board), level => log_threshold + 1);
-					module.frame_template_board := frame_template_board;
+					module.board.frame.template := frame_template_board;
 				end set_frame_board;
 
 				procedure insert_note (

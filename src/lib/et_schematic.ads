@@ -68,7 +68,6 @@ with et_geometry;
 with et_text;
 with et_symbols;
 with et_devices;
-with et_frames;				use et_frames;
 with et_schematic_sheets;
 
 package et_schematic is
@@ -346,8 +345,10 @@ package et_schematic is
 	
 -- MODULE
 	type type_module is record
-		description			: et_text.type_text_content.bounded_string; -- a short description of the module
-		description_sheets	: et_schematic_sheets.pac_descriptions.map;
+		description		: et_text.type_text_content.bounded_string; -- a short description of the module
+
+		-- schematic frame template and descriptions of individual schematic frames:
+		frames			: et_schematic_sheets.type_frames;
 		
 		grid			: type_grid; -- the drawing grid of the schematic
 
@@ -358,14 +359,6 @@ package et_schematic is
 		submods			: submodules.type_submodules.map;		-- instances of submodules (boxes)
 		netchangers		: submodules.type_netchangers.map;		-- netchangers
 		
-		frame_template_schematic	: type_frame_template_name.bounded_string :=
-			frame_template_name_dummy;	-- $ET_FRAMES/drawing_frame_version_1.frm
-		
-		-- CS frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
-		-- should be part of statistics
-		
-		frame_template_board		: type_frame_template_name.bounded_string :=	-- $ET_FRAMES/drawing_frame_version_2.frm
-			frame_template_name_dummy;
 		-- CS: handle sheet description via a composite type consisting of template name and a bounded string
 		-- CS: move to et_pcb and make it a selector of board ?
 		

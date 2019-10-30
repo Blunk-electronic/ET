@@ -2862,8 +2862,11 @@ package body et_kicad_to_native is
 		-- CS: not completed yet.
 		-- For the time being the native module gets dummy templates assigned.
 		begin
-			module.frame_template_schematic := frame_template_name_dummy;
-			module.frame_template_board := frame_template_name_dummy;
+			-- schematic frames:
+			module.frames.template := frame_template_name_dummy;
+
+			-- board frame:
+			module.board.frame.template := frame_template_name_dummy;
 		end copy_frames;
 		
 		procedure copy_libraries (
