@@ -360,19 +360,19 @@ package et_symbols is
 
 
 	-- Instantiation of the generic shapes package et_geometry.shapes_2d:
-	package shapes is new et_geometry.shapes_2d (geometry => et_coordinates.geometry); -- CS rename to pac_shapes
-	use shapes;
+	package pac_shapes is new et_geometry.shapes_2d (geometry => et_coordinates.geometry);
+	use pac_shapes;
 	
 
 
 	-- lines
-	type type_line is new shapes.type_line with record
+	type type_line is new pac_shapes.type_line with record
 		width		: type_line_width;
 	end record;
 	package type_lines is new doubly_linked_lists (type_line);
 
 	-- Arcs
-	type type_arc is new shapes.type_arc with record
+	type type_arc is new pac_shapes.type_arc with record
 		radius		: type_distance_positive; -- CS really required ?
 		width		: type_line_width;
 	end record;
@@ -383,7 +383,7 @@ package et_symbols is
 	function to_circle_filled (filled : in string) return type_circle_filled;
 	
 	-- Circles
-	type type_circle_base is new shapes.type_circle with record
+	type type_circle_base is new pac_shapes.type_circle with record
 		width		: type_line_width;
 	end record;
 

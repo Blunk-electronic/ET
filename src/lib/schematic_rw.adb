@@ -170,7 +170,7 @@ package body schematic_rw is
 		symbol			: in et_symbols.type_symbol;
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_symbols;
-		use et_symbols.shapes;
+		use et_symbols.pac_shapes;
 		use et_text;
 
 		use type_lines;
