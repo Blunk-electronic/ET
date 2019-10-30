@@ -49,7 +49,7 @@ with ada.directories;			use ada.directories;
 
 --with gnat.source_info;
 
-with et_general;
+with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 with et_coordinates;
 with et_packages;
@@ -87,7 +87,6 @@ procedure et is
 	
 	procedure get_commandline_arguments is
 		use et_schematic;
-		use et_general;
 		use et_project;
 
 		arg : constant string := ("argument: -");
@@ -178,10 +177,7 @@ procedure et is
 					end if;
 
 					
-				when others => 
--- 					show_cdl_switches; -- CS
-					exit;
--- 					raise constraint_error;
+				when others => exit;
 
 			end case;
 		end loop;
@@ -200,7 +196,7 @@ procedure et is
 	begin
 		-- CS: log ?
 		projects_root_dir := to_bounded_string (current_directory);
-	end backup_projects_root_directory;
+	end;
 
 	procedure restore_projects_root_directory is
 		use et_project;
@@ -210,7 +206,7 @@ procedure et is
 		log (text => "changing back to projects directory " & to_string (projects_root_dir) & " ...",
 			 level => 1);
 		set_directory (to_string (projects_root_dir));
-	end restore_projects_root_directory;
+	end;
 	
 	procedure create_work_directory is
 		use et_general;
@@ -219,16 +215,14 @@ procedure et is
 			put_line ("creating " & system_name & " work directory " & work_directory & " ...");
 			create_directory (work_directory);
 		end if;
-	end create_work_directory;
+	end;
 
-	procedure create_report_directory is
-		use et_general;
-	begin	
+	procedure create_report_directory is begin	
 		if not exists (compose (work_directory, report_directory)) then
 			put_line ("creating report directory ...");
 			create_directory (compose (work_directory, report_directory));
 		end if;
-	end create_report_directory;
+	end;
 
 	procedure import_project is
 	-- As a result of the import, a native project is created in the work_directory (ET/...).
@@ -395,24 +389,30 @@ procedure et is
 		end if;
 		
 	end process_commandline_arguments;
-
 	
 begin -- main
-	-- create a directory where imported projects live:
-	create_work_directory;
 
-	-- create inside the word directory another directory for reports and log messages:
-	create_report_directory;
+	if argument_count = 0 then
+		-- If operator does not provide any arguments, show possible options.
+		show_cdl_switches;
+		
+	else
+		
+		-- create a directory where imported projects and reports live:
+		create_work_directory;
 
-	create_report;
+		-- create inside the work directory another directory for reports and log messages:
+		create_report_directory;
+
+		create_report;
+		
+		get_commandline_arguments;
+
+		process_commandline_arguments;
+		
+		close_report;
+	end if;
 	
-	get_commandline_arguments;
-
-	process_commandline_arguments;
-	
-
-	close_report;
-
 	exception
 		when event: others =>
 			log_indentation_reset;
