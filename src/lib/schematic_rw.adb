@@ -60,7 +60,7 @@ package body schematic_rw is
 		end text;
 		
 	begin
-		return space & keyword_sheet
+		return keyword_sheet
 			& to_sheet (sheet (pos)) 
 			& text;
 	end position;
