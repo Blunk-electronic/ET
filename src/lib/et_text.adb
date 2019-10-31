@@ -45,20 +45,20 @@ package body et_text is
 
 -- TEXT ALIGNMENT
 	function to_string (alignment : in type_text_alignment_horizontal) return string is begin
-		return latin_1.space & to_lower (type_text_alignment_horizontal'image (alignment));
-	end to_string;
+		return to_lower (type_text_alignment_horizontal'image (alignment));
+	end;
 
 	function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal is begin
 		return type_text_alignment_horizontal'value (alignment);
-	end to_alignment_horizontal;
+	end;
 	
 	function to_string (alignment : in type_text_alignment_vertical) return string is begin
-		return latin_1.space & to_lower (type_text_alignment_vertical'image (alignment));
-	end to_string;
+		return to_lower (type_text_alignment_vertical'image (alignment));
+	end;
 
 	function to_alignment_vertical (alignment : in string) return type_text_alignment_vertical is begin
 		return type_text_alignment_vertical'value (alignment);
-	end to_alignment_vertical;
+	end;
 
 	function to_alignment (
 		line : in et_string_processing.type_fields_of_line; -- "alignment horizontal center vertical center"

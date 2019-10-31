@@ -77,10 +77,10 @@ package body pcb_rw is
 		write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
 		
 		write (keyword => keyword_line_width, parameters => to_string (t.line_width));
-		write (keyword => keyword_alignment, parameters => space &
-			keyword_horizontal & to_string (t.alignment.horizontal) & space &
-			keyword_vertical   & to_string (t.alignment.vertical)
-				);
+		write (keyword => keyword_alignment, parameters =>
+			keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
+			keyword_vertical   & space & to_string (t.alignment.vertical));
+		
 		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
 	end write_text_properties;
 
@@ -112,7 +112,7 @@ package body pcb_rw is
 		use et_packages.type_texts_with_content;
 	begin
 		text_begin;
-		write (keyword => keyword_content, space => true, wrap => true,
+		write (keyword => keyword_content, wrap => true,
 			parameters => to_string (element (cursor).content));
 		write_text_properties (element (cursor));
 		text_end;
@@ -167,7 +167,7 @@ package body pcb_rw is
 	procedure write_easing (easing: in et_packages.type_easing) is
 		use et_packages;
 	begin
-		write (keyword => keyword_corner_easing, space => true, parameters => to_string (easing.style));
+		write (keyword => keyword_corner_easing, parameters => to_string (easing.style));
 		write (keyword => keyword_easing_radius, parameters => to_string (easing.radius));
 	end;
 
@@ -200,19 +200,19 @@ package body pcb_rw is
 	procedure write_signal_layer (layer : in et_pcb_stack.type_signal_layer) is 
 		use et_pcb_stack;
 	begin
-		write (keyword => keyword_layer, space => true, parameters => to_string (layer));
+		write (keyword => keyword_layer, parameters => to_string (layer));
 	end;
 
 	procedure write_fill_stlye (fill_style : in et_packages.type_fill_style) is
 		use et_packages;
 	begin
-		write (keyword => keyword_fill_style, space => true, parameters => to_string (fill_style));
+		write (keyword => keyword_fill_style, parameters => to_string (fill_style));
 	end;
 
 	procedure write_fill_status (filled : in et_packages.shapes.type_filled) is
 		use et_packages.shapes;
 	begin
-		write (keyword => keyword_filled, space => true, parameters => to_string (filled));
+		write (keyword => keyword_filled, parameters => to_string (filled));
 	end;
 	
 	procedure write_pad_connection (connection : in et_pcb.type_polygon_pad_connection) is
@@ -230,7 +230,7 @@ package body pcb_rw is
 	procedure write_signal_layers (layers : in et_pcb_stack.type_signal_layers.set) is
 		use et_pcb_stack;
 	begin
-		write (keyword => keyword_layers, space => true, parameters => to_string (layers));
+		write (keyword => keyword_layers, parameters => to_string (layers));
 	end;
 	
 	procedure write_circle_fillable (circle : in et_packages.type_fillable_circle) is 
@@ -1034,7 +1034,7 @@ package body pcb_rw is
 	begin
 		circle_begin;
 		write_circle (element (cursor));
-		write (keyword => keyword_filled, space => true, parameters => to_string (element (cursor).filled));
+		write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
 		circle_end;
 	end write_circle;
 	
@@ -1351,7 +1351,7 @@ package body pcb_rw is
 	begin
 		line_begin;
 		write_line (element (cursor));
-		write (keyword => keyword_locked, space => true, parameters => to_string (element (cursor).locked));
+		write (keyword => keyword_locked, parameters => to_string (element (cursor).locked));
 		line_end;
 	end write_line;
 	
@@ -1847,10 +1847,10 @@ package body pcb_rw is
 
 		reset_tab_depth;
 
-		write (keyword => keyword_description, space => true, wrap => true, 
+		write (keyword => keyword_description, wrap => true, 
 			   parameters => to_string (packge.description));
 
-		write (keyword => keyword_appearance, space => true, parameters => to_string (packge.appearance));
+		write (keyword => keyword_appearance, parameters => to_string (packge.appearance));
 		write (keyword => keyword_assembly_technology, parameters => to_string (packge.technology));
 
 		write_silk_screen;

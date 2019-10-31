@@ -96,7 +96,7 @@ package body device_rw is
 			end write_terminal;
 
 		begin -- write_variant
-			write (keyword => keyword_package_model, space => true, parameters => to_string (variant.package_model)); -- CS path correct ??
+			write (keyword => keyword_package_model, parameters => to_string (variant.package_model)); -- CS path correct ??
 			section_mark (section_terminal_port_map, HEADER);
 			iterate (variant.terminal_port_map, write_terminal'access);
 			section_mark (section_terminal_port_map, FOOTER);						
@@ -112,7 +112,7 @@ package body device_rw is
 			name	: in type_unit_name.bounded_string;
 			unit	: in type_unit_internal) is
 		begin -- query_internal_unit
-			write (keyword => keyword_name, space => true, parameters => to_string (name));
+			write (keyword => keyword_name, parameters => to_string (name));
 			write (keyword => keyword_position, parameters => position (unit.position));
 			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
 			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
@@ -125,11 +125,11 @@ package body device_rw is
 			name	: in type_unit_name.bounded_string;
 			unit	: in type_unit_external) is
 		begin -- query_external_unit
-			write (keyword => keyword_name, space => true, parameters => to_string (name));
+			write (keyword => keyword_name, parameters => to_string (name));
 			write (keyword => keyword_position, parameters => position (unit.position));
 			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
 			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
-			write (keyword => keyword_file, space => true, parameters => to_string (unit.file));
+			write (keyword => keyword_file, parameters => to_string (unit.file));
 		end query_external_unit;
 		
 	begin -- save_device
@@ -151,21 +151,21 @@ package body device_rw is
 		reset_tab_depth;
 
 		-- prefix, appearance ...
-		write (keyword => keyword_prefix, space => true, parameters => to_string (device.prefix));
+		write (keyword => keyword_prefix, parameters => to_string (device.prefix));
 		write (keyword => keyword_appearance, parameters => to_string (device.appearance));
 
 		-- package variants
 		case device.appearance is
 			when PCB =>
-				write (keyword => keyword_value, space => true, parameters => to_string (device.value));
-				--write (keyword => keyword_partcode, space => true, parameters => to_string (device.partcode));
+				write (keyword => keyword_value, parameters => to_string (device.value));
+				--write (keyword => keyword_partcode, parameters => to_string (device.partcode));
 
 				section_mark (section_variants, HEADER);
 
 				variant_cursor := device.variants.first;
 				while variant_cursor /= type_component_variants.no_element loop
 					section_mark (section_variant, HEADER);
-					write (keyword => keyword_name, space => true, parameters => to_string (key (variant_cursor)));
+					write (keyword => keyword_name, parameters => to_string (key (variant_cursor)));
 
 					query_element (
 						position	=> variant_cursor,

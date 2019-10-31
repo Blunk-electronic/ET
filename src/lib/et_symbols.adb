@@ -94,11 +94,11 @@ package body et_symbols is
 
 	function to_string (style : in type_text_style) return string is begin
 		return to_lower (type_text_style'image (style));
-	end to_string;
+	end;
 	
 	function to_text_style (style : in string) return type_text_style is begin
 		return type_text_style'value (style);
-	end to_text_style;
+	end;
 
 
 
@@ -207,7 +207,7 @@ package body et_symbols is
 	begin
 		c := text.content;
 		return et_text.to_string (c);
-	end content;
+	end;
 
 
 	
@@ -215,97 +215,97 @@ package body et_symbols is
 	
 	
 	function to_string (direction : in type_port_direction) return string is begin
-		return latin_1.space & to_lower (type_port_direction'image (direction));
-	end to_string;
+		return to_lower (type_port_direction'image (direction));
+	end;
 	
 	function to_port_direction (direction : in string) return type_port_direction is begin
 		return type_port_direction'value (direction);
-	end to_port_direction;
+	end;
 
 
 
 
 	function to_string (visible : in type_port_name_visible) return string is begin
-		return latin_1.space & to_lower (type_port_name_visible'image (visible));
-	end to_string;
+		return to_lower (type_port_name_visible'image (visible));
+	end;
 
 	function to_port_name_visible (visible : in string) return type_port_name_visible is begin
 		return type_port_name_visible'value (visible);
-	end to_port_name_visible;
+	end;
 
 
 
 
 	function to_string (visible : in type_terminal_name_visible) return string is begin
-		return latin_1.space & to_lower (type_terminal_name_visible'image (visible));
-	end to_string;
+		return to_lower (type_terminal_name_visible'image (visible));
+	end;
 
 	function to_terminal_name_visible (visible : in string) return type_terminal_name_visible is begin
 		return type_terminal_name_visible'value (visible);
-	end to_terminal_name_visible;
+	end;
 
 	
 
 	function to_string (port : in type_port_name.bounded_string) return string is begin
 		return type_port_name.to_string (port);
-	end to_string;
+	end;
 
 	function to_port_name (name : in string) return type_port_name.bounded_string is begin
 		return type_port_name.to_bounded_string (name);
-	end to_port_name;
+	end;
 
 	
 
 
 
 	function to_string (sensitivity : in type_sensitivity_edge) return string is begin
-		return latin_1.space & to_lower (type_sensitivity_edge'image (sensitivity));
-	end to_string;
+		return to_lower (type_sensitivity_edge'image (sensitivity));
+	end;
 
 	function to_sensitivity_edge (sensitivity : in string) return type_sensitivity_edge is begin
 		return type_sensitivity_edge'value (sensitivity);
-	end to_sensitivity_edge;
+	end;
 
 	
 
 	function to_string (sensitivity : in type_sensitivity_level) return string is begin
-		return latin_1.space & to_lower (type_sensitivity_level'image (sensitivity));
-	end to_string;
+		return to_lower (type_sensitivity_level'image (sensitivity));
+	end;
 
 	function to_sensitivity_level (sensitivity : in string) return type_sensitivity_level is begin
 		return type_sensitivity_level'value (sensitivity);
-	end to_sensitivity_level;
+	end;
 
 
 
 
 	function to_string (inverted : in type_output_inverted) return string is begin
-		return latin_1.space & to_lower (type_output_inverted'image (inverted));
-	end to_string;
+		return to_lower (type_output_inverted'image (inverted));
+	end;
 
 	function to_output_inverted (inverted : in string) return type_output_inverted is begin
 		return type_output_inverted'value (inverted);
-	end to_output_inverted;
+	end;
 
 
 
 	function to_string (weakness : in type_output_weakness) return string is begin
-		return latin_1.space & to_lower (type_output_weakness'image (weakness));
-	end to_string;
+		return to_lower (type_output_weakness'image (weakness));
+	end;
 
 	function to_output_weakness (weakness : in string) return type_output_weakness is begin
 		return type_output_weakness'value (weakness);
-	end to_output_weakness;
+	end;
 
 
 
 	function to_string (tristate : in type_output_tristate) return string is begin
-		return latin_1.space & to_lower (type_output_tristate'image (tristate));
-	end to_string;
+		return to_lower (type_output_tristate'image (tristate));
+	end;
 
 	function to_output_tristate (tristate : in string) return type_output_tristate is begin
 		return type_output_tristate'value (tristate);
-	end to_output_tristate;
+	end;
 
 
 
@@ -319,14 +319,14 @@ package body et_symbols is
 		B : positive := level_string'length;
 	begin
 		return latin_1.space & level_string (A .. B);
-	end to_string;
+	end;
 
 	function to_power_level (level : in string) return type_power_level is 
 	-- Converts the power level (like positive) to power level (like LEVEL_POSITIVE).
 	-- The prefix LEVEL_ is prepended.
 	begin
 		return type_power_level'value ("LEVEL_" & level);
-	end to_power_level;
+	end;
 
 
 
@@ -344,25 +344,25 @@ package body et_symbols is
 					return ("appears in schematic and layout");
 			end case;
 		else
-			return latin_1.space & to_lower (type_appearance'image (appearance));
+			return to_lower (type_appearance'image (appearance));
 		end if;
-	end to_string;
+	end;
 
 	function to_appearance (appearance : in string) return type_appearance is begin
 		return type_appearance'value (appearance);
-	end to_appearance;	
+	end;	
 
 
 
 
 
 	function to_string (filled : in type_circle_filled) return string is begin
-		return latin_1.space & to_lower (type_circle_filled'image (filled));
-	end to_string;
+		return to_lower (type_circle_filled'image (filled));
+	end;
 
 	function to_circle_filled (filled : in string) return type_circle_filled is begin
 		return type_circle_filled'value (filled);
-	end to_circle_filled;
+	end;
 
 
 

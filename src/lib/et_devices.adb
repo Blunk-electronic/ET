@@ -59,9 +59,7 @@ with et_packages;				use et_packages;
 
 package body et_devices is
 
-	function to_string (purpose : in type_device_purpose.bounded_string) return string is
-	-- Returns the given purpose as string.
-	begin
+	function to_string (purpose : in type_device_purpose.bounded_string) return string is begin
 		return type_device_purpose.to_string (purpose);
 	end to_string;
 
@@ -158,7 +156,7 @@ package body et_devices is
 	-- Returns the given value as string.
 	begin
 		return type_value.to_string (value);
-	end to_string;
+	end;
 
 	function value_length_valid (value : in string) return boolean is
 	-- Tests if the given value is longer than allowed. Returns false if too long.
@@ -546,34 +544,30 @@ package body et_devices is
 
 
 
-	function to_string (unit_name : in type_unit_name.bounded_string) return string is
-	-- Returns the given unit name as string.
-	begin
+	function to_string (unit_name : in type_unit_name.bounded_string) return string is begin
 		return type_unit_name.to_string (unit_name);
-	end to_string;
+	end;
 
-	function to_unit_name (unit_name : in string) return type_unit_name.bounded_string is
-	-- Returns the given unit name as type_unit_name.
-	begin
+	function to_unit_name (unit_name : in string) return type_unit_name.bounded_string is begin
 		-- CS do character and length checks
 		return type_unit_name.to_bounded_string (unit_name);
-	end to_unit_name;
+	end;
 
 	function to_string (swap_level : in type_unit_swap_level) return string is begin
 		return type_unit_swap_level'image (swap_level);
-	end to_string;
+	end;
 
 	function to_swap_level (swap_level : in string) return type_unit_swap_level is begin
 		return type_unit_swap_level'value (swap_level);
-	end to_swap_level;
+	end;
 	
 	function to_string (add_level : in type_unit_add_level) return string is begin
-		return latin_1.space & to_lower (type_unit_add_level'image (add_level));
-	end to_string;
+		return to_lower (type_unit_add_level'image (add_level));
+	end;
 
 	function to_add_level (add_level : in string) return type_unit_add_level is begin
 		return type_unit_add_level'value (add_level);
-	end to_add_level;
+	end;
 
 	
 

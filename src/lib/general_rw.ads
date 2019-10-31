@@ -119,7 +119,6 @@ package general_rw is
 	procedure write (
 		keyword 	: in string;
 		parameters	: in string;
-		space 		: in boolean := false;
 		wrap		: in boolean := false);
 
 

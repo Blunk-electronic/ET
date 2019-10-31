@@ -470,8 +470,8 @@ package body et_project is
 			section_mark (section_module_instances, HEADER);
 
 			section_mark (section_module, HEADER);			
-			write (keyword => keyword_generic_name, space => true, parameters => to_string (project_name));
-			write (keyword => keyword_instance_name, space => true, parameters => to_string (project_name));
+			write (keyword => keyword_generic_name, parameters => to_string (project_name));
+			write (keyword => keyword_instance_name, parameters => to_string (project_name));
 			section_mark (section_module, FOOTER);			
 			
 			-- CS In the future, write other things here that characterize the instance.
@@ -483,14 +483,14 @@ package body et_project is
 			section_mark (section_module_connections, HEADER);
 
 			section_mark (section_connector, HEADER);			
-			write (keyword => comment_mark & " " & keyword_instance_A, space => true, parameters => to_string (project_name));
-			write (keyword => comment_mark & " " & keyword_purpose_A, space => true, wrap => true, parameters => "power_in");
+			write (keyword => comment_mark & " " & keyword_instance_A, parameters => to_string (project_name));
+			write (keyword => comment_mark & " " & keyword_purpose_A, wrap => true, parameters => "power_in");
 			new_line;
-			write (keyword => comment_mark & " " & keyword_instance_B, space => true, parameters => "power_supply");
-			write (keyword => comment_mark & " " & keyword_purpose_B, space => true, wrap => true, parameters => "power_out");
+			write (keyword => comment_mark & " " & keyword_instance_B, parameters => "power_supply");
+			write (keyword => comment_mark & " " & keyword_purpose_B, wrap => true, parameters => "power_out");
 			new_line;
-			write (keyword => comment_mark & " " & keyword_net_comparator, space => true, parameters => "on"); -- CS image of enum type
-			write (keyword => comment_mark & " " & keyword_net_comparator_warn_only, space => true, parameters => "on"); -- CS image of enum type
+			write (keyword => comment_mark & " " & keyword_net_comparator, parameters => "on"); -- CS image of enum type
+			write (keyword => comment_mark & " " & keyword_net_comparator_warn_only, parameters => "on"); -- CS image of enum type
 			section_mark (section_connector, FOOTER);			
 			
 			-- CS In the future, write other things here that characterize the board to board connection
@@ -598,8 +598,8 @@ package body et_project is
 		procedure query_instance (instance_cursor : in type_module_instances.cursor) is
 		begin
 			section_mark (section_module, HEADER);			
-			write (keyword => keyword_generic_name, space => true, parameters => to_string (element (instance_cursor).generic_name));
-			write (keyword => keyword_instance_name, space => true, parameters => et_general.to_string (key (instance_cursor)));
+			write (keyword => keyword_generic_name, parameters => to_string (element (instance_cursor).generic_name));
+			write (keyword => keyword_instance_name, parameters => et_general.to_string (key (instance_cursor)));
 			section_mark (section_module, FOOTER);
 		end;
 
@@ -607,11 +607,11 @@ package body et_project is
 			con : type_connector := element (connection_cursor);
 		begin
 			section_mark (section_connector, HEADER);
-			write (keyword => keyword_instance_A, space => true, parameters => to_string (con.instance_A));
-			write (keyword => keyword_purpose_A, space => true, wrap => true, parameters => et_devices.to_string (con.purpose_A));
+			write (keyword => keyword_instance_A, parameters => to_string (con.instance_A));
+			write (keyword => keyword_purpose_A, wrap => true, parameters => et_devices.to_string (con.purpose_A));
 			new_line;
-			write (keyword => keyword_instance_B, space => true, parameters => to_string (con.instance_B));
-			write (keyword => keyword_purpose_B, space => true, wrap => true, parameters => et_devices.to_string (con.purpose_B));
+			write (keyword => keyword_instance_B, parameters => to_string (con.instance_B));
+			write (keyword => keyword_purpose_B, wrap => true, parameters => et_devices.to_string (con.purpose_B));
 
 			-- CS: net comparator, warnings
 			
@@ -737,7 +737,7 @@ package body et_project is
 				log (text => "net class " & to_string (key (class_cursor)), level => log_threshold + 1);
 				section_mark (section_net_class, HEADER);
 
-				write (keyword => keyword_name, space => true, parameters => to_string (key (class_cursor)));
+				write (keyword => keyword_name, parameters => to_string (key (class_cursor)));
 				write (keyword => keyword_description, parameters => et_pcb.to_string (element (class_cursor).description), wrap => true);
 				write (keyword => keyword_clearance, parameters => to_string (element (class_cursor).clearance));
 				write (keyword => keyword_track_width_min, parameters => to_string (element (class_cursor).track_width_min));
@@ -768,13 +768,13 @@ package body et_project is
 			section_mark (section_drawing_grid, HEADER);
 
 			section_mark (section_schematic, HEADER);
-			write (keyword => keyword_default, space => true, parameters => 
+			write (keyword => keyword_default, parameters => 
 				   keyword_pos_x & to_string (element (module_cursor).grid.x) & space &
 				   keyword_pos_y & to_string (element (module_cursor).grid.y));
 			section_mark (section_schematic, FOOTER);
 
 			section_mark (section_board, HEADER);
-			write (keyword => keyword_default, space => true, parameters => 
+			write (keyword => keyword_default, parameters => 
 				   keyword_pos_x & to_string (element (module_cursor).board.grid.x) & space &
 				   keyword_pos_y & to_string (element (module_cursor).board.grid.y));
 			section_mark (section_board, FOOTER);
@@ -819,7 +819,7 @@ package body et_project is
 			bottom_layer_thickness := element (module_cursor).board.stack.bottom.thickness;
 
 			-- Write the bottom layer in the file.
-			write (keyword => keyword_conductor, space => true,
+			write (keyword => keyword_conductor,
 				parameters => space & to_string (bottom_layer) & to_string (bottom_layer_thickness) &
 				space & comment_mark & " bottom signal layer");
 			
@@ -886,11 +886,11 @@ package body et_project is
 					procedure query_junctions (segment : in type_net_segment) is
 					begin
 						if segment.junctions.start_point then
-							write (keyword => keyword_junction, space => true, parameters => keyword_start);
+							write (keyword => keyword_junction, parameters => keyword_start);
 						end if;
 
 						if segment.junctions.end_point then
-							write (keyword => keyword_junction, space => true, parameters => keyword_end);
+							write (keyword => keyword_junction, parameters => keyword_end);
 						end if;
 					end query_junctions;
 					
@@ -1020,7 +1020,7 @@ package body et_project is
 					
 					write (keyword => keyword_start, parameters => position (element (line_cursor).start_point));
 					write (keyword => keyword_end  , parameters => position (element (line_cursor).end_point));
-					write (keyword => keyword_layer, space => true, parameters => to_string (element (line_cursor).layer));
+					write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
 					write (keyword => keyword_width, parameters => to_string (element (line_cursor).width));
 
 					section_mark (section_line, FOOTER);
@@ -1141,8 +1141,8 @@ package body et_project is
 				log (text => "net " & et_general.to_string (key (net_cursor)), level => log_threshold + 1);
 				section_mark (section_net, HEADER);
 
-				write (keyword => keyword_name, parameters => et_general.to_string (key (net_cursor)), space => true);
-				write (keyword => keyword_class, parameters => to_string (element (net_cursor).class), space => true);
+				write (keyword => keyword_name, parameters => et_general.to_string (key (net_cursor)));
+				write (keyword => keyword_class, parameters => to_string (element (net_cursor).class));
 				write (keyword => keyword_scope, parameters => netlists.to_string (element (net_cursor).scope));
 
 				query_element (net_cursor, query_strands'access);
@@ -1187,7 +1187,7 @@ package body et_project is
 				section_mark (section_units, HEADER);
 				while unit_cursor /= type_units.no_element loop
 					section_mark (section_unit, HEADER);
-					write (keyword => keyword_name, parameters => to_string (key (unit_cursor)), space => true);
+					write (keyword => keyword_name, parameters => to_string (key (unit_cursor)));
 					write (keyword => keyword_position, parameters => position (element (unit_cursor).position)); -- position sheet 1 x 147.32 y 96.97
 					--write (keyword => keyword_rotation, parameters => to_string (element (unit_cursor).rotation)); -- rotation 180.0
 					write (keyword => keyword_rotation, parameters => to_string (rot (element (unit_cursor).position))); -- rotation 180.0
@@ -1252,16 +1252,16 @@ package body et_project is
 
 			procedure write (device_cursor : in et_schematic.type_devices.cursor) is begin
 				section_mark (section_device, HEADER);
-				write (keyword => keyword_name, parameters => to_string (key (device_cursor)), space => true);
+				write (keyword => keyword_name, parameters => to_string (key (device_cursor)));
 				write (keyword => keyword_appearance, parameters => to_string (element (device_cursor).appearance));
-				write (keyword => keyword_model, parameters => to_string (element (device_cursor).model), space => true);
+				write (keyword => keyword_model, parameters => to_string (element (device_cursor).model));
 
 				case element (device_cursor).appearance is
 					when PCB =>
-						write (keyword => keyword_value   , parameters => to_string (element (device_cursor).value), space => true);
-						write (keyword => keyword_variant , parameters => to_string (element (device_cursor).variant), space => true);
-						write (keyword => keyword_partcode, parameters => material.to_string (element (device_cursor).partcode), space => true);
-						write (keyword => keyword_purpose , parameters => to_string (element (device_cursor).purpose), space => true, wrap => true);
+						write (keyword => keyword_value   , parameters => to_string (element (device_cursor).value));
+						write (keyword => keyword_variant , parameters => to_string (element (device_cursor).variant));
+						write (keyword => keyword_partcode, parameters => material.to_string (element (device_cursor).partcode));
+						write (keyword => keyword_purpose , parameters => to_string (element (device_cursor).purpose), wrap => true);
 						
 						section_mark (section_package, HEADER);
 
@@ -1270,7 +1270,7 @@ package body et_project is
 							   position (element (device_cursor).position));
 
 						-- Flip status:
-						write (keyword => keyword_flipped, parameters => et_pcb.to_string (element (device_cursor).flipped), space => true);
+						write (keyword => keyword_flipped, parameters => et_pcb.to_string (element (device_cursor).flipped));
 					
 						query_element (device_cursor, query_placeholders'access);
 						section_mark (section_package, FOOTER);
@@ -1324,8 +1324,7 @@ package body et_project is
 							write (
 								keyword		=> keyword_device,
 								parameters	=> to_string (key (device_cursor)) & 
-												space & keyword_not_mounted,
-								space 		=> true);
+												space & keyword_not_mounted);
 
 						when YES =>
 							write (
@@ -1336,8 +1335,7 @@ package body et_project is
 									to_string (element (device_cursor).value) &
 									space & keyword_partcode & space &
 									material.to_string (element (device_cursor).partcode) &
-									purpose,
-								space 		=> true);
+									purpose);
 
 					end case;
 					
@@ -1357,8 +1355,7 @@ package body et_project is
 						keyword		=> keyword_submodule,
 						parameters	=> et_general.to_string (key (submodule_cursor)) &
 										space & keyword_variant & space &
-										to_variant (element (submodule_cursor).variant),
-						space		=> true);
+										to_variant (element (submodule_cursor).variant));
 					
 					next (submodule_cursor);
 				end loop;
@@ -1366,7 +1363,7 @@ package body et_project is
 
 			procedure write (variant_cursor : in type_variants.cursor) is begin
 				section_mark (section_assembly_variant, HEADER);
-				write (keyword => keyword_name, parameters => to_variant (key (variant_cursor)), space => true);
+				write (keyword => keyword_name, parameters => to_variant (key (variant_cursor)));
 				write (keyword => keyword_description, wrap => true, parameters => to_string (element (variant_cursor).description));
 
 				-- write the device variants
@@ -1420,7 +1417,6 @@ package body et_project is
 			section_mark (section_schematic, HEADER);
 			write (
 				keyword 	=> keyword_template, 
-				space 		=> true, 
 				parameters	=> et_frames.to_string (element (module_cursor).frames.template));
 			
 			-- CS frame count ?
@@ -1429,11 +1425,12 @@ package body et_project is
 			section_mark (section_schematic, FOOTER);			
 
 			-- board frame:
-			section_mark (section_board, HEADER);			
+			section_mark (section_board, HEADER);
+			
 			write (
 				keyword		=> keyword_template, 
-				space 		=> true, 
 				parameters	=> et_frames.to_string (element (module_cursor).board.frame.template));
+			
 			section_mark (section_board, FOOTER);			
 			
 			section_mark (section_drawing_frames, FOOTER);
@@ -1448,7 +1445,7 @@ package body et_project is
 				use type_submodule_ports;
 			begin
 				section_mark (section_port, HEADER);
-				write (keyword => keyword_name, space => true, parameters => et_general.to_string (key (port_cursor))); -- name clk_out
+				write (keyword => keyword_name, parameters => et_general.to_string (key (port_cursor))); -- name clk_out
 				write (keyword => keyword_position, parameters => position (element (port_cursor).position)); -- position x 0 y 10
 				write (keyword => keyword_direction, parameters => to_string (element (port_cursor).direction)); -- direction master/slave
 				section_mark (section_port, FOOTER);
@@ -1458,8 +1455,8 @@ package body et_project is
 				use et_coordinates.geometry;
 			begin
 				section_mark (section_submodule, HEADER);
-				write (keyword => keyword_name, space => true, parameters => et_general.to_string (key (submodule_cursor))); -- name stepper_driver_1
-				write (keyword => keyword_file, space => true, parameters => type_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
+				write (keyword => keyword_name, parameters => et_general.to_string (key (submodule_cursor))); -- name stepper_driver_1
+				write (keyword => keyword_file, parameters => type_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
 
 				write (keyword => keyword_position, parameters => position (element (submodule_cursor).position));
 				write (keyword => submodules.keyword_size, parameters => 
@@ -1491,7 +1488,7 @@ package body et_project is
 			procedure write (text_cursor : in type_texts.cursor) is begin
 				section_mark (section_text, HEADER);
 				write (keyword => keyword_position, parameters => position (element (text_cursor).position));
-				write (keyword => keyword_content, space => true, wrap => true,
+				write (keyword => keyword_content, wrap => true,
 					   parameters => to_string (element (text_cursor).content));
 				write_text_properties (element (text_cursor));
 				section_mark (section_text, FOOTER);

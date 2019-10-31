@@ -225,8 +225,8 @@ package body et_packages is
 	end text_properties;
 	
 	function to_string (text_meaning : in type_text_meaning_package) return string is begin
-		return latin_1.space & to_lower (type_text_meaning_package'image (text_meaning));
-	end to_string;
+		return to_lower (type_text_meaning_package'image (text_meaning));
+	end;
 
 	function to_text_meaning (text_meaning : in string) return type_text_meaning_package is begin
 		return type_text_meaning_package'value (text_meaning);
