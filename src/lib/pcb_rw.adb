@@ -101,9 +101,9 @@ package body pcb_rw is
 		write (keyword => keyword_size, parameters => to_string (t.size)); -- size 1.000
 		
 		write (keyword => keyword_line_width, parameters => to_string (t.line_width));
-		write (keyword => keyword_alignment, parameters => space &
-				keyword_horizontal & to_string (t.alignment.horizontal) & space &
-				keyword_vertical   & to_string (t.alignment.vertical)
+		write (keyword => keyword_alignment, parameters =>
+				keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
+				keyword_vertical   & space & to_string (t.alignment.vertical)
 				);
 		-- CS write (keyword => keyword_hidden, parameters => space & to_lower (boolean'image (text.hidden)));
 	end write_text_properties_with_face;

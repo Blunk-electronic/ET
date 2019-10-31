@@ -103,7 +103,7 @@ package body et_pcb is
 	end text_properties;
 	
 	function to_string (meaning : in type_text_meaning_copper) return string is begin
-		return latin_1.space & to_lower (type_text_meaning_copper'image (meaning));
+		return to_lower (type_text_meaning_copper'image (meaning));
 	end to_string;
 
 	function to_meaning (meaning : in string) return type_text_meaning_copper is begin
@@ -155,33 +155,33 @@ package body et_pcb is
 
 	function to_string (locked : in type_locked) return string is begin
 		return to_lower (type_locked'image (locked));
-	end to_string;
+	end;
 
 	function to_lock_status (locked : in string) return type_locked is begin
 		return type_locked'value (locked);
-	end to_lock_status;
+	end;
 
 	function to_string (priority_level : in type_polygon_priority) return string is begin
 		return type_polygon_priority'image (priority_level);
-	end to_string;
+	end;
 
 	function to_polygon_priority (priority_level : in string) return type_polygon_priority is begin
 		return type_polygon_priority'value (priority_level);
-	end to_polygon_priority;
+	end;
 
 
 	function to_string (polygon_pad_connection : in type_polygon_pad_connection) return string is begin
-		return latin_1.space & to_lower (type_polygon_pad_connection'image (polygon_pad_connection));
-	end to_string;
+		return to_lower (type_polygon_pad_connection'image (polygon_pad_connection));
+	end;
 
 	function to_pad_connection (connection : in string) return type_polygon_pad_connection is begin
 		return type_polygon_pad_connection'value (connection);
-	end to_pad_connection;
+	end;
 	
 
 	function to_string (polygon_pad_technology : in type_polygon_pad_technology) return string is begin
-		return latin_1.space & to_lower (type_polygon_pad_technology'image (polygon_pad_technology));
-	end to_string;
+		return to_lower (type_polygon_pad_technology'image (polygon_pad_technology));
+	end;
 
 	function to_pad_technology (technology : in string) return type_polygon_pad_technology is begin
 		return type_polygon_pad_technology'value (technology);

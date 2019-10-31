@@ -106,20 +106,20 @@ package body et_schematic is
 	end;
 
 	function to_string (appearance : in type_net_label_appearance) return string is begin
-		return latin_1.space & to_lower (type_net_label_appearance'image (appearance));
-	end to_string;
+		return to_lower (type_net_label_appearance'image (appearance));
+	end;
 
 	function to_appearance (appearance : in string) return type_net_label_appearance is begin
 		return type_net_label_appearance'value (appearance);
-	end to_appearance;
+	end;
 	
 	function to_string (direction : in type_net_label_direction) return string is begin
-		return latin_1.space & to_lower (type_net_label_direction'image (direction));
-	end to_string;
+		return to_lower (type_net_label_direction'image (direction));
+	end;
 
 	function to_direction (direction : in string) return type_net_label_direction is begin
 		return type_net_label_direction'value (direction);
-	end to_direction;
+	end;
 	
 	function to_string (segment : in type_net_segments.cursor) return string is
 	-- Returns a string that tells about start and end coordinates of the net segment.
@@ -278,7 +278,7 @@ package body et_schematic is
 		if verbose then
 			return "mirrored " & to_lower (type_mirror'image (mirror));
 		else
-			return latin_1.space & to_lower (type_mirror'image (mirror));
+			return to_lower (type_mirror'image (mirror));
 		end if;
 	end to_string;
 

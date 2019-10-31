@@ -39,6 +39,8 @@
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
+with ada.strings;				use ada.strings;
+with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.bounded;       use ada.strings.bounded;
 
 with et_general;				use et_general;
@@ -138,7 +140,7 @@ package body submodules is
 	end move_ports;
 	
 	function to_string (view : in type_submodule_view_mode) return string is begin
-		return latin_1.space & to_lower (type_submodule_view_mode'image (view));
+		return to_lower (type_submodule_view_mode'image (view));
 	end;
 
 	function to_view_mode (mode : in string) return type_submodule_view_mode is begin
@@ -150,7 +152,7 @@ package body submodules is
 	end;
 
 	function to_string (id : in type_netchanger_id) return string is begin
-		return type_netchanger_id'image (id);
+		return trim (type_netchanger_id'image (id), left);
 	end;
 
 	function opposide_port (port : in type_netchanger_port_name) return type_netchanger_port_name is begin
@@ -165,7 +167,7 @@ package body submodules is
 	end;
 
 	function to_string (name : in type_netchanger_port_name) return string is begin
-		return latin_1.space & to_lower (type_netchanger_port_name'image (name));
+		return trim (to_lower (type_netchanger_port_name'image (name)), left);
 	end;
 
 	function netchanger_ports (

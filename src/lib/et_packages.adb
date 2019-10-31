@@ -230,15 +230,15 @@ package body et_packages is
 
 	function to_text_meaning (text_meaning : in string) return type_text_meaning_package is begin
 		return type_text_meaning_package'value (text_meaning);
-	end to_text_meaning;
+	end;
 
 	function to_string (layer : in type_placeholder_package_layer) return string is begin
-		return latin_1.space & to_lower (type_placeholder_package_layer'image (layer));
-	end to_string;
+		return to_lower (type_placeholder_package_layer'image (layer));
+	end;
 
 	function to_layer (layer : in string) return type_placeholder_package_layer is begin
 		return type_placeholder_package_layer'value (layer);
-	end to_layer;
+	end;
 
 	-- FILL STYLE
 	function to_string (fill_style : in type_fill_style) return string is begin
@@ -257,7 +257,7 @@ package body et_packages is
 
 	function to_string (easing : in type_corner_easing) return string is begin
 		return to_lower (type_corner_easing'image (easing));
-	end to_string;
+	end;
 
 	
 	function to_directory (directory_name : in string) return type_directory_name.bounded_string is
@@ -298,43 +298,43 @@ package body et_packages is
 	
 	function to_string (appearance : in type_package_appearance) return string is begin
 		return to_lower (type_package_appearance'image (appearance));
-	end to_string;
+	end;
 
 	function to_appearance (appearance : in string) return type_package_appearance is begin
 		return type_package_appearance'value (appearance);
 	end;
 	
 	function to_string (technology : in type_assembly_technology) return string is begin
-		return latin_1.space & to_lower (type_assembly_technology'image (technology));
-	end to_string;
+		return to_lower (type_assembly_technology'image (technology));
+	end;
 
 	function to_assembly_technology (technology : in string) return type_assembly_technology is begin
 		return type_assembly_technology'value (technology);
 	end;
 	
 	function to_string (solder_paste : in type_solder_paste_status) return string is begin
-		return latin_1.space & to_lower (type_solder_paste_status'image (solder_paste));
-	end to_string;
+		return to_lower (type_solder_paste_status'image (solder_paste));
+	end;
 
 	function to_solder_paste_status (solder_paste : in string) return type_solder_paste_status is begin
 		return type_solder_paste_status'value (solder_paste);
 	end;
 	
 	function to_string (stop_mask : in type_stop_mask_status) return string is begin
-		return latin_1.space & to_lower (type_stop_mask_status'image (stop_mask));
-	end to_string;
+		return to_lower (type_stop_mask_status'image (stop_mask));
+	end;
 
 	function to_stop_mask_status (stop_mask : in string) return type_stop_mask_status is begin
 		return type_stop_mask_status'value (stop_mask);
-	end to_stop_mask_status;
+	end;
 	
 	function to_string (tht_hole : in type_terminal_tht_hole) return string is begin
-		return latin_1.space & to_lower (type_terminal_tht_hole'image (tht_hole));
-	end to_string;
+		return to_lower (type_terminal_tht_hole'image (tht_hole));
+	end;
 
 	function to_tht_hole (tht_hole : in string) return type_terminal_tht_hole is begin
 		return type_terminal_tht_hole'value (tht_hole);
-	end to_tht_hole;
+	end;
 	
 	
 	function to_string (circle : in type_fillable_circle) return string is begin
