@@ -68,7 +68,7 @@ with et_packages;
 with pcb_rw;
 
 with et_symbols;
-
+with symbol_rw;
 
 procedure et is
 
@@ -322,7 +322,8 @@ procedure et is
 	procedure save_package_as is 
 		use et_packages.type_package_model_file;
 	begin
-		 -- if package_name_save_as is empty nothing happens
+		-- If package_name_save_as is empty nothing happens.
+		-- Otherwise the latest and only packagein et_packages.packages is saved.
 		if length (package_name_save_as) > 0 then
 			pcb_rw.save_package (
 				file_name 		=> package_name_save_as,
@@ -330,6 +331,20 @@ procedure et is
 				log_threshold	=> 0);
 		end if;
 	end;
+
+	procedure save_symbol_as is 
+		use et_symbols.type_symbol_model_file;
+	begin
+		-- If symbol_name_save_as is empty nothing happens.
+		-- Otherwise the latest and only symbol in et_symbols.symbols is saved.
+		if length (symbol_name_save_as) > 0 then
+			symbol_rw.save_symbol (
+				file_name 		=> symbol_name_save_as,
+				symbol			=> et_symbols.type_symbols.last_element (et_symbols.symbols),
+				log_threshold	=> 0);
+		end if;
+	end;
+
 	
 	procedure process_commandline_arguments is
 		use et_project.type_project_name;
@@ -423,12 +438,12 @@ procedure et is
 			elsif length (symbol_name_create) > 0 then
 				null; -- CS
 
-				-- save_symbol_as;
+-- 				save_symbol_as; -- if symbol_name_save_as is empty nothing happens
 
 			elsif length (symbol_name_open) > 0 then
-				null; -- CS
+				symbol_rw.read_symbol (symbol_name_open, log_threshold => 0);
 
-				-- save_symbol_as;
+				save_symbol_as; -- if symbol_name_save_as is empty nothing happens
 			end if;
 			
 		end if;

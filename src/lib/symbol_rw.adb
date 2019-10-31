@@ -57,7 +57,7 @@ with et_string_processing;
 with general_rw;				use general_rw;
 with et_geometry;				use et_geometry;
 with et_text;					--use et_text;
-with et_symbols;
+with et_symbols;				use et_symbols;
 
 package body symbol_rw is
 
@@ -141,8 +141,7 @@ package body symbol_rw is
 		return point;
 	end to_position;
 	
-	procedure write_text_properties (t : in et_symbols.type_text_basic'class) is
-		use et_symbols;
+	procedure write_text_properties (t : in type_text_basic'class) is
 		use et_symbols.pac_text;
 		use et_text;
 	begin
@@ -158,9 +157,9 @@ package body symbol_rw is
 	end write_text_properties;
 
 	procedure write_symbol ( 
-		symbol			: in et_symbols.type_symbol;
+		symbol			: in type_symbol;
 		log_threshold	: in et_string_processing.type_log_level) is
-		use et_symbols;
+
 		use et_symbols.pac_shapes;
 		use et_text;
 
@@ -314,20 +313,20 @@ package body symbol_rw is
 		section_mark (section_ports, FOOTER);
 	end write_symbol;
 	
-	procedure save_symbol ( -- CS: testing requried
-	-- Saves the given symbol model in a file specified by name.
-		name			: in string; -- libraries/symbols/resistor.sym
-		symbol			: in et_symbols.type_symbol; -- the actual symbol model
+	procedure save_symbol (
+	-- Saves the given symbol model in a file specified by file_name.
+		file_name		: in type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+		symbol			: in type_symbol; -- the actual symbol model
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		file_handle : ada.text_io.file_type;
 	begin
-		log (text => name, level => log_threshold);
+		log (text => to_string (file_name), level => log_threshold);
 
 		create (
 			file 	=> file_handle,
 			mode	=> out_file,
-			name	=> name);
+			name	=> to_string (file_name));
 
 		set_output (file_handle);
 		
@@ -360,12 +359,11 @@ package body symbol_rw is
 	end save_symbol;
 	
 	procedure read_symbol (
-	-- Opens the symbol file and stores the symbol in container et_libraries.symbols.
-		file_name 		: in et_symbols.type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+	-- Opens the symbol file and stores the symbol in container et_symbols.symbols.
+		file_name 		: in type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_coordinates.geometry;
 		use et_string_processing;
-		use et_symbols;
 		use et_text;
 		
 		file_handle : ada.text_io.file_type;

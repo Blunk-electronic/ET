@@ -37,7 +37,7 @@
 
 with et_string_processing;
 with et_coordinates;
-with et_symbols;
+with et_symbols;			use et_symbols;
 
 package symbol_rw is
 
@@ -63,7 +63,7 @@ package symbol_rw is
 		from : in positive)
 		return et_coordinates.geometry.type_point;
 	
-	procedure write_text_properties (t : in et_symbols.type_text_basic'class);
+	procedure write_text_properties (t : in type_text_basic'class);
 
 	type type_section is (
 		SEC_INIT,
@@ -80,18 +80,18 @@ package symbol_rw is
 		);
 
 	procedure write_symbol ( 
-		symbol			: in et_symbols.type_symbol;
+		symbol			: in type_symbol;
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure save_symbol (
-	-- Saves the given symbol model in a file specified by name.
-		name			: in string; -- libraries/symbols/resistor.sym
-		symbol			: in et_symbols.type_symbol; -- the actual symbol model
+	-- Saves the given symbol model in a file specified by file_name.
+		file_name		: in type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+		symbol			: in type_symbol; -- the actual symbol model
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure read_symbol (
-	-- Opens the symbol file and stores the symbol in container et_libraries.symbols.
-		file_name 		: in et_symbols.type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+	-- Opens the symbol file and stores the symbol in container et_symbols.symbols.
+		file_name 		: in type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		log_threshold	: in et_string_processing.type_log_level);
 
 	
