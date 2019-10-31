@@ -21,6 +21,7 @@ OBJS = $(TARGET).o \
 	board_ops.o \
 	general_rw.o \
 	device_rw.o \
+	symbol_rw.o \
 	schematic_rw.o \
 	pcb_rw.o \
 	et_pcb_coordinates.o \
