@@ -975,7 +975,7 @@ package body et_project is
 				while strand_cursor /= type_strands.no_element loop
 					section_mark (section_strand, HEADER);
 
-					write (keyword => keyword_position, parameters => position (element (strand_cursor).position));
+					write (keyword => keyword_position, parameters => schematic_rw.position (element (strand_cursor).position));
 
 					query_element (strand_cursor, query_segments'access);
 					

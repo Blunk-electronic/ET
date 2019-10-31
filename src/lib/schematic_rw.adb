@@ -40,27 +40,30 @@ with ada.characters.latin_1;	--use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.text_io;				use ada.text_io;
-with ada.tags;
 
 with ada.exceptions;
-
-with ada.containers;            use ada.containers;
-with ada.containers.ordered_maps;
-
-with et_general;				use et_general;
 
 with et_coordinates;			use et_coordinates;
 use et_coordinates.geometry;
 
-with et_string_processing;
-with general_rw;				use general_rw;
+-- with et_string_processing;
 with et_geometry;				use et_geometry;
-with et_text;					--use et_text;
--- with et_symbols;
 
 package body schematic_rw is
 
-	procedure dummy is begin null; end;
+	function position (pos : in et_coordinates.type_position) return string is
+	-- Returns something like "sheet 3 x 12.34 y 45.0".
+
+		function text return string is begin return 
+			space & keyword_pos_x & to_string (x (pos)) 
+			& space & keyword_pos_y & to_string (y (pos));
+		end text;
+		
+	begin
+		return space & keyword_sheet
+			& to_sheet (sheet (pos)) 
+			& text;
+	end position;
+
 	
 end schematic_rw;

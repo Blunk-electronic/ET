@@ -35,22 +35,20 @@
 --   history of changes:
 --
 
-with ada.containers;            use ada.containers;
-
-with et_schematic;
-with et_string_processing;
 with et_coordinates;
-with et_symbols;
+
 
 package schematic_rw is
 
+	keyword_sheet				: constant string := "sheet";	
+	
 	keyword_position_in_board		: constant string := "position_in_board";
 	keyword_position_in_schematic	: constant string := "position_in_schematic";	
 	keyword_view_mode				: constant string := "view_mode";
+
+
+	function position (pos : in et_coordinates.type_position) return string;
+	-- Returns something like "sheet 3 x 12.34 y 45.0".
 	
-
-	schematic_object_filled : et_schematic.pac_shapes.type_filled := et_schematic.pac_shapes.filled_default;		
-
-	procedure dummy;
 	
 end schematic_rw;

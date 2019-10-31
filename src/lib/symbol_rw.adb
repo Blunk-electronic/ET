@@ -41,7 +41,7 @@ with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.text_io;				use ada.text_io;
-with ada.tags;
+-- with ada.tags;
 
 with ada.exceptions;
 
@@ -93,25 +93,16 @@ package body symbol_rw is
 		return grid;
 	end to_grid;
 
-	function position (pos : in et_coordinates.geometry.type_point'class) return string is
-	-- Returns something like "x 12.34 y 45.0" or "sheet 3 x 12.34 y 45.0".
-	-- This kind of output depends on the tag of the given object.
-		use et_coordinates.geometry;
-		use ada.tags;
+	function position (pos : in et_coordinates.geometry.type_point) return string is
+	-- Returns something like "x 12.34 y 45.0".
 
-		-- This function returns the basic text with x and y coordinates.
 		function text return string is begin return 
 			space & keyword_pos_x & to_string (x (pos)) 
 			& space & keyword_pos_y & to_string (y (pos));
 		end text;
 		
-	begin -- position
-		if pos'tag = type_point'tag then
-			return text; -- a 2d point has just x and y
-		else
-			-- A type_coordinates also has the sheet number:
-			return space & keyword_sheet & to_sheet (sheet (et_coordinates.type_position (pos))) & text;
-		end if;
+	begin
+		return text; -- a 2d point has just x and y
 	end position;
 
 	function to_position (
@@ -387,14 +378,14 @@ package body symbol_rw is
 		max_section_depth : constant positive := 3; -- incl. section init
 
 		package stack is new general_rw.stack_lifo (
-			item	=> type_section_name_symbol,
+			item	=> type_section,
 			max 	=> max_section_depth);
 
-		function to_string (section : in type_section_name_symbol) return string is
+		function to_string (section : in type_section) return string is
 		-- Converts a section like SEC_DRAW to a string "draw".
-			len : positive := type_section_name_symbol'image (section)'length;
+			len : positive := type_section'image (section)'length;
 		begin
-			return to_lower (type_section_name_symbol'image (section) (5..len));
+			return to_lower (type_section'image (section) (5..len));
 		end to_string;
 		
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
@@ -686,7 +677,7 @@ package body symbol_rw is
 			-- If it is a header, the section name is pushed onto the sections stack.
 			-- If it is a footer, the latest section name is popped from the stack.
 				section_keyword	: in string; -- [DRAW
-				section			: in type_section_name_symbol) -- SEC_DRAW
+				section			: in type_section) -- SEC_DRAW
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1

@@ -35,23 +35,18 @@
 --   history of changes:
 --
 
-with ada.containers;            use ada.containers;
-
-with et_schematic;
 with et_string_processing;
 with et_coordinates;
 with et_symbols;
 
 package symbol_rw is
 
-	keyword_sheet				: constant string := "sheet";
-	
-	keyword_direction			: constant string := "direction";			
-	keyword_style				: constant string := "style";
+	keyword_direction	: constant string := "direction";			
+	keyword_style		: constant string := "style";
 
-	section_draw				: constant string := "[DRAW";
-	section_port				: constant string := "[PORT";	
-	section_ports				: constant string := "[PORTS";
+	section_draw		: constant string := "[DRAW";
+	section_port		: constant string := "[PORT";	
+	section_ports		: constant string := "[PORTS";
 	
 	
 	function to_grid (
@@ -60,9 +55,8 @@ package symbol_rw is
 		return et_coordinates.geometry.type_grid;
 
 
-	function position (pos : in et_coordinates.geometry.type_point'class) return string;
-	-- Returns something like "x 12.34 y 45.0" or "sheet 3 x 12.34 y 45.0".
-	-- This kind of output depends on the tag of the given object.
+	function position (pos : in et_coordinates.geometry.type_point) return string;
+	-- Returns something like "x 12.34 y 45.0".
 
 	function to_position (
 		line : in et_string_processing.type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
@@ -71,7 +65,7 @@ package symbol_rw is
 	
 	procedure write_text_properties (t : in et_symbols.type_text_basic'class);
 
-	type type_section_name_symbol is ( -- CS rename to type_section
+	type type_section is (
 		SEC_INIT,
 		SEC_DRAW,
 		SEC_LINE,
