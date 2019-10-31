@@ -71,6 +71,7 @@ with et_geometry;				use et_geometry;
 with general_rw;				use general_rw;
 with pcb_rw;					use pcb_rw;
 with schematic_rw;				use schematic_rw;
+with symbol_rw;					use symbol_rw;
 with device_rw;					use device_rw;
 with et_symbols;
 with et_devices;				use et_devices;

@@ -59,6 +59,7 @@ use et_coordinates.geometry;
 with et_string_processing;
 with general_rw;				use general_rw;
 with schematic_rw;				use schematic_rw;
+with symbol_rw;					use symbol_rw;
 with pcb_rw;
 with conventions;
 with et_geometry;				use et_geometry;

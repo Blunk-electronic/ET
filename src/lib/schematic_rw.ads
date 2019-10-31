@@ -44,67 +44,13 @@ with et_symbols;
 
 package schematic_rw is
 
-	keyword_sheet					: constant string := "sheet";
-
 	keyword_position_in_board		: constant string := "position_in_board";
 	keyword_position_in_schematic	: constant string := "position_in_schematic";	
 	keyword_view_mode				: constant string := "view_mode";
-	keyword_direction				: constant string := "direction";			
-	keyword_style					: constant string := "style";
-
-	section_draw				: constant string := "[DRAW";
-	section_port				: constant string := "[PORT";	
-	section_ports				: constant string := "[PORTS";
 	
--- BASIC GEOMETRIC OBJECTS USED IN SYMBOLS AND SCHEMATICS
+
 	schematic_object_filled : et_schematic.pac_shapes.type_filled := et_schematic.pac_shapes.filled_default;		
 
-	
-	function to_grid (
-		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
-		from : in positive)
-		return et_coordinates.geometry.type_grid;
-
-
-	function position (pos : in et_coordinates.geometry.type_point'class) return string;
-	-- Returns something like "x 12.34 y 45.0" or "sheet 3 x 12.34 y 45.0".
-	-- This kind of output depends on the tag of the given object.
-
-	function to_position (
-		line : in et_string_processing.type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
-		from : in positive)
-		return et_coordinates.geometry.type_point;
-	
-	procedure write_text_properties (t : in et_symbols.type_text_basic'class);
-
-	type type_section_name_symbol is (
-		SEC_INIT,
-		SEC_DRAW,
-		SEC_LINE,
-		SEC_ARC,
-		SEC_CIRCLE,
-		SEC_TEXTS,
-		SEC_TEXT,
-		SEC_PLACEHOLDER,		
-		SEC_PLACEHOLDERS,
-		SEC_PORTS,
-		SEC_PORT
-		);
-
-	procedure write_symbol ( 
-		symbol			: in et_symbols.type_symbol;
-		log_threshold	: in et_string_processing.type_log_level);
-	
-	procedure save_symbol (
-	-- Saves the given symbol model in a file specified by name.
-		name			: in string; -- libraries/symbols/resistor.sym
-		symbol			: in et_symbols.type_symbol; -- the actual symbol model
-		log_threshold	: in et_string_processing.type_log_level);
-	
-	procedure read_symbol (
-	-- Opens the symbol file and stores the symbol in container et_libraries.symbols.
-		file_name 		: in et_symbols.type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
-		log_threshold	: in et_string_processing.type_log_level);
-
+	procedure dummy;
 	
 end schematic_rw;

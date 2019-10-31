@@ -53,8 +53,6 @@ package symbol_rw is
 	section_port				: constant string := "[PORT";	
 	section_ports				: constant string := "[PORTS";
 	
-	schematic_object_filled : et_schematic.pac_shapes.type_filled := et_schematic.pac_shapes.filled_default;
-
 	
 	function to_grid (
 		line : in et_string_processing.type_fields_of_line; -- "default x 1 y 1"
@@ -73,7 +71,7 @@ package symbol_rw is
 	
 	procedure write_text_properties (t : in et_symbols.type_text_basic'class);
 
-	type type_section_name_symbol is (
+	type type_section_name_symbol is ( -- CS rename to type_section
 		SEC_INIT,
 		SEC_DRAW,
 		SEC_LINE,
