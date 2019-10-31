@@ -156,6 +156,43 @@ package body symbol_rw is
 		--write (keyword => keyword_hidden, parameters => et_libraries.to_string (text.visible)); -- CS: no need. probably useless
 	end write_text_properties;
 
+	procedure create_symbol (
+	-- Creates a symbol and stores it in container et_symbols.symbols.
+		symbol_name		: in type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+		appearance		: in type_appearance;
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_string_processing;
+		use type_symbols;
+	begin
+		log (text => "creating symbol " & to_string (symbol_name) & " ...", level => log_threshold);
+		log_indentation_up;
+		log (text => "appearance " & to_string (appearance) & " ...", level => log_threshold);
+		
+		-- Test if symbol already exists. If already exists, issue warning and exit.
+		if contains (symbols, symbol_name) then
+			log (WARNING, text => "symbol already exists -> skipped", level => log_threshold + 1);
+		else
+			case appearance is
+				when PCB =>
+					insert (
+						container	=> symbols,
+						key			=> symbol_name,
+						new_item	=> (appearance => PCB, others => <>)
+						);
+
+				when VIRTUAL =>
+					insert (
+						container	=> symbols,
+						key			=> symbol_name,
+						new_item	=> (appearance => VIRTUAL, others => <>)
+						);
+			end case;					
+		end if;
+
+		log_indentation_down;
+
+	end create_symbol;
+	
 	procedure write_symbol ( 
 		symbol			: in type_symbol;
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -211,7 +248,7 @@ package body symbol_rw is
 					section_mark (section_placeholders, HEADER);
 					
 					section_mark (section_placeholder, HEADER);
-					write (keyword => keyword_meaning , parameters => to_string (symbol.name.meaning));
+					write (keyword => keyword_meaning, parameters => to_string (symbol.name.meaning));
 					write (keyword => keyword_position, parameters => position (symbol.name.position));
 					write_text_properties (symbol.name);
 					section_mark (section_placeholder, FOOTER);

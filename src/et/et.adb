@@ -436,13 +436,15 @@ procedure et is
 
 			-- symbol
 			elsif length (symbol_name_create) > 0 then
-				null; -- CS
+				symbol_rw.create_symbol (symbol_name_create, symbol_appearance, log_threshold => 0);
 
--- 				save_symbol_as; -- if symbol_name_save_as is empty nothing happens
+				-- optionally the symbol can be saved under a different name
+				save_symbol_as; -- if symbol_name_save_as is empty nothing happens
 
 			elsif length (symbol_name_open) > 0 then
 				symbol_rw.read_symbol (symbol_name_open, log_threshold => 0);
 
+				-- optionally the symbol can be saved under a different name				
 				save_symbol_as; -- if symbol_name_save_as is empty nothing happens
 			end if;
 			

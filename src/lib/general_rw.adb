@@ -138,23 +138,24 @@ package body general_rw is
 		keyword 	: in string;
 		parameters	: in string;
 		space 		: in boolean := false;
-		wrap		: in boolean := false) is 
+		wrap		: in boolean := false) is
+		use latin_1;
 		parameters_wrapped : string (1..parameters'length + 2);
 	begin -- write
 		if wrap then
-			parameters_wrapped := latin_1.quotation & parameters & latin_1.quotation;
+			parameters_wrapped := quotation & parameters & quotation;
 		end if;
 					
 		if wrap then
 			-- If wrapping required, a space is always between keyword and parameters
 			put_line (tab_depth * tab & keyword & latin_1.space & parameters_wrapped);
 		else
-			case space is
-				when true =>
+-- 			case space is
+-- 				when true =>
 					put_line (tab_depth * tab & keyword & latin_1.space & parameters);
-				when false =>
-					put_line (tab_depth * tab & keyword & parameters);
-			end case;
+-- 				when false =>
+-- 					put_line (tab_depth * tab & keyword & parameters);
+-- 			end case;
 		end if;
 	end write;	
 

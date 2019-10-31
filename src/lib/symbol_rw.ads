@@ -79,6 +79,12 @@ package symbol_rw is
 		SEC_PORT
 		);
 
+	procedure create_symbol (
+	-- Creates a symbol and stores it in container et_symbols.symbols.
+		symbol_name		: in type_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
+		appearance		: in type_appearance;
+		log_threshold	: in et_string_processing.type_log_level);
+	
 	procedure write_symbol ( 
 		symbol			: in type_symbol;
 		log_threshold	: in et_string_processing.type_log_level);

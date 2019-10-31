@@ -327,7 +327,7 @@ package pcb_rw is
 	procedure write_circle (cursor : in et_pcb.type_pcb_contour_circles.cursor);
 
 
-	type type_section_name_package is (
+	type type_section_name_package is ( -- CS rename to type_section 
 		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUTOUT_ZONE,
 		SEC_INIT,
