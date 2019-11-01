@@ -58,7 +58,8 @@ package submodules is
 
 	subtype type_submodule_edge_length is type_distance range 10.0 .. 1000.0;
 
-	keyword_size		: constant string := "size";
+	keyword_size	: constant string := "size";
+	keyword_file	: constant string := "file";
 	
 	type type_submodule_size is record
 		x, y : type_submodule_edge_length; -- size x/y of the box

@@ -41,7 +41,7 @@ with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.text_io;				use ada.text_io;
-with ada.tags;
+-- with ada.tags;
 
 with ada.directories;
 with ada.exceptions;
@@ -49,7 +49,6 @@ with ada.exceptions;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
--- with et_libraries;
 with material;
 with et_general;				use et_general;
 
@@ -63,16 +62,54 @@ with symbol_rw;					use symbol_rw;
 with pcb_rw;
 with conventions;
 with et_geometry;				use et_geometry;
-with et_text;					--use et_text;
+with et_text;
 with et_symbols;
 with et_devices;				use et_devices;
 with et_packages;				use et_packages;
 
 package body device_rw is
 
+	procedure create_device (
+	-- Creates a device and stores it in container et_devices.devices.
+		device_name		: in type_device_model_file.bounded_string; -- libraries/devices/7400.dev
+		appearance		: in et_symbols.type_appearance;
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_string_processing;
+		use type_devices;
+		use et_symbols;
+	begin
+		log (text => "creating device " & to_string (device_name) & " ...", level => log_threshold);
+		log_indentation_up;
+		log (text => "appearance " & to_string (appearance) & " ...", level => log_threshold);
+		
+		-- Test if device already exists. If already exists, issue warning and exit.
+		if contains (devices, device_name) then
+			log (WARNING, text => "device already exists -> skipped", level => log_threshold + 1);
+		else
+			case appearance is
+				when PCB =>
+					insert (
+						container	=> devices,
+						key			=> device_name,
+						new_item	=> (appearance => PCB, others => <>)
+						);
+
+				when VIRTUAL =>
+					insert (
+						container	=> devices,
+						key			=> device_name,
+						new_item	=> (appearance => VIRTUAL, others => <>)
+						);
+			end case;					
+		end if;
+
+		log_indentation_down;
+	end create_device;
+
+	
 	procedure save_device (
 	-- Saves the given device model in a file specified by name.
-		name			: in string; -- libraries/devices/resistor.dev
+		file_name		: in type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		device			: in type_device; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
@@ -129,16 +166,16 @@ package body device_rw is
 			write (keyword => keyword_position, parameters => position (unit.position));
 			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
 			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
-			write (keyword => keyword_file, parameters => to_string (unit.file));
+			write (keyword => keyword_symbol_file, parameters => to_string (unit.file));
 		end query_external_unit;
 		
 	begin -- save_device
-		log (text => name, level => log_threshold);
+		log (text => to_string (file_name), level => log_threshold);
 
 		create (
 			file 	=> file_handle,
 			mode	=> out_file,
-			name	=> name);
+			name	=> to_string (file_name));
 
 		set_output (file_handle);
 		
@@ -220,9 +257,9 @@ package body device_rw is
 		
 	end save_device;
 	
-	procedure read_device_file (
+	procedure read_device (
 	-- Opens the device and stores it in container devices.
-		file_name 		: in type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
+		file_name 		: in type_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_symbols;
@@ -237,20 +274,20 @@ package body device_rw is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
 		max_section_depth : constant positive := 6;
 		package stack is new general_rw.stack_lifo (
-			item	=> type_section_name_device,
+			item	=> type_section,
 			max 	=> max_section_depth);
 
-		function to_string (section : in type_section_name_device) return string is
+		function to_string (section : in type_section) return string is
 		-- Converts a section like SEC_VARIANT to a string "variant".
-			len : positive := type_section_name_device'image (section)'length;
+			len : positive := type_section'image (section)'length;
 		begin
-			return to_lower (type_section_name_device'image (section) (5..len));
+			return to_lower (type_section'image (section) (5..len));
 		end to_string;
 		
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		prefix				: type_device_name_prefix.bounded_string; -- T, IC
 		value				: type_value.bounded_string; -- BC548
-		appearance			: type_appearance; -- sch, sch_pcb
+		appearance			: type_appearance; -- virtual/pcb
 		partcode			: material.type_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
 		variant				: type_component_variant;
 		variant_name		: type_component_variant_name.bounded_string; -- N, D
@@ -802,7 +839,7 @@ package body device_rw is
 			-- If it is a header, the section name is pushed onto the sections stack.
 			-- If it is a footer, the latest section name is popped from the stack.
 				section_keyword	: in string; -- [UNIT
-				section			: in type_section_name_device) -- SEC_UNIT
+				section			: in type_section) -- SEC_UNIT
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1
@@ -1043,7 +1080,7 @@ package body device_rw is
 										expect_field_count (line, 2);
 										unit_external.add_level := to_add_level (f (line, 2));
 
-									elsif kw = keyword_file then -- file libraries/symbols/nand.sym
+									elsif kw = keyword_symbol_file then -- symbol_model libraries/symbols/nand.sym
 										expect_field_count (line, 2);
 										unit_external.file := to_file_name (f (line, 2));
 										
@@ -1486,6 +1523,6 @@ package body device_rw is
 			end if;
 			raise;
 
-	end read_device_file;
+	end read_device;
 	
 end device_rw;

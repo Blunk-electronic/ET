@@ -63,6 +63,9 @@ with pcb_rw;
 with et_symbols;
 with symbol_rw;
 
+with et_devices;
+with device_rw;
+
 procedure et is
 
 	conv_file_name_create	: conventions.type_conventions_file_name.bounded_string;
@@ -84,6 +87,11 @@ procedure et is
 	symbol_name_save_as		: et_symbols.type_symbol_model_file.bounded_string; -- the symbol to be saved as
 	symbol_appearance		: et_symbols.type_appearance := et_symbols.PCB; -- virtual/pcb. mostly pcb.
 	
+	device_name_create		: et_devices.type_device_model_file.bounded_string; -- the device to be created like libraries/devices/TL084.dev
+	device_name_open		: et_devices.type_device_model_file.bounded_string; -- the device to be opened
+	device_name_save_as		: et_devices.type_device_model_file.bounded_string; -- the device to be saved as
+	device_appearance		: et_symbols.type_appearance := et_symbols.PCB; -- virtual/pcb. mostly pcb.
+
 	script_name	: scripting.type_script_name.bounded_string;
 
 	dummy_name : constant string := "dummy";
@@ -102,20 +110,29 @@ procedure et is
 						& space & switch_import_project & equals
 						& space & switch_import_format & equals
 						& space & switch_conventions & equals
-						
+
+						-- project
 						& space & switch_native_project_create & equals
 						& space & switch_native_project_open & equals
 						& space & switch_native_project_save_as & equals
 
+						-- package
 						& space & switch_native_package_create -- no parameter
 						& space & switch_package_appearance & equals
 						& space & switch_native_package_open & equals
 						& space & switch_native_package_save_as & equals
 
+						-- symbol
 						& space & switch_native_symbol_create -- no parameter
 						& space & switch_symbol_appearance & equals
 						& space & switch_native_symbol_open & equals
 						& space & switch_native_symbol_save_as & equals
+
+						-- device
+						& space & switch_native_device_create -- no parameter
+						& space & switch_device_appearance & equals
+						& space & switch_native_device_open & equals
+						& space & switch_native_device_save_as & equals
 						
 						& space & switch_execute_script & equals
 					) is
@@ -192,6 +209,25 @@ procedure et is
 						log (text => arg & full_switch & space & parameter);
 						symbol_name_save_as := et_symbols.to_file_name (parameter);
 
+
+					-- device
+					elsif full_switch = switch_native_device_create then
+						log (text => arg & full_switch); -- no parameter
+						device_name_create := et_devices.to_file_name (dummy_name);
+
+					elsif full_switch = switch_device_appearance then -- virtual/pcb
+						log (text => arg & full_switch & space & parameter);
+						device_appearance := et_symbols.to_appearance (parameter); -- if not provided -> default used
+						
+					elsif full_switch = switch_native_device_open then
+						log (text => arg & full_switch & space & parameter);
+						device_name_open := et_devices.to_file_name (parameter); -- libraries/devices/TL084.dev
+
+					elsif full_switch = switch_native_device_save_as then
+						log (text => arg & full_switch & space & parameter);
+						device_name_save_as := et_devices.to_file_name (parameter);
+
+						
 					-- script
 					elsif full_switch = switch_execute_script then
 						log (text => arg & full_switch & space & parameter);
@@ -339,6 +375,18 @@ procedure et is
 		end if;
 	end;
 
+	procedure save_device_as is 
+		use et_devices.type_device_model_file;
+	begin
+		-- If device_name_save_as is empty nothing happens.
+		-- Otherwise the latest and only device in et_devices.devices is saved.
+		if length (device_name_save_as) > 0 then
+			device_rw.save_device (
+				file_name 		=> device_name_save_as,
+				device			=> et_devices.type_devices.last_element (et_devices.devices),
+				log_threshold	=> 0);
+		end if;
+	end;
 	
 	procedure process_commandline_arguments is
 		use et_project.type_project_name;
@@ -346,6 +394,7 @@ procedure et is
 		use conventions.type_conventions_file_name;
 		use et_packages.type_package_model_file;
 		use et_symbols.type_symbol_model_file;
+		use et_devices.type_device_model_file;
 		
 		procedure read_configuration_file is begin
 			if length (conv_file_name_use) > 0 then
@@ -412,6 +461,7 @@ procedure et is
 					et_project.save_project (project_name_save_as, log_threshold => 0);
 				end if;
 
+				
 			-- package
 			elsif length (package_name_create) > 0 then
 				pcb_rw.create_package (package_name_create, package_appearance, log_threshold => 0);
@@ -428,6 +478,7 @@ procedure et is
 				-- optionally the package can be saved under a different name
 				save_package_as; -- if package_name_save_as is empty nothing happens
 
+				
 			-- symbol
 			elsif length (symbol_name_create) > 0 then
 				symbol_rw.create_symbol (symbol_name_create, symbol_appearance, log_threshold => 0);
@@ -440,6 +491,22 @@ procedure et is
 
 				-- optionally the symbol can be saved under a different name				
 				save_symbol_as; -- if symbol_name_save_as is empty nothing happens
+
+
+			-- device
+			elsif length (device_name_create) > 0 then
+				device_rw.create_device (device_name_create, device_appearance, log_threshold => 0);
+
+				-- optionally the device can be saved under a different name
+				save_device_as; -- if device_name_save_as is empty nothing happens
+
+			elsif length (device_name_open) > 0 then
+				device_rw.read_device (device_name_open, log_threshold => 0);
+
+				-- optionally the device can be saved under a different name				
+				save_device_as; -- if device_name_save_as is empty nothing happens
+
+
 			end if;
 			
 		end if;

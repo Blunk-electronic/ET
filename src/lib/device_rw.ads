@@ -35,19 +35,13 @@
 --   history of changes:
 --
 
-with ada.containers;            use ada.containers;
-
-with et_schematic;
 with et_string_processing;
-with et_coordinates;
-
-with et_symbols;
 with et_devices;				use et_devices;
-with et_packages;				use et_packages;
+with et_symbols;
 
 package device_rw is
 
-	keyword_file				: constant string := "file";
+	keyword_symbol_file			: constant string := "symbol_model";
 	keyword_prefix				: constant string := "prefix";		
 	
 	section_symbol				: constant string := "[SYMBOL";
@@ -61,7 +55,7 @@ package device_rw is
 
 
 	
-	type type_section_name_device is (
+	type type_section is (
 		SEC_INIT,
 		SEC_VARIANTS,
 		SEC_VARIANT,
@@ -82,12 +76,18 @@ package device_rw is
 		SEC_UNITS_EXTERNAL
 		);
 
+	procedure create_device (
+	-- Creates a device and stores it in container et_devices.devices.
+		device_name		: in type_device_model_file.bounded_string; -- libraries/devices/7400.dev
+		appearance		: in et_symbols.type_appearance;
+		log_threshold	: in et_string_processing.type_log_level);
+	
 	procedure save_device (
-		name			: in string; -- libraries/devices/resistor.dev
+		file_name		: in type_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		device			: in type_device; -- the actual device model
 		log_threshold	: in et_string_processing.type_log_level);
 
-	procedure read_device_file (
+	procedure read_device (
 	-- Opens the device and stores it in container et_libraries.devices.
 		file_name 		: in type_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		log_threshold	: in et_string_processing.type_log_level);

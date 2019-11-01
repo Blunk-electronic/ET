@@ -195,6 +195,26 @@ Opening a symbol includes syntax checking. See the report for details.
 
 
 
+#### Creating an ET native device
+A device is the compound of symbol(s) and package(s).
+
+```sh
+$ et --create-device --device-appearance pcb --save-device-as tmp/TL084D.dev
+```
+
+```sh
+$ et --create-device --device-appearance virtual --save-device-as tmp/gnd.dev
+```
+
+Since the appearance has a default, it can be omitted:
+
+```sh
+$ et --create-device --device-appearance pcb --save-device-as tmp/TL084D.dev
+```
+
+
+
+
 
 #### Executing scripts
 ET has an internal script processor that reads and executes a script file. The scripting feature allows manipulating designs without GUI:

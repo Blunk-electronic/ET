@@ -190,7 +190,6 @@ package body symbol_rw is
 		end if;
 
 		log_indentation_down;
-
 	end create_symbol;
 	
 	procedure write_symbol ( 

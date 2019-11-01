@@ -3657,10 +3657,13 @@ package body et_kicad_to_native is
 				device_rw.save_device (
 					-- library name like: 
 					-- /home/user/et_projects/imported_from_kicad/blood_sample_analyzer/libraries/devices/__#__#lbr#bel_connector_and_jumper_FEMALE_01X06.dev
-					name	=> to_string (path) & gnat.directory_operations.dir_separator & to_string (key (device_cursor)),
+					file_name		=> to_file_name 
+						(
+						to_string (path) & gnat.directory_operations.dir_separator & to_string (key (device_cursor))
+						),
 
 					-- the device model itself:
-					device	=> element (device_cursor),
+					device			=> element (device_cursor),
 					log_threshold	=> log_threshold + 1); 
 			end save_device;
 

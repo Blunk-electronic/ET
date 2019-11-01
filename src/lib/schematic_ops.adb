@@ -3810,7 +3810,7 @@ package body schematic_ops is
 
 		-- Read the device file and store it in container et_libraries.devices.
 		-- If the device is already in et_libraries.devices, nothing happpens.
-		device_rw.read_device_file (
+		device_rw.read_device (
 			file_name		=> device_model, -- ../lbr/logic_ttl/7400.dev
 			log_threshold	=> log_threshold + 1);
 

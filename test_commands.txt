@@ -2,7 +2,11 @@ et --open-project submoduletest/ --script submoduletest/board.scr --save-project
 
 et --import-project hierarchy_1/ --import-format kicad_v4 --log-level 4
 
-
+et --create-package --package-appearance virtual --save-package-as dummy2.pac
 et --open-package ../ET_component_library/packages/S_0805.pac --save-package-as dummy.pac
 
+et --create-symbol --symbol-appearance pcb --save-symbol-as dummy.sym
 et --open-symbol ../ET_component_library/symbols/resistors/resistor_single.sym --save-symbol-as dummy.sym
+
+et --create-device --device-appearance virtual --save-device-as dummy.dev
+et --create-device --device-appearance pcb --save-device-as dummy.dev

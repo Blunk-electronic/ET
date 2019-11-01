@@ -2728,7 +2728,7 @@ package body et_project is
 					end if;
 
 					-- read the device model (like ../libraries/transistor/pnp.dev)
-					read_device_file (device.model, log_threshold + 2);
+					read_device (device.model, log_threshold + 2);
 
 					if device.appearance = PCB then
 						conventions.validate_partcode (
@@ -6700,6 +6700,7 @@ package body et_project is
 						case stack.parent is
 							when SEC_SUBMODULES =>
 								declare
+									use submodules;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -8192,10 +8193,13 @@ package body et_project is
 			save_device (
 				-- library name like: 
 				-- /home/user/ecad/blood_sample_analyzer/libraries/devices/bel_connector_and_jumper_FEMALE_01X06.dev
-				name	=> to_string (path) & gnat.directory_operations.dir_separator & to_string (key (device_cursor)),
+				file_name		=> to_file_name 
+					(
+					to_string (path) & gnat.directory_operations.dir_separator & to_string (key (device_cursor))
+					),
 
 				-- the device model itself:
-				device	=> element (device_cursor),
+				device			=> element (device_cursor),
 				log_threshold	=> log_threshold + 1); 
 		end save_device;
 
