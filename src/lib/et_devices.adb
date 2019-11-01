@@ -268,9 +268,9 @@ package body et_devices is
 	-- Tests if the given prefix is longer than allowed.
 		use et_string_processing;
 	begin
-		if prefix'length > device_name_prefix_length_max then
+		if prefix'length > prefix_length_max then
 			log (ERROR, "max. number of characters for device name prefix is" 
-				 & positive'image (device_name_prefix_length_max) & " !",
+				 & positive'image (prefix_length_max) & " !",
 				console => true);
 			raise constraint_error;
 		end if;
