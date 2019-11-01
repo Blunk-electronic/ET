@@ -72,7 +72,7 @@ package netlists is
 
 	-- For ERC of netlists the connected devices are modelled by this type:
 	type type_device_port_extended (direction : et_symbols.type_port_direction) is record
-		device			: type_device_name; -- IC4		
+		device			: type_name; -- IC4		
 		port			: et_symbols.type_port_name.bounded_string; -- CLOCK, CE, VDD, GND
 		characteristics	: et_symbols.type_port (direction); -- direction, sensitivity, ...
 		terminal		: et_packages.type_terminal_name.bounded_string; -- H4, 1, 16

@@ -299,7 +299,7 @@ package body et_kicad is
 		u : type_units_schematic.map;
 
 		procedure locate (
-			name		: in type_device_name;
+			name		: in type_name;
 			component	: in type_component_schematic) is
 		begin
 			-- copy the units of the component to the return value
@@ -339,7 +339,7 @@ package body et_kicad is
 	end check_prefix_characters;
 	
 	function to_component_reference (	
-	-- Converts a string like "IC303" to a composite type_device_name.
+	-- Converts a string like "IC303" to a composite type_name.
 	-- If allow_special_character_in_prefix is given true, the first character
 	-- is allowed to be a special character (like in #FLG01).
 	-- Raises constraint error if prefix contains invalid characters.
@@ -347,14 +347,14 @@ package body et_kicad is
 	-- Leading zeroes in the id are removed. R002 becomes R2.
 		text_in			: in string;
 		leading_hash	: in boolean := false
-		) return type_device_name is
+		) return type_name is
 		
 		use et_devices;
 
 		-- justify given text_in on the left
 		text_in_justified : string (1 .. text_in'length) := text_in;
 	
-		r : type_device_name := (
+		r : type_name := (
 				prefix 		=> type_prefix.to_bounded_string(""),
 				id 			=> 0,
 				id_width	=> 1);
@@ -445,7 +445,7 @@ package body et_kicad is
 
 	
 	function component_reference (cursor : in type_components_schematic.cursor) 
-		return type_device_name is
+		return type_name is
 	-- Returns the component reference where cursor points to.
 	begin
 		return type_components_schematic.key (cursor);
@@ -615,7 +615,7 @@ package body et_kicad is
 
 
 	procedure no_generic_model_found (
-		reference		: in type_device_name; -- IC303
+		reference		: in type_name; -- IC303
 		library			: in et_kicad_general.type_device_library_name.bounded_string; -- ../lib/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string) -- TRANSISTOR_NPN
 		is
@@ -778,7 +778,7 @@ package body et_kicad is
 		end if;
 	end validate_prefix;
 
-	procedure validate_prefix (reference : in type_device_name) is
+	procedure validate_prefix (reference : in type_name) is
 	-- Tests if the given reference has a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
 		use type_prefix;
@@ -1167,7 +1167,7 @@ package body et_kicad is
 		-- CS: exception handler
 	end to_degrees;
 
-	function to_power_flag (reference : in type_device_name) 
+	function to_power_flag (reference : in type_name) 
 		return type_power_flag is
 	-- If the given component reference is one that belongs to a "power flag" returns YES.
 		use type_prefix;
@@ -7365,7 +7365,7 @@ package body et_kicad is
 				use et_devices;
 				use et_string_processing;
 
-				reference					: type_device_name;	-- like IC5	
+				reference					: type_name;	-- like IC5	
 				appearance					: type_appearance := VIRTUAL; -- CS: why this default ?
 				generic_name_in_lbr			: type_component_generic_name.bounded_string; -- like TRANSISTOR_PNP
 
@@ -7608,7 +7608,7 @@ package body et_kicad is
 				-- The given reference serves to provide a helpful error message on the affected 
 				-- component in the schematic.
 					component 		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
-					reference 		: in type_device_name; -- the reference in the schematic like "R4"
+					reference 		: in type_name; -- the reference in the schematic like "R4"
 					log_threshold	: in et_string_processing.type_log_level)
 					return type_device_library_name.bounded_string is -- the full library name like "../libraries/resistors.lib"
 
@@ -7692,7 +7692,7 @@ package body et_kicad is
 				-- The given reference serves to provide a helpful error message on the affected 
 				-- component in the schematic.
 					component 		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
-					reference 		: in type_device_name; -- the reference in the schematic like "R4"
+					reference 		: in type_name; -- the reference in the schematic like "R4"
 					log_threshold 	: in type_log_level) 
 					return type_device_library_name.bounded_string is
 
@@ -7762,13 +7762,13 @@ package body et_kicad is
 
 				end full_name_of_component_library;
 
-				function remove_leading_hash (reference : in type_device_name) return
+				function remove_leading_hash (reference : in type_name) return
 				-- Removes from a reference like #PWR04 the leading hash character.
 				-- CS: This function should be applied on virtual components (such as power flags or power symbols) only.
 				-- The assumption is that their prefix always starts with a hash character.
-					type_device_name is
+					type_name is
 					use type_prefix;
-					reference_out : type_device_name := reference; -- to be returned -- like PWR04
+					reference_out : type_name := reference; -- to be returned -- like PWR04
 				begin
 					--log (text => "renaming " & to_string (reference_out));
 					--log (text => "length" & positive'image (length (reference_out.prefix)));
@@ -8180,7 +8180,7 @@ package body et_kicad is
 				-- to the list alternative_references.
 				
 					path	: et_string_processing.type_fields_of_line; -- 59F17F77 5A991798
-					ref		: type_device_name; -- #PWR03
+					ref		: type_name; -- #PWR03
 					unit	: type_unit_name.bounded_string; -- 1 -- CS is this really about unit names ?
 
 					path_segment : type_timestamp;
@@ -9170,7 +9170,7 @@ package body et_kicad is
 -- 	-- Returns the purpose of the given component in the given module.
 -- 	-- If no purpose specified for the component, an empty string is returned.
 -- 		module_name		: in et_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
--- 		reference		: in type_device_name; -- X701
+-- 		reference		: in type_name; -- X701
 -- 		log_threshold	: in et_string_processing.type_log_level)
 -- 		return et_libraries.type_component_purpose.bounded_string is
 -- 
@@ -9282,7 +9282,7 @@ package body et_kicad is
 		port_cursor : type_ports.cursor;
 	
 		procedure set_cursor (
-			name 	: in type_device_name;
+			name 	: in type_name;
 			ports	: in type_ports.list) is
 		begin
 			port_cursor := type_ports.first (ports);
@@ -9878,7 +9878,7 @@ package body et_kicad is
 
 		-- The component reference in the schematic (like R44 or IC34)
 		-- is tempoarily held here:
-		component_reference	: type_device_name;
+		component_reference	: type_name;
 	
 		-- This component cursor points to the library component being processed.
 		use type_components_library;
@@ -9919,7 +9919,7 @@ package body et_kicad is
 			-- NOTE: It is important first to rotate, then mirror (if required) and finally to move/offset it.
 
 				procedure add (
-					component	: in type_device_name;
+					component	: in type_name;
 					ports		: in out type_ports.list) is
 					use type_modules;
 					
@@ -10341,7 +10341,7 @@ package body et_kicad is
 			portlist_cursor : type_portlists.cursor := module.portlists.first;
 
 			procedure query_ports (
-				component	: in type_device_name;
+				component	: in type_name;
 				ports 		: in type_ports.list) is
 				port_cursor : type_ports.cursor := ports.first;
 				use type_ports;
@@ -10577,7 +10577,7 @@ package body et_kicad is
 					unit : type_units_library.cursor := component.units.first;
 
 					procedure query_units_sch (
-						component_name	: in type_device_name;
+						component_name	: in type_name;
 						component 		: in type_component_schematic) is
 						use type_units_schematic;
 						unit_cursor : type_units_schematic.cursor := component.units.first;
@@ -10981,7 +10981,7 @@ package body et_kicad is
 	-- CS: This assumption may not apply for all CAE systems. Currently we
 	-- consider only kicad. In other cases the "inserted" check (see below) 
 	-- must be enabled via an argument.
-		reference		: in type_device_name;
+		reference		: in type_name;
 		component		: in type_component_schematic;
 		log_threshold 	: in et_string_processing.type_log_level) is
 		
@@ -11017,13 +11017,13 @@ package body et_kicad is
 	
 	procedure add_unit (
 	-- Adds a unit to the given commponent.
-		reference		: in type_device_name;
+		reference		: in type_name;
 		unit_name		: in et_devices.type_unit_name.bounded_string;
 		unit 			: in type_unit_schematic;
 		log_threshold	: in et_string_processing.type_log_level) is
 
 		procedure add (
-			reference	: in type_device_name;
+			reference	: in type_name;
 			component	: in out type_component_schematic) is
 
 			inserted	: boolean := false;
@@ -11521,7 +11521,7 @@ package body et_kicad is
 					
 					procedure query_ports (
 					-- Query ports. Exit prematurely once a port was found.
-						component	: in type_device_name;
+						component	: in type_name;
 						ports 		: in type_ports.list) is
 						port_cursor : type_ports.cursor := ports.first;
 						use type_ports;
@@ -11775,7 +11775,7 @@ package body et_kicad is
 				flag_orphaned : boolean := true;
 				
 				procedure query_ports (
-					component 	: in type_device_name;
+					component 	: in type_name;
 					ports 		: in type_ports.list) is
 					port_cursor : type_ports.cursor := ports.first;
 					use type_ports;
@@ -12407,7 +12407,7 @@ package body et_kicad is
 
 						procedure query_ports (
 						-- Tests the ports of the given component if they sit on the current net segment.
-							component	: in type_device_name;
+							component	: in type_name;
 							ports		: in type_ports.list) is
 							use type_ports;
 							port_cursor : type_ports.cursor := ports.first; -- points to the first port of the component
@@ -12422,7 +12422,7 @@ package body et_kicad is
 	
 									procedure locate_port (
 									-- Locates the port of the component
-										component	: in type_device_name;
+										component	: in type_name;
 										ports		: in out type_ports.list) is
 
 										procedure mark_it (port : in out type_port) is
@@ -12650,7 +12650,7 @@ package body et_kicad is
 
 	
 	function terminal_count (
-		reference		: in type_device_name;
+		reference		: in type_name;
 		log_threshold	: in et_string_processing.type_log_level)
 		return et_devices.type_terminal_count is
 	-- Returns the number of terminals of the given component reference.
@@ -12961,7 +12961,7 @@ package body et_kicad is
 	function connected_net (
 	-- Returns the name of the net connected with the given component and terminal.
 		module			: in type_submodule_name.bounded_string; -- nucleo_core
-		reference		: in type_device_name;	-- IC45
+		reference		: in type_name;	-- IC45
 		terminal		: in et_packages.type_terminal_name.bounded_string; -- E14
 		log_threshold	: in et_string_processing.type_log_level)		
 		return type_net_name.bounded_string is
@@ -13574,7 +13574,7 @@ package body et_kicad is
 -- 			portlist : type_portlists.cursor := module.portlists.first;
 -- 
 -- 			procedure count (
--- 				component	: in type_device_name;
+-- 				component	: in type_name;
 -- 				ports		: in type_ports.list) is
 -- 				port : type_ports.cursor := ports.first;
 -- 				use type_ports;

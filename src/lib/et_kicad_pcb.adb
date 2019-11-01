@@ -3006,7 +3006,7 @@ package body et_kicad_pcb is
 		return type_layer_meaning'value (meaning);
 	end to_layer_meaning;
 
-	function default_component_reference return type_device_name is
+	function default_component_reference return type_name is
 	-- Returns a default device name with an empty prefix and and id 0.
 	-- Used to initialize a component reference.	
 		use et_devices;
@@ -3284,7 +3284,7 @@ package body et_kicad_pcb is
 		package_appearance 	: type_package_appearance := REAL;
 
 		package_text 		: type_text_package;
-		package_reference 	: type_device_name := default_component_reference;
+		package_reference 	: type_name := default_component_reference;
 		package_value 		: et_devices.type_value.bounded_string;
 
 		package_time_stamp	: type_timestamp; -- temporarily storage of package timestamp
@@ -7348,7 +7348,7 @@ package body et_kicad_pcb is
 			-- Returns for the given component reference and terminal the name of the attached net.
 			-- The information required is sotred in the terminals of a package.
 			-- Example: (pad 1 smd rect (at -2.925 -3.81) (size 2 0.6) (layers F.Cu F.Paste F.Mask) (net 1 /IN))
-				reference	: in type_device_name;	-- IC45
+				reference	: in type_name;	-- IC45
 				terminal	: in et_packages.type_terminal_name.bounded_string) -- G7
 				return type_net_name.bounded_string is
 				net : type_net_name.bounded_string; -- to be returned
@@ -7413,7 +7413,7 @@ package body et_kicad_pcb is
 
 				use type_packages_board;
 				package_cursor		: type_packages_board.cursor;
-				package_reference	: type_device_name;
+				package_reference	: type_name;
 				package_position	: et_pcb_coordinates.type_package_position;
 
 				text_placeholders	: et_packages.type_text_placeholders;
@@ -7669,7 +7669,7 @@ package body et_kicad_pcb is
 
 				procedure update_component_in_schematic (
 				-- Updates the component in the schematic with position, text placeholders
-					comp_ref	: in type_device_name;
+					comp_ref	: in type_name;
 					component	: in out et_kicad.type_component_schematic) is
 				begin
 					component.position := package_position;
@@ -7684,7 +7684,7 @@ package body et_kicad_pcb is
 					placeholders : type_text_placeholders; -- to be returned
 
 					procedure query_placeholders (
-						comp_reference	: in type_device_name;
+						comp_reference	: in type_name;
 						comp_package	: in type_package_board) is
 
 						use et_packages.pac_text_placeholders;
@@ -7798,12 +7798,12 @@ package body et_kicad_pcb is
 						net_name_out : type_net_name.bounded_string; -- to be returned
 
 						package_cursor	: type_packages_board.cursor := board.packages.first;
-						package_name	: type_device_name;
+						package_name	: type_name;
 						terminal_found	: boolean := false;
 						terminal_name	: et_packages.type_terminal_name.bounded_string;
 
 						procedure query_terminals (
-							package_name	: in type_device_name;
+							package_name	: in type_name;
 							packge			: in type_package_board) is
 							use type_terminals;
 							terminal_cursor : type_terminals.cursor := packge.terminals.first;

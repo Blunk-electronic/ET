@@ -1167,7 +1167,7 @@ package body et_project is
 			use et_symbols;
 			use et_schematic.type_devices;
 
-			procedure query_units (device_name : in type_device_name; device : in et_schematic.type_device) is
+			procedure query_units (device_name : in type_name; device : in et_schematic.type_device) is
 				use et_schematic.type_units;
 				unit_cursor : type_units.cursor := device.units.first;
 
@@ -1211,7 +1211,7 @@ package body et_project is
 			end query_units;
 
 			procedure query_placeholders (
-				device_name : in type_device_name;
+				device_name : in type_name;
 				device 		: in et_schematic.type_device) is
 				use et_pcb_coordinates;
 				use et_packages;
@@ -2166,7 +2166,7 @@ package body et_project is
 		-- The temporarily device will exist where "device" points at:
 		device					: access et_schematic.type_device;
 		
-		device_name				: type_device_name; -- C12
+		device_name				: type_name; -- C12
 		device_model			: type_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
 		device_value			: type_value.bounded_string; -- 470R
 		device_appearance		: et_schematic.type_appearance_schematic;
@@ -5464,7 +5464,7 @@ package body et_project is
 								declare
 									use et_devices;
 									kw : string 	:= f (line, 1);
-									device_name		: type_device_name; -- R1
+									device_name		: type_name; -- R1
 									device			: access assembly_variants.type_device;
 									device_cursor	: assembly_variants.type_devices.cursor;
 									
@@ -8421,7 +8421,7 @@ package body et_project is
 	-- Returns true if the given module provides the given device.
 	-- The module being searched in must be in the rig already.						
 		module	: in type_modules.cursor;
-		device	: in type_device_name)
+		device	: in type_name)
 		return boolean is
 
 		device_found : boolean := false; -- to be returned
@@ -8579,7 +8579,7 @@ package body et_project is
 	-- - The device must exist in the module.
 		module	: in type_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
-		device	: in type_device_name)
+		device	: in type_name)
 		return boolean is
 
 		result : boolean := false; -- to be returned
@@ -8644,7 +8644,7 @@ package body et_project is
 	--   otherwise the return is no_element.
 		module	: in type_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
-		device	: in type_device_name)
+		device	: in type_name)
 		return assembly_variants.type_devices.cursor is
 
 		cursor : assembly_variants.type_devices.cursor; -- to be returned;

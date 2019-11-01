@@ -481,7 +481,7 @@ package et_project is
 	-- Returns true if the given module provides the given device.
 	-- The module being searched in must be in the rig already.						
 		module	: in type_modules.cursor;
-		device	: in type_device_name)
+		device	: in type_name)
 		return boolean;
 	
 	function exists (
@@ -517,7 +517,7 @@ package et_project is
 	-- - The device must exist in the module.
 		module	: in type_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
-		device	: in type_device_name)
+		device	: in type_name)
 		return boolean;
 
 	function alternative_device (
@@ -531,7 +531,7 @@ package et_project is
 	--   otherwise the return is no_element.
 		module	: in type_modules.cursor; -- the module like motor_driver
 		variant	: in et_general.type_variant_name.bounded_string; -- low_cost				
-		device	: in type_device_name)
+		device	: in type_name)
 		return assembly_variants.type_devices.cursor;
 
 	function alternative_submodule (
@@ -552,7 +552,7 @@ package et_project is
 
 -- 	function package_model (
 -- 		module	: in type_modules.cursor; -- the module like motor_driver
--- 		device	: in et_libraries.type_device_name; -- IC40
+-- 		device	: in et_libraries.type_name; -- IC40
 -- 		return et_libraries.type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 							   
 end et_project;

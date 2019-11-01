@@ -73,7 +73,7 @@ package body assembly_variants is
 	end;
 
 	function is_mounted (
-		device	: in type_device_name; -- IC1
+		device	: in type_name; -- IC1
 		variant	: in type_variants.cursor)
 		return boolean is
 	-- Returns true if the given device is to be mounted according to given assembly variant.

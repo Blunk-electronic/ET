@@ -59,7 +59,7 @@ with et_devices;				use et_devices;
 package numbering is
 
 	type type_device is record
-		name	: type_device_name; -- R56, IC4
+		name	: type_name; -- R56, IC4
 		unit	: et_devices.type_unit_name.bounded_string; -- 1, A, B, ...
 		done	: boolean := false; -- indicates whether the device has been renumbered
 	end record;

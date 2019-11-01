@@ -91,7 +91,7 @@ package board_ops is
 	-- Moves a device in the board layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC45
+		device_name		: in type_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in geometry.type_point; -- x/y
 		log_threshold	: in type_log_level);
@@ -100,7 +100,7 @@ package board_ops is
 	-- Rotates a device in the board layout.
 	-- Leaves x/y and face (top/bottom) as it is.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC45
+		device_name		: in type_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_pcb_coordinates.type_rotation; -- 90
 		log_threshold	: in type_log_level);
@@ -110,7 +110,7 @@ package board_ops is
 	-- Leaves x/y and rotation as it is.
 	-- Warns operator if device already on desired face of board.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC45
+		device_name		: in type_name; -- IC45
 		face			: in type_face; -- top/bottom
 		log_threshold	: in type_log_level);
 
@@ -141,7 +141,7 @@ package board_ops is
 	function locate_device (
 	-- Returns a cursor to the requested device in the given module.
 		module_cursor	: in et_project.type_modules.cursor;
-		device_name		: in type_device_name)
+		device_name		: in type_name)
 		return et_schematic.type_devices.cursor;
 	
 	function terminal_position (
@@ -191,7 +191,7 @@ package board_ops is
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
-		device			: in type_device_name;
+		device			: in type_name;
 		terminal		: in type_terminal_name.bounded_string;
 		direction		: in type_rotation;
 		length			: in geometry.type_distance_positive;
@@ -207,7 +207,7 @@ package board_ops is
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
-		device			: in type_device_name;
+		device			: in type_name;
 		terminal		: in type_terminal_name.bounded_string;
 		direction		: in type_rotation;
 		axis			: in type_axis_2d;
@@ -223,7 +223,7 @@ package board_ops is
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
-		device			: in type_device_name;
+		device			: in type_name;
 		terminal		: in type_terminal_name.bounded_string;
 		end_point		: in geometry.type_point;
 		log_threshold	: in type_log_level);
@@ -238,7 +238,7 @@ package board_ops is
 		net_name		: in type_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		width			: in type_track_width;
-		device			: in type_device_name;
+		device			: in type_name;
 		terminal		: in type_terminal_name.bounded_string;
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;

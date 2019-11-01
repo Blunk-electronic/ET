@@ -78,7 +78,7 @@ package assembly_variants is
 
 	-- Variants of devices are collected in a map.
 	package type_devices is new indefinite_ordered_maps (
-		key_type		=> type_device_name, -- something like "IC43"
+		key_type		=> type_name, -- something like "IC43"
  		element_type	=> type_device);
 
 	use type_devices;
@@ -111,7 +111,7 @@ package assembly_variants is
 		element_type	=> type_variant);
 
 	function is_mounted (
-		device	: in type_device_name; -- IC1
+		device	: in type_name; -- IC1
 		variant	: in type_variants.cursor)
 		return boolean;
 	-- Returns true if the given device is to be mounted according to given assembly variant.
