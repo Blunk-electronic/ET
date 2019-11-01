@@ -59,8 +59,8 @@ with et_packages;				use et_packages;
 
 package body et_devices is
 
-	function to_string (purpose : in type_device_purpose.bounded_string) return string is begin
-		return type_device_purpose.to_string (purpose);
+	function to_string (purpose : in type_purpose.bounded_string) return string is begin
+		return type_purpose.to_string (purpose);
 	end to_string;
 
 	function purpose_length_valid (purpose : in string) return boolean is 
@@ -80,11 +80,11 @@ package body et_devices is
 	function purpose_characters_valid (
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
-		purpose		: in type_device_purpose.bounded_string;
+		purpose		: in type_purpose.bounded_string;
 		characters	: in character_set := purpose_characters) 
 		return boolean is
 		use et_string_processing;
-		use type_device_purpose;
+		use type_purpose;
 		invalid_character_position : natural := 0;
 	begin
 		invalid_character_position := index (
@@ -116,13 +116,13 @@ package body et_devices is
 	-- Tests the given purpose for length and invalid characters.
 		purpose 					: in string;
 		error_on_invalid_character	: in boolean := true)
-		return type_device_purpose.bounded_string is
+		return type_purpose.bounded_string is
 
-		purpose_out : type_device_purpose.bounded_string; -- to be returned
+		purpose_out : type_purpose.bounded_string; -- to be returned
 	begin
 		-- Test length of given purpose:
 		if purpose_length_valid (purpose) then
-			purpose_out := type_device_purpose.to_bounded_string (purpose);
+			purpose_out := type_purpose.to_bounded_string (purpose);
 		else
 			purpose_invalid (purpose);
 		end if;

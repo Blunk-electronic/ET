@@ -324,7 +324,7 @@ package body et_project is
 	function compare_connectors (left, right : in type_connector) return boolean is
 	-- Returns true if left connector comes before right connector.
 	-- Returns false if connectors are equal.
-		use et_devices.type_device_purpose;
+		use et_devices.type_purpose;
 		use type_module_instance_name;
 		r : boolean := false; -- to be returned
 	begin
@@ -1303,7 +1303,7 @@ package body et_project is
 
 				function purpose return string is 
 					use et_devices;
-					use type_device_purpose;
+					use type_purpose;
 				begin
 					if length (element (device_cursor).purpose) > 0 then
 						return space & keyword_purpose & space &
@@ -2186,7 +2186,7 @@ package body et_project is
 		device_units			: et_schematic.type_units.map; -- PWR, A, B, ...
 		
 		device_partcode			: material.type_partcode.bounded_string;
-		device_purpose			: et_devices.type_device_purpose.bounded_string;
+		device_purpose			: et_devices.type_purpose.bounded_string;
 		device_variant			: et_devices.type_component_variant_name.bounded_string; -- D, N
 		device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
 		device_flipped			: et_pcb.type_flipped := et_pcb.flipped_default;
@@ -2749,7 +2749,7 @@ package body et_project is
 					-- clean up temporarily variables for next device
 					device_model	:= to_file_name ("");
 					device_value	:= type_value.to_bounded_string ("");
-					device_purpose	:= type_device_purpose.to_bounded_string ("");
+					device_purpose	:= type_purpose.to_bounded_string ("");
 					device_partcode := material.type_partcode.to_bounded_string ("");
 					device_variant	:= to_component_variant_name ("");
 
@@ -7749,11 +7749,11 @@ package body et_project is
 				instance_name := to_instance_name ("");
 			end clear_module_instance;
 			
-			purpose_A, purpose_B : et_devices.type_device_purpose.bounded_string; -- power_in, power_out
+			purpose_A, purpose_B : et_devices.type_purpose.bounded_string; -- power_in, power_out
 			instance_A, instance_B : type_module_instance_name.bounded_string; -- DRV_1, PWR
 
 			procedure clear_connector is begin
-				purpose_A := et_devices.type_device_purpose.to_bounded_string ("");
+				purpose_A := et_devices.type_purpose.to_bounded_string ("");
 				purpose_A := purpose_B;
 				instance_A := to_instance_name ("");
 				instance_B := instance_A;
@@ -7796,7 +7796,7 @@ package body et_project is
 						rig			: in out type_rig) is
 						connection_inserted : boolean;
 						connection_cursor : type_module_connectors.cursor;
-						use et_devices.type_device_purpose;
+						use et_devices.type_purpose;
 						use et_general.type_module_instance_name;
 					begin
 						-- If NONE of the four elements that make a module connection is specified,

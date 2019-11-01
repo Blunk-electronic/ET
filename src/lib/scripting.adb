@@ -1118,7 +1118,7 @@ package body scripting is
 							declare
 								value : type_value.bounded_string; -- 470R
 								partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-								purpose : type_device_purpose.bounded_string; -- brightness_control
+								purpose : type_purpose.bounded_string; -- brightness_control
 							begin
 								-- validate value
 								value := to_value (f (7));
@@ -1527,7 +1527,7 @@ package body scripting is
 						when NOUN_PURPOSE =>
 							declare
 								use et_schematic;
-								purpose : type_device_purpose.bounded_string; -- brightness_control
+								purpose : type_purpose.bounded_string; -- brightness_control
 							begin
 								purpose := to_purpose (f (6));
 								

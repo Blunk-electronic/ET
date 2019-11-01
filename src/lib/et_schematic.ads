@@ -153,7 +153,7 @@ package et_schematic is
 			when et_symbols.PCB => 
 				value		: et_devices.type_value.bounded_string; -- 470R
 				partcode	: material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-				purpose		: et_devices.type_device_purpose.bounded_string; -- brightness_control
+				purpose		: et_devices.type_purpose.bounded_string; -- brightness_control
 				variant		: et_devices.type_component_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position

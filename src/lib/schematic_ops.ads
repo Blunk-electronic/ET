@@ -176,7 +176,7 @@ package schematic_ops is
 	-- Sets the purpose of a device.
 		module_name			: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
-		purpose				: in type_device_purpose.bounded_string; -- brightness_control
+		purpose				: in type_purpose.bounded_string; -- brightness_control
 		log_threshold		: in type_log_level);
 
 	procedure set_partcode (
@@ -534,7 +534,7 @@ package schematic_ops is
 		device			: in type_device_name; -- R1
 		value			: in type_value.bounded_string; -- 220R
 		partcode		: in material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
-		purpose			: in type_device_purpose.bounded_string := type_device_purpose.to_bounded_string (""); -- set temperature
+		purpose			: in type_purpose.bounded_string := type_purpose.to_bounded_string (""); -- set temperature
 		log_threshold	: in type_log_level);
 
 	procedure unmount_device (
