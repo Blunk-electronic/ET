@@ -318,7 +318,7 @@ package body et_symbols is
 		A : positive := index (level_string, "_") + 1; -- the position after the first underscore
 		B : positive := level_string'length;
 	begin
-		return latin_1.space & level_string (A .. B);
+		return level_string (A .. B);
 	end;
 
 	function to_power_level (level : in string) return type_power_level is 
@@ -390,13 +390,6 @@ package body et_symbols is
 	begin
 		return type_symbols.find (symbols, symbol);
 	end locate;
-
-
-
-	
-
-
-
 
 
 	
