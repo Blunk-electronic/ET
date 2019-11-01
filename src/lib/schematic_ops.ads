@@ -582,7 +582,7 @@ package schematic_ops is
 	procedure renumber_devices (
 	-- Renumbers devices according to the sheet number.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		step_width		: in type_device_name_index;
+		step_width		: in type_name_index;
 		log_threshold	: in type_log_level);
 
 	procedure autoset_device_name_offsets (
@@ -606,7 +606,7 @@ package schematic_ops is
 	procedure apply_offset (
 	-- Adds the offset to the device index of the given device_name.
 		device_name		: in out type_device_name; -- IC3
-		offset			: in type_device_name_index; -- 100
+		offset			: in type_name_index; -- 100
 		log_threshold	: in et_string_processing.type_log_level);
 	
 	procedure make_boms (

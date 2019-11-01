@@ -301,13 +301,13 @@ package body et_devices is
 
 	
 
-	function to_string (index : in type_device_name_index) return string is begin
-		return latin_1.space & trim (type_device_name_index'image (index), left);
-	end to_string;
+	function to_string (index : in type_name_index) return string is begin
+		return latin_1.space & trim (type_name_index'image (index), left);
+	end;
 
-	function to_device_name_index (index : in string) return type_device_name_index is begin
-		return type_device_name_index'value (index);
-	end to_device_name_index;
+	function to_device_name_index (index : in string) return type_name_index is begin
+		return type_name_index'value (index);
+	end;
 
 	function to_device_name (
 	-- Converts a string like "IC303" to a composite type_device_name.
@@ -475,7 +475,7 @@ package body et_devices is
 		return name.prefix;
 	end;
 
-	function index (name : in type_device_name) return type_device_name_index is begin
+	function index (name : in type_device_name) return type_name_index is begin
 	-- Returns the index of the given device name.
 		return name.id;
 	end;
@@ -485,7 +485,7 @@ package body et_devices is
 	-- If width is not provided, then the width of the index is calculated automatically. In case of R23 the width is 2.
 	-- If width is provided, then it is set accordingly.
 		prefix	: in type_prefix.bounded_string; 	-- R, C, L
-		index	: in type_device_name_index;					-- 1, 20, ..
+		index	: in type_name_index;					-- 1, 20, ..
 		width	: in type_device_name_index_width := type_device_name_index_width'first) -- the number of digits
 		return type_device_name is
 		device_name : type_device_name; -- to be returned
@@ -519,7 +519,7 @@ package body et_devices is
 	-- Adds to the device index the given offset. 
 	-- Example: given name is R4, given offset is 100. Result R104.
 		name	: in out type_device_name;
-		offset	: in type_device_name_index) is
+		offset	: in type_name_index) is
 	begin
 		name := to_device_name (
 			prefix	=> prefix (name),

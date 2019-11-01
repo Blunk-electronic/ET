@@ -167,20 +167,19 @@ package et_devices is
 -- DEVICE NAMES
 	keyword_device : constant string := "device";
 	
-	type type_device_name_element is (PREFIX, ID);
-	device_name_prefix_default : constant type_prefix.bounded_string := type_prefix.to_bounded_string ("?");
+	prefix_default : constant type_prefix.bounded_string := type_prefix.to_bounded_string ("?");
 
-	subtype type_device_name_index is natural range natural'first .. 99_999; -- R1..R99999, IC1..IC99999 should be enough
-	device_name_index_default : constant type_device_name_index := 0;
+	subtype type_name_index is natural range natural'first .. 99_999; -- R1..R99999, IC1..IC99999 should be enough
+	device_name_index_default : constant type_name_index := 0;
 
-	function to_string (index : in type_device_name_index) return string;
-	function to_device_name_index (index : in string) return type_device_name_index;
+	function to_string (index : in type_name_index) return string;
+	function to_device_name_index (index : in string) return type_name_index;
 
 	subtype type_device_name_index_width is positive range positive'first .. 5; -- see number of digits of type_device_name_index
 	
 	type type_device_name is record -- CS: should be private
-		prefix		: type_prefix.bounded_string := device_name_prefix_default; -- like "IC"
-		id			: type_device_name_index := device_name_index_default; -- like "303"
+		prefix		: type_prefix.bounded_string := prefix_default; -- like "IC"
+		id			: type_name_index := device_name_index_default; -- like "303"
 		id_width	: type_device_name_index_width; -- the number of digits of the id. 3 in case of an id of 303 -- CS default ?
 		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
 	end record;
@@ -207,12 +206,12 @@ package et_devices is
 	function prefix (name : in type_device_name) return type_prefix.bounded_string;
 	-- Returns the prefix of the given device name.
 
-	function index (name : in type_device_name) return type_device_name_index;
+	function index (name : in type_device_name) return type_name_index;
 	-- Returns the index of the given device name.
 
 	function to_device_name (
 		prefix	: in type_prefix.bounded_string; 	-- R, C, L
-		index	: in type_device_name_index;					-- 1, 20, ..
+		index	: in type_name_index;				-- 1, 20, ..
 		width	: in type_device_name_index_width := type_device_name_index_width'first) -- the number of digits
 		return type_device_name;
 
@@ -220,7 +219,7 @@ package et_devices is
 	-- Adds to the device index the given offset. 
 	-- Example: given name is R4, given offset is 100. Result R104.
 		name	: in out type_device_name;
-		offset	: in type_device_name_index);
+		offset	: in type_name_index);
 
 	
 	

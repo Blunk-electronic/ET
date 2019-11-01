@@ -3284,7 +3284,7 @@ package body schematic_ops is
 
 			-- We start the search with index 1. Not 0 because this would result in a zero based
 			-- numbering order. Index zero is allowed but not automatically choosen.
-			index_expected : type_device_name_index := type_device_name_index'first + 1;
+			index_expected : type_name_index := type_name_index'first + 1;
 
 			gap_found : boolean := false; -- goes true once a gap has been found
 		begin -- search_gap
@@ -10587,7 +10587,7 @@ package body schematic_ops is
 	procedure renumber_devices (
 	-- Renumbers devices according to the sheet number.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		step_width		: in type_device_name_index;
+		step_width		: in type_name_index;
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -10612,8 +10612,8 @@ package body schematic_ops is
 			use et_coordinates;
 			sheet_before, sheet_now : type_sheet := type_sheet'first;
 
-			index_on_sheet : type_device_name_index := type_device_name_index'first;
-			device_index : type_device_name_index;
+			index_on_sheet : type_name_index := type_name_index'first;
+			device_index : type_name_index;
 
 			procedure update_index is begin
 			-- Detects when the sheet number changes. In this case
@@ -10624,7 +10624,7 @@ package body schematic_ops is
 					index_on_sheet := index_on_sheet + 1;
 				else -- sheet has changed
 					sheet_before := sheet_now;
-					index_on_sheet := type_device_name_index'first + 1;
+					index_on_sheet := type_name_index'first + 1;
 				end if;
 			end update_index;
 
@@ -10679,7 +10679,7 @@ package body schematic_ops is
 						update_index;
 						
 						-- step width times sheet number: like 100 * 4 = 400
-						device_index := step_width * type_device_name_index (sheet_now);
+						device_index := step_width * type_name_index (sheet_now);
 
 						-- 400 plus index on sheet: like 407
 						device_index := device_index + index_on_sheet;
@@ -10789,7 +10789,7 @@ package body schematic_ops is
 			use et_schematic.type_devices;
 
 			device_cursor : et_schematic.type_devices.cursor := module.devices.first;
-			index_current : type_device_name_index;
+			index_current : type_name_index;
 		begin -- query_devices
 			while device_cursor /= et_schematic.type_devices.no_element loop
 
@@ -10813,8 +10813,8 @@ package body schematic_ops is
 				log (WARNING, "no devices found in module " &
 					 enclose_in_quotes (to_string (module_name)) & " !");
 
-				index_range.lowest := type_device_name_index'first;
-				index_range.highest := type_device_name_index'first;
+				index_range.lowest := type_name_index'first;
+				index_range.highest := type_name_index'first;
 
 			end if;
 
@@ -10880,9 +10880,9 @@ package body schematic_ops is
 		-- It increases each time a submodule is entered by procedure set_offset.
 		-- The increase is the highest index used by that submodule.
 		-- The next submodule will then get an offset of index_max + 1.
-		index_max : type_device_name_index := 0;
+		index_max : type_name_index := 0;
 
-		procedure increase_index_max (index : in type_device_name_index) is begin
+		procedure increase_index_max (index : in type_name_index) is begin
 			index_max := index_max + index;
 		end;
 		
@@ -11147,7 +11147,7 @@ package body schematic_ops is
 					new_item	=> (
 							name				=> submod_name,
 							instance			=> submod_instance,
-							device_names_offset	=> type_device_name_index'first
+							device_names_offset	=> type_name_index'first
 							), -- templates/CLOCK_GENERATOR OSC1 100
 					position	=> tree_cursor
 					);
@@ -11224,7 +11224,7 @@ package body schematic_ops is
 	procedure apply_offset (
 	-- Adds the offset to the device index of the given device_name.
 		device_name		: in out type_device_name; -- IC3
-		offset			: in type_device_name_index; -- 100
+		offset			: in type_name_index; -- 100
 		log_threshold	: in et_string_processing.type_log_level) is
 		device_name_instance : type_device_name;
 	begin
@@ -11269,7 +11269,7 @@ package body schematic_ops is
 -- 		-- If offset is zero, we are dealing with the top module.
 -- 			module_cursor	: in type_modules.cursor;
 -- 			variant			: in type_variant_name.bounded_string;
--- 			offset			: in type_device_name_index) is
+-- 			offset			: in type_name_index) is
 -- 			
 -- 			procedure query_devices (
 -- 				module_name	: in type_module_name.bounded_string;
@@ -11483,7 +11483,7 @@ package body schematic_ops is
 -- 			module_name 	: type_module_name.bounded_string; -- motor_driver
 -- 			parent_name 	: type_module_name.bounded_string; -- water_pump
 -- 			module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
--- 			offset			: type_device_name_index;
+-- 			offset			: type_name_index;
 -- 
 -- 			use assembly_variants.type_submodules;
 -- 			alt_submod : assembly_variants.type_submodules.cursor;
@@ -11667,7 +11667,7 @@ package body schematic_ops is
 			-- If offset is zero, we are dealing with the top module.
 				module_cursor	: in type_modules.cursor;
 				variant			: in type_variant_name.bounded_string;
-				offset			: in type_device_name_index) is
+				offset			: in type_name_index) is
 				
 				procedure query_devices (
 					module_name	: in type_module_name.bounded_string;
@@ -11884,7 +11884,7 @@ package body schematic_ops is
 				module_name 	: type_module_name.bounded_string; -- motor_driver
 				parent_name 	: type_module_name.bounded_string; -- water_pump
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-				offset			: type_device_name_index;
+				offset			: type_name_index;
 
 				use assembly_variants.type_submodules;
 				alt_submod : assembly_variants.type_submodules.cursor;
@@ -12308,7 +12308,7 @@ package body schematic_ops is
 				module_cursor	: in et_project.type_modules.cursor;
 				variant			: in type_variant_name.bounded_string;
 				prefix			: in et_general.type_net_name.bounded_string; -- DRV3/OSC1/
-				offset			: in type_device_name_index) is
+				offset			: in type_name_index) is
 
 				use assembly_variants.type_variants;
 				variant_cursor : assembly_variants.type_variants.cursor;
@@ -12469,7 +12469,7 @@ package body schematic_ops is
 				module_name 	: type_module_name.bounded_string; -- motor_driver
 				parent_name 	: type_module_name.bounded_string; -- water_pump
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-				offset			: type_device_name_index;
+				offset			: type_name_index;
 
 				use assembly_variants.type_submodules;
 				alt_submod : assembly_variants.type_submodules.cursor;

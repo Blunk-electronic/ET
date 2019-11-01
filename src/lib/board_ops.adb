@@ -575,7 +575,7 @@ package body board_ops is
 			-- The submodule position in the parent module is added to the device position.
 				module_cursor		: in type_modules.cursor;
 				variant				: in type_variant_name.bounded_string;
-				offset				: in type_device_name_index;
+				offset				: in type_name_index;
 				position_in_board	: in type_position) -- submod pos. in parent
 			is
 
@@ -807,7 +807,7 @@ package body board_ops is
 				module_name 	: type_module_name.bounded_string; -- motor_driver
 				parent_name 	: type_module_name.bounded_string; -- water_pump
 				module_instance	: et_general.type_module_instance_name.bounded_string; -- MOT_DRV_3
-				offset			: et_devices.type_device_name_index;
+				offset			: et_devices.type_name_index;
 
 				use assembly_variants.type_submodules;
 				alt_submod : assembly_variants.type_submodules.cursor;
