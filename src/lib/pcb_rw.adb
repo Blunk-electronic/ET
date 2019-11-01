@@ -1911,14 +1911,14 @@ package body pcb_rw is
 		max_section_depth : constant positive := 7; -- incl. section init
 
 		package stack is new general_rw.stack_lifo (
-			item	=> type_section_name_package,
+			item	=> type_section,
 			max 	=> max_section_depth);
 
-		function to_string (section : in type_section_name_package) return string is
+		function to_string (section : in type_section) return string is
 		-- Converts a section like SEC_KEEPOUT to a string "keepout".
-			len : positive := type_section_name_package'image (section)'length;
+			len : positive := type_section'image (section)'length;
 		begin
-			return to_lower (type_section_name_package'image (section) (5..len));
+			return to_lower (type_section'image (section) (5..len));
 		end to_string;
 
 	-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
@@ -3243,7 +3243,7 @@ package body pcb_rw is
 			-- If it is a header, the section name is pushed onto the sections stack.
 			-- If it is a footer, the latest section name is popped from the stack.
 				section_keyword	: in string; -- [POLYGON
-				section			: in type_section_name_package) -- SEC_FILL_ZONE
+				section			: in type_section) -- SEC_FILL_ZONE
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1

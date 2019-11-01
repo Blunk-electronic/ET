@@ -35,6 +35,9 @@
 --   history of changes:
 --
 
+--   do do:
+--	  - separate package related stuff in separate package
+
 with ada.containers;            use ada.containers;
 
 with et_string_processing;
@@ -327,7 +330,7 @@ package pcb_rw is
 	procedure write_circle (cursor : in et_pcb.type_pcb_contour_circles.cursor);
 
 
-	type type_section_name_package is ( -- CS rename to type_section 
+	type type_section is ( -- of a package
 		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUTOUT_ZONE,
 		SEC_INIT,

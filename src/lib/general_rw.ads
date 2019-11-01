@@ -36,7 +36,6 @@
 --
 
 with ada.characters;			--use ada.characters
-with ada.characters.latin_1;
 with ada.containers;            use ada.containers;
 
 with et_string_processing;
@@ -123,7 +122,6 @@ package general_rw is
 
 
 
--- GENERICS
 	
 	generic
 		max : positive;
