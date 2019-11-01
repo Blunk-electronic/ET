@@ -1405,7 +1405,7 @@ package body scripting is
 									schematic_ops.renumber_devices
 										(
 										module_name 	=> module,
-										step_width		=> to_device_name_index (f (5)), -- 100
+										step_width		=> to_index (f (5)), -- 100
 										log_threshold	=> log_threshold + 1
 										);
 

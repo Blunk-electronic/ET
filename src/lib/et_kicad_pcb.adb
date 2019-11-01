@@ -3013,7 +3013,7 @@ package body et_kicad_pcb is
 	begin
 		return ((
 			prefix		=> type_prefix.to_bounded_string (""),
-			id			=> device_name_index_default,
+			id			=> name_index_default,
 			id_width	=> 1));
 	end default_component_reference;
 	

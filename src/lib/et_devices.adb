@@ -305,7 +305,7 @@ package body et_devices is
 		return latin_1.space & trim (type_name_index'image (index), left);
 	end;
 
-	function to_device_name_index (index : in string) return type_name_index is begin
+	function to_index (index : in string) return type_name_index is begin
 		return type_name_index'value (index);
 	end;
 
@@ -485,8 +485,8 @@ package body et_devices is
 	-- If width is not provided, then the width of the index is calculated automatically. In case of R23 the width is 2.
 	-- If width is provided, then it is set accordingly.
 		prefix	: in type_prefix.bounded_string; 	-- R, C, L
-		index	: in type_name_index;					-- 1, 20, ..
-		width	: in type_device_name_index_width := type_device_name_index_width'first) -- the number of digits
+		index	: in type_name_index;				-- 1, 20, ..
+		width	: in type_index_width := type_index_width'first) -- the number of digits
 		return type_device_name is
 		device_name : type_device_name; -- to be returned
 	begin
@@ -501,7 +501,7 @@ package body et_devices is
 
 		-- If width IS provided AND wider than the just calculated width,
 		-- then the calculated width is overwritten.
-		if width /= type_device_name_index_width'first then
+		if width /= type_index_width'first then
 
 			-- If width is smaller or equal the calculated width nothing happens.
 			-- Otherwise width is set according to the provided width:
