@@ -119,11 +119,22 @@ Opening a project includes syntax checking. See the report for details.
 
 #### Creating an ET native package (or footprint)
 Packages can be real or virtual. Virtual components are things like testpoints or edge connectors.
+By default a real package will be created.
 The newly created package should be saved right away.
 To create a native package drawing like 'S_0805.pac' run this command: 
 
 ```sh
-$ et --create-package libraries/packages/S_0805.pac --appearance real --save-package-as tmp/dummy_S_0805.pac
+$ et --create-package --package-appearance real --save-package-as tmp/dummy_S_0805.pac
+```
+
+```sh
+$ et --create-package --package-appearance virtual --save-package-as tmp/dummy_connector.pac
+```
+
+Since the appearance has a default, it can be omitted:
+
+```sh
+$ et --create-package --save-package-as tmp/dummy_S_0805.pac
 ```
 
 
@@ -148,12 +159,25 @@ Opening a package includes syntax checking. See the report for details.
 A symbol is an abstraction of a component in the schematic. 
 Symbols can represent a virtual component such as a GND-symbol
 or something real like a resistor that is mounted on the PCB.
-The newly created symbols should be saved right away.
-To create a native symbolg like 'opamp.sym' run this command: 
+By default a pcb-type symbol will be created.
+The newly created symbol should be saved right away.
+To create a native symbol like 'opamp.sym' run this command: 
 
 ```sh
-$ et --create-symbol libraries/symbols/opamp.sym --appearance pcb --save-package-as tmp/dummy_opamp.sym
+$ et --create-symbol --symbol-appearance pcb --save-symbol-as tmp/dummy_opamp.sym
 ```
+
+```sh
+$ et --create-symbol --symbol-appearance virtual --save-symbol-as tmp/gnd.sym
+```
+
+Since the appearance has a default, it can be omitted:
+
+```sh
+$ et --create-symbol --save-symbol-as tmp/dummy_opamp.sym
+```
+
+
 
 #### Opening an ET native symbol
 To open a native symbol drawing like 'opamp.sym' run this command: 
@@ -165,7 +189,7 @@ $ et --open-symbol libraries/symbols/opamp.sym
 The symbol can also be saved under a different name at a different place:
 
 ```sh
-$ et --open-symbol libraries/symbols/opamp.sym --save-symbol-as tmp/dummy_opam.sym
+$ et --open-symbol libraries/symbols/opamp.sym --save-symbol-as tmp/dummy_opamp.sym
 ```
 Opening a symbol includes syntax checking. See the report for details.
 

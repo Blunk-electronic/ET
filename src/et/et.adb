@@ -36,11 +36,9 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with ada.integer_text_io;		use ada.integer_text_io;
 with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.latin_1;
 
-with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.exceptions; 			use ada.exceptions;
  
 with ada.command_line;			use ada.command_line;
@@ -51,15 +49,10 @@ with ada.directories;			use ada.directories;
 
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
-with et_coordinates;
-with et_packages;
-with et_schematic;
-with et_schematic_sheets;
 with et_import;
 with et_export;
 with conventions;
 with et_kicad;
-with et_kicad_pcb;
 with et_kicad_to_native;
 with et_project;
 with scripting;
@@ -89,43 +82,45 @@ procedure et is
 	symbol_name_create		: et_symbols.type_symbol_model_file.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
 	symbol_name_open		: et_symbols.type_symbol_model_file.bounded_string; -- the symbol to be opened
 	symbol_name_save_as		: et_symbols.type_symbol_model_file.bounded_string; -- the symbol to be saved as
-	symbol_appearance		: et_symbols.type_appearance; -- CS default
+	symbol_appearance		: et_symbols.type_appearance := et_symbols.PCB; -- virtual/pcb. mostly pcb.
 	
 	script_name	: scripting.type_script_name.bounded_string;
+
+	dummy_name : constant string := "dummy";
 	
 	procedure get_commandline_arguments is
-		use et_schematic;
-		use et_project;
-
+		use ada.characters.latin_1;
+		
 		arg : constant string := ("argument: -");
-		space : character renames latin_1.space;
+		equals : character renames equals_sign;
 	begin
 		loop 
 			case getopt (switch_version -- FIND THE SWITCH STRINGS IN ET_GENERAL !!!
-						& latin_1.space & switch_help -- no parameter
-						& latin_1.space & switch_make_default_conv & latin_1.equals_sign
-						& latin_1.space & switch_log_level & latin_1.equals_sign
-						& latin_1.space & switch_import_project & latin_1.equals_sign
-						& latin_1.space & switch_import_format & latin_1.equals_sign
-						& latin_1.space & switch_conventions & latin_1.equals_sign
+						& space & switch_help -- no parameter
+						& space & switch_make_default_conv & equals
+						& space & switch_log_level & equals
+						& space & switch_import_project & equals
+						& space & switch_import_format & equals
+						& space & switch_conventions & equals
 						
-						& latin_1.space & switch_native_project_create & latin_1.equals_sign
-						& latin_1.space & switch_native_project_open & latin_1.equals_sign
-						& latin_1.space & switch_native_project_save_as & latin_1.equals_sign
+						& space & switch_native_project_create & equals
+						& space & switch_native_project_open & equals
+						& space & switch_native_project_save_as & equals
 
-						& latin_1.space & switch_native_package_create & latin_1.equals_sign
-						& latin_1.space & switch_package_appearance & latin_1.equals_sign
-						& latin_1.space & switch_native_package_open & latin_1.equals_sign						
-						& latin_1.space & switch_native_package_save_as & latin_1.equals_sign
+						& space & switch_native_package_create -- no parameter
+						& space & switch_package_appearance & equals
+						& space & switch_native_package_open & equals
+						& space & switch_native_package_save_as & equals
 
-						& latin_1.space & switch_native_symbol_create & latin_1.equals_sign
-						& latin_1.space & switch_native_symbol_open & latin_1.equals_sign						
-						& latin_1.space & switch_native_symbol_save_as & latin_1.equals_sign
+						& space & switch_native_symbol_create -- no parameter
+						& space & switch_symbol_appearance & equals
+						& space & switch_native_symbol_open & equals
+						& space & switch_native_symbol_save_as & equals
 						
-						& latin_1.space & switch_execute_script & latin_1.equals_sign
+						& space & switch_execute_script & equals
 					) is
 
-				when latin_1.hyphen => -- which is a '-'
+				when hyphen => -- which is a '-'
 					if full_switch = switch_version then
 						put_line (system_name & " version " & version);
 						
@@ -134,7 +129,7 @@ procedure et is
 
 					elsif full_switch = switch_import_project then
 						log (text => arg & full_switch & space & strip_directory_separator (parameter));
-						project_name_import := et_project.type_project_name.to_bounded_string (parameter);
+						project_name_import := et_project.to_project_name (parameter);
 
 					elsif full_switch = switch_import_format then
 						log (text => arg & full_switch & space & parameter);
@@ -165,12 +160,12 @@ procedure et is
 
 					-- package
 					elsif full_switch = switch_native_package_create then
-						log (text => arg & full_switch & space & parameter);
-						package_name_create := et_packages.to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
+						log (text => arg & full_switch); -- no parameter
+						package_name_create := et_packages.to_file_name (dummy_name);
 
 					elsif full_switch = switch_package_appearance then -- virtual/real
 						log (text => arg & full_switch & space & parameter);
-						package_appearance := et_packages.to_appearance (parameter);
+						package_appearance := et_packages.to_appearance (parameter); -- if not provided -> default used
 						
 					elsif full_switch = switch_native_package_open then
 						log (text => arg & full_switch & space & parameter);
@@ -182,12 +177,12 @@ procedure et is
 
 					-- symbol
 					elsif full_switch = switch_native_symbol_create then
-						log (text => arg & full_switch & space & parameter);
-						symbol_name_create := et_symbols.to_file_name (parameter); -- libraries/symbols/nand.sym
+						log (text => arg & full_switch); -- no parameter
+						symbol_name_create := et_symbols.to_file_name (dummy_name);
 
-					elsif full_switch = switch_symbol_appearance then -- virtual, pcb
+					elsif full_switch = switch_symbol_appearance then -- virtual/pcb
 						log (text => arg & full_switch & space & parameter);
-						symbol_appearance := et_symbols.to_appearance (parameter);
+						symbol_appearance := et_symbols.to_appearance (parameter); -- if not provided -> default used
 						
 					elsif full_switch = switch_native_symbol_open then
 						log (text => arg & full_switch & space & parameter);
@@ -257,7 +252,6 @@ procedure et is
 
 	procedure import_project is
 	-- As a result of the import, a native project is created in the work_directory (ET/...).
-		use et_schematic;
 		use et_project.type_project_name;
 		use et_import;
 	begin
