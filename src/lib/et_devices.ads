@@ -326,9 +326,7 @@ package et_devices is
 	function to_string (package_variant : in type_variant_name.bounded_string) return string;
 	-- converts a type_variant_name to a string.
 	
-	function to_component_variant_name (variant_name : in string) 
-		return type_variant_name.bounded_string;
-	-- converts a string to a variant name
+	function to_name (variant_name : in string) return type_variant_name.bounded_string;
 
 	procedure check_variant_name_length (variant_name : in string);
 	-- tests if the given variant name is not longer than allowed
@@ -352,14 +350,14 @@ package et_devices is
 
 
 	
-	type type_component_variant is record -- CS rename to type_package_variant
+	type type_variant is record
 		package_model		: type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		terminal_port_map	: type_terminal_port_map.map; -- which port is connected with with terminal
 	end record;
 
-	package type_component_variants is new ordered_maps ( -- CS rename to type_package_variants
+	package pac_variants is new ordered_maps (
 		key_type 		=> type_variant_name.bounded_string, -- D, N
-		element_type 	=> type_component_variant);
+		element_type 	=> type_variant);
 
 	type type_terminal is record
 		name	: type_terminal_name.bounded_string; -- H7
@@ -398,7 +396,7 @@ package et_devices is
 			when PCB => 
 				value		: type_value.bounded_string; -- 74LS00
 				--partcode	: type_component_partcode.bounded_string;
-				variants	: type_component_variants.map;
+				variants	: pac_variants.map;
 				
 		end case;
 

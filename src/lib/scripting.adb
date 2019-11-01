@@ -380,7 +380,7 @@ package body scripting is
 														)),
 											rotation => to_rotation (f (9))
 											),
-										variant			=> to_component_variant_name (""),
+										variant			=> to_name (""),
 										log_threshold	=> log_threshold + 1
 										);
 
@@ -399,7 +399,7 @@ package body scripting is
 														)),
 											rotation		=> to_rotation (f (9))
 											),
-										variant			=> to_component_variant_name (f (10)),
+										variant			=> to_name (f (10)),
 										log_threshold	=> log_threshold + 1
 										);
 

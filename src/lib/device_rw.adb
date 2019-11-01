@@ -116,12 +116,12 @@ package body device_rw is
 		use et_symbols;
 		file_handle : ada.text_io.file_type;
 
-		use type_component_variants;
-		variant_cursor : type_component_variants.cursor;
+		use pac_variants;
+		variant_cursor : pac_variants.cursor;
 		
 		procedure write_variant (
 			packge	: in type_variant_name.bounded_string;
-			variant	: in type_component_variant) is
+			variant	: in type_variant) is
 			use type_terminal_port_map;	
 
 			procedure write_terminal (terminal_cursor : in type_terminal_port_map.cursor) is begin
@@ -200,7 +200,7 @@ package body device_rw is
 				section_mark (section_variants, HEADER);
 
 				variant_cursor := device.variants.first;
-				while variant_cursor /= type_component_variants.no_element loop
+				while variant_cursor /= pac_variants.no_element loop
 					section_mark (section_variant, HEADER);
 					write (keyword => keyword_name, parameters => to_string (key (variant_cursor)));
 
@@ -289,9 +289,9 @@ package body device_rw is
 		value				: type_value.bounded_string; -- BC548
 		appearance			: type_appearance; -- virtual/pcb
 		partcode			: material.type_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
-		variant				: type_component_variant;
+		variant				: type_variant;
 		variant_name		: type_variant_name.bounded_string; -- N, D
-		variants			: type_component_variants.map;
+		variants			: pac_variants.map;
 		terminal_port_map	: type_terminal_port_map.map;
 
 		procedure insert_terminal (line : in type_fields_of_line) is -- terminal 14 unit 5 VCC
@@ -353,9 +353,9 @@ package body device_rw is
 		end insert_terminal;
 
 		procedure insert_variant is
-			use type_component_variants;
+			use pac_variants;
 			inserted : boolean;
-			position : type_component_variants.cursor;
+			position : pac_variants.cursor;
 		begin
 			check_variant_name_characters (variant_name);
 
@@ -973,7 +973,7 @@ package body device_rw is
 									if kw = keyword_name then -- name D
 										expect_field_count (line, 2);
 										check_variant_name_length (f (line, 2));
-										variant_name := to_component_variant_name (f (line,2));
+										variant_name := to_name (f (line,2));
 										log (text => "variant " & to_string (variant_name), level => log_threshold + 1);
 										
 									elsif kw = keyword_package_model then -- package_model libraries/packages/S_SO14.pac

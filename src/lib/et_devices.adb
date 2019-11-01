@@ -580,13 +580,11 @@ package body et_devices is
 	
 	function to_string (package_variant : in type_variant_name.bounded_string) return string is begin
 		return type_variant_name.to_string (package_variant);
-	end to_string;
+	end;
 
-	function to_component_variant_name (variant_name : in string) 
-		return type_variant_name.bounded_string is
-	begin
+	function to_name (variant_name : in string) return type_variant_name.bounded_string is begin
 		return type_variant_name.to_bounded_string (variant_name);
-	end to_component_variant_name;
+	end;
 
 	procedure check_variant_name_length (variant_name : in string) is
 	-- tests if the given variant name is not longer than allowed
@@ -680,7 +678,7 @@ package body et_devices is
 			device_name	: in type_device_model_file.bounded_string;
 			device		: in type_device) is
 		begin
-			if type_component_variants.contains (device.variants, variant) then
+			if pac_variants.contains (device.variants, variant) then
 				result := true;
 			end if;
 		end;
@@ -713,10 +711,10 @@ package body et_devices is
 		procedure query_variants (
 			device_name	: in type_device_model_file.bounded_string;
 			device		: in type_device) is
-			use type_component_variants;
-			variant_cursor : type_component_variants.cursor;
+			use pac_variants;
+			variant_cursor : pac_variants.cursor;
 		begin
-			variant_cursor := type_component_variants.find (device.variants, variant);
+			variant_cursor := pac_variants.find (device.variants, variant);
 			package_model := element (variant_cursor).package_model;
 		end;
 

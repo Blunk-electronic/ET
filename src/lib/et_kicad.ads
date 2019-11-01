@@ -487,7 +487,7 @@ package et_kicad is
 			when et_symbols.PCB => 
 				package_filter	: type_package_filter.set := type_package_filter.empty_set;
 				datasheet		: type_component_datasheet.bounded_string;
-				variants		: et_devices.type_component_variants.map;
+				variants		: et_devices.pac_variants.map;
 				
 		end case;
 

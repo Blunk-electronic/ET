@@ -1297,7 +1297,7 @@ package body et_project is
 
 			procedure query_devices (
 				variant_name	: in et_general.type_variant_name.bounded_string;
-				variant			: in type_variant) is
+				variant			: in assembly_variants.type_variant) is
 				use assembly_variants.type_devices;
 				device_cursor : assembly_variants.type_devices.cursor := variant.devices.first;
 
@@ -1345,7 +1345,7 @@ package body et_project is
 
 			procedure query_submodules (
 				variant_name	: in et_general.type_variant_name.bounded_string;
-				variant			: in type_variant) is
+				variant			: in assembly_variants.type_variant) is
 				use assembly_variants;
 				use assembly_variants.type_submodules;
 				submodule_cursor : assembly_variants.type_submodules.cursor := variant.submodules.first;
@@ -2622,18 +2622,18 @@ package body et_project is
 							model	: in type_device_model_file.bounded_string; -- libraries/devices/7400.dev
 							dev_lib	: in et_devices.type_device) -- a device in the library 
 							is
-							use type_component_variants;
-							variant_cursor : type_component_variants.cursor;
+							use pac_variants;
+							variant_cursor : pac_variants.cursor;
 							use ada.directories;
 						begin -- query_variants
 							-- Locate the variant (specified by the device in the module) in
 							-- the device model.
-							variant_cursor := type_component_variants.find (
+							variant_cursor := pac_variants.find (
 								container	=> dev_lib.variants,
 								key			=> device.variant); -- the variant name from the module !
 
 							-- The variant should be there. Otherwise abort.
-							if variant_cursor = type_component_variants.no_element then
+							if variant_cursor = pac_variants.no_element then
 								log (ERROR, "variant " & to_string (device.variant) &
 									" not available in device model " & to_string (model) & " !", console => true);
 								raise constraint_error;
@@ -2751,7 +2751,7 @@ package body et_project is
 					device_value	:= type_value.to_bounded_string ("");
 					device_purpose	:= type_purpose.to_bounded_string ("");
 					device_partcode := material.type_partcode.to_bounded_string ("");
-					device_variant	:= to_component_variant_name ("");
+					device_variant	:= to_name ("");
 
 					log_indentation_down;
 				end insert_device;						
@@ -7012,7 +7012,7 @@ package body et_project is
 									elsif kw = keyword_variant then -- variant S_0805, N, D
 										expect_field_count (line, 2);
 										check_variant_name_length (f (line, 2));
-										device_variant := to_component_variant_name (f (line, 2));
+										device_variant := to_name (f (line, 2));
 
 									elsif kw = keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
 										expect_field_count (line, 2);
@@ -7416,7 +7416,7 @@ package body et_project is
 
 				procedure query_submodules (
 					variant_name	: in et_general.type_variant_name.bounded_string;
-					variant			: in type_variant) is
+					variant			: in assembly_variants.type_variant) is
 					use type_submodules;
 					submod_cursor : type_submodules.cursor := variant.submodules.first;
 					submod_name : type_module_instance_name.bounded_string; -- CLK_GENERATOR
@@ -8593,7 +8593,7 @@ package body et_project is
 
 			procedure query_devices (
 				variant_name	: in et_general.type_variant_name.bounded_string;
-				variant			: in type_variant) is
+				variant			: in assembly_variants.type_variant) is
 				use assembly_variants.type_devices;
 				device_cursor : assembly_variants.type_devices.cursor;
 			begin
@@ -8658,7 +8658,7 @@ package body et_project is
 
 			procedure query_devices (
 				variant_name	: in et_general.type_variant_name.bounded_string;
-				variant			: in type_variant) is
+				variant			: in assembly_variants.type_variant) is
 				use assembly_variants.type_devices;
 			begin
 				cursor := find (variant.devices, device);
@@ -8708,7 +8708,7 @@ package body et_project is
 
 			procedure query_submodules (
 				variant_name	: in et_general.type_variant_name.bounded_string;
-				variant			: in type_variant) is
+				variant			: in assembly_variants.type_variant) is
 				use assembly_variants.type_submodules;
 			begin
 				cursor := find (variant.submodules, submod);

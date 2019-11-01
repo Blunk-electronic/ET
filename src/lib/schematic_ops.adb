@@ -3508,13 +3508,13 @@ package body schematic_ops is
 		return et_packages.type_text_placeholders is
 		use et_packages;
 		use et_devices.type_devices;
-		use type_component_variants;
+		use pac_variants;
 		placeholders		: et_packages.type_text_placeholders; -- to be returned
 
 		-- fetch the package variants available for the given device:
-		variants_available	: type_component_variants.map := element (device).variants;
+		variants_available	: pac_variants.map := element (device).variants;
 		
-		variant_cursor		: type_component_variants.cursor;
+		variant_cursor		: pac_variants.cursor;
 		package_model		: type_package_model_file.bounded_string; -- ../lbr/smd/SO15.pac
 
 		use et_packages;		
@@ -3524,7 +3524,7 @@ package body schematic_ops is
 	begin -- placeholders_of_package
 		
 		-- locate the given variant in the device:
-		variant_cursor := type_component_variants.find (variants_available, variant);
+		variant_cursor := pac_variants.find (variants_available, variant);
 
 		-- get the package model name:
 		package_model := element (variant_cursor).package_model; -- ../lbr/smd/SO15.pac
@@ -9914,7 +9914,7 @@ package body schematic_ops is
 
 			procedure assign_description (
 				name		: in et_general.type_variant_name.bounded_string;
-				variant		: in out type_variant) is
+				variant		: in out assembly_variants.type_variant) is
 			begin
 				variant.description := description;
 			end assign_description;
@@ -9986,7 +9986,7 @@ package body schematic_ops is
 
 			procedure insert_device (
 				name		: in et_general.type_variant_name.bounded_string;
-				variant		: in out type_variant) is
+				variant		: in out assembly_variants.type_variant) is
 				use assembly_variants.type_devices;
 				cursor : assembly_variants.type_devices.cursor;
 				inserted : boolean;
@@ -10077,7 +10077,7 @@ package body schematic_ops is
 
 			procedure insert_device (
 				name		: in et_general.type_variant_name.bounded_string;
-				variant		: in out type_variant) is
+				variant		: in out assembly_variants.type_variant) is
 				use assembly_variants.type_devices;
 				cursor : assembly_variants.type_devices.cursor;
 				inserted : boolean;
@@ -10160,7 +10160,7 @@ package body schematic_ops is
 
 			procedure delete_device (
 				name		: in et_general.type_variant_name.bounded_string;
-				variant		: in out type_variant) is
+				variant		: in out assembly_variants.type_variant) is
 				use assembly_variants.type_devices;
 				cursor : assembly_variants.type_devices.cursor;
 			begin
@@ -10242,7 +10242,7 @@ package body schematic_ops is
 
 			procedure mount (
 				name		: in et_general.type_variant_name.bounded_string; -- low_cost (parent module)
-				variant		: in out type_variant) is
+				variant		: in out assembly_variants.type_variant) is
 				use assembly_variants.type_submodules;
 				cursor : type_submodules.cursor;
 			begin
@@ -10337,7 +10337,7 @@ package body schematic_ops is
 
 			procedure remove (
 				name		: in et_general.type_variant_name.bounded_string; -- low_cost (parent module)
-				variant		: in out type_variant) is
+				variant		: in out assembly_variants.type_variant) is
 				use assembly_variants.type_submodules;
 				cursor : type_submodules.cursor;
 			begin
@@ -12049,7 +12049,6 @@ package body schematic_ops is
 	function port_properties (
 	-- Returns properties of the given device port in module indicated by module_cursor.
 	-- Properties are things like: terminal name, direction, sensitivity, power level, ...
-	-- See et_libraries.type_port for detail.
 	-- The device must exist in the module and must be real. Run intergrity check
 	-- in case exception occurs here.
 		module_cursor	: in type_modules.cursor; -- motor_driver
@@ -12078,11 +12077,11 @@ package body schematic_ops is
 			procedure query_variants (
 				model	: in type_device_model_file.bounded_string;
 				device	: in et_devices.type_device) is
-				variant_cursor : type_component_variants.cursor;
+				variant_cursor : pac_variants.cursor;
 
 				procedure query_ports (
 					variant_name	: in et_devices.type_variant_name.bounded_string;
-					variant			: in type_component_variant) is
+					variant			: in et_devices.type_variant) is
 					use type_terminal_port_map;
 					terminal_cursor : type_terminal_port_map.cursor := variant.terminal_port_map.first;
 					use type_port_name;
@@ -12098,9 +12097,9 @@ package body schematic_ops is
 				end query_ports;
 				
 			begin -- query_variants
-				variant_cursor := type_component_variants.find (device.variants, variant);
+				variant_cursor := pac_variants.find (device.variants, variant);
 
-				type_component_variants.query_element (
+				pac_variants.query_element (
 					position	=> variant_cursor,
 					process		=> query_ports'access);
 				

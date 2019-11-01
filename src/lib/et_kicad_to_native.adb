@@ -3395,12 +3395,12 @@ package body et_kicad_to_native is
 					device_name	: in et_devices.type_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
 					device		: in out et_devices.type_device) is
 
-					use et_devices.type_component_variants;
-					variant_cursor : et_devices.type_component_variants.cursor := device.variants.first;
+					use et_devices.pac_variants;
+					variant_cursor : et_devices.pac_variants.cursor := device.variants.first;
 
 					procedure rename (
 						variant_name	: in et_devices.type_variant_name.bounded_string; -- N, D, ...
-						variant			: in out et_devices.type_component_variant) is
+						variant			: in out et_devices.type_variant) is
 					begin -- rename
 						variant.package_model := (rename_package_model (variant.package_model)); -- ../../lbr/transistors.pretty/S_0805
 
@@ -3411,9 +3411,9 @@ package body et_kicad_to_native is
 					
 				begin -- rename_package_model_in_variants
 					-- Loop in variants and rename the package names.
-					while variant_cursor /= et_devices.type_component_variants.no_element loop
+					while variant_cursor /= et_devices.pac_variants.no_element loop
 
-						et_devices.type_component_variants.update_element (
+						et_devices.pac_variants.update_element (
 							container	=> device.variants,
 							position	=> variant_cursor,
 							process		=> rename'access);

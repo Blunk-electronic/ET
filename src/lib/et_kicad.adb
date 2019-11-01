@@ -2218,7 +2218,7 @@ package body et_kicad is
 
 								package_filter	=> type_package_filter.empty_set,
 								datasheet		=> type_component_datasheet.to_bounded_string (content (field_datasheet)),
-								variants		=> type_component_variants.empty_map
+								variants		=> pac_variants.empty_map
 								)
 							);
 
@@ -2881,11 +2881,11 @@ package body et_kicad is
 						comp_name	: in type_component_generic_name.bounded_string;
 						component	: in out type_component_library) is
 
-						use type_component_variants;
+						use pac_variants;
 						use type_terminal_port_map;
 
 						tmp_variant_name : et_devices.type_variant_name.bounded_string; -- temporarily used for building the variant name
-						tmp_variants : type_component_variants.map; -- temporarily used for building the variant
+						tmp_variants : pac_variants.map; -- temporarily used for building the variant
 
 						full_package_library_name : type_package_library_name.bounded_string;
 					begin
@@ -2895,7 +2895,7 @@ package body et_kicad is
 								-- The name of the default variant is the package
 								-- name itself (instead of an empty string or a string like "default"):
 								check_variant_name_length (to_string (package_name (content (field_package)))); -- S_SO14
-								tmp_variant_name := to_component_variant_name (to_string (package_name (content (field_package)))); -- S_SO14
+								tmp_variant_name := to_name (to_string (package_name (content (field_package)))); -- S_SO14
 								check_variant_name_characters (tmp_variant_name);
 
 								-- Find the library where the given package is stored in.
@@ -3342,21 +3342,21 @@ package body et_kicad is
 				component 		: in out type_component_library) is
 
 				use type_component_package_name;
-				use type_component_variants;
+				use pac_variants;
 				use et_devices.type_variant_name;
 
 				-- This cursor points to the package variant being queryied.
-				variant_cursor : type_component_variants.cursor := component.variants.first;
+				variant_cursor : pac_variants.cursor := component.variants.first;
 
 				-- If a new package variant is to be built, it is temporarily stored here:
-				new_variant : type_component_variant;
+				new_variant : type_variant;
 			
 			begin -- query_variants
 				log (text => "querying package variants ...", level => log_threshold + 2);
 				log_indentation_up;
 
 				-- Loop through package variants:
-				while variant_cursor /= type_component_variants.no_element loop
+				while variant_cursor /= pac_variants.no_element loop
 
 					-- From the library and package name we can reason the variant name.
 					-- So if both the given library and package name match, the variant name
@@ -3381,7 +3381,7 @@ package body et_kicad is
 				end loop;
 
 				-- If no suitable package variant has been found, a new one must be created.
-				if variant_cursor = type_component_variants.no_element then
+				if variant_cursor = pac_variants.no_element then
 					
 					-- Package variant not defined in library. Make sure
 					-- the terminal_port_map (there is only one) can be applied 
@@ -3418,9 +3418,9 @@ package body et_kicad is
 							);
 
 						-- insert the new package variant in the component (in library)
-						type_component_variants.insert (
+						pac_variants.insert (
 							container	=> component.variants,
-							key			=> to_component_variant_name (to_string (packge => package_name)),
+							key			=> to_name (to_string (packge => package_name)),
 							new_item	=> new_variant);
 
 					else
@@ -12685,10 +12685,10 @@ package body et_kicad is
 				-- Looks up the list of variants of the component.
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) is
-					use et_devices.type_component_variants;
+					use et_devices.pac_variants;
 					use et_import;
 
-					variant_cursor : et_devices.type_component_variants.cursor;
+					variant_cursor : et_devices.pac_variants.cursor;
 				begin -- query_variants
 					log (text => "locating variant " & et_devices.type_variant_name.to_string (package_variant)
 						& " ...", level => log_threshold + 3);
@@ -12838,13 +12838,13 @@ package body et_kicad is
 				-- Looks up the list of variants of the component.
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) is
-					use et_devices.type_component_variants;
+					use et_devices.pac_variants;
 
-					variant_cursor : et_devices.type_component_variants.cursor;
+					variant_cursor : et_devices.pac_variants.cursor;
 
 					procedure locate_terminal (
 						variant_name 	: in et_devices.type_variant_name.bounded_string;
-						variant 		: in et_devices.type_component_variant) is
+						variant 		: in et_devices.type_variant) is
 						use et_devices.type_terminal_port_map;
 						use type_port_name;
 						terminal_cursor : et_devices.type_terminal_port_map.cursor := variant.terminal_port_map.first;
@@ -12877,7 +12877,7 @@ package body et_kicad is
 					-- CS Otherwise an exception would occur here:
 					variant_cursor := component.variants.find (package_variant);
 
-					et_devices.type_component_variants.query_element (
+					et_devices.pac_variants.query_element (
 						position	=> variant_cursor,
 						process		=> locate_terminal'access);
 
@@ -13007,13 +13007,13 @@ package body et_kicad is
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) is
 				
-					use et_devices.type_component_variants;
-					variant_cursor : type_component_variants.cursor;
+					use et_devices.pac_variants;
+					variant_cursor : pac_variants.cursor;
 
 					procedure locate_terminal (
 					-- Locates the given terminal in the package variant.
 						variant_name 	: in et_devices.type_variant_name.bounded_string;
-						variant 		: in et_devices.type_component_variant) is
+						variant 		: in et_devices.type_variant) is
 						use type_terminal_port_map;
 						use type_port_name;
 						terminal_cursor : type_terminal_port_map.cursor;
@@ -13042,7 +13042,7 @@ package body et_kicad is
 
 					-- Locate the given terminal in the variant.
 					-- The variant should be found (because the component has been inserted in the library earlier).
-					if variant_cursor /= type_component_variants.no_element then
+					if variant_cursor /= pac_variants.no_element then
 
 						-- locate the given terminal in the package variant
 						query_element (
