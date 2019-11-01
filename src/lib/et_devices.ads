@@ -63,12 +63,12 @@ package et_devices is
 	-- Devices that require operator interaction like connectors, LEDs or switches 
 	-- MUST have a purpose assigned.
 	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
-	device_purpose_characters : character_set := to_set 
+	purpose_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_- "); 
 
-	device_purpose_length_max : constant positive := 50;
+	purpose_length_max : constant positive := 50;
 
-	package type_device_purpose is new generic_bounded_length (device_purpose_length_max);
+	package type_device_purpose is new generic_bounded_length (purpose_length_max);
 	purpose_default : constant string := "dummy";
 
 	function to_string (purpose : in type_device_purpose.bounded_string) return string;
@@ -78,7 +78,7 @@ package et_devices is
 	
 	function purpose_characters_valid (
 		purpose		: in type_device_purpose.bounded_string;
-		characters	: in character_set := device_purpose_characters) 
+		characters	: in character_set := purpose_characters) 
 		return boolean;
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.

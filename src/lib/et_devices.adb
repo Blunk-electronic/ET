@@ -67,9 +67,9 @@ package body et_devices is
 	-- Returns true if given purpose is too long. Issues warning.
 		use et_string_processing;
 	begin
-		if purpose'length > device_purpose_length_max then
+		if purpose'length > purpose_length_max then
 			log (WARNING, "purpose " & enclose_in_quotes (purpose) & " is longer than" 
-				 & positive'image (device_purpose_length_max) & " characters !", 
+				 & positive'image (purpose_length_max) & " characters !", 
 				console => true);
 			return false;
 		else
@@ -81,7 +81,7 @@ package body et_devices is
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
 		purpose		: in type_device_purpose.bounded_string;
-		characters	: in character_set := device_purpose_characters) 
+		characters	: in character_set := purpose_characters) 
 		return boolean is
 		use et_string_processing;
 		use type_device_purpose;
