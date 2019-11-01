@@ -316,7 +316,7 @@ package body device_rw is
 
 				-- After the keyword "unit" must come the unit name:
 				elsif f (line, place) = keyword_unit then 
-					unit := to_unit_name (f (line, place + 1)); -- 5
+					unit := to_name (f (line, place + 1)); -- 5
 
 				-- After the keyword "port" must come the port name
 				elsif f (line, place) = keyword_port then 
@@ -348,7 +348,7 @@ package body device_rw is
 
 			-- clean up for next terminal to port assigment
 			terminal	:= to_terminal_name ("");
-			unit		:= to_unit_name ("");
+			unit		:= to_name ("");
 			port		:= to_port_name ("");
 		end insert_terminal;
 
@@ -381,8 +381,8 @@ package body device_rw is
 
 		unit_name			: type_unit_name.bounded_string; -- IO_BANK_2
 		unit_position		: type_point := origin; -- the position of the unit inside the device editor
-		unit_swap_level		: type_unit_swap_level := unit_swap_level_default;
-		unit_add_level		: type_unit_add_level := unit_add_level_default;
+		unit_swap_level		: type_swap_level := swap_level_default;
+		unit_add_level		: type_add_level := add_level_default;
 		unit_symbol			: access type_symbol;
 		units_internal		: type_units_internal.map;
 		units_external		: type_units_external.map;
@@ -464,10 +464,10 @@ package body device_rw is
 			end if;
 			
 			-- clean up for next unit
-			unit_name := to_unit_name ("");
+			unit_name := to_name ("");
 			unit_position := origin;
-			unit_swap_level := unit_swap_level_default;
-			unit_add_level := unit_add_level_default;
+			unit_swap_level := swap_level_default;
+			unit_add_level := add_level_default;
 			unit_symbol := null;
 			
 		end insert_unit_internal;
@@ -505,7 +505,7 @@ package body device_rw is
 			read_symbol (unit_external.file, log_threshold + 1);
 
 			-- clean up for next unit
-			unit_name := to_unit_name ("");
+			unit_name := to_name ("");
 			unit_external := (others => <>);
 		end insert_unit_external;
 
@@ -1015,7 +1015,7 @@ package body device_rw is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then
 										expect_field_count (line, 2);
-										unit_name := to_unit_name (f (line,2));
+										unit_name := to_name (f (line,2));
 
 										-- Create a new symbol where unit_symbol is pointing at.
 										-- The symbol assumes the appearance of the device.
@@ -1063,7 +1063,7 @@ package body device_rw is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then -- name A, B, ...
 										expect_field_count (line, 2);
-										unit_name := to_unit_name (f (line,2));
+										unit_name := to_name (f (line,2));
 
 									elsif kw = keyword_position then -- position x 0.00 y 0.00
 										expect_field_count (line, 5);

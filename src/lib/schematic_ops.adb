@@ -2779,7 +2779,7 @@ package body schematic_ops is
 	-- The unit and port names are optionally.
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string := to_unit_name (""); -- A
+		unit_name		: in type_unit_name.bounded_string := to_name (""); -- A
 		port_name		: in et_symbols.type_port_name.bounded_string := et_symbols.to_port_name ("")) -- CE
 		return boolean is
 
@@ -3294,7 +3294,7 @@ package body schematic_ops is
 					if index (key (device_cursor)) /= index_expected then -- we have a gap
 
 						-- build the next available device name and exit
-						next_name := to_device_name (prefix, index_expected);
+						next_name := to_name (prefix, index_expected);
 						gap_found := true;
 						exit;
 					end if;
@@ -3308,7 +3308,7 @@ package body schematic_ops is
 			-- If no gap has been found, then the device name must be assembled
 			-- using the latest index_expected.
 			if not gap_found then
-				next_name := to_device_name (prefix, index_expected);
+				next_name := to_name (prefix, index_expected);
 			end if;
 			
 		end search_gap;
@@ -3341,7 +3341,7 @@ package body schematic_ops is
 			device_name	: in type_device_model_file.bounded_string;
 			device		: in et_devices.type_device) is
 
-			function first_internal (add_level : in type_unit_add_level) 
+			function first_internal (add_level : in type_add_level) 
 				return type_units_internal.cursor is
 			-- Searches for a unit with given add_level. Returns the cursor of that unit.
 			-- If no suitable unit found, returns cursor with no_element.
@@ -3357,7 +3357,7 @@ package body schematic_ops is
 				return type_units_internal.no_element;
 			end;
 
-			function first_external (add_level : in type_unit_add_level) 
+			function first_external (add_level : in type_add_level) 
 				return type_units_external.cursor is
 			-- Searches for a unit with given add_level. Returns the cursor of that unit.
 			-- If no suitable unit found, returns cursor with no_element.
@@ -10685,9 +10685,9 @@ package body schematic_ops is
 						device_index := device_index + index_on_sheet;
 
 						-- build the new device name
-						name_after := to_device_name (
-									prefix	=> prefix (name_before), -- R, C, IC
-									index 	=> device_index); -- 407
+						name_after := to_name (
+								prefix	=> prefix (name_before), -- R, C, IC
+								index 	=> device_index); -- 407
 
 						-- Do the renaming if the new name differs from the old name.
 						-- If the renaming fails, set result false. Result remains false
@@ -11234,7 +11234,7 @@ package body schematic_ops is
 			device_name_instance := device_name; -- take copy of original name
 			
 			-- apply device name offset
-			offset_device_name (device_name_instance, offset);
+			offset_index (device_name_instance, offset);
 
 			-- log original name and name in instanciated submodule
 			log (text => "device name origin " & to_string (device_name) &

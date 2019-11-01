@@ -1312,8 +1312,8 @@ package body et_kicad is
 			tmp_units_total		: type_units_total; -- see spec for range -- CS rename to units_total	
 			tmp_unit_id			: type_unit_id; -- assumes 0 if all units are affected, -- see spec	-- CS rename to unit_id
 
-			tmp_unit_swap_level	: type_unit_swap_level := unit_swap_level_default; -- CS: rename to unit_swap_level
-			tmp_unit_add_level	: type_unit_add_level := type_unit_add_level'first; -- CS: rename to unit_add_level
+			tmp_unit_swap_level	: type_swap_level := swap_level_default; -- CS: rename to unit_swap_level
+			tmp_unit_add_level	: type_add_level := type_add_level'first; -- CS: rename to unit_add_level
 			tmp_unit_global		: boolean := false; -- specifies if a unit harbors component wide pins (such as power supply) -- CS: rename to unit_global
 			
 			field_reference		: type_text_placeholder (meaning => NAME); -- CS: should be field_prefix as it contains just the prefix 
@@ -1347,7 +1347,7 @@ package body et_kicad is
 			begin
 				-- CS: init other variables
 				extra_unit_available := false;
-				tmp_unit_add_level := type_unit_add_level'first;
+				tmp_unit_add_level := type_add_level'first;
 				tmp_unit_global := false;
 
 				field_prefix_found			:= false;
@@ -1364,10 +1364,10 @@ package body et_kicad is
 			-- Since Kicad has only one swap level (interchangeable yes or no) 
 			-- we convert to the lowest swap level available.
 			-- Used when reading component libraries.	
-				return type_unit_swap_level is
+				return type_swap_level is
 				
 				i : type_symbol_interchangeable;
-				s : type_unit_swap_level;
+				s : type_swap_level;
 				--log_threshold : type_log_level := 2;
 			begin
 				log_indentation_up;
@@ -3064,7 +3064,7 @@ package body et_kicad is
 									tmp_unit_swap_level := to_swap_level (f (line,9));
 									log_indentation_down;
 								else
-									tmp_unit_swap_level := unit_swap_level_default;
+									tmp_unit_swap_level := swap_level_default;
 								end if;
 
 								-- read the appearance flag (N/P) in subfield #10
@@ -8226,7 +8226,7 @@ package body et_kicad is
 					
 					-- extract the part name (CS unit name ?) from field 4: example Part="1
 					-- NOTE: the trailing double quote is already gone.
-					unit := to_unit_name (f (line, 4) (7 .. (f (line, 4)'last)));
+					unit := to_name (f (line, 4) (7 .. (f (line, 4)'last)));
 
 					-- Now all components of the alternative reference are ready.
 					-- Append the new alternative reference to list alternative_references:

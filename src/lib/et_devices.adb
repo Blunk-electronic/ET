@@ -309,7 +309,7 @@ package body et_devices is
 		return type_name_index'value (index);
 	end;
 
-	function to_device_name (
+	function to_name (
 	-- Converts a string like "IC303" to a composite type_name.
 	-- Raises constraint error if prefix contains invalid characters.
 	-- Raises constraint error if id contains non-digit characters.
@@ -342,7 +342,7 @@ package body et_devices is
 
 		use type_prefix;
 
-	begin -- to_device_name
+	begin -- to_name
 		-- assemble prefix
 		for i in text_in_justified'first .. text_in_justified'last loop
 			c := text_in_justified(i);
@@ -392,7 +392,7 @@ package body et_devices is
 		r.id_width := digit;
 		
 		return r;
-	end to_device_name;
+	end to_name;
 
 	function "<" (left, right : in type_name) return boolean is
 	-- Returns true if left comes before right.
@@ -480,7 +480,7 @@ package body et_devices is
 		return name.id;
 	end;
 
-	function to_device_name (
+	function to_name (
 	-- Builds a device name by given prefix (like R) and index (like 23) to a device name (like R23).
 	-- If width is not provided, then the width of the index is calculated automatically. In case of R23 the width is 2.
 	-- If width is provided, then it is set accordingly.
@@ -513,20 +513,19 @@ package body et_devices is
 		end if;
 		
 		return device_name;
-	end; -- to_device_name
+	end;
 
-	procedure offset_device_name (
+	procedure offset_index (
 	-- Adds to the device index the given offset. 
 	-- Example: given name is R4, given offset is 100. Result R104.
 		name	: in out type_name;
 		offset	: in type_name_index) is
 	begin
-		name := to_device_name (
+		name := to_name (
 			prefix	=> prefix (name),
 			index	=> name.id + offset);
-		-- the width of the index is calculated automatically by to_device_name.
-		
-	end offset_device_name;
+		-- the width of the index is calculated automatically by to_name.
+	end;
 
 	
 
@@ -548,25 +547,29 @@ package body et_devices is
 		return type_unit_name.to_string (unit_name);
 	end;
 
-	function to_unit_name (unit_name : in string) return type_unit_name.bounded_string is begin
+	function to_name (unit_name : in string) return type_unit_name.bounded_string is begin
 		-- CS do character and length checks
 		return type_unit_name.to_bounded_string (unit_name);
 	end;
 
-	function to_string (swap_level : in type_unit_swap_level) return string is begin
-		return type_unit_swap_level'image (swap_level);
-	end;
 
-	function to_swap_level (swap_level : in string) return type_unit_swap_level is begin
-		return type_unit_swap_level'value (swap_level);
-	end;
 	
-	function to_string (add_level : in type_unit_add_level) return string is begin
-		return to_lower (type_unit_add_level'image (add_level));
+	function to_string (swap_level : in type_swap_level) return string is begin
+		return type_swap_level'image (swap_level);
 	end;
 
-	function to_add_level (add_level : in string) return type_unit_add_level is begin
-		return type_unit_add_level'value (add_level);
+	function to_swap_level (swap_level : in string) return type_swap_level is begin
+		return type_swap_level'value (swap_level);
+	end;
+
+
+	
+	function to_string (add_level : in type_add_level) return string is begin
+		return to_lower (type_add_level'image (add_level));
+	end;
+
+	function to_add_level (add_level : in string) return type_add_level is begin
+		return type_add_level'value (add_level);
 	end;
 
 	

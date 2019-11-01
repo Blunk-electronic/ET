@@ -5492,7 +5492,7 @@ package body et_project is
 										-- there must be at least 3 fields:
 										expect_field_count (line, 3, warn => false);
 										
-										device_name := to_device_name (f (line, 2));
+										device_name := to_name (f (line, 2));
 
 										-- test whether device exists
 										if not exists (module_cursor, device_name) then
@@ -5835,7 +5835,7 @@ package body et_project is
 									if kw = keyword_device then -- device R1 port 1
 										expect_field_count (line, 4);
 
-										net_device_port.device_name := to_device_name (f (line, 2)); -- IC3
+										net_device_port.device_name := to_name (f (line, 2)); -- IC3
 
 										if f (line, 3) = keyword_port then -- port
 											net_device_port.port_name := to_port_name (f (line, 4)); -- CE
@@ -6979,7 +6979,7 @@ package body et_project is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then -- name C12
 										expect_field_count (line, 2);
-										device_name := to_device_name (f (line, 2));
+										device_name := to_name (f (line, 2));
 
 									-- As soon as the appearance becomes clear, a temporarily device is
 									-- created where pointer "device" is pointing at:
@@ -7253,7 +7253,7 @@ package body et_project is
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then -- name 1, GPIO_BANK_1, ...
 										expect_field_count (line, 2);
-										device_unit_name := to_unit_name (f (line, 2));
+										device_unit_name := to_name (f (line, 2));
 										
 									elsif kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
 										expect_field_count (line, 7);

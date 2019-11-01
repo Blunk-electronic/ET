@@ -184,7 +184,7 @@ package et_devices is
 		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
 	end record;
 
-	function to_device_name (
+	function to_name (
 	-- Converts a string like "IC303" to a composite type_name.
 	-- Raises constraint error if prefix contains invalid characters.
 	-- Raises constraint error if id contains non-digit characters.
@@ -209,13 +209,13 @@ package et_devices is
 	function index (name : in type_name) return type_name_index;
 	-- Returns the index of the given device name.
 
-	function to_device_name (
+	function to_name (
 		prefix	: in type_prefix.bounded_string; 	-- R, C, L
 		index	: in type_name_index;				-- 1, 20, ..
 		width	: in type_index_width := type_index_width'first) -- the number of digits
 		return type_name;
 
-	procedure offset_device_name (
+	procedure offset_index (
 	-- Adds to the device index the given offset. 
 	-- Example: given name is R4, given offset is 100. Result R104.
 		name	: in out type_name;
@@ -251,34 +251,34 @@ package et_devices is
 	unit_name_default : constant type_unit_name.bounded_string := type_unit_name.to_bounded_string ("");
 	
 	function to_string (unit_name : in type_unit_name.bounded_string) return string;
-	function to_unit_name (unit_name : in string) return type_unit_name.bounded_string;
+	function to_name (unit_name : in string) return type_unit_name.bounded_string;
 	
-	unit_swap_level_max : constant natural := 10;
-	type type_unit_swap_level is new natural range 0..unit_swap_level_max;
-	unit_swap_level_default : constant := type_unit_swap_level'first;
+	swap_level_max : constant natural := 10;
+	type type_swap_level is new natural range 0 .. swap_level_max;
+	swap_level_default : constant := type_swap_level'first;
 
-	function to_string (swap_level : in type_unit_swap_level) return string;
-	function to_swap_level (swap_level : in string) return type_unit_swap_level;	
+	function to_string (swap_level : in type_swap_level) return string;
+	function to_swap_level (swap_level : in string) return type_swap_level;	
 
-	type type_unit_add_level is (
+	type type_add_level is (
 		NEXT, 		-- should be default. for things like logic gates, multi-OP-Amps, ...
 		REQUEST, 	-- for power supply 
 		CAN,		-- OPTIONAl units. things like relay contacts
 		ALWAYS,		-- units that SHOULD be used always
 		MUST);		-- units that MUST be used. things like relay coils.
 
-	unit_add_level_default : constant type_unit_add_level := type_unit_add_level'first;
+	add_level_default : constant type_add_level := type_add_level'first;
 	
-	function to_string (add_level : in type_unit_add_level) return string;
-	function to_add_level (add_level : in string) return type_unit_add_level;
+	function to_string (add_level : in type_add_level) return string;
+	function to_add_level (add_level : in string) return type_add_level;
 	
 	-- An internal unit is a symbol with a swap level.
 	-- An internal unit is owned by the particular device exclusively.
 	type type_unit_internal (appearance : type_appearance) is record
 		symbol		: type_symbol (appearance);
 		position	: et_coordinates.geometry.type_point; -- the position of the unit inside the device editor
-		swap_level	: type_unit_swap_level := unit_swap_level_default;
-		add_level	: type_unit_add_level := type_unit_add_level'first;
+		swap_level	: type_swap_level := swap_level_default;
+		add_level	: type_add_level := add_level_default;
 	end record;
 
 	-- Internal units are collected in a map:
@@ -291,8 +291,8 @@ package et_devices is
         -- file is the link to the symbol in container "symbols":
         file		: type_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym -- CS rename to model
        	position	: et_coordinates.geometry.type_point := geometry.origin; -- the position within the device editor
-		swap_level	: type_unit_swap_level := unit_swap_level_default;
-		add_level	: type_unit_add_level := type_unit_add_level'first;
+		swap_level	: type_swap_level := swap_level_default;
+		add_level	: type_add_level := type_add_level'first;
 	end record;
 
 	-- External units are collected in a map;

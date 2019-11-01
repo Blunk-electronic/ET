@@ -528,7 +528,7 @@ package body scripting is
 								when 9 =>
 									schematic_ops.copy_device (
 										module_name 	=> module,
-										device_name		=> to_device_name (f (5)),
+										device_name		=> to_name (f (5)),
 										destination		=> to_position 
 											(
 											sheet => to_sheet (f (6)),
@@ -607,7 +607,7 @@ package body scripting is
 						when NOUN_DEVICE =>
 							schematic_ops.delete_device (
 								module_name 	=> module,
-								device_name		=> to_device_name (f (5)),
+								device_name		=> to_name (f (5)),
 								log_threshold	=> log_threshold + 1);
 
 						when NOUN_LABEL =>
@@ -756,8 +756,8 @@ package body scripting is
 						when NOUN_UNIT =>
 							schematic_ops.delete_unit (
 								module_name 	=> module,
-								device_name		=> to_device_name (f (5)),
-								unit_name		=> to_unit_name (f (6)),
+								device_name		=> to_name (f (5)),
+								unit_name		=> to_name (f (6)),
 								log_threshold	=> log_threshold + 1);
 
 						when NOUN_VARIANT => 
@@ -809,8 +809,8 @@ package body scripting is
 							schematic_ops.drag_unit
 								(
 								module_name 	=> module,
-								device_name		=> to_device_name (f (5)),
-								unit_name		=> to_unit_name (f (6)),
+								device_name		=> to_name (f (5)),
+								unit_name		=> to_name (f (6)),
 								coordinates		=> schematic_ops.to_coordinates (f (7)), -- relative/absolute
 								point			=> type_point (set (
 													x => to_distance (f (8)),
@@ -931,8 +931,8 @@ package body scripting is
 								when 10 =>
 									schematic_ops.invoke_unit (
 										module_name		=> module,
-										device_name		=> to_device_name (f (5)),
-										unit_name		=> to_unit_name (f (6)),
+										device_name		=> to_name (f (5)),
+										unit_name		=> to_name (f (6)),
 										place			=> to_position 
 											(
 											sheet => to_sheet (f (7)),
@@ -962,8 +962,8 @@ package body scripting is
 							schematic_ops.move_unit_placeholder
 								(
 								module_name 	=> module,
-								device_name		=> to_device_name (f (5)), -- IC1
-								unit_name		=> to_unit_name (f (6)), -- A
+								device_name		=> to_name (f (5)), -- IC1
+								unit_name		=> to_name (f (6)), -- A
 								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
 								point			=> type_point (set (
 													x => to_distance (f (8)),
@@ -976,8 +976,8 @@ package body scripting is
 							schematic_ops.move_unit_placeholder
 								(
 								module_name 	=> module,
-								device_name		=> to_device_name (f (5)), -- IC1
-								unit_name		=> to_unit_name (f (6)), -- A
+								device_name		=> to_name (f (5)), -- IC1
+								unit_name		=> to_name (f (6)), -- A
 								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
 								point			=> type_point (set (
 													x => to_distance (f (8)),
@@ -1011,8 +1011,8 @@ package body scripting is
 							schematic_ops.move_unit_placeholder
 								(
 								module_name 	=> module,
-								device_name		=> to_device_name (f (5)), -- IC1
-								unit_name		=> to_unit_name (f (6)), -- A
+								device_name		=> to_name (f (5)), -- IC1
+								unit_name		=> to_name (f (6)), -- A
 								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
 								point			=> type_point (set (
 													x => to_distance (f (8)),
@@ -1063,8 +1063,8 @@ package body scripting is
 							schematic_ops.move_unit
 								(
 								module_name 	=> module,
-								device_name		=> to_device_name (f (5)), -- IC1
-								unit_name		=> to_unit_name (f (6)), -- A
+								device_name		=> to_name (f (5)), -- IC1
+								unit_name		=> to_name (f (6)), -- A
 								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
 								sheet			=> to_sheet_relative (f (8)),
 								point			=> type_point (set (
@@ -1133,7 +1133,7 @@ package body scripting is
 											(
 											module_name		=> module,
 											variant_name	=> to_variant (f (5)), -- low_cost
-											device			=> to_device_name (f (6)), -- R1
+											device			=> to_name (f (6)), -- R1
 											value			=> value, -- 220R
 											partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
 											log_threshold	=> log_threshold + 1);
@@ -1146,7 +1146,7 @@ package body scripting is
 											(
 											module_name		=> module,
 											variant_name	=> to_variant (f (5)), -- low_cost
-											device			=> to_device_name (f (6)), -- R1
+											device			=> to_name (f (6)), -- R1
 											value			=> value, -- 220R
 											partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
 											purpose			=> purpose, -- brightness_control
@@ -1275,7 +1275,7 @@ package body scripting is
 										(
 										module_name		=> module,
 										variant_name	=> to_variant (f (5)), -- low_cost
-										device			=> to_device_name (f (6)), -- R1
+										device			=> to_name (f (6)), -- R1
 										log_threshold	=> log_threshold + 1);
 
 								when 7 .. count_type'last =>
@@ -1313,8 +1313,8 @@ package body scripting is
 							schematic_ops.rename_device
 								(
 								module_name 		=> module,
-								device_name_before	=> to_device_name (f (5)), -- IC1
-								device_name_after	=> to_device_name (f (6)), -- IC23
+								device_name_before	=> to_name (f (5)), -- IC1
+								device_name_after	=> to_name (f (6)), -- IC23
 								log_threshold		=> log_threshold + 1
 								);
 
@@ -1429,8 +1429,8 @@ package body scripting is
 							schematic_ops.rotate_unit
 								(
 								module_name 	=> module,
-								device_name		=> to_device_name (f (5)), -- IC1
-								unit_name		=> to_unit_name (f (6)), -- A
+								device_name		=> to_name (f (5)), -- IC1
+								unit_name		=> to_name (f (6)), -- A
 								coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
 								rotation		=> to_rotation (f (8)), -- 90
 								log_threshold	=> log_threshold + 1
@@ -1440,8 +1440,8 @@ package body scripting is
 							schematic_ops.rotate_unit_placeholder
 								(
 								module_name 	=> module,
-								device_name		=> to_device_name (f (5)), -- IC1
-								unit_name		=> to_unit_name (f (6)), -- A
+								device_name		=> to_name (f (5)), -- IC1
+								unit_name		=> to_name (f (6)), -- A
 								rotation		=> to_rotation (f (7)), -- 90
 								meaning			=> et_symbols.NAME,
 								log_threshold	=> log_threshold + 1
@@ -1451,8 +1451,8 @@ package body scripting is
 							schematic_ops.rotate_unit_placeholder
 								(
 								module_name 	=> module,
-								device_name		=> to_device_name (f (5)), -- IC1
-								unit_name		=> to_unit_name (f (6)), -- A
+								device_name		=> to_name (f (5)), -- IC1
+								unit_name		=> to_name (f (6)), -- A
 								rotation		=> to_rotation (f (7)), -- 90
 								meaning			=> et_symbols.VALUE,
 								log_threshold	=> log_threshold + 1
@@ -1462,8 +1462,8 @@ package body scripting is
 							schematic_ops.rotate_unit_placeholder
 								(
 								module_name 	=> module,
-								device_name		=> to_device_name (f (5)), -- IC1
-								unit_name		=> to_unit_name (f (6)), -- A
+								device_name		=> to_name (f (5)), -- IC1
+								unit_name		=> to_name (f (6)), -- A
 								rotation		=> to_rotation (f (7)), -- 90
 								meaning			=> et_symbols.PURPOSE,
 								log_threshold	=> log_threshold + 1
@@ -1518,7 +1518,7 @@ package body scripting is
 								schematic_ops.set_partcode
 									(
 									module_name 	=> module,
-									device_name		=> to_device_name (f (5)), -- R1
+									device_name		=> to_name (f (5)), -- R1
 									partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
 									log_threshold	=> log_threshold + 1
 									);
@@ -1535,7 +1535,7 @@ package body scripting is
 								schematic_ops.set_purpose
 									(
 									module_name 	=> module,
-									device_name		=> to_device_name (f (5)), -- R1
+									device_name		=> to_name (f (5)), -- R1
 									purpose			=> purpose, -- brightness_control
 									log_threshold	=> log_threshold + 1
 									);
@@ -1586,7 +1586,7 @@ package body scripting is
 								schematic_ops.set_value
 									(
 									module_name 	=> module,
-									device_name		=> to_device_name (f (5)), -- R1
+									device_name		=> to_name (f (5)), -- R1
 									value			=> value, -- 470R
 									log_threshold	=> log_threshold + 1
 									);
@@ -1607,7 +1607,7 @@ package body scripting is
 										(
 										module_name		=> module,
 										variant_name	=> to_variant (f (5)), -- low_cost
-										device			=> to_device_name (f (6)), -- R1
+										device			=> to_name (f (6)), -- R1
 										log_threshold	=> log_threshold + 1);
 
 								when 7 .. count_type'last =>
@@ -2344,7 +2344,7 @@ package body scripting is
 												net_name	=> to_net_name (f (5)),
 												layer		=> to_signal_layer (f (6)),
 												width		=> to_distance (f (8)),
-												device		=> to_device_name (f (9)),
+												device		=> to_name (f (9)),
 												terminal	=> to_terminal_name (f (10)),
 												end_point	=> type_point (set (
 														x => to_distance (f (12)),	 -- 35
@@ -2372,7 +2372,7 @@ package body scripting is
 													net_name	=> to_net_name (f (5)),
 													layer		=> to_signal_layer (f (6)),
 													width		=> to_distance (f (8)),
-													device		=> to_device_name (f (9)),
+													device		=> to_name (f (9)),
 													terminal	=> to_terminal_name (f (10)),
 													axis		=> to_axis (f (12)),
 													notches		=> to_notches (f (13)), -- 5
@@ -2408,7 +2408,7 @@ package body scripting is
 												net_name	=> to_net_name (f (5)),
 												layer		=> to_signal_layer (f (6)),
 												width		=> to_distance (f (8)),
-												device		=> to_device_name (f (9)),
+												device		=> to_name (f (9)),
 												terminal	=> to_terminal_name (f (10)),
 												direction	=> to_rotation (f (12)), -- 45 degree
 												length		=> to_distance (f (13)), -- 50mm
@@ -2436,7 +2436,7 @@ package body scripting is
 													net_name	=> to_net_name (f (5)),
 													layer		=> to_signal_layer (f (6)),
 													width		=> to_distance (f (8)),
-													device		=> to_device_name (f (9)),
+													device		=> to_name (f (9)),
 													terminal	=> to_terminal_name (f (10)),
 													direction	=> to_rotation (f (12)), -- 45 degree
 													axis		=> to_axis (f (13)),
@@ -3176,7 +3176,7 @@ package body scripting is
 								when 6 =>
 									board_ops.flip_device (
 										module_name 	=> module,
-										device_name		=> to_device_name (f (5)), -- IC1
+										device_name		=> to_name (f (5)), -- IC1
 										face			=> to_face  (f (6)),  -- top/bottom
 										log_threshold	=> log_threshold + 1
 										);
@@ -3324,7 +3324,7 @@ package body scripting is
 								when 7 =>
 									board_ops.rotate_device (
 										module_name 	=> module,
-										device_name		=> to_device_name (f (5)), -- IC1
+										device_name		=> to_name (f (5)), -- IC1
 										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
 										rotation		=> to_rotation (f (7)),
 										log_threshold	=> log_threshold + 1
@@ -3367,7 +3367,7 @@ package body scripting is
 								when 8 =>
 									board_ops.move_device (
 										module_name 	=> module,
-										device_name		=> to_device_name (f (5)), -- IC1
+										device_name		=> to_name (f (5)), -- IC1
 										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
 										point			=> type_point (set (
 															x => to_distance (f (7)),

@@ -198,7 +198,7 @@ package schematic_ops is
 	-- The unit and port names are optionally.
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string := to_unit_name (""); -- A
+		unit_name		: in type_unit_name.bounded_string := to_name (""); -- A
 		port_name		: in et_symbols.type_port_name.bounded_string := et_symbols.to_port_name ("")) -- CE		
 		return boolean;						
 
