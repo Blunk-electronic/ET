@@ -423,7 +423,7 @@ package body et_devices is
 		return result;
 	end;	
 
-	function equal_name (left, right : in type_device_name) return boolean is
+	function "=" (left, right : in type_device_name) return boolean is
 	-- Returns true if left equals right.
 	-- Example: if IC4 = IC4 then return true.
 		result : boolean := false;
