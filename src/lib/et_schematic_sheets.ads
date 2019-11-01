@@ -63,11 +63,11 @@ package et_schematic_sheets is
 -- FRAMES
 	use pac_frames;
 
-	-- The title block of a schematic sheet requires a placeholder for the 
-	-- description of the sheet:
+	-- The title block of a schematic sheet has placeholders:
 	type type_text_placeholders is record
-		description	: type_text_placeholder;
-		category	: type_text_placeholder; -- development, routing, product
+		sheet_number	: type_text_placeholder;
+		description		: type_text_placeholder;
+		category		: type_text_placeholder; -- development, routing, product
 	end record;
 	
 	type type_title_block is new pac_frames.type_title_block with record
