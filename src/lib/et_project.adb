@@ -1296,7 +1296,7 @@ package body et_project is
 			use type_variants;
 
 			procedure query_devices (
-				variant_name	: in type_variant_name.bounded_string;
+				variant_name	: in et_general.type_variant_name.bounded_string;
 				variant			: in type_variant) is
 				use assembly_variants.type_devices;
 				device_cursor : assembly_variants.type_devices.cursor := variant.devices.first;
@@ -1344,7 +1344,7 @@ package body et_project is
 			end query_devices;
 
 			procedure query_submodules (
-				variant_name	: in type_variant_name.bounded_string;
+				variant_name	: in et_general.type_variant_name.bounded_string;
 				variant			: in type_variant) is
 				use assembly_variants;
 				use assembly_variants.type_submodules;
@@ -2187,7 +2187,7 @@ package body et_project is
 		
 		device_partcode			: material.type_partcode.bounded_string;
 		device_purpose			: et_devices.type_purpose.bounded_string;
-		device_variant			: et_devices.type_component_variant_name.bounded_string; -- D, N
+		device_variant			: et_devices.type_variant_name.bounded_string; -- D, N
 		device_position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
 		device_flipped			: et_pcb.type_flipped := et_pcb.flipped_default;
 
@@ -7412,15 +7412,15 @@ package body et_project is
 				use assembly_variants;
 				use type_variants;
 				variant_cursor : type_variants.cursor := module.variants.first;
-				variant_name : type_variant_name.bounded_string; -- low_cost
+				variant_name : et_general.type_variant_name.bounded_string; -- low_cost
 
 				procedure query_submodules (
-					variant_name	: in type_variant_name.bounded_string;
+					variant_name	: in et_general.type_variant_name.bounded_string;
 					variant			: in type_variant) is
 					use type_submodules;
 					submod_cursor : type_submodules.cursor := variant.submodules.first;
 					submod_name : type_module_instance_name.bounded_string; -- CLK_GENERATOR
-					submod_variant : type_variant_name.bounded_string; -- fixed_frequency
+					submod_variant : et_general.type_variant_name.bounded_string; -- fixed_frequency
 				begin -- query_submodules
 					if submod_cursor = type_submodules.no_element then
 						log (text => "no submodule variants specified", level => log_threshold + 1);
@@ -8558,7 +8558,7 @@ package body et_project is
 		end;
 		
 	begin -- exists
-		if type_variant_name.length (variant) = 0 then
+		if et_general.type_variant_name.length (variant) = 0 then
 			result := true;
 		else
 			
@@ -8592,7 +8592,7 @@ package body et_project is
 			variant_cursor : type_variants.cursor;
 
 			procedure query_devices (
-				variant_name	: in type_variant_name.bounded_string;
+				variant_name	: in et_general.type_variant_name.bounded_string;
 				variant			: in type_variant) is
 				use assembly_variants.type_devices;
 				device_cursor : assembly_variants.type_devices.cursor;
@@ -8657,7 +8657,7 @@ package body et_project is
 			variant_cursor : type_variants.cursor;
 
 			procedure query_devices (
-				variant_name	: in type_variant_name.bounded_string;
+				variant_name	: in et_general.type_variant_name.bounded_string;
 				variant			: in type_variant) is
 				use assembly_variants.type_devices;
 			begin
@@ -8707,7 +8707,7 @@ package body et_project is
 			variant_cursor : type_variants.cursor;
 
 			procedure query_submodules (
-				variant_name	: in type_variant_name.bounded_string;
+				variant_name	: in et_general.type_variant_name.bounded_string;
 				variant			: in type_variant) is
 				use assembly_variants.type_submodules;
 			begin

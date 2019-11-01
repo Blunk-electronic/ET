@@ -243,7 +243,7 @@ package body et_schematic is
 	-- The given device must have appearance SCH_PCB. Otherwise constraint error arises here.
 		device_model		: et_devices.type_device_model_file.bounded_string;
 		device_cursor_lib	: et_devices.type_devices.cursor;
-		device_variant		: et_devices.type_component_variant_name.bounded_string; -- N, D
+		device_variant		: et_devices.type_variant_name.bounded_string; -- N, D
 	begin
 		-- load package variant of given device
 		device_variant := type_devices.element (device).variant;

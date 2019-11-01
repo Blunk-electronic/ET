@@ -67,7 +67,7 @@ package schematic_ops is
 	procedure netchanger_not_found (index : in submodules.type_netchanger_id);
 	procedure submodule_not_found (name : in et_general.type_module_instance_name.bounded_string);	
 	procedure net_not_found (name : in et_general.type_net_name.bounded_string);
-	procedure assembly_variant_not_found (variant : in type_variant_name.bounded_string);
+	procedure assembly_variant_not_found (variant : in et_general.type_variant_name.bounded_string);
 	
 	procedure set_grid (
 	-- Sets the grid of the module.
@@ -236,7 +236,7 @@ package schematic_ops is
 	-- If the given variant is empty (zero length) the the device is assumed to be virtual.							 
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
-		variant			: in type_component_variant_name.bounded_string; -- N, D, S_0805
+		variant			: in et_devices.type_variant_name.bounded_string; -- N, D, S_0805
 		place			: in et_coordinates.type_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level);
 
@@ -510,19 +510,19 @@ package schematic_ops is
 	procedure create_assembly_variant (
 	-- Creates a new assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level);
 
 	procedure delete_assembly_variant (
 	-- Deletes an assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level);
 	
 	procedure describe_assembly_variant (
 	-- Describes an assembly variant. Overwrites the previous description.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		description		: in assembly_variants.type_description; -- "this is the low budget variant"
 		log_threshold	: in type_log_level);
 
@@ -530,7 +530,7 @@ package schematic_ops is
 	-- Sets the value, partcode and (optionally the purpose) of a device in 
 	-- An already existing device will be overwritten without warning.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		device			: in type_name; -- R1
 		value			: in type_value.bounded_string; -- 220R
 		partcode		: in material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
@@ -540,14 +540,14 @@ package schematic_ops is
 	procedure unmount_device (
 	-- Sets the given device as not mounted in the given assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		device			: in type_name; -- R1
 		log_threshold	: in type_log_level);
 
 	procedure remove_device (
 	-- Removes the given device from the given assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		device			: in type_name; -- R1
 		log_threshold	: in type_log_level);
 
@@ -555,16 +555,16 @@ package schematic_ops is
 	-- Sets the assembly variant of a submodule instance. An already existing submodule
 	-- will be overwritten without warning.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in type_variant_name.bounded_string; -- low_cost								  
+		variant_parent	: in et_general.type_variant_name.bounded_string; -- low_cost								  
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		variant_submod	: in type_variant_name.bounded_string; -- fixed_frequency
+		variant_submod	: in et_general.type_variant_name.bounded_string; -- fixed_frequency
 		log_threshold	: in type_log_level);
 
 	procedure remove_submodule (
 	-- Removes the assembly variant of a submodule. This results in all devices
 	-- of the submodule being mounted.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in type_variant_name.bounded_string; -- low_cost								   
+		variant_parent	: in et_general.type_variant_name.bounded_string; -- low_cost								   
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level);
 

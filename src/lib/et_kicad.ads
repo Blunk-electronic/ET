@@ -550,7 +550,7 @@ package et_kicad is
 	function to_package_name (
 		library_name	: in type_device_library_name.bounded_string; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
-		package_variant	: in et_devices.type_component_variant_name.bounded_string) -- N, D
+		package_variant	: in et_devices.type_variant_name.bounded_string) -- N, D
 		return et_packages.type_component_package_name.bounded_string;
 	-- Returns the package name of the given component. 
 
@@ -582,7 +582,7 @@ package et_kicad is
 			-- If a component appears in both schematic and layout it has got:
 			when et_symbols.PCB => 
 				datasheet			: type_component_datasheet.bounded_string;
-				variant				: et_devices.type_component_variant_name.bounded_string; -- D, N
+				variant				: et_devices.type_variant_name.bounded_string; -- D, N
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for reference and value.

@@ -505,7 +505,7 @@ package body et_kicad is
 	function to_package_name (
 		library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
-		package_variant	: in et_devices.type_component_variant_name.bounded_string) -- N, D
+		package_variant	: in et_devices.type_variant_name.bounded_string) -- N, D
 		return et_packages.type_component_package_name.bounded_string is
 	-- Returns the package name for of the given component.
 		package_name : et_packages.type_component_package_name.bounded_string; -- to be returned
@@ -2884,7 +2884,7 @@ package body et_kicad is
 						use type_component_variants;
 						use type_terminal_port_map;
 
-						tmp_variant_name : type_component_variant_name.bounded_string; -- temporarily used for building the variant name
+						tmp_variant_name : et_devices.type_variant_name.bounded_string; -- temporarily used for building the variant name
 						tmp_variants : type_component_variants.map; -- temporarily used for building the variant
 
 						full_package_library_name : type_package_library_name.bounded_string;
@@ -3313,14 +3313,14 @@ package body et_kicad is
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
 		package_name 		: in et_packages.type_component_package_name.bounded_string;	-- S_SO14
 		log_threshold		: in et_string_processing.type_log_level)
-		return et_devices.type_component_variant_name.bounded_string is 					-- D
+		return et_devices.type_variant_name.bounded_string is 					-- D
 
 		library_cursor : type_libraries.cursor; -- points to the component library
 		
 		use et_string_processing;
 
 		use et_devices;
-		variant : type_component_variant_name.bounded_string; -- variant name to be returned
+		variant : et_devices.type_variant_name.bounded_string; -- variant name to be returned
 		
 		-- temporarily here the name of the package library is stored:
 		use type_package_library_name;
@@ -3343,7 +3343,7 @@ package body et_kicad is
 
 				use type_component_package_name;
 				use type_component_variants;
-				use type_component_variant_name;
+				use et_devices.type_variant_name;
 
 				-- This cursor points to the package variant being queryied.
 				variant_cursor : type_component_variants.cursor := component.variants.first;
@@ -12670,7 +12670,7 @@ package body et_kicad is
 			
 			library_name	: et_kicad_general.type_device_library_name.bounded_string;
 			generic_name	: type_component_generic_name.bounded_string;
-			package_variant	: et_devices.type_component_variant_name.bounded_string;
+			package_variant	: et_devices.type_variant_name.bounded_string;
 
 			library_cursor	: type_libraries.cursor;
 
@@ -12690,7 +12690,7 @@ package body et_kicad is
 
 					variant_cursor : et_devices.type_component_variants.cursor;
 				begin -- query_variants
-					log (text => "locating variant " & et_devices.type_component_variant_name.to_string (package_variant)
+					log (text => "locating variant " & et_devices.type_variant_name.to_string (package_variant)
 						& " ...", level => log_threshold + 3);
 					log_indentation_up;
 
@@ -12822,7 +12822,7 @@ package body et_kicad is
 			
 			library_name	: et_kicad_general.type_device_library_name.bounded_string;
 			generic_name	: type_component_generic_name.bounded_string;
-			package_variant	: et_devices.type_component_variant_name.bounded_string;
+			package_variant	: et_devices.type_variant_name.bounded_string;
 
 			--use type_libraries;
 			library_cursor	: type_libraries.cursor;
@@ -12843,7 +12843,7 @@ package body et_kicad is
 					variant_cursor : et_devices.type_component_variants.cursor;
 
 					procedure locate_terminal (
-						variant_name 	: in et_devices.type_component_variant_name.bounded_string;
+						variant_name 	: in et_devices.type_variant_name.bounded_string;
 						variant 		: in et_devices.type_component_variant) is
 						use et_devices.type_terminal_port_map;
 						use type_port_name;
@@ -12990,7 +12990,7 @@ package body et_kicad is
 
 			library_name	: et_kicad_general.type_device_library_name.bounded_string;
 			generic_name	: type_component_generic_name.bounded_string;
-			package_variant	: type_component_variant_name.bounded_string;
+			package_variant	: et_devices.type_variant_name.bounded_string;
 
 			library_cursor	: type_libraries.cursor;
 
@@ -13012,7 +13012,7 @@ package body et_kicad is
 
 					procedure locate_terminal (
 					-- Locates the given terminal in the package variant.
-						variant_name 	: in et_devices.type_component_variant_name.bounded_string;
+						variant_name 	: in et_devices.type_variant_name.bounded_string;
 						variant 		: in et_devices.type_component_variant) is
 						use type_terminal_port_map;
 						use type_port_name;

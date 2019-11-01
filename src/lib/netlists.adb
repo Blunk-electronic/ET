@@ -713,7 +713,7 @@ package body netlists is
 	-- Exports the netlist of the given module to the export/CAM directory.
 		netlist			: in type_netlist.tree;
 		module_name		: in type_module_name.bounded_string; -- motor_driver 
-		variant_name	: in type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level) is
 
 		file_name : type_file_name.bounded_string;

@@ -2917,7 +2917,7 @@ package body et_kicad_to_native is
 					ports_kicad : et_kicad.type_ports_library.list;
 					
 					-- This cursor points to a native ET unit.
-					unit_cursor : et_devices.type_units_internal.cursor;
+					unit_cursor : et_devices.pac_units_internal.cursor;
 					inserted	: boolean;
 					
 					procedure copy_ports (
@@ -3331,7 +3331,7 @@ package body et_kicad_to_native is
 						case element (unit_cursor_kicad).appearance is
 							when PCB => -- real
 						
-								et_devices.type_units_internal.insert (
+								et_devices.pac_units_internal.insert (
 									container	=> device.units_internal,
 									key			=> key (unit_cursor_kicad), -- the name of the unit
 									position	=> unit_cursor, -- set unit_cursor for later updating the current unit
@@ -3357,7 +3357,7 @@ package body et_kicad_to_native is
 										));
 
 							when VIRTUAL =>
-								et_devices.type_units_internal.insert (
+								et_devices.pac_units_internal.insert (
 									container	=> device.units_internal,
 									key			=> key (unit_cursor_kicad), -- the name of the unit
 									position	=> unit_cursor, -- set unit_cursor for later updating the current unit
@@ -3380,7 +3380,7 @@ package body et_kicad_to_native is
 						end case;
 								
 						-- copy ports 
-						et_devices.type_units_internal.update_element (
+						et_devices.pac_units_internal.update_element (
 							container	=> device.units_internal,
 							position	=> unit_cursor,
 							process		=> copy_ports'access);
@@ -3399,7 +3399,7 @@ package body et_kicad_to_native is
 					variant_cursor : et_devices.type_component_variants.cursor := device.variants.first;
 
 					procedure rename (
-						variant_name	: in et_devices.type_component_variant_name.bounded_string; -- N, D, ...
+						variant_name	: in et_devices.type_variant_name.bounded_string; -- N, D, ...
 						variant			: in out et_devices.type_component_variant) is
 					begin -- rename
 						variant.package_model := (rename_package_model (variant.package_model)); -- ../../lbr/transistors.pretty/S_0805

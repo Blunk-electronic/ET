@@ -561,7 +561,7 @@ package body board_ops is
 		use assembly_variants.type_variants;
 		use et_general.type_variant_name;
 
-		procedure make_for_variant (variant_name : in type_variant_name.bounded_string) is
+		procedure make_for_variant (variant_name : in et_general.type_variant_name.bounded_string) is
 			
 			-- Here we collect the pick and place data in the first step. It will then
 			-- be passed to procedure pick_and_place.write_pnp.
@@ -574,7 +574,7 @@ package body board_ops is
 			-- If offset is zero, we are dealing with the top module.
 			-- The submodule position in the parent module is added to the device position.
 				module_cursor		: in type_modules.cursor;
-				variant				: in type_variant_name.bounded_string;
+				variant				: in et_general.type_variant_name.bounded_string;
 				offset				: in type_name_index;
 				position_in_board	: in type_position) -- submod pos. in parent
 			is
@@ -787,10 +787,10 @@ package body board_ops is
 
 			-- Another stack keeps record of the assembly variant on submodule levels.
 			package stack_variant is new et_general.stack_lifo (
-				item	=> type_variant_name.bounded_string,
+				item	=> et_general.type_variant_name.bounded_string,
 				max 	=> submodules.nesting_depth_max);
 			
-			variant : type_variant_name.bounded_string; -- low_cost
+			variant : et_general.type_variant_name.bounded_string; -- low_cost
 
 			-- Another stack keeps record of the submodule position (inside the parent module) on submodule levels.
 			package stack_position_in_board is new et_general.stack_lifo (

@@ -578,29 +578,29 @@ package body et_devices is
 
 	
 	
-	function to_string (package_variant : in type_component_variant_name.bounded_string) return string is begin
-		return type_component_variant_name.to_string (package_variant);
+	function to_string (package_variant : in type_variant_name.bounded_string) return string is begin
+		return type_variant_name.to_string (package_variant);
 	end to_string;
 
 	function to_component_variant_name (variant_name : in string) 
-		return type_component_variant_name.bounded_string is
+		return type_variant_name.bounded_string is
 	begin
-		return type_component_variant_name.to_bounded_string (variant_name);
+		return type_variant_name.to_bounded_string (variant_name);
 	end to_component_variant_name;
 
 	procedure check_variant_name_length (variant_name : in string) is
 	-- tests if the given variant name is not longer than allowed
 		use et_string_processing;
 	begin
-		if variant_name'length > component_variant_name_length_max then
+		if variant_name'length > variant_name_length_max then
 			log (WARNING, "variant name too long. Max. length is" 
-				 & positive'image (component_variant_name_length_max) & " !");
+				 & positive'image (variant_name_length_max) & " !");
 		end if;
 	end check_variant_name_length;
 	
 	procedure check_variant_name_characters (
-		variant		: in type_component_variant_name.bounded_string;
-		characters	: in character_set := component_variant_name_characters) is
+		variant		: in type_variant_name.bounded_string;
+		characters	: in character_set := variant_name_characters) is
 	-- Tests if the given variant name contains only valid characters as specified
 	-- by given character set.
 		use et_string_processing;
@@ -671,7 +671,7 @@ package body et_devices is
 	-- Returns true if given device provides the given package variant.
 	-- The given device must be real. Means appearance SCH_PCB.
 		device_cursor	: in type_devices.cursor;
-		variant			: in type_component_variant_name.bounded_string)  -- D, N
+		variant			: in type_variant_name.bounded_string)  -- D, N
 		return boolean is
 		
 		result : boolean := false; -- to be returned
@@ -706,7 +706,7 @@ package body et_devices is
 	-- Returns the name of the package model of the given device according to the given variant.
 	-- The given device must be real. Means appearance SCH_PCB.
 		device_cursor	: in type_devices.cursor;
-		variant			: in type_component_variant_name.bounded_string) -- D, N
+		variant			: in type_variant_name.bounded_string) -- D, N
 		return type_package_model_file.bounded_string is -- libraries/packages/smd/SOT23.pac
 		package_model : type_package_model_file.bounded_string; -- to be returned (packages/smd/SOT23.pac)
 
@@ -744,11 +744,11 @@ package body et_devices is
 			model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 			device	: in type_device) is
 
-			use type_units_internal;
-			unit_internal_cursor : type_units_internal.cursor := device.units_internal.first;
+			use pac_units_internal;
+			unit_internal_cursor : pac_units_internal.cursor := device.units_internal.first;
 			
-			use type_units_external;
-			unit_external_cursor : type_units_external.cursor := device.units_external.first;
+			use pac_units_external;
+			unit_external_cursor : pac_units_external.cursor := device.units_external.first;
 
 			use type_ports;
 
@@ -782,7 +782,7 @@ package body et_devices is
 			
 		begin -- query_units
 			-- search the port among the internal units first
-			while unit_internal_cursor /= type_units_internal.no_element loop
+			while unit_internal_cursor /= pac_units_internal.no_element loop
 
 				query_element (
 					position	=> unit_internal_cursor,
@@ -798,7 +798,7 @@ package body et_devices is
 
 			-- if port not found among the internal units, search in external units:
 			if port_cursor = type_ports.no_element then
-				while unit_external_cursor /= type_units_external.no_element loop
+				while unit_external_cursor /= pac_units_external.no_element loop
 
 					query_element (
 						position	=> unit_external_cursor,

@@ -125,7 +125,7 @@ package body schematic_ops is
 		raise constraint_error;
 	end;
 
-	procedure assembly_variant_not_found (variant : in type_variant_name.bounded_string) is 
+	procedure assembly_variant_not_found (variant : in et_general.type_variant_name.bounded_string) is 
 	begin
 		log (ERROR, "assembly variant " &
 			 enclose_in_quotes (to_variant (variant)) & " not found !", console => true);
@@ -459,8 +459,8 @@ package body schematic_ops is
 		procedure query_internal_units (
 			model	: in type_device_model_file.bounded_string;
 			device	: in et_devices.type_device) is
-			use type_units_internal;
-			unit_cursor : type_units_internal.cursor;
+			use pac_units_internal;
+			unit_cursor : pac_units_internal.cursor;
 		begin -- query_internal_units
 			-- locate the given unit among the internal units
 			unit_cursor := find (device.units_internal, unit_name);
@@ -474,8 +474,8 @@ package body schematic_ops is
 		procedure query_external_units (
 			model	: in type_device_model_file.bounded_string;
 			device	: in et_devices.type_device) is
-			use type_units_external;
-			unit_cursor : type_units_external.cursor;
+			use pac_units_external;
+			unit_cursor : pac_units_external.cursor;
 			sym_model : type_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
 
 			procedure query_symbol (
@@ -493,7 +493,7 @@ package body schematic_ops is
 
 			-- Fetch the symbol model file of the external unit.
 			-- If unit could not be located, nothing happens -> ports remains empty.
-			if unit_cursor /= type_units_external.no_element then
+			if unit_cursor /= pac_units_external.no_element then
 				sym_model := element (unit_cursor).file;
 
 				-- Fetch the ports of the external unit.
@@ -3322,8 +3322,8 @@ package body schematic_ops is
 	end next_device_name;
 
 	type type_unit_cursors_lib is record
-		int : type_units_internal.cursor;
-		ext : type_units_external.cursor;
+		int : pac_units_internal.cursor;
+		ext : pac_units_external.cursor;
 	end record;
 
 	function first_unit (device_cursor : in et_devices.type_devices.cursor) return type_unit_cursors_lib is
@@ -3334,43 +3334,43 @@ package body schematic_ops is
 	-- If no suitable external unit found, the cursor of external units in the return is no_element.
 		cursors : type_unit_cursors_lib; -- to be returned
 		use et_devices.type_devices;
-		use type_units_internal;
-		use type_units_external;
+		use pac_units_internal;
+		use pac_units_external;
 
 		procedure query_units (
 			device_name	: in type_device_model_file.bounded_string;
 			device		: in et_devices.type_device) is
 
 			function first_internal (add_level : in type_add_level) 
-				return type_units_internal.cursor is
+				return pac_units_internal.cursor is
 			-- Searches for a unit with given add_level. Returns the cursor of that unit.
 			-- If no suitable unit found, returns cursor with no_element.
-				cursor : type_units_internal.cursor := device.units_internal.first;
+				cursor : pac_units_internal.cursor := device.units_internal.first;
 			begin
-				while cursor /= type_units_internal.no_element loop
+				while cursor /= pac_units_internal.no_element loop
 					if element (cursor).add_level = add_level then
 						return cursor; -- unit found, no further search required. exit prematurely.
 					end if;
 					next (cursor);
 				end loop;
 				-- no unit found. return no_element:
-				return type_units_internal.no_element;
+				return pac_units_internal.no_element;
 			end;
 
 			function first_external (add_level : in type_add_level) 
-				return type_units_external.cursor is
+				return pac_units_external.cursor is
 			-- Searches for a unit with given add_level. Returns the cursor of that unit.
 			-- If no suitable unit found, returns cursor with no_element.
-				cursor : type_units_external.cursor := device.units_external.first;
+				cursor : pac_units_external.cursor := device.units_external.first;
 			begin
-				while cursor /= type_units_external.no_element loop
+				while cursor /= pac_units_external.no_element loop
 					if element (cursor).add_level = add_level then
 						return cursor; -- unit found, no further search required. exit prematurely.
 					end if;
 					next (cursor);
 				end loop;
 				-- no unit found. return no_element:
-				return type_units_external.no_element;
+				return pac_units_external.no_element;
 			end;
 			
 		begin -- query_units
@@ -3378,19 +3378,19 @@ package body schematic_ops is
 			cursors.int := first_internal (MUST);
 
 			-- if no MUST-unit found, search for an ALWAYS-unit:
-			if cursors.int = type_units_internal.no_element then
+			if cursors.int = pac_units_internal.no_element then
 				cursors.int := first_internal (ALWAYS);
 
 				-- if no ALWAYS-unit found, search for a NEXT-unit:
-				if cursors.int = type_units_internal.no_element then
+				if cursors.int = pac_units_internal.no_element then
 					cursors.int := first_internal (NEXT);
 
 					-- if no NEXT-unit found, search for a REQUEST-unit
-					if cursors.int = type_units_internal.no_element then
+					if cursors.int = pac_units_internal.no_element then
 						cursors.int := first_internal (REQUEST);
 
 						-- if no REQUEST-unit found, search for a CAN-unit
-						if cursors.int = type_units_internal.no_element then
+						if cursors.int = pac_units_internal.no_element then
 							cursors.int := first_internal (CAN);
 						end if;
 					end if;					
@@ -3398,25 +3398,25 @@ package body schematic_ops is
 			end if;
 
 			-- if no suitable internal unit found, search among the external units:
-			if cursors.int = type_units_internal.no_element then
+			if cursors.int = pac_units_internal.no_element then
 
 				-- search among the external units for a MUST-unit
 				cursors.ext := first_external (MUST);
 
 				-- if no MUST-unit found, search for an ALWAYS-unit:
-				if cursors.ext = type_units_external.no_element then
+				if cursors.ext = pac_units_external.no_element then
 					cursors.ext := first_external (ALWAYS);
 
 					-- if no ALWAYS-unit found, search for a NEXT-unit:
-					if cursors.ext = type_units_external.no_element then
+					if cursors.ext = pac_units_external.no_element then
 						cursors.ext := first_external (NEXT);
 
 						-- if no NEXT-unit found, search for a REQUEST-unit
-						if cursors.ext = type_units_external.no_element then
+						if cursors.ext = pac_units_external.no_element then
 							cursors.ext := first_external (REQUEST);
 
 							-- if no REQUEST-unit found, search for a CAN-unit
-							if cursors.ext = type_units_external.no_element then
+							if cursors.ext = pac_units_external.no_element then
 								cursors.ext := first_external (CAN);
 							end if;
 						end if;					
@@ -3424,7 +3424,7 @@ package body schematic_ops is
 				end if;
 			
 				-- if no suitable external unit found, we have a problem:
-				if cursors.ext = type_units_external.no_element then
+				if cursors.ext = pac_units_external.no_element then
 					log (ERROR, " Device model has no units !", console => true);
 					raise constraint_error;
 				end if;
@@ -3451,8 +3451,8 @@ package body schematic_ops is
 		
 		use et_devices.type_devices;
 		use type_unit_name;
-		use type_units_internal;
-		use type_units_external;
+		use pac_units_internal;
+		use pac_units_external;
 
 		procedure query_units (
 			device_name	: in type_device_model_file.bounded_string;
@@ -3461,7 +3461,7 @@ package body schematic_ops is
 			-- First search among the internal units:
 			cursors.int := device.units_internal.first;
 
-			while cursors.int /= type_units_internal.no_element loop
+			while cursors.int /= pac_units_internal.no_element loop
 				if key (cursors.int) = unit_name then
 					exit; -- unit found, no further search required. exit prematurely.
 				end if;
@@ -3469,11 +3469,11 @@ package body schematic_ops is
 			end loop;
 
 			-- if no suitable internal unit found, search among the external units:
-			if cursors.int = type_units_internal.no_element then
+			if cursors.int = pac_units_internal.no_element then
 
 				cursors.ext := device.units_external.first;
 
-				while cursors.ext /= type_units_external.no_element loop
+				while cursors.ext /= pac_units_external.no_element loop
 					if key (cursors.ext) = unit_name then
 						exit; -- unit found, no further search required. exit prematurely.
 					end if;
@@ -3481,7 +3481,7 @@ package body schematic_ops is
 				end loop;
 				
 				-- if no suitable external unit found, we have a problem:
-				if cursors.ext = type_units_external.no_element then
+				if cursors.ext = pac_units_external.no_element then
 					log (ERROR, "unit " & et_devices.to_string (unit_name) &
 						 " not found in device model !", console => true);
 					raise constraint_error;
@@ -3504,7 +3504,7 @@ package body schematic_ops is
 	-- Returns the placeholders of the package of a device. The package is indirectly selected
 	-- by the given variant name. The given device is accessed by the given device cursor.
 		device	: in et_devices.type_devices.cursor;
-		variant	: in type_component_variant_name.bounded_string) -- N, D, S_0805
+		variant	: in et_devices.type_variant_name.bounded_string) -- N, D, S_0805
 		return et_packages.type_text_placeholders is
 		use et_packages;
 		use et_devices.type_devices;
@@ -3548,7 +3548,7 @@ package body schematic_ops is
 	-- If the given variant is empty (zero length) the the device is assumed to be virtual.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in type_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
-		variant			: in type_component_variant_name.bounded_string; -- N, D, S_0805
+		variant			: in et_devices.type_variant_name.bounded_string; -- N, D, S_0805
 		place			: in et_coordinates.type_position; -- sheet/x/y,rotation
 		log_threshold	: in type_log_level) is
 
@@ -3574,8 +3574,8 @@ package body schematic_ops is
 
 			unit_cursors : type_unit_cursors_lib;
 
-			use type_units_internal;
-			use type_units_external;
+			use pac_units_internal;
+			use pac_units_external;
 
 			procedure add_unit_internal (
 			-- Add an internal unit to the schematic device.
@@ -3683,7 +3683,7 @@ package body schematic_ops is
 
 				when PCB =>
 					-- A real device requires a package variant.
-					if type_component_variant_name.length (variant) > 0 then
+					if et_devices.type_variant_name.length (variant) > 0 then
 
 						if variant_available (device_cursor_lib, variant) then
 							et_schematic.type_devices.insert (
@@ -3727,7 +3727,7 @@ package body schematic_ops is
 			-- If an internal unit is available, add it to device. If no internal unit available
 			-- but an external, add it to the device. So the operator will not take notice
 			-- whether an internal or external unit is placed.
-			if unit_cursors.int /= type_units_internal.no_element then
+			if unit_cursors.int /= pac_units_internal.no_element then
 
 				et_schematic.type_devices.update_element (
 					container	=> module.devices,
@@ -3744,7 +3744,7 @@ package body schematic_ops is
 					unit_name		=> key (unit_cursors.int));
 
 			-- no internal unit available -> add external unit
-			elsif unit_cursors.ext /= type_units_external.no_element then
+			elsif unit_cursors.ext /= pac_units_external.no_element then
 				
 				et_schematic.type_devices.update_element (
 					container	=> module.devices,
@@ -3785,7 +3785,7 @@ package body schematic_ops is
 		end add;
 			
 	begin -- add_device
-		if type_component_variant_name.length (variant) > 0 then -- real device
+		if et_devices.type_variant_name.length (variant) > 0 then -- real device
 			log (text => "module " & to_string (module_name) &
 				" adding device " & to_string (device_model) &
 				" package variant " & to_string (variant) &
@@ -3852,8 +3852,8 @@ package body schematic_ops is
 			unit_cursors : type_unit_cursors_lib;
 			ports : et_symbols.type_ports.map;
 
-			use type_units_internal;
-			use type_units_external;
+			use pac_units_internal;
+			use pac_units_external;
 			
 			procedure add_unit_internal (
 			-- Add an internal unit to the schematic device.
@@ -3994,7 +3994,7 @@ package body schematic_ops is
 				-- If an internal unit is available, add it to device. If no internal unit available
 				-- but an external, add it to the device. So the operator will not take notice
 				-- whether an internal or external unit is placed.
-				if unit_cursors.int /= type_units_internal.no_element then
+				if unit_cursors.int /= pac_units_internal.no_element then
 
 					et_schematic.type_devices.update_element (
 						container	=> module.devices,
@@ -4011,7 +4011,7 @@ package body schematic_ops is
 						unit_name		=> key (unit_cursors.int));
 
 				-- no internal unit available -> add external unit
-				elsif unit_cursors.ext /= type_units_external.no_element then
+				elsif unit_cursors.ext /= pac_units_external.no_element then
 					
 					et_schematic.type_devices.update_element (
 						container	=> module.devices,
@@ -4108,8 +4108,8 @@ package body schematic_ops is
 			device_cursor_lib : et_devices.type_devices.cursor;
 			unit_cursors : type_unit_cursors_lib;
 
-			use type_units_external;
-			use type_units_internal;
+			use pac_units_external;
+			use pac_units_internal;
 			use et_devices.type_devices;
 			
 			procedure add_unit_internal (
@@ -4219,7 +4219,7 @@ package body schematic_ops is
 				unit_cursors := any_unit (device_cursor_lib, unit_name);
 
 				-- If the unit is internal, add it to the device in the schematic:
-				if unit_cursors.int /= type_units_internal.no_element then
+				if unit_cursors.int /= pac_units_internal.no_element then
 
 					et_schematic.type_devices.update_element (
 						container	=> module.devices,
@@ -4236,7 +4236,7 @@ package body schematic_ops is
 						unit_name		=> key (unit_cursors.int));
 
 				-- Unit is external -> add external unit to device in schematic:
-				elsif unit_cursors.ext /= type_units_external.no_element then
+				elsif unit_cursors.ext /= pac_units_external.no_element then
 					
 					et_schematic.type_devices.update_element (
 						container	=> module.devices,
@@ -9808,7 +9808,7 @@ package body schematic_ops is
 	procedure create_assembly_variant (
 	-- Creates a new assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -9853,7 +9853,7 @@ package body schematic_ops is
 	procedure delete_assembly_variant (
 	-- Deletes an assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -9898,7 +9898,7 @@ package body schematic_ops is
 	procedure describe_assembly_variant (
 	-- Describes an assembly variant. Overwrites the previous description.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in type_variant_name.bounded_string; -- low_cost											
+		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost											
 		description		: in assembly_variants.type_description; -- "this is the low budget variant"
 		log_threshold	: in type_log_level) is
 
@@ -9913,7 +9913,7 @@ package body schematic_ops is
 			cursor : type_variants.cursor;
 
 			procedure assign_description (
-				name		: in type_variant_name.bounded_string;
+				name		: in et_general.type_variant_name.bounded_string;
 				variant		: in out type_variant) is
 			begin
 				variant.description := description;
@@ -9957,7 +9957,7 @@ package body schematic_ops is
 	-- the given assembly variant. An already existing device will be overwritten
 	-- without warning.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		device			: in type_name; -- R1
 		value			: in type_value.bounded_string; -- 220R
 		partcode		: in material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
@@ -9985,7 +9985,7 @@ package body schematic_ops is
 			cursor : type_variants.cursor;
 
 			procedure insert_device (
-				name		: in type_variant_name.bounded_string;
+				name		: in et_general.type_variant_name.bounded_string;
 				variant		: in out type_variant) is
 				use assembly_variants.type_devices;
 				cursor : assembly_variants.type_devices.cursor;
@@ -10061,7 +10061,7 @@ package body schematic_ops is
 	-- the given assembly variant. An already existing device will be overwritten
 	-- without warning.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		device			: in type_name; -- R1
 		log_threshold	: in type_log_level) is
 
@@ -10076,7 +10076,7 @@ package body schematic_ops is
 			cursor : type_variants.cursor;
 
 			procedure insert_device (
-				name		: in type_variant_name.bounded_string;
+				name		: in et_general.type_variant_name.bounded_string;
 				variant		: in out type_variant) is
 				use assembly_variants.type_devices;
 				cursor : assembly_variants.type_devices.cursor;
@@ -10144,7 +10144,7 @@ package body schematic_ops is
 	procedure remove_device (
 	-- Removes the gvien device from the given assembly variant.
 		module_name		: in type_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
-		variant_name	: in type_variant_name.bounded_string; -- low_cost
+		variant_name	: in et_general.type_variant_name.bounded_string; -- low_cost
 		device			: in type_name; -- R1
 		log_threshold	: in type_log_level) is
 
@@ -10159,7 +10159,7 @@ package body schematic_ops is
 			cursor : type_variants.cursor;
 
 			procedure delete_device (
-				name		: in type_variant_name.bounded_string;
+				name		: in et_general.type_variant_name.bounded_string;
 				variant		: in out type_variant) is
 				use assembly_variants.type_devices;
 				cursor : assembly_variants.type_devices.cursor;
@@ -10224,9 +10224,9 @@ package body schematic_ops is
 	-- Sets the assembly variant of a submodule instance. An already existing submodule
 	-- will be overwritten without warning.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in type_variant_name.bounded_string; -- low_cost								  
+		variant_parent	: in et_general.type_variant_name.bounded_string; -- low_cost								  
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
-		variant_submod	: in type_variant_name.bounded_string; -- fixed_frequency
+		variant_submod	: in et_general.type_variant_name.bounded_string; -- fixed_frequency
 		log_threshold	: in type_log_level) is
 
 		module_cursor : type_modules.cursor; -- points to the module
@@ -10241,7 +10241,7 @@ package body schematic_ops is
 			cursor : type_variants.cursor;
 
 			procedure mount (
-				name		: in type_variant_name.bounded_string; -- low_cost (parent module)
+				name		: in et_general.type_variant_name.bounded_string; -- low_cost (parent module)
 				variant		: in out type_variant) is
 				use assembly_variants.type_submodules;
 				cursor : type_submodules.cursor;
@@ -10320,7 +10320,7 @@ package body schematic_ops is
 	-- Removes the assembly variant of a submodule. This results in all devices
 	-- of the submodule being mounted.
 		module_name		: in type_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in type_variant_name.bounded_string; -- low_cost
+		variant_parent	: in et_general.type_variant_name.bounded_string; -- low_cost
 		instance		: in et_general.type_module_instance_name.bounded_string; -- OSC1
 		log_threshold	: in type_log_level) is
 
@@ -10336,7 +10336,7 @@ package body schematic_ops is
 			cursor : type_variants.cursor;
 
 			procedure remove (
-				name		: in type_variant_name.bounded_string; -- low_cost (parent module)
+				name		: in et_general.type_variant_name.bounded_string; -- low_cost (parent module)
 				variant		: in out type_variant) is
 				use assembly_variants.type_submodules;
 				cursor : type_submodules.cursor;
@@ -11656,7 +11656,7 @@ package body schematic_ops is
 		use assembly_variants.type_variants;
 		use et_general.type_variant_name;
 
-		procedure make_for_variant (variant_name : in type_variant_name.bounded_string) is
+		procedure make_for_variant (variant_name : in et_general.type_variant_name.bounded_string) is
 
 			use material;
 			bill_of_material : material.type_devices.map;
@@ -11666,7 +11666,7 @@ package body schematic_ops is
 			-- Adds to the device index the given offset.
 			-- If offset is zero, we are dealing with the top module.
 				module_cursor	: in type_modules.cursor;
-				variant			: in type_variant_name.bounded_string;
+				variant			: in et_general.type_variant_name.bounded_string;
 				offset			: in type_name_index) is
 				
 				procedure query_devices (
@@ -11872,10 +11872,10 @@ package body schematic_ops is
 
 			-- Another stack keeps record of the assembly variant on submodule levels.
 			package stack_variant is new et_general.stack_lifo (
-				item	=> type_variant_name.bounded_string,
+				item	=> et_general.type_variant_name.bounded_string,
 				max 	=> submodules.nesting_depth_max);
 			
-			variant : type_variant_name.bounded_string; -- low_cost
+			variant : et_general.type_variant_name.bounded_string; -- low_cost
 			
 			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
@@ -12072,7 +12072,7 @@ package body schematic_ops is
 			module		: in type_module) is
 			use et_schematic.type_devices;
 			device_cursor_sch	: et_schematic.type_devices.cursor;
-			variant 			: type_component_variant_name.bounded_string; -- D, N
+			variant 			: et_devices.type_variant_name.bounded_string; -- D, N
 			device_cursor_lib	: et_devices.type_devices.cursor;
 
 			procedure query_variants (
@@ -12081,7 +12081,7 @@ package body schematic_ops is
 				variant_cursor : type_component_variants.cursor;
 
 				procedure query_ports (
-					variant_name	: in type_component_variant_name.bounded_string;
+					variant_name	: in et_devices.type_variant_name.bounded_string;
 					variant			: in type_component_variant) is
 					use type_terminal_port_map;
 					terminal_cursor : type_terminal_port_map.cursor := variant.terminal_port_map.first;
@@ -12286,7 +12286,7 @@ package body schematic_ops is
 		use assembly_variants.type_variants;
 		use et_general.type_variant_name;
 
-		procedure make_for_variant (variant_name : in type_variant_name.bounded_string) is
+		procedure make_for_variant (variant_name : in et_general.type_variant_name.bounded_string) is
 
 			-- Since we are dealing with hierarchic designs, a tree of modules (each of them having its
 			-- own netlist) is required. In the course of this procedure the netlist_tree is built
@@ -12306,7 +12306,7 @@ package body schematic_ops is
 			-- Adds to the device index the given offset.
 			-- If offset is zero, we are dealing with the top module.
 				module_cursor	: in et_project.type_modules.cursor;
-				variant			: in type_variant_name.bounded_string;
+				variant			: in et_general.type_variant_name.bounded_string;
 				prefix			: in et_general.type_net_name.bounded_string; -- DRV3/OSC1/
 				offset			: in type_name_index) is
 
@@ -12457,10 +12457,10 @@ package body schematic_ops is
 
 			-- Another stack keeps record of the assembly variant at the submodule level.
 			package stack_variant is new et_general.stack_lifo (
-				item	=> type_variant_name.bounded_string,
+				item	=> et_general.type_variant_name.bounded_string,
 				max 	=> submodules.nesting_depth_max);
 			
-			variant : type_variant_name.bounded_string; -- low_cost
+			variant : et_general.type_variant_name.bounded_string; -- low_cost
 			
 			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
@@ -12603,7 +12603,7 @@ package body schematic_ops is
 				module			: in out et_schematic.type_module) is
 
 				procedure assign_netlist (
-					variant		: in type_variant_name.bounded_string;
+					variant		: in et_general.type_variant_name.bounded_string;
 					netlist		: in out netlists.type_netlist.tree) is
 				begin
 					-- overwrite the current netlist by the new netlist:

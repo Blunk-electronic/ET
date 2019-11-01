@@ -282,7 +282,7 @@ package et_devices is
 	end record;
 
 	-- Internal units are collected in a map:
-	package type_units_internal is new indefinite_ordered_maps (
+	package pac_units_internal is new indefinite_ordered_maps (
 		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
 		element_type	=> type_unit_internal);
 
@@ -296,7 +296,7 @@ package et_devices is
 	end record;
 
 	-- External units are collected in a map;
-	package type_units_external is new ordered_maps (
+	package pac_units_external is new ordered_maps (
 		key_type		=> type_unit_name.bounded_string, -- like "I/O-Bank 3"
 		element_type	=> type_unit_external);
 
@@ -313,29 +313,29 @@ package et_devices is
 	-- specific abbrevation for the package a device comes with.
 	-- Example: An opamp made by TI can be the type TL084N or TL084D. N means the NDIP14 package
 	-- whereas D means the SO14 package.
-	-- If a device has package variants, a suffix after the component type indicates the package
+	-- If a device has package variants, a suffix after the value indicates the package
 	-- The variant name is manufacturer specific. example: TL084D or TL084N
 	-- device package variant names like "N" or "D" are stored in bounded strings.
-	component_variant_name_characters : character_set := 
-		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set ("_-"); -- CS rename to package_variant_name_characters
+	variant_name_characters : character_set := 
+		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) or to_set ("_-");
 	
-	component_variant_name_length_max : constant positive := 50;
-	package type_component_variant_name is new generic_bounded_length (component_variant_name_length_max);
-	use type_component_variant_name;
+	variant_name_length_max : constant positive := 50;
+	package type_variant_name is new generic_bounded_length (variant_name_length_max);
+	use type_variant_name;
 
-	function to_string (package_variant : in type_component_variant_name.bounded_string) return string;
-	-- converts a type_component_variant_name to a string.
+	function to_string (package_variant : in type_variant_name.bounded_string) return string;
+	-- converts a type_variant_name to a string.
 	
 	function to_component_variant_name (variant_name : in string) 
-		return type_component_variant_name.bounded_string;
+		return type_variant_name.bounded_string;
 	-- converts a string to a variant name
 
 	procedure check_variant_name_length (variant_name : in string);
 	-- tests if the given variant name is not longer than allowed
 	
 	procedure check_variant_name_characters (
-		variant		: in type_component_variant_name.bounded_string;
-		characters	: in character_set := component_variant_name_characters);
+		variant		: in type_variant_name.bounded_string;
+		characters	: in character_set := variant_name_characters);
 	-- Tests if the given variant name contains only valid characters as specified
 	-- by given character set.
 	-- Raises exception if invalid character found.
@@ -358,7 +358,7 @@ package et_devices is
 	end record;
 
 	package type_component_variants is new ordered_maps ( -- CS rename to type_package_variants
-		key_type 		=> type_component_variant_name.bounded_string, -- D, N
+		key_type 		=> type_variant_name.bounded_string, -- D, N
 		element_type 	=> type_component_variant);
 
 	type type_terminal is record
@@ -381,8 +381,8 @@ package et_devices is
 -- DEVICES
 	type type_device (appearance : type_appearance) is record
 		prefix			: type_prefix.bounded_string; -- R, C, IC, ...
-		units_internal	: type_units_internal.map := type_units_internal.empty_map;
-		units_external	: type_units_external.map := type_units_external.empty_map;
+		units_internal	: pac_units_internal.map := pac_units_internal.empty_map;
+		units_external	: pac_units_external.map := pac_units_external.empty_map;
 
 		case appearance is
 
@@ -422,7 +422,7 @@ package et_devices is
 	-- Returns true if given device provides the given package variant.								   
 	-- The given device must be real. Means appearance SCH_PCB.
 		device_cursor	: in type_devices.cursor;
-		variant			: in type_component_variant_name.bounded_string)  -- D, N
+		variant			: in type_variant_name.bounded_string)  -- D, N
 		return boolean;
 
 	function locate_device (model : in type_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
@@ -433,7 +433,7 @@ package et_devices is
 	-- Returns the name of the package model of the given device according to the given variant.
 	-- The given device must be real. Means appearance SCH_PCB.							  
 		device_cursor	: in type_devices.cursor;
-		variant			: in type_component_variant_name.bounded_string) -- D, N
+		variant			: in type_variant_name.bounded_string) -- D, N
 		return type_package_model_file.bounded_string; -- libraries/packages/smd/SOT23.pac
 		
 -- 	function terminal_name (
@@ -441,7 +441,7 @@ package et_devices is
 -- 	-- The given device must be real. Means appearance SCH_PCB.							  
 -- 		device_cursor	: in type_devices.cursor;
 -- 		port_name		: in type_port_name.bounded_string;
--- 		variant			: in type_component_variant_name.bounded_string) -- D, N
+-- 		variant			: in type_variant_name.bounded_string) -- D, N
 -- 		return type_terminal_name.bounded_string; -- 14, H4
 
 	-- Used for netlists:

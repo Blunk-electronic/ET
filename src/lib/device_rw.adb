@@ -50,7 +50,7 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
 with material;
-with et_general;				use et_general;
+with et_general;				--use et_general;
 
 with et_coordinates;			use et_coordinates;
 use et_coordinates.geometry;
@@ -120,7 +120,7 @@ package body device_rw is
 		variant_cursor : type_component_variants.cursor;
 		
 		procedure write_variant (
-			packge	: in type_component_variant_name.bounded_string;
+			packge	: in type_variant_name.bounded_string;
 			variant	: in type_component_variant) is
 			use type_terminal_port_map;	
 
@@ -139,11 +139,11 @@ package body device_rw is
 			section_mark (section_terminal_port_map, FOOTER);						
 		end write_variant;
 
-		use type_units_internal;
-		unit_internal_cursor : type_units_internal.cursor := device.units_internal.first;
+		use pac_units_internal;
+		unit_internal_cursor : pac_units_internal.cursor := device.units_internal.first;
 		
-		use type_units_external;
-		unit_external_cursor : type_units_external.cursor := device.units_external.first;
+		use pac_units_external;
+		unit_external_cursor : pac_units_external.cursor := device.units_external.first;
 
 		procedure query_internal_unit (
 			name	: in type_unit_name.bounded_string;
@@ -219,7 +219,7 @@ package body device_rw is
 
 		-- internal units
 		section_mark (section_units_internal, HEADER);
-		while unit_internal_cursor /= type_units_internal.no_element loop
+		while unit_internal_cursor /= pac_units_internal.no_element loop
 			section_mark (section_unit, HEADER);
 			query_element (unit_internal_cursor, query_internal_unit'access);
 			section_mark (section_unit, FOOTER);
@@ -229,7 +229,7 @@ package body device_rw is
 
 		-- external units
 		section_mark (section_units_external, HEADER);
-		while unit_external_cursor /= type_units_external.no_element loop
+		while unit_external_cursor /= pac_units_external.no_element loop
 			section_mark (section_unit, HEADER);
 			query_element (unit_external_cursor, query_external_unit'access);
 			section_mark (section_unit, FOOTER);
@@ -290,7 +290,7 @@ package body device_rw is
 		appearance			: type_appearance; -- virtual/pcb
 		partcode			: material.type_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
 		variant				: type_component_variant;
-		variant_name		: type_component_variant_name.bounded_string; -- N, D
+		variant_name		: type_variant_name.bounded_string; -- N, D
 		variants			: type_component_variants.map;
 		terminal_port_map	: type_terminal_port_map.map;
 
@@ -384,8 +384,8 @@ package body device_rw is
 		unit_swap_level		: type_swap_level := swap_level_default;
 		unit_add_level		: type_add_level := add_level_default;
 		unit_symbol			: access type_symbol;
-		units_internal		: type_units_internal.map;
-		units_external		: type_units_external.map;
+		units_internal		: pac_units_internal.map;
+		units_external		: pac_units_external.map;
 
 		-- CS move to schematic_rw
 		symbol_line			: type_line;
@@ -412,14 +412,14 @@ package body device_rw is
 		procedure insert_unit_internal is
 		-- Inserts in the temporarily collection of internal units a new unit.
 		-- The symbol of the unit is the one accessed by pointer unit_symbol.
-			position : type_units_internal.cursor;
+			position : pac_units_internal.cursor;
 			inserted : boolean;
 		begin
 			-- Depending on the appearance of the device, a unit with the same
 			-- appearance is inserted in units_internal.
 			case appearance is 
 				when VIRTUAL =>
-					type_units_internal.insert (
+					pac_units_internal.insert (
 						container	=> units_internal,
 						position	=> position,
 						inserted	=> inserted,
@@ -432,7 +432,7 @@ package body device_rw is
 								add_level	=> unit_add_level));
 
 				when PCB =>
-					type_units_internal.insert (
+					pac_units_internal.insert (
 						container	=> units_internal,
 						position	=> position,
 						inserted	=> inserted,
@@ -457,7 +457,7 @@ package body device_rw is
 			end if;
 
 			-- Make sure the unit name is not in use by any external unit:
-			if type_units_external.contains (units_external, unit_name) then
+			if pac_units_external.contains (units_external, unit_name) then
 				log (ERROR, "unit name " & to_string (unit_name) 
 					& " already used by an external unit !", console => true);
 				raise constraint_error;
@@ -474,10 +474,10 @@ package body device_rw is
 
 		procedure insert_unit_external is
 		-- Inserts in the temporarily collection of external units a new unit.
-			position : type_units_external.cursor;
+			position : pac_units_external.cursor;
 			inserted : boolean;
 		begin
-			type_units_external.insert (
+			pac_units_external.insert (
 				container	=> units_external,
 				position	=> position,
 				inserted	=> inserted,
@@ -495,7 +495,7 @@ package body device_rw is
 			end if;
 
 			-- Make sure the unit name is not in use by any internal unit:
-			if type_units_internal.contains (units_internal, unit_name) then
+			if pac_units_internal.contains (units_internal, unit_name) then
 				log (ERROR, "unit name " & to_string (unit_name) 
 					& " already used by an internal unit !", console => true);
 				raise constraint_error;
@@ -1423,7 +1423,7 @@ package body device_rw is
 		else
 			-- If the model file is to be read, first check if the file exists.
 			declare
-				file : string := expand (to_string (file_name));
+				file : string := et_general.expand (to_string (file_name));
 			begin
 				if ada.directories.exists (file) then
 
