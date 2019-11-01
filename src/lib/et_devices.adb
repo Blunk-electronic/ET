@@ -284,7 +284,7 @@ package body et_devices is
 	begin
 		invalid_character_position := index (
 			source	=> prefix,
-			set		=> device_name_prefix_characters,
+			set		=> prefix_characters,
 			test	=> outside);
 
 		if invalid_character_position > 0 then
@@ -350,7 +350,7 @@ package body et_devices is
 			case i is 
 				-- The first character MUST be a valid prefix character.
 				when 1 => 
-					if is_in (c, device_name_prefix_characters) then
+					if is_in (c, prefix_characters) then
 						r.prefix := r.prefix & c;
 					else 
 						invalid_reference;
@@ -359,7 +359,7 @@ package body et_devices is
 				-- Further characters are appended to prefix if they are valid prefix characters.
 				-- If anything else is found, the prefix is assumed as complete.
 				when others =>
-					if is_in (c, device_name_prefix_characters) then
+					if is_in (c, prefix_characters) then
 						r.prefix := r.prefix & c;
 					else
 						d := i; -- d holds the position of the charcter after the prefix.

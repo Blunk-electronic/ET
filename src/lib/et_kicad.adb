@@ -2101,7 +2101,7 @@ package body et_kicad is
 						else
 							check_prefix_characters (
 								prefix 		=> tmp_prefix,
-								characters	=> device_name_prefix_characters);
+								characters	=> prefix_characters);
 							
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_reference.size);
 						end if;

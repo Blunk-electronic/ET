@@ -1151,7 +1151,7 @@ package et_kicad is
 	power_symbol_prefix : constant string (1..4) := "#PWR";	
 
 	-- These are the characters allowed for a component prefix:
-	component_prefix_characters : character_set := et_devices.device_name_prefix_characters
+	component_prefix_characters : character_set := et_devices.prefix_characters
 		or to_set (schematic_component_power_symbol_prefix);
 
 	-- These characters are allowed for a component reference. 

@@ -147,7 +147,7 @@ package et_devices is
 
 	-- A device name consists of a prefix (like R, C, IC, ..)
 	-- and a consecutive number. Both form something like "IC702"
-	device_name_prefix_characters : character_set := to_set (span => ('A','Z'));
+	prefix_characters : character_set := to_set (span => ('A','Z'));
 	device_name_prefix_length_max : constant natural := 10; -- CS: there is no reason to work with longer prefixes.
 	package type_device_name_prefix is new generic_bounded_length (device_name_prefix_length_max);
 	use type_device_name_prefix;
@@ -197,7 +197,7 @@ package et_devices is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.	
 
--- 	function "=" (left, right : in type_device_name) return boolean;
+	function "=" (left, right : in type_device_name) return boolean;
 	-- Returns true if left equals right.
 	
 	function to_string (name : in type_device_name) return string;
