@@ -254,14 +254,14 @@ package body et_devices is
 
 	
 	
-	function to_string (prefix : in type_device_name_prefix.bounded_string) return string is
+	function to_string (prefix : in type_prefix.bounded_string) return string is
 	-- returns the given prefix as string
 	begin
-		return type_device_name_prefix.to_string (prefix); -- leading space not allowd !
+		return type_prefix.to_string (prefix); -- leading space not allowd !
 	end to_string;
 
-	function to_prefix (prefix : in string) return type_device_name_prefix.bounded_string is begin
-		return type_device_name_prefix.to_bounded_string (prefix);
+	function to_prefix (prefix : in string) return type_prefix.bounded_string is begin
+		return type_prefix.to_bounded_string (prefix);
 	end to_prefix;
 
 	procedure check_prefix_length (prefix : in string) is
@@ -276,7 +276,7 @@ package body et_devices is
 		end if;
 	end check_prefix_length;
 	
-	procedure check_prefix_characters (prefix : in type_device_name_prefix.bounded_string) is
+	procedure check_prefix_characters (prefix : in type_prefix.bounded_string) is
 	-- Tests if the given prefix contains only valid characters.
 	-- Raises exception if invalid character found.
 		use et_string_processing;
@@ -321,12 +321,12 @@ package body et_devices is
 		text_in_justified : string (1 .. text_in'length) := text_in;
 	
 		r : type_device_name := (
-				prefix		=> type_device_name_prefix.to_bounded_string(""),
+				prefix		=> type_prefix.to_bounded_string(""),
 				id 			=> 0,
 				id_width	=> 1);
 	
 		c : character;
-		p : type_device_name_prefix.bounded_string;
+		p : type_prefix.bounded_string;
 	
 		procedure invalid_reference is
 			use et_string_processing;
@@ -340,7 +340,7 @@ package body et_devices is
 		d : positive;
 		digit : natural := 0;
 
-		use type_device_name_prefix;
+		use type_prefix;
 
 	begin -- to_device_name
 		-- assemble prefix
@@ -399,7 +399,7 @@ package body et_devices is
 	-- If left equals right, the return is false.
 	-- CS: needs verification !
 		result : boolean := false;
-		use type_device_name_prefix;
+		use type_prefix;
 	begin
 		-- First we compare the prefix.
 		-- Example: If left is C201 and right is R4 then the result is true as C comes before R.
@@ -427,7 +427,7 @@ package body et_devices is
 	-- Returns true if left equals right.
 	-- Example: if IC4 = IC4 then return true.
 		result : boolean := false;
-		use type_device_name_prefix;
+		use type_prefix;
 	begin
 		-- First we compare the prefix. If prefixes are equal, we compare the id.
 		-- If either of them does not match, the result is set false.
@@ -461,16 +461,16 @@ package body et_devices is
 	begin
 		case lz is
 			when 0 => -- no leading zeroes
-				return type_device_name_prefix.to_string (name.prefix) 
+				return type_prefix.to_string (name.prefix) 
 					& trim (natural'image (name.id),left);
 				
 			when others => -- leading zeros required
-				return type_device_name_prefix.to_string (name.prefix) 
+				return type_prefix.to_string (name.prefix) 
 					& lz * '0' & trim (natural'image (name.id),left);
 		end case;
 	end to_string;
 	
-	function prefix (name : in type_device_name) return type_device_name_prefix.bounded_string is begin
+	function prefix (name : in type_device_name) return type_prefix.bounded_string is begin
 	-- Returns the prefix of the given device name.
 		return name.prefix;
 	end;
@@ -484,7 +484,7 @@ package body et_devices is
 	-- Builds a device name by given prefix (like R) and index (like 23) to a device name (like R23).
 	-- If width is not provided, then the width of the index is calculated automatically. In case of R23 the width is 2.
 	-- If width is provided, then it is set accordingly.
-		prefix	: in type_device_name_prefix.bounded_string; 	-- R, C, L
+		prefix	: in type_prefix.bounded_string; 	-- R, C, L
 		index	: in type_device_name_index;					-- 1, 20, ..
 		width	: in type_device_name_index_width := type_device_name_index_width'first) -- the number of digits
 		return type_device_name is

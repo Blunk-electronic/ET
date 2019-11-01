@@ -3424,9 +3424,9 @@ package body et_kicad_to_native is
 
 				function remove_leading_hash (
 				-- Removes the leading hash character from the prefix of a virtual component like #FLG or #PWR.
-					prefix : in et_devices.type_device_name_prefix.bounded_string) return
-					et_devices.type_device_name_prefix.bounded_string is
-					use et_devices.type_device_name_prefix;
+					prefix : in et_devices.type_prefix.bounded_string) return
+					et_devices.type_prefix.bounded_string is
+					use et_devices.type_prefix;
 				begin
 					return et_devices.to_prefix (slice (prefix, 2, length (prefix))); -- FLG, PWR
 				end;

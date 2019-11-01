@@ -228,7 +228,7 @@ package schematic_ops is
 	-- Returns for the given device prefix the next available device name in the module.
 	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.
 		module_cursor	: in type_modules.cursor;
-		prefix			: in type_device_name_prefix.bounded_string) -- C
+		prefix			: in type_prefix.bounded_string) -- C
 		return type_device_name; -- C2
 	
 	procedure add_device (

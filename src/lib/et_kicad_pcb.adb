@@ -3012,7 +3012,7 @@ package body et_kicad_pcb is
 		use et_devices;
 	begin
 		return ((
-			prefix		=> type_device_name_prefix.to_bounded_string (""),
+			prefix		=> type_prefix.to_bounded_string (""),
 			id			=> device_name_index_default,
 			id_width	=> 1));
 	end default_component_reference;

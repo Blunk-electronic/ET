@@ -285,7 +285,7 @@ package body device_rw is
 		end to_string;
 		
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
-		prefix				: type_device_name_prefix.bounded_string; -- T, IC
+		prefix				: type_prefix.bounded_string; -- T, IC
 		value				: type_value.bounded_string; -- BC548
 		appearance			: type_appearance; -- virtual/pcb
 		partcode			: material.type_partcode.bounded_string; -- IC_PAC_S_SOT23_VAL_
