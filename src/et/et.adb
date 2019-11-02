@@ -66,6 +66,9 @@ with symbol_rw;
 with et_devices;
 with device_rw;
 
+with et_schematic_sheets;
+with et_pcb_sheet;
+
 procedure et is
 
 	conv_file_name_create	: conventions.type_conventions_file_name.bounded_string;
@@ -92,6 +95,14 @@ procedure et is
 	device_name_save_as		: et_devices.type_device_model_file.bounded_string; -- the device to be saved as
 	device_appearance		: et_symbols.type_appearance := et_symbols.PCB; -- virtual/pcb. mostly pcb.
 
+	frame_schematic_name_create		: et_schematic_sheets.pac_template_name.bounded_string; -- the frame to be created like lib/frames/A3_landscape.frs
+	frame_schematic_name_open		: et_schematic_sheets.pac_template_name.bounded_string;
+	frame_schematic_name_save_as	: et_schematic_sheets.pac_template_name.bounded_string;
+
+	frame_pcb_name_create	: et_pcb_sheet.pac_template_name.bounded_string; -- the frame to be created like lib/frames/A3_landscape.frb
+	frame_pcb_name_open		: et_pcb_sheet.pac_template_name.bounded_string;
+	frame_pcb_name_save_as	: et_pcb_sheet.pac_template_name.bounded_string;
+	
 	script_name	: scripting.type_script_name.bounded_string;
 
 	dummy_name : constant string := "dummy";
@@ -133,6 +144,16 @@ procedure et is
 						& space & switch_device_appearance & equals
 						& space & switch_native_device_open & equals
 						& space & switch_native_device_save_as & equals
+
+						-- frame schematic
+						& space & switch_frame_schematic_create -- no parameter
+						& space & switch_frame_schematic_open & equals
+						& space & switch_frame_schematic_save_as & equals
+
+						-- frame pcb
+						& space & switch_frame_pcb_create -- no parameter
+						& space & switch_frame_pcb_open & equals
+						& space & switch_frame_pcb_save_as & equals
 						
 						& space & switch_execute_script & equals
 					) is
@@ -226,6 +247,34 @@ procedure et is
 					elsif full_switch = switch_native_device_save_as then
 						log (text => arg & full_switch & space & parameter);
 						device_name_save_as := et_devices.to_file_name (parameter);
+
+						
+					-- frame schematic
+					elsif full_switch = switch_frame_schematic_create then
+						log (text => arg & full_switch); -- no parameter
+						frame_schematic_name_create := et_schematic_sheets.to_template_name (dummy_name);
+
+					elsif full_switch = switch_frame_schematic_open then
+						log (text => arg & full_switch & space & parameter);
+						frame_schematic_name_open := et_schematic_sheets.to_template_name (parameter);
+
+					elsif full_switch = switch_frame_schematic_save_as then
+						log (text => arg & full_switch & space & parameter);
+						frame_schematic_name_save_as := et_schematic_sheets.to_template_name (parameter);
+
+
+					-- frame pcb
+					elsif full_switch = switch_frame_pcb_create then
+						log (text => arg & full_switch); -- no parameter
+						frame_pcb_name_create := et_pcb_sheet.to_template_name (dummy_name);
+
+					elsif full_switch = switch_frame_pcb_open then
+						log (text => arg & full_switch & space & parameter);
+						frame_pcb_name_open := et_pcb_sheet.to_template_name (parameter);
+
+					elsif full_switch = switch_frame_pcb_save_as then
+						log (text => arg & full_switch & space & parameter);
+						frame_pcb_name_save_as := et_pcb_sheet.to_template_name (parameter);
 
 						
 					-- script
@@ -395,6 +444,8 @@ procedure et is
 		use et_packages.type_package_model_file;
 		use et_symbols.type_symbol_model_file;
 		use et_devices.type_device_model_file;
+		use et_schematic_sheets.pac_template_name;
+		use et_pcb_sheet.pac_template_name;
 		
 		procedure read_configuration_file is begin
 			if length (conv_file_name_use) > 0 then
@@ -506,6 +557,21 @@ procedure et is
 				-- optionally the device can be saved under a different name				
 				save_device_as; -- if device_name_save_as is empty nothing happens
 
+
+			-- frame schematic
+			elsif length (frame_schematic_name_create) > 0 then
+				null;
+-- 				device_rw.create_device (device_name_create, device_appearance, log_threshold => 0);
+
+				-- optionally the device can be saved under a different name
+-- 				save_device_as; -- if device_name_save_as is empty nothing happens
+
+			elsif length (frame_schematic_name_open) > 0 then
+				null;
+-- 				device_rw.read_device (device_name_open, log_threshold => 0);
+
+				-- optionally the device can be saved under a different name				
+-- 				save_device_as; -- if device_name_save_as is empty nothing happens
 
 			end if;
 			

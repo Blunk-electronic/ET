@@ -10,3 +10,10 @@ et --open-symbol ../ET_component_library/symbols/resistors/resistor_single.sym -
 
 et --create-device --device-appearance virtual --save-device-as dummy.dev
 et --create-device --device-appearance pcb --save-device-as dummy.dev
+
+et --create-schematic-frame --save-schematic-frame-as dummy.frs
+et --open-schematic-frame test.frs --save-schematic-frame-as dummy.frs
+
+et --create-pcb-frame --save-pcb-frame-as dummy.frb
+et --open-pcb-frame test.frb --save-pcb-frame-as dummy.frb
+

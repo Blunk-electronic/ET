@@ -58,16 +58,11 @@ package et_frames is
 	type type_paper_orientation is (PORTRAIT, LANDSCAPE);
 
 	
-	-- $ET_FRAMES/drawing_frame_version_1.frm
-	frame_template_fil_name_length_max : constant positive := 300;
-	package type_frame_template_name is new generic_bounded_length (frame_template_fil_name_length_max);
+	template_file_name_length_max : constant positive := 300;
 
-	frame_template_name_dummy : constant type_frame_template_name.bounded_string := 
-		type_frame_template_name.to_bounded_string ("dummy_frame");
+	template_file_name_dummy : constant string := "dummy_frame";
+
 	
-	function to_string (name : in type_frame_template_name.bounded_string) return string;
-	function to_template_name (name : in string) return type_frame_template_name.bounded_string;
-
 	-- A drawing frame is divided in columns and rows. The columns run from 1 to maximal 26.
 	-- The rows run from A to Z.
 	type type_columns is new positive range 1..26;

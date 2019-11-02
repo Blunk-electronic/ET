@@ -36,14 +36,18 @@
 --
 --   ToDo: 
 
-with et_coordinates;		use et_coordinates;
-with et_text;				use et_text;
-with et_frames;				use et_frames;
 
 package body et_schematic_sheets is
 
-	procedure dummy is begin null; end;
-		
+	function to_string (name : in pac_template_name.bounded_string) return string is begin
+		return pac_template_name.to_string (name);
+	end;
+	
+	function to_template_name (name : in string) return pac_template_name.bounded_string is begin
+		return pac_template_name.to_bounded_string (name);
+	end;
+
+	
 end et_schematic_sheets;
 
 -- Soli Deo Gloria

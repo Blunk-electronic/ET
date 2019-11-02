@@ -169,6 +169,14 @@ package body et_general is
 		put_line (dash & switch_native_device_create);
 		put_line (dash & switch_native_device_open);		
 		put_line (dash & switch_native_device_save_as);
+
+		put_line (dash & switch_frame_schematic_create);
+		put_line (dash & switch_frame_schematic_open);		
+		put_line (dash & switch_frame_schematic_save_as);
+
+		put_line (dash & switch_frame_pcb_create);
+		put_line (dash & switch_frame_pcb_open);		
+		put_line (dash & switch_frame_pcb_save_as);
 		
 		put_line (dash & switch_execute_script);
 		put_line (dash & switch_make_default_conv);

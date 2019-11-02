@@ -36,6 +36,8 @@
 --
 --   ToDo: 
 
+with ada.strings.bounded; 	use ada.strings.bounded;
+
 with et_geometry;
 with et_pcb_coordinates;	use et_pcb_coordinates;
 with et_packages;
@@ -44,6 +46,18 @@ with et_frames;				use et_frames;
 
 package et_pcb_sheet is
 
+	-- $ET_FRAMES/drawing_frame_version_1.frb
+	template_file_extension : constant string := "frb";
+	
+	package pac_template_name is new generic_bounded_length (template_file_name_length_max);
+
+	frame_template_name_dummy : constant pac_template_name.bounded_string := 
+		pac_template_name.to_bounded_string (template_file_name_dummy);
+	
+	function to_string (name : in pac_template_name.bounded_string) return string;
+	function to_template_name (name : in string) return pac_template_name.bounded_string;
+
+	
 	use et_pcb_coordinates.geometry;
 	use type_text_content;
 
@@ -56,7 +70,6 @@ package et_pcb_sheet is
 	
 	use pac_frames;
 	
-	procedure dummy;
 
 
 	
@@ -80,7 +93,7 @@ package et_pcb_sheet is
 
 	-- This is the drawing frame used in a pcb layout:
 	type type_frame is new pac_frames.type_frame with record
-		template	: type_frame_template_name.bounded_string := frame_template_name_dummy;
+		template	: pac_template_name.bounded_string := frame_template_name_dummy;
 			-- like $ET_FRAMES/drawing_frame_A3_landscape.frm
 
 		title_block : type_title_block;

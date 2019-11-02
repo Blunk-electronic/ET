@@ -36,6 +36,7 @@
 --
 --   ToDo: 
 
+with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
@@ -47,6 +48,18 @@ with et_frames;				use et_frames;
 
 package et_schematic_sheets is
 
+	-- $ET_FRAMES/drawing_frame_version_1.frs
+	template_file_extension : constant string := "frs";
+	
+	package pac_template_name is new generic_bounded_length (template_file_name_length_max);
+
+	frame_template_name_dummy : constant pac_template_name.bounded_string := 
+		pac_template_name.to_bounded_string (template_file_name_dummy);
+	
+	function to_string (name : in pac_template_name.bounded_string) return string;
+	function to_template_name (name : in string) return pac_template_name.bounded_string;
+
+	
 	use et_coordinates.geometry;
 	use type_text_content;
 
@@ -58,7 +71,6 @@ package et_schematic_sheets is
 		text	=> et_symbols.pac_text);
 	
 	
-	procedure dummy;
 
 -- FRAMES
 	use pac_frames;
@@ -101,8 +113,8 @@ package et_schematic_sheets is
 
 	-- The final drawing frames:
 	type type_frames is record
-		template		: type_frame_template_name.bounded_string := frame_template_name_dummy;
-			-- like $ET_FRAMES/drawing_frame_A4_landscape.frm
+		template		: pac_template_name.bounded_string := frame_template_name_dummy;
+			-- like $ET_FRAMES/drawing_frame_A4_landscape.frs
 
 		frame			: type_frame; -- lines, title block
 		

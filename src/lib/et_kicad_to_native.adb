@@ -72,6 +72,8 @@ with device_rw;
 with et_symbols;
 with et_devices;				use et_devices;
 with et_frames;					use et_frames;
+with et_schematic_sheets;
+with et_pcb_sheet;
 
 package body et_kicad_to_native is
 
@@ -2863,10 +2865,10 @@ package body et_kicad_to_native is
 		-- For the time being the native module gets dummy templates assigned.
 		begin
 			-- schematic frames:
-			module.frames.template := frame_template_name_dummy;
+			module.frames.template := et_schematic_sheets.frame_template_name_dummy;
 
 			-- board frame:
-			module.board.frame.template := frame_template_name_dummy;
+			module.board.frame.template := et_pcb_sheet.frame_template_name_dummy;
 		end copy_frames;
 		
 		procedure copy_libraries (

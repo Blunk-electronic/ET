@@ -129,6 +129,15 @@ package et_general is
 	switch_native_device_save_as	: constant string := "-save-device-as";	
 	switch_device_appearance		: constant string := "-device-appearance";
 
+	switch_frame_schematic_create	: constant string := "-create-schematic-frame";	
+	switch_frame_schematic_open		: constant string := "-open-schematic-frame";	
+	switch_frame_schematic_save_as	: constant string := "-save-schematic-frame-as";	
+	
+	switch_frame_pcb_create			: constant string := "-create-pcb-frame";	
+	switch_frame_pcb_open			: constant string := "-open-pcb-frame";	
+	switch_frame_pcb_save_as		: constant string := "-save-pcb-frame-as";	
+
+	
 	switch_execute_script			: constant string := "-script";
 
 
