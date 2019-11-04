@@ -56,21 +56,47 @@ package et_frames is
 	function to_string (paper_size : in type_paper_size) return string;
 
 	type type_paper_orientation is (PORTRAIT, LANDSCAPE);
-
+	orientation_default : constant type_paper_orientation := LANDSCAPE;
 	
 	template_file_name_length_max : constant positive := 300;
-
 	template_file_name_dummy : constant string := "dummy_frame";
 
 	
 	-- A drawing frame is divided in columns and rows. The columns run from 1 to maximal 26.
 	-- The rows run from A to Z.
-	type type_columns is new positive range 1..26;
+	type type_rows is new positive range 1..26;
+	rows_default : constant type_rows := 7;
 
+	type type_columns is new positive range 1..26;
+	columns_default : constant type_columns := 10;
+	
+	row_characters : constant character_set := to_set (span => ('A','Z')); -- CS currently not used
+	-- CS row numbers must be mapped to row characters 
+	
 	type type_sectors is record
-		rows	: character_set := to_set (span => ('A','Z')); 
-		columns	: type_columns := type_columns'first;
+		rows	: type_rows := rows_default; 
+		columns	: type_columns := columns_default;
 	end record;
+	
+	type type_dimension is new natural range 1 .. 10000;
+	
+	type type_size is record
+		x	: type_dimension := 280;
+		y	: type_dimension := 200;
+	end record;
+
+	subtype type_border_width is type_dimension range 5 .. 20;
+	border_width_default : constant type_border_width := 7;
+	
+	
+	type type_frame is record
+		paper			: type_paper_size := paper_size_default;
+		orientation		: type_paper_orientation := orientation_default;
+		border_width	: type_border_width := border_width_default;
+		size			: type_size;
+		sectors			: type_sectors;
+	end record;
+
 
 
 	
