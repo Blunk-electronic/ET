@@ -49,7 +49,6 @@ with gnat.source_info;
 
 with et_coordinates;
 with et_schematic;
-with et_schematic_sheets;
 
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;

@@ -48,7 +48,6 @@ with ada.containers.vectors;
 with et_general;
 with et_project;
 with et_schematic;
-with et_schematic_sheets;
 with et_packages;
 with et_pcb;
 with et_kicad_general;			use et_kicad_general;

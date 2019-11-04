@@ -67,8 +67,6 @@ with et_devices;
 with device_rw;
 
 with et_frames;
--- with et_schematic_sheets;
--- with et_pcb_sheet;
 
 procedure et is
 
