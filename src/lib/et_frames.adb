@@ -59,7 +59,7 @@ package body et_frames is
 			axis		: in type_axis_2d)
 			return type_distance_positive is
 
-			dimension : type_distance_positive;
+			dimension : type_dimension;
 		
 		begin
 			case orientation is
@@ -95,7 +95,7 @@ package body et_frames is
 
 			end case;
 
-			return dimension;
+			return type_distance_positive (dimension);
 		end paper_dimension;
 
 

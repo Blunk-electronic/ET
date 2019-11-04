@@ -57,6 +57,7 @@ package et_frames is
 
 	type type_paper_orientation is (PORTRAIT, LANDSCAPE);
 	orientation_default : constant type_paper_orientation := LANDSCAPE;
+
 	
 	template_file_name_length_max : constant positive := 300;
 	template_file_name_dummy : constant string := "dummy_frame";
@@ -87,7 +88,72 @@ package et_frames is
 
 	subtype type_border_width is type_dimension range 5 .. 20;
 	border_width_default : constant type_border_width := 7;
+
+	paper_size_A3_x : constant type_dimension := 420;
+	paper_size_A3_y : constant type_dimension := 297;
 	
+	paper_size_A4_x : constant type_dimension := 297;
+	paper_size_A4_y : constant type_dimension := 210;
+	
+	type type_position_2 is record
+		x, y : type_dimension := border_width_default;
+	end record;
+
+	position_default : constant type_position_2 := (1,1);
+	
+	type type_title_block_line is record
+		start_point	: type_position_2 := position_default;
+		end_point	: type_position_2 := position_default;
+	end record;
+
+	package pac_title_block_lines is new doubly_linked_lists (type_title_block_line);
+
+	subtype type_text_size is type_dimension range 1 .. 50;
+	text_size_default : constant type_text_size := 3;
+	
+	type type_text_placeholder_2 is tagged record
+		size			: type_text_size := text_size_default;
+		position		: type_position_2 := position_default;
+	end record;
+	
+	type type_text_placeholders_2 is record
+		company			: type_text_placeholder_2;
+		customer		: type_text_placeholder_2;
+		partcode		: type_text_placeholder_2;
+		drawing_number	: type_text_placeholder_2;
+		assembly_variant: type_text_placeholder_2; -- CS good idea to have it here ?
+			
+		project			: type_text_placeholder_2;
+		file			: type_text_placeholder_2;
+		revision		: type_text_placeholder_2;
+		
+		drawn_by		: type_text_placeholder_2;
+		checked_by		: type_text_placeholder_2;
+		approved_by		: type_text_placeholder_2;
+
+		drawn_date		: type_text_placeholder_2;
+		checked_date	: type_text_placeholder_2;
+		approved_date	: type_text_placeholder_2;
+
+		created_date	: type_text_placeholder_2;
+		edited_date		: type_text_placeholder_2;
+	end record;
+
+	
+	type type_text_2 is new type_text_placeholder_2 with record
+		content			: et_text.type_text_content.bounded_string;
+	end record;
+
+	package pac_texts_2 is new doubly_linked_lists (type_text_2);
+
+	
+	type type_title_block is tagged record
+		position		: type_position_2 := position_default;
+		lines			: pac_title_block_lines.list;
+		placeholders	: type_text_placeholders_2;
+		texts			: pac_texts_2.list;
+	end record;
+
 	
 	type type_frame is record
 		paper			: type_paper_size := paper_size_default;
@@ -109,14 +175,6 @@ package et_frames is
 		use shapes;
 		use text;
 
-		-- PAPER SIZES
-		-- As default we assume landscape format for all sheets.
-		paper_size_A3_x : constant type_distance_positive := 420.0;
-		paper_size_A3_y : constant type_distance_positive := 297.0;
-		
-		paper_size_A4_x : constant type_distance_positive := 297.0;
-		paper_size_A4_y : constant type_distance_positive := 210.0;
-
 		function paper_dimension (
 		-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
 			paper_size	: in type_paper_size;
@@ -124,7 +182,7 @@ package et_frames is
 			axis		: in type_axis_2d)
 			return type_distance_positive;
 
-		-- The drawing frame consists of lots of lines:
+		-- The title block consists of lots of lines:
 		type type_line is new shapes.type_line with null record;
 		package pac_lines is new doubly_linked_lists (type_line);
 

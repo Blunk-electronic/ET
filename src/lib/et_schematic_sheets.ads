@@ -59,6 +59,17 @@ package et_schematic_sheets is
 	function to_string (name : in pac_template_name.bounded_string) return string;
 	function to_template_name (name : in string) return pac_template_name.bounded_string;
 
+	type type_text_placeholders_additional is record
+		sheet_number	: type_text_placeholder_2;
+		description		: type_text_placeholder_2;
+		category		: type_text_placeholder_2; -- development, routing, product
+	end record;
+	
+	type type_title_block_2 is new et_frames.type_title_block with record
+		additional_placeholders : type_text_placeholders_additional;
+	end record;
+
+	
 	
 	use et_coordinates.geometry;
 	use type_text_content;
