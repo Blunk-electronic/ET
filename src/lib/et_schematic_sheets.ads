@@ -65,15 +65,15 @@ package et_schematic_sheets is
 		category		: type_text_placeholder_2; -- development, routing, product
 	end record;
 	
-	type type_title_block_2 is new et_frames.type_title_block with record
+	type type_title_block is new et_frames.type_title_block with record
 		additional_placeholders : type_text_placeholders_additional;
 	end record;
 
 	
 	
 	use et_coordinates.geometry;
-	use type_text_content;
-
+-- 	use type_text_content;
+-- 
 	package pac_shapes is new et_geometry.shapes_2d (
 		geometry	=> et_coordinates.geometry);
 	
@@ -81,27 +81,12 @@ package et_schematic_sheets is
 		shapes	=> pac_shapes,
 		text	=> et_symbols.pac_text);
 	
+
 	
-
--- FRAMES
-	use pac_frames;
-
-	-- The title block of a schematic sheet has placeholders:
-	type type_text_placeholders is record
-		sheet_number	: type_text_placeholder;
-		description		: type_text_placeholder;
-		category		: type_text_placeholder; -- development, routing, product
-	end record;
-	
-	type type_title_block is new pac_frames.type_title_block with record
-		additional_placeholders : type_text_placeholders;		
-	end record;
-
-	-- This is the drawing frame used in a schematic:
-	type type_frame is new pac_frames.type_frame with record
+	type type_frame is new et_frames.type_frame with record
 		title_block : type_title_block;
 	end record;
-
+	
 	type type_sheet_category is (
 		DEVELOPMENT,
 		ROUTING,

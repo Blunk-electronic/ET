@@ -124,7 +124,7 @@ package body et_kicad_to_native is
 				use et_coordinates;
 			begin
 				if kicad_coordinates.sheet (frame.coordinates) = sheet_number then
-					size := frame.paper_size;
+					size := frame.paper;
 					sheet_found := true;
 				end if;
 			end query_sheet_number;

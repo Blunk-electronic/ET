@@ -1378,8 +1378,8 @@ package et_kicad is
 		sheet	: in type_schematic_file_name.bounded_string);
 
 	
-	--	type type_frame is new et_libraries.type_frame with record
-	type type_frame is new et_schematic_sheets.pac_frames.type_frame with record	
+	--type type_frame is new et_schematic_sheets.pac_frames.type_frame with record
+	type type_frame is new et_frames.type_frame with record		
 		coordinates : type_position; -- the position of the frame -- CS rename to position
 	end record;
 

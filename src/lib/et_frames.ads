@@ -155,7 +155,7 @@ package et_frames is
 	end record;
 
 	
-	type type_frame is record
+	type type_frame is tagged record
 		paper			: type_paper_size := paper_size_default;
 		orientation		: type_paper_orientation := orientation_default;
 		border_width	: type_border_width := border_width_default;

@@ -38,10 +38,6 @@
 
 with ada.strings.bounded; 	use ada.strings.bounded;
 
-with et_geometry;
-with et_pcb_coordinates;	use et_pcb_coordinates;
-with et_packages;
-with et_text;				use et_text;
 with et_frames;				use et_frames;
 
 package et_pcb_sheet is
@@ -57,42 +53,23 @@ package et_pcb_sheet is
 	function to_string (name : in pac_template_name.bounded_string) return string;
 	function to_template_name (name : in string) return pac_template_name.bounded_string;
 
-	
-	use et_pcb_coordinates.geometry;
-	use type_text_content;
 
-	package pac_shapes is new et_geometry.shapes_2d (
-		geometry	=> et_pcb_coordinates.geometry);
-	
-	package pac_frames is new et_frames.frames (
-		shapes	=> pac_shapes,
-		text	=> et_packages.pac_text);
-	
-	use pac_frames;
-	
-
-
-	
--- FRAMES
-
-	-- Placeholders required for CAM output. They are filled by fixed keywords like "assembly documentation" 
-	-- or "silk screen" automatically.
-	type type_text_placeholders is record
+	type type_text_placeholders_additional is record
 		silk_screen, assy_doc, 
 
 		keepout, plated_millings, pcb_outline, 
 
-		route_restrict, via_restrict, signal_layer	: type_text_placeholder;
+		route_restrict, via_restrict, signal_layer	: type_text_placeholder_2;
 		-- CS add more
 	end record;
 	
-	-- The title block of the single layout sheet requires additional placeholders:
-	type type_title_block is new pac_frames.type_title_block with record
-		additional_placeholders : type_text_placeholders;
+	type type_title_block is new et_frames.type_title_block with record
+		additional_placeholders : type_text_placeholders_additional;
 	end record;
 
+
 	-- This is the drawing frame used in a pcb layout:
-	type type_frame is new pac_frames.type_frame with record
+	type type_frame is new et_frames.type_frame with record
 		template	: pac_template_name.bounded_string := frame_template_name_dummy;
 			-- like $ET_FRAMES/drawing_frame_A3_landscape.frm
 
