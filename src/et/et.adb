@@ -67,6 +67,7 @@ with et_devices;
 with device_rw;
 
 with et_frames;
+with frame_rw;
 
 procedure et is
 
@@ -559,8 +560,7 @@ procedure et is
 
 			-- frame schematic
 			elsif length (frame_schematic_name_create) > 0 then
-				null;
--- 				device_rw.create_device (device_name_create, device_appearance, log_threshold => 0);
+				frame_rw.create_frame (frame_schematic_name_create, et_frames.SCHEMATIC, log_threshold => 0);
 
 				-- optionally the device can be saved under a different name
 -- 				save_device_as; -- if device_name_save_as is empty nothing happens

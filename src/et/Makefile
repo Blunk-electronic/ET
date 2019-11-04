@@ -6,6 +6,7 @@ OBJS = $(TARGET).o \
 	et_general.o \
 	et_coordinates.o \
 	et_frames.o \
+	frame_rw.o \
 	et_text.o \
 	et_geometry.o \
 	et_devices.o \
