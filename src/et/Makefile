@@ -11,7 +11,6 @@ OBJS = $(TARGET).o \
 	et_devices.o \
 	et_symbols.o \
 	et_schematic.o \
-	et_schematic_sheets.o \
 	netlists.o \
 	numbering.o \
 	assembly_variants.o \
@@ -27,7 +26,6 @@ OBJS = $(TARGET).o \
 	et_pcb_coordinates.o \
 	et_pcb_stack.o \
 	et_packages.o \
-	et_pcb_sheet.o \
 	et_pcb.o \
 	pick_and_place.o \
 	material.o \

@@ -68,7 +68,7 @@ with et_geometry;
 with et_text;
 with et_symbols;
 with et_devices;
-with et_schematic_sheets;
+with et_frames;
 
 package et_schematic is
 	use et_general.type_net_name;
@@ -346,7 +346,7 @@ package et_schematic is
 		description		: et_text.type_text_content.bounded_string; -- a short description of the module
 
 		-- schematic frame template and descriptions of individual schematic frames:
-		frames			: et_schematic_sheets.type_frames;
+		frames			: et_frames.type_frames_schematic;
 		
 		grid			: type_grid; -- the drawing grid of the schematic
 

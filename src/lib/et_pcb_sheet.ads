@@ -42,40 +42,41 @@ with et_frames;				use et_frames;
 
 package et_pcb_sheet is
 
-	-- $ET_FRAMES/drawing_frame_version_1.frb
-	template_file_extension : constant string := "frb";
-	
-	package pac_template_name is new generic_bounded_length (template_file_name_length_max);
+-- 	-- $ET_FRAMES/drawing_frame_version_1.frb
+-- 	template_file_extension : constant string := "frb";
+-- 	
+-- 	package pac_template_name is new generic_bounded_length (template_file_name_length_max);
+-- 
+-- 	frame_template_name_dummy : constant pac_template_name.bounded_string := 
+-- 		pac_template_name.to_bounded_string (template_file_name_dummy);
+-- 	
+-- 	function to_string (name : in pac_template_name.bounded_string) return string;
+-- 	function to_template_name (name : in string) return pac_template_name.bounded_string;
+-- 
+-- 
+-- 	type type_text_placeholders_additional is record
+-- 		silk_screen, assy_doc, 
+-- 
+-- 		keepout, plated_millings, pcb_outline, 
+-- 
+-- 		route_restrict, via_restrict, signal_layer	: type_placeholder;
+-- 		-- CS add more
+-- 	end record;
+-- 	
+-- 	type type_title_block is new et_frames.type_title_block with record
+-- 		additional_placeholders : type_text_placeholders_additional;
+-- 	end record;
+-- 
+-- 
+-- 	-- This is the drawing frame used in a pcb layout:
+-- 	type type_frame is new et_frames.type_frame with record
+-- 		template	: pac_template_name.bounded_string := frame_template_name_dummy;
+-- 			-- like $ET_FRAMES/drawing_frame_A3_landscape.frm
+-- 
+-- 		title_block : type_title_block;
+-- 	end record;
 
-	frame_template_name_dummy : constant pac_template_name.bounded_string := 
-		pac_template_name.to_bounded_string (template_file_name_dummy);
-	
-	function to_string (name : in pac_template_name.bounded_string) return string;
-	function to_template_name (name : in string) return pac_template_name.bounded_string;
-
-
-	type type_text_placeholders_additional is record
-		silk_screen, assy_doc, 
-
-		keepout, plated_millings, pcb_outline, 
-
-		route_restrict, via_restrict, signal_layer	: type_placeholder;
-		-- CS add more
-	end record;
-	
-	type type_title_block is new et_frames.type_title_block with record
-		additional_placeholders : type_text_placeholders_additional;
-	end record;
-
-
-	-- This is the drawing frame used in a pcb layout:
-	type type_frame is new et_frames.type_frame with record
-		template	: pac_template_name.bounded_string := frame_template_name_dummy;
-			-- like $ET_FRAMES/drawing_frame_A3_landscape.frm
-
-		title_block : type_title_block;
-	end record;
-
+	procedure dummy;
 		
 end et_pcb_sheet;
 

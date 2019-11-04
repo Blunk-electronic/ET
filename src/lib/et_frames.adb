@@ -93,6 +93,28 @@ package body et_frames is
 		return dimension;
 	end paper_dimension;
 
+
+-- SCHEMATIC
+
+	function to_string (name : in pac_schematic_template_name.bounded_string) return string is begin
+		return pac_schematic_template_name.to_string (name);
+	end;
+	
+	function to_template_name (name : in string) return pac_schematic_template_name.bounded_string is begin
+		return pac_schematic_template_name.to_bounded_string (name);
+	end;
+
+
+-- PCB RELATED
+
+	function to_string (name : in pac_pcb_template_name.bounded_string) return string is begin
+		return pac_pcb_template_name.to_string (name);
+	end;
+	
+	function to_template_name (name : in string) return pac_pcb_template_name.bounded_string is begin
+		return pac_pcb_template_name.to_bounded_string (name);
+	end;
+	
 	
 end et_frames;
 

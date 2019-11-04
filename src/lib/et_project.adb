@@ -76,8 +76,6 @@ with device_rw;					use device_rw;
 with et_symbols;
 with et_devices;				use et_devices;
 with et_frames;
-with et_schematic_sheets;
-with et_pcb_sheet;
 
 package body et_project is
 
@@ -1416,7 +1414,7 @@ package body et_project is
 			section_mark (section_schematic, HEADER);
 			write (
 				keyword 	=> keyword_template, 
-				parameters	=> et_schematic_sheets.to_string (element (module_cursor).frames.template));
+				parameters	=> et_frames.to_string (element (module_cursor).frames.template));
 			
 			-- CS frame count ?
 			-- CS description ?
@@ -1428,7 +1426,7 @@ package body et_project is
 			
 			write (
 				keyword		=> keyword_template, 
-				parameters	=> et_pcb_sheet.to_string (element (module_cursor).board.frame.template));
+				parameters	=> et_frames.to_string (element (module_cursor).board.frame.template));
 			
 			section_mark (section_board, FOOTER);			
 			section_mark (section_drawing_frames, FOOTER);
@@ -2148,9 +2146,9 @@ package body et_project is
 		route_via	: et_pcb.type_via;
 
 		
-		frame_template_schematic	: et_schematic_sheets.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
+		frame_template_schematic	: et_frames.pac_schematic_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
 		-- CS frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
-		frame_template_board		: et_pcb_sheet.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
+		frame_template_board		: et_frames.pac_pcb_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
 
 		-- submodules
 		submodule_port			: submodules.type_submodule_port;
@@ -2448,16 +2446,18 @@ package body et_project is
 				procedure set_frame_schematic (
 					module_name	: in type_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
+					use et_frames;
 				begin
-					log (text => "drawing frame schematic " & et_schematic_sheets.to_string (frame_template_schematic), level => log_threshold + 1);
+					log (text => "drawing frame schematic " & to_string (frame_template_schematic), level => log_threshold + 1);
 					module.frames.template := frame_template_schematic;
 				end set_frame_schematic;
 				
 				procedure set_frame_board (
 					module_name	: in type_module_name.bounded_string;
 					module		: in out et_schematic.type_module) is
+					use et_frames;
 				begin
-					log (text => "drawing frame board " & et_pcb_sheet.to_string (frame_template_board), level => log_threshold + 1);
+					log (text => "drawing frame board " & to_string (frame_template_board), level => log_threshold + 1);
 					module.board.frame.template := frame_template_board;
 				end set_frame_board;
 
@@ -6778,12 +6778,13 @@ package body et_project is
 						case stack.parent is
 							when SEC_DRAWING_FRAMES =>
 								declare
+									use et_frames;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_template then -- template $ET_FRAMES/drawing_frame_version_1.frs
 										expect_field_count (line, 2);
-										frame_template_schematic := et_schematic_sheets.to_template_name (f (line, 2));
+										frame_template_schematic := to_template_name (f (line, 2));
 									else
 										invalid_keyword (kw);
 									end if;
@@ -6811,12 +6812,13 @@ package body et_project is
 							
 							when SEC_DRAWING_FRAMES =>
 								declare
+									use et_frames;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_template then -- template $ET_FRAMES/drawing_frame_version_2.frb
 										expect_field_count (line, 2);
-										frame_template_board := et_pcb_sheet.to_template_name (f (line, 2));
+										frame_template_board := to_template_name (f (line, 2));
 									else
 										invalid_keyword (kw);
 									end if;

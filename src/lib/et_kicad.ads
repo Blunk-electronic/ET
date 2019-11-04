@@ -1379,7 +1379,9 @@ package et_kicad is
 
 	
 	--type type_frame is new et_schematic_sheets.pac_frames.type_frame with record
-	type type_frame is new et_frames.type_frame with record		
+	--type type_frame is new et_frames.type_frame with record		
+	type type_frame is record
+		paper		: et_frames.type_paper_size := et_frames.paper_size_default;
 		coordinates : type_position; -- the position of the frame -- CS rename to position
 	end record;
 
