@@ -50,9 +50,20 @@ with et_frames;					use et_frames;
 package frame_rw is
 
 	procedure create_frame (
-		frame_name		: in pac_schematic_template_name.bounded_string;
-		domain			: in type_domain;
+		file_name		: in pac_schematic_template_name.bounded_string;
+		domain			: in type_domain;							   
 		log_threshold	: in et_string_processing.type_log_level);
+	
+	procedure save_frame (
+		frame			: in type_frame;
+		file_name		: in pac_schematic_template_name.bounded_string;							 
+		log_threshold	: in et_string_processing.type_log_level);
+
+	function read_frame (
+		file_name		: in pac_schematic_template_name.bounded_string;
+		domain			: in type_domain;
+		log_threshold	: in et_string_processing.type_log_level)
+		return type_frame;
 	
 end frame_rw;
 

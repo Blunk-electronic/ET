@@ -560,17 +560,15 @@ procedure et is
 
 			-- frame schematic
 			elsif length (frame_schematic_name_create) > 0 then
-				frame_rw.create_frame (frame_schematic_name_create, et_frames.SCHEMATIC, log_threshold => 0);
-
-				-- optionally the device can be saved under a different name
--- 				save_device_as; -- if device_name_save_as is empty nothing happens
-
-			elsif length (frame_schematic_name_open) > 0 then
 				null;
--- 				device_rw.read_device (device_name_open, log_threshold => 0);
+-- 				frame_rw.create_frame (frame_schematic_name_create, et_frames.SCHEMATIC, log_threshold => 0);
 
-				-- optionally the device can be saved under a different name				
--- 				save_device_as; -- if device_name_save_as is empty nothing happens
+			elsif length (frame_schematic_name_save_as) > 0 then
+				null;
+-- 				frame_rw.save_frame (frame_schematic_name_save_as, et_frames.SCHEMATIC, log_threshold => 0);
+
+				-- optionally the framc can be saved under a different name				
+-- 				save_device_as; -- if frame_schematic_name_save_as is empty nothing happens
 
 			end if;
 			

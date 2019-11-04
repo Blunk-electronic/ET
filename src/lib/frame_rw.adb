@@ -50,13 +50,31 @@ with et_frames;
 package body frame_rw is
 
 	procedure create_frame (
-		frame_name		: in pac_schematic_template_name.bounded_string;
-		domain			: in type_domain;
+		file_name		: in pac_schematic_template_name.bounded_string;
+		domain			: in type_domain;							   
 		log_threshold	: in et_string_processing.type_log_level) is
 	begin
 		null;
 	end create_frame;
+	
+	procedure save_frame (
+		frame			: in type_frame;
+		file_name		: in pac_schematic_template_name.bounded_string;
+		log_threshold	: in et_string_processing.type_log_level) is
+	begin
+		null;
+	end save_frame;
 
+	function read_frame (
+		file_name		: in pac_schematic_template_name.bounded_string;
+		domain			: in type_domain;
+		log_threshold	: in et_string_processing.type_log_level)
+		return type_frame is
+
+		frame : type_frame (SCHEMATIC);
+	begin
+		return frame;
+	end read_frame;
 	
 end frame_rw;
 
