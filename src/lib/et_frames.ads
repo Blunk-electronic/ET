@@ -39,10 +39,8 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
 
 with et_general;				use et_general;
-with et_geometry;
 with et_text;
 
 
@@ -79,41 +77,48 @@ package et_frames is
 		columns	: type_columns := columns_default;
 	end record;
 	
-	type type_dimension is new natural range 1 .. 10000;
+	type type_distance is new natural range 1 .. 10000;
 	
 	type type_size is record
-		x	: type_dimension := 280;
-		y	: type_dimension := 200;
+		x	: type_distance := 280;
+		y	: type_distance := 200;
 	end record;
 
-	subtype type_border_width is type_dimension range 5 .. 20;
+	subtype type_border_width is type_distance range 5 .. 20;
 	border_width_default : constant type_border_width := 7;
 
-	paper_size_A3_x : constant type_dimension := 420;
-	paper_size_A3_y : constant type_dimension := 297;
+	paper_size_A3_x : constant type_distance := 420;
+	paper_size_A3_y : constant type_distance := 297;
 	
-	paper_size_A4_x : constant type_dimension := 297;
-	paper_size_A4_y : constant type_dimension := 210;
+	paper_size_A4_x : constant type_distance := 297;
+	paper_size_A4_y : constant type_distance := 210;
 	
-	type type_position_2 is record
-		x, y : type_dimension := border_width_default;
+	type type_position is record
+		x, y : type_distance := border_width_default;
 	end record;
 
-	position_default : constant type_position_2 := (1,1);
+	position_default : constant type_position := (1,1);
+
+
 	
 	type type_title_block_line is record
-		start_point	: type_position_2 := position_default;
-		end_point	: type_position_2 := position_default;
+		start_point	: type_position := position_default;
+		end_point	: type_position := position_default;
 	end record;
 
 	package pac_title_block_lines is new doubly_linked_lists (type_title_block_line);
 
-	subtype type_text_size is type_dimension range 1 .. 50;
+
+
+	
+	subtype type_text_size is type_distance range 1 .. 50;
 	text_size_default : constant type_text_size := 3;
+
+
 	
 	type type_placeholder is tagged record
 		size			: type_text_size := text_size_default;
-		position		: type_position_2 := position_default;
+		position		: type_position := position_default;
 	end record;
 	
 	type type_placeholders is record
@@ -138,21 +143,25 @@ package et_frames is
 		created_date	: type_placeholder;
 		edited_date		: type_placeholder;
 	end record;
+
+
 	
-	type type_text_2 is new type_placeholder with record
+	type type_text is new type_placeholder with record
 		content			: et_text.type_text_content.bounded_string;
 	end record;
 
-	package pac_texts_2 is new doubly_linked_lists (type_text_2);
+	package pac_texts is new doubly_linked_lists (type_text);
+
 
 	
 	type type_title_block is tagged record
-		position		: type_position_2 := position_default;
+		position		: type_position := position_default;
 		lines			: pac_title_block_lines.list;
 		placeholders	: type_placeholders;
-		texts			: pac_texts_2.list;
+		texts			: pac_texts.list;
 	end record;
 
+	
 	
 	type type_frame is tagged record
 		paper			: type_paper_size := paper_size_default;
@@ -163,12 +172,14 @@ package et_frames is
 	end record;
 
 
+
+	
 	function paper_dimension (
 	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
 		paper_size	: in type_paper_size;
 		orientation	: in type_paper_orientation := LANDSCAPE;
 		axis		: in type_axis_2d)
-		return type_dimension;
+		return type_distance;
 
 
 	

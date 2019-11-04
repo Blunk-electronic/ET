@@ -57,7 +57,6 @@ package et_coordinates is
 	
 	
 	-- The total distance between two objects:
-	--	type type_distance is digits 9 range -100_000_000.0 .. 100_000_000.0; -- unit is metric millimeter
 	type type_distance is delta 0.01 range -100_000_000.00 .. 100_000_000.00; -- CS rename to type_distance_total
 	for type_distance'small use 0.01; -- this is the accuracy required for schematic
 

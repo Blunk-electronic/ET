@@ -60,15 +60,10 @@ with et_geometry;
 with et_packages;				use et_packages;
 with et_pcb_stack;				use et_pcb_stack;
 with et_pcb_sheet;
-with et_frames;
 
 package et_pcb is
 	use et_pcb_coordinates.geometry;
 	use et_packages.shapes;
-
--- 	package frames is new et_frames.frames (
--- 		shapes		=> et_packages.shapes);
-	
 	
 	-- VIAS
 	type type_micro_vias_allowed is (NO, YES);

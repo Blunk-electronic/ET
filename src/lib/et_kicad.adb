@@ -75,7 +75,7 @@ with et_text;
 with et_packages;
 with et_symbols;				use et_symbols;
 with et_devices;				use et_devices;
-with et_frames;					use et_frames;
+with et_frames;
 
 package body et_kicad is
 
@@ -6544,9 +6544,7 @@ package body et_kicad is
 				lines 			: in pac_lines_of_file.list;
 				log_threshold	: in type_log_level) is
 
-				-- use et_text;
-				-- use et_frames;
-				-- use et_schematic.pac_frames;
+				use et_frames;
 				
 				frame : type_frame; -- a single drawing frame. see type in et_kicad.ads
 			
@@ -6572,7 +6570,7 @@ package body et_kicad is
 				-- are thus not project wide.
 				-- CS: These attributes are currently lost during conversion.
 				
-			begin -- make_drawing_frame
+			begin
 				log (text => "making drawing frame ...", level => log_threshold);
 				log_indentation_up;
 			

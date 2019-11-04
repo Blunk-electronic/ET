@@ -42,7 +42,6 @@ with ada.containers.ordered_maps;
 
 with et_geometry;
 with et_coordinates;		use et_coordinates;
-with et_symbols;
 with et_text;				use et_text;
 with et_frames;				use et_frames;
 

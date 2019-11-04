@@ -52,9 +52,9 @@ package body et_frames is
 		paper_size	: in type_paper_size;
 		orientation	: in type_paper_orientation := LANDSCAPE;
 		axis		: in type_axis_2d)
-		return type_dimension is
+		return type_distance is
 
-		dimension : type_dimension;
+		dimension : type_distance;
 	
 	begin
 		case orientation is
