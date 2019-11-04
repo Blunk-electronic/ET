@@ -59,7 +59,7 @@ package et_pcb_sheet is
 
 		keepout, plated_millings, pcb_outline, 
 
-		route_restrict, via_restrict, signal_layer	: type_text_placeholder_2;
+		route_restrict, via_restrict, signal_layer	: type_placeholder;
 		-- CS add more
 	end record;
 	

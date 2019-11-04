@@ -62,25 +62,15 @@ package et_schematic_sheets is
 
 	
 	type type_text_placeholders_additional is record
-		sheet_number	: type_text_placeholder_2;
-		description		: type_text_placeholder_2;
-		category		: type_text_placeholder_2; -- development, routing, product
+		sheet_number	: type_placeholder;
+		description		: type_placeholder;
+		category		: type_placeholder; -- development, routing, product
 	end record;
 	
 	type type_title_block is new et_frames.type_title_block with record
 		additional_placeholders : type_text_placeholders_additional;
 	end record;
 
-	
-	
-	use et_coordinates.geometry;
--- 	use type_text_content;
--- 
-	package pac_shapes is new et_geometry.shapes_2d (
-		geometry	=> et_coordinates.geometry);
-	
-	package pac_frames is new et_frames.frames (
-		shapes	=> pac_shapes);
 	
 
 	

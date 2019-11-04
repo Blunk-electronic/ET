@@ -47,61 +47,52 @@ package body et_frames is
 	
 
 
+	function paper_dimension (
+	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
+		paper_size	: in type_paper_size;
+		orientation	: in type_paper_orientation := LANDSCAPE;
+		axis		: in type_axis_2d)
+		return type_dimension is
+
+		dimension : type_dimension;
 	
+	begin
+		case orientation is
+			when LANDSCAPE =>
+				case paper_size is 
+					when A3 =>
+						case axis is
+							when X => dimension := paper_size_A3_x;
+							when Y => dimension := paper_size_A3_y;
+						end case;
 
-	
-	package body frames is
+					when A4 =>
+						case axis is
+							when X => dimension := paper_size_A4_x;
+							when Y => dimension := paper_size_A4_y;
+						end case;
+				end case;
 
-		function paper_dimension (
-		-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
-			paper_size	: in type_paper_size;
-			orientation	: in type_paper_orientation := LANDSCAPE;
-			axis		: in type_axis_2d)
-			return type_distance_positive is
+			when PORTRAIT =>
+				case paper_size is 
+					when A3 =>
+						case axis is
+							when X => dimension := paper_size_A3_y;
+							when Y => dimension := paper_size_A3_x;
+						end case;
 
-			dimension : type_dimension;
-		
-		begin
-			case orientation is
-				when LANDSCAPE =>
-					case paper_size is 
-						when A3 =>
-							case axis is
-								when X => dimension := paper_size_A3_x;
-								when Y => dimension := paper_size_A3_y;
-							end case;
+					when A4 =>
+						case axis is
+							when X => dimension := paper_size_A4_y;
+							when Y => dimension := paper_size_A4_x;
+						end case;
+				end case;
 
-						when A4 =>
-							case axis is
-								when X => dimension := paper_size_A4_x;
-								when Y => dimension := paper_size_A4_y;
-							end case;
-					end case;
+		end case;
 
-				when PORTRAIT =>
-					case paper_size is 
-						when A3 =>
-							case axis is
-								when X => dimension := paper_size_A3_y;
-								when Y => dimension := paper_size_A3_x;
-							end case;
+		return dimension;
+	end paper_dimension;
 
-						when A4 =>
-							case axis is
-								when X => dimension := paper_size_A4_y;
-								when Y => dimension := paper_size_A4_x;
-							end case;
-					end case;
-
-			end case;
-
-			return type_distance_positive (dimension);
-		end paper_dimension;
-
-
-		
-	end frames;
-	
 	
 end et_frames;
 

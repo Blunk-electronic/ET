@@ -111,36 +111,35 @@ package et_frames is
 	subtype type_text_size is type_dimension range 1 .. 50;
 	text_size_default : constant type_text_size := 3;
 	
-	type type_text_placeholder_2 is tagged record
+	type type_placeholder is tagged record
 		size			: type_text_size := text_size_default;
 		position		: type_position_2 := position_default;
 	end record;
 	
-	type type_text_placeholders_2 is record
-		company			: type_text_placeholder_2;
-		customer		: type_text_placeholder_2;
-		partcode		: type_text_placeholder_2;
-		drawing_number	: type_text_placeholder_2;
-		assembly_variant: type_text_placeholder_2; -- CS good idea to have it here ?
+	type type_placeholders is record
+		company			: type_placeholder;
+		customer		: type_placeholder;
+		partcode		: type_placeholder;
+		drawing_number	: type_placeholder;
+		assembly_variant: type_placeholder; -- CS good idea to have it here ?
 			
-		project			: type_text_placeholder_2;
-		file			: type_text_placeholder_2;
-		revision		: type_text_placeholder_2;
+		project			: type_placeholder;
+		file			: type_placeholder;
+		revision		: type_placeholder;
 		
-		drawn_by		: type_text_placeholder_2;
-		checked_by		: type_text_placeholder_2;
-		approved_by		: type_text_placeholder_2;
+		drawn_by		: type_placeholder;
+		checked_by		: type_placeholder;
+		approved_by		: type_placeholder;
 
-		drawn_date		: type_text_placeholder_2;
-		checked_date	: type_text_placeholder_2;
-		approved_date	: type_text_placeholder_2;
+		drawn_date		: type_placeholder;
+		checked_date	: type_placeholder;
+		approved_date	: type_placeholder;
 
-		created_date	: type_text_placeholder_2;
-		edited_date		: type_text_placeholder_2;
+		created_date	: type_placeholder;
+		edited_date		: type_placeholder;
 	end record;
-
 	
-	type type_text_2 is new type_text_placeholder_2 with record
+	type type_text_2 is new type_placeholder with record
 		content			: et_text.type_text_content.bounded_string;
 	end record;
 
@@ -150,7 +149,7 @@ package et_frames is
 	type type_title_block is tagged record
 		position		: type_position_2 := position_default;
 		lines			: pac_title_block_lines.list;
-		placeholders	: type_text_placeholders_2;
+		placeholders	: type_placeholders;
 		texts			: pac_texts_2.list;
 	end record;
 
@@ -164,23 +163,14 @@ package et_frames is
 	end record;
 
 
+	function paper_dimension (
+	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
+		paper_size	: in type_paper_size;
+		orientation	: in type_paper_orientation := LANDSCAPE;
+		axis		: in type_axis_2d)
+		return type_dimension;
 
-	
-	generic
-		with package shapes is new et_geometry.shapes_2d (<>);
--- 		with package text is new et_text.text (<>);
-		
-	package frames is
-		use shapes.geometry;
 
-		function paper_dimension (
-		-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
-			paper_size	: in type_paper_size;
-			orientation	: in type_paper_orientation := LANDSCAPE;
-			axis		: in type_axis_2d)
-			return type_distance_positive;
-
-	end frames;
 	
 end et_frames;
 
