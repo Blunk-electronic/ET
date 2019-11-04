@@ -63,6 +63,9 @@ package et_devices is
 	-- Devices that require operator interaction like connectors, LEDs or switches 
 	-- MUST have a purpose assigned.
 	-- Example: The purpose of connector X44 is "power in". The purpose of LED5 is "system fail":
+
+	keyword_purpose : constant string := "purpose";
+	
 	purpose_characters : character_set := to_set 
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_- "); 
 
@@ -106,6 +109,8 @@ package et_devices is
 
 
 	-- The device value is something like 330R or 100n or 74LS00
+	keyword_value : constant string := "value";
+	
 	value_length_max : constant positive := 50;
 
 	-- Define the characters that are allowed for a value:

@@ -41,6 +41,7 @@ with ada.containers;            use ada.containers;
 with et_string_processing;
 
 package general_rw is
+
 	comment_mark : constant string := ("--");
 									  
 	function f (line : in et_string_processing.type_fields_of_line; position : in positive) return string;
@@ -56,16 +57,9 @@ package general_rw is
 	section_end		: constant string := "END]";
 
 	section_drawing_grid	: constant string := "[DRAWING_GRID";
-	
 	keyword_name			: constant string := "name";
 	keyword_appearance		: constant string := "appearance";
-	keyword_description		: constant string := "description";
-	keyword_meaning			: constant string := "meaning";
-	keyword_class			: constant string := "class";
-	keyword_value			: constant string := "value";
-	keyword_partcode		: constant string := "partcode";	
-	keyword_purpose			: constant string := "purpose";	
-	keyword_width 			: constant string := "width";	
+	
 	
 -- SECTIONS AND INDENTATION
 	function write_top_level_reached return string;

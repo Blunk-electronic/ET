@@ -59,6 +59,8 @@ package material is
 	-- The part code is THE key into the ERP system of the user. It can be a cryptic SAP number
 	-- or something human readable like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5".
 	-- The keywords for the latter can be specified via the conventions file. See package "convention".
+	keyword_partcode : constant string := "partcode";	
+
 	partcode_characters : character_set := to_set
 		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ('_'); 
 	partcode_length_max : constant positive := 100;

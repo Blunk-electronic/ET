@@ -1023,7 +1023,7 @@ package body et_project is
 					write (keyword => keyword_start, parameters => position (element (line_cursor).start_point));
 					write (keyword => keyword_end  , parameters => position (element (line_cursor).end_point));
 					write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
-					write (keyword => keyword_width, parameters => to_string (element (line_cursor).width));
+					write (keyword => pcb_rw.keyword_width, parameters => to_string (element (line_cursor).width));
 
 					section_mark (section_line, FOOTER);
 					next (line_cursor);
@@ -1035,7 +1035,7 @@ package body et_project is
 					write (keyword => keyword_center, parameters => position (element (arc_cursor).center));
 					write (keyword => keyword_start , parameters => position (element (arc_cursor).start_point));
 					write (keyword => keyword_end   , parameters => position (element (arc_cursor).end_point));
-					write (keyword => keyword_width , parameters => to_string (element (arc_cursor).width));
+					write (keyword => pcb_rw.keyword_width , parameters => to_string (element (arc_cursor).width));
 					write (keyword => keyword_layer , parameters => to_string (element (arc_cursor).layer));
 					
 					section_mark (section_arc, FOOTER);
@@ -1262,7 +1262,7 @@ package body et_project is
 					when PCB =>
 						write (keyword => keyword_value   , parameters => to_string (element (device_cursor).value));
 						write (keyword => keyword_variant , parameters => to_string (element (device_cursor).variant));
-						write (keyword => keyword_partcode, parameters => material.to_string (element (device_cursor).partcode));
+						write (keyword => material.keyword_partcode, parameters => material.to_string (element (device_cursor).partcode));
 						write (keyword => keyword_purpose , parameters => to_string (element (device_cursor).purpose), wrap => true);
 						
 						section_mark (section_package, HEADER);
@@ -1335,7 +1335,7 @@ package body et_project is
 									space &
 									keyword_value & space &
 									to_string (element (device_cursor).value) &
-									space & keyword_partcode & space &
+									space & material.keyword_partcode & space &
 									material.to_string (element (device_cursor).partcode) &
 									purpose);
 
@@ -5522,10 +5522,10 @@ package body et_project is
 											device.value := to_value (f (line, 4));
 
 											-- read partcode
-											if f (line, 5) = keyword_partcode then
+											if f (line, 5) = material.keyword_partcode then
 												device.partcode := material.to_partcode (f (line, 6));
 											else -- keyword partcode not found
-												log (ERROR, "expect keyword " & enclose_in_quotes (keyword_partcode) &
+												log (ERROR, "expect keyword " & enclose_in_quotes (material.keyword_partcode) &
 													 " after value !", console => true);
 												raise constraint_error;
 											end if;
@@ -5976,7 +5976,7 @@ package body et_project is
 											expect_field_count (line, 2);
 											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
-										elsif kw = keyword_width then -- width 0.5
+										elsif kw = pcb_rw.keyword_width then -- width 0.5
 											expect_field_count (line, 2);
 											board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 											
@@ -5996,7 +5996,7 @@ package body et_project is
 												kw : string := f (line, 1);
 											begin
 												-- CS: In the following: set a corresponding parameter-found-flag
-												if kw = keyword_width then -- width 0.5
+												if kw = pcb_rw.keyword_width then -- width 0.5
 													expect_field_count (line, 2);
 													board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 													
@@ -6038,7 +6038,7 @@ package body et_project is
 										use et_pcb_stack;
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_width then -- width 0.5
+										if kw = pcb_rw.keyword_width then -- width 0.5
 											expect_field_count (line, 2);
 											board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
@@ -6088,7 +6088,7 @@ package body et_project is
 											expect_field_count (line, 2);
 											signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 
-										elsif kw = keyword_width then -- width 0.5
+										elsif kw = pcb_rw.keyword_width then -- width 0.5
 											expect_field_count (line, 2);
 											board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 											
@@ -6109,7 +6109,7 @@ package body et_project is
 												kw : string := f (line, 1);
 											begin
 												-- CS: In the following: set a corresponding parameter-found-flag
-												if kw = keyword_width then -- width 0.5
+												if kw = pcb_rw.keyword_width then -- width 0.5
 													expect_field_count (line, 2);
 													board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 													
@@ -6155,7 +6155,7 @@ package body et_project is
 										use et_pcb_stack;
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_width then -- width 0.5
+										if kw = pcb_rw.keyword_width then -- width 0.5
 											expect_field_count (line, 2);
 											board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
@@ -6206,7 +6206,7 @@ package body et_project is
 												kw : string := f (line, 1);
 											begin
 												-- CS: In the following: set a corresponding parameter-found-flag
-												if kw = keyword_width then -- circumfence line width 0.5
+												if kw = pcb_rw.keyword_width then -- circumfence line width 0.5
 													expect_field_count (line, 2);
 													board_line_width := et_pcb_coordinates.geometry.to_distance (f (line, 2));
 
@@ -6278,7 +6278,7 @@ package body et_project is
 										kw : string := f (line, 1);
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
-										if kw = keyword_width then -- width 0.5
+										if kw = pcb_rw.keyword_width then -- width 0.5
 											expect_field_count (line, 2);
 											board_line_width := to_distance (f (line, 2));
 
@@ -7012,7 +7012,7 @@ package body et_project is
 										check_variant_name_length (f (line, 2));
 										device_variant := to_name (f (line, 2));
 
-									elsif kw = keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
+									elsif kw = material.keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
 										expect_field_count (line, 2);
 
 										-- validate partcode

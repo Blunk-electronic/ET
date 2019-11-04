@@ -43,7 +43,8 @@ package symbol_rw is
 
 	keyword_direction	: constant string := "direction";			
 	keyword_style		: constant string := "style";
-
+	keyword_width 		: constant string := "width";
+	
 	section_draw		: constant string := "[DRAW";
 	section_port		: constant string := "[PORT";	
 	section_ports		: constant string := "[PORTS";

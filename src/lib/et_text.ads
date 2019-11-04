@@ -85,7 +85,7 @@ package et_text is
 	keyword_line_width	: constant string := "line_width";	
 	keyword_size		: constant string := "size";
 
-	
+	keyword_meaning		: constant string := "meaning";	-- for placeholders
 
 
 	

@@ -945,7 +945,7 @@ package body device_rw is
 								appearance := to_appearance (f (line,2));
 								log (text => "appearance" & to_string (appearance), level => log_threshold + 1);								
 
-							elsif kw = keyword_partcode then -- partcode IC_PAC_S_SO14_VAL_
+							elsif kw = material.keyword_partcode then -- partcode IC_PAC_S_SO14_VAL_
 								expect_field_count (line, 2);
 
 								-- validate partcode length

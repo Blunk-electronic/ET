@@ -286,13 +286,14 @@ package et_project is
 
 	
 
--- FILE SECTIONS AND KEYWORDS
-	-- CS move package specific keywords to related packages
-	
+-- KEYWORDS
+
 	keyword_default					: constant string := "default";
 	keyword_generic_name			: constant string := "generic_name";
 	keyword_instance_name			: constant string := "instance_name";
 	keyword_assembly_variant		: constant string := "assembly_variant";
+	keyword_not_mounted				: constant string := "not_mounted";
+
 	keyword_instance_A				: constant string := "instance_A";
 	keyword_instance_B				: constant string := "instance_B";		
 	keyword_purpose_A				: constant string := "purpose_A";
@@ -300,13 +301,11 @@ package et_project is
 	keyword_net_comparator			: constant string := "net_comparator";
 	keyword_net_comparator_warn_only: constant string := "warn_only";
 
-
+	keyword_class					: constant string := "class";
 
 	keyword_scope					: constant string := "scope";	
 	keyword_flipped					: constant string := "flipped";
 	keyword_rotation_in_schematic	: constant string := "rotation_in_schematic";
-
-	keyword_appearance				: constant string := "appearance";
 
 	keyword_junction				: constant string := "junction";
 	keyword_submodule				: constant string := "submodule";
@@ -317,16 +316,10 @@ package et_project is
 	keyword_variant					: constant string := "variant";
 	keyword_mirrored				: constant string := "mirrored";
 
-	keyword_hidden					: constant string := "hidden"; -- CS ?
 
-
-
-	keyword_commissioned			: constant string := "commissioned";
-	keyword_updated					: constant string := "updated";
-	keyword_author					: constant string := "author";
-
-	keyword_not_mounted				: constant string := "not_mounted";
-
+	
+-- SECTION NAMES
+	
 	section_module_instances	: constant string := "[MODULE_INSTANCES";
 	section_module_connections	: constant string := "[MODULE_CONNECTIONS";
 	section_connector			: constant string := "[CONNECTOR";
@@ -347,13 +340,12 @@ package et_project is
 
 	section_labels				: constant string := "[LABELS";
 	section_label				: constant string := "[LABEL";
-
-
 	
 	section_submodules			: constant string := "[SUBMODULES";
 	section_submodule			: constant string := "[SUBMODULE";
 
 	section_drawing_frames		: constant string := "[DRAWING_FRAMES";
+	section_title_block			: constant string := "[TITLE_BLOCK";
 
 	section_schematic			: constant string := "[SCHEMATIC";
 
@@ -367,12 +359,9 @@ package et_project is
 	section_netchanger			: constant string := "[NETCHANGER";
 	
 	section_units				: constant string := "[UNITS";
-	
-
 
 	section_port_begin			: constant string := "[PORT";
 	
-	section_title_block			: constant string := "[TITLE_BLOCK";
 	
 	type type_section_name_module is (
 		SEC_BOARD_LAYER_STACK,

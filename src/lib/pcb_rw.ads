@@ -73,8 +73,10 @@ package pcb_rw is
 
 	section_terminals			: constant string	:= "[TERMINALS";
 	section_terminal			: constant string	:= "[TERMINAL";
-	
 
+	
+	keyword_description				: constant string := "description";	
+	keyword_width 					: constant string := "width";	
 	keyword_clearance				: constant string := "clearance";
 	keyword_track_width_min			: constant string := "track_width_min";
 	keyword_via_drill_min			: constant string := "via_drill_min";
