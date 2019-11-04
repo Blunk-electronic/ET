@@ -67,8 +67,7 @@ package et_pcb is
 	use et_packages.shapes;
 
 	package frames is new et_frames.frames (
-		shapes		=> et_packages.shapes,
-		text		=> et_packages.pac_text);
+		shapes		=> et_packages.shapes);
 	
 	
 	-- VIAS

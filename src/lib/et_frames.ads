@@ -168,12 +168,10 @@ package et_frames is
 	
 	generic
 		with package shapes is new et_geometry.shapes_2d (<>);
-		with package text is new et_text.text (<>);
+-- 		with package text is new et_text.text (<>);
 		
 	package frames is
 		use shapes.geometry;
-		use shapes;
-		use text;
 
 		function paper_dimension (
 		-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
@@ -182,69 +180,6 @@ package et_frames is
 			axis		: in type_axis_2d)
 			return type_distance_positive;
 
-		-- The title block consists of lots of lines:
-		type type_line is new shapes.type_line with null record;
-		package pac_lines is new doubly_linked_lists (type_line);
-
-		-- Inside the title block are placeholders for texts such as project, file, date ...
-		type type_text_placeholder is new text.type_text with record
-			position	: type_point; -- x/y relative to the position of the title block
-			rotation	: type_rotation;
-			-- CS: font, ...
-		end record;
-
-		-- These basic placeholders are required in both schematic and layout frames.
-		-- The user may use them or not. In the schematic these placeholders are
-		-- replaced by the module or project wide attributes:
-		type type_text_placeholders is record
-			company			: type_text_placeholder;
-			customer		: type_text_placeholder;
-			partcode		: type_text_placeholder;
-			drawing_number	: type_text_placeholder;
-			assembly_variant: type_text_placeholder; -- CS good idea to have it here ?
-			
-			project		: type_text_placeholder;
-			file		: type_text_placeholder;
-			revision	: type_text_placeholder;
-		
-			drawn_by	: type_text_placeholder;
-			checked_by	: type_text_placeholder;
-			approved_by	: type_text_placeholder;
-
-			drawn_date		: type_text_placeholder;
-			checked_date	: type_text_placeholder;
-			approved_date	: type_text_placeholder;
-
-			created_date	: type_text_placeholder;
-			edited_date		: type_text_placeholder;
-		end record;
-
-		-- A real text with content:
-		type type_text is new type_text_placeholder with record
-			content		: et_text.type_text_content.bounded_string;
-		end record;
-
-		-- Real texts are stored in a simple list:
-		package pac_texts is new doubly_linked_lists (type_text);
-
-		-- This is the basic title block of a frame. On instantiation it can
-		-- be extended with other properties.
-		type type_title_block is tagged record
-			position		: type_point; -- relative to the position of the frame
-			lines			: pac_lines.list;
-			texts			: pac_texts.list;
-			placeholders	: type_text_placeholders;
-		end record;
-
-		-- The final drawing frame. To be extended with other properties on instantiation.
-		-- NOTE: The native drawing frame has its lower left corner at position x/y 0/0. always.
-		type type_frame is tagged record
-			paper_size      : type_paper_size; -- the size of the paper
-			sectors			: type_sectors;
-			orientation		: type_paper_orientation := LANDSCAPE;
-			lines           : pac_lines.list;
-		end record;
-		
 	end frames;
 	
 end et_frames;

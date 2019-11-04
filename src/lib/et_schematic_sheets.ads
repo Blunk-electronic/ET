@@ -59,6 +59,8 @@ package et_schematic_sheets is
 	function to_string (name : in pac_template_name.bounded_string) return string;
 	function to_template_name (name : in string) return pac_template_name.bounded_string;
 
+
+	
 	type type_text_placeholders_additional is record
 		sheet_number	: type_text_placeholder_2;
 		description		: type_text_placeholder_2;
@@ -78,8 +80,7 @@ package et_schematic_sheets is
 		geometry	=> et_coordinates.geometry);
 	
 	package pac_frames is new et_frames.frames (
-		shapes	=> pac_shapes,
-		text	=> et_symbols.pac_text);
+		shapes	=> pac_shapes);
 	
 
 	
