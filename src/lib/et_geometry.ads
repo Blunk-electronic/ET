@@ -42,8 +42,8 @@ with et_general;				use et_general;
 package et_geometry is
 
 	keyword_position	: constant string := "position";
-	keyword_pos_x 		: constant string := "x";
-	keyword_pos_y 		: constant string := "y";		
+	keyword_x 			: constant string := "x";
+	keyword_y 			: constant string := "y";		
 	keyword_rotation 	: constant string := "rotation";
 	keyword_start		: constant string := "start";
 	keyword_end			: constant string := "end";

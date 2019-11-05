@@ -55,8 +55,8 @@ package body schematic_rw is
 	-- Returns something like "sheet 3 x 12.34 y 45.0".
 
 		function text return string is begin return 
-			space & keyword_pos_x & to_string (x (pos)) 
-			& space & keyword_pos_y & to_string (y (pos));
+			space & keyword_x & to_string (x (pos)) 
+			& space & keyword_y & to_string (y (pos));
 		end text;
 		
 	begin

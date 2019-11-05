@@ -42,7 +42,7 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
 with et_string_processing;
-with et_coordinates;			use et_coordinates;
+with et_coordinates;
 with et_general;				use et_general;
 with et_text;
 with et_frames;					use et_frames;
@@ -54,9 +54,6 @@ package frame_rw is
 	keyword_orientation		: constant string := "orientation";
 	keyword_border_width	: constant string := "border_width";
 	keyword_size			: constant string := "size";
-	
-	keyword_x				: constant string := "x";
-	keyword_y				: constant string := "y";	
 
 	keyword_sectors			: constant string := "sectors";
 	keyword_rows			: constant string := "rows";

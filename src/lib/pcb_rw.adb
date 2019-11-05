@@ -366,14 +366,14 @@ package body pcb_rw is
 		while place <= positive (field_count (line)) loop
 
 			-- We expect after the x the corresponding value for x
-			if f (line, place) = keyword_pos_x then
+			if f (line, place) = keyword_x then
 				set (
 					point	=> point,
 					axis	=> X,
 					value 	=> to_distance (f (line, place + 1)));
 
 			-- We expect after the y the corresponding value for y
-			elsif f (line, place) = keyword_pos_y then
+			elsif f (line, place) = keyword_y then
 				set (
 					point	=> point,
 					axis 	=> Y,
@@ -405,11 +405,11 @@ package body pcb_rw is
 		while place <= positive (field_count (line)) loop
 
 			-- We expect after the x the corresponding value for x
-			if f (line, place) = keyword_pos_x then
+			if f (line, place) = keyword_x then
 				set (point => point, axis => X, value => to_distance (f (line, place + 1)));
 
 			-- We expect after the y the corresponding value for y
-			elsif f (line, place) = keyword_pos_y then
+			elsif f (line, place) = keyword_y then
 				set (point => point, axis => Y, value => to_distance (f (line, place + 1)));
 
 			-- We expect after "rotation" the corresponding value for the rotation
@@ -429,8 +429,8 @@ package body pcb_rw is
 	function position (point : et_pcb_coordinates.geometry.type_point'class) return string is
 		use ada.tags;
 
-		xy : constant string := space & keyword_pos_x & to_string (x (point)) 
-				& space & keyword_pos_y & to_string (y (point));
+		xy : constant string := space & keyword_x & to_string (x (point)) 
+				& space & keyword_y & to_string (y (point));
 	begin
 		if point'tag = et_pcb_coordinates.geometry.type_point'tag then
 			return xy;
@@ -466,11 +466,11 @@ package body pcb_rw is
 		while place <= positive (field_count (line)) loop
 
 			-- We expect after the x the corresponding value for x
-			if f (line, place) = keyword_pos_x then
+			if f (line, place) = keyword_x then
 				grid.x := to_distance (f (line, place + 1));
 
 			-- We expect after the y the corresponding value for y
-			elsif f (line, place) = keyword_pos_y then
+			elsif f (line, place) = keyword_y then
 				grid.y := to_distance (f (line, place + 1));
 
 			else

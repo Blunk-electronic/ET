@@ -76,11 +76,11 @@ package body symbol_rw is
 		while place <= positive (field_count (line)) loop
 
 			-- We expect after the x the corresponding value for x
-			if f (line, place) = keyword_pos_x then
+			if f (line, place) = keyword_x then
 				grid.x := to_distance (f (line, place + 1));
 
 			-- We expect after the y the corresponding value for y
-			elsif f (line, place) = keyword_pos_y then
+			elsif f (line, place) = keyword_y then
 				grid.y := to_distance (f (line, place + 1));
 
 			else
@@ -97,8 +97,8 @@ package body symbol_rw is
 	-- Returns something like "x 12.34 y 45.0".
 
 		function text return string is begin return 
-			keyword_pos_x & to_string (x (pos)) 
-			& space & keyword_pos_y & to_string (y (pos));
+			keyword_x & to_string (x (pos)) 
+			& space & keyword_y & to_string (y (pos));
 		end text;
 		
 	begin
@@ -122,12 +122,12 @@ package body symbol_rw is
 		while place <= positive (field_count (line)) loop
 
 			-- We expect after the x the corresponding value for x
-			if f (line, place) = keyword_pos_x then
+			if f (line, place) = keyword_x then
 				--set_x (point, to_distance (f (line, place + 1)));
 				set (X, to_distance (f (line, place + 1)), point);
 
 			-- We expect after the y the corresponding value for y
-			elsif f (line, place) = keyword_pos_y then
+			elsif f (line, place) = keyword_y then
 				--set_y (point, to_distance (f (line, place + 1)));
 				set (Y, to_distance (f (line, place + 1)),point);
 

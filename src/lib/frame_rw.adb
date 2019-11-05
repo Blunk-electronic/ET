@@ -47,7 +47,7 @@ with ada.containers.ordered_maps;
 with ada.exceptions;
 
 with et_geometry;
-with et_coordinates;			use et_coordinates;
+with et_coordinates;
 with et_general;				use et_general;
 with et_text;
 with et_frames;					use et_frames;
@@ -56,30 +56,39 @@ with general_rw;				use general_rw;
 
 package body frame_rw is
 
+	function to_string (position : in type_position) return string is
+	-- returns something like "x 120 y 12"
+		use et_geometry;
+	begin
+		return 
+			keyword_x & space & to_string (position.x) & space &
+			keyword_y & space & to_string (position.y);
+	end;
+	
 	procedure write (
 		frame			: in type_frame;
 		file_name		: in pac_template_name.bounded_string;
 		log_threshold	: in et_string_processing.type_log_level) is
 
+		use et_geometry;  -- for keywords only		
+		
 		file_handle : ada.text_io.file_type;
 
 		procedure write_lines (lines : in pac_lines.list) is
 			use pac_lines;
 
-			procedure write (cursor : in pac_lines.cursor) is 
-				use et_geometry; -- for keywords only
-			begin
+			procedure write (cursor : in pac_lines.cursor) is begin
 				section_mark (section_line, HEADER);
 
 				-- start point
-				write (keyword => keyword_start, parameters => 
-					keyword_x & space & to_string (element (cursor).start_point.x) & space &
-					keyword_y & space & to_string (element (cursor).start_point.y)); -- start x 180 x 10
+				write (
+					keyword		=> keyword_start, 
+					parameters	=> to_string (element (cursor).start_point)); -- start x 180 x 10
 
 				-- end point
-				write (keyword => keyword_end, parameters => 
-					keyword_x & space & to_string (element (cursor).end_point.x) & space &
-					keyword_y & space & to_string (element (cursor).end_point.y)); -- end x 220 x 10
+				write (
+					keyword		=> keyword_end, 
+					parameters	=> to_string (element (cursor).end_point)); -- end x 180 x 10
 				
 				section_mark (section_line, FOOTER);
 			end;
@@ -89,15 +98,44 @@ package body frame_rw is
 			iterate (lines, write'access);
 			section_mark (section_lines, FOOTER);
 		end;
+
+		procedure write_texts (texts : in pac_texts.list) is
+			use pac_texts;
+
+			procedure write (cursor : in pac_texts.cursor) is begin
+				section_mark (section_text, HEADER);
+
+				-- position
+				write (
+					keyword		=> keyword_position,
+					parameters	=> to_string (element (cursor).position)); -- position x 220 y 40
+
+				-- size
+				write (
+					keyword		=> et_text.keyword_size,
+					parameters	=> to_string (element (cursor).size)); -- size 20
+
+				-- content
+				write (
+					keyword		=> et_text.keyword_content,
+					wrap		=> true,
+					parameters	=> et_text.to_string (element (cursor).content)); -- content "motor driver"
+				
+				section_mark (section_text, FOOTER);
+			end;
+			
+		begin -- write_texts
+			section_mark (section_texts, HEADER);
+			iterate (texts, write'access);
+			section_mark (section_texts, FOOTER);
+		end write_texts;
 		
-		procedure write_title_block (block : in type_title_block) is
-			use et_geometry;  -- for keywords only
-		begin
-			write (keyword => keyword_position, parameters => 
-				keyword_x & space & to_string (block.position.x) & space &
-				keyword_y & space & to_string (block.position.y)); -- position x 180 x 10
+		procedure write_title_block (block : in type_title_block) is begin
+			write (keyword => keyword_position, parameters => to_string (block.position)); -- position x 180 x 10
 
 			write_lines (block.lines);
+
+			write_texts (block.texts);
 			
 		end write_title_block;
 		
@@ -145,6 +183,7 @@ package body frame_rw is
 				write_title_block (type_title_block (frame.title_block_pcb));
 		end case;
 
+		
 		section_mark (section_title_block, FOOTER);		
 
 

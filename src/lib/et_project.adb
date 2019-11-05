@@ -769,14 +769,14 @@ package body et_project is
 
 			section_mark (section_schematic, HEADER);
 			write (keyword => keyword_default, parameters => 
-				   keyword_pos_x & to_string (element (module_cursor).grid.x) & space &
-				   keyword_pos_y & to_string (element (module_cursor).grid.y));
+				   keyword_x & to_string (element (module_cursor).grid.x) & space &
+				   keyword_y & to_string (element (module_cursor).grid.y));
 			section_mark (section_schematic, FOOTER);
 
 			section_mark (section_board, HEADER);
 			write (keyword => keyword_default, parameters => 
-				   keyword_pos_x & to_string (element (module_cursor).board.grid.x) & space &
-				   keyword_pos_y & to_string (element (module_cursor).board.grid.y));
+				   keyword_x & to_string (element (module_cursor).board.grid.x) & space &
+				   keyword_y & to_string (element (module_cursor).board.grid.y));
 			section_mark (section_board, FOOTER);
 			
 			section_mark (section_drawing_grid, FOOTER);
@@ -1456,8 +1456,8 @@ package body et_project is
 
 				write (keyword => keyword_position, parameters => position (element (submodule_cursor).position));
 				write (keyword => submodules.keyword_size, parameters => 
-					space & keyword_pos_x & to_string (element (submodule_cursor).size.x) &
-					space & keyword_pos_y & to_string (element (submodule_cursor).size.y)); -- size x 50 y 70
+					space & keyword_x & to_string (element (submodule_cursor).size.x) &
+					space & keyword_y & to_string (element (submodule_cursor).size.y)); -- size x 50 y 70
 				
 				write (keyword => keyword_position_in_board, parameters => -- position_in_board x 23 y 0.2 rotation 90.0
 					position (element (submodule_cursor).position_in_board));
@@ -2007,12 +2007,12 @@ package body et_project is
 					set_sheet (point, to_sheet (f (line, place + 1)));
 					
 				-- We expect after the x the corresponding value for x
-				elsif f (line, place) = keyword_pos_x then
+				elsif f (line, place) = keyword_x then
 					--set_x (point, to_distance (f (line, place + 1)));
 					set (X, to_distance (f (line, place + 1)), point);
 
 				-- We expect after the y the corresponding value for y
-				elsif f (line, place) = keyword_pos_y then
+				elsif f (line, place) = keyword_y then
 					--set_y (point, to_distance (f (line, place + 1)));
 					set (Y, to_distance (f (line, place + 1)), point);
 
@@ -2040,11 +2040,11 @@ package body et_project is
 			while place <= positive (field_count (line)) loop
 
 				-- We expect after the x the corresponding value for x
-				if f (line, place) = keyword_pos_x then
+				if f (line, place) = keyword_x then
 					size.x := to_distance (f (line, place + 1));
 
 				-- We expect after the y the corresponding value for y
-				elsif f (line, place) = keyword_pos_y then
+				elsif f (line, place) = keyword_y then
 					size.y := to_distance (f (line, place + 1));
 
 				else
@@ -2073,11 +2073,11 @@ package body et_project is
 			while place <= positive (field_count (line)) loop
 
 				-- We expect after the x the corresponding value for x
-				if f (line, place) = keyword_pos_x then
+				if f (line, place) = keyword_x then
 					set (point => point, axis => X, value => to_distance (f (line, place + 1)));
 
 				-- We expect after the y the corresponding value for y
-				elsif f (line, place) = keyword_pos_y then
+				elsif f (line, place) = keyword_y then
 					set (point => point, axis => Y, value => to_distance (f (line, place + 1)));
 
 				-- We expect after "rotation" the corresponding value for the rotation
