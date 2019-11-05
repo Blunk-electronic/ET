@@ -2146,9 +2146,9 @@ package body et_project is
 		route_via	: et_pcb.type_via;
 
 		
-		frame_template_schematic	: et_frames.pac_schematic_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
+		frame_template_schematic	: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
 		-- CS frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
-		frame_template_board		: et_frames.pac_pcb_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
+		frame_template_board		: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
 
 		-- submodules
 		submodule_port			: submodules.type_submodule_port;

@@ -97,7 +97,7 @@ package et_frames is
 	paper_size_A4_y : constant type_distance := 210;
 
 	function paper_dimension (
-	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
+	-- Returns for the given paper size, orientation and axis the corresponding size in mm.
 		paper_size	: in type_paper_size;
 		orientation	: in type_paper_orientation := LANDSCAPE;
 		axis		: in type_axis_2d)
@@ -182,21 +182,29 @@ package et_frames is
 	
 
 
--- SCHEMATIC RELATED
+-- FILE NAMES
 
-	-- $ET_FRAMES/drawing_frame_version_1.frs
-	schematic_template_file_extension : constant string := "frs";
+	-- extensions:
+	template_schematic_extension	: constant string := "frs"; -- $ET_FRAMES/drawing_frame_version_1.frs
+	template_pcb_extension			: constant string := "frb"; -- $ET_FRAMES/drawing_frame_version_1.frb
+
+	package pac_template_name is new generic_bounded_length (template_file_name_length_max);
+
+	-- default file names:
+	template_schematic_default : constant pac_template_name.bounded_string := 
+		pac_template_name.to_bounded_string (template_file_name_dummy); -- cs compose extension
+
+	template_pcb_default : constant pac_template_name.bounded_string := 
+		pac_template_name.to_bounded_string (template_file_name_dummy); -- cs compose extension
 	
-	package pac_schematic_template_name is new generic_bounded_length (template_file_name_length_max);
-
-	schematic_frame_template_name_dummy : constant pac_schematic_template_name.bounded_string := 
-		pac_schematic_template_name.to_bounded_string (template_file_name_dummy); -- cs compose extension
-	
-	function to_string (name : in pac_schematic_template_name.bounded_string) return string;
-	function to_template_name (name : in string) return pac_schematic_template_name.bounded_string;
+	function to_string (name : in pac_template_name.bounded_string) return string;
+	function to_template_name (name : in string) return pac_template_name.bounded_string;
 
 
 	
+-- TEXT PLACEHOLDERS AND TITLE BLOCKS
+	
+	-- schematic:
 	type type_placeholders_schematic is record
 		sheet_number	: type_placeholder;
 		description		: type_placeholder;
@@ -207,25 +215,7 @@ package et_frames is
 		additional_placeholders : type_placeholders_schematic;
 	end record;
 
-	
-
-
-
-	
--- PCB RELATED
-
-	-- $ET_FRAMES/drawing_frame_version_1.frb
-	pcb_template_file_extension : constant string := "frb";
-	
-	package pac_pcb_template_name is new generic_bounded_length (template_file_name_length_max);
-
-	pcb_frame_template_name_dummy : constant pac_pcb_template_name.bounded_string := 
-		pac_pcb_template_name.to_bounded_string (template_file_name_dummy); -- cs compose extension
-	
-	function to_string (name : in pac_pcb_template_name.bounded_string) return string;
-	function to_template_name (name : in string) return pac_pcb_template_name.bounded_string;
-
-
+	-- pcb:
 	type type_placeholders_pcb is record
 		silk_screen, assy_doc, 
 
@@ -243,9 +233,14 @@ package et_frames is
 
 	
 -- THE GENERAL PARAMETERIZED FRAME
-	
+
+	-- The frame may be used in a schematic drawing or a layout drawing:
 	type type_domain is (SCHEMATIC, PCB);
-	
+
+	function to_string (domain : in type_domain) return string;
+	function to_domain (domain : in string) return type_domain;
+
+	-- The used title block depends on the domain.
 	type type_frame (domain : type_domain) is record
 		paper			: type_paper_size := paper_size_default;
 		orientation		: type_paper_orientation := orientation_default;
@@ -265,10 +260,11 @@ package et_frames is
 
 
 	
--- PCB RELATED
+-- THE FINAL FRAME IN A PCB DRAWING
+	
 	-- This is the drawing frame used in a pcb layout:
 	type type_frame_pcb is record
-		template	: pac_pcb_template_name.bounded_string := pcb_frame_template_name_dummy;
+		template	: pac_template_name.bounded_string := template_pcb_default;
 			-- like $ET_FRAMES/drawing_frame_A3_landscape.frm
 
 		frame		: type_frame (PCB);
@@ -277,7 +273,7 @@ package et_frames is
 	
 
 
--- SCHEMATIC RELATED
+-- THE FINAL FRAME IN A SCHEMATIC
 	
 	type type_schematic_sheet_category is (
 		DEVELOPMENT,
@@ -301,7 +297,7 @@ package et_frames is
 
 	-- The final drawing frames:
 	type type_frames_schematic is record
-		template		: pac_schematic_template_name.bounded_string := schematic_frame_template_name_dummy;
+		template		: pac_template_name.bounded_string := template_schematic_default;
 			-- like $ET_FRAMES/drawing_frame_A4_landscape.frs
 
 		frame			: type_frame (SCHEMATIC);

@@ -2866,10 +2866,10 @@ package body et_kicad_to_native is
 		-- For the time being the native module gets dummy templates assigned.
 		begin
 			-- schematic frames:
-			module.frames.template := schematic_frame_template_name_dummy;
+			module.frames.template := template_schematic_default;
 
 			-- board frame:
-			module.board.frame.template := pcb_frame_template_name_dummy;
+			module.board.frame.template := template_pcb_default;
 		end copy_frames;
 		
 		procedure copy_libraries (

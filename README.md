@@ -218,7 +218,7 @@ There is a distiction between drawing frames for schematic and PCB.
 
 To create or open a schematic frame:
 ```sh
-$ et --create-schematic-frame --save-schematic-frame-as tmp/frames/A4_landscape.frs
+$ et --create-schematic-frame tmp/frames/A4_landscape.frs
 ```
 
 ```sh
@@ -227,7 +227,7 @@ $ et --open-schematic-frame lib/frames/schematic/A4_landscape.frs --save-schemat
 
 Similar a board frame can be created or opened:
 ```sh
-$ et --create-pcb-frame --save-pcb-frame-as tmp/frames/A4_landscape.frb
+$ et --create-pcb-frame tmp/frames/A4_landscape.frb
 ```
 
 ```sh

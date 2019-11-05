@@ -35,6 +35,9 @@
 --   history of changes:
 --
 
+with ada.characters;			use ada.characters;
+with ada.characters.handling;	use ada.characters.handling;
+
 package body et_frames is
 
 	function to_paper_size (paper_size : in string) return type_paper_size is begin
@@ -48,7 +51,7 @@ package body et_frames is
 
 
 	function paper_dimension (
-	-- Returns for the given paper size, orientation and axis the correspoinding size in mm.
+	-- Returns for the given paper size, orientation and axis the corresponding size in mm.
 		paper_size	: in type_paper_size;
 		orientation	: in type_paper_orientation := LANDSCAPE;
 		axis		: in type_axis_2d)
@@ -94,25 +97,22 @@ package body et_frames is
 	end paper_dimension;
 
 
--- SCHEMATIC
 
-	function to_string (name : in pac_schematic_template_name.bounded_string) return string is begin
-		return pac_schematic_template_name.to_string (name);
+
+	function to_string (name : in pac_template_name.bounded_string) return string is begin
+		return pac_template_name.to_string (name);
 	end;
 	
-	function to_template_name (name : in string) return pac_schematic_template_name.bounded_string is begin
-		return pac_schematic_template_name.to_bounded_string (name);
+	function to_template_name (name : in string) return pac_template_name.bounded_string is begin
+		return pac_template_name.to_bounded_string (name);
 	end;
 
-
--- PCB RELATED
-
-	function to_string (name : in pac_pcb_template_name.bounded_string) return string is begin
-		return pac_pcb_template_name.to_string (name);
+	function to_string (domain : in type_domain) return string is begin
+		return to_lower (type_domain'image (domain));
 	end;
-	
-	function to_template_name (name : in string) return pac_pcb_template_name.bounded_string is begin
-		return pac_pcb_template_name.to_bounded_string (name);
+
+	function to_domain (domain : in string) return type_domain is begin
+		return type_domain'value (domain);
 	end;
 	
 	

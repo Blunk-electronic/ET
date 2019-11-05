@@ -95,13 +95,10 @@ procedure et is
 	device_name_save_as		: et_devices.type_device_model_file.bounded_string; -- the device to be saved as
 	device_appearance		: et_symbols.type_appearance := et_symbols.PCB; -- virtual/pcb. mostly pcb.
 
-	frame_schematic_name_create		: et_frames.pac_schematic_template_name.bounded_string; -- the frame to be created like lib/frames/A3_landscape.frs
-	frame_schematic_name_open		: et_frames.pac_schematic_template_name.bounded_string;
-	frame_schematic_name_save_as	: et_frames.pac_schematic_template_name.bounded_string;
-
-	frame_pcb_name_create	: et_frames.pac_pcb_template_name.bounded_string; -- the frame to be created like lib/frames/A3_landscape.frb
-	frame_pcb_name_open		: et_frames.pac_pcb_template_name.bounded_string;
-	frame_pcb_name_save_as	: et_frames.pac_pcb_template_name.bounded_string;
+	frame_name_create		: et_frames.pac_template_name.bounded_string; -- the frame to be created like lib/frames/A3_landscape.frs
+	frame_name_open			: et_frames.pac_template_name.bounded_string;
+	frame_name_save_as		: et_frames.pac_template_name.bounded_string;
+	frame_domain			: et_frames.type_domain := et_frames.SCHEMATIC;
 	
 	script_name	: scripting.type_script_name.bounded_string;
 
@@ -252,29 +249,33 @@ procedure et is
 					-- frame schematic
 					elsif full_switch = switch_frame_schematic_create then
 						log (text => arg & full_switch); -- no parameter
-						frame_schematic_name_create := et_frames.to_template_name (dummy_name);
-
+						frame_name_create := et_frames.to_template_name (dummy_name);
+						frame_domain := et_frames.SCHEMATIC;
+						
 					elsif full_switch = switch_frame_schematic_open then
 						log (text => arg & full_switch & space & parameter);
-						frame_schematic_name_open := et_frames.to_template_name (parameter);
-
+						frame_name_open := et_frames.to_template_name (parameter);
+						frame_domain := et_frames.SCHEMATIC;
+						
 					elsif full_switch = switch_frame_schematic_save_as then
 						log (text => arg & full_switch & space & parameter);
-						frame_schematic_name_save_as := et_frames.to_template_name (parameter);
+						frame_name_save_as := et_frames.to_template_name (parameter);
 
 
 					-- frame pcb
 					elsif full_switch = switch_frame_pcb_create then
 						log (text => arg & full_switch); -- no parameter
-						frame_pcb_name_create := et_frames.to_template_name (dummy_name);
+						frame_name_create := et_frames.to_template_name (dummy_name);
+						frame_domain := et_frames.PCB;
 
 					elsif full_switch = switch_frame_pcb_open then
 						log (text => arg & full_switch & space & parameter);
-						frame_pcb_name_open := et_frames.to_template_name (parameter);
-
+						frame_name_open := et_frames.to_template_name (parameter);
+						frame_domain := et_frames.PCB;
+						
 					elsif full_switch = switch_frame_pcb_save_as then
 						log (text => arg & full_switch & space & parameter);
-						frame_pcb_name_save_as := et_frames.to_template_name (parameter);
+						frame_name_save_as := et_frames.to_template_name (parameter);
 
 						
 					-- script
@@ -444,8 +445,7 @@ procedure et is
 		use et_packages.type_package_model_file;
 		use et_symbols.type_symbol_model_file;
 		use et_devices.type_device_model_file;
-		use et_frames.pac_schematic_template_name;
-		use et_frames.pac_pcb_template_name;
+		use et_frames.pac_template_name;
 		
 		procedure read_configuration_file is begin
 			if length (conv_file_name_use) > 0 then
@@ -558,17 +558,23 @@ procedure et is
 				save_device_as; -- if device_name_save_as is empty nothing happens
 
 
-			-- frame schematic
-			elsif length (frame_schematic_name_create) > 0 then
-				null;
--- 				frame_rw.create_frame (frame_schematic_name_create, et_frames.SCHEMATIC, log_threshold => 0);
+			-- frame
+			elsif length (frame_name_create) > 0 then
+				frame_rw.create_frame (frame_name_create, frame_domain, log_threshold => 0); -- incl. save to file
 
-			elsif length (frame_schematic_name_save_as) > 0 then
-				null;
--- 				frame_rw.save_frame (frame_schematic_name_save_as, et_frames.SCHEMATIC, log_threshold => 0);
+			elsif length (frame_name_open) > 0 then
+				declare
+					use et_frames;
+					use frame_rw;
+					frame : type_frame (frame_domain);
+				begin
+					frame := read_frame (frame_name_open, frame_domain, log_threshold => 0);
 
-				-- optionally the framc can be saved under a different name				
--- 				save_device_as; -- if frame_schematic_name_save_as is empty nothing happens
+					-- optionally the framc can be saved under a different name				
+					if length (frame_name_save_as) > 0 then
+						save_frame (frame, frame_name_save_as, log_threshold => 0);
+					end if;
+				end;
 
 			end if;
 			
