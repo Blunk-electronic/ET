@@ -70,7 +70,7 @@ with pcb_rw;
 with device_rw;
 with et_symbols;
 with et_devices;				use et_devices;
-with et_frames;					use et_frames;
+with et_frames;
 
 package body et_kicad_to_native is
 
@@ -110,7 +110,9 @@ package body et_kicad_to_native is
 		
 		function paper_size_of_schematic_sheet (sheet_number : in et_coordinates.type_sheet)
 		-- Returns for a given sheet number the respective paper size.
-			return type_paper_size is
+			return et_frames.type_paper_size is
+
+			use et_frames;
 
 			-- This is to be returned. In case no paper size was found, use the default value of type_paper_size.
 			size : type_paper_size := paper_size_default;
@@ -159,7 +161,7 @@ package body et_kicad_to_native is
 			use et_coordinates;
 			use geometry;
 			sheet_number 		: et_coordinates.type_sheet;
-			sheet_paper_size	: type_paper_size;
+			sheet_paper_size	: et_frames.type_paper_size;
 			sheet_height		: type_distance_positive;
 			new_y				: et_coordinates.type_distance_xy;
 		begin -- move
@@ -193,7 +195,7 @@ package body et_kicad_to_native is
 			use et_coordinates;
 			use geometry;
 			sheet_number 		: et_coordinates.type_sheet;
-			sheet_paper_size	: type_paper_size;
+			sheet_paper_size	: et_frames.type_paper_size;
 			sheet_height		: type_distance_positive;
 			new_y				: et_coordinates.type_distance_xy;
 		begin -- move
@@ -222,6 +224,7 @@ package body et_kicad_to_native is
 			-- The paper size of a board/layout drawing:
 			use et_pcb_coordinates;
 			use geometry;
+			use et_frames;
 			board_paper_size : type_paper_size;
 		begin -- prepare_layout_y_movements
 			-- Fetch the paper size of the current layout design:
@@ -2864,6 +2867,7 @@ package body et_kicad_to_native is
 		-- Converts the kicad drawing frame templates (schematic and layout) to native templates.
 		-- CS: not completed yet.
 		-- For the time being the native module gets dummy templates assigned.
+			use et_frames;
 		begin
 			-- schematic frames:
 			module.frames.template := template_schematic_default;

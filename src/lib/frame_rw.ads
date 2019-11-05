@@ -54,6 +54,7 @@ package frame_rw is
 	keyword_orientation		: constant string := "orientation";
 	keyword_border_width	: constant string := "border_width";
 	keyword_size			: constant string := "size";
+	
 	keyword_x				: constant string := "x";
 	keyword_y				: constant string := "y";	
 
@@ -61,8 +62,9 @@ package frame_rw is
 	keyword_rows			: constant string := "rows";
 	keyword_columns			: constant string := "columns";	
 
-	
 	section_title_block		: constant string := "[TITLE_BLOCK";
+	section_lines			: constant string := "[LINES";
+
 	
 	type type_section is (
 		SEC_INIT,

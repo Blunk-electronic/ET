@@ -124,12 +124,12 @@ package et_frames is
 
 
 	
-	type type_title_block_line is record
+	type type_line is record
 		start_point	: type_position := position_default;
 		end_point	: type_position := position_default;
 	end record;
 
-	package pac_title_block_lines is new doubly_linked_lists (type_title_block_line);
+	package pac_lines is new doubly_linked_lists (type_line);
 
 
 
@@ -180,7 +180,7 @@ package et_frames is
 	-- The basic title block:
 	type type_title_block is tagged record
 		position		: type_position := position_default;
-		lines			: pac_title_block_lines.list;
+		lines			: pac_lines.list;
 		placeholders	: type_placeholders;
 		texts			: pac_texts.list;
 	end record;

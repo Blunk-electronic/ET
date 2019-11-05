@@ -46,6 +46,7 @@ with ada.containers.ordered_maps;
 
 with ada.exceptions;
 
+with et_geometry;
 with et_coordinates;			use et_coordinates;
 with et_general;				use et_general;
 with et_text;
@@ -61,7 +62,46 @@ package body frame_rw is
 		log_threshold	: in et_string_processing.type_log_level) is
 
 		file_handle : ada.text_io.file_type;
-	begin
+
+		procedure write_lines (lines : in pac_lines.list) is
+			use pac_lines;
+
+			procedure write (cursor : in pac_lines.cursor) is 
+				use et_geometry; -- for keywords only
+			begin
+				section_mark (section_line, HEADER);
+
+				-- start point
+				write (keyword => keyword_start, parameters => 
+					keyword_x & space & to_string (element (cursor).start_point.x) & space &
+					keyword_y & space & to_string (element (cursor).start_point.y)); -- start x 180 x 10
+
+				-- end point
+				write (keyword => keyword_end, parameters => 
+					keyword_x & space & to_string (element (cursor).end_point.x) & space &
+					keyword_y & space & to_string (element (cursor).end_point.y)); -- end x 220 x 10
+				
+				section_mark (section_line, FOOTER);
+			end;
+				
+		begin -- write lines
+			section_mark (section_lines, HEADER);
+			iterate (lines, write'access);
+			section_mark (section_lines, FOOTER);
+		end;
+		
+		procedure write_title_block (block : in type_title_block) is
+			use et_geometry;  -- for keywords only
+		begin
+			write (keyword => keyword_position, parameters => 
+				keyword_x & space & to_string (block.position.x) & space &
+				keyword_y & space & to_string (block.position.y)); -- position x 180 x 10
+
+			write_lines (block.lines);
+			
+		end write_title_block;
+		
+	begin -- write
 		create (
 			file 	=> file_handle,
 			mode	=> out_file,
@@ -75,6 +115,9 @@ package body frame_rw is
 		put_line (comment_mark & space & row_separator_double);
 		new_line;
 
+
+
+		
 		write (keyword => keyword_domain, parameters => to_string (frame.domain));
 		write (keyword => keyword_paper_size, parameters => to_string (frame.paper));
 		write (keyword => keyword_orientation, parameters => to_string (frame.orientation));
@@ -87,11 +130,25 @@ package body frame_rw is
 			keyword_rows & space & to_string (frame.sectors.rows) & space &
 			keyword_columns & space & to_string (frame.sectors.columns)); -- sectors rows 5 columns 10
 
-			   
+
+
+		
+		-- title block
 		section_mark (section_title_block, HEADER);
+		
+		-- write general things of title block (standard placeholders, texts, lines):
+		case frame.domain is 
+			when SCHEMATIC =>
+				write_title_block (type_title_block (frame.title_block_schematic));
+
+			when PCB =>
+				write_title_block (type_title_block (frame.title_block_pcb));
+		end case;
 
 		section_mark (section_title_block, FOOTER);		
 
+
+		
 		-- write footer
 		new_line;		
 		put_line (comment_mark & space & row_separator_double);
