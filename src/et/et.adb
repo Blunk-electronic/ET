@@ -143,12 +143,12 @@ procedure et is
 						& space & switch_native_device_save_as & equals
 
 						-- frame schematic
-						& space & switch_frame_schematic_create -- no parameter
+						& space & switch_frame_schematic_create & equals
 						& space & switch_frame_schematic_open & equals
 						& space & switch_frame_schematic_save_as & equals
 
 						-- frame pcb
-						& space & switch_frame_pcb_create -- no parameter
+						& space & switch_frame_pcb_create & equals
 						& space & switch_frame_pcb_open & equals
 						& space & switch_frame_pcb_save_as & equals
 						
@@ -248,8 +248,8 @@ procedure et is
 						
 					-- frame schematic
 					elsif full_switch = switch_frame_schematic_create then
-						log (text => arg & full_switch); -- no parameter
-						frame_name_create := et_frames.to_template_name (dummy_name);
+						log (text => arg & full_switch & space & parameter);
+						frame_name_create := et_frames.to_template_name (parameter);
 						frame_domain := et_frames.SCHEMATIC;
 						
 					elsif full_switch = switch_frame_schematic_open then
@@ -264,8 +264,8 @@ procedure et is
 
 					-- frame pcb
 					elsif full_switch = switch_frame_pcb_create then
-						log (text => arg & full_switch); -- no parameter
-						frame_name_create := et_frames.to_template_name (dummy_name);
+						log (text => arg & full_switch & space & parameter);
+						frame_name_create := et_frames.to_template_name (parameter);
 						frame_domain := et_frames.PCB;
 
 					elsif full_switch = switch_frame_pcb_open then

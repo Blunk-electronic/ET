@@ -37,6 +37,7 @@
 
 
 with ada.text_io;				use ada.text_io;
+with ada.strings;				use ada.strings;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.containers; 			use ada.containers;
@@ -69,12 +70,19 @@ package body frame_rw is
 		set_output (file_handle);
 
 		-- write a nice header
-		put_line (comment_mark & " " & et_general.system_name & " drawing frame template");
+		put_line (comment_mark & " " & et_general.system_name & space & "drawing frame template");
 		put_line (comment_mark & " " & date);
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;
 
+		write (keyword => keyword_domain, parameters => to_string (frame.domain));
+		write (keyword => keyword_paper_size, parameters => to_string (frame.paper));
+		write (keyword => keyword_paper_size, parameters => to_string (frame.paper));
+-- 		write (keyword => keyword_orientation, parameters => to_string (frame.orientation));
+		
+		section_mark (section_title_block, HEADER);
 
+		section_mark (section_title_block, FOOTER);		
 
 		-- write footer
 		new_line;		

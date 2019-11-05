@@ -49,6 +49,20 @@ with et_frames;					use et_frames;
 
 package frame_rw is
 
+	keyword_domain			: constant string := "domain";				
+	keyword_paper_size		: constant string := "paper_size";
+	keyword_orientation		: constant string := "orientation";
+	keyword_border_width	: constant string := "border_width";
+	keyword_size			: constant string := "size";
+	keyword_sectors			: constant string := "sectors";
+
+	section_title_block		: constant string := "[TITLE_BLOCK";
+	
+	type type_section is (
+		SEC_INIT,
+		SEC_TITLE_BLOCK
+		);
+	
 	procedure create_frame (
 	-- Creates and saves a frame in given file_name.
 		file_name		: in pac_template_name.bounded_string;

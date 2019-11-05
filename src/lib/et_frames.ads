@@ -40,7 +40,7 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
-
+with ada.directories;			use ada.directories;
 
 with et_coordinates;			use et_coordinates;
 with et_general;				use et_general;
@@ -58,6 +58,8 @@ package et_frames is
 
 	type type_paper_orientation is (PORTRAIT, LANDSCAPE);
 	orientation_default : constant type_paper_orientation := LANDSCAPE;
+
+-- 	function to_string (orientation : in type_paper_orientation)
 
 	
 	template_file_name_length_max : constant positive := 300;
@@ -192,10 +194,18 @@ package et_frames is
 
 	-- default file names:
 	template_schematic_default : constant pac_template_name.bounded_string := 
-		pac_template_name.to_bounded_string (template_file_name_dummy); -- cs compose extension
+		pac_template_name.to_bounded_string (
+			compose (
+				name		=> template_file_name_dummy,
+				extension	=> template_schematic_extension)
+				);
 
 	template_pcb_default : constant pac_template_name.bounded_string := 
-		pac_template_name.to_bounded_string (template_file_name_dummy); -- cs compose extension
+		pac_template_name.to_bounded_string (
+			compose (
+				name		=> template_file_name_dummy,
+				extension	=> template_pcb_extension)
+				);
 	
 	function to_string (name : in pac_template_name.bounded_string) return string;
 	function to_template_name (name : in string) return pac_template_name.bounded_string;
