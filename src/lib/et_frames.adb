@@ -35,6 +35,8 @@
 --   history of changes:
 --
 
+with ada.strings;				use ada.strings;
+with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.characters;			use ada.characters;
 with ada.characters.handling;	use ada.characters.handling;
 
@@ -47,13 +49,50 @@ package body et_frames is
 	function to_string (paper_size : in type_paper_size) return string is begin
 		return type_paper_size'image (paper_size);
 	end;
+
+	
+	function to_string (orientation : in type_orientation) return string is begin
+		return to_lower (type_orientation'image (orientation));
+	end;
+
+	function to_orientation (orientation : in string) return type_orientation is begin
+		return type_orientation'value (orientation);
+	end;
+
+
+	function to_string (rows : in type_rows) return string is begin
+		return trim (type_rows'image (rows), left);
+	end;
+
+	function to_rows (rows : in string) return type_rows is begin
+		return type_rows'value (rows);
+	end;
+
+	function to_string (columns : in type_columns) return string is begin
+		return trim (type_columns'image (columns), left);
+	end;
+
+	function to_columns (columns : in string) return type_columns is begin
+		return type_columns'value (columns);
+	end;
+
+
 	
 
+	function to_string (distance : in type_distance) return string is begin
+		return trim (type_distance'image (distance), left);
+	end;
+
+	function to_distance (distance : in string) return type_distance is begin
+		return type_distance'value (distance);
+	end;
+
+	
 
 	function paper_dimension (
 	-- Returns for the given paper size, orientation and axis the corresponding size in mm.
 		paper_size	: in type_paper_size;
-		orientation	: in type_paper_orientation := LANDSCAPE;
+		orientation	: in type_orientation := LANDSCAPE;
 		axis		: in type_axis_2d)
 		return type_distance is
 

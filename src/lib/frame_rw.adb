@@ -70,24 +70,32 @@ package body frame_rw is
 		set_output (file_handle);
 
 		-- write a nice header
-		put_line (comment_mark & " " & et_general.system_name & space & "drawing frame template");
-		put_line (comment_mark & " " & date);
-		put_line (comment_mark & " " & row_separator_double);
+		put_line (comment_mark & space & et_general.system_name & space & "drawing frame template");
+		put_line (comment_mark & space & date);
+		put_line (comment_mark & space & row_separator_double);
 		new_line;
 
 		write (keyword => keyword_domain, parameters => to_string (frame.domain));
 		write (keyword => keyword_paper_size, parameters => to_string (frame.paper));
-		write (keyword => keyword_paper_size, parameters => to_string (frame.paper));
--- 		write (keyword => keyword_orientation, parameters => to_string (frame.orientation));
-		
+		write (keyword => keyword_orientation, parameters => to_string (frame.orientation));
+		write (keyword => keyword_border_width, parameters => to_string (frame.border_width));
+		write (keyword => keyword_size, parameters => 
+			keyword_x & space & to_string (frame.size.x) & space &
+			keyword_y & space & to_string (frame.size.y)); -- size x 240 x 200
+
+		write (keyword => keyword_sectors, parameters => 
+			keyword_rows & space & to_string (frame.sectors.rows) & space &
+			keyword_columns & space & to_string (frame.sectors.columns)); -- sectors rows 5 columns 10
+
+			   
 		section_mark (section_title_block, HEADER);
 
 		section_mark (section_title_block, FOOTER);		
 
 		-- write footer
 		new_line;		
-		put_line (comment_mark & " " & row_separator_double);
-		put_line (comment_mark & " drawing frame template file end");
+		put_line (comment_mark & space & row_separator_double);
+		put_line (comment_mark & space & "drawing frame template file end");
 		new_line;
 		
 		reset_tab_depth;		

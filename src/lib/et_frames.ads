@@ -56,10 +56,11 @@ package et_frames is
 	function to_paper_size (paper_size : in string) return type_paper_size;
 	function to_string (paper_size : in type_paper_size) return string;
 
-	type type_paper_orientation is (PORTRAIT, LANDSCAPE);
-	orientation_default : constant type_paper_orientation := LANDSCAPE;
+	type type_orientation is (PORTRAIT, LANDSCAPE);
+	orientation_default : constant type_orientation := LANDSCAPE;
 
--- 	function to_string (orientation : in type_paper_orientation)
+	function to_string (orientation : in type_orientation) return string;
+	function to_orientation (orientation : in string) return type_orientation;
 
 	
 	template_file_name_length_max : constant positive := 300;
@@ -71,8 +72,14 @@ package et_frames is
 	type type_rows is new positive range 1..26;
 	rows_default : constant type_rows := 7;
 
+	function to_string (rows : in type_rows) return string;
+	function to_rows (rows : in string) return type_rows;
+	
 	type type_columns is new positive range 1..26;
 	columns_default : constant type_columns := 10;
+
+	function to_string (columns : in type_columns) return string;
+	function to_columns (columns : in string) return type_columns;
 	
 	row_characters : constant character_set := to_set (span => ('A','Z')); -- CS currently not used
 	-- CS row numbers must be mapped to row characters 
@@ -83,6 +90,9 @@ package et_frames is
 	end record;
 	
 	type type_distance is new natural range 1 .. 10000;
+
+	function to_string (distance : in type_distance) return string;
+	function to_distance (distance : in string) return type_distance;
 	
 	type type_size is record
 		x	: type_distance := 280;
@@ -101,7 +111,7 @@ package et_frames is
 	function paper_dimension (
 	-- Returns for the given paper size, orientation and axis the corresponding size in mm.
 		paper_size	: in type_paper_size;
-		orientation	: in type_paper_orientation := LANDSCAPE;
+		orientation	: in type_orientation := LANDSCAPE;
 		axis		: in type_axis_2d)
 		return type_distance;
 
@@ -253,7 +263,7 @@ package et_frames is
 	-- The used title block depends on the domain.
 	type type_frame (domain : type_domain) is record
 		paper			: type_paper_size := paper_size_default;
-		orientation		: type_paper_orientation := orientation_default;
+		orientation		: type_orientation := orientation_default;
 		border_width	: type_border_width := border_width_default;
 		size			: type_size;
 		sectors			: type_sectors;
