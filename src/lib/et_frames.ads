@@ -144,16 +144,22 @@ package et_frames is
 		position		: type_position := position_default;
 	end record;
 
-	-- General placeholders used in both schematic and pcb title blocks:
-	type type_placeholders is record
+	-- These placeholders are common in both schematic and pcb title blocks:
+	type type_placeholders_common is record
+		project_name			: type_placeholder; -- name of project directory
+		module_file_name		: type_placeholder; -- name of module file
+		active_assembly_variant	: type_placeholder; -- the active assembly variant
+	end record;
+
+	-- Basic placeholders are available for schematic and pcb.
+	-- For example the revision in schematic is not necessarily the same as in the layout.
+	-- Another example: The person who has drawn the schematic is not necessarily the
+	-- same as the one who did the layout.
+	type type_placeholders_basic is tagged record
 		company			: type_placeholder;
 		customer		: type_placeholder;
 		partcode		: type_placeholder;
 		drawing_number	: type_placeholder;
-		assembly_variant: type_placeholder; -- CS good idea to have it here ?
-			
-		project			: type_placeholder;
-		file			: type_placeholder;
 		revision		: type_placeholder;
 		
 		drawn_by		: type_placeholder;
@@ -164,8 +170,8 @@ package et_frames is
 		checked_date	: type_placeholder;
 		approved_date	: type_placeholder;
 
-		created_date	: type_placeholder;
-		edited_date		: type_placeholder;
+-- 		created_date	: type_placeholder;
+-- 		edited_date		: type_placeholder;
 	end record;
 
 
@@ -181,7 +187,7 @@ package et_frames is
 	type type_title_block is tagged record
 		position		: type_position := position_default;
 		lines			: pac_lines.list;
-		placeholders	: type_placeholders;
+		placeholders	: type_placeholders_common;
 		texts			: pac_texts.list;
 	end record;
 
@@ -225,7 +231,9 @@ package et_frames is
 -- TEXT PLACEHOLDERS AND TITLE BLOCKS
 	
 	-- schematic:
-	type type_placeholders_schematic is record
+	-- The set of basic placeholders is extended by other things which are
+	-- required in the schematic:
+	type type_placeholders_schematic is new type_placeholders_basic with record
 		sheet_number	: type_placeholder;
 		description		: type_placeholder;
 		category		: type_placeholder; -- development, routing, product
@@ -236,7 +244,8 @@ package et_frames is
 	end record;
 
 	-- pcb:
-	type type_placeholders_pcb is record
+	-- The set of basic placeholderss is extended by things required in the layout:
+	type type_placeholders_pcb is new type_placeholders_basic with record
 		silk_screen, assy_doc, 
 
 		keepout, plated_millings, pcb_outline, 
@@ -245,7 +254,7 @@ package et_frames is
 		-- CS add more
 	end record;
 	
-	type type_pcb_title_block is new type_title_block with record
+	type type_title_block_pcb is new type_title_block with record
 		additional_placeholders : type_placeholders_pcb;
 	end record;
 
@@ -273,7 +282,7 @@ package et_frames is
 				title_block_schematic : type_title_block_schematic;
 
 			when PCB =>
-				title_block_pcb : type_pcb_title_block;
+				title_block_pcb : type_title_block_pcb;
 		end case;
 	end record;
 

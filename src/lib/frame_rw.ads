@@ -49,6 +49,41 @@ with et_frames;					use et_frames;
 
 package frame_rw is
 
+	-- general placeholders
+	keyword_project_name			: constant string := "project_name";
+	keyword_active_assembly_variant	: constant string := "active_assembly_variant";
+	keyword_module_file_name		: constant string := "module_file_name";	
+	keyword_company					: constant string := "company";
+	keyword_customer				: constant string := "customer";
+	keyword_partcode				: constant string := "partcode";
+	keyword_drawing_number			: constant string := "drawing_number";
+	keyword_revision				: constant string := "revision";
+
+	keyword_drawn_by				: constant string := "drawn_by";
+	keyword_checked_by				: constant string := "checked_by";
+	keyword_approved_by				: constant string := "approved_by";
+
+	keyword_drawn_date				: constant string := "drawn_date";
+	keyword_checked_date			: constant string := "checked_date";
+	keyword_approved_date			: constant string := "approved_date";
+
+	-- schematic related placeholders:
+	keyword_sheet_number			: constant string := "sheet_number";
+	keyword_sheet_description		: constant string := "sheet_description";
+	keyword_sheet_category			: constant string := "sheet_category";
+
+	-- pcb related placeholders:
+	keyword_silk_screen				: constant string := "silk_screen";
+	keyword_assy_doc				: constant string := "assy_doc";
+	keyword_keepout					: constant string := "keepout";	
+	keyword_plated_millings			: constant string := "plated_millings";
+	keyword_pcb_outline				: constant string := "pcb_outline";
+	keyword_route_restrict			: constant string := "route_restrict";
+	keyword_via_restrict			: constant string := "via_restrict";
+	keyword_signal_layer			: constant string := "signal_layer";
+
+	
+														 
 	keyword_domain			: constant string := "domain";				
 	keyword_paper_size		: constant string := "paper_size";
 	keyword_orientation		: constant string := "orientation";
@@ -62,6 +97,7 @@ package frame_rw is
 	section_title_block		: constant string := "[TITLE_BLOCK";
 	section_lines			: constant string := "[LINES";
 
+	section_placeholder_positions	: constant string := "[PLACEHOLDER_POSITIONS";	
 	
 	type type_section is (
 		SEC_INIT,

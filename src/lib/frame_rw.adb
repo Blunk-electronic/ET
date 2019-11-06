@@ -43,7 +43,7 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
-
+with ada.tags;
 with ada.exceptions;
 
 with et_geometry;
@@ -129,13 +129,70 @@ package body frame_rw is
 			iterate (texts, write'access);
 			section_mark (section_texts, FOOTER);
 		end write_texts;
+
+		procedure write_placeholders_common (phs : in type_placeholders_common) is begin
+			write (keyword => keyword_project_name, parameters => to_string (phs.project_name.position));
+			write (keyword => keyword_module_file_name, parameters => to_string (phs.module_file_name.position));
+			write (keyword => keyword_active_assembly_variant, parameters => to_string (phs.active_assembly_variant.position));
+		end write_placeholders_common;
+
+		procedure write_placeholders_basic (phb : in type_placeholders_basic) is begin
+			write (keyword => keyword_company, parameters => to_string (phb.company.position));
+			write (keyword => keyword_customer, parameters => to_string (phb.customer.position));
+			write (keyword => keyword_partcode, parameters => to_string (phb.partcode.position));
+			write (keyword => keyword_drawing_number, parameters => to_string (phb.drawing_number.position));
+			write (keyword => keyword_revision, parameters => to_string (phb.revision.position));
+			write (keyword => keyword_drawn_by, parameters => to_string (phb.drawn_by.position));
+			write (keyword => keyword_checked_by, parameters => to_string (phb.checked_by.position));
+			write (keyword => keyword_approved_by, parameters => to_string (phb.approved_by.position));
+			write (keyword => keyword_drawn_date, parameters => to_string (phb.drawn_date.position));
+			write (keyword => keyword_checked_date, parameters => to_string (phb.checked_date.position));
+			write (keyword => keyword_approved_date, parameters => to_string (phb.approved_date.position));
+		end;
 		
-		procedure write_title_block (block : in type_title_block) is begin
+		procedure write_placeholders_schematic (phs : in type_placeholders_schematic) is begin
+			write_placeholders_basic (type_placeholders_basic (phs));
+			write (keyword => keyword_sheet_number, parameters => to_string (phs.sheet_number.position));
+			write (keyword => keyword_sheet_description, parameters => to_string (phs.description.position));
+			write (keyword => keyword_sheet_category, parameters => to_string (phs.category.position));
+		end;
+
+		procedure write_placeholders_pcb (phs : in type_placeholders_pcb) is begin
+			write_placeholders_basic (type_placeholders_basic (phs));
+			write (keyword => keyword_silk_screen, parameters => to_string (phs.silk_screen.position));
+			write (keyword => keyword_assy_doc, parameters => to_string (phs.assy_doc.position));
+			write (keyword => keyword_keepout, parameters => to_string (phs.keepout.position));			
+			write (keyword => keyword_plated_millings, parameters => to_string (phs.plated_millings.position));
+			write (keyword => keyword_pcb_outline, parameters => to_string (phs.pcb_outline.position));
+			write (keyword => keyword_route_restrict, parameters => to_string (phs.route_restrict.position));
+			write (keyword => keyword_via_restrict, parameters => to_string (phs.via_restrict.position));
+			write (keyword => keyword_signal_layer, parameters => to_string (phs.signal_layer.position));
+		end;
+		
+		procedure write_title_block (block : in type_title_block'class) is 
+			use ada.tags;
+			pp : type_placeholders_pcb;
+			ps : type_placeholders_schematic;
+		begin
 			write (keyword => keyword_position, parameters => to_string (block.position)); -- position x 180 x 10
 
 			write_lines (block.lines);
-
 			write_texts (block.texts);
+
+			section_mark (section_placeholder_positions, HEADER);
+			write_placeholders_common (block.placeholders);
+
+			if block'tag = type_title_block_schematic'tag then
+				ps := type_title_block_schematic (block).additional_placeholders;
+				write_placeholders_schematic (ps);
+			elsif block'tag = type_title_block_pcb'tag then
+				pp := type_title_block_pcb (block).additional_placeholders;
+				write_placeholders_pcb (pp);
+			else
+				null; -- CS
+			end if;
+
+			section_mark (section_placeholder_positions, FOOTER);
 			
 		end write_title_block;
 		
@@ -177,10 +234,10 @@ package body frame_rw is
 		-- write general things of title block (standard placeholders, texts, lines):
 		case frame.domain is 
 			when SCHEMATIC =>
-				write_title_block (type_title_block (frame.title_block_schematic));
+				write_title_block (frame.title_block_schematic);
 
 			when PCB =>
-				write_title_block (type_title_block (frame.title_block_pcb));
+				write_title_block (frame.title_block_pcb);
 		end case;
 
 		
