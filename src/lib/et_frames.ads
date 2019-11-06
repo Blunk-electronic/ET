@@ -244,18 +244,21 @@ package et_frames is
 	end record;
 
 	-- pcb:
-	-- The set of basic placeholderss is extended by things required in the layout:
-	type type_placeholders_pcb is new type_placeholders_basic with record
-		silk_screen, assy_doc, 
+	-- For visualization and CAM output, some texts indicate the active "layers":
+	type type_texts_pcb is record
+		silk_screen	: type_text := (content => et_text.to_content ("SILK SCREEN"), others => <>);
+
+		assy_doc, 
 
 		keepout, plated_millings, pcb_outline, 
 
-		route_restrict, via_restrict, signal_layer	: type_placeholder;
+		route_restrict, via_restrict, signal_layer	: type_text;
 		-- CS add more
 	end record;
 	
 	type type_title_block_pcb is new type_title_block with record
-		additional_placeholders : type_placeholders_pcb;
+		additional_placeholders	: type_placeholders_basic;
+		additional_texts : type_texts_pcb;
 	end record;
 
 

@@ -50,27 +50,9 @@ with et_frames;					use et_frames;
 package frame_rw is
 
 	-- general placeholders
-	keyword_project_name			: constant string := "project_name";
-	keyword_active_assembly_variant	: constant string := "active_assembly_variant";
-	keyword_module_file_name		: constant string := "module_file_name";	
-	keyword_company					: constant string := "company";
-	keyword_customer				: constant string := "customer";
-	keyword_partcode				: constant string := "partcode";
-	keyword_drawing_number			: constant string := "drawing_number";
-	keyword_revision				: constant string := "revision";
 
-	keyword_drawn_by				: constant string := "drawn_by";
-	keyword_checked_by				: constant string := "checked_by";
-	keyword_approved_by				: constant string := "approved_by";
-
-	keyword_drawn_date				: constant string := "drawn_date";
-	keyword_checked_date			: constant string := "checked_date";
-	keyword_approved_date			: constant string := "approved_date";
 
 	-- schematic related placeholders:
-	keyword_sheet_number			: constant string := "sheet_number";
-	keyword_sheet_description		: constant string := "sheet_description";
-	keyword_sheet_category			: constant string := "sheet_category";
 
 	-- pcb related placeholders:
 	keyword_silk_screen				: constant string := "silk_screen";
@@ -97,7 +79,33 @@ package frame_rw is
 	section_title_block		: constant string := "[TITLE_BLOCK";
 	section_lines			: constant string := "[LINES";
 
-	section_placeholder_positions	: constant string := "[PLACEHOLDER_POSITIONS";	
+	section_placeholders	: constant string := "[PLACEHOLDERS";
+	section_project_name	: constant string := "[PROJECT_NAME";
+	section_module_file_name		: constant string := "[MODULE_FILE_NAME";		
+	section_active_assembly_variant	: constant string := "[ACTIVE_ASSEMBLY_VARIANT";
+
+	section_company					: constant string := "[COMPANY";
+	section_customer				: constant string := "[CUSTOMER";
+	section_partcode				: constant string := "[PARTCODE";
+	section_drawing_number			: constant string := "[DRAWING_NUMBER";
+	section_revision				: constant string := "[REVISION";
+
+	section_drawn_by				: constant string := "[DRAWN_BY";
+	section_checked_by				: constant string := "[CHECKED_BY";
+	section_approved_by				: constant string := "[APPROVED_BY";
+
+	section_drawn_date				: constant string := "[DRAWN_DATE";
+	section_checked_date			: constant string := "[CHECKED_DATE";
+	section_approved_date			: constant string := "[APPROVED_DATE";
+
+	section_sheet_number			: constant string := "[SHEET_NUMBER";
+	section_sheet_description		: constant string := "[SHEET_DESCRIPTION";
+	section_sheet_category			: constant string := "[SHEET_CATEGORY";
+
+	
+	section_texts_pcb		: constant string := "[TEXTS_PCB";		
+
+
 	
 	type type_section is (
 		SEC_INIT,

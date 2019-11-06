@@ -131,68 +131,130 @@ package body frame_rw is
 		end write_texts;
 
 		procedure write_placeholders_common (phs : in type_placeholders_common) is begin
-			write (keyword => keyword_project_name, parameters => to_string (phs.project_name.position));
-			write (keyword => keyword_module_file_name, parameters => to_string (phs.module_file_name.position));
-			write (keyword => keyword_active_assembly_variant, parameters => to_string (phs.active_assembly_variant.position));
+			section_mark (section_project_name, HEADER);
+			write (keyword => keyword_position, parameters => to_string (phs.project_name.position));
+			section_mark (section_project_name, FOOTER);
+
+			section_mark (section_module_file_name, HEADER);			
+			write (keyword => keyword_position, parameters => to_string (phs.module_file_name.position));
+			section_mark (section_module_file_name, FOOTER);
+
+			section_mark (section_active_assembly_variant, HEADER);
+			write (keyword => keyword_position, parameters => to_string (phs.active_assembly_variant.position));
+			section_mark (section_active_assembly_variant, FOOTER);			
 		end write_placeholders_common;
 
 		procedure write_placeholders_basic (phb : in type_placeholders_basic) is begin
-			write (keyword => keyword_company, parameters => to_string (phb.company.position));
-			write (keyword => keyword_customer, parameters => to_string (phb.customer.position));
-			write (keyword => keyword_partcode, parameters => to_string (phb.partcode.position));
-			write (keyword => keyword_drawing_number, parameters => to_string (phb.drawing_number.position));
-			write (keyword => keyword_revision, parameters => to_string (phb.revision.position));
-			write (keyword => keyword_drawn_by, parameters => to_string (phb.drawn_by.position));
-			write (keyword => keyword_checked_by, parameters => to_string (phb.checked_by.position));
-			write (keyword => keyword_approved_by, parameters => to_string (phb.approved_by.position));
-			write (keyword => keyword_drawn_date, parameters => to_string (phb.drawn_date.position));
-			write (keyword => keyword_checked_date, parameters => to_string (phb.checked_date.position));
-			write (keyword => keyword_approved_date, parameters => to_string (phb.approved_date.position));
+			section_mark (section_company, HEADER);
+			write (keyword => keyword_position, parameters => to_string (phb.company.position));
+			section_mark (section_company, FOOTER);
+
+			section_mark (section_customer, HEADER);			
+			write (keyword => keyword_position, parameters => to_string (phb.customer.position));
+			section_mark (section_customer, FOOTER);			
+
+			section_mark (section_partcode, HEADER);			
+			write (keyword => keyword_position, parameters => to_string (phb.partcode.position));
+			section_mark (section_partcode, FOOTER);			
+
+			section_mark (section_drawing_number, HEADER);			
+			write (keyword => keyword_position, parameters => to_string (phb.drawing_number.position));
+			section_mark (section_drawing_number, FOOTER);
+
+			section_mark (section_revision, HEADER);			
+			write (keyword => keyword_position, parameters => to_string (phb.revision.position));
+			section_mark (section_revision, FOOTER);						
+
+			section_mark (section_drawn_by, HEADER);			
+			write (keyword => keyword_position, parameters => to_string (phb.drawn_by.position));
+			section_mark (section_drawn_by, FOOTER);			
+
+			section_mark (section_checked_by, HEADER);
+			write (keyword => keyword_position, parameters => to_string (phb.checked_by.position));
+			section_mark (section_checked_by, FOOTER);
+
+			section_mark (section_approved_by, HEADER);
+			write (keyword => keyword_position, parameters => to_string (phb.approved_by.position));
+			section_mark (section_approved_by, FOOTER);
+
+			section_mark (section_drawn_date, HEADER);
+			write (keyword => keyword_position, parameters => to_string (phb.drawn_date.position));
+			section_mark (section_drawn_date, FOOTER);
+
+			section_mark (section_checked_date, HEADER);
+			write (keyword => keyword_position, parameters => to_string (phb.checked_date.position));
+			section_mark (section_checked_date, FOOTER);
+
+			section_mark (section_approved_date, HEADER);			
+			write (keyword => keyword_position, parameters => to_string (phb.approved_date.position));
+			section_mark (section_approved_date, FOOTER);			
 		end;
 		
 		procedure write_placeholders_schematic (phs : in type_placeholders_schematic) is begin
 			write_placeholders_basic (type_placeholders_basic (phs));
-			write (keyword => keyword_sheet_number, parameters => to_string (phs.sheet_number.position));
-			write (keyword => keyword_sheet_description, parameters => to_string (phs.description.position));
-			write (keyword => keyword_sheet_category, parameters => to_string (phs.category.position));
+
+			section_mark (section_sheet_number, HEADER);
+			write (keyword => keyword_position, parameters => to_string (phs.sheet_number.position));
+			section_mark (section_sheet_number, FOOTER);
+
+			section_mark (section_sheet_description, HEADER);			
+			write (keyword => keyword_position, parameters => to_string (phs.description.position));
+			section_mark (section_sheet_description, FOOTER);
+
+			section_mark (section_sheet_category, HEADER);						
+			write (keyword => keyword_position, parameters => to_string (phs.category.position));
+			section_mark (section_sheet_category, FOOTER);			
 		end;
 
-		procedure write_placeholders_pcb (phs : in type_placeholders_pcb) is begin
-			write_placeholders_basic (type_placeholders_basic (phs));
-			write (keyword => keyword_silk_screen, parameters => to_string (phs.silk_screen.position));
-			write (keyword => keyword_assy_doc, parameters => to_string (phs.assy_doc.position));
-			write (keyword => keyword_keepout, parameters => to_string (phs.keepout.position));			
-			write (keyword => keyword_plated_millings, parameters => to_string (phs.plated_millings.position));
-			write (keyword => keyword_pcb_outline, parameters => to_string (phs.pcb_outline.position));
-			write (keyword => keyword_route_restrict, parameters => to_string (phs.route_restrict.position));
-			write (keyword => keyword_via_restrict, parameters => to_string (phs.via_restrict.position));
-			write (keyword => keyword_signal_layer, parameters => to_string (phs.signal_layer.position));
+		procedure write_text_pcb (texts : in type_texts_pcb) is begin
+			section_mark (section_texts_pcb, HEADER);
+			write (keyword => keyword_silk_screen, parameters => to_string (texts.silk_screen.position));
+			write (keyword => keyword_assy_doc, parameters => to_string (texts.assy_doc.position));
+			write (keyword => keyword_keepout, parameters => to_string (texts.keepout.position));			
+			write (keyword => keyword_plated_millings, parameters => to_string (texts.plated_millings.position));
+			write (keyword => keyword_pcb_outline, parameters => to_string (texts.pcb_outline.position));
+			write (keyword => keyword_route_restrict, parameters => to_string (texts.route_restrict.position));
+			write (keyword => keyword_via_restrict, parameters => to_string (texts.via_restrict.position));
+			write (keyword => keyword_signal_layer, parameters => to_string (texts.signal_layer.position));
+			section_mark (section_texts_pcb, FOOTER);			
 		end;
 		
 		procedure write_title_block (block : in type_title_block'class) is 
 			use ada.tags;
-			pp : type_placeholders_pcb;
+			tp : type_texts_pcb;
+			ap : type_placeholders_basic;
 			ps : type_placeholders_schematic;
+			
 		begin
 			write (keyword => keyword_position, parameters => to_string (block.position)); -- position x 180 x 10
 
+			-- write lines. they are basic elements of a title block:
 			write_lines (block.lines);
+
+			-- write texts (with content). they are basic elements of a title block
 			write_texts (block.texts);
 
-			section_mark (section_placeholder_positions, HEADER);
+			-- if the given title block belongs to a layout frame, write texts (with content):
+			if block'tag = type_title_block_pcb'tag then
+				tp := type_title_block_pcb (block).additional_texts;
+				write_text_pcb (tp);
+			end if;
+			
+			section_mark (section_placeholders, HEADER);
 			write_placeholders_common (block.placeholders);
 
 			if block'tag = type_title_block_schematic'tag then
 				ps := type_title_block_schematic (block).additional_placeholders;
 				write_placeholders_schematic (ps);
+				
 			elsif block'tag = type_title_block_pcb'tag then
-				pp := type_title_block_pcb (block).additional_placeholders;
-				write_placeholders_pcb (pp);
+				ap := type_title_block_pcb (block).additional_placeholders;
+				write_placeholders_basic (ap);
 			else
 				null; -- CS
 			end if;
 
-			section_mark (section_placeholder_positions, FOOTER);
+			section_mark (section_placeholders, FOOTER);
 			
 		end write_title_block;
 		
