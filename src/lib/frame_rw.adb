@@ -224,8 +224,8 @@ package body frame_rw is
 			section_mark (section_signal_layer, FOOTER);
 			
 		end;
+		
 		procedure write_text_pcb (texts : in type_texts_pcb) is begin
-			-- section_mark (section_texts_pcb, HEADER);
 			write_text (texts.face);
 			write_text (texts.top);
 			write_text (texts.bottom);
@@ -237,15 +237,13 @@ package body frame_rw is
 			write_text (texts.route_restrict);
 			write_text (texts.via_restrict);
 			write_text (texts.signal_layer);
-			-- section_mark (section_texts_pcb, FOOTER);			
 		end;
 		
 		procedure write_title_block (block : in type_title_block'class) is 
 			use ada.tags;
 			tp : type_texts_pcb;
-			ap : type_placeholders_pcb;
+			pp : type_placeholders_pcb;
 			ps : type_placeholders_schematic;
-			
 		begin
 			write (keyword => keyword_position, parameters => to_string (block.position)); -- position x 180 x 10
 
@@ -276,8 +274,8 @@ package body frame_rw is
 				write_placeholders_schematic (ps);
 				
 			elsif block'tag = type_title_block_pcb'tag then
-				ap := type_title_block_pcb (block).additional_placeholders;
-				write_placeholders_pcb (ap);
+				pp := type_title_block_pcb (block).additional_placeholders;
+				write_placeholders_pcb (pp);
 			else
 				null; -- CS
 			end if;
