@@ -37,6 +37,7 @@
 
 
 with ada.text_io;				use ada.text_io;
+with ada.characters.handling;
 with ada.strings;				use ada.strings;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.strings.maps;			use ada.strings.maps;
@@ -393,15 +394,527 @@ package body frame_rw is
 		log_threshold	: in et_string_processing.type_log_level)
 		return type_frame is
 
-		frame : type_frame (SCHEMATIC);
-	begin
+		frame : type_frame (domain); -- to be returned
+
+		file_handle : ada.text_io.file_type;
+
+		line : et_string_processing.type_fields_of_line;
+
+		-- This is the section stack of the frame.
+		-- Here we track the sections. On entering a section, its name is
+		-- pushed onto the stack. When leaving a section the latest section name is popped.
+		max_section_depth : constant positive := 4; -- incl. section init
+
+		package stack is new general_rw.stack_lifo (
+			item	=> type_section,
+			max 	=> max_section_depth);
+
+		use ada.characters.handling;
+		
+		function to_string (section : in type_section) return string is
+		-- Converts a section like SEC_PROJECT_NAME to a string "project_name".
+			len : positive := type_section'image (section)'length;
+		begin
+			return to_lower (type_section'image (section) (5..len));
+		end to_string;
+
+		procedure invalid_domain is begin
+			log (ERROR, text => "invalid domain ", console => true);
+			-- CS improve message
+			raise constraint_error;
+		end;
+
+		procedure read_general_stuff is
+			kw : string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_domain then -- domain schematic/pcb
+				expect_field_count (line, 2);
+
+				-- The given domain must match the domain specified in the frame:
+				if to_domain (f (line, 2)) /= domain then
+					invalid_domain;
+				end if;
+
+			elsif kw = keyword_paper_size then -- paper_size A4
+				expect_field_count (line, 2);
+				frame.paper := to_paper_size (f (line, 2));
+
+			elsif kw = keyword_orientation then -- orientation landscape/portrait
+				expect_field_count (line, 2);
+				frame.orientation := to_orientation (f (line, 2));
+
+			elsif kw = keyword_border_width then -- border_width 8
+				expect_field_count (line, 2);
+				frame.border_width := to_distance (f (line, 2));
+
+			elsif kw = keyword_size then -- size x 280 y 200
+				expect_field_count (line, 5);
+				frame.size.x := to_distance (f (line, 3));
+				frame.size.y := to_distance (f (line, 5));
+				-- CS check position of x and y character
+
+			elsif kw = keyword_sectors then -- sectors rows 7 columns 10
+				expect_field_count (line, 5);
+				frame.sectors.rows := to_rows (f (line, 3));
+				frame.sectors.columns := to_columns (f (line, 5));
+				-- CS check position of keywords row and column
+
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
+		
+		procedure process_line is 
+
+			procedure execute_section is
+			-- Once a section concludes, the temporarily variables are read, evaluated
+			-- and finally assembled to actual objects:
+			begin -- execute_section
+				case stack.current is
+
+					when SEC_TITLE_BLOCK => 
+						case stack.parent is
+							when SEC_INIT => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_LINES | SEC_TEXTS | SEC_PLACEHOLDERS =>
+						case stack.parent is
+							when SEC_TITLE_BLOCK => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_LINE =>
+						case stack.parent is
+							when SEC_LINES => null;
+							when others => invalid_section;
+						end case;
+						
+					when SEC_TEXT =>
+						case stack.parent is
+							when SEC_TEXTS => null;
+							when others => invalid_section;
+						end case;
+						
+					when SEC_PROJECT_NAME =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_MODULE_FILE_NAME =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_ACTIVE_ASSEMBLY_VARIANT =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_COMPANY =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_CUSTOMER =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_PARTCODE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_DRAWING_NUMBER =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_REVISION =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_DRAWN_BY =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_DRAWN_DATE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+						
+					when SEC_CHECKED_BY =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_CHECKED_DATE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_APPROVED_BY =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_APPROVED_DATE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_SHEET_NUMBER =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+								-- domain must be schematic
+							when others => invalid_section;
+						end case;
+						
+					when SEC_SHEET_DESCRIPTION =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+								-- domain must be schematic
+							when others => invalid_section;
+						end case;
+
+					when SEC_SHEET_CATEGORY =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+								-- domain must be schematic
+							when others => invalid_section;
+						end case;
+
+					when SEC_FACE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+								-- domain must be pcb
+							when others => invalid_section;
+						end case;
+
+					when SEC_SIGNAL_LAYER =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+								-- domain must be pcb
+							when others => invalid_section;
+						end case;
+						
+					when SEC_INIT => null; -- CS: should never happen
+				end case;
+
+			end execute_section;
+
+			function set (
+			-- Tests if the current line is a section header or footer. Returns true in both cases.
+			-- Returns false if the current line is neither a section header or footer.
+			-- If it is a header, the section name is pushed onto the sections stack.
+			-- If it is a footer, the latest section name is popped from the stack.
+				section_keyword	: in string;
+				section			: in type_section) -- SEC_PROJECT_NAME
+				return boolean is 
+			begin
+				if f (line, 1) = section_keyword then -- section name detected in field 1
+					if f (line, 2) = section_begin then -- section header detected in field 2
+						stack.push (section);
+						log (text => write_enter_section & to_string (section), level => log_threshold + 3);
+						return true;
+
+					elsif f (line, 2) = section_end then -- section footer detected in field 2
+
+						-- The section name in the footer must match the name
+						-- of the current section. Otherwise abort.
+						if section /= stack.current then
+							log_indentation_reset;
+							invalid_section;
+						end if;
+						
+						-- Now that the section ends, the data collected in temporarily
+						-- variables is processed.
+						execute_section;
+						
+						stack.pop;
+						if stack.empty then
+							log (text => write_top_level_reached, level => log_threshold + 3);
+						else
+							log (text => write_return_to_section & to_string (stack.current), level => log_threshold + 3);
+						end if;
+						return true;
+
+					else
+						log (ERROR, write_missing_begin_end, console => true);
+						raise constraint_error;
+					end if;
+
+				else -- neither a section header nor footer
+					return false;
+				end if;
+			end set;
+
+		begin -- process_line
+			if set (section_active_assembly_variant, SEC_ACTIVE_ASSEMBLY_VARIANT) then null;			
+			elsif set (section_approved_by, SEC_APPROVED_BY) then null;								
+			elsif set (section_approved_date, SEC_APPROVED_DATE) then null;								
+			elsif set (section_checked_by, SEC_CHECKED_BY) then null;
+			elsif set (section_checked_date, SEC_CHECKED_DATE) then null;
+			elsif set (section_company, SEC_COMPANY) then null;
+			elsif set (section_customer, SEC_CUSTOMER) then null;
+			elsif set (section_drawing_number, SEC_DRAWING_NUMBER) then null;
+			elsif set (section_drawn_by, SEC_DRAWN_BY) then null;
+			elsif set (section_drawn_date, SEC_DRAWN_DATE) then null;
+			elsif set (section_face, SEC_FACE) then null;
+			elsif set (section_line, SEC_LINE) then null;
+			elsif set (section_lines, SEC_LINES) then null;
+			elsif set (section_module_file_name, SEC_MODULE_FILE_NAME) then null;
+			elsif set (section_partcode, SEC_PARTCODE) then null;
+			elsif set (section_placeholders, SEC_PLACEHOLDERS) then null;
+			elsif set (section_project_name, SEC_PROJECT_NAME) then null;
+			elsif set (section_revision, SEC_REVISION) then null;
+			elsif set (section_sheet_category, SEC_SHEET_CATEGORY) then null;
+			elsif set (section_sheet_description, SEC_SHEET_DESCRIPTION) then null;			
+			elsif set (section_sheet_number, SEC_SHEET_NUMBER) then null;
+			elsif set (section_signal_layer, SEC_SIGNAL_LAYER) then null;
+			elsif set (section_text, SEC_TEXT) then null;			
+			elsif set (section_texts, SEC_TEXTS) then null;
+			elsif set (section_title_block, SEC_TITLE_BLOCK) then null;
+			else
+				-- The line contains something else -> the payload data. 
+				-- Temporarily this data is stored in corresponding variables.
+
+				log (text => "frame line --> " & to_string (line), level => log_threshold + 3);
+		
+				case stack.current is
+
+					when SEC_INIT =>
+						read_general_stuff;
+
+					when SEC_TITLE_BLOCK => 
+						case stack.parent is
+							when SEC_INIT => null;
+								-- CS read position of title block
+							when others => invalid_section;
+						end case;
+
+					when SEC_LINES | SEC_TEXTS | SEC_PLACEHOLDERS =>
+						case stack.parent is
+							when SEC_TITLE_BLOCK => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_LINE =>
+						case stack.parent is
+							when SEC_LINES => null;
+							when others => invalid_section;
+						end case;
+						
+					when SEC_TEXT =>
+						case stack.parent is
+							when SEC_TEXTS => null;
+							when others => invalid_section;
+						end case;
+						
+					when SEC_PROJECT_NAME =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_MODULE_FILE_NAME =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_ACTIVE_ASSEMBLY_VARIANT =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_COMPANY =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_CUSTOMER =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_PARTCODE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_DRAWING_NUMBER =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_REVISION =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_DRAWN_BY =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_DRAWN_DATE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+						
+					when SEC_CHECKED_BY =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_CHECKED_DATE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_APPROVED_BY =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_APPROVED_DATE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+							when others => invalid_section;
+						end case;
+
+					when SEC_SHEET_NUMBER =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+								-- domain must be schematic
+							when others => invalid_section;
+						end case;
+						
+					when SEC_SHEET_DESCRIPTION =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+								-- domain must be schematic
+							when others => invalid_section;
+						end case;
+
+					when SEC_SHEET_CATEGORY =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+								-- domain must be schematic
+							when others => invalid_section;
+						end case;
+
+					when SEC_FACE =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+								-- domain must be pcb
+							when others => invalid_section;
+						end case;
+
+					when SEC_SIGNAL_LAYER =>
+						case stack.parent is
+							when SEC_PLACEHOLDERS => null;
+								-- domain must be pcb
+							when others => invalid_section;
+						end case;
+
+						
+				end case;
+			end if;
+
+			exception when event: others =>
+				log (text => "file " & to_string (file_name) & space 
+					 & affected_line (line) & to_string (line), console => true);
+				raise;
+			
+		end process_line;
+
+		
+		previous_input : ada.text_io.file_type renames current_input;
+		
+	begin -- read_frame
 		log (text => "reading frame " & to_string (file_name) & " ...", level => log_threshold);
 		log_indentation_up;
 		log (text => "domain " & to_string (domain) & " ...", level => log_threshold);
 
+		open (
+			file => file_handle,
+			mode => in_file, 
+			name => expand (to_string (file_name)));
+
+		set_input (file_handle);
+		
+		-- Init section stack.
+		stack.init;
+		stack.push (SEC_INIT);
+
+		-- read the file line by line
+		while not end_of_file loop
+			line := et_string_processing.read_line (
+				line 			=> get_line,
+				number			=> ada.text_io.line (current_input),
+				comment_mark 	=> comment_mark,
+				delimiter_wrap	=> true, -- strings are enclosed in quotations
+				ifs 			=> space); -- fields are separated by space
+
+			-- we are interested in lines that contain something. emtpy lines are skipped:
+			if field_count (line) > 0 then
+				process_line;
+			end if;
+		end loop;
+
+		-- As a safety measure the top section must be reached finally.
+		if stack.depth > 1 then 
+			log (WARNING, write_section_stack_not_empty);
+		end if;
+
+		set_input (previous_input);
+		close (file_handle);
+
+
+		
 		log_indentation_down;
 
 		return frame;
+
+		exception when event: others =>
+			if is_open (file_handle) then 
+				set_input (previous_input);
+				close (file_handle); 
+			end if;
+			raise;
+		
 	end read_frame;
 	
 end frame_rw;
