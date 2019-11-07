@@ -108,6 +108,8 @@ package body frame_rw is
 		end;
 
 		procedure write_text (text : in type_text) is begin
+			section_mark (section_text, HEADER);
+			
 			-- position
 			write (keyword => keyword_position, parameters	=> to_string (text.position)); -- position x 220 y 40
 
@@ -116,38 +118,22 @@ package body frame_rw is
 
 			-- content
 			write (keyword => et_text.keyword_content, wrap => true,
-					parameters => et_text.to_string (text.content)); -- content "motor driver"
+				   parameters => et_text.to_string (text.content)); -- content "motor driver"
+
+			section_mark (section_text, FOOTER);
 		end;
 		
 		procedure write_texts (texts : in pac_texts.list) is
 			use pac_texts;
 
 			procedure write (cursor : in pac_texts.cursor) is begin
-				section_mark (section_text, HEADER);
-
-				-- position
-				write (
-					keyword		=> keyword_position,
-					parameters	=> to_string (element (cursor).position)); -- position x 220 y 40
-
-				-- size
-				write (
-					keyword		=> et_text.keyword_size,
-					parameters	=> to_string (element (cursor).size)); -- size 20
-
-				-- content
-				write (
-					keyword		=> et_text.keyword_content,
-					wrap		=> true,
-					parameters	=> et_text.to_string (element (cursor).content)); -- content "motor driver"
-				
-				section_mark (section_text, FOOTER);
+				write_text (element (cursor));
 			end;
 			
 		begin -- write_texts
-			section_mark (section_texts, HEADER);
+-- 			section_mark (section_texts, HEADER);
 			iterate (texts, write'access);
-			section_mark (section_texts, FOOTER);
+			--section_mark (section_texts, FOOTER);
 		end write_texts;
 
 		procedure write_placeholders_common (ph : in type_placeholders_common) is begin
@@ -227,16 +213,17 @@ package body frame_rw is
 		end;
 
 		procedure write_text_pcb (texts : in type_texts_pcb) is begin
-			section_mark (section_texts_pcb, HEADER);
-			write (keyword => keyword_silk_screen, parameters => to_string (texts.silk_screen.position));
-			write (keyword => keyword_assy_doc, parameters => to_string (texts.assy_doc.position));
-			write (keyword => keyword_keepout, parameters => to_string (texts.keepout.position));			
-			write (keyword => keyword_plated_millings, parameters => to_string (texts.plated_millings.position));
-			write (keyword => keyword_pcb_outline, parameters => to_string (texts.pcb_outline.position));
-			write (keyword => keyword_route_restrict, parameters => to_string (texts.route_restrict.position));
-			write (keyword => keyword_via_restrict, parameters => to_string (texts.via_restrict.position));
-			write (keyword => keyword_signal_layer, parameters => to_string (texts.signal_layer.position));
-			section_mark (section_texts_pcb, FOOTER);			
+			-- section_mark (section_texts_pcb, HEADER);
+			write_text (texts.face);
+			write_text (texts.silk_screen);
+			write_text (texts.assy_doc);
+			write_text (texts.keepout);			
+			write_text (texts.plated_millings);
+			write_text (texts.pcb_outline);
+			write_text (texts.route_restrict);
+			write_text (texts.via_restrict);
+			write_text (texts.signal_layer);
+			-- section_mark (section_texts_pcb, FOOTER);			
 		end;
 		
 		procedure write_title_block (block : in type_title_block'class) is 
@@ -251,14 +238,21 @@ package body frame_rw is
 			-- write lines. they are basic elements of a title block:
 			write_lines (block.lines);
 
+
+			
 			-- write texts (with content). they are basic elements of a title block
+			section_mark (section_texts, HEADER);
 			write_texts (block.texts);
 
-			-- if the given title block belongs to a layout frame, write texts (with content):
+			-- if the given title block belongs to a layout frame, write additional texts (with content):
 			if block'tag = type_title_block_pcb'tag then
 				tp := type_title_block_pcb (block).additional_texts;
 				write_text_pcb (tp);
 			end if;
+
+			section_mark (section_texts, FOOTER);
+
+			
 			
 			section_mark (section_placeholders, HEADER);
 			write_placeholders_common (block.placeholders);

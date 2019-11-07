@@ -244,16 +244,24 @@ package et_frames is
 	end record;
 
 	-- pcb:
-	-- For visualization and CAM output, some texts indicate the active "layers":
+	-- For visualization and CAM output: texts that indicate in the description block what it is about.
+	-- Depending on the structures being displayed or exported, they are displayed or not.
 	type type_texts_pcb is record
-		silk_screen	: type_text := (content => et_text.to_content ("SILK SCREEN"), others => <>);
-
-		assy_doc, 
-
-		keepout, plated_millings, pcb_outline, 
-
-		route_restrict, via_restrict, signal_layer	: type_text;
+		face			: type_text := (content => et_text.to_content ("FACE"), others => <>);
+		silk_screen		: type_text := (content => et_text.to_content ("SILK SCREEN"), others => <>);
+		assy_doc		: type_text := (content => et_text.to_content ("ASSEMBLY DOCUMENTATION"), others => <>);
+		keepout			: type_text := (content => et_text.to_content ("KEEPOUT"), others => <>);
+		plated_millings	: type_text := (content => et_text.to_content ("PLATED MILLINGS"), others => <>); 
+		pcb_outline 	: type_text := (content => et_text.to_content ("PCB CONTOURS"), others => <>);
+		route_restrict	: type_text := (content => et_text.to_content ("ROUTE RESTRICT"), others => <>);
+		via_restrict	: type_text := (content => et_text.to_content ("VIA RESTRICT"), others => <>);		
+		signal_layer	: type_text := (content => et_text.to_content ("SIGNAL LAYER"), others => <>);
 		-- CS add more
+	end record;
+
+	type type_placeholders_pcb is new type_placeholders_basic with record
+		face			: type_placeholder;
+		signal_layer	: type_placeholder;
 	end record;
 	
 	type type_title_block_pcb is new type_title_block with record
