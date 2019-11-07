@@ -49,23 +49,6 @@ with et_frames;					use et_frames;
 
 package frame_rw is
 
-	-- general placeholders
-
-
-	-- schematic related placeholders:
-
-	-- pcb related placeholders:
-	keyword_silk_screen				: constant string := "silk_screen";
-	keyword_assy_doc				: constant string := "assy_doc";
-	keyword_keepout					: constant string := "keepout";	
-	keyword_plated_millings			: constant string := "plated_millings";
-	keyword_pcb_outline				: constant string := "pcb_outline";
-	keyword_route_restrict			: constant string := "route_restrict";
-	keyword_via_restrict			: constant string := "via_restrict";
-	keyword_signal_layer			: constant string := "signal_layer";
-
-	
-														 
 	keyword_domain			: constant string := "domain";				
 	keyword_paper_size		: constant string := "paper_size";
 	keyword_orientation		: constant string := "orientation";
@@ -76,11 +59,15 @@ package frame_rw is
 	keyword_rows			: constant string := "rows";
 	keyword_columns			: constant string := "columns";	
 
+
+	
+	-- general sections:
 	section_title_block		: constant string := "[TITLE_BLOCK";
 	section_lines			: constant string := "[LINES";
 
-	section_placeholders	: constant string := "[PLACEHOLDERS";
-	section_project_name	: constant string := "[PROJECT_NAME";
+	section_placeholders			: constant string := "[PLACEHOLDERS";
+
+	section_project_name			: constant string := "[PROJECT_NAME";
 	section_module_file_name		: constant string := "[MODULE_FILE_NAME";		
 	section_active_assembly_variant	: constant string := "[ACTIVE_ASSEMBLY_VARIANT";
 
@@ -98,12 +85,16 @@ package frame_rw is
 	section_checked_date			: constant string := "[CHECKED_DATE";
 	section_approved_date			: constant string := "[APPROVED_DATE";
 
+	
+	-- schematic related sections:	
 	section_sheet_number			: constant string := "[SHEET_NUMBER";
 	section_sheet_description		: constant string := "[SHEET_DESCRIPTION";
 	section_sheet_category			: constant string := "[SHEET_CATEGORY";
-
 	
-	section_texts_pcb		: constant string := "[TEXTS_PCB";		
+	
+	-- pcb related sections:
+	section_face			: constant string := "[FACE";
+	section_signal_layer	: constant string := "[SIGNAL_LAYER";
 
 
 	

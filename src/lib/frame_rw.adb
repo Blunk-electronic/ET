@@ -212,9 +212,23 @@ package body frame_rw is
 			section_mark (section_sheet_category, FOOTER);			
 		end;
 
+		procedure write_placeholders_pcb (ph : in type_placeholders_pcb) is begin
+			write_placeholders_basic (type_placeholders_basic (ph));
+
+			section_mark (section_face, HEADER);
+			write_placeholder (ph.face);
+			section_mark (section_face, FOOTER);
+
+			section_mark (section_signal_layer, HEADER);
+			write_placeholder (ph.signal_layer);
+			section_mark (section_signal_layer, FOOTER);
+			
+		end;
 		procedure write_text_pcb (texts : in type_texts_pcb) is begin
 			-- section_mark (section_texts_pcb, HEADER);
 			write_text (texts.face);
+			write_text (texts.top);
+			write_text (texts.bottom);
 			write_text (texts.silk_screen);
 			write_text (texts.assy_doc);
 			write_text (texts.keepout);			
@@ -229,7 +243,7 @@ package body frame_rw is
 		procedure write_title_block (block : in type_title_block'class) is 
 			use ada.tags;
 			tp : type_texts_pcb;
-			ap : type_placeholders_basic;
+			ap : type_placeholders_pcb;
 			ps : type_placeholders_schematic;
 			
 		begin
@@ -263,7 +277,7 @@ package body frame_rw is
 				
 			elsif block'tag = type_title_block_pcb'tag then
 				ap := type_title_block_pcb (block).additional_placeholders;
-				write_placeholders_basic (ap);
+				write_placeholders_pcb (ap);
 			else
 				null; -- CS
 			end if;

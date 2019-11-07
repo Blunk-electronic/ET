@@ -248,6 +248,8 @@ package et_frames is
 	-- Depending on the structures being displayed or exported, they are displayed or not.
 	type type_texts_pcb is record
 		face			: type_text := (content => et_text.to_content ("FACE"), others => <>);
+		top				: type_text := (content => et_text.to_content ("TOP"), others => <>);
+		bottom			: type_text := (content => et_text.to_content ("BOTTOM"), others => <>);				
 		silk_screen		: type_text := (content => et_text.to_content ("SILK SCREEN"), others => <>);
 		assy_doc		: type_text := (content => et_text.to_content ("ASSEMBLY DOCUMENTATION"), others => <>);
 		keepout			: type_text := (content => et_text.to_content ("KEEPOUT"), others => <>);
@@ -265,8 +267,8 @@ package et_frames is
 	end record;
 	
 	type type_title_block_pcb is new type_title_block with record
-		additional_placeholders	: type_placeholders_basic;
-		additional_texts : type_texts_pcb;
+		additional_placeholders	: type_placeholders_pcb;
+		additional_texts		: type_texts_pcb;
 	end record;
 
 
