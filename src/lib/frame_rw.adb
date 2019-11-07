@@ -99,6 +99,26 @@ package body frame_rw is
 			section_mark (section_lines, FOOTER);
 		end;
 
+		procedure write_placeholder (ph : in type_placeholder) is begin
+			-- position
+			write (keyword => keyword_position, parameters	=> to_string (ph.position)); -- position x 220 y 40
+
+			-- size
+			write (keyword => et_text.keyword_size, parameters => to_string (ph.size)); -- size 20
+		end;
+
+		procedure write_text (text : in type_text) is begin
+			-- position
+			write (keyword => keyword_position, parameters	=> to_string (text.position)); -- position x 220 y 40
+
+			-- size
+			write (keyword => et_text.keyword_size, parameters => to_string (text.size)); -- size 20
+
+			-- content
+			write (keyword => et_text.keyword_content, wrap => true,
+					parameters => et_text.to_string (text.content)); -- content "motor driver"
+		end;
+		
 		procedure write_texts (texts : in pac_texts.list) is
 			use pac_texts;
 
@@ -130,79 +150,79 @@ package body frame_rw is
 			section_mark (section_texts, FOOTER);
 		end write_texts;
 
-		procedure write_placeholders_common (phs : in type_placeholders_common) is begin
+		procedure write_placeholders_common (ph : in type_placeholders_common) is begin
 			section_mark (section_project_name, HEADER);
-			write (keyword => keyword_position, parameters => to_string (phs.project_name.position));
+			write_placeholder (ph.project_name);
 			section_mark (section_project_name, FOOTER);
 
 			section_mark (section_module_file_name, HEADER);			
-			write (keyword => keyword_position, parameters => to_string (phs.module_file_name.position));
+			write_placeholder (ph.module_file_name);
 			section_mark (section_module_file_name, FOOTER);
 
 			section_mark (section_active_assembly_variant, HEADER);
-			write (keyword => keyword_position, parameters => to_string (phs.active_assembly_variant.position));
+			write_placeholder (ph.active_assembly_variant);
 			section_mark (section_active_assembly_variant, FOOTER);			
 		end write_placeholders_common;
 
-		procedure write_placeholders_basic (phb : in type_placeholders_basic) is begin
+		procedure write_placeholders_basic (ph : in type_placeholders_basic) is begin
 			section_mark (section_company, HEADER);
-			write (keyword => keyword_position, parameters => to_string (phb.company.position));
+			write_placeholder (ph.company);
 			section_mark (section_company, FOOTER);
 
 			section_mark (section_customer, HEADER);			
-			write (keyword => keyword_position, parameters => to_string (phb.customer.position));
+			write_placeholder (ph.customer);
 			section_mark (section_customer, FOOTER);			
 
 			section_mark (section_partcode, HEADER);			
-			write (keyword => keyword_position, parameters => to_string (phb.partcode.position));
+			write_placeholder (ph.partcode);
 			section_mark (section_partcode, FOOTER);			
 
 			section_mark (section_drawing_number, HEADER);			
-			write (keyword => keyword_position, parameters => to_string (phb.drawing_number.position));
+			write_placeholder (ph.drawing_number);
 			section_mark (section_drawing_number, FOOTER);
 
 			section_mark (section_revision, HEADER);			
-			write (keyword => keyword_position, parameters => to_string (phb.revision.position));
+			write_placeholder (ph.revision);
 			section_mark (section_revision, FOOTER);						
 
 			section_mark (section_drawn_by, HEADER);			
-			write (keyword => keyword_position, parameters => to_string (phb.drawn_by.position));
+			write_placeholder (ph.drawn_by);
 			section_mark (section_drawn_by, FOOTER);			
 
 			section_mark (section_checked_by, HEADER);
-			write (keyword => keyword_position, parameters => to_string (phb.checked_by.position));
+			write_placeholder (ph.checked_by);
 			section_mark (section_checked_by, FOOTER);
 
 			section_mark (section_approved_by, HEADER);
-			write (keyword => keyword_position, parameters => to_string (phb.approved_by.position));
+			write_placeholder (ph.approved_by);
 			section_mark (section_approved_by, FOOTER);
 
 			section_mark (section_drawn_date, HEADER);
-			write (keyword => keyword_position, parameters => to_string (phb.drawn_date.position));
+			write_placeholder (ph.drawn_date);
 			section_mark (section_drawn_date, FOOTER);
 
 			section_mark (section_checked_date, HEADER);
-			write (keyword => keyword_position, parameters => to_string (phb.checked_date.position));
+			write_placeholder (ph.checked_date);
 			section_mark (section_checked_date, FOOTER);
 
 			section_mark (section_approved_date, HEADER);			
-			write (keyword => keyword_position, parameters => to_string (phb.approved_date.position));
+			write_placeholder (ph.approved_date);
 			section_mark (section_approved_date, FOOTER);			
 		end;
 		
-		procedure write_placeholders_schematic (phs : in type_placeholders_schematic) is begin
-			write_placeholders_basic (type_placeholders_basic (phs));
+		procedure write_placeholders_schematic (ph : in type_placeholders_schematic) is begin
+			write_placeholders_basic (type_placeholders_basic (ph));
 
 			section_mark (section_sheet_number, HEADER);
-			write (keyword => keyword_position, parameters => to_string (phs.sheet_number.position));
+			write_placeholder (ph.sheet_number);
 			section_mark (section_sheet_number, FOOTER);
 
 			section_mark (section_sheet_description, HEADER);			
-			write (keyword => keyword_position, parameters => to_string (phs.description.position));
+			write_placeholder (ph.description);
 			section_mark (section_sheet_description, FOOTER);
 
 			section_mark (section_sheet_category, HEADER);						
-			write (keyword => keyword_position, parameters => to_string (phs.category.position));
+			write_placeholder (ph.category);
 			section_mark (section_sheet_category, FOOTER);			
 		end;
 
