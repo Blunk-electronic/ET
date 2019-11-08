@@ -93,15 +93,25 @@ package frame_rw is
 	
 	
 	-- pcb related sections:
+	section_cam_markers		: constant string := "[CAM_MARKERS";
 	section_face			: constant string := "[FACE";
+	section_silk_screen		: constant string := "[SILK_SCREEN";
+	section_assy_doc		: constant string := "[ASSY_DOC";
+	section_keepout			: constant string := "[KEEPOUT";
+	section_plated_millings	: constant string := "[PLATED_MILLINGS";
+	section_pcb_outline		: constant string := "[PCB_OUTLINE";
+	section_route_restrict	: constant string := "[ROUTE_RESTRICT";
+	section_via_restrict	: constant string := "[VIA_RESTRICT";
 	section_signal_layer	: constant string := "[SIGNAL_LAYER";
 
 
 	
 	type type_section is (
 		SEC_ACTIVE_ASSEMBLY_VARIANT,
+		SEC_ASSY_DOC,
 		SEC_APPROVED_BY,
 		SEC_APPROVED_DATE,
+		SEC_CAM_MARKERS,
 		SEC_CHECKED_BY,
 		SEC_CHECKED_DATE,
 		SEC_COMPANY,
@@ -111,20 +121,26 @@ package frame_rw is
 		SEC_DRAWN_DATE,
 		SEC_FACE,
 		SEC_INIT,
+		SEC_KEEPOUT,
 		SEC_LINE,
 		SEC_LINES,
 		SEC_MODULE_FILE_NAME,
 		SEC_PARTCODE,
+		SEC_PCB_OUTLINE,
 		SEC_PLACEHOLDERS,
+		SEC_PLATED_MILLINGS,
 		SEC_PROJECT_NAME,
+		SEC_ROUTE_RESTRICT,
 		SEC_REVISION,
 		SEC_SHEET_CATEGORY,
 		SEC_SHEET_DESCRIPTION,
 		SEC_SHEET_NUMBER,
 		SEC_SIGNAL_LAYER,
+		SEC_SILK_SCREEN,
 		SEC_TEXT,
 		SEC_TEXTS,
-		SEC_TITLE_BLOCK
+		SEC_TITLE_BLOCK,
+		SEC_VIA_RESTRICT
 		);
 	
 	procedure create_frame (

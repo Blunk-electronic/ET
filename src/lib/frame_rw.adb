@@ -261,6 +261,23 @@ package body frame_rw is
 			write_text (texts.via_restrict);
 			write_text (texts.signal_layer);
 		end;
+
+		procedure write_cam_markers (cms : in type_cam_markers) is begin
+			section_mark (section_cam_markers, HEADER);
+-- 			write_text (texts.face);
+-- 			write_text (texts.top);
+-- 			write_text (texts.bottom);
+-- 			write_text (texts.silk_screen);
+-- 			write_text (texts.assy_doc);
+-- 			write_text (texts.keepout);			
+-- 			write_text (texts.plated_millings);
+-- 			write_text (texts.pcb_outline);
+-- 			write_text (texts.route_restrict);
+-- 			write_text (texts.via_restrict);
+-- 			write_text (texts.signal_layer);
+			section_mark (section_cam_markers, FOOTER);			
+		end;
+
 		
 		procedure write_title_block (block : in type_title_block'class) is 
 			use ada.tags;
@@ -279,14 +296,13 @@ package body frame_rw is
 			section_mark (section_texts, HEADER);
 			write_texts (block.texts);
 
-			-- if the given title block belongs to a layout frame, write additional texts (with content):
-			if block'tag = type_title_block_pcb'tag then
-				tp := type_title_block_pcb (block).additional_texts;
-				write_text_pcb (tp);
-			end if;
+-- 			-- if the given title block belongs to a layout frame, write additional texts (with content):
+-- 			if block'tag = type_title_block_pcb'tag then
+-- 				tp := type_title_block_pcb (block).additional_texts;
+-- 				write_text_pcb (tp);
+-- 			end if;
 
 			section_mark (section_texts, FOOTER);
-
 			
 			
 			section_mark (section_placeholders, HEADER);
@@ -304,6 +320,11 @@ package body frame_rw is
 			end if;
 
 			section_mark (section_placeholders, FOOTER);
+
+			-- if the given title block belongs to a layout frame, write cam markers:
+			if block'tag = type_title_block_pcb'tag then
+				write_cam_markers (type_title_block_pcb (block).cam_markers);
+			end if;
 			
 		end write_title_block;
 		
@@ -627,7 +648,7 @@ package body frame_rw is
 							when others => invalid_section;
 						end case;
 
-					when SEC_LINES | SEC_TEXTS | SEC_PLACEHOLDERS =>
+					when SEC_LINES | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_CAM_MARKERS =>
 						case stack.parent is
 							when SEC_TITLE_BLOCK => null;
 							when others => invalid_section;
@@ -799,20 +820,20 @@ package body frame_rw is
 							when others => invalid_section;
 						end case;
 
-					when SEC_FACE => -- NOTE: this placeholder exists in pcb only !
+					when SEC_FACE => 
 						case stack.parent is
 							when SEC_PLACEHOLDERS =>
-								case domain is
+								case domain is -- NOTE: this placeholder exists in pcb only !
 									when PCB => tb_face := tb_placeholder;
 									when others => invalid_section;
 								end case;
 							when others => invalid_section;
 						end case;
 
-					when SEC_SIGNAL_LAYER => -- NOTE: this placeholder exists in pcb only !
+					when SEC_SIGNAL_LAYER =>
 						case stack.parent is
 							when SEC_PLACEHOLDERS =>
-								case domain is
+								case domain is  -- NOTE: this placeholder exists in pcb only !
 									when PCB => tb_signal_layer := tb_placeholder;
 									when others => invalid_section;
 								end case;
@@ -820,6 +841,8 @@ package body frame_rw is
 						end case;
 						
 					when SEC_INIT => null; -- CS: should never happen
+
+					when others => null; -- CS
 				end case;
 
 			end execute_section;
@@ -913,7 +936,7 @@ package body frame_rw is
 							when others => invalid_section;
 						end case;
 
-					when SEC_LINES | SEC_TEXTS | SEC_PLACEHOLDERS =>
+					when SEC_LINES | SEC_TEXTS | SEC_PLACEHOLDERS | SEC_CAM_MARKERS =>
 						case stack.parent is
 							when SEC_TITLE_BLOCK => null;
 							when others => invalid_section;
@@ -961,6 +984,8 @@ package body frame_rw is
 								end case;
 							when others => invalid_section;
 						end case;
+
+					when others => null; -- CS
 						
 				end case;
 			end if;

@@ -247,6 +247,23 @@ package et_frames is
 	-- pcb:
 	-- For visualization and CAM output: texts that indicate in the description block what it is about.
 	-- Depending on the structures being displayed or exported, they are displayed or not.
+
+	type type_cam_marker is new type_text with null record;
+
+	type type_cam_markers is record
+		face			: type_cam_marker := (content => et_text.to_content ("FACE"), others => <>);
+-- 		top				: type_cam_marker := (content => et_text.to_content ("TOP"), others => <>);
+-- 		bottom			: type_cam_marker := (content => et_text.to_content ("BOTTOM"), others => <>);				
+		silk_screen		: type_cam_marker := (content => et_text.to_content ("SILK SCREEN"), others => <>);
+		assy_doc		: type_cam_marker := (content => et_text.to_content ("ASSEMBLY DOCUMENTATION"), others => <>);
+		keepout			: type_cam_marker := (content => et_text.to_content ("KEEPOUT"), others => <>);
+		plated_millings	: type_cam_marker := (content => et_text.to_content ("PLATED MILLINGS"), others => <>); 
+		pcb_outline 	: type_cam_marker := (content => et_text.to_content ("PCB CONTOURS"), others => <>);
+		route_restrict	: type_cam_marker := (content => et_text.to_content ("ROUTE RESTRICT"), others => <>);
+		via_restrict	: type_cam_marker := (content => et_text.to_content ("VIA RESTRICT"), others => <>);		
+		signal_layer	: type_cam_marker := (content => et_text.to_content ("SIGNAL LAYER"), others => <>);
+	end record;
+	
 	type type_texts_pcb is record
 		face			: type_text := (content => et_text.to_content ("FACE"), others => <>);
 		top				: type_text := (content => et_text.to_content ("TOP"), others => <>);
@@ -269,7 +286,8 @@ package et_frames is
 	
 	type type_title_block_pcb is new type_title_block with record
 		additional_placeholders	: type_placeholders_pcb;
-		additional_texts		: type_texts_pcb;
+		cam_markers				: type_cam_markers;
+		additional_texts		: type_texts_pcb; -- CS not required any more
 	end record;
 
 
