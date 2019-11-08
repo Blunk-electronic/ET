@@ -260,20 +260,6 @@ package body frame_rw is
 			
 		end;
 		
--- 		procedure write_text_pcb (texts : in type_texts_pcb) is begin
--- 			write_text (texts.face);
--- 			write_text (texts.top);
--- 			write_text (texts.bottom);
--- 			write_text (texts.silk_screen);
--- 			write_text (texts.assy_doc);
--- 			write_text (texts.keepout);			
--- 			write_text (texts.plated_millings);
--- 			write_text (texts.pcb_outline);
--- 			write_text (texts.route_restrict);
--- 			write_text (texts.via_restrict);
--- 			write_text (texts.signal_layer);
--- 		end;
-
 		procedure write_cam_markers (cms : in type_cam_markers) is begin
 			section_mark (section_cam_markers, HEADER);
 			
@@ -315,7 +301,6 @@ package body frame_rw is
 
 			section_mark (section_cam_markers, FOOTER);			
 		end;
-
 		
 		procedure write_title_block (block : in type_title_block'class) is 
 			use ada.tags;
@@ -324,24 +309,18 @@ package body frame_rw is
 		begin
 			write (keyword => keyword_position, parameters => to_string (block.position)); -- position x 180 x 10
 
+			-- LINES
 			-- write lines. they are basic elements of a title block:
 			write_lines (block.lines);
 
 
-			
+			-- TEXTS
 			-- write texts (with content). they are basic elements of a title block
 			section_mark (section_texts, HEADER);
 			write_texts (block.texts);
-
--- 			-- if the given title block belongs to a layout frame, write additional texts (with content):
--- 			if block'tag = type_title_block_pcb'tag then
--- 				tp := type_title_block_pcb (block).additional_texts;
--- 				write_text_pcb (tp);
--- 			end if;
-
 			section_mark (section_texts, FOOTER);
 			
-			
+			-- PLACEHOLDERS
 			section_mark (section_placeholders, HEADER);
 			write_placeholders_common (block.placeholders);
 
@@ -358,6 +337,7 @@ package body frame_rw is
 
 			section_mark (section_placeholders, FOOTER);
 
+			-- CAM MARKERS (pcb only)
 			-- if the given title block belongs to a layout frame, write cam markers:
 			if block'tag = type_title_block_pcb'tag then
 				write_cam_markers (type_title_block_pcb (block).cam_markers);
@@ -652,7 +632,6 @@ package body frame_rw is
 				invalid_keyword (kw);
 			end if;
 		end;
-
 		
 		procedure reset_placeholder is begin tb_placeholder := (others => <>); end;
 
@@ -1199,7 +1178,6 @@ package body frame_rw is
 
 							when others => invalid_section;
 						end case;
-
 						
 				end case;
 			end if;

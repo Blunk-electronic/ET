@@ -265,21 +265,6 @@ package et_frames is
 		signal_layer	: type_cam_marker := (content => et_text.to_content ("SIGNAL LAYER"), others => <>);
 	end record;
 	
--- 	type type_texts_pcb is record
--- 		face			: type_text := (content => et_text.to_content ("FACE"), others => <>);
--- 		top				: type_text := (content => et_text.to_content ("TOP"), others => <>);
--- 		bottom			: type_text := (content => et_text.to_content ("BOTTOM"), others => <>);				
--- 		silk_screen		: type_text := (content => et_text.to_content ("SILK SCREEN"), others => <>);
--- 		assy_doc		: type_text := (content => et_text.to_content ("ASSEMBLY DOCUMENTATION"), others => <>);
--- 		keepout			: type_text := (content => et_text.to_content ("KEEPOUT"), others => <>);
--- 		plated_millings	: type_text := (content => et_text.to_content ("PLATED MILLINGS"), others => <>); 
--- 		pcb_outline 	: type_text := (content => et_text.to_content ("PCB CONTOURS"), others => <>);
--- 		route_restrict	: type_text := (content => et_text.to_content ("ROUTE RESTRICT"), others => <>);
--- 		via_restrict	: type_text := (content => et_text.to_content ("VIA RESTRICT"), others => <>);		
--- 		signal_layer	: type_text := (content => et_text.to_content ("SIGNAL LAYER"), others => <>);
--- 		-- CS add more
--- 	end record;
-
 	type type_placeholders_pcb is new type_placeholders_basic with record
 		face			: type_placeholder; -- to be filled with the word "TOP" or "BOTTOM"
 		signal_layer	: type_placeholder; -- to be filled with the signal layer id like 1,2,3, .. 16
@@ -288,7 +273,6 @@ package et_frames is
 	type type_title_block_pcb is new type_title_block with record
 		additional_placeholders	: type_placeholders_pcb;
 		cam_markers				: type_cam_markers;
--- 		additional_texts		: type_texts_pcb; -- CS not required any more
 	end record;
 
 
