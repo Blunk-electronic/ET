@@ -17,3 +17,36 @@ et --open-schematic-frame dummy.frs --save-schematic-frame-as test.frs --log-lev
 et --create-pcb-frame dummy.frb
 et --open-pcb-frame dummy.frb --save-pcb-frame-as test.frb --log-level 3
 
+
+
+[META BEGIN]
+	active_assembly_variant low_cost
+	
+	[SCHEMATIC BEGIN]
+		company BEL
+		customer "ABC systems"
+		partcode NCC1701
+		drawing_number 0815
+		revision F
+		drawn_by "Joseph Miller"
+		checked_by "Dieter Krause"
+		approved_by "Sergey Komarow"
+		drawn_date 2019-01-04
+		checked_date 2019-01-05
+		approved_date 2019-01-10
+	[SCHEMATIC END]
+	
+	[BOARD BEGIN]
+		company BEL
+		customer "ABC systems"
+		partcode NCC1701B
+		drawing_number K463
+		revision A
+		drawn_by "Steve Carpenter"
+		checked_by "Dieter Krause"
+		approved_by "Sergey Komarow"
+		drawn_date 2019-02-14
+		checked_date 2019-03-05
+		approved_date 2019-03-10
+	[BOARD END]
+[META END]

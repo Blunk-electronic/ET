@@ -449,6 +449,7 @@ package body frame_rw is
 
 	function read_frame (
 	-- Reads a frame from given file_name and returns a parameterized type_frame.
+	-- CS add more log messages on level 1 and 2.
 		file_name		: in pac_template_name.bounded_string;
 		domain			: in type_domain;
 		log_threshold	: in et_string_processing.type_log_level)

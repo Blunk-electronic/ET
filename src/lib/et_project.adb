@@ -76,6 +76,7 @@ with device_rw;					use device_rw;
 with et_symbols;
 with et_devices;				use et_devices;
 with et_frames;
+with frame_rw;
 
 package body et_project is
 
@@ -2449,7 +2450,16 @@ package body et_project is
 					use et_frames;
 				begin
 					log (text => "drawing frame schematic " & to_string (frame_template_schematic), level => log_threshold + 1);
+
+					-- set the frame template name
 					module.frames.template := frame_template_schematic;
+
+					-- read the frame template file
+					module.frames.frame := frame_rw.read_frame (
+						file_name		=> frame_template_schematic,
+						domain			=> SCHEMATIC,
+						log_threshold	=> log_threshold + 2);
+					
 				end set_frame_schematic;
 				
 				procedure set_frame_board (
@@ -2458,7 +2468,16 @@ package body et_project is
 					use et_frames;
 				begin
 					log (text => "drawing frame board " & to_string (frame_template_board), level => log_threshold + 1);
+
+					-- set the frame template name
 					module.board.frame.template := frame_template_board;
+
+					-- read the frame template file
+					module.board.frame.frame := frame_rw.read_frame (
+						file_name		=> frame_template_board,
+						domain			=> PCB,
+						log_threshold	=> log_threshold + 2);
+
 				end set_frame_board;
 
 				procedure insert_note (
