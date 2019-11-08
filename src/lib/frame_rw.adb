@@ -65,6 +65,29 @@ package body frame_rw is
 			keyword_x & space & to_string (position.x) & space &
 			keyword_y & space & to_string (position.y);
 	end;
+
+	function to_position (line : in et_string_processing.type_fields_of_line)
+	-- Converts the fields like "x 220 y 239" of a line to a type_position.
+	-- Starts processing from field 2. Ignores field 1 and fields after field 5.
+		return type_position is
+		use et_geometry; -- for keywords only
+		position : type_position;
+
+		procedure error (p : positive) is begin invalid_keyword (f (line, p)); end;
+	
+	begin
+		for place in 2 .. 5 loop
+			case place is
+				when 2 => if f (line, place) /= keyword_x then error (place); end if; -- expect an x
+				when 3 => position.x := to_distance (f (line, place)); -- expect x value
+				when 4 => if f (line, place) /= keyword_y then error (place); end if; -- expect an y
+				when 5 => position.y := to_distance (f (line, place)); -- expect y value
+			end case;
+		end loop;
+
+		-- CS exception handler in case x or y value is invalid
+		return position;
+	end; 
 	
 	procedure write (
 		frame			: in type_frame;
@@ -90,7 +113,8 @@ package body frame_rw is
 				write (
 					keyword		=> keyword_end, 
 					parameters	=> to_string (element (cursor).end_point)); -- end x 180 x 10
-				
+
+				-- CS in the future, if a line has a width, write it here
 				section_mark (section_line, FOOTER);
 			end;
 				
@@ -132,9 +156,7 @@ package body frame_rw is
 			end;
 			
 		begin -- write_texts
--- 			section_mark (section_texts, HEADER);
 			iterate (texts, write'access);
-			--section_mark (section_texts, FOOTER);
 		end write_texts;
 
 		procedure write_placeholders_common (ph : in type_placeholders_common) is begin
@@ -465,18 +487,143 @@ package body frame_rw is
 			end if;
 		end;
 
+		-- TEMPORARILY VARIABLES AND CONTAINERS
+		tb_position 	: type_position;
+		tb_line 		: type_line;
+		tb_lines		: pac_lines.list;
+		tb_text			: type_text;
+		tb_texts		: pac_texts.list;
+		tb_placeholder	: type_placeholder;
+		tb_placeholders_common	: type_placeholders_common;
+		tb_placeholders_basic	: type_placeholders_basic;
+		tb_sheet_number			: type_placeholder; -- for schematic only
+		tb_sheet_description 	: type_placeholder; -- for schematic only
+		tb_sheet_category		: type_placeholder; -- for schematic only
+		tb_face					: type_placeholder; -- for pcb only
+		tb_signal_layer			: type_placeholder; -- for pcb only
+		
+		procedure read_title_block_position is
+			use et_geometry; -- for keywords only
+			kw : constant string := f (line, 1);
+		begin
+			if kw = keyword_position then -- position x 100 y 200
+				expect_field_count (line, 5);
+				tb_position := to_position (line);
+			end if;
+		end;
+		
+		procedure read_line_properties is
+			use et_geometry; -- for keywords only
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_start then -- start x 220 y 239
+				expect_field_count (line, 5);
+				tb_line.start_point := to_position (line);
+
+			elsif kw = keyword_end then -- end x 250 y 239
+				expect_field_count (line, 5);
+				tb_line.end_point := to_position (line);
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
+		procedure read_text_properties is
+			use et_geometry; -- for keywords only
+			use et_text; -- for keywords only
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_position then -- position x 220 y 239
+				expect_field_count (line, 5);
+				tb_text.position := to_position (line);
+
+			elsif kw = keyword_size then -- size 12
+				expect_field_count (line, 2);
+				tb_text.size := to_distance (f (line, 2));
+
+			elsif kw = keyword_content then -- content "some text"
+				expect_field_count (line, 2);
+				tb_text.content := to_content (f (line, 2));
+
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
+		procedure read_placeholder_properties is
+			use et_geometry; -- for keywords only
+			use et_text; -- for keywords only
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_position then -- position x 220 y 239
+				expect_field_count (line, 5);
+				tb_placeholder.position := to_position (line);
+
+			elsif kw = keyword_size then -- size 12
+				expect_field_count (line, 2);
+				tb_placeholder.size := to_distance (f (line, 2));
+
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
+		
+		procedure reset_placeholder is begin tb_placeholder := (others => <>); end;
+		
+		procedure assemble_title_block is 
+			use pac_lines;
+			use pac_texts;
+		begin
+								
+			case domain is
+				when SCHEMATIC => 
+					frame.title_block_schematic.position := tb_position;
+					frame.title_block_schematic.lines := tb_lines;
+					frame.title_block_schematic.texts := tb_texts;
+					frame.title_block_schematic.placeholders := tb_placeholders_common;
+					frame.title_block_schematic.additional_placeholders := (
+						tb_placeholders_basic with 
+							sheet_number 	=> tb_sheet_number,
+							description		=> tb_sheet_description,
+							category		=> tb_sheet_category);
+					
+				when PCB =>
+					frame.title_block_pcb.position := tb_position;
+					frame.title_block_pcb.lines := tb_lines;
+					frame.title_block_pcb.texts := tb_texts;
+					frame.title_block_pcb.placeholders := tb_placeholders_common;
+					frame.title_block_pcb.additional_placeholders := (
+						tb_placeholders_basic with 
+							face			=> tb_face,
+							signal_layer	=> tb_signal_layer);
+			end case;
+
+			-- clean up (even if there is no further title block)
+			tb_position := (others => <>);
+			clear (tb_lines);
+			clear (tb_texts);
+			tb_placeholders_common := (others => <>);
+		end;
 		
 		procedure process_line is 
 
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
 			-- and finally assembled to actual objects:
+				use pac_lines;
+				use pac_texts;
+				
 			begin -- execute_section
 				case stack.current is
 
 					when SEC_TITLE_BLOCK => 
 						case stack.parent is
-							when SEC_INIT => null;
+							when SEC_INIT => assemble_title_block;
+
 							when others => invalid_section;
 						end case;
 
@@ -488,132 +635,187 @@ package body frame_rw is
 
 					when SEC_LINE =>
 						case stack.parent is
-							when SEC_LINES => null;
+							when SEC_LINES =>
+								-- append the title block line to the collection of lines
+								append (tb_lines, tb_line);
+
+								-- clean up for next title block line
+								tb_line := (others => <>);
+								
 							when others => invalid_section;
 						end case;
 						
 					when SEC_TEXT =>
 						case stack.parent is
-							when SEC_TEXTS => null;
+							when SEC_TEXTS =>
+								-- append the title block text to the collection of texts
+								append (tb_texts, tb_text);
+
+								-- clean up for next title block text
+								tb_text := (others => <>);
+								
 							when others => invalid_section;
 						end case;
 						
 					when SEC_PROJECT_NAME =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_common.project_name := tb_placeholder;
+								reset_placeholder;
 							when others => invalid_section;
 						end case;
 
 					when SEC_MODULE_FILE_NAME =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_common.module_file_name := tb_placeholder;
+								reset_placeholder;
 							when others => invalid_section;
 						end case;
 
 					when SEC_ACTIVE_ASSEMBLY_VARIANT =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_common.active_assembly_variant := tb_placeholder;
+								reset_placeholder;
 							when others => invalid_section;
 						end case;
 
 					when SEC_COMPANY =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.company := tb_placeholder;
+								reset_placeholder;
 							when others => invalid_section;
 						end case;
 
 					when SEC_CUSTOMER =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.customer := tb_placeholder;
+								reset_placeholder;
 							when others => invalid_section;
 						end case;
 
 					when SEC_PARTCODE =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.partcode := tb_placeholder;
+								reset_placeholder;
 							when others => invalid_section;
 						end case;
 
 					when SEC_DRAWING_NUMBER =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.drawing_number := tb_placeholder;
+								reset_placeholder;
 							when others => invalid_section;
 						end case;
 
 					when SEC_REVISION =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.revision := tb_placeholder;
+								reset_placeholder;
 							when others => invalid_section;
 						end case;
 
 					when SEC_DRAWN_BY =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.drawn_by := tb_placeholder;
+								reset_placeholder;
 							when others => invalid_section;
 						end case;
 
 					when SEC_DRAWN_DATE =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.drawn_date := tb_placeholder;
+								reset_placeholder;
 							when others => invalid_section;
 						end case;
 						
 					when SEC_CHECKED_BY =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.checked_by := tb_placeholder;
+								reset_placeholder;
 							when others => invalid_section;
 						end case;
 
 					when SEC_CHECKED_DATE =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.checked_date := tb_placeholder;
+								reset_placeholder;
 							when others => invalid_section;
 						end case;
 
 					when SEC_APPROVED_BY =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.approved_by := tb_placeholder;
+								reset_placeholder;
 							when others => invalid_section;
 						end case;
 
 					when SEC_APPROVED_DATE =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS =>
+								tb_placeholders_basic.approved_date := tb_placeholder;
+								reset_placeholder;
 							when others => invalid_section;
 						end case;
 
-					when SEC_SHEET_NUMBER =>
+					when SEC_SHEET_NUMBER => -- NOTE: this placeholder exists in schematic only !
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
-								-- domain must be schematic
+							when SEC_PLACEHOLDERS =>
+								case domain is
+									when SCHEMATIC => tb_sheet_number := tb_placeholder;
+									when others => invalid_section;
+								end case;
 							when others => invalid_section;
 						end case;
 						
-					when SEC_SHEET_DESCRIPTION =>
+					when SEC_SHEET_DESCRIPTION => -- NOTE: this placeholder exists in schematic only !
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
-								-- domain must be schematic
+							when SEC_PLACEHOLDERS =>
+								case domain is
+									when SCHEMATIC => tb_sheet_description := tb_placeholder;
+									when others => invalid_section;
+								end case;
 							when others => invalid_section;
 						end case;
 
-					when SEC_SHEET_CATEGORY =>
+					when SEC_SHEET_CATEGORY => -- NOTE: this placeholder exists in schematic only !
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
-								-- domain must be schematic
+							when SEC_PLACEHOLDERS =>
+								case domain is
+									when SCHEMATIC => tb_sheet_category := tb_placeholder;
+									when others => invalid_section;
+								end case;
 							when others => invalid_section;
 						end case;
 
-					when SEC_FACE =>
+					when SEC_FACE => -- NOTE: this placeholder exists in pcb only !
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
-								-- domain must be pcb
+							when SEC_PLACEHOLDERS =>
+								case domain is
+									when PCB => tb_face := tb_placeholder;
+									when others => invalid_section;
+								end case;
 							when others => invalid_section;
 						end case;
 
-					when SEC_SIGNAL_LAYER =>
+					when SEC_SIGNAL_LAYER => -- NOTE: this placeholder exists in pcb only !
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
-								-- domain must be pcb
+							when SEC_PLACEHOLDERS =>
+								case domain is
+									when PCB => tb_signal_layer := tb_placeholder;
+									when others => invalid_section;
+								end case;
 							when others => invalid_section;
 						end case;
 						
@@ -707,8 +909,7 @@ package body frame_rw is
 
 					when SEC_TITLE_BLOCK => 
 						case stack.parent is
-							when SEC_INIT => null;
-								-- CS read position of title block
+							when SEC_INIT => read_title_block_position;
 							when others => invalid_section;
 						end case;
 
@@ -720,55 +921,55 @@ package body frame_rw is
 
 					when SEC_LINE =>
 						case stack.parent is
-							when SEC_LINES => null;
+							when SEC_LINES => read_line_properties;
 							when others => invalid_section;
 						end case;
 						
 					when SEC_TEXT =>
 						case stack.parent is
-							when SEC_TEXTS => null;
+							when SEC_TEXTS => read_text_properties;
 							when others => invalid_section;
 						end case;
 						
 					when SEC_PROJECT_NAME =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS => read_placeholder_properties;
 							when others => invalid_section;
 						end case;
 
 					when SEC_MODULE_FILE_NAME =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS => read_placeholder_properties;
 							when others => invalid_section;
 						end case;
 
 					when SEC_ACTIVE_ASSEMBLY_VARIANT =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS => read_placeholder_properties;
 							when others => invalid_section;
 						end case;
 
 					when SEC_COMPANY =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS => read_placeholder_properties;
 							when others => invalid_section;
 						end case;
 
 					when SEC_CUSTOMER =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS => read_placeholder_properties;
 							when others => invalid_section;
 						end case;
 
 					when SEC_PARTCODE =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS => read_placeholder_properties;
 							when others => invalid_section;
 						end case;
 
 					when SEC_DRAWING_NUMBER =>
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS => read_placeholder_properties;
 							when others => invalid_section;
 						end case;
 

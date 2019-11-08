@@ -127,6 +127,7 @@ package et_frames is
 	type type_line is record
 		start_point	: type_position := position_default;
 		end_point	: type_position := position_default;
+		-- CS line width ?
 	end record;
 
 	package pac_lines is new doubly_linked_lists (type_line);
