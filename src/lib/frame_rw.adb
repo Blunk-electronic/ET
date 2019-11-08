@@ -931,125 +931,36 @@ package body frame_rw is
 							when others => invalid_section;
 						end case;
 						
-					when SEC_PROJECT_NAME =>
+					when SEC_PROJECT_NAME | SEC_MODULE_FILE_NAME | SEC_ACTIVE_ASSEMBLY_VARIANT |
+						SEC_COMPANY | SEC_CUSTOMER | SEC_PARTCODE | SEC_DRAWING_NUMBER | SEC_REVISION |
+						SEC_DRAWN_BY | SEC_DRAWN_DATE | SEC_CHECKED_BY | SEC_CHECKED_DATE | 
+						SEC_APPROVED_BY | SEC_APPROVED_DATE =>
 						case stack.parent is
 							when SEC_PLACEHOLDERS => read_placeholder_properties;
 							when others => invalid_section;
 						end case;
 
-					when SEC_MODULE_FILE_NAME =>
+					when SEC_SHEET_NUMBER | SEC_SHEET_DESCRIPTION | SEC_SHEET_CATEGORY => 
+						-- NOTE: these placeholders exists in schematic only !
 						case stack.parent is
-							when SEC_PLACEHOLDERS => read_placeholder_properties;
-							when others => invalid_section;
-						end case;
-
-					when SEC_ACTIVE_ASSEMBLY_VARIANT =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => read_placeholder_properties;
-							when others => invalid_section;
-						end case;
-
-					when SEC_COMPANY =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => read_placeholder_properties;
-							when others => invalid_section;
-						end case;
-
-					when SEC_CUSTOMER =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => read_placeholder_properties;
-							when others => invalid_section;
-						end case;
-
-					when SEC_PARTCODE =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => read_placeholder_properties;
-							when others => invalid_section;
-						end case;
-
-					when SEC_DRAWING_NUMBER =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => read_placeholder_properties;
-							when others => invalid_section;
-						end case;
-
-					when SEC_REVISION =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
-							when others => invalid_section;
-						end case;
-
-					when SEC_DRAWN_BY =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
-							when others => invalid_section;
-						end case;
-
-					when SEC_DRAWN_DATE =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS => 
+								case domain is
+									when SCHEMATIC => read_placeholder_properties;
+									when others => invalid_section;
+								end case;
 							when others => invalid_section;
 						end case;
 						
-					when SEC_CHECKED_BY =>
+					when SEC_FACE | SEC_SIGNAL_LAYER =>
+						-- NOTE: these placeholders exists in pcb only !
 						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
+							when SEC_PLACEHOLDERS => 
+								case domain is
+									when PCB => read_placeholder_properties;
+									when others => invalid_section;
+								end case;
 							when others => invalid_section;
 						end case;
-
-					when SEC_CHECKED_DATE =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
-							when others => invalid_section;
-						end case;
-
-					when SEC_APPROVED_BY =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
-							when others => invalid_section;
-						end case;
-
-					when SEC_APPROVED_DATE =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
-							when others => invalid_section;
-						end case;
-
-					when SEC_SHEET_NUMBER =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
-								-- domain must be schematic
-							when others => invalid_section;
-						end case;
-						
-					when SEC_SHEET_DESCRIPTION =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
-								-- domain must be schematic
-							when others => invalid_section;
-						end case;
-
-					when SEC_SHEET_CATEGORY =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
-								-- domain must be schematic
-							when others => invalid_section;
-						end case;
-
-					when SEC_FACE =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
-								-- domain must be pcb
-							when others => invalid_section;
-						end case;
-
-					when SEC_SIGNAL_LAYER =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS => null;
-								-- domain must be pcb
-							when others => invalid_section;
-						end case;
-
 						
 				end case;
 			end if;
