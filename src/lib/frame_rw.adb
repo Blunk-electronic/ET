@@ -147,6 +147,18 @@ package body frame_rw is
 
 			section_mark (section_text, FOOTER);
 		end;
+
+		procedure write_cam_marker (cm : in type_cam_marker) is begin
+			-- position
+			write (keyword => keyword_position, parameters	=> to_string (cm.position)); -- position x 220 y 40
+
+			-- size
+			write (keyword => et_text.keyword_size, parameters => to_string (cm.size)); -- size 20
+
+			-- content
+			write (keyword => et_text.keyword_content, wrap => true,
+				   parameters => et_text.to_string (cm.content));
+		end;
 		
 		procedure write_texts (texts : in pac_texts.list) is
 			use pac_texts;
@@ -248,22 +260,7 @@ package body frame_rw is
 			
 		end;
 		
-		procedure write_text_pcb (texts : in type_texts_pcb) is begin
-			write_text (texts.face);
-			write_text (texts.top);
-			write_text (texts.bottom);
-			write_text (texts.silk_screen);
-			write_text (texts.assy_doc);
-			write_text (texts.keepout);			
-			write_text (texts.plated_millings);
-			write_text (texts.pcb_outline);
-			write_text (texts.route_restrict);
-			write_text (texts.via_restrict);
-			write_text (texts.signal_layer);
-		end;
-
-		procedure write_cam_markers (cms : in type_cam_markers) is begin
-			section_mark (section_cam_markers, HEADER);
+-- 		procedure write_text_pcb (texts : in type_texts_pcb) is begin
 -- 			write_text (texts.face);
 -- 			write_text (texts.top);
 -- 			write_text (texts.bottom);
@@ -275,13 +272,53 @@ package body frame_rw is
 -- 			write_text (texts.route_restrict);
 -- 			write_text (texts.via_restrict);
 -- 			write_text (texts.signal_layer);
+-- 		end;
+
+		procedure write_cam_markers (cms : in type_cam_markers) is begin
+			section_mark (section_cam_markers, HEADER);
+			
+			section_mark (section_face, HEADER);
+			write_cam_marker (cms.face);
+			section_mark (section_face, FOOTER);
+
+			section_mark (section_silk_screen, HEADER);
+			write_cam_marker (cms.silk_screen);
+			section_mark (section_silk_screen, FOOTER);
+
+			section_mark (section_assy_doc, HEADER);
+			write_cam_marker (cms.assy_doc);
+			section_mark (section_assy_doc, FOOTER);
+
+			section_mark (section_keepout, HEADER);
+			write_cam_marker (cms.keepout);
+			section_mark (section_keepout, FOOTER);
+
+			section_mark (section_plated_millings, HEADER);
+			write_cam_marker (cms.plated_millings);
+			section_mark (section_plated_millings, FOOTER);
+
+			section_mark (section_pcb_outline, HEADER);
+			write_cam_marker (cms.pcb_outline);
+			section_mark (section_pcb_outline, FOOTER);
+
+			section_mark (section_route_restrict, HEADER);
+			write_cam_marker (cms.route_restrict);
+			section_mark (section_route_restrict, FOOTER);
+
+			section_mark (section_via_restrict, HEADER);
+			write_cam_marker (cms.via_restrict);
+			section_mark (section_via_restrict, FOOTER);
+
+			section_mark (section_signal_layer, HEADER);
+			write_cam_marker (cms.signal_layer);
+			section_mark (section_signal_layer, FOOTER);
+
 			section_mark (section_cam_markers, FOOTER);			
 		end;
 
 		
 		procedure write_title_block (block : in type_title_block'class) is 
 			use ada.tags;
-			tp : type_texts_pcb;
 			pp : type_placeholders_pcb;
 			ps : type_placeholders_schematic;
 		begin
@@ -522,6 +559,7 @@ package body frame_rw is
 		tb_sheet_category		: type_placeholder; -- for schematic only
 		tb_face					: type_placeholder; -- for pcb only
 		tb_signal_layer			: type_placeholder; -- for pcb only
+		tb_cam_marker			: type_cam_marker;
 		
 		procedure read_title_block_position is
 			use et_geometry; -- for keywords only
@@ -573,6 +611,29 @@ package body frame_rw is
 			end if;
 		end;
 
+		procedure read_cam_marker_properties is
+			use et_geometry; -- for keywords only
+			use et_text; -- for keywords only
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_position then -- position x 220 y 239
+				expect_field_count (line, 5);
+				tb_cam_marker.position := to_position (line);
+
+			elsif kw = keyword_size then -- size 12
+				expect_field_count (line, 2);
+				tb_cam_marker.size := to_distance (f (line, 2));
+
+			elsif kw = keyword_content then -- content "some text"
+				expect_field_count (line, 2);
+				tb_cam_marker.content := to_content (f (line, 2));
+
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+		
 		procedure read_placeholder_properties is
 			use et_geometry; -- for keywords only
 			use et_text; -- for keywords only
@@ -594,6 +655,8 @@ package body frame_rw is
 
 		
 		procedure reset_placeholder is begin tb_placeholder := (others => <>); end;
+
+		procedure reset_cam_marker is begin tb_cam_marker := (others => <>); end;
 		
 		procedure assemble_title_block is 
 			use pac_lines;
@@ -820,29 +883,145 @@ package body frame_rw is
 							when others => invalid_section;
 						end case;
 
-					when SEC_FACE => 
-						case stack.parent is
-							when SEC_PLACEHOLDERS =>
-								case domain is -- NOTE: this placeholder exists in pcb only !
-									when PCB => tb_face := tb_placeholder;
+					when SEC_FACE => -- NOTE: this section exists in pcb only !
+						case domain is
+							when PCB =>
+								
+								case stack.parent is
+									when SEC_PLACEHOLDERS => tb_face := tb_placeholder;
+									when SEC_CAM_MARKERS => 
+										frame.title_block_pcb.cam_markers.face := tb_cam_marker;
+										reset_cam_marker;
+										
 									when others => invalid_section;
 								end case;
+
 							when others => invalid_section;
 						end case;
 
-					when SEC_SIGNAL_LAYER =>
-						case stack.parent is
-							when SEC_PLACEHOLDERS =>
-								case domain is  -- NOTE: this placeholder exists in pcb only !
-									when PCB => tb_signal_layer := tb_placeholder;
+					when SEC_SIGNAL_LAYER => -- NOTE: this section exists in pcb only !
+						case domain is
+							when PCB =>
+								
+								case stack.parent is
+									when SEC_PLACEHOLDERS => tb_signal_layer := tb_placeholder;
+									when SEC_CAM_MARKERS => 
+										frame.title_block_pcb.cam_markers.signal_layer := tb_cam_marker;
+										reset_cam_marker;
+										
 									when others => invalid_section;
 								end case;
+
+							when others => invalid_section;
+						end case;
+
+					when SEC_SILK_SCREEN => -- NOTE: this section exists in pcb only !
+						case domain is
+							when PCB =>
+								
+								case stack.parent is
+									when SEC_CAM_MARKERS => 
+										frame.title_block_pcb.cam_markers.silk_screen := tb_cam_marker;
+										reset_cam_marker;
+										
+									when others => invalid_section;
+								end case;
+
+							when others => invalid_section;
+						end case;
+
+					when SEC_ASSY_DOC => -- NOTE: this section exists in pcb only !
+						case domain is
+							when PCB =>
+								
+								case stack.parent is
+									when SEC_CAM_MARKERS => 
+										frame.title_block_pcb.cam_markers.assy_doc := tb_cam_marker;
+										reset_cam_marker;
+										
+									when others => invalid_section;
+								end case;
+
+							when others => invalid_section;
+						end case;
+
+					when SEC_KEEPOUT => -- NOTE: this section exists in pcb only !
+						case domain is
+							when PCB =>
+								
+								case stack.parent is
+									when SEC_CAM_MARKERS =>
+										frame.title_block_pcb.cam_markers.keepout := tb_cam_marker;
+										reset_cam_marker;
+										
+									when others => invalid_section;
+								end case;
+
+							when others => invalid_section;
+						end case;
+
+					when SEC_PLATED_MILLINGS => -- NOTE: this section exists in pcb only !
+						case domain is
+							when PCB =>
+								
+								case stack.parent is
+									when SEC_CAM_MARKERS => 
+										frame.title_block_pcb.cam_markers.plated_millings := tb_cam_marker;
+										reset_cam_marker;
+										
+									when others => invalid_section;
+								end case;
+
+							when others => invalid_section;
+						end case;
+
+					when SEC_PCB_OUTLINE => -- NOTE: this section exists in pcb only !
+						case domain is
+							when PCB =>
+								
+								case stack.parent is
+									when SEC_CAM_MARKERS => 
+										frame.title_block_pcb.cam_markers.pcb_outline := tb_cam_marker;
+										reset_cam_marker;
+										
+									when others => invalid_section;
+								end case;
+
+							when others => invalid_section;
+						end case;
+						
+					when SEC_ROUTE_RESTRICT => -- NOTE: this section exists in pcb only !
+						case domain is
+							when PCB =>
+								
+								case stack.parent is
+									when SEC_CAM_MARKERS => 
+										frame.title_block_pcb.cam_markers.route_restrict := tb_cam_marker;
+										reset_cam_marker;
+										
+									when others => invalid_section;
+								end case;
+
+							when others => invalid_section;
+						end case;
+
+					when SEC_VIA_RESTRICT => -- NOTE: this section exists in pcb only !
+						case domain is
+							when PCB =>
+								
+								case stack.parent is
+									when SEC_CAM_MARKERS =>
+										frame.title_block_pcb.cam_markers.via_restrict := tb_cam_marker;
+										reset_cam_marker;
+										
+									when others => invalid_section;
+								end case;
+
 							when others => invalid_section;
 						end case;
 						
 					when SEC_INIT => null; -- CS: should never happen
 
-					when others => null; -- CS
 				end case;
 
 			end execute_section;
@@ -896,7 +1075,9 @@ package body frame_rw is
 		begin -- process_line
 			if set (section_active_assembly_variant, SEC_ACTIVE_ASSEMBLY_VARIANT) then null;			
 			elsif set (section_approved_by, SEC_APPROVED_BY) then null;								
-			elsif set (section_approved_date, SEC_APPROVED_DATE) then null;								
+			elsif set (section_approved_date, SEC_APPROVED_DATE) then null;
+			elsif set (section_assy_doc, SEC_ASSY_DOC) then null;
+			elsif set (section_cam_markers, SEC_CAM_MARKERS) then null;
 			elsif set (section_checked_by, SEC_CHECKED_BY) then null;
 			elsif set (section_checked_date, SEC_CHECKED_DATE) then null;
 			elsif set (section_company, SEC_COMPANY) then null;
@@ -905,20 +1086,26 @@ package body frame_rw is
 			elsif set (section_drawn_by, SEC_DRAWN_BY) then null;
 			elsif set (section_drawn_date, SEC_DRAWN_DATE) then null;
 			elsif set (section_face, SEC_FACE) then null;
+			elsif set (section_keepout, SEC_KEEPOUT) then null;
 			elsif set (section_line, SEC_LINE) then null;
 			elsif set (section_lines, SEC_LINES) then null;
 			elsif set (section_module_file_name, SEC_MODULE_FILE_NAME) then null;
 			elsif set (section_partcode, SEC_PARTCODE) then null;
+			elsif set (section_pcb_outline, SEC_PCB_OUTLINE) then null;
 			elsif set (section_placeholders, SEC_PLACEHOLDERS) then null;
+			elsif set (section_plated_millings, SEC_PLATED_MILLINGS) then null;			
 			elsif set (section_project_name, SEC_PROJECT_NAME) then null;
 			elsif set (section_revision, SEC_REVISION) then null;
+			elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;
 			elsif set (section_sheet_category, SEC_SHEET_CATEGORY) then null;
 			elsif set (section_sheet_description, SEC_SHEET_DESCRIPTION) then null;			
 			elsif set (section_sheet_number, SEC_SHEET_NUMBER) then null;
 			elsif set (section_signal_layer, SEC_SIGNAL_LAYER) then null;
-			elsif set (section_text, SEC_TEXT) then null;			
+			elsif set (section_silk_screen, SEC_SILK_SCREEN) then null;
+			elsif set (section_text, SEC_TEXT) then null;	
 			elsif set (section_texts, SEC_TEXTS) then null;
 			elsif set (section_title_block, SEC_TITLE_BLOCK) then null;
+			elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
 			else
 				-- The line contains something else -> the payload data. 
 				-- Temporarily this data is stored in corresponding variables.
@@ -974,18 +1161,45 @@ package body frame_rw is
 							when others => invalid_section;
 						end case;
 						
-					when SEC_FACE | SEC_SIGNAL_LAYER =>
-						-- NOTE: these placeholders exists in pcb only !
-						case stack.parent is
-							when SEC_PLACEHOLDERS => 
-								case domain is
-									when PCB => read_placeholder_properties;
+					when SEC_FACE => -- NOTE: this section exists in pcb only !
+						case domain is
+							when PCB =>
+								
+								case stack.parent is
+									when SEC_PLACEHOLDERS => read_placeholder_properties;
+									when SEC_CAM_MARKERS => read_cam_marker_properties;
 									when others => invalid_section;
 								end case;
+
 							when others => invalid_section;
 						end case;
 
-					when others => null; -- CS
+					when SEC_SIGNAL_LAYER => -- NOTE: this section exists in pcb only !
+						case domain is
+							when PCB =>
+								
+								case stack.parent is
+									when SEC_PLACEHOLDERS => read_placeholder_properties;
+									when SEC_CAM_MARKERS => read_cam_marker_properties;
+									when others => invalid_section;
+								end case;
+
+							when others => invalid_section;
+						end case;
+
+					when SEC_SILK_SCREEN | SEC_ASSY_DOC | SEC_KEEPOUT | SEC_PLATED_MILLINGS |
+						SEC_PCB_OUTLINE | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => -- NOTE: these sections exists in pcb only !
+						case domain is
+							when PCB =>
+								
+								case stack.parent is
+									when SEC_CAM_MARKERS => read_cam_marker_properties;
+									when others => invalid_section;
+								end case;
+
+							when others => invalid_section;
+						end case;
+
 						
 				end case;
 			end if;

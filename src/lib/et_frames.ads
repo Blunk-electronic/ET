@@ -245,15 +245,16 @@ package et_frames is
 	end record;
 
 	-- pcb:
-	-- For visualization and CAM output: texts that indicate in the description block what it is about.
+	
+	-- CAM markers are required for CAM output and visualization.
+	-- They are texts in the title block that indicate what it is about.
 	-- Depending on the structures being displayed or exported, they are displayed or not.
-
+	-- Their content may be specified by the operator in the respective sections in the frame file (*.frb).
+	-- If they are not specified by the frame file, default position, size and content is used (see below).
 	type type_cam_marker is new type_text with null record;
 
 	type type_cam_markers is record
 		face			: type_cam_marker := (content => et_text.to_content ("FACE"), others => <>);
--- 		top				: type_cam_marker := (content => et_text.to_content ("TOP"), others => <>);
--- 		bottom			: type_cam_marker := (content => et_text.to_content ("BOTTOM"), others => <>);				
 		silk_screen		: type_cam_marker := (content => et_text.to_content ("SILK SCREEN"), others => <>);
 		assy_doc		: type_cam_marker := (content => et_text.to_content ("ASSEMBLY DOCUMENTATION"), others => <>);
 		keepout			: type_cam_marker := (content => et_text.to_content ("KEEPOUT"), others => <>);
@@ -264,30 +265,30 @@ package et_frames is
 		signal_layer	: type_cam_marker := (content => et_text.to_content ("SIGNAL LAYER"), others => <>);
 	end record;
 	
-	type type_texts_pcb is record
-		face			: type_text := (content => et_text.to_content ("FACE"), others => <>);
-		top				: type_text := (content => et_text.to_content ("TOP"), others => <>);
-		bottom			: type_text := (content => et_text.to_content ("BOTTOM"), others => <>);				
-		silk_screen		: type_text := (content => et_text.to_content ("SILK SCREEN"), others => <>);
-		assy_doc		: type_text := (content => et_text.to_content ("ASSEMBLY DOCUMENTATION"), others => <>);
-		keepout			: type_text := (content => et_text.to_content ("KEEPOUT"), others => <>);
-		plated_millings	: type_text := (content => et_text.to_content ("PLATED MILLINGS"), others => <>); 
-		pcb_outline 	: type_text := (content => et_text.to_content ("PCB CONTOURS"), others => <>);
-		route_restrict	: type_text := (content => et_text.to_content ("ROUTE RESTRICT"), others => <>);
-		via_restrict	: type_text := (content => et_text.to_content ("VIA RESTRICT"), others => <>);		
-		signal_layer	: type_text := (content => et_text.to_content ("SIGNAL LAYER"), others => <>);
-		-- CS add more
-	end record;
+-- 	type type_texts_pcb is record
+-- 		face			: type_text := (content => et_text.to_content ("FACE"), others => <>);
+-- 		top				: type_text := (content => et_text.to_content ("TOP"), others => <>);
+-- 		bottom			: type_text := (content => et_text.to_content ("BOTTOM"), others => <>);				
+-- 		silk_screen		: type_text := (content => et_text.to_content ("SILK SCREEN"), others => <>);
+-- 		assy_doc		: type_text := (content => et_text.to_content ("ASSEMBLY DOCUMENTATION"), others => <>);
+-- 		keepout			: type_text := (content => et_text.to_content ("KEEPOUT"), others => <>);
+-- 		plated_millings	: type_text := (content => et_text.to_content ("PLATED MILLINGS"), others => <>); 
+-- 		pcb_outline 	: type_text := (content => et_text.to_content ("PCB CONTOURS"), others => <>);
+-- 		route_restrict	: type_text := (content => et_text.to_content ("ROUTE RESTRICT"), others => <>);
+-- 		via_restrict	: type_text := (content => et_text.to_content ("VIA RESTRICT"), others => <>);		
+-- 		signal_layer	: type_text := (content => et_text.to_content ("SIGNAL LAYER"), others => <>);
+-- 		-- CS add more
+-- 	end record;
 
 	type type_placeholders_pcb is new type_placeholders_basic with record
-		face			: type_placeholder;
-		signal_layer	: type_placeholder;
+		face			: type_placeholder; -- to be filled with the word "TOP" or "BOTTOM"
+		signal_layer	: type_placeholder; -- to be filled with the signal layer id like 1,2,3, .. 16
 	end record;
 	
 	type type_title_block_pcb is new type_title_block with record
 		additional_placeholders	: type_placeholders_pcb;
 		cam_markers				: type_cam_markers;
-		additional_texts		: type_texts_pcb; -- CS not required any more
+-- 		additional_texts		: type_texts_pcb; -- CS not required any more
 	end record;
 
 
