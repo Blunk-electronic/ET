@@ -1997,7 +1997,7 @@ package body et_project is
 		procedure read_active_assembly_variant is 
 			kw : constant string := f (line, 1);
 		begin
-			if kw = keyword_active_assembly_variant then
+			if kw = et_meta.keyword_active_assembly_variant then
 				expect_field_count (line, 2);
 				active_assembly_variant := to_variant (f (line, 2));
 			else
@@ -2023,8 +2023,25 @@ package body et_project is
 				process		=> do_it'access);
 		end;
 
+		procedure read_meta_schematic is 
+			use et_meta;
+			kw : constant string := f (line, 1);
+		begin
+			if kw = keyword_company then
+				expect_field_count (line, 2);
+-- 				meta.schematic.company := to_company (f (line, 2));
+			else
+				null;
+-- 				invalid_keyword (kw);
+			end if;
+		end;
 
-
+		procedure read_meta_board is 
+			use et_meta;			
+			kw : constant string := f (line, 1);
+		begin
+			null;
+		end;		
 		
 		function to_position (
 			line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
@@ -2142,6 +2159,31 @@ package body et_project is
 		-- drawing grid
 		grid_schematic : et_coordinates.geometry.type_grid; -- CS rename to schematic_grid
 		grid_board : et_pcb_coordinates.geometry.type_grid; -- CS rename to board_grid
+
+		procedure read_drawing_grid_schematic is 
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_default then -- default x 1.00 y 1.00
+				expect_field_count (line, 5);
+				grid_schematic := to_grid (line, 2);
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
+		procedure read_drawing_grid_board is
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_default then -- default x 1.00 y 1.00
+				expect_field_count (line, 5);
+				grid_board := to_grid (line, 2);
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
 		
 		-- net class
 		net_class 		: et_pcb.type_net_class;
@@ -2189,6 +2231,35 @@ package body et_project is
 		-- CS frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
 		frame_template_board		: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
 
+		procedure read_frame_template_schematic is
+		-- Reads the name of the schematic frame template.
+			use et_frames;
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_template then -- template $ET_FRAMES/drawing_frame_version_1.frs
+				expect_field_count (line, 2);
+				frame_template_schematic := to_template_name (f (line, 2));
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
+		procedure read_frame_template_board is
+		-- Reads the name of the board frame template.		
+			use et_frames;
+			kw : constant string := f (line, 1);
+		begin
+			-- CS: In the following: set a corresponding parameter-found-flag
+			if kw = keyword_template then -- template $ET_FRAMES/drawing_frame_version_2.frb
+				expect_field_count (line, 2);
+				frame_template_board := to_template_name (f (line, 2));
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
+		
 		-- submodules
 		submodule_port			: submodules.type_submodule_port;
 		submodule_port_name		: et_general.type_net_name.bounded_string; -- RESET
@@ -5062,7 +5133,9 @@ package body et_project is
 									process		=> set_frame_schematic'access);
 
 							when SEC_DRAWING_GRID => null; -- nothing to do
-							
+
+							when SEC_META => null; -- nothing to do
+								
 							when others => invalid_section;
 						end case;
 
@@ -5079,7 +5152,9 @@ package body et_project is
 									process		=> set_frame_board'access);
 
 							when SEC_DRAWING_GRID => null; -- nothing to do
-								
+
+							when SEC_META => null; -- nothing to do
+							
 							when others => invalid_section;
 						end case;
 
@@ -6846,67 +6921,18 @@ package body et_project is
 						
 					when SEC_SCHEMATIC =>
 						case stack.parent is
-							when SEC_DRAWING_FRAMES =>
-								declare
-									use et_frames;
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_template then -- template $ET_FRAMES/drawing_frame_version_1.frs
-										expect_field_count (line, 2);
-										frame_template_schematic := to_template_name (f (line, 2));
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
-							when SEC_DRAWING_GRID =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_default then -- default x 1.00 y 1.00
-										expect_field_count (line, 5);
-										grid_schematic := to_grid (line, 2);
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-								
+							when SEC_DRAWING_FRAMES => read_frame_template_schematic;
+							when SEC_DRAWING_GRID => read_drawing_grid_schematic;
+							when SEC_META => read_meta_schematic;
 							when others => invalid_section;
 						end case;
 
 					when SEC_BOARD =>
 						case stack.parent is
 							when SEC_INIT => null; -- nothing to do
-							
-							when SEC_DRAWING_FRAMES =>
-								declare
-									use et_frames;
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_template then -- template $ET_FRAMES/drawing_frame_version_2.frb
-										expect_field_count (line, 2);
-										frame_template_board := to_template_name (f (line, 2));
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-
-							when SEC_DRAWING_GRID =>
-								declare
-									kw : string := f (line, 1);
-								begin
-									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = keyword_default then -- default x 1.00 y 1.00
-										expect_field_count (line, 5);
-										grid_board := to_grid (line, 2);
-									else
-										invalid_keyword (kw);
-									end if;
-								end;
-								
+							when SEC_DRAWING_FRAMES => read_frame_template_board;
+							when SEC_DRAWING_GRID => read_drawing_grid_board;
+							when SEC_META => read_meta_board;
 							when others => invalid_section;
 						end case;
 						

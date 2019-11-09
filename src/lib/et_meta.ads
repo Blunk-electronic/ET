@@ -47,33 +47,75 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with ada.calendar;				use ada.calendar;
+with ada.calendar.formatting;	use ada.calendar.formatting;
+with ada.calendar.time_zones;	use ada.calendar.time_zones;
+
 with et_general;				use et_general;
 with et_coordinates;			use et_coordinates;
 with et_string_processing;
 
 package et_meta is
 
-	company_name_length_max : constant positive := 100;
-	package pac_company_name is new generic_bounded_length (company_name_length_max);
+	company_length_max : constant positive := 100;
+	package pac_company is new generic_bounded_length (company_length_max);
 
+	customer_length_max : constant positive := 100;
+	package pac_customer is new generic_bounded_length (customer_length_max);
+
+	partcode_length_max : constant positive := 100;
+	package pac_partcode is new generic_bounded_length (partcode_length_max);
+
+	drawing_number_length_max : constant positive := 100;
+	package pac_drawing_number is new generic_bounded_length (drawing_number_length_max);
+
+	revision_length_max : constant positive := 5;
+	package pac_revision is new generic_bounded_length (revision_length_max);
+
+	person_length_max : constant positive := 20;
+	package pac_person is new generic_bounded_length (person_length_max);
+	
 	type type_schematic is record
-		company		: pac_company_name.bounded_string;
+		company			: pac_company.bounded_string;
+		customer		: pac_customer.bounded_string;
+		partcode		: pac_partcode.bounded_string;
+		drawing_number	: pac_partcode.bounded_string;
+		revision		: pac_revision.bounded_string;
+		drawn_by		: pac_person.bounded_string;
+		checked_by		: pac_person.bounded_string;
+		approved_by		: pac_person.bounded_string;
+		drawn_date		: time;
+		checked_date	: time;
+		approced_date	: time;		
 	end record;
 
 	type type_board is record
-		company		: pac_company_name.bounded_string;
+		company		: pac_company.bounded_string;
 	end record;
 
 	type type_meta is record
 		schematic	: type_schematic;
 		board		: type_board;
 	end record;
+
+
 	
 -- KEYWORDS
 
+	keyword_active_assembly_variant	: constant string := "active_assembly_variant";	
+	keyword_company			: constant string := "company";
+	keyword_customer		: constant string := "customer";
+	keyword_partcode		: constant string := "partcode";
+	keyword_drawing_number	: constant string := "drawing_number";
+	keyword_revision		: constant string := "revision";
+	keyword_drawn_by		: constant string := "drawn_by";
+	keyword_drawn_date		: constant string := "drawn_date";	
+	keyword_checked_by		: constant string := "checked_by";
+	keyword_checked_date	: constant string := "checked_date";	
+	keyword_approved_by		: constant string := "approved_by";
+	keyword_approved_date	: constant string := "approved_date";	
 
--- 	keyword_active_assembly_variant	: constant string := "active_assembly_variant";	
-
+	
 	procedure dummy;
 	
 end et_meta;

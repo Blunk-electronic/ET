@@ -291,7 +291,6 @@ package et_project is
 	keyword_default					: constant string := "default";
 	keyword_generic_name			: constant string := "generic_name";
 	keyword_instance_name			: constant string := "instance_name";
-	keyword_active_assembly_variant	: constant string := "active_assembly_variant";	
 	keyword_assembly_variant		: constant string := "assembly_variant";
 	keyword_not_mounted				: constant string := "not_mounted";
 
