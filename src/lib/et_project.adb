@@ -1992,6 +1992,7 @@ package body et_project is
 
 		-- META DATA
 		meta : et_meta.type_meta;
+		meta_basic : et_meta.type_basic;
 		active_assembly_variant : et_general.type_variant_name.bounded_string; -- "low_cost"
 		
 		procedure read_active_assembly_variant is 
@@ -2023,17 +2024,51 @@ package body et_project is
 				process		=> do_it'access);
 		end;
 
-		procedure read_meta_schematic is 
+		procedure read_meta_basic is
 			use et_meta;
 			kw : constant string := f (line, 1);
 		begin
 			if kw = keyword_company then
 				expect_field_count (line, 2);
--- 				meta.schematic.company := to_company (f (line, 2));
-			else
-				null;
--- 				invalid_keyword (kw);
+				meta_basic.company := to_company (f (line, 2));
+
+			elsif kw = keyword_customer then
+				expect_field_count (line, 2);
+				
+			elsif kw = keyword_partcode then
+				expect_field_count (line, 2);
+
+			elsif kw = keyword_drawing_number then
+				expect_field_count (line, 2);
+
+			elsif kw = keyword_revision then
+				expect_field_count (line, 2);
+
+			elsif kw = keyword_drawn_by then
+				expect_field_count (line, 2);
+
+			elsif kw = keyword_drawn_date then
+				expect_field_count (line, 2);
+
+			elsif kw = keyword_checked_by then
+				expect_field_count (line, 2);
+
+			elsif kw = keyword_checked_date then
+				expect_field_count (line, 2);
+
+			elsif kw = keyword_approved_by then
+				expect_field_count (line, 2);
+
+			elsif kw = keyword_approved_date then
+				expect_field_count (line, 2);
 			end if;
+		end;
+			
+		procedure read_meta_schematic is 
+			use et_meta;
+			kw : constant string := f (line, 1);
+		begin
+			read_meta_basic;
 		end;
 
 		procedure read_meta_board is 

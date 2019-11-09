@@ -60,22 +60,45 @@ package et_meta is
 	company_length_max : constant positive := 100;
 	package pac_company is new generic_bounded_length (company_length_max);
 
+	function to_company (company : in string) return pac_company.bounded_string;
+	function to_string (company : in pac_company.bounded_string) return string;
+
+	
 	customer_length_max : constant positive := 100;
 	package pac_customer is new generic_bounded_length (customer_length_max);
 
+	function to_customer (customer : in string) return pac_customer.bounded_string;
+	function to_string (customer : in pac_customer.bounded_string) return string;
+
+		
 	partcode_length_max : constant positive := 100;
 	package pac_partcode is new generic_bounded_length (partcode_length_max);
 
+	function to_partcode (partcode : in string) return pac_partcode.bounded_string;
+	function to_string (partcode : in pac_partcode.bounded_string) return string;
+
+	
 	drawing_number_length_max : constant positive := 100;
 	package pac_drawing_number is new generic_bounded_length (drawing_number_length_max);
 
+	function to_drawing_number (drawing_number : in string) return pac_drawing_number.bounded_string;
+	function to_string (drawing_number : in pac_drawing_number.bounded_string) return string;
+
+	
 	revision_length_max : constant positive := 5;
 	package pac_revision is new generic_bounded_length (revision_length_max);
 
+	function to_revision (revision : in string) return pac_revision.bounded_string;
+	function to_string (revision : in pac_revision.bounded_string) return string;
+
+	
 	person_length_max : constant positive := 20;
 	package pac_person is new generic_bounded_length (person_length_max);
-	
-	type type_schematic is record
+
+	function to_person (person : in string) return pac_person.bounded_string;
+	function to_string (person : in pac_person.bounded_string) return string;
+
+	type type_basic is tagged record
 		company			: pac_company.bounded_string;
 		customer		: pac_customer.bounded_string;
 		partcode		: pac_partcode.bounded_string;
@@ -89,10 +112,11 @@ package et_meta is
 		approced_date	: time;		
 	end record;
 
-	type type_board is record
-		company		: pac_company.bounded_string;
-	end record;
+	type type_schematic is new type_basic with null record; -- CS extend here if required
+	
+	type type_board is new type_basic with null record;  -- CS extend here if required
 
+	
 	type type_meta is record
 		schematic	: type_schematic;
 		board		: type_board;

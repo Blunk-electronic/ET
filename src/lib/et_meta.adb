@@ -53,8 +53,59 @@ with et_string_processing;
 
 package body et_meta is
 
-	
+	function to_company (company : in string) return pac_company.bounded_string is begin
+		return pac_company.to_bounded_string (company);
+	end;
 
+	function to_string (company : in pac_company.bounded_string) return string is begin
+		return pac_company.to_string (company);
+	end;
+
+
+	function to_customer (customer : in string) return pac_customer.bounded_string is begin
+		return pac_customer.to_bounded_string (customer);
+	end;
+
+	function to_string (customer : in pac_customer.bounded_string) return string is begin
+		return pac_customer.to_string (customer);
+	end;
+
+
+	function to_partcode (partcode : in string) return pac_partcode.bounded_string is begin
+		return pac_partcode.to_bounded_string (partcode);
+	end;
+
+	function to_string (partcode : in pac_partcode.bounded_string) return string is begin
+		return pac_partcode.to_string (partcode);
+	end;
+
+
+	function to_drawing_number (drawing_number : in string) return pac_drawing_number.bounded_string is begin
+		return pac_drawing_number.to_bounded_string (drawing_number);
+	end;
+
+	function to_string (drawing_number : in pac_drawing_number.bounded_string) return string is begin
+		return pac_drawing_number.to_string (drawing_number);
+	end;
+
+
+	function to_revision (revision : in string) return pac_revision.bounded_string is begin
+		return pac_revision.to_bounded_string (revision);
+	end;
+
+	function to_string (revision : in pac_revision.bounded_string) return string is begin
+		return pac_revision.to_string (revision);
+	end;
+
+
+	function to_person (person : in string) return pac_person.bounded_string is begin
+		return pac_person.to_bounded_string (person);
+	end;
+
+	function to_string (person : in pac_person.bounded_string) return string is begin
+		return pac_person.to_string (person);
+	end;
+	
 -- KEYWORDS
 
 
