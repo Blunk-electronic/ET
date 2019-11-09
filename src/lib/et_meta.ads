@@ -102,7 +102,7 @@ package et_meta is
 		company			: pac_company.bounded_string;
 		customer		: pac_customer.bounded_string;
 		partcode		: pac_partcode.bounded_string;
-		drawing_number	: pac_partcode.bounded_string;
+		drawing_number	: pac_drawing_number.bounded_string;
 		revision		: pac_revision.bounded_string;
 		drawn_by		: pac_person.bounded_string;
 		checked_by		: pac_person.bounded_string;

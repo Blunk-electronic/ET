@@ -2024,9 +2024,12 @@ package body et_project is
 				process		=> do_it'access);
 		end;
 
-		procedure read_meta_basic is
+		function read_meta_basic return boolean is
+		-- Reads basic meta data. If given line does not contain
+		-- basic meta stuff, returns a false.
 			use et_meta;
 			kw : constant string := f (line, 1);
+			result : boolean := true;
 		begin
 			if kw = keyword_company then
 				expect_field_count (line, 2);
@@ -2034,48 +2037,78 @@ package body et_project is
 
 			elsif kw = keyword_customer then
 				expect_field_count (line, 2);
+				meta_basic.customer := to_customer (f (line, 2));
 				
 			elsif kw = keyword_partcode then
 				expect_field_count (line, 2);
-
+				meta_basic.partcode := to_partcode (f (line, 2));
+				
 			elsif kw = keyword_drawing_number then
 				expect_field_count (line, 2);
-
+				meta_basic.drawing_number := to_drawing_number (f (line, 2));
+				
 			elsif kw = keyword_revision then
 				expect_field_count (line, 2);
-
+				meta_basic.revision := to_revision (f (line, 2));
+				
 			elsif kw = keyword_drawn_by then
 				expect_field_count (line, 2);
-
+				meta_basic.drawn_by := to_person (f (line, 2));
+				
 			elsif kw = keyword_drawn_date then
 				expect_field_count (line, 2);
-
+				-- CS meta_basic.drawn_date := to_date (f (line, 2));
+				
 			elsif kw = keyword_checked_by then
 				expect_field_count (line, 2);
-
+				meta_basic.checked_by := to_person (f (line, 2));
+				
 			elsif kw = keyword_checked_date then
 				expect_field_count (line, 2);
-
+				-- CS meta_basic.checked_date := to_date (f (line, 2));
+				
 			elsif kw = keyword_approved_by then
 				expect_field_count (line, 2);
-
+				meta_basic.approved_by := to_person (f (line, 2));
+				
 			elsif kw = keyword_approved_date then
 				expect_field_count (line, 2);
+				-- CS meta_basic.approved_date := to_date (f (line, 2));
+
+			else
+				result := false;
 			end if;
-		end;
+			
+			return result;
+		end read_meta_basic;
 			
 		procedure read_meta_schematic is 
 			use et_meta;
 			kw : constant string := f (line, 1);
 		begin
-			read_meta_basic;
+			-- first parse line for basic meta stuff.
+			-- if no meta stuff found, test for schematic specific meta data:
+			if read_meta_basic = false then
+
+				-- if kw = keyword_xyz then
+				-- do something
+				--else
+				invalid_keyword (kw);
+			end if;
 		end;
 
 		procedure read_meta_board is 
 			use et_meta;			
 			kw : constant string := f (line, 1);
 		begin
-			null;
+			-- first parse line for basic meta stuff.
+			-- if no meta stuff found, test for bord specific meta data:
+			if read_meta_basic = false then
+				-- if kw = keyword_xyz then
+				-- do something
+				--else
+				invalid_keyword (kw);
+			end if;
 		end;		
 		
 		function to_position (
