@@ -291,6 +291,7 @@ package et_project is
 	keyword_default					: constant string := "default";
 	keyword_generic_name			: constant string := "generic_name";
 	keyword_instance_name			: constant string := "instance_name";
+	keyword_active_assembly_variant	: constant string := "active_assembly_variant";	
 	keyword_assembly_variant		: constant string := "assembly_variant";
 	keyword_not_mounted				: constant string := "not_mounted";
 
@@ -357,13 +358,15 @@ package et_project is
 	
 	section_netchangers			: constant string := "[NETCHANGERS";
 	section_netchanger			: constant string := "[NETCHANGER";
+
+	section_meta				: constant string := "[META";
 	
 	section_units				: constant string := "[UNITS";
 
 	section_port_begin			: constant string := "[PORT";
 	
 	
-	type type_section_name_module is (
+	type type_section is (
 		SEC_BOARD_LAYER_STACK,
 		SEC_CONTOURS, -- of fill and cutout zones
 		SEC_CUTOUT_ZONE,
@@ -397,6 +400,7 @@ package et_project is
 		SEC_ASSEMBLY_VARIANT,
 		SEC_NETCHANGERS,
 		SEC_NETCHANGER,
+		SEC_META,
 		SEC_TEXTS,
 		SEC_TEXT,
 		SEC_UNITS,
@@ -419,7 +423,7 @@ package et_project is
 		SEC_BOTTOM
 		);
 
-	function to_string (section : in type_section_name_module) return string;
+	function to_string (section : in type_section) return string;
 	-- Converts a section like SEC_NET to a string "net".
 	
 	procedure read_module_file (

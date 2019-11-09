@@ -77,6 +77,7 @@ with et_symbols;
 with et_devices;				use et_devices;
 with et_frames;
 with frame_rw;
+with et_meta;
 
 package body et_project is
 
@@ -1953,11 +1954,11 @@ package body et_project is
 
 	
 
-	function to_string (section : in type_section_name_module) return string is
+	function to_string (section : in type_section) return string is
 	-- Converts a section like SEC_NET to a string "net".
-		len : positive := type_section_name_module'image (section)'length;
+		len : positive := type_section'image (section)'length;
 	begin
-		return to_lower (type_section_name_module'image (section) (5..len));
+		return to_lower (type_section'image (section) (5..len));
 	end to_string;
 
 	procedure read_module_file (
@@ -1985,9 +1986,46 @@ package body et_project is
 		-- pushed onto the stack. When leaving a section the latest section name is popped.
 		max_section_depth : constant positive := 11;
 		package stack is new general_rw.stack_lifo (
-			item	=> type_section_name_module,
+			item	=> type_section,
 			max 	=> max_section_depth);
 
+
+		-- META DATA
+		meta : et_meta.type_meta;
+		active_assembly_variant : et_general.type_variant_name.bounded_string; -- "low_cost"
+		
+		procedure read_active_assembly_variant is 
+			kw : constant string := f (line, 1);
+		begin
+			if kw = keyword_active_assembly_variant then
+				expect_field_count (line, 2);
+				active_assembly_variant := to_variant (f (line, 2));
+			else
+				invalid_keyword (kw);
+			end if;
+		end;
+
+		procedure set_meta is
+		-- Assigns the collected meta data to the module.
+			use et_schematic;
+			procedure do_it (
+				module_name	: in type_module_name.bounded_string;
+				module		: in out type_module) is
+			begin
+				module.meta := meta;
+			end;
+		begin
+			log (text => "meta data ...", level => log_threshold + 1);
+			
+			update_element (
+				container	=> modules,
+				position	=> module_cursor,
+				process		=> do_it'access);
+		end;
+
+
+
+		
 		function to_position (
 			line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
 			from : in positive)
@@ -2240,7 +2278,7 @@ package body et_project is
 		end set_junction;
 
 		procedure read_layer is
-			kw : string := f (line, 1);
+			kw : constant string := f (line, 1);
 			use et_pcb_stack;
 			use package_layers;
 			use et_pcb_coordinates.geometry;
@@ -5286,6 +5324,12 @@ package body et_project is
 							when SEC_INIT => null;
 							when others => invalid_section;
 						end case;
+
+					when SEC_META =>
+						case stack.parent is
+							when SEC_INIT => set_meta;
+							when others => invalid_section;
+						end case;
 						
 					when SEC_NETCHANGERS =>
 						case stack.parent is
@@ -5338,7 +5382,7 @@ package body et_project is
 			-- If it is a header, the section name is pushed onto the sections stack.
 			-- If it is a footer, the latest section name is popped from the stack.
 				section_keyword	: in string; -- [NETS
-				section			: in type_section_name_module) -- SEC_NETS
+				section			: in type_section) -- SEC_NETS
 				return boolean is 
 			begin -- set
 				if f (line, 1) = section_keyword then -- section name detected in field 1
@@ -5413,6 +5457,7 @@ package body et_project is
 			elsif set (section_assembly_variant, SEC_ASSEMBLY_VARIANT) then null;
 			elsif set (section_netchangers, SEC_NETCHANGERS) then null;
 			elsif set (section_netchanger, SEC_NETCHANGER) then null;
+			elsif set (section_meta, SEC_META) then null;
 			elsif set (section_placeholders, SEC_PLACEHOLDERS) then null;				
 			elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
 			elsif set (section_package, SEC_PACKAGE) then null;
@@ -5663,6 +5708,12 @@ package body et_project is
 							when others => invalid_section;
 						end case;
 
+					when SEC_META =>
+						case stack.parent is
+							when SEC_INIT => read_active_assembly_variant;
+							when others => invalid_section;
+						end case;
+						
 					when SEC_NET_CLASS =>
 						case stack.parent is
 							when SEC_NET_CLASSES =>

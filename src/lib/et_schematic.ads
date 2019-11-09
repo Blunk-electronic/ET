@@ -69,6 +69,7 @@ with et_text;
 with et_symbols;
 with et_devices;
 with et_frames;
+with et_meta;
 
 package et_schematic is
 	use et_general.type_net_name;
@@ -343,6 +344,8 @@ package et_schematic is
 	
 -- MODULE
 	type type_module is record
+		meta			: et_meta.type_meta;
+		
 		description		: et_text.type_text_content.bounded_string; -- a short description of the module
 
 		-- schematic frame template and descriptions of individual schematic frames:
