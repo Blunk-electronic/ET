@@ -729,6 +729,23 @@ package body et_project is
 		begin
 			return to_string (get_face (point));
 		end face;
+
+		procedure query_meta is
+			use et_meta;
+			meta : et_meta.type_meta := element (module_cursor).meta;
+		begin
+			log_indentation_up;
+			log (text => "meta data ...", level => log_threshold + 1);
+			
+			section_mark (section_meta, HEADER);
+			
+-- 			write_schematic (meta.;
+-- 			write (keyword => keyword_active_assembly_variant, parameters => to_string (active_assembly_variant));
+			--iterate (element (module_cursor).net_classes, write'access);
+			section_mark (section_meta, FOOTER);
+
+			log_indentation_down;
+		end query_meta;
 		
 		procedure query_net_classes is
 			use et_pcb;
@@ -1824,6 +1841,10 @@ package body et_project is
 
 	begin -- save_module
 		write_header;
+
+		-- meta data
+		query_meta;
+		put_line (row_separator_single);
 		
 		-- net classes
 		query_net_classes;
@@ -1991,8 +2012,10 @@ package body et_project is
 
 
 		-- META DATA
-		meta : et_meta.type_meta;
-		meta_basic : et_meta.type_basic;
+		meta_basic		: et_meta.type_basic;
+		meta_schematic	: et_meta.type_schematic;
+		meta_board		: et_meta.type_board;
+		
 		active_assembly_variant : et_general.type_variant_name.bounded_string; -- "low_cost"
 		
 		procedure read_active_assembly_variant is 
@@ -2013,7 +2036,8 @@ package body et_project is
 				module_name	: in type_module_name.bounded_string;
 				module		: in out type_module) is
 			begin
-				module.meta := meta;
+				module.meta.schematic := meta_schematic;
+				module.meta.board := meta_board;
 			end;
 		begin
 			log (text => "meta data ...", level => log_threshold + 1);
@@ -2089,7 +2113,7 @@ package body et_project is
 			-- first parse line for basic meta stuff.
 			-- if no meta stuff found, test for schematic specific meta data:
 			if read_meta_basic = false then
-
+				-- CS: in the future, if there is schematic specific meta data:
 				-- if kw = keyword_xyz then
 				-- do something
 				--else
@@ -2104,6 +2128,7 @@ package body et_project is
 			-- first parse line for basic meta stuff.
 			-- if no meta stuff found, test for bord specific meta data:
 			if read_meta_basic = false then
+				-- CS: in the future, if there is schematic specific meta data:
 				-- if kw = keyword_xyz then
 				-- do something
 				--else
@@ -5202,7 +5227,8 @@ package body et_project is
 
 							when SEC_DRAWING_GRID => null; -- nothing to do
 
-							when SEC_META => null; -- nothing to do
+							when SEC_META =>
+								meta_schematic := (meta_basic with others => <>);
 								
 							when others => invalid_section;
 						end case;
@@ -5221,7 +5247,8 @@ package body et_project is
 
 							when SEC_DRAWING_GRID => null; -- nothing to do
 
-							when SEC_META => null; -- nothing to do
+							when SEC_META =>
+								meta_board := (meta_basic with others => <>);
 							
 							when others => invalid_section;
 						end case;

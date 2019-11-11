@@ -344,7 +344,7 @@ package et_schematic is
 	
 -- MODULE
 	type type_module is record
-		meta			: et_meta.type_meta;
+		meta			: et_meta.type_meta; -- for both schematic and layout
 		
 		description		: et_text.type_text_content.bounded_string; -- a short description of the module
 
