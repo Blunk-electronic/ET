@@ -91,6 +91,8 @@ package et_meta is
 	function to_revision (revision : in string) return pac_revision.bounded_string;
 	function to_string (revision : in pac_revision.bounded_string) return string;
 
+	function to_string (date : in time) return string;
+	function to_date (date : in string) return time;
 	
 	person_length_max : constant positive := 20;
 	package pac_person is new generic_bounded_length (person_length_max);
@@ -109,7 +111,7 @@ package et_meta is
 		approved_by		: pac_person.bounded_string;
 		drawn_date		: time;
 		checked_date	: time;
-		approced_date	: time;		
+		approved_date	: time;		
 	end record;
 
 	type type_schematic is new type_basic with null record; -- CS extend here if required
@@ -138,8 +140,6 @@ package et_meta is
 	keyword_approved_by		: constant string := "approved_by";
 	keyword_approved_date	: constant string := "approved_date";	
 
-	
-	procedure dummy;
 	
 end et_meta;
 

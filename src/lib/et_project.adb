@@ -733,15 +733,42 @@ package body et_project is
 		procedure query_meta is
 			use et_meta;
 			meta : et_meta.type_meta := element (module_cursor).meta;
-		begin
+
+			procedure write_basic (basic : in type_basic'class) is begin
+				write (keyword => keyword_company, parameters => to_string (basic.company), wrap => true);
+				write (keyword => keyword_customer, parameters => to_string (basic.customer), wrap => true);
+				write (keyword => keyword_partcode, parameters => to_string (basic.partcode));
+				write (keyword => keyword_drawing_number, parameters => to_string (basic.drawing_number));
+				write (keyword => keyword_revision, parameters => to_string (basic.revision));
+				
+				write (keyword => keyword_drawn_by, parameters => to_string (basic.drawn_by), wrap => true);
+				write (keyword => keyword_drawn_date, parameters => to_string (basic.drawn_date));
+				
+				write (keyword => keyword_checked_by, parameters => to_string (basic.checked_by), wrap => true);
+				write (keyword => keyword_checked_date, parameters => to_string (basic.checked_date));
+
+				write (keyword => keyword_approved_by, parameters => to_string (basic.approved_by), wrap => true);
+				write (keyword => keyword_approved_date, parameters => to_string (basic.approved_date));
+			end;
+		
+		begin -- query_meta
 			log_indentation_up;
 			log (text => "meta data ...", level => log_threshold + 1);
 			
 			section_mark (section_meta, HEADER);
-			
--- 			write_schematic (meta.;
 
-			--iterate (element (module_cursor).net_classes, write'access);
+			-- schematic related
+			section_mark (section_schematic, HEADER);
+			write_basic (meta.schematic);
+			-- CS write schematic specific meta stuff here
+			section_mark (section_schematic, FOOTER);
+			
+			-- board related
+			section_mark (section_board, HEADER);
+			write_basic (meta.board);
+			-- CS write schematic specific meta stuff here
+			section_mark (section_board, FOOTER);
+			
 			section_mark (section_meta, FOOTER);
 
 			log_indentation_down;
@@ -902,8 +929,7 @@ package body et_project is
 						end if;
 					end query_labels;
 
-					procedure query_junctions (segment : in type_net_segment) is
-					begin
+					procedure query_junctions (segment : in type_net_segment) is begin
 						if segment.junctions.start_point then
 							write (keyword => keyword_junction, parameters => keyword_start);
 						end if;
@@ -930,7 +956,7 @@ package body et_project is
 					procedure query_submodule_ports (segment : in type_net_segment) is
 						use et_symbols;
 						port_cursor : type_ports_submodule.cursor := segment.ports_submodules.first;
-					begin -- query_submodule_ports
+					begin
 						while port_cursor /= type_ports_submodule.no_element loop
 
 							write (keyword => keyword_submodule, parameters => 
@@ -2056,6 +2082,9 @@ package body et_project is
 				module_name	: in type_module_name.bounded_string;
 				module		: in out type_module) is
 			begin
+				-- CS check whether date drawn <= date checked <= date_approved
+				--  use type_basic for the test of schematic and board data.
+				
 				module.meta.schematic := meta_schematic;
 				module.meta.board := meta_board;
 			end;
@@ -2101,7 +2130,7 @@ package body et_project is
 				
 			elsif kw = keyword_drawn_date then
 				expect_field_count (line, 2);
-				-- CS meta_basic.drawn_date := to_date (f (line, 2));
+				meta_basic.drawn_date := to_date (f (line, 2));
 				
 			elsif kw = keyword_checked_by then
 				expect_field_count (line, 2);
@@ -2109,7 +2138,7 @@ package body et_project is
 				
 			elsif kw = keyword_checked_date then
 				expect_field_count (line, 2);
-				-- CS meta_basic.checked_date := to_date (f (line, 2));
+				meta_basic.checked_date := to_date (f (line, 2));
 				
 			elsif kw = keyword_approved_by then
 				expect_field_count (line, 2);
@@ -2117,7 +2146,7 @@ package body et_project is
 				
 			elsif kw = keyword_approved_date then
 				expect_field_count (line, 2);
-				-- CS meta_basic.approved_date := to_date (f (line, 2));
+				meta_basic.approved_date := to_date (f (line, 2));
 
 			else
 				result := false;

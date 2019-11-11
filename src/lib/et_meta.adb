@@ -47,9 +47,13 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with ada.calendar;				use ada.calendar;
+with ada.calendar.formatting;	use ada.calendar.formatting;
+with ada.calendar.time_zones;	use ada.calendar.time_zones;
+
 with et_general;				use et_general;
 with et_coordinates;			use et_coordinates;
-with et_string_processing;
+with et_string_processing;		use et_string_processing;
 
 package body et_meta is
 
@@ -106,12 +110,24 @@ package body et_meta is
 		return pac_person.to_string (person);
 	end;
 	
--- KEYWORDS
+	function to_string (date : in time) return string is
+		-- The function "image" returns something like "2017-08-17 14:17:25".
+		-- We extract only year, month and day:
+		t : constant string (1..10) := image (date) (1..10);
+	begin
+		return t; -- 2019-01-01
+	end;
 
+	function to_date (date : in string) return time is -- 2019-01-01 
+	begin
+		-- The function "value" requires something like "2017-08-17 14:17:25".
+		-- Since date provides only year, month and day, we append hours, minutes and seconds.
+		return value (date & " 00:00:00");
 
--- 	keyword_active_assembly_variant	: constant string := "active_assembly_variant";	
-
-	procedure dummy is begin null; end;
+		exception when event:
+			others => log (ERROR, text => "date invalid !", console => true);
+				raise;
+	end;
 	
 end et_meta;
 
