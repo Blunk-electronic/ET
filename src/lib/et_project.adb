@@ -740,7 +740,7 @@ package body et_project is
 			section_mark (section_meta, HEADER);
 			
 -- 			write_schematic (meta.;
--- 			write (keyword => keyword_active_assembly_variant, parameters => to_string (active_assembly_variant));
+
 			--iterate (element (module_cursor).net_classes, write'access);
 			section_mark (section_meta, FOOTER);
 
@@ -1402,6 +1402,12 @@ package body et_project is
 		begin -- query_assembly_variants
 			section_mark (section_assembly_variants, HEADER);			
 			iterate (element (module_cursor).variants, write'access);
+
+			-- write the active assembly variant
+			write (
+				keyword		=> keyword_active,
+				parameters	=> et_general.to_variant (element (module_cursor).active_variant));
+
 			section_mark (section_assembly_variants, FOOTER);
 		end query_assembly_variants;
 		
@@ -2018,15 +2024,29 @@ package body et_project is
 		
 		active_assembly_variant : et_general.type_variant_name.bounded_string; -- "low_cost"
 		
-		procedure read_active_assembly_variant is 
+		procedure set_active_assembly_variant is
+		-- Assigns to the module the active assembly variant.
+			use et_schematic;
+			use assembly_variants;
+			
 			kw : constant string := f (line, 1);
+
+			procedure set_variant (
+				module_name	: in type_module_name.bounded_string;
+				module		: in out type_module) is
+			begin
+				module.active_variant := active_assembly_variant;
+			end;
+			
 		begin
-			if kw = et_meta.keyword_active_assembly_variant then
+			if kw = keyword_active then
 				expect_field_count (line, 2);
 				active_assembly_variant := to_variant (f (line, 2));
 			else
 				invalid_keyword (kw);
 			end if;
+
+			update_element (modules, module_cursor, set_variant'access);
 		end;
 
 		procedure set_meta is
@@ -5492,7 +5512,7 @@ package body et_project is
 
 					when SEC_ASSEMBLY_VARIANTS =>
 						case stack.parent is
-							when SEC_INIT => null;
+							when SEC_INIT => null; -- CS test if active variant exists
 							when others => invalid_section;
 						end case;
 
@@ -5687,7 +5707,7 @@ package body et_project is
 
 					when SEC_ASSEMBLY_VARIANTS =>
 						case stack.parent is
-							when SEC_INIT => null; -- nothing to do
+							when SEC_INIT => set_active_assembly_variant;
 							when others => invalid_section;
 						end case;
 
@@ -5881,7 +5901,7 @@ package body et_project is
 
 					when SEC_META =>
 						case stack.parent is
-							when SEC_INIT => read_active_assembly_variant;
+							when SEC_INIT => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 						

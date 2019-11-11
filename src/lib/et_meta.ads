@@ -126,7 +126,6 @@ package et_meta is
 	
 -- KEYWORDS
 
-	keyword_active_assembly_variant	: constant string := "active_assembly_variant";	
 	keyword_company			: constant string := "company";
 	keyword_customer		: constant string := "customer";
 	keyword_partcode		: constant string := "partcode";

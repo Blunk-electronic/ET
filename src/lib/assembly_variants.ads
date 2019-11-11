@@ -53,6 +53,8 @@ with et_devices;				use et_devices;
 
 package assembly_variants is
 
+	keyword_active	: constant string := "active";	
+	
 	-- An assembly variant should be described more or less detailled by the operator:
 	type type_description is new unbounded_string;
 	

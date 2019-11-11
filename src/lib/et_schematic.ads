@@ -367,6 +367,7 @@ package et_schematic is
 
 		-- the assembly variants of the module
 		variants		: assembly_variants.pac_variants.map;
+		active_variant	: et_general.type_variant_name.bounded_string; -- "premium"
 		
 		-- General non-component related board stuff (silk screen, documentation, ...):
 		board			: et_pcb.type_board;
