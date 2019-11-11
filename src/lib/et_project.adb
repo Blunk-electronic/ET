@@ -1312,7 +1312,7 @@ package body et_project is
 		procedure query_assembly_variants is
 		-- writes the assembly variants in the module file
 			use assembly_variants;
-			use type_variants;
+			use assembly_variants.pac_variants;
 
 			procedure query_devices (
 				variant_name	: in et_general.type_variant_name.bounded_string;
@@ -1380,7 +1380,7 @@ package body et_project is
 				end loop;
 			end query_submodules;
 
-			procedure write (variant_cursor : in type_variants.cursor) is begin
+			procedure write (variant_cursor : in assembly_variants.pac_variants.cursor) is begin
 				section_mark (section_assembly_variant, HEADER);
 				write (keyword => keyword_name, parameters => to_variant (key (variant_cursor)));
 				write (keyword => keyword_description, wrap => true, parameters => to_string (element (variant_cursor).description));
@@ -4330,13 +4330,14 @@ package body et_project is
 					module		: in out et_schematic.type_module) is
 					inserted : boolean;
 					use assembly_variants;
-					cursor : type_variants.cursor;
+					use assembly_variants.pac_variants;
+					cursor : assembly_variants.pac_variants.cursor;
 				begin
 					log (text => "assembly variant " & 
 						 enclose_in_quotes (to_variant (assembly_variant_name)), level => log_threshold + 2);
 
 					-- insert variant in container variants
-					type_variants.insert (
+					assembly_variants.pac_variants.insert (
 						container	=> module.variants,
 						key			=> assembly_variant_name,
 						inserted	=> inserted,
@@ -7601,8 +7602,9 @@ package body et_project is
 				module		: in et_schematic.type_module) is
 
 				use assembly_variants;
-				use type_variants;
-				variant_cursor : type_variants.cursor := module.variants.first;
+				use assembly_variants.pac_variants;
+				
+				variant_cursor : assembly_variants.pac_variants.cursor := module.variants.first;
 				variant_name : et_general.type_variant_name.bounded_string; -- low_cost
 
 				procedure query_submodules (
@@ -7646,11 +7648,11 @@ package body et_project is
 				end query_submodules;
 				
 			begin -- query_variants
-				if variant_cursor = type_variants.no_element then
+				if variant_cursor = assembly_variants.pac_variants.no_element then
 					log (text => "no variants specified", level => log_threshold);
 				else
 					-- iterate assembly variants of parent module
-					while variant_cursor /= type_variants.no_element loop
+					while variant_cursor /= assembly_variants.pac_variants.no_element loop
 						variant_name := key (variant_cursor);
 
 						-- show assembly variant of parent module
@@ -8692,7 +8694,7 @@ package body et_project is
 				submodule		: in et_schematic.type_module) is
 				use assembly_variants;
 			begin
-				if type_variants.contains (submodule.variants, variant) then
+				if assembly_variants.pac_variants.contains (submodule.variants, variant) then
 					variant_found := true;
 				end if;
 			end query_variants;
@@ -8736,8 +8738,7 @@ package body et_project is
 		variant		: in et_general.type_variant_name.bounded_string) -- low_cost
 		return boolean is
 
-		use assembly_variants;
-		use type_variants;
+		use assembly_variants.pac_variants;
 
 		result : boolean := false; -- to be returned
 
@@ -8778,13 +8779,13 @@ package body et_project is
 		procedure query_variants (
 			module_name	: in type_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use assembly_variants;
-			use type_variants;
-			variant_cursor : type_variants.cursor;
+			use assembly_variants.pac_variants;
+			variant_cursor : assembly_variants.pac_variants.cursor;
 
 			procedure query_devices (
 				variant_name	: in et_general.type_variant_name.bounded_string;
 				variant			: in assembly_variants.type_variant) is
+				use assembly_variants;
 				use assembly_variants.type_devices;
 				device_cursor : assembly_variants.type_devices.cursor;
 			begin
@@ -8843,9 +8844,9 @@ package body et_project is
 		procedure query_variants (
 			module_name	: in type_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use assembly_variants;
-			use type_variants;
-			variant_cursor : type_variants.cursor;
+			use assembly_variants.pac_variants;
+			
+			variant_cursor : assembly_variants.pac_variants.cursor;
 
 			procedure query_devices (
 				variant_name	: in et_general.type_variant_name.bounded_string;
@@ -8893,9 +8894,9 @@ package body et_project is
 		procedure query_variants (
 			module_name	: in type_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
-			use assembly_variants;
-			use type_variants;
-			variant_cursor : type_variants.cursor;
+			use assembly_variants.pac_variants;
+
+			variant_cursor : assembly_variants.pac_variants.cursor;
 
 			procedure query_submodules (
 				variant_name	: in et_general.type_variant_name.bounded_string;

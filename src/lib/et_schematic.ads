@@ -305,7 +305,7 @@ package et_schematic is
 	
 	function ports (
 		net		: in type_nets.cursor;
-		variant	: in assembly_variants.type_variants.cursor)
+		variant	: in assembly_variants.pac_variants.cursor)
 		return type_ports;
 	-- Returns the ports of devices, submodules and netchangers in
 	-- the given net. The given assembly variant determines whether
@@ -366,7 +366,7 @@ package et_schematic is
 		nets 	    	: type_nets.map;
 
 		-- the assembly variants of the module
-		variants		: assembly_variants.type_variants.map;
+		variants		: assembly_variants.pac_variants.map;
 		
 		-- General non-component related board stuff (silk screen, documentation, ...):
 		board			: et_pcb.type_board;

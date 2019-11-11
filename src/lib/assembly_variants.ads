@@ -105,14 +105,14 @@ package assembly_variants is
 
 	-- Since a board may have lots of variants, we keep them in a map.
 	-- NOTE: The default variant ("") is never inserted here.
-	package type_variants is new ordered_maps (
+	package pac_variants is new ordered_maps (
 		key_type		=> et_general.type_variant_name.bounded_string, -- "low_cost"
 		"<"				=> et_general.type_variant_name."<",
 		element_type	=> type_variant);
 
 	function is_mounted (
 		device	: in type_name; -- IC1
-		variant	: in type_variants.cursor)
+		variant	: in pac_variants.cursor)
 		return boolean;
 	-- Returns true if the given device is to be mounted according to given assembly variant.
 	-- If variant points to no element the default variant is assumed and the device regarded as mounted.

@@ -181,7 +181,7 @@ package body et_schematic is
 	
 	function ports (
 		net		: in type_nets.cursor;
-		variant	: in assembly_variants.type_variants.cursor)
+		variant	: in assembly_variants.pac_variants.cursor)
 		return type_ports is
 	-- Returns the ports of devices, submodules and netchangers in
 	-- the given net. The given assembly variant determines whether

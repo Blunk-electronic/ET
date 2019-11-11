@@ -558,7 +558,7 @@ package body board_ops is
 		module_cursor : type_modules.cursor; -- points to the module
 
 		use assembly_variants;
-		use assembly_variants.type_variants;
+		use assembly_variants.pac_variants;
 		use et_general.type_variant_name;
 
 		procedure make_for_variant (variant_name : in et_general.type_variant_name.bounded_string) is
@@ -963,7 +963,7 @@ package body board_ops is
 			log_indentation_down;
 		end make_for_variant;
 		
-		procedure query_variant (variant_cursor : in type_variants.cursor) is
+		procedure query_variant (variant_cursor : in assembly_variants.pac_variants.cursor) is
 			use et_general.type_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));

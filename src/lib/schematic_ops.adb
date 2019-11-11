@@ -9819,10 +9819,10 @@ package body schematic_ops is
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
 			inserted : boolean;
-			cursor : type_variants.cursor;
+			cursor : assembly_variants.pac_variants.cursor;
 		begin
 			-- create the variant
-			type_variants.insert (
+			assembly_variants.pac_variants.insert (
 				container	=> module.variants,
 				key			=> variant_name,
 				position	=> cursor,
@@ -9863,13 +9863,13 @@ package body schematic_ops is
 		procedure delete (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_variants;
-			cursor : type_variants.cursor;
+			use assembly_variants.pac_variants;
+			cursor : assembly_variants.pac_variants.cursor;
 		begin
 			-- before deleting, the variant must be located
 			cursor := find (module.variants, variant_name);
 
-			if cursor /= type_variants.no_element then
+			if cursor /= assembly_variants.pac_variants.no_element then
 				
 				delete (
 					container	=> module.variants,
@@ -9909,8 +9909,8 @@ package body schematic_ops is
 		procedure describe (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_variants;
-			cursor : type_variants.cursor;
+			use assembly_variants.pac_variants;
+			cursor : assembly_variants.pac_variants.cursor;
 
 			procedure assign_description (
 				name		: in et_general.type_variant_name.bounded_string;
@@ -9921,11 +9921,11 @@ package body schematic_ops is
 			
 		begin -- describe
 			-- before describing, the variant must be located
-			cursor := find (module.variants, variant_name);
+			cursor := assembly_variants.pac_variants.find (module.variants, variant_name);
 
-			if cursor /= type_variants.no_element then
+			if cursor /= assembly_variants.pac_variants.no_element then
 
-				type_variants.update_element (
+				assembly_variants.pac_variants.update_element (
 					container	=> module.variants,
 					position	=> cursor,
 					process		=> assign_description'access);
@@ -9981,8 +9981,8 @@ package body schematic_ops is
 		procedure mount (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_variants;
-			cursor : type_variants.cursor;
+			use assembly_variants.pac_variants;
+			cursor : assembly_variants.pac_variants.cursor;
 
 			procedure insert_device (
 				name		: in et_general.type_variant_name.bounded_string;
@@ -10016,11 +10016,11 @@ package body schematic_ops is
 			
 		begin -- mount
 			-- the variant must exists
-			cursor := find (module.variants, variant_name);
+			cursor := assembly_variants.pac_variants.find (module.variants, variant_name);
 
-			if cursor /= type_variants.no_element then
+			if cursor /= assembly_variants.pac_variants.no_element then
 
-				type_variants.update_element (
+				assembly_variants.pac_variants.update_element (
 					container	=> module.variants,
 					position	=> cursor,
 					process		=> insert_device'access);
@@ -10072,8 +10072,8 @@ package body schematic_ops is
 		procedure unmount (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_variants;
-			cursor : type_variants.cursor;
+			use assembly_variants.pac_variants;
+			cursor : assembly_variants.pac_variants.cursor;
 
 			procedure insert_device (
 				name		: in et_general.type_variant_name.bounded_string;
@@ -10103,11 +10103,11 @@ package body schematic_ops is
 			
 		begin -- unmount
 			-- the variant must exists
-			cursor := find (module.variants, variant_name);
+			cursor := assembly_variants.pac_variants.find (module.variants, variant_name);
 
-			if cursor /= type_variants.no_element then
+			if cursor /= assembly_variants.pac_variants.no_element then
 
-				type_variants.update_element (
+				assembly_variants.pac_variants.update_element (
 					container	=> module.variants,
 					position	=> cursor,
 					process		=> insert_device'access);
@@ -10155,8 +10155,8 @@ package body schematic_ops is
 		procedure remove (
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_variants;
-			cursor : type_variants.cursor;
+			use assembly_variants.pac_variants;
+			cursor : assembly_variants.pac_variants.cursor;
 
 			procedure delete_device (
 				name		: in et_general.type_variant_name.bounded_string;
@@ -10182,11 +10182,11 @@ package body schematic_ops is
 			
 		begin -- remove
 			-- the variant must exist
-			cursor := find (module.variants, variant_name);
+			cursor := assembly_variants.pac_variants.find (module.variants, variant_name);
 
-			if cursor /= type_variants.no_element then
+			if cursor /= assembly_variants.pac_variants.no_element then
 
-				type_variants.update_element (
+				assembly_variants.pac_variants.update_element (
 					container	=> module.variants,
 					position	=> cursor,
 					process		=> delete_device'access);
@@ -10237,8 +10237,8 @@ package body schematic_ops is
 		-- Locates the targeted assembly variant of the parent module.
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_variants;
-			cursor : type_variants.cursor;
+			use assembly_variants.pac_variants;
+			cursor : assembly_variants.pac_variants.cursor;
 
 			procedure mount (
 				name		: in et_general.type_variant_name.bounded_string; -- low_cost (parent module)
@@ -10266,12 +10266,12 @@ package body schematic_ops is
 			
 		begin -- query_variants
 			-- the variant (low_cost) must exist in the parent module
-			cursor := find (module.variants, variant_parent);
+			cursor := assembly_variants.pac_variants.find (module.variants, variant_parent);
 
-			if cursor /= type_variants.no_element then
+			if cursor /= assembly_variants.pac_variants.no_element then
 
 				-- Insert the submodule instance with the desired variant:
-				type_variants.update_element (
+				assembly_variants.pac_variants.update_element (
 					container	=> module.variants,
 					position	=> cursor,
 					process		=> mount'access);
@@ -10332,8 +10332,8 @@ package body schematic_ops is
 		-- Locates the targeted assembly variant of the parent module.
 			module_name	: in type_module_name.bounded_string;
 			module		: in out type_module) is
-			use type_variants;
-			cursor : type_variants.cursor;
+			use assembly_variants.pac_variants;
+			cursor : assembly_variants.pac_variants.cursor;
 
 			procedure remove (
 				name		: in et_general.type_variant_name.bounded_string; -- low_cost (parent module)
@@ -10358,12 +10358,12 @@ package body schematic_ops is
 			
 		begin -- query_variants
 			-- the variant (low_cost) must exist in the parent module
-			cursor := find (module.variants, variant_parent);
+			cursor := assembly_variants.pac_variants.find (module.variants, variant_parent);
 
-			if cursor /= type_variants.no_element then
+			if cursor /= assembly_variants.pac_variants.no_element then
 
 				-- Remove the submodule instance
-				type_variants.update_element (
+				assembly_variants.pac_variants.update_element (
 					container	=> module.variants,
 					position	=> cursor,
 					process		=> remove'access);
@@ -11653,7 +11653,7 @@ package body schematic_ops is
 		module_cursor : type_modules.cursor; -- points to the module
 
 		use assembly_variants;
-		use assembly_variants.type_variants;
+		use assembly_variants.pac_variants;
 		use et_general.type_variant_name;
 
 		procedure make_for_variant (variant_name : in et_general.type_variant_name.bounded_string) is
@@ -12018,7 +12018,7 @@ package body schematic_ops is
 			log_indentation_down;
 		end make_for_variant;
 		
-		procedure query_variant (variant_cursor : in type_variants.cursor) is
+		procedure query_variant (variant_cursor : in assembly_variants.pac_variants.cursor) is
 			use et_general.type_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
@@ -12041,7 +12041,7 @@ package body schematic_ops is
 		make_for_variant (default);
 
 		-- make netlists of other variants
-		iterate (element (module_cursor).variants, query_variant'access);
+		assembly_variants.pac_variants.iterate (element (module_cursor).variants, query_variant'access);
 				
 		log_indentation_down;
 	end make_boms;
@@ -12282,7 +12282,7 @@ package body schematic_ops is
 		use netlists;
 		use et_general.type_net_name;
 		use assembly_variants;
-		use assembly_variants.type_variants;
+		use assembly_variants.pac_variants;
 		use et_general.type_variant_name;
 
 		procedure make_for_variant (variant_name : in et_general.type_variant_name.bounded_string) is
@@ -12309,8 +12309,8 @@ package body schematic_ops is
 				prefix			: in et_general.type_net_name.bounded_string; -- DRV3/OSC1/
 				offset			: in type_name_index) is
 
-				use assembly_variants.type_variants;
-				variant_cursor : assembly_variants.type_variants.cursor;
+				use assembly_variants.pac_variants;
+				variant_cursor : assembly_variants.pac_variants.cursor;
 				
 				procedure query_nets (
 					module_name	: in type_module_name.bounded_string;
@@ -12371,10 +12371,10 @@ package body schematic_ops is
 					
 				begin -- query_nets
 					if is_default (variant) then
-						variant_cursor := type_variants.no_element;
+						variant_cursor := assembly_variants.pac_variants.no_element;
 					else
 						variant_cursor := find (module.variants, variant);
-						if variant_cursor = type_variants.no_element then
+						if variant_cursor = assembly_variants.pac_variants.no_element then
 							assembly_variant_not_found (variant);
 						end if;
 					end if;
@@ -12707,7 +12707,7 @@ package body schematic_ops is
 			log_indentation_down;
 		end make_for_variant;
 		
-		procedure query_variant (variant_cursor : in type_variants.cursor) is
+		procedure query_variant (variant_cursor : in assembly_variants.pac_variants.cursor) is
 			use et_general.type_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
@@ -12728,7 +12728,7 @@ package body schematic_ops is
 		make_for_variant (default);
 
 		-- make netlists of other variants
-		iterate (element (module_cursor).variants, query_variant'access);
+		assembly_variants.pac_variants.iterate (element (module_cursor).variants, query_variant'access);
 		
 		log_indentation_down;
 	end make_netlists;

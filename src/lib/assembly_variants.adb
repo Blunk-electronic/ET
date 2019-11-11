@@ -74,12 +74,12 @@ package body assembly_variants is
 
 	function is_mounted (
 		device	: in type_name; -- IC1
-		variant	: in type_variants.cursor)
+		variant	: in pac_variants.cursor)
 		return boolean is
 	-- Returns true if the given device is to be mounted according to given assembly variant.
 	-- If variant points to no element the default variant is assumed and the device regarded as mounted.
 		
-		use type_variants;
+		use pac_variants;
 		use type_devices;
 		
 		cursor : type_devices.cursor;
@@ -92,7 +92,7 @@ package body assembly_variants is
 		end query_devices;
 		
 	begin -- is_mounted
-		if variant = type_variants.no_element then -- assume default variant
+		if variant = pac_variants.no_element then -- assume default variant
 			return true; -- device is to be mounted
 		else
 			
