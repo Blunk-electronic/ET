@@ -38,7 +38,7 @@
 with gtk.main;
 with gtk.window; 				--use gtk.window;
 
-with gtk.widget;  				--use gtk.widget;
+-- with gtk.widget;  				--use gtk.widget;
 -- with gtk.box;					use gtk.box;
 -- with gtk.button;     			use gtk.button;
 -- with gtk.label;					use gtk.label;
@@ -56,29 +56,40 @@ with ada.directories;
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 
-with gui_cb;					use gui_cb;
+with gui_cb;					
 
 package body gui_general is
 
 	
 	procedure single_module (
 		log_threshold	: in type_log_level) is
-		
-		window : gtk.window.gtk_window;
+
+		procedure create_main_window is
+			use gui_cb;
+			window : gtk.window.gtk_window;
+		begin
+			gtk.window.gtk_new (window);
+			gtk.window.set_title (window => window, title  => system_name);
+
+			--  Construct the window and connect various callbacks
+
+			
+			window.on_destroy (terminate_main'access);
+
+			window.show_all;
+		end;
+
 	begin
 		log (text => "launching mode " & to_string (MODE_MODULE), level => log_threshold);
 
 		-- initialize gtkada
 		gtk.main.init;
 
-		-- create the main window
-		gtk.window.gtk_new (window);
+		create_main_window;
 
-		window.on_destroy (terminate_main'access);
+
 
 		
-		-- show the window
-		window.show_all;
 
 		-- All GTK applications must have a Gtk.Main.Main. Control ends here
 		-- and waits for an event to occur (like a key press or a mouse event),
