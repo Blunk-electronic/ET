@@ -44,17 +44,28 @@ with ada.containers.indefinite_doubly_linked_lists;
 
 package et_general is
 
--- 	procedure show_line (
--- 	-- Output the line of code where the exception occured:
--- 		file : string; -- the file name like et_kicad.adb
--- 		line : natural);-- the line number
-	
 	version					: constant string := "version 001";
 	system_name				: constant string := "SYSTEM ET";
 
 	system_name_cmd_line	: constant string := "et ";
 
+	type type_runmode is (
+		MODE_HEADLESS,
+		MODE_SYMBOL,
+		MODE_PACKAGE,
+		MODE_DEVICE,
+		MODE_MODULE,
+		MODE_RIG
+		);
 
+	runmode_default : constant type_runmode := MODE_MODULE;
+
+	function to_runmode (mode : in string) return type_runmode;
+	function to_string (mode : in type_runmode) return string;
+
+
+
+	
 	function expand (
 	-- Translates a file name like $HOME/libraries/devices/7400.dev to
 	-- /home/user/libraries/devices/7400.dev
@@ -136,10 +147,10 @@ package et_general is
 	switch_frame_pcb_create			: constant string := "-create-pcb-frame";	
 	switch_frame_pcb_open			: constant string := "-open-pcb-frame";	
 	switch_frame_pcb_save_as		: constant string := "-save-pcb-frame-as";	
-
 	
 	switch_execute_script			: constant string := "-script";
 
+	switch_runmode					: constant string := "-runmode";
 
 	procedure show_cdl_switches;
 	-- Outputs the command line switches that initiate something.

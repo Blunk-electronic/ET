@@ -69,6 +69,8 @@ with device_rw;
 with et_frames;
 with frame_rw;
 
+with gui_general;
+
 procedure et is
 
 	conv_file_name_create	: conventions.type_conventions_file_name.bounded_string;
@@ -102,6 +104,8 @@ procedure et is
 	
 	script_name	: scripting.type_script_name.bounded_string;
 
+	runmode : type_runmode := runmode_default;
+	
 	dummy_name : constant string := "dummy";
 	
 	procedure get_commandline_arguments is
@@ -151,8 +155,12 @@ procedure et is
 						& space & switch_frame_pcb_create & equals
 						& space & switch_frame_pcb_open & equals
 						& space & switch_frame_pcb_save_as & equals
-						
+
+						-- script
 						& space & switch_execute_script & equals
+
+						-- runmode
+						& space & switch_runmode & equals
 					) is
 
 				when hyphen => -- which is a '-'
@@ -276,7 +284,6 @@ procedure et is
 					elsif full_switch = switch_frame_pcb_save_as then
 						log (text => arg & full_switch & space & parameter);
 						frame_name_save_as := et_frames.to_template_name (parameter);
-
 						
 					-- script
 					elsif full_switch = switch_execute_script then
@@ -286,8 +293,13 @@ procedure et is
 					elsif full_switch = switch_log_level then
 						log (text => arg & full_switch & space & parameter);
 						log_level := type_log_level_cmd_line'value (parameter);
-					end if;
 
+					-- runmode
+					elsif full_switch = switch_runmode then
+						log (text => arg & full_switch & space & parameter);
+						runmode := to_runmode (parameter);
+						
+					end if;
 					
 				when others => exit;
 
@@ -581,6 +593,17 @@ procedure et is
 		end if;
 		
 	end process_commandline_arguments;
+
+	procedure launch_gui is 
+		use gui_general;
+	begin
+		case runmode is 
+			when MODE_HEADLESS => null;
+			when MODE_MODULE => single_module (log_threshold => 0); -- CS provide module file name
+			when others => null;
+		end case;
+	end;
+
 	
 begin -- main
 
@@ -601,6 +624,8 @@ begin -- main
 		get_commandline_arguments;
 
 		process_commandline_arguments;
+
+		launch_gui;
 		
 		close_report;
 	end if;

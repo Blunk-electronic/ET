@@ -48,6 +48,14 @@ with et_string_processing;
 
 package body et_general is
 
+	function to_runmode (mode : in string) return type_runmode is begin
+		return type_runmode'value (mode);
+	end;
+
+	function to_string (mode : in type_runmode) return string is begin
+		return to_lower (type_runmode'image (mode));
+	end;
+	
 	function expand (
 	-- Translates a file name like $HOME/libraries/devices/7400.dev to
 	-- /home/user/libraries/devices/7400.dev
@@ -181,6 +189,9 @@ package body et_general is
 		put_line (dash & switch_execute_script);
 		put_line (dash & switch_make_default_conv);
 		put_line (dash & switch_import_project);
+
+		put_line (dash & switch_runmode);
+		
 		put_line ("For additional switches and examples see <https://github.com/Blunk-electronic/ET>");
 	end show_cdl_switches;
 
