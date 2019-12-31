@@ -39,7 +39,7 @@ with gtk.main;
 with gtk.window; 				--use gtk.window;
 
 -- with gtk.widget;  				--use gtk.widget;
--- with gtk.box;					use gtk.box;
+with gtk.box;					use gtk.box;
 -- with gtk.button;     			use gtk.button;
 -- with gtk.label;					use gtk.label;
 -- with gtk.image;					use gtk.image;
@@ -65,15 +65,47 @@ package body gui_general is
 		log_threshold	: in type_log_level) is
 
 		procedure create_main_window is
+
 			use gui_cb;
 			window : gtk.window.gtk_window;
+
+			box_back	: gtk_box;
+			box_head	: gtk_hbox;
+			box_bottom	: gtk_hbox;
+
+			box_selection_label		: gtk_vbox;
+			box_selection_directory	: gtk_vbox;
+
+			
 		begin
 			gtk.window.gtk_new (window);
 			gtk.window.set_title (window => window, title  => system_name);
 
-			--  Construct the window and connect various callbacks
+			window.set_default_size (700, 200);
+			window.set_border_width (10);
+
+			-- create and place background box			
+			gtk_new_vbox (box_back, false, 0);
+			gtk.window.add (window, box_back);
+
+			-- create and place box_head in box_back			
+			gtk_new_hbox (box_head, false, 0);
+			pack_start (box_back, box_head, true, true, 0);
+			set_spacing (box_head, 20);
+
+			-- create and place box_bottom in box_back
+			gtk_new_hbox (box_bottom, false, 0);
+			pack_start (box_back, box_bottom, true, true, 0);
+			set_spacing (box_head, 20);
+
+			-- BOX SELECTION LABELS
+			gtk_new_vbox (box_selection_label);
+			pack_start (box_head, box_selection_label, true, true, 5);
+			show (box_selection_label);
 
 			
+			
+			--  Construct the window and connect various callbacks
 			window.on_destroy (terminate_main'access);
 
 			window.show_all;
