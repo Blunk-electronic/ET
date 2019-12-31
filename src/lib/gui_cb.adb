@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             GUI CALL BACKS                               --
+--                             GUI CALLBACKS                                --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -37,17 +37,67 @@
 
 
 with gtk.main;
--- with gtk.window; 				--use gtk.window;
-
-with gtk.widget;  				--use gtk.widget;
-
+with ada.text_io;			use ada.text_io;
+-- with canvas_test;			use canvas_test;
 
 
 package body gui_cb is
 
 	procedure terminate_main (self : access gtk.widget.gtk_widget_record'class) is begin
--- 		log (text => "exiting ... " & to_string (MODE_MODULE), level => log_threshold);
+		-- 		log (text => "exiting ... " & to_string (MODE_MODULE), level => log_threshold);
+		put_line ("exiting ...");
 		gtk.main.main_quit;
+	end;
+
+	procedure zoom_to_fit (self : access glib.object.gobject_record'class) is 
+	begin
+		put_line ("zoom to fit ...");
+-- 		scale_to_fit (canvas);
+-- 		put_line (to_string (get_scale (canvas)));
+	end;
+
+	procedure zoom_in (self : access glib.object.gobject_record'class) is begin
+		put_line ("zooming in ...");
+-- 		scale := get_scale (canvas);
+-- 		scale := scale + 0.1;
+-- 		set_scale (canvas, scale);
+-- 		put_line (to_string (get_scale (canvas)));
+	end;
+
+	procedure zoom_out (self : access glib.object.gobject_record'class) is begin
+		put_line ("zooming out ...");
+-- 		scale := get_scale (canvas);
+-- 		if scale >= 0.0 then
+-- 			scale := scale - 0.1;
+-- 			set_scale (canvas, scale);
+-- 		end if;
+-- 		put_line (to_string (get_scale (canvas)));
+	end;
+
+	procedure move_right (self : access glib.object.gobject_record'class) is begin
+		put_line ("moving right ...");
+-- 		set_position (item, p2);
+-- 		refresh_layout (model);
+	end;
+
+	procedure move_left (self : access glib.object.gobject_record'class) is begin
+		put_line ("moving left ...");
+-- 		set_position (item, p1);
+-- 		refresh_layout (model);
+	end;
+
+	procedure delete (self : access glib.object.gobject_record'class) is begin
+		put_line ("deleting ...");
+
+-- 		model.remove (item);
+
+-- 		refresh_layout (model);
+	end;
+	
+	procedure echo_command_simple (self : access gtk.gentry.gtk_entry_record'class) is 
+		use gtk.gentry;
+	begin
+		put_line (get_text (self));
 	end;
 
 	

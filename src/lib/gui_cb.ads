@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             GUI CALL BACKS                               --
+--                             GUI CALLBACKS                                --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -36,15 +36,26 @@
 --
 
 
--- with gtk.main;
--- with gtk.window; 				--use gtk.window;
-
-with gtk.widget;  				--use gtk.widget;
+with glib;				use glib;
+with gtk.widget;  		--use gtk.widget;
+with gtk.button;     	--use gtk.button;
+with glib.object;		--use glib.object;
+with gtk.gentry;
+with gtkada.style;		use gtkada.style;
 
 
 package gui_cb is
 
+	-- Callbacks:
 	procedure terminate_main (self : access gtk.widget.gtk_widget_record'class);
+	procedure zoom_to_fit (self : access glib.object.gobject_record'class);	
+	procedure zoom_in (self : access glib.object.gobject_record'class);
+	procedure zoom_out (self : access glib.object.gobject_record'class);
+	procedure move_right (self : access glib.object.gobject_record'class);
+	procedure move_left (self : access glib.object.gobject_record'class);	
+	procedure delete (self : access glib.object.gobject_record'class);
+	procedure echo_command_simple (self : access gtk.gentry.gtk_entry_record'class);
+
 
 	
 end gui_cb;

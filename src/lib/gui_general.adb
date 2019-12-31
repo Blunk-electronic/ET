@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -36,98 +36,197 @@
 --
 
 with gtk.main;
-with gtk.window; 				--use gtk.window;
+with gtk.window; 			use gtk.window;
+with gtk.widget;  			use gtk.widget;
+with gtk.box;				use gtk.box;
+with gtk.button;     		use gtk.button;
+with gtk.toolbar; 			use gtk.toolbar;
+with gtk.tool_button;		use gtk.tool_button;
+with gtk.enums;				use gtk.enums;
+with gtk.gentry;			use gtk.gentry;
+with gtk.combo_box_text;	use gtk.combo_box_text;
+with gtk.frame;				use gtk.frame;
+with gtk.scrolled_window;	use gtk.scrolled_window;
+with glib.object;			use glib.object;
 
--- with gtk.widget;  				--use gtk.widget;
-with gtk.box;					use gtk.box;
--- with gtk.button;     			use gtk.button;
--- with gtk.label;					use gtk.label;
--- with gtk.image;					use gtk.image;
--- with gtk.file_chooser;			use gtk.file_chooser;
--- with gtk.file_chooser_button;	use gtk.file_chooser_button;
--- with gtk.file_filter;			use gtk.file_filter;
--- with gtkada.handlers; 			use gtkada.handlers;
--- with glib.object;
--- with gdk.event;
-
-
+with ada.text_io;			use ada.text_io;
 with ada.directories;
 
 with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 
-with gui_cb;					
+with gui_cb;					use gui_cb;	
+-- with canvas_test;			use canvas_test;
 
 package body gui_general is
 
+	window 					: gtk_window; -- This is an access/pointer to the actual window.
+	box_back				: gtk_box; -- This is an access/pointer to the actual box.
+	box_left, box_right		: gtk_box;
+	box_console				: gtk_box;
+	box_drawing				: gtk_box;
+
+	-- We will have some buttons:
+	button_zoom_to_fit					: gtk_tool_button; -- This is an access/pointer to the actual button.
+	button_zoom_in, button_zoom_out		: gtk_tool_button;
+	button_move_right, button_move_left	: gtk_tool_button; -- CS for testing only
+	button_delete						: gtk_tool_button;
+
+	-- We will have a toolbar, a console, a frame and a scrolled window:
+	toolbar					: gtk_toolbar; -- This is an access/pointer to the actual toolbar.
+	console					: gtk_entry;
+	frame					: gtk_frame;
+	scrolled				: gtk_scrolled_window;
 	
-	procedure single_module (
-		log_threshold	: in type_log_level) is
+	procedure init is begin
+		gtk.main.init; -- initialize the main gtk stuff
 
-		procedure create_main_window is
+		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
+		window.set_title (system_name);
+		window.set_default_size (1024, 768);
 
-			use gui_cb;
-			window : gtk.window.gtk_window;
+		-- If the operator wishes to terminate the program (by clicking X)
+		-- the procedure terminate_main (in gui_cb) is to be called.
+		window.on_destroy (terminate_main'access);
 
-			box_back	: gtk_box;
-			box_head	: gtk_hbox;
-			box_bottom	: gtk_hbox;
+		
+		-- background box
+		gtk_new_hbox (box_back);
+		set_spacing (box_back, 10);
+		add (window, box_back);
 
-			box_selection_label		: gtk_vbox;
-			box_selection_directory	: gtk_vbox;
+		-- left box
+		gtk_new_hbox (box_left);
+		set_spacing (box_left, 10);
+		pack_start (box_back, box_left, expand => false);
 
-			
-		begin
-			gtk.window.gtk_new (window);
-			gtk.window.set_title (window => window, title  => system_name);
+		-- right box
+		gtk_new_vbox (box_right);
+		set_spacing (box_right, 10);
+		add (box_back, box_right);
 
-			window.set_default_size (700, 200);
-			window.set_border_width (10);
-
-			-- create and place background box			
-			gtk_new_vbox (box_back, false, 0);
-			gtk.window.add (window, box_back);
-
-			-- create and place box_head in box_back			
-			gtk_new_hbox (box_head, false, 0);
-			pack_start (box_back, box_head, true, true, 0);
-			set_spacing (box_head, 20);
-
-			-- create and place box_bottom in box_back
-			gtk_new_hbox (box_bottom, false, 0);
-			pack_start (box_back, box_bottom, true, true, 0);
-			set_spacing (box_head, 20);
-
-			-- BOX SELECTION LABELS
-			gtk_new_vbox (box_selection_label);
-			pack_start (box_head, box_selection_label, true, true, 5);
-			show (box_selection_label);
-
-			
-			
-			--  Construct the window and connect various callbacks
-			window.on_destroy (terminate_main'access);
-
-			window.show_all;
-		end;
-
-	begin
-		log (text => "launching mode " & to_string (MODE_MODULE), level => log_threshold);
-
-		-- initialize gtkada
-		gtk.main.init;
-
-		create_main_window;
+		-- toolbar on the left
+		gtk_new (toolbar);
+		set_orientation (toolbar, orientation_vertical);
+		pack_start (box_left, toolbar, expand => false);
 
 
 
 		
+		-- Create a button and place it in the toolbar:
+		gtk.tool_button.gtk_new (button_zoom_to_fit, label => "FIT");
+		insert (toolbar, button_zoom_to_fit);
 
-		-- All GTK applications must have a Gtk.Main.Main. Control ends here
-		-- and waits for an event to occur (like a key press or a mouse event),
-		-- until Gtk.Main.Main_Quit is called.
+		-- If the operator clicks the button
+		-- call the procedure zoom_to_fit in package callbacks_4:
+		button_zoom_to_fit.on_clicked (zoom_to_fit'access, toolbar);
+
+
+
+		
+		-- Create a button and place it in the toolbar:
+		gtk.tool_button.gtk_new (button_zoom_in, label => "IN");
+		insert (toolbar, button_zoom_in);
+
+		-- If the operator clicks the button
+		-- call the procedure zoom_in in package callbacks_4:
+		button_zoom_in.on_clicked (zoom_in'access, toolbar);
+
+
+
+		
+		-- Create another button and place it in the toolbar:
+		gtk.tool_button.gtk_new (button_zoom_out, label => "OUT");
+		insert (toolbar, button_zoom_out);
+
+		-- If the operator clicks the button
+		-- call the procedure zoom_out in package callbacks_4:
+		button_zoom_out.on_clicked (zoom_out'access, toolbar);
+
+
+		
+		
+		-- Create another button and place it in the toolbar:
+		gtk.tool_button.gtk_new (button_move_right, label => "MOVE RIGHT");
+		insert (toolbar, button_move_right);
+		
+		-- If the operator clicks the button
+		-- call the procedure move_right in package callbacks_4:		
+		button_move_right.on_clicked (move_right'access, toolbar);
+
+
+		
+		
+		gtk.tool_button.gtk_new (button_move_left, label => "MOVE LEFT");
+		insert (toolbar, button_move_left);
+
+		-- If the operator clicks the button
+		-- call the procedure move_left in package callbacks_4:
+		button_move_left.on_clicked (move_left'access, toolbar);
+
+
+		
+		
+		gtk.tool_button.gtk_new (button_delete, label => "DELETE");
+		insert (toolbar, button_delete);
+
+		-- If the operator clicks the button
+		-- call the procedure delete in package callbacks_4:
+		button_delete.on_clicked (delete'access, toolbar);
+
+
+
+		
+		-- box for console on the right top
+		gtk_new_vbox (box_console);
+		set_spacing (box_console, 10);
+		pack_start (box_right, box_console, expand => false);
+
+		-- a simple text entry
+		gtk_new (console);
+		set_text (console, "cmd: ");
+		pack_start (box_console, console, expand => false);
+
+		-- If the operator hits enter after typing text in the console,
+		-- call the procedure echo_command_simple in package callbacks_4:
+		console.on_activate (echo_command_simple'access); -- on hitting enter
+
+
+
+		
+		-- drawing area on the right bottom
+		gtk_new_hbox (box_drawing);
+		set_spacing (box_drawing, 10);
+		add (box_right, box_drawing);
+
+		-- frame inside the drawing box
+		gtk_new (frame);
+		pack_start (box_drawing, frame);
+
+		-- scrolled window inside the frame
+		gtk_new (scrolled);
+		set_policy (scrolled, policy_automatic, policy_automatic);
+		add (frame, scrolled);
+
+	end;
+
+	
+	procedure single_module (
+		log_threshold	: in type_log_level) is
+	begin
+		log (text => "launching mode " & to_string (MODE_MODULE), level => log_threshold);
+
+		-- set up the main window
+		init; 
+
+		
+
+		-- Display all the widgets on the screen:
+		window.show_all;
+
+		-- Start the main gtk loop. This is a loop that permanently draws the widgets and
+		-- samples them for possible signals sent.
 		gtk.main.main;
-
 
 		
 	end single_module;
