@@ -56,7 +56,7 @@ with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 
 with gui_cb;					use gui_cb;	
--- with canvas_test;			use canvas_test;
+with et_canvas;					use et_canvas;
 
 package body gui_general is
 

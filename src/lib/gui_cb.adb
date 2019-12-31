@@ -37,8 +37,8 @@
 
 
 with gtk.main;
-with ada.text_io;			use ada.text_io;
--- with canvas_test;			use canvas_test;
+with ada.text_io;				use ada.text_io;
+with et_canvas;					use et_canvas;
 
 
 package body gui_cb is
