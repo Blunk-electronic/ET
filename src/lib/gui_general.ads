@@ -37,6 +37,7 @@
 
 with et_string_processing;		use et_string_processing;
 with et_general;
+with et_canvas.schematic;
 
 package gui_general is
 

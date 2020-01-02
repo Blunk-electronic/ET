@@ -178,7 +178,7 @@ package et_canvas is
 	end record;
 
 	-- The type to access the model:
-	type type_model_ptr is access all type_model;
+	type type_model_ptr is access all type_model'class;
 	
 
 
@@ -192,6 +192,10 @@ package et_canvas is
 
 	no_rectangle : constant type_model_rectangle := (0.0, 0.0, 0.0, 0.0);
 
+	function bounding_box (
+		self   : not null access type_model;
+		margin : type_model_coordinate := 0.0)
+		return type_model_rectangle;
 
 
 

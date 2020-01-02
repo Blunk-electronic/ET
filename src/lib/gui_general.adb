@@ -57,6 +57,7 @@ with et_string_processing;		use et_string_processing;
 
 with gui_cb;					use gui_cb;	
 with et_canvas;					use et_canvas;
+with et_canvas.schematic;
 
 package body gui_general is
 
@@ -213,14 +214,20 @@ package body gui_general is
 	
 	procedure single_module (
 		log_threshold	: in type_log_level) is
+		use et_canvas.schematic;
 	begin
 		log (text => "launching mode " & to_string (MODE_MODULE), level => log_threshold);
 
 		-- set up the main window
 		init; 
 
-		
+		gtk_new (model); -- model is declared in callbacks_4
+		initialize (model);
 
+		gtk_new (canvas, model); -- canvas is declared in callbacks_4
+		add (scrolled, canvas); -- place the canvas in the scrolled window
+
+		
 		-- Display all the widgets on the screen:
 		window.show_all;
 

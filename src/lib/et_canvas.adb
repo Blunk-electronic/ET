@@ -666,7 +666,7 @@ package body et_canvas is
 		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
 		
 	begin
--- 		put_line ("draw internal ...");
+		put_line ("draw internal ...");
 		
 		if self.model /= null then
 
