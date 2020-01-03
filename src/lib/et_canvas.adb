@@ -317,26 +317,26 @@ package body et_canvas is
 		result : type_model_rectangle;
 		is_first : boolean := true;
 
-		procedure do_item (item : not null access type_item'class) is
-			box : constant type_model_rectangle := item.model_bounding_box;
-		begin
-			if is_first then
-				is_first := false;
-				result := box;
-			else
-				union (result, box);
-			end if;
-		end do_item;
+-- 		procedure do_item (item : not null access type_item'class) is
+-- 			box : constant type_model_rectangle := item.model_bounding_box;
+-- 		begin
+-- 			if is_first then
+-- 				is_first := false;
+-- 				result := box;
+-- 			else
+-- 				union (result, box);
+-- 			end if;
+-- 		end do_item;
 	begin
-		type_model'class (self.all).for_each_item (do_item'access);
+-- 		type_model'class (self.all).for_each_item (do_item'access);
 
 		if is_first then
 			return no_rectangle;
 		else
-			result.x := result.x - margin;
-			result.y := result.y - margin;
-			result.width := result.width + 2.0 * margin;
-			result.height := result.height + 2.0 * margin;
+-- 			result.x := result.x - margin;
+-- 			result.y := result.y - margin;
+-- 			result.width := result.width + 2.0 * margin;
+-- 			result.height := result.height + 2.0 * margin;
 			return result;
 		end if;
 	end bounding_box;
@@ -678,7 +678,7 @@ package body et_canvas is
 			set_grid_size (self, 100.0);
 			draw_grid_dots (self, style, context, area);
 			
-			self.model.for_each_item (draw_item'access, in_area => area);
+-- 			self.model.for_each_item (draw_item'access, in_area => area);
 			
 		end if;
 	end draw_internal;
@@ -910,27 +910,27 @@ package body et_canvas is
 			or else rect2.y > rect1.y + rect1.height); --  r1 above r2
 	end intersects;
 	
-	procedure for_each_item (
-		self		: not null access type_model;
-		callback	: not null access procedure (item : not null access type_item'class);
-		in_area		: type_model_rectangle := no_rectangle)
-	is
-		use pac_items;
-		c    : pac_items.cursor := self.items.first;
-		item : type_item_ptr;
-	begin
-		while has_element (c) loop
-			item := element (c);
-			next (c);
-
-			if (in_area = no_rectangle
-				or else intersects (in_area, item.model_bounding_box))
-			then
-				callback (item);
-			end if;
-			
-		end loop;
-	end for_each_item;
+-- 	procedure for_each_item (
+-- 		self		: not null access type_model;
+-- 		callback	: not null access procedure (item : not null access type_item'class);
+-- 		in_area		: type_model_rectangle := no_rectangle)
+-- 	is
+-- 		use pac_items;
+-- 		c    : pac_items.cursor := self.items.first;
+-- 		item : type_item_ptr;
+-- 	begin
+-- 		while has_element (c) loop
+-- 			item := element (c);
+-- 			next (c);
+-- 
+-- 			if (in_area = no_rectangle
+-- 				or else intersects (in_area, item.model_bounding_box))
+-- 			then
+-- 				callback (item);
+-- 			end if;
+-- 			
+-- 		end loop;
+-- 	end for_each_item;
 
 	procedure size_request (self : not null access type_item) is
 	begin
@@ -945,13 +945,13 @@ package body et_canvas is
 		self        : not null access type_model;
 		send_signal : boolean := true) is
 		
-		procedure do_size_request (item : not null access type_item'class) is begin
-			type_item'class (item.all).size_request;
-		end;
+-- 		procedure do_size_request (item : not null access type_item'class) is begin
+-- 			type_item'class (item.all).size_request;
+-- 		end;
 
 	begin
 		-- Update the width and height of all items:
-		type_model'class (self.all).for_each_item (do_size_request'access);
+-- 		type_model'class (self.all).for_each_item (do_size_request'access);
 
 		if send_signal then
 			type_model'class (self.all).layout_changed;
@@ -1079,13 +1079,6 @@ package body et_canvas is
 		return self.position;
 	end;
 	
-	procedure set_position (
-		self	: not null access type_item;
-		pos		: type_model_point) is
-	begin
-		self.position := pos;
-	end;
-	
 	procedure gtk_new (
 		self	: out type_view_ptr;
 		model	: access type_model'class := null) is 
@@ -1094,41 +1087,16 @@ package body et_canvas is
 		init (self, model);
 	end;
 
-	procedure add (
-		self : not null access type_model;
-		item : not null access type_item'class) is
-	begin
-		self.items.append (type_item_ptr (item));
-	end add;
-
-	procedure destroy_and_free (
-		self     : in out type_item_ptr;
-		in_model : not null access type_model'class) is
-		
-		procedure unchecked_free is new ada.unchecked_deallocation (type_item'class, type_item_ptr);
-	begin
-		if self /= null then
-			unchecked_free (self);
-		end if;
-	end destroy_and_free;
-	
-	procedure remove (
-		self : not null access type_model;
-		item : not null access type_item'class) is
-		i : type_item_ptr;
-		use pac_items;
-		c : pac_items.cursor;
-	begin
-		c := self.items.find (item);
-		
-		i := element (c);
-
-		-- remove in items list
-		self.items.delete (c);
-
-		-- destroy in model
-		destroy_and_free (i, self);
-	end;
+-- 	procedure destroy_and_free (
+-- 		self     : in out type_item_ptr;
+-- 		in_model : not null access type_model'class) is
+-- 		
+-- 		procedure unchecked_free is new ada.unchecked_deallocation (type_item'class, type_item_ptr);
+-- 	begin
+-- 		if self /= null then
+-- 			unchecked_free (self);
+-- 		end if;
+-- 	end destroy_and_free;
 
 	procedure scale_to_fit (
 		self      : not null access type_view;

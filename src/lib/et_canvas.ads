@@ -161,10 +161,6 @@ package et_canvas is
 
 
 	
-	-- Access values of items are stored in a simple list:
-	package pac_items is new doubly_linked_lists (type_item_ptr);
-
-	
 
 -- MODEL:
 	
@@ -173,7 +169,6 @@ package et_canvas is
 	-- The model consists of a list of item access values.
 	-- NOTE: The model stores pointers, not the items themselves ! The items are located in the heap.
 	type type_model is new glib.object.gobject_record with record
-		items	: pac_items.list;
 		layout	: pango.layout.pango_layout;
 	end record;
 
@@ -204,10 +199,10 @@ package et_canvas is
 	-- for each item.
 	-- If a certain region of the model via "in_area" provided, only the
 	-- items in that area are processed.
-	procedure for_each_item (
-		self    	: not null access type_model;
-		callback	: not null access procedure (item : not null access type_item'class);
-		in_area		: type_model_rectangle := no_rectangle);
+-- 	procedure for_each_item (
+-- 		self    	: not null access type_model;
+-- 		callback	: not null access procedure (item : not null access type_item'class);
+-- 		in_area		: type_model_rectangle := no_rectangle);
 
 	
 	-- Initializes the internal data so that the model can send signals:
@@ -403,22 +398,10 @@ package et_canvas is
 
 	function position (self : not null access type_item) return type_model_point;
 	
-	procedure set_position (
-		self	: not null access type_item;
-		pos		: type_model_point);
-	
 	procedure gtk_new (
 		self	: out type_view_ptr;
 		model	: access type_model'class := null);
 
-	procedure add (
-		self : not null access type_model;
-		item : not null access type_item'class);
-
-	procedure remove (
-		self : not null access type_model;
-		item : not null access type_item'class);
-	
 	procedure scale_to_fit (
 		self      : not null access type_view;
 		rect      : type_model_rectangle := no_rectangle;
