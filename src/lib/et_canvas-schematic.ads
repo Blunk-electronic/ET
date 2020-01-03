@@ -77,36 +77,91 @@ package et_canvas.schematic is
 -- 	subtype type_item_coordiante is et_coordinates.type_distance;
 -- 	subtype type_item_point is et_coordinates.geometry.type_point;
 	
+
+	-- A rectangular area of the model:
+	type type_model_rectangle is record
+		x, y			: type_model_coordinate; -- position
+		width, height	: type_model_coordinate; -- size
+	end record;
+
+	no_rectangle : constant type_model_rectangle := (0.0, 0.0, 0.0, 0.0);
+
 	
-	procedure dummy;
+
 
 -- MODEL
-	type type_model is new et_canvas.type_model with record
+	type type_model is new glib.object.gobject_record with record
+		layout	: pango.layout.pango_layout;
 		module	: et_project.type_modules.cursor;
 	end record;
-		
-	canvas	: type_view_ptr;
+
+	type type_model_ptr is access all type_model'class;
+	
+
 	model	: type_model_ptr;
+
+	
+	function on_layout_changed (
+		self : not null access type_model'class;
+		call : not null access procedure (self : not null access gobject_record'class);
+		slot : access gobject_record'class := null)
+		return gtk.handlers.handler_id;
+
+
+	
+	-- Creates a new model (or a drawing sheet according to the example above):
+	procedure gtk_new (self : out type_model_ptr);
 
 	-- Initializes the internal data so that the model can send signals:
 	procedure init (self : not null access type_model'class);
 
-	-- Creates a new model (or a drawing sheet according to the example above):
-	procedure gtk_new (self : out type_model_ptr);
-
 
 -- VIEW
 	
-	type type_view is new et_canvas.type_view with record
+	-- The view (or canvas) displays a certain region of the model (or the sheet) 
+	-- depending on scrolling or zoom.
+	type type_view is new gtk.widget.gtk_widget_record with record
+		model 		: type_model_ptr;
+
 		-- The upper left corner of the visible area has its initial value at 0/0.
 		-- NOTE: This has nothing to do with the upper left corner of the
 		-- drawing sheet. topleft is not a constant and is changed on by procedure
 		-- set_scale or by procedure scale_to_fit.
-		topleft_2   	: type_model_point := geometry.origin; -- CS rename to topleft
+		topleft  	: type_model_point := geometry.origin; -- CS rename to topleft
+		
+		scale     	: gdouble := 1.0; -- gdouble is a real floating-point type (see glib.ads)
+		grid_size 	: type_model_coordinate := 20.0;
+		
+		layout		: pango.layout.pango_layout; -- CS for displaying text. not used yet
+
+		-- Required for the scrollbars:
+		hadj, vadj	: gtk.adjustment.gtk_adjustment;
+
+		-- connections to model signals
+		id_layout_changed : gtk.handlers.handler_id := (gtk.handlers.null_handler_id, null);
+
+		scale_to_fit_requested : gdouble := 0.0; -- gdouble is a real floating-point type (see glib.ads)
+		scale_to_fit_area : type_model_rectangle;
 	end record;
 
+	-- The pointer to the canvas/view:
+	type type_view_ptr is access all type_view'class;
+
+	canvas	: type_view_ptr;
+
+	procedure viewport_changed (self : not null access type_view'class);
 	
-	
+	function get_scale (self : not null access type_view) return gdouble;
+
+	-- The cairo context to perform the actual drawing.
+	-- NOTE: The final drawing is performed in the view (hence in view coordinates):
+	type type_draw_context is record
+		cr     : cairo.cairo_context := cairo.null_context;
+		layout : pango.layout.pango_layout := null; -- CS for displaying text. not used yet
+		view   : type_view_ptr := null;
+	end record;
+
+	procedure layout_changed (self : not null access type_model'class);
 	
 -- CONVERSIONS BETWEEN COORDINATE SYSTEMS
 
@@ -134,8 +189,23 @@ package et_canvas.schematic is
 		rect   : in type_model_rectangle) -- position x/y and size given as a float type
 		return type_view_rectangle;
 
-	
 
+	
+	function bounding_box (
+		self   : not null access type_model;
+		margin : type_model_coordinate := 0.0)
+		return type_model_rectangle;
+
+	procedure set_adjustment_values (self : not null access type_view'class);	
+
+	function view_get_type return glib.gtype;
+	pragma convention (c, view_get_type);
+	--  return the internal type
+
+	procedure gtk_new (
+		self	: out type_view_ptr;
+		model	: access type_model'class := null);
+	
 	procedure set_scale (
 		self     : not null access type_view;
 		scale    : gdouble := 1.0;
