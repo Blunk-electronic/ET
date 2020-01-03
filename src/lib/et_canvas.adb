@@ -79,6 +79,8 @@ with ada.unchecked_deallocation;
 with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 
+with et_coordinates;		use et_coordinates;
+
 package body et_canvas is
 
 	function to_string (d : in gdouble) return string is begin
@@ -328,7 +330,8 @@ package body et_canvas is
 -- 			end if;
 -- 		end do_item;
 	begin
--- 		type_model'class (self.all).for_each_item (do_item'access);
+		-- 		type_model'class (self.all).for_each_item (do_item'access);
+		
 
 		if is_first then
 			return no_rectangle;

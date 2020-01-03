@@ -75,6 +75,7 @@ with pango.layout;			use pango.layout;
 with ada.containers;		use ada.containers;
 with ada.containers.doubly_linked_lists;
 
+with et_coordinates;
 
 package et_canvas is
 
@@ -88,11 +89,12 @@ package et_canvas is
 	-- the item points (relative to the item position) must be converted.
 
 	-- For the real world coordinates we define millimeters:
-	type type_millimeters is delta 0.01 range -100_000_000.00 .. 100_000_000.00;
-	for type_millimeters'small use 0.01;
+-- 	type type_millimeters is delta 0.01 range -100_000_000.00 .. 100_000_000.00;
+-- 	for type_millimeters'small use 0.01;
  
 	-- The items placed in the model (or on the sheet) use millimeters.
-	subtype type_model_coordinate is type_millimeters;
+-- 	subtype type_model_coordinate is type_millimeters;
+	subtype type_model_coordinate is et_coordinates.type_distance;
 
 	
 	-- A point at the model (or on the sheet):
@@ -112,7 +114,8 @@ package et_canvas is
 -- ITEM:
 	-- Coordinates relative to the position of the item are used when drawing an item.
 	-- Since they are real world coordinates we use millimeters.
-	subtype type_item_coordinate is type_millimeters;
+	--subtype type_item_coordinate is type_millimeters;
+	subtype type_item_coordinate is et_coordinates.type_distance;
 	
 	type type_item_point is record
 		x, y : type_item_coordinate := type_item_coordinate'first;
@@ -329,6 +332,8 @@ package et_canvas is
 	-- points used by the item.
 	procedure size_request (self : not null access type_item);
 
+	procedure layout_changed (self : not null access type_model'class);
+	
 	-- This procedure should be called every time items are moved, added or removed.
 	-- Call this procedure after having created after a view has been created for the model.
 	procedure refresh_layout (
@@ -379,15 +384,15 @@ package et_canvas is
 		cr		: cairo.cairo_context;
 		item	: access type_item'class := null);
 
-	procedure set_grid_size (
-		self : not null access type_view'class;
-		size : type_model_coordinate := 30.0);
+-- 	procedure set_grid_size (
+-- 		self : not null access type_view'class;
+-- 		size : type_model_coordinate := 30.0);
 
-	procedure draw_grid_dots (
-		self    : not null access type_view'class;
-		style   : gtkada.style.drawing_style;
-		context : type_draw_context;
-		area    : type_model_rectangle);
+-- 	procedure draw_grid_dots (
+-- 		self    : not null access type_view'class;
+-- 		style   : gtkada.style.drawing_style;
+-- 		context : type_draw_context;
+-- 		area    : type_model_rectangle);
 
 	-- Redraw either the whole view, or a specific part of it only.
 	-- The transformation matrix has already been set on the context.

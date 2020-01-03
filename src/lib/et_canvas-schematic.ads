@@ -65,18 +65,122 @@ with pango.layout;			use pango.layout;
 with ada.containers;		use ada.containers;
 with ada.containers.doubly_linked_lists;
 
+with et_coordinates;		use et_coordinates;
 with et_project;			--use et_project;
+
 
 package et_canvas.schematic is
 
+	subtype type_model_coordinate is et_coordinates.type_distance;
+	subtype type_model_point is et_coordinates.geometry.type_point; -- x/y only
+
+-- 	subtype type_item_coordiante is et_coordinates.type_distance;
+-- 	subtype type_item_point is et_coordinates.geometry.type_point;
+	
+	
 	procedure dummy;
 
+-- MODEL
 	type type_model is new et_canvas.type_model with record
 		module	: et_project.type_modules.cursor;
 	end record;
 		
 	canvas	: type_view_ptr;
 	model	: type_model_ptr;
+
+	-- Initializes the internal data so that the model can send signals:
+	procedure init (self : not null access type_model'class);
+
+	-- Creates a new model (or a drawing sheet according to the example above):
+	procedure gtk_new (self : out type_model_ptr);
+
+
+-- VIEW
+	
+	type type_view is new et_canvas.type_view with record
+		-- The upper left corner of the visible area has its initial value at 0/0.
+		-- NOTE: This has nothing to do with the upper left corner of the
+		-- drawing sheet. topleft is not a constant and is changed on by procedure
+		-- set_scale or by procedure scale_to_fit.
+		topleft_2   	: type_model_point := geometry.origin; -- CS rename to topleft
+	end record;
+
+	
+	
+	
+-- CONVERSIONS BETWEEN COORDINATE SYSTEMS
+
+	function view_to_model (
+		self   : not null access type_view;
+		p      : in type_view_point) 
+		return type_model_point;
+	
+	-- Converts the given area of the view to a model rectangle:
+	function view_to_model (
+		self   : not null access type_view;
+		rect   : in type_view_rectangle) -- position and size are in pixels
+		return type_model_rectangle;
+
+	
+	-- Converts the given point in the model to a point in the view.
+	function model_to_view (
+		self   : not null access type_view;
+		p      : in type_model_point) -- position x/y given as a float type
+		return type_view_point;
+	
+	-- Converts the given area of the model to a view rectangle:	
+	function model_to_view (
+		self   : not null access type_view;
+		rect   : in type_model_rectangle) -- position x/y and size given as a float type
+		return type_view_rectangle;
+
+	
+
+	procedure set_scale (
+		self     : not null access type_view;
+		scale    : gdouble := 1.0;
+		preserve : type_model_point := geometry.origin);
+	-- Changes the scaling factor for self.
+	-- this also scrolls the view so that either preserve or the current center
+	-- of the view remains at the same location in the widget, as if the user
+	-- was zooming towards that specific point.
+
+	function get_visible_area (self : not null access type_view) return type_model_rectangle;
+	-- Return the area of the model (or the sheet) that is currently displayed in the view.
+	-- This is in model coordinates (since the canvas coordinates are always
+	-- from (0,0) to (self.get_allocation_width, self.get_allocation_height).
+
+	
+	
+	-- This procedure should be called every time items are moved, added or removed.
+	-- Call this procedure after having created after a view has been created for the model.
+	procedure refresh_layout (
+		self        : not null access type_model;
+		send_signal : boolean := true); -- sends "layout_changed" signal when true
+
+
+	procedure set_grid_size (
+		self : not null access type_view'class;
+		size : type_model_coordinate := 30.0);
+
+	procedure draw_grid_dots (
+		self    : not null access type_view'class;
+		style   : gtkada.style.drawing_style;
+		context : type_draw_context;
+		area    : type_model_rectangle);
+
+	-- Redraw either the whole view, or a specific part of it only.
+	-- The transformation matrix has already been set on the context.
+	procedure draw_internal (
+		self    : not null access type_view;
+		context : type_draw_context;
+		area    : type_model_rectangle);
+
+	procedure scale_to_fit (
+		self      : not null access type_view;
+		rect      : type_model_rectangle := no_rectangle;
+		min_scale : gdouble := 1.0 / 4.0;
+		max_scale : gdouble := 4.0);
 
 	
 end et_canvas.schematic;

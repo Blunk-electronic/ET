@@ -221,7 +221,7 @@ package body gui_general is
 		-- set up the main window
 		init; 
 
-		gtk_new (model); -- model is declared in callbacks_4
+		schematic.gtk_new (model); -- model is declared in callbacks_4
 		initialize (model);
 
 		gtk_new (canvas, model); -- canvas is declared in callbacks_4
