@@ -163,6 +163,9 @@ package et_canvas.schematic is
 
 	procedure layout_changed (self : not null access type_model'class);
 
+	procedure set_transform (
+		self	: not null access type_view;
+		cr		: cairo.cairo_context);
 
 	
 -- CONVERSIONS BETWEEN COORDINATE SYSTEMS

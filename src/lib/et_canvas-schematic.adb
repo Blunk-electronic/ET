@@ -130,6 +130,33 @@ package body et_canvas.schematic is
 		rect1.height := bottom - rect1.y;
 	end;
 
+	procedure set_transform (
+		self	: not null access type_view;
+		cr		: cairo.cairo_context)
+-- 		item	: access type_item'class := null)
+	is
+		model_p : type_model_point := origin;
+		view_p  : type_view_point;
+	begin
+-- 		if item /= null then
+-- 			model_p := item.item_to_model (i_point => (0.0, 0.0));
+-- 		else
+-- 			model_p := (0.0, 0.0);
+-- 		end if;
+
+		-- compute a view point according to current model point:
+		view_p := self.model_to_view (model_p);
+
+		-- Set the CTM so that following draw operations are relative
+		-- to the current view point:
+		translate (cr, view_p.x, view_p.y);
+
+		-- Set the CTM so that following draw operations are scaled
+		-- according to the scale factor of the view:
+		cairo.scale (cr, self.scale, self.scale);
+
+	end set_transform;
+	
 	procedure refresh (
 		self : not null access type_view'class;
 		cr   : cairo.cairo_context;
@@ -153,7 +180,7 @@ package body et_canvas.schematic is
 			view	=> type_view_ptr (self));
 
 		save (cr);
--- CS		self.set_transform (cr);
+		self.set_transform (cr);
 		self.draw_internal (c, a);
 		restore (cr);
 	end refresh;
@@ -266,7 +293,7 @@ package body et_canvas.schematic is
 		-- Convert the view point (pixels) to the position (millimeters) in the model
 		-- and output in on the console:
 		model_point := self.view_to_model (view_point);
-		put_line (" " & to_string (model_point));
+		put_line (" model " & to_string (model_point));
 
 		return false;
 	end on_mouse_movement;
@@ -456,10 +483,10 @@ package body et_canvas.schematic is
 -- 		if is_first then
 -- 			return no_rectangle;
 -- 		else
--- 			result.x := result.x - margin;
--- 			result.y := result.y - margin;
--- 			result.width := result.width + 2.0 * margin;
--- 			result.height := result.height + 2.0 * margin;
+			result.x := result.x - margin;
+			result.y := result.y - margin;
+			result.width := result.width + 2.0 * margin;
+			result.height := result.height + 2.0 * margin;
 			return result;
 -- 		end if;
 	end bounding_box;
