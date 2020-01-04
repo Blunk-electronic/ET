@@ -36,13 +36,14 @@
 --
 
 with et_string_processing;		use et_string_processing;
-with et_general;
+with et_general;				use et_general;
+with et_project;				use et_project;
 with et_canvas.schematic;
 
 package gui_general is
 
 	procedure single_module (
-		-- CS take module file name
+		module			: in type_modules.cursor; -- cursor of generic module
 		log_threshold	: in type_log_level
 		);
 

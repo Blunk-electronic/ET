@@ -79,15 +79,13 @@ with ada.unchecked_deallocation;
 with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 
+with et_project;
+with et_frames;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.geometry;
 
 package body et_canvas.schematic is
 
-
-
-
-	
 	model_signals : constant gtkada.types.chars_ptr_array := (
 		1 => new_string (string (signal_layout_changed))
 		);
@@ -103,7 +101,6 @@ package body et_canvas.schematic is
 
 	model_class_record : glib.object.ada_gobject_class := glib.object.uninitialized_class;
 	view_class_record : aliased glib.object.ada_gobject_class := glib.object.uninitialized_class;
-
 	
 	function model_get_type return glib.gtype is begin
 		glib.object.initialize_class_record (
@@ -117,7 +114,6 @@ package body et_canvas.schematic is
 			);  
 		return model_class_record.the_type;
 	end model_get_type;
-
 	
 	procedure union (
 		rect1 : in out type_model_rectangle;
@@ -259,7 +255,6 @@ package body et_canvas.schematic is
 
 		-- The point in the model (or on the sheet) expressed in millimeters:
 		model_point : type_model_point;
-		
 	begin
 		new_line;
 		put_line ("mouse movement ! new positions are:");
@@ -348,32 +343,9 @@ package body et_canvas.schematic is
 		self.viewport_changed;
 	end set_model;
 	
--- 	model_signals : constant gtkada.types.chars_ptr_array := (
--- 		1 => new_string (string (signal_layout_changed))
--- 		);
 
-	
--- 	model_class_record : glib.object.ada_gobject_class := glib.object.uninitialized_class;
-	
--- 	function model_get_type return glib.gtype is begin
--- 		glib.object.initialize_class_record (
--- 			ancestor     => gtype_object,
--- 			signals      => model_signals,
--- 			class_record => model_class_record,
--- 			type_name    => "gtkada_model",
--- 			parameters   => (
--- 				1 => (1 => gtype_none)  	-- layout_changed
--- 				)
--- 			);  
--- 		return model_class_record.the_type;
--- 	end model_get_type;
 
-	
--- 	procedure init (self : not null access type_model'class) is begin
--- 		if not self.is_created then
--- 			g_new (self, model_get_type);
--- 		end if;
--- 	end;
+
 	
 	procedure gtk_new (self : out type_model_ptr) is begin
 		self := new type_model;
@@ -386,14 +358,18 @@ package body et_canvas.schematic is
 		end if;
 	end;
 
+	
 	function get_scale (self : not null access type_view) return gdouble is
 	begin
 		return self.scale;
 	end get_scale;
 
+	
 	procedure layout_changed (self : not null access type_model'class) is begin
 		object_callback.emit_by_name (self, signal_layout_changed);
 	end layout_changed;
+
+
 
 	
 -- CONVERSIONS BETWEEN COORDINATE SYSTEMS
@@ -458,6 +434,10 @@ package body et_canvas.schematic is
 		result : type_model_rectangle;
 		is_first : boolean := true;
 
+		use et_project;
+		use et_frames;
+
+		frame : type_frame (et_frames.SCHEMATIC);
 -- 		procedure do_item (item : not null access type_item'class) is
 -- 			box : constant type_model_rectangle := item.model_bounding_box;
 -- 		begin
@@ -470,17 +450,18 @@ package body et_canvas.schematic is
 -- 		end do_item;
 	begin
 		-- 		type_model'class (self.all).for_each_item (do_item'access);
-		
+		frame := type_modules.element (self.module).frames.frame;
+		result := (0.0, 0.0, type_model_coordinate (1000), type_model_coordinate (1000));
 
-		if is_first then
-			return no_rectangle;
-		else
+-- 		if is_first then
+-- 			return no_rectangle;
+-- 		else
 -- 			result.x := result.x - margin;
 -- 			result.y := result.y - margin;
 -- 			result.width := result.width + 2.0 * margin;
 -- 			result.height := result.height + 2.0 * margin;
 			return result;
-		end if;
+-- 		end if;
 	end bounding_box;
 	
 	procedure set_adjustment_values (self : not null access type_view'class) is
@@ -773,14 +754,10 @@ package body et_canvas.schematic is
 	procedure refresh_layout (
 		self        : not null access type_model;
 		send_signal : boolean := true) is
-		
--- 		procedure do_size_request (item : not null access type_item'class) is begin
--- 			type_item'class (item.all).size_request;
--- 		end;
-
 	begin
 		-- Update the width and height of all items:
--- 		type_model'class (self.all).for_each_item (do_size_request'access);
+		
+		-- CS no need for size request. All items will have properties width and heigth.
 
 		if send_signal then
 			type_model'class (self.all).layout_changed;
@@ -843,7 +820,7 @@ package body et_canvas.schematic is
 		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
 		
 	begin
-		put_line ("draw internal ...");
+		--put_line ("draw internal ...");
 		
 		if self.model /= null then
 
@@ -915,6 +892,14 @@ package body et_canvas.schematic is
 			end if;
 		end if;
 	end scale_to_fit;
+
+--
+	procedure set_module (
+		model	: not null access type_model;
+		module	: in et_project.type_modules.cursor) is
+	begin 
+		model.module := module;
+	end;
 
 	
 end et_canvas.schematic;

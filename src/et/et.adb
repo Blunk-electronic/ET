@@ -596,10 +596,18 @@ procedure et is
 
 	procedure launch_gui is 
 		use gui_general;
+		use et_project;
+		use et_project.type_modules;
+-- 		generic_module_name : et_general.type_module_name.bounded_string;
+		module_cursor : type_modules.cursor := modules.first; -- CS use name of module file as provided by cmd line
 	begin
 		case runmode is 
 			when MODE_HEADLESS => null;
-			when MODE_MODULE => single_module (log_threshold => 0); -- CS provide module file name
+			when MODE_MODULE => 
+-- 				generic_module_name := key (module_cursor);
+				single_module (
+					module			=> module_cursor,
+					log_threshold	=> 0);
 			when others => null;
 		end case;
 	end;

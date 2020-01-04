@@ -53,6 +53,7 @@ with ada.text_io;			use ada.text_io;
 with ada.directories;
 
 with et_general;				use et_general;
+with et_project;				use et_project;
 with et_string_processing;		use et_string_processing;
 
 with gui_cb;					use gui_cb;	
@@ -213,18 +214,22 @@ package body gui_general is
 
 	
 	procedure single_module (
+		module			: in type_modules.cursor; -- cursor of generic module to be edited
 		log_threshold	: in type_log_level) is
 		use et_canvas.schematic;
 	begin
 		log (text => "launching mode " & to_string (MODE_MODULE), level => log_threshold);
+		log (text => "opening module " & enclose_in_quotes (to_string (type_modules.key (module))), level => log_threshold);
 
 		-- set up the main window
 		init; 
 
-		schematic.gtk_new (model); -- model is declared in callbacks_4
+		schematic.gtk_new (model);
 		initialize (model);
 
-		gtk_new (canvas, model); -- canvas is declared in callbacks_4
+		set_module (model, module);
+
+		gtk_new (canvas, model);
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 
 		

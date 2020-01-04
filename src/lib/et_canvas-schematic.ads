@@ -100,13 +100,6 @@ package et_canvas.schematic is
 
 	model	: type_model_ptr;
 
-	
-	function on_layout_changed (
-		self : not null access type_model'class;
-		call : not null access procedure (self : not null access gobject_record'class);
-		slot : access gobject_record'class := null)
-		return gtk.handlers.handler_id;
-
 
 	
 	-- Creates a new model (or a drawing sheet according to the example above):
@@ -148,8 +141,15 @@ package et_canvas.schematic is
 	type type_view_ptr is access all type_view'class;
 
 	canvas	: type_view_ptr;
-
+	scale	: gdouble := 1.0;
+	
 	procedure viewport_changed (self : not null access type_view'class);
+
+	function on_layout_changed (
+		self : not null access type_model'class;
+		call : not null access procedure (self : not null access gobject_record'class);
+		slot : access gobject_record'class := null)
+		return gtk.handlers.handler_id;
 	
 	function get_scale (self : not null access type_view) return gdouble;
 
@@ -162,6 +162,8 @@ package et_canvas.schematic is
 	end record;
 
 	procedure layout_changed (self : not null access type_model'class);
+
+
 	
 -- CONVERSIONS BETWEEN COORDINATE SYSTEMS
 
@@ -251,6 +253,12 @@ package et_canvas.schematic is
 		rect      : type_model_rectangle := no_rectangle;
 		min_scale : gdouble := 1.0 / 4.0;
 		max_scale : gdouble := 4.0);
+--
+
+	-- Assign the module to be edited to the model:
+	procedure set_module (
+		model	: not null access type_model;
+		module	: in et_project.type_modules.cursor);
 
 	
 end et_canvas.schematic;

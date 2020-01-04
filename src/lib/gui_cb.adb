@@ -39,7 +39,7 @@
 with gtk.main;
 with ada.text_io;				use ada.text_io;
 with et_canvas;					use et_canvas;
-
+with et_canvas.schematic;		use et_canvas.schematic;
 
 package body gui_cb is
 
@@ -52,25 +52,25 @@ package body gui_cb is
 	procedure zoom_to_fit (self : access glib.object.gobject_record'class) is 
 	begin
 		put_line ("zoom to fit ...");
--- 		scale_to_fit (canvas);
+		scale_to_fit (canvas);
 -- 		put_line (to_string (get_scale (canvas)));
 	end;
 
 	procedure zoom_in (self : access glib.object.gobject_record'class) is begin
 		put_line ("zooming in ...");
--- 		scale := get_scale (canvas);
--- 		scale := scale + 0.1;
--- 		set_scale (canvas, scale);
+		scale := get_scale (canvas);
+		scale := scale + 0.1;
+		set_scale (canvas, scale);
 -- 		put_line (to_string (get_scale (canvas)));
 	end;
 
 	procedure zoom_out (self : access glib.object.gobject_record'class) is begin
 		put_line ("zooming out ...");
--- 		scale := get_scale (canvas);
--- 		if scale >= 0.0 then
--- 			scale := scale - 0.1;
--- 			set_scale (canvas, scale);
--- 		end if;
+		scale := get_scale (canvas);
+		if scale >= 0.0 then
+			scale := scale - 0.1;
+			set_scale (canvas, scale);
+		end if;
 -- 		put_line (to_string (get_scale (canvas)));
 	end;
 
