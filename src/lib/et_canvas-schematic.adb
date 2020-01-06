@@ -79,6 +79,7 @@ with ada.unchecked_deallocation;
 with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 
+with et_general;
 with et_project;
 with et_frames;
 with et_coordinates;			use et_coordinates;
@@ -455,40 +456,42 @@ package body et_canvas.schematic is
 
 	function bounding_box (
 		self   : not null access type_model;
-		margin : type_model_coordinate := 0.0)
+		margin : type_model_coordinate := 0.0) -- CS no need
 		return type_model_rectangle is
 		
 		result : type_model_rectangle;
-		is_first : boolean := true;
 
+		use et_general;
 		use et_project;
 		use et_frames;
 
 		frame : type_frame (et_frames.SCHEMATIC);
--- 		procedure do_item (item : not null access type_item'class) is
--- 			box : constant type_model_rectangle := item.model_bounding_box;
--- 		begin
--- 			if is_first then
--- 				is_first := false;
--- 				result := box;
--- 			else
--- 				union (result, box);
--- 			end if;
--- 		end do_item;
+		paper_height, paper_width : type_model_coordinate;
+		
 	begin
-		-- 		type_model'class (self.all).for_each_item (do_item'access);
 		frame := type_modules.element (self.module).frames.frame;
-		result := (0.0, 0.0, type_model_coordinate (1000), type_model_coordinate (1000));
 
--- 		if is_first then
--- 			return no_rectangle;
--- 		else
-			result.x := result.x - margin;
-			result.y := result.y - margin;
-			result.width := result.width + 2.0 * margin;
-			result.height := result.height + 2.0 * margin;
-			return result;
--- 		end if;
+		paper_height := type_model_coordinate (paper_dimension (
+							paper_size	=> frame.paper,
+							orientation	=> frame.orientation,
+							axis		=> Y));
+
+		paper_width := type_model_coordinate (paper_dimension (
+							paper_size	=> frame.paper,
+							orientation	=> frame.orientation,
+							axis		=> X));
+		
+		result := (0.0, 0.0, 
+-- 				   type_model_coordinate (frame.size.x),
+-- 				   type_model_coordinate (frame.size.y));
+					paper_width, paper_height);
+				   
+-- 		result.x := result.x - margin;
+-- 		result.y := result.y - margin;
+-- 		result.width := result.width + 2.0 * margin;
+-- 		result.height := result.height + 2.0 * margin;
+
+		return result;
 	end bounding_box;
 	
 	procedure set_adjustment_values (self : not null access type_view'class) is
@@ -794,7 +797,7 @@ package body et_canvas.schematic is
 
 	procedure set_grid_size (
 		self : not null access type_view'class;
-		size : type_model_coordinate := 30.0) is
+		size : type_model_coordinate := grid_default) is
 	begin
 		self.grid_size := size;
 	end set_grid_size;
@@ -821,7 +824,7 @@ package body et_canvas.schematic is
 				tmpy := type_view_coordinate (gint (area.y / self.grid_size)) * type_view_coordinate (self.grid_size);
 				
 				while tmpy < type_view_coordinate (area.y + area.height) loop
-					rectangle (context.cr, tmpx - 0.5, tmpy - 0.5, 1.0, 1.0);
+					rectangle (context.cr, tmpx - 0.5, tmpy - 0.5, 0.1, 0.1);
 					tmpy := tmpy + type_view_coordinate (self.grid_size);
 				end loop;
 
@@ -832,6 +835,85 @@ package body et_canvas.schematic is
 		end if;
 	end draw_grid_dots;
 
+	procedure draw_frame (
+		model	: not null access type_model;
+		in_area	: in type_model_rectangle := no_rectangle;
+		context : in type_draw_context) is
+
+		use et_general;
+		use et_project;
+		use et_frames;
+
+		frame : type_frame (et_frames.SCHEMATIC);
+		paper_height, paper_width : type_model_coordinate;
+		
+
+		bounding_box : type_model_rectangle;
+	begin
+-- 		put_line ("draw frame ...");
+		
+		frame := type_modules.element (model.module).frames.frame;
+		
+		paper_height := type_model_coordinate (paper_dimension (
+							paper_size	=> frame.paper,
+							orientation	=> frame.orientation,
+							axis		=> Y));
+
+		paper_width := type_model_coordinate (paper_dimension (
+							paper_size	=> frame.paper,
+							orientation	=> frame.orientation,
+							axis		=> X));
+
+		
+		bounding_box.x := (paper_width - type_model_coordinate (frame.size.x)) / 2.0;
+		bounding_box.y := (paper_height - type_model_coordinate (frame.size.y)) / 2.0;
+		bounding_box.width := type_model_coordinate (frame.size.x);
+		bounding_box.height := type_model_coordinate (frame.size.y);
+
+		if (in_area = no_rectangle)
+			or else intersects (in_area, bounding_box) 
+		then
+			-- CS test size 
+-- 			if not size_above_threshold (self, context.view) then
+-- 				return;
+-- 			end if;
+
+			
+			save (context.cr);
+
+			-- Prepare the current transformation matrix (CTM) so that
+			-- all following drawing is relative to the upper left frame corner.
+			translate (
+				context.cr,
+				type_view_coordinate (bounding_box.x),
+				type_view_coordinate (bounding_box.y));
+
+			cairo.set_line_width (context.cr, 1.0);
+
+			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (0), gdouble (0)); -- red
+
+			-- draw the outer frame
+			cairo.rectangle (
+				context.cr,
+				type_view_coordinate (0.0),
+				type_view_coordinate (0.0),
+				type_view_coordinate (frame.size.x),
+				type_view_coordinate (frame.size.y));
+
+			-- draw the inner frame
+			cairo.rectangle (
+				context.cr,
+				type_view_coordinate (frame.border_width),
+				type_view_coordinate (frame.border_width),
+				type_view_coordinate (frame.size.x - 2 * frame.border_width),
+				type_view_coordinate (frame.size.y - 2 * frame.border_width));
+
+			cairo.stroke (context.cr);
+			
+			restore (context.cr);
+		end if;
+	end;
+	
 	procedure draw_internal (
 		self    : not null access type_view;
 		context : type_draw_context;
@@ -856,9 +938,10 @@ package body et_canvas.schematic is
 			paint (context.cr);
 
 			-- draw white grid dots:
-			set_grid_size (self, 100.0);
+			set_grid_size (self, grid_default);
 			draw_grid_dots (self, style, context, area);
-			
+
+			self.model.draw_frame (area, context);
 -- 			self.model.for_each_item (draw_item'access, in_area => area);
 			
 		end if;

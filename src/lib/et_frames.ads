@@ -94,7 +94,7 @@ package et_frames is
 	function to_string (distance : in type_distance) return string;
 	function to_distance (distance : in string) return type_distance;
 	
-	type type_size is record
+	type type_size is record -- CS rename to type_frame_size
 		x	: type_distance := 280;
 		y	: type_distance := 200;
 	end record;

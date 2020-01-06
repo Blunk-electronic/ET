@@ -232,6 +232,7 @@ package body gui_general is
 		gtk_new (canvas, model);
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 
+		scale_to_fit (canvas);
 		
 		-- Display all the widgets on the screen:
 		window.show_all;

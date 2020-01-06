@@ -234,9 +234,11 @@ package et_canvas.schematic is
 		send_signal : boolean := true); -- sends "layout_changed" signal when true
 
 
+	grid_default : constant type_model_coordinate := 10.0;
+	
 	procedure set_grid_size (
 		self : not null access type_view'class;
-		size : type_model_coordinate := 30.0);
+		size : type_model_coordinate := grid_default);
 
 	procedure draw_grid_dots (
 		self    : not null access type_view'class;
@@ -244,6 +246,12 @@ package et_canvas.schematic is
 		context : type_draw_context;
 		area    : type_model_rectangle);
 
+	procedure draw_frame (
+		model	: not null access type_model;
+		in_area	: in type_model_rectangle := no_rectangle;
+		context : in type_draw_context);		
+
+	
 	-- Redraw either the whole view, or a specific part of it only.
 	-- The transformation matrix has already been set on the context.
 	procedure draw_internal (
