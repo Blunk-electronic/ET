@@ -267,6 +267,11 @@ package body et_canvas.schematic is
 	end intersects;
 
 
+	-- To convert a model point to a drawing point:
+	function model_to_drawing (model_point : in type_model_point) return type_model_point is 
+	begin
+		return model_point;
+	end;
 	
 	-- For demonstrating the difference between view coordinates (pixels) and model coordinates
 	-- this function outputs them at the console.
@@ -283,6 +288,8 @@ package body et_canvas.schematic is
 
 		-- The point in the model (or on the sheet) expressed in millimeters:
 		model_point : type_model_point;
+
+		drawing_point : type_model_point;
 	begin
 		new_line;
 		put_line ("mouse movement ! new positions are:");
@@ -296,6 +303,9 @@ package body et_canvas.schematic is
 		model_point := self.view_to_model (view_point);
 		put_line (" model " & to_string (model_point));
 
+		drawing_point := model_to_drawing (model_point);
+		put_line (" drawing " & to_string (drawing_point));
+		
 		return false;
 	end on_mouse_movement;
 
@@ -372,9 +382,6 @@ package body et_canvas.schematic is
 	end set_model;
 	
 
-
-
-	
 	procedure gtk_new (self : out type_model_ptr) is begin
 		self := new type_model;
 		init (self);
@@ -458,40 +465,8 @@ package body et_canvas.schematic is
 		self   : not null access type_model;
 		margin : type_model_coordinate := 0.0) -- CS no need
 		return type_model_rectangle is
-		
-		result : type_model_rectangle;
-
-		use et_general;
-		use et_project;
-		use et_frames;
-
-		frame : type_frame (et_frames.SCHEMATIC);
-		paper_height, paper_width : type_model_coordinate;
-		
 	begin
-		frame := type_modules.element (self.module).frames.frame;
-
-		paper_height := type_model_coordinate (paper_dimension (
-							paper_size	=> frame.paper,
-							orientation	=> frame.orientation,
-							axis		=> Y));
-
-		paper_width := type_model_coordinate (paper_dimension (
-							paper_size	=> frame.paper,
-							orientation	=> frame.orientation,
-							axis		=> X));
-		
-		result := (0.0, 0.0, 
--- 				   type_model_coordinate (frame.size.x),
--- 				   type_model_coordinate (frame.size.y));
-					paper_width, paper_height);
-				   
--- 		result.x := result.x - margin;
--- 		result.y := result.y - margin;
--- 		result.width := result.width + 2.0 * margin;
--- 		result.height := result.height + 2.0 * margin;
-
-		return result;
+		return self.paper_bounding_box;
 	end bounding_box;
 	
 	procedure set_adjustment_values (self : not null access type_view'class) is
@@ -840,38 +815,12 @@ package body et_canvas.schematic is
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context) is
 
-		use et_general;
-		use et_project;
 		use et_frames;
-
-		frame : type_frame (et_frames.SCHEMATIC);
-		paper_height, paper_width : type_model_coordinate;
-		
-
-		bounding_box : type_model_rectangle;
 	begin
 -- 		put_line ("draw frame ...");
-		
-		frame := type_modules.element (model.module).frames.frame;
-		
-		paper_height := type_model_coordinate (paper_dimension (
-							paper_size	=> frame.paper,
-							orientation	=> frame.orientation,
-							axis		=> Y));
-
-		paper_width := type_model_coordinate (paper_dimension (
-							paper_size	=> frame.paper,
-							orientation	=> frame.orientation,
-							axis		=> X));
-
-		
-		bounding_box.x := (paper_width - type_model_coordinate (frame.size.x)) / 2.0;
-		bounding_box.y := (paper_height - type_model_coordinate (frame.size.y)) / 2.0;
-		bounding_box.width := type_model_coordinate (frame.size.x);
-		bounding_box.height := type_model_coordinate (frame.size.y);
 
 		if (in_area = no_rectangle)
-			or else intersects (in_area, bounding_box) 
+			or else intersects (in_area, model.frame_bounding_box) 
 		then
 			-- CS test size 
 -- 			if not size_above_threshold (self, context.view) then
@@ -885,8 +834,8 @@ package body et_canvas.schematic is
 			-- all following drawing is relative to the upper left frame corner.
 			translate (
 				context.cr,
-				type_view_coordinate (bounding_box.x),
-				type_view_coordinate (bounding_box.y));
+				type_view_coordinate (model.frame_bounding_box.x),
+				type_view_coordinate (model.frame_bounding_box.y));
 
 			cairo.set_line_width (context.cr, 1.0);
 
@@ -897,16 +846,16 @@ package body et_canvas.schematic is
 				context.cr,
 				type_view_coordinate (0.0),
 				type_view_coordinate (0.0),
-				type_view_coordinate (frame.size.x),
-				type_view_coordinate (frame.size.y));
+				type_view_coordinate (model.frame.size.x),
+				type_view_coordinate (model.frame.size.y));
 
 			-- draw the inner frame
 			cairo.rectangle (
 				context.cr,
-				type_view_coordinate (frame.border_width),
-				type_view_coordinate (frame.border_width),
-				type_view_coordinate (frame.size.x - 2 * frame.border_width),
-				type_view_coordinate (frame.size.y - 2 * frame.border_width));
+				type_view_coordinate (model.frame.border_width),
+				type_view_coordinate (model.frame.border_width),
+				type_view_coordinate (model.frame.size.x - 2 * model.frame.border_width),
+				type_view_coordinate (model.frame.size.y - 2 * model.frame.border_width));
 
 			cairo.stroke (context.cr);
 			
@@ -1003,12 +952,38 @@ package body et_canvas.schematic is
 		end if;
 	end scale_to_fit;
 
---
+
 	procedure set_module (
-		model	: not null access type_model;
+		self	: not null access type_model;
 		module	: in et_project.type_modules.cursor) is
+
+		use et_general;
+		use et_frames;
+		use et_project;
+		
 	begin 
-		model.module := module;
+		self.module := module;
+
+		-- set some variables frequently used regarding frame and paper:
+		self.frame := type_modules.element (model.module).frames.frame;
+		
+		self.paper_height := type_model_coordinate (paper_dimension (
+							paper_size	=> self.frame.paper,
+							orientation	=> self.frame.orientation,
+							axis		=> Y));
+
+		self.paper_width := type_model_coordinate (paper_dimension (
+							paper_size	=> self.frame.paper,
+							orientation	=> self.frame.orientation,
+							axis		=> X));
+
+		self.frame_bounding_box.x := (self.paper_width - type_model_coordinate (self.frame.size.x)) / 2.0;
+		self.frame_bounding_box.y := (self.paper_height - type_model_coordinate (self.frame.size.y)) / 2.0;
+		self.frame_bounding_box.width := type_model_coordinate (self.frame.size.x);
+		self.frame_bounding_box.height := type_model_coordinate (self.frame.size.y);
+
+		self.paper_bounding_box := (0.0, 0.0, self.paper_width, self.paper_height);
+	
 	end;
 
 	

@@ -67,7 +67,7 @@ with ada.containers.doubly_linked_lists;
 
 with et_coordinates;		use et_coordinates;
 with et_project;			--use et_project;
-
+with et_frames;				--use et_frames;
 
 package et_canvas.schematic is
 
@@ -93,10 +93,17 @@ package et_canvas.schematic is
 	type type_model is new glib.object.gobject_record with record
 		layout	: pango.layout.pango_layout;
 		module	: et_project.type_modules.cursor;
+		
+		frame				: et_frames.type_frame (et_frames.SCHEMATIC);
+		frame_bounding_box	: type_model_rectangle;
+
+		paper_bounding_box	: type_model_rectangle;
+		paper_height	: type_model_coordinate;
+		paper_width		: type_model_coordinate;
 	end record;
 
 	type type_model_ptr is access all type_model'class;
-	
+
 
 	model	: type_model_ptr;
 
@@ -268,7 +275,7 @@ package et_canvas.schematic is
 
 	-- Assign the module to be edited to the model:
 	procedure set_module (
-		model	: not null access type_model;
+		self	: not null access type_model;
 		module	: in et_project.type_modules.cursor);
 
 	
