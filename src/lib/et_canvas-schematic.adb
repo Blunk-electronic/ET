@@ -829,30 +829,50 @@ package body et_canvas.schematic is
 		use et_frames;
 		use pac_lines;
 
-		-- In order to convert the drawing y coordinates to the model coordinates
-		-- we need to know the height of the drawing frame. The drawing coordinates have the 
-		-- y-axis going upwards. The model coordinates have y-axis going downwards.
-		height : constant et_frames.type_distance := model.frame.size.y;
-
-		-- drawing of the title block items is relative to the title block position:
-		title_block_x : constant et_frames.type_distance := model.frame.title_block_schematic.position.x;
-		title_block_y : constant et_frames.type_distance := model.frame.title_block_schematic.position.y;
-
 		-- Draw the line of the title block. The line is offset by the position of the
 		-- title block. The y-cooordinate is converted to the y-axis going downwards.
 		procedure draw_line (cursor : in pac_lines.cursor) is begin
-			cairo.move_to (context.cr,
-				type_view_coordinate (element (cursor).start_point.x + title_block_x),
-				type_view_coordinate (height - (element (cursor).start_point.y + title_block_y)));
 
-			cairo.line_to (context.cr,
-				type_view_coordinate (element (cursor).end_point.x + title_block_x),
-				type_view_coordinate (height - (element (cursor).end_point.y + title_block_y)));
+			-- start point
+			cairo.move_to 
+				(
+				context.cr,
+
+				-- x position
+				type_view_coordinate (
+					element (cursor).start_point.x 
+					+ model.title_block_position.x), -- x position of title block
+
+				-- y position
+				type_view_coordinate (
+					model.frame_bounding_box.height -- height of the drawing frame
+					- type_model_coordinate (
+						element (cursor).start_point.y 
+						+ model.title_block_position.y)) -- y position of title block
+				);
+
+			-- end point
+			cairo.line_to 
+				(
+				context.cr,
+
+				-- x position	
+				type_view_coordinate (
+					element (cursor).end_point.x 
+					+ model.title_block_position.x), -- x position of title block
+
+				-- y position
+				type_view_coordinate (
+					model.frame_bounding_box.height  -- height of the drawing frame 
+					- type_model_coordinate (
+						element (cursor).end_point.y 
+						+ model.title_block_position.y)) -- y position of title block
+				);
 		end;
 		
 		
 	begin
-		put_line ("draw frame ...");
+--		put_line ("draw frame ...");
 
 		if (in_area = no_rectangle)
 			or else intersects (in_area, model.frame_bounding_box) 
@@ -1033,7 +1053,9 @@ package body et_canvas.schematic is
 
 		-- The sheet has a drawing box:
 		self.paper_bounding_box := (0.0, 0.0, self.paper_width, self.paper_height);
-	
+
+		-- Drawing of the title block items is relative to the title block position:
+		self.title_block_position := self.frame.title_block_schematic.position;
 	end;
 
 -- 	function drawing_to_model (drawing_point : in type_model_point)

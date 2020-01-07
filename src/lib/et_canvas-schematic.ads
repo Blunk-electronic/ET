@@ -93,13 +93,19 @@ package et_canvas.schematic is
 	type type_model is new glib.object.gobject_record with record
 		layout	: pango.layout.pango_layout;
 		module	: et_project.type_modules.cursor;
-		
+
+		-- These variables are frequently used. Procedure set_module
+		-- sets them. Other operations are free to access
+		-- them.
 		frame				: et_frames.type_frame (et_frames.SCHEMATIC);
 		frame_bounding_box	: type_model_rectangle;
+		frame_height		: et_frames.type_distance;
 
 		paper_bounding_box	: type_model_rectangle;
-		paper_height	: type_model_coordinate;
-		paper_width		: type_model_coordinate;
+		paper_height		: type_model_coordinate;
+		paper_width			: type_model_coordinate;
+
+		title_block_position	: et_frames.type_position;
 	end record;
 
 	type type_model_ptr is access all type_model'class;
