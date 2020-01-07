@@ -88,8 +88,9 @@ package et_frames is
 		rows	: type_rows := rows_default; 
 		columns	: type_columns := columns_default;
 	end record;
-	
-	type type_distance is new natural range 1 .. 10000;
+
+	-- The unit for all kinds of distances in a drawing frame is millimeters.
+	type type_distance is new natural range 0 .. 10000;
 
 	function to_string (distance : in type_distance) return string;
 	function to_distance (distance : in string) return type_distance;
@@ -187,6 +188,9 @@ package et_frames is
 	-- The basic title block:
 	type type_title_block is tagged record
 		position		: type_position := position_default;
+
+		-- The positions of title block objects are relative
+		-- to the position of the title block:
 		lines			: pac_lines.list;
 		placeholders	: type_placeholders_common;
 		texts			: pac_texts.list;

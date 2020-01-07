@@ -829,24 +829,30 @@ package body et_canvas.schematic is
 		use et_frames;
 		use pac_lines;
 
+		-- In order to convert the drawing y coordinates to the model coordinates
+		-- we need to know the height of the drawing frame. The drawing coordinates have the 
+		-- y-axis going upwards. The model coordinates have y-axis going downwards.
 		height : constant et_frames.type_distance := model.frame.size.y;
 
+		-- drawing of the title block items is relative to the title block position:
 		title_block_x : constant et_frames.type_distance := model.frame.title_block_schematic.position.x;
-		
-		procedure draw_line (cursor : in pac_lines.cursor) is 
-		begin
+		title_block_y : constant et_frames.type_distance := model.frame.title_block_schematic.position.y;
+
+		-- Draw the line of the title block. The line is offset by the position of the
+		-- title block. The y-cooordinate is converted to the y-axis going downwards.
+		procedure draw_line (cursor : in pac_lines.cursor) is begin
 			cairo.move_to (context.cr,
-				type_view_coordinate (title_block_x + element (cursor).start_point.x),
-				type_view_coordinate (height - element (cursor).start_point.y));
+				type_view_coordinate (element (cursor).start_point.x + title_block_x),
+				type_view_coordinate (height - (element (cursor).start_point.y + title_block_y)));
 
 			cairo.line_to (context.cr,
-				type_view_coordinate (title_block_x + element (cursor).end_point.x),
-				type_view_coordinate (height - element (cursor).end_point.y));
+				type_view_coordinate (element (cursor).end_point.x + title_block_x),
+				type_view_coordinate (height - (element (cursor).end_point.y + title_block_y)));
 		end;
 		
 		
 	begin
--- 		put_line ("draw frame ...");
+		put_line ("draw frame ...");
 
 		if (in_area = no_rectangle)
 			or else intersects (in_area, model.frame_bounding_box) 
@@ -886,6 +892,7 @@ package body et_canvas.schematic is
 				type_view_coordinate (model.frame.size.y - 2 * model.frame.border_width));
 
 			-- draw the title block
+
 			
 			-- lines
 			iterate (model.frame.title_block_schematic.lines, draw_line'access);
