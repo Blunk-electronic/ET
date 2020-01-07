@@ -201,8 +201,18 @@ package et_canvas.schematic is
 		rect   : in type_model_rectangle) -- position x/y and size given as a float type
 		return type_view_rectangle;
 
+	-- Converts a model point to a drawing point. 
+	-- NOTE: The model point is in a coordinate system with y-axis
+	-- going downwards. The drawing point is in a system where y-axis
+	-- goes upwards. The origin of the drawing coordinate system is the
+	-- lower left corner of the drawing frame.
+	function model_to_drawing (model_point : in type_model_point)
+		return type_model_point;
 
-	
+
+	-- Returns the bounding box of the whole model.
+	-- Currently it returns the bounding box of the drawing sheet
+	-- which seems sufficient for now.
 	function bounding_box (
 		self   : not null access type_model;
 		margin : type_model_coordinate := 0.0)

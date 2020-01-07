@@ -266,12 +266,6 @@ package body et_canvas.schematic is
 			or else rect2.y > rect1.y + rect1.height); --  r1 above r2
 	end intersects;
 
-
-	-- To convert a model point to a drawing point:
-	function model_to_drawing (model_point : in type_model_point) return type_model_point is 
-	begin
-		return model_point;
-	end;
 	
 	-- For demonstrating the difference between view coordinates (pixels) and model coordinates
 	-- this function outputs them at the console.
@@ -459,11 +453,28 @@ package body et_canvas.schematic is
 		return result;
 	end model_to_view;
 
+	function model_to_drawing (model_point : in type_model_point)
+		return type_model_point is 
+		use et_general;
+		p : type_model_point; -- to be returned
+	begin
+		set (point	=> p,
+			 axis	=> X, 
+			 value	=> model_point.x - model.frame_bounding_box.x);
+		
+		set (point	=> p,
+			 axis	=> Y,
+			 value	=> type_model_coordinate (model.frame.size.y) 
+						- model_point.y 
+						+ model.frame_bounding_box.y);
+		
+		return p;
+	end;
 
 
 	function bounding_box (
 		self   : not null access type_model;
-		margin : type_model_coordinate := 0.0) -- CS no need
+		margin : type_model_coordinate := 0.0)
 		return type_model_rectangle is
 	begin
 		return self.paper_bounding_box;
@@ -816,6 +827,24 @@ package body et_canvas.schematic is
 		context : in type_draw_context) is
 
 		use et_frames;
+		use pac_lines;
+
+		height : constant et_frames.type_distance := model.frame.size.y;
+
+		title_block_x : constant et_frames.type_distance := model.frame.title_block_schematic.position.x;
+		
+		procedure draw_line (cursor : in pac_lines.cursor) is 
+		begin
+			cairo.move_to (context.cr,
+				type_view_coordinate (title_block_x + element (cursor).start_point.x),
+				type_view_coordinate (height - element (cursor).start_point.y));
+
+			cairo.line_to (context.cr,
+				type_view_coordinate (title_block_x + element (cursor).end_point.x),
+				type_view_coordinate (height - element (cursor).end_point.y));
+		end;
+		
+		
 	begin
 -- 		put_line ("draw frame ...");
 
@@ -826,7 +855,6 @@ package body et_canvas.schematic is
 -- 			if not size_above_threshold (self, context.view) then
 -- 				return;
 -- 			end if;
-
 			
 			save (context.cr);
 
@@ -857,6 +885,15 @@ package body et_canvas.schematic is
 				type_view_coordinate (model.frame.size.x - 2 * model.frame.border_width),
 				type_view_coordinate (model.frame.size.y - 2 * model.frame.border_width));
 
+			-- draw the title block
+			
+			-- lines
+			iterate (model.frame.title_block_schematic.lines, draw_line'access);
+			
+			-- CS draw the sector delimiters
+
+			-- CS draw the sector rows and columns
+			
 			cairo.stroke (context.cr);
 			
 			restore (context.cr);
@@ -977,15 +1014,33 @@ package body et_canvas.schematic is
 							orientation	=> self.frame.orientation,
 							axis		=> X));
 
+		-- The drawing frame has a bounding box:
+
+		-- position (upper left corner):
 		self.frame_bounding_box.x := (self.paper_width - type_model_coordinate (self.frame.size.x)) / 2.0;
 		self.frame_bounding_box.y := (self.paper_height - type_model_coordinate (self.frame.size.y)) / 2.0;
+
+		-- width and height
 		self.frame_bounding_box.width := type_model_coordinate (self.frame.size.x);
 		self.frame_bounding_box.height := type_model_coordinate (self.frame.size.y);
 
+		-- The sheet has a drawing box:
 		self.paper_bounding_box := (0.0, 0.0, self.paper_width, self.paper_height);
 	
 	end;
 
+-- 	function drawing_to_model (drawing_point : in type_model_point)
+-- 		return type_model_point is
+-- 		use e
+-- 	begin
+-- 		set (
+-- 			point	=> drawing_point,
+-- 			axis	=> Y,
+-- 			value	=> model.frame.size.y - drawing_point.y);
+-- 
+-- 		return drawing_point;
+-- 	end;
+		
 	
 end et_canvas.schematic;
 
