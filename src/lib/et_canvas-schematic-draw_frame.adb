@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               CANVAS                                     --
+--                              DRAW FRAME                                  --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -39,54 +39,15 @@
 --
 
 
-with ada.text_io;			use ada.text_io;
+with ada.text_io;				use ada.text_io;
+with cairo;						use cairo;
+with pango.layout;				use pango.layout;
 
-with interfaces.c.strings;	use interfaces.c.strings;
-
-with gtk.main;
-with gtk.window; 			use gtk.window;
-with gtk.widget;  			use gtk.widget;
-with gtk.box;				use gtk.box;
-with gtk.button;     		use gtk.button;
-with gtk.toolbar; 			use gtk.toolbar;
-with gtk.tool_button;		use gtk.tool_button;
-with gtk.enums;				use gtk.enums;
-with gtk.gentry;			use gtk.gentry;
-with gtk.combo_box_text;	use gtk.combo_box_text;
-with gtk.frame;				use gtk.frame;
-with gtk.handlers;			use gtk.handlers;
-with gtk.scrolled_window;	use gtk.scrolled_window;
-with gtk.adjustment;		use gtk.adjustment;
-with gtk.bin;				use gtk.bin;
-with gtk.scrollable;		use gtk.scrollable;
-with gtk.style_context;		use gtk.style_context;
-
-with glib.properties.creation;	use glib.properties.creation;
-with cairo;					use cairo;
-with gtkada.types;			use gtkada.types;
-with gtkada.handlers;		use gtkada.handlers;
-with gtkada.bindings;		use gtkada.bindings;
-with gdk;					use gdk;
-with gdk.window;			use gdk.window;
-with gdk.window_attr;		use gdk.window_attr;
-with gdk.event;				use gdk.event;
-
-with gdk.rgba;
-with pango.layout;					use pango.layout;
-with system.storage_elements;		use system.storage_elements;
-
-with ada.unchecked_deallocation;
-with ada.containers;				use ada.containers;
-with ada.containers.doubly_linked_lists;
-
-with et_general;
-with et_project;
-with et_frames;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.geometry;
 
-
 separate (et_canvas.schematic)
+
 procedure draw_frame (
 	model	: not null access type_model;
 	in_area	: in type_model_rectangle := no_rectangle;
@@ -192,6 +153,7 @@ begin
 		restore (context.cr);
 	end if;
 end;
+
 
 -- Soli Deo Gloria
 
