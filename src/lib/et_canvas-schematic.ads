@@ -272,7 +272,7 @@ package et_canvas.schematic is
 	procedure draw_frame (
 		model	: not null access type_model;
 		in_area	: in type_model_rectangle := no_rectangle;
-		context : in type_draw_context);		
+		context : in type_draw_context);
 
 	
 	-- Redraw either the whole view, or a specific part of it only.
