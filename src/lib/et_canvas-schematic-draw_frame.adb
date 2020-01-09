@@ -8,9 +8,6 @@
 --                                                                          --
 --         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
---         Bases on the package gtkada.canvas_view written by               --
---         E. Briot, J. Brobecker and A. Charlet, AdaCore                   --
---                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
 -- Software  Foundation;  either version 3,  or (at your  option) any later --
@@ -97,7 +94,6 @@ procedure draw_frame (
 			);
 	end;
 	
-	
 begin
 --		put_line ("draw frame ...");
 
@@ -122,7 +118,8 @@ begin
 
 		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (0), gdouble (0)); -- red
 
-		-- draw the outer frame
+		-- FRAME BORDER
+		-- draw the outer border
 		cairo.rectangle (
 			context.cr,
 			type_view_coordinate (0.0),
@@ -130,7 +127,7 @@ begin
 			type_view_coordinate (model.frame.size.x),
 			type_view_coordinate (model.frame.size.y));
 
-		-- draw the inner frame
+		-- draw the inner border
 		cairo.rectangle (
 			context.cr,
 			type_view_coordinate (model.frame.border_width),
@@ -138,15 +135,15 @@ begin
 			type_view_coordinate (model.frame.size.x - 2 * model.frame.border_width),
 			type_view_coordinate (model.frame.size.y - 2 * model.frame.border_width));
 
-		-- draw the title block
-
-		
+		-- TITLE BLOCK
 		-- lines
 		iterate (model.frame.title_block_schematic.lines, draw_line'access);
 		
 		-- CS draw the sector delimiters
 
 		-- CS draw the sector rows and columns
+
+		-- CS texts according to current model.sheet
 		
 		cairo.stroke (context.cr);
 		

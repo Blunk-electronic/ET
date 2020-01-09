@@ -106,6 +106,9 @@ package et_canvas.schematic is
 		paper_width			: type_model_coordinate;
 
 		title_block_position	: et_frames.type_position;
+
+		-- the active sheet
+		sheet	: et_coordinates.type_sheet := type_sheet'first;
 	end record;
 
 	type type_model_ptr is access all type_model'class;
@@ -216,13 +219,6 @@ package et_canvas.schematic is
 		return type_model_point;
 
 
-	-- Returns the bounding box of the whole model.
-	-- Currently it returns the bounding box of the drawing sheet
-	-- which seems sufficient for now.
-	function bounding_box (
-		self   : not null access type_model;
-		margin : type_model_coordinate := 0.0)
-		return type_model_rectangle;
 
 	procedure set_adjustment_values (self : not null access type_view'class);	
 
@@ -287,12 +283,13 @@ package et_canvas.schematic is
 		rect      : type_model_rectangle := no_rectangle;
 		min_scale : gdouble := 1.0 / 4.0;
 		max_scale : gdouble := 4.0);
---
+
 
 	-- Assign the module to be edited to the model:
 	procedure set_module (
 		self	: not null access type_model;
-		module	: in et_project.type_modules.cursor);
+		module	: in et_project.type_modules.cursor;
+		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be opened
 
 	
 end et_canvas.schematic;

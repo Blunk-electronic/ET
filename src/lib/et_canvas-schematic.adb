@@ -472,14 +472,6 @@ package body et_canvas.schematic is
 	end;
 
 
-	function bounding_box (
-		self   : not null access type_model;
-		margin : type_model_coordinate := 0.0)
-		return type_model_rectangle is
-	begin
-		return self.paper_bounding_box;
-	end bounding_box;
-	
 	procedure set_adjustment_values (self : not null access type_view'class) is
 		box   : type_model_rectangle;
 		area  : constant type_model_rectangle := self.get_visible_area;
@@ -490,10 +482,9 @@ package body et_canvas.schematic is
 			return;
 		end if;
 
-		--  we want a small margin around the minimal box for the model, since it
-		--  looks better.
-
-		box := self.model.bounding_box (type_model_coordinate (view_margin / self.scale));
+		-- The bounding box of the whole model is the bounding box of the drawing sheet
+		-- which seems sufficient for now.
+		box := self.model.paper_bounding_box;
 
 		--  we set the adjustments to include the model area, but also at least
 		--  the current visible area (if we don't, then part of the display will
@@ -829,14 +820,9 @@ package body et_canvas.schematic is
 	procedure draw_internal (
 		self    : not null access type_view;
 		context : type_draw_context;
-		area    : type_model_rectangle)
+		area    : type_model_rectangle) 
 	is
--- 		procedure draw_item (
--- 			item : not null access type_item'class) is
--- 		begin
--- 			translate_and_draw_item (item, context);
--- 		end;
-
+		
 		-- prepare draing style so that white grid dots will be drawn.
 		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
 		
@@ -853,8 +839,11 @@ package body et_canvas.schematic is
 			set_grid_size (self, grid_default);
 			draw_grid_dots (self, style, context, area);
 
-			self.model.draw_frame (area, context);
--- 			self.model.for_each_item (draw_item'access, in_area => area);
+			self.model.draw_frame (area, context); -- separate unit
+
+			-- CS self.model.draw_nets (area, context);
+			-- CS self.model.draw_symbols (area, context);
+			-- CS self.model.draw_texts (area, context);
 			
 		end if;
 	end draw_internal;
@@ -881,7 +870,7 @@ package body et_canvas.schematic is
 			self.scale_to_fit_requested := 0.0;
 			
 			if rect = no_rectangle then
-				box := self.model.bounding_box;
+				box := self.model.paper_bounding_box;
 			else
 				box := rect;
 			end if;
@@ -918,8 +907,9 @@ package body et_canvas.schematic is
 
 	procedure set_module (
 		self	: not null access type_model;
-		module	: in et_project.type_modules.cursor) is
-
+		module	: in et_project.type_modules.cursor;
+		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be opened
+	is
 		use et_general;
 		use et_frames;
 		use et_project;
@@ -955,6 +945,9 @@ package body et_canvas.schematic is
 
 		-- Drawing of the title block items is relative to the title block position:
 		self.title_block_position := self.frame.title_block_schematic.position;
+
+		-- set active sheet
+		self.sheet := sheet;
 	end;
 
 -- 	function drawing_to_model (drawing_point : in type_model_point)

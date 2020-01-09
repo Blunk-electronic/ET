@@ -215,6 +215,7 @@ package body gui_general is
 	
 	procedure single_module (
 		module			: in type_modules.cursor; -- cursor of generic module to be edited
+		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
 		log_threshold	: in type_log_level) is
 		use et_canvas.schematic;
 	begin
@@ -227,7 +228,8 @@ package body gui_general is
 		schematic.gtk_new (model);
 		initialize (model);
 
-		set_module (model, module);
+		-- set the module to be opened and optionally the sheet to be displayed:
+		set_module (model, module, sheet);
 
 		gtk_new (canvas, model);
 		add (scrolled, canvas); -- place the canvas in the scrolled window

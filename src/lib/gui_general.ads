@@ -38,12 +38,14 @@
 with et_string_processing;		use et_string_processing;
 with et_general;				use et_general;
 with et_project;				use et_project;
+with et_coordinates;			use et_coordinates;
 with et_canvas.schematic;
 
 package gui_general is
 
 	procedure single_module (
 		module			: in type_modules.cursor; -- cursor of generic module
+		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
 		log_threshold	: in type_log_level
 		);
 

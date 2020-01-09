@@ -69,6 +69,8 @@ with device_rw;
 with et_frames;
 with frame_rw;
 
+with et_coordinates;
+
 with gui_general;
 
 procedure et is
@@ -607,6 +609,7 @@ procedure et is
 -- 				generic_module_name := key (module_cursor);
 				single_module (
 					module			=> module_cursor,
+					sheet			=> et_coordinates.type_sheet'first, -- CS via cmd argument
 					log_threshold	=> 0);
 			when others => null;
 		end case;
