@@ -952,19 +952,22 @@ package body et_canvas.schematic is
 
 		-- set active sheet
 		self.sheet := sheet;
-	end;
+	end set_module;
 
--- 	function drawing_to_model (drawing_point : in type_model_point)
--- 		return type_model_point is
--- 		use e
--- 	begin
--- 		set (
--- 			point	=> drawing_point,
--- 			axis	=> Y,
--- 			value	=> model.frame.size.y - drawing_point.y);
--- 
--- 		return drawing_point;
--- 	end;
+
+	function convert_x (x : in et_coordinates.type_distance) return type_view_coordinate is begin
+		return type_view_coordinate (
+			type_model_coordinate (x)
+			);
+	end;
+	
+	function convert_y (y : in et_coordinates.type_distance) return type_view_coordinate is begin
+		return type_view_coordinate 
+			(
+			model.frame_bounding_box.height 
+			- type_model_coordinate (y)
+			);
+	end;
 		
 	
 end et_canvas.schematic;

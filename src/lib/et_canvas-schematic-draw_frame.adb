@@ -63,34 +63,39 @@ procedure draw_frame (
 			context.cr,
 
 			-- x position
-			type_view_coordinate (
+			convert_x (et_coordinates.type_distance
+				(
 				element (cursor).start_point.x 
-				+ model.title_block_position.x), -- x position of title block
-
+				+ model.title_block_position.x -- x position of title block
+				)),
+				
 			-- y position
-			type_view_coordinate (
-				model.frame_bounding_box.height -- height of the drawing frame
-				- type_model_coordinate (
-					element (cursor).start_point.y 
-					+ model.title_block_position.y)) -- y position of title block
+			convert_y (et_coordinates.type_distance 
+				(
+				element (cursor).start_point.y 
+				+ model.title_block_position.y -- y position of title block
+				))
 			);
 
+			
 		-- end point
 		cairo.line_to 
 			(
 			context.cr,
 
 			-- x position	
-			type_view_coordinate (
+			convert_x (et_coordinates.type_distance
+				(
 				element (cursor).end_point.x 
-				+ model.title_block_position.x), -- x position of title block
+				+ model.title_block_position.x -- x position of title block
+				)),
 
 			-- y position
-			type_view_coordinate (
-				model.frame_bounding_box.height  -- height of the drawing frame 
-				- type_model_coordinate (
-					element (cursor).end_point.y 
-					+ model.title_block_position.y)) -- y position of title block
+			convert_y (et_coordinates.type_distance 
+				(
+				element (cursor).end_point.y 
+				+ model.title_block_position.y -- y position of title block
+				))
 			);
 	end;
 	
@@ -149,7 +154,8 @@ begin
 		
 		restore (context.cr);
 	end if;
-end;
+	
+end draw_frame;
 
 
 -- Soli Deo Gloria

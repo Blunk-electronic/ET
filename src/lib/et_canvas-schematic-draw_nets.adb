@@ -80,19 +80,15 @@ procedure draw_nets (
 						-- start point
 						cairo.move_to (
 							context.cr,
-							type_view_coordinate (element (segment_cursor).start_point.x),
-							type_view_coordinate (
-								model.frame_bounding_box.height -- height of the drawing frame
-								- type_model_coordinate (element (segment_cursor).start_point.y))
+							convert_x (element (segment_cursor).start_point.x),
+							convert_y (element (segment_cursor).start_point.y)
 							);
 
 						-- end point
 						cairo.line_to (
 							context.cr,
-							type_view_coordinate (element (segment_cursor).end_point.x),
-							type_view_coordinate (
-								model.frame_bounding_box.height -- height of the drawing frame
-								- type_model_coordinate (element (segment_cursor).end_point.y))
+							convert_x (element (segment_cursor).end_point.x),
+							convert_y (element (segment_cursor).end_point.y)
 							);
 					
 						next (segment_cursor);
@@ -162,7 +158,8 @@ begin
 
 		
 	end if;
-end;
+	
+end draw_nets;
 
 
 -- Soli Deo Gloria
