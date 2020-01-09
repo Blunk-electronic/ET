@@ -40,8 +40,15 @@ with ada.text_io;				use ada.text_io;
 with cairo;						use cairo;
 with pango.layout;				use pango.layout;
 
+with et_general;				use et_general;
+with et_project;				use et_project;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.geometry;
+
+with et_schematic;				use et_schematic;
+use et_schematic.type_nets;
+use et_schematic.type_strands;
+use et_schematic.type_net_segments;
 
 separate (et_canvas.schematic)
 
@@ -49,9 +56,77 @@ procedure draw_nets (
 	model	: not null access type_model;
 	in_area	: in type_model_rectangle := no_rectangle;
 	context : in type_draw_context) is
+
+	procedure query_nets (
+		module_name	: in type_module_name.bounded_string;
+		module		: in type_module) is
+
+		net_cursor : type_nets.cursor := module.nets.first;
+
+		procedure query_strands (
+			net_name	: in et_general.type_net_name.bounded_string;
+			net			: in type_net) is
+			strand_cursor : type_strands.cursor := net.strands.first;
+
+			procedure query_segments (strand : in type_strand) is
+				segment_cursor : type_net_segments.cursor := strand.segments.first;
+				
+			begin -- query_segments
+				-- draw nets of the active sheet only:
+				if strand.position.sheet = model.sheet then
+					
+					while segment_cursor /= type_net_segments.no_element loop
+		
+						-- start point
+						cairo.move_to (
+							context.cr,
+							type_view_coordinate (element (segment_cursor).start_point.x),
+							type_view_coordinate (
+								model.frame_bounding_box.height -- height of the drawing frame
+								- type_model_coordinate (element (segment_cursor).start_point.y))
+							);
+
+						-- end point
+						cairo.line_to (
+							context.cr,
+							type_view_coordinate (element (segment_cursor).end_point.x),
+							type_view_coordinate (
+								model.frame_bounding_box.height -- height of the drawing frame
+								- type_model_coordinate (element (segment_cursor).end_point.y))
+							);
+					
+						next (segment_cursor);
+					end loop;
+
+				end if;
+			end query_segments;
+			
+		begin -- query_strands
+			while strand_cursor /= type_strands.no_element loop
+
+				query_element (
+					position	=> strand_cursor,
+					process		=> query_segments'access);
+				
+				next (strand_cursor);
+			end loop;
+		end query_strands;
+		
+	begin -- query_nets
+		while net_cursor /= type_nets.no_element loop
+
+			type_nets.query_element (
+				position	=> net_cursor,
+				process		=> query_strands'access);
+
+			next (net_cursor);
+		end loop;
+		
+	end query_nets;
+
 	
 begin
-	put_line ("draw nets ...");
+-- 	put_line ("draw nets ...");
 
 	if (in_area = no_rectangle)
 		or else intersects (in_area, model.frame_bounding_box) 
@@ -60,7 +135,7 @@ begin
 -- 			if not size_above_threshold (self, context.view) then
 -- 				return;
 -- 			end if;
-		
+
 		save (context.cr);
 
 		-- Prepare the current transformation matrix (CTM) so that
@@ -75,9 +150,17 @@ begin
 		cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (0)); -- green
 
 		
+		-- draw the nets
+		type_modules.query_element (
+			position	=> model.module,
+			process		=> query_nets'access);
+
+
 		cairo.stroke (context.cr);
 		
 		restore (context.cr);
+
+		
 	end if;
 end;
 
