@@ -816,13 +816,18 @@ package body et_canvas.schematic is
 		model	: not null access type_model;
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
+
+	procedure draw_nets (
+		model	: not null access type_model;
+		in_area	: in type_model_rectangle := no_rectangle;
+		context : in type_draw_context) is separate;
+
 	
 	procedure draw_internal (
 		self    : not null access type_view;
 		context : type_draw_context;
 		area    : type_model_rectangle) 
 	is
-		
 		-- prepare draing style so that white grid dots will be drawn.
 		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
 		
@@ -840,8 +845,7 @@ package body et_canvas.schematic is
 			draw_grid_dots (self, style, context, area);
 
 			self.model.draw_frame (area, context); -- separate unit
-
-			-- CS self.model.draw_nets (area, context);
+			self.model.draw_nets (area, context); -- separate unit
 			-- CS self.model.draw_symbols (area, context);
 			-- CS self.model.draw_texts (area, context);
 			
