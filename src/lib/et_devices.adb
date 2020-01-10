@@ -709,29 +709,40 @@ package body et_devices is
 		use pac_units_external;
 		use pac_units_internal;
 
-		device : type_device := element (device_cursor);
+		status : type_unit_ext_int;
 		
-		cursor_external : pac_units_external.cursor := pac_units_external.no_element;
+		cursor_external : pac_units_external.cursor;
 		cursor_internal : pac_units_internal.cursor;
-	begin
+
+		procedure query_units (
+			model	: in type_device_model_file.bounded_string;
+			device	: in type_device) is
+		begin
+			-- Most likely the requested unit is external. So we search first in 
+			-- the list of external units of the given device:
+			cursor_external := find (device.units_external, unit_name);
+
+			-- If the unit has been found, return the cursor to it:
+			if cursor_external /= pac_units_external.no_element then
+				status := EXT;
+			else
+			-- If the unit could not be found, it must be an internal unit. Search among
+			-- the internal units of the given device:
+				cursor_internal := find (device.units_internal, unit_name);
+				status := INT;
+			end if;
+		end;
+		
+	begin -- locate_unit
 		--put_line (to_string (type_devices.key (device_cursor)));
-		
-		-- Most likely the requested unit is external. So we search first in 
-		-- the list of external units of the given device:
-		--		cursor_external := find (element (device_cursor).units_external, unit_name);
-		cursor_external := find (device.units_external, unit_name);
 
-		-- If the unit has been found, return the cursor to it:
-		if cursor_external /= pac_units_external.no_element then
-			return (EXT, cursor_external);
+		query_element (device_cursor, query_units'access);
 
-		-- If the unit could not be found, it must be an internal unit. Seach among
-		-- the internal units of the given device:
-		else
-			cursor_internal := find (device.units_internal, unit_name);
-			return (INT, cursor_internal);
-		end if;
-		
+		case status is
+			when EXT => return (EXT, cursor_external);
+			when INT => return (INT, cursor_internal);
+		end case;
+
 	end locate_unit;
 	
 	function package_model (

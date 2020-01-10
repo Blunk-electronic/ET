@@ -82,16 +82,15 @@ procedure draw_units (
 			begin
 				case unit_cursor.ext_int is
 					when EXT =>
-						null;
-						put_line ("external unit");
+						--put_line ("external unit");
 						-- If the unit is external, we must fetch the symbol 
 						-- via its model file:
--- 						symbol_model := element (unit_cursor.external).file;
--- 						symbol_cursor := locate (symbol_model);
--- 						draw_symbol (type_symbols.element (symbol_cursor));
+						symbol_model := element (unit_cursor.external).file;
+						symbol_cursor := locate (symbol_model);
+						draw_symbol (type_symbols.element (symbol_cursor));
 						
 					when INT =>
-						put_line ("internal unit");						
+						--put_line ("internal unit");						
 						-- If the unit is internal, we can fetch it the symbol 
 						-- directly from the unit:
 						draw_symbol (element (unit_cursor.internal).symbol);
@@ -106,7 +105,7 @@ procedure draw_units (
 				-- we want to draw only those units which are on the active sheet:
 				if element (unit_cursor).position.sheet = model.sheet then
 					unit_name := key (unit_cursor);
-					put_line (to_string (unit_name));
+					--put_line (to_string (unit_name));
 					
 					device_cursor_lib := locate_device (device_model);
 					locate_symbol (locate_unit (device_cursor_lib, unit_name));
@@ -114,8 +113,7 @@ procedure draw_units (
 			end query_units;
 
 		begin
-			put_line (et_devices.to_string (key (device_cursor)));
-			
+			-- put_line (et_devices.to_string (key (device_cursor)));			
 			iterate (element (device_cursor).units, query_units'access);
 		end query_devices;
 			
