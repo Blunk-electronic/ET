@@ -221,7 +221,7 @@ package body gui_general is
 	begin
 		log (text => "launching mode " & to_string (MODE_MODULE), level => log_threshold);
 		log (text => "opening module " & enclose_in_quotes (to_string (type_modules.key (module))), level => log_threshold);
-		-- CS log sheet number
+		log (text => "sheet" & to_sheet (sheet), level => log_threshold);
 		
 		-- set up the main window
 		init; 
