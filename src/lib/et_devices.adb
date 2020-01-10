@@ -709,12 +709,17 @@ package body et_devices is
 		use pac_units_external;
 		use pac_units_internal;
 
-		cursor_external : pac_units_external.cursor;
+		device : type_device := element (device_cursor);
+		
+		cursor_external : pac_units_external.cursor := pac_units_external.no_element;
 		cursor_internal : pac_units_internal.cursor;
 	begin
+		--put_line (to_string (type_devices.key (device_cursor)));
+		
 		-- Most likely the requested unit is external. So we search first in 
 		-- the list of external units of the given device:
-		cursor_external := find (element (device_cursor).units_external, unit_name);
+		--		cursor_external := find (element (device_cursor).units_external, unit_name);
+		cursor_external := find (device.units_external, unit_name);
 
 		-- If the unit has been found, return the cursor to it:
 		if cursor_external /= pac_units_external.no_element then
@@ -723,7 +728,7 @@ package body et_devices is
 		-- If the unit could not be found, it must be an internal unit. Seach among
 		-- the internal units of the given device:
 		else
-			cursor_internal := find (element (device_cursor).units_internal, unit_name);
+			cursor_internal := find (device.units_internal, unit_name);
 			return (INT, cursor_internal);
 		end if;
 		
