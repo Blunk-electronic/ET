@@ -296,14 +296,19 @@ package et_canvas.schematic is
 		module	: in et_project.type_modules.cursor;
 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be opened
 
-	-- This function converts a x-value from the drawing
-	-- to a x-value in the view.
+	-- This function converts a x-value from the drawing to a x-value in the view.
 	function convert_x (x : in et_coordinates.type_distance) return type_view_coordinate;
+
+	-- This function converts a x-value from the drawing to a x-value in the model.	
+	function convert_x (x : in et_coordinates.type_distance) return type_model_coordinate;	
 	
-	-- This function converts a y-value from the drawing
-	-- to a y-value in the view.
+	-- This function converts a y-value from the drawing to a y-value in the view.
 	-- The input y increases upwards. The output y increases downwards.
 	function convert_y (y : in et_coordinates.type_distance) return type_view_coordinate;
+
+	-- This function converts a y-value from the drawing to a y-value in the model.
+	-- The input y increases upwards. The output y increases downwards.
+	function convert_y (y : in et_coordinates.type_distance) return type_model_coordinate;
 	
 end et_canvas.schematic;
 

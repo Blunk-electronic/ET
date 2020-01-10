@@ -35,7 +35,6 @@
 --   history of changes:
 --
 
-
 with ada.text_io;				use ada.text_io;
 with cairo;						use cairo;
 with pango.layout;				use pango.layout;
@@ -70,27 +69,95 @@ procedure draw_nets (
 
 			procedure query_segments (strand : in type_strand) is
 				segment_cursor : type_net_segments.cursor := strand.segments.first;
+
+				-- The bounding box that surrounds the segment must be calculated.
+				function make_bounding_box (segment : in type_net_segment) return type_model_rectangle is
+					smallest_y, smallest_x, greatest_y, greatest_x : type_model_coordinate;
+
+					-- The bounding box exists in the model. Therefore the drawing x and y values
+					-- must be converted to model coordinates:
+					start_point_x	: type_model_coordinate := convert_x (segment.start_point.x);
+					start_point_y	: type_model_coordinate := convert_y (segment.start_point.y);
+					end_point_x		: type_model_coordinate := convert_x (segment.end_point.x);
+					end_point_y		: type_model_coordinate := convert_y (segment.end_point.y);
+				begin
+					-- NOTE: Model coordinates have the y-axis increasing downwards !
+					
+					if start_point_y < end_point_y then
+						smallest_y := start_point_y;
+						greatest_y := end_point_y;
+					else
+						smallest_y := end_point_y;
+						greatest_y := start_point_y;
+					end if;
+
+					if start_point_x < end_point_x then
+						smallest_x := start_point_x;
+						greatest_x := end_point_x;
+					else
+						smallest_x := end_point_x;
+						greatest_x := start_point_x;
+					end if;
+
+					return (
+							x => smallest_x, y => smallest_y, -- position
+							width => greatest_x - smallest_x, -- width
+							height => greatest_y - smallest_y -- height
+						   );
+				end make_bounding_box;
 				
 			begin -- query_segments
+				
 				-- draw nets of the active sheet only:
 				if strand.position.sheet = model.sheet then
 					
 					while segment_cursor /= type_net_segments.no_element loop
-		
-						-- start point
-						cairo.move_to (
-							context.cr,
-							convert_x (element (segment_cursor).start_point.x),
-							convert_y (element (segment_cursor).start_point.y)
-							);
 
-						-- end point
-						cairo.line_to (
-							context.cr,
-							convert_x (element (segment_cursor).end_point.x),
-							convert_y (element (segment_cursor).end_point.y)
-							);
-					
+						-- We draw the segment if:
+						--  - no area given or
+						--  - if the bounding box of the segment intersects the given area
+						if (in_area = no_rectangle
+							or else intersects (in_area, make_bounding_box (element (segment_cursor)))) 
+						then
+							-- CS test size 
+					-- 			if not size_above_threshold (self, context.view) then
+					-- 				return;
+					-- 			end if;
+
+							save (context.cr);
+
+							-- Prepare the current transformation matrix (CTM) so that
+							-- all following drawing is relative to the upper left frame corner.
+							translate (
+								context.cr,
+								type_view_coordinate (model.frame_bounding_box.x),
+								type_view_coordinate (model.frame_bounding_box.y));
+
+							cairo.set_line_width (context.cr, 1.0);
+
+							cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (0)); -- green
+
+							
+							-- start point
+							cairo.move_to (
+								context.cr,
+								convert_x (element (segment_cursor).start_point.x),
+								convert_y (element (segment_cursor).start_point.y)
+								);
+
+							-- end point
+							cairo.line_to (
+								context.cr,
+								convert_x (element (segment_cursor).end_point.x),
+								convert_y (element (segment_cursor).end_point.y)
+								);
+
+
+							cairo.stroke (context.cr);
+							restore (context.cr);
+							
+						end if;
+						
 						next (segment_cursor);
 					end loop;
 
@@ -119,45 +186,14 @@ procedure draw_nets (
 		end loop;
 		
 	end query_nets;
-
 	
 begin
 -- 	put_line ("draw nets ...");
-
-	if (in_area = no_rectangle)
-		or else intersects (in_area, model.frame_bounding_box) 
-	then
-		-- CS test size 
--- 			if not size_above_threshold (self, context.view) then
--- 				return;
--- 			end if;
-
-		save (context.cr);
-
-		-- Prepare the current transformation matrix (CTM) so that
-		-- all following drawing is relative to the upper left frame corner.
-		translate (
-			context.cr,
-			type_view_coordinate (model.frame_bounding_box.x),
-			type_view_coordinate (model.frame_bounding_box.y));
-
-		cairo.set_line_width (context.cr, 1.0);
-
-		cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (0)); -- green
-
-		
-		-- draw the nets
-		type_modules.query_element (
-			position	=> model.module,
-			process		=> query_nets'access);
-
-
-		cairo.stroke (context.cr);
-		
-		restore (context.cr);
-
-		
-	end if;
+	
+	-- draw the nets
+	type_modules.query_element (
+		position	=> model.module,
+		process		=> query_nets'access);
 	
 end draw_nets;
 

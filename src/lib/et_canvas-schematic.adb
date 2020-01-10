@@ -960,6 +960,11 @@ package body et_canvas.schematic is
 			type_model_coordinate (x)
 			);
 	end;
+
+	function convert_x (x : in et_coordinates.type_distance) return type_model_coordinate is begin
+		return type_model_coordinate (x);
+	end;
+
 	
 	function convert_y (y : in et_coordinates.type_distance) return type_view_coordinate is begin
 		return type_view_coordinate 
@@ -969,6 +974,13 @@ package body et_canvas.schematic is
 			);
 	end;
 		
+	function convert_y (y : in et_coordinates.type_distance) return type_model_coordinate is begin
+		return (
+			model.frame_bounding_box.height 
+			- type_model_coordinate (y)
+			);
+	end;
+
 	
 end et_canvas.schematic;
 
