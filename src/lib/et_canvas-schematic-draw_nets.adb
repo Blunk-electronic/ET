@@ -82,7 +82,7 @@ procedure draw_nets (
 					end_point_y		: type_model_coordinate := convert_y (segment.end_point.y);
 				begin
 					-- NOTE: Model coordinates have the y-axis increasing downwards !
-					
+
 					if start_point_y < end_point_y then
 						smallest_y := start_point_y;
 						greatest_y := end_point_y;
@@ -99,6 +99,8 @@ procedure draw_nets (
 						greatest_x := start_point_x;
 					end if;
 
+					-- CS include net labels in the bounding box
+					
 					return (
 							x => smallest_x, y => smallest_y, -- position
 							width => greatest_x - smallest_x, -- width
@@ -152,6 +154,7 @@ procedure draw_nets (
 								convert_y (element (segment_cursor).end_point.y)
 								);
 
+							-- CS draw junctions and labels
 
 							cairo.stroke (context.cr);
 							restore (context.cr);

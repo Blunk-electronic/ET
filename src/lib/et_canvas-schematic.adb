@@ -822,6 +822,11 @@ package body et_canvas.schematic is
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	procedure draw_units (
+		model	: not null access type_model;
+		in_area	: in type_model_rectangle := no_rectangle;
+		context : in type_draw_context) is separate;
+
 	
 	procedure draw_internal (
 		self    : not null access type_view;
@@ -846,7 +851,7 @@ package body et_canvas.schematic is
 
 			self.model.draw_frame (area, context); -- separate unit
 			self.model.draw_nets (area, context); -- separate unit
-			-- CS self.model.draw_symbols (area, context);
+			self.model.draw_units (area, context); -- separate unit
 			-- CS self.model.draw_texts (area, context);
 			
 		end if;

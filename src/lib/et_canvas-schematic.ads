@@ -275,6 +275,11 @@ package et_canvas.schematic is
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context);
 	
+	procedure draw_units (
+		model	: not null access type_model;
+		in_area	: in type_model_rectangle := no_rectangle;
+		context : in type_draw_context);
+
 	
 	-- Redraw either the whole view, or a specific part of it only.
 	-- The transformation matrix has already been set on the context.
