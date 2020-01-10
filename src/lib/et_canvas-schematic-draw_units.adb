@@ -44,13 +44,14 @@ with et_project;				use et_project;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.geometry;
 
-with et_schematic;				use et_schematic;
+with et_schematic;				--use et_schematic;
 
 use et_project.type_modules;
 use et_schematic.type_devices;
 use et_schematic.type_units;
 
 with et_devices;
+with et_symbols;
 
 separate (et_canvas.schematic)
 
@@ -58,23 +59,54 @@ procedure draw_units (
 	model	: not null access type_model;
 	in_area	: in type_model_rectangle := no_rectangle;
 	context : in type_draw_context) is
+
+		procedure draw_symbol (symbol : in et_symbols.type_symbol) is
+		begin
+			null;
+		end draw_symbol;
 	
-		procedure query_devices (device_cursor : in type_devices.cursor) is
+		procedure query_devices (device_cursor : in et_schematic.type_devices.cursor) is
 
 			-- get the model of the current device
 			device_model : et_devices.type_device_model_file.bounded_string :=
 				element (device_cursor).model;	-- ../libraries/devices/transistor/pnp.dev
 
-			procedure query_units (unit_cursor : in type_units.cursor) is
-				unit_name : et_devices.type_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
-				device_cursor_lib : et_devices.type_devices.cursor;
+			procedure locate_symbol (unit_cursor : in et_devices.type_unit_cursors) is
+				use et_devices;
+				use pac_units_external;
+				use pac_units_internal;
+
+				use et_symbols;
+				symbol_model : type_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
+				symbol_cursor : et_symbols.type_symbols.cursor;
+			begin
+				case unit_cursor.ext_int is
+					when EXT =>
+						null;
+						-- If the unit is external, we must fetch the symbol 
+						-- via its model file:
+-- 						symbol_model := element (unit_cursor.external).file;
+-- 						symbol_cursor := locate (symbol_model);
+-- 						draw_symbol (type_symbols.element (symbol_cursor));
+						
+					when INT =>
+						-- If the unit is internal, we can fetch it the symbol 
+						-- directly from the unit:
+						draw_symbol (element (unit_cursor.internal).symbol);
+				end case;
+			end locate_symbol;
+			
+			procedure query_units (unit_cursor : in et_schematic.type_units.cursor) is
+				use et_devices;
+				unit_name : type_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
+				device_cursor_lib : type_devices.cursor;
 			begin
 				-- we want to draw only those units which are on the active sheet:
 				if element (unit_cursor).position.sheet = model.sheet then
 					unit_name := key (unit_cursor);
 					
-					device_cursor_lib := et_devices.locate_device (device_model);
-					null;
+					device_cursor_lib := locate_device (device_model);
+					locate_symbol (locate_unit (device_cursor_lib, unit_name));
 				end if;
 			end query_units;
 

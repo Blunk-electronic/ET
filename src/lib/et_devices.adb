@@ -699,6 +699,35 @@ package body et_devices is
 	begin
 		return cursor;
 	end;
+
+	function locate_unit (
+		device_cursor	: in type_devices.cursor;
+		unit_name		: in type_unit_name.bounded_string) -- like "I/O-Bank 3"
+		return type_unit_cursors is
+
+		use type_devices;
+		use pac_units_external;
+		use pac_units_internal;
+
+		cursor_external : pac_units_external.cursor;
+		cursor_internal : pac_units_internal.cursor;
+	begin
+		-- Most likely the requested unit is external. So we search first in 
+		-- the list of external units of the given device:
+		cursor_external := find (element (device_cursor).units_external, unit_name);
+
+		-- If the unit has been found, return the cursor to it:
+		if cursor_external /= pac_units_external.no_element then
+			return (EXT, cursor_external);
+
+		-- If the unit could not be found, it must be an internal unit. Seach among
+		-- the internal units of the given device:
+		else
+			cursor_internal := find (element (device_cursor).units_internal, unit_name);
+			return (INT, cursor_internal);
+		end if;
+		
+	end locate_unit;
 	
 	function package_model (
 	-- Returns the name of the package model of the given device according to the given variant.
