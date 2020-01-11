@@ -60,67 +60,179 @@ procedure draw_units (
 	in_area	: in type_model_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
-		procedure draw_symbol (symbol : in et_symbols.type_symbol) is
-		begin
-			null;
-		end draw_symbol;
-	
-		procedure query_devices (device_cursor : in et_schematic.type_devices.cursor) is
+	procedure draw_symbol (
+		symbol		: in et_symbols.type_symbol;
+		position	: in et_coordinates.geometry.type_point) -- x/y on the schematic sheet
+	is
+		use et_symbols;
+		use type_lines;
 
-			-- get the model of the current device
-			device_model : et_devices.type_device_model_file.bounded_string :=
-				element (device_cursor).model;	-- ../libraries/devices/transistor/pnp.dev
+		smallest_x, smallest_y : type_distance := type_distance'last; 
+		greatest_x, greatest_y : type_distance := type_distance'first;
 
-			procedure locate_symbol (unit_cursor : in et_devices.type_unit_cursors) is
-				use et_devices;
-				use pac_units_external;
-				use pac_units_internal;
-
-				use et_symbols;
-				symbol_model : type_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
-				symbol_cursor : et_symbols.type_symbols.cursor;
-			begin
-				case unit_cursor.ext_int is
-					when EXT =>
-						--put_line ("external unit");
-						-- If the unit is external, we must fetch the symbol 
-						-- via its model file:
-						symbol_model := element (unit_cursor.external).file;
-						symbol_cursor := locate (symbol_model);
-						draw_symbol (type_symbols.element (symbol_cursor));
-						
-					when INT =>
-						--put_line ("internal unit");						
-						-- If the unit is internal, we can fetch it the symbol 
-						-- directly from the unit:
-						draw_symbol (element (unit_cursor.internal).symbol);
-				end case;
-			end locate_symbol;
+		procedure update_boundaries (p : et_coordinates.geometry.type_point) is begin
+			if p.x < smallest_x then smallest_x := p.x; end if;
+			if p.x > greatest_x then greatest_x := p.x; end if;
+			if p.y < smallest_y then smallest_y := p.y; end if;
+			if p.y > greatest_y then greatest_y := p.y; end if;
+		end;
+		
+		bounding_box : type_model_rectangle;
+		
+		-- The bounding box that surrounds the symbol must be calculated.
+		function make_bounding_box return type_model_rectangle is 
 			
-			procedure query_units (unit_cursor : in et_schematic.type_units.cursor) is
-				use et_devices;
-				unit_name : type_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
-				device_cursor_lib : type_devices.cursor;
-			begin
-				-- we want to draw only those units which are on the active sheet:
-				if element (unit_cursor).position.sheet = model.sheet then
-					unit_name := key (unit_cursor);
-					--put_line (to_string (unit_name));
+			procedure query_line (c : in type_lines.cursor) is begin
+				update_boundaries (element (c).start_point);
+				update_boundaries (element (c).end_point);
+			end query_line;
+				
+		begin -- make_bounding_box
+			iterate (symbol.shapes.lines, query_line'access);
+			-- CS arcs, circles, text, placeholders, ports
+
+			put_line ("smallest_x " & to_string (smallest_x));
+			put_line ("greatest_x " & to_string (greatest_x));
+			put_line ("smallest_y " & to_string (smallest_y));
+			put_line ("greatest_y " & to_string (greatest_y));
+			
+			return (
+				-- The bounding box origin is the upper left corner.
+				-- The box position in x is shifted by the smallest_x to the left.
+				-- The box position in y is shifted by the greatest_y upwards.
+				-- The box position in y is additonally converted to y axis going downwards.
+				x		=> type_model_coordinate (position.x - abs (smallest_x)),
+				y		=> convert_y (position.y + abs (greatest_y)), -- convert y to "downwards"
+				width	=> type_model_coordinate (greatest_x - smallest_x),
+				height	=> type_model_coordinate (greatest_y - smallest_y)
+				);
+			
+		end make_bounding_box;
+
+		procedure draw_line (c : in type_lines.cursor) is begin
+			-- start point
+			cairo.move_to (
+				context.cr,
+				convert_x (element (c).start_point.x - smallest_x),
+				type_view_coordinate (abs (element (c).start_point.y - greatest_y))
+-- 				0.0,
+-- 				0.0
+				);
+
+			-- end point
+			cairo.line_to (
+				context.cr,
+				convert_x (element (c).end_point.x - smallest_x),
+				type_view_coordinate (abs (element (c).end_point.y - greatest_y))
+-- 				10.0,
+-- 				0.0
+				);
+
+		end draw_line;
+
+			
+	begin -- draw_symbol
+		bounding_box := make_bounding_box;
+
+		put_line ("bounding box position in model" & 
+				  to_string (bounding_box.x) & to_string (bounding_box.y));
+
+		put_line ("unit position in drawing " & 
+				  to_string (position.x) & to_string (position.y));
+
+		
+		if (in_area = no_rectangle
+			or else intersects (in_area, bounding_box)) 
+		then
+			save (context.cr);
+
+			-- Prepare the current transformation matrix (CTM) so that
+			-- all following drawing is relative to the upper left corner
+			-- of the symbol bounding box:
+			translate (
+				context.cr,
+				type_view_coordinate (model.frame_bounding_box.x + bounding_box.x),
+				type_view_coordinate (model.frame_bounding_box.y + bounding_box.y));
+
+			cairo.set_line_width (context.cr, 1.0);
+
+			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
+
+			-- draw lines
+			iterate (symbol.shapes.lines, draw_line'access);
+			-- CS arcs, circles, text, placeholders, ports
+			
+
+			cairo.stroke (context.cr);
+			restore (context.cr);
+			
+		end if;
+
+	end draw_symbol;
+
+	procedure query_devices (device_cursor : in et_schematic.type_devices.cursor) is
+
+		-- get the model of the current device
+		device_model : et_devices.type_device_model_file.bounded_string :=
+			element (device_cursor).model;	-- ../libraries/devices/transistor/pnp.dev
+
+		unit_position : et_coordinates.geometry.type_point; -- only x and y relevant
+		
+		procedure locate_symbol (unit_cursor : in et_devices.type_unit_cursors) is
+			use et_devices;
+			use pac_units_external;
+			use pac_units_internal;
+
+			use et_symbols;
+			symbol_model : type_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
+			symbol_cursor : et_symbols.type_symbols.cursor;
+		begin
+			case unit_cursor.ext_int is
+				when EXT =>
+					--put_line ("external unit");
+					-- If the unit is external, we must fetch the symbol 
+					-- via its model file:
+					symbol_model := element (unit_cursor.external).file;
+					symbol_cursor := locate (symbol_model);
+					draw_symbol (
+						symbol		=> type_symbols.element (symbol_cursor),
+						position	=> unit_position);
 					
-					device_cursor_lib := locate_device (device_model);
-					locate_symbol (locate_unit (device_cursor_lib, unit_name));
-				end if;
-			end query_units;
-
+				when INT =>
+					--put_line ("internal unit");						
+					-- If the unit is internal, we can fetch it the symbol 
+					-- directly from the unit:
+					draw_symbol (
+						symbol		=> element (unit_cursor.internal).symbol,
+						position	=> unit_position);
+			end case;
+		end locate_symbol;
+		
+		procedure query_units (unit_cursor : in et_schematic.type_units.cursor) is
+			use et_devices;
+			unit_name : type_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
+			device_cursor_lib : type_devices.cursor;
 		begin
-			-- put_line (et_devices.to_string (key (device_cursor)));			
-			iterate (element (device_cursor).units, query_units'access);
-		end query_devices;
-			
+			-- we want to draw only those units which are on the active sheet:
+			if element (unit_cursor).position.sheet = model.sheet then
+				unit_name := key (unit_cursor);
+				unit_position := type_point (element (unit_cursor).position);
+				--put_line (to_string (unit_name));
+				
+				device_cursor_lib := locate_device (device_model);
+				locate_symbol (locate_unit (device_cursor_lib, unit_name));
+			end if;
+		end query_units;
+
 	begin
+		-- put_line (et_devices.to_string (key (device_cursor)));			
+		iterate (element (device_cursor).units, query_units'access);
+	end query_devices;
+		
+begin
 -- 	put_line ("draw units ...");
 
-		iterate (element (model.module).devices, query_devices'access);
+	iterate (element (model.module).devices, query_devices'access);
 	
 end draw_units;
 
