@@ -115,8 +115,6 @@ procedure draw_units (
 				context.cr,
 				convert_x (element (c).start_point.x - smallest_x),
 				type_view_coordinate (abs (element (c).start_point.y - greatest_y))
--- 				0.0,
--- 				0.0
 				);
 
 			-- end point
@@ -124,8 +122,6 @@ procedure draw_units (
 				context.cr,
 				convert_x (element (c).end_point.x - smallest_x),
 				type_view_coordinate (abs (element (c).end_point.y - greatest_y))
--- 				10.0,
--- 				0.0
 				);
 
 		end draw_line;
