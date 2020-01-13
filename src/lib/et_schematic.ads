@@ -123,7 +123,7 @@ package et_schematic is
 				value	: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
 				purpose	: et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE); -- to be filled in schematic later by the user
 		end case;
-		-- NOTE: The placeholders are defined in the et_symbols. Thus they have only
+		-- NOTE: The placeholders are defined in et_symbols. Thus they have only
 		-- basic coordinates (x/y). Via the unit position the sheet number can be obtained.
 	end record;
 

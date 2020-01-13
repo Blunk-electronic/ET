@@ -1141,10 +1141,14 @@ package body symbol_rw is
 				key			=> file_name, -- libraries/symbols/nand.sym
 				new_item	=> symbol.all);
 
-		end if;
 
-		-- CS Check integrity of symbol (style guides, conventions ...)
-		-- use function "last" to fetch latest symbol
+			
+			-- The GUI needs to know the area occupied by the symbol:
+			make_bounding_box (symbols.last, log_threshold + 1);
+			
+			-- CS Check integrity of symbol (style guides, conventions ...)
+			-- use function "last" to fetch latest symbol
+		end if;
 
 		log_indentation_down;
 		log_indentation_down;		

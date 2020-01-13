@@ -392,6 +392,75 @@ package body et_symbols is
 	end locate;
 
 
+
+	procedure make_bounding_box ( 
+		symbol			: in type_symbols.cursor;
+		log_threshold	: in et_string_processing.type_log_level) is
+		use et_string_processing;
+
+		-- All elements of the symbol must be probed and the greatest and
+		-- smallest x and y positions detected.
+		-- Thus the boundaries of the bounding box are updated many times. Finally the 
+		-- bounding box is formed by the boundaries:
+
+		-- CS consider mirror status of symbol !
+
+		procedure query_items (
+			symbol_name	: in type_symbol_model_file.bounded_string; -- ../libraries/symbols/NAND.sym
+			symbol		: in out type_symbol) is 
+
+			procedure update_boundaries (p : type_point) is begin
+				if p.x < symbol.bounding_box.boundaries.smallest_x then 
+					symbol.bounding_box.boundaries.smallest_x := p.x; 
+				end if;
+				
+				if p.x > symbol.bounding_box.boundaries.greatest_x then
+					symbol.bounding_box.boundaries.greatest_x := p.x; 
+				end if;
+				
+				if p.y < symbol.bounding_box.boundaries.smallest_y then
+					symbol.bounding_box.boundaries.smallest_y := p.y;
+				end if;
+				
+				if p.y > symbol.bounding_box.boundaries.greatest_y then
+					symbol.bounding_box.boundaries.greatest_y := p.y;
+				end if;
+			end;
+
+			
+			use type_lines;
+
+			-- Probe a single line:
+			procedure query_line (c : in type_lines.cursor) is begin
+				update_boundaries (element (c).start_point);
+				update_boundaries (element (c).end_point);
+			end query_line;
+
+		begin -- query_items
+
+			-- probe in shapes all lines:
+			iterate (symbol.shapes.lines, query_line'access);
+
+			-- Build the bounding box of the symbol:
+			symbol.bounding_box.width :=
+				  symbol.bounding_box.boundaries.greatest_x 
+				- symbol.bounding_box.boundaries.smallest_x;
+			
+			symbol.bounding_box.height :=
+				  symbol.bounding_box.boundaries.greatest_y
+				- symbol.bounding_box.boundaries.smallest_y;
+			
+		end query_items;
+		
+	begin -- make_bounding_box
+		log (text => "computing bounding box ...", level => log_threshold);
+
+		type_symbols.update_element (
+			container	=> symbols,
+			position	=> symbol,
+			process		=> query_items'access);
+		
+	end make_bounding_box;
 	
 end et_symbols;
 

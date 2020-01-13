@@ -419,9 +419,22 @@ package et_symbols is
 		texts : type_texts.list; -- the collection of texts
 	end record;
 
+	-- The GUI requires the area (a rectanglular box around the whole symbol) occupied by the symol:
+	type type_boundaries is record
+		smallest_x, smallest_y : et_coordinates.type_distance := et_coordinates.type_distance'last;
+		greatest_x, greatest_y : et_coordinates.type_distance := et_coordinates.type_distance'first;
+	end record;
+	
+	type type_bounding_box is record
+		boundaries	: type_boundaries;
+		width		: type_distance_positive := type_distance_positive'first;
+		height		: type_distance_positive := type_distance_positive'first;
+	end record;
+	
 	type type_symbol (appearance : type_appearance) is new type_symbol_base with record
-		shapes	: type_shapes; -- the collection of shapes
-		ports	: type_ports.map;
+		shapes			: type_shapes; -- the collection of shapes
+		ports			: type_ports.map;
+		bounding_box	: type_bounding_box;
 		case appearance is
 			when PCB =>
 				-- Placeholders for device wide texts. To be filled with content when 
@@ -473,8 +486,12 @@ package et_symbols is
 
 	
 
-	
+-- BOUNDING BOX
 
+	-- Computes the bounding box of the given symbol:
+	procedure make_bounding_box (
+		symbol			: in type_symbols.cursor;
+		log_threshold	: in et_string_processing.type_log_level);
 	
 		
 end et_symbols;

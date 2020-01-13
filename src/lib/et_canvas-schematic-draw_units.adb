@@ -66,30 +66,31 @@ procedure draw_units (
 	is
 		use et_symbols;
 		use type_lines;
+-- 
+-- 		smallest_x, smallest_y : type_distance := type_distance'last; 
+-- 		greatest_x, greatest_y : type_distance := type_distance'first;
 
-		smallest_x, smallest_y : type_distance := type_distance'last; 
-		greatest_x, greatest_y : type_distance := type_distance'first;
-
-		procedure update_boundaries (p : et_coordinates.geometry.type_point) is begin
-			if p.x < smallest_x then smallest_x := p.x; end if;
-			if p.x > greatest_x then greatest_x := p.x; end if;
-			if p.y < smallest_y then smallest_y := p.y; end if;
-			if p.y > greatest_y then greatest_y := p.y; end if;
-		end;
+-- 		procedure update_boundaries (p : et_coordinates.geometry.type_point) is begin
+-- 			if p.x < smallest_x then smallest_x := p.x; end if;
+-- 			if p.x > greatest_x then greatest_x := p.x; end if;
+-- 			if p.y < smallest_y then smallest_y := p.y; end if;
+-- 			if p.y > greatest_y then greatest_y := p.y; end if;
+-- 		end;
 		
 		bounding_box : type_model_rectangle;
+		boundaries : type_boundaries := symbol.bounding_box.boundaries;
 		
-		-- The bounding box that surrounds the symbol must be calculated.
-		function make_bounding_box return type_model_rectangle is 
-			
-			procedure query_line (c : in type_lines.cursor) is begin
-				update_boundaries (element (c).start_point);
-				update_boundaries (element (c).end_point);
-			end query_line;
-				
-		begin -- make_bounding_box
-			iterate (symbol.shapes.lines, query_line'access);
-			-- CS arcs, circles, text, placeholders, ports
+		-- The bounding box that surrounds the symbol must be updated.
+		-- Reason: The operator may have changed positions of
+		-- placeholders (for name, value and purpose) from their initial
+		-- position as specified in the symbol model.
+		-- Other things like lines, arcs, ports and texts can't be moved in the 
+		-- schematic editor. They already have been included in the bounding box.
+		-- See procedure et_symbols.make_bounding_box for details.
+		-- The result of this procedure is an updated bounding box that is
+		-- also converted to a model_rectangle.
+		function update_bounding_box return type_model_rectangle is begin
+			-- CS update bounding by positions of placeholders
 
 -- 			put_line ("smallest_x " & to_string (smallest_x));
 -- 			put_line ("greatest_x " & to_string (greatest_x));
@@ -101,34 +102,44 @@ procedure draw_units (
 				-- The box position in x is shifted by the smallest_x to the left.
 				-- The box position in y is shifted by the greatest_y upwards.
 				-- The box position in y is additonally converted to y axis going downwards.
-				x		=> convert_x (position.x - abs (smallest_x)),
-				y		=> convert_and_shift_y (position.y + abs (greatest_y)), -- convert y to "downwards"
-				width	=> convert_x (greatest_x - smallest_x),
-				height	=> convert_y (greatest_y - smallest_y)
+				x		=> convert_x (
+							  position.x 
+							- abs (boundaries.smallest_x)),
+				
+				y		=> convert_and_shift_y (
+							  position.y
+							+ abs (boundaries.greatest_y)), -- convert y to "downwards"
+				
+				width	=> convert_x (symbol.bounding_box.width),
+				height	=> convert_y (symbol.bounding_box.height)
 				);
 			
-		end make_bounding_box;
+		end update_bounding_box;
 
 		procedure draw_line (c : in type_lines.cursor) is begin
 			-- start point
 			cairo.move_to (
 				context.cr,
-				convert_x (element (c).start_point.x - smallest_x),
-				convert_y (abs (element (c).start_point.y - greatest_y))
+
+				-- Transpose the start point from the drawing to the view.
+				convert_x (element (c).start_point.x - boundaries.smallest_x),
+				convert_y (abs (element (c).start_point.y - boundaries.greatest_y))
 				);
 
 			-- end point
 			cairo.line_to (
 				context.cr,
-				convert_x (element (c).end_point.x - smallest_x),
-				convert_y (abs (element (c).end_point.y - greatest_y))
+
+				-- Transpose the end point from the drawing to the view.
+				convert_x (element (c).end_point.x - boundaries.smallest_x),
+				convert_y (abs (element (c).end_point.y - boundaries.greatest_y))
 				);
 
 		end draw_line;
 
 			
 	begin -- draw_symbol
-		bounding_box := make_bounding_box;
+		bounding_box := update_bounding_box;
 
 -- 		put_line ("bounding box position in model" & to_string (bounding_box.x) & to_string (bounding_box.y));
 

@@ -3358,12 +3358,15 @@ package body et_kicad_to_native is
 												name		=> element (unit_cursor_kicad).symbol.name, 	-- placeholder
 												value		=> element (unit_cursor_kicad).symbol.value,	-- placeholder
 												purpose		=> ( -- we must invent a placeholder for purpose since kicad does not know such a thing
-														meaning	=> PURPOSE,
-														others 	=> <>))
+																meaning	=> PURPOSE,
+																others 	=> <>),
 												-- NOTE: Other placeholders (fields in kicad) discarded here.
+												
+												others		=> <>)
 										));
 
-							when VIRTUAL =>
+							when VIRTUAL => -- virtual unit
+								
 								et_devices.pac_units_internal.insert (
 									container	=> device.units_internal,
 									key			=> key (unit_cursor_kicad), -- the name of the unit
@@ -3380,8 +3383,10 @@ package body et_kicad_to_native is
 											with 
 												shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes),
 												appearance	=> VIRTUAL,
-												ports		=> type_ports.empty_map) -- ports will come later
+												ports		=> type_ports.empty_map, -- ports will come later
 												-- NOTE: Other placeholders discarded here.
+												
+												others		=> <>)
 										));
 
 						end case;
