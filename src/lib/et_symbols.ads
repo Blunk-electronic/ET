@@ -427,8 +427,8 @@ package et_symbols is
 	
 	type type_bounding_box is record
 		boundaries	: type_boundaries;
-		width		: type_distance_positive := type_distance_positive'first;
-		height		: type_distance_positive := type_distance_positive'first;
+-- 		width		: type_distance_positive := type_distance_positive'first;
+-- 		height		: type_distance_positive := type_distance_positive'first;
 	end record;
 	
 	type type_symbol (appearance : type_appearance) is new type_symbol_base with record

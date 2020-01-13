@@ -441,14 +441,14 @@ package body et_symbols is
 			-- probe in shapes all lines:
 			iterate (symbol.shapes.lines, query_line'access);
 
-			-- Build the bounding box of the symbol:
-			symbol.bounding_box.width :=
-				  symbol.bounding_box.boundaries.greatest_x 
-				- symbol.bounding_box.boundaries.smallest_x;
-			
-			symbol.bounding_box.height :=
-				  symbol.bounding_box.boundaries.greatest_y
-				- symbol.bounding_box.boundaries.smallest_y;
+-- 			-- Build the bounding box of the symbol:
+-- 			symbol.bounding_box.width :=
+-- 				  symbol.bounding_box.boundaries.greatest_x 
+-- 				- symbol.bounding_box.boundaries.smallest_x;
+-- 			
+-- 			symbol.bounding_box.height :=
+-- 				  symbol.bounding_box.boundaries.greatest_y
+-- 				- symbol.bounding_box.boundaries.smallest_y;
 			
 		end query_items;
 		

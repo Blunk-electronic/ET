@@ -66,9 +66,6 @@ procedure draw_units (
 	is
 		use et_symbols;
 		use type_lines;
--- 
--- 		smallest_x, smallest_y : type_distance := type_distance'last; 
--- 		greatest_x, greatest_y : type_distance := type_distance'first;
 
 -- 		procedure update_boundaries (p : et_coordinates.geometry.type_point) is begin
 -- 			if p.x < smallest_x then smallest_x := p.x; end if;
@@ -76,28 +73,31 @@ procedure draw_units (
 -- 			if p.y < smallest_y then smallest_y := p.y; end if;
 -- 			if p.y > greatest_y then greatest_y := p.y; end if;
 -- 		end;
-		
-		bounding_box : type_model_rectangle;
+
+		-- First we take a copy the boundaries of the symbol.
 		boundaries : type_boundaries := symbol.bounding_box.boundaries;
-		
-		-- The bounding box that surrounds the symbol must be updated.
+
+		-- In the next steps the boundaries are extended.
 		-- Reason: The operator may have changed positions of
 		-- placeholders (for name, value and purpose) from their initial
 		-- position as specified in the symbol model.
 		-- Other things like lines, arcs, ports and texts can't be moved in the 
 		-- schematic editor. They already have been included in the bounding box.
 		-- See procedure et_symbols.make_bounding_box for details.
-		-- The result of this procedure is an updated bounding box that is
-		-- also converted to a model_rectangle.
-		function update_bounding_box return type_model_rectangle is begin
-			-- CS update bounding by positions of placeholders
 
+		-- This is the bounding box required for drawing the symbol:
+		bounding_box : type_model_rectangle;
+		
+		procedure make_bounding_box is begin
+			-- CS update bounding by positions of placeholders
+			-- CS iterate placeholders
+			
 -- 			put_line ("smallest_x " & to_string (smallest_x));
 -- 			put_line ("greatest_x " & to_string (greatest_x));
 -- 			put_line ("smallest_y " & to_string (smallest_y));
 -- 			put_line ("greatest_y " & to_string (greatest_y));
-			
-			return (
+
+			bounding_box := (
 				-- The bounding box origin is the upper left corner.
 				-- The box position in x is shifted by the smallest_x to the left.
 				-- The box position in y is shifted by the greatest_y upwards.
@@ -110,11 +110,13 @@ procedure draw_units (
 							  position.y
 							+ abs (boundaries.greatest_y)), -- convert y to "downwards"
 				
-				width	=> convert_x (symbol.bounding_box.width),
-				height	=> convert_y (symbol.bounding_box.height)
+-- 				width	=> convert_x (symbol.bounding_box.width),
+-- 				height	=> convert_y (symbol.bounding_box.height)
+				width	=> convert_x (boundaries.greatest_x - boundaries.smallest_x),
+				height	=> convert_y (boundaries.greatest_y - boundaries.smallest_y)
 				);
 			
-		end update_bounding_box;
+		end make_bounding_box;
 
 		procedure draw_line (c : in type_lines.cursor) is begin
 			-- start point
@@ -139,7 +141,7 @@ procedure draw_units (
 
 			
 	begin -- draw_symbol
-		bounding_box := update_bounding_box;
+		make_bounding_box;
 
 -- 		put_line ("bounding box position in model" & to_string (bounding_box.x) & to_string (bounding_box.y));
 
