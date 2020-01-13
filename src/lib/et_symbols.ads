@@ -419,22 +419,17 @@ package et_symbols is
 		texts : type_texts.list; -- the collection of texts
 	end record;
 
-	-- The GUI requires the area (a rectanglular box around the whole symbol) occupied by the symol:
+	-- The GUI requires the area (a rectanglular box around the whole symbol) occupied by the symol.
+	-- For preparation we need the boundaries:
 	type type_boundaries is record
 		smallest_x, smallest_y : et_coordinates.type_distance := et_coordinates.type_distance'last;
 		greatest_x, greatest_y : et_coordinates.type_distance := et_coordinates.type_distance'first;
 	end record;
 	
-	type type_bounding_box is record
-		boundaries	: type_boundaries;
--- 		width		: type_distance_positive := type_distance_positive'first;
--- 		height		: type_distance_positive := type_distance_positive'first;
-	end record;
-	
 	type type_symbol (appearance : type_appearance) is new type_symbol_base with record
 		shapes			: type_shapes; -- the collection of shapes
 		ports			: type_ports.map;
-		bounding_box	: type_bounding_box;
+		boundaries		: type_boundaries;
 		case appearance is
 			when PCB =>
 				-- Placeholders for device wide texts. To be filled with content when 

@@ -75,7 +75,7 @@ procedure draw_units (
 -- 		end;
 
 		-- First we take a copy the boundaries of the symbol.
-		boundaries : type_boundaries := symbol.bounding_box.boundaries;
+		boundaries : type_boundaries := symbol.boundaries;
 
 		-- In the next steps the boundaries are extended.
 		-- Reason: The operator may have changed positions of
@@ -110,8 +110,6 @@ procedure draw_units (
 							  position.y
 							+ abs (boundaries.greatest_y)), -- convert y to "downwards"
 				
--- 				width	=> convert_x (symbol.bounding_box.width),
--- 				height	=> convert_y (symbol.bounding_box.height)
 				width	=> convert_x (boundaries.greatest_x - boundaries.smallest_x),
 				height	=> convert_y (boundaries.greatest_y - boundaries.smallest_y)
 				);

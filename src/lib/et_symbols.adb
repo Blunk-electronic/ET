@@ -400,9 +400,8 @@ package body et_symbols is
 
 		-- All elements of the symbol must be probed and the greatest and
 		-- smallest x and y positions detected.
-		-- Thus the boundaries of the bounding box are updated many times. Finally the 
-		-- bounding box is formed by the boundaries:
-
+		-- Thus the boundaries of the bounding box are updated many times.
+		
 		-- CS consider mirror status of symbol !
 
 		procedure query_items (
@@ -410,20 +409,20 @@ package body et_symbols is
 			symbol		: in out type_symbol) is 
 
 			procedure update_boundaries (p : type_point) is begin
-				if p.x < symbol.bounding_box.boundaries.smallest_x then 
-					symbol.bounding_box.boundaries.smallest_x := p.x; 
+				if p.x < symbol.boundaries.smallest_x then 
+					symbol.boundaries.smallest_x := p.x; 
 				end if;
 				
-				if p.x > symbol.bounding_box.boundaries.greatest_x then
-					symbol.bounding_box.boundaries.greatest_x := p.x; 
+				if p.x > symbol.boundaries.greatest_x then
+					symbol.boundaries.greatest_x := p.x; 
 				end if;
 				
-				if p.y < symbol.bounding_box.boundaries.smallest_y then
-					symbol.bounding_box.boundaries.smallest_y := p.y;
+				if p.y < symbol.boundaries.smallest_y then
+					symbol.boundaries.smallest_y := p.y;
 				end if;
 				
-				if p.y > symbol.bounding_box.boundaries.greatest_y then
-					symbol.bounding_box.boundaries.greatest_y := p.y;
+				if p.y > symbol.boundaries.greatest_y then
+					symbol.boundaries.greatest_y := p.y;
 				end if;
 			end;
 
@@ -440,15 +439,6 @@ package body et_symbols is
 
 			-- probe in shapes all lines:
 			iterate (symbol.shapes.lines, query_line'access);
-
--- 			-- Build the bounding box of the symbol:
--- 			symbol.bounding_box.width :=
--- 				  symbol.bounding_box.boundaries.greatest_x 
--- 				- symbol.bounding_box.boundaries.smallest_x;
--- 			
--- 			symbol.bounding_box.height :=
--- 				  symbol.bounding_box.boundaries.greatest_y
--- 				- symbol.bounding_box.boundaries.smallest_y;
 			
 		end query_items;
 		
