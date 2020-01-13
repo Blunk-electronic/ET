@@ -853,6 +853,7 @@ package body et_canvas.schematic is
 			self.model.draw_nets (area, context); -- separate unit
 			self.model.draw_units (area, context); -- separate unit
 			-- CS self.model.draw_texts (area, context);
+			-- CS self.model.draw_submodules (area, context);
 			
 		end if;
 	end draw_internal;
@@ -970,8 +971,7 @@ package body et_canvas.schematic is
 		return type_model_coordinate (x);
 	end;
 
-	
-	function convert_y (y : in et_coordinates.type_distance) return type_view_coordinate is begin
+	function convert_and_shift_y (y : in et_coordinates.type_distance) return type_view_coordinate is begin
 		return type_view_coordinate 
 			(
 			model.frame_bounding_box.height 
@@ -979,7 +979,7 @@ package body et_canvas.schematic is
 			);
 	end;
 		
-	function convert_y (y : in et_coordinates.type_distance) return type_model_coordinate is begin
+	function convert_and_shift_y (y : in et_coordinates.type_distance) return type_model_coordinate is begin
 		return (
 			model.frame_bounding_box.height 
 			- type_model_coordinate (y)

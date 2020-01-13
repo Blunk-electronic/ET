@@ -91,20 +91,20 @@ procedure draw_units (
 			iterate (symbol.shapes.lines, query_line'access);
 			-- CS arcs, circles, text, placeholders, ports
 
-			put_line ("smallest_x " & to_string (smallest_x));
-			put_line ("greatest_x " & to_string (greatest_x));
-			put_line ("smallest_y " & to_string (smallest_y));
-			put_line ("greatest_y " & to_string (greatest_y));
+-- 			put_line ("smallest_x " & to_string (smallest_x));
+-- 			put_line ("greatest_x " & to_string (greatest_x));
+-- 			put_line ("smallest_y " & to_string (smallest_y));
+-- 			put_line ("greatest_y " & to_string (greatest_y));
 			
 			return (
 				-- The bounding box origin is the upper left corner.
 				-- The box position in x is shifted by the smallest_x to the left.
 				-- The box position in y is shifted by the greatest_y upwards.
 				-- The box position in y is additonally converted to y axis going downwards.
-				x		=> type_model_coordinate (position.x - abs (smallest_x)),
-				y		=> convert_y (position.y + abs (greatest_y)), -- convert y to "downwards"
-				width	=> type_model_coordinate (greatest_x - smallest_x),
-				height	=> type_model_coordinate (greatest_y - smallest_y)
+				x		=> convert_x (position.x - abs (smallest_x)),
+				y		=> convert_and_shift_y (position.y + abs (greatest_y)), -- convert y to "downwards"
+				width	=> convert_x (greatest_x - smallest_x),
+				height	=> convert_y (greatest_y - smallest_y)
 				);
 			
 		end make_bounding_box;
@@ -114,14 +114,14 @@ procedure draw_units (
 			cairo.move_to (
 				context.cr,
 				convert_x (element (c).start_point.x - smallest_x),
-				type_view_coordinate (abs (element (c).start_point.y - greatest_y))
+				convert_y (abs (element (c).start_point.y - greatest_y))
 				);
 
 			-- end point
 			cairo.line_to (
 				context.cr,
 				convert_x (element (c).end_point.x - smallest_x),
-				type_view_coordinate (abs (element (c).end_point.y - greatest_y))
+				convert_y (abs (element (c).end_point.y - greatest_y))
 				);
 
 		end draw_line;
@@ -130,11 +130,9 @@ procedure draw_units (
 	begin -- draw_symbol
 		bounding_box := make_bounding_box;
 
-		put_line ("bounding box position in model" & 
-				  to_string (bounding_box.x) & to_string (bounding_box.y));
+-- 		put_line ("bounding box position in model" & to_string (bounding_box.x) & to_string (bounding_box.y));
 
-		put_line ("unit position in drawing " & 
-				  to_string (position.x) & to_string (position.y));
+-- 		put_line ("unit position in drawing " & to_string (position.x) & to_string (position.y));
 
 		
 		if (in_area = no_rectangle
@@ -144,11 +142,13 @@ procedure draw_units (
 
 			-- Prepare the current transformation matrix (CTM) so that
 			-- all following drawing is relative to the upper left corner
-			-- of the symbol bounding box:
+			-- of the symbol bounding box.
+			-- Further-on the drawing must be offset by the position
+			-- of the frame_bounding_box:
 			translate (
 				context.cr,
-				type_view_coordinate (model.frame_bounding_box.x + bounding_box.x),
-				type_view_coordinate (model.frame_bounding_box.y + bounding_box.y));
+				convert_x (model.frame_bounding_box.x + bounding_box.x),
+				convert_y (model.frame_bounding_box.y + bounding_box.y));
 
 			cairo.set_line_width (context.cr, 1.0);
 

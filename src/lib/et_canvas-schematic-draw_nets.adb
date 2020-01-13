@@ -77,9 +77,9 @@ procedure draw_nets (
 					-- The bounding box exists in the model. Therefore the drawing x and y values
 					-- must be converted to model coordinates:
 					start_point_x	: type_model_coordinate := convert_x (segment.start_point.x);
-					start_point_y	: type_model_coordinate := convert_y (segment.start_point.y);
+					start_point_y	: type_model_coordinate := convert_and_shift_y (segment.start_point.y);
 					end_point_x		: type_model_coordinate := convert_x (segment.end_point.x);
-					end_point_y		: type_model_coordinate := convert_y (segment.end_point.y);
+					end_point_y		: type_model_coordinate := convert_and_shift_y (segment.end_point.y);
 				begin
 					-- NOTE: Model coordinates have the y-axis increasing downwards !
 
@@ -132,8 +132,8 @@ procedure draw_nets (
 							-- all following drawing is relative to the upper left frame corner.
 							translate (
 								context.cr,
-								type_view_coordinate (model.frame_bounding_box.x),
-								type_view_coordinate (model.frame_bounding_box.y));
+								convert_x (model.frame_bounding_box.x),
+								convert_y (model.frame_bounding_box.y));
 
 							cairo.set_line_width (context.cr, 1.0);
 
@@ -144,14 +144,14 @@ procedure draw_nets (
 							cairo.move_to (
 								context.cr,
 								convert_x (element (segment_cursor).start_point.x),
-								convert_y (element (segment_cursor).start_point.y)
+								convert_and_shift_y (element (segment_cursor).start_point.y)
 								);
 
 							-- end point
 							cairo.line_to (
 								context.cr,
 								convert_x (element (segment_cursor).end_point.x),
-								convert_y (element (segment_cursor).end_point.y)
+								convert_and_shift_y (element (segment_cursor).end_point.y)
 								);
 
 							-- CS draw junctions and labels

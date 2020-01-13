@@ -70,7 +70,7 @@ procedure draw_frame (
 				)),
 				
 			-- y position
-			convert_y (et_coordinates.type_distance 
+			convert_and_shift_y (et_coordinates.type_distance 
 				(
 				element (cursor).start_point.y 
 				+ model.title_block_position.y -- y position of title block
@@ -91,7 +91,7 @@ procedure draw_frame (
 				)),
 
 			-- y position
-			convert_y (et_coordinates.type_distance 
+			convert_and_shift_y (et_coordinates.type_distance 
 				(
 				element (cursor).end_point.y 
 				+ model.title_block_position.y -- y position of title block
@@ -116,8 +116,8 @@ begin
 		-- all following drawing is relative to the upper left frame corner.
 		translate (
 			context.cr,
-			type_view_coordinate (model.frame_bounding_box.x),
-			type_view_coordinate (model.frame_bounding_box.y));
+			convert_x (model.frame_bounding_box.x),
+			convert_y (model.frame_bounding_box.y));
 
 		cairo.set_line_width (context.cr, 1.0);
 
@@ -127,18 +127,18 @@ begin
 		-- draw the outer border
 		cairo.rectangle (
 			context.cr,
-			type_view_coordinate (0.0),
-			type_view_coordinate (0.0),
-			type_view_coordinate (model.frame.size.x),
-			type_view_coordinate (model.frame.size.y));
+			convert_x (et_coordinates.type_distance (0.0)),
+			convert_y (et_coordinates.type_distance (0.0)),
+			convert_x (et_coordinates.type_distance (model.frame.size.x)),
+			convert_y (et_coordinates.type_distance (model.frame.size.y)));
 
 		-- draw the inner border
 		cairo.rectangle (
 			context.cr,
-			type_view_coordinate (model.frame.border_width),
-			type_view_coordinate (model.frame.border_width),
-			type_view_coordinate (model.frame.size.x - 2 * model.frame.border_width),
-			type_view_coordinate (model.frame.size.y - 2 * model.frame.border_width));
+			convert_x (et_coordinates.type_distance (model.frame.border_width)),
+			convert_y (et_coordinates.type_distance (model.frame.border_width)),
+			convert_x (et_coordinates.type_distance (model.frame.size.x - 2 * model.frame.border_width)),
+			convert_y (et_coordinates.type_distance (model.frame.size.y - 2 * model.frame.border_width)));
 
 		-- TITLE BLOCK
 		-- lines
