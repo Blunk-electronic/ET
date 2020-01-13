@@ -85,7 +85,16 @@ procedure draw_units (
 		
 		procedure make_bounding_box is begin
 			-- CS update boundaries by positions of placeholders
-			-- CS iterate placeholders
+
+			-- In case the symbol belongs to a real devcie, probe placeholders and
+			-- update boundaries. If a placeholder is inside the boundaries,
+			-- nothing happens -> The boundaries are NOT changed.
+			if symbol.appearance = PCB then
+				-- CS: Currently the area occupied by the text content is ignored.
+				update_boundaries (boundaries, symbol.name.position);
+				update_boundaries (boundaries, symbol.value.position);
+				update_boundaries (boundaries, symbol.purpose.position);
+			end if;
 			
 -- 			put_line ("smallest_x " & to_string (smallest_x));
 -- 			put_line ("greatest_x " & to_string (greatest_x));

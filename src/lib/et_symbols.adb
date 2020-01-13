@@ -431,6 +431,7 @@ package body et_symbols is
 			symbol		: in out type_symbol) is 
 
 			use type_lines;
+			use type_circles;
 
 			-- Update boundaries by start end end point of a line:
 			procedure query_line (c : in type_lines.cursor) is begin
@@ -438,11 +439,25 @@ package body et_symbols is
 				update_boundaries (symbol.boundaries, element (c).end_point);
 			end;
 
+			-- Update boundaries by start end end point of a line:
+			procedure query_circle (c : in type_circles.cursor) is 
+-- 				right, left, up, down : type_point := element (c).center;
+-- 				center : type_point := element (c).center;
+-- 				radius : type_distance := element (c).radius;
+			begin
+				null;
+-- 				update_boundaries (symbol.boundaries, move (point => right, offset => set ();
+-- 				update_boundaries (symbol.boundaries, left);
+-- 				update_boundaries (symbol.boundaries, up);
+-- 				update_boundaries (symbol.boundaries, down);
+			end;
+
+			
 		begin -- query_items
 
 			-- probe in shapes all lines:
 			iterate (symbol.shapes.lines, query_line'access);
-
+			iterate (symbol.shapes.circles, query_circle'access);
 			-- CS circles, arcs, ports, placeholders, texts
 			
 		end query_items;
