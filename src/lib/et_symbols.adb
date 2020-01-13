@@ -393,7 +393,29 @@ package body et_symbols is
 
 
 
-	procedure make_bounding_box ( 
+	procedure update_boundaries (
+		boundaries	: in out type_boundaries;
+		point		: in type_point) is
+	begin
+		if point.x < boundaries.smallest_x then 
+			boundaries.smallest_x := point.x; 
+		end if;
+		
+		if point.x > boundaries.greatest_x then
+			boundaries.greatest_x := point.x; 
+		end if;
+		
+		if point.y < boundaries.smallest_y then
+			boundaries.smallest_y := point.y;
+		end if;
+		
+		if point.y > boundaries.greatest_y then
+			boundaries.greatest_y := point.y;
+		end if;
+	end;
+
+
+	procedure compute_boundaries ( 
 		symbol			: in type_symbols.cursor;
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
@@ -408,49 +430,32 @@ package body et_symbols is
 			symbol_name	: in type_symbol_model_file.bounded_string; -- ../libraries/symbols/NAND.sym
 			symbol		: in out type_symbol) is 
 
-			procedure update_boundaries (p : type_point) is begin
-				if p.x < symbol.boundaries.smallest_x then 
-					symbol.boundaries.smallest_x := p.x; 
-				end if;
-				
-				if p.x > symbol.boundaries.greatest_x then
-					symbol.boundaries.greatest_x := p.x; 
-				end if;
-				
-				if p.y < symbol.boundaries.smallest_y then
-					symbol.boundaries.smallest_y := p.y;
-				end if;
-				
-				if p.y > symbol.boundaries.greatest_y then
-					symbol.boundaries.greatest_y := p.y;
-				end if;
-			end;
-
-			
 			use type_lines;
 
-			-- Probe a single line:
+			-- Update boundaries by start end end point of a line:
 			procedure query_line (c : in type_lines.cursor) is begin
-				update_boundaries (element (c).start_point);
-				update_boundaries (element (c).end_point);
-			end query_line;
+				update_boundaries (symbol.boundaries, element (c).start_point);
+				update_boundaries (symbol.boundaries, element (c).end_point);
+			end;
 
 		begin -- query_items
 
 			-- probe in shapes all lines:
 			iterate (symbol.shapes.lines, query_line'access);
+
+			-- CS circles, arcs, ports, placeholders, texts
 			
 		end query_items;
 		
-	begin -- make_bounding_box
-		log (text => "computing bounding box ...", level => log_threshold);
+	begin -- compute_boundaries
+		log (text => "computing boundaries ...", level => log_threshold);
 
 		type_symbols.update_element (
 			container	=> symbols,
 			position	=> symbol,
 			process		=> query_items'access);
 		
-	end make_bounding_box;
+	end compute_boundaries;
 	
 end et_symbols;
 

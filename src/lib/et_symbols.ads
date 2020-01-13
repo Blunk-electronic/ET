@@ -483,8 +483,12 @@ package et_symbols is
 
 -- BOUNDING BOX
 
+	procedure update_boundaries (
+		boundaries	: in out type_boundaries;
+		point		: in type_point);
+	
 	-- Computes the bounding box of the given symbol:
-	procedure make_bounding_box (
+	procedure compute_boundaries (
 		symbol			: in type_symbols.cursor;
 		log_threshold	: in et_string_processing.type_log_level);
 	

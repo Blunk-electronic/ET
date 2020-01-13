@@ -67,29 +67,24 @@ procedure draw_units (
 		use et_symbols;
 		use type_lines;
 
--- 		procedure update_boundaries (p : et_coordinates.geometry.type_point) is begin
--- 			if p.x < smallest_x then smallest_x := p.x; end if;
--- 			if p.x > greatest_x then greatest_x := p.x; end if;
--- 			if p.y < smallest_y then smallest_y := p.y; end if;
--- 			if p.y > greatest_y then greatest_y := p.y; end if;
--- 		end;
-
 		-- First we take a copy the boundaries of the symbol.
 		boundaries : type_boundaries := symbol.boundaries;
 
 		-- In the next steps the boundaries are extended.
 		-- Reason: The operator may have changed positions of
 		-- placeholders (for name, value and purpose) from their initial
-		-- position as specified in the symbol model.
+		-- position as specified in the symbol model. So the boundaries
+		-- may have become wider.
 		-- Other things like lines, arcs, ports and texts can't be moved in the 
 		-- schematic editor. They already have been included in the bounding box.
-		-- See procedure et_symbols.make_bounding_box for details.
+		-- See procedure et_symbols.compute_boundaries for details.
 
-		-- This is the bounding box required for drawing the symbol:
+		-- This is the bounding box required for drawing the symbol. The bounding
+		-- box exists in the model only.
 		bounding_box : type_model_rectangle;
 		
 		procedure make_bounding_box is begin
-			-- CS update bounding by positions of placeholders
+			-- CS update boundaries by positions of placeholders
 			-- CS iterate placeholders
 			
 -- 			put_line ("smallest_x " & to_string (smallest_x));
@@ -109,9 +104,13 @@ procedure draw_units (
 				y		=> convert_and_shift_y (
 							  position.y
 							+ abs (boundaries.greatest_y)), -- convert y to "downwards"
-				
-				width	=> convert_x (boundaries.greatest_x - boundaries.smallest_x),
-				height	=> convert_y (boundaries.greatest_y - boundaries.smallest_y)
+
+				-- The box width is the difference between greatest x and smallest x.
+				-- The box width is the difference between greatest y and smallest y.
+				-- As a safety measure we test whether the width and height are positive numbers
+				-- because width and height must/can never be negative.
+				width	=> convert_x (type_distance_positive (boundaries.greatest_x - boundaries.smallest_x)),
+				height	=> convert_y (type_distance_positive (boundaries.greatest_y - boundaries.smallest_y))
 				);
 			
 		end make_bounding_box;

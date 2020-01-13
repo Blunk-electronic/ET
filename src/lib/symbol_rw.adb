@@ -1144,7 +1144,7 @@ package body symbol_rw is
 
 			
 			-- The GUI needs to know the area occupied by the symbol:
-			make_bounding_box (symbols.last, log_threshold + 1);
+			compute_boundaries (symbols.last, log_threshold + 1);
 			
 			-- CS Check integrity of symbol (style guides, conventions ...)
 			-- use function "last" to fetch latest symbol
