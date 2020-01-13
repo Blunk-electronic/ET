@@ -438,7 +438,83 @@ package body et_geometry is
 		function to_filled (filled : in string) return type_filled is begin
 			return type_filled'value (filled);
 		end to_filled;
-				
+
+		procedure union (
+			boundaries	: in out type_boundaries;
+			point		: in type_point) is
+		begin
+			-- X axis
+			if point.x < boundaries.smallest_x then 
+				boundaries.smallest_x := point.x; 
+			end if;
+			
+			if point.x > boundaries.greatest_x then
+				boundaries.greatest_x := point.x; 
+			end if;
+
+			-- Y axis
+			if point.y < boundaries.smallest_y then
+				boundaries.smallest_y := point.y;
+			end if;
+			
+			if point.y > boundaries.greatest_y then
+				boundaries.greatest_y := point.y;
+			end if;
+		end;
+		
+		procedure union (
+			left	: in out type_boundaries;
+			right	: in type_boundaries) is
+		begin
+			-- X axis
+			-- smallest
+			if right.smallest_x < left.smallest_x then
+				left.smallest_x := right.smallest_x;
+			end if;
+
+			-- Y axis
+			-- smallest
+			if right.smallest_y < left.smallest_y then
+				left.smallest_y := right.smallest_y;
+			end if;
+
+			-- X axis
+			-- greatest
+			if right.greatest_x > left.greatest_x then
+				left.greatest_x := right.greatest_x;
+			end if;
+
+			-- Y axis
+			-- greatest
+			if right.greatest_y > left.greatest_y then
+				left.greatest_y := right.greatest_y;
+			end if;
+		end union;
+		
+		function boundaries (line : in type_line) return type_boundaries is
+			result : type_boundaries;
+		begin
+			-- X axis
+			if line.start_point.x < line.end_point.x then
+				result.smallest_x := line.start_point.x;
+				result.greatest_x := line.end_point.x;
+			else
+				result.smallest_x := line.end_point.x;
+				result.greatest_x := line.start_point.x;
+			end if;
+
+			-- Y axis
+			if line.start_point.y < line.end_point.y then
+				result.smallest_y := line.start_point.y;
+				result.greatest_y := line.end_point.y;
+			else
+				result.smallest_y := line.end_point.y;
+				result.greatest_y := line.start_point.y;
+			end if;
+			
+			return result;
+		end boundaries;
+		
 		function which_zone (
 		-- Calculates the zone of the line where point is nearest.
 			point	: in type_point'class;
@@ -708,6 +784,14 @@ package body et_geometry is
 			end if;
 		end;
 
+		function boundaries (arc : in type_arc) return type_boundaries
+		is
+			result : type_boundaries;
+		begin
+			-- CS
+			return result;
+		end boundaries;
+		
 		function on_arc (
 		-- Returns true if the given point sits on the given arc.
 		-- The optional parameter accuracy may be used to specifiy the range at
@@ -735,6 +819,13 @@ package body et_geometry is
 			
 			return end_point;
 		end arc_end_point;
+
+		function boundaries (circle : in type_circle) return type_boundaries
+		is
+			result : type_boundaries;
+		begin
+			return result; -- CS
+		end boundaries;
 		
 		function on_circle (
 		-- Returns true if the given point sits on the given circle circumfence.

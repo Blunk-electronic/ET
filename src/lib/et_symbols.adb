@@ -391,30 +391,6 @@ package body et_symbols is
 		return type_symbols.find (symbols, symbol);
 	end locate;
 
-
-
-	procedure update_boundaries (
-		boundaries	: in out type_boundaries;
-		point		: in type_point) is
-	begin
-		if point.x < boundaries.smallest_x then 
-			boundaries.smallest_x := point.x; 
-		end if;
-		
-		if point.x > boundaries.greatest_x then
-			boundaries.greatest_x := point.x; 
-		end if;
-		
-		if point.y < boundaries.smallest_y then
-			boundaries.smallest_y := point.y;
-		end if;
-		
-		if point.y > boundaries.greatest_y then
-			boundaries.greatest_y := point.y;
-		end if;
-	end;
-
-
 	procedure compute_boundaries ( 
 		symbol			: in type_symbols.cursor;
 		log_threshold	: in et_string_processing.type_log_level) is
@@ -422,7 +398,7 @@ package body et_symbols is
 
 		-- All elements of the symbol must be probed and the greatest and
 		-- smallest x and y positions detected.
-		-- Thus the boundaries of the bounding box are updated many times.
+		-- Thus the boundaries of the symbol are updated many times here.
 		
 		-- CS consider mirror status of symbol !
 
@@ -432,33 +408,28 @@ package body et_symbols is
 
 			use type_lines;
 			use type_circles;
+			use type_arcs;
 
-			-- Update boundaries by start end end point of a line:
 			procedure query_line (c : in type_lines.cursor) is begin
-				update_boundaries (symbol.boundaries, element (c).start_point);
-				update_boundaries (symbol.boundaries, element (c).end_point);
+				union (symbol.boundaries, boundaries (element (c)));
 			end;
 
-			-- Update boundaries by start end end point of a line:
-			procedure query_circle (c : in type_circles.cursor) is 
--- 				right, left, up, down : type_point := element (c).center;
--- 				center : type_point := element (c).center;
--- 				radius : type_distance := element (c).radius;
-			begin
-				null;
--- 				update_boundaries (symbol.boundaries, move (point => right, offset => set ();
--- 				update_boundaries (symbol.boundaries, left);
--- 				update_boundaries (symbol.boundaries, up);
--- 				update_boundaries (symbol.boundaries, down);
+			procedure query_circle (c : in type_circles.cursor) is begin
+				union (symbol.boundaries, boundaries (element (c)));
 			end;
 
+			procedure query_arc (c : in type_arcs.cursor) is begin
+				union (symbol.boundaries, boundaries (element (c)));
+			end;
 			
 		begin -- query_items
 
 			-- probe in shapes all lines:
 			iterate (symbol.shapes.lines, query_line'access);
 			iterate (symbol.shapes.circles, query_circle'access);
-			-- CS circles, arcs, ports, placeholders, texts
+			iterate (symbol.shapes.arcs, query_arc'access);
+			
+			-- CS ports, placeholders, texts
 			
 		end query_items;
 		

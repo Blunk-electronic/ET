@@ -68,7 +68,7 @@ procedure draw_units (
 		use type_lines;
 
 		-- First we take a copy the boundaries of the symbol.
-		boundaries : type_boundaries := symbol.boundaries;
+		boundaries : pac_shapes.type_boundaries := symbol.boundaries;
 
 		-- In the next steps the boundaries are extended.
 		-- Reason: The operator may have changed positions of
@@ -91,9 +91,9 @@ procedure draw_units (
 			-- nothing happens -> The boundaries are NOT changed.
 			if symbol.appearance = PCB then
 				-- CS: Currently the area occupied by the text content is ignored.
-				update_boundaries (boundaries, symbol.name.position);
-				update_boundaries (boundaries, symbol.value.position);
-				update_boundaries (boundaries, symbol.purpose.position);
+				pac_shapes.union (boundaries, symbol.name.position);
+				pac_shapes.union (boundaries, symbol.value.position);
+				pac_shapes.union (boundaries, symbol.purpose.position);
 			end if;
 			
 -- 			put_line ("smallest_x " & to_string (smallest_x));

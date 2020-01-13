@@ -247,6 +247,23 @@ package et_geometry is
 		filled_default : constant type_filled := NO;
 
 
+		-- The GUI frequently requires the area (a rectanglular box around an object)
+		-- occupied by the object. For preparation we need the boundaries:
+		type type_boundaries is record
+			smallest_x, smallest_y : type_distance := type_distance'last;
+			greatest_x, greatest_y : type_distance := type_distance'first;
+		end record;
+
+		-- Unions the point with the boundaries. boundaries is updated.
+		procedure union (
+			boundaries	: in out type_boundaries;
+			point		: in type_point);
+		
+		-- Unions the union "right" with union "left". "left" is updated.
+		procedure union (
+			left	: in out type_boundaries;
+			right	: in type_boundaries);
+						
 		
 	-- LINE
 		type type_line is abstract tagged record
@@ -255,6 +272,9 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
+		function boundaries (line : in type_line) return type_boundaries;
+		-- Returns the boundaries of the given line.
+		
 		-- A line is divided into three zones. Their width is the ratio
 		-- of line length and the zone_division_factor.
 		-- 
@@ -309,6 +329,9 @@ package et_geometry is
 			-- CS locked : type_locked;		
 		end record;
 
+		function boundaries (arc : in type_arc) return type_boundaries;
+		-- Returns the boundaries of the given arc.
+		
 		function on_arc (
 		-- Returns true if the given point sits on the given arc.
 		-- The optional parameter accuracy may be used to specifiy the range at
@@ -335,6 +358,8 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
+		function boundaries (circle : in type_circle) return type_boundaries;
+		-- Returns the boundaries of the given circle.
 		
 		function on_circle (
 		-- Returns true if the given point sits on the given circle circumfence.

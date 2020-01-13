@@ -419,12 +419,6 @@ package et_symbols is
 		texts : type_texts.list; -- the collection of texts
 	end record;
 
-	-- The GUI requires the area (a rectanglular box around the whole symbol) occupied by the symol.
-	-- For preparation we need the boundaries:
-	type type_boundaries is record
-		smallest_x, smallest_y : et_coordinates.type_distance := et_coordinates.type_distance'last;
-		greatest_x, greatest_y : et_coordinates.type_distance := et_coordinates.type_distance'first;
-	end record;
 	
 	type type_symbol (appearance : type_appearance) is new type_symbol_base with record
 		shapes			: type_shapes; -- the collection of shapes
@@ -481,11 +475,8 @@ package et_symbols is
 
 	
 
--- BOUNDING BOX
+-- MISC
 
-	procedure update_boundaries (
-		boundaries	: in out type_boundaries;
-		point		: in type_point);
 	
 	-- Computes the bounding box of the given symbol:
 	procedure compute_boundaries (
