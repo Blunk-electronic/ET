@@ -429,8 +429,8 @@ package body et_symbols is
 			procedure query_port (c : in type_ports.cursor) is begin
 				-- The port position is the point of connection with a net.
 				-- Regardless of the rotation or length of the port,
-				-- its position is always the farthest point from the 
-				-- center of the symbol.
+				-- this end of the port points always away from the
+				-- symbol center.
 				union (symbol.boundaries, element (c).position);
 			end;
 

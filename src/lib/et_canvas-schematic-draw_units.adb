@@ -44,7 +44,7 @@ with et_project;				use et_project;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.geometry;
 
-with et_schematic;				--use et_schematic;
+with et_schematic;
 
 use et_project.type_modules;
 use et_schematic.type_devices;
@@ -124,10 +124,12 @@ procedure draw_units (
 			
 		end make_bounding_box;
 
+		-- Transposes the x-value from the drawing to the view.
 		function transpose_x (x : in type_distance) return type_view_coordinate is begin
 			return convert_x (x - boundaries.smallest_x);
 		end;
 
+		-- Transposes the y-value from the drawing to the view.
 		function transpose_y (y : in type_distance) return type_view_coordinate is begin
 			return convert_y (abs (y - boundaries.greatest_y));
 		end;
@@ -137,22 +139,14 @@ procedure draw_units (
 			-- start point
 			cairo.move_to (
 				context.cr,
-
-				-- Transpose the start point from the drawing to the view.
-				--convert_x (element (c).start_point.x - boundaries.smallest_x),
 				transpose_x (element (c).start_point.x),
-				--convert_y (abs (element (c).start_point.y - boundaries.greatest_y))
 				transpose_y (element (c).start_point.y)
 				);
 
 			-- end point
 			cairo.line_to (
 				context.cr,
-
-				-- Transpose the end point from the drawing to the view.
-				-- convert_x (element (c).end_point.x - boundaries.smallest_x),
 				transpose_x (element (c).end_point.x),
-				-- convert_y (abs (element (c).end_point.y - boundaries.greatest_y))
 				transpose_y (element (c).end_point.y)
 				);
 
@@ -166,40 +160,51 @@ procedure draw_units (
 			null; -- CS
 		end draw_circle;
 
-		procedure draw_port (c : in type_ports.cursor) is 
-			end_point : type_point;
+		procedure draw_port (c : in type_ports.cursor) is
+			end_point : type_point := element (c).position;
 		begin
+			-- A port is basically a line. Its start point is the port position.
+			-- The end point points towards the symbol body. Depending on the port
+			-- rotation the end tail points:
+			--  to the left if rotation is 0 degree
+			--  to the right if rotation is 180 degree
+			--  downwards if the rottion is 90 degree
+			--  upwards if the rotation is 270 degree
+			
 			-- We start drawing at the port position:
 			cairo.move_to (
 				context.cr,
-
-				-- Transpose the port position from the drawing to the view.
-				convert_x (element (c).position.x - boundaries.smallest_x),
-				convert_y (abs (element (c).position.y - boundaries.greatest_y))
+				transpose_x (element (c).position.x),
+				transpose_y (element (c).position.y)
 				);
 
-			-- end point
-			if element (c).rotation = 0.0 then
-				null;
-			elsif element (c).rotation = 90.0 then
-				null;
-			elsif element (c).rotation = 180.0 then
-				null;
-			elsif element (c).rotation = 270.0 then
-				null;
-			else
-				raise constraint_error;
-			end if;
-			
-			
--- 			cairo.line_to (
--- 				context.cr,
--- 
--- 				-- Transpose the end point from the drawing to the view.
--- 				convert_x (element (c).end_point.x - boundaries.smallest_x),
--- 				convert_y (abs (element (c).end_point.y - boundaries.greatest_y))
--- 				);
+			-- set the end point
+			if element (c).rotation = 0.0 then -- end point points to the left
+				set (axis => X, value => - (element (c).length), point => end_point);
+				
+			elsif element (c).rotation = 90.0 then -- end point points downwards
+				set (axis => Y, value => - (element (c).length), point => end_point);
 
+			elsif element (c).rotation = 180.0 then  -- end point points to the right
+				set (axis => X, value => element (c).length, point => end_point);
+				
+			elsif element (c).rotation = 270.0 then -- end point points upwards
+				set (axis => Y, value => element (c).length, point => end_point);
+				
+			else
+				raise constraint_error; -- CS do something helpful
+			end if;
+
+			-- draw the end point
+			cairo.line_to (
+				context.cr,
+				transpose_x (end_point.x),
+				transpose_y (end_point.y)
+				);
+
+			-- CS draw terminal and port name, direction, sensitivity, level
+
+			-- CS draw circle around port position
 		end draw_port;
 
 		procedure draw_text (c : in type_texts.cursor) is begin

@@ -229,7 +229,14 @@ package et_symbols is
 	subtype type_line_width is type_distance; -- CS reasonable positive range
 	
 	line_width_port_default : constant type_line_width := 0.2;
-	
+
+	-- A port is basically a line. Its start point is the port position.
+	-- The end point points towards the symbol body. Depending on the port
+	-- rotation the end tail points:
+	--  to the left if rotation is 0 degree
+	--  to the right if rotation is 180 degree
+	--  downwards if the rottion is 90 degree
+	--  upwards if the rotation is 270 degree
 	type type_port_base is tagged record
 		position			: type_point; -- this is the point of connection with a net
 		length				: type_port_length := port_length_default; 
