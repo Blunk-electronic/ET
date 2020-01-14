@@ -396,6 +396,8 @@ package body et_symbols is
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 
+		-- Initially the symbol.boundaries are not determined. The operator
+		-- is not responsible for setting them.
 		-- All elements of the symbol must be probed and the greatest and
 		-- smallest x and y positions detected.
 		-- Thus the boundaries of the symbol are updated many times here.
@@ -424,7 +426,7 @@ package body et_symbols is
 			
 		begin -- query_items
 
-			-- probe in shapes all lines:
+			-- Probe elements of the symbol and unite them in symbol.boundaries:
 			iterate (symbol.shapes.lines, query_line'access);
 			iterate (symbol.shapes.circles, query_circle'access);
 			iterate (symbol.shapes.arcs, query_arc'access);

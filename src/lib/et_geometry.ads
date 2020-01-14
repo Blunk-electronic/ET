@@ -254,12 +254,12 @@ package et_geometry is
 			greatest_x, greatest_y : type_distance := type_distance'first;
 		end record;
 
-		-- Unions the point with the boundaries. boundaries is updated.
+		-- Unites the point with the boundaries. boundaries is updated.
 		procedure union (
 			boundaries	: in out type_boundaries;
 			point		: in type_point);
 		
-		-- Unions the union "right" with union "left". "left" is updated.
+		-- Unites the boundaries "right" with boundaries "left". "left" is updated.
 		procedure union (
 			left	: in out type_boundaries;
 			right	: in type_boundaries);

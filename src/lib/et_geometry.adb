@@ -784,11 +784,22 @@ package body et_geometry is
 			end if;
 		end;
 
-		function boundaries (arc : in type_arc) return type_boundaries
-		is
+		function boundaries (arc : in type_arc) return type_boundaries is
 			result : type_boundaries;
+			radius : type_distance_positive := distance (arc.start_point, arc.end_point);
 		begin
-			-- CS
+			-- CS: This calculation is very simple and superficially. Since an arc is just
+			-- a cutout of a circle, we assume the full circle and calculate its
+			-- boundaries. A more professional approach is required here.
+			
+			-- X axis
+			result.smallest_x := arc.center.x - radius;
+			result.greatest_x := arc.center.x + radius;
+
+			-- Y axis
+			result.smallest_y := arc.center.x - radius;
+			result.greatest_y := arc.center.x + radius;
+			
 			return result;
 		end boundaries;
 		
@@ -820,11 +831,18 @@ package body et_geometry is
 			return end_point;
 		end arc_end_point;
 
-		function boundaries (circle : in type_circle) return type_boundaries
-		is
+		function boundaries (circle : in type_circle) return type_boundaries is
 			result : type_boundaries;
 		begin
-			return result; -- CS
+			-- X axis
+			result.smallest_x := circle.center.x - circle.radius;
+			result.greatest_x := circle.center.x + circle.radius;
+
+			-- Y axis
+			result.smallest_y := circle.center.x - circle.radius;
+			result.greatest_y := circle.center.x + circle.radius;
+			
+			return result;
 		end boundaries;
 		
 		function on_circle (
