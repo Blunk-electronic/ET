@@ -176,7 +176,8 @@ package et_symbols is
 	
 	-- A port is something where a net can be attached to.
 	-- The name of a port represents the function of the port like (A14 or RST_N)
-	subtype type_port_length is type_distance range 0.0 .. 20.0; -- unit is millimeters. CS: reasonable limits ?
+	subtype type_port_length is type_distance_positive range 2.0 .. 20.0; -- unit is millimeters. CS: reasonable limits ?
+	port_length_default : constant type_port_length := 4.0;
 	
 	-- The port has an electrical direction:
 	type type_port_direction is (
@@ -204,12 +205,16 @@ package et_symbols is
 	function to_port_direction (direction : in string) return type_port_direction;
 	
 	type type_port_name_visible is (YES, NO);
+	port_name_visible_default : constant type_port_name_visible := YES;
 	function to_string (visible : in type_port_name_visible) return string;
 	function to_port_name_visible (visible : in string) return type_port_name_visible;	
+
 	
 	type type_terminal_name_visible is (YES, NO);
+	terminal_name_visible_default : constant type_terminal_name_visible := YES;
 	function to_string (visible : in type_terminal_name_visible) return string;	
 	function to_terminal_name_visible (visible : in string) return type_terminal_name_visible;
+
 	
  	port_name_length_max : constant natural := 100;
 	package type_port_name is new generic_bounded_length (port_name_length_max);
@@ -225,16 +230,16 @@ package et_symbols is
 	
 	line_width_port_default : constant type_line_width := 0.2;
 	
-	type type_port_base is tagged record 	-- CS: set defaults	
-		position			: type_point;
-		length				: type_port_length; 
+	type type_port_base is tagged record
+		position			: type_point; -- this is the point of connection with a net
+		length				: type_port_length := port_length_default; 
 		-- CS line_width	: type_line_width := line_width_port_default;
-		rotation			: type_rotation := 0.0;
+		rotation			: type_rotation := 0.0; -- CS use type_rotation_relative ?
 		
-		port_name_visible		: type_port_name_visible;
+		port_name_visible		: type_port_name_visible := port_name_visible_default;
 		port_name_size			: pac_text.type_text_size := text_size_default;
 		
-		terminal_name_visible	: type_terminal_name_visible;
+		terminal_name_visible	: type_terminal_name_visible := terminal_name_visible_default;
 		terminal_name_size		: pac_text.type_text_size := text_size_default;
 		-- CS: port swap level ? -> would require a derived new type
 	end record;
