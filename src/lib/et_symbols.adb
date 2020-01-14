@@ -411,6 +411,8 @@ package body et_symbols is
 			use type_lines;
 			use type_circles;
 			use type_arcs;
+			use type_ports;
+			use type_texts;
 
 			procedure query_line (c : in type_lines.cursor) is begin
 				union (symbol.boundaries, boundaries (element (c)));
@@ -423,6 +425,20 @@ package body et_symbols is
 			procedure query_arc (c : in type_arcs.cursor) is begin
 				union (symbol.boundaries, boundaries (element (c)));
 			end;
+
+			procedure query_port (c : in type_ports.cursor) is begin
+				-- The port position is the point of connection with a net.
+				-- Regardless of the rotation or length of the port,
+				-- its position is always the farthest point from the 
+				-- center of the symbol.
+				union (symbol.boundaries, element (c).position);
+			end;
+
+			procedure query_text (c : in type_texts.cursor) is begin
+				-- CS Currently we care for the position of the text
+				-- only. The text length and size is ignored.
+				union (symbol.boundaries, element (c).position);
+			end;
 			
 		begin -- query_items
 
@@ -430,8 +446,16 @@ package body et_symbols is
 			iterate (symbol.shapes.lines, query_line'access);
 			iterate (symbol.shapes.circles, query_circle'access);
 			iterate (symbol.shapes.arcs, query_arc'access);
+			iterate (symbol.ports, query_port'access);
+			iterate (symbol.texts, query_text'access);
 			
-			-- CS ports, placeholders, texts
+			-- Probe placeholders in case the symbol belongs to
+			-- a real device:
+			if symbol.appearance = PCB then
+				union (symbol.boundaries, symbol.name.position);
+				union (symbol.boundaries, symbol.value.position);
+				union (symbol.boundaries, symbol.purpose.position);
+			end if;
 			
 		end query_items;
 		

@@ -107,7 +107,6 @@ procedure draw_nets (
 						--  - no area given or
 						--  - if the bounding box of the segment intersects the given area
 						if (in_area = no_rectangle
-							--or else intersects (in_area, make_bounding_box (element (segment_cursor))))
 							or else intersects (in_area, bounding_box)) 
 						then
 							-- CS test size 

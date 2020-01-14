@@ -66,6 +66,10 @@ procedure draw_units (
 	is
 		use et_symbols;
 		use type_lines;
+		use type_arcs;
+		use type_circles;
+		use type_ports;
+		use type_texts;
 
 		-- First we take a copy the boundaries of the symbol.
 		boundaries : pac_shapes.type_boundaries := symbol.boundaries;
@@ -84,8 +88,6 @@ procedure draw_units (
 		bounding_box : type_model_rectangle;
 		
 		procedure make_bounding_box is begin
-			-- CS update boundaries by positions of placeholders
-
 			-- In case the symbol belongs to a real devcie, probe placeholders and
 			-- update boundaries. If a placeholder is inside the boundaries,
 			-- nothing happens -> The boundaries are NOT changed.
@@ -122,14 +124,25 @@ procedure draw_units (
 			
 		end make_bounding_box;
 
+		function transpose_x (x : in type_distance) return type_view_coordinate is begin
+			return convert_x (x - boundaries.smallest_x);
+		end;
+
+		function transpose_y (y : in type_distance) return type_view_coordinate is begin
+			return convert_y (abs (y - boundaries.greatest_y));
+		end;
+
+		
 		procedure draw_line (c : in type_lines.cursor) is begin
 			-- start point
 			cairo.move_to (
 				context.cr,
 
 				-- Transpose the start point from the drawing to the view.
-				convert_x (element (c).start_point.x - boundaries.smallest_x),
-				convert_y (abs (element (c).start_point.y - boundaries.greatest_y))
+				--convert_x (element (c).start_point.x - boundaries.smallest_x),
+				transpose_x (element (c).start_point.x),
+				--convert_y (abs (element (c).start_point.y - boundaries.greatest_y))
+				transpose_y (element (c).start_point.y)
 				);
 
 			-- end point
@@ -137,12 +150,65 @@ procedure draw_units (
 				context.cr,
 
 				-- Transpose the end point from the drawing to the view.
-				convert_x (element (c).end_point.x - boundaries.smallest_x),
-				convert_y (abs (element (c).end_point.y - boundaries.greatest_y))
+				-- convert_x (element (c).end_point.x - boundaries.smallest_x),
+				transpose_x (element (c).end_point.x),
+				-- convert_y (abs (element (c).end_point.y - boundaries.greatest_y))
+				transpose_y (element (c).end_point.y)
 				);
 
 		end draw_line;
 
+		procedure draw_arc (c : in type_arcs.cursor) is begin
+			null; -- CS
+		end draw_arc;
+
+		procedure draw_circle (c : in type_circles.cursor) is begin
+			null; -- CS
+		end draw_circle;
+
+		procedure draw_port (c : in type_ports.cursor) is 
+			end_point : type_point;
+		begin
+			-- We start drawing at the port position:
+			cairo.move_to (
+				context.cr,
+
+				-- Transpose the port position from the drawing to the view.
+				convert_x (element (c).position.x - boundaries.smallest_x),
+				convert_y (abs (element (c).position.y - boundaries.greatest_y))
+				);
+
+			-- end point
+			if element (c).rotation = 0.0 then
+				null;
+			elsif element (c).rotation = 90.0 then
+				null;
+			elsif element (c).rotation = 180.0 then
+				null;
+			elsif element (c).rotation = 270.0 then
+				null;
+			else
+				raise constraint_error;
+			end if;
+			
+			
+-- 			cairo.line_to (
+-- 				context.cr,
+-- 
+-- 				-- Transpose the end point from the drawing to the view.
+-- 				convert_x (element (c).end_point.x - boundaries.smallest_x),
+-- 				convert_y (abs (element (c).end_point.y - boundaries.greatest_y))
+-- 				);
+
+		end draw_port;
+
+		procedure draw_text (c : in type_texts.cursor) is begin
+			null; -- CS
+		end draw_text;
+
+		procedure draw_placeholders is begin
+			null; -- CS
+		end draw_placeholders;
 			
 	begin -- draw_symbol
 		make_bounding_box;
@@ -173,9 +239,23 @@ procedure draw_units (
 
 			-- draw lines
 			iterate (symbol.shapes.lines, draw_line'access);
-			-- CS arcs, circles, text, placeholders, ports
-			
 
+			-- draw arcs
+			iterate (symbol.shapes.arcs, draw_arc'access);
+
+			-- draw circles
+			iterate (symbol.shapes.circles, draw_circle'access);
+
+			-- draw ports
+			iterate (symbol.ports, draw_port'access);
+
+			-- draw texts
+			iterate (symbol.texts, draw_text'access);
+			
+			-- draw placeholders
+			draw_placeholders;
+			
+			
 			cairo.stroke (context.cr);
 			restore (context.cr);
 			
