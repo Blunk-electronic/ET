@@ -104,7 +104,7 @@ procedure draw_units (
 			bounding_box := (
 				-- The bounding box origin is the upper left corner.
 				-- The box position in x is shifted by the smallest_x to the left.
-				-- The box position in y is shifted by the greatest_y upwards.
+				-- The box position in y is shifted by the greatest_y (upwards).
 				-- The box position in y is additonally converted to y axis going downwards.
 				x		=> convert_x (
 							  position.x 
@@ -115,7 +115,7 @@ procedure draw_units (
 							+ abs (boundaries.greatest_y)), -- convert y to "downwards"
 
 				-- The box width is the difference between greatest x and smallest x.
-				-- The box width is the difference between greatest y and smallest y.
+				-- The box height is the difference between greatest y and smallest y.
 				-- As a safety measure we test whether the width and height are positive numbers
 				-- because width and height must/can never be negative.
 				width	=> convert_x (type_distance_positive (boundaries.greatest_x - boundaries.smallest_x)),

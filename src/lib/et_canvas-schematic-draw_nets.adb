@@ -71,41 +71,29 @@ procedure draw_nets (
 				segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 				-- The bounding box that surrounds the segment must be calculated.
-				function make_bounding_box (segment : in type_net_segment) return type_model_rectangle is
-					smallest_y, smallest_x, greatest_y, greatest_x : type_model_coordinate;
+				bounding_box : type_model_rectangle;
 
-					-- The bounding box exists in the model. Therefore the drawing x and y values
-					-- must be converted to model coordinates:
-					start_point_x	: type_model_coordinate := convert_x (segment.start_point.x);
-					start_point_y	: type_model_coordinate := convert_and_shift_y (segment.start_point.y);
-					end_point_x		: type_model_coordinate := convert_x (segment.end_point.x);
-					end_point_y		: type_model_coordinate := convert_and_shift_y (segment.end_point.y);
+				procedure make_bounding_box (sc : in type_net_segments.cursor) is
+					use pac_shapes;					
+					boundaries : type_boundaries := pac_shapes.boundaries (type_line (element (sc)));
 				begin
-					-- NOTE: Model coordinates have the y-axis increasing downwards !
+					bounding_box := (
+						-- The bounding box origin is the upper left corner.
+						-- The box position in x is the smallest_x.
+						-- The box position in y is the greatest_y (upwards).
+						-- The box position in y is additonally converted to y axis going downwards.
+						x		=> convert_x (boundaries.smallest_x),
+						y		=> convert_and_shift_y (boundaries.smallest_y),
 
-					if start_point_y < end_point_y then
-						smallest_y := start_point_y;
-						greatest_y := end_point_y;
-					else
-						smallest_y := end_point_y;
-						greatest_y := start_point_y;
-					end if;
-
-					if start_point_x < end_point_x then
-						smallest_x := start_point_x;
-						greatest_x := end_point_x;
-					else
-						smallest_x := end_point_x;
-						greatest_x := start_point_x;
-					end if;
+						-- The box width is the difference between greatest x and smallest x.
+						-- The box height is the difference between greatest y and smallest y.
+						-- As a safety measure we test whether the width and height are positive numbers
+						-- because width and height must/can never be negative.
+						width	=> convert_x (type_distance_positive (boundaries.greatest_x - boundaries.smallest_x)),
+						height	=> convert_y (type_distance_positive (boundaries.greatest_y - boundaries.smallest_y))
+						);
 
 					-- CS include net labels in the bounding box
-					
-					return (
-							x => smallest_x, y => smallest_y, -- position
-							width => greatest_x - smallest_x, -- width
-							height => greatest_y - smallest_y -- height
-						   );
 				end make_bounding_box;
 				
 			begin -- query_segments
@@ -115,11 +103,14 @@ procedure draw_nets (
 					
 					while segment_cursor /= type_net_segments.no_element loop
 
+						make_bounding_box (segment_cursor);
+						
 						-- We draw the segment if:
 						--  - no area given or
 						--  - if the bounding box of the segment intersects the given area
 						if (in_area = no_rectangle
-							or else intersects (in_area, make_bounding_box (element (segment_cursor)))) 
+							--or else intersects (in_area, make_bounding_box (element (segment_cursor))))
+							or else intersects (in_area, bounding_box)) 
 						then
 							-- CS test size 
 					-- 			if not size_above_threshold (self, context.view) then
