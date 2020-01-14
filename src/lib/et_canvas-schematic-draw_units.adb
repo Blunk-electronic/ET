@@ -116,10 +116,8 @@ procedure draw_units (
 
 				-- The box width is the difference between greatest x and smallest x.
 				-- The box height is the difference between greatest y and smallest y.
-				-- As a safety measure we test whether the width and height are positive numbers
-				-- because width and height must/can never be negative.
-				width	=> convert_x (type_distance_positive (boundaries.greatest_x - boundaries.smallest_x)),
-				height	=> convert_y (type_distance_positive (boundaries.greatest_y - boundaries.smallest_y))
+				width	=> convert_x (boundaries.greatest_x - boundaries.smallest_x),
+				height	=> convert_y (boundaries.greatest_y - boundaries.smallest_y)
 				);
 			
 		end make_bounding_box;

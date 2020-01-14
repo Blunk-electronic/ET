@@ -72,6 +72,7 @@ with et_frames;				--use et_frames;
 package et_canvas.schematic is
 
 	subtype type_model_coordinate is et_coordinates.type_distance;
+	subtype type_model_coordinate_positive is et_coordinates.geometry.type_distance_positive;	
 	subtype type_model_point is et_coordinates.geometry.type_point; -- x/y only
 
 -- 	subtype type_item_coordiante is et_coordinates.type_distance;
@@ -81,7 +82,7 @@ package et_canvas.schematic is
 	-- A rectangular area of the model:
 	type type_model_rectangle is record
 		x, y			: type_model_coordinate; -- position
-		width, height	: type_model_coordinate; -- size
+		width, height	: type_model_coordinate_positive; -- size
 	end record;
 
 	no_rectangle : constant type_model_rectangle := (0.0, 0.0, 0.0, 0.0);
