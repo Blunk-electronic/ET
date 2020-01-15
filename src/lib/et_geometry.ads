@@ -83,7 +83,15 @@ package et_geometry is
 		function x (point : in type_point'class) return type_distance; -- CS class attr. not required ?
 		function y (point : in type_point'class) return type_distance;		
 
+		-- The GUI frequently requires the area (a rectanglular box around an object)
+		-- occupied by the object. For preparation we need the boundaries:
+		type type_boundaries is record
+			smallest_x, smallest_y : type_distance := type_distance'last;
+			greatest_x, greatest_y : type_distance := type_distance'first;
+		end record;
 
+		function boundaries (point_one, point_two : in type_point) return type_boundaries;
+		-- Calculates the boundaries of the given points.
 		
 		function mil_to_distance (mil : in string) return type_distance;
 		-- Converts a mil number (given as a string) to millimeters.	
@@ -113,6 +121,13 @@ package et_geometry is
 			point	: in out type_point'class;
 			position: in type_point);
 
+		-- The quadrants of the coordinate system are numbered counter clockwise.
+		-- Quadrant ONE is top right.
+		type type_quadrant is (ONE, TWO, THREE, FOUR);
+
+		function quadrant (point : in type_point) return type_quadrant;
+		-- Returns the quadrant the point is located in.
+		
 		function invert (point : in type_point'class) return type_point'class;
 		-- Inverts the given point by multiplying x by -1 and y by -1.
 		
@@ -257,13 +272,6 @@ package et_geometry is
 		function to_filled (filled : in string) return type_filled;
 		filled_default : constant type_filled := NO;
 
-
-		-- The GUI frequently requires the area (a rectanglular box around an object)
-		-- occupied by the object. For preparation we need the boundaries:
-		type type_boundaries is record
-			smallest_x, smallest_y : type_distance := type_distance'last;
-			greatest_x, greatest_y : type_distance := type_distance'first;
-		end record;
 
 		-- Unites the point with the boundaries. boundaries is updated.
 		procedure union (

@@ -72,7 +72,7 @@ procedure draw_units (
 		use type_texts;
 
 		-- First we take a copy the boundaries of the symbol.
-		boundaries : pac_shapes.type_boundaries := symbol.boundaries;
+		boundaries : geometry.type_boundaries := symbol.boundaries;
 
 		-- In the next steps the boundaries are extended.
 		-- Reason: The operator may have changed positions of
@@ -214,7 +214,11 @@ procedure draw_units (
 		procedure draw_placeholders is begin
 			null; -- CS
 		end draw_placeholders;
-			
+
+		procedure draw_origin is begin
+			null; -- CS
+		end draw_origin;
+		
 	begin -- draw_symbol
 		make_bounding_box;
 
@@ -259,7 +263,9 @@ procedure draw_units (
 			
 			-- draw placeholders
 			draw_placeholders;
-			
+
+			-- draw origin
+			draw_origin;
 			
 			cairo.stroke (context.cr);
 			restore (context.cr);

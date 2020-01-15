@@ -72,6 +72,32 @@ package body et_geometry is
 			return point.y;
 		end;
 
+		function boundaries (point_one, point_two : in type_point) return type_boundaries is
+		-- Calculates the boundaries of the given points.
+			result : type_boundaries;
+		begin
+			-- X axis
+			if point_one.x < point_two.x then
+				result.smallest_x := point_one.x;
+				result.greatest_x := point_two.x;
+			else
+				result.smallest_x := point_two.x;
+				result.greatest_x := point_one.x;
+			end if;
+
+			-- Y axis
+			if point_one.y < point_two.y then
+				result.smallest_y := point_one.y;
+				result.greatest_y := point_two.y;
+			else
+				result.smallest_y := point_two.y;
+				result.greatest_y := point_one.y;
+			end if;
+
+			return result;
+		end boundaries;
+			
+		
 		function mil_to_distance (mil : in string) return type_distance is
 		-- Converts a mil number (given as a string) to millimeters.
 			
@@ -147,6 +173,25 @@ package body et_geometry is
 			point.y := position.y;
 		end;
 
+		function quadrant (point : in type_point) return type_quadrant is
+		-- Returns the quadrant the point is located in.
+		begin
+			if point.x >= zero then -- we are right of the y-axis or on top of it
+				if point.y >= zero then -- we are above the x-axis or on top of it
+					return ONE; 
+				else -- we are below the x-axis
+					return FOUR;
+				end if;
+				
+			else -- we are left of the y-axis
+				if point.y >= zero then -- we are above the x-axis or on top of it
+					return TWO;
+				else -- we are below the x-axis
+					return THREE;
+				end if;
+			end if;
+		end quadrant;
+		
 		function invert (point : in type_point'class) return type_point'class is
 		-- Inverts the given point by multiplying x by -1 and y by -1.
 			pi : type_point'class := point;
@@ -519,28 +564,8 @@ package body et_geometry is
 			end if;
 		end union;
 		
-		function boundaries (line : in type_line) return type_boundaries is
-			result : type_boundaries;
-		begin
-			-- X axis
-			if line.start_point.x < line.end_point.x then
-				result.smallest_x := line.start_point.x;
-				result.greatest_x := line.end_point.x;
-			else
-				result.smallest_x := line.end_point.x;
-				result.greatest_x := line.start_point.x;
-			end if;
-
-			-- Y axis
-			if line.start_point.y < line.end_point.y then
-				result.smallest_y := line.start_point.y;
-				result.greatest_y := line.end_point.y;
-			else
-				result.smallest_y := line.end_point.y;
-				result.greatest_y := line.start_point.y;
-			end if;
-			
-			return result;
+		function boundaries (line : in type_line) return type_boundaries is begin
+			return boundaries (line.start_point, line.end_point);
 		end boundaries;
 		
 		function which_zone (
@@ -813,9 +838,97 @@ package body et_geometry is
 		end;
 
 		function boundaries (arc : in type_arc) return type_boundaries is
-			result : type_boundaries;
-			radius : type_distance_positive := distance (arc.start_point, arc.end_point);
-		begin
+			result : type_boundaries; -- to be returned
+
+			type type_arc_tmp is new type_arc with null record;
+			arc_tmp : type_arc_tmp := (arc with null record);
+			
+			radius : type_distance_positive := distance (arc.center, arc.start_point);
+
+			q_start : type_quadrant := quadrant (arc_tmp.start_point);
+			q_end   : type_quadrant := quadrant (arc_tmp.end_point);
+
+			procedure same_quadrands is begin
+				result := boundaries (arc.start_point, arc.end_point);
+			end;
+			
+		begin -- boundaries
+			move_to (arc_tmp, origin);
+			if quadrant (arc_tmp.start_point) = quadrant (arc_tmp.end_point) then
+				result := boundaries (arc.start_point, arc.end_point);
+			else
+				null;
+			end if;
+
+			case q_start is
+				when ONE =>
+					case q_end is
+						when ONE => same_quadrands;
+
+						when TWO => 
+							result := boundaries (arc_tmp.start_point, arc_tmp.end_point);
+							result.greatest_y := radius;
+
+						when THREE =>
+							result := boundaries (arc_tmp.start_point, arc_tmp.end_point);
+							result.greatest_y := radius;
+							result.smallest_x := - radius;
+
+						when FOUR =>
+							result := boundaries (arc_tmp.start_point, arc_tmp.end_point);
+							result.greatest_y := radius;
+							result.smallest_x := - radius;
+							result.smallest_y := - radius;
+					end case;
+
+
+				when TWO =>
+					case q_end is
+						when ONE => null;
+
+						when TWO => same_quadrands;
+
+						when THREE => null;
+
+						when FOUR => null;
+					end case;
+
+
+				when THREE =>
+					case q_end is
+						when ONE => null;
+
+						when TWO => null;
+
+						when THREE => same_quadrands;
+
+						when FOUR => null;
+					end case;
+
+				when FOUR =>
+					case q_end is
+						when ONE => null;
+
+						when TWO => null;
+
+						when THREE => null;
+
+						when FOUR => same_quadrands;
+					end case;
+					
+			end case;
+
+			
+			case q_end is
+				when ONE => null;
+
+				when TWO => null;
+
+				when THREE => null;
+
+				when FOUR => null;
+			end case;
+			
 			-- CS: This calculation is very simple and superficially. Since an arc is just
 			-- a cutout of a circle, we assume the full circle and calculate its
 			-- boundaries. A more professional approach is required here.
