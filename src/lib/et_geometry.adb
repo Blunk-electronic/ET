@@ -885,18 +885,37 @@ package body et_geometry is
 
 						when TWO => 
 							result := boundaries (arc_tmp.start_point, arc_tmp.end_point);
-							result.greatest_y := radius;
+
+							if arc.direction = CCW then
+								result.greatest_y := radius;
+							else
+								result.smallest_y := - radius;
+							end if;
 
 						when THREE =>
 							result := boundaries (arc_tmp.start_point, arc_tmp.end_point);
-							result.greatest_y := radius;
-							result.smallest_x := - radius;
+
+							if arc.direction = CCW then
+								result.greatest_y := radius;
+								result.smallest_x := - radius;
+							else
+								result.smallest_y := - radius;
+								result.greatest_x := radius;
+							end if;
 
 						when FOUR =>
-							result := boundaries (arc_tmp.start_point, arc_tmp.end_point);
-							result.greatest_y := radius;
-							result.smallest_x := - radius;
-							result.smallest_y := - radius;
+							--result := boundaries (arc_tmp.start_point, arc_tmp.end_point);
+
+							if arc.direction = CCW then
+								result.greatest_y := radius;
+								result.smallest_x := - radius;
+								result.smallest_y := - radius;
+							else
+								result.greatest_x := radius;
+								result.smallest_y := - radius;
+								result.smallest_x := - radius;
+								result.greatest_y := radius;
+							end if;
 					end case;
 
 
@@ -958,7 +977,8 @@ package body et_geometry is
 			-- Y axis
 			result.smallest_y := arc.center.x - radius;
 			result.greatest_y := arc.center.x + radius;
-			
+
+			-- CS add to boundaries x/y of arc.center
 			return result;
 		end boundaries;
 		
