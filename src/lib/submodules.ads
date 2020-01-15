@@ -93,7 +93,9 @@ package submodules is
 	-- Removes the file extension from given path and returns the module name.
 
 	type type_netchanger_port_name is (MASTER, SLAVE);
-
+	
+	keyword_direction : constant string := "direction";
+	
 	function to_port_name (name : in string) return type_netchanger_port_name;
 	function to_string (name : in type_netchanger_port_name) return string;	
 	
@@ -172,7 +174,7 @@ package submodules is
 						radius		=> 5.0,
 						start_point	=> et_coordinates.geometry.type_point (geometry.set (x => -5.0, y => 0.0)),
 						end_point	=> et_coordinates.geometry.type_point (geometry.set (x =>  5.0, y => 0.0)),
-						direction	=> et_symbols.pac_shapes.CCW,
+						direction	=> et_coordinates.geometry.CW,
 						width		=> et_symbols.line_width_port_default);
 	end record;
 

@@ -304,7 +304,7 @@ Laying out:
 board led_driver route freetrack 1 line 0.25 10 10 16 13 # layer 1, line, width 0.25, from 10/10 to 16/13
 ```
 ```
-board led_driver route freetrack 1 arc 0.25 50 50 50 0 50 100 # layer 1, arc, width 0.25, center 50/50, from 50/0 to 50/100
+board led_driver route freetrack 1 arc 0.25 50 50 50 0 50 100 cw # layer 1, arc, width 0.25, center 50/50, from 50/0 to 50/100, clockwise
 ```
 
 Changing width. CS: Not implemented yet.
@@ -326,7 +326,7 @@ Laying out tracks takes place in the layout:
 board led_driver route net reset_n 1 line 0.25 10 10 16 13 # net reset_n, layer 1, line, width 0.25, line from 10/10 to 16/13
 ```
 ```
-board led_driver route net reset_n 1 arc 0.25 50 50 50 0 50 100 # net reset_n, layer 1, arc, width 0.25, center 50/50, from 50/0 to 50/100
+board led_driver route net reset_n 1 arc 0.25 50 50 50 0 50 100 ccw # net reset_n, layer 1, arc, width 0.25, center 50/50, from 50/0 to 50/100, counterclockwise
 ```
 
 Route track from IC1 pad H7 in direction 45 degrees with length of 50mm:
@@ -397,7 +397,7 @@ NOTE: Within the term do not use whitespace characters.
 board led_driver draw route_restrict [1,3,5-9] line 10 10 60 10  # line, from 10/10 to 60/10
 ```
 ```
-board led_driver draw route_restrict [1,3,5-9] arc 50 50 0 50 100 0 # arc, center 50/50 from 50/0 to 50/100
+board led_driver draw route_restrict [1,3,5-9] arc 50 50 0 50 100 0 cw # arc, center 50/50 from 50/0 to 50/100, clockwise
 ```
 ```
 board led_driver draw route_restrict [1,3,5-9] circle 50 50 40 # circle, center 50/50 radius 40
@@ -629,7 +629,7 @@ no line width parameter.
 board led_driver draw outline line 0 0 160 0 # from 0/0 to 160/0
 ```
 ```
-board led_driver draw outline arc 50 50 50 0 50 100 # center 50/50 from 50/0 to 50/100
+board led_driver draw outline arc 50 50 50 0 50 100 cw # center 50/50 from 50/0 to 50/100, clockwise
 ```
 ```
 board led_driver draw outline circle 50 50 50 # center 50/50 radius 50
@@ -645,7 +645,7 @@ NOTE: Whatever you draw in here affects the PCB manufacturing.
 board led_driver draw silk top line 2.5 0 0 160 0 # top, line, width 2.5mm, from 0/0 to 160/0
 ```
 ```
-board led_driver draw silk top arc 2.5 50 50 0 50 100 0 # top, arc, width 2.5mm, center 50/50 from 50/0 to 50/100
+board led_driver draw silk top arc 2.5 50 50 0 50 100 0 ccw # top, arc, width 2.5mm, center 50/50 from 50/0 to 50/100, counterclockwise
 ```
 ```
 board led_driver draw silk top circle 2.5 50 50 40 # top, circle, width 2.5mm, center 50/50 radius 40

@@ -361,6 +361,23 @@ package body et_geometry is
 				return type_rotation'image (rotation);
 			end if;
 		end;
+
+		function to_string (direction : in type_direction_of_rotation) return string is begin
+			return to_lower (type_direction_of_rotation'image (direction));
+		end to_string;
+			
+		function to_direction (direction : in string) return type_direction_of_rotation is begin
+			return type_direction_of_rotation'value (direction);
+		end to_direction;
+
+		function direction_of_rotation (rotation : in type_rotation) return type_direction_of_rotation is begin
+			if rotation < zero_rotation then
+				return CW;
+			else
+				return CCW;
+			end if;
+		end direction_of_rotation;
+
 		
 		procedure set (
 		-- Sets the rotation of a position. (position.rotation)
@@ -837,13 +854,6 @@ package body et_geometry is
 			end if;
 		end;
 
-		function to_string (direction : in type_arc_direction) return string is begin
-			return to_lower (type_arc_direction'image (direction));
-		end to_string;
-			
-		function to_direction (direction : in string) return type_arc_direction is begin
-			return type_arc_direction'value (direction);
-		end to_direction;
 		
 		function boundaries (arc : in type_arc) return type_boundaries is
 			result : type_boundaries; -- to be returned

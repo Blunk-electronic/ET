@@ -1931,7 +1931,9 @@ package body et_kicad_pcb is
 						keepout.top.arcs.append ((
 							center 		=> arc.center,
 							start_point	=> arc.start_point, 
-							end_point	=> arc.end_point));
+							end_point	=> arc.end_point,
+							direction	=> direction_of_rotation (arc.angle)
+							));
 						
 						arc_keepout_properties (TOP, keepout.top.arcs.last, log_threshold + 1);
 						
@@ -1939,7 +1941,9 @@ package body et_kicad_pcb is
 						keepout.bottom.arcs.append ((
 							center 		=> arc.center,
 							start_point	=> arc.start_point, 
-							end_point	=> arc.end_point));
+							end_point	=> arc.end_point,
+							direction	=> direction_of_rotation (arc.angle)
+							));
 
 						arc_keepout_properties (BOTTOM, keepout.bottom.arcs.last, log_threshold + 1);
 
@@ -6139,7 +6143,9 @@ package body et_kicad_pcb is
 						board.keepout.top.arcs.append ((
 							center 		=> board_arc.center, 
 							start_point	=> board_arc.start_point,
-							end_point	=> board_arc.end_point));
+							end_point	=> board_arc.end_point,
+							direction	=> direction_of_rotation (board_arc.angle)
+							));
 						
 						arc_keepout_properties (TOP, board.keepout.top.arcs.last, log_threshold + 1);
 
@@ -6147,7 +6153,9 @@ package body et_kicad_pcb is
 						board.keepout.bottom.arcs.append ((
 							center 		=> board_arc.center, 
 							start_point	=> board_arc.start_point,
-							end_point	=> board_arc.end_point));
+							end_point	=> board_arc.end_point,
+							direction	=> direction_of_rotation (board_arc.angle)
+							));
 
 						arc_keepout_properties (BOTTOM, board.keepout.bottom.arcs.last, log_threshold + 1);
 						
@@ -6402,7 +6410,9 @@ package body et_kicad_pcb is
 						package_keepout.top.arcs.append ((
 							center 		=> package_arc.center,
 							start_point	=> package_arc.start_point, 
-							end_point	=> package_arc.end_point));
+							end_point	=> package_arc.end_point,
+							direction	=> direction_of_rotation (package_arc.angle)
+							));
 
 						arc_keepout_properties (TOP, package_keepout.top.arcs.last, log_threshold + 1);
 						
@@ -6410,7 +6420,9 @@ package body et_kicad_pcb is
 						package_keepout.bottom.arcs.append ((
 							center 		=> package_arc.center,
 							start_point	=> package_arc.start_point, 
-							end_point	=> package_arc.end_point));
+							end_point	=> package_arc.end_point,
+							direction	=> direction_of_rotation (package_arc.angle)
+							));
 						
 						arc_keepout_properties (BOTTOM, package_keepout.bottom.arcs.last, log_threshold + 1);
 

@@ -1668,7 +1668,7 @@ package body scripting is
 						
 					when ARC =>
 						case fields is
-							when 12 =>
+							when 13 =>
 								board_ops.draw_keepout_arc (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
@@ -1681,12 +1681,13 @@ package body scripting is
 													y => to_distance (f (10)))),
 												end_point	=> type_point (set (
 													x => to_distance (f (11)),
-													y => to_distance (f (12))))
+													y => to_distance (f (12)))),
+												direction	=> to_direction (f (13))
 												),
 
 									log_threshold	=> log_threshold + 1);
 
-							when 13 .. count_type'last => command_too_long (fields - 1);
+							when 14 .. count_type'last => command_too_long (fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1776,8 +1777,8 @@ package body scripting is
 						
 					when ARC =>
 						case fields is
-							when 12 =>
-								-- board led_driver draw route_restrict [1,3,5-9] arc 50 50 0 50 100 0
+							when 13 =>
+								-- board led_driver draw route_restrict [1,3,5-9] arc 50 50 0 50 100 0 cw
 								board_ops.draw_route_restrict_arc (
 									module_name 	=> module,
 									arc				=> (
@@ -1790,12 +1791,13 @@ package body scripting is
 													y => to_distance (f (10)))),
 												end_point	=> type_point (set (
 													x => to_distance (f (11)),
-													y => to_distance (f (12))))
+													y => to_distance (f (12)))),
+												direction	=> to_direction (f (13))
 												),
 
 									log_threshold	=> log_threshold + 1);
 
-							when 13 .. count_type'last => command_too_long (fields - 1);
+							when 14 .. count_type'last => command_too_long (fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1885,7 +1887,7 @@ package body scripting is
 						
 					when ARC =>
 						case fields is
-							when 12 =>
+							when 13 =>
 								-- board led_driver draw via_restrict [1,3,5-9] arc 50 50 0 50 100 0
 								board_ops.draw_via_restrict_arc (
 									module_name 	=> module,
@@ -1899,12 +1901,13 @@ package body scripting is
 													y => to_distance (f (10)))),
 												end_point	=> type_point (set (
 													x => to_distance (f (11)),
-													y => to_distance (f (12))))
+													y => to_distance (f (12)))),
+												direction	=> to_direction (f (13))
 												),
 
 									log_threshold	=> log_threshold + 1);
 
-							when 13 .. count_type'last => command_too_long (fields - 1);
+							when 14 .. count_type'last => command_too_long (fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -1995,7 +1998,7 @@ package body scripting is
 						
 					when ARC =>
 						case fields is
-							when 13 =>
+							when 14 =>
 								board_ops.draw_stop_arc (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
@@ -2009,12 +2012,13 @@ package body scripting is
 													y => to_distance (f (11)))),
 												end_point	=> type_point (set (
 													x => to_distance (f (12)),
-													y => to_distance (f (13))))
+													y => to_distance (f (13)))),
+												direction	=> to_direction (f (14))
 												),
 
 									log_threshold	=> log_threshold + 1);
 
-							when 14 .. count_type'last => command_too_long (fields - 1);
+							when 15 .. count_type'last => command_too_long (fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -2156,7 +2160,7 @@ package body scripting is
 						
 					when ARC =>
 						case fields is
-							when 13 =>
+							when 14 =>
 								board_ops.draw_stencil_arc (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
@@ -2170,12 +2174,13 @@ package body scripting is
 													y => to_distance (f (11)))),
 												end_point	=> type_point (set (
 													x => to_distance (f (12)),
-													y => to_distance (f (13))))
+													y => to_distance (f (13)))),
+												direction	=> to_direction (f (14))
 												),
 
 									log_threshold	=> log_threshold + 1);
 
-							when 14 .. count_type'last => command_too_long (fields - 1);
+							when 15 .. count_type'last => command_too_long (fields - 1);
 								
 							when others => command_incomplete;
 						end case;
@@ -2445,10 +2450,9 @@ package body scripting is
 													log_threshold	=> log_threshold + 1
 													);
 
-											when 15 .. count_type'last =>
-												command_too_long (fields - 1);
+											when 15 .. count_type'last => command_too_long (fields - 1);
 												
-											when others =>
+											when others => 
 												command_incomplete;
 										end case;
 										
@@ -2464,7 +2468,7 @@ package body scripting is
 						
 					when ARC =>
 						case fields is
-							when 14 =>
+							when 15 =>
 								-- draw a named track
 								board_ops.draw_track_arc (
 									module_name 	=> module,
@@ -2480,14 +2484,14 @@ package body scripting is
 											y => to_distance (f (12)))),
 										end_point	=> type_point (set (
 											x => to_distance (f (13)),
-											y => to_distance (f (14))))
+											y => to_distance (f (14)))),
+										direction	=> to_direction (f (15))
 										),
 
 									log_threshold	=> log_threshold + 1
 									);
 								
-							when 15 .. count_type'last =>
-								command_too_long (14);
+							when 16 .. count_type'last => command_too_long (fields - 1);
 								
 							when others =>
 								command_incomplete;
@@ -2750,7 +2754,7 @@ package body scripting is
 										
 									when ARC =>
 										case fields is
-											when 11 =>
+											when 12 =>
 												board_ops.draw_outline_arc (
 													module_name 	=> module,
 													arc				=> (
@@ -2763,14 +2767,15 @@ package body scripting is
 														end_point	=> type_point (set (
 															x => to_distance (f (10)),
 															y => to_distance (f (11)))),
+														direction	=> to_direction (f (12)),
 														locked	=> lock_status_default
 														),
 
 													log_threshold	=> log_threshold + 1
 													);
 
-											when 12 .. count_type'last =>
-												command_too_long (11);
+											when 13 .. count_type'last =>
+												command_too_long (fields - 1);
 												
 											when others =>
 												command_incomplete;
@@ -2836,7 +2841,7 @@ package body scripting is
 										
 									when ARC =>
 										case fields is
-											when 13 =>
+											when 14 =>
 												board_ops.draw_silk_screen_arc (
 													module_name 	=> module,
 													face			=> to_face (f (5)),
@@ -2850,13 +2855,14 @@ package body scripting is
 																	y => to_distance (f (11)))),
 																end_point	=> type_point (set (
 																	x => to_distance (f (12)),
-																	y => to_distance (f (13))))
+																	y => to_distance (f (13)))),
+																direction	=> to_direction (f (14))
 																),
 
 													log_threshold	=> log_threshold + 1
 													);
 
-											when 14 .. count_type'last =>
+											when 15 .. count_type'last =>
 												command_too_long (fields - 1);
 												
 											when others =>
@@ -3010,7 +3016,7 @@ package body scripting is
 										
 									when ARC =>
 										case fields is
-											when 13 =>
+											when 14 =>
 												board_ops.draw_assy_doc_arc (
 													module_name 	=> module,
 													face			=> to_face (f (5)),
@@ -3024,13 +3030,14 @@ package body scripting is
 																	y => to_distance (f (11)))),
 																end_point	=> type_point (set (
 																	x => to_distance (f (12)),
-																	y => to_distance (f (13))))
+																	y => to_distance (f (13)))),
+																direction	=> to_direction (f (14))
 																),
 
 													log_threshold	=> log_threshold + 1
 													);
 
-											when 14 .. count_type'last =>
+											when 15 .. count_type'last =>
 												command_too_long (fields - 1);
 												
 											when others =>
@@ -3227,7 +3234,7 @@ package body scripting is
 										
 									when ARC =>
 										case fields is
-											when 13 =>
+											when 14 =>
 												-- draw a freetrack
 												board_ops.draw_track_arc (
 													module_name 	=> module,
@@ -3242,15 +3249,16 @@ package body scripting is
 															y => to_distance (f (11)))),
 														end_point		=> type_point (set (
 															x => to_distance (f (12)),
-															y => to_distance (f (13))))
+															y => to_distance (f (13)))),
+														direction	=> to_direction (f (14))
 															),
 													net_name		=> to_net_name (""),
 
 													log_threshold	=> log_threshold + 1
 													);
 												
-											when 14 .. count_type'last =>
-												command_too_long (13);
+											when 15 .. count_type'last =>
+												command_too_long (fields - 1);
 												
 											when others =>
 												command_incomplete;

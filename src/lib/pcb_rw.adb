@@ -136,7 +136,8 @@ package body pcb_rw is
 	begin
 		write (keyword => keyword_center, parameters => position (arc.center));
 		write (keyword => keyword_start, parameters => position (arc.start_point));
-		write (keyword => keyword_end  , parameters => position (arc.end_point));
+		write (keyword => keyword_end, parameters => position (arc.end_point));
+		write (keyword => et_geometry.keyword_direction, parameters => to_string (arc.direction));		
 	end write_arc;
 
 	procedure write_circle (circle : in et_packages.shapes.type_circle'class) is 
@@ -646,6 +647,11 @@ package body pcb_rw is
 			-- extract the center position starting at field 2 of line
 			board_arc.center := to_position (line, 2);
 
+		elsif kw = et_geometry.keyword_direction then -- direction ccw
+			expect_field_count (line, 2);
+
+			board_arc.direction := to_direction (f (line, 2));
+			
 		else
 			invalid_keyword (kw);
 		end if;
@@ -679,6 +685,14 @@ package body pcb_rw is
 			board_arc.center := to_position (line, 2);
 
 			return true;
+
+		elsif kw = et_geometry.keyword_direction then -- direction ccw
+			expect_field_count (line, 2);
+
+			board_arc.direction := to_direction (f (line, 2));
+
+			return true;
+			
 		else
 			return false;
 		end if;

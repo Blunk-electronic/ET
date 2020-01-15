@@ -1165,6 +1165,11 @@ package body device_rw is
 										-- extract the end position starting at field 2
 										symbol_arc.end_point := to_position (line,2);
 
+									elsif kw = et_geometry.keyword_direction then -- direction ccw
+										expect_field_count (line, 2);
+
+										symbol_arc.direction := to_direction (f (line, 2));
+
 									elsif kw = keyword_width then
 										expect_field_count (line, 2);
 										symbol_arc.width := to_distance (f (line, 2));
@@ -1363,7 +1368,7 @@ package body device_rw is
 										expect_field_count (line, 2);
 										port.terminal_name_size := to_distance (f (line, 2));
 
-									elsif kw = keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
+									elsif kw = et_symbols.keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
 										expect_field_count (line, 2);
 										port_direction := to_port_direction (f (line, 2));
 

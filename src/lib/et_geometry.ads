@@ -45,6 +45,7 @@ package et_geometry is
 	keyword_x 			: constant string := "x";
 	keyword_y 			: constant string := "y";		
 	keyword_rotation 	: constant string := "rotation";
+	keyword_direction	: constant string := "direction";
 	keyword_start		: constant string := "start";
 	keyword_end			: constant string := "end";
 	keyword_center		: constant string := "center";		
@@ -184,6 +185,18 @@ package et_geometry is
 		
 		function to_rotation (rotation : in string) return type_rotation;
 		function to_string (rotation : in type_rotation) return string;
+
+		
+		type type_direction_of_rotation is (
+			CW,		-- clockwise
+			CCW);	-- counterclockwise
+
+		function to_string (direction : in type_direction_of_rotation) return string;
+		function to_direction (direction : in string) return type_direction_of_rotation;
+
+		function direction_of_rotation (rotation : in type_rotation) return type_direction_of_rotation;
+		-- Returns CW if rotation is negative. Returns CCW if rotation is positive or zero.
+
 		
 		origin_zero_rotation : constant type_position;
 		
@@ -341,16 +354,11 @@ package et_geometry is
 			return boolean; 
 		
 	-- ARC
-		type type_arc_direction is (CW, CCW);
-
-		function to_string (direction : in type_arc_direction) return string;
-		function to_direction (direction : in string) return type_arc_direction;
-		
 		type type_arc is abstract tagged record
 			center			: type_point;
 			start_point		: type_point;
 			end_point		: type_point;
-			direction		: type_arc_direction;
+			direction		: type_direction_of_rotation := CW;
 			-- CS locked : type_locked;		
 		end record;
 

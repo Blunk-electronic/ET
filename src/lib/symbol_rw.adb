@@ -218,6 +218,7 @@ package body symbol_rw is
 			write (keyword => keyword_center, parameters => position (element (cursor).center));
 			write (keyword => keyword_start , parameters => position (element (cursor).start_point));
 			write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
+			write (keyword => et_geometry.keyword_direction, parameters => to_string (element (cursor).direction));
 			write (keyword => keyword_radius, parameters => geometry.to_string (element (cursor).radius));			
 			write (keyword => keyword_width , parameters => geometry.to_string (element (cursor).width));
 			section_mark (section_arc, FOOTER);
@@ -274,7 +275,7 @@ package body symbol_rw is
 			section_mark (section_port, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (cursor)));
 			write (keyword => keyword_position, parameters => position (element (cursor).position));
-			write (keyword => keyword_direction, parameters => to_string (element (cursor).direction));
+			write (keyword => et_symbols.keyword_direction, parameters => to_string (element (cursor).direction));
 			
 			case element (cursor).direction is
 				when INPUT_DIGITAL =>
@@ -861,6 +862,11 @@ package body symbol_rw is
 										-- extract the end position starting at field 2
 										symbol_arc.end_point := to_position (line,2);
 
+									elsif kw = et_geometry.keyword_direction then -- direction ccw
+										expect_field_count (line, 2);
+
+										symbol_arc.direction := to_direction (f (line, 2));
+										
 									elsif kw = keyword_width then
 										expect_field_count (line, 2);
 										symbol_arc.width := to_distance (f (line, 2));
@@ -1041,7 +1047,7 @@ package body symbol_rw is
 										expect_field_count (line, 2);
 										port.terminal_name_size := to_distance (f (line, 2));
 
-									elsif kw = keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
+									elsif kw = et_symbols.keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
 										expect_field_count (line, 2);
 										port_direction := to_port_direction (f (line, 2));
 

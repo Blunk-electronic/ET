@@ -223,6 +223,8 @@ package et_schematic is
 	function to_string (direction : in type_net_label_direction) return string;
 	function to_direction (direction : in string) return type_net_label_direction;
 
+	keyword_direction : constant string := "direction";
+	
 	type type_net_label_base is tagged record
 		position	: et_coordinates.geometry.type_point;
 		rotation	: et_coordinates.type_rotation_text := et_coordinates.geometry.zero_rotation;

@@ -41,7 +41,6 @@ with et_symbols;			use et_symbols;
 
 package symbol_rw is
 
-	keyword_direction	: constant string := "direction";			
 	keyword_style		: constant string := "style";
 	keyword_width 		: constant string := "width";
 	

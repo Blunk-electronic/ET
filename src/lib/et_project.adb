@@ -919,7 +919,7 @@ package body et_project is
 								
 								-- a tag label also indicates a signal direction
 								if element (label_cursor).appearance = TAG then
-									write (keyword => keyword_direction, parameters => to_string (element (label_cursor).direction));
+									write (keyword => et_schematic.keyword_direction, parameters => to_string (element (label_cursor).direction));
 								end if;
 								
 								section_mark (section_label, FOOTER);
@@ -1494,7 +1494,7 @@ package body et_project is
 				section_mark (section_port, HEADER);
 				write (keyword => keyword_name, parameters => et_general.to_string (key (port_cursor))); -- name clk_out
 				write (keyword => keyword_position, parameters => position (element (port_cursor).position)); -- position x 0 y 10
-				write (keyword => keyword_direction, parameters => to_string (element (port_cursor).direction)); -- direction master/slave
+				write (keyword => submodules.keyword_direction, parameters => to_string (element (port_cursor).direction)); -- direction master/slave
 				section_mark (section_port, FOOTER);
 			end;
 
@@ -6238,7 +6238,7 @@ package body et_project is
 										expect_field_count (line, 2);
 										net_label_appearance := et_schematic.to_appearance (f (line, 2));
 
-									elsif kw = keyword_direction then -- direction input/output
+									elsif kw = et_schematic.keyword_direction then -- direction input/output
 										expect_field_count (line, 2);
 										net_label_direction := et_schematic.to_direction (f (line, 2));
 										
@@ -7049,7 +7049,7 @@ package body et_project is
 												-- extract port position starting at field 2
 												submodule_port.position := to_position (line, 2);
 
-											elsif kw = keyword_direction then -- direction master/slave
+											elsif kw = submodules.keyword_direction then -- direction master/slave
 												expect_field_count (line, 2);
 
 												submodule_port.direction := submodules.to_port_name (f (line, 2));

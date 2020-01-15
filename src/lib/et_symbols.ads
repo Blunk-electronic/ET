@@ -180,6 +180,9 @@ package et_symbols is
 	port_length_default : constant type_port_length := 4.0;
 	
 	-- The port has an electrical direction:
+
+	keyword_direction : constant string := "direction";	
+	
 	type type_port_direction is (
 		PASSIVE,		-- almost all passive components like resistors, capacitors, .. have such ports
 
