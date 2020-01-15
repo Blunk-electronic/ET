@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017-2020 Mario Blunk, Blunk electronic            --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -172,6 +172,7 @@ package submodules is
 						radius		=> 5.0,
 						start_point	=> et_coordinates.geometry.type_point (geometry.set (x => -5.0, y => 0.0)),
 						end_point	=> et_coordinates.geometry.type_point (geometry.set (x =>  5.0, y => 0.0)),
+						direction	=> et_symbols.pac_shapes.CCW,
 						width		=> et_symbols.line_width_port_default);
 	end record;
 

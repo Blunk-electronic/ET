@@ -837,6 +837,14 @@ package body et_geometry is
 			end if;
 		end;
 
+		function to_string (direction : in type_arc_direction) return string is begin
+			return to_lower (type_arc_direction'image (direction));
+		end to_string;
+			
+		function to_direction (direction : in string) return type_arc_direction is begin
+			return type_arc_direction'value (direction);
+		end to_direction;
+		
 		function boundaries (arc : in type_arc) return type_boundaries is
 			result : type_boundaries; -- to be returned
 

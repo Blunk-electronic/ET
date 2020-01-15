@@ -341,10 +341,16 @@ package et_geometry is
 			return boolean; 
 		
 	-- ARC
+		type type_arc_direction is (CW, CCW);
+
+		function to_string (direction : in type_arc_direction) return string;
+		function to_direction (direction : in string) return type_arc_direction;
+		
 		type type_arc is abstract tagged record
 			center			: type_point;
 			start_point		: type_point;
 			end_point		: type_point;
+			direction		: type_arc_direction;
 			-- CS locked : type_locked;		
 		end record;
 
