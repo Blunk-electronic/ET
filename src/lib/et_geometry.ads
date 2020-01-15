@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017-2020 Mario Blunk, Blunk electronic            --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -113,14 +113,22 @@ package et_geometry is
 			point	: in out type_point'class;
 			position: in type_point);
 
+		function invert (point : in type_point'class) return type_point'class;
+		-- Inverts the given point by multiplying x by -1 and y by -1.
 		
 		procedure reset (point : in out type_point'class);
 		-- Moves the given point to the origin (0/0).
 
-		procedure move (
+		procedure move ( -- CS rename to move_by
+		-- Moves a point by the given offset.
 			point	: in out type_point'class;
 			offset	: in type_point);
 
+		procedure move_to (
+		-- Moves a point to the given position.
+			point		: in out type_point'class;
+			position	: in type_point);
+		
 		function move (
 		-- Moves a point into direction at distance.
 			point		: in type_point;
@@ -140,8 +148,11 @@ package et_geometry is
 			point_2	: in type_point;
 			axis	: in type_axis_2d) 
 			return type_distance;
+
+		function distance_relative (point_one, point_two : in type_point) return type_point'class;
+		-- Returns the relative distance of point_two from point_one.	
 		
-		function distance (point_one, point_two : in type_point) return type_distance;
+		function distance (point_one, point_two : in type_point) return type_distance; -- CS renamte to distance_total
 		-- Computes the total distance between point_one and point_two.	
 
 		function add (left, right : in type_rotation) return type_rotation;
@@ -348,7 +359,15 @@ package et_geometry is
 			angle 		: in type_rotation)
 			return type_point'class;
 
+		procedure move_by (
+		-- Moves an arc by the given offset. 
+			arc		: in out type_arc'class;
+			offset	: in type_point);
 
+		procedure move_to (
+		-- Moves an arc to the given position. 
+			arc			: in out type_arc'class;
+			position	: in type_point);
 
 		
 	-- CIRCLE

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017-2020 Mario Blunk, Blunk electronic            --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -146,6 +146,15 @@ package body et_geometry is
 			point.x := position.x;
 			point.y := position.y;
 		end;
+
+		function invert (point : in type_point'class) return type_point'class is
+		-- Inverts the given point by multiplying x by -1 and y by -1.
+			pi : type_point'class := point;
+		begin
+			pi.x := - pi.x;
+			pi.y := - pi.y;
+			return pi;
+		end invert;
 		
 		procedure reset (point : in out type_point'class) is begin
 		-- Moves the given point to the origin (0/0).
@@ -154,13 +163,23 @@ package body et_geometry is
 		end;
 
 		procedure move (
+		-- Moves a point by the given offset.
 			point	: in out type_point'class;
-			offset	: in type_point) 
-		is begin
+			offset	: in type_point) is
+		begin
 			point.x := point.x + offset.x;
 			point.y := point.y + offset.y;
-		end;
+		end move;
 
+		procedure move_to (
+		-- Moves a point to the given position.
+			point		: in out type_point'class;
+			position	: in type_point) is
+		begin
+			point.x := position.x;
+			point.y := position.y;
+		end move_to;
+		
 		function move (
 		-- Moves a point into direction at distance.
 			point		: in type_point;
@@ -220,6 +239,15 @@ package body et_geometry is
 					
 			return type_distance (dis);
 		end distance;
+
+		function distance_relative (point_one, point_two : in type_point) return type_point'class is
+		-- Returns the relative distance of point_two from point_one.	
+			d : type_point;
+		begin
+			d.x := point_two.x - point_one.x;
+			d.y := point_two.y - point_one.y;
+			return d;
+		end distance_relative;
 		
 		function distance (point_one, point_two : in type_point) return type_distance is
 		-- Computes the total distance between point_one and point_two.	
@@ -831,6 +859,33 @@ package body et_geometry is
 			return end_point;
 		end arc_end_point;
 
+		procedure move_by (
+		-- Moves an arc by the given offset.
+			arc		: in out type_arc'class;
+			offset	: in type_point) is
+		begin
+			move (point => arc.center,      offset => offset);
+			move (point => arc.start_point, offset => offset);
+			move (point => arc.end_point,   offset => offset);
+		end move_by;
+
+		procedure move_to (
+		-- Moves an arc to the given position.
+			arc			: in out type_arc'class;
+			position	: in type_point) is
+
+			-- compute the offset:
+			offset : type_point := type_point (distance_relative (arc.center, position));
+		begin
+			-- move the center of the arc to the given position
+			move_to (arc.center, position);
+
+			-- move start and end point of the arc by the computed offset
+			move (point => arc.start_point, offset => offset);
+			move (point => arc.end_point,   offset => offset);
+		end move_to;
+
+		
 		function boundaries (circle : in type_circle) return type_boundaries is
 			result : type_boundaries;
 		begin
