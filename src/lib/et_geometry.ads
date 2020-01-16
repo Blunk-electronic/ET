@@ -93,6 +93,12 @@ package et_geometry is
 
 		function boundaries (point_one, point_two : in type_point) return type_boundaries;
 		-- Calculates the boundaries of the given points.
+
+		procedure move_by (
+		-- Moves the boundaries by the given offset.
+			boundaries	: in out type_boundaries;
+			offset		: in type_point);
+		
 		
 		function mil_to_distance (mil : in string) return type_distance;
 		-- Converts a mil number (given as a string) to millimeters.	

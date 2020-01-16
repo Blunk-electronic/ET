@@ -96,8 +96,19 @@ package body et_geometry is
 
 			return result;
 		end boundaries;
+
+		procedure move_by (
+		-- Moves the boundaries by the given offset.
+			boundaries	: in out type_boundaries;
+			offset		: in type_point) is
+		begin
+			boundaries.smallest_x := boundaries.smallest_x + offset.x;
+			boundaries.greatest_x := boundaries.greatest_x + offset.x;
 			
-		
+			boundaries.smallest_y := boundaries.smallest_y + offset.y;
+			boundaries.greatest_y := boundaries.greatest_y + offset.y;
+		end move_by;
+			
 		function mil_to_distance (mil : in string) return type_distance is
 		-- Converts a mil number (given as a string) to millimeters.
 			
@@ -856,129 +867,172 @@ package body et_geometry is
 
 		
 		function boundaries (arc : in type_arc) return type_boundaries is
+		-- This function calculates the boundaries of an arc.
+		-- The current implementation is probably not the best solution.
+		-- CS: A more professional approach is required here.
+			
 			result : type_boundaries; -- to be returned
 
+			-- Take a copy of the given arc in arc_tmp.
 			type type_arc_tmp is new type_arc with null record;
 			arc_tmp : type_arc_tmp := (arc with null record);
-			
+
+			-- Calculate the radius of the arc:
 			radius : type_distance_positive := distance (arc.center, arc.start_point);
 
+			-- Calculate the quadrant where start and end point are in:
 			q_start : type_quadrant := quadrant (arc_tmp.start_point);
 			q_end   : type_quadrant := quadrant (arc_tmp.end_point);
 
-			procedure same_quadrands is begin
-				result := boundaries (arc.start_point, arc.end_point);
-			end;
+			procedure set_sx is begin result.smallest_x := - radius; end;
+			procedure set_gx is begin result.greatest_x :=   radius; end;
+			procedure set_sy is begin result.smallest_y := - radius; end;
+			procedure set_gy is begin result.greatest_y :=   radius; end;
 			
 		begin -- boundaries
+			-- move arc_tmp so that its center is at 0/0
 			move_to (arc_tmp, origin);
-			if quadrant (arc_tmp.start_point) = quadrant (arc_tmp.end_point) then
-				result := boundaries (arc.start_point, arc.end_point);
-			else
-				null;
-			end if;
 
+			-- calculate the boundaries of start and end point
+			result := boundaries (arc_tmp.start_point, arc_tmp.end_point);
+
+			-- Depending on the quadrants of start and end point, other quadrants may
+			-- be crossed. The boundaries (held in result) must be pushed away into x
+			-- or y direction if start and end point are not in the same quadrant.
 			case q_start is
 				when ONE =>
 					case q_end is
-						when ONE => same_quadrands;
+						when ONE => null; -- same quadrants, leave result as it is
 
 						when TWO => 
-							result := boundaries (arc_tmp.start_point, arc_tmp.end_point);
-
 							if arc.direction = CCW then
-								result.greatest_y := radius;
+								set_gy;
 							else
-								result.smallest_y := - radius;
+								set_sy;
 							end if;
 
 						when THREE =>
-							result := boundaries (arc_tmp.start_point, arc_tmp.end_point);
-
 							if arc.direction = CCW then
-								result.greatest_y := radius;
-								result.smallest_x := - radius;
+								set_gy;
+								set_sx;
 							else
-								result.smallest_y := - radius;
-								result.greatest_x := radius;
+								set_sy;
+								set_gx;
 							end if;
 
 						when FOUR =>
-							--result := boundaries (arc_tmp.start_point, arc_tmp.end_point);
-
 							if arc.direction = CCW then
-								result.greatest_y := radius;
-								result.smallest_x := - radius;
-								result.smallest_y := - radius;
+								set_gy;
+								set_sx;
+								set_sy;
 							else
-								result.greatest_x := radius;
-								result.smallest_y := - radius;
-								result.smallest_x := - radius;
-								result.greatest_y := radius;
+								set_gx;
 							end if;
 					end case;
 
-
 				when TWO =>
 					case q_end is
-						when ONE => null;
+						when ONE => 
+							if arc.direction = CCW then
+								set_sx;
+								set_sy;
+								set_gx;
+							else
+								set_gy;
+							end if;
 
-						when TWO => same_quadrands;
+						when TWO => null; -- same quadrants, leave result as it is
 
-						when THREE => null;
+						when THREE =>
+							if arc.direction = CCW then
+								set_sx;
+							else
+								set_gy;
+								set_gx;
+								set_sy;
+							end if;
 
-						when FOUR => null;
+						when FOUR =>
+							if arc.direction = CCW then
+								set_sx;
+								set_sy;
+							else
+								set_gy;
+								set_gx;
+							end if;
 					end case;
-
-
+					
 				when THREE =>
 					case q_end is
-						when ONE => null;
+						when ONE =>
+							if arc.direction = CCW then
+								set_sy;
+								set_gx;
+							else
+								set_sx;
+								set_gy;
+							end if;
 
-						when TWO => null;
+						when TWO =>
+							if arc.direction = CCW then
+								set_sy;
+								set_gx;
+								set_gy;
+							else
+								set_sx;
+							end if;
 
-						when THREE => same_quadrands;
+						when THREE => null; -- same quadrants, leave result as it is
 
-						when FOUR => null;
+						when FOUR =>
+							if arc.direction = CCW then
+								set_sy;
+							else
+								set_sx;
+								set_gy;
+								set_gx;
+							end if;
+
 					end case;
 
 				when FOUR =>
 					case q_end is
-						when ONE => null;
+						when ONE =>
+							if arc.direction = CCW then
+								set_gx;
+							else
+								set_sy;
+								set_sx;
+								set_gy;
+							end if;
 
-						when TWO => null;
+						when TWO =>
+							if arc.direction = CCW then
+								set_gx;
+								set_gy;
+							else
+								set_sy;
+								set_sx;
+							end if;
 
-						when THREE => null;
+						when THREE =>
+							if arc.direction = CCW then
+								set_gx;
+								set_gy;
+								set_sx;
+							else
+								set_sy;
+							end if;
 
-						when FOUR => same_quadrands;
+						when FOUR => null; -- same quadrants, leave result as it is
 					end case;
 					
 			end case;
 
+			-- The boundaries held in "result" are still relative to the origin (0/0).
+			-- They must be moved back to where the given arc is positioned.
+			move_by (result, arc.center);
 			
-			case q_end is
-				when ONE => null;
-
-				when TWO => null;
-
-				when THREE => null;
-
-				when FOUR => null;
-			end case;
-			
-			-- CS: This calculation is very simple and superficially. Since an arc is just
-			-- a cutout of a circle, we assume the full circle and calculate its
-			-- boundaries. A more professional approach is required here.
-			
-			-- X axis
-			result.smallest_x := arc.center.x - radius;
-			result.greatest_x := arc.center.x + radius;
-
-			-- Y axis
-			result.smallest_y := arc.center.x - radius;
-			result.greatest_y := arc.center.x + radius;
-
-			-- CS add to boundaries x/y of arc.center
 			return result;
 		end boundaries;
 		
