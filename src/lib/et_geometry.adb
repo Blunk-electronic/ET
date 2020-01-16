@@ -244,10 +244,12 @@ package body et_geometry is
 			return type_point'class is 
 
 			package functions is new ada.numerics.generic_elementary_functions (float);
+			-- CS could be useful to use a constrained float type			
 			use functions;
 			
 			delta_x, delta_y : float := 0.0;
-
+			-- CS could be useful to use a constrained float type
+			
 			result : type_point;
 			
 		begin
@@ -388,6 +390,21 @@ package body et_geometry is
 				return CCW;
 			end if;
 		end direction_of_rotation;
+
+
+		function to_radians (degrees : in type_rotation) return float is
+		-- Converts degrees to radians.
+			use ada.numerics;
+		begin
+			return (pi * float (degrees)) / (units_per_cycle * 0.5);
+		end to_radians;
+
+		function to_degrees (radians : in float) return type_rotation is
+		-- Converts radians to degrees.
+			use ada.numerics;
+		begin
+			return type_rotation (units_per_cycle * 0.5 * radians) / pi;
+		end to_degrees;
 
 		
 		procedure set (
@@ -1053,15 +1070,53 @@ package body et_geometry is
 		-- Computes the end point of an arc.
 			center		: in type_point;
 			start_point	: in type_point;	
-			angle 		: in type_rotation)
+			angle 		: in type_rotation) -- unit is degrees
 			return type_point'class is
-			end_point : type_point; -- to be returned			
-		begin
-			-- CS
-			set (X, zero, end_point);
-			set (Y, zero, end_point);
+
+			package functions is new ada.numerics.generic_elementary_functions (float);
+			-- CS could be useful to use a constrained float type
+			use functions;
+						
+			-- Take a copy of the given arc in arc.
+			type type_arc_tmp is new type_arc with null record;
+			arc : type_arc_tmp; -- := (arc with null record);
+
+			radius : float;
+			angle_start, angle_end : float; -- unit is radians
+			end_x, end_y : float;
 			
-			return end_point;
+		begin -- arc_end_point
+			
+			-- build an arc from the information available
+			arc := (
+				center		=> center,
+				start_point	=> start_point,
+				end_point	=> origin, -- not determined yet
+				direction	=> direction_of_rotation (angle)
+				);
+			
+			-- move arc so that its center is at 0/0
+			move_to (arc, origin);
+
+			-- calculate the radius of the arc
+			radius := float (distance (arc.center, arc.start_point));
+
+			-- calculate the angle where the arc begins:
+			angle_start := arctan (
+							y => float (arc.start_point.y),
+							x => float (arc.start_point.x));
+
+			-- the angle where the arc ends:
+			angle_end := angle_start + to_radians (angle);
+
+			-- The end point of the arc:
+			end_y := sin (angle_end) * radius;
+			end_x := cos (angle_end) * radius;
+
+			return set (
+				x	=> type_distance (end_x),
+				y	=> type_distance (end_y));
+			
 		end arc_end_point;
 
 		procedure move_by (

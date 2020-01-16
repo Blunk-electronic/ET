@@ -36,6 +36,7 @@
 --
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
+with ada.numerics;
 
 with et_general;				use et_general;
 
@@ -210,6 +211,18 @@ package et_geometry is
 
 		zero_rotation : constant type_rotation := 0.0;
 
+		radians_max : constant float := - 2.0 * ada.numerics.pi;
+		
+		subtype type_radians is float range (- radians_max) .. radians_max;
+		
+		function to_radians (degrees : in type_rotation) return float;
+		-- Converts degrees to radians.
+
+		function to_degrees (radians : in float) return type_rotation;
+		-- Converts radians to degrees.
+
+		
+		
 		procedure set (
 		-- Sets the rotation of a position. (position.rotation)
 			position	: in out type_position;
@@ -384,7 +397,7 @@ package et_geometry is
 		-- Computes the end point of an arc.
 			center		: in type_point;
 			start_point	: in type_point;	
-			angle 		: in type_rotation)
+			angle 		: in type_rotation) -- unit is degrees
 			return type_point'class;
 
 		procedure move_by (
