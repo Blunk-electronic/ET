@@ -229,10 +229,8 @@ package et_symbols is
 	
 	-- line width
 	keyword_line_width : constant string := "line_width"; -- NOTE: do not confuse with text line width !
-	subtype type_line_width is type_distance; -- CS reasonable positive range
+	subtype type_line_width is type_distance_positive range 0.1 .. 10.0;
 	
-	line_width_port_default : constant type_line_width := 0.2;
-
 	-- A port is basically a line. Its start point is the port position.
 	-- The end point points towards the symbol body. Depending on the port
 	-- rotation the end tail points:
@@ -240,10 +238,11 @@ package et_symbols is
 	--  to the right if rotation is 180 degree
 	--  downwards if the rottion is 90 degree
 	--  upwards if the rotation is 270 degree
+	port_line_width : constant type_line_width := 0.2;	
+	
 	type type_port_base is tagged record
 		position			: type_point; -- this is the point of connection with a net
 		length				: type_port_length := port_length_default; 
-		-- CS line_width	: type_line_width := line_width_port_default;
 		rotation			: type_rotation := 0.0; -- CS use type_rotation_relative ?
 		
 		port_name_visible		: type_port_name_visible := port_name_visible_default;

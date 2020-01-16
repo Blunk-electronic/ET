@@ -323,6 +323,7 @@ package et_canvas.schematic is
 	-- This function converts a y-value from the drawing to a y-value in the model.
 	-- The input y increases upwards. The output y increases downwards.
 	function convert_and_shift_y (y : in et_coordinates.type_distance) return type_model_coordinate;
+
 	
 end et_canvas.schematic;
 

@@ -960,7 +960,7 @@ package body et_canvas.schematic is
 		self.sheet := sheet;
 	end set_module;
 
-
+	
 	function convert_x (x : in et_coordinates.type_distance) return type_view_coordinate is begin
 		return type_view_coordinate (
 			type_model_coordinate (x)

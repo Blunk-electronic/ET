@@ -123,7 +123,7 @@ procedure draw_nets (
 								convert_x (model.frame_bounding_box.x),
 								convert_y (model.frame_bounding_box.y));
 
-							cairo.set_line_width (context.cr, 1.0);
+							cairo.set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
 
 							cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (0)); -- green
 

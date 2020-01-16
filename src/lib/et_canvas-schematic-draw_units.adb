@@ -136,6 +136,12 @@ procedure draw_units (
 
 		
 		procedure draw_line (c : in type_lines.cursor) is begin
+
+			--put_line ("width " & to_string (element (c).width));
+			
+			-- set line width
+			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
+			
 			-- start point
 			cairo.move_to (
 				context.cr,
@@ -150,6 +156,7 @@ procedure draw_units (
 				transpose_y (element (c).end_point.y)
 				);
 
+			cairo.stroke (context.cr);
 		end draw_line;
 
 		procedure draw_arc (c : in type_arcs.cursor) is 
@@ -158,6 +165,7 @@ procedure draw_units (
 		begin
 			cairo.new_sub_path (context.cr); -- required to suppress an initial line
 
+			-- set line width
 			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 			
 			if arc.direction = CCW then
@@ -182,11 +190,18 @@ procedure draw_units (
 					angle2	=> type_view_coordinate (to_radians (arc.angle_end))
 					);
 			end if;
-				
+
+			cairo.stroke (context.cr);
 		end draw_arc;
 
 		procedure draw_circle (c : in type_circles.cursor) is begin
-			null; -- CS
+			
+			-- set line width
+			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
+
+			-- CS
+			
+			cairo.stroke (context.cr);
 		end draw_circle;
 
 		procedure draw_port (c : in type_ports.cursor) is
@@ -199,6 +214,9 @@ procedure draw_units (
 			--  to the right if rotation is 180 degree
 			--  downwards if the rottion is 90 degree
 			--  upwards if the rotation is 270 degree
+
+			-- set line width
+			cairo.set_line_width (context.cr, type_view_coordinate (et_symbols.port_line_width));
 			
 			-- We start drawing at the port position:
 			cairo.move_to (
@@ -231,6 +249,8 @@ procedure draw_units (
 				transpose_y (end_point.y)
 				);
 
+			cairo.stroke (context.cr);
+			
 			-- CS draw terminal and port name, direction, sensitivity, level
 
 			-- CS draw circle around port position
@@ -271,7 +291,7 @@ procedure draw_units (
 				convert_x (model.frame_bounding_box.x + bounding_box.x),
 				convert_y (model.frame_bounding_box.y + bounding_box.y));
 
-			cairo.set_line_width (context.cr, 1.0);
+-- 			cairo.set_line_width (context.cr, 1.0);
 
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 
@@ -296,7 +316,7 @@ procedure draw_units (
 			-- draw origin
 			draw_origin;
 			
-			cairo.stroke (context.cr);
+-- 			cairo.stroke (context.cr);
 			restore (context.cr);
 			
 		end if;

@@ -259,6 +259,8 @@ package et_schematic is
 		end_point	: boolean := false;
 	end record;
 
+	net_line_width : constant et_symbols.type_line_width := et_symbols.port_line_width;	
+	
 	type type_net_segment is new pac_shapes.type_line with record
 		labels				: type_net_labels.list;
 		junctions			: type_junctions;

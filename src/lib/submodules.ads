@@ -175,7 +175,7 @@ package submodules is
 						start_point	=> et_coordinates.geometry.type_point (geometry.set (x => -5.0, y => 0.0)),
 						end_point	=> et_coordinates.geometry.type_point (geometry.set (x =>  5.0, y => 0.0)),
 						direction	=> et_coordinates.geometry.CW,
-						width		=> et_symbols.line_width_port_default);
+						width		=> et_symbols.port_line_width);
 	end record;
 
 	type type_netchanger is record
