@@ -403,7 +403,7 @@ package body et_geometry is
 		-- Converts radians to degrees.
 			use ada.numerics;
 		begin
-			return type_rotation (units_per_cycle * 0.5 * radians) / pi;
+			return type_rotation ((units_per_cycle * 0.5 * radians) / pi);
 		end to_degrees;
 
 		
@@ -898,6 +898,9 @@ package body et_geometry is
 			-- move arc_tmp so that its center is at 0/0
 			move_to (arc_tmp, origin);
 
+			-- the center is not changed:
+			result.center := arc.center;
+			
 			-- calculate the radius of the arc
 			result.radius := distance (arc_tmp.center, arc_tmp.start_point);
 
@@ -910,6 +913,7 @@ package body et_geometry is
 							y => float (arc_tmp.end_point.y),
 							x => float (arc_tmp.end_point.x)));
 
+			-- direction is not changed:
 			result.direction := arc.direction;
 			
 			return result;

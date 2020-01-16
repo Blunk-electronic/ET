@@ -152,8 +152,37 @@ procedure draw_units (
 
 		end draw_line;
 
-		procedure draw_arc (c : in type_arcs.cursor) is begin
-			null; -- CS
+		procedure draw_arc (c : in type_arcs.cursor) is 
+			use et_symbols.pac_shapes;
+			arc : type_arc_angles := to_arc_angles (element (c));
+		begin
+			cairo.new_sub_path (context.cr); -- required to suppress an initial line
+
+			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
+			
+			if arc.direction = CCW then
+
+				cairo.arc (
+					context.cr,
+					xc		=> transpose_x (arc.center.x),
+					yc		=> transpose_y (arc.center.y),
+					radius	=> type_view_coordinate (arc.radius),
+					angle1	=> type_view_coordinate (to_radians (arc.angle_start)),
+					angle2	=> type_view_coordinate (to_radians (arc.angle_end))
+					);
+
+			else
+				
+				cairo.arc_negative (
+					context.cr,
+					xc		=> transpose_x (arc.center.x),
+					yc		=> transpose_y (arc.center.y),
+					radius	=> type_view_coordinate (arc.radius),
+					angle1	=> type_view_coordinate (to_radians (arc.angle_start)),
+					angle2	=> type_view_coordinate (to_radians (arc.angle_end))
+					);
+			end if;
+				
 		end draw_arc;
 
 		procedure draw_circle (c : in type_circles.cursor) is begin
