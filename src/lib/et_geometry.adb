@@ -882,6 +882,38 @@ package body et_geometry is
 			end if;
 		end;
 
+		function to_arc_angles (arc : in type_arc) return type_arc_angles is
+		-- Returns the start and end angles of an arc.
+			result : type_arc_angles;
+
+			package functions is new ada.numerics.generic_elementary_functions (float);
+			-- CS could be useful to use a constrained float type
+			use functions;
+						
+			-- Take a copy of the given arc in arc_tmp.
+			type type_arc_tmp is new type_arc with null record;
+			arc_tmp : type_arc_tmp := (arc with null record);
+
+		begin
+			-- move arc_tmp so that its center is at 0/0
+			move_to (arc_tmp, origin);
+
+			-- calculate the radius of the arc
+			result.radius := distance (arc_tmp.center, arc_tmp.start_point);
+
+			-- calculate the angles where the arc begins and ends:
+			result.angle_start := to_degrees (arctan (
+							y => float (arc_tmp.start_point.y),
+							x => float (arc_tmp.start_point.x)));
+
+			result.angle_end := to_degrees (arctan (
+							y => float (arc_tmp.end_point.y),
+							x => float (arc_tmp.end_point.x)));
+
+			result.direction := arc.direction;
+			
+			return result;
+		end to_arc_angles;
 		
 		function boundaries (arc : in type_arc) return type_boundaries is
 		-- This function calculates the boundaries of an arc.

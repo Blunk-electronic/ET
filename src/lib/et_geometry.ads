@@ -381,6 +381,19 @@ package et_geometry is
 			-- CS locked : type_locked;		
 		end record;
 
+		-- Sometimes (for example with cairo) an arc must be
+		-- expressed in terms of start and end angle:
+		type type_arc_angles is record
+			center		: type_point;
+			radius		: type_distance_positive;
+			angle_start	: type_rotation;
+			angle_end	: type_rotation;
+			direction	: type_direction_of_rotation := CW;
+		end record;
+
+		function to_arc_angles (arc : in type_arc) return type_arc_angles;
+		-- Returns the start and end angles of an arc.
+		
 		function boundaries (arc : in type_arc) return type_boundaries;
 		-- Returns the boundaries of the given arc.
 		
