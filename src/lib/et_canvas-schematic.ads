@@ -100,7 +100,6 @@ package et_canvas.schematic is
 		-- them.
 		frame				: et_frames.type_frame (et_frames.SCHEMATIC);
 		frame_bounding_box	: type_model_rectangle;
-		frame_height		: et_frames.type_distance;
 
 		paper_bounding_box	: type_model_rectangle;
 		paper_height		: type_model_coordinate;
