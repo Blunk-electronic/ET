@@ -69,7 +69,7 @@ begin
 			y := type_view_coordinate (gint (area.y / self.grid_size)) * type_view_coordinate (self.grid_size);
 
 			-- The grid must be shifted downwards so that it starts at the frame y position:
-			y := y + type_view_coordinate (model.frame_bounding_box.y + model.frame_height); -- CS frame height ?
+			y := y + type_view_coordinate (model.frame_bounding_box.y); -- + type_view_coordinate (model.frame_height);
 			
 			while y < type_view_coordinate (area.y + area.height) loop
 
