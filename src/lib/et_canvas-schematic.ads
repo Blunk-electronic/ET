@@ -260,7 +260,7 @@ package et_canvas.schematic is
 		self : not null access type_view'class;
 		size : type_model_coordinate := grid_default);
 
-	procedure draw_grid_dots (
+	procedure draw_grid (
 		self    : not null access type_view'class;
 		style   : gtkada.style.drawing_style;
 		context : type_draw_context;
