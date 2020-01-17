@@ -36,6 +36,7 @@
 --
 
 with ada.text_io;				use ada.text_io;
+with ada.numerics;				use ada.numerics;
 with cairo;						use cairo;
 with pango.layout;				use pango.layout;
 
@@ -199,7 +200,18 @@ procedure draw_units (
 			-- set line width
 			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 
-			-- CS
+			cairo.new_sub_path (context.cr); -- required to suppress an initial line
+
+			cairo.arc (
+				cr		=> context.cr,
+				xc		=> transpose_x (element (c).center.x),
+				yc		=> transpose_y (element (c).center.y),
+				radius	=> type_view_coordinate (element (c).radius),
+
+				-- it must be a full circle starting at 0 degree and ending at 360 degree:
+				angle1	=> 0.0,
+				angle2	=> type_view_coordinate (2 * pi)
+				);
 			
 			cairo.stroke (context.cr);
 		end draw_circle;
@@ -217,6 +229,9 @@ procedure draw_units (
 
 			-- set line width
 			cairo.set_line_width (context.cr, type_view_coordinate (et_symbols.port_line_width));
+
+			-- set color
+			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 			
 			-- We start drawing at the port position:
 			cairo.move_to (
@@ -250,10 +265,30 @@ procedure draw_units (
 				);
 
 			cairo.stroke (context.cr);
+
+
+			-- The start point of the port must have a small green circle around it.
+
+			-- set color and line width
+			cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (0)); -- green
+			cairo.set_line_width (context.cr, type_view_coordinate (0.1));
+
+			cairo.new_sub_path (context.cr); -- required to suppress an initial line
+			cairo.arc (
+				cr		=> context.cr,
+				xc		=> transpose_x (element (c).position.x),
+				yc		=> transpose_y (element (c).position.y),
+				radius	=> 1.5,
+
+				-- it must be a full circle starting at 0 degree and ending at 360 degree:
+				angle1	=> 0.0,
+				angle2	=> type_view_coordinate (2 * pi)
+				);
+
+			cairo.stroke (context.cr);
 			
 			-- CS draw terminal and port name, direction, sensitivity, level
 
-			-- CS draw circle around port position
 		end draw_port;
 
 		procedure draw_text (c : in type_texts.cursor) is begin
@@ -264,8 +299,39 @@ procedure draw_units (
 			null; -- CS
 		end draw_placeholders;
 
-		procedure draw_origin is begin
-			null; -- CS
+		procedure draw_origin is 
+			crosshair_half_size : constant type_distance_positive := 2.0;
+		begin
+			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
+			cairo.set_line_width (context.cr, type_view_coordinate (0.1));
+
+			-- horizontal line from left to right
+			cairo.move_to (
+				context.cr,
+				transpose_x (- crosshair_half_size),
+				transpose_y (zero)
+				);
+
+			cairo.line_to (
+				context.cr,
+				transpose_x (crosshair_half_size),
+				transpose_y (zero)
+				);
+
+			-- vertical line downwards
+			cairo.move_to (
+				context.cr,
+				transpose_x (zero),
+				transpose_y (crosshair_half_size)
+				);
+
+			cairo.line_to (
+				context.cr,
+				transpose_x (zero),
+				transpose_y (- crosshair_half_size)
+				);
+
+			cairo.stroke (context.cr);
 		end draw_origin;
 		
 	begin -- draw_symbol
@@ -291,23 +357,20 @@ procedure draw_units (
 				convert_x (model.frame_bounding_box.x + bounding_box.x),
 				convert_y (model.frame_bounding_box.y + bounding_box.y));
 
--- 			cairo.set_line_width (context.cr, 1.0);
-
+			-- SYMBOL BODY
+			-- set color
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 
-			-- draw lines
 			iterate (symbol.shapes.lines, draw_line'access);
-
-			-- draw arcs
 			iterate (symbol.shapes.arcs, draw_arc'access);
-
-			-- draw circles
 			iterate (symbol.shapes.circles, draw_circle'access);
 
-			-- draw ports
-			iterate (symbol.ports, draw_port'access);
+			
+			-- SYMBOL PORTS
+			iterate (symbol.ports, draw_port'access); -- has internal color settings
 
-			-- draw texts
+
+			-- SYMBOL TEXTS
 			iterate (symbol.texts, draw_text'access);
 			
 			-- draw placeholders
@@ -316,7 +379,7 @@ procedure draw_units (
 			-- draw origin
 			draw_origin;
 			
--- 			cairo.stroke (context.cr);
+
 			restore (context.cr);
 			
 		end if;
