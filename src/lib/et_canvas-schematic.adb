@@ -794,14 +794,22 @@ package body et_canvas.schematic is
 
 		if self.grid_size /= 0.0 then
 			new_path (context.cr);
-
+			
 			tmpx := type_view_coordinate (gint (area.x / self.grid_size)) * type_view_coordinate (self.grid_size);
+
+			-- The grid must be shifted to the right so that it starts at the frame x position:
+			tmpx := tmpx + type_view_coordinate (model.frame_bounding_box.x);
 			
 			while tmpx < type_view_coordinate (area.x + area.width) loop
+				
 				tmpy := type_view_coordinate (gint (area.y / self.grid_size)) * type_view_coordinate (self.grid_size);
+
+				-- The grid must be shifted downwards so that it starts at the frame y position:
+				tmpy := tmpy + type_view_coordinate (model.frame_bounding_box.y);
 				
 				while tmpy < type_view_coordinate (area.y + area.height) loop
-					rectangle (context.cr, tmpx - 0.5, tmpy - 0.5, 0.1, 0.1);
+					--rectangle (context.cr, tmpx - 0.5, tmpy - 0.5, 0.1, 0.1);
+					rectangle (context.cr, tmpx, tmpy, 0.1, 0.1);
 					tmpy := tmpy + type_view_coordinate (self.grid_size);
 				end loop;
 

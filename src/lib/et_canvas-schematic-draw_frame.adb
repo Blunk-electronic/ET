@@ -98,7 +98,7 @@ procedure draw_frame (
 				))
 			);
 	end;
-	
+
 begin
 --		put_line ("draw frame ...");
 
@@ -143,6 +143,7 @@ begin
 		-- TITLE BLOCK
 		-- lines
 		iterate (model.frame.title_block_schematic.lines, draw_line'access);
+
 		
 		-- CS draw the sector delimiters
 
