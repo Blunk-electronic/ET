@@ -238,7 +238,10 @@ package et_symbols is
 	--  to the right if rotation is 180 degree
 	--  downwards if the rottion is 90 degree
 	--  upwards if the rotation is 270 degree
-	port_line_width : constant type_line_width := 0.2;	
+	
+	port_line_width : constant type_line_width := 0.2;				-- relevant for GUI only
+	port_circle_line_width : constant type_line_width := 0.1; 		-- relevant for GUI only
+	port_circle_radius : constant type_distance_positive := 1.5;	-- relevant for GUI only
 	
 	type type_port_base is tagged record
 		position			: type_point; -- this is the point of connection with a net
@@ -429,6 +432,9 @@ package et_symbols is
 	-- like swap level.	
 	-- The unit name is something like "I/O Bank 3", "PWR" or "Switch 1" "Switch 2"
 
+	origin_half_size : constant type_distance_positive := 2.0;
+	origin_line_width : constant type_line_width := 0.1;
+	
 	type type_symbol_base is tagged record		
 		texts : type_texts.list; -- the collection of texts
 	end record;

@@ -271,14 +271,14 @@ procedure draw_units (
 
 			-- set color and line width
 			cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (0)); -- green
-			cairo.set_line_width (context.cr, type_view_coordinate (0.1));
+			cairo.set_line_width (context.cr, type_view_coordinate (port_circle_line_width));
 
 			cairo.new_sub_path (context.cr); -- required to suppress an initial line
 			cairo.arc (
 				cr		=> context.cr,
 				xc		=> transpose_x (element (c).position.x),
 				yc		=> transpose_y (element (c).position.y),
-				radius	=> 1.5,
+				radius	=> type_view_coordinate (port_circle_radius),
 
 				-- it must be a full circle starting at 0 degree and ending at 360 degree:
 				angle1	=> 0.0,
@@ -299,22 +299,20 @@ procedure draw_units (
 			null; -- CS
 		end draw_placeholders;
 
-		procedure draw_origin is 
-			crosshair_half_size : constant type_distance_positive := 2.0;
-		begin
+		procedure draw_origin is begin
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
-			cairo.set_line_width (context.cr, type_view_coordinate (0.1));
+			cairo.set_line_width (context.cr, type_view_coordinate (origin_line_width));
 
 			-- horizontal line from left to right
 			cairo.move_to (
 				context.cr,
-				transpose_x (- crosshair_half_size),
+				transpose_x (- origin_half_size),
 				transpose_y (zero)
 				);
 
 			cairo.line_to (
 				context.cr,
-				transpose_x (crosshair_half_size),
+				transpose_x (origin_half_size),
 				transpose_y (zero)
 				);
 
@@ -322,13 +320,13 @@ procedure draw_units (
 			cairo.move_to (
 				context.cr,
 				transpose_x (zero),
-				transpose_y (crosshair_half_size)
+				transpose_y (origin_half_size)
 				);
 
 			cairo.line_to (
 				context.cr,
 				transpose_x (zero),
-				transpose_y (- crosshair_half_size)
+				transpose_y (- origin_half_size)
 				);
 
 			cairo.stroke (context.cr);
@@ -371,6 +369,7 @@ procedure draw_units (
 
 
 			-- SYMBOL TEXTS
+			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 			iterate (symbol.texts, draw_text'access);
 			
 			-- draw placeholders
