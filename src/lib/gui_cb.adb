@@ -43,12 +43,23 @@ with et_canvas.schematic;		use et_canvas.schematic;
 
 package body gui_cb is
 
-	procedure terminate_main (self : access gtk.widget.gtk_widget_record'class) is begin
-		-- 		log (text => "exiting ... " & to_string (MODE_MODULE), level => log_threshold);
+	procedure terminate_main (self : access gtk_widget_record'class) is begin
 		put_line ("exiting ...");
 		gtk.main.main_quit;
 	end;
 
+	function window_resized (
+		self  : access gtk_widget_record'class;
+		event : gdk.event.gdk_event_configure) 
+		return boolean is
+	begin
+		put_line ("window resized");
+		scale_to_fit (canvas);
+		
+		return true;
+	end;
+	
+	
 	procedure zoom_to_fit (self : access glib.object.gobject_record'class) is 
 	begin
 		put_line ("zoom to fit ...");
@@ -56,7 +67,9 @@ package body gui_cb is
 -- 		put_line (to_string (get_scale (canvas)));
 	end;
 
-	procedure zoom_in (self : access glib.object.gobject_record'class) is begin
+	procedure zoom_in (self : access glib.object.gobject_record'class) is 
+		scale : gdouble;
+	begin
 		put_line ("zooming in ...");
 		scale := get_scale (canvas);
 		scale := scale + 0.1;
@@ -64,7 +77,9 @@ package body gui_cb is
 -- 		put_line (to_string (get_scale (canvas)));
 	end;
 
-	procedure zoom_out (self : access glib.object.gobject_record'class) is begin
+	procedure zoom_out (self : access glib.object.gobject_record'class) is 
+		scale : gdouble;
+	begin
 		put_line ("zooming out ...");
 		scale := get_scale (canvas);
 		if scale >= 0.0 then
@@ -99,6 +114,7 @@ package body gui_cb is
 	begin
 		put_line (get_text (self));
 	end;
+
 
 	
 end gui_cb;

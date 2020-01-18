@@ -91,6 +91,8 @@ package body gui_general is
 		-- the procedure terminate_main (in gui_cb) is to be called.
 		window.on_destroy (terminate_main'access);
 
+		-- If the operator minimizes, maximizes or changes the size in some way:
+		window.on_configure_event (window_resized'access);
 		
 		-- background box
 		gtk_new_hbox (box_back);

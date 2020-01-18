@@ -35,9 +35,11 @@
 --   history of changes:
 --
 
+with gdk;				use gdk;
+with gdk.event;			use gdk.event;
 
 with glib;				use glib;
-with gtk.widget;  		--use gtk.widget;
+with gtk.widget;  		use gtk.widget;
 with gtk.button;     	--use gtk.button;
 with glib.object;		--use glib.object;
 with gtk.gentry;
@@ -47,7 +49,16 @@ with gtkada.style;		use gtkada.style;
 package gui_cb is
 
 	-- Callbacks:
-	procedure terminate_main (self : access gtk.widget.gtk_widget_record'class);
+
+	-- Terminates the main window:
+	procedure terminate_main (self : access gtk_widget_record'class);
+
+	-- Scales the canvas so that the frame fits into.
+	function window_resized (
+		self  : access gtk_widget_record'class;
+		event : gdk.event.gdk_event_configure) 
+		return boolean;
+	
 	procedure zoom_to_fit (self : access glib.object.gobject_record'class);	
 	procedure zoom_in (self : access glib.object.gobject_record'class);
 	procedure zoom_out (self : access glib.object.gobject_record'class);

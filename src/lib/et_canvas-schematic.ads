@@ -157,7 +157,7 @@ package et_canvas.schematic is
 	type type_view_ptr is access all type_view'class;
 
 	canvas	: type_view_ptr;
-	scale	: gdouble := 1.0;
+
 	
 	procedure viewport_changed (self : not null access type_view'class);
 
