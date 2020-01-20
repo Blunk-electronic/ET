@@ -71,6 +71,7 @@ with et_frames;				--use et_frames;
 
 package et_canvas.schematic is
 
+
 	subtype type_model_coordinate is et_coordinates.type_distance;
 	subtype type_model_coordinate_positive is et_coordinates.geometry.type_distance_positive;	
 	subtype type_model_point is et_coordinates.geometry.type_point; -- x/y only
@@ -155,6 +156,7 @@ package et_canvas.schematic is
 
 	-- The pointer to the canvas/view:
 	type type_view_ptr is access all type_view'class;
+
 
 	canvas	: type_view_ptr;
 

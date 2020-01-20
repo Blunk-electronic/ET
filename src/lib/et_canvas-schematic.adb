@@ -267,128 +267,6 @@ package body et_canvas.schematic is
 	end intersects;
 
 	
-	-- For demonstrating the difference between view coordinates (pixels) and model coordinates
-	-- this function outputs them at the console.
-	function on_mouse_movement (
-		view  : access gtk_widget_record'class;
-		event : gdk_event_motion) return boolean is
-		
-		-- the point where the mouse pointer is pointing at
-		view_point : type_view_point;
-
-		-- The conversion from view to model coordinates requires a pointer to
-		-- the view. This command sets self so that it points to the view:
-		self : constant type_view_ptr := type_view_ptr (view);
-
-		-- The point in the model (or on the sheet) expressed in millimeters:
-		model_point : type_model_point;
-
-		drawing_point : type_model_point;
-	begin
-		new_line;
-		put_line ("mouse movement ! new positions are:");
-
-		-- Fetch the position of the mouse pointer and output it on the console:
-		view_point := (x => event.x, y => event.y);
-		put_line (" " & to_string (view_point));
-
-		-- Convert the view point (pixels) to the position (millimeters) in the model
-		-- and output in on the console:
-		model_point := self.view_to_model (view_point);
-		put_line (" model " & to_string (model_point));
-
-		drawing_point := model_to_drawing (model_point);
-		put_line (" drawing " & to_string (drawing_point));
-		
-		return false;
-	end on_mouse_movement;
-
-	procedure center_on (
-		self         : not null access type_view;
-		center_on    : type_model_point;
-		x_pos, y_pos : gdouble := 0.5)
-	is
-		area : constant type_model_rectangle := self.get_visible_area;
-		pos  : constant type_model_point := (
-			center_on.x - area.width * x_pos,
-			center_on.y - area.height * y_pos);
-	begin
-		self.scale_to_fit_requested := 0.0;
-
-		self.topleft := pos;
-		self.set_adjustment_values;
-		self.queue_draw;
-
-	end center_on;
-	
-	function on_scroll_event (
-		view	: access gtk_widget_record'class;
-		event	: gdk_event_scroll) return boolean is
-		
-		self    : constant type_view_ptr := type_view_ptr (view);
-		x,y		: gdouble := 0.5;
--- 		details : aliased canvas_event_details;
--- 		button  : guint;
-	begin
-		if self.model /= null then
-			new_line;
-			put_line ("scroll detected");
-
-			x := event.x;
-			y := event.y;
-			
---    type Gdk_Event_Scroll is record
---       The_Type : Gdk_Event_Type;
---       Window : Gdk.Gdk_Window;
---       Send_Event : Gint8;
---       Time : Guint32;
---       X : Gdouble;
---       Y : Gdouble;
---       State : Gdk.Types.Gdk_Modifier_Type;
---       Direction : Gdk_Scroll_Direction;
---       Device : System.Address;
---       X_Root : Gdouble;
---       Y_Root : Gdouble;
---       Delta_X : Gdouble;
---       Delta_Y : Gdouble;
---    end record;
-
-			
--- 		case event.direction is
-				
--- 			when scroll_up | scroll_left =>
--- 				button := 5;
--- 			when scroll_down | scroll_right =>
--- 				button := 6;
--- 			when scroll_smooth =>
--- 				if event.delta_y > 0.0 then
--- 					button := 6;
--- 				else
--- 					button := 5;
--- 				end if;
--- 			end case;
--- 
--- 			details :=
--- 			(event_type => scroll,
--- 			button     => button,
--- 			key        => 0,
--- 			state      => event.state,
--- 			root_point => (event.x_root, event.y_root),
--- 			m_point    => self.window_to_model ((x => event.x, y => event.y)),
--- 			t_point    => no_item_point,
--- 			i_point    => no_item_point,
--- 			item       => null,
--- 			toplevel_item => null,
--- 			allow_snapping    => true,
--- 			allowed_drag_area => no_drag_allowed);
--- 			compute_item (self, details);
--- 			return self.item_event (details'unchecked_access);
-		end if;
-		
-		return false;
-	end on_scroll_event;
-
-	
 	procedure on_layout_changed_for_view (view : not null access gobject_record'class) is
 		self  : constant type_view_ptr := type_view_ptr (view);
 		alloc : gtk_allocation;
@@ -752,6 +630,158 @@ package body et_canvas.schematic is
 		return view_class_record.the_type;
 	end view_get_type;
 
+
+	-- For demonstrating the difference between view coordinates (pixels) and model coordinates
+	-- this function outputs them at the console.
+	function on_mouse_movement (
+		view  : access gtk_widget_record'class;
+		event : gdk_event_motion) return boolean is
+		
+		-- the point where the mouse pointer is pointing at
+		view_point : type_view_point;
+
+		-- The conversion from view to model coordinates requires a pointer to
+		-- the view. This command sets self so that it points to the view:
+		self : constant type_view_ptr := type_view_ptr (view);
+
+		-- The point in the model (or on the sheet) expressed in millimeters:
+		model_point : type_model_point;
+
+		drawing_point : type_model_point;
+	begin
+		new_line;
+		put_line ("mouse movement ! new positions are:");
+
+		-- Fetch the position of the mouse pointer and output it on the console:
+		view_point := (x => event.x, y => event.y);
+		put_line (" " & to_string (view_point));
+
+		-- Convert the view point (pixels) to the position (millimeters) in the model
+		-- and output in on the console:
+		model_point := self.view_to_model (view_point);
+		put_line (" model " & to_string (model_point));
+
+		drawing_point := model_to_drawing (model_point);
+		put_line (" drawing " & to_string (drawing_point));
+		
+		return false;
+	end on_mouse_movement;
+
+-- 	procedure center_on (
+-- 		self         : not null access type_view;
+-- 		center_on    : type_model_point;
+-- 		x_pos, y_pos : gdouble := 0.5)
+-- 	is
+-- 		area : constant type_model_rectangle := self.get_visible_area;
+-- 		pos  : constant type_model_point := (
+-- 			center_on.x - area.width * x_pos,
+-- 			center_on.y - area.height * y_pos);
+-- 	begin
+-- 		self.scale_to_fit_requested := 0.0;
+-- 
+-- 		self.topleft := pos;
+-- 		self.set_adjustment_values;
+-- 		self.queue_draw;
+-- 
+-- 	end center_on;
+
+	
+	function on_scroll_event (
+		view	: access gtk_widget_record'class;
+		event	: gdk_event_scroll) return boolean is
+		
+		self    : constant type_view_ptr := type_view_ptr (view);
+		x,y		: gdouble := 0.5;
+-- 		details : aliased canvas_event_details;
+-- 		button  : guint;
+	begin
+		if self.model /= null then
+			new_line;
+			put_line ("scroll detected");
+
+			x := event.x;
+			y := event.y;
+			
+--    type Gdk_Event_Scroll is record
+--       The_Type : Gdk_Event_Type;
+--       Window : Gdk.Gdk_Window;
+--       Send_Event : Gint8;
+--       Time : Guint32;
+--       X : Gdouble;
+--       Y : Gdouble;
+--       State : Gdk.Types.Gdk_Modifier_Type;
+--       Direction : Gdk_Scroll_Direction;
+--       Device : System.Address;
+--       X_Root : Gdouble;
+--       Y_Root : Gdouble;
+--       Delta_X : Gdouble;
+--       Delta_Y : Gdouble;
+--    end record;
+
+			
+-- 		case event.direction is
+				
+-- 			when scroll_up | scroll_left =>
+-- 				button := 5;
+-- 			when scroll_down | scroll_right =>
+-- 				button := 6;
+-- 			when scroll_smooth =>
+-- 				if event.delta_y > 0.0 then
+-- 					button := 6;
+-- 				else
+-- 					button := 5;
+-- 				end if;
+-- 			end case;
+-- 
+-- 			details :=
+-- 			(event_type => scroll,
+-- 			button     => button,
+-- 			key        => 0,
+-- 			state      => event.state,
+-- 			root_point => (event.x_root, event.y_root),
+-- 			m_point    => self.window_to_model ((x => event.x, y => event.y)),
+-- 			t_point    => no_item_point,
+-- 			i_point    => no_item_point,
+-- 			item       => null,
+-- 			toplevel_item => null,
+-- 			allow_snapping    => true,
+-- 			allowed_drag_area => no_drag_allowed);
+-- 			compute_item (self, details);
+-- 			return self.item_event (details'unchecked_access);
+		end if;
+		
+		return false;
+	end on_scroll_event;
+	
+	function on_key_event (
+		view  : access gtk_widget_record'class;
+		event : gdk_event_key) return boolean is
+
+-- 		self    : constant type_view_ptr := type_view_ptr (view);		
+	begin
+		put_line ("key pressed");
+		
+-- 		if self.model /= null then
+-- 			new_line;
+-- 			put_line ("key pressed");
+-- 
+-- 		end if;
+		
+		return false;
+	end on_key_event;
+	
+	function on_button_event (
+		view  : access gtk_widget_record'class;
+		event : gdk_event_button)
+		return boolean
+	is
+		self    : constant type_view_ptr := type_view_ptr (view);
+	begin
+		put_line ("mouse button pressed");
+
+		return false;
+	end on_button_event;
+	
 	procedure init (
 		self  : not null access type_view'class;
 		model : access type_model'class := null) is
@@ -769,13 +799,20 @@ package body et_canvas.schematic is
 				or button2_motion_mask
 				or button3_motion_mask
 				or pointer_motion_mask -- whenever the mouse is being moved inside the canvas
+				-- key_press_mask -- no need
 			);
 
-		-- reaction of mouse movements in the canvas
+		-- reaction to mouse movements in the canvas
 		self.on_motion_notify_event (on_mouse_movement'access);
 
-		-- reaction of mouse wheel rotated
+		-- reaction to mouse wheel being rotated
 		self.on_scroll_event (on_scroll_event'access);
+
+		-- reaction to mouse buttons pressed
+		self.on_button_press_event (on_button_event'access);
+
+		-- reaction to keys pressed on the keyboard		
+		self.on_key_press_event (on_key_event'access);
 		
 		self.set_can_focus (true);
 
