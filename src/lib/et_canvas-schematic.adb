@@ -60,6 +60,7 @@ with gtk.adjustment;		use gtk.adjustment;
 with gtk.bin;				use gtk.bin;
 with gtk.scrollable;		use gtk.scrollable;
 with gtk.style_context;		use gtk.style_context;
+with gtk.accel_group;
 
 with glib.properties.creation;	use glib.properties.creation;
 with cairo;					use cairo;
@@ -70,6 +71,8 @@ with gdk;					use gdk;
 with gdk.window;			use gdk.window;
 with gdk.window_attr;		use gdk.window_attr;
 with gdk.event;				use gdk.event;
+with gdk.types;				--use gdk.types;
+with gdk.types.keysyms;
 
 with gdk.rgba;
 with pango.layout;					use pango.layout;
@@ -689,18 +692,46 @@ package body et_canvas.schematic is
 	function on_scroll_event (
 		view	: access gtk_widget_record'class;
 		event	: gdk_event_scroll) return boolean is
+
+		result : boolean := false; -- to be returned
+
+		procedure event_handled is begin result := true; end;
+		procedure event_not_handled is begin result := false; end;
+		
+		use gdk.types;
+		use gdk.types.keysyms;
+		use gtk.accel_group;
+
+		accel_mask : gdk_modifier_type := get_default_mod_mask;
+		dy : gdouble := event.delta_y;
 		
 		self    : constant type_view_ptr := type_view_ptr (view);
 		x,y		: gdouble := 0.5;
 -- 		details : aliased canvas_event_details;
--- 		button  : guint;
+		-- 		button  : guint;
+		
 	begin
 		if self.model /= null then
 			new_line;
 			put_line ("scroll detected");
 
+			if (event.state and accel_mask) = control_mask then
+
+				-- CS: Testing event.direction would be more useful 
+				-- but for some reason always returns SMOOTH_SCROLL.
+				if dy > 0.0 then
+					put_line ("zoom out");
+					event_handled;
+				else
+					put_line ("zoom in");
+					event_handled;
+				end if;
+						
+			end if;
+			
 			x := event.x;
 			y := event.y;
+
 			
 --    type Gdk_Event_Scroll is record
 --       The_Type : Gdk_Event_Type;
@@ -750,25 +781,73 @@ package body et_canvas.schematic is
 -- 			return self.item_event (details'unchecked_access);
 		end if;
 		
-		return true; -- indicates that event has been handled
+-- 		return true; -- indicates that event has been handled
+		return result;
 	end on_scroll_event;
 	
-	function on_key_event (
+	function on_key_pressed_event (
 		view  : access gtk_widget_record'class;
 		event : gdk_event_key) return boolean is
 
--- 		self    : constant type_view_ptr := type_view_ptr (view);		
-	begin
-		put_line ("key pressed");
+		use gdk.types;
+		use gdk.types.keysyms;
 		
--- 		if self.model /= null then
--- 			new_line;
--- 			put_line ("key pressed");
--- 
--- 		end if;
+		self    : constant type_view_ptr := type_view_ptr (view);
+
+-- 		key_ctrl : gdk_modifier_type := event.state and control_mask;
+		key : gdk_key_type := event.keyval;
+	begin
+		--put_line ("key pressed");
+		
+		if self.model /= null then
+			new_line;
+
+			put_line (gdk_key_type'image (key));
+
+			case key is
+				when GDK_Control_L | GDK_Control_R =>
+					put_line ("ctrl pressed");
+
+				when others => 
+					put_line ("other key pressed");
+			end case;
+		
+		end if;
 		
 		return true; -- indicates that event has been handled
-	end on_key_event;
+	end on_key_pressed_event;
+
+	function on_key_released_event (
+		view  : access gtk_widget_record'class;
+		event : gdk_event_key) return boolean is
+
+		use gdk.types;
+		use gdk.types.keysyms;
+		
+		self    : constant type_view_ptr := type_view_ptr (view);
+
+-- 		key_ctrl : gdk_modifier_type := event.state and control_mask;
+		key : gdk_key_type := event.keyval;
+	begin
+		--put_line ("key pressed");
+		
+		if self.model /= null then
+			new_line;
+
+			put_line (gdk_key_type'image (key));
+
+			case key is
+				when GDK_Control_L | GDK_Control_R =>
+					put_line ("ctrl released");
+
+				when others => 
+					put_line ("other key released");
+			end case;
+		
+		end if;
+		
+		return true; -- indicates that event has been handled
+	end on_key_released_event;
 	
 	function on_button_event (
 		view  : access gtk_widget_record'class;
@@ -812,7 +891,10 @@ package body et_canvas.schematic is
 		self.on_button_press_event (on_button_event'access);
 
 		-- reaction to keys pressed on the keyboard		
-		self.on_key_press_event (on_key_event'access);
+		self.on_key_press_event (on_key_pressed_event'access);
+
+		-- reaction to keys released on the keyboard		
+		self.on_key_release_event (on_key_released_event'access);
 		
 		self.set_can_focus (true);
 
