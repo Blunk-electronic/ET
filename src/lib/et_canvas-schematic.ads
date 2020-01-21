@@ -133,6 +133,7 @@ package et_canvas.schematic is
 	scale_max : constant gdouble := 10.0;
 	subtype type_scale is gdouble range scale_min .. scale_max;
 	scale_default : constant type_scale := 1.0;
+	scale_delta_on_zoom : constant type_scale := 0.1;
 	
 	
 	-- The view (or canvas) displays a certain region of the model (or the sheet) 
@@ -144,7 +145,7 @@ package et_canvas.schematic is
 		-- NOTE: This has nothing to do with the upper left corner of the
 		-- drawing sheet. topleft is not a constant and is changed on by procedure
 		-- set_scale or by procedure scale_to_fit.
-		topleft  	: type_model_point := geometry.origin; -- CS rename to topleft
+		topleft  	: type_model_point := geometry.origin;
 		
 		scale     	: type_scale := scale_default;
 		grid_size 	: type_model_coordinate_positive := 20.0;

@@ -696,6 +696,7 @@ package body et_canvas.schematic is
 		event	: gdk_event_scroll) return boolean is
 
 		result : boolean := false; -- to be returned
+		-- When true, no other handler will process the event.
 
 		procedure event_handled is begin result := true; end;
 		procedure event_not_handled is begin result := false; end;
@@ -704,86 +705,48 @@ package body et_canvas.schematic is
 		use gdk.types.keysyms;
 		use gtk.accel_group;
 
+		-- Provides information on pressed keys:
 		accel_mask : gdk_modifier_type := get_default_mod_mask;
+
+		-- The amount of wheel rotation. We are interested in
+		-- its sign only. Negative means zooming in, positive means zooming out.
 		dy : gdouble := event.delta_y;
 		
 		self    : constant type_view_ptr := type_view_ptr (view);
-		x,y		: gdouble := 0.5;
--- 		details : aliased canvas_event_details;
-		-- 		button  : guint;
-		
-	begin
-		if self.model /= null then
-			new_line;
-			put_line ("scroll detected");
 
+		-- Get the current scale:
+		scale	: type_scale := get_scale (self);
+
+		-- The point at which the zooming takes place:
+		point	: type_model_point;
+		
+	begin -- on_scroll_event
+		if self.model /= null then
+			--new_line;
+			--put_line ("scroll detected");
+
+			-- If CTRL is being pressed, zoom in our out depending on dy:
 			if (event.state and accel_mask) = control_mask then
 
+				-- Get the center of the zooming operation:
+				point := view_to_model (self, (event.x, event.y));
+				
 				-- CS: Testing event.direction would be more useful 
 				-- but for some reason always returns SMOOTH_SCROLL.
 				if dy > 0.0 then
 					put_line ("zoom out");
+					set_scale (self, scale - scale_delta_on_zoom, point);
 					event_handled;
 				else
 					put_line ("zoom in");
+					set_scale (self, scale + scale_delta_on_zoom, point);
 					event_handled;
 				end if;
 						
 			end if;
 			
-			x := event.x;
-			y := event.y;
-
-			
---    type Gdk_Event_Scroll is record
---       The_Type : Gdk_Event_Type;
---       Window : Gdk.Gdk_Window;
---       Send_Event : Gint8;
---       Time : Guint32;
---       X : Gdouble;
---       Y : Gdouble;
---       State : Gdk.Types.Gdk_Modifier_Type;
---       Direction : Gdk_Scroll_Direction;
---       Device : System.Address;
---       X_Root : Gdouble;
---       Y_Root : Gdouble;
---       Delta_X : Gdouble;
---       Delta_Y : Gdouble;
---    end record;
-
-			
--- 		case event.direction is
-				
--- 			when scroll_up | scroll_left =>
--- 				button := 5;
--- 			when scroll_down | scroll_right =>
--- 				button := 6;
--- 			when scroll_smooth =>
--- 				if event.delta_y > 0.0 then
--- 					button := 6;
--- 				else
--- 					button := 5;
--- 				end if;
--- 			end case;
--- 
--- 			details :=
--- 			(event_type => scroll,
--- 			button     => button,
--- 			key        => 0,
--- 			state      => event.state,
--- 			root_point => (event.x_root, event.y_root),
--- 			m_point    => self.window_to_model ((x => event.x, y => event.y)),
--- 			t_point    => no_item_point,
--- 			i_point    => no_item_point,
--- 			item       => null,
--- 			toplevel_item => null,
--- 			allow_snapping    => true,
--- 			allowed_drag_area => no_drag_allowed);
--- 			compute_item (self, details);
--- 			return self.item_event (details'unchecked_access);
 		end if;
-		
--- 		return true; -- indicates that event has been handled
+
 		return result;
 	end on_scroll_event;
 	
