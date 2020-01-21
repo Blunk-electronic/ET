@@ -984,7 +984,7 @@ package body et_canvas.schematic is
 
 	procedure set_grid_size (
 		self : not null access type_view'class;
-		size : type_model_coordinate := grid_default) is
+		size : in type_model_coordinate_positive := grid_default) is
 	begin
 		self.grid_size := size;
 	end set_grid_size;

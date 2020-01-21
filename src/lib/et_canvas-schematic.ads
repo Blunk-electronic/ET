@@ -147,7 +147,7 @@ package et_canvas.schematic is
 		topleft  	: type_model_point := geometry.origin; -- CS rename to topleft
 		
 		scale     	: type_scale := scale_default;
-		grid_size 	: type_model_coordinate := 20.0;
+		grid_size 	: type_model_coordinate_positive := 20.0;
 		
 		layout		: pango.layout.pango_layout; -- CS for displaying text. not used yet
 
@@ -262,11 +262,11 @@ package et_canvas.schematic is
 		send_signal : boolean := true); -- sends "layout_changed" signal when true
 
 
-	grid_default : constant type_model_coordinate := 10.0;
+	grid_default : constant type_model_coordinate_positive := 10.0;
 	
 	procedure set_grid_size (
 		self : not null access type_view'class;
-		size : type_model_coordinate := grid_default);
+		size : in type_model_coordinate_positive := grid_default);
 
 	procedure draw_grid (
 		self    : not null access type_view'class;
