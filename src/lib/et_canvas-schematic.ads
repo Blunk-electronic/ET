@@ -127,6 +127,13 @@ package et_canvas.schematic is
 
 
 -- VIEW
+
+	-- scale
+	scale_min : constant gdouble := 0.1;
+	scale_max : constant gdouble := 10.0;
+	subtype type_scale is gdouble range scale_min .. scale_max;
+	scale_default : constant type_scale := 1.0;
+	
 	
 	-- The view (or canvas) displays a certain region of the model (or the sheet) 
 	-- depending on scrolling or zoom.
@@ -139,7 +146,7 @@ package et_canvas.schematic is
 		-- set_scale or by procedure scale_to_fit.
 		topleft  	: type_model_point := geometry.origin; -- CS rename to topleft
 		
-		scale     	: gdouble := 1.0; -- gdouble is a real floating-point type (see glib.ads)
+		scale     	: type_scale := scale_default;
 		grid_size 	: type_model_coordinate := 20.0;
 		
 		layout		: pango.layout.pango_layout; -- CS for displaying text. not used yet
@@ -169,7 +176,7 @@ package et_canvas.schematic is
 		slot : access gobject_record'class := null)
 		return gtk.handlers.handler_id;
 	
-	function get_scale (self : not null access type_view) return gdouble;
+	function get_scale (self : not null access type_view) return type_scale;
 
 	-- The cairo context to perform the actual drawing.
 	-- NOTE: The final drawing is performed in the view (hence in view coordinates):
@@ -234,8 +241,8 @@ package et_canvas.schematic is
 	
 	procedure set_scale (
 		self     : not null access type_view;
-		scale    : gdouble := 1.0;
-		preserve : type_model_point := geometry.origin);
+		scale    : in type_scale := scale_default;
+		preserve : in type_model_point := geometry.origin);
 	-- Changes the scaling factor for self.
 	-- this also scrolls the view so that either preserve or the current center
 	-- of the view remains at the same location in the widget, as if the user
@@ -292,9 +299,9 @@ package et_canvas.schematic is
 
 	procedure scale_to_fit (
 		self      : not null access type_view;
-		rect      : type_model_rectangle := no_rectangle;
-		min_scale : gdouble := 1.0 / 4.0;
-		max_scale : gdouble := 4.0);
+		rect      : in type_model_rectangle := no_rectangle;
+		min_scale : in type_scale := 1.0 / 4.0;
+		max_scale : in type_scale := 4.0);
 
 
 	-- Assign the module to be edited to the model:

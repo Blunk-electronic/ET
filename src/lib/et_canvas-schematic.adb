@@ -355,7 +355,7 @@ package body et_canvas.schematic is
 	end;
 
 	
-	function get_scale (self : not null access type_view) return gdouble is
+	function get_scale (self : not null access type_view) return type_scale is
 	begin
 		return self.scale;
 	end get_scale;
@@ -582,9 +582,11 @@ package body et_canvas.schematic is
 		end if;
 
 		if self.scale_to_fit_requested /= 0.0 then
-			self.scale_to_fit
-			(rect      => self.scale_to_fit_area,
-			max_scale => self.scale_to_fit_requested);
+			
+			self.scale_to_fit (
+				rect      => self.scale_to_fit_area,
+				max_scale => self.scale_to_fit_requested);
+			
 		end if;
 	end on_size_allocate;
 
@@ -912,11 +914,11 @@ package body et_canvas.schematic is
 	
 	procedure set_scale (
 		self     : not null access type_view;
-		scale    : gdouble := 1.0;
-		preserve : type_model_point := geometry.origin)
+		scale    : in type_scale := scale_default;
+		preserve : in type_model_point := geometry.origin)
 	is
 		-- backup the current scale
-		old_scale : constant gdouble := self.scale;
+		old_scale : constant type_scale := self.scale;
 		
 		box : type_model_rectangle;
 		p   : type_model_point;
@@ -1041,9 +1043,9 @@ package body et_canvas.schematic is
 
 	procedure scale_to_fit (
 		self      : not null access type_view;
-		rect      : type_model_rectangle := no_rectangle;
-		min_scale : gdouble := 1.0 / 4.0;
-		max_scale : gdouble := 4.0)
+		rect      : in type_model_rectangle := no_rectangle;
+		min_scale : in type_scale := 1.0 / 4.0;
+		max_scale : in type_scale := 4.0)
 	is
 		box     : type_model_rectangle;
 		w, h, s : gdouble;
