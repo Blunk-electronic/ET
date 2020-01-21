@@ -93,6 +93,12 @@ package body gui_general is
 
 		-- If the operator minimizes, maximizes or changes the size in some way:
 		window.on_configure_event (window_resized'access);
+
+		-- For reaction to keys pressed on the keyboard:
+		-- This is required in order to propagate the key-pressed events to sub-windows.
+		window.on_key_press_event (on_key_event'access);
+		
+
 		
 		-- background box
 		gtk_new_hbox (box_back);

@@ -664,7 +664,7 @@ package body et_canvas.schematic is
 		drawing_point := model_to_drawing (model_point);
 		put_line (" drawing " & to_string (drawing_point));
 		
-		return false;
+		return true; -- indicates that event has been handled
 	end on_mouse_movement;
 
 -- 	procedure center_on (
@@ -750,7 +750,7 @@ package body et_canvas.schematic is
 -- 			return self.item_event (details'unchecked_access);
 		end if;
 		
-		return false;
+		return true; -- indicates that event has been handled
 	end on_scroll_event;
 	
 	function on_key_event (
@@ -767,7 +767,7 @@ package body et_canvas.schematic is
 -- 
 -- 		end if;
 		
-		return false;
+		return true; -- indicates that event has been handled
 	end on_key_event;
 	
 	function on_button_event (
@@ -779,7 +779,7 @@ package body et_canvas.schematic is
 	begin
 		put_line ("mouse button pressed");
 
-		return false;
+		return true; -- indicates that event has been handled
 	end on_button_event;
 	
 	procedure init (

@@ -35,8 +35,10 @@
 --   history of changes:
 --
 
+with gdk.event;					use gdk.event;
 
 with gtk.main;
+with gtk.window;				use gtk.window;
 with ada.text_io;				use ada.text_io;
 with et_canvas;					use et_canvas;
 with et_canvas.schematic;		use et_canvas.schematic;
@@ -58,8 +60,7 @@ package body gui_cb is
 		
 		return true;
 	end;
-	
-	
+		
 	procedure zoom_to_fit (self : access glib.object.gobject_record'class) is 
 	begin
 		put_line ("zoom to fit ...");
@@ -114,6 +115,35 @@ package body gui_cb is
 	begin
 		put_line (get_text (self));
 	end;
+
+	function on_key_event (
+		self	: access gtk_widget_record'class;
+		event	: in gdk_event_key) 
+		return boolean is
+		
+		result : boolean; -- to be returned. Indicates that the event has been handled.
+
+		-- Make a pointer to the main window:
+		current_window : constant gtk_window := gtk_window (self);
+
+	begin
+		--new_line;
+		--put_line ("top level key pressed");
+
+		-- Set the focus to the canvas:
+		set_focus (current_window, canvas);
+
+		-- Propagate the key-press event to the canvas:
+		result := propagate_key_event (current_window, event);
+
+-- 		if result = true then
+-- 			put_line ("got handled");
+-- 		else
+-- 			put_line ("not handled");
+-- 		end if;
+		
+		return result;
+	end on_key_event;
 
 
 	

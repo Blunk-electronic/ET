@@ -67,6 +67,11 @@ package gui_cb is
 	procedure delete (self : access glib.object.gobject_record'class);
 	procedure echo_command_simple (self : access gtk.gentry.gtk_entry_record'class);
 
+	function on_key_event (
+		self	: access gtk_widget_record'class;
+		event	: in gdk_event_key) 
+		return boolean;
+
 
 	
 end gui_cb;
