@@ -747,6 +747,8 @@ package body et_canvas.schematic is
 			
 		end if;
 
+		-- CS: exception handler if scale range check fails
+
 		return result;
 	end on_scroll_event;
 	
