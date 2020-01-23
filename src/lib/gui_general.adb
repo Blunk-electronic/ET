@@ -226,6 +226,7 @@ package body gui_general is
 		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
 		log_threshold	: in type_log_level) is
 		use et_canvas.schematic;
+		use et_canvas.schematic.pac_canvas;
 	begin
 		log (text => "launching mode " & to_string (MODE_MODULE), level => log_threshold);
 		log (text => "opening module " & enclose_in_quotes (to_string (type_modules.key (module))), level => log_threshold);
@@ -243,7 +244,7 @@ package body gui_general is
 		gtk_new (canvas, model);
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 
-		scale_to_fit (canvas);
+		pac_canvas.scale_to_fit (canvas);
 		
 		-- Display all the widgets on the screen:
 		window.show_all;

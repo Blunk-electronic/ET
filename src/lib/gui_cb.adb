@@ -42,6 +42,7 @@ with gtk.window;				use gtk.window;
 with ada.text_io;				use ada.text_io;
 with et_canvas;					use et_canvas;
 with et_canvas.schematic;		use et_canvas.schematic;
+use et_canvas.schematic.pac_canvas;
 
 package body gui_cb is
 

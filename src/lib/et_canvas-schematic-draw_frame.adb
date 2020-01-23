@@ -70,7 +70,7 @@ procedure draw_frame (
 				)),
 				
 			-- y position
-			convert_and_shift_y (et_coordinates.type_distance 
+			convert_and_shift_y (model, et_coordinates.type_distance 
 				(
 				element (cursor).start_point.y 
 				+ model.title_block_position.y -- y position of title block
@@ -91,7 +91,7 @@ procedure draw_frame (
 				)),
 
 			-- y position
-			convert_and_shift_y (et_coordinates.type_distance 
+			convert_and_shift_y (model, et_coordinates.type_distance 
 				(
 				element (cursor).end_point.y 
 				+ model.title_block_position.y -- y position of title block
