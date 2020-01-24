@@ -1014,35 +1014,35 @@ package body pac_canvas is
 -- 		context : in type_draw_context) is separate;
 
 	
--- 	procedure draw_internal (
--- 		self    : not null access type_view;
--- 		context : type_draw_context;
--- 		area    : type_model_rectangle) 
--- 	is
--- 		-- prepare draing style so that white grid dots will be drawn.
--- 		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
--- 		
--- 	begin
--- 		--put_line ("draw internal ...");
--- 		
--- 		if self.model /= null then
--- 
--- 			-- draw a black background:
--- 			set_source_rgb (context.cr, 0.0, 0.0, 0.0);
--- 			paint (context.cr);
--- 
--- 			-- draw white grid dots:
--- 			set_grid_size (self, grid_default);
+	procedure draw_internal (
+		self    : not null access type_view;
+		context : type_draw_context;
+		area    : type_model_rectangle) 
+	is
+		-- prepare draing style so that white grid dots will be drawn.
+		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
+		
+	begin
+		--put_line ("draw internal ...");
+		
+		if self.model /= null then
+
+			-- draw a black background:
+			set_source_rgb (context.cr, 0.0, 0.0, 0.0);
+			paint (context.cr);
+
+			-- draw white grid dots:
+			set_grid_size (self, grid_default);
 -- 			draw_grid (self, style, context, area);
--- 
+
 -- 			self.model.draw_frame (area, context); -- separate unit
 -- 			self.model.draw_nets (area, context); -- separate unit
 -- 			self.model.draw_units (area, context); -- separate unit
--- 			-- CS self.model.draw_texts (area, context);
--- 			-- CS self.model.draw_submodules (area, context);
--- 			
--- 		end if;
--- 	end draw_internal;
+			-- CS self.model.draw_texts (area, context);
+			-- CS self.model.draw_submodules (area, context);
+			
+		end if;
+	end draw_internal;
 
 	procedure scale_to_fit (
 		self      : not null access type_view;

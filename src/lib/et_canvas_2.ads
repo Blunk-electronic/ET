@@ -359,7 +359,7 @@ package pac_canvas is
 	procedure draw_internal (
 		self    : not null access type_view;
 		context : type_draw_context;
-		area    : type_model_rectangle) is null;
+		area    : type_model_rectangle);
 
 	procedure scale_to_fit (
 		self      : not null access type_view;

@@ -306,10 +306,11 @@ package et_canvas.schematic is
 	
 	-- Redraw either the whole view, or a specific part of it only.
 	-- The transformation matrix has already been set on the context.
-	overriding procedure draw_internal (
-		self    : not null access type_view;
-		context : type_draw_context;
-		area    : type_model_rectangle);
+-- 	procedure draw_internal (
+-- 		self    : not null access type_view;
+-- -- 		model	: not null access type_model;
+-- 		context : type_draw_context;
+-- 		area    : type_model_rectangle);
 
 -- 	procedure scale_to_fit (
 -- 		self      : not null access type_view;
