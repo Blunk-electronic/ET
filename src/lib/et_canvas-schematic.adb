@@ -800,14 +800,14 @@ package body et_canvas.schematic is
 -- 		return true; -- indicates that event has been handled
 -- 	end on_button_event;
 	
--- 
--- 	procedure gtk_new (
--- 		self	: out type_view_ptr;
--- 		model	: access type_model'class := null) is 
--- 	begin
--- 		self := new type_view;
--- 		init (self, model);
--- 	end;
+
+	procedure gtk_new (
+		self	: out type_view_ptr_sch;
+		model	: access type_model'class := null) is 
+	begin
+		self := new type_view_sch;
+		init (self, model);
+	end;
 
 	
 -- 	procedure set_scale (
@@ -888,7 +888,7 @@ package body et_canvas.schematic is
 -- 	end set_grid_size;
 
 	procedure draw_grid (
-		self    : not null access type_view'class;
+		self    : not null access type_view_sch;
 		style   : gtkada.style.drawing_style;
 		context : type_draw_context;
 		area    : type_model_rectangle)	is separate;
@@ -908,36 +908,43 @@ package body et_canvas.schematic is
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
-	
--- 	procedure draw_internal (
+-- 	procedure draw (
 -- 		self    : not null access type_view;
 -- 		context : type_draw_context;
--- 		area    : type_model_rectangle) 
--- 	is
--- 		-- prepare draing style so that white grid dots will be drawn.
--- 		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
--- 		
+-- 		area    : type_model_rectangle) is
 -- 	begin
 -- 		put_line ("draw internal ...");
--- 		
--- 		if self.model /= null then
--- 
--- 			-- draw a black background:
--- 			set_source_rgb (context.cr, 0.0, 0.0, 0.0);
--- 			paint (context.cr);
--- 
--- 			-- draw white grid dots:
--- 			set_grid_size (self, pac_canvas.grid_default);
--- 			draw_grid (self, style, context, area);
--- 
--- -- 			self.model.draw_frame (area, context); -- separate unit
--- -- 			self.model.draw_nets (area, context); -- separate unit
--- -- 			self.model.draw_units (area, context); -- separate unit
--- 			-- CS self.model.draw_texts (area, context);
--- 			-- CS self.model.draw_submodules (area, context);
--- 			
--- 		end if;
--- 	end draw_internal;
+-- 	end;
+	
+	procedure draw_internal (
+		self    : not null access type_view_sch;
+		context : type_draw_context;
+		area    : type_model_rectangle) 
+	is
+		-- prepare draing style so that white grid dots will be drawn.
+		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
+		
+	begin
+		put_line ("draw internal ...");
+		
+		if self.model /= null then
+
+			-- draw a black background:
+			set_source_rgb (context.cr, 0.0, 0.0, 0.0);
+			paint (context.cr);
+
+			-- draw white grid dots:
+			set_grid_size (self, pac_canvas.grid_default);
+			draw_grid (self, style, context, area);
+
+-- 			self.model.draw_frame (area, context); -- separate unit
+-- 			self.model.draw_nets (area, context); -- separate unit
+-- 			self.model.draw_units (area, context); -- separate unit
+			-- CS self.model.draw_texts (area, context);
+			-- CS self.model.draw_submodules (area, context);
+			
+		end if;
+	end draw_internal;
 
 
 

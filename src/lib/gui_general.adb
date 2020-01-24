@@ -241,10 +241,12 @@ package body gui_general is
 		-- set the module to be opened and optionally the sheet to be displayed:
 		set_module (model, module, sheet);
 
+-- 		canvas := new type_view_sch;
+		
 		gtk_new (canvas, model);
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 
-		pac_canvas.scale_to_fit (canvas);
+		scale_to_fit (canvas);
 		
 		-- Display all the widgets on the screen:
 		window.show_all;

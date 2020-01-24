@@ -200,7 +200,7 @@ package pac_canvas is
 	type type_view_ptr is access all type_view'class;
 
 
-	canvas	: type_view_ptr;
+-- 	canvas	: type_view_ptr;
 
 
 	procedure set_model (
@@ -281,6 +281,10 @@ package pac_canvas is
 	procedure gtk_new (
 		self	: out type_view_ptr;
 		model	: access type_model'class := null);
+
+	procedure init (
+		self  : not null access type_view'class;
+		model : access type_model'class := null);
 	
 	procedure set_scale (
 		self     : not null access type_view;
@@ -318,8 +322,19 @@ package pac_canvas is
 	procedure draw_internal (
 		self    : not null access type_view;
 		context : type_draw_context;
-		area    : type_model_rectangle);
+		area    : type_model_rectangle) is null;
 
+-- 	type type_draw is access procedure (
+-- 		self    : not null access type_view;
+-- 		context : type_draw_context;
+-- 		area    : type_model_rectangle);
+-- 
+-- 	procedure draw (
+-- 		self    : not null access type_view;
+-- 		context : type_draw_context;
+-- 		area    : type_model_rectangle) is null;
+
+	
 	procedure scale_to_fit (
 		self      : not null access type_view;
 		rect      : in type_model_rectangle := no_rectangle;

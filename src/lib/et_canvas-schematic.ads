@@ -102,6 +102,7 @@ package et_canvas.schematic is
 	end record;
 
 	type type_model_ptr is access all type_model'class;
+-- 	type type_model_ptr is access all type_model;
 
 	model	: type_model_ptr;
 
@@ -126,13 +127,13 @@ package et_canvas.schematic is
 -- 	
 	-- The view (or canvas) displays a certain region of the model (or the sheet) 
 	-- depending on scrolling or zoom.
-	type type_view is new pac_canvas.type_view with null record;
+	type type_view_sch is new pac_canvas.type_view with null record;
 
 	-- The pointer to the canvas/view:
--- 	type type_view_ptr is access all type_view'class;
+	type type_view_ptr_sch is access all type_view_sch'class;
 
 
--- 	canvas	: type_view_ptr;
+	canvas	: type_view_ptr_sch;
 
 
 
@@ -208,9 +209,9 @@ package et_canvas.schematic is
 -- 	pragma convention (c, view_get_type);
 -- 	--  return the internal type
 
--- 	procedure gtk_new (
--- 		self	: out type_view_ptr;
--- 		model	: access type_model'class := null);
+	procedure gtk_new (
+		self	: out type_view_ptr_sch;
+		model	: access type_model'class := null);
 	
 -- 	procedure set_scale (
 -- 		self     : not null access type_view;
@@ -241,11 +242,11 @@ package et_canvas.schematic is
 -- 		self : not null access type_view'class;
 -- 		size : in type_model_coordinate_positive := grid_default);
 
-	procedure draw_grid (
-		self    : not null access type_view'class;
-		style   : gtkada.style.drawing_style;
-		context : type_draw_context;
-		area    : type_model_rectangle);
+-- 	procedure draw_grid (
+-- 		self    : not null access type_view'class;
+-- 		style   : gtkada.style.drawing_style;
+-- 		context : type_draw_context;
+-- 		area    : type_model_rectangle);
 
 	procedure draw_frame (
 		model	: not null access type_model;
@@ -265,11 +266,17 @@ package et_canvas.schematic is
 	
 	-- Redraw either the whole view, or a specific part of it only.
 	-- The transformation matrix has already been set on the context.
--- 	overriding procedure draw_internal (
+	overriding procedure draw_internal (
+		self    : not null access type_view_sch;
+		context : type_draw_context;
+		area    : type_model_rectangle);
+
+-- 	procedure draw (
 -- 		self    : not null access type_view;
 -- 		context : type_draw_context;
 -- 		area    : type_model_rectangle);
 
+	
 -- 	procedure scale_to_fit (
 -- 		self      : not null access type_view;
 -- 		rect      : in type_model_rectangle := no_rectangle;
