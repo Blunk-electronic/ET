@@ -693,7 +693,8 @@ package body pac_canvas is
 		model_point := self.view_to_model (view_point);
 		put_line (" model " & to_string (model_point));
 
-		drawing_point := model_to_drawing (canvas.model, model_point);
+		--drawing_point := model_to_drawing (canvas.model, model_point);
+		drawing_point := model_to_drawing (self.model, model_point);
 		put_line (" drawing " & to_string (drawing_point));
 		
 		return true; -- indicates that event has been handled
@@ -992,27 +993,6 @@ package body pac_canvas is
 		self.grid_size := size;
 	end set_grid_size;
 
--- 	procedure draw_grid (
--- 		self    : not null access type_view'class;
--- 		style   : gtkada.style.drawing_style;
--- 		context : type_draw_context;
--- 		area    : type_model_rectangle)	is separate;
--- 
--- 	procedure draw_frame (
--- 		model	: not null access type_model;
--- 		in_area	: in type_model_rectangle := no_rectangle;
--- 		context : in type_draw_context) is separate;
--- 
--- 	procedure draw_nets (
--- 		model	: not null access type_model;
--- 		in_area	: in type_model_rectangle := no_rectangle;
--- 		context : in type_draw_context) is separate;
--- 
--- 	procedure draw_units (
--- 		model	: not null access type_model;
--- 		in_area	: in type_model_rectangle := no_rectangle;
--- 		context : in type_draw_context) is separate;
-
 	
 	procedure draw_internal (
 		self    : not null access type_view;
@@ -1023,7 +1003,7 @@ package body pac_canvas is
 		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
 		
 	begin
-		--put_line ("draw internal ...");
+		put_line ("draw internal gen ...");
 		
 		if self.model /= null then
 

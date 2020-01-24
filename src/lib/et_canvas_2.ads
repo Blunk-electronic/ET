@@ -147,29 +147,9 @@ package pac_canvas is
 -- MODEL
 	type type_model is new glib.object.gobject_record with record
 		layout	: pango.layout.pango_layout;
--- 		module	: et_project.type_modules.cursor;
-
-		-- These variables are frequently used. Procedure set_module
-		-- sets them. Other operations are free to access
-		-- them.
--- 		frame				: et_frames.type_frame (et_frames.SCHEMATIC);
--- 		frame_bounding_box	: type_model_rectangle;
--- 
--- 		paper_bounding_box	: type_model_rectangle;
--- 		paper_height		: type_model_coordinate;
--- 		paper_width			: type_model_coordinate;
--- 
--- 		title_block_position	: et_frames.type_position;
-
--- 		-- the active sheet
--- 		sheet	: type_sheet := type_sheet'first;
 	end record;
 
 	type type_model_ptr is access all type_model'class;
-
-
--- 	model	: type_model_ptr;
-
 
 	
 	-- Creates a new model (or a drawing sheet according to the example above):
@@ -331,27 +311,6 @@ package pac_canvas is
 	procedure set_grid_size (
 		self : not null access type_view'class;
 		size : in type_model_coordinate_positive := grid_default);
-
--- 	procedure draw_grid (
--- 		self    : not null access type_view'class;
--- 		style   : gtkada.style.drawing_style;
--- 		context : type_draw_context;
--- 		area    : type_model_rectangle);
--- 
--- 	procedure draw_frame (
--- 		model	: not null access type_model;
--- 		in_area	: in type_model_rectangle := no_rectangle;
--- 		context : in type_draw_context);
--- 
--- 	procedure draw_nets (
--- 		model	: not null access type_model;
--- 		in_area	: in type_model_rectangle := no_rectangle;
--- 		context : in type_draw_context);
--- 	
--- 	procedure draw_units (
--- 		model	: not null access type_model;
--- 		in_area	: in type_model_rectangle := no_rectangle;
--- 		context : in type_draw_context);
 
 	
 	-- Redraw either the whole view, or a specific part of it only.

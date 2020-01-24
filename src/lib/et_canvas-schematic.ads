@@ -79,28 +79,10 @@ package et_canvas.schematic is
 
 	use pac_canvas;
 	
-	
--- 
--- 	subtype type_model_coordinate is et_coordinates.type_distance;
--- 	subtype type_model_coordinate_positive is et_coordinates.geometry.type_distance_positive;	
--- 	subtype type_model_point is et_coordinates.geometry.type_point; -- x/y only
-
-
--- 	-- A rectangular area of the model:
--- 	type type_model_rectangle is record
--- 		x, y			: type_model_coordinate; -- position
--- 		width, height	: type_model_coordinate_positive; -- size
--- 	end record;
--- 
--- 	no_rectangle : constant type_model_rectangle := (0.0, 0.0, 0.0, 0.0);
-
-	
 
 
 -- MODEL
-	--type type_model is new glib.object.gobject_record with record
 	type type_model is new pac_canvas.type_model with record
--- 		layout	: pango.layout.pango_layout;
 		module	: et_project.type_modules.cursor;
 
 		-- These variables are frequently used. Procedure set_module
@@ -144,30 +126,7 @@ package et_canvas.schematic is
 -- 	
 	-- The view (or canvas) displays a certain region of the model (or the sheet) 
 	-- depending on scrolling or zoom.
--- 	type type_view is new pac_canvas.type_view with null record;
--- 	type type_view is new gtk.widget.gtk_widget_record with record
--- 		model 		: type_model_ptr;
--- 
--- 		-- The upper left corner of the visible area has its initial value at 0/0.
--- 		-- NOTE: This has nothing to do with the upper left corner of the
--- 		-- drawing sheet. topleft is not a constant and is changed on by procedure
--- 		-- set_scale or by procedure scale_to_fit.
--- 		topleft  	: type_model_point := geometry.origin;
--- 		
--- 		scale     	: type_scale := scale_default;
--- 		grid_size 	: type_model_coordinate_positive := 20.0;
--- 		
--- 		layout		: pango.layout.pango_layout; -- CS for displaying text. not used yet
--- 
--- 		-- Required for the scrollbars:
--- 		hadj, vadj	: gtk.adjustment.gtk_adjustment;
--- 
--- 		-- connections to model signals
--- 		id_layout_changed : gtk.handlers.handler_id := (gtk.handlers.null_handler_id, null);
--- 
--- 		scale_to_fit_requested : gdouble := 0.0; -- gdouble is a real floating-point type (see glib.ads)
--- 		scale_to_fit_area : type_model_rectangle;
--- 	end record;
+	type type_view is new pac_canvas.type_view with null record;
 
 	-- The pointer to the canvas/view:
 -- 	type type_view_ptr is access all type_view'class;
@@ -306,9 +265,8 @@ package et_canvas.schematic is
 	
 	-- Redraw either the whole view, or a specific part of it only.
 	-- The transformation matrix has already been set on the context.
--- 	procedure draw_internal (
+-- 	overriding procedure draw_internal (
 -- 		self    : not null access type_view;
--- -- 		model	: not null access type_model;
 -- 		context : type_draw_context;
 -- 		area    : type_model_rectangle);
 
