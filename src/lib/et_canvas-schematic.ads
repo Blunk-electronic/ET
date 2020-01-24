@@ -82,7 +82,7 @@ package et_canvas.schematic is
 
 
 -- MODEL
-	type type_model is new pac_canvas.type_model with record
+	type type_model_sch is new pac_canvas.type_model with record
 		module	: et_project.type_modules.cursor;
 
 		-- These variables are frequently used. Procedure set_module
@@ -101,15 +101,15 @@ package et_canvas.schematic is
 		sheet	: et_coordinates.type_sheet := type_sheet'first;
 	end record;
 
-	type type_model_ptr is access all type_model'class;
--- 	type type_model_ptr is access all type_model;
+-- 	type type_model_ptr is access all type_model'class;
+	type type_model_ptr_sch is access all type_model_sch;
 
-	model	: type_model_ptr;
+	model	: type_model_ptr_sch;
 
 
 	
 	-- Creates a new model (or a drawing sheet according to the example above):
-	procedure gtk_new (self : out type_model_ptr);
+	procedure gtk_new (self : out type_model_ptr_sch);
 
 -- 	-- Initializes the internal data so that the model can send signals:
 -- 	procedure init (self : not null access type_model'class);
@@ -195,11 +195,11 @@ package et_canvas.schematic is
 	-- goes upwards. The origin of the drawing coordinate system is the
 	-- lower left corner of the drawing frame.
 	overriding function model_to_drawing (
-		model		: not null access type_model;
+		model		: not null access type_model_sch;
 		model_point : in type_model_point)
 		return type_model_point;
 
-	overriding function bounding_box (self : not null access type_model)
+	overriding function bounding_box (self : not null access type_model_sch)
 		return type_model_rectangle;
 
 
@@ -212,6 +212,7 @@ package et_canvas.schematic is
 	procedure gtk_new (
 		self	: out type_view_ptr_sch;
 		model	: access type_model'class := null);
+-- 		model	: access type_model);
 	
 -- 	procedure set_scale (
 -- 		self     : not null access type_view;
@@ -249,17 +250,17 @@ package et_canvas.schematic is
 -- 		area    : type_model_rectangle);
 
 	procedure draw_frame (
-		model	: not null access type_model;
+		model	: not null access type_model_sch;
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context);
 
 	procedure draw_nets (
-		model	: not null access type_model;
+		model	: not null access type_model_sch;
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context);
 	
 	procedure draw_units (
-		model	: not null access type_model;
+		model	: not null access type_model_sch;
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context);
 
@@ -286,7 +287,7 @@ package et_canvas.schematic is
 
 	-- Assign the module to be edited to the model:
 	procedure set_module (
-		self	: not null access type_model;
+		self	: not null access type_model_sch;
 		module	: in et_project.type_modules.cursor;
 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be opened
 
@@ -306,14 +307,14 @@ package et_canvas.schematic is
 	-- This function converts a y-value from the drawing to a y-value in the view.
 	-- The input y increases upwards. The output y increases downwards.
 	overriding function convert_and_shift_y (
- 		model	: not null access type_model;
+ 		model	: not null access type_model_sch;
 		y		: in type_distance)
 		return type_view_coordinate;
 
 	-- This function converts a y-value from the drawing to a y-value in the model.
 	-- The input y increases upwards. The output y increases downwards.
 	overriding function convert_and_shift_y (
-		model	: not null access type_model;
+		model	: not null access type_model_sch;
 		y		: in type_distance) 
 		return type_model_coordinate;
 

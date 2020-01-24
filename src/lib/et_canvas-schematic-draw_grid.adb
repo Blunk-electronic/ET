@@ -48,17 +48,17 @@ procedure draw_grid (
 	context : type_draw_context;
 	area    : type_model_rectangle) 
 is
--- 	x, y  : type_view_coordinate;
--- 	dot_size : constant type_view_coordinate := 0.1; -- the size of a dot
--- 	dot_line_width : constant type_view_coordinate := 0.1; -- the width of the lines that form the dot
--- 
--- 	-- The grid must be aligned with the frame. So the initial offset of the grid is
--- 	-- the position of the drawing frame. That is the position of the frame bounding box.
--- 	-- NOTE: The frame is drawn directly in cairo, means in y-axis going downwards. 
--- 	-- See procedure draw_frame.
--- 	offset_x : type_view_coordinate := type_view_coordinate (self.model.frame_bounding_box.x);
--- 	offset_y : type_view_coordinate := type_view_coordinate (self.model.frame_bounding_box.y);
--- 	-- Later, the offset_y will get a fine adjustment according to the frame height.
+	x, y  : type_view_coordinate;
+	dot_size : constant type_view_coordinate := 0.1; -- the size of a dot
+	dot_line_width : constant type_view_coordinate := 0.1; -- the width of the lines that form the dot
+
+	-- The grid must be aligned with the frame. So the initial offset of the grid is
+	-- the position of the drawing frame. That is the position of the frame bounding box.
+	-- NOTE: The frame is drawn directly in cairo, means in y-axis going downwards. 
+	-- See procedure draw_frame.
+	offset_x : type_view_coordinate := type_view_coordinate (self.model.frame_bounding_box.x);
+	offset_y : type_view_coordinate := type_view_coordinate (self.model.frame_bounding_box.y);
+	-- Later, the offset_y will get a fine adjustment according to the frame height.
 -- 
 -- 	function lower_grid_coordinate (coordinate : in type_model_coordinate) 
 -- 	-- This function calculates the grid coordinate on the axis that comes

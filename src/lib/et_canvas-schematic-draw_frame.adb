@@ -46,7 +46,7 @@ use et_coordinates.geometry;
 separate (et_canvas.schematic)
 
 procedure draw_frame (
-	model	: not null access type_model;
+	model	: not null access type_model_sch;
 	in_area	: in type_model_rectangle := no_rectangle;
 	context : in type_draw_context) is
 

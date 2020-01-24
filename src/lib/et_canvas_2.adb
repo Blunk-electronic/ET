@@ -340,6 +340,7 @@ package body pac_canvas is
 		end if;
 
 		self.model := type_model_ptr (model);
+-- 		self.model := model;
 
 		if self.model /= null then
 			ref (self.model);

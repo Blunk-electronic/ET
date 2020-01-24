@@ -303,8 +303,8 @@ package body et_canvas.schematic is
 -- 		end if;
 -- 	end on_layout_changed;
 	
-	procedure gtk_new (self : out type_model_ptr) is begin
-		self := new type_model;
+	procedure gtk_new (self : out type_model_ptr_sch) is begin
+		self := new type_model_sch;
 		init (self);
 	end;	
 
@@ -381,7 +381,7 @@ package body et_canvas.schematic is
 -- 	end model_to_view;
 -- 
 	function model_to_drawing (
-		model		: not null access type_model;
+		model		: not null access type_model_sch;
 		model_point : in type_model_point)	
 		return type_model_point is 
 		use et_general;
@@ -404,7 +404,7 @@ package body et_canvas.schematic is
 		return p;
 	end;
 
-	function bounding_box (self : not null access type_model)
+	function bounding_box (self : not null access type_model_sch)
 		return type_model_rectangle is
 	begin
 		return self.paper_bounding_box;
@@ -803,7 +803,8 @@ package body et_canvas.schematic is
 
 	procedure gtk_new (
 		self	: out type_view_ptr_sch;
-		model	: access type_model'class := null) is 
+		model	: access type_model'class := null) is
+-- 		model	: access type_model) is 
 	begin
 		self := new type_view_sch;
 		init (self, model);
@@ -894,17 +895,17 @@ package body et_canvas.schematic is
 		area    : type_model_rectangle)	is separate;
 
 	procedure draw_frame (
-		model	: not null access type_model;
+		model	: not null access type_model_sch;
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
 	procedure draw_nets (
-		model	: not null access type_model;
+		model	: not null access type_model_sch;
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
 	procedure draw_units (
-		model	: not null access type_model;
+		model	: not null access type_model_sch;
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
@@ -949,7 +950,7 @@ package body et_canvas.schematic is
 
 
 	procedure set_module (
-		self	: not null access type_model;
+		self	: not null access type_model_sch;
 		module	: in et_project.type_modules.cursor;
 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be opened
 	is
@@ -1005,7 +1006,7 @@ package body et_canvas.schematic is
 -- 	end;
 
 	function convert_and_shift_y (
-		model	: not null access type_model;
+		model	: not null access type_model_sch;
 		y		: in type_distance)
 		return type_view_coordinate is 
 	begin
@@ -1017,7 +1018,7 @@ package body et_canvas.schematic is
 	end;
 		
 	function convert_and_shift_y (
-		model	: not null access type_model;
+		model	: not null access type_model_sch;
 		y		: in type_distance)
 		return type_model_coordinate is 
 	begin
