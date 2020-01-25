@@ -212,7 +212,7 @@ package et_canvas.schematic is
 	procedure gtk_new (
 		self	: out type_view_ptr_sch;
 		model	: access type_model'class := null);
--- 		model	: access type_model);
+-- 		model	: access type_model_sch);
 	
 -- 	procedure set_scale (
 -- 		self     : not null access type_view;

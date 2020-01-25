@@ -56,10 +56,10 @@ is
 	-- the position of the drawing frame. That is the position of the frame bounding box.
 	-- NOTE: The frame is drawn directly in cairo, means in y-axis going downwards. 
 	-- See procedure draw_frame.
-	offset_x : type_view_coordinate := type_view_coordinate (self.model.frame_bounding_box.x);
-	offset_y : type_view_coordinate := type_view_coordinate (self.model.frame_bounding_box.y);
+-- 	offset_x : type_view_coordinate := type_view_coordinate (self.model.frame_bounding_box.x);
+-- 	offset_y : type_view_coordinate := type_view_coordinate (self.model.frame_bounding_box.y);
 	-- Later, the offset_y will get a fine adjustment according to the frame height.
--- 
+
 -- 	function lower_grid_coordinate (coordinate : in type_model_coordinate) 
 -- 	-- This function calculates the grid coordinate on the axis that comes
 -- 	-- before the given coordinate.

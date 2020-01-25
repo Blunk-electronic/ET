@@ -79,38 +79,8 @@ with et_coordinates;
 
 package et_canvas is
 
-
-	-- This signal is emitted by the model whenever items are added, moved, resized, ...
-	signal_layout_changed : constant glib.signal_name := "layout_changed";
+	procedure dummy;
 	
-
-	signal_viewport_changed : constant glib.signal_name := "viewport_changed";
-	-- This signal is emitted whenever the view is zoomed or scrolled.
-
-
-	-- The view coordinates are the 
-	-- coordinates of items on the screen and are expressed in pixels.
-	-- They change when the operators zooms or scrolls.
-	subtype type_view_coordinate is gdouble; -- gdouble is a real floating-point type (see glib.ads)
-	subtype type_view_coordinate_positive is type_view_coordinate range 0.0 .. type_view_coordinate'last;
-
-	-- The point inside the view.
-	type type_view_point is record
-		x, y : type_view_coordinate;
-	end record;
-
-	function to_string (p : in type_view_point) return string;
-	
-	-- A rectangular regions of the view:
-	type type_view_rectangle is record
-		x, y			: type_view_coordinate;
-		width, height	: type_view_coordinate_positive;
-	end record;
-
-	--  The number of blank pixels on each sides of the view. This avoids having
-	--  items displays exactly next to the border of the view.
-	view_margin : constant type_view_coordinate := 20.0;
-
 end et_canvas;
 
 -- Soli Deo Gloria

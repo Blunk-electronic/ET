@@ -340,7 +340,6 @@ package body pac_canvas is
 		end if;
 
 		self.model := type_model_ptr (model);
--- 		self.model := model;
 
 		if self.model /= null then
 			ref (self.model);
@@ -902,13 +901,13 @@ package body pac_canvas is
 		self.set_model (model);
 	end init;
 
-	procedure gtk_new (
-		self	: out type_view_ptr;
-		model	: access type_model'class := null) is 
-	begin
-		self := new type_view;
-		init (self, model);
-	end;
+-- 	procedure gtk_new (
+-- 		self	: out type_view_ptr;
+-- 		model	: access type_model'class := null) is 
+-- 	begin
+-- 		self := new type_view;
+-- 		init (self, model);
+-- 	end;
 
 	
 	procedure set_scale (

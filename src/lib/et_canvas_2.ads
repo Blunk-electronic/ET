@@ -278,9 +278,9 @@ package pac_canvas is
 	pragma convention (c, view_get_type);
 	--  return the internal type
 
-	procedure gtk_new (
-		self	: out type_view_ptr;
-		model	: access type_model'class := null);
+-- 	procedure gtk_new (
+-- 		self	: out type_view_ptr;
+-- 		model	: access type_model'class := null);
 
 	procedure init (
 		self  : not null access type_view'class;

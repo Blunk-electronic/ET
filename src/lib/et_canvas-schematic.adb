@@ -804,7 +804,7 @@ package body et_canvas.schematic is
 	procedure gtk_new (
 		self	: out type_view_ptr_sch;
 		model	: access type_model'class := null) is
--- 		model	: access type_model) is 
+-- 		model	: access type_model_sch) is 
 	begin
 		self := new type_view_sch;
 		init (self, model);

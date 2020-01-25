@@ -235,14 +235,12 @@ package body gui_general is
 		-- set up the main window
 		init; 
 
-		schematic.gtk_new (model);
+		gtk_new (model);
 		initialize (model);
 
 		-- set the module to be opened and optionally the sheet to be displayed:
 		set_module (model, module, sheet);
 
--- 		canvas := new type_view_sch;
-		
 		gtk_new (canvas, model);
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 

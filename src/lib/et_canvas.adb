@@ -83,18 +83,7 @@ with et_coordinates;		use et_coordinates;
 
 package body et_canvas is
 
-	function to_string (d : in gdouble) return string is begin
-		return gdouble'image (d);
-	end;
-
-	function to_string (d : in gint) return string is begin
-		return gint'image (d);
-	end;
-	
-	function to_string (p : in type_view_point) return string is begin
-		return ("view x/y [pixels]" & to_string (gint (p.x)) & "/" & to_string (gint (p.y)));
-	end;
-	
+	procedure dummy is begin null; end;
 end et_canvas;
 
 -- Soli Deo Gloria
