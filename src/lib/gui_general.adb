@@ -239,7 +239,7 @@ package body gui_general is
 		initialize (model);
 
 		-- set the module to be opened and optionally the sheet to be displayed:
-		set_module (model, module, sheet);
+		set_module (module, sheet);
 
 		gtk_new (canvas, model);
 		add (scrolled, canvas); -- place the canvas in the scrolled window

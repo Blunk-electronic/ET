@@ -145,12 +145,15 @@ package pac_canvas is
 	
 
 -- MODEL
+
+
 	type type_model is new glib.object.gobject_record with record
 		layout	: pango.layout.pango_layout;
 	end record;
 
 	type type_model_ptr is access all type_model'class;
-
+	
+	model	: type_model_ptr;
 	
 	-- Creates a new model (or a drawing sheet according to the example above):
 	procedure gtk_new (self : out type_model_ptr);
@@ -259,17 +262,21 @@ package pac_canvas is
 		rect   : in type_model_rectangle) -- position x/y and size given as a float type
 		return type_view_rectangle;
 
+
+	type type_accessories is tagged null record;
+	
 	-- Converts a model point to a drawing point. 
 	-- NOTE: The model point is in a coordinate system with y-axis
 	-- going downwards. The drawing point is in a system where y-axis
 	-- goes upwards. The origin of the drawing coordinate system is the
 	-- lower left corner of the drawing frame.
 	function model_to_drawing (
-		model		: not null access type_model;
+		accessories	: in type_accessories;
 		model_point : in type_model_point)
 		return type_model_point;
 
-	function bounding_box (self : not null access type_model)
+	--function bounding_box (self : not null access type_model)
+	function bounding_box (accessories : in type_accessories)
 		return type_model_rectangle;
 
 	procedure set_adjustment_values (self : not null access type_view'class);	
@@ -278,9 +285,6 @@ package pac_canvas is
 	pragma convention (c, view_get_type);
 	--  return the internal type
 
--- 	procedure gtk_new (
--- 		self	: out type_view_ptr;
--- 		model	: access type_model'class := null);
 
 	procedure init (
 		self  : not null access type_view'class;
@@ -324,29 +328,11 @@ package pac_canvas is
 		context : type_draw_context;
 		area    : type_model_rectangle) is null;
 
--- 	type type_draw is access procedure (
--- 		self    : not null access type_view;
--- 		context : type_draw_context;
--- 		area    : type_model_rectangle);
--- 
--- 	procedure draw (
--- 		self    : not null access type_view;
--- 		context : type_draw_context;
--- 		area    : type_model_rectangle) is null;
-
-	
 	procedure scale_to_fit (
 		self      : not null access type_view;
 		rect      : in type_model_rectangle := no_rectangle;
 		min_scale : in type_scale := 1.0 / 4.0;
 		max_scale : in type_scale := 4.0);
-
-
--- 	-- Assign the module to be edited to the model:
--- 	procedure set_module (
--- 		self	: not null access type_model;
--- 		module	: in et_project.type_modules.cursor;
--- 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be opened
 
 	-- This function converts a x-value from the drawing to a x-value in the view.
 	function convert_x (x : in type_distance) return type_view_coordinate;
@@ -365,15 +351,15 @@ package pac_canvas is
 	-- This function converts a y-value from the drawing to a y-value in the view.
 	-- The input y increases upwards. The output y increases downwards.
 	function convert_and_shift_y (
- 		model	: not null access type_model;
-		y		: in type_distance)
+		accessories	: in type_accessories;
+		y			: in type_distance)
 		return type_view_coordinate;
 
 	-- This function converts a y-value from the drawing to a y-value in the model.
 	-- The input y increases upwards. The output y increases downwards.
 	function convert_and_shift_y (
-		model	: not null access type_model;
-		y		: in type_distance) 
+		accessories	: in type_accessories;
+		y			: in type_distance) 
 		return type_model_coordinate;
 
 private

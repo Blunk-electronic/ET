@@ -85,8 +85,6 @@ with ada.containers.doubly_linked_lists;
 with et_general;
 with et_project;
 with et_frames;
--- with et_coordinates;			use et_coordinates;
--- use et_coordinates.geometry;
 
 package body et_canvas_2 is
 
@@ -205,13 +203,6 @@ package body pac_canvas is
 		restore (cr);
 	end refresh;
 
--- 	function on_view_draw (
--- 		view	: system.address; 
--- 		cr		: cairo_context) return gboolean;
--- 	
--- 	pragma convention (c, on_view_draw);
--- 	--  default handler for "draw" on views.
-
 	function on_view_draw (
 		view	: system.address; 
 		cr		: cairo_context) return gboolean is
@@ -235,10 +226,6 @@ package body pac_canvas is
 			return 0;
 	end on_view_draw;
 
--- 	procedure on_view_realize (widget : system.address);
--- 	pragma convention (c, on_view_realize);
--- 	--  called when the view is realized
-	
 	procedure on_view_realize (widget : system.address) is
 		w          : constant gtk_widget := gtk_widget (get_user_data_or_null (widget));
 		allocation : gtk_allocation;
@@ -441,14 +428,14 @@ package body pac_canvas is
 	end model_to_view;
 
 	function model_to_drawing (
-		model		: not null access type_model;
+		accessories	: in type_accessories;
 		model_point : in type_model_point)
 		return type_model_point is
 	begin
 		return origin;
 	end;
 
-	function bounding_box (self : not null access type_model)
+	function bounding_box (accessories : in type_accessories)
 		return type_model_rectangle is
 	begin
 		return no_rectangle;
@@ -993,40 +980,6 @@ package body pac_canvas is
 		self.grid_size := size;
 	end set_grid_size;
 
-	
--- 	procedure draw_internal (
--- 		self    : not null access type_view;
--- 		context : type_draw_context;
--- 		area    : type_model_rectangle) 
--- 	is
--- 		-- prepare draing style so that white grid dots will be drawn.
--- 		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
--- 
--- -- 		a : type_draw := draw'access;
--- 	begin
--- 		put_line ("draw internal gen ...");
--- 
--- -- 		a (self, context, area);
--- 		
--- 		if self.model /= null then
--- 
--- 			-- draw a black background:
--- 			set_source_rgb (context.cr, 0.0, 0.0, 0.0);
--- 			paint (context.cr);
--- 
--- 			-- draw white grid dots:
--- 			set_grid_size (self, grid_default);
--- -- 			draw_grid (self, style, context, area);
--- 
--- -- 			self.model.draw_frame (area, context); -- separate unit
--- -- 			self.model.draw_nets (area, context); -- separate unit
--- -- 			self.model.draw_units (area, context); -- separate unit
--- 			-- CS self.model.draw_texts (area, context);
--- 			-- CS self.model.draw_submodules (area, context);
--- 			
--- 		end if;
--- 	end draw_internal;
-
 	procedure scale_to_fit (
 		self      : not null access type_view;
 		rect      : in type_model_rectangle := no_rectangle;
@@ -1088,53 +1041,6 @@ package body pac_canvas is
 			end if;
 		end if;
 	end scale_to_fit;
-
--- 
--- 	procedure set_module (
--- 		self	: not null access type_model;
--- 		module	: in et_project.type_modules.cursor;
--- 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be opened
--- 	is
--- 		use et_general;
--- 		use et_frames;
--- 		use et_project;
--- 		
--- 	begin 
--- 		self.module := module;
--- 
--- 		-- set some variables frequently used regarding frame and paper:
--- 		self.frame := type_modules.element (model.module).frames.frame;
--- 		
--- 		self.paper_height := type_model_coordinate (paper_dimension (
--- 							paper_size	=> self.frame.paper,
--- 							orientation	=> self.frame.orientation,
--- 							axis		=> Y));
--- 
--- 		self.paper_width := type_model_coordinate (paper_dimension (
--- 							paper_size	=> self.frame.paper,
--- 							orientation	=> self.frame.orientation,
--- 							axis		=> X));
--- 
--- 		-- The drawing frame has a bounding box:
--- 
--- 		-- position (upper left corner):
--- 		self.frame_bounding_box.x := (self.paper_width - type_model_coordinate (self.frame.size.x)) / 2.0;
--- 		self.frame_bounding_box.y := (self.paper_height - type_model_coordinate (self.frame.size.y)) / 2.0;
--- 
--- 		-- width and height
--- 		self.frame_bounding_box.width := type_model_coordinate (self.frame.size.x);
--- 		self.frame_bounding_box.height := type_model_coordinate (self.frame.size.y);
--- 
--- 		-- The sheet has a drawing box:
--- 		self.paper_bounding_box := (0.0, 0.0, self.paper_width, self.paper_height);
--- 
--- 		-- Drawing of the title block items is relative to the title block position:
--- 		self.title_block_position := self.frame.title_block_schematic.position;
--- 
--- 		-- set active sheet
--- 		self.sheet := sheet;
--- 	end set_module;
-
 	
 	function convert_x (x : in type_distance) return type_view_coordinate is begin
 		return type_view_coordinate (
@@ -1147,8 +1053,8 @@ package body pac_canvas is
 	end;
 
 	function convert_and_shift_y (
-		model	: not null access type_model;
-		y		: in type_distance)
+		accessories	: in type_accessories;
+		y			: in type_distance)
 		return type_view_coordinate is 
 	begin
 		return type_view_coordinate 
@@ -1159,8 +1065,8 @@ package body pac_canvas is
 	end;
 		
 	function convert_and_shift_y (
-		model	: not null access type_model;
-		y		: in type_distance)
+		accessories	: in type_accessories;
+		y			: in type_distance)
 		return type_model_coordinate is 
 	begin
 		return (
