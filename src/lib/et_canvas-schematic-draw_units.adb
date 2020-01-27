@@ -112,7 +112,7 @@ procedure draw_units (
 							  position.x 
 							- abs (boundaries.smallest_x)),
 				
-				y		=> convert_and_shift_y (model,
+				y		=> convert_and_shift_y (accessories,
 							  position.y
 							+ abs (boundaries.greatest_y)), -- convert y to "downwards"
 

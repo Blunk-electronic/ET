@@ -98,6 +98,8 @@ package et_canvas.schematic is
 
 		title_block_position	: et_frames.type_position;
 
+		-- CS grid_size 	: type_model_coordinate_positive := 20.0;
+		
 		-- the active sheet
 		sheet	: et_coordinates.type_sheet := type_sheet'first;
 	end record;
@@ -107,10 +109,11 @@ package et_canvas.schematic is
 	-- going downwards. The drawing point is in a system where y-axis
 	-- goes upwards. The origin of the drawing coordinate system is the
 	-- lower left corner of the drawing frame.
-	overriding function model_to_drawing (
-		accessories	: in type_accessories;
-		model_point : in type_model_point)
-		return type_model_point;
+-- CS
+-- 	overriding function model_to_drawing (
+-- 		accessories	: in type_accessories;
+-- 		model_point : in type_model_point)
+-- 		return type_model_point;
 
 
 	overriding function bounding_box (accessories : in type_accessories)
@@ -161,25 +164,29 @@ package et_canvas.schematic is
 -- 	
 	-- The view (or canvas) displays a certain region of the model (or the sheet) 
 	-- depending on scrolling or zoom.
-	type type_view_sch is new pac_canvas.type_view with record
+	type type_view is new pac_canvas.type_view with record
 		accessories	: type_accessories;
 	end record;
 
 	-- The pointer to the canvas/view:
-	type type_view_ptr_sch is access all type_view_sch'class;
+	type type_view_ptr is access all type_view'class;
 
-	canvas	: type_view_ptr_sch;
+	canvas	: type_view_ptr;
 
+	
+	procedure gtk_new (
+		self	: out type_view_ptr);
 
+	
 	
 -- CONVERSIONS BETWEEN COORDINATE SYSTEMS
 
 
-
-	procedure gtk_new (
-		self	: out type_view_ptr_sch;
-		model	: access type_model'class := null);
-	
+-- 
+-- 	procedure gtk_new (
+-- 		self	: out type_view_ptr;
+-- 		model	: access type_model'class := null);
+-- 	
 
 	procedure draw_frame (
 		in_area	: in type_model_rectangle := no_rectangle;
@@ -197,7 +204,7 @@ package et_canvas.schematic is
 	-- Redraw either the whole view, or a specific part of it only.
 	-- The transformation matrix has already been set on the context.
 	overriding procedure draw_internal (
-		self    : not null access type_view_sch;
+		self    : not null access type_view;
 		context : type_draw_context;
 		area    : type_model_rectangle);
 

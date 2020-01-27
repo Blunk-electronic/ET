@@ -235,13 +235,14 @@ package body gui_general is
 		-- set up the main window
 		init; 
 
-		gtk_new (model);
-		initialize (model);
+-- 		gtk_new (model);
+-- 		initialize (model);
 
 		-- set the module to be opened and optionally the sheet to be displayed:
 		set_module (module, sheet);
 
-		gtk_new (canvas, model);
+		--gtk_new (canvas, model);
+		gtk_new (canvas);
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 
 		scale_to_fit (canvas);

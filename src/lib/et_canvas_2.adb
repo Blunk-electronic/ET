@@ -111,9 +111,9 @@ package body pac_canvas is
 		return ("model x/y [mm]" & to_string (p.x) & "/" & to_string (p.y));
 	end;
 		
-	model_signals : constant gtkada.types.chars_ptr_array := (
-		1 => new_string (string (signal_layout_changed))
-		);
+-- 	model_signals : constant gtkada.types.chars_ptr_array := (
+-- 		1 => new_string (string (signal_layout_changed))
+-- 		);
 	
 	view_signals : constant gtkada.types.chars_ptr_array := (
 		1 => new_string (string (signal_viewport_changed))
@@ -124,21 +124,21 @@ package body pac_canvas is
 	h_scroll_property : constant property_id := 3;
 	v_scroll_property : constant property_id := 4;
 
-	model_class_record : glib.object.ada_gobject_class := glib.object.uninitialized_class;
+-- 	model_class_record : glib.object.ada_gobject_class := glib.object.uninitialized_class;
 	view_class_record : aliased glib.object.ada_gobject_class := glib.object.uninitialized_class;
 	
-	function model_get_type return glib.gtype is begin
-		glib.object.initialize_class_record (
-			ancestor     => gtype_object,
-			signals      => model_signals,
-			class_record => model_class_record,
-			type_name    => "gtkada_model",
-			parameters   => (
-				1 => (1 => gtype_none)  	-- layout_changed
-				)
-			);  
-		return model_class_record.the_type;
-	end model_get_type;
+-- 	function model_get_type return glib.gtype is begin
+-- 		glib.object.initialize_class_record (
+-- 			ancestor     => gtype_object,
+-- 			signals      => model_signals,
+-- 			class_record => model_class_record,
+-- 			type_name    => "gtkada_model",
+-- 			parameters   => (
+-- 				1 => (1 => gtype_none)  	-- layout_changed
+-- 				)
+-- 			);  
+-- 		return model_class_record.the_type;
+-- 	end model_get_type;
 
 	procedure union (
 		rect1 : in out type_model_rectangle;
@@ -293,69 +293,69 @@ package body pac_canvas is
 		object_callback.emit_by_name (self, signal_viewport_changed);
 	end viewport_changed;
 
-	function on_layout_changed (
-		self : not null access type_model'class;
-		call : not null access procedure (self : not null access gobject_record'class);
-		slot : access gobject_record'class := null)
-		return gtk.handlers.handler_id is
-	begin
-		if slot = null then
-			return object_callback.connect (
-				self,
-				signal_layout_changed,
-				object_callback.to_marshaller (call));
-		else
-			return object_callback.object_connect (
-				self,
-				signal_layout_changed,
-				object_callback.to_marshaller (call),
-				slot);
-		end if;
-	end on_layout_changed;
+-- 	function on_layout_changed (
+-- 		self : not null access type_model'class;
+-- 		call : not null access procedure (self : not null access gobject_record'class);
+-- 		slot : access gobject_record'class := null)
+-- 		return gtk.handlers.handler_id is
+-- 	begin
+-- 		if slot = null then
+-- 			return object_callback.connect (
+-- 				self,
+-- 				signal_layout_changed,
+-- 				object_callback.to_marshaller (call));
+-- 		else
+-- 			return object_callback.object_connect (
+-- 				self,
+-- 				signal_layout_changed,
+-- 				object_callback.to_marshaller (call),
+-- 				slot);
+-- 		end if;
+-- 	end on_layout_changed;
 	
-	procedure set_model (
-		self  : not null access type_view'class;
-		model : access type_model'class) is
-	begin
-		if self.model = type_model_ptr (model) then
-			return;
-		end if;
-
-		if self.model /= null then
-			disconnect (self.model, self.id_layout_changed);
-			unref (self.model);
-		end if;
-
-		self.model := type_model_ptr (model);
-
-		if self.model /= null then
-			ref (self.model);
-			self.id_layout_changed := model.on_layout_changed (on_layout_changed_for_view'access, self);
-		end if;
-
-		if self.model /= null and then self.model.layout = null then
-			self.model.layout := self.layout;  --  needed for layout
-			ref (self.model.layout);
-			self.model.refresh_layout;
-		else
-			set_adjustment_values (self);
-			self.queue_draw;
-		end if;
-
-		self.viewport_changed;
-	end set_model;
+-- 	procedure set_model (
+-- 		self  : not null access type_view'class;
+-- 		model : access type_model'class) is
+-- 	begin
+-- 		if self.model = type_model_ptr (model) then
+-- 			return;
+-- 		end if;
+-- 
+-- 		if self.model /= null then
+-- 			disconnect (self.model, self.id_layout_changed);
+-- 			unref (self.model);
+-- 		end if;
+-- 
+-- 		self.model := type_model_ptr (model);
+-- 
+-- 		if self.model /= null then
+-- 			ref (self.model);
+-- 			self.id_layout_changed := model.on_layout_changed (on_layout_changed_for_view'access, self);
+-- 		end if;
+-- 
+-- 		if self.model /= null and then self.model.layout = null then
+-- 			self.model.layout := self.layout;  --  needed for layout
+-- 			ref (self.model.layout);
+-- 			self.model.refresh_layout;
+-- 		else
+-- 			set_adjustment_values (self);
+-- 			self.queue_draw;
+-- 		end if;
+-- 
+-- 		self.viewport_changed;
+-- 	end set_model;
 	
 
-	procedure gtk_new (self : out type_model_ptr) is begin
-		self := new type_model;
-		init (self);
-	end;	
+-- 	procedure gtk_new (self : out type_model_ptr) is begin
+-- 		self := new type_model;
+-- 		init (self);
+-- 	end;	
 
-	procedure init (self : not null access type_model'class) is begin
-		if not self.is_created then
-			g_new (self, model_get_type);
-		end if;
-	end;
+-- 	procedure init (self : not null access type_model'class) is begin
+-- 		if not self.is_created then
+-- 			g_new (self, model_get_type);
+-- 		end if;
+-- 	end;
 
 	
 	function get_scale (self : not null access type_view) return type_scale is
@@ -364,9 +364,9 @@ package body pac_canvas is
 	end get_scale;
 
 	
-	procedure layout_changed (self : not null access type_model'class) is begin
-		object_callback.emit_by_name (self, signal_layout_changed);
-	end layout_changed;
+-- 	procedure layout_changed (self : not null access type_model'class) is begin
+-- 		object_callback.emit_by_name (self, signal_layout_changed);
+-- 	end layout_changed;
 
 
 
@@ -446,7 +446,8 @@ package body pac_canvas is
 		area  : constant type_model_rectangle := self.get_visible_area;
 		min, max : gdouble;
 	begin
-		if self.model = null or else area.width <= 1.0 then
+		--if self.model = null or else area.width <= 1.0 then
+		if area.width >= 1.0 then
 			--  not allocated yet
 			return;
 		end if;
@@ -454,7 +455,7 @@ package body pac_canvas is
 		-- The bounding box of the whole model is the bounding box of the drawing sheet
 		-- which seems sufficient for now.
 		--box := self.model.paper_bounding_box;
-		box := self.model.bounding_box;
+		-- CS box := bounding_box;
 
 		--  we set the adjustments to include the model area, but also at least
 		--  the current visible area (if we don't, then part of the display will
@@ -681,7 +682,7 @@ package body pac_canvas is
 		put_line (" model " & to_string (model_point));
 
 		--drawing_point := model_to_drawing (canvas.model, model_point);
-		drawing_point := model_to_drawing (self.model, model_point);
+-- CS		drawing_point := model_to_drawing (self.model, model_point);
 		put_line (" drawing " & to_string (drawing_point));
 		
 		return true; -- indicates that event has been handled
@@ -736,7 +737,7 @@ package body pac_canvas is
 		point	: type_model_point;
 		
 	begin -- on_scroll_event
-		if self.model /= null then
+-- 		if self.model /= null then
 			--new_line;
 			--put_line ("scroll detected");
 
@@ -760,7 +761,7 @@ package body pac_canvas is
 						
 			end if;
 			
-		end if;
+-- 		end if;
 
 		-- CS: exception handler if scale range check fails
 
@@ -781,7 +782,7 @@ package body pac_canvas is
 	begin
 		--put_line ("key pressed");
 		
-		if self.model /= null then
+-- 		if self.model /= null then
 			new_line;
 
 			put_line (gdk_key_type'image (key));
@@ -794,7 +795,7 @@ package body pac_canvas is
 					put_line ("other key pressed");
 			end case;
 		
-		end if;
+-- 		end if;
 		
 		return true; -- indicates that event has been handled
 	end on_key_pressed_event;
@@ -813,7 +814,7 @@ package body pac_canvas is
 	begin
 		--put_line ("key pressed");
 		
-		if self.model /= null then
+-- 		if self.model /= null then
 			new_line;
 
 			put_line (gdk_key_type'image (key));
@@ -826,7 +827,7 @@ package body pac_canvas is
 					put_line ("other key released");
 			end case;
 		
-		end if;
+-- 		end if;
 		
 		return true; -- indicates that event has been handled
 	end on_key_released_event;
@@ -844,8 +845,8 @@ package body pac_canvas is
 	end on_button_event;
 	
 	procedure init (
-		self  : not null access type_view'class;
-		model : access type_model'class := null) is
+		self  : not null access type_view'class) is
+-- 		model : access type_model'class := null) is
 	begin
 		g_new (self, view_get_type);
 		self.layout := self.create_pango_layout;
@@ -885,16 +886,8 @@ package body pac_canvas is
 		
 		self.set_can_focus (true);
 
-		self.set_model (model);
+-- 		self.set_model (model);
 	end init;
-
--- 	procedure gtk_new (
--- 		self	: out type_view_ptr;
--- 		model	: access type_model'class := null) is 
--- 	begin
--- 		self := new type_view;
--- 		init (self, model);
--- 	end;
 
 	
 	procedure set_scale (
@@ -959,18 +952,18 @@ package body pac_canvas is
 			));
 	end get_visible_area;
 
-	procedure refresh_layout (
-		self        : not null access type_model;
-		send_signal : boolean := true) is
-	begin
-		-- Update the width and height of all items:
-		
-		-- CS no need for size request. All items will have properties width and heigth.
-
-		if send_signal then
-			type_model'class (self.all).layout_changed;
-		end if;
-	end refresh_layout;
+-- 	procedure refresh_layout (
+-- 		self        : not null access type_model;
+-- 		send_signal : boolean := true) is
+-- 	begin
+-- 		-- Update the width and height of all items:
+-- 		
+-- 		-- CS no need for size request. All items will have properties width and heigth.
+-- 
+-- 		if send_signal then
+-- 			type_model'class (self.all).layout_changed;
+-- 		end if;
+-- 	end refresh_layout;
 
 
 	procedure set_grid_size (
@@ -998,12 +991,14 @@ package body pac_canvas is
 			self.scale_to_fit_requested := max_scale;
 			self.scale_to_fit_area := rect;
 
-		elsif self.model /= null then
+-- 		elsif self.model /= null then
+		else
 			self.scale_to_fit_requested := 0.0;
 			
 			if rect = no_rectangle then
 				--box := self.model.paper_bounding_box;
-				box := self.model.bounding_box;
+				--box := self.model.bounding_box;
+				box := rect; -- CS
 			else
 				box := rect;
 			end if;

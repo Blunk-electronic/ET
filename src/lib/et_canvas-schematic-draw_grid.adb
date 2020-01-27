@@ -43,7 +43,7 @@ with et_frames;
 separate (et_canvas.schematic)
 
 procedure draw_grid (
-	self    : not null access type_view_sch;
+	self    : not null access type_view;
 	style   : gtkada.style.drawing_style;
 	context : type_draw_context;
 	area    : type_model_rectangle) 

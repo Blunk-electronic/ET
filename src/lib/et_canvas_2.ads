@@ -147,19 +147,19 @@ package pac_canvas is
 -- MODEL
 
 
-	type type_model is new glib.object.gobject_record with record
-		layout	: pango.layout.pango_layout;
-	end record;
+-- 	type type_model is new glib.object.gobject_record with record
+-- 		layout	: pango.layout.pango_layout;
+-- 	end record;
 
-	type type_model_ptr is access all type_model'class;
+-- 	type type_model_ptr is access all type_model'class;
 	
-	model	: type_model_ptr;
+-- 	model	: type_model_ptr;
 	
 	-- Creates a new model (or a drawing sheet according to the example above):
-	procedure gtk_new (self : out type_model_ptr);
+-- 	procedure gtk_new (self : out type_model_ptr);
 
 	-- Initializes the internal data so that the model can send signals:
-	procedure init (self : not null access type_model'class);
+-- 	procedure init (self : not null access type_model'class);
 
 
 -- VIEW
@@ -175,7 +175,7 @@ package pac_canvas is
 	-- The view (or canvas) displays a certain region of the model (or the sheet) 
 	-- depending on scrolling or zoom.
 	type type_view is new gtk.widget.gtk_widget_record with record
-		model 		: type_model_ptr;
+-- 		model 		: type_model_ptr;
 
 		-- The upper left corner of the visible area has its initial value at 0/0.
 		-- NOTE: This has nothing to do with the upper left corner of the
@@ -185,7 +185,7 @@ package pac_canvas is
 		topleft  	: type_model_point := origin;
 		
 		scale     	: type_scale := scale_default;
-		grid_size 	: type_model_coordinate_positive := 20.0;
+		grid_size 	: type_model_coordinate_positive := 20.0; -- CS move to accessories
 		
 		layout		: pango.layout.pango_layout; -- CS for displaying text. not used yet
 
@@ -206,18 +206,20 @@ package pac_canvas is
 -- 	canvas	: type_view_ptr;
 
 
-	procedure set_model (
-		self  : not null access type_view'class;
-		model : access type_model'class);
+	
+
+-- 	procedure set_model (
+-- 		self  : not null access type_view'class;
+-- 		model : access type_model'class);
 	
 	
 	procedure viewport_changed (self : not null access type_view'class);
 
-	function on_layout_changed (
-		self : not null access type_model'class;
-		call : not null access procedure (self : not null access gobject_record'class);
-		slot : access gobject_record'class := null)
-		return gtk.handlers.handler_id;
+-- 	function on_layout_changed (
+-- 		self : not null access type_model'class;
+-- 		call : not null access procedure (self : not null access gobject_record'class);
+-- 		slot : access gobject_record'class := null)
+-- 		return gtk.handlers.handler_id;
 	
 	function get_scale (self : not null access type_view) return type_scale;
 
@@ -229,7 +231,7 @@ package pac_canvas is
 		view   : type_view_ptr := null;
 	end record;
 
-	procedure layout_changed (self : not null access type_model'class);
+-- 	procedure layout_changed (self : not null access type_model'class);
 
 	procedure set_transform (
 		self	: not null access type_view;
@@ -270,10 +272,11 @@ package pac_canvas is
 	-- going downwards. The drawing point is in a system where y-axis
 	-- goes upwards. The origin of the drawing coordinate system is the
 	-- lower left corner of the drawing frame.
-	function model_to_drawing (
-		accessories	: in type_accessories;
-		model_point : in type_model_point)
-		return type_model_point;
+-- CS
+-- 	function model_to_drawing (
+-- 		accessories	: in type_accessories;
+-- 		model_point : in type_model_point)
+-- 		return type_model_point;
 
 	--function bounding_box (self : not null access type_model)
 	function bounding_box (accessories : in type_accessories)
@@ -287,8 +290,8 @@ package pac_canvas is
 
 
 	procedure init (
-		self  : not null access type_view'class;
-		model : access type_model'class := null);
+		self  : not null access type_view'class);
+-- 		model : access type_model'class := null);
 	
 	procedure set_scale (
 		self     : not null access type_view;
@@ -309,9 +312,9 @@ package pac_canvas is
 	
 	-- This procedure should be called every time items are moved, added or removed.
 	-- Call this procedure after having created after a view has been created for the model.
-	procedure refresh_layout (
-		self        : not null access type_model;
-		send_signal : boolean := true); -- sends "layout_changed" signal when true
+-- 	procedure refresh_layout (
+-- 		self        : not null access type_model;
+-- 		send_signal : boolean := true); -- sends "layout_changed" signal when true
 
 
 	grid_default : constant type_model_coordinate_positive := 10.0;

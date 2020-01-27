@@ -90,10 +90,10 @@ use et_coordinates.geometry;
 
 package body et_canvas.schematic is
 	
-	procedure gtk_new (self : out type_model_ptr_sch) is begin
-		self := new type_model_sch;
-		init (self);
-	end;	
+-- 	procedure gtk_new (self : out type_model_ptr_sch) is begin
+-- 		self := new type_model_sch;
+-- 		init (self);
+-- 	end;	
 
 -- 	procedure init (self : not null access type_model'class) is begin
 -- 		if not self.is_created then
@@ -201,16 +201,17 @@ package body et_canvas.schematic is
 
 
 	procedure gtk_new (
-		self	: out type_view_ptr_sch;
-		model	: access type_model'class := null) is
+		self	: out type_view_ptr) is
+-- 		model	: access type_model'class := null) is
 	begin
-		self := new type_view_sch;
-		init (self, model);
+		self := new type_view;
+		--init (self, model);
+		init (self);
 	end;
 
 
 	procedure draw_grid (
-		self    : not null access type_view_sch;
+		self    : not null access type_view;
 		style   : gtkada.style.drawing_style;
 		context : type_draw_context;
 		area    : type_model_rectangle)	is separate;
@@ -228,7 +229,7 @@ package body et_canvas.schematic is
 		context : in type_draw_context) is separate;
 
 	procedure draw_internal (
-		self    : not null access type_view_sch;
+		self    : not null access type_view;
 		context : type_draw_context;
 		area    : type_model_rectangle) 
 	is
@@ -237,7 +238,7 @@ package body et_canvas.schematic is
 	begin
 		put_line ("draw internal ...");
 		
-		if self.model /= null then
+-- 		if self.model /= null then
 
 			-- draw a black background:
 			set_source_rgb (context.cr, 0.0, 0.0, 0.0);
@@ -253,7 +254,7 @@ package body et_canvas.schematic is
 			-- CS self.model.draw_texts (area, context);
 			-- CS self.model.draw_submodules (area, context);
 			
-		end if;
+-- 		end if;
 	end draw_internal;
 
 
