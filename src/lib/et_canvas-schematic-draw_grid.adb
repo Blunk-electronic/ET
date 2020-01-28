@@ -56,95 +56,95 @@ is
 	-- the position of the drawing frame. That is the position of the frame bounding box.
 	-- NOTE: The frame is drawn directly in cairo, means in y-axis going downwards. 
 	-- See procedure draw_frame.
--- 	offset_x : type_view_coordinate := type_view_coordinate (self.model.frame_bounding_box.x);
--- 	offset_y : type_view_coordinate := type_view_coordinate (self.model.frame_bounding_box.y);
+	offset_x : type_view_coordinate := type_view_coordinate (accessories.frame_bounding_box.x);
+	offset_y : type_view_coordinate := type_view_coordinate (accessories.frame_bounding_box.y);
 	-- Later, the offset_y will get a fine adjustment according to the frame height.
 
--- 	function lower_grid_coordinate (coordinate : in type_model_coordinate) 
--- 	-- This function calculates the grid coordinate on the axis that comes
--- 	-- before the given coordinate.
--- 	-- Example 1: If coordinate is 215.6 and grid_size is 10, then x becomes 210.
--- 	-- Example 2: If coordinate is 166.5 and grid_size is 5, then x becomes 165.
--- 		return type_view_coordinate is 
--- 	begin
--- 		return    type_view_coordinate (gint (coordinate / self.grid_size)) -- 166.5 / 5 = 33.3 -> 33
--- 				* type_view_coordinate (self.grid_size); -- 33 * 5 = 165
--- 	end;
--- 
--- 	-- This procedure calculates the addional offset in y. This is necessary because
--- 	-- the grid must be aligned with the lower left corner of the frame. The lower left corner
--- 	-- depends on the heigth of the frame.
--- 	procedure fine_tune_y_offset is
--- 		use et_frames;
--- 		dy : type_view_coordinate;
--- 	begin
--- 		-- put_line ("fh " & to_string (model.frame.size.y));
--- 
--- 		-- Calculate the next lower y-grid-coordinate that comes before the frame height.
--- 		-- Example: If the frame is 207mm high and grid size is 10 then dy becomes 200.
--- 		dy := type_view_coordinate (
--- 				gint (self.model.frame.size.y / et_frames.type_distance (self.grid_size))) 
--- 				* type_view_coordinate (self.grid_size);
--- 
--- 		-- put_line ("y1 " & type_view_coordinate'image (y));
--- 
--- 		-- Calculate the distance between the lower frame border and the 
--- 		-- next lower y-grid-coordinate.
--- 		-- Example: If the lower border of the frame is at 207mm and the next lower y-grid-coordinate 
--- 		-- is 200 then the dy becomes 7.
--- 		dy := type_view_coordinate (self.model.frame.size.y) - dy;
--- 
--- 		-- put_line ("y2 " & type_view_coordinate'image (y));
--- 
--- 		-- Add dy to the already existing offset_y so that the grid is moved by dy downwards:
--- 		offset_y := offset_y + dy;
--- 	end fine_tune_y_offset;
+	function lower_grid_coordinate (coordinate : in type_model_coordinate) 
+	-- This function calculates the grid coordinate on the axis that comes
+	-- before the given coordinate.
+	-- Example 1: If coordinate is 215.6 and grid_size is 10, then x becomes 210.
+	-- Example 2: If coordinate is 166.5 and grid_size is 5, then x becomes 165.
+		return type_view_coordinate is 
+	begin
+		return    type_view_coordinate (gint (coordinate / self.grid_size)) -- 166.5 / 5 = 33.3 -> 33
+				* type_view_coordinate (self.grid_size); -- 33 * 5 = 165
+	end;
+
+	-- This procedure calculates the addional offset in y. This is necessary because
+	-- the grid must be aligned with the lower left corner of the frame. The lower left corner
+	-- depends on the heigth of the frame.
+	procedure fine_tune_y_offset is
+		use et_frames;
+		dy : type_view_coordinate;
+	begin
+		-- put_line ("fh " & to_string (model.frame.size.y));
+
+		-- Calculate the next lower y-grid-coordinate that comes before the frame height.
+		-- Example: If the frame is 207mm high and grid size is 10 then dy becomes 200.
+		dy := type_view_coordinate (
+				gint (accessories.frame.size.y / et_frames.type_distance (self.grid_size))) 
+				* type_view_coordinate (self.grid_size);
+
+		-- put_line ("y1 " & type_view_coordinate'image (y));
+
+		-- Calculate the distance between the lower frame border and the 
+		-- next lower y-grid-coordinate.
+		-- Example: If the lower border of the frame is at 207mm and the next lower y-grid-coordinate 
+		-- is 200 then the dy becomes 7.
+		dy := type_view_coordinate (accessories.frame.size.y) - dy;
+
+		-- put_line ("y2 " & type_view_coordinate'image (y));
+
+		-- Add dy to the already existing offset_y so that the grid is moved by dy downwards:
+		offset_y := offset_y + dy;
+	end fine_tune_y_offset;
 	
 begin -- draw_grid
 	null;
 	
--- 	if style.get_fill /= null_pattern then
--- 		set_source (context.cr, style.get_fill);
--- 		paint (context.cr);
--- 	end if;
--- 
--- 	if self.grid_size /= 0.0 then
--- 		
--- 		new_path (context.cr);
--- 		cairo.set_line_width (context.cr, dot_line_width);
--- 
--- 		-- Calculate addional y offset due to the frame height:
--- 		fine_tune_y_offset;
--- 
--- 		-- The grid must be shifted to the right so that it starts at 
--- 		-- the left frame border:
--- 		x := lower_grid_coordinate (area.x) + offset_x;
--- 		
--- 		while x < type_view_coordinate (area.x + area.width) loop
--- 			
--- 			-- The grid must be shifted downwards so that it starts at the 
--- 			-- lower frame border position:
--- 			y := lower_grid_coordinate (area.y) + offset_y;
--- 			
--- 			while y < type_view_coordinate (area.y + area.height) loop
--- 
--- 				-- draw a very small cross (so that it seems like a dot):
--- 				cairo.move_to (context.cr, x - dot_size, y);
--- 				cairo.line_to (context.cr, x + dot_size, y);
--- 
--- 				cairo.move_to (context.cr, x, y - dot_size);
--- 				cairo.line_to (context.cr, x, y + dot_size);
--- 
--- 				-- advance to next position on y-axis
--- 				y := y + type_view_coordinate (self.grid_size);
--- 			end loop;
--- 
--- 			-- advance to next position in x-axis
--- 			x := x + type_view_coordinate (self.grid_size);
--- 		end loop;
--- 
--- 		style.finish_path (context.cr);
--- 	end if;
+	if style.get_fill /= null_pattern then
+		set_source (context.cr, style.get_fill);
+		paint (context.cr);
+	end if;
+
+	if self.grid_size /= 0.0 then
+		
+		new_path (context.cr);
+		cairo.set_line_width (context.cr, dot_line_width);
+
+		-- Calculate addional y offset due to the frame height:
+		fine_tune_y_offset;
+
+		-- The grid must be shifted to the right so that it starts at 
+		-- the left frame border:
+		x := lower_grid_coordinate (area.x) + offset_x;
+		
+		while x < type_view_coordinate (area.x + area.width) loop
+			
+			-- The grid must be shifted downwards so that it starts at the 
+			-- lower frame border position:
+			y := lower_grid_coordinate (area.y) + offset_y;
+			
+			while y < type_view_coordinate (area.y + area.height) loop
+
+				-- draw a very small cross (so that it seems like a dot):
+				cairo.move_to (context.cr, x - dot_size, y);
+				cairo.line_to (context.cr, x + dot_size, y);
+
+				cairo.move_to (context.cr, x, y - dot_size);
+				cairo.line_to (context.cr, x, y + dot_size);
+
+				-- advance to next position on y-axis
+				y := y + type_view_coordinate (self.grid_size);
+			end loop;
+
+			-- advance to next position in x-axis
+			x := x + type_view_coordinate (self.grid_size);
+		end loop;
+
+		style.finish_path (context.cr);
+	end if;
 end draw_grid;
 
 

@@ -69,10 +69,7 @@ with system.storage_elements;		use system.storage_elements;
 with ada.containers;		use ada.containers;
 with ada.containers.doubly_linked_lists;
 
--- with et_coordinates;		use et_coordinates;
 with et_geometry;
-with et_project;			--use et_project;
-with et_frames;				--use et_frames;
 
 package et_canvas_2 is
 
@@ -144,24 +141,6 @@ package pac_canvas is
 	function intersects (rect1, rect2 : type_model_rectangle) return boolean;
 	
 
--- MODEL
-
-
--- 	type type_model is new glib.object.gobject_record with record
--- 		layout	: pango.layout.pango_layout;
--- 	end record;
-
--- 	type type_model_ptr is access all type_model'class;
-	
--- 	model	: type_model_ptr;
-	
-	-- Creates a new model (or a drawing sheet according to the example above):
--- 	procedure gtk_new (self : out type_model_ptr);
-
-	-- Initializes the internal data so that the model can send signals:
--- 	procedure init (self : not null access type_model'class);
-
-
 -- VIEW
 
 	-- scale
@@ -171,11 +150,7 @@ package pac_canvas is
 	scale_default : constant type_scale := 1.0;
 	scale_delta_on_zoom : constant type_scale := 0.1;
 	
-	
-	-- The view (or canvas) displays a certain region of the model (or the sheet) 
-	-- depending on scrolling or zoom.
-	type type_view is new gtk.widget.gtk_widget_record with record
--- 		model 		: type_model_ptr;
+	type type_view is abstract new gtk.widget.gtk_widget_record with record
 
 		-- The upper left corner of the visible area has its initial value at 0/0.
 		-- NOTE: This has nothing to do with the upper left corner of the
@@ -202,15 +177,6 @@ package pac_canvas is
 	-- The pointer to the canvas/view:
 	type type_view_ptr is access all type_view'class;
 
-
--- 	canvas	: type_view_ptr;
-
-
-	
-
--- 	procedure set_model (
--- 		self  : not null access type_view'class;
--- 		model : access type_model'class);
 	
 	
 	procedure viewport_changed (self : not null access type_view'class);
@@ -237,8 +203,9 @@ package pac_canvas is
 		self	: not null access type_view;
 		cr		: cairo.cairo_context);
 
+
+
 	
--- CONVERSIONS BETWEEN COORDINATE SYSTEMS
 
 	function view_to_model (
 		self   : not null access type_view;
@@ -265,23 +232,22 @@ package pac_canvas is
 		return type_view_rectangle;
 
 
-	type type_accessories is tagged null record;
+
 	
 	-- Converts a model point to a drawing point. 
 	-- NOTE: The model point is in a coordinate system with y-axis
 	-- going downwards. The drawing point is in a system where y-axis
 	-- goes upwards. The origin of the drawing coordinate system is the
 	-- lower left corner of the drawing frame.
--- CS
--- 	function model_to_drawing (
--- 		accessories	: in type_accessories;
--- 		model_point : in type_model_point)
--- 		return type_model_point;
+	function model_to_drawing (
+		self		: not null access type_view;
+		model_point : in type_model_point)
+		return type_model_point is abstract;
 
-	--function bounding_box (self : not null access type_model)
-	function bounding_box (accessories : in type_accessories)
-		return type_model_rectangle;
 
+	function bounding_box (self : not null access type_view)
+		return type_model_rectangle is abstract;
+	
 	procedure set_adjustment_values (self : not null access type_view'class);	
 
 	function view_get_type return glib.gtype;
@@ -332,7 +298,7 @@ package pac_canvas is
 		area    : type_model_rectangle) is null;
 
 	procedure scale_to_fit (
-		self      : not null access type_view;
+		self      : not null access type_view'class;
 		rect      : in type_model_rectangle := no_rectangle;
 		min_scale : in type_scale := 1.0 / 4.0;
 		max_scale : in type_scale := 4.0);
@@ -354,16 +320,16 @@ package pac_canvas is
 	-- This function converts a y-value from the drawing to a y-value in the view.
 	-- The input y increases upwards. The output y increases downwards.
 	function convert_and_shift_y (
-		accessories	: in type_accessories;
-		y			: in type_distance)
-		return type_view_coordinate;
+		self	: not null access type_view;
+		y		: in type_distance)
+		return type_view_coordinate is abstract;
 
 	-- This function converts a y-value from the drawing to a y-value in the model.
 	-- The input y increases upwards. The output y increases downwards.
 	function convert_and_shift_y (
-		accessories	: in type_accessories;
-		y			: in type_distance) 
-		return type_model_coordinate;
+		self	: not null access type_view;
+		y		: in type_distance) 
+		return type_model_coordinate is abstract;
 
 private
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);
@@ -457,10 +423,6 @@ private
 		event : gdk_event_key) return boolean;
 
 	access_on_key_released_event : constant cb_gtk_widget_gdk_event_key_boolean := on_key_released_event'access;
-	------
-
-
-	------
 	
 end pac_canvas;
 	

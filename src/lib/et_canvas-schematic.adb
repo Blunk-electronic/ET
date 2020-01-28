@@ -90,86 +90,8 @@ use et_coordinates.geometry;
 
 package body et_canvas.schematic is
 	
--- 	procedure gtk_new (self : out type_model_ptr_sch) is begin
--- 		self := new type_model_sch;
--- 		init (self);
--- 	end;	
-
--- 	procedure init (self : not null access type_model'class) is begin
--- 		if not self.is_created then
--- 			g_new (self, model_get_type);
--- 		end if;
--- 	end;
-
-	
--- 	function get_scale (self : not null access type_view) return type_scale is
--- 	begin
--- 		return self.scale;
--- 	end get_scale;
-
-	
--- 	procedure layout_changed (self : not null access type_model'class) is begin
--- 		object_callback.emit_by_name (self, signal_layout_changed);
--- 	end layout_changed;
-
-
-
-	
--- CONVERSIONS BETWEEN COORDINATE SYSTEMS
-	
--- 	function view_to_model (
--- 		self   : not null access type_view;
--- 		p      : in type_view_point) 
--- 		return type_model_point is
--- 	begin
--- 		return type_model_point (set (
--- 			x	=> type_model_coordinate (p.x / self.scale) + self.topleft.x,
--- 			y	=> type_model_coordinate (p.y / self.scale) + self.topleft.y
--- 			));
--- 	end view_to_model;
--- 
--- 	function view_to_model (
--- 		self   : not null access type_view;
--- 		rect   : in type_view_rectangle) -- position and size are in pixels
--- 		return type_model_rectangle is
--- 	begin
--- 		return (x      => type_model_coordinate (rect.x / self.scale) + self.topleft.x,
--- 				y      => type_model_coordinate (rect.y / self.scale) + self.topleft.y,
--- 				width  => type_model_coordinate (rect.width / self.scale),
--- 				height => type_model_coordinate (rect.height / self.scale));
--- 	end view_to_model;
--- 
--- 	
--- 	function model_to_view (
--- 		self   : not null access type_view;
--- 		p      : in type_model_point) 
--- 		return type_view_point is
--- 	begin
--- 		return (
--- 			x => type_view_coordinate (p.x - self.topleft.x) * self.scale,
--- 			y => type_view_coordinate (p.y - self.topleft.y) * self.scale
--- 			);
--- 	end model_to_view;
--- 
--- 	function model_to_view (
--- 		self   : not null access type_view;
--- 		rect   : in type_model_rectangle)
--- 		return type_view_rectangle is
--- 		result : type_view_rectangle;
--- 	begin
--- 		result := (
--- 			x      => type_view_coordinate (rect.x - self.topleft.x) * self.scale,
--- 			y      => type_view_coordinate (rect.y - self.topleft.y) * self.scale,
--- 			width  => type_view_coordinate (rect.width) * self.scale,
--- 			height => type_view_coordinate (rect.height) * self.scale
--- 			);
--- 		
--- 		return result;
--- 	end model_to_view;
--- 
-	
 	function model_to_drawing (
-		accessories	: in type_accessories;
+		self		: not null access type_view;
 		model_point : in type_model_point)	
 		return type_model_point is 
 		use et_general;
@@ -192,14 +114,14 @@ package body et_canvas.schematic is
 		return p;
 	end;
 
-	function bounding_box (accessories : in type_accessories)
+	function bounding_box (self : not null access type_view)
 		return type_model_rectangle is
 	begin
-		--return self.paper_bounding_box;
-		return accessories.paper_bounding_box; -- CS
+		return accessories.paper_bounding_box; -- CS should include items outside the frame
 	end;
 
 
+	
 	procedure gtk_new (
 		self	: out type_view_ptr) is
 -- 		model	: access type_model'class := null) is
@@ -217,14 +139,17 @@ package body et_canvas.schematic is
 		area    : type_model_rectangle)	is separate;
 
 	procedure draw_frame (
+		self    : not null access type_view;
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
 	procedure draw_nets (
+		self    : not null access type_view;
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
 	procedure draw_units (
+		self	: not null access type_view;
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
@@ -238,23 +163,20 @@ package body et_canvas.schematic is
 	begin
 		put_line ("draw internal ...");
 		
--- 		if self.model /= null then
+		-- draw a black background:
+		set_source_rgb (context.cr, 0.0, 0.0, 0.0);
+		paint (context.cr);
 
-			-- draw a black background:
-			set_source_rgb (context.cr, 0.0, 0.0, 0.0);
-			paint (context.cr);
+		-- draw white grid dots:
+		set_grid_size (self, pac_canvas.grid_default);
+		draw_grid (self, style, context, area);
 
-			-- draw white grid dots:
-			set_grid_size (self, pac_canvas.grid_default);
-			draw_grid (self, style, context, area);
-
-			draw_frame (area, context); -- separate unit
--- 			self.model.draw_nets (area, context); -- separate unit
--- 			self.model.draw_units (area, context); -- separate unit
-			-- CS self.model.draw_texts (area, context);
-			-- CS self.model.draw_submodules (area, context);
+		draw_frame (self, area, context); -- separate unit
+		draw_nets (self, area, context); -- separate unit
+		draw_units (self, area, context); -- separate unit
+		-- CS self.model.draw_texts (area, context);
+		-- CS self.model.draw_submodules (area, context);
 			
--- 		end if;
 	end draw_internal;
 
 
@@ -304,19 +226,9 @@ package body et_canvas.schematic is
 		accessories.sheet := sheet;
 	end set_module;
 
-	
--- 	function convert_x (x : in et_coordinates.type_distance) return type_view_coordinate is begin
--- 		return type_view_coordinate (
--- 			type_model_coordinate (x)
--- 			);
--- 	end;
--- 
--- 	function convert_x (x : in et_coordinates.type_distance) return type_model_coordinate is begin
--- 		return type_model_coordinate (x);
--- 	end;
 
 	function convert_and_shift_y (
-		accessories	: in type_accessories;
+		self		: not null access type_view;
 		y			: in type_distance)
 		return type_view_coordinate is 
 	begin
@@ -328,7 +240,7 @@ package body et_canvas.schematic is
 	end;
 		
 	function convert_and_shift_y (
-		accessories	: in type_accessories;
+		self		: not null access type_view;
 		y			: in type_distance)
 		return type_model_coordinate is 
 	begin

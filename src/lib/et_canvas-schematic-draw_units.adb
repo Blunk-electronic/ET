@@ -57,6 +57,7 @@ with et_symbols;
 separate (et_canvas.schematic)
 
 procedure draw_units (
+	self	: not null access type_view;
 	in_area	: in type_model_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
@@ -112,7 +113,7 @@ procedure draw_units (
 							  position.x 
 							- abs (boundaries.smallest_x)),
 				
-				y		=> convert_and_shift_y (accessories,
+				y		=> convert_and_shift_y (self,
 							  position.y
 							+ abs (boundaries.greatest_y)), -- convert y to "downwards"
 

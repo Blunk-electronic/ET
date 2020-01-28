@@ -83,7 +83,7 @@ package et_canvas.schematic is
 
 -- MODEL
 	-- 	type type_model_sch is new pac_canvas.type_model with record
-	type type_accessories is new pac_canvas.type_accessories with record	
+	type type_accessories is record	
 		module	: et_project.type_modules.cursor;
 
 		-- These variables are frequently used. Procedure set_module
@@ -103,71 +103,47 @@ package et_canvas.schematic is
 		-- the active sheet
 		sheet	: et_coordinates.type_sheet := type_sheet'first;
 	end record;
-
-	-- Converts a model point to a drawing point. 
-	-- NOTE: The model point is in a coordinate system with y-axis
-	-- going downwards. The drawing point is in a system where y-axis
-	-- goes upwards. The origin of the drawing coordinate system is the
-	-- lower left corner of the drawing frame.
--- CS
--- 	overriding function model_to_drawing (
--- 		accessories	: in type_accessories;
--- 		model_point : in type_model_point)
--- 		return type_model_point;
-
-
-	overriding function bounding_box (accessories : in type_accessories)
-		return type_model_rectangle;
-
-
-	-- This function converts a y-value from the drawing to a y-value in the view.
-	-- The input y increases upwards. The output y increases downwards.
-	overriding function convert_and_shift_y (
-		accessories	: in type_accessories;
-		y			: in type_distance)
-		return type_view_coordinate;
-
-	-- This function converts a y-value from the drawing to a y-value in the model.
-	-- The input y increases upwards. The output y increases downwards.
-	overriding function convert_and_shift_y (
-		accessories	: in type_accessories;
-		y			: in type_distance) 
-		return type_model_coordinate;
-
 		
 	accessories : type_accessories;
 	
--- 	type type_model_ptr is access all type_model'class;
--- 	type type_model_ptr_sch is access all type_model_sch;
-
--- 	model	: type_model_ptr_sch;
--- 	model	: type_model_ptr;
-
-
-	
-	-- Creates a new model (or a drawing sheet according to the example above):
--- 	procedure gtk_new (self : out type_model_ptr_sch);
 
 -- 	-- Initializes the internal data so that the model can send signals:
 -- 	procedure init (self : not null access type_model'class);
 
 
 -- VIEW
-
--- 	-- scale
--- 	scale_min : constant gdouble := 0.1;
--- 	scale_max : constant gdouble := 10.0;
--- 	subtype type_scale is gdouble range scale_min .. scale_max;
--- 	scale_default : constant type_scale := 1.0;
--- 	scale_delta_on_zoom : constant type_scale := 0.1;
--- 	
--- 	
-	-- The view (or canvas) displays a certain region of the model (or the sheet) 
-	-- depending on scrolling or zoom.
 	type type_view is new pac_canvas.type_view with record
 		accessories	: type_accessories;
 	end record;
 
+	overriding function bounding_box (self : not null access type_view)
+		return type_model_rectangle;
+
+	-- This function converts a y-value from the drawing to a y-value in the model.
+	-- The input y increases upwards. The output y increases downwards.
+	overriding function convert_and_shift_y (
+		self		: not null access type_view;
+		y			: in type_distance) 
+		return type_model_coordinate;
+		
+	-- This function converts a y-value from the drawing to a y-value in the view.
+	-- The input y increases upwards. The output y increases downwards.
+	overriding function convert_and_shift_y (
+		self		: not null access type_view;
+		y			: in type_distance)
+		return type_view_coordinate;
+
+	-- Converts a model point to a drawing point. 
+	-- NOTE: The model point is in a coordinate system with y-axis
+	-- going downwards. The drawing point is in a system where y-axis
+	-- goes upwards. The origin of the drawing coordinate system is the
+	-- lower left corner of the drawing frame.
+	overriding function model_to_drawing (
+		self		: not null access type_view;
+		model_point : in type_model_point)
+		return type_model_point;
+
+		
 	-- The pointer to the canvas/view:
 	type type_view_ptr is access all type_view'class;
 
@@ -179,26 +155,23 @@ package et_canvas.schematic is
 
 	
 	
--- CONVERSIONS BETWEEN COORDINATE SYSTEMS
-
-
--- 
--- 	procedure gtk_new (
--- 		self	: out type_view_ptr;
--- 		model	: access type_model'class := null);
--- 	
 
 	procedure draw_frame (
+		self	: not null access type_view;
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context);
 
 	procedure draw_nets (
+		self    : not null access type_view;
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context);
 	
 	procedure draw_units (
+		self	: not null access type_view;
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context);
+
+	
 
 	
 	-- Redraw either the whole view, or a specific part of it only.

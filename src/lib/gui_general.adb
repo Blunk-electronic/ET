@@ -235,7 +235,6 @@ package body gui_general is
 		-- set up the main window
 		init; 
 
--- 		gtk_new (model);
 -- 		initialize (model);
 
 		-- set the module to be opened and optionally the sheet to be displayed:

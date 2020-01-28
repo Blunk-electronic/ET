@@ -52,6 +52,7 @@ use et_schematic.type_net_segments;
 separate (et_canvas.schematic)
 
 procedure draw_nets (
+	self    : not null access type_view;
 	in_area	: in type_model_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
@@ -82,7 +83,7 @@ procedure draw_nets (
 						-- The box position in y is the greatest_y (upwards).
 						-- The box position in y is additonally converted to y axis going downwards.
 						x		=> convert_x (boundaries.smallest_x),
-						y		=> convert_and_shift_y (accessories, boundaries.smallest_y),
+						y		=> convert_and_shift_y (self, boundaries.smallest_y),
 
 						-- The box width is the difference between greatest x and smallest x.
 						-- The box height is the difference between greatest y and smallest y.
@@ -131,14 +132,14 @@ procedure draw_nets (
 							cairo.move_to (
 								context.cr,
 								convert_x (element (segment_cursor).start_point.x),
-								convert_and_shift_y (accessories, element (segment_cursor).start_point.y)
+								convert_and_shift_y (self, element (segment_cursor).start_point.y)
 								);
 
 							-- end point
 							cairo.line_to (
 								context.cr,
 								convert_x (element (segment_cursor).end_point.x),
-								convert_and_shift_y (accessories, element (segment_cursor).end_point.y)
+								convert_and_shift_y (self, element (segment_cursor).end_point.y)
 								);
 
 							-- CS draw junctions and labels
