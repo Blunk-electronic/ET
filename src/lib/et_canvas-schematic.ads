@@ -143,9 +143,6 @@ package et_canvas.schematic is
 		model_point : in type_model_point)
 		return type_model_point;
 
-		
-	-- The pointer to the canvas/view:
-	type type_view_ptr is access all type_view'class;
 
 	canvas	: type_view_ptr;
 
