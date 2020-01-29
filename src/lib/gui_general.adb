@@ -61,7 +61,7 @@ with canvas_schematic;
 
 package body gui_general is
 
-	window 					: gtk_window; -- This is an access/pointer to the actual window.
+	window_schematic, window_board	: gtk_window; -- This is an access/pointer to the actual window.
 	box_back				: gtk_box; -- This is an access/pointer to the actual box.
 	box_left, box_right		: gtk_box;
 	box_console				: gtk_box;
@@ -70,8 +70,6 @@ package body gui_general is
 	-- We will have some buttons:
 	button_zoom_to_fit					: gtk_tool_button; -- This is an access/pointer to the actual button.
 	button_zoom_in, button_zoom_out		: gtk_tool_button;
-	button_move_right, button_move_left	: gtk_tool_button; -- CS for testing only
-	button_delete						: gtk_tool_button;
 
 	-- We will have a toolbar, a console, a frame and a scrolled window:
 	toolbar					: gtk_toolbar; -- This is an access/pointer to the actual toolbar.
@@ -79,30 +77,138 @@ package body gui_general is
 	frame					: gtk_frame;
 	scrolled				: gtk_scrolled_window;
 	
-	procedure init is begin
-		gtk.main.init; -- initialize the main gtk stuff
+	procedure init_schematic_window is begin
 
-		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
-		window.set_title (system_name);
-		window.set_default_size (1024, 768);
+		gtk_new (window_schematic); -- create the main window (where pointer "window" is pointing at)
+		window_schematic.set_title (system_name & " SCHEMATIC");
+		window_schematic.set_default_size (1024, 768);
 
 		-- If the operator wishes to terminate the program (by clicking X)
 		-- the procedure terminate_main (in gui_cb) is to be called.
-		window.on_destroy (terminate_main'access);
+		window_schematic.on_destroy (terminate_main'access);
 
 		-- If the operator minimizes, maximizes or changes the size in some way:
-		window.on_configure_event (window_resized'access);
+		window_schematic.on_configure_event (window_resized'access);
 
 		-- For reaction to keys pressed on the keyboard:
 		-- This is required in order to propagate the key-pressed events to sub-windows.
-		window.on_key_press_event (on_key_event'access);
+		window_schematic.on_key_press_event (on_key_event'access);
 		
 
 		
 		-- background box
 		gtk_new_hbox (box_back);
 		set_spacing (box_back, 10);
-		add (window, box_back);
+		add (window_schematic, box_back);
+
+		-- left box
+		gtk_new_hbox (box_left);
+		set_spacing (box_left, 10);
+		pack_start (box_back, box_left, expand => false);
+
+		-- right box
+		gtk_new_vbox (box_right);
+		set_spacing (box_right, 10);
+		add (box_back, box_right);
+
+		-- toolbar on the left
+		gtk_new (toolbar);
+		set_orientation (toolbar, orientation_vertical);
+		pack_start (box_left, toolbar, expand => false);
+
+
+
+		
+		-- Create a button and place it in the toolbar:
+		gtk.tool_button.gtk_new (button_zoom_to_fit, label => "FIT");
+		insert (toolbar, button_zoom_to_fit);
+
+		-- If the operator clicks the button
+		-- call the procedure zoom_to_fit in package callbacks_4:
+		button_zoom_to_fit.on_clicked (zoom_to_fit'access, toolbar);
+
+
+
+		
+		-- Create a button and place it in the toolbar:
+		gtk.tool_button.gtk_new (button_zoom_in, label => "IN");
+		insert (toolbar, button_zoom_in);
+
+		-- If the operator clicks the button
+		-- call the procedure zoom_in in package callbacks_4:
+		button_zoom_in.on_clicked (zoom_in'access, toolbar);
+
+
+
+		
+		-- Create another button and place it in the toolbar:
+		gtk.tool_button.gtk_new (button_zoom_out, label => "OUT");
+		insert (toolbar, button_zoom_out);
+
+		-- If the operator clicks the button
+		-- call the procedure zoom_out in package callbacks_4:
+		button_zoom_out.on_clicked (zoom_out'access, toolbar);
+
+
+
+		
+		-- box for console on the right top
+		gtk_new_vbox (box_console);
+		set_spacing (box_console, 10);
+		pack_start (box_right, box_console, expand => false);
+
+		-- a simple text entry
+		gtk_new (console);
+		set_text (console, "cmd: ");
+		pack_start (box_console, console, expand => false);
+
+		-- If the operator hits enter after typing text in the console,
+		-- call the procedure echo_command_simple in package callbacks_4:
+		console.on_activate (echo_command_simple'access); -- on hitting enter
+
+
+
+		
+		-- drawing area on the right bottom
+		gtk_new_hbox (box_drawing);
+		set_spacing (box_drawing, 10);
+		add (box_right, box_drawing);
+
+		-- frame inside the drawing box
+		gtk_new (frame);
+		pack_start (box_drawing, frame);
+
+		-- scrolled window inside the frame
+		gtk_new (scrolled);
+		set_policy (scrolled, policy_automatic, policy_automatic);
+		add (frame, scrolled);
+
+	end init_schematic_window;
+
+	
+	procedure init_board_window is begin
+
+		gtk_new (window_board); -- create the main window_board (where pointer "window_board" is pointing at)
+		window_board.set_title (system_name & " BOARD");
+		window_board.set_default_size (1024, 768);
+
+		-- If the operator wishes to terminate the program (by clicking X)
+		-- the procedure terminate_main (in gui_cb) is to be called.
+		window_board.on_destroy (terminate_main'access);
+
+		-- If the operator minimizes, maximizes or changes the size in some way:
+		window_board.on_configure_event (window_resized'access);
+
+		-- For reaction to keys pressed on the keyboard:
+		-- This is required in order to propagate the key-pressed events to sub-windows.
+		window_board.on_key_press_event (on_key_event'access);
+		
+
+		
+		-- background box
+		gtk_new_hbox (box_back);
+		set_spacing (box_back, 10);
+		add (window_board, box_back);
 
 		-- left box
 		gtk_new_hbox (box_left);
@@ -155,33 +261,6 @@ package body gui_general is
 
 		
 		
-		-- Create another button and place it in the toolbar:
-		gtk.tool_button.gtk_new (button_move_right, label => "MOVE RIGHT");
-		insert (toolbar, button_move_right);
-		
-		-- If the operator clicks the button
-		-- call the procedure move_right in package callbacks_4:		
-		button_move_right.on_clicked (move_right'access, toolbar);
-
-
-		
-		
-		gtk.tool_button.gtk_new (button_move_left, label => "MOVE LEFT");
-		insert (toolbar, button_move_left);
-
-		-- If the operator clicks the button
-		-- call the procedure move_left in package callbacks_4:
-		button_move_left.on_clicked (move_left'access, toolbar);
-
-
-		
-		
-		gtk.tool_button.gtk_new (button_delete, label => "DELETE");
-		insert (toolbar, button_delete);
-
-		-- If the operator clicks the button
-		-- call the procedure delete in package callbacks_4:
-		button_delete.on_clicked (delete'access, toolbar);
 
 
 
@@ -217,7 +296,7 @@ package body gui_general is
 		set_policy (scrolled, policy_automatic, policy_automatic);
 		add (frame, scrolled);
 
-	end;
+	end init_board_window;
 
 	
 	procedure single_module (
@@ -230,9 +309,13 @@ package body gui_general is
 		log (text => "launching mode " & to_string (MODE_MODULE), level => log_threshold);
 		log (text => "opening module " & enclose_in_quotes (to_string (type_modules.key (module))), level => log_threshold);
 		log (text => "sheet" & to_sheet (sheet), level => log_threshold);
+
+		gtk.main.init; -- initialize the main gtk stuff
+
+	-- SCHEMATIC
 		
-		-- set up the main window
-		init; 
+		-- set up the schematic window
+		init_schematic_window;
 
 		gtk_new (canvas);
 		add (scrolled, canvas); -- place the canvas in the scrolled window
@@ -242,13 +325,26 @@ package body gui_general is
 		
 		scale_to_fit (canvas);
 		
-		-- Display all the widgets on the screen:
-		window.show_all;
+		-- display the schematic:
+		window_schematic.show_all;
 
+
+		
+
+	-- BOARD
+		
+		-- set up the board window
+		init_board_window;
+
+		-- display the board
+		window_board.show_all;
+
+
+
+		
 		-- Start the main gtk loop. This is a loop that permanently draws the widgets and
 		-- samples them for possible signals sent.
 		gtk.main.main;
-
 		
 	end single_module;
 	
