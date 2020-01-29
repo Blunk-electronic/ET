@@ -182,9 +182,7 @@ package body et_canvas.schematic is
 
 
 	procedure set_module (
-		self	: not null access type_view;
--- 		self	: not null access type_view'class;
--- 		self	: in type_view_ptr;							 
+		view	: in type_view_ptr;							 
 		module	: in et_project.type_modules.cursor;
 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be opened
 	is
@@ -192,10 +190,9 @@ package body et_canvas.schematic is
 		use et_frames;
 		use et_project;
 
--- 		type type_local_view_ptr is access all type_view;
--- 		view : type_local_view_ptr := type_local_view_ptr (self);
+		type type_local_view_ptr is access all type_view;
+		self : type_local_view_ptr := type_local_view_ptr (view);
 	begin
-		null;
 		self.accessories.module := module;
 
 		-- set some variables frequently used regarding frame and paper:
