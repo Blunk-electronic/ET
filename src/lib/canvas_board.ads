@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         CANVAS FOR SCHEMATIC                             --
+--                           CANVAS FOR BOARD                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -65,22 +65,22 @@ with pango.layout;			use pango.layout;
 with ada.containers;		use ada.containers;
 with ada.containers.doubly_linked_lists;
 
-with et_coordinates;		use et_coordinates;
+with et_pcb_coordinates;	use et_pcb_coordinates;
 with et_project;			--use et_project;
 with et_frames;				--use et_frames;
 
 with et_canvas;
 
-package canvas_schematic is
+package canvas_board is
 
 	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas.pac_canvas (
-		geometry		=> et_coordinates.geometry);
+		geometry		=> et_pcb_coordinates.geometry);
 
 	use pac_canvas;
 	
 
-	use et_coordinates.geometry; -- CS
+	use et_pcb_coordinates.geometry;
 	
 
 	type type_drawing is record	
@@ -89,19 +89,19 @@ package canvas_schematic is
 		-- These variables are frequently used. Procedure set_module
 		-- sets them. Other operations are free to access
 		-- them.
-		frame				: et_frames.type_frame (et_frames.SCHEMATIC);
+		frame				: et_frames.type_frame (et_frames.PCB);
 		frame_bounding_box	: type_rectangle;
 
 		paper_bounding_box	: type_rectangle;
-		paper_height		: et_coordinates.geometry.type_distance_positive; -- CS
-		paper_width			: et_coordinates.geometry.type_distance_positive;
+		paper_height		: geometry.type_distance_positive;
+		paper_width			: geometry.type_distance_positive;
 
 		title_block_position	: et_frames.type_position;
 
 		-- CS grid_size 	: type_distance_positive_positive := 20.0;
 		
 		-- the active sheet
-		sheet	: et_coordinates.type_sheet := type_sheet'first;
+-- 		sheet	: et_coordinates.type_sheet := type_sheet'first;
 	end record;
 	
 
@@ -114,7 +114,7 @@ package canvas_schematic is
 		drawing	: type_drawing;
 	end record;
 
-	-- Returns the bounding box of all items of the current sheet.
+	-- Returns the bounding box of all items.
 	overriding function bounding_box (self : not null access type_view)
 		return type_rectangle;
 
@@ -122,14 +122,14 @@ package canvas_schematic is
 	-- The input y increases upwards. The output y increases downwards.
 	overriding function convert_and_shift_y (
 		self	: not null access type_view;
-		y		: in type_distance) 
-		return type_distance;
+		y		: in type_distance_total) 
+		return type_distance_total;
 		
 	-- This function converts a y-value from the drawing to a y-value in the view.
 	-- The input y increases upwards. The output y increases downwards.
 	overriding function convert_and_shift_y (
 		self	: not null access type_view;
-		y		: in type_distance)
+		y		: in type_distance_total)
 		return type_view_coordinate;
 
 	-- Converts a model point to a drawing point. 
@@ -155,17 +155,6 @@ package canvas_schematic is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context);
 
-	-- Draws the nets:
-	procedure draw_nets (
-		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
-		context : in type_draw_context);
-
-	-- Draws the units:
-	procedure draw_units (
-		self	: not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
-		context : in type_draw_context);
 
 	
 
@@ -182,13 +171,12 @@ package canvas_schematic is
 	-- Init the drawing:
 	procedure init_drawing (
 		view	: in type_view_ptr;
-		module	: in et_project.type_modules.cursor;
-		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be opened
+		module	: in et_project.type_modules.cursor);
 
 
 
 	
-end canvas_schematic;
+end canvas_board;
 
 -- Soli Deo Gloria
 

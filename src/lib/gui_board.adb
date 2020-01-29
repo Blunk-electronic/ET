@@ -58,9 +58,9 @@ with et_project;				use et_project;
 with et_string_processing;		use et_string_processing;
 
 with gui_board.callbacks;		use gui_board.callbacks;
--- with canvas_schematic;			use canvas_schematic;
+with canvas_board;				use canvas_board;
 		
--- use canvas_schematic.pac_canvas;
+use canvas_board.pac_canvas;
 
 
 package body gui_board is

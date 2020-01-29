@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                        CANVAS FOR SCHEMATIC                              --
+--                           CANVAS FOR BOARD                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -85,10 +85,10 @@ with ada.containers.doubly_linked_lists;
 with et_general;
 with et_project;
 with et_frames;
-with et_coordinates;			use et_coordinates;
-use et_coordinates.geometry;
+with et_pcb_coordinates;	use et_pcb_coordinates;
+use et_pcb_coordinates.geometry;
 
-package body canvas_schematic is
+package body canvas_board is
 	
 	function model_to_drawing (
 		self		: not null access type_view;
@@ -138,15 +138,6 @@ package body canvas_schematic is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
-	procedure draw_nets (
-		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
-		context : in type_draw_context) is separate;
-
-	procedure draw_units (
-		self	: not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
-		context : in type_draw_context) is separate;
 
 	procedure draw_internal (
 		self    : not null access type_view;
@@ -167,8 +158,8 @@ package body canvas_schematic is
 		draw_grid (self, style, context, area);
 
 		draw_frame (self, area, context); -- separate unit
-		draw_nets (self, area, context); -- separate unit
-		draw_units (self, area, context); -- separate unit
+-- 		draw_nets (self, area, context); -- separate unit
+-- 		draw_units (self, area, context); -- separate unit
 		-- CS self.model.draw_texts (area, context);
 		-- CS self.model.draw_submodules (area, context);
 			
@@ -178,8 +169,7 @@ package body canvas_schematic is
 
 	procedure init_drawing (
 		view	: in type_view_ptr;							 
-		module	: in et_project.type_modules.cursor;
-		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be opened
+		module	: in et_project.type_modules.cursor)
 	is
 		use et_general;
 		use et_frames;
@@ -219,15 +209,12 @@ package body canvas_schematic is
 		-- Drawing of the title block items is relative to the title block position:
 		self.drawing.title_block_position := self.drawing.frame.title_block_schematic.position;
 
-		-- set active sheet
-		self.drawing.sheet := sheet;
-		
 	end init_drawing;
 
 
 	function convert_and_shift_y (
 		self	: not null access type_view;
-		y		: in type_distance)
+		y		: in type_distance_total)
 		return type_view_coordinate is 
 	begin
 		return type_view_coordinate 
@@ -239,8 +226,8 @@ package body canvas_schematic is
 		
 	function convert_and_shift_y (
 		self	: not null access type_view;
-		y		: in type_distance)
-		return type_distance is 
+		y		: in type_distance_total)
+		return type_distance_total is 
 	begin
 		return (
 			self.drawing.frame_bounding_box.height 
@@ -249,7 +236,7 @@ package body canvas_schematic is
 	end;
 
 	
-end canvas_schematic;
+end canvas_board;
 
 -- Soli Deo Gloria
 
