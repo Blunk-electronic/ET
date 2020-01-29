@@ -69,11 +69,11 @@ with et_coordinates;		use et_coordinates;
 with et_project;			--use et_project;
 with et_frames;				--use et_frames;
 
-with et_canvas_2;
+with et_canvas;
 
 package et_canvas.schematic is
 
-	package pac_canvas is new et_canvas_2.pac_canvas (
+	package pac_canvas is new et_canvas.pac_canvas (
 		type_distance	=> et_coordinates.type_distance,
 		geometry		=> et_coordinates.geometry);
 
