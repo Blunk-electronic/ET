@@ -43,7 +43,7 @@ with pango.layout;				use pango.layout;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.geometry;
 
-separate (et_canvas.schematic)
+separate (canvas_schematic)
 
 procedure draw_frame (
 	self	: not null access type_view;

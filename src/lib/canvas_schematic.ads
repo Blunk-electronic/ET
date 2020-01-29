@@ -71,7 +71,7 @@ with et_frames;				--use et_frames;
 
 with et_canvas;
 
-package et_canvas.schematic is
+package canvas_schematic is
 
 	package pac_canvas is new et_canvas.pac_canvas (
 		type_distance	=> et_coordinates.type_distance,
@@ -183,7 +183,7 @@ package et_canvas.schematic is
 
 
 	
-end et_canvas.schematic;
+end canvas_schematic;
 
 -- Soli Deo Gloria
 

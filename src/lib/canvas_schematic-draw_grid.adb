@@ -40,7 +40,7 @@ with ada.text_io;				use ada.text_io;
 with cairo;						use cairo;
 with et_frames;
 
-separate (et_canvas.schematic)
+separate (canvas_schematic)
 
 procedure draw_grid (
 	self    : not null access type_view;

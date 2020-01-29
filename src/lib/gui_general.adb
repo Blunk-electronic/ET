@@ -57,8 +57,7 @@ with et_project;				use et_project;
 with et_string_processing;		use et_string_processing;
 
 with gui_cb;					use gui_cb;	
-with et_canvas;					use et_canvas;
-with et_canvas.schematic;
+with canvas_schematic;
 
 package body gui_general is
 
@@ -225,8 +224,8 @@ package body gui_general is
 		module			: in type_modules.cursor; -- cursor of generic module to be edited
 		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
 		log_threshold	: in type_log_level) is
-		use et_canvas.schematic;
-		use et_canvas.schematic.pac_canvas;
+		use canvas_schematic;
+		use canvas_schematic.pac_canvas;
 	begin
 		log (text => "launching mode " & to_string (MODE_MODULE), level => log_threshold);
 		log (text => "opening module " & enclose_in_quotes (to_string (type_modules.key (module))), level => log_threshold);

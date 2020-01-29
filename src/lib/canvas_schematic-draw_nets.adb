@@ -49,7 +49,7 @@ use et_schematic.type_nets;
 use et_schematic.type_strands;
 use et_schematic.type_net_segments;
 
-separate (et_canvas.schematic)
+separate (canvas_schematic)
 
 procedure draw_nets (
 	self    : not null access type_view;

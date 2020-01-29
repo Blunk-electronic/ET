@@ -54,7 +54,7 @@ use et_schematic.type_units;
 with et_devices;
 with et_symbols;
 
-separate (et_canvas.schematic)
+separate (canvas_schematic)
 
 procedure draw_units (
 	self	: not null access type_view;

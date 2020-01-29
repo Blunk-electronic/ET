@@ -39,7 +39,7 @@ with et_string_processing;		use et_string_processing;
 with et_general;				use et_general;
 with et_project;				use et_project;
 with et_coordinates;			use et_coordinates;
-with et_canvas.schematic;
+with canvas_schematic;
 
 package gui_general is
 

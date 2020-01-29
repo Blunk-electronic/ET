@@ -88,7 +88,7 @@ with et_frames;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.geometry;
 
-package body et_canvas.schematic is
+package body canvas_schematic is
 	
 	function model_to_drawing (
 		self		: not null access type_view;
@@ -254,7 +254,7 @@ package body et_canvas.schematic is
 	end;
 
 	
-end et_canvas.schematic;
+end canvas_schematic;
 
 -- Soli Deo Gloria
 
