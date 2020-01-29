@@ -73,6 +73,7 @@ with et_canvas;
 
 package canvas_schematic is
 
+	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas.pac_canvas (
 		type_distance	=> et_coordinates.type_distance,
 		geometry		=> et_coordinates.geometry);
@@ -112,21 +113,22 @@ package canvas_schematic is
 		drawing	: type_drawing;
 	end record;
 
+	-- Returns the bounding box of all items of the current sheet.
 	overriding function bounding_box (self : not null access type_view)
 		return type_model_rectangle;
 
 	-- This function converts a y-value from the drawing to a y-value in the model.
 	-- The input y increases upwards. The output y increases downwards.
 	overriding function convert_and_shift_y (
-		self		: not null access type_view;
-		y			: in type_distance) 
+		self	: not null access type_view;
+		y		: in type_distance) 
 		return type_model_coordinate;
 		
 	-- This function converts a y-value from the drawing to a y-value in the view.
 	-- The input y increases upwards. The output y increases downwards.
 	overriding function convert_and_shift_y (
-		self		: not null access type_view;
-		y			: in type_distance)
+		self	: not null access type_view;
+		y		: in type_distance)
 		return type_view_coordinate;
 
 	-- Converts a model point to a drawing point. 
@@ -140,23 +142,25 @@ package canvas_schematic is
 		return type_model_point;
 
 
-	
+	-- Creates a new view:
 	procedure gtk_new (
 		self	: out type_view_ptr);
 
 	
 	
-
+	-- Draws the frame:
 	procedure draw_frame (
 		self	: not null access type_view;
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context);
 
+	-- Draws the nets:
 	procedure draw_nets (
 		self    : not null access type_view;
 		in_area	: in type_model_rectangle := no_rectangle;
 		context : in type_draw_context);
-	
+
+	-- Draws the units:
 	procedure draw_units (
 		self	: not null access type_view;
 		in_area	: in type_model_rectangle := no_rectangle;

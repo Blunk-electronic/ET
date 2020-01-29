@@ -167,8 +167,9 @@ package pac_canvas is
 		-- Required for the scrollbars:
 		hadj, vadj	: gtk.adjustment.gtk_adjustment;
 
+		-- CS: currently no need:
 		-- connections to model signals
-		id_layout_changed : gtk.handlers.handler_id := (gtk.handlers.null_handler_id, null);
+		-- id_layout_changed : gtk.handlers.handler_id := (gtk.handlers.null_handler_id, null);
 
 		scale_to_fit_requested : gdouble := 0.0; -- gdouble is a real floating-point type (see glib.ads)
 		scale_to_fit_area : type_model_rectangle;
@@ -178,6 +179,9 @@ package pac_canvas is
 	type type_view_ptr is access all type_view'class;
 
 	canvas	: type_view_ptr;
+
+
+	
 	
 	
 	procedure viewport_changed (self : not null access type_view'class);

@@ -117,7 +117,8 @@ package body canvas_schematic is
 	function bounding_box (self : not null access type_view)
 		return type_model_rectangle is
 	begin
-		return self.drawing.paper_bounding_box; -- CS should include items outside the frame
+		return self.drawing.paper_bounding_box; -- CS should include all items of the current sheet.
+		-- means: also items outside the frame
 	end;
 
 
