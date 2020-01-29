@@ -75,12 +75,14 @@ package canvas_schematic is
 
 	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas.pac_canvas (
-		type_distance	=> et_coordinates.type_distance,
+-- 		type_distance	=> et_coordinates.type_distance,
 		geometry		=> et_coordinates.geometry);
 
 	use pac_canvas;
 	
 
+	use et_coordinates.geometry;
+	
 
 	type type_drawing is record	
 		module	: et_project.type_modules.cursor;
@@ -92,12 +94,12 @@ package canvas_schematic is
 		frame_bounding_box	: type_model_rectangle;
 
 		paper_bounding_box	: type_model_rectangle;
-		paper_height		: type_model_coordinate;
-		paper_width			: type_model_coordinate;
+		paper_height		: et_coordinates.geometry.type_distance_positive;
+		paper_width			: et_coordinates.geometry.type_distance_positive;
 
 		title_block_position	: et_frames.type_position;
 
-		-- CS grid_size 	: type_model_coordinate_positive := 20.0;
+		-- CS grid_size 	: type_distance_positive_positive := 20.0;
 		
 		-- the active sheet
 		sheet	: et_coordinates.type_sheet := type_sheet'first;
@@ -122,7 +124,7 @@ package canvas_schematic is
 	overriding function convert_and_shift_y (
 		self	: not null access type_view;
 		y		: in type_distance) 
-		return type_model_coordinate;
+		return type_distance;
 		
 	-- This function converts a y-value from the drawing to a y-value in the view.
 	-- The input y increases upwards. The output y increases downwards.
@@ -138,8 +140,8 @@ package canvas_schematic is
 	-- lower left corner of the drawing frame.
 	overriding function model_to_drawing (
 		self		: not null access type_view;
-		model_point : in type_model_point)
-		return type_model_point;
+		model_point : in type_point)
+		return type_point;
 
 
 	-- Creates a new view:

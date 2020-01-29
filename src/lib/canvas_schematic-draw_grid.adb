@@ -60,7 +60,7 @@ is
 	offset_y : type_view_coordinate := type_view_coordinate (self.drawing.frame_bounding_box.y);
 	-- Later, the offset_y will get a fine adjustment according to the frame height.
 
-	function lower_grid_coordinate (coordinate : in type_model_coordinate) 
+	function lower_grid_coordinate (coordinate : in type_distance) 
 	-- This function calculates the grid coordinate on the axis that comes
 	-- before the given coordinate.
 	-- Example 1: If coordinate is 215.6 and grid_size is 10, then x becomes 210.

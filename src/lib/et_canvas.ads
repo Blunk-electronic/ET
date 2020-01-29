@@ -75,7 +75,7 @@ package et_canvas is
 
 generic
 
-	type type_distance is delta <>;
+-- 	type type_distance is delta <>;
 	with package geometry is new et_geometry.geometry_operations_2d (<>);
 	
 package pac_canvas is
@@ -116,29 +116,29 @@ package pac_canvas is
 
 	
 		
-	subtype type_model_coordinate is type_distance;
-	subtype type_model_coordinate_positive is type_model_coordinate range 0.0 .. type_model_coordinate'last;
-	type type_model_point is record
-		x,y	: type_model_coordinate; -- x/y only
-	end record;
-	origin : constant type_model_point := (0.0, 0.0);
+-- 	subtype type_model_coordinate is type_distance;
+-- 	subtype type_model_coordinate_positive is type_model_coordinate range 0.0 .. type_model_coordinate'last;
+-- 	type type_model_point is record
+-- 		x,y	: type_model_coordinate; -- x/y only
+-- 	end record;
+-- 	origin : constant type_model_point := (0.0, 0.0);
 -- 	subtype type_model_coordinate is type_distance;
 -- 	subtype type_model_coordinate_positive is type_distance_positive;
 -- 	subtype type_model_point is type_point; -- x/y only
 
 
-	function to_string (p : in type_model_point) return string;
+-- 	function to_string (p : in type_model_point) return string;
 	
 	-- A rectangular area of the model:
-	type type_model_rectangle is record
-		x, y			: type_model_coordinate; -- position
-		width, height	: type_model_coordinate_positive; -- size
+	type type_model_rectangle is record -- CS rename to type_rectangle and move to et_geometry
+		x, y			: type_distance; -- position
+		width, height	: type_distance; -- CS _positive; -- size
 	end record;
 
 	no_rectangle : constant type_model_rectangle := (0.0, 0.0, 0.0, 0.0);
 
 	
-	function intersects (rect1, rect2 : type_model_rectangle) return boolean;
+	function intersects (rect1, rect2 : type_model_rectangle) return boolean; -- CS move to et_geometry ?
 	
 
 -- VIEW
@@ -157,10 +157,10 @@ package pac_canvas is
 		-- drawing sheet. topleft is not a constant and is changed on by procedure
 		-- set_scale or by procedure scale_to_fit.
 		--topleft  	: type_model_point := geometry.origin;
-		topleft  	: type_model_point := origin;
+		topleft  	: type_point := origin;
 		
 		scale     	: type_scale := scale_default;
-		grid_size 	: type_model_coordinate_positive := 20.0; -- CS move to accessories
+		grid_size 	: type_distance_positive := 20.0; -- CS move to accessories
 		
 		layout		: pango.layout.pango_layout; -- CS for displaying text. not used yet
 
@@ -215,7 +215,7 @@ package pac_canvas is
 	function view_to_model (
 		self   : not null access type_view;
 		p      : in type_view_point) 
-		return type_model_point;
+		return type_point;
 	
 	-- Converts the given area of the view to a model rectangle:
 	function view_to_model (
@@ -227,7 +227,7 @@ package pac_canvas is
 	-- Converts the given point in the model to a point in the view.
 	function model_to_view (
 		self   : not null access type_view;
-		p      : in type_model_point) -- position x/y given as a float type
+		p      : in type_point) -- position x/y given as a float type
 		return type_view_point;
 	
 	-- Converts the given area of the model to a view rectangle:	
@@ -246,8 +246,8 @@ package pac_canvas is
 	-- lower left corner of the drawing frame.
 	function model_to_drawing (
 		self		: not null access type_view;
-		model_point : in type_model_point)
-		return type_model_point is abstract;
+		model_point : in type_point)
+		return type_point is abstract;
 
 
 	function bounding_box (self : not null access type_view)
@@ -268,7 +268,7 @@ package pac_canvas is
 		self     : not null access type_view;
 		scale    : in type_scale := scale_default;
 		--preserve : in type_model_point := geometry.origin);
-		preserve : in type_model_point := origin);
+		preserve : in type_point := origin);
 	-- Changes the scaling factor for self.
 	-- this also scrolls the view so that either preserve or the current center
 	-- of the view remains at the same location in the widget, as if the user
@@ -288,11 +288,11 @@ package pac_canvas is
 -- 		send_signal : boolean := true); -- sends "layout_changed" signal when true
 
 
-	grid_default : constant type_model_coordinate_positive := 10.0;
+	grid_default : constant type_distance_positive := 10.0;
 	
 	procedure set_grid_size (
 		self : not null access type_view'class;
-		size : in type_model_coordinate_positive := grid_default);
+		size : in type_distance_positive := grid_default);
 
 	
 	-- Redraw either the whole view, or a specific part of it only.
@@ -315,10 +315,10 @@ package pac_canvas is
 	function convert_y (y : in type_distance) return type_view_coordinate renames convert_x;
 	
 	-- This function converts a x-value from the drawing to a x-value in the model.	
-	function convert_x (x : in type_distance) return type_model_coordinate;
+	function convert_x (x : in type_distance) return type_distance;
 
 	-- This function converts a y-value from the drawing to a y-value in the model.	
-	function convert_y (y : in type_distance) return type_model_coordinate renames convert_x;
+	function convert_y (y : in type_distance) return type_distance renames convert_x;
 
 	
 
@@ -334,7 +334,7 @@ package pac_canvas is
 	function convert_and_shift_y (
 		self	: not null access type_view;
 		y		: in type_distance) 
-		return type_model_coordinate is abstract;
+		return type_distance is abstract;
 
 	
 private

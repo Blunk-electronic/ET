@@ -103,13 +103,13 @@ package body pac_canvas is
 		return ("view x/y [pixels]" & to_string (gint (p.x)) & "/" & to_string (gint (p.y)));
 	end;
 
-	function to_string (d : in type_model_coordinate) return string is begin
-		return type_model_coordinate'image (d);
-	end;
+-- 	function to_string (d : in type_model_coordinate) return string is begin
+-- 		return type_model_coordinate'image (d);
+-- 	end;
 	
-	function to_string (p : in type_model_point) return string is begin
-		return ("model x/y [mm]" & to_string (p.x) & "/" & to_string (p.y));
-	end;
+-- 	function to_string (p : in type_model_point) return string is begin
+-- 		return ("model x/y [mm]" & to_string (p.x) & "/" & to_string (p.y));
+-- 	end;
 		
 -- 	model_signals : constant gtkada.types.chars_ptr_array := (
 -- 		1 => new_string (string (signal_layout_changed))
@@ -140,18 +140,18 @@ package body pac_canvas is
 -- 		return model_class_record.the_type;
 -- 	end model_get_type;
 
-	procedure union (
+	procedure union ( -- CS move to et_geometry ?
 		rect1 : in out type_model_rectangle;
 		rect2 : type_model_rectangle) is
-		right : constant type_model_coordinate := 
-			type_model_coordinate'max (rect1.x + rect1.width, rect2.x + rect2.width);
-		bottom : constant type_model_coordinate :=
-			type_model_coordinate'max (rect1.y + rect1.height, rect2.y + rect2.height);
+		right : constant type_distance := 
+			type_distance'max (rect1.x + rect1.width, rect2.x + rect2.width);
+		bottom : constant type_distance :=
+			type_distance'max (rect1.y + rect1.height, rect2.y + rect2.height);
 	begin
-		rect1.x := type_model_coordinate'min (rect1.x, rect2.x);
+		rect1.x := type_distance'min (rect1.x, rect2.x);
 		rect1.width := right - rect1.x;
 
-		rect1.y := type_model_coordinate'min (rect1.y, rect2.y);
+		rect1.y := type_distance'min (rect1.y, rect2.y);
 		rect1.height := bottom - rect1.y;
 	end;
 
@@ -159,7 +159,7 @@ package body pac_canvas is
 		self	: not null access type_view;
 		cr		: cairo.cairo_context)
 	is
-		model_p : type_model_point := origin;
+		model_p : type_point := origin;
 		view_p  : type_view_point;
 	begin
 		-- compute a view point according to current model point:
@@ -305,16 +305,16 @@ package body pac_canvas is
 	function view_to_model (
 		self   : not null access type_view;
 		p      : in type_view_point) 
-		return type_model_point is
+		return type_point is
 	begin
--- 		return type_model_point (set (
--- 			x	=> type_model_coordinate (p.x / self.scale) + self.topleft.x,
--- 			y	=> type_model_coordinate (p.y / self.scale) + self.topleft.y
--- 			));
-		return (
-			x	=> type_model_coordinate (p.x / self.scale) + self.topleft.x,
-			y	=> type_model_coordinate (p.y / self.scale) + self.topleft.y
-			);
+		return type_point (set (
+			x	=> type_distance (p.x / self.scale) + (x (self.topleft)),
+			y	=> type_distance (p.y / self.scale) + (y (self.topleft))
+			));
+-- 		return (
+-- 			x	=> type_distance (p.x / self.scale) + self.topleft.x,
+-- 			y	=> type_distance (p.y / self.scale) + self.topleft.y
+-- 			);
 	end view_to_model;
 
 	function view_to_model (
@@ -322,16 +322,16 @@ package body pac_canvas is
 		rect   : in type_view_rectangle) -- position and size are in pixels
 		return type_model_rectangle is
 	begin
-		return (x      => type_model_coordinate (rect.x / self.scale) + self.topleft.x,
-				y      => type_model_coordinate (rect.y / self.scale) + self.topleft.y,
-				width  => type_model_coordinate (rect.width / self.scale),
-				height => type_model_coordinate (rect.height / self.scale));
+		return (x      => type_distance (rect.x / self.scale) + self.topleft.x,
+				y      => type_distance (rect.y / self.scale) + self.topleft.y,
+				width  => type_distance (rect.width / self.scale),
+				height => type_distance (rect.height / self.scale));
 	end view_to_model;
 
 	
 	function model_to_view (
 		self   : not null access type_view;
-		p      : in type_model_point) 
+		p      : in type_point) 
 		return type_view_point is
 	begin
 		return (
@@ -406,9 +406,9 @@ package body pac_canvas is
 -- 		pos  : constant type_model_point := type_model_point (set (
 -- 							x => type_model_coordinate (self.hadj.get_value),
 -- 							y => type_model_coordinate (self.vadj.get_value)));
-		pos  : constant type_model_point := (
-							x => type_model_coordinate (self.hadj.get_value),
-							y => type_model_coordinate (self.vadj.get_value));
+		pos  : constant type_point := type_point (set (
+							x => type_distance (self.hadj.get_value),
+							y => type_distance (self.vadj.get_value)));
 
 	begin
 		if pos /= self.topleft then
@@ -570,9 +570,9 @@ package body pac_canvas is
 		self : constant type_view_ptr := type_view_ptr (view);
 
 		-- The point in the model (or on the sheet) expressed in millimeters:
-		model_point : type_model_point;
+		model_point : type_point;
 
-		drawing_point : type_model_point;
+		drawing_point : type_point;
 	begin
 		new_line;
 		put_line ("mouse movement ! new positions are:");
@@ -638,7 +638,7 @@ package body pac_canvas is
 		scale	: type_scale := get_scale (self);
 
 		-- The point at which the zooming takes place:
-		point	: type_model_point;
+		point	: type_point;
 		
 	begin -- on_scroll_event
 
@@ -780,13 +780,13 @@ package body pac_canvas is
 		self     : not null access type_view;
 		scale    : in type_scale := scale_default;
 		--preserve : in type_model_point := geometry.origin)
-		preserve : in type_model_point := origin)
+		preserve : in type_point := origin)
 	is
 		-- backup the current scale
 		old_scale : constant type_scale := self.scale;
 		
 		box : type_model_rectangle;
-		p   : type_model_point;
+		p   : type_point;
 	begin
 		if preserve /= origin then
 			-- set p at the point given by preserve
@@ -797,7 +797,9 @@ package body pac_canvas is
 
 			-- set p at the center of the visible area
 			--p := type_model_point (set (box.x + box.width / 2.0, box.y + box.height / 2.0));
-			p := (x => box.x + box.width / 2.0, y => box.y + box.height / 2.0);
+			p := type_point (set (
+				x => box.x + box.width / 2.0,
+				y => box.y + box.height / 2.0));
 		end if;
 
 		self.scale := scale;
@@ -807,9 +809,9 @@ package body pac_canvas is
 -- 			p.x - (p.x - self.topleft.x) * type_model_coordinate (old_scale / scale),
 -- 			p.y - (p.y - self.topleft.y) * type_model_coordinate (old_scale / scale)));
 
-		self.topleft := (
-			p.x - (p.x - self.topleft.x) * type_model_coordinate (old_scale / scale),
-			p.y - (p.y - self.topleft.y) * type_model_coordinate (old_scale / scale));
+		self.topleft := type_point (set (
+			p.x - (p.x - self.topleft.x) * type_distance (old_scale / scale),
+			p.y - (p.y - self.topleft.y) * type_distance (old_scale / scale)));
 		
 		self.scale_to_fit_requested := 0.0;
 		self.set_adjustment_values;
@@ -854,7 +856,7 @@ package body pac_canvas is
 
 	procedure set_grid_size (
 		self : not null access type_view'class;
-		size : in type_model_coordinate_positive := grid_default) is
+		size : in type_distance_positive := grid_default) is
 	begin
 		self.grid_size := size;
 	end set_grid_size;
@@ -868,7 +870,7 @@ package body pac_canvas is
 		box     : type_model_rectangle;
 		w, h, s : gdouble;
 		alloc   : gtk_allocation;
-		tl      : type_model_point;
+		tl      : type_point;
 		wmin, hmin : gdouble;
 	begin
 		put_line ("scale to fit ...");
@@ -909,10 +911,10 @@ package body pac_canvas is
 -- 					y	=> box.y - (type_model_coordinate (h / s) - box.height) / 2.0)
 -- 					);
 
-				tl := (
-					x	=> box.x - (type_model_coordinate (w / s) - box.width) / 2.0,
-					y	=> box.y - (type_model_coordinate (h / s) - box.height) / 2.0
-					);
+				tl := type_point (set (
+					x	=> box.x - (type_distance (w / s) - box.width) / 2.0,
+					y	=> box.y - (type_distance (h / s) - box.height) / 2.0
+					));
 				
 				self.scale := s;
 				self.topleft := tl;
@@ -925,12 +927,12 @@ package body pac_canvas is
 	
 	function convert_x (x : in type_distance) return type_view_coordinate is begin
 		return type_view_coordinate (
-			type_model_coordinate (x)
+			type_distance (x)
 			);
 	end;
 
-	function convert_x (x : in type_distance) return type_model_coordinate is begin
-		return type_model_coordinate (x);
+	function convert_x (x : in type_distance) return type_distance is begin
+		return type_distance (x);
 	end;
 
 end pac_canvas;

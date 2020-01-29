@@ -92,25 +92,25 @@ package body canvas_schematic is
 	
 	function model_to_drawing (
 		self		: not null access type_view;
-		model_point : in type_model_point)	
-		return type_model_point is 
+		model_point : in type_point)	
+		return type_point is 
 		use et_general;
-		p : type_model_point; -- to be returned
+		p : type_point; -- to be returned
 	begin
--- 		set (point	=> p,
--- 			 axis	=> X, 
--- 			 value	=> model_point.x - model.frame_bounding_box.x);
-		p.x := model_point.x - self.drawing.frame_bounding_box.x;
+		set (point	=> p,
+			 axis	=> X, 
+			 value	=> model_point.x - self.drawing.frame_bounding_box.x);
+-- 		p.x := model_point.x - self.drawing.frame_bounding_box.x;
 		
--- 		set (point	=> p,
--- 			 axis	=> Y,
--- 			 value	=> type_model_coordinate (model.frame.size.y) 
--- 						- model_point.y 
--- 						+ model.frame_bounding_box.y);
-
-		p.y := type_model_coordinate (self.drawing.frame.size.y) 
+		set (point	=> p,
+			 axis	=> Y,
+			 value	=> type_distance (self.drawing.frame.size.y) 
 						- model_point.y 
-						+ self.drawing.frame_bounding_box.y;
+						+ self.drawing.frame_bounding_box.y);
+
+-- 		p.y := type_distance (self.drawing.frame.size.y) 
+-- 						- model_point.y 
+-- 						+ self.drawing.frame_bounding_box.y;
 		return p;
 	end;
 
@@ -199,12 +199,12 @@ package body canvas_schematic is
 		-- set some variables frequently used regarding frame and paper:
 		self.drawing.frame := type_modules.element (module).frames.frame;
 		
-		self.drawing.paper_height := type_model_coordinate (paper_dimension (
+		self.drawing.paper_height := type_distance_positive (paper_dimension (
 							paper_size	=> self.drawing.frame.paper,
 							orientation	=> self.drawing.frame.orientation,
 							axis		=> Y));
 
-		self.drawing.paper_width := type_model_coordinate (paper_dimension (
+		self.drawing.paper_width := type_distance_positive (paper_dimension (
 							paper_size	=> self.drawing.frame.paper,
 							orientation	=> self.drawing.frame.orientation,
 							axis		=> X));
@@ -212,12 +212,12 @@ package body canvas_schematic is
 		-- The drawing frame has a bounding box:
 
 		-- position (upper left corner):
-		self.drawing.frame_bounding_box.x := (self.drawing.paper_width - type_model_coordinate (self.drawing.frame.size.x)) / 2.0;
-		self.drawing.frame_bounding_box.y := (self.drawing.paper_height - type_model_coordinate (self.drawing.frame.size.y)) / 2.0;
+		self.drawing.frame_bounding_box.x := (self.drawing.paper_width - type_distance_positive (self.drawing.frame.size.x)) / 2.0;
+		self.drawing.frame_bounding_box.y := (self.drawing.paper_height - type_distance_positive (self.drawing.frame.size.y)) / 2.0;
 
 		-- width and height
-		self.drawing.frame_bounding_box.width := type_model_coordinate (self.drawing.frame.size.x);
-		self.drawing.frame_bounding_box.height := type_model_coordinate (self.drawing.frame.size.y);
+		self.drawing.frame_bounding_box.width := type_distance_positive (self.drawing.frame.size.x);
+		self.drawing.frame_bounding_box.height := type_distance_positive (self.drawing.frame.size.y);
 
 		-- The sheet has a drawing box:
 		self.drawing.paper_bounding_box := (0.0, 0.0, self.drawing.paper_width, self.drawing.paper_height);
@@ -239,18 +239,18 @@ package body canvas_schematic is
 		return type_view_coordinate 
 			(
 			self.drawing.frame_bounding_box.height 
-			- type_model_coordinate (y)
+			- type_distance (y)
 			);
 	end;
 		
 	function convert_and_shift_y (
 		self	: not null access type_view;
 		y		: in type_distance)
-		return type_model_coordinate is 
+		return type_distance is 
 	begin
 		return (
 			self.drawing.frame_bounding_box.height 
-			- type_model_coordinate (y)
+			- type_distance (y)
 			);
 	end;
 
