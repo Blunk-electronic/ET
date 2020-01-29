@@ -100,7 +100,6 @@ package body canvas_schematic is
 		set (point	=> p,
 			 axis	=> X, 
 			 value	=> model_point.x - self.drawing.frame_bounding_box.x);
--- 		p.x := model_point.x - self.drawing.frame_bounding_box.x;
 		
 		set (point	=> p,
 			 axis	=> Y,
@@ -108,9 +107,6 @@ package body canvas_schematic is
 						- model_point.y 
 						+ self.drawing.frame_bounding_box.y);
 
--- 		p.y := type_distance (self.drawing.frame.size.y) 
--- 						- model_point.y 
--- 						+ self.drawing.frame_bounding_box.y;
 		return p;
 	end;
 
@@ -125,10 +121,8 @@ package body canvas_schematic is
 	
 	procedure gtk_new (
 		self	: out type_view_ptr) is
--- 		model	: access type_model'class := null) is
 	begin
 		self := new type_view;
-		--init (self, model);
 		init (self);
 	end;
 
@@ -239,7 +233,7 @@ package body canvas_schematic is
 		return type_view_coordinate 
 			(
 			self.drawing.frame_bounding_box.height 
-			- type_distance (y)
+			- y
 			);
 	end;
 		
@@ -250,7 +244,7 @@ package body canvas_schematic is
 	begin
 		return (
 			self.drawing.frame_bounding_box.height 
-			- type_distance (y)
+			- y
 			);
 	end;
 

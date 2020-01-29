@@ -101,8 +101,6 @@ is
 	end fine_tune_y_offset;
 	
 begin -- draw_grid
-	null;
-	
 	if style.get_fill /= null_pattern then
 		set_source (context.cr, style.get_fill);
 		paint (context.cr);

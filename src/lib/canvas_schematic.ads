@@ -75,7 +75,6 @@ package canvas_schematic is
 
 	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas.pac_canvas (
--- 		type_distance	=> et_coordinates.type_distance,
 		geometry		=> et_coordinates.geometry);
 
 	use pac_canvas;

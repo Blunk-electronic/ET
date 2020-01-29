@@ -103,18 +103,6 @@ package body pac_canvas is
 		return ("view x/y [pixels]" & to_string (gint (p.x)) & "/" & to_string (gint (p.y)));
 	end;
 
--- 	function to_string (d : in type_model_coordinate) return string is begin
--- 		return type_model_coordinate'image (d);
--- 	end;
-	
--- 	function to_string (p : in type_model_point) return string is begin
--- 		return ("model x/y [mm]" & to_string (p.x) & "/" & to_string (p.y));
--- 	end;
-		
--- 	model_signals : constant gtkada.types.chars_ptr_array := (
--- 		1 => new_string (string (signal_layout_changed))
--- 		);
-	
 	view_signals : constant gtkada.types.chars_ptr_array := (
 		1 => new_string (string (signal_viewport_changed))
 		);
@@ -124,21 +112,7 @@ package body pac_canvas is
 	h_scroll_property : constant property_id := 3;
 	v_scroll_property : constant property_id := 4;
 
--- 	model_class_record : glib.object.ada_gobject_class := glib.object.uninitialized_class;
 	view_class_record : aliased glib.object.ada_gobject_class := glib.object.uninitialized_class;
-	
--- 	function model_get_type return glib.gtype is begin
--- 		glib.object.initialize_class_record (
--- 			ancestor     => gtype_object,
--- 			signals      => model_signals,
--- 			class_record => model_class_record,
--- 			type_name    => "gtkada_model",
--- 			parameters   => (
--- 				1 => (1 => gtype_none)  	-- layout_changed
--- 				)
--- 			);  
--- 		return model_class_record.the_type;
--- 	end model_get_type;
 
 	procedure union ( -- CS move to et_geometry ?
 		rect1 : in out type_model_rectangle;
@@ -311,10 +285,6 @@ package body pac_canvas is
 			x	=> type_distance (p.x / self.scale) + (x (self.topleft)),
 			y	=> type_distance (p.y / self.scale) + (y (self.topleft))
 			));
--- 		return (
--- 			x	=> type_distance (p.x / self.scale) + self.topleft.x,
--- 			y	=> type_distance (p.y / self.scale) + self.topleft.y
--- 			);
 	end view_to_model;
 
 	function view_to_model (
@@ -403,9 +373,6 @@ package body pac_canvas is
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class) is
 	-- Called when one of the scrollbars has changed value.		
 		self : constant type_view_ptr := type_view_ptr (view);
--- 		pos  : constant type_model_point := type_model_point (set (
--- 							x => type_model_coordinate (self.hadj.get_value),
--- 							y => type_model_coordinate (self.vadj.get_value)));
 		pos  : constant type_point := type_point (set (
 							x => type_distance (self.hadj.get_value),
 							y => type_distance (self.vadj.get_value)));
@@ -432,7 +399,6 @@ package body pac_canvas is
 				self.hadj := gtk_adjustment (get_object (value));
 				if self.hadj /= null then
 					set_adjustment_values (self);
-					--self.hadj.on_value_changed (on_adj_value_changed'access, self);
 					self.hadj.on_value_changed (access_on_adj_value_changed, self);
 					self.queue_draw;
 				end if;
@@ -443,7 +409,6 @@ package body pac_canvas is
 
 				if self.vadj /= null then
 					set_adjustment_values (self);
-					--self.vadj.on_value_changed (on_adj_value_changed'access, self);
 					self.vadj.on_value_changed (access_on_adj_value_changed, self);
 					self.queue_draw;
 				end if;
@@ -509,7 +474,6 @@ package body pac_canvas is
 	end on_size_allocate;
 
 	procedure view_class_init (self : gobject_class) is begin
-		--set_properties_handlers (self, view_set_property'access, view_get_property'access);
 		set_properties_handlers (self, access_view_set_property, access_view_get_property);
 
 		override_property (self, h_adj_property, "hadjustment");
@@ -517,11 +481,8 @@ package body pac_canvas is
 		override_property (self, h_scroll_property, "hscroll-policy");
 		override_property (self, v_scroll_property, "vscroll-policy");
 
-		--set_default_draw_handler (self, on_view_draw'access);
 		set_default_draw_handler (self, access_on_view_draw);
-		--set_default_size_allocate_handler (self, on_size_allocate'access);
 		set_default_size_allocate_handler (self, access_on_size_allocate);
-		--set_default_realize_handler (self, on_view_realize'access);
 		set_default_realize_handler (self, access_on_view_realize);
 	end;
 
@@ -779,7 +740,6 @@ package body pac_canvas is
 	procedure set_scale (
 		self     : not null access type_view;
 		scale    : in type_scale := scale_default;
-		--preserve : in type_model_point := geometry.origin)
 		preserve : in type_point := origin)
 	is
 		-- backup the current scale
@@ -796,7 +756,6 @@ package body pac_canvas is
 			box := self.get_visible_area;
 
 			-- set p at the center of the visible area
-			--p := type_model_point (set (box.x + box.width / 2.0, box.y + box.height / 2.0));
 			p := type_point (set (
 				x => box.x + box.width / 2.0,
 				y => box.y + box.height / 2.0));
@@ -805,10 +764,6 @@ package body pac_canvas is
 		self.scale := scale;
 
 		-- calculate the new topleft corner of the visible area:
--- 		self.topleft := type_model_point (set (
--- 			p.x - (p.x - self.topleft.x) * type_model_coordinate (old_scale / scale),
--- 			p.y - (p.y - self.topleft.y) * type_model_coordinate (old_scale / scale)));
-
 		self.topleft := type_point (set (
 			p.x - (p.x - self.topleft.x) * type_distance (old_scale / scale),
 			p.y - (p.y - self.topleft.y) * type_distance (old_scale / scale)));
@@ -870,7 +825,6 @@ package body pac_canvas is
 		box     : type_model_rectangle;
 		w, h, s : gdouble;
 		alloc   : gtk_allocation;
-		tl      : type_point;
 		wmin, hmin : gdouble;
 	begin
 		put_line ("scale to fit ...");
@@ -879,14 +833,11 @@ package body pac_canvas is
 			self.scale_to_fit_requested := max_scale;
 			self.scale_to_fit_area := rect;
 
--- 		elsif self.model /= null then
 		else
 			self.scale_to_fit_requested := 0.0;
 			
 			if rect = no_rectangle then
-				--box := self.model.paper_bounding_box;
 				box := bounding_box (self);
--- 				box := rect; -- CS
 			else
 				box := rect;
 			end if;
@@ -905,19 +856,14 @@ package body pac_canvas is
 				s := gdouble'min (max_scale, wmin);
 				s := gdouble'max (min_scale, s);
 
-				-- calculate the new topleft corner of the visible area:
--- 				tl := type_model_point (set (
--- 					x	=> box.x - (type_model_coordinate (w / s) - box.width) / 2.0,
--- 					y	=> box.y - (type_model_coordinate (h / s) - box.height) / 2.0)
--- 					);
+				self.scale := s;
 
-				tl := type_point (set (
+				-- calculate the new topleft corner of the visible area:
+				self.topleft := type_point (set (
 					x	=> box.x - (type_distance (w / s) - box.width) / 2.0,
 					y	=> box.y - (type_distance (h / s) - box.height) / 2.0
 					));
 				
-				self.scale := s;
-				self.topleft := tl;
 				self.set_adjustment_values;
 				self.queue_draw;
 
@@ -926,9 +872,7 @@ package body pac_canvas is
 	end scale_to_fit;
 	
 	function convert_x (x : in type_distance) return type_view_coordinate is begin
-		return type_view_coordinate (
-			type_distance (x)
-			);
+		return type_view_coordinate (x);
 	end;
 
 	function convert_x (x : in type_distance) return type_distance is begin

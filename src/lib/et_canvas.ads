@@ -75,7 +75,6 @@ package et_canvas is
 
 generic
 
--- 	type type_distance is delta <>;
 	with package geometry is new et_geometry.geometry_operations_2d (<>);
 	
 package pac_canvas is
@@ -114,20 +113,6 @@ package pac_canvas is
 	view_margin : constant type_view_coordinate := 20.0;
 
 
-	
-		
--- 	subtype type_model_coordinate is type_distance;
--- 	subtype type_model_coordinate_positive is type_model_coordinate range 0.0 .. type_model_coordinate'last;
--- 	type type_model_point is record
--- 		x,y	: type_model_coordinate; -- x/y only
--- 	end record;
--- 	origin : constant type_model_point := (0.0, 0.0);
--- 	subtype type_model_coordinate is type_distance;
--- 	subtype type_model_coordinate_positive is type_distance_positive;
--- 	subtype type_model_point is type_point; -- x/y only
-
-
--- 	function to_string (p : in type_model_point) return string;
 	
 	-- A rectangular area of the model:
 	type type_model_rectangle is record -- CS rename to type_rectangle and move to et_geometry
