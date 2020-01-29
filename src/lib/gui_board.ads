@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            GUI SCHEMATIC                                 --
+--                              GUI BOARD                                   --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -54,17 +54,18 @@ with ada.text_io;			use ada.text_io;
 
 -- with et_general;				use et_general;
 with et_project;				use et_project;
-with et_coordinates;			use et_coordinates;
 -- with et_string_processing;		use et_string_processing;
 
 
-package gui_schematic is
+package gui_board is
 
-	procedure init_window (
-		module	: in type_modules.cursor; -- cursor of generic module to be edited
-		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be opened
 	
-end gui_schematic;
+	procedure init_window (
+		module	: in type_modules.cursor); -- cursor of generic module to be edited
+
+
+	
+end gui_board;
 
 -- Soli Deo Gloria
 

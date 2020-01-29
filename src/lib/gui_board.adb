@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            GUI SCHEMATIC                                 --
+--                              GUI BOARD                                   --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -54,16 +54,16 @@ with ada.directories;
 
 with et_general;				use et_general;
 with et_project;				use et_project;
-with et_coordinates;			use et_coordinates;
+-- with et_coordinates;			use et_coordinates;
 with et_string_processing;		use et_string_processing;
 
 with gui_cb;					use gui_cb;	
-with canvas_schematic;			use canvas_schematic;
+-- with canvas_schematic;			use canvas_schematic;
 		
-use canvas_schematic.pac_canvas;
+-- use canvas_schematic.pac_canvas;
 
 
-package body gui_schematic is
+package body gui_board is
 
 	window					: gtk_window; -- This is an access/pointer to the actual window.
 	box_back				: gtk_box; -- This is an access/pointer to the actual box.
@@ -82,12 +82,11 @@ package body gui_schematic is
 	scrolled				: gtk_scrolled_window;
 
 	procedure init_window (
-		module	: in type_modules.cursor; -- cursor of generic module to be edited
-		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be opened
+		module	: in type_modules.cursor) -- cursor of generic module to be edited
 	is begin
 
 		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
-		window.set_title (system_name & " SCHEMATIC");
+		window.set_title (system_name & " BOARD");
 		window.set_default_size (1024, 768);
 
 		-- If the operator wishes to terminate the program (by clicking X)
@@ -193,22 +192,22 @@ package body gui_schematic is
 
 
 
-		gtk_new (canvas);
-		add (scrolled, canvas); -- place the canvas in the scrolled window
-
-		-- set the module to be opened and optionally the sheet to be displayed:
-		init_drawing (canvas, module, sheet);
+-- 		gtk_new (canvas);
+-- 		add (scrolled, canvas); -- place the canvas in the scrolled window
+-- 
+-- 		-- set the module to be opened and optionally the sheet to be displayed:
+-- 		init_drawing (canvas, module, sheet);
+-- 		
+-- 		scale_to_fit (canvas);
 		
-		scale_to_fit (canvas);
-		
-		-- display the schematic:
+		-- display the board:
 		window.show_all;
 
 		
 	end init_window;
 	
 	
-end gui_schematic;
+end gui_board;
 
 -- Soli Deo Gloria
 
