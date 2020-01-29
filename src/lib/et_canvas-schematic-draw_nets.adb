@@ -97,7 +97,7 @@ procedure draw_nets (
 			begin -- query_segments
 				
 				-- draw nets of the active sheet only:
-				if strand.position.sheet = accessories.sheet then
+				if strand.position.sheet = self.accessories.sheet then
 					
 					while segment_cursor /= type_net_segments.no_element loop
 
@@ -120,8 +120,8 @@ procedure draw_nets (
 							-- all following drawing is relative to the upper left frame corner.
 							translate (
 								context.cr,
-								convert_x (accessories.frame_bounding_box.x),
-								convert_y (accessories.frame_bounding_box.y));
+								convert_x (self.accessories.frame_bounding_box.x),
+								convert_y (self.accessories.frame_bounding_box.y));
 
 							cairo.set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
 
@@ -183,7 +183,7 @@ begin
 	
 	-- draw the nets
 	type_modules.query_element (
-		position	=> accessories.module,
+		position	=> self.accessories.module,
 		process		=> query_nets'access);
 	
 end draw_nets;

@@ -177,6 +177,7 @@ package pac_canvas is
 	-- The pointer to the canvas/view:
 	type type_view_ptr is access all type_view'class;
 
+	canvas	: type_view_ptr;
 	
 	
 	procedure viewport_changed (self : not null access type_view'class);
@@ -331,6 +332,7 @@ package pac_canvas is
 		y		: in type_distance) 
 		return type_model_coordinate is abstract;
 
+	
 private
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);
 	-- Called when one of the scrollbars has changed value.

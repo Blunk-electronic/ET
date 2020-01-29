@@ -104,7 +104,7 @@ package et_canvas.schematic is
 		sheet	: et_coordinates.type_sheet := type_sheet'first;
 	end record;
 		
-	accessories : type_accessories;
+-- 	accessories : type_accessories;
 	
 
 -- 	-- Initializes the internal data so that the model can send signals:
@@ -144,7 +144,10 @@ package et_canvas.schematic is
 		return type_model_point;
 
 
-	canvas	: type_view_ptr;
+		-- 	canvas	: type_view_ptr;
+	type type_ptr is access all type_view;
+	ptr : type_ptr;
+-- 	drawing : 
 
 	
 	procedure gtk_new (
@@ -178,10 +181,15 @@ package et_canvas.schematic is
 		context : type_draw_context;
 		area    : type_model_rectangle);
 
+
+	
 	-- Assign the module to be edited to the model:
 	procedure set_module (
-		module		: in et_project.type_modules.cursor;
-		sheet		: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be opened
+		self	: not null access type_view;
+-- 		self	: not null access type_view'class;
+-- 		self	: in type_view_ptr;
+		module	: in et_project.type_modules.cursor;
+		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be opened
 
 
 

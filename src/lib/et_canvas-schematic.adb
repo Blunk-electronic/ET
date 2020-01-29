@@ -100,7 +100,7 @@ package body et_canvas.schematic is
 -- 		set (point	=> p,
 -- 			 axis	=> X, 
 -- 			 value	=> model_point.x - model.frame_bounding_box.x);
-		p.x := model_point.x - accessories.frame_bounding_box.x;
+		p.x := model_point.x - self.accessories.frame_bounding_box.x;
 		
 -- 		set (point	=> p,
 -- 			 axis	=> Y,
@@ -108,16 +108,16 @@ package body et_canvas.schematic is
 -- 						- model_point.y 
 -- 						+ model.frame_bounding_box.y);
 
-		p.y := type_model_coordinate (accessories.frame.size.y) 
+		p.y := type_model_coordinate (self.accessories.frame.size.y) 
 						- model_point.y 
-						+ accessories.frame_bounding_box.y;
+						+ self.accessories.frame_bounding_box.y;
 		return p;
 	end;
 
 	function bounding_box (self : not null access type_view)
 		return type_model_rectangle is
 	begin
-		return accessories.paper_bounding_box; -- CS should include items outside the frame
+		return self.accessories.paper_bounding_box; -- CS should include items outside the frame
 	end;
 
 
@@ -182,70 +182,75 @@ package body et_canvas.schematic is
 
 
 	procedure set_module (
-		module		: in et_project.type_modules.cursor;
-		sheet		: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be opened
+		self	: not null access type_view;
+-- 		self	: not null access type_view'class;
+-- 		self	: in type_view_ptr;							 
+		module	: in et_project.type_modules.cursor;
+		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be opened
 	is
 		use et_general;
 		use et_frames;
 		use et_project;
-		
-	begin 
-		accessories.module := module;
+
+-- 		type type_local_view_ptr is access all type_view;
+-- 		view : type_local_view_ptr := type_local_view_ptr (self);
+	begin
+		null;
+		self.accessories.module := module;
 
 		-- set some variables frequently used regarding frame and paper:
-		--accessories.frame := type_modules.element (model.module).frames.frame;
-		accessories.frame := type_modules.element (module).frames.frame;
+		self.accessories.frame := type_modules.element (module).frames.frame;
 		
-		accessories.paper_height := type_model_coordinate (paper_dimension (
-							paper_size	=> accessories.frame.paper,
-							orientation	=> accessories.frame.orientation,
+		self.accessories.paper_height := type_model_coordinate (paper_dimension (
+							paper_size	=> self.accessories.frame.paper,
+							orientation	=> self.accessories.frame.orientation,
 							axis		=> Y));
 
-		accessories.paper_width := type_model_coordinate (paper_dimension (
-							paper_size	=> accessories.frame.paper,
-							orientation	=> accessories.frame.orientation,
+		self.accessories.paper_width := type_model_coordinate (paper_dimension (
+							paper_size	=> self.accessories.frame.paper,
+							orientation	=> self.accessories.frame.orientation,
 							axis		=> X));
 
 		-- The drawing frame has a bounding box:
 
 		-- position (upper left corner):
-		accessories.frame_bounding_box.x := (accessories.paper_width - type_model_coordinate (accessories.frame.size.x)) / 2.0;
-		accessories.frame_bounding_box.y := (accessories.paper_height - type_model_coordinate (accessories.frame.size.y)) / 2.0;
+		self.accessories.frame_bounding_box.x := (self.accessories.paper_width - type_model_coordinate (self.accessories.frame.size.x)) / 2.0;
+		self.accessories.frame_bounding_box.y := (self.accessories.paper_height - type_model_coordinate (self.accessories.frame.size.y)) / 2.0;
 
 		-- width and height
-		accessories.frame_bounding_box.width := type_model_coordinate (accessories.frame.size.x);
-		accessories.frame_bounding_box.height := type_model_coordinate (accessories.frame.size.y);
+		self.accessories.frame_bounding_box.width := type_model_coordinate (self.accessories.frame.size.x);
+		self.accessories.frame_bounding_box.height := type_model_coordinate (self.accessories.frame.size.y);
 
 		-- The sheet has a drawing box:
-		accessories.paper_bounding_box := (0.0, 0.0, accessories.paper_width, accessories.paper_height);
+		self.accessories.paper_bounding_box := (0.0, 0.0, self.accessories.paper_width, self.accessories.paper_height);
 
 		-- Drawing of the title block items is relative to the title block position:
-		accessories.title_block_position := accessories.frame.title_block_schematic.position;
+		self.accessories.title_block_position := self.accessories.frame.title_block_schematic.position;
 
 		-- set active sheet
-		accessories.sheet := sheet;
+		self.accessories.sheet := sheet;
 	end set_module;
 
 
 	function convert_and_shift_y (
-		self		: not null access type_view;
-		y			: in type_distance)
+		self	: not null access type_view;
+		y		: in type_distance)
 		return type_view_coordinate is 
 	begin
 		return type_view_coordinate 
 			(
-			accessories.frame_bounding_box.height 
+			self.accessories.frame_bounding_box.height 
 			- type_model_coordinate (y)
 			);
 	end;
 		
 	function convert_and_shift_y (
-		self		: not null access type_view;
-		y			: in type_distance)
+		self	: not null access type_view;
+		y		: in type_distance)
 		return type_model_coordinate is 
 	begin
 		return (
-			accessories.frame_bounding_box.height 
+			self.accessories.frame_bounding_box.height 
 			- type_model_coordinate (y)
 			);
 	end;

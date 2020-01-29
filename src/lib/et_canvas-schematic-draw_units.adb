@@ -352,8 +352,8 @@ procedure draw_units (
 			-- of the frame_bounding_box:
 			translate (
 				context.cr,
-				convert_x (accessories.frame_bounding_box.x + bounding_box.x),
-				convert_y (accessories.frame_bounding_box.y + bounding_box.y));
+				convert_x (self.accessories.frame_bounding_box.x + bounding_box.x),
+				convert_y (self.accessories.frame_bounding_box.y + bounding_box.y));
 
 			-- SYMBOL BODY
 			-- set color
@@ -429,7 +429,7 @@ procedure draw_units (
 			device_cursor_lib : type_devices.cursor;
 		begin
 			-- we want to draw only those units which are on the active sheet:
-			if element (unit_cursor).position.sheet = accessories.sheet then
+			if element (unit_cursor).position.sheet = self.accessories.sheet then
 				unit_name := key (unit_cursor);
 				unit_position := type_point (element (unit_cursor).position);
 				--put_line (to_string (unit_name));
@@ -447,7 +447,7 @@ procedure draw_units (
 begin
 -- 	put_line ("draw units ...");
 
-	iterate (element (accessories.module).devices, query_devices'access);
+	iterate (element (self.accessories.module).devices, query_devices'access);
 	
 end draw_units;
 

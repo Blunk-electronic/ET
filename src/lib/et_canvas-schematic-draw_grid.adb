@@ -56,8 +56,8 @@ is
 	-- the position of the drawing frame. That is the position of the frame bounding box.
 	-- NOTE: The frame is drawn directly in cairo, means in y-axis going downwards. 
 	-- See procedure draw_frame.
-	offset_x : type_view_coordinate := type_view_coordinate (accessories.frame_bounding_box.x);
-	offset_y : type_view_coordinate := type_view_coordinate (accessories.frame_bounding_box.y);
+	offset_x : type_view_coordinate := type_view_coordinate (self.accessories.frame_bounding_box.x);
+	offset_y : type_view_coordinate := type_view_coordinate (self.accessories.frame_bounding_box.y);
 	-- Later, the offset_y will get a fine adjustment according to the frame height.
 
 	function lower_grid_coordinate (coordinate : in type_model_coordinate) 
@@ -83,7 +83,7 @@ is
 		-- Calculate the next lower y-grid-coordinate that comes before the frame height.
 		-- Example: If the frame is 207mm high and grid size is 10 then dy becomes 200.
 		dy := type_view_coordinate (
-				gint (accessories.frame.size.y / et_frames.type_distance (self.grid_size))) 
+				gint (self.accessories.frame.size.y / et_frames.type_distance (self.grid_size))) 
 				* type_view_coordinate (self.grid_size);
 
 		-- put_line ("y1 " & type_view_coordinate'image (y));
@@ -92,7 +92,7 @@ is
 		-- next lower y-grid-coordinate.
 		-- Example: If the lower border of the frame is at 207mm and the next lower y-grid-coordinate 
 		-- is 200 then the dy becomes 7.
-		dy := type_view_coordinate (accessories.frame.size.y) - dy;
+		dy := type_view_coordinate (self.accessories.frame.size.y) - dy;
 
 		-- put_line ("y2 " & type_view_coordinate'image (y));
 
