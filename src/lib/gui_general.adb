@@ -239,7 +239,7 @@ package body gui_general is
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 
 		-- set the module to be opened and optionally the sheet to be displayed:
-		set_module (canvas, module, sheet);
+		init_drawing (canvas, module, sheet);
 		
 		scale_to_fit (canvas);
 		

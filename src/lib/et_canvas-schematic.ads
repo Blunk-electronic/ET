@@ -81,7 +81,7 @@ package et_canvas.schematic is
 	
 
 
-	type type_accessories is record	
+	type type_drawing is record	
 		module	: et_project.type_modules.cursor;
 
 		-- These variables are frequently used. Procedure set_module
@@ -109,7 +109,7 @@ package et_canvas.schematic is
 
 -- VIEW
 	type type_view is new pac_canvas.type_view with record
-		accessories	: type_accessories;
+		drawing	: type_drawing;
 	end record;
 
 	overriding function bounding_box (self : not null access type_view)
@@ -174,8 +174,8 @@ package et_canvas.schematic is
 
 
 	
-	-- Assign the module to be edited to the model:
-	procedure set_module (
+	-- Init the drawing:
+	procedure init_drawing (
 		view	: in type_view_ptr;
 		module	: in et_project.type_modules.cursor;
 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be opened

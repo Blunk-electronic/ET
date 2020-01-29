@@ -66,14 +66,14 @@ procedure draw_frame (
 			convert_x (et_coordinates.type_distance
 				(
 				element (cursor).start_point.x 
-				+ self.accessories.title_block_position.x -- x position of title block
+				+ self.drawing.title_block_position.x -- x position of title block
 				)),
 				
 			-- y position
 			convert_and_shift_y (self, et_coordinates.type_distance 
 				(
 				element (cursor).start_point.y 
-				+ self.accessories.title_block_position.y -- y position of title block
+				+ self.drawing.title_block_position.y -- y position of title block
 				))
 			);
 
@@ -87,14 +87,14 @@ procedure draw_frame (
 			convert_x (et_coordinates.type_distance
 				(
 				element (cursor).end_point.x 
-				+ self.accessories.title_block_position.x -- x position of title block
+				+ self.drawing.title_block_position.x -- x position of title block
 				)),
 
 			-- y position
 			convert_and_shift_y (self, et_coordinates.type_distance 
 				(
 				element (cursor).end_point.y 
-				+ self.accessories.title_block_position.y -- y position of title block
+				+ self.drawing.title_block_position.y -- y position of title block
 				))
 			);
 	end;
@@ -103,7 +103,7 @@ begin
 --		put_line ("draw frame ...");
 
 	if (in_area = no_rectangle)
-		or else intersects (in_area, self.accessories.frame_bounding_box) 
+		or else intersects (in_area, self.drawing.frame_bounding_box) 
 	then
 		-- CS test size 
 -- 			if not size_above_threshold (self, context.view) then
@@ -116,8 +116,8 @@ begin
 		-- all following drawing is relative to the upper left frame corner.
 		translate (
 			context.cr,
-			convert_x (self.accessories.frame_bounding_box.x),
-			convert_y (self.accessories.frame_bounding_box.y));
+			convert_x (self.drawing.frame_bounding_box.x),
+			convert_y (self.drawing.frame_bounding_box.y));
 
 		cairo.set_line_width (context.cr, 1.0);
 
@@ -129,27 +129,27 @@ begin
 			context.cr,
 			convert_x (et_coordinates.type_distance (0.0)),
 			convert_y (et_coordinates.type_distance (0.0)),
-			convert_x (et_coordinates.type_distance (self.accessories.frame.size.x)),
-			convert_y (et_coordinates.type_distance (self.accessories.frame.size.y)));
+			convert_x (et_coordinates.type_distance (self.drawing.frame.size.x)),
+			convert_y (et_coordinates.type_distance (self.drawing.frame.size.y)));
 
 		-- draw the inner border
 		cairo.rectangle (
 			context.cr,
-			convert_x (et_coordinates.type_distance (self.accessories.frame.border_width)),
-			convert_y (et_coordinates.type_distance (self.accessories.frame.border_width)),
-			convert_x (et_coordinates.type_distance (self.accessories.frame.size.x - 2 * self.accessories.frame.border_width)),
-			convert_y (et_coordinates.type_distance (self.accessories.frame.size.y - 2 * self.accessories.frame.border_width)));
+			convert_x (et_coordinates.type_distance (self.drawing.frame.border_width)),
+			convert_y (et_coordinates.type_distance (self.drawing.frame.border_width)),
+			convert_x (et_coordinates.type_distance (self.drawing.frame.size.x - 2 * self.drawing.frame.border_width)),
+			convert_y (et_coordinates.type_distance (self.drawing.frame.size.y - 2 * self.drawing.frame.border_width)));
 
 		-- TITLE BLOCK
 		-- lines
-		iterate (self.accessories.frame.title_block_schematic.lines, draw_line'access);
+		iterate (self.drawing.frame.title_block_schematic.lines, draw_line'access);
 
 		
 		-- CS draw the sector delimiters
 
 		-- CS draw the sector rows and columns
 
-		-- CS texts according to current accessories.sheet
+		-- CS texts according to current drawing.sheet
 		
 		cairo.stroke (context.cr);
 		
