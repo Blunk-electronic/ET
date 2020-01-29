@@ -47,7 +47,7 @@ separate (canvas_schematic)
 
 procedure draw_frame (
 	self	: not null access type_view;
-	in_area	: in type_model_rectangle := no_rectangle;
+	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
 	use et_frames;

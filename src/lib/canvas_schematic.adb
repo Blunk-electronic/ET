@@ -111,7 +111,7 @@ package body canvas_schematic is
 	end;
 
 	function bounding_box (self : not null access type_view)
-		return type_model_rectangle is
+		return type_rectangle is
 	begin
 		return self.drawing.paper_bounding_box; -- CS should include all items of the current sheet.
 		-- means: also items outside the frame
@@ -131,27 +131,27 @@ package body canvas_schematic is
 		self    : not null access type_view;
 		style   : gtkada.style.drawing_style;
 		context : type_draw_context;
-		area    : type_model_rectangle)	is separate;
+		area    : type_rectangle)	is separate;
 
 	procedure draw_frame (
 		self    : not null access type_view;
-		in_area	: in type_model_rectangle := no_rectangle;
+		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
 	procedure draw_nets (
 		self    : not null access type_view;
-		in_area	: in type_model_rectangle := no_rectangle;
+		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
 	procedure draw_units (
 		self	: not null access type_view;
-		in_area	: in type_model_rectangle := no_rectangle;
+		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
 	procedure draw_internal (
 		self    : not null access type_view;
 		context : type_draw_context;
-		area    : type_model_rectangle) 
+		area    : type_rectangle) 
 	is
 		-- prepare draing style so that white grid dots will be drawn.
 		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);

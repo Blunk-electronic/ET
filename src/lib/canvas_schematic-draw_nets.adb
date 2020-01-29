@@ -53,7 +53,7 @@ separate (canvas_schematic)
 
 procedure draw_nets (
 	self    : not null access type_view;
-	in_area	: in type_model_rectangle := no_rectangle;
+	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
 	procedure query_nets (
@@ -71,7 +71,7 @@ procedure draw_nets (
 				segment_cursor : type_net_segments.cursor := strand.segments.first;
 
 				-- The bounding box that surrounds the segment must be calculated.
-				bounding_box : type_model_rectangle;
+				bounding_box : type_rectangle;
 
 				procedure make_bounding_box (sc : in type_net_segments.cursor) is
 					use pac_shapes;					

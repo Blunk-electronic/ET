@@ -46,7 +46,7 @@ procedure draw_grid (
 	self    : not null access type_view;
 	style   : gtkada.style.drawing_style;
 	context : type_draw_context;
-	area    : type_model_rectangle) 
+	area    : type_rectangle) 
 is
 	x, y  : type_view_coordinate;
 	dot_size : constant type_view_coordinate := 0.1; -- the size of a dot

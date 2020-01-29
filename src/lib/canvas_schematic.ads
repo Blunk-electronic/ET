@@ -90,9 +90,9 @@ package canvas_schematic is
 		-- sets them. Other operations are free to access
 		-- them.
 		frame				: et_frames.type_frame (et_frames.SCHEMATIC);
-		frame_bounding_box	: type_model_rectangle;
+		frame_bounding_box	: type_rectangle;
 
-		paper_bounding_box	: type_model_rectangle;
+		paper_bounding_box	: type_rectangle;
 		paper_height		: et_coordinates.geometry.type_distance_positive;
 		paper_width			: et_coordinates.geometry.type_distance_positive;
 
@@ -116,7 +116,7 @@ package canvas_schematic is
 
 	-- Returns the bounding box of all items of the current sheet.
 	overriding function bounding_box (self : not null access type_view)
-		return type_model_rectangle;
+		return type_rectangle;
 
 	-- This function converts a y-value from the drawing to a y-value in the model.
 	-- The input y increases upwards. The output y increases downwards.
@@ -152,19 +152,19 @@ package canvas_schematic is
 	-- Draws the frame:
 	procedure draw_frame (
 		self	: not null access type_view;
-		in_area	: in type_model_rectangle := no_rectangle;
+		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context);
 
 	-- Draws the nets:
 	procedure draw_nets (
 		self    : not null access type_view;
-		in_area	: in type_model_rectangle := no_rectangle;
+		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context);
 
 	-- Draws the units:
 	procedure draw_units (
 		self	: not null access type_view;
-		in_area	: in type_model_rectangle := no_rectangle;
+		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context);
 
 	
@@ -175,7 +175,7 @@ package canvas_schematic is
 	overriding procedure draw_internal (
 		self    : not null access type_view;
 		context : type_draw_context;
-		area    : type_model_rectangle);
+		area    : type_rectangle);
 
 
 	

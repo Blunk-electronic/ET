@@ -58,7 +58,7 @@ separate (canvas_schematic)
 
 procedure draw_units (
 	self	: not null access type_view;
-	in_area	: in type_model_rectangle := no_rectangle;
+	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
 	procedure draw_symbol (
@@ -86,7 +86,7 @@ procedure draw_units (
 
 		-- This is the bounding box required for drawing the symbol. The bounding
 		-- box exists in the model only.
-		bounding_box : type_model_rectangle;
+		bounding_box : type_rectangle;
 		
 		procedure make_bounding_box is begin
 			-- In case the symbol belongs to a real devcie, probe placeholders and

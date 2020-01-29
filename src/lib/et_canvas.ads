@@ -114,16 +114,16 @@ package pac_canvas is
 
 
 	
-	-- A rectangular area of the model:
-	type type_model_rectangle is record -- CS rename to type_rectangle and move to et_geometry
-		x, y			: type_distance; -- position
-		width, height	: type_distance; -- CS _positive; -- size
+	-- A rectangular area of the drawing:
+	type type_rectangle is record
+		x, y			: type_distance; -- position, upper left corner
+		width, height	: type_distance_positive; -- size
 	end record;
 
-	no_rectangle : constant type_model_rectangle := (0.0, 0.0, 0.0, 0.0);
+	no_rectangle : constant type_rectangle := (0.0, 0.0, 0.0, 0.0);
 
 	
-	function intersects (rect1, rect2 : type_model_rectangle) return boolean; -- CS move to et_geometry ?
+	function intersects (rect1, rect2 : type_rectangle) return boolean;
 	
 
 -- VIEW
@@ -141,7 +141,6 @@ package pac_canvas is
 		-- NOTE: This has nothing to do with the upper left corner of the
 		-- drawing sheet. topleft is not a constant and is changed on by procedure
 		-- set_scale or by procedure scale_to_fit.
-		--topleft  	: type_model_point := geometry.origin;
 		topleft  	: type_point := origin;
 		
 		scale     	: type_scale := scale_default;
@@ -156,8 +155,8 @@ package pac_canvas is
 		-- connections to model signals
 		-- id_layout_changed : gtk.handlers.handler_id := (gtk.handlers.null_handler_id, null);
 
-		scale_to_fit_requested : gdouble := 0.0; -- gdouble is a real floating-point type (see glib.ads)
-		scale_to_fit_area : type_model_rectangle;
+		scale_to_fit_requested	: gdouble := 0.0; -- gdouble is a real floating-point type (see glib.ads)
+		scale_to_fit_area		: type_rectangle;
 	end record;
 
 	-- The pointer to the canvas/view:
@@ -206,7 +205,7 @@ package pac_canvas is
 	function view_to_model (
 		self   : not null access type_view;
 		rect   : in type_view_rectangle) -- position and size are in pixels
-		return type_model_rectangle;
+		return type_rectangle;
 
 	
 	-- Converts the given point in the model to a point in the view.
@@ -218,7 +217,7 @@ package pac_canvas is
 	-- Converts the given area of the model to a view rectangle:	
 	function model_to_view (
 		self   : not null access type_view;
-		rect   : in type_model_rectangle) -- position x/y and size given as a float type
+		rect   : in type_rectangle) -- position x/y and size given as a float type
 		return type_view_rectangle;
 
 
@@ -236,7 +235,7 @@ package pac_canvas is
 
 
 	function bounding_box (self : not null access type_view)
-		return type_model_rectangle is abstract;
+		return type_rectangle is abstract;
 	
 	procedure set_adjustment_values (self : not null access type_view'class);	
 
@@ -247,19 +246,17 @@ package pac_canvas is
 
 	procedure init (
 		self  : not null access type_view'class);
--- 		model : access type_model'class := null);
 	
 	procedure set_scale (
 		self     : not null access type_view;
 		scale    : in type_scale := scale_default;
-		--preserve : in type_model_point := geometry.origin);
 		preserve : in type_point := origin);
 	-- Changes the scaling factor for self.
 	-- this also scrolls the view so that either preserve or the current center
 	-- of the view remains at the same location in the widget, as if the user
 	-- was zooming towards that specific point.
 
-	function get_visible_area (self : not null access type_view) return type_model_rectangle;
+	function get_visible_area (self : not null access type_view) return type_rectangle;
 	-- Return the area of the model (or the sheet) that is currently displayed in the view.
 	-- This is in model coordinates (since the canvas coordinates are always
 	-- from (0,0) to (self.get_allocation_width, self.get_allocation_height).
@@ -285,11 +282,11 @@ package pac_canvas is
 	procedure draw_internal (
 		self    : not null access type_view;
 		context : type_draw_context;
-		area    : type_model_rectangle) is null;
+		area    : type_rectangle) is null;
 
 	procedure scale_to_fit (
 		self      : not null access type_view'class;
-		rect      : in type_model_rectangle := no_rectangle;
+		rect      : in type_rectangle := no_rectangle;
 		min_scale : in type_scale := 1.0 / 4.0;
 		max_scale : in type_scale := 4.0);
 

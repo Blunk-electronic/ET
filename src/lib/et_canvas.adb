@@ -114,9 +114,10 @@ package body pac_canvas is
 
 	view_class_record : aliased glib.object.ada_gobject_class := glib.object.uninitialized_class;
 
-	procedure union ( -- CS move to et_geometry ?
-		rect1 : in out type_model_rectangle;
-		rect2 : type_model_rectangle) is
+	-- This procedure unifies two rectangles to one.
+	procedure union (
+		rect1 : in out type_rectangle;
+		rect2 : type_rectangle) is
 		right : constant type_distance := 
 			type_distance'max (rect1.x + rect1.width, rect2.x + rect2.width);
 		bottom : constant type_distance :=
@@ -152,9 +153,9 @@ package body pac_canvas is
 	procedure refresh (
 		self : not null access type_view'class;
 		cr   : cairo.cairo_context;
-		area : type_model_rectangle := no_rectangle)
+		area : type_rectangle := no_rectangle)
 	is
-		a : type_model_rectangle;
+		a : type_rectangle;
 		c : type_draw_context;
 	begin
 		if area = no_rectangle then
@@ -238,7 +239,7 @@ package body pac_canvas is
 
 
 	
-	function intersects (rect1, rect2 : type_model_rectangle) return boolean is begin
+	function intersects (rect1, rect2 : type_rectangle) return boolean is begin
 		return not (
 			rect1.x > rect2.x + rect2.width            --  r1 on the right of r2
 			or else rect2.x > rect1.x + rect1.width    --  r2 on the right of r1
@@ -290,7 +291,7 @@ package body pac_canvas is
 	function view_to_model (
 		self   : not null access type_view;
 		rect   : in type_view_rectangle) -- position and size are in pixels
-		return type_model_rectangle is
+		return type_rectangle is
 	begin
 		return (x      => type_distance (rect.x / self.scale) + self.topleft.x,
 				y      => type_distance (rect.y / self.scale) + self.topleft.y,
@@ -312,7 +313,7 @@ package body pac_canvas is
 
 	function model_to_view (
 		self   : not null access type_view;
-		rect   : in type_model_rectangle)
+		rect   : in type_rectangle)
 		return type_view_rectangle is
 		result : type_view_rectangle;
 	begin
@@ -327,8 +328,8 @@ package body pac_canvas is
 	end model_to_view;
 
 	procedure set_adjustment_values (self : not null access type_view'class) is
-		box   : type_model_rectangle;
-		area  : constant type_model_rectangle := self.get_visible_area;
+		box   : type_rectangle;
+		area  : constant type_rectangle := self.get_visible_area;
 		min, max : gdouble;
 	begin
 		if area.width <= 1.0 then
@@ -558,7 +559,7 @@ package body pac_canvas is
 -- 		center_on    : type_model_point;
 -- 		x_pos, y_pos : gdouble := 0.5)
 -- 	is
--- 		area : constant type_model_rectangle := self.get_visible_area;
+-- 		area : constant type_rectangle := self.get_visible_area;
 -- 		pos  : constant type_model_point := (
 -- 			center_on.x - area.width * x_pos,
 -- 			center_on.y - area.height * y_pos);
@@ -745,7 +746,7 @@ package body pac_canvas is
 		-- backup the current scale
 		old_scale : constant type_scale := self.scale;
 		
-		box : type_model_rectangle;
+		box : type_rectangle;
 		p   : type_point;
 	begin
 		if preserve /= origin then
@@ -774,11 +775,11 @@ package body pac_canvas is
 	end set_scale;
 
 	function get_visible_area (self : not null access type_view)
-		return type_model_rectangle is
+		return type_rectangle is
 	begin
 		return self.view_to_model (
 			-- Assemble a type_view_rectangle which will be converted
-			-- to a type_model_rectangle by function view_to_model.
+			-- to a type_rectangle by function view_to_model.
 			(
 			-- The visible area of the view always starts at 0/0 (topleft corner):
 			x		=> 0.0, 
@@ -818,11 +819,11 @@ package body pac_canvas is
 
 	procedure scale_to_fit (
 		self      : not null access type_view'class;
-		rect      : in type_model_rectangle := no_rectangle;
+		rect      : in type_rectangle := no_rectangle;
 		min_scale : in type_scale := 1.0 / 4.0;
 		max_scale : in type_scale := 4.0)
 	is
-		box     : type_model_rectangle;
+		box     : type_rectangle;
 		w, h, s : gdouble;
 		alloc   : gtk_allocation;
 		wmin, hmin : gdouble;
