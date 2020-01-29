@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             GUI GENERAL                                  --
+--                       GUI SCHEMATIC CALLBACKS                            --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
 --         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -35,58 +35,41 @@
 --   history of changes:
 --
 
-with gtk.main;
-with gtk.window; 			use gtk.window;
-with gtk.widget;  			use gtk.widget;
-with gtk.box;				use gtk.box;
-with gtk.button;     		use gtk.button;
-with gtk.toolbar; 			use gtk.toolbar;
-with gtk.tool_button;		use gtk.tool_button;
-with gtk.enums;				use gtk.enums;
-with gtk.gentry;			use gtk.gentry;
-with gtk.combo_box_text;	use gtk.combo_box_text;
-with gtk.frame;				use gtk.frame;
-with gtk.scrolled_window;	use gtk.scrolled_window;
-with glib.object;			use glib.object;
+with gdk;				use gdk;
+with gdk.event;			use gdk.event;
 
-with ada.text_io;			use ada.text_io;
-with ada.directories;
+with glib;				use glib;
+with gtk.widget;  		use gtk.widget;
+with gtk.button;     	--use gtk.button;
+with glib.object;		--use glib.object;
+with gtk.gentry;
+with gtkada.style;		use gtkada.style;
 
-with et_general;				use et_general;
-with et_project;				use et_project;
-with et_string_processing;		use et_string_processing;
 
-with gui_schematic;
-with gui_board;
+package gui_board.callbacks is
 
-package body gui is
+	-- Terminates the main window:
+	procedure terminate_main (self : access gtk_widget_record'class);
 
-	procedure single_module (
-		module			: in type_modules.cursor; -- cursor of generic module to be edited
-		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
-		log_threshold	: in type_log_level) is
-	begin
-		log (text => "launching mode " & to_string (MODE_MODULE), level => log_threshold);
-		log (text => "opening module " & enclose_in_quotes (to_string (type_modules.key (module))), level => log_threshold);
-		log (text => "sheet" & to_sheet (sheet), level => log_threshold);
-
-		gtk.main.init; -- initialize the main gtk stuff
-
-		-- set up the schematic window
-		gui_schematic.init_window (module, sheet);
-
-		-- set up the board window
-		gui_board.init_window (module);
-
-		
-		-- Start the main gtk loop. This is a loop that permanently draws the widgets and
-		-- samples them for possible signals sent.
-		gtk.main.main;
-		
-	end single_module;
+	-- Scales the canvas so that the frame fits into.
+	function window_resized (
+		self  : access gtk_widget_record'class;
+		event : gdk.event.gdk_event_configure) 
+		return boolean;
 	
+	procedure zoom_to_fit (self : access glib.object.gobject_record'class);	
+	procedure zoom_in (self : access glib.object.gobject_record'class);
+	procedure zoom_out (self : access glib.object.gobject_record'class);
+	procedure echo_command_simple (self : access gtk.gentry.gtk_entry_record'class);
+
+	function on_key_event (
+		self	: access gtk_widget_record'class;
+		event	: in gdk_event_key) 
+		return boolean;
+
+
 	
-end gui;
+end gui_board.callbacks;
 
 -- Soli Deo Gloria
 

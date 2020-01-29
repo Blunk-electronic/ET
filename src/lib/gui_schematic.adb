@@ -57,7 +57,7 @@ with et_project;				use et_project;
 with et_coordinates;			use et_coordinates;
 with et_string_processing;		use et_string_processing;
 
-with gui_cb;					use gui_cb;	
+with gui_schematic.callbacks;	use gui_schematic.callbacks;	
 with canvas_schematic;			use canvas_schematic;
 		
 use canvas_schematic.pac_canvas;

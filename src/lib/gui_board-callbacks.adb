@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             GUI CALLBACKS                                --
+--                          GUI BOARD CALLBACKS                             --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 --         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
@@ -40,10 +40,10 @@ with gdk.event;					use gdk.event;
 with gtk.main;
 with gtk.window;				use gtk.window;
 with ada.text_io;				use ada.text_io;
-with canvas_schematic;			use canvas_schematic;
-use canvas_schematic.pac_canvas;
+-- with canvas_schematic;			use canvas_schematic;
+-- use canvas_schematic.pac_canvas;
 
-package body gui_cb is
+package body gui_board.callbacks is
 
 	procedure terminate_main (self : access gtk_widget_record'class) is begin
 		put_line ("exiting ...");
@@ -56,7 +56,7 @@ package body gui_cb is
 		return boolean is
 	begin
 		put_line ("window resized");
-		scale_to_fit (canvas);
+-- 		scale_to_fit (canvas);
 		
 		return true;
 	end;
@@ -64,7 +64,7 @@ package body gui_cb is
 	procedure zoom_to_fit (self : access glib.object.gobject_record'class) is 
 	begin
 		put_line ("zoom to fit ...");
-		scale_to_fit (canvas);
+-- 		scale_to_fit (canvas);
 -- 		put_line (to_string (get_scale (canvas)));
 	end;
 
@@ -72,9 +72,9 @@ package body gui_cb is
 		scale : gdouble;
 	begin
 		put_line ("zooming in ...");
-		scale := get_scale (canvas);
-		scale := scale + 0.1;
-		set_scale (canvas, scale);
+-- 		scale := get_scale (canvas);
+-- 		scale := scale + 0.1;
+-- 		set_scale (canvas, scale);
 -- 		put_line (to_string (get_scale (canvas)));
 	end;
 
@@ -82,34 +82,14 @@ package body gui_cb is
 		scale : gdouble;
 	begin
 		put_line ("zooming out ...");
-		scale := get_scale (canvas);
+-- 		scale := get_scale (canvas);
 		if scale >= 0.0 then
 			scale := scale - 0.1;
-			set_scale (canvas, scale);
+-- 			set_scale (canvas, scale);
 		end if;
 -- 		put_line (to_string (get_scale (canvas)));
 	end;
 
-	procedure move_right (self : access glib.object.gobject_record'class) is begin
-		put_line ("moving right ...");
--- 		set_position (item, p2);
--- 		refresh_layout (model);
-	end;
-
-	procedure move_left (self : access glib.object.gobject_record'class) is begin
-		put_line ("moving left ...");
--- 		set_position (item, p1);
--- 		refresh_layout (model);
-	end;
-
-	procedure delete (self : access glib.object.gobject_record'class) is begin
-		put_line ("deleting ...");
-
--- 		model.remove (item);
-
--- 		refresh_layout (model);
-	end;
-	
 	procedure echo_command_simple (self : access gtk.gentry.gtk_entry_record'class) is 
 		use gtk.gentry;
 	begin
@@ -131,7 +111,7 @@ package body gui_cb is
 		--put_line ("top level key pressed");
 
 		-- Set the focus to the canvas:
-		set_focus (current_window, canvas);
+-- 		set_focus (current_window, canvas);
 
 		-- Propagate the key-press event to the canvas:
 		result := propagate_key_event (current_window, event);
@@ -147,7 +127,7 @@ package body gui_cb is
 
 
 	
-end gui_cb;
+end gui_board.callbacks;
 
 -- Soli Deo Gloria
 

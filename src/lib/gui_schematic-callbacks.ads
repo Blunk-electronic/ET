@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             GUI CALLBACKS                                --
+--                       GUI SCHEMATIC CALLBACKS                            --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -46,9 +46,8 @@ with gtk.gentry;
 with gtkada.style;		use gtkada.style;
 
 
-package gui_cb is
+package gui_schematic.callbacks is
 
-	-- Callbacks:
 
 	-- Terminates the main window:
 	procedure terminate_main (self : access gtk_widget_record'class);
@@ -62,9 +61,6 @@ package gui_cb is
 	procedure zoom_to_fit (self : access glib.object.gobject_record'class);	
 	procedure zoom_in (self : access glib.object.gobject_record'class);
 	procedure zoom_out (self : access glib.object.gobject_record'class);
-	procedure move_right (self : access glib.object.gobject_record'class);
-	procedure move_left (self : access glib.object.gobject_record'class);	
-	procedure delete (self : access glib.object.gobject_record'class);
 	procedure echo_command_simple (self : access gtk.gentry.gtk_entry_record'class);
 
 	function on_key_event (
@@ -74,7 +70,7 @@ package gui_cb is
 
 
 	
-end gui_cb;
+end gui_schematic.callbacks;
 
 -- Soli Deo Gloria
 

@@ -57,7 +57,7 @@ with et_project;				use et_project;
 -- with et_coordinates;			use et_coordinates;
 with et_string_processing;		use et_string_processing;
 
-with gui_cb;					use gui_cb;	
+with gui_board.callbacks;		use gui_board.callbacks;
 -- with canvas_schematic;			use canvas_schematic;
 		
 -- use canvas_schematic.pac_canvas;
@@ -93,12 +93,12 @@ package body gui_board is
 		-- the procedure terminate_main (in gui_cb) is to be called.
 		window.on_destroy (terminate_main'access);
 
-		-- If the operator minimizes, maximizes or changes the size in some way:
-		window.on_configure_event (window_resized'access);
-
-		-- For reaction to keys pressed on the keyboard:
-		-- This is required in order to propagate the key-pressed events to sub-windows.
-		window.on_key_press_event (on_key_event'access);
+-- 		-- If the operator minimizes, maximizes or changes the size in some way:
+-- 		window.on_configure_event (window_resized'access);
+-- 
+-- 		-- For reaction to keys pressed on the keyboard:
+-- 		-- This is required in order to propagate the key-pressed events to sub-windows.
+-- 		window.on_key_press_event (on_key_event'access);
 		
 
 		
