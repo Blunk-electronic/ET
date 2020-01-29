@@ -875,10 +875,6 @@ package body pac_canvas is
 		return type_view_coordinate (x);
 	end;
 
-	function convert_x (x : in type_distance) return type_distance is begin
-		return type_distance (x);
-	end;
-
 end pac_canvas;
 	
 end et_canvas;

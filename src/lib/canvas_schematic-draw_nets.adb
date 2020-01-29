@@ -82,13 +82,13 @@ procedure draw_nets (
 						-- The box position in x is the smallest_x.
 						-- The box position in y is the greatest_y (upwards).
 						-- The box position in y is additonally converted to y axis going downwards.
-						x		=> convert_x (boundaries.smallest_x),
+						x		=> boundaries.smallest_x,
 						y		=> convert_and_shift_y (self, boundaries.smallest_y),
 
 						-- The box width is the difference between greatest x and smallest x.
 						-- The box height is the difference between greatest y and smallest y.
-						width	=> convert_x (boundaries.greatest_x - boundaries.smallest_x),
-						height	=> convert_y (boundaries.greatest_y - boundaries.smallest_y)
+						width	=> boundaries.greatest_x - boundaries.smallest_x,
+						height	=> boundaries.greatest_y - boundaries.smallest_y
 						);
 
 					-- CS include net labels in the bounding box

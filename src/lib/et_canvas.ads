@@ -299,22 +299,17 @@ package pac_canvas is
 	-- This function converts a y-value from the drawing to a y-value in the view.	
 	function convert_y (y : in type_distance) return type_view_coordinate renames convert_x;
 	
-	-- This function converts a x-value from the drawing to a x-value in the model.	
-	function convert_x (x : in type_distance) return type_distance;
-
-	-- This function converts a y-value from the drawing to a y-value in the model.	
-	function convert_y (y : in type_distance) return type_distance renames convert_x;
 
 	
 
-	-- This function converts a y-value from the drawing to a y-value in the view.
+	-- This function converts a y-value from the drawing to the view.
 	-- The input y increases upwards. The output y increases downwards.
 	function convert_and_shift_y (
 		self	: not null access type_view;
 		y		: in type_distance)
 		return type_view_coordinate is abstract;
 
-	-- This function converts a y-value from the drawing to a y-value in the model.
+	-- This function converts a y-value from the view to the drawing.
 	-- The input y increases upwards. The output y increases downwards.
 	function convert_and_shift_y (
 		self	: not null access type_view;

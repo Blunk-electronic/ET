@@ -109,9 +109,8 @@ procedure draw_units (
 				-- The box position in x is shifted by the smallest_x to the left.
 				-- The box position in y is shifted by the greatest_y (upwards).
 				-- The box position in y is additonally converted to y axis going downwards.
-				x		=> convert_x (
-							  position.x 
-							- abs (boundaries.smallest_x)),
+				x		=> position.x 
+							- abs (boundaries.smallest_x),
 				
 				y		=> convert_and_shift_y (self,
 							  position.y
@@ -119,8 +118,8 @@ procedure draw_units (
 
 				-- The box width is the difference between greatest x and smallest x.
 				-- The box height is the difference between greatest y and smallest y.
-				width	=> convert_x (boundaries.greatest_x - boundaries.smallest_x),
-				height	=> convert_y (boundaries.greatest_y - boundaries.smallest_y)
+				width	=> boundaries.greatest_x - boundaries.smallest_x,
+				height	=> boundaries.greatest_y - boundaries.smallest_y
 				);
 			
 		end make_bounding_box;
