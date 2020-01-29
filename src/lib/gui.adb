@@ -59,7 +59,9 @@ with et_string_processing;		use et_string_processing;
 with gui_cb;					use gui_cb;	
 with canvas_schematic;
 
-package body gui_general is
+with gui_schematic;
+
+package body gui is
 
 	window_schematic, window_board	: gtk_window; -- This is an access/pointer to the actual window.
 	box_back				: gtk_box; -- This is an access/pointer to the actual box.
@@ -349,7 +351,7 @@ package body gui_general is
 	end single_module;
 	
 	
-end gui_general;
+end gui;
 
 -- Soli Deo Gloria
 

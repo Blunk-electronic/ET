@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             GUI GENERAL                                  --
+--                            GUI SCHEMATIC                                 --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -35,22 +35,34 @@
 --   history of changes:
 --
 
-with et_string_processing;		use et_string_processing;
+with gtk.main;
+with gtk.window; 			use gtk.window;
+with gtk.widget;  			use gtk.widget;
+with gtk.box;				use gtk.box;
+with gtk.button;     		use gtk.button;
+with gtk.toolbar; 			use gtk.toolbar;
+with gtk.tool_button;		use gtk.tool_button;
+with gtk.enums;				use gtk.enums;
+with gtk.gentry;			use gtk.gentry;
+with gtk.combo_box_text;	use gtk.combo_box_text;
+with gtk.frame;				use gtk.frame;
+with gtk.scrolled_window;	use gtk.scrolled_window;
+with glib.object;			use glib.object;
+
+with ada.text_io;			use ada.text_io;
+with ada.directories;
+
 with et_general;				use et_general;
 with et_project;				use et_project;
-with et_coordinates;			use et_coordinates;
-with canvas_schematic;
+with et_string_processing;		use et_string_processing;
 
-package gui_general is
 
-	procedure single_module (
-		module			: in type_modules.cursor; -- cursor of generic module
-		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
-		log_threshold	: in type_log_level
-		);
+package gui_schematic is
 
+	procedure dummy;
 	
-end gui_general;
+	
+end gui_schematic;
 
 -- Soli Deo Gloria
 

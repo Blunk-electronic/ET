@@ -71,7 +71,7 @@ with frame_rw;
 
 with et_coordinates;
 
-with gui_general;
+with gui;
 
 procedure et is
 
@@ -597,7 +597,7 @@ procedure et is
 	end process_commandline_arguments;
 
 	procedure launch_gui is 
-		use gui_general;
+		use gui;
 		use et_project;
 		use et_project.type_modules;
 -- 		generic_module_name : et_general.type_module_name.bounded_string;
