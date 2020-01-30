@@ -131,12 +131,12 @@ package body canvas_board is
 		self    : not null access type_view;
 		style   : gtkada.style.drawing_style;
 		context : type_draw_context;
-		area    : type_rectangle)	is separate;
+		area    : type_rectangle) is separate;
 
--- 	procedure draw_frame (
--- 		self    : not null access type_view;
--- 		in_area	: in type_rectangle := no_rectangle;
--- 		context : in type_draw_context) is separate;
+	procedure draw_frame (
+		self    : not null access type_view;
+		in_area	: in type_rectangle := no_rectangle;
+		context : in type_draw_context) is separate;
 
 
 	procedure draw_internal (
@@ -157,7 +157,7 @@ package body canvas_board is
 		set_grid_size (self, pac_canvas.grid_default);
 		draw_grid (self, style, context, area);
 
--- 		draw_frame (self, area, context); -- separate unit
+		draw_frame (self, area, context); -- separate unit
 -- 		draw_nets (self, area, context); -- separate unit
 -- 		draw_units (self, area, context); -- separate unit
 		-- CS self.model.draw_texts (area, context);

@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         SCHEMATIC DRAW FRAME                             --
+--                           BOARD DRAW FRAME                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -40,10 +40,10 @@ with ada.text_io;				use ada.text_io;
 with cairo;						use cairo;
 with pango.layout;				use pango.layout;
 
-with et_coordinates;			use et_coordinates;
-use et_coordinates.geometry;
+with et_pcb_coordinates;		use et_pcb_coordinates;
+use et_pcb_coordinates.geometry;
 
-separate (canvas_schematic)
+separate (canvas_board)
 
 procedure draw_frame (
 	self	: not null access type_view;
@@ -63,14 +63,14 @@ procedure draw_frame (
 			context.cr,
 
 			-- x position
-			convert_x (et_coordinates.type_distance
+			convert_x (et_pcb_coordinates.type_distance
 				(
 				element (cursor).start_point.x 
 				+ self.drawing.title_block_position.x -- x position of title block
 				)),
 				
 			-- y position
-			convert_and_shift_y (self, et_coordinates.type_distance 
+			convert_and_shift_y (self, et_pcb_coordinates.type_distance 
 				(
 				element (cursor).start_point.y 
 				+ self.drawing.title_block_position.y -- y position of title block
@@ -84,14 +84,14 @@ procedure draw_frame (
 			context.cr,
 
 			-- x position	
-			convert_x (et_coordinates.type_distance
+			convert_x (et_pcb_coordinates.type_distance
 				(
 				element (cursor).end_point.x 
 				+ self.drawing.title_block_position.x -- x position of title block
 				)),
 
 			-- y position
-			convert_and_shift_y (self, et_coordinates.type_distance 
+			convert_and_shift_y (self, et_pcb_coordinates.type_distance 
 				(
 				element (cursor).end_point.y 
 				+ self.drawing.title_block_position.y -- y position of title block
@@ -127,22 +127,22 @@ begin
 		-- draw the outer border
 		cairo.rectangle (
 			context.cr,
-			convert_x (et_coordinates.type_distance (0.0)),
-			convert_y (et_coordinates.type_distance (0.0)),
-			convert_x (et_coordinates.type_distance (self.drawing.frame.size.x)),
-			convert_y (et_coordinates.type_distance (self.drawing.frame.size.y)));
+			convert_x (et_pcb_coordinates.type_distance (0.0)),
+			convert_y (et_pcb_coordinates.type_distance (0.0)),
+			convert_x (et_pcb_coordinates.type_distance (self.drawing.frame.frame.size.x)),
+			convert_y (et_pcb_coordinates.type_distance (self.drawing.frame.frame.size.y)));
 
 		-- draw the inner border
 		cairo.rectangle (
 			context.cr,
-			convert_x (et_coordinates.type_distance (self.drawing.frame.border_width)),
-			convert_y (et_coordinates.type_distance (self.drawing.frame.border_width)),
-			convert_x (et_coordinates.type_distance (self.drawing.frame.size.x - 2 * self.drawing.frame.border_width)),
-			convert_y (et_coordinates.type_distance (self.drawing.frame.size.y - 2 * self.drawing.frame.border_width)));
+			convert_x (et_pcb_coordinates.type_distance (self.drawing.frame.frame.border_width)),
+			convert_y (et_pcb_coordinates.type_distance (self.drawing.frame.frame.border_width)),
+			convert_x (et_pcb_coordinates.type_distance (self.drawing.frame.frame.size.x - 2 * self.drawing.frame.frame.border_width)),
+			convert_y (et_pcb_coordinates.type_distance (self.drawing.frame.frame.size.y - 2 * self.drawing.frame.frame.border_width)));
 
 		-- TITLE BLOCK
 		-- lines
-		iterate (self.drawing.frame.title_block_schematic.lines, draw_line'access);
+		iterate (self.drawing.frame.frame.title_block_pcb.lines, draw_line'access);
 
 		
 		-- CS draw the sector delimiters
