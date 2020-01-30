@@ -103,7 +103,7 @@ package body canvas_board is
 		
 		set (point	=> p,
 			 axis	=> Y,
-			 value	=> type_distance (self.drawing.frame.size.y) 
+			 value	=> type_distance (self.drawing.frame.frame.size.y) 
 						- model_point.y 
 						+ self.drawing.frame_bounding_box.y);
 
@@ -133,10 +133,10 @@ package body canvas_board is
 		context : type_draw_context;
 		area    : type_rectangle)	is separate;
 
-	procedure draw_frame (
-		self    : not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
-		context : in type_draw_context) is separate;
+-- 	procedure draw_frame (
+-- 		self    : not null access type_view;
+-- 		in_area	: in type_rectangle := no_rectangle;
+-- 		context : in type_draw_context) is separate;
 
 
 	procedure draw_internal (
@@ -157,7 +157,7 @@ package body canvas_board is
 		set_grid_size (self, pac_canvas.grid_default);
 		draw_grid (self, style, context, area);
 
-		draw_frame (self, area, context); -- separate unit
+-- 		draw_frame (self, area, context); -- separate unit
 -- 		draw_nets (self, area, context); -- separate unit
 -- 		draw_units (self, area, context); -- separate unit
 		-- CS self.model.draw_texts (area, context);
@@ -181,33 +181,33 @@ package body canvas_board is
 		self.drawing.module := module;
 
 		-- set some variables frequently used regarding frame and paper:
-		self.drawing.frame := type_modules.element (module).frames.frame;
+		self.drawing.frame := type_modules.element (module).board.frame;
 		
 		self.drawing.paper_height := type_distance_positive (paper_dimension (
-							paper_size	=> self.drawing.frame.paper,
-							orientation	=> self.drawing.frame.orientation,
+							paper_size	=> self.drawing.frame.frame.paper,
+							orientation	=> self.drawing.frame.frame.orientation,
 							axis		=> Y));
 
 		self.drawing.paper_width := type_distance_positive (paper_dimension (
-							paper_size	=> self.drawing.frame.paper,
-							orientation	=> self.drawing.frame.orientation,
+							paper_size	=> self.drawing.frame.frame.paper,
+							orientation	=> self.drawing.frame.frame.orientation,
 							axis		=> X));
 
 		-- The drawing frame has a bounding box:
 
 		-- position (upper left corner):
-		self.drawing.frame_bounding_box.x := (self.drawing.paper_width - type_distance_positive (self.drawing.frame.size.x)) / 2.0;
-		self.drawing.frame_bounding_box.y := (self.drawing.paper_height - type_distance_positive (self.drawing.frame.size.y)) / 2.0;
+		self.drawing.frame_bounding_box.x := (self.drawing.paper_width - type_distance_positive (self.drawing.frame.frame.size.x)) / 2.0;
+		self.drawing.frame_bounding_box.y := (self.drawing.paper_height - type_distance_positive (self.drawing.frame.frame.size.y)) / 2.0;
 
 		-- width and height
-		self.drawing.frame_bounding_box.width := type_distance_positive (self.drawing.frame.size.x);
-		self.drawing.frame_bounding_box.height := type_distance_positive (self.drawing.frame.size.y);
+		self.drawing.frame_bounding_box.width := type_distance_positive (self.drawing.frame.frame.size.x);
+		self.drawing.frame_bounding_box.height := type_distance_positive (self.drawing.frame.frame.size.y);
 
 		-- The sheet has a drawing box:
 		self.drawing.paper_bounding_box := (0.0, 0.0, self.drawing.paper_width, self.drawing.paper_height);
 
 		-- Drawing of the title block items is relative to the title block position:
-		self.drawing.title_block_position := self.drawing.frame.title_block_schematic.position;
+		self.drawing.title_block_position := self.drawing.frame.frame.title_block_pcb.position;
 
 	end init_drawing;
 

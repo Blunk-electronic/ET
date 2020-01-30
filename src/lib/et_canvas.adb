@@ -494,7 +494,7 @@ package body pac_canvas is
 			ancestor     => gtk.bin.get_type,
 			signals      => view_signals,
 			class_record => view_class_record'access,
-			type_name    => "GtkadaCanvasView",
+			type_name    => canvas_name, -- provided as parameter for the package
 			parameters   => (
 				1 => (1 => gtype_none)
 				),

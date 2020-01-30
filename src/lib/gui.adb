@@ -36,21 +36,20 @@
 --
 
 with gtk.main;
-with gtk.window; 			use gtk.window;
-with gtk.widget;  			use gtk.widget;
-with gtk.box;				use gtk.box;
-with gtk.button;     		use gtk.button;
-with gtk.toolbar; 			use gtk.toolbar;
-with gtk.tool_button;		use gtk.tool_button;
-with gtk.enums;				use gtk.enums;
-with gtk.gentry;			use gtk.gentry;
-with gtk.combo_box_text;	use gtk.combo_box_text;
-with gtk.frame;				use gtk.frame;
-with gtk.scrolled_window;	use gtk.scrolled_window;
-with glib.object;			use glib.object;
+-- with gtk.window; 			use gtk.window;
+-- with gtk.widget;  			use gtk.widget;
+-- with gtk.box;				use gtk.box;
+-- with gtk.button;     		use gtk.button;
+-- with gtk.toolbar; 			use gtk.toolbar;
+-- with gtk.tool_button;		use gtk.tool_button;
+-- with gtk.enums;				use gtk.enums;
+-- with gtk.gentry;			use gtk.gentry;
+-- with gtk.combo_box_text;	use gtk.combo_box_text;
+-- with gtk.frame;				use gtk.frame;
+-- with gtk.scrolled_window;	use gtk.scrolled_window;
+-- with glib.object;			use glib.object;
 
-with ada.text_io;			use ada.text_io;
-with ada.directories;
+with ada.text_io;				use ada.text_io;
 
 with et_general;				use et_general;
 with et_project;				use et_project;

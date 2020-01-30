@@ -75,6 +75,7 @@ package canvas_board is
 
 	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas.pac_canvas (
+		canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
 		geometry		=> et_pcb_coordinates.geometry);
 
 	use pac_canvas;
@@ -89,7 +90,7 @@ package canvas_board is
 		-- These variables are frequently used. Procedure set_module
 		-- sets them. Other operations are free to access
 		-- them.
-		frame				: et_frames.type_frame (et_frames.PCB);
+		frame				: et_frames.type_frame_pcb;
 		frame_bounding_box	: type_rectangle;
 
 		paper_bounding_box	: type_rectangle;
@@ -99,9 +100,6 @@ package canvas_board is
 		title_block_position	: et_frames.type_position;
 
 		-- CS grid_size 	: type_distance_positive_positive := 20.0;
-		
-		-- the active sheet
--- 		sheet	: et_coordinates.type_sheet := type_sheet'first;
 	end record;
 	
 
@@ -150,10 +148,10 @@ package canvas_board is
 	
 	
 	-- Draws the frame:
-	procedure draw_frame (
-		self	: not null access type_view;
-		in_area	: in type_rectangle := no_rectangle;
-		context : in type_draw_context);
+-- 	procedure draw_frame (
+-- 		self	: not null access type_view;
+-- 		in_area	: in type_rectangle := no_rectangle;
+-- 		context : in type_draw_context);
 
 
 	

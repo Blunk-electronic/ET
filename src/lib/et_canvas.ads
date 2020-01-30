@@ -75,6 +75,7 @@ package et_canvas is
 
 generic
 
+	canvas_name : string;
 	with package geometry is new et_geometry.geometry_operations_2d (<>);
 	
 package pac_canvas is

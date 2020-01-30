@@ -87,7 +87,7 @@ package body gui_schematic is
 	is begin
 
 		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
-		window.set_title (system_name & " SCHEMATIC");
+		window.set_title (system_name & " SCHEMATIC"); -- CS: plus module name
 		window.set_default_size (1024, 768);
 
 		-- If the operator wishes to terminate the program (by clicking X)

@@ -75,6 +75,7 @@ package canvas_schematic is
 
 	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas.pac_canvas (
+		canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain
 		geometry		=> et_coordinates.geometry);
 
 	use pac_canvas;

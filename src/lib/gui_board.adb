@@ -54,7 +54,6 @@ with ada.directories;
 
 with et_general;				use et_general;
 with et_project;				use et_project;
--- with et_coordinates;			use et_coordinates;
 with et_string_processing;		use et_string_processing;
 
 with gui_board.callbacks;		use gui_board.callbacks;
@@ -86,19 +85,19 @@ package body gui_board is
 	is begin
 
 		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
-		window.set_title (system_name & " BOARD");
+		window.set_title (system_name & " BOARD"); -- CS: plus module name
 		window.set_default_size (1024, 768);
 
 		-- If the operator wishes to terminate the program (by clicking X)
 		-- the procedure terminate_main (in gui_cb) is to be called.
 		window.on_destroy (terminate_main'access);
 
--- 		-- If the operator minimizes, maximizes or changes the size in some way:
--- 		window.on_configure_event (window_resized'access);
--- 
--- 		-- For reaction to keys pressed on the keyboard:
--- 		-- This is required in order to propagate the key-pressed events to sub-windows.
--- 		window.on_key_press_event (on_key_event'access);
+		-- If the operator minimizes, maximizes or changes the size in some way:
+		window.on_configure_event (window_resized'access);
+
+		-- For reaction to keys pressed on the keyboard:
+		-- This is required in order to propagate the key-pressed events to sub-windows.
+		window.on_key_press_event (on_key_event'access);
 		
 
 		
@@ -192,13 +191,13 @@ package body gui_board is
 
 
 
--- 		gtk_new (canvas);
--- 		add (scrolled, canvas); -- place the canvas in the scrolled window
--- 
--- 		-- set the module to be opened and optionally the sheet to be displayed:
--- 		init_drawing (canvas, module, sheet);
--- 		
--- 		scale_to_fit (canvas);
+		gtk_new (canvas);
+		add (scrolled, canvas); -- place the canvas in the scrolled window
+
+		-- set the module to be opened and optionally the sheet to be displayed:
+		init_drawing (canvas, module);
+		
+		scale_to_fit (canvas);
 		
 		-- display the board:
 		window.show_all;
