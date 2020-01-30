@@ -138,6 +138,11 @@ package body canvas_board is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	procedure draw_outline (
+		self    : not null access type_view;
+		in_area	: in type_rectangle := no_rectangle;
+		context : in type_draw_context) is separate;
+
 
 	procedure draw_internal (
 		self    : not null access type_view;
@@ -158,7 +163,7 @@ package body canvas_board is
 		draw_grid (self, style, context, area);
 
 		draw_frame (self, area, context); -- separate unit
--- 		draw_nets (self, area, context); -- separate unit
+		draw_outline (self, area, context); -- separate unit
 -- 		draw_units (self, area, context); -- separate unit
 		-- CS self.model.draw_texts (area, context);
 		-- CS self.model.draw_submodules (area, context);
