@@ -173,7 +173,7 @@ package body canvas_board is
 		-- prepare draing style so that white grid dots will be drawn.
 		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
 	begin
-		put_line ("draw internal ...");
+-- 		put_line ("draw internal ...");
 		
 		-- draw a black background:
 		set_source_rgb (context.cr, 0.0, 0.0, 0.0);

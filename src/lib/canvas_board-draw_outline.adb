@@ -56,6 +56,8 @@ procedure draw_outline (
 	context : in type_draw_context) is
 	
 	use type_pcb_contour_lines;
+	use type_pcb_contour_arcs;
+	use type_pcb_contour_circles;
 	
 	procedure query_line (c : in type_pcb_contour_lines.cursor) is
 		use et_packages;
@@ -107,12 +109,76 @@ procedure draw_outline (
 			
 		end if;
 	end query_line;
+
+	procedure query_arc (c : in type_pcb_contour_arcs.cursor) is
+		use et_packages;
+		use et_packages.shapes;
+		boundaries : type_boundaries := shapes.boundaries (type_arc (element (c)));
+		bounding_box : type_rectangle := make_bounding_box (self, boundaries);
+
+		arc : type_arc_angles := to_arc_angles (element (c));
+	begin
+		-- We draw the segment if:
+		--  - no area given or
+		--  - if the bounding box of the segment intersects the given area
+		if (in_area = no_rectangle
+			or else intersects (in_area, bounding_box)) 
+		then
+			-- CS test size 
+	-- 			if not size_above_threshold (self, context.view) then
+	-- 				return;
+	-- 			end if;
+
+			save (context.cr);
+
+			-- Prepare the current transformation matrix (CTM) so that
+			-- all following drawing is relative to the upper left frame corner.
+			translate (
+				context.cr,
+				convert_x (self.drawing.frame_bounding_box.x),
+				convert_y (self.drawing.frame_bounding_box.y));
+
+			cairo.new_sub_path (context.cr); -- required to suppress an initial line
+			
+			cairo.set_line_width (context.cr, type_view_coordinate (0.5)); -- cS
+
+			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
+
+			if arc.direction = CCW then
+
+				cairo.arc (
+					context.cr,
+					xc		=> convert_x (arc.center.x),
+					yc		=> convert_and_shift_y (self, arc.center.y),
+					radius	=> type_view_coordinate (arc.radius),
+					angle1	=> type_view_coordinate (to_radians (arc.angle_start)),
+					angle2	=> type_view_coordinate (to_radians (arc.angle_end))
+					);
+
+			else
+				
+				cairo.arc_negative (
+					context.cr,
+					xc		=> convert_x (arc.center.x),
+					yc		=> convert_and_shift_y (self, arc.center.y),
+					radius	=> type_view_coordinate (arc.radius),
+					angle1	=> type_view_coordinate (to_radians (arc.angle_start)),
+					angle2	=> type_view_coordinate (to_radians (arc.angle_end))
+					);
+			end if;
+
+			cairo.stroke (context.cr);
+			restore (context.cr);
+			
+		end if;
+	end query_arc;
 	
 	procedure query_segments (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
 	begin
 		iterate (module.board.contours.lines, query_line'access);
+		iterate (module.board.contours.arcs, query_arc'access);
 	end query_segments;
 	
 begin -- draw_outline
