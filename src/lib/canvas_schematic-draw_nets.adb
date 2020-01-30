@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              DRAW NETS                                   --
+--                         SCHEMATIC DRAW NETS                              --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -76,22 +76,9 @@ procedure draw_nets (
 				procedure make_bounding_box (sc : in type_net_segments.cursor) is
 					use pac_shapes;					
 					boundaries : type_boundaries := pac_shapes.boundaries (type_line (element (sc)));
+					-- CS include net labels in the boundaries
 				begin
-					bounding_box := (
-						-- The bounding box origin is the upper left corner.
-						-- The box position in x is the smallest_x.
-						-- The box position in y is the greatest_y (upwards).
-						-- The box position in y is additonally converted to y axis going downwards.
-						x		=> boundaries.smallest_x,
-						y		=> convert_and_shift_y (self, boundaries.smallest_y),
-
-						-- The box width is the difference between greatest x and smallest x.
-						-- The box height is the difference between greatest y and smallest y.
-						width	=> boundaries.greatest_x - boundaries.smallest_x,
-						height	=> boundaries.greatest_y - boundaries.smallest_y
-						);
-
-					-- CS include net labels in the bounding box
+					bounding_box := canvas_schematic.make_bounding_box (self, boundaries);
 				end make_bounding_box;
 				
 			begin -- query_segments
