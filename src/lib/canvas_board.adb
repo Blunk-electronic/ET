@@ -138,6 +138,27 @@ package body canvas_board is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	function make_bounding_box (
+		self		: not null access type_view;
+		boundaries	: in type_boundaries)
+		return type_rectangle is
+	begin
+		return (
+			-- The bounding box origin is the upper left corner.
+			-- The box position in x is the smallest_x.
+			-- The box position in y is the greatest_y (upwards).
+			-- The box position in y is additonally converted to y axis going downwards.
+			x		=> boundaries.smallest_x,
+			y		=> convert_and_shift_y (self, boundaries.smallest_y),
+
+			-- The box width is the difference between greatest x and smallest x.
+			-- The box height is the difference between greatest y and smallest y.
+			width	=> boundaries.greatest_x - boundaries.smallest_x,
+			height	=> boundaries.greatest_y - boundaries.smallest_y
+			);
+	end make_bounding_box;
+
+	
 	procedure draw_outline (
 		self    : not null access type_view;
 		in_area	: in type_rectangle := no_rectangle;

@@ -154,6 +154,11 @@ package canvas_board is
 -- 		context : in type_draw_context);
 
 
+	-- Computes a bounding box from the given boundaries.
+	function make_bounding_box (
+		self		: not null access type_view;
+		boundaries	: in type_boundaries)
+		return type_rectangle;
 	
 
 	

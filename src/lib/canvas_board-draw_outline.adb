@@ -58,32 +58,11 @@ procedure draw_outline (
 	use type_pcb_contour_lines;
 	
 	procedure query_line (c : in type_pcb_contour_lines.cursor) is
-		bounding_box : type_rectangle;
-
-		procedure make_bounding_box is
-			use et_packages;
-			use et_packages.shapes;
-			boundaries : type_boundaries := shapes.boundaries (type_line (element (c)));
-		begin
-			bounding_box := (
-				-- The bounding box origin is the upper left corner.
-				-- The box position in x is the smallest_x.
-				-- The box position in y is the greatest_y (upwards).
-				-- The box position in y is additonally converted to y axis going downwards.
-				x		=> boundaries.smallest_x,
-				y		=> convert_and_shift_y (self, boundaries.smallest_y),
-
-				-- The box width is the difference between greatest x and smallest x.
-				-- The box height is the difference between greatest y and smallest y.
-				width	=> boundaries.greatest_x - boundaries.smallest_x,
-				height	=> boundaries.greatest_y - boundaries.smallest_y
-				);
-
-		end make_bounding_box;
-		
-	begin -- query_line
-		make_bounding_box;
-
+		use et_packages;
+		use et_packages.shapes;
+		boundaries : type_boundaries := shapes.boundaries (type_line (element (c)));
+		bounding_box : type_rectangle := make_bounding_box (self, boundaries);
+	begin
 		-- We draw the segment if:
 		--  - no area given or
 		--  - if the bounding box of the segment intersects the given area
