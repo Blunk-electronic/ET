@@ -174,6 +174,63 @@ package body pac_draw is
 		end if;
 	end draw_line;
 
+	procedure draw_arc (
+		area	: in type_rectangle;
+		context	: in type_draw_context;
+		arc		: in type_arc'class;
+		height	: in pac_shapes.geometry.type_distance) is
+
+		-- compute the boundaries (greatest/smallest x/y) of the given arc:
+		boundaries : type_boundaries := pac_shapes.boundaries (arc);
+
+		-- compute the bounding box of the given arc
+		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
+
+		arc_temp : type_arc_angles := to_arc_angles (arc);
+	begin
+		-- We draw the segment if:
+		--  - no area given or
+		--  - if the bounding box of the segment intersects the given area
+		if (area = no_rectangle
+			or else intersects (area, bounding_box)) 
+		then
+
+	-- CS test size 
+	-- 			if not size_above_threshold (self, context.view) then
+	-- 				return;
+	-- 			end if;
+			
+			save (context.cr);
+
+			cairo.new_sub_path (context.cr); -- required to suppress an initial line
+
+			if arc.direction = CW then
+				
+				cairo.arc (
+					context.cr,
+					xc		=> convert_x (arc_temp.center.x),
+					yc		=> shift_y (arc_temp.center.y, height),
+					radius	=> type_view_coordinate (arc_temp.radius),
+					angle1	=> type_view_coordinate (to_radians (arc_temp.angle_start)),
+					angle2	=> type_view_coordinate (to_radians (arc_temp.angle_end))
+					);
+
+			else
+				
+				cairo.arc_negative (
+					context.cr,
+					xc		=> convert_x (arc_temp.center.x),
+					yc		=> shift_y (arc_temp.center.y, height),
+					radius	=> type_view_coordinate (arc_temp.radius),
+					angle1	=> type_view_coordinate (to_radians (arc_temp.angle_start)),
+					angle2	=> type_view_coordinate (to_radians (arc_temp.angle_end))
+					);
+			end if;
+
+			restore (context.cr);
+
+		end if;
+	end draw_arc;
 	
 end pac_draw;
 

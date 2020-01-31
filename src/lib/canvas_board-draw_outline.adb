@@ -71,55 +71,13 @@ procedure draw_outline (
 
 	end query_line;
 
-	procedure query_arc (c : in type_pcb_contour_arcs.cursor) is
-		use et_packages;
-		use et_packages.shapes;
-		boundaries : type_boundaries := shapes.boundaries (type_arc (element (c)));
-		bounding_box : type_rectangle := make_bounding_box (self, boundaries);
-
-		arc : type_arc_angles := to_arc_angles (element (c));
-	begin
-		-- We draw the segment if:
-		--  - no area given or
-		--  - if the bounding box of the segment intersects the given area
-		if (in_area = no_rectangle
-			or else intersects (in_area, bounding_box)) 
-		then
-			-- CS test size 
-	-- 			if not size_above_threshold (self, context.view) then
-	-- 				return;
-	-- 			end if;
-
-			save (context.cr);
-
-			cairo.new_sub_path (context.cr); -- required to suppress an initial line
-
-			if arc.direction = CW then
-				
-				cairo.arc (
-					context.cr,
-					xc		=> convert_x (arc.center.x),
-					yc		=> convert_and_shift_y (self, arc.center.y),
-					radius	=> type_view_coordinate (arc.radius),
-					angle1	=> type_view_coordinate (to_radians (arc.angle_start)),
-					angle2	=> type_view_coordinate (to_radians (arc.angle_end))
-					);
-
-			else
-				
-				cairo.arc_negative (
-					context.cr,
-					xc		=> convert_x (arc.center.x),
-					yc		=> convert_and_shift_y (self, arc.center.y),
-					radius	=> type_view_coordinate (arc.radius),
-					angle1	=> type_view_coordinate (to_radians (arc.angle_start)),
-					angle2	=> type_view_coordinate (to_radians (arc.angle_end))
-					);
-			end if;
-
-			restore (context.cr);
-			
-		end if;
+	procedure query_arc (c : in type_pcb_contour_arcs.cursor) is begin
+		pac_draw_package.draw_arc (
+			--area		=> in_area,
+			area		=> (in_area.x, in_area.y, in_area.width, in_area.height),
+			context		=> context,
+			arc			=> element (c),
+			height		=> self.drawing.frame_bounding_box.height);
 	end query_arc;
 	
 	procedure query_segments (
