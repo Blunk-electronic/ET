@@ -804,6 +804,8 @@ package et_packages is
 	-- Unlike plated millings of terminals (see below) one can not assume a single
 	-- circumfence. There may be circles, rectangles and other objects that are not
 	-- nessecarily connected with each other. DON'T try to model the pcb outline with a polygon !
+	pcb_contour_line_width : constant type_general_line_width := line_width_min; -- for GUI
+	
 	type type_pcb_contour_line is new type_line with null record;
 	package type_pcb_contour_lines is new doubly_linked_lists (type_pcb_contour_line);
 	

@@ -58,6 +58,13 @@ procedure draw_outline (
 	use type_pcb_contour_lines;
 	use type_pcb_contour_arcs;
 	use type_pcb_contour_circles;
+
+-- 	procedure draw_line (
+-- 		self    : not null access type_view;
+-- 		line	: in type_line) is
+-- 	begin
+-- 		null;
+-- 	end draw_line;
 	
 	procedure query_line (c : in type_pcb_contour_lines.cursor) is
 		use et_packages;
@@ -78,18 +85,6 @@ procedure draw_outline (
 
 			save (context.cr);
 
-			-- Prepare the current transformation matrix (CTM) so that
-			-- all following drawing is relative to the upper left frame corner.
-			translate (
-				context.cr,
-				convert_x (self.drawing.frame_bounding_box.x),
-				convert_y (self.drawing.frame_bounding_box.y));
-
-			cairo.set_line_width (context.cr, type_view_coordinate (0.5)); -- cS
-
-			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
-
-			
 			-- start point
 			cairo.move_to (
 				context.cr,
@@ -104,7 +99,6 @@ procedure draw_outline (
 				convert_and_shift_y (self, element (c).end_point.y)
 				);
 
-			cairo.stroke (context.cr);
 			restore (context.cr);
 			
 		end if;
@@ -131,21 +125,10 @@ procedure draw_outline (
 
 			save (context.cr);
 
-			-- Prepare the current transformation matrix (CTM) so that
-			-- all following drawing is relative to the upper left frame corner.
-			translate (
-				context.cr,
-				convert_x (self.drawing.frame_bounding_box.x),
-				convert_y (self.drawing.frame_bounding_box.y));
-
 			cairo.new_sub_path (context.cr); -- required to suppress an initial line
-			
-			cairo.set_line_width (context.cr, type_view_coordinate (0.5)); -- cS
 
-			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
-
-			if arc.direction = CCW then
-
+			if arc.direction = CW then
+				
 				cairo.arc (
 					context.cr,
 					xc		=> convert_x (arc.center.x),
@@ -167,7 +150,6 @@ procedure draw_outline (
 					);
 			end if;
 
-			cairo.stroke (context.cr);
 			restore (context.cr);
 			
 		end if;
@@ -177,8 +159,21 @@ procedure draw_outline (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
 	begin
+		-- Prepare the current transformation matrix (CTM) so that
+		-- all following drawing is relative to the upper left frame corner.
+		translate (
+			context.cr,
+			convert_x (self.drawing.frame_bounding_box.x),
+			convert_y (self.drawing.frame_bounding_box.y));
+
+		-- All outline segments will be drawn with the same line width and color:
+		cairo.set_line_width (context.cr, type_view_coordinate (et_packages.pcb_contour_line_width));
+		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
+		
 		iterate (module.board.contours.lines, query_line'access);
 		iterate (module.board.contours.arcs, query_arc'access);
+
+		cairo.stroke (context.cr);
 	end query_segments;
 	
 begin -- draw_outline
