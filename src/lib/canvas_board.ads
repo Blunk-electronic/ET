@@ -146,20 +146,6 @@ package canvas_board is
 		self	: out type_view_ptr);
 
 	
-	
-	-- Draws the frame:
--- 	procedure draw_frame (
--- 		self	: not null access type_view;
--- 		in_area	: in type_rectangle := no_rectangle;
--- 		context : in type_draw_context);
-
-
--- 	-- Computes a bounding box from the given boundaries:
--- 	function make_bounding_box (
--- 		self		: not null access type_view;
--- 		boundaries	: in type_boundaries)
--- 		return type_rectangle;
-	
 
 	
 	-- Redraw either the whole view, or a specific part of it only.

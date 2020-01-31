@@ -64,7 +64,7 @@ procedure draw_outline (
 	procedure query_line (c : in type_pcb_contour_lines.cursor) is begin
 		pac_draw_package.draw_line (
 			--area		=> in_area,
-			area		=> (in_area.x, in_area.y, in_area.width, in_area.height),
+			area		=> (in_area.x, in_area.y, in_area.width, in_area.height), -- CS error prone, need something more professional
 			context		=> context,
 			line		=> element (c),
 			height		=> self.drawing.frame_bounding_box.height);
@@ -74,7 +74,7 @@ procedure draw_outline (
 	procedure query_arc (c : in type_pcb_contour_arcs.cursor) is begin
 		pac_draw_package.draw_arc (
 			--area		=> in_area,
-			area		=> (in_area.x, in_area.y, in_area.width, in_area.height),
+			area		=> (in_area.x, in_area.y, in_area.width, in_area.height), -- CS error prone, need something more professional
 			context		=> context,
 			arc			=> element (c),
 			height		=> self.drawing.frame_bounding_box.height);

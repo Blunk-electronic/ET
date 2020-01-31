@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           CANVAS FOR BOARD                               --
+--                       PRIMITIVE DRAW OPS FOR BOARD                       --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -35,39 +35,8 @@
 --   history of changes:
 --
 
--- with gtk.main;
--- with gtk.window; 			use gtk.window;
--- with gtk.widget;  			use gtk.widget;
--- with gtk.box;				use gtk.box;
--- with gtk.button;     		use gtk.button;
--- with gtk.handlers;			use gtk.handlers;
--- with gtk.toolbar; 			use gtk.toolbar;
--- with gtk.tool_button;		use gtk.tool_button;
--- with gtk.enums;				use gtk.enums;
--- with gtk.gentry;			use gtk.gentry;
--- with gtk.combo_box_text;	use gtk.combo_box_text;
--- with gtk.frame;				use gtk.frame;
--- with gtk.scrolled_window;	use gtk.scrolled_window;
--- with gtk.adjustment;		use gtk.adjustment;
--- 
--- with gdk;
--- with gdk.types;
--- 
--- with glib;					use glib;
--- with glib.object;			use glib.object;
--- with glib.values;			use glib.values;
 with cairo;					use cairo;
--- with cairo.pattern;			use cairo.pattern;
--- with gtkada.style;     		use gtkada.style;
 
--- with pango.layout;			use pango.layout;
-
--- with ada.containers;		use ada.containers;
--- with ada.containers.doubly_linked_lists;
-
--- with et_pcb_coordinates;	use et_pcb_coordinates;
--- with et_project;			--use et_project;
--- with et_frames;				--use et_frames;
 with et_geometry;
 with et_canvas;
 
@@ -102,13 +71,6 @@ package pac_draw is
 	
 
 	
-
--- 	-- This function converts a y-value from the drawing to the view.
--- 	-- The input y increases upwards. The output y increases downwards.
--- 	function shift_y (
--- 		height	: in pac_shapes.geometry.type_distance;
--- 		offset	: in pac_shapes.geometry.type_distance)
--- 		return type_view_coordinate;
 
 
 	-- This procedure draws the given line on the given context.
