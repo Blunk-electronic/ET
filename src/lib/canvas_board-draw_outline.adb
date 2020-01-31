@@ -48,6 +48,8 @@ use et_pcb_coordinates.geometry;
 
 with et_pcb;					use et_pcb;
 
+with et_canvas_draw;
+
 separate (canvas_board)
 
 procedure draw_outline (
@@ -58,13 +60,6 @@ procedure draw_outline (
 	use type_pcb_contour_lines;
 	use type_pcb_contour_arcs;
 	use type_pcb_contour_circles;
-
--- 	procedure draw_line (
--- 		self    : not null access type_view;
--- 		line	: in type_line) is
--- 	begin
--- 		null;
--- 	end draw_line;
 	
 	procedure query_line (c : in type_pcb_contour_lines.cursor) is
 		use et_packages;
@@ -83,23 +78,10 @@ procedure draw_outline (
 	-- 				return;
 	-- 			end if;
 
-			save (context.cr);
-
-			-- start point
-			cairo.move_to (
-				context.cr,
-				convert_x (element (c).start_point.x),
-				convert_and_shift_y (self, element (c).start_point.y)
-				);
-
-			-- end point
-			cairo.line_to (
-				context.cr,
-				convert_x (element (c).end_point.x),
-				convert_and_shift_y (self, element (c).end_point.y)
-				);
-
-			restore (context.cr);
+			pac_draw_package.draw_line (
+				context		=> context,
+				line		=> type_line (element (c)),
+				offset		=> self.drawing.frame_bounding_box.height);
 			
 		end if;
 	end query_line;
