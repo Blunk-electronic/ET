@@ -78,42 +78,100 @@ package body et_canvas_draw is
 	
 package body pac_draw is
 
-	function convert_x (x : in pac_shapes.geometry.type_distance) return type_view_coordinate is begin
+	function convert_x (x : in pac_shapes.geometry.type_distance) 
+		return type_view_coordinate is 
+	begin
 		return type_view_coordinate (x);
 	end;
 
 	function shift_y (
-		height	: in pac_shapes.geometry.type_distance;
-		offset	: in pac_shapes.geometry.type_distance)
+		y		: in pac_shapes.geometry.type_distance;
+		height	: in pac_shapes.geometry.type_distance)
 		return type_view_coordinate is
 	begin
-		return type_view_coordinate (offset - height);
+		return type_view_coordinate (height - y);
 	end;
+
+	function shift_y (
+		y		: in pac_shapes.geometry.type_distance;
+		height	: in pac_shapes.geometry.type_distance)
+		return pac_shapes.geometry.type_distance is
+	begin
+		return (height - y);
+	end;
+
+	function make_bounding_box (
+		height		: in pac_shapes.geometry.type_distance;
+		boundaries	: in type_boundaries)
+		return type_rectangle is
+	begin
+		return (
+			-- The bounding box origin is the upper left corner.
+			-- The box position in x is the smallest_x.
+			-- The box position in y is the greatest_y (upwards).
+			-- The box position in y is additonally converted to y axis going downwards.
+			x		=> boundaries.smallest_x,
+			y		=> shift_y (boundaries.smallest_y, height),
+
+			-- The box width is the difference between greatest x and smallest x.
+			-- The box height is the difference between greatest y and smallest y.
+			width	=> boundaries.greatest_x - boundaries.smallest_x,
+			height	=> boundaries.greatest_y - boundaries.smallest_y
+			);
+	end make_bounding_box;
+
+	function intersects (rect1, rect2 : type_rectangle) return boolean is begin
+		return not (
+			rect1.x > rect2.x + rect2.width            --  r1 on the right of r2
+			or else rect2.x > rect1.x + rect1.width    --  r2 on the right of r1
+			or else rect1.y > rect2.y + rect2.height   --  r1 below r2
+			or else rect2.y > rect1.y + rect1.height); --  r1 above r2
+	end intersects;
+
 	
 	procedure draw_line (
+		area	: in type_rectangle;
 		context	: in type_draw_context;
 		line	: in type_line'class;
 		height	: in pac_shapes.geometry.type_distance) is
 
+		-- compute the boundaries (greatest/smallest x/y) of the given line:
 		boundaries : type_boundaries := pac_shapes.boundaries (line);
+
+		-- compute the bounding box of the given line
+		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
 	begin
-		save (context.cr);
-		
-		-- start point
-		cairo.move_to (
-			context.cr,
-			convert_x (line.start_point.x),
-			shift_y (line.start_point.y, height)
-			);
+		-- We draw the segment if:
+		--  - no area given or
+		--  - if the bounding box of the segment intersects the given area
+		if (area = no_rectangle
+			or else intersects (area, bounding_box)) 
+		then
 
-		-- end point
-		cairo.line_to (
-			context.cr,
-			convert_x (line.end_point.x),
-			shift_y (line.end_point.y, height)
-			);
+	-- CS test size 
+	-- 			if not size_above_threshold (self, context.view) then
+	-- 				return;
+	-- 			end if;
+			
+			save (context.cr);
+			
+			-- start point
+			cairo.move_to (
+				context.cr,
+				convert_x (line.start_point.x),
+				shift_y (line.start_point.y, height)
+				);
 
-		restore (context.cr);
+			-- end point
+			cairo.line_to (
+				context.cr,
+				convert_x (line.end_point.x),
+				shift_y (line.end_point.y, height)
+				);
+
+			restore (context.cr);
+
+		end if;
 	end draw_line;
 
 	

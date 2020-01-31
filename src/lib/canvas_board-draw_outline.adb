@@ -61,29 +61,14 @@ procedure draw_outline (
 	use type_pcb_contour_arcs;
 	use type_pcb_contour_circles;
 	
-	procedure query_line (c : in type_pcb_contour_lines.cursor) is
-		use et_packages;
-		use et_packages.shapes;
-		boundaries : type_boundaries := shapes.boundaries (type_line (element (c)));
-		bounding_box : type_rectangle := make_bounding_box (self, boundaries);
-	begin
-		-- We draw the segment if:
-		--  - no area given or
-		--  - if the bounding box of the segment intersects the given area
-		if (in_area = no_rectangle
-			or else intersects (in_area, bounding_box)) 
-		then
-			-- CS test size 
-	-- 			if not size_above_threshold (self, context.view) then
-	-- 				return;
-	-- 			end if;
+	procedure query_line (c : in type_pcb_contour_lines.cursor) is begin
+		pac_draw_package.draw_line (
+			--area		=> in_area,
+			area		=> (in_area.x, in_area.y, in_area.width, in_area.height),
+			context		=> context,
+			line		=> element (c),
+			height		=> self.drawing.frame_bounding_box.height);
 
-			pac_draw_package.draw_line (
-				context		=> context,
-				line		=> element (c),
-				height		=> self.drawing.frame_bounding_box.height);
-			
-		end if;
 	end query_line;
 
 	procedure query_arc (c : in type_pcb_contour_arcs.cursor) is

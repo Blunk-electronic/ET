@@ -91,6 +91,8 @@ package pac_draw is
 
 	no_rectangle : constant type_rectangle := (0.0, 0.0, 0.0, 0.0);
 
+	function intersects (rect1, rect2 : type_rectangle) return boolean;
+	
 	
 	-- This function converts a x-value from the drawing to a x-value in the view.
 	function convert_x (x : in pac_shapes.geometry.type_distance) return type_view_coordinate;
@@ -112,6 +114,7 @@ package pac_draw is
 	-- This procedure draws the given line on the given context.
 	-- The line is shifted in y to a plane of given heigth.
 	procedure draw_line (
+		area	: in type_rectangle;
 		context	: in type_draw_context;
 		line	: in type_line'class;
 		height	: in pac_shapes.geometry.type_distance);
