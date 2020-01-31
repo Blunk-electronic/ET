@@ -315,15 +315,6 @@ package pac_canvas is
 		return type_distance is abstract;
 
 
--- 	procedure draw_line (
--- 		self    : not null access type_view;
--- 		line	: in type_line) is
--- 	begin
--- 		null;
--- 	end draw_line;
-
--- 	subtype lt is type_line;
-	
 private
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);
 	-- Called when one of the scrollbars has changed value.
