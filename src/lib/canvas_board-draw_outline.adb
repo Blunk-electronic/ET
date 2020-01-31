@@ -80,8 +80,8 @@ procedure draw_outline (
 
 			pac_draw_package.draw_line (
 				context		=> context,
-				line		=> type_line (element (c)),
-				offset		=> self.drawing.frame_bounding_box.height);
+				line		=> element (c),
+				height		=> self.drawing.frame_bounding_box.height);
 			
 		end if;
 	end query_line;

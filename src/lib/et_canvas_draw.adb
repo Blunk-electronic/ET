@@ -82,20 +82,20 @@ package body pac_draw is
 		return type_view_coordinate (x);
 	end;
 
-	-- This function converts a y-value from the drawing to the view.
-	-- The input y increases upwards. The output y increases downwards.
 	function shift_y (
-		y		: in pac_shapes.geometry.type_distance;
+		height	: in pac_shapes.geometry.type_distance;
 		offset	: in pac_shapes.geometry.type_distance)
 		return type_view_coordinate is
 	begin
-		return type_view_coordinate (offset - y);
+		return type_view_coordinate (offset - height);
 	end;
 	
 	procedure draw_line (
 		context	: in type_draw_context;
-		line	: in type_line;
-		offset	: in pac_shapes.geometry.type_distance) is
+		line	: in type_line'class;
+		height	: in pac_shapes.geometry.type_distance) is
+
+		boundaries : type_boundaries := pac_shapes.boundaries (line);
 	begin
 		save (context.cr);
 		
@@ -103,14 +103,14 @@ package body pac_draw is
 		cairo.move_to (
 			context.cr,
 			convert_x (line.start_point.x),
-			shift_y (line.start_point.y, offset)
+			shift_y (line.start_point.y, height)
 			);
 
 		-- end point
 		cairo.line_to (
 			context.cr,
 			convert_x (line.end_point.x),
-			shift_y (line.end_point.y, offset)
+			shift_y (line.end_point.y, height)
 			);
 
 		restore (context.cr);

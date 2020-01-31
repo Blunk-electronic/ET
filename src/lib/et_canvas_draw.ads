@@ -83,6 +83,15 @@ package pac_draw is
 	use pac_shapes;
 	use pac_shapes.geometry;
 
+	-- A rectangular area of the drawing:
+	type type_rectangle is record
+		x, y			: pac_shapes.geometry.type_distance; -- position, upper left corner
+		width, height	: pac_shapes.geometry.type_distance_positive; -- size
+	end record;
+
+	no_rectangle : constant type_rectangle := (0.0, 0.0, 0.0, 0.0);
+
+	
 	-- This function converts a x-value from the drawing to a x-value in the view.
 	function convert_x (x : in pac_shapes.geometry.type_distance) return type_view_coordinate;
 
@@ -92,20 +101,20 @@ package pac_draw is
 
 	
 
-	-- This function converts a y-value from the drawing to the view.
-	-- The input y increases upwards. The output y increases downwards.
-	function shift_y (
-		y		: in pac_shapes.geometry.type_distance;
-		offset	: in pac_shapes.geometry.type_distance)
-		return type_view_coordinate;
+-- 	-- This function converts a y-value from the drawing to the view.
+-- 	-- The input y increases upwards. The output y increases downwards.
+-- 	function shift_y (
+-- 		height	: in pac_shapes.geometry.type_distance;
+-- 		offset	: in pac_shapes.geometry.type_distance)
+-- 		return type_view_coordinate;
 
 
 	-- This procedure draws the given line on the given context.
-	-- The line is shifted in y by the given offset.
+	-- The line is shifted in y to a plane of given heigth.
 	procedure draw_line (
 		context	: in type_draw_context;
-		line	: in type_line;
-		offset	: in pac_shapes.geometry.type_distance);
+		line	: in type_line'class;
+		height	: in pac_shapes.geometry.type_distance);
 
 
 end pac_draw;
