@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                       PRIMITIVE DRAW OPS FOR BOARD                       --
+--                          PRIMITIVE DRAW OPS                              --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --

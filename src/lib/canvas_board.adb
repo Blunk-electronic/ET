@@ -85,18 +85,18 @@ with ada.containers.doubly_linked_lists;
 with et_general;
 with et_project;
 with et_frames;
-with et_packages;
+-- with et_packages;
 with et_pcb_coordinates;	use et_pcb_coordinates;
 use et_pcb_coordinates.geometry;
 
-with et_canvas_draw;
+-- with et_canvas_draw;
 
 package body canvas_board is
 
-	-- In order to draw objects of a package we instantiate this package:
-	package pac_draw_package is new et_canvas_draw.pac_draw (
-		pac_canvas	=> canvas_board.pac_canvas,
-		pac_shapes	=> et_packages.shapes);
+-- 	-- In order to draw objects of a package we instantiate this package:
+-- 	package pac_draw_package is new et_canvas_draw.pac_draw (
+-- 		pac_canvas	=> canvas_board.pac_canvas,
+-- 		pac_shapes	=> et_packages.shapes);
 
 
 	

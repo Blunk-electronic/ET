@@ -66,10 +66,12 @@ with ada.containers;		use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_pcb_coordinates;	use et_pcb_coordinates;
+with et_packages;
 with et_project;			--use et_project;
 with et_frames;				--use et_frames;
 
 with et_canvas;
+with et_canvas_draw;
 
 package canvas_board is
 
@@ -78,8 +80,14 @@ package canvas_board is
 		canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
 		geometry		=> et_pcb_coordinates.geometry);
 
-	use pac_canvas;
+	-- In order to draw objects of a package we instantiate this package:
+	package pac_draw_package is new et_canvas_draw.pac_draw (
+		pac_canvas	=> pac_canvas,
+		pac_shapes	=> et_packages.shapes);
+
+
 	
+	use pac_canvas;	
 
 	use et_pcb_coordinates.geometry;
 	
