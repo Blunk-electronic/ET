@@ -52,16 +52,6 @@ package pac_draw is
 	use pac_shapes;
 	use pac_shapes.geometry;
 
-	-- A rectangular area of the drawing:
-	type type_rectangle is record
-		x, y			: pac_shapes.geometry.type_distance; -- position, upper left corner
-		width, height	: pac_shapes.geometry.type_distance_positive; -- size
-	end record;
-
-	no_rectangle : constant type_rectangle := (0.0, 0.0, 0.0, 0.0);
-
--- 	function intersects (rect1, rect2 : type_rectangle) return boolean;
-	
 	
 	-- This function converts a x-value from the drawing to a x-value in the view.
 	function convert_x (x : in pac_shapes.geometry.type_distance) return type_view_coordinate;

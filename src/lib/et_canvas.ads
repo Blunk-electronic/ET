@@ -114,19 +114,6 @@ package pac_canvas is
 	view_margin : constant type_view_coordinate := 20.0;
 
 
-	
-	-- A rectangular area of the drawing:
-	type type_rectangle is record
-		x, y			: type_distance; -- position, upper left corner
-		width, height	: type_distance_positive; -- size
-	end record;
-
-	no_rectangle : constant type_rectangle := (0.0, 0.0, 0.0, 0.0);
-
-	
-	function intersects (rect1, rect2 : type_rectangle) return boolean;
-	
-
 -- VIEW
 
 	-- scale

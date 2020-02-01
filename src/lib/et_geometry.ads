@@ -52,7 +52,7 @@ package et_geometry is
 	keyword_center		: constant string := "center";		
 	keyword_radius		: constant string := "radius";		
 	keyword_diameter	: constant string := "diameter";
-	keyword_filled 		: constant string := "filled";		
+	keyword_filled 		: constant string := "filled";
 		
 	
 	generic
@@ -85,20 +85,38 @@ package et_geometry is
 		function x (point : in type_point'class) return type_distance; -- CS class attr. not required ?
 		function y (point : in type_point'class) return type_distance;		
 
+
+
+		
 		-- The GUI frequently requires the area (a rectanglular box around an object)
-		-- occupied by the object. For preparation we need the boundaries:
+		-- occupied by the object. For preparation we need the type_boundaries:
 		type type_boundaries is record
 			smallest_x, smallest_y : type_distance := type_distance'last;
 			greatest_x, greatest_y : type_distance := type_distance'first;
 		end record;
 
+		-- Calculates the boundaries of the given points:
 		function boundaries (point_one, point_two : in type_point) return type_boundaries;
-		-- Calculates the boundaries of the given points.
 
+		-- Moves the boundaries by the given offset:
 		procedure move_by (
-		-- Moves the boundaries by the given offset.
 			boundaries	: in out type_boundaries;
 			offset		: in type_point);
+
+		-- In connection with boundaries and bounding boxes a type for
+		-- a rectangular area of the drawing is required:
+		type type_rectangle is record
+			x, y			: type_distance; -- position, upper left corner
+			width, height	: type_distance_positive; -- size
+		end record;
+
+		no_rectangle : constant type_rectangle := (others => zero); -- 0.0, 0.0, 0.0, 0.0);
+
+		-- Returns true if the given two rectangles intersect each other in some way:
+		function intersects (rect1, rect2 : type_rectangle) return boolean;
+
+
+		
 		
 		
 		function mil_to_distance (mil : in string) return type_distance;

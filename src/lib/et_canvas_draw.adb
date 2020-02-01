@@ -37,9 +37,7 @@
 
 with ada.text_io;				use ada.text_io;
 
-
 package body et_canvas_draw is
-
 	
 package body pac_draw is
 
