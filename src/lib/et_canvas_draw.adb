@@ -83,14 +83,6 @@ package body pac_draw is
 			);
 	end make_bounding_box;
 
-	function intersects (rect1, rect2 : type_rectangle) return boolean is begin
-		return not (
-			rect1.x > rect2.x + rect2.width            --  r1 on the right of r2
-			or else rect2.x > rect1.x + rect1.width    --  r2 on the right of r1
-			or else rect1.y > rect2.y + rect2.height   --  r1 below r2
-			or else rect2.y > rect1.y + rect1.height); --  r1 above r2
-	end intersects;
-
 	
 	procedure draw_line (
 		area	: in type_rectangle;

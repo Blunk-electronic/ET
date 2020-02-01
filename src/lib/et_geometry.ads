@@ -110,7 +110,7 @@ package et_geometry is
 			width, height	: type_distance_positive; -- size
 		end record;
 
-		no_rectangle : constant type_rectangle := (others => zero); -- 0.0, 0.0, 0.0, 0.0);
+		no_rectangle : constant type_rectangle := (others => zero);
 
 		-- Returns true if the given two rectangles intersect each other in some way:
 		function intersects (rect1, rect2 : type_rectangle) return boolean;

@@ -126,14 +126,14 @@ package canvas_board is
 
 	-- This function converts a y-value from the drawing to a y-value in the model.
 	-- The input y increases upwards. The output y increases downwards.
-	overriding function convert_and_shift_y (
+	overriding function convert_and_shift_y (  -- CS remove
 		self	: not null access type_view;
 		y		: in type_distance_total) 
 		return type_distance_total;
 		
 	-- This function converts a y-value from the drawing to a y-value in the view.
 	-- The input y increases upwards. The output y increases downwards.
-	overriding function convert_and_shift_y (
+	overriding function convert_and_shift_y (  -- CS remove
 		self	: not null access type_view;
 		y		: in type_distance_total)
 		return type_view_coordinate;
