@@ -90,6 +90,17 @@ package pac_draw is
 		arc		: in type_arc'class;
 		height	: in pac_shapes.geometry.type_distance);
 
+	-- This procedure draws the given circle on the given context.
+	-- The circle is shifted in y to a plane of given height. This plane
+	-- has y-axis going downwards.
+	-- The circle will be drawn if its bounding box intersects the given area.
+	procedure draw_circle (
+		area	: in type_rectangle;
+		context	: in type_draw_context;
+		circle	: in type_circle'class;
+		height	: in pac_shapes.geometry.type_distance);
+
+	
 end pac_draw;
 
 end et_canvas_draw;

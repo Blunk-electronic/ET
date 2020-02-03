@@ -77,6 +77,14 @@ procedure draw_outline (
 			arc			=> element (c),
 			height		=> self.drawing.frame_bounding_box.height);
 	end query_arc;
+
+	procedure query_circle (c : in type_pcb_contour_circles.cursor) is begin
+		pac_draw_package.draw_circle (
+			area		=> in_area,
+			context		=> context,
+			circle		=> element (c),
+			height		=> self.drawing.frame_bounding_box.height);
+	end query_circle;
 	
 	procedure query_segments (
 		module_name	: in type_module_name.bounded_string;
@@ -95,6 +103,7 @@ procedure draw_outline (
 		
 		iterate (module.board.contours.lines, query_line'access);
 		iterate (module.board.contours.arcs, query_arc'access);
+		iterate (module.board.contours.circles, query_circle'access);
 
 		cairo.stroke (context.cr);
 	end query_segments;

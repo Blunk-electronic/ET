@@ -36,6 +36,8 @@
 --
 
 with ada.text_io;				use ada.text_io;
+with ada.numerics;				use ada.numerics;
+
 
 package body et_canvas_draw is
 	
@@ -185,6 +187,47 @@ package body pac_draw is
 
 		end if;
 	end draw_arc;
+
+	procedure draw_circle (
+		area	: in type_rectangle;
+		context	: in type_draw_context;
+		circle	: in type_circle'class;
+		height	: in pac_shapes.geometry.type_distance) is
+
+		-- compute the boundaries (greatest/smallest x/y) of the given circle:
+		boundaries : type_boundaries := pac_shapes.boundaries (circle);
+
+		-- compute the bounding box of the given arc
+		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
+	begin
+		-- We draw the segment if:
+		--  - no area given or
+		--  - if the bounding box of the segment intersects the given area
+		if (area = no_rectangle
+			or else intersects (area, bounding_box)) 
+		then
+
+	-- CS test size 
+	-- 			if not size_above_threshold (self, context.view) then
+	-- 				return;
+	-- 			end if;
+			
+			cairo.new_sub_path (context.cr); -- required to suppress an initial line
+
+			cairo.arc (
+				context.cr,
+				xc		=> convert_x (circle.center.x),
+				yc		=> shift_y (circle.center.y, height),
+				radius	=> type_view_coordinate (circle.radius),
+
+				-- it must be a full circle starting at 0 degree and ending at 360 degree:
+				angle1	=> 0.0,
+				angle2	=> type_view_coordinate (2 * pi)				
+				);
+
+		end if;
+	end draw_circle;
+
 	
 end pac_draw;
 

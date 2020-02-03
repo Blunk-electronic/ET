@@ -1212,8 +1212,8 @@ package body et_geometry is
 			result.greatest_x := circle.center.x + circle.radius;
 
 			-- Y axis
-			result.smallest_y := circle.center.x - circle.radius;
-			result.greatest_y := circle.center.x + circle.radius;
+			result.smallest_y := circle.center.y - circle.radius;
+			result.greatest_y := circle.center.y + circle.radius;
 			
 			return result;
 		end boundaries;
