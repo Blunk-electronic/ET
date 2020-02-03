@@ -85,10 +85,13 @@ package body pac_draw is
 
 	
 	procedure draw_line (
-		area	: in type_rectangle;
-		context	: in type_draw_context;
-		line	: in type_line'class;
-		height	: in pac_shapes.geometry.type_distance) is
+		area			: in type_rectangle;
+		context			: in type_draw_context;
+		line			: in type_line'class;
+		height			: in pac_shapes.geometry.type_distance;
+		extend_boundaries	: in boolean := false;
+		boundaries_to_add	: in type_boundaries := boundaries_default)
+	is
 
 		-- compute the boundaries (greatest/smallest x/y) of the given line:
 		boundaries : type_boundaries := pac_shapes.boundaries (line);
@@ -96,6 +99,10 @@ package body pac_draw is
 		-- compute the bounding box of the given line
 		bounding_box : type_rectangle := make_bounding_box (height, boundaries);
 	begin
+		if extend_boundaries then
+			add (boundaries, boundaries_to_add);
+		end if;
+		
 		-- We draw the segment if:
 		--  - no area given or
 		--  - if the bounding box of the segment intersects the given area

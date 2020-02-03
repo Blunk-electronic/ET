@@ -72,6 +72,17 @@ package body et_geometry is
 			return point.y;
 		end;
 
+		-- Adds two boundaries.
+		procedure add (
+			boundaries_one : in out type_boundaries;
+			boundaries_two : in type_boundaries) is
+		begin
+-- 			if boundaries_two.smallest_x < boundaries_one.smallest_x , smallest_y : type_distance := type_distance'last;
+-- 			greatest_x, greatest_y : type_distance := type_distance'first;
+			null; -- CS
+		end; 
+
+		
 		function boundaries (point_one, point_two : in type_point) return type_boundaries is
 		-- Calculates the boundaries of the given points.
 			result : type_boundaries;

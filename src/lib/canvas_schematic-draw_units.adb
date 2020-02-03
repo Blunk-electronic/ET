@@ -75,12 +75,12 @@ procedure draw_units (
 		-- First we take a copy the boundaries of the symbol.
 		boundaries : geometry.type_boundaries := symbol.boundaries;
 
-		-- In the next steps the boundaries are extended.
+		-- In the next steps the boundaries are to be extended.
 		-- Reason: The operator may have changed positions of
 		-- placeholders (for name, value and purpose) from their initial
 		-- position as specified in the symbol model. So the boundaries
 		-- may have become wider.
-		-- Other things like lines, arcs, ports and texts can't be moved in the 
+		-- Other things like lines, arcs, ports and texts can't be moved separately in the 
 		-- schematic editor. They already have been included in the bounding box.
 		-- See procedure et_symbols.compute_boundaries for details.
 

@@ -67,11 +67,18 @@ package pac_draw is
 	-- The line is shifted in y to a plane of given height. This plane
 	-- has y-axis going downwards.
 	-- The line will be drawn if its bounding box intersects the given area.
+	-- If extend_boundaries is true, then the boundaries in boundaries_to_add
+	-- extend the bounding box of the given line accordingly.
+	-- (This may be the case if the line is a 
+	-- net segment with labels.).
 	procedure draw_line (
-		area	: in type_rectangle;	
-		context	: in type_draw_context;
-		line	: in type_line'class;
-		height	: in pac_shapes.geometry.type_distance);
+		area			: in type_rectangle;	
+		context			: in type_draw_context;
+		line			: in type_line'class;
+		height			: in pac_shapes.geometry.type_distance;
+		extend_boundaries	: in boolean := false;
+		boundaries_to_add	: in type_boundaries := boundaries_default);
+		
 
 	-- This procedure draws the given arc on the given context.
 	-- The arc is shifted in y to a plane of given height. This plane
@@ -82,7 +89,6 @@ package pac_draw is
 		context	: in type_draw_context;
 		arc		: in type_arc'class;
 		height	: in pac_shapes.geometry.type_distance);
-
 
 end pac_draw;
 

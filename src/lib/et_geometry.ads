@@ -95,6 +95,13 @@ package et_geometry is
 			greatest_x, greatest_y : type_distance := type_distance'first;
 		end record;
 
+		boundaries_default : constant type_boundaries := (others => <>);
+		
+		-- Adds two boundaries.
+		procedure add (
+			boundaries_one : in out type_boundaries;
+			boundaries_two : in type_boundaries);
+		
 		-- Calculates the boundaries of the given points:
 		function boundaries (point_one, point_two : in type_point) return type_boundaries;
 
