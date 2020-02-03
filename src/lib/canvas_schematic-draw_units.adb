@@ -65,6 +65,13 @@ procedure draw_units (
 		symbol		: in et_symbols.type_symbol;
 		position	: in et_coordinates.geometry.type_point) -- x/y on the schematic sheet
 	is
+
+	-- CS Could be useful to use the primitive draw operations of et_canvas_draw:
+	-- In order to draw objects of a symbol we instantiate this package:
+	-- 	package pac_draw_symbol is new et_canvas_draw.pac_draw (
+	-- 		pac_canvas	=> pac_canvas,
+	-- 		pac_shapes	=> et_symbols.pac_shapes);
+
 		use et_symbols;
 		use type_lines;
 		use type_arcs;
@@ -89,7 +96,7 @@ procedure draw_units (
 		bounding_box : type_rectangle;
 		
 		procedure make_bounding_box is begin
-			-- In case the symbol belongs to a real devcie, probe placeholders and
+			-- In case the symbol belongs to a real device, probe placeholders and
 			-- update boundaries. If a placeholder is inside the boundaries,
 			-- nothing happens -> The boundaries are NOT changed.
 			if symbol.appearance = PCB then

@@ -66,10 +66,9 @@ with ada.containers;		use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_coordinates;		use et_coordinates;
-with et_project;			--use et_project;
+with et_project;
 with et_schematic;
-with et_frames;				--use et_frames;
-with et_symbols;
+with et_frames;
 
 with et_canvas;
 with et_canvas_draw;
@@ -81,20 +80,17 @@ package canvas_schematic is
 		canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain
 		geometry		=> et_coordinates.geometry);
 
-
-	-- In order to draw objects of a symbol we instantiate this package:
--- 	package pac_draw_symbol is new et_canvas_draw.pac_draw (
--- 		pac_canvas	=> pac_canvas,
--- 		pac_shapes	=> et_symbols.pac_shapes);
-
-	-- In order to draw other stuff like net segments, lines, arcs, circles of a schematic
+	use pac_canvas;
+	
+	-- Objects that neither belong to frames or symbols like:
+	--  - net segments
+	--  - lines, arcs, circles of documentation
 	-- we instantiate this package:
 	package pac_draw_misc is new et_canvas_draw.pac_draw (
 		pac_canvas	=> pac_canvas,
 		pac_shapes	=> et_schematic.pac_shapes);
 
 	
-	use pac_canvas;
 	
 
 	use et_coordinates.geometry; -- CS
@@ -103,9 +99,8 @@ package canvas_schematic is
 	type type_drawing is record	
 		module	: et_project.type_modules.cursor;
 
-		-- These variables are frequently used. Procedure set_module
-		-- sets them. Other operations are free to access
-		-- them.
+		-- These variables are frequently used. Procedure init_drawing
+		-- sets them. Other operations are free to access them.
 		frame				: et_frames.type_frame (et_frames.SCHEMATIC);
 		frame_bounding_box	: type_rectangle;
 

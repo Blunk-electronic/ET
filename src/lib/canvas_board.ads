@@ -80,14 +80,15 @@ package canvas_board is
 		canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
 		geometry		=> et_pcb_coordinates.geometry);
 
-	-- In order to draw objects of a package we instantiate this package:
+	
+	-- In order to draw objects of a component-package we instantiate this package:
 	package pac_draw_package is new et_canvas_draw.pac_draw (
 		pac_canvas	=> pac_canvas,
 		pac_shapes	=> et_packages.shapes);
 
+	use pac_canvas;	
 
 	
-	use pac_canvas;	
 
 	use et_pcb_coordinates.geometry;
 	
@@ -95,9 +96,8 @@ package canvas_board is
 	type type_drawing is record	
 		module	: et_project.type_modules.cursor;
 
-		-- These variables are frequently used. Procedure set_module
-		-- sets them. Other operations are free to access
-		-- them.
+		-- These variables are frequently used. Procedure init_drawing
+		-- sets them. Other operations are free to access them.
 		frame				: et_frames.type_frame_pcb;
 		frame_bounding_box	: type_rectangle;
 
