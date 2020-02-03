@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               CANVAS                                     --
+--                            CANVAS GENERAL                                --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -86,7 +86,7 @@ with et_general;
 with et_project;
 with et_frames;
 
-package body et_canvas is
+package body et_canvas_general is
 
 package body pac_canvas is
 	use geometry;
@@ -867,7 +867,7 @@ package body pac_canvas is
 
 end pac_canvas;
 	
-end et_canvas;
+end et_canvas_general;
 
 -- Soli Deo Gloria
 

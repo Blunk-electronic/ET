@@ -38,13 +38,13 @@
 with cairo;					use cairo;
 
 with et_geometry;
-with et_canvas;
+with et_canvas_general;
 
 package et_canvas_draw is
 
 generic
 
-	with package pac_canvas is new et_canvas.pac_canvas (<>);
+	with package pac_canvas is new et_canvas_general.pac_canvas (<>);
 	with package pac_shapes is new et_geometry.shapes_2d (<>);
 	
 package pac_draw is

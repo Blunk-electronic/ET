@@ -70,13 +70,13 @@ with et_project;
 with et_schematic;
 with et_frames;
 
-with et_canvas;
+with et_canvas_general;
 with et_canvas_draw;
 
 package canvas_schematic is
 
 	-- Instantiate the canvas package:
-	package pac_canvas is new et_canvas.pac_canvas (
+	package pac_canvas is new et_canvas_general.pac_canvas (
 		canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain
 		geometry		=> et_coordinates.geometry);
 

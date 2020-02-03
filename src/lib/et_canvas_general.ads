@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               CANVAS                                     --
+--                            CANVAS GENERAL                                --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -34,6 +34,13 @@
 --
 --   history of changes:
 --
+-- DESCRIPTION:
+--	This package provides general things required to set up a canvas. A canvas
+--  is also referred to as "view". 
+--  Since the canvas is used in various drawings like schematic, pcb-layout, ...
+--  it must be instantiated with the package that provides the respective
+--  measurement system.
+
 
 with gtk.main;
 with gtk.window; 			use gtk.window;
@@ -71,19 +78,21 @@ with ada.containers.doubly_linked_lists;
 
 with et_geometry;
 
-package et_canvas is
+package et_canvas_general is
 
 generic
 
-	canvas_name : string;
+	canvas_name : string; -- schematic, board, package, device, symbol, ...
+
+	-- The system of measurement:
 	with package geometry is new et_geometry.geometry_operations_2d (<>);
 	
 package pac_canvas is
 	use geometry;
 
 
-	-- This signal is emitted by the model whenever items are added, moved, resized, ...
-	signal_layout_changed : constant glib.signal_name := "layout_changed";
+	-- This signal is emitted by the drawing whenever items are added, moved, resized, ...
+-- 	signal_layout_changed : constant glib.signal_name := "layout_changed";
 	
 
 	signal_viewport_changed : constant glib.signal_name := "viewport_changed";
@@ -397,7 +406,7 @@ private
 	
 end pac_canvas;
 	
-end et_canvas;
+end et_canvas_general;
 
 -- Soli Deo Gloria
 
