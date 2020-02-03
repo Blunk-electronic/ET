@@ -187,8 +187,8 @@ package body canvas_schematic is
 		draw_grid (self, style, context, area);
 
 		draw_frame (self, area, context); -- separate unit
-		draw_nets (self, area, context); -- separate unit
 		draw_units (self, area, context); -- separate unit
+		draw_nets (self, area, context); -- separate unit
 		-- CS self.model.draw_texts (area, context);
 		-- CS self.model.draw_submodules (area, context);
 			

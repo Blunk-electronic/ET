@@ -67,6 +67,7 @@ with ada.containers.doubly_linked_lists;
 
 with et_coordinates;		use et_coordinates;
 with et_project;			--use et_project;
+with et_schematic;
 with et_frames;				--use et_frames;
 with et_symbols;
 
@@ -80,10 +81,18 @@ package canvas_schematic is
 		canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain
 		geometry		=> et_coordinates.geometry);
 
+
 	-- In order to draw objects of a symbol we instantiate this package:
-	package pac_draw_symbol is new et_canvas_draw.pac_draw (
+-- 	package pac_draw_symbol is new et_canvas_draw.pac_draw (
+-- 		pac_canvas	=> pac_canvas,
+-- 		pac_shapes	=> et_symbols.pac_shapes);
+
+	-- In order to draw other stuff like net segments, lines, arcs, circles of a schematic
+	-- we instantiate this package:
+	package pac_draw_misc is new et_canvas_draw.pac_draw (
 		pac_canvas	=> pac_canvas,
-		pac_shapes	=> et_symbols.pac_shapes);
+		pac_shapes	=> et_schematic.pac_shapes);
+
 	
 	use pac_canvas;
 	

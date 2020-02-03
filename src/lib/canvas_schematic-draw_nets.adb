@@ -69,72 +69,24 @@ procedure draw_nets (
 
 			procedure query_segments (strand : in type_strand) is
 				segment_cursor : type_net_segments.cursor := strand.segments.first;
-
-				-- The bounding box that surrounds the segment must be calculated.
-				bounding_box : type_rectangle;
-
-				procedure make_bounding_box (sc : in type_net_segments.cursor) is
-					use pac_shapes;					
-					boundaries : type_boundaries := pac_shapes.boundaries (type_line (element (sc)));
-					-- CS include net labels in the boundaries
-				begin
-					bounding_box := canvas_schematic.make_bounding_box (self, boundaries);
-				end make_bounding_box;
-				
-			begin -- query_segments
-				
+			begin
 				-- draw nets of the active sheet only:
 				if strand.position.sheet = self.drawing.sheet then
 					
 					while segment_cursor /= type_net_segments.no_element loop
 
-						make_bounding_box (segment_cursor);
-						
-						-- We draw the segment if:
-						--  - no area given or
-						--  - if the bounding box of the segment intersects the given area
-						if (in_area = no_rectangle
-							or else intersects (in_area, bounding_box)) 
-						then
-							-- CS test size 
-					-- 			if not size_above_threshold (self, context.view) then
-					-- 				return;
-					-- 			end if;
+						pac_draw_misc.draw_line (
+							area		=> in_area,
+							context		=> context,
+							line		=> element (segment_cursor),
+							height		=> self.drawing.frame_bounding_box.height,
+							extend_boundaries	=> false,
+							boundaries_to_add	=> boundaries_default -- CS
+							);
 
-							save (context.cr);
+						-- CS include net labels (if any) in the boundaries
 
-							-- Prepare the current transformation matrix (CTM) so that
-							-- all following drawing is relative to the upper left frame corner.
-							translate (
-								context.cr,
-								convert_x (self.drawing.frame_bounding_box.x),
-								convert_y (self.drawing.frame_bounding_box.y));
-
-							cairo.set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
-
-							cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (0)); -- green
-
-							
-							-- start point
-							cairo.move_to (
-								context.cr,
-								convert_x (element (segment_cursor).start_point.x),
-								convert_and_shift_y (self, element (segment_cursor).start_point.y)
-								);
-
-							-- end point
-							cairo.line_to (
-								context.cr,
-								convert_x (element (segment_cursor).end_point.x),
-								convert_and_shift_y (self, element (segment_cursor).end_point.y)
-								);
-
-							-- CS draw junctions and labels
-
-							cairo.stroke (context.cr);
-							restore (context.cr);
-							
-						end if;
+						-- CS draw junctions and labels
 						
 						next (segment_cursor);
 					end loop;
@@ -154,6 +106,19 @@ procedure draw_nets (
 		end query_strands;
 		
 	begin -- query_nets
+		save (context.cr);
+		
+		-- Prepare the current transformation matrix (CTM) so that
+		-- all following drawing is relative to the upper left frame corner.
+		translate (
+			context.cr,
+			convert_x (self.drawing.frame_bounding_box.x),
+			convert_y (self.drawing.frame_bounding_box.y));
+
+		cairo.set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
+		cairo.set_source_rgb (context.cr, gdouble (0), gdouble (1), gdouble (0)); -- green
+
+		-- iterate nets
 		while net_cursor /= type_nets.no_element loop
 
 			type_nets.query_element (
@@ -162,7 +127,10 @@ procedure draw_nets (
 
 			next (net_cursor);
 		end loop;
-		
+
+		cairo.stroke (context.cr);
+
+		restore (context.cr);
 	end query_nets;
 	
 begin

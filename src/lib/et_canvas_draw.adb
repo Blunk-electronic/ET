@@ -115,8 +115,6 @@ package body pac_draw is
 	-- 				return;
 	-- 			end if;
 			
-			save (context.cr);
-			
 			-- start point
 			cairo.move_to (
 				context.cr,
@@ -130,8 +128,6 @@ package body pac_draw is
 				convert_x (line.end_point.x),
 				shift_y (line.end_point.y, height)
 				);
-
-			restore (context.cr);
 
 		end if;
 	end draw_line;
@@ -162,8 +158,6 @@ package body pac_draw is
 	-- 				return;
 	-- 			end if;
 			
-			save (context.cr);
-
 			cairo.new_sub_path (context.cr); -- required to suppress an initial line
 
 			if arc.direction = CW then
@@ -188,8 +182,6 @@ package body pac_draw is
 					angle2	=> type_view_coordinate (to_radians (arc_temp.angle_end))
 					);
 			end if;
-
-			restore (context.cr);
 
 		end if;
 	end draw_arc;
