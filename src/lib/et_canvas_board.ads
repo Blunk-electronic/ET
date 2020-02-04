@@ -56,7 +56,7 @@ with et_project;			--use et_project;
 with et_frames;				--use et_frames;
 
 with et_canvas_general;
-with et_canvas_draw;
+with et_canvas_primitive_draw_ops;
 
 package et_canvas_board is
 
@@ -67,7 +67,7 @@ package et_canvas_board is
 
 	
 	-- In order to draw objects of a component-package we instantiate this package:
-	package pac_draw_package is new et_canvas_draw.pac_draw (
+	package pac_draw_package is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas	=> pac_canvas,
 		pac_shapes	=> et_packages.shapes);
 

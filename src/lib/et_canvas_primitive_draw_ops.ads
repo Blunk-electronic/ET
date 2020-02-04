@@ -56,7 +56,7 @@ with cairo;					use cairo;
 with et_geometry;
 with et_canvas_general;
 
-package et_canvas_draw is
+package et_canvas_primitive_draw_ops is
 
 generic
 
@@ -111,7 +111,7 @@ package pac_draw is
 	
 end pac_draw;
 
-end et_canvas_draw;
+end et_canvas_primitive_draw_ops;
 
 -- Soli Deo Gloria
 

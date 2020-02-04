@@ -39,7 +39,7 @@ with ada.text_io;				use ada.text_io;
 with ada.numerics;				use ada.numerics;
 
 
-package body et_canvas_draw is
+package body et_canvas_primitive_draw_ops is
 	
 package body pac_draw is
 
@@ -233,7 +233,7 @@ package body pac_draw is
 	
 end pac_draw;
 
-end et_canvas_draw;
+end et_canvas_primitive_draw_ops;
 
 -- Soli Deo Gloria
 

@@ -71,7 +71,7 @@ with et_schematic;
 with et_frames;
 
 with et_canvas_general;
-with et_canvas_draw;
+with et_canvas_primitive_draw_ops;
 
 package canvas_schematic is
 
@@ -86,7 +86,7 @@ package canvas_schematic is
 	--  - net segments
 	--  - lines, arcs, circles of documentation
 	-- we instantiate this package:
-	package pac_draw_misc is new et_canvas_draw.pac_draw (
+	package pac_draw_misc is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas	=> pac_canvas,
 		pac_shapes	=> et_schematic.pac_shapes);
 
