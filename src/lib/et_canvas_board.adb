@@ -100,7 +100,13 @@ package body et_canvas_board is
 		in_area	: in type_rectangle := no_rectangle;
 		context : in type_draw_context) is separate;
 
+	procedure draw_silk_screen (
+		self    : not null access type_view;
+		in_area	: in type_rectangle := no_rectangle;
+		context : in type_draw_context;
+		face	: in type_face) is separate;
 
+	
 	procedure draw_internal (
 		self    : not null access type_view;
 		context : type_draw_context;
@@ -121,6 +127,7 @@ package body et_canvas_board is
 
 		draw_frame (self, area, context); -- separate unit
 		draw_outline (self, area, context); -- separate unit
+		draw_silk_screen (self, area, context, TOP);
 -- 		draw_units (self, area, context); -- separate unit
 		-- CS self.model.draw_texts (area, context);
 		-- CS self.model.draw_submodules (area, context);
