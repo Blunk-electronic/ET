@@ -34,6 +34,22 @@
 --
 --   history of changes:
 --
+-- DESCRIPTION:
+-- 
+-- This package provides primite draw operations for the board.
+-- It bases on an instance of the general canvas package. The general canvas
+-- package has been instantiated for example in et_canvas_schematic or et_canvas_board.
+-- The instantiated canvas package is required because the draw operations ALWAYS require
+-- the drawing information provided in the type_view.drawing.
+--
+-- This package also bases on a instantiated shapes package because it is about
+-- shapes here.
+-- and extends the type_view by the type_drawing. The latter is the link
+-- to the actual drawing. The type_drawing provides information on sheet size,
+-- fame bounding box, paper size etc. These information is frequently used
+-- by various draw operations.
+--  Further-on the generic package for primitve draw operations (et_canvas_draw.pac_draw)
+-- is instantiated here so that lots of draw operations can use pac_draw_package.
 
 with cairo;					use cairo;
 
@@ -44,24 +60,16 @@ package et_canvas_draw is
 
 generic
 
+	-- The instantiated canvas package:
 	with package pac_canvas is new et_canvas_general.pac_canvas (<>);
+
+	-- The instantiated shapes package:
 	with package pac_shapes is new et_geometry.shapes_2d (<>);
 	
 package pac_draw is
 	use pac_canvas;
 	use pac_shapes;
 	use pac_shapes.geometry;
-
-	
-	-- This function converts a x-value from the drawing to a x-value in the view.
-	function convert_x (x : in pac_shapes.geometry.type_distance) return type_view_coordinate;
-
-	-- This function converts a y-value from the drawing to a y-value in the view.	
-	function convert_y (y : in pac_shapes.geometry.type_distance) return type_view_coordinate renames convert_x;
-	
-
-	
-
 
 	-- This procedure draws the given line on the given context.
 	-- The line is shifted in y to a plane of given height. This plane

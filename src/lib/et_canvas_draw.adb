@@ -43,12 +43,14 @@ package body et_canvas_draw is
 	
 package body pac_draw is
 
+	-- This function converts a x-value from the drawing to a x-value in the view.
 	function convert_x (x : in pac_shapes.geometry.type_distance) 
 		return type_view_coordinate is 
 	begin
 		return type_view_coordinate (x);
 	end;
 
+	-- This function converts a y-value from the drawing to a y-value in the view.
 	function shift_y (
 		y		: in pac_shapes.geometry.type_distance;
 		height	: in pac_shapes.geometry.type_distance)
