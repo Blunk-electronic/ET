@@ -43,7 +43,7 @@ with pango.layout;				use pango.layout;
 with et_pcb_coordinates;		use et_pcb_coordinates;
 use et_pcb_coordinates.geometry;
 
-separate (canvas_board)
+separate (et_canvas_board)
 
 procedure draw_frame (
 	self	: not null access type_view;

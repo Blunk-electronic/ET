@@ -35,6 +35,7 @@
 --   history of changes:
 --
 -- DESCRIPTION:
+--
 --	This package provides general things required to set up a canvas. A canvas
 --  is also referred to as "view". 
 --  Since the canvas is used in various drawings like schematic, pcb-layout, ...

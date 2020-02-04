@@ -50,7 +50,7 @@ with et_pcb;					use et_pcb;
 
 with et_canvas_draw;
 
-separate (canvas_board)
+separate (et_canvas_board)
 
 procedure draw_outline (
 	self    : not null access type_view;

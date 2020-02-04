@@ -34,36 +34,21 @@
 --
 --   history of changes:
 --
-
-with gtk.main;
-with gtk.window; 			use gtk.window;
-with gtk.widget;  			use gtk.widget;
-with gtk.box;				use gtk.box;
-with gtk.button;     		use gtk.button;
-with gtk.handlers;			use gtk.handlers;
-with gtk.toolbar; 			use gtk.toolbar;
-with gtk.tool_button;		use gtk.tool_button;
-with gtk.enums;				use gtk.enums;
-with gtk.gentry;			use gtk.gentry;
-with gtk.combo_box_text;	use gtk.combo_box_text;
-with gtk.frame;				use gtk.frame;
-with gtk.scrolled_window;	use gtk.scrolled_window;
-with gtk.adjustment;		use gtk.adjustment;
-
-with gdk;
-with gdk.types;
+-- DESCRIPTION:
+-- 
+-- This package draws the pcb layout (board) via various child packages.
+-- This package instantiates the generic canvas package (et_canvas_general.pac_canvas)
+-- and extends the type_view by the type_drawing. The latter is the link
+-- to the actual drawing. The type_drawing provides information on sheet size,
+-- fame bounding box, paper size etc. These information is frequently used
+-- by various draw operations.
+--  Further-on the generic package for primitve draw operations (et_canvas_draw.pac_draw)
+-- is instantiated here so that lots of draw operations can use pac_draw_package.
 
 with glib;					use glib;
-with glib.object;			use glib.object;
-with glib.values;			use glib.values;
 with cairo;					use cairo;
 with cairo.pattern;			use cairo.pattern;
 with gtkada.style;     		use gtkada.style;
-
-with pango.layout;			use pango.layout;
-
-with ada.containers;		use ada.containers;
-with ada.containers.doubly_linked_lists;
 
 with et_pcb_coordinates;	use et_pcb_coordinates;
 with et_packages;
@@ -73,9 +58,9 @@ with et_frames;				--use et_frames;
 with et_canvas_general;
 with et_canvas_draw;
 
-package canvas_board is
+package et_canvas_board is
 
-	-- Instantiate the canvas package:
+	-- Instantiate the general canvas package:
 	package pac_canvas is new et_canvas_general.pac_canvas (
 		canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
 		geometry		=> et_pcb_coordinates.geometry);
@@ -92,7 +77,7 @@ package canvas_board is
 
 	use et_pcb_coordinates.geometry;
 	
-
+	-- This is the link to the actual drawing:
 	type type_drawing is record	
 		module	: et_project.type_modules.cursor;
 
@@ -115,7 +100,8 @@ package canvas_board is
 -- 	procedure init (self : not null access type_model'class);
 
 
--- VIEW
+-- VIEW OR CANVAS
+	
 	type type_view is new pac_canvas.type_view with record
 		drawing	: type_drawing;
 	end record;
@@ -124,56 +110,44 @@ package canvas_board is
 	overriding function bounding_box (self : not null access type_view)
 		return type_rectangle;
 
-	-- This function converts a y-value from the drawing to a y-value in the model.
+	-- This function converts a y-value.
 	-- The input y increases upwards. The output y increases downwards.
-	overriding function convert_and_shift_y (  -- CS remove
+	overriding function convert_and_shift_y (
 		self	: not null access type_view;
 		y		: in type_distance_total) 
 		return type_distance_total;
 		
-	-- This function converts a y-value from the drawing to a y-value in the view.
+	-- This function converts a y-value.
 	-- The input y increases upwards. The output y increases downwards.
-	overriding function convert_and_shift_y (  -- CS remove
+	overriding function convert_and_shift_y (
 		self	: not null access type_view;
 		y		: in type_distance_total)
 		return type_view_coordinate;
 
-	-- Converts a model point to a drawing point. 
-	-- NOTE: The model point is in a coordinate system with y-axis
-	-- going downwards. The drawing point is in a system where y-axis
-	-- goes upwards. The origin of the drawing coordinate system is the
-	-- lower left corner of the drawing frame.
+	-- This function converts the y-value of a drawing point.
+	-- The input y increases upwards. The output y increases downwards.
 	overriding function model_to_drawing (
 		self		: not null access type_view;
 		model_point : in type_point)
 		return type_point;
 
 
-	-- Creates a new view:
+	-- Creates a new board view:
 	procedure gtk_new (
 		self	: out type_view_ptr);
-
 	
-
-	
-	-- Redraw either the whole view, or a specific part of it only.
-	-- The transformation matrix has already been set on the context.
+	-- Redraws either the whole board view, or a specific part of it only:
 	overriding procedure draw_internal (
 		self    : not null access type_view;
 		context : type_draw_context;
 		area    : type_rectangle);
-
-
 	
 	-- Init the drawing:
 	procedure init_drawing (
 		view	: in type_view_ptr;
 		module	: in et_project.type_modules.cursor);
-
-
-
 	
-end canvas_board;
+end et_canvas_board;
 
 -- Soli Deo Gloria
 

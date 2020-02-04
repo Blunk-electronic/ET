@@ -40,8 +40,8 @@ with gdk.event;					use gdk.event;
 with gtk.main;
 with gtk.window;				use gtk.window;
 with ada.text_io;				use ada.text_io;
-with canvas_board;				use canvas_board;
-use canvas_board.pac_canvas;
+with et_canvas_board;			use et_canvas_board;
+use et_canvas_board.pac_canvas;
 
 package body gui_board.callbacks is
 
