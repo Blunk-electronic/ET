@@ -58,9 +58,9 @@ with et_coordinates;			use et_coordinates;
 with et_string_processing;		use et_string_processing;
 
 with gui_schematic.callbacks;	use gui_schematic.callbacks;	
-with canvas_schematic;			use canvas_schematic;
+with et_canvas_schematic;		use et_canvas_schematic;
 		
-use canvas_schematic.pac_canvas;
+use et_canvas_schematic.pac_canvas;
 
 
 package body gui_schematic is

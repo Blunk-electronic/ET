@@ -40,8 +40,8 @@ with gdk.event;					use gdk.event;
 with gtk.main;
 with gtk.window;				use gtk.window;
 with ada.text_io;				use ada.text_io;
-with canvas_schematic;			use canvas_schematic;
-use canvas_schematic.pac_canvas;
+with et_canvas_schematic;		use et_canvas_schematic;
+use et_canvas_schematic.pac_canvas;
 
 package body gui_schematic.callbacks is
 

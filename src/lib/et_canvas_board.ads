@@ -40,7 +40,7 @@
 -- This package instantiates the generic canvas package (et_canvas_general.pac_canvas)
 -- and extends the type_view by the type_drawing. The latter is the link
 -- to the actual drawing. The type_drawing provides information on sheet size,
--- fame bounding box, paper size etc. These information is frequently used
+-- fame bounding box, paper size etc. This information is frequently used
 -- by various draw operations.
 --  Further-on the generic package for primitve draw operations (et_canvas_draw.pac_draw)
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
