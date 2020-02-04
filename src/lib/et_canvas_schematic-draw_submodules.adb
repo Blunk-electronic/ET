@@ -36,7 +36,6 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with ada.numerics;				use ada.numerics;
 with cairo;						use cairo;
 with pango.layout;				use pango.layout;
 
@@ -46,11 +45,8 @@ with et_coordinates;			use et_coordinates;
 use et_coordinates.geometry;
 
 with et_schematic;
-
-use et_project.type_modules;
-
 with submodules;				use submodules;
-
+use et_project.type_modules;
 
 separate (et_canvas_schematic)
 
@@ -65,7 +61,7 @@ procedure draw_submodules (
 		
 		procedure draw_box is begin
 
-			cairo.set_line_width (context.cr, type_view_coordinate (1.0));
+			cairo.set_line_width (context.cr, type_view_coordinate (submod_box_line_width));
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (0), gdouble (1)); -- mangenta
 
 			pac_draw_misc.draw_rectangle (
@@ -83,21 +79,37 @@ procedure draw_submodules (
 			use type_submodule_ports;
 
 			procedure draw_port (pc : in type_submodule_ports.cursor) is 
-				position : type_point := type_point (element (cursor).position);
+
+				-- First get the position of the submodule box:
+				pos_port : type_point := type_point (element (cursor).position);
 			begin
--- 				position 
+				-- CS detect the edge where the port sits at. Depending on the edge
+				-- the port must be drawn 0, 90, 180 or 270 degree.
+				
+				-- Move pos_port by the position of the port:
+				move (pos_port, element (pc).position);
+
+				-- Move pos_port down so that the port sits excatly at
+				-- the point where a net will be connected:
+				move (pos_port, set (zero, - port_symbol_height / 2.0));
+				
 				pac_draw_misc.draw_rectangle (
 					area			=> in_area,
 					context			=> context,
-					position		=> position,
-					width			=> 5.0,
-					height			=> 5.0,
+					position		=> pos_port,
+					width			=> port_symbol_width,
+					height			=> port_symbol_height,
 					frame_height	=> self.drawing.frame_bounding_box.height);
 
+				-- CS draw something that indicates the direction (master/slave).
+				-- element (pc).direction
+
+				-- CS draw port name
+				-- key (pc)
 			end draw_port;
 			
 		begin -- draw_ports
-			cairo.set_line_width (context.cr, type_view_coordinate (1.0));
+			cairo.set_line_width (context.cr, type_view_coordinate (port_symbol_line_width));
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 
 			iterate (element (cursor).ports, draw_port'access);
@@ -105,7 +117,7 @@ procedure draw_submodules (
 			cairo.stroke (context.cr);
 		end draw_ports;
 			
-	begin
+	begin -- query_submods
 		save (context.cr);
 		
 		-- Prepare the current transformation matrix (CTM) so that
@@ -118,7 +130,8 @@ procedure draw_submodules (
 
 		draw_box;
 		draw_ports;
-		
+
+		-- CS draw file name, instance name, position in board, view mode
 
 		restore (context.cr);
 		

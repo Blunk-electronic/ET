@@ -56,7 +56,7 @@ package submodules is
 
 	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
 
-	subtype type_submodule_edge_length is type_distance range 10.0 .. 1000.0;
+	subtype type_submodule_edge_length is type_distance range 20.0 .. 1000.0;
 
 	keyword_size	: constant string := "size";
 	keyword_file	: constant string := "file";
@@ -98,6 +98,17 @@ package submodules is
 	
 	function to_port_name (name : in string) return type_netchanger_port_name;
 	function to_string (name : in type_netchanger_port_name) return string;	
+
+	
+	-- GUI relevant only: The port of a submodule is just a small rectangle:
+	port_symbol_width	: constant type_distance := 4.0;
+	port_symbol_height	: constant type_distance := 2.0;
+	type type_port_symbol is record
+		width, height	: type_distance;
+	end record;
+
+	port_symbol : constant type_port_symbol := (port_symbol_width, port_symbol_height);
+	port_symbol_line_width : constant type_distance := 0.2;
 	
 	type type_submodule_port is record
 		-- the position somewhere at the edge of the box
@@ -109,8 +120,6 @@ package submodules is
 		-- Master means: The net in the parent module enforces its name onto the
 		-- net in the submodule:
 		direction	: type_netchanger_port_name;
-		
-		-- CS symbol : type_module_connector_symbol;
 	end record;
 	
 	package type_submodule_ports is new ordered_maps (
@@ -135,6 +144,9 @@ package submodules is
 		ports				: type_submodule_ports.map;
 	end record;
 
+	-- GUI relevant only: The line width of the box:
+	submod_box_line_width : constant type_distance := 0.2;
+	
 	package type_submodules is new ordered_maps (
 		key_type		=> et_general.type_module_instance_name.bounded_string, -- MOT_DRV_3
 		"<" 			=> et_general.type_module_instance_name."<",
