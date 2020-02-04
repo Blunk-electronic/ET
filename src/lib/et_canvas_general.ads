@@ -8,6 +8,9 @@
 --                                                                          --
 --         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
+--         Bases on the package gtkada.canvas_view written by               --
+--         E. Briot, J. Brobecker and A. Charlet, AdaCore                   --
+--                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
 -- Software  Foundation;  either version 3,  or (at your  option) any later --
@@ -43,19 +46,9 @@
 --  measurement system.
 
 
-with gtk.main;
-with gtk.window; 			use gtk.window;
 with gtk.widget;  			use gtk.widget;
-with gtk.box;				use gtk.box;
-with gtk.button;     		use gtk.button;
 with gtk.handlers;			use gtk.handlers;
-with gtk.toolbar; 			use gtk.toolbar;
-with gtk.tool_button;		use gtk.tool_button;
 with gtk.enums;				use gtk.enums;
-with gtk.gentry;			use gtk.gentry;
-with gtk.combo_box_text;	use gtk.combo_box_text;
-with gtk.frame;				use gtk.frame;
-with gtk.scrolled_window;	use gtk.scrolled_window;
 with gtk.adjustment;		use gtk.adjustment;
 
 with gdk;
@@ -68,14 +61,9 @@ with glib.values;			use glib.values;
 with glib.properties.creation;	use glib.properties.creation;
 
 with cairo;					use cairo;
-with cairo.pattern;			use cairo.pattern;
-with gtkada.style;     		use gtkada.style;
 
 with pango.layout;			use pango.layout;
 with system.storage_elements;		use system.storage_elements;
-
-with ada.containers;		use ada.containers;
-with ada.containers.doubly_linked_lists;
 
 with et_geometry;
 
