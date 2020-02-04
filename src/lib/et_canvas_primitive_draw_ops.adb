@@ -230,6 +230,99 @@ package body pac_draw is
 		end if;
 	end draw_circle;
 
+	procedure draw_rectangle (
+		area			: in type_rectangle;
+		context			: in type_draw_context;
+		position		: in type_point'class;
+		width			: in type_distance;
+		height			: in type_distance;
+		frame_height	: in pac_shapes.geometry.type_distance;
+		extend_boundaries	: in boolean := false;
+		boundaries_to_add	: in type_boundaries := boundaries_default) is
+
+		-- compute the boundaries (greatest/smallest x/y) of the given arc:
+		boundaries : type_boundaries := (
+			smallest_x	=> position.x,
+			greatest_x	=> position.x + width,
+			smallest_y	=> position.y,
+			greatest_y	=> position.y + height);
+
+		-- compute the bounding box of the given arc
+		bounding_box : type_rectangle := make_bounding_box (frame_height, boundaries);
+
+	begin
+		if extend_boundaries then
+			add (boundaries, boundaries_to_add);
+		end if;
+
+		-- We draw the rectanglet if:
+		--  - no area given or
+		--  - if the bounding box of the segment intersects the given area
+		if (area = no_rectangle
+			or else intersects (area, bounding_box)) 
+		then
+			-- We draw the four lines of the rectangle starting at
+			-- the lower left corner. proceed counterclockwise:
+
+			-- LINE 1:
+			
+			-- start point
+			cairo.move_to (
+				context.cr,
+				convert_x (position.x),
+				shift_y (position.y, frame_height));
+
+			-- end point
+			cairo.line_to (
+				context.cr,
+				convert_x (position.x + width),
+				shift_y (position.y, frame_height));
+
+			-- LINE 2:
+			
+			-- start point
+			cairo.move_to (
+				context.cr,
+				convert_x (position.x + width),
+				shift_y (position.y, frame_height));
+
+			-- end point
+			cairo.line_to (
+				context.cr,
+				convert_x (position.x + width),
+				shift_y (position.y + height, frame_height));
+
+			-- LINE 3:
+			
+			-- start point
+			cairo.move_to (
+				context.cr,
+				convert_x (position.x + width),
+				shift_y (position.y + height, frame_height));
+
+			-- end point
+			cairo.line_to (
+				context.cr,
+				convert_x (position.x),
+				shift_y (position.y + height, frame_height));
+
+			-- LINE 4:
+			
+			-- start point
+			cairo.move_to (
+				context.cr,
+				convert_x (position.x),
+				shift_y (position.y + height, frame_height));
+
+			-- end point
+			cairo.line_to (
+				context.cr,
+				convert_x (position.x),
+				shift_y (position.y, frame_height));
+			
+		end if;
+		
+	end draw_rectangle;
 	
 end pac_draw;
 

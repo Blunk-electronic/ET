@@ -108,6 +108,17 @@ package pac_draw is
 		circle	: in type_circle'class;
 		height	: in pac_shapes.geometry.type_distance);
 
+
+	procedure draw_rectangle (
+		area			: in type_rectangle;
+		context			: in type_draw_context;
+		position		: in type_point'class;
+		width			: in type_distance;
+		height			: in type_distance;
+		frame_height	: in pac_shapes.geometry.type_distance;
+		extend_boundaries	: in boolean := false;
+		boundaries_to_add	: in type_boundaries := boundaries_default);
+
 	
 end pac_draw;
 
