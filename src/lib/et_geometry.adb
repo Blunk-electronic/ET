@@ -88,7 +88,14 @@ package body et_geometry is
 			result : type_boundaries;
 		begin
 			-- X axis
-			if point_one.x < point_two.x then
+			if point_one.x = point_two.x then -- both points on a vertical line
+
+				-- In order to ensure a minimum width of the boundaries:
+				result.smallest_x := point_one.x - type_distance'small;
+				result.greatest_x := point_one.x + type_distance'small;
+				
+			elsif point_one.x < point_two.x then
+				
 				result.smallest_x := point_one.x;
 				result.greatest_x := point_two.x;
 			else
@@ -97,7 +104,14 @@ package body et_geometry is
 			end if;
 
 			-- Y axis
-			if point_one.y < point_two.y then
+			if point_one.y = point_two.y then -- both points on a horizontal line
+
+				-- In order to ensure a minimum height of the boundaries:
+				result.smallest_y := point_one.y - type_distance'small;
+				result.greatest_y := point_one.y + type_distance'small;
+			
+			elsif point_one.y < point_two.y then
+				
 				result.smallest_y := point_one.y;
 				result.greatest_y := point_two.y;
 			else
