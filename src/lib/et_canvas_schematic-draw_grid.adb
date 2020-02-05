@@ -111,18 +111,22 @@ begin -- draw_grid
 		new_path (context.cr);
 		cairo.set_line_width (context.cr, dot_line_width);
 
-		-- Calculate addional y offset due to the frame height:
+		-- Calculate additional y offset due to the frame height:
 		fine_tune_y_offset;
 
-		-- The grid must be shifted to the right so that it starts at 
-		-- the left frame border:
-		x := lower_grid_coordinate (area.x) + offset_x;
+		-- The grid must be shifted to the right so that it is aligned
+		-- with the left frame border:
+		x := lower_grid_coordinate (area.x) -- the next grid point before area.x
+			 - type_view_coordinate (self.grid_size) -- start at one grid point earlier
+			 + offset_x;
 		
 		while x < type_view_coordinate (area.x + area.width) loop
 			
-			-- The grid must be shifted downwards so that it starts at the 
-			-- lower frame border position:
-			y := lower_grid_coordinate (area.y) + offset_y;
+			-- The grid must be shifted downwards so that it is aligned
+			-- with the lower frame border:
+			y := lower_grid_coordinate (area.y)  -- the next grid point before area.y
+				 - type_view_coordinate (self.grid_size) -- start at one grid point earlier
+				 + offset_y;
 			
 			while y < type_view_coordinate (area.y + area.height) loop
 
