@@ -116,7 +116,7 @@ package pac_canvas is
 
 	-- scale
 	scale_min : constant gdouble := 0.1;
-	scale_max : constant gdouble := 10.0;
+	scale_max : constant gdouble := 100.0;
 	subtype type_scale is gdouble range scale_min .. scale_max;
 	scale_default : constant type_scale := 1.0;
 	scale_delta_on_zoom : constant type_scale := 0.1;

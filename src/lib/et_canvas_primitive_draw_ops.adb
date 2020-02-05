@@ -78,7 +78,8 @@ package body pac_draw is
 			-- The box position in y is the greatest_y (upwards).
 			-- The box position in y is additonally converted to y axis going downwards.
 			x		=> boundaries.smallest_x,
-			y		=> shift_y (boundaries.smallest_y, height),
+			--y		=> shift_y (boundaries.smallest_y, height),
+			y		=> shift_y (boundaries.greatest_y, height),
 
 			-- The box width is the difference between greatest x and smallest x.
 			-- The box height is the difference between greatest y and smallest y.
