@@ -107,18 +107,22 @@ package pac_draw is
 		context	: in type_draw_context;
 		circle	: in type_circle'class;
 		height	: in pac_shapes.geometry.type_distance);
+		-- CS fill style ?
 
-
+	-- This procedure draws the a rectangle on the given context.
+	-- The rectangle is shifted in y to a plane of given height. This plane
+	-- has y-axis going downwards.
+	-- The rectangle will be drawn if its bounding box intersects the given area.
 	procedure draw_rectangle (
 		area			: in type_rectangle;
 		context			: in type_draw_context;
-		position		: in type_point'class;
-		width			: in type_distance;
-		height			: in type_distance;
+		position		: in type_point'class;	-- position of the rectangle (lower left corner)
+		width			: in type_distance;		-- widht of the rectangle
+		height			: in type_distance;		-- height of the rectangle
 		frame_height	: in pac_shapes.geometry.type_distance;
 		extend_boundaries	: in boolean := false;
 		boundaries_to_add	: in type_boundaries := boundaries_default);
-
+		-- CS fill style ?
 	
 end pac_draw;
 

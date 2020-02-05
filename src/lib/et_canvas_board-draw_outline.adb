@@ -90,6 +90,8 @@ procedure draw_outline (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
 	begin
+		save (context.cr);
+		
 		-- Prepare the current transformation matrix (CTM) so that
 		-- all following drawing is relative to the upper left frame corner.
 		translate (
@@ -99,13 +101,14 @@ procedure draw_outline (
 
 		-- All outline segments will be drawn with the same line width and color:
 		cairo.set_line_width (context.cr, type_view_coordinate (et_packages.pcb_contour_line_width));
-		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
+		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (0)); -- yellow
 		
 		iterate (module.board.contours.lines, query_line'access);
 		iterate (module.board.contours.arcs, query_arc'access);
 		iterate (module.board.contours.circles, query_circle'access);
 
 		cairo.stroke (context.cr);
+		restore (context.cr);
 	end query_segments;
 	
 begin -- draw_outline

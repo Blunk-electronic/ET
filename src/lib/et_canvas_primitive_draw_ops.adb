@@ -96,7 +96,6 @@ package body pac_draw is
 		extend_boundaries	: in boolean := false;
 		boundaries_to_add	: in type_boundaries := boundaries_default)
 	is
-
 		-- compute the boundaries (greatest/smallest x/y) of the given line:
 		boundaries : type_boundaries := pac_shapes.boundaries (line);
 
@@ -263,6 +262,8 @@ package body pac_draw is
 		then
 			-- We draw the four lines of the rectangle starting at
 			-- the lower left corner. proceed counterclockwise:
+
+			-- CS use cairo.rectangle instead if filling required.
 
 			-- LINE 1:
 			

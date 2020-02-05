@@ -63,34 +63,60 @@ procedure draw_silk_screen (
 	use type_silk_circles;
 	
 	procedure query_line (c : in type_silk_lines.cursor) is begin
+		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
+		
 		pac_draw_package.draw_line (
 			area		=> in_area,
 			context		=> context,
 			line		=> element (c),
 			height		=> self.drawing.frame_bounding_box.height);
 
+		cairo.stroke (context.cr);
 	end query_line;
 
 	procedure query_arc (c : in type_silk_arcs.cursor) is begin
+		cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
+		
 		pac_draw_package.draw_arc (
 			area		=> in_area,
 			context		=> context,
 			arc			=> element (c),
 			height		=> self.drawing.frame_bounding_box.height);
+
+		cairo.stroke (context.cr);		
 	end query_arc;
 
-	procedure query_circle (c : in type_silk_circles.cursor) is begin
-		pac_draw_package.draw_circle (
-			area		=> in_area,
-			context		=> context,
-			circle		=> element (c),
-			height		=> self.drawing.frame_bounding_box.height);
+	procedure query_circle (c : in type_silk_circles.cursor) is 
+		use et_packages.shapes;
+	begin
+		case element (c).filled is
+			when NO =>
+				-- We draw a normal non-filled circle:
+				cairo.set_line_width (context.cr, type_view_coordinate (element (c).border_width));
+
+				pac_draw_package.draw_circle (
+					area		=> in_area,
+					context		=> context,
+					circle		=> element (c),
+					height		=> self.drawing.frame_bounding_box.height);
+				
+			when YES =>
+				-- We draw a filled circle with a certain fill style:
+				case element (c).fill_style is
+					when SOLID 		=> null; -- CS
+					when HATCHED 	=> null; -- CS
+				end case;
+		end case;
+
+		cairo.stroke (context.cr);
 	end query_circle;
 	
-	procedure query_segments (
+	procedure query_itemss (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
 	begin
+		save (context.cr);
+		
 		-- Prepare the current transformation matrix (CTM) so that
 		-- all following drawing is relative to the upper left frame corner.
 		translate (
@@ -98,8 +124,7 @@ procedure draw_silk_screen (
 			convert_x (self.drawing.frame_bounding_box.x),
 			convert_y (self.drawing.frame_bounding_box.y));
 
-		-- All outline segments will be drawn with the same line width and color:
--- 		cairo.set_line_width (context.cr, type_view_coordinate (et_packages.pcb_contour_line_width));
+		-- All outline segments will be drawn with the same color:
 		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 
 		case face is
@@ -107,22 +132,29 @@ procedure draw_silk_screen (
 				iterate (module.board.silk_screen.top.lines, query_line'access);
 				iterate (module.board.silk_screen.top.arcs, query_arc'access);
 				iterate (module.board.silk_screen.top.circles, query_circle'access);
+				-- CS iterate (module.board.silk_screen.top.polygons, query_polygon'access);
+				-- CS iterate (module.board.silk_screen.top.cutouts, query_polygon'cutout);
+				-- CS iterate (module.board.silk_screen.top.placeholders, query_placeholder'access);
+				-- CS iterate (module.board.silk_screen.top.texts, query_text'access);
 
 			when BOTTOM =>
 				iterate (module.board.silk_screen.bottom.lines, query_line'access);
 				iterate (module.board.silk_screen.bottom.arcs, query_arc'access);
 				iterate (module.board.silk_screen.bottom.circles, query_circle'access);
+				-- CS see above
 		end case;
+
+		-- CS query packages
 		
-		cairo.stroke (context.cr);
-	end query_segments;
+		restore (context.cr);
+	end query_itemss;
 	
-begin -- draw_outline
+begin -- draw_silk_screen
 	put_line ("draw board silk screen ...");
 	
 	type_modules.query_element (
 		position	=> self.drawing.module,
-		process		=> query_segments'access);
+		process		=> query_itemss'access);
 	
 end draw_silk_screen;
 
