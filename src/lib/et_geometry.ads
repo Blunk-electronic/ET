@@ -268,7 +268,11 @@ package et_geometry is
 			point		: in out type_point'class;
 			rotation	: in type_rotation);
 		
-		function to_string (point : in type_point) return string;
+		function to_string (
+			point		: in type_point;
+			resolution	: in type_distance_positive := zero)
+			return string;
+		
 		function to_string (point : in type_position) return string;
 
 

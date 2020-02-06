@@ -553,14 +553,28 @@ package body et_geometry is
 		end rotate;
 
 		
-		function to_string (point : in type_point) return string is begin
-			return point_preamble
-				& to_string (point.x)
-				& axis_separator
-				& to_string (point.y);
+		function to_string (
+			point 		: in type_point;
+			resolution	: in type_distance_positive := zero) 
+			return string 
+		is 
+			function change_resolution (d : in type_distance) return type_distance is begin
+				return type_distance (integer (d / resolution)) * resolution;
+			end;
+		begin
+			if resolution = zero then -- finest resolution
+				return point_preamble
+					& to_string (point.x)
+					& axis_separator
+					& to_string (point.y);
+			else -- resolution as given
+				return point_preamble
+					& to_string (change_resolution (point.x))
+					& axis_separator
+					& to_string (change_resolution (point.y));
+			end if;
 		end;
 
-		overriding
 		function to_string (point : in type_position) return string is begin
 			return point_preamble_with_rotation
 				& to_string (point.x)

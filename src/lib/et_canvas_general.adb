@@ -535,7 +535,7 @@ package body pac_canvas is
 -- 		put_line (" model " & to_string (model_point));
 
 -- 		drawing_point := model_to_drawing (self, model_point);
-		put_line (" drawing " & to_string (drawing_point));
+		put_line (" drawing " & to_string (drawing_point, self.grid_size));
 		
 		return true; -- indicates that event has been handled
 	end on_mouse_movement;
