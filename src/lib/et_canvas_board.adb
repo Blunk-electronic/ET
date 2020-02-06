@@ -101,26 +101,40 @@ package body et_canvas_board is
 				width  => type_distance (rect.width / self.scale),
 				height => type_distance (rect.height / self.scale));
 	end view_to_model2;
-	
-	function model_to_drawing (
-		self		: not null access type_view;
-		model_point : in type_point)	
-		return type_point is 
-		use et_general;
-		p : type_point; -- to be returned
-	begin
-		set (point	=> p,
-			 axis	=> X, 
-			 value	=> model_point.x - self.drawing.frame_bounding_box.x);
-		
-		set (point	=> p,
-			 axis	=> Y,
-			 value	=> type_distance (self.drawing.frame.frame.size.y) 
-						- model_point.y 
-						+ self.drawing.frame_bounding_box.y);
 
-		return p;
-	end;
+	function model_to_view2 (
+		self   : not null access type_view;
+		p      : in type_point) 
+		return type_view_point is
+		p1 : type_view_point := mtv (p, self.scale, self.topleft);
+		p2 : type_view_point; -- to be returned
+	begin
+		return p1; -- CS
+-- 		return (
+-- 			x => type_view_coordinate (p.x - self.topleft.x) * self.scale,
+-- 			y => type_view_coordinate (p.y - self.topleft.y) * self.scale
+-- 			);
+	end model_to_view2;
+	
+-- 	function model_to_drawing (
+-- 		self		: not null access type_view;
+-- 		model_point : in type_point)	
+-- 		return type_point is 
+-- 		use et_general;
+-- 		p : type_point; -- to be returned
+-- 	begin
+-- 		set (point	=> p,
+-- 			 axis	=> X, 
+-- 			 value	=> model_point.x - self.drawing.frame_bounding_box.x);
+-- 		
+-- 		set (point	=> p,
+-- 			 axis	=> Y,
+-- 			 value	=> type_distance (self.drawing.frame.frame.size.y) 
+-- 						- model_point.y 
+-- 						+ self.drawing.frame_bounding_box.y);
+-- 
+-- 		return p;
+-- 	end;
 
 	function bounding_box (self : not null access type_view)
 		return type_rectangle is

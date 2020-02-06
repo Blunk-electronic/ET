@@ -175,29 +175,22 @@ package pac_canvas is
 -- 	procedure layout_changed (self : not null access type_model'class);
 
 	procedure set_transform (
-		self	: not null access type_view;
+		self	: not null access type_view'class;
 		cr		: cairo.cairo_context);
 
 
 
-	
+	function vtm (
+		view_point	: in type_view_point;
+		scale		: in type_scale;
+		topleft		: in type_point) 
+		return type_point;
 
 	function view_to_model (
 		self   : not null access type_view;
 		p      : in type_view_point) 
 		return type_point;
 
-	function vtm (
-		view_point	: type_view_point;
-		scale		: type_scale;
-		topleft		: type_point) 
-		return type_point;
-	
-	function view_to_model2 (
-		self   : not null access type_view;
-		p      : in type_view_point) 
-		return type_point is abstract;
-	
 	-- Converts the given area of the view to a model rectangle:
 	function view_to_model (
 		self   : not null access type_view;
@@ -206,21 +199,37 @@ package pac_canvas is
 
 	function view_to_model2 (
 		self   : not null access type_view;
+		p      : in type_view_point) 
+		return type_point is abstract;
+
+	function view_to_model2 (
+		self   : not null access type_view;
 		rect   : in type_view_rectangle) -- position and size are in pixels
 		return type_rectangle is abstract;
 
+	function mtv (
+		drawing_point	: in type_point;
+		scale			: in type_scale;
+		topleft			: in type_point) 
+		return type_view_point;
 	
 	-- Converts the given point in the model to a point in the view.
 	function model_to_view (
 		self   : not null access type_view;
 		p      : in type_point) -- position x/y given as a float type
 		return type_view_point;
+
+	-- Converts the given point in the model to a point in the view.
+	function model_to_view2 (
+		self   : not null access type_view;
+		p      : in type_point) -- position x/y given as a float type
+		return type_view_point is abstract;
 	
 	-- Converts the given area of the model to a view rectangle:	
-	function model_to_view (
-		self   : not null access type_view;
-		rect   : in type_rectangle) -- position x/y and size given as a float type
-		return type_view_rectangle;
+-- 	function model_to_view (
+-- 		self   : not null access type_view;
+-- 		rect   : in type_rectangle) -- position x/y and size given as a float type
+-- 		return type_view_rectangle;
 
 
 
@@ -230,10 +239,10 @@ package pac_canvas is
 	-- going downwards. The drawing point is in a system where y-axis
 	-- goes upwards. The origin of the drawing coordinate system is the
 	-- lower left corner of the drawing frame.
-	function model_to_drawing (
-		self		: not null access type_view;
-		model_point : in type_point)
-		return type_point is abstract;
+-- 	function model_to_drawing (
+-- 		self		: not null access type_view;
+-- 		model_point : in type_point)
+-- 		return type_point is abstract;
 
 
 	function bounding_box (self : not null access type_view)
@@ -258,7 +267,8 @@ package pac_canvas is
 	-- of the view remains at the same location in the widget, as if the user
 	-- was zooming towards that specific point.
 
-	function get_visible_area (self : not null access type_view) return type_rectangle;
+	function get_visible_area (self : not null access type_view'class)
+		return type_rectangle;
 	-- Return the area of the model (or the sheet) that is currently displayed in the view.
 	-- This is in model coordinates (since the canvas coordinates are always
 	-- from (0,0) to (self.get_allocation_width, self.get_allocation_height).

@@ -107,7 +107,7 @@ package body pac_canvas is
 	end;
 
 	procedure set_transform (
-		self	: not null access type_view;
+		self	: not null access type_view'class;
 		cr		: cairo.cairo_context)
 	is
 		model_p : type_point := origin;
@@ -243,9 +243,9 @@ package body pac_canvas is
 -- CONVERSIONS BETWEEN COORDINATE SYSTEMS
 
 	function vtm (
-		view_point	: type_view_point;
-		scale		: type_scale;
-		topleft		: type_point) 
+		view_point	: in type_view_point;
+		scale		: in type_scale;
+		topleft		: in type_point) 
 		return type_point is
 	begin
 		return type_point (set (
@@ -259,10 +259,7 @@ package body pac_canvas is
 		p      : in type_view_point) 
 		return type_point is
 	begin
-		return type_point (set (
-			x	=> type_distance (p.x / self.scale) + (x (self.topleft)),
-			y	=> type_distance (p.y / self.scale) + (y (self.topleft))
-			));
+		return vtm (p, self.scale, self.topleft);
 	end view_to_model;
 
 	function view_to_model (
@@ -276,33 +273,42 @@ package body pac_canvas is
 				height => type_distance (rect.height / self.scale));
 	end view_to_model;
 
+	function mtv (
+		drawing_point	: in type_point;
+		scale			: in type_scale;
+		topleft			: in type_point) 
+		return type_view_point is
+	begin
+		return (
+			x => type_view_coordinate (drawing_point.x - topleft.x) * scale,
+			y => type_view_coordinate (drawing_point.y - topleft.y) * scale
+			);
+	end mtv;
 	
 	function model_to_view (
 		self   : not null access type_view;
 		p      : in type_point) 
 		return type_view_point is
 	begin
-		return (
-			x => type_view_coordinate (p.x - self.topleft.x) * self.scale,
-			y => type_view_coordinate (p.y - self.topleft.y) * self.scale
-			);
+		return mtv (p, self.scale, self.topleft);
 	end model_to_view;
 
-	function model_to_view (
-		self   : not null access type_view;
-		rect   : in type_rectangle)
-		return type_view_rectangle is
-		result : type_view_rectangle;
-	begin
-		result := (
-			x      => type_view_coordinate (rect.x - self.topleft.x) * self.scale,
-			y      => type_view_coordinate (rect.y - self.topleft.y) * self.scale,
-			width  => type_view_coordinate (rect.width) * self.scale,
-			height => type_view_coordinate (rect.height) * self.scale
-			);
-		
-		return result;
-	end model_to_view;
+-- 
+-- 	function model_to_view (
+-- 		self   : not null access type_view;
+-- 		rect   : in type_rectangle)
+-- 		return type_view_rectangle is
+-- 		result : type_view_rectangle;
+-- 	begin
+-- 		result := (
+-- 			x      => type_view_coordinate (rect.x - self.topleft.x) * self.scale,
+-- 			y      => type_view_coordinate (rect.y - self.topleft.y) * self.scale,
+-- 			width  => type_view_coordinate (rect.width) * self.scale,
+-- 			height => type_view_coordinate (rect.height) * self.scale
+-- 			);
+-- 		
+-- 		return result;
+-- 	end model_to_view;
 
 	procedure set_adjustment_values (self : not null access type_view'class) is
 		box   : type_rectangle;
@@ -509,7 +515,7 @@ package body pac_canvas is
 		self : constant type_view_ptr := type_view_ptr (view);
 
 		-- The point in the model (or on the sheet) expressed in millimeters:
-		model_point : type_point;
+-- 		model_point : type_point;
 
 		drawing_point : type_point;
 	begin
@@ -522,10 +528,10 @@ package body pac_canvas is
 
 		-- Convert the view point (pixels) to the position (millimeters) in the model
 		-- and output in on the console:
-		model_point := self.view_to_model (view_point);
-		put_line (" model " & to_string (model_point));
+		drawing_point := self.view_to_model2 (view_point);
+-- 		put_line (" model " & to_string (model_point));
 
-		drawing_point := model_to_drawing (self, model_point);
+-- 		drawing_point := model_to_drawing (self, model_point);
 		put_line (" drawing " & to_string (drawing_point));
 		
 		return true; -- indicates that event has been handled
@@ -751,7 +757,7 @@ package body pac_canvas is
 		self.queue_draw;
 	end set_scale;
 
-	function get_visible_area (self : not null access type_view)
+	function get_visible_area (self : not null access type_view'class)
 		return type_rectangle is
 	begin
 		return self.view_to_model (

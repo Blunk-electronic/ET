@@ -140,13 +140,20 @@ package et_canvas_schematic is
 		rect   : in type_view_rectangle) -- position and size are in pixels
 		return type_rectangle;
 
+	-- Converts the given point in the model to a point in the view.
+	overriding function model_to_view2 (
+		self   : not null access type_view;
+		p      : in type_point) -- position x/y given as a float type
+		return type_view_point;
+
+		
 		
 	-- This function converts the y-value of a drawing point.
 	-- The input y increases upwards. The output y increases downwards.
-	overriding function model_to_drawing (
-		self		: not null access type_view;
-		model_point : in type_point)
-		return type_point;
+-- 	overriding function model_to_drawing (
+-- 		self		: not null access type_view;
+-- 		model_point : in type_point)
+-- 		return type_point;
 
 	-- Creates a new schematic view:
 	procedure gtk_new (
