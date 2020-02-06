@@ -266,9 +266,12 @@ package body pac_canvas is
 		self   : not null access type_view;
 		rect   : in type_view_rectangle) -- position and size are in pixels
 		return type_rectangle is
+
+		-- get the position of the given rectangle in drawing coordinatess
+		p1 : type_point := vtm ((rect.x, rect.y), self.scale, self.topleft);
 	begin
-		return (x      => type_distance (rect.x / self.scale) + self.topleft.x,
-				y      => type_distance (rect.y / self.scale) + self.topleft.y,
+		return (x      => p1.x,
+				y      => p1.y,
 				width  => type_distance (rect.width / self.scale),
 				height => type_distance (rect.height / self.scale));
 	end view_to_model;
