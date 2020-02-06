@@ -186,12 +186,28 @@ package pac_canvas is
 		self   : not null access type_view;
 		p      : in type_view_point) 
 		return type_point;
+
+	function vtm (
+		view_point	: type_view_point;
+		scale		: type_scale;
+		topleft		: type_point) 
+		return type_point;
+	
+	function view_to_model2 (
+		self   : not null access type_view;
+		p      : in type_view_point) 
+		return type_point is abstract;
 	
 	-- Converts the given area of the view to a model rectangle:
 	function view_to_model (
 		self   : not null access type_view;
 		rect   : in type_view_rectangle) -- position and size are in pixels
 		return type_rectangle;
+
+	function view_to_model2 (
+		self   : not null access type_view;
+		rect   : in type_view_rectangle) -- position and size are in pixels
+		return type_rectangle is abstract;
 
 	
 	-- Converts the given point in the model to a point in the view.

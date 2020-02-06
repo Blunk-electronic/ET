@@ -241,6 +241,18 @@ package body pac_canvas is
 
 	
 -- CONVERSIONS BETWEEN COORDINATE SYSTEMS
+
+	function vtm (
+		view_point	: type_view_point;
+		scale		: type_scale;
+		topleft		: type_point) 
+		return type_point is
+	begin
+		return type_point (set (
+			x	=> type_distance (view_point.x / scale) + (x (topleft)),
+			y	=> type_distance (view_point.y / scale) + (y (topleft))
+			));
+	end;
 	
 	function view_to_model (
 		self   : not null access type_view;

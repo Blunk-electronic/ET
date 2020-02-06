@@ -130,6 +130,17 @@ package et_canvas_schematic is
 		y		: in type_distance)
 		return type_view_coordinate;
 
+	overriding function view_to_model2 (
+		self   : not null access type_view;
+		p      : in type_view_point) 
+		return type_point;
+
+	overriding function view_to_model2 (
+		self   : not null access type_view;
+		rect   : in type_view_rectangle) -- position and size are in pixels
+		return type_rectangle;
+
+		
 	-- This function converts the y-value of a drawing point.
 	-- The input y increases upwards. The output y increases downwards.
 	overriding function model_to_drawing (
