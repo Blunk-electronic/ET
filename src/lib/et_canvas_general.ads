@@ -197,16 +197,6 @@ package pac_canvas is
 		rect   : in type_view_rectangle) -- position and size are in pixels
 		return type_rectangle;
 
-	function view_to_model2 (
-		self   : not null access type_view;
-		p      : in type_view_point) 
-		return type_point is abstract;
-
-	function view_to_model2 (
-		self   : not null access type_view;
-		rect   : in type_view_rectangle) -- position and size are in pixels
-		return type_rectangle is abstract;
-
 	function mtv (
 		drawing_point	: in type_point;
 		scale			: in type_scale;
@@ -219,12 +209,6 @@ package pac_canvas is
 		p      : in type_point) -- position x/y given as a float type
 		return type_view_point;
 
-	-- Converts the given point in the model to a point in the view.
-	function model_to_view2 (
-		self   : not null access type_view;
-		p      : in type_point) -- position x/y given as a float type
-		return type_view_point is abstract;
-	
 	-- Converts the given area of the model to a view rectangle:	
 -- 	function model_to_view (
 -- 		self   : not null access type_view;
@@ -239,10 +223,10 @@ package pac_canvas is
 	-- going downwards. The drawing point is in a system where y-axis
 	-- goes upwards. The origin of the drawing coordinate system is the
 	-- lower left corner of the drawing frame.
--- 	function model_to_drawing (
--- 		self		: not null access type_view;
--- 		model_point : in type_point)
--- 		return type_point is abstract;
+	function model_to_drawing (
+		self		: not null access type_view;
+		model_point : in type_point)
+		return type_point is abstract;
 
 
 	function bounding_box (self : not null access type_view)

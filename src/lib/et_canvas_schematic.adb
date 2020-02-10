@@ -47,104 +47,25 @@ use et_coordinates.geometry;
 
 package body et_canvas_schematic is
 
-	function view_to_model2 (
-		self   : not null access type_view;
-		p      : in type_view_point) 
-		return type_point is
-		result : type_point;
+	function model_to_drawing (
+		self		: not null access type_view;
+		model_point : in type_point)	
+		return type_point is 
 		use et_general;
-		
-		p1 : type_point; 
-		p2 : type_point; -- to be returned
+		p : type_point; -- to be returned
 	begin
-		p1 := vtm (p, self.scale, self.topleft);
-
-		set (point	=> p2,
+		set (point	=> p,
 			 axis	=> X, 
-			 value	=> p1.x - self.drawing.frame_bounding_box.x);
+			 value	=> model_point.x - self.drawing.frame_bounding_box.x);
 		
-		set (point	=> p2,
+		set (point	=> p,
 			 axis	=> Y,
 			 value	=> type_distance (self.drawing.frame.size.y) 
-						- p1.y 
+						- model_point.y 
 						+ self.drawing.frame_bounding_box.y);
-		return p2;
+
+		return p;
 	end;
-
-	function view_to_model2 (
-		self   : not null access type_view;
-		rect   : in type_view_rectangle) -- position and size are in pixels
-		return type_rectangle is
-		use et_general;
-
-		-- the position of the given rectangle in the view:
-		position_in_view : type_view_point := (rect.x, rect.y);
-		
-		p1, p2 : type_point;
-	begin
-		-- p1 is the temporarily position of the rectangle in the drawing
-		p1 := vtm (position_in_view, self.scale, self.topleft);
-
-		-- build final position in point p2
-		set (point	=> p2,
-			 axis	=> X, 
-			 value	=> p1.x - self.drawing.frame_bounding_box.x);
-		
-		set (point	=> p2,
-			 axis	=> Y,
-			 value	=> type_distance (self.drawing.frame.size.y) 
-						- p1.y 
-						+ self.drawing.frame_bounding_box.y);
-		
-		return (x      => p2.x,
-				y      => p2.y,
-				width  => type_distance (rect.width / self.scale),
-				height => type_distance (rect.height / self.scale));
-		
-	end view_to_model2;
-
-	
-	function model_to_view2 (
-		self   : not null access type_view;
-		p      : in type_point) 
-		return type_view_point is
-		use et_general;
-		p1 : type_point;
-	begin
-		set (point	=> p1,
-			 axis	=> X, 
-			 value	=> p.x + self.drawing.frame_bounding_box.x);
-		
-		set (point	=> p1,
-			 axis	=> Y,
-			 value	=> type_distance (self.drawing.frame.size.y) 
-						- (p.y - self.drawing.frame_bounding_box.y));
-		
-		return mtv (p1, self.scale, self.topleft);
-	end model_to_view2;
-	
-
-
-	
--- 	function model_to_drawing (
--- 		self		: not null access type_view;
--- 		model_point : in type_point)	
--- 		return type_point is 
--- 		use et_general;
--- 		p : type_point; -- to be returned
--- 	begin
--- 		set (point	=> p,
--- 			 axis	=> X, 
--- 			 value	=> model_point.x - self.drawing.frame_bounding_box.x);
--- 		
--- 		set (point	=> p,
--- 			 axis	=> Y,
--- 			 value	=> type_distance (self.drawing.frame.size.y) 
--- 						- model_point.y 
--- 						+ self.drawing.frame_bounding_box.y);
--- 
--- 		return p;
--- 	end;
 
 	function bounding_box (self : not null access type_view)
 		return type_rectangle is

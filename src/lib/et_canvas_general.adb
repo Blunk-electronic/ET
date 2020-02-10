@@ -518,7 +518,7 @@ package body pac_canvas is
 		self : constant type_view_ptr := type_view_ptr (view);
 
 		-- The point in the model (or on the sheet) expressed in millimeters:
--- 		model_point : type_point;
+		model_point : type_point;
 
 		drawing_point : type_point;
 	begin
@@ -531,10 +531,10 @@ package body pac_canvas is
 
 		-- Convert the view point (pixels) to the position (millimeters) in the model
 		-- and output in on the console:
-		drawing_point := self.view_to_model2 (view_point);
--- 		put_line (" model " & to_string (model_point));
+		model_point := self.view_to_model (view_point);
+		put_line (" model " & to_string (model_point));
 
--- 		drawing_point := model_to_drawing (self, model_point);
+		drawing_point := model_to_drawing (self, model_point);
 		put_line (" drawing " & to_string (drawing_point, self.grid_size));
 		
 		return true; -- indicates that event has been handled
