@@ -272,6 +272,11 @@ package et_geometry is
 			point		: in type_point;
 			resolution	: in type_distance_positive := zero)
 			return string;
+
+		function snap_to_grid (
+			point		: in type_point'class;
+			resolution	: in type_distance_positive)
+			return type_point'class;
 		
 		function to_string (point : in type_position) return string;
 

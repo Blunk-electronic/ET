@@ -575,6 +575,21 @@ package body et_geometry is
 			end if;
 		end;
 
+		function snap_to_grid (
+			point		: in type_point'class;
+			resolution	: in type_distance_positive)
+			return type_point'class is
+			result : type_point;
+		begin
+			result := (
+				x	=> type_distance (integer ((point.x) / resolution) * resolution),
+				y	=> type_distance (integer ((point.y) / resolution) * resolution)
+			);
+			
+			return result;
+			
+		end snap_to_grid;
+
 		function to_string (point : in type_position) return string is begin
 			return point_preamble_with_rotation
 				& to_string (point.x)
