@@ -731,11 +731,18 @@ package body pac_canvas is
 		scale    : in type_scale := scale_default;
 		preserve : in type_point := origin)
 	is
-		-- backup the current scale
-		old_scale : constant type_scale := self.scale;
+		-- backup old scale
+		old_scale : constant type_distance := type_distance (self.scale);
+
+		-- save requested scale
+		new_scale : constant type_distance := type_distance (scale);
+
+		-- for calculating the new topleft point we need those tempoarily variables:
+		cx, cy : type_distance;
 		
 		box : type_rectangle;
 		p   : type_point;
+
 	begin
 		if preserve /= origin then
 			-- set p at the point given by preserve
@@ -752,10 +759,21 @@ package body pac_canvas is
 
 		self.scale := scale;
 
-		-- calculate the new topleft corner of the visible area:
+		-- Calculate the new topleft corner of the visible area:
+		-- Reason: The next time a model point is computed (via view_to_model)
+		-- the point must not change. So topleft is now moved so that
+		-- function view_to_model returns for the same view point the same
+		-- model point.
+		cx := p.x - self.topleft.x;
+		cx := cx * old_scale;
+		
+		cy := p.y - self.topleft.y;
+		cy := cy * old_scale;
+		
 		self.topleft := type_point (set (
-			p.x - (p.x - self.topleft.x) * type_distance (old_scale / scale),
-			p.y - (p.y - self.topleft.y) * type_distance (old_scale / scale)));
+			p.x - cx / new_scale,
+			p.y - cy / new_scale)
+			);
 		
 		self.scale_to_fit_requested := 0.0;
 		self.set_adjustment_values;
