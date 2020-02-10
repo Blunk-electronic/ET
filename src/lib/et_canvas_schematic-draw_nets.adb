@@ -134,7 +134,8 @@ procedure draw_nets (
 	end query_nets;
 	
 begin
--- 	put_line ("draw nets ...");
+	put_line ("draw nets ...");
+	put_line (to_string (in_area));
 	
 	-- draw the nets
 	type_modules.query_element (

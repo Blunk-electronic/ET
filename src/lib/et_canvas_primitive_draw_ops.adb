@@ -113,7 +113,8 @@ package body pac_draw is
 		if (area = no_rectangle
 			or else intersects (area, bounding_box)) 
 		then
-
+-- 			put_line (to_string (boundaries));
+-- 			put_line (to_string (bounding_box));
 	-- CS test size 
 	-- 			if not size_above_threshold (self, context.view) then
 	-- 				return;

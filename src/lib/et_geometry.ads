@@ -96,6 +96,8 @@ package et_geometry is
 		end record;
 
 		boundaries_default : constant type_boundaries := (others => <>);
+
+		function to_string (boundaries : in type_boundaries) return string;
 		
 		-- Adds two boundaries.
 		procedure add (
@@ -119,6 +121,8 @@ package et_geometry is
 
 		no_rectangle : constant type_rectangle := (others => zero);
 
+		function to_string (rectangle : in type_rectangle) return string;
+		
 		-- Returns true if the given two rectangles intersect each other in some way:
 		function intersects (rect1, rect2 : type_rectangle) return boolean;
 

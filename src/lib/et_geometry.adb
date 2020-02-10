@@ -72,6 +72,13 @@ package body et_geometry is
 			return point.y;
 		end;
 
+		function to_string (boundaries : in type_boundaries) return string is begin
+			return "boundaries: smallest x" & to_string (boundaries.smallest_x) 
+				& " greatest x" & to_string (boundaries.greatest_x)
+				& " smallest y" & to_string (boundaries.smallest_y)
+				& " greatest y" & to_string (boundaries.greatest_y);
+		end;
+		
 		-- Adds two boundaries.
 		procedure add (
 			boundaries_one : in out type_boundaries;
@@ -134,6 +141,12 @@ package body et_geometry is
 			boundaries.greatest_y := boundaries.greatest_y + offset.y;
 		end move_by;
 
+		function to_string (rectangle : in type_rectangle) return string is begin
+			return "rectangle " & to_string (set (rectangle.x, rectangle.y))
+				& " width" & to_string (rectangle.width)
+				& " height" & to_string (rectangle.height);
+		end;
+		
 		function intersects (rect1, rect2 : type_rectangle) return boolean is begin
 			return not (
 				rect1.x > rect2.x + rect2.width            --  r1 on the right of r2
