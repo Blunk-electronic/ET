@@ -600,12 +600,12 @@ package body pac_canvas is
 			-- but for some reason always returns SMOOTH_SCROLL.
 			if dy > 0.0 then
 				--put_line ("zoom out");
-				put_line ("zoom out at " & to_string (point));
+				--put_line ("zoom out at " & to_string (point));
 				set_scale (self, scale - scale_delta_on_zoom, point);
 				event_handled;
 			else
 				--put_line ("zoom in");
-				put_line ("zoom in at  " & to_string (point));
+				--put_line ("zoom in at  " & to_string (point));
 				set_scale (self, scale + scale_delta_on_zoom, point);
 				event_handled;
 			end if;

@@ -117,6 +117,17 @@ package body et_canvas_schematic is
 	is
 		-- prepare draing style so that white grid dots will be drawn.
 		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
+
+		-- The given area must be shifted (left and up) by the position
+		-- of the drawing frame. This is required for all objects in the 
+		-- drawing frame.
+		-- Take a copy of the given area:
+		area_shifted : type_rectangle := area;
+
+		-- Calculate the new position of area_shifted:
+		area_shifted_new_position : type_point := type_point (set (
+						x => - self.drawing.frame_bounding_box.x,
+						y => - self.drawing.frame_bounding_box.y));
 	begin
 -- 		put_line ("draw internal ...");
 		
@@ -127,12 +138,17 @@ package body et_canvas_schematic is
 		-- draw white grid dots:
 		set_grid_size (self, pac_canvas.grid_default);
 		draw_grid (self, style, context, area);
+		
+		draw_frame (self, area, context);
 
-		draw_frame (self, area, context); -- separate unit
-		draw_units (self, area, context); -- separate unit
-		draw_nets (self, area, context); -- separate unit
+		-- move area_shifted
+		move_by (area_shifted, area_shifted_new_position);
+
+		-- draw objects inside the drawing frame:
+		draw_units (self, area_shifted, context);
+		draw_nets (self, area_shifted, context);
 		-- CS self.model.draw_texts (area, context);
-		draw_submodules (self, area, context);
+		draw_submodules (self, area_shifted, context);
 			
 	end draw_internal;
 

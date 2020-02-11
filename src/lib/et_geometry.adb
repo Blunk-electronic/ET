@@ -146,6 +146,14 @@ package body et_geometry is
 				& " width" & to_string (rectangle.width)
 				& " height" & to_string (rectangle.height);
 		end;
+
+		procedure move_by (
+			rectangle	: in out type_rectangle;
+			offset		: in type_point) is
+		begin
+			rectangle.x := rectangle.x + offset.x;
+			rectangle.y := rectangle.y + offset.y;
+		end move_by;
 		
 		function intersects (rect1, rect2 : type_rectangle) return boolean is begin
 			return not (

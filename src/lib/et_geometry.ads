@@ -122,6 +122,11 @@ package et_geometry is
 		no_rectangle : constant type_rectangle := (others => zero);
 
 		function to_string (rectangle : in type_rectangle) return string;
+
+		-- Moves the rectangle by the given offset:
+		procedure move_by (
+			rectangle	: in out type_rectangle;
+			offset		: in type_point);
 		
 		-- Returns true if the given two rectangles intersect each other in some way:
 		function intersects (rect1, rect2 : type_rectangle) return boolean;
