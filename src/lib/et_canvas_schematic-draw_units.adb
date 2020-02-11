@@ -53,6 +53,7 @@ use et_schematic.type_units;
 
 with et_devices;
 with et_symbols;
+with et_text;
 
 separate (et_canvas_schematic)
 
@@ -105,11 +106,6 @@ procedure draw_units (
 				pac_shapes.union (boundaries, symbol.value.position);
 				pac_shapes.union (boundaries, symbol.purpose.position);
 			end if;
-			
--- 			put_line ("smallest_x " & to_string (smallest_x));
--- 			put_line ("greatest_x " & to_string (greatest_x));
--- 			put_line ("smallest_y " & to_string (smallest_y));
--- 			put_line ("greatest_y " & to_string (greatest_y));
 
 			bounding_box := (
 				-- The bounding box origin is the upper left corner.
@@ -297,8 +293,25 @@ procedure draw_units (
 
 		end draw_port;
 
-		procedure draw_text (c : in type_texts.cursor) is begin
-			null; -- CS
+		procedure draw_text (c : in type_texts.cursor) is 
+			use et_text;
+		begin
+			cairo.select_font_face (context.cr, 
+				family	=> "monospace", -- serif",
+				slant	=> CAIRO_FONT_SLANT_NORMAL,
+				weight	=> CAIRO_FONT_WEIGHT_NORMAL);
+
+			cairo.move_to (
+				context.cr,
+				transpose_x (element (c).position.x),
+				transpose_y (element (c).position.y)
+				);
+
+			cairo.set_font_size (context.cr, (gdouble (element (c).size) * 1.4));
+			
+			cairo.show_text (context.cr, to_string (element (c).content));
+
+			-- CS alignment, rotation. http://zetcode.com/gfx/cairo/cairotext/
 		end draw_text;
 
 		procedure draw_placeholders is begin

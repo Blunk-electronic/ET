@@ -95,7 +95,7 @@ package et_text is
 		line_width_min, line_width_max, line_width_default : type_distance;
 	package text is
 
-		subtype type_text_size is type_distance range size_min .. size_max;
+		subtype type_text_size is type_distance range size_min .. size_max; -- in millimeters
 		subtype type_text_line_width is type_distance range line_width_min .. line_width_max;
 		
 		function to_string (size : in type_distance) return string;

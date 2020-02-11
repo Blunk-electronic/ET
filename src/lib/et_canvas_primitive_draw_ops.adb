@@ -37,12 +37,20 @@
 
 with ada.text_io;				use ada.text_io;
 with ada.numerics;				use ada.numerics;
-
+with glib;						use glib;
 
 package body et_canvas_primitive_draw_ops is
 	
 package body pac_draw is
 
+	conversion_factor_mm_to_pt : constant gdouble := 1.4;
+	
+	function to_points (size : in pac_shapes.geometry.type_distance_positive)
+		return gdouble is
+	begin
+		return gdouble (size) * conversion_factor_mm_to_pt;
+	end to_points;
+	
 	-- This function converts a x-value from the drawing to a x-value in the view.
 	function convert_x (x : in pac_shapes.geometry.type_distance) 
 		return type_view_coordinate is 

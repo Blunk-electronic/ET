@@ -89,7 +89,7 @@ package et_schematic is
 		content		: et_text.type_text_content.bounded_string;
 	end record;
 
-	package type_texts is new doubly_linked_lists (type_text);
+	package type_texts is new doubly_linked_lists (type_text); -- CS rename to pac_texts
 
 	
 	-- Units can be placed mirrored along the x or y axis or not at all.
