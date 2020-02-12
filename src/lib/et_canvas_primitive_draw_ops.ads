@@ -135,6 +135,10 @@ package pac_draw is
 	
 	function to_points (size : in pac_text.type_text_size)
 		return gdouble;
+
+	procedure draw_text (
+		context	: in type_draw_context;
+		text	: in type_text);
 	
 end pac_draw;
 

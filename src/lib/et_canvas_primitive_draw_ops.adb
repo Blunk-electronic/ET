@@ -256,7 +256,7 @@ package body pac_draw is
 			add (boundaries, boundaries_to_add);
 		end if;
 
-		-- We draw the rectanglet if:
+		-- We draw the rectangle if:
 		--  - no area given or
 		--  - if the bounding box of the segment intersects the given area
 		if (area = no_rectangle
@@ -335,6 +335,12 @@ package body pac_draw is
 		return gdouble (size) * conversion_factor_mm_to_pt;
 	end to_points;
 
+	procedure draw_text (
+		context	: in type_draw_context;
+		text	: in type_text) is
+	begin
+		null;
+	end draw_text;
 	
 end pac_draw;
 

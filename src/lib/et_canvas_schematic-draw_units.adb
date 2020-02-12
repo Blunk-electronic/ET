@@ -294,8 +294,8 @@ procedure draw_units (
 		end draw_port;
 
 		procedure draw_text (c : in type_texts.cursor) is 
-			use et_text;
 			use pac_draw_misc;
+			use et_text;
 		begin
 			cairo.select_font_face (context.cr, 
 				family	=> "monospace", -- serif",
@@ -313,6 +313,8 @@ procedure draw_units (
 			cairo.show_text (context.cr, to_string (element (c).content));
 
 			-- CS alignment, rotation. http://zetcode.com/gfx/cairo/cairotext/
+
+			draw_text (context, element (c));
 		end draw_text;
 
 		procedure draw_placeholders is begin
@@ -359,7 +361,9 @@ procedure draw_units (
 
 -- 		put_line ("unit position in drawing " & to_string (position.x) & to_string (position.y));
 
-		
+		-- We draw the symbol if:
+		--  - no area given or
+		--  - if the bounding box of the symbol intersects the given area		
 		if (in_area = no_rectangle
 			or else intersects (in_area, bounding_box)) 
 		then
