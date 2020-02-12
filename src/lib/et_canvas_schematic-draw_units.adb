@@ -37,6 +37,7 @@
 
 with ada.text_io;				use ada.text_io;
 with ada.numerics;				use ada.numerics;
+with ada.containers;
 with cairo;						use cairo;
 with pango.layout;				use pango.layout;
 
@@ -62,6 +63,17 @@ procedure draw_units (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
+	-- The name of the current device:
+	device_name	: et_devices.type_name; -- like R1, IC100	
+
+	device_value : et_devices.type_value.bounded_string; -- like 100R or TL084
+
+	-- The number of units provided by the current device:
+	unit_count	: et_devices.type_unit_count; -- the total number of units
+
+	-- The name of the current unit:
+	unit_name	: et_devices.type_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
+	
 	procedure draw_symbol (
 		symbol		: in et_symbols.type_symbol;
 		position	: in et_coordinates.geometry.type_point) -- x/y on the schematic sheet
@@ -293,32 +305,53 @@ procedure draw_units (
 
 		end draw_port;
 
-		procedure draw_text (c : in type_texts.cursor) is 
-			use pac_draw_misc;
-			use et_text;
-		begin
-			cairo.select_font_face (context.cr, 
-				family	=> "monospace", -- serif",
-				slant	=> CAIRO_FONT_SLANT_NORMAL,
-				weight	=> CAIRO_FONT_WEIGHT_NORMAL);
-
-			cairo.move_to (
-				context.cr,
-				transpose_x (element (c).position.x),
-				transpose_y (element (c).position.y)
+		procedure draw_text (c : in type_texts.cursor) is begin
+			pac_draw_misc.draw_text 
+				(
+				context		=> context,
+				text		=> pac_text.type_text (element (c)),
+				content		=> element (c).content,
+				size		=> element (c).size,
+				x			=> transpose_x (element (c).position.x),
+				y			=> transpose_y (element (c).position.y),
+				rotation	=> element (c).rotation
 				);
-
-			cairo.set_font_size (context.cr, (to_points (element (c).size)));
-			
-			cairo.show_text (context.cr, to_string (element (c).content));
-
-			-- CS alignment, rotation. http://zetcode.com/gfx/cairo/cairotext/
-
-			draw_text (context, element (c));
 		end draw_text;
 
-		procedure draw_placeholders is begin
-			null; -- CS
+		procedure draw_placeholders is 
+			use et_text;
+			use et_devices;
+		begin
+			-- device name
+			pac_draw_misc.draw_text 
+				(
+				context		=> context,
+				text		=> pac_text.type_text (symbol.name),
+				content		=> to_content (to_full_name (device_name, unit_name, unit_count)),
+				size		=> symbol.name.size,
+				x			=> transpose_x (x (symbol.name.position)),
+				y			=> transpose_y (y (symbol.name.position)),
+				rotation	=> symbol.name.rotation
+				);
+
+			-- value
+			pac_draw_misc.draw_text 
+				(
+				context		=> context,
+				text		=> pac_text.type_text (symbol.value),
+				content		=> to_content (to_string (device_value)),
+				size		=> symbol.value.size,
+				x			=> transpose_x (x (symbol.value.position)),
+				y			=> transpose_y (y (symbol.value.position)),
+				rotation	=> symbol.value.rotation
+				);
+
+			-- purpose
+			
+-- 			symbol.name.position);
+-- 				pac_shapes.union (boundaries, symbol.value.position);
+-- 				pac_shapes.union (boundaries, symbol.purpose.position)
+			
 		end draw_placeholders;
 
 		procedure draw_origin is begin
@@ -396,8 +429,11 @@ procedure draw_units (
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 			iterate (symbol.texts, draw_text'access);
 			
-			-- draw placeholders
-			draw_placeholders;
+			-- Draw placeholders if this is the symbol of a real device. 
+			-- Virtual symbols do not have placeholders.
+			if symbol.appearance = PCB then
+				draw_placeholders;
+			end if;
 
 			-- draw origin
 			draw_origin;
@@ -410,7 +446,7 @@ procedure draw_units (
 	end draw_symbol;
 
 	procedure query_devices (device_cursor : in et_schematic.type_devices.cursor) is
-
+		
 		-- get the model of the current device
 		device_model : et_devices.type_device_model_file.bounded_string :=
 			element (device_cursor).model;	-- ../libraries/devices/transistor/pnp.dev
@@ -449,7 +485,6 @@ procedure draw_units (
 		
 		procedure query_units (unit_cursor : in et_schematic.type_units.cursor) is
 			use et_devices;
-			unit_name : type_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 			device_cursor_lib : type_devices.cursor;
 		begin
 			-- we want to draw only those units which are on the active sheet:
@@ -463,14 +498,21 @@ procedure draw_units (
 			end if;
 		end query_units;
 
-	begin
-		-- put_line (et_devices.to_string (key (device_cursor)));			
+	begin -- query_devices
+
+		-- Get device name, value, purpose and number of units of the current device.
+		-- Procedure draw_symbol needs them later:
+		device_name := key (device_cursor); -- like R1, IC100
+		device_value := element (device_cursor).value; -- like 100R or TL084
+		unit_count := et_devices.type_unit_count (length (element (device_cursor).units));
+
+		-- Iterate the units of the current device:
 		iterate (element (device_cursor).units, query_units'access);
 	end query_devices;
 		
 begin
--- 	put_line ("draw units ...");
-
+	-- 	put_line ("draw units ...");
+	
 	iterate (element (self.drawing.module).devices, query_devices'access);
 	
 end draw_units;

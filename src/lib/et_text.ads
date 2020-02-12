@@ -73,7 +73,7 @@ package et_text is
 	keyword_content : constant string := "content";
 	
 	text_length_max : constant natural := 200;
-	package type_text_content is new generic_bounded_length (text_length_max);
+	package type_text_content is new generic_bounded_length (text_length_max); -- CS rename to pac_text_content
 
 	function to_string (text_content : in type_text_content.bounded_string) return string;
 	function to_content (content : in string) return type_text_content.bounded_string;

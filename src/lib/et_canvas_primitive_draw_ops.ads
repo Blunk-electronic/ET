@@ -122,8 +122,8 @@ package pac_draw is
 		area			: in type_rectangle;
 		context			: in type_draw_context;
 		position		: in type_point'class;	-- position of the rectangle (lower left corner)
-		width			: in type_distance;		-- widht of the rectangle
-		height			: in type_distance;		-- height of the rectangle
+		width			: in pac_shapes.geometry.type_distance;		-- widht of the rectangle
+		height			: in pac_shapes.geometry.type_distance;		-- height of the rectangle
 		frame_height	: in pac_shapes.geometry.type_distance;
 		extend_boundaries	: in boolean := false;
 		boundaries_to_add	: in type_boundaries := boundaries_default);
@@ -131,14 +131,32 @@ package pac_draw is
 
 	
 -- TEXT
+	use et_text;
+	use pac_text;
+	
 	conversion_factor_mm_to_pt : constant gdouble := 1.53; -- CS use exact factor
 	
 	function to_points (size : in pac_text.type_text_size)
 		return gdouble;
 
 	procedure draw_text (
-		context	: in type_draw_context;
-		text	: in type_text);
+		context		: in type_draw_context;
+		text		: in pac_text.type_text;
+		content		: in type_text_content.bounded_string;
+		size		: in pac_text.type_text_size;
+		x,y			: in gdouble;
+		rotation	: in type_rotation
+		);
+	
+-- 	procedure draw_text (
+-- 		context		: in type_draw_context;
+-- 		text		: in pac_text.type_text;
+-- 		content		: in type_text_content.bounded_string;
+-- 		size		: in pac_text.type_text_size;
+-- 		position	: in type_point;
+-- 		rotation	: in type_rotation;
+-- 		frame_height	: in pac_shapes.geometry.type_distance;
+-- 		);
 	
 end pac_draw;
 

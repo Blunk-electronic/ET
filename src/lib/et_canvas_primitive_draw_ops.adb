@@ -235,8 +235,8 @@ package body pac_draw is
 		area			: in type_rectangle;
 		context			: in type_draw_context;
 		position		: in type_point'class;
-		width			: in type_distance;
-		height			: in type_distance;
+		width			: in pac_shapes.geometry.type_distance;
+		height			: in pac_shapes.geometry.type_distance;
 		frame_height	: in pac_shapes.geometry.type_distance;
 		extend_boundaries	: in boolean := false;
 		boundaries_to_add	: in type_boundaries := boundaries_default) is
@@ -336,10 +336,31 @@ package body pac_draw is
 	end to_points;
 
 	procedure draw_text (
-		context	: in type_draw_context;
-		text	: in type_text) is
+		context		: in type_draw_context;
+		text		: in pac_text.type_text;
+		content		: in type_text_content.bounded_string;
+		size		: in pac_text.type_text_size;
+		x,y			: in gdouble;
+		rotation	: in type_rotation
+		)
+	is
 	begin
-		null;
+		cairo.select_font_face (
+			context.cr, 
+			family	=> "monospace", -- serif",
+			slant	=> CAIRO_FONT_SLANT_NORMAL,
+			weight	=> CAIRO_FONT_WEIGHT_NORMAL);
+
+		cairo.move_to (context.cr, x, y);
+
+		cairo.set_font_size (context.cr, (to_points (size)));
+			
+		cairo.show_text (context.cr, to_string (content));
+
+
+
+		-- CS alignment, rotation. http://zetcode.com/gfx/cairo/cairotext/
+
 	end draw_text;
 	
 end pac_draw;

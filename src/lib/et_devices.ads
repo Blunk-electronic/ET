@@ -227,9 +227,8 @@ package et_devices is
 		offset	: in type_name_index);
 
 	
-	
-	
 
+	
 -- TERMINALS	
 
 	type type_terminal_count is new count_type; -- CS: limit to a reasonable range ?
@@ -257,6 +256,22 @@ package et_devices is
 	
 	function to_string (unit_name : in type_unit_name.bounded_string) return string;
 	function to_name (unit_name : in string) return type_unit_name.bounded_string;
+
+	device_unit_separator : constant character := '.';
+
+	-- A device may have up to 1000 units. CS: seems to be reasonable limit
+	subtype type_unit_count is positive range 1 .. 1000;
+	
+	-- This function concatenates the device name and unit name, separated
+	-- by the device_unit_separator. If the given unit_count is 1 then just
+	-- the device name will be returned as string.
+	function to_full_name (
+		device_name	: in type_name; -- IC34
+		symbol_name	: in type_unit_name.bounded_string; -- PWR
+		unit_count	: in type_unit_count) -- the total number of units
+		return string; -- IC34.PWR
+
+
 	
 	swap_level_max : constant natural := 10;
 	type type_swap_level is new natural range 0 .. swap_level_max;

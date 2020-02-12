@@ -552,6 +552,20 @@ package body et_devices is
 		return type_unit_name.to_bounded_string (unit_name);
 	end;
 
+	function to_full_name (
+		device_name	: in type_name; -- IC34
+		symbol_name	: in type_unit_name.bounded_string; -- PWR
+		unit_count	: in type_unit_count) -- the total number of units
+		return string is -- IC34.PWR
+	begin
+		if unit_count > 1 then
+			return to_string (device_name) 
+				& device_unit_separator 
+				& to_string (symbol_name);
+		else
+			return to_string (device_name);
+		end if;
+	end to_full_name;
 
 	
 	function to_string (swap_level : in type_swap_level) return string is begin
