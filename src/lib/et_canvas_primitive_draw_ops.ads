@@ -51,9 +51,11 @@
 --  Further-on the generic package for primitve draw operations (et_canvas_draw.pac_draw)
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
+with glib;					use glib;
 with cairo;					use cairo;
 
 with et_geometry;
+with et_text;
 with et_canvas_general;
 
 package et_canvas_primitive_draw_ops is
@@ -65,6 +67,9 @@ generic
 
 	-- The instantiated shapes package:
 	with package pac_shapes is new et_geometry.shapes_2d (<>);
+
+	-- The instantiated text package:
+	with package pac_text is new et_text.text (<>);
 	
 package pac_draw is
 	use pac_canvas;
@@ -123,6 +128,13 @@ package pac_draw is
 		extend_boundaries	: in boolean := false;
 		boundaries_to_add	: in type_boundaries := boundaries_default);
 		-- CS fill style ?
+
+	
+-- TEXT
+	conversion_factor_mm_to_pt : constant gdouble := 1.53; -- CS use exact factor
+	
+	function to_points (size : in pac_text.type_text_size)
+		return gdouble;
 	
 end pac_draw;
 

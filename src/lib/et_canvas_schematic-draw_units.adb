@@ -295,6 +295,7 @@ procedure draw_units (
 
 		procedure draw_text (c : in type_texts.cursor) is 
 			use et_text;
+			use pac_draw_misc;
 		begin
 			cairo.select_font_face (context.cr, 
 				family	=> "monospace", -- serif",
@@ -307,7 +308,7 @@ procedure draw_units (
 				transpose_y (element (c).position.y)
 				);
 
-			cairo.set_font_size (context.cr, (gdouble (element (c).size) * 1.4));
+			cairo.set_font_size (context.cr, (to_points (element (c).size)));
 			
 			cairo.show_text (context.cr, to_string (element (c).content));
 

@@ -52,6 +52,7 @@ with gtkada.style;     		use gtkada.style;
 
 with et_coordinates;		use et_coordinates;
 with et_project;
+with et_symbols;
 with et_schematic;
 with et_frames;
 
@@ -73,8 +74,8 @@ package et_canvas_schematic is
 	-- we instantiate this package:
 	package pac_draw_misc is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas	=> pac_canvas,
-		pac_shapes	=> et_schematic.pac_shapes);
-
+		pac_shapes	=> et_schematic.pac_shapes,
+		pac_text	=> et_symbols.pac_text);
 	
 	
 
