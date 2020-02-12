@@ -63,10 +63,15 @@ procedure draw_units (
 	in_area	: in type_rectangle := no_rectangle;
 	context : in type_draw_context) is
 
-	-- The name of the current device:
+	-- The name, value and purpose of the current device:
 	device_name	: et_devices.type_name; -- like R1, IC100	
-
 	device_value : et_devices.type_value.bounded_string; -- like 100R or TL084
+	device_purpose : et_devices.type_purpose.bounded_string; -- like "brightness control"
+
+	-- The placeholders as given by the schematic:
+	sch_placeholder_name	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
+	sch_placeholder_value	: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
+	sch_placeholder_purpose : et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE);
 
 	-- The number of units provided by the current device:
 	unit_count	: et_devices.type_unit_count; -- the total number of units
@@ -347,10 +352,16 @@ procedure draw_units (
 				);
 
 			-- purpose
-			
--- 			symbol.name.position);
--- 				pac_shapes.union (boundaries, symbol.value.position);
--- 				pac_shapes.union (boundaries, symbol.purpose.position)
+			pac_draw_misc.draw_text 
+				(
+				context		=> context,
+				text		=> pac_text.type_text (symbol.purpose),
+				content		=> to_content (to_string (device_purpose)),
+				size		=> symbol.purpose.size,
+				x			=> transpose_x (x (symbol.purpose.position)),
+				y			=> transpose_y (y (symbol.purpose.position)),
+				rotation	=> symbol.purpose.rotation
+				);
 			
 		end draw_placeholders;
 
@@ -485,6 +496,7 @@ procedure draw_units (
 		
 		procedure query_units (unit_cursor : in et_schematic.type_units.cursor) is
 			use et_devices;
+			use et_symbols;
 			device_cursor_lib : type_devices.cursor;
 		begin
 			-- we want to draw only those units which are on the active sheet:
@@ -492,18 +504,31 @@ procedure draw_units (
 				unit_name := key (unit_cursor);
 				unit_position := type_point (element (unit_cursor).position);
 				--put_line (to_string (unit_name));
+
+				-- Get a copy of the placeholders of the unit:
+				if element (unit_cursor).appearance = PCB then
+					sch_placeholder_name := element (unit_cursor).name;
+					sch_placeholder_value := element (unit_cursor).value;
+					sch_placeholder_purpose := element (unit_cursor).purpose;
+				end if;
 				
 				device_cursor_lib := locate_device (device_model);
 				locate_symbol (locate_unit (device_cursor_lib, unit_name));
 			end if;
 		end query_units;
 
+		use et_symbols;
+		
 	begin -- query_devices
 
 		-- Get device name, value, purpose and number of units of the current device.
 		-- Procedure draw_symbol needs them later:
-		device_name := key (device_cursor); -- like R1, IC100
-		device_value := element (device_cursor).value; -- like 100R or TL084
+		if element (device_cursor).appearance = PCB then
+			device_name := key (device_cursor); -- like R1, IC100
+			device_value := element (device_cursor).value; -- like 100R or TL084
+			device_purpose := element (device_cursor).purpose; -- like "brightness control"
+		end if;
+		
 		unit_count := et_devices.type_unit_count (length (element (device_cursor).units));
 
 		-- Iterate the units of the current device:
