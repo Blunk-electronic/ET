@@ -505,6 +505,7 @@ procedure draw_units (
 		then
 			save (context.cr);
 
+			
 			-- Prepare the current transformation matrix (CTM) so that
 			-- all following drawing is relative to the upper left corner
 			-- of the symbol bounding box.
@@ -514,6 +515,8 @@ procedure draw_units (
 				context.cr,
 				convert_x (self.drawing.frame_bounding_box.x + bounding_box.x),
 				convert_y (self.drawing.frame_bounding_box.y + bounding_box.y));
+
+-- 			cairo.rotate (context.cr, gdouble (to_radians (-90.0)));
 
 			-- SYMBOL BODY
 			-- set color
