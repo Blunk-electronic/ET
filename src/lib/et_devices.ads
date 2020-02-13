@@ -95,6 +95,8 @@ package et_devices is
 		error_on_invalid_character	: in boolean := true)
 		return type_purpose.bounded_string;
 
+	-- Returns true if purpose is empty ("").
+	function is_empty (purpose : in type_purpose.bounded_string) return boolean;
 
 	
 	-- To handle names of package models like libraries/packages/smd/SOT23.pac use this:
@@ -146,7 +148,8 @@ package et_devices is
 		error_on_invalid_character	: in boolean := true)
 		return type_value.bounded_string;
 
-
+	-- Returns true if value is empty ("").
+	function is_empty (value : in type_value.bounded_string) return boolean;
 
 
 

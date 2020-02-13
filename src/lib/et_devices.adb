@@ -137,6 +137,14 @@ package body et_devices is
 		return purpose_out;
 	end to_purpose;
 
+	function is_empty (purpose : in type_purpose.bounded_string) return boolean is 
+		use type_purpose;
+	begin
+		if length (purpose) = 0 then return true;
+		else return false;
+		end if;
+	end is_empty;
+
 
 	
 	function to_string (name : in type_device_model_file.bounded_string) 
@@ -247,6 +255,15 @@ package body et_devices is
 		return value_out;
 	end to_value;
 
+	-- Returns true if value is empty ("").
+	function is_empty (value : in type_value.bounded_string) return boolean is 
+		use type_value;
+	begin
+		if length (value) = 0 then return true;
+		else return false;
+		end if;
+	end is_empty;
+		
 
 
 

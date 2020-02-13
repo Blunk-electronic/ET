@@ -145,8 +145,8 @@ package pac_draw is
 		content		: in type_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		x,y			: in gdouble;
-		rotation	: in type_rotation
-		);
+		rotation	: in type_rotation;
+		alignment	: in type_text_alignment);
 	
 -- 	procedure draw_text (
 -- 		context		: in type_draw_context;

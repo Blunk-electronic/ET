@@ -68,16 +68,50 @@ procedure draw_units (
 	device_value : et_devices.type_value.bounded_string; -- like 100R or TL084
 	device_purpose : et_devices.type_purpose.bounded_string; -- like "brightness control"
 
-	-- The placeholders as given by the schematic:
-	sch_placeholder_name	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
-	sch_placeholder_value	: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
-	sch_placeholder_purpose : et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE);
-
 	-- The number of units provided by the current device:
 	unit_count	: et_devices.type_unit_count; -- the total number of units
 
 	-- The name of the current unit:
 	unit_name	: et_devices.type_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
+
+	-- The placeholders as given by the schematic:
+	sch_placeholder_name	: et_symbols.type_text_placeholder (meaning => et_symbols.NAME);
+	sch_placeholder_value	: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
+	sch_placeholder_purpose : et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE);
+
+	-- This function returns true if the given placeholder has been moved from the
+	-- default position and rotation or if the alignment has been changed:
+	function moved_by_operator (placeholder : in et_symbols.type_text_placeholder)
+		return boolean is
+		use et_symbols;
+		use type et_text.type_text_alignment;
+		result : boolean := false;
+	begin
+		case placeholder.meaning is
+			when NAME =>
+				if  placeholder.position /= sch_placeholder_name.position or
+					placeholder.rotation /= sch_placeholder_name.rotation or
+					placeholder.alignment /= sch_placeholder_name.alignment then
+					result := true;
+				end if;
+
+			when VALUE =>
+				if 	placeholder.position /= sch_placeholder_value.position or
+					placeholder.rotation /= sch_placeholder_value.rotation or
+					placeholder.alignment /= sch_placeholder_value.alignment then
+					result := true;
+				end if;
+			
+			when PURPOSE =>
+				if 	placeholder.position /= sch_placeholder_purpose.position or
+					placeholder.rotation /= sch_placeholder_purpose.rotation or
+					placeholder.alignment /= sch_placeholder_purpose.alignment then
+					result := true;
+				end if;
+		end case;
+
+		return result;
+	end moved_by_operator;
 	
 	procedure draw_symbol (
 		symbol		: in et_symbols.type_symbol;
@@ -153,7 +187,6 @@ procedure draw_units (
 		function transpose_y (y : in type_distance) return type_view_coordinate is begin
 			return convert_y (abs (y - boundaries.greatest_y));
 		end;
-
 		
 		procedure draw_line (c : in type_lines.cursor) is begin
 
@@ -310,6 +343,8 @@ procedure draw_units (
 
 		end draw_port;
 
+		-- This procedure draws fixed texts like "MUX" or "CT16" as they 
+		-- are frequently placed inside symbols:
 		procedure draw_text (c : in type_texts.cursor) is begin
 			pac_draw_misc.draw_text 
 				(
@@ -319,49 +354,106 @@ procedure draw_units (
 				size		=> element (c).size,
 				x			=> transpose_x (element (c).position.x),
 				y			=> transpose_y (element (c).position.y),
-				rotation	=> element (c).rotation
+				rotation	=> element (c).rotation,
+				alignment	=> element (c).alignment
 				);
 		end draw_text;
 
+		-- This procedure draws text placeholders for device name, value and purpose:
 		procedure draw_placeholders is 
 			use et_text;
 			use et_devices;
 		begin
-			-- device name
-			pac_draw_misc.draw_text 
-				(
-				context		=> context,
-				text		=> pac_text.type_text (symbol.name),
-				content		=> to_content (to_full_name (device_name, unit_name, unit_count)),
-				size		=> symbol.name.size,
-				x			=> transpose_x (x (symbol.name.position)),
-				y			=> transpose_y (y (symbol.name.position)),
-				rotation	=> symbol.name.rotation
-				);
 
-			-- value
-			pac_draw_misc.draw_text 
-				(
-				context		=> context,
-				text		=> pac_text.type_text (symbol.value),
-				content		=> to_content (to_string (device_value)),
-				size		=> symbol.value.size,
-				x			=> transpose_x (x (symbol.value.position)),
-				y			=> transpose_y (y (symbol.value.position)),
-				rotation	=> symbol.value.rotation
-				);
+			-- If operator has moved or rotate the placeholder in the schematic,
+			-- then the position and rotation of the placeholder in the schematic
+			-- is used. Otherwise the default position and rotation as given in
+			-- the symbol is used.
+			
+			-- DEVICE NAME:
+			if moved_by_operator (symbol.name) then
 
-			-- purpose
-			pac_draw_misc.draw_text 
-				(
-				context		=> context,
-				text		=> pac_text.type_text (symbol.purpose),
-				content		=> to_content (to_string (device_purpose)),
-				size		=> symbol.purpose.size,
-				x			=> transpose_x (x (symbol.purpose.position)),
-				y			=> transpose_y (y (symbol.purpose.position)),
-				rotation	=> symbol.purpose.rotation
-				);
+				pac_draw_misc.draw_text (
+					context		=> context,
+					text		=> pac_text.type_text (symbol.name),
+					content		=> to_content (to_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
+					size		=> symbol.name.size,
+					x			=> transpose_x (x (sch_placeholder_name.position)),
+					y			=> transpose_y (y (sch_placeholder_name.position)),
+					rotation	=> sch_placeholder_name.rotation,
+					alignment	=> sch_placeholder_name.alignment);
+
+			else -- use defaults from library symbol
+				pac_draw_misc.draw_text (
+					context		=> context,
+					text		=> pac_text.type_text (symbol.name),
+					content		=> to_content (to_full_name (device_name, unit_name, unit_count)),
+					size		=> symbol.name.size,
+					x			=> transpose_x (x (symbol.name.position)),
+					y			=> transpose_y (y (symbol.name.position)),
+					rotation	=> symbol.name.rotation,
+					alignment	=> symbol.name.alignment);
+
+			end if;
+			
+			-- VALUE
+			-- The value may be empty. We do not draw it in this case:
+			if not is_empty (device_value) then
+				if moved_by_operator (symbol.value) then
+
+					pac_draw_misc.draw_text (
+						context		=> context,
+						text		=> pac_text.type_text (symbol.value),
+						content		=> to_content (to_string (device_value)), -- 100R
+						size		=> symbol.value.size,
+						x			=> transpose_x (x (sch_placeholder_value.position)),
+						y			=> transpose_y (y (sch_placeholder_value.position)),
+						rotation	=> sch_placeholder_value.rotation,
+						alignment	=> sch_placeholder_value.alignment);
+					
+				else -- use defaults from library symbol
+					pac_draw_misc.draw_text (
+						context		=> context,
+						text		=> pac_text.type_text (symbol.value),
+						content		=> to_content (to_string (device_value)),
+						size		=> symbol.value.size,
+						x			=> transpose_x (x (symbol.value.position)),
+						y			=> transpose_y (y (symbol.value.position)),
+						rotation	=> symbol.value.rotation,
+						alignment	=> symbol.value.alignment);
+
+				end if;
+			end if;
+			
+			-- PURPOSE
+			-- The purpose may be empty. We do not draw it in this case:
+			if not is_empty (device_purpose) then
+
+				if moved_by_operator (symbol.purpose) then
+
+					pac_draw_misc.draw_text (
+						context		=> context,
+						text		=> pac_text.type_text (symbol.purpose),
+						content		=> to_content (to_string (device_purpose)), -- "brightness control"
+						size		=> symbol.purpose.size,
+						x			=> transpose_x (x (sch_placeholder_purpose.position)),
+						y			=> transpose_y (y (sch_placeholder_purpose.position)),
+						rotation	=> sch_placeholder_purpose.rotation,
+						alignment	=> sch_placeholder_purpose.alignment);
+
+				else -- use defaults from library symbol
+					pac_draw_misc.draw_text (
+						context		=> context,
+						text		=> pac_text.type_text (symbol.purpose),
+						content		=> to_content (to_string (device_purpose)),
+						size		=> symbol.purpose.size,
+						x			=> transpose_x (x (symbol.purpose.position)),
+						y			=> transpose_y (y (symbol.purpose.position)),
+						rotation	=> symbol.purpose.rotation,
+						alignment	=> symbol.purpose.alignment);
+
+				end if;
+			end if;
 			
 		end draw_placeholders;
 
