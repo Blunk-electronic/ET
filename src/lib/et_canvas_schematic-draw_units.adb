@@ -495,7 +495,10 @@ procedure draw_units (
 	begin -- draw_symbol
 		-- The unit might have been rotated. So the boundaries must be computed anew:
 		if unit_rotation /= zero_rotation then
+-- 			put_line (to_string (boundaries));
+-- 			put_line ("unit rotated by" & to_string (unit_rotation));
 			rotate (boundaries, unit_rotation);
+-- 			put_line (to_string (boundaries));
 		end if;
 		
 		make_bounding_box;
@@ -511,18 +514,46 @@ procedure draw_units (
 			or else intersects (in_area, bounding_box)) 
 		then
 			save (context.cr);
-
 			
 			-- Prepare the current transformation matrix (CTM) so that
 			-- all following drawing is relative to the upper left corner
-			-- of the symbol bounding box.
+			-- of the symbol bounding box (in the non-rotated state).
 			-- Further-on the drawing must be offset by the position
 			-- of the frame_bounding_box:
 			translate (
 				context.cr,
-				convert_x (self.drawing.frame_bounding_box.x + bounding_box.x),
-				convert_y (self.drawing.frame_bounding_box.y + bounding_box.y));
+				convert_x (self.drawing.frame_bounding_box.x 
+						+ bounding_box.x 
 
+						-- compensate the rotatation of the bounding box:
+						+ x (boundaries.distance_of_topleft_to_default)),
+				
+				convert_y (self.drawing.frame_bounding_box.y 
+						+ bounding_box.y 
+
+						 -- compensates the rotatation of the bounding box:   
+						+ y (boundaries.distance_of_topleft_to_default))
+					  );
+
+
+-- 			translate (
+-- 				context.cr,
+-- 				convert_x (self.drawing.frame_bounding_box.x 
+-- 						+ bounding_box.x 
+-- 
+-- 						-- compensate the rotatation of the bounding box:
+-- 						+ x (boundaries.distance_of_topleft_to_default)
+-- 						+ boundaries.smallest_x),
+-- 				
+-- 				convert_y (self.drawing.frame_bounding_box.y 
+-- 						+ bounding_box.y 
+-- 
+-- 						 -- compensates the rotatation of the bounding box:   
+-- 						+ y (boundaries.distance_of_topleft_to_default)
+-- 						+ boundaries.greatest_y)
+-- 					  );
+
+			
 -- 			cairo.rotate (context.cr, gdouble (to_radians (-90.0)));
 
 			-- SYMBOL BODY
