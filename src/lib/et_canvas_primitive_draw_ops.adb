@@ -246,7 +246,8 @@ package body pac_draw is
 			smallest_x	=> position.x,
 			greatest_x	=> position.x + width,
 			smallest_y	=> position.y,
-			greatest_y	=> position.y + height);
+			greatest_y	=> position.y + height,
+			others		=> <>);
 
 		-- compute the bounding box of the given arc
 		bounding_box : type_rectangle := make_bounding_box (frame_height, boundaries);

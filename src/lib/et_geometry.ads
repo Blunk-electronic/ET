@@ -93,10 +93,11 @@ package et_geometry is
 		type type_boundaries is record
 			smallest_x, smallest_y : type_distance := type_distance'last;
 			greatest_x, greatest_y : type_distance := type_distance'first;
+			distance_of_topleft_to_default : type_point := origin;
 		end record;
 
-		boundaries_default : constant type_boundaries := (others => <>);
-
+		boundaries_default : constant type_boundaries;
+		
 		function to_string (boundaries : in type_boundaries) return string;
 		
 		-- Adds two boundaries.
@@ -112,6 +113,11 @@ package et_geometry is
 			boundaries	: in out type_boundaries;
 			offset		: in type_point);
 
+		-- Rotates the given boundaries by given rotation.
+		procedure rotate (
+			boundaries	: in out type_boundaries;
+			rotation	: in type_rotation);
+		
 		-- In connection with boundaries and bounding boxes a type for
 		-- a rectangular area of the drawing is required:
 		type type_rectangle is record
@@ -206,11 +212,18 @@ package et_geometry is
 			axis	: in type_axis_2d) 
 			return type_distance;
 
+		function "+" (point_one, point_two : in type_point) return type_point'class;
+		function "-" (point_one, point_two : in type_point) return type_point'class;
+		
 		function distance_relative (point_one, point_two : in type_point) return type_point'class;
 		-- Returns the relative distance of point_two from point_one.	
+		-- Subtracts point_one.x from point_two.y and point_one.y from point_two.y
+		-- returns	d.x := point_two.x - point_one.x
+		--			d.y := point_two.y - point_one.y;
+
 		
 		function distance (point_one, point_two : in type_point) return type_distance; -- CS renamte to distance_total
-		-- Computes the total distance between point_one and point_two.	
+		-- Computes the total distance between point_one and point_two.
 
 		function add (left, right : in type_rotation) return type_rotation;
 		-- Adds two angles.
@@ -307,6 +320,8 @@ package et_geometry is
 
 		origin_zero_rotation : constant type_position := (others => <>);
 
+		boundaries_default : constant type_boundaries := (others => <>);
+		
 	end geometry_operations_2d;
 
 -- 	package geometry_operations_3d is

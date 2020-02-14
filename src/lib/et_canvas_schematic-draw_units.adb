@@ -79,6 +79,8 @@ procedure draw_units (
 	sch_placeholder_value	: et_symbols.type_text_placeholder (meaning => et_symbols.VALUE);
 	sch_placeholder_purpose : et_symbols.type_text_placeholder (meaning => et_symbols.PURPOSE);
 
+	unit_rotation : type_rotation;
+	
 	-- This function returns true if the given placeholder has been moved from the
 	-- default position and rotation or if the alignment has been changed:
 	function moved_by_operator (placeholder : in et_symbols.type_text_placeholder)
@@ -491,6 +493,8 @@ procedure draw_units (
 		end draw_origin;
 		
 	begin -- draw_symbol
+		-- The unit might have been rotated. So the boundaries must be computed anew:
+		rotate (boundaries, unit_rotation);
 		make_bounding_box;
 
 -- 		put_line ("bounding box position in model" & to_string (bounding_box.x) & to_string (bounding_box.y));
@@ -598,6 +602,7 @@ procedure draw_units (
 			if element (unit_cursor).position.sheet = self.drawing.sheet then
 				unit_name := key (unit_cursor);
 				unit_position := type_point (element (unit_cursor).position);
+				unit_rotation := rot (element (unit_cursor).position);
 				--put_line (to_string (unit_name));
 
 				-- Get a copy of the placeholders of the unit:
