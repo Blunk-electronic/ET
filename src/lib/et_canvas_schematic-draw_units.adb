@@ -494,7 +494,10 @@ procedure draw_units (
 		
 	begin -- draw_symbol
 		-- The unit might have been rotated. So the boundaries must be computed anew:
-		rotate (boundaries, unit_rotation);
+		if unit_rotation /= zero_rotation then
+			rotate (boundaries, unit_rotation);
+		end if;
+		
 		make_bounding_box;
 
 -- 		put_line ("bounding box position in model" & to_string (bounding_box.x) & to_string (bounding_box.y));
