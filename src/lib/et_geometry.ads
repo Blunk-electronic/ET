@@ -444,6 +444,11 @@ package et_geometry is
 			-- CS locked : type_locked;		
 		end record;
 
+		-- Rotates an arc around the origin.
+		procedure rotate (
+			arc			: in out type_arc;
+			rotation	: in type_rotation);
+		
 		-- Sometimes (for example with cairo) an arc must be
 		-- expressed in terms of start and end angle:
 		type type_arc_angles is record
@@ -494,6 +499,11 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
+		-- Rotates a circle around the origin.
+		procedure rotate (
+			circle		: in out type_circle;
+			rotation	: in type_rotation);
+		
 		function boundaries (circle : in type_circle) return type_boundaries;
 		-- Returns the boundaries of the given circle.
 		

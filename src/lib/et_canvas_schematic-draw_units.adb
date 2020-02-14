@@ -193,6 +193,7 @@ procedure draw_units (
 		end;
 		
 		procedure draw_line (c : in type_lines.cursor) is 
+			-- Take a copy of the given line:
 			type type_line is new pac_shapes.type_line with null record;
 			line : type_line := (pac_shapes.type_line (element (c)) with null record);
 		begin
@@ -221,50 +222,64 @@ procedure draw_units (
 
 		procedure draw_arc (c : in type_arcs.cursor) is 
 			use et_symbols.pac_shapes;
-			arc : type_arc_angles := to_arc_angles (element (c));
+			-- Take a copy of the given arc:
+			type type_arc is new pac_shapes.type_arc with null record;
+			arc_1 : type_arc := (pac_shapes.type_arc (element (c)) with null record);
+
+			arc_2 : type_arc_angles;
 		begin
+			rotate (arc_1, unit_rotation);
+
+			-- Convert the arc to an arc that uses angles instead of start and end point:
+			arc_2 := to_arc_angles (arc_1);
+			
 			cairo.new_sub_path (context.cr); -- required to suppress an initial line
 
 			-- set line width
 			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 			
-			if arc.direction = CCW then
+			if arc_2.direction = CCW then
 
 				cairo.arc (
 					context.cr,
-					xc		=> transpose_x (arc.center.x),
-					yc		=> transpose_y (arc.center.y),
-					radius	=> type_view_coordinate (arc.radius),
-					angle1	=> type_view_coordinate (to_radians (arc.angle_start)),
-					angle2	=> type_view_coordinate (to_radians (arc.angle_end))
+					xc		=> transpose_x (arc_2.center.x),
+					yc		=> transpose_y (arc_2.center.y),
+					radius	=> type_view_coordinate (arc_2.radius),
+					angle1	=> type_view_coordinate (to_radians (arc_2.angle_start)),
+					angle2	=> type_view_coordinate (to_radians (arc_2.angle_end))
 					);
 
 			else
 				
 				cairo.arc_negative (
 					context.cr,
-					xc		=> transpose_x (arc.center.x),
-					yc		=> transpose_y (arc.center.y),
-					radius	=> type_view_coordinate (arc.radius),
-					angle1	=> type_view_coordinate (to_radians (arc.angle_start)),
-					angle2	=> type_view_coordinate (to_radians (arc.angle_end))
+					xc		=> transpose_x (arc_2.center.x),
+					yc		=> transpose_y (arc_2.center.y),
+					radius	=> type_view_coordinate (arc_2.radius),
+					angle1	=> type_view_coordinate (to_radians (arc_2.angle_start)),
+					angle2	=> type_view_coordinate (to_radians (arc_2.angle_end))
 					);
 			end if;
 
 			cairo.stroke (context.cr);
 		end draw_arc;
 
-		procedure draw_circle (c : in type_circles.cursor) is begin
+		procedure draw_circle (c : in type_circles.cursor) is 
+			center : type_point := element (c).center;
+		begin
 			
 			-- set line width
 			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 
 			cairo.new_sub_path (context.cr); -- required to suppress an initial line
 
+			-- We have to rotate just the center of the circle:
+			rotate (center, unit_rotation);
+			
 			cairo.arc (
 				cr		=> context.cr,
-				xc		=> transpose_x (element (c).center.x),
-				yc		=> transpose_y (element (c).center.y),
+				xc		=> transpose_x (x (center)),
+				yc		=> transpose_y (y (center)),
 				radius	=> type_view_coordinate (element (c).radius),
 
 				-- it must be a full circle starting at 0 degree and ending at 360 degree:
@@ -360,6 +375,8 @@ procedure draw_units (
 		procedure draw_text (c : in type_texts.cursor) is 
 			position : type_point := element (c).position;
 		begin
+			-- Rotate the position of the text.
+			-- NOTE: This does NOT rotate the text itelf.
 			rotate (position, unit_rotation);
 			
 			pac_draw_misc.draw_text 
@@ -380,9 +397,20 @@ procedure draw_units (
 			use et_text;
 			use et_devices;
 			position : type_point;
-		begin
 
-			-- If operator has moved or rotate the placeholder in the schematic,
+			-- In order to rotate the position of a placeholder we use this function.
+			-- NOTE: It does NOT rotate the text itself. It just rotates the position
+			-- around the center of the symbol:
+			function rotate (p : in type_point) return type_point is
+				result : type_point := p;
+			begin
+				rotate (result, unit_rotation);
+				return result;
+			end;
+				
+		begin -- draw_placeholders
+
+			-- If operator has moved or rotated the placeholder in the schematic,
 			-- then the position and rotation of the placeholder in the schematic
 			-- is used. Otherwise the default position and rotation as given in
 			-- the symbol is used.
@@ -390,8 +418,7 @@ procedure draw_units (
 			-- DEVICE NAME:
 			if moved_by_operator (symbol.name) then
 
-				position := sch_placeholder_name.position;
-				rotate (position, unit_rotation);
+				position := rotate (sch_placeholder_name.position);
 				
 				pac_draw_misc.draw_text (
 					context		=> context,
@@ -405,8 +432,7 @@ procedure draw_units (
 
 			else -- use defaults from library symbol
 
-				position := symbol.name.position;
-				rotate (position, unit_rotation);
+				position := rotate (symbol.name.position);
 				
 				pac_draw_misc.draw_text (
 					context		=> context,
@@ -425,23 +451,21 @@ procedure draw_units (
 			if not is_empty (device_value) then
 				if moved_by_operator (symbol.value) then
 
-					position := sch_placeholder_value.position;
-					rotate (position, unit_rotation);
+					position := rotate (sch_placeholder_value.position);
 					
 					pac_draw_misc.draw_text (
 						context		=> context,
 						text		=> pac_text.type_text (symbol.value),
 						content		=> to_content (to_string (device_value)), -- 100R
 						size		=> symbol.value.size,
-						x			=> transpose_x (x (sch_placeholder_value.position)),
-						y			=> transpose_y (y (sch_placeholder_value.position)),
+						x			=> transpose_x (x (position)),
+						y			=> transpose_y (y (position)),
 						rotation	=> sch_placeholder_value.rotation,
 						alignment	=> sch_placeholder_value.alignment);
 					
 				else -- use defaults from library symbol
 
-					position := symbol.value.position;
-					rotate (position, unit_rotation);
+					position := rotate (symbol.value.position);
 					
 					pac_draw_misc.draw_text (
 						context		=> context,
@@ -462,17 +486,22 @@ procedure draw_units (
 
 				if moved_by_operator (symbol.purpose) then
 
+					position := rotate (sch_placeholder_purpose.position);
+					
 					pac_draw_misc.draw_text (
 						context		=> context,
 						text		=> pac_text.type_text (symbol.purpose),
 						content		=> to_content (to_string (device_purpose)), -- "brightness control"
 						size		=> symbol.purpose.size,
-						x			=> transpose_x (x (sch_placeholder_purpose.position)),
-						y			=> transpose_y (y (sch_placeholder_purpose.position)),
+						x			=> transpose_x (x (position)),
+						y			=> transpose_y (y (position)),
 						rotation	=> sch_placeholder_purpose.rotation,
 						alignment	=> sch_placeholder_purpose.alignment);
 
 				else -- use defaults from library symbol
+
+					position := rotate (symbol.purpose.position);
+					
 					pac_draw_misc.draw_text (
 						context		=> context,
 						text		=> pac_text.type_text (symbol.purpose),
@@ -492,6 +521,8 @@ procedure draw_units (
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 			cairo.set_line_width (context.cr, type_view_coordinate (origin_line_width));
 
+			-- NOTE: The origin is never rotated.
+			
 			-- horizontal line from left to right
 			cairo.move_to (
 				context.cr,

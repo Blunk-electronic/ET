@@ -1064,6 +1064,16 @@ package body et_geometry is
 			end if;
 		end;
 
+		-- Rotates an arc around the origin.
+		procedure rotate (
+			arc			: in out type_arc;
+			rotation	: in type_rotation) is
+		begin
+			rotate (arc.center, rotation);
+			rotate (arc.start_point, rotation);
+			rotate (arc.end_point, rotation);
+		end;
+		
 		function to_arc_angles (arc : in type_arc) return type_arc_angles is
 		-- Returns the start and end angles of an arc.
 			result : type_arc_angles;
@@ -1363,6 +1373,13 @@ package body et_geometry is
 			move (point => arc.end_point,   offset => offset);
 		end move_to;
 
+		-- Rotates a circle around the origin.
+		procedure rotate (
+			circle		: in out type_circle;
+			rotation	: in type_rotation) is
+		begin
+			rotate (circle.center, rotation);
+		end;
 		
 		function boundaries (circle : in type_circle) return type_boundaries is
 			result : type_boundaries;
