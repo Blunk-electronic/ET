@@ -780,6 +780,16 @@ package body et_geometry is
 				left.greatest_y := right.greatest_y;
 			end if;
 		end union;
+
+		-- Rotates a line around the origin.
+		procedure rotate (
+			line		: in out type_line;
+			rotation	: in type_rotation) 
+		is begin
+			rotate (line.start_point, rotation);
+			rotate (line.end_point, rotation);
+		end rotate;
+
 		
 		function boundaries (line : in type_line) return type_boundaries is begin
 			return boundaries (line.start_point, line.end_point);

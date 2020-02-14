@@ -381,6 +381,11 @@ package et_geometry is
 			-- CS locked : type_locked;
 		end record;
 
+		-- Rotates a line around the origin.
+		procedure rotate (
+			line		: in out type_line;
+			rotation	: in type_rotation);
+		
 		function boundaries (line : in type_line) return type_boundaries;
 		-- Returns the boundaries of the given line.
 		

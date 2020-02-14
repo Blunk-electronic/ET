@@ -182,16 +182,21 @@ procedure draw_units (
 
 		-- Transposes the x-value from the drawing to the view.
 		function transpose_x (x : in type_distance) return type_view_coordinate is begin
-			return convert_x (x - boundaries.smallest_x);
+			--return convert_x (x - boundaries.smallest_x);
+			return convert_x (x);
 		end;
 
 		-- Transposes the y-value from the drawing to the view.
 		function transpose_y (y : in type_distance) return type_view_coordinate is begin
-			return convert_y (abs (y - boundaries.greatest_y));
+			--return convert_y (abs (y - boundaries.greatest_y));
+			return convert_y (- y);
 		end;
 		
-		procedure draw_line (c : in type_lines.cursor) is begin
-
+		procedure draw_line (c : in type_lines.cursor) is 
+			type type_line is new pac_shapes.type_line with null record;
+			line : type_line := (pac_shapes.type_line (element (c)) with null record);
+		begin
+			rotate (line, unit_rotation);
 			--put_line ("width " & to_string (element (c).width));
 			
 			-- set line width
@@ -200,15 +205,15 @@ procedure draw_units (
 			-- start point
 			cairo.move_to (
 				context.cr,
-				transpose_x (element (c).start_point.x),
-				transpose_y (element (c).start_point.y)
+				transpose_x (x (line.start_point)),
+				transpose_y (y (line.start_point))
 				);
 
 			-- end point
 			cairo.line_to (
 				context.cr,
-				transpose_x (element (c).end_point.x),
-				transpose_y (element (c).end_point.y)
+				transpose_x (x (line.end_point)),
+				transpose_y (y (line.end_point))
 				);
 
 			cairo.stroke (context.cr);
@@ -271,6 +276,7 @@ procedure draw_units (
 		end draw_circle;
 
 		procedure draw_port (c : in type_ports.cursor) is
+			start_point : type_point := element (c).position;
 			end_point : type_point := element (c).position;
 		begin
 			-- A port is basically a line. Its start point is the port position.
@@ -288,10 +294,12 @@ procedure draw_units (
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 			
 			-- We start drawing at the port position:
+			rotate (start_point, unit_rotation);
+			
 			cairo.move_to (
 				context.cr,
-				transpose_x (element (c).position.x),
-				transpose_y (element (c).position.y)
+				transpose_x (x (start_point)),
+				transpose_y (y (start_point))
 				);
 
 			-- set the end point
@@ -312,6 +320,8 @@ procedure draw_units (
 			end if;
 
 			-- draw the end point
+			rotate (end_point, unit_rotation);
+			
 			cairo.line_to (
 				context.cr,
 				transpose_x (end_point.x),
@@ -330,8 +340,8 @@ procedure draw_units (
 			cairo.new_sub_path (context.cr); -- required to suppress an initial line
 			cairo.arc (
 				cr		=> context.cr,
-				xc		=> transpose_x (element (c).position.x),
-				yc		=> transpose_y (element (c).position.y),
+				xc		=> transpose_x (x (start_point)),
+				yc		=> transpose_y (y (start_point)),
 				radius	=> type_view_coordinate (port_circle_radius),
 
 				-- it must be a full circle starting at 0 degree and ending at 360 degree:
@@ -347,15 +357,19 @@ procedure draw_units (
 
 		-- This procedure draws fixed texts like "MUX" or "CT16" as they 
 		-- are frequently placed inside symbols:
-		procedure draw_text (c : in type_texts.cursor) is begin
+		procedure draw_text (c : in type_texts.cursor) is 
+			position : type_point := element (c).position;
+		begin
+			rotate (position, unit_rotation);
+			
 			pac_draw_misc.draw_text 
 				(
 				context		=> context,
 				text		=> pac_text.type_text (element (c)),
 				content		=> element (c).content,
 				size		=> element (c).size,
-				x			=> transpose_x (element (c).position.x),
-				y			=> transpose_y (element (c).position.y),
+				x			=> transpose_x (x (position)),
+				y			=> transpose_y (y (position)),
 				rotation	=> element (c).rotation,
 				alignment	=> element (c).alignment
 				);
@@ -365,6 +379,7 @@ procedure draw_units (
 		procedure draw_placeholders is 
 			use et_text;
 			use et_devices;
+			position : type_point;
 		begin
 
 			-- If operator has moved or rotate the placeholder in the schematic,
@@ -375,24 +390,31 @@ procedure draw_units (
 			-- DEVICE NAME:
 			if moved_by_operator (symbol.name) then
 
+				position := sch_placeholder_name.position;
+				rotate (position, unit_rotation);
+				
 				pac_draw_misc.draw_text (
 					context		=> context,
 					text		=> pac_text.type_text (symbol.name),
 					content		=> to_content (to_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
 					size		=> symbol.name.size,
-					x			=> transpose_x (x (sch_placeholder_name.position)),
-					y			=> transpose_y (y (sch_placeholder_name.position)),
+					x			=> transpose_x (x (position)),
+					y			=> transpose_y (y (position)),
 					rotation	=> sch_placeholder_name.rotation,
 					alignment	=> sch_placeholder_name.alignment);
 
 			else -- use defaults from library symbol
+
+				position := symbol.name.position;
+				rotate (position, unit_rotation);
+				
 				pac_draw_misc.draw_text (
 					context		=> context,
 					text		=> pac_text.type_text (symbol.name),
 					content		=> to_content (to_full_name (device_name, unit_name, unit_count)),
 					size		=> symbol.name.size,
-					x			=> transpose_x (x (symbol.name.position)),
-					y			=> transpose_y (y (symbol.name.position)),
+					x			=> transpose_x (x (position)),
+					y			=> transpose_y (y (position)),
 					rotation	=> symbol.name.rotation,
 					alignment	=> symbol.name.alignment);
 
@@ -403,6 +425,9 @@ procedure draw_units (
 			if not is_empty (device_value) then
 				if moved_by_operator (symbol.value) then
 
+					position := sch_placeholder_value.position;
+					rotate (position, unit_rotation);
+					
 					pac_draw_misc.draw_text (
 						context		=> context,
 						text		=> pac_text.type_text (symbol.value),
@@ -414,13 +439,17 @@ procedure draw_units (
 						alignment	=> sch_placeholder_value.alignment);
 					
 				else -- use defaults from library symbol
+
+					position := symbol.value.position;
+					rotate (position, unit_rotation);
+					
 					pac_draw_misc.draw_text (
 						context		=> context,
 						text		=> pac_text.type_text (symbol.value),
 						content		=> to_content (to_string (device_value)),
 						size		=> symbol.value.size,
-						x			=> transpose_x (x (symbol.value.position)),
-						y			=> transpose_y (y (symbol.value.position)),
+						x			=> transpose_x (x (position)),
+						y			=> transpose_y (y (position)),
 						rotation	=> symbol.value.rotation,
 						alignment	=> symbol.value.alignment);
 
@@ -491,6 +520,11 @@ procedure draw_units (
 
 			cairo.stroke (context.cr);
 		end draw_origin;
+
+		-- Build the center point of the symbol:
+		center : constant type_point := type_point (set (
+			x	=> self.drawing.frame_bounding_box.x + x (position),
+			y	=> et_coordinates.type_distance (self.drawing.frame.size.y) - y (position) + self.drawing.frame_bounding_box.y));
 		
 	begin -- draw_symbol
 		-- The unit might have been rotated. So the boundaries must be computed anew:
@@ -520,42 +554,31 @@ procedure draw_units (
 			-- of the symbol bounding box (in the non-rotated state).
 			-- Further-on the drawing must be offset by the position
 			-- of the frame_bounding_box:
-			translate (
-				context.cr,
-				convert_x (self.drawing.frame_bounding_box.x 
-						+ bounding_box.x 
-
-						-- compensate the rotatation of the bounding box:
-						+ x (boundaries.distance_of_topleft_to_default)),
-				
-				convert_y (self.drawing.frame_bounding_box.y 
-						+ bounding_box.y 
-
-						 -- compensates the rotatation of the bounding box:   
-						+ y (boundaries.distance_of_topleft_to_default))
-					  );
-
-
 -- 			translate (
 -- 				context.cr,
 -- 				convert_x (self.drawing.frame_bounding_box.x 
 -- 						+ bounding_box.x 
 -- 
 -- 						-- compensate the rotatation of the bounding box:
--- 						+ x (boundaries.distance_of_topleft_to_default)
--- 						+ boundaries.smallest_x),
+-- 						+ x (boundaries.distance_of_topleft_to_default)),
 -- 				
 -- 				convert_y (self.drawing.frame_bounding_box.y 
 -- 						+ bounding_box.y 
 -- 
 -- 						 -- compensates the rotatation of the bounding box:   
--- 						+ y (boundaries.distance_of_topleft_to_default)
--- 						+ boundaries.greatest_y)
+-- 						+ y (boundaries.distance_of_topleft_to_default))
 -- 					  );
 
-			
--- 			cairo.rotate (context.cr, gdouble (to_radians (-90.0)));
+-- 			put_line (to_string (center));
 
+			-- Prepare the current transformation matrix (CTM) so that
+			-- all following drawing is relative to the center of the symbol:
+			translate (
+				context.cr,
+				convert_x (x (center)),	
+				convert_y (y (center)));
+
+			
 			-- SYMBOL BODY
 			-- set color
 			cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
