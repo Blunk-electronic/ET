@@ -382,7 +382,7 @@ procedure draw_units (
 			position : type_point := element (c).position;
 		begin
 			-- Rotate the position of the text.
-			-- NOTE: This does NOT rotate the text itelf.
+			-- This adds the unit_rotation to the given rotation.
 			rotate (position, unit_rotation);
 			
 			pac_draw_misc.draw_text 
@@ -393,7 +393,8 @@ procedure draw_units (
 				size		=> element (c).size,
 				x			=> transpose_x (x (position)),
 				y			=> transpose_y (y (position)),
-				rotation	=> element (c).rotation,
+				rotation	=> element (c).rotation + unit_rotation,
+				fixed		=> true,
 				alignment	=> element (c).alignment
 				);
 		end draw_text;
@@ -433,7 +434,8 @@ procedure draw_units (
 					size		=> symbol.name.size,
 					x			=> transpose_x (x (position)),
 					y			=> transpose_y (y (position)),
-					rotation	=> sch_placeholder_name.rotation,
+					rotation	=> sch_placeholder_name.rotation + unit_rotation,
+					fixed		=> false,
 					alignment	=> sch_placeholder_name.alignment);
 
 			else -- use defaults from library symbol
@@ -447,7 +449,8 @@ procedure draw_units (
 					size		=> symbol.name.size,
 					x			=> transpose_x (x (position)),
 					y			=> transpose_y (y (position)),
-					rotation	=> symbol.name.rotation,
+					rotation	=> symbol.name.rotation + unit_rotation,
+					fixed		=> false,
 					alignment	=> symbol.name.alignment);
 
 			end if;
@@ -466,7 +469,8 @@ procedure draw_units (
 						size		=> symbol.value.size,
 						x			=> transpose_x (x (position)),
 						y			=> transpose_y (y (position)),
-						rotation	=> sch_placeholder_value.rotation,
+						rotation	=> sch_placeholder_value.rotation + unit_rotation,
+						fixed		=> false,
 						alignment	=> sch_placeholder_value.alignment);
 					
 				else -- use defaults from library symbol
@@ -480,7 +484,8 @@ procedure draw_units (
 						size		=> symbol.value.size,
 						x			=> transpose_x (x (position)),
 						y			=> transpose_y (y (position)),
-						rotation	=> symbol.value.rotation,
+						rotation	=> symbol.value.rotation + unit_rotation,
+						fixed		=> false,
 						alignment	=> symbol.value.alignment);
 
 				end if;
@@ -501,7 +506,8 @@ procedure draw_units (
 						size		=> symbol.purpose.size,
 						x			=> transpose_x (x (position)),
 						y			=> transpose_y (y (position)),
-						rotation	=> sch_placeholder_purpose.rotation,
+						rotation	=> sch_placeholder_purpose.rotation + unit_rotation,
+						fixed		=> false,						
 						alignment	=> sch_placeholder_purpose.alignment);
 
 				else -- use defaults from library symbol
@@ -515,7 +521,8 @@ procedure draw_units (
 						size		=> symbol.purpose.size,
 						x			=> transpose_x (x (symbol.purpose.position)),
 						y			=> transpose_y (y (symbol.purpose.position)),
-						rotation	=> symbol.purpose.rotation,
+						rotation	=> symbol.purpose.rotation + unit_rotation,
+						fixed		=> false,						
 						alignment	=> symbol.purpose.alignment);
 
 				end if;

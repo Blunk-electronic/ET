@@ -146,6 +146,7 @@ package pac_draw is
 		size		: in pac_text.type_text_size;
 		x,y			: in gdouble;
 		rotation	: in type_rotation;
+		fixed		: in boolean;
 		alignment	: in type_text_alignment);
 	
 -- 	procedure draw_text (

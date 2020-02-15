@@ -343,13 +343,12 @@ package body pac_draw is
 		size		: in pac_text.type_text_size;
 		x,y			: in gdouble;
 		rotation	: in type_rotation;
+		fixed		: in boolean;
 		alignment	: in type_text_alignment) is
 
 		use cairo;
--- 		matrix2 : cairo_matrix_access;
+
 	begin
--- 		get_matrix (context.cr, matrix2);
-		
 		cairo.select_font_face (
 			context.cr, 
 			family	=> "monospace", -- serif",
@@ -359,24 +358,35 @@ package body pac_draw is
 		save (context.cr);
 
 		cairo.set_font_size (context.cr, (to_points (size)));
-		
--- 		cairo.translate (context.cr, -x, -y);
-		
--- 		cairo.rotate (context.cr, gdouble (to_radians (rotation)));
--- 		cairo.translate (context.cr, x, y);
 
-		cairo.move_to (context.cr, x, y);
--- 		cairo.move_to (context.cr, 0.0, 0.0);
+		if fixed then
+			-- In cairo all angles increase in clockwise direction.
+			-- Since our angles increase in counterclockwise direction (mathematically)
+			-- the angle must change the sign.		
+			cairo.rotate (context.cr, gdouble (to_radians (- rotation)));
 
+			cairo.move_to (context.cr, x, y);
+		else
+			-- The text must be placed and rotated relative
+			-- to the given x and y:
+			translate (context.cr, x, y);
+
+			-- In cairo all angles increase in clockwise direction.
+			-- Since our angles increase in counterclockwise direction (mathematically)
+			-- the angle must change the sign.		
+			cairo.rotate (context.cr, gdouble (to_radians (- rotation)));
+
+			-- Place the text without any offset right at given x and y:
+			cairo.move_to (context.cr, 0.0, 0.0);
+		end if;
 			
 		cairo.show_text (context.cr, to_string (content));
 
 
-		-- CS alignment, rotation. http://zetcode.com/gfx/cairo/cairotext/
+		-- CS alignment. http://zetcode.com/gfx/cairo/cairotext/
 
 		restore (context.cr);
 
--- 		set_matrix (context.cr, matrix2);
 	end draw_text;
 	
 end pac_draw;
