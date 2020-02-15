@@ -136,20 +136,23 @@ procedure draw_units (
 		-- First we take a copy the boundaries of the symbol.
 		boundaries : geometry.type_boundaries := symbol.boundaries;
 
-		-- In the next steps the boundaries are to be extended.
-		-- Reason: The operator may have changed positions of
-		-- placeholders (for name, value and purpose) from their initial
-		-- position as specified in the symbol model. So the boundaries
-		-- may have become wider.
-		-- Other things like lines, arcs, ports and texts can't be moved separately in the 
-		-- schematic editor. They already have been included in the bounding box.
-		-- See procedure et_symbols.compute_boundaries for details.
-
-		-- This is the bounding box required for drawing the symbol. The bounding
-		-- box exists in the model only.
-		bounding_box : type_rectangle;
+		-- This is the bounding box required for drawing the symbol.
+		-- The sole purpose of the bounding box is to draw the symbol
+		-- only in case it is inside the given area or if it intersects
+		-- the given area. This way we avoid it to be drawn on the cairo
+		-- context if it is outside the area -> saves computing time.
+		bounding_box : type_rectangle; -- model coordinates
 		
 		procedure make_bounding_box is begin
+			-- In the next steps the boundaries are to be extended.
+			-- Reason: The operator may have changed positions of
+			-- placeholders (for name, value and purpose) from their initial
+			-- position as specified in the symbol model. So the boundaries
+			-- may have become wider.
+			-- Other things like lines, arcs, ports and texts can't be moved separately in the 
+			-- schematic editor. They already have been included in the bounding box.
+			-- See procedure et_symbols.compute_boundaries for details.
+			
 			-- In case the symbol belongs to a real device, probe placeholders and
 			-- update boundaries. If a placeholder is inside the boundaries,
 			-- nothing happens -> The boundaries are NOT changed.
@@ -232,32 +235,36 @@ procedure draw_units (
 
 			-- Convert the arc to an arc that uses angles instead of start and end point:
 			arc_2 := to_arc_angles (arc_1);
+			arc_2.direction := element (c).direction;
 			
 			cairo.new_sub_path (context.cr); -- required to suppress an initial line
 
 			-- set line width
 			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
-			
-			if arc_2.direction = CCW then
 
+			-- Draw the arc. In cairo all angles increase in clockwise direction.
+			-- Since our angles increase in counterclockwise direction (mathematically)
+			-- all angles must change the sign.
+			if arc_2.direction = CW then -- clockwise
+				
 				cairo.arc (
 					context.cr,
 					xc		=> transpose_x (arc_2.center.x),
 					yc		=> transpose_y (arc_2.center.y),
 					radius	=> type_view_coordinate (arc_2.radius),
-					angle1	=> type_view_coordinate (to_radians (arc_2.angle_start)),
-					angle2	=> type_view_coordinate (to_radians (arc_2.angle_end))
+					angle1	=> type_view_coordinate (to_radians (- arc_2.angle_start)),
+					angle2	=> type_view_coordinate (to_radians (- arc_2.angle_end))
 					);
 
-			else
+			else -- counterclockwise
 				
 				cairo.arc_negative (
 					context.cr,
 					xc		=> transpose_x (arc_2.center.x),
 					yc		=> transpose_y (arc_2.center.y),
 					radius	=> type_view_coordinate (arc_2.radius),
-					angle1	=> type_view_coordinate (to_radians (arc_2.angle_start)),
-					angle2	=> type_view_coordinate (to_radians (arc_2.angle_end))
+					angle1	=> type_view_coordinate (to_radians (- arc_2.angle_start)),
+					angle2	=> type_view_coordinate (to_radians (- arc_2.angle_end))
 					);
 			end if;
 
@@ -267,7 +274,6 @@ procedure draw_units (
 		procedure draw_circle (c : in type_circles.cursor) is 
 			center : type_point := element (c).center;
 		begin
-			
 			-- set line width
 			cairo.set_line_width (context.cr, type_view_coordinate (element (c).width));
 
@@ -554,11 +560,22 @@ procedure draw_units (
 
 		-- Build the center point of the symbol:
 		center : constant type_point := type_point (set (
-			x	=> self.drawing.frame_bounding_box.x + x (position),
-			y	=> et_coordinates.type_distance (self.drawing.frame.size.y) - y (position) + self.drawing.frame_bounding_box.y));
+			x	=> 	x (position)
+					+ self.drawing.frame_bounding_box.x, -- shift right by the x position of the frame
+
+			-- y must be transposed from the drawing plane (y-axis going upwards)
+			-- to the view plane (y-axis going downwards):
+			-- (Height of drawing frame) - y + (position of frame):
+			y	=> 		et_coordinates.type_distance (self.drawing.frame.size.y)
+					- 	y (position)
+					+	self.drawing.frame_bounding_box.y) -- shift down by frame position
+			);
 		
 	begin -- draw_symbol
-		-- The unit might have been rotated. So the boundaries must be computed anew:
+		-- The unit might have been rotated. So the boundaries must be computed anew.
+		-- It may happen that the boundaries are aftewards wider than actually required.
+		-- This results in a drawing box being greater than required.
+		-- This in turn causes the symbol to be drawn even if it is not in the given area.
 		if unit_rotation /= zero_rotation then
 -- 			put_line (to_string (boundaries));
 -- 			put_line ("unit rotated by" & to_string (unit_rotation));
@@ -579,28 +596,6 @@ procedure draw_units (
 			or else intersects (in_area, bounding_box)) 
 		then
 			save (context.cr);
-			
-			-- Prepare the current transformation matrix (CTM) so that
-			-- all following drawing is relative to the upper left corner
-			-- of the symbol bounding box (in the non-rotated state).
-			-- Further-on the drawing must be offset by the position
-			-- of the frame_bounding_box:
--- 			translate (
--- 				context.cr,
--- 				convert_x (self.drawing.frame_bounding_box.x 
--- 						+ bounding_box.x 
--- 
--- 						-- compensate the rotatation of the bounding box:
--- 						+ x (boundaries.distance_of_topleft_to_default)),
--- 				
--- 				convert_y (self.drawing.frame_bounding_box.y 
--- 						+ bounding_box.y 
--- 
--- 						 -- compensates the rotatation of the bounding box:   
--- 						+ y (boundaries.distance_of_topleft_to_default))
--- 					  );
-
--- 			put_line (to_string (center));
 
 			-- Prepare the current transformation matrix (CTM) so that
 			-- all following drawing is relative to the center of the symbol:
@@ -608,7 +603,6 @@ procedure draw_units (
 				context.cr,
 				convert_x (x (center)),	
 				convert_y (y (center)));
-
 			
 			-- SYMBOL BODY
 			-- set color
@@ -633,7 +627,7 @@ procedure draw_units (
 				draw_placeholders;
 			end if;
 
-			-- draw origin
+			-- draw origin (the crosshair) at the center of the symbol
 			draw_origin;
 			
 

@@ -1076,6 +1076,8 @@ package body et_geometry is
 		
 		function to_arc_angles (arc : in type_arc) return type_arc_angles is
 		-- Returns the start and end angles of an arc.
+		-- The angles may be negative. For example instead of 270 degree
+		-- the angle will be -90 degree.
 			result : type_arc_angles;
 
 			package functions is new ada.numerics.generic_elementary_functions (float);
