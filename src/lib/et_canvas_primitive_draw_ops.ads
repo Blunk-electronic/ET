@@ -149,7 +149,7 @@ package pac_draw is
 		content		: in type_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		x,y			: in gdouble;
-		rotation	: in type_rotation;
+		rotation	: in pac_shapes.geometry.type_rotation;
 -- 		rigid		: in type_rigid_text;
 		alignment	: in type_text_alignment);
 	

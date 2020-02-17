@@ -183,6 +183,17 @@ package body et_text is
 				& to_string (text.alignment)
 				;
 		end text_properties;
+
+		procedure warning_rotation_outside_range is
+			use et_string_processing;
+	-- 		use et_coordinates.geometry;
+		begin
+			log (WARNING,
+				"rotation of text outside range " 
+				& type_rotation'image (type_rotation_documentation'first) & " .. " 
+				& type_rotation'image (type_rotation_documentation'last) & " !");
+		end;
+
 		
 	end text;
 

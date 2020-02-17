@@ -131,7 +131,7 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
-		rotation		: in et_coordinates.type_rotation_text; -- absolute ! -- 90
+		rotation		: in pac_text.type_rotation_documentation; -- absolute ! -- 90
 		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level);
 

@@ -1749,8 +1749,8 @@ package body et_kicad is
 			begin -- to_text
 				text.rotation := to_degrees (f (line,2));
 -- 				if text.rotation not in type_rotation_text then
-				if text.rotation'valid then
-					warning_angle_greater_90_degrees;
+				if text.rotation'valid then -- CS should be "if not text.rotation'valid" ?
+					pac_text.warning_rotation_outside_range;
 				end if;
 				
 				--set_x (text.position, mil_to_distance (mil => f (line,3)));

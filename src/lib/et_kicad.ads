@@ -190,7 +190,8 @@ package et_kicad is
 		size_default		=> text_size_default,
 		line_width_min		=> text_line_width_min,
 		line_width_max		=> text_line_width_max,
-		line_width_default	=> text_line_width_default
+		line_width_default	=> text_line_width_default,
+		type_rotation		=> et_coordinates.type_rotation
 		);
 
 	-- These are basic properties a text has got:

@@ -94,9 +94,9 @@ package et_coordinates is
 	rotation_relative_max : constant type_rotation := 180.0;	
 	subtype type_rotation_relative is type_rotation range rotation_relative_min .. rotation_relative_max;
 
-	rotation_text_min : constant := 0.0;
-	rotation_text_max : constant := 90.0;
-	subtype type_rotation_text is type_rotation range rotation_text_min .. rotation_text_max;
+-- 	rotation_text_min : constant := 0.0;
+-- 	rotation_text_max : constant := 90.0;
+-- 	subtype type_rotation_text is type_rotation range rotation_text_min .. rotation_text_max;
 	-- CS: make use of this type by membership tests when required
 
 

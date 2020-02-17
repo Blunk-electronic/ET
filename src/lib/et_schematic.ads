@@ -80,7 +80,17 @@ package et_schematic is
 	
 	use pac_shapes;
 
-	
+	package pac_text is new et_text.text (
+		type_distance		=> et_coordinates.type_distance,
+		size_min			=> et_symbols.text_size_min,
+		size_max			=> et_symbols.text_size_max,
+		size_default		=> et_symbols.text_size_default,
+		line_width_min		=> et_symbols.text_line_width_min,
+		line_width_max		=> et_symbols.text_line_width_max,
+		line_width_default	=> et_symbols.text_line_width_default,
+		type_rotation		=> et_coordinates.type_rotation
+		);
+
 -- TEXT FIELD
 
 	-- A text/note in the schematic:
@@ -227,7 +237,7 @@ package et_schematic is
 	
 	type type_net_label_base is tagged record
 		position	: et_coordinates.geometry.type_point;
-		rotation	: et_coordinates.type_rotation_text := et_coordinates.geometry.zero_rotation;
+		rotation	: pac_text.type_rotation_documentation := pac_text.type_rotation_documentation'first;
         size		: et_symbols.pac_text.type_text_size := et_symbols.text_size_default;
         style		: et_symbols.type_text_style := et_symbols.type_text_style'first;
 		width		: et_symbols.type_text_line_width := et_symbols.type_text_line_width'first;

@@ -134,7 +134,8 @@ package et_packages is
 		size_default		=> text_size_default,
 		line_width_min		=> line_width_min,
 		line_width_max		=> line_width_max,
-		line_width_default	=> line_width_default
+		line_width_default	=> line_width_default,
+		type_rotation		=> type_rotation
 		);
 
 	subtype type_general_line_width is type_distance_positive range line_width_min .. line_width_max;

@@ -53,15 +53,6 @@ with et_coordinates;			use et_coordinates;
 package body kicad_coordinates is
 	use geometry;
 	
-	procedure warning_angle_greater_90_degrees is
-		use et_string_processing;
-		use et_coordinates.geometry;
-	begin
-		log (WARNING,
-			"rotation of text outside range " 
-			& to_string (rotation => rotation_text_min) & " .. " & to_string (rotation => rotation_text_max) & " !");
-	end warning_angle_greater_90_degrees;
-	
 	function to_string (schematic : in type_schematic_file_name.bounded_string) return string is begin
 		return type_schematic_file_name.to_string (schematic);
 	end;

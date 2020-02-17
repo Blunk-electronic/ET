@@ -79,7 +79,8 @@ package et_symbols is
 		size_default		=> text_size_default,
 		line_width_min		=> text_line_width_min,
 		line_width_max		=> text_line_width_max,
-		line_width_default	=> text_line_width_default
+		line_width_default	=> text_line_width_default,
+		type_rotation		=> type_rotation
 		);
 
 	
@@ -111,7 +112,7 @@ package et_symbols is
 	-- These are basic properties a text has got:
 	type type_text_basic is new pac_text.type_text with record
         style		: type_text_style := type_text_style'first;
-        rotation	: type_rotation_text := 0.0;
+        rotation	: pac_text.type_rotation_documentation := pac_text.type_rotation_documentation'first;
 	end record;
 	
 	-- This is a placeholder for a text. It does not have content yet, but a meaning:

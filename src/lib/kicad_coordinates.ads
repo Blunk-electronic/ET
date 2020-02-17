@@ -50,9 +50,6 @@ with et_coordinates;			use et_coordinates;
 
 package kicad_coordinates is
 	
-	procedure warning_angle_greater_90_degrees;
-
-	
 	schematic_file_name_length : constant positive := 100; -- includes extension
 	package type_schematic_file_name is new generic_bounded_length (schematic_file_name_length); 
 

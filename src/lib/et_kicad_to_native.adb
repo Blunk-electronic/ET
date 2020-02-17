@@ -2533,7 +2533,7 @@ package body et_kicad_to_native is
 
 					-- For converting kicad rotation to native rotation:
 					use type et_coordinates.type_rotation;
-					rotation : et_coordinates.type_rotation_text;
+					rotation : et_schematic.pac_text.type_rotation_documentation;
 					
 				begin -- tag_and_simple_labels
 					log_indentation_up;

@@ -92,6 +92,9 @@ package et_text is
 		type type_distance is delta <>;
 		size_min, size_max, size_default : type_distance;
 		line_width_min, line_width_max, line_width_default : type_distance;
+
+		type type_rotation is delta <>;
+		
 	package text is
 
 		subtype type_text_size is type_distance range size_min .. size_max; -- in millimeters
@@ -114,7 +117,10 @@ package et_text is
 		function text_properties (text : in type_text) return string;
 		-- Returns the properties of the given text in a long single string.	
 
-			
+		subtype type_rotation_documentation is type_rotation range 0.0 .. 90.0;
+
+		procedure warning_rotation_outside_range;
+		
 	-- 	private
 
 	end text;
