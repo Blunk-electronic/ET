@@ -57,7 +57,7 @@ with et_string_processing;		use et_string_processing;
 with et_text;
 
 package body et_packages is
-	use shapes;
+	use pac_shapes;
 
 	function to_string (packge : in type_component_package_name.bounded_string) return string is
 	-- Returns the given package name as string.
@@ -341,19 +341,19 @@ package body et_packages is
 		case circle.filled is
 			when NO =>
 				return
-					shapes.to_string (type_circle (circle)) &
+					pac_shapes.to_string (type_circle (circle)) &
 					latin_1.space & et_text.keyword_line_width & to_string (circle.border_width);
 
 			when YES =>
 				case circle.fill_style is
 					when SOLID =>
 						return 
-							shapes.to_string (type_circle (circle)) &
+							pac_shapes.to_string (type_circle (circle)) &
 							latin_1.space & keyword_fill_style & latin_1.space & to_string (circle.fill_style);
 
 					when HATCHED =>
 						return
-							shapes.to_string (type_circle (circle)) &
+							pac_shapes.to_string (type_circle (circle)) &
 							latin_1.space & keyword_fill_style & latin_1.space & to_string (circle.fill_style) &
 							latin_1.space & keyword_hatching_line_width & to_string (circle.hatching.line_width) &
 							latin_1.space & keyword_hatching_line_spacing & to_string (circle.hatching.spacing);

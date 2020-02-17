@@ -249,9 +249,9 @@ package body et_kicad_to_native is
 			set (Y, new_y, point);
 		end move;
 
-		procedure move (polygon : in out et_packages.shapes.type_polygon_base'class) is
+		procedure move (polygon : in out et_packages.pac_shapes.type_polygon_base'class) is
 		-- Moves the segments of a polygon from the kicad frame to the ET native frame.
-			use et_packages.shapes;
+			use et_packages.pac_shapes;
 			use pac_polygon_lines;
 			use pac_polygon_arcs;
 			use pac_polygon_circles;
@@ -1630,7 +1630,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 				end move_circle;
 				
-				procedure move_polygon (polygon : in out shapes.type_polygon) is begin
+				procedure move_polygon (polygon : in out pac_shapes.type_polygon) is begin
 					log (text => keepout & "polygon segments", level => log_threshold + log_threshold_add);
 					move (polygon);
 				end move_polygon;

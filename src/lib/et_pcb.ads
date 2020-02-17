@@ -63,7 +63,7 @@ with et_frames;
 
 package et_pcb is
 	use et_pcb_coordinates.geometry;
-	use et_packages.shapes;
+	use et_packages.pac_shapes;
 	
 	-- VIAS
 	type type_micro_vias_allowed is (NO, YES);

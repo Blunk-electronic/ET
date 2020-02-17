@@ -122,17 +122,17 @@ package body pcb_rw is
 		write (keyword => keyword_width, parameters => to_string (width));
 	end;
 
-	procedure write_line (line : in et_packages.shapes.type_line'class) is
+	procedure write_line (line : in et_packages.pac_shapes.type_line'class) is
 	-- writes start and end point of a line
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 	begin
 		write (keyword => keyword_start, parameters => position (line.start_point));
 		write (keyword => keyword_end  , parameters => position (line.end_point));
 	end write_line;
 
-	procedure write_arc (arc : in et_packages.shapes.type_arc'class) is 
+	procedure write_arc (arc : in et_packages.pac_shapes.type_arc'class) is 
 	-- writes center, start and end point of an arc
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 	begin
 		write (keyword => keyword_center, parameters => position (arc.center));
 		write (keyword => keyword_start, parameters => position (arc.start_point));
@@ -140,9 +140,9 @@ package body pcb_rw is
 		write (keyword => et_geometry.keyword_direction, parameters => to_string (arc.direction));		
 	end write_arc;
 
-	procedure write_circle (circle : in et_packages.shapes.type_circle'class) is 
+	procedure write_circle (circle : in et_packages.pac_shapes.type_circle'class) is 
 	-- writes center and radius of a circle
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 	begin
 		write (keyword => keyword_center, parameters => position (circle.center));
 		write (keyword => keyword_radius, parameters => to_string (circle.radius));
@@ -210,8 +210,8 @@ package body pcb_rw is
 		write (keyword => keyword_fill_style, parameters => to_string (fill_style));
 	end;
 
-	procedure write_fill_status (filled : in et_packages.shapes.type_filled) is
-		use et_packages.shapes;
+	procedure write_fill_status (filled : in et_packages.pac_shapes.type_filled) is
+		use et_packages.pac_shapes;
 	begin
 		write (keyword => keyword_filled, parameters => to_string (filled));
 	end;
@@ -236,7 +236,7 @@ package body pcb_rw is
 	
 	procedure write_circle_fillable (circle : in et_packages.type_fillable_circle) is 
 		use et_packages;
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 	begin
 		circle_begin;
 		write_circle (circle);
@@ -263,7 +263,7 @@ package body pcb_rw is
 	procedure write_circle_copper (circle : in et_packages.type_copper_circle) is 
 	-- Writes the properties of a circle in copper as used in a package.
 		use et_packages;
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 	begin
 		circle_begin;
 		write_circle (circle);
@@ -289,7 +289,7 @@ package body pcb_rw is
 	procedure write_circle_copper (circle : in et_pcb.type_copper_circle) is 
 	-- Writes the properties of a circle in copper as used in a freetrack.		
 		use et_packages;
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 	begin
 		circle_begin;
 		write_circle (circle);
@@ -317,26 +317,26 @@ package body pcb_rw is
 	end write_circle_copper;
 
 	
-	procedure write_polygon_segments (polygon : in et_packages.shapes.type_polygon_base) is
+	procedure write_polygon_segments (polygon : in et_packages.pac_shapes.type_polygon_base) is
 	-- writes the segments of a polygon (lines, arcs and circles)
 		use et_packages;
-		use shapes.pac_polygon_lines;
-		use shapes.pac_polygon_arcs;
-		use shapes.pac_polygon_circles;		
+		use pac_shapes.pac_polygon_lines;
+		use pac_shapes.pac_polygon_arcs;
+		use pac_shapes.pac_polygon_circles;		
 		
-		procedure write_line (cursor : in shapes.pac_polygon_lines.cursor) is begin
+		procedure write_line (cursor : in pac_shapes.pac_polygon_lines.cursor) is begin
 			line_begin;
 			write_line (element (cursor));
 			line_end;
 		end;
 
-		procedure write_arc (cursor : in shapes.pac_polygon_arcs.cursor) is begin
+		procedure write_arc (cursor : in pac_shapes.pac_polygon_arcs.cursor) is begin
 			arc_begin;
 			write_arc (element (cursor));
 			arc_end;
 		end;
 
-		procedure write_circle (cursor : in shapes.pac_polygon_circles.cursor) is begin
+		procedure write_circle (cursor : in pac_shapes.pac_polygon_circles.cursor) is begin
 			circle_begin;
 			write_circle (element (cursor));
 			circle_end;
@@ -530,11 +530,11 @@ package body pcb_rw is
 -- BASIC GEOMETRIC OBJECTS USED IN PACKAGES AND BOARDS
 
 	procedure add_polygon_line (line : in out type_board_line) is
-		use et_packages.shapes;
-		use et_packages.shapes.pac_polygon_lines;
+		use et_packages.pac_shapes;
+		use et_packages.pac_shapes.pac_polygon_lines;
 
 		-- make a polygon line:
-		l : type_polygon_line := (et_packages.shapes.type_line (line) with others => <>);
+		l : type_polygon_line := (et_packages.pac_shapes.type_line (line) with others => <>);
 	begin
 		-- collect the polygon line 
 		append (polygon.segments.lines, l);
@@ -546,11 +546,11 @@ package body pcb_rw is
 
 	
 	procedure add_polygon_arc (arc : in out type_board_arc) is
-		use et_packages.shapes;
-		use et_packages.shapes.pac_polygon_arcs;
+		use et_packages.pac_shapes;
+		use et_packages.pac_shapes.pac_polygon_arcs;
 
 		-- make a polygon arc:
-		a : type_polygon_arc := (et_packages.shapes.type_arc (arc) with others => <>);
+		a : type_polygon_arc := (et_packages.pac_shapes.type_arc (arc) with others => <>);
 	begin
 		-- collect the polygon line 
 		append (polygon.segments.arcs, a);
@@ -562,11 +562,11 @@ package body pcb_rw is
 
 
 	procedure add_polygon_circle (circle : in out type_board_circle) is
-		use et_packages.shapes;
-		use et_packages.shapes.pac_polygon_circles;
+		use et_packages.pac_shapes;
+		use et_packages.pac_shapes.pac_polygon_circles;
 
 		-- make a polygon circle:
-		c : type_polygon_circle := (et_packages.shapes.type_circle (circle) with others => <>);
+		c : type_polygon_circle := (et_packages.pac_shapes.type_circle (circle) with others => <>);
 	begin
 		-- collect the polygon line 
 		append (polygon.segments.circles, c);
@@ -580,7 +580,7 @@ package body pcb_rw is
 	procedure read_board_line (line : et_string_processing.type_fields_of_line) is
 	-- Reads start and end point of the board_line. If the statement is invalid then an error issued.
 		kw : string := f (line, 1);
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_start then -- start x 22.3 y 23.3
@@ -603,7 +603,7 @@ package body pcb_rw is
 	function read_board_line (line : et_string_processing.type_fields_of_line) return boolean is
 	-- Reads start and end point of the board_line. If the statement is invalid then it returns a false.
 		kw : string := f (line, 1);
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
 			expect_field_count (line, 5);
@@ -627,7 +627,7 @@ package body pcb_rw is
 	procedure read_board_arc (line : et_string_processing.type_fields_of_line) is
 	-- Reads start and end point of the board_arc. If the statement is invalid then an error issued.
 		kw : string := f (line, 1);
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
 			expect_field_count (line, 5);
@@ -660,7 +660,7 @@ package body pcb_rw is
 	function read_board_arc (line : et_string_processing.type_fields_of_line) return boolean is
 	-- Reads start and end point of the board_arc. If the statement is invalid then it returns a false.
 		kw : string := f (line, 1);
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
 			expect_field_count (line, 5);
@@ -702,7 +702,7 @@ package body pcb_rw is
 	procedure read_board_circle (line : et_string_processing.type_fields_of_line) is
 	-- Reads start and end point of the board_circle. If the statement is invalid then an error issued.
 		kw : string := f (line, 1);
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_center then -- center x 150 y 45
@@ -723,7 +723,7 @@ package body pcb_rw is
 	function read_board_circle (line : et_string_processing.type_fields_of_line) return boolean is
 	-- Reads start and end point of the board_circle. If the statement is invalid then it returns a false.
 		kw : string := f (line, 1);
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_center then -- center x 150 y 45
@@ -768,7 +768,7 @@ package body pcb_rw is
 	-- package and board relevant:	
 	procedure board_reset_circle_fillable is 
 		use et_packages;
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 	begin 
 		board_circle		:= (others => <>);
 		board_filled		:= type_filled'first;
@@ -782,15 +782,15 @@ package body pcb_rw is
 	-- Composes a fillable circle from the given parameters. 
 	-- Filled and fill_style are discriminants. Depending on them some parameters
 	-- matter or not. See spec for type_fillable_circle.
-		circle				: in et_packages.shapes.type_circle;
-		filled				: in et_packages.shapes.type_filled;
+		circle				: in et_packages.pac_shapes.type_circle;
+		filled				: in et_packages.pac_shapes.type_filled;
 		fill_style			: in et_packages.type_fill_style;
 		circumfence_width	: in et_packages.type_general_line_width;
 		hatching			: in et_packages.type_hatching)
 		return et_packages.type_fillable_circle is
 
 		use et_packages;
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 
 	begin -- to_fillable_circle
 		case filled is
@@ -821,7 +821,7 @@ package body pcb_rw is
 		use et_packages;
 	begin
 		return to_fillable_circle (
-			circle 				=> shapes.type_circle (board_circle),
+			circle 				=> pac_shapes.type_circle (board_circle),
 			filled				=> board_filled,
 			fill_style			=> board_fill_style,
 			circumfence_width	=> board_line_width,
@@ -831,16 +831,16 @@ package body pcb_rw is
 	function board_make_fillable_circle_solid return et_packages.type_fillable_circle_solid is 
 		use et_packages;
 	begin
-		return (et_packages.shapes.type_circle (board_circle) with board_filled);
+		return (et_packages.pac_shapes.type_circle (board_circle) with board_filled);
 	end;
 
 	function board_make_copper_circle return et_packages.type_copper_circle is
 		use et_packages;
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 	begin
 		case board_filled is
 			when NO =>
-				return (shapes.type_circle (board_circle) with 
+				return (pac_shapes.type_circle (board_circle) with 
 					filled			=> NO,
 					fill_style		=> SOLID, -- don't care here
 					border_width	=> board_line_width);
@@ -848,12 +848,12 @@ package body pcb_rw is
 			when YES =>
 				case board_fill_style is
 					when SOLID =>
-						return (shapes.type_circle (board_circle) with 
+						return (pac_shapes.type_circle (board_circle) with 
 							filled		=> YES,
 							fill_style	=> SOLID);
 
 					when HATCHED =>
-						return (shapes.type_circle (board_circle) with
+						return (pac_shapes.type_circle (board_circle) with
 							filled		=> YES,
 							fill_style	=> HATCHED,
 							hatching 	=> board_hatching_copper);
@@ -866,7 +866,7 @@ package body pcb_rw is
 	-- This procdure is used by both package and board parsing procedures read_package and read_module_file.
 	-- Some properties have no meaning in packages as remarked below.
 		use et_packages;
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 		use et_pcb_stack;
 	begin
 		polygon				:= (others => <>);
@@ -938,7 +938,7 @@ package body pcb_rw is
 		end case;
 
 		contours_begin;		
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 		contours_end;
 		
 		fill_zone_end;
@@ -953,7 +953,7 @@ package body pcb_rw is
 		write_easing (element (cursor).easing);
 
 		contours_begin;
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 		contours_end;
 
 		cutout_zone_end;
@@ -1004,7 +1004,7 @@ package body pcb_rw is
 		end case;
 
 		contours_begin;		
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 		contours_end;
 		
 		fill_zone_end;
@@ -1018,7 +1018,7 @@ package body pcb_rw is
 		write_easing (element (cursor).easing);
 
 		contours_begin;
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 		contours_end;
 		
 		cutout_zone_end;
@@ -1043,7 +1043,7 @@ package body pcb_rw is
 	
 	procedure write_circle (cursor : in et_packages.type_keepout_circles.cursor) is 
 		use et_packages;
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 		use type_keepout_circles;
 	begin
 		circle_begin;
@@ -1060,7 +1060,7 @@ package body pcb_rw is
 		write_fill_status (element (cursor).filled);
 
 		contours_begin;
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 		contours_end;
 
 		fill_zone_end;
@@ -1073,7 +1073,7 @@ package body pcb_rw is
 		cutout_zone_begin;
 		
 		contours_begin;
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 		contours_end;
 		
 		cutout_zone_end;
@@ -1120,7 +1120,7 @@ package body pcb_rw is
 		end if;
 
 		contours_begin;		
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 		contours_begin;
 		
 		fill_zone_end;
@@ -1134,7 +1134,7 @@ package body pcb_rw is
 		write_easing (element (cursor).easing);
 
 		contours_begin;
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 		contours_end;
 		
 		cutout_zone_end;
@@ -1181,7 +1181,7 @@ package body pcb_rw is
 		end if;
 
 		contours_begin;
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 		contours_end;
 		
 		fill_zone_end;
@@ -1195,7 +1195,7 @@ package body pcb_rw is
 		write_easing (element (cursor).easing);
 
 		contours_begin;
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 		contours_end;
 		
 		cutout_zone_end;
@@ -1244,7 +1244,7 @@ package body pcb_rw is
 		write_signal_layers (element (cursor).layers);
 
 		contours_begin;
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 		contours_end;
 		
 		fill_zone_end;
@@ -1258,7 +1258,7 @@ package body pcb_rw is
 		write_signal_layers (element (cursor).layers);
 
 		contours_begin;
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 		contours_end;
 		
 		cutout_zone_end;
@@ -1289,7 +1289,7 @@ package body pcb_rw is
 
 	procedure write_circle (cursor : in et_packages.type_via_restrict_circles.cursor) is 
 		use et_packages;
-		use et_packages.shapes;		
+		use et_packages.pac_shapes;		
 		use et_pcb_stack;		
 		use type_via_restrict_circles;
 	begin
@@ -1310,7 +1310,7 @@ package body pcb_rw is
 		write_signal_layers (element (cursor).layers);			
 
 		contours_begin;
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 		contours_end;
 		
 		fill_zone_end;
@@ -1324,7 +1324,7 @@ package body pcb_rw is
 		write_signal_layers (element (cursor).layers);
 		
 		contours_begin;
-		write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+		write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 		contours_end;
 		
 		cutout_zone_end;
@@ -1476,7 +1476,7 @@ package body pcb_rw is
 				write_fill_stlye (element (cursor).fill_style);
 				
 				contours_begin;
-				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+				write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 				contours_end;
 				
 				fill_zone_end;
@@ -1494,7 +1494,7 @@ package body pcb_rw is
 				write_hatching (element (cursor).hatching);
 
 				contours_begin;
-				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+				write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 				contours_end;
 				
 				fill_zone_end;
@@ -1506,7 +1506,7 @@ package body pcb_rw is
 				write_easing (element (cursor).easing);
 
 				contours_begin;
-				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+				write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 				contours_end;
 				
 				cutout_zone_end;
@@ -1780,7 +1780,7 @@ package body pcb_rw is
 
 			procedure write_plated_millings (millings : in type_plated_millings) is begin
 				section_mark (section_pad_millings, HEADER);
-				write_polygon_segments (shapes.type_polygon_base (millings));
+				write_polygon_segments (pac_shapes.type_polygon_base (millings));
 				section_mark (section_pad_millings, FOOTER);
 			end write_plated_millings;
 			
@@ -1799,12 +1799,12 @@ package body pcb_rw is
 						section_mark (section_pad_contours_tht, HEADER);
 						
 						section_mark (section_top, HEADER);
-						write_polygon_segments (shapes.type_polygon_base (element (terminal_cursor).pad_shape_tht.top));
+						write_polygon_segments (pac_shapes.type_polygon_base (element (terminal_cursor).pad_shape_tht.top));
 						section_mark (section_top, FOOTER);
 
 						-- pad contour bottom
 						section_mark (section_bottom, HEADER);
-						write_polygon_segments (shapes.type_polygon_base (element (terminal_cursor).pad_shape_tht.bottom));
+						write_polygon_segments (pac_shapes.type_polygon_base (element (terminal_cursor).pad_shape_tht.bottom));
 						section_mark (section_bottom, FOOTER);
 						
 						section_mark (section_pad_contours_tht, FOOTER);
@@ -1827,7 +1827,7 @@ package body pcb_rw is
 					when SMT =>
 						-- pad contour
 						section_mark (section_pad_contours_smt, HEADER);
-						write_polygon_segments (shapes.type_polygon_base (element (terminal_cursor).pad_shape));
+						write_polygon_segments (pac_shapes.type_polygon_base (element (terminal_cursor).pad_shape));
 						section_mark (section_pad_contours_smt, FOOTER);
 						
 						write (keyword => et_pcb_coordinates.keyword_face, parameters => et_pcb_coordinates.to_string (element (terminal_cursor).face));
@@ -1912,7 +1912,7 @@ package body pcb_rw is
 		log_threshold	: in et_string_processing.type_log_level) is
 		use et_string_processing;
 		use et_packages;
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 		use et_pcb;
 		
 		file_handle : ada.text_io.file_type;
@@ -2055,7 +2055,7 @@ package body pcb_rw is
 						when SOLID =>
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.top.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 												fill_style 	=> SOLID,
 												easing 		=> board_easing
 											   ));
@@ -2063,7 +2063,7 @@ package body pcb_rw is
 						when HATCHED =>
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.top.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with 
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 												fill_style 	=> HATCHED,
 												easing 		=> board_easing,
 												hatching	=> board_hatching));
@@ -2077,7 +2077,7 @@ package body pcb_rw is
 						when SOLID =>
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.bottom.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with 
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 												fill_style	=> SOLID,
 												easing		=> board_easing
 											   ));
@@ -2085,7 +2085,7 @@ package body pcb_rw is
 						when HATCHED =>
 							pac_silk_polygons.append (
 								container	=> packge.silk_screen.bottom.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with 
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 												fill_style	=> HATCHED,
 												easing		=> board_easing,
 												hatching	=> board_hatching));
@@ -2100,14 +2100,14 @@ package body pcb_rw is
 						when SOLID =>
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.top.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with 
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 												easing		=> board_easing,
 												fill_style	=> SOLID));
 
 						when HATCHED =>
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.top.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with 
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 												fill_style	=> HATCHED,
 												easing		=> board_easing,
 												hatching 	=> board_hatching));
@@ -2122,14 +2122,14 @@ package body pcb_rw is
 						when SOLID =>
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.bottom.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with 
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 												easing 		=> board_easing,
 												fill_style	=> SOLID));
 
 						when HATCHED =>
 							pac_doc_polygons.append (
 								container	=> packge.assembly_documentation.bottom.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with 
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 												fill_style	=> HATCHED,
 												easing		=> board_easing,
 												hatching	=> board_hatching));
@@ -2143,7 +2143,7 @@ package body pcb_rw is
 				procedure append_keepout_polygon_top is begin
 					type_keepout_polygons.append (
 						container	=> packge.keepout.top.polygons, 
-						new_item	=> (shapes.type_polygon_base (polygon) with 
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 										filled	=> board_filled));
 
 					-- clean up for next polygon
@@ -2153,7 +2153,7 @@ package body pcb_rw is
 				procedure append_keepout_polygon_bottom is begin
 					type_keepout_polygons.append (
 						container	=> packge.keepout.bottom.polygons, 
-						new_item	=> (shapes.type_polygon_base (polygon) with
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										filled	=> board_filled));
 
 					-- clean up for next polygon
@@ -2165,14 +2165,14 @@ package body pcb_rw is
 						when SOLID =>
 							type_stencil_polygons.append (
 								container	=> packge.stencil.top.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing));
 
 						when HATCHED =>
 							type_stencil_polygons.append (
 								container	=> packge.stencil.top.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching));
@@ -2187,14 +2187,14 @@ package body pcb_rw is
 						when SOLID =>
 							type_stencil_polygons.append (
 								container	=> packge.stencil.bottom.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing));
 
 						when HATCHED =>
 							type_stencil_polygons.append (
 								container	=> packge.stencil.bottom.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching));
@@ -2209,14 +2209,14 @@ package body pcb_rw is
 						when SOLID =>
 							type_stop_polygons.append (
 								container	=> packge.stop_mask.top.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing));
 
 						when HATCHED =>
 							type_stop_polygons.append (
 								container	=> packge.stop_mask.top.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching));
@@ -2231,14 +2231,14 @@ package body pcb_rw is
 						when SOLID =>
 							type_stop_polygons.append (
 								container	=> packge.stop_mask.bottom.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing));
 
 						when HATCHED =>
 							type_stop_polygons.append (
 								container	=> packge.stop_mask.bottom.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching));
@@ -2253,7 +2253,7 @@ package body pcb_rw is
 						when SOLID =>
 							pac_copper_polygons_solid.append (
 								container	=> packge.copper.top.polygons.solid, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing,
 										width_min 	=> polygon_width_min,
@@ -2262,7 +2262,7 @@ package body pcb_rw is
 						when HATCHED =>
 							pac_copper_polygons_hatched.append (
 								container	=> packge.copper.top.polygons.hatched, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching_copper,
@@ -2279,7 +2279,7 @@ package body pcb_rw is
 						when SOLID =>
 							pac_copper_polygons_solid.append (
 								container	=> packge.copper.bottom.polygons.solid, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> SOLID,
 										easing		=> board_easing,
 										width_min 	=> polygon_width_min,
@@ -2288,7 +2288,7 @@ package body pcb_rw is
 						when HATCHED =>
 							pac_copper_polygons_hatched.append (
 								container	=> packge.copper.bottom.polygons.hatched, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										fill_style	=> HATCHED,
 										easing		=> board_easing,
 										hatching	=> board_hatching_copper,
@@ -2303,7 +2303,7 @@ package body pcb_rw is
 				procedure append_route_restrict_polygon is begin
 					type_route_restrict_polygons.append (
 						container	=> packge.route_restrict.polygons, 
-						new_item	=> (shapes.type_polygon_base (polygon) with 
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 										filled	=> board_filled,
 										layers	=> signal_layers));
 
@@ -2316,7 +2316,7 @@ package body pcb_rw is
 				procedure append_via_restrict_polygon is begin
 					type_via_restrict_polygons.append (
 						container	=> packge.via_restrict.polygons, 
-						new_item	=> (shapes.type_polygon_base (polygon) with 
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 										filled	=> board_filled,
 										layers	=> signal_layers));
 
@@ -2330,7 +2330,7 @@ package body pcb_rw is
 				procedure append_silk_cutout_top is begin
 					pac_silk_cutouts.append (
 						container	=> packge.silk_screen.top.cutouts, 
-						new_item	=> (shapes.type_polygon_base (polygon) with
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										easing => board_easing));
 					
 					-- clean up for next polygon
@@ -2340,7 +2340,7 @@ package body pcb_rw is
 				procedure append_silk_cutout_bottom is begin
 					pac_silk_cutouts.append (
 						container	=> packge.silk_screen.bottom.cutouts, 
-						new_item	=> (shapes.type_polygon_base (polygon) with
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										easing => board_easing));
 					
 					-- clean up for next polygon
@@ -2350,7 +2350,7 @@ package body pcb_rw is
 				procedure append_assy_doc_cutout_top is begin
 					pac_doc_cutouts.append (
 						container	=> packge.assembly_documentation.top.cutouts, 
-						new_item	=> (shapes.type_polygon_base (polygon) with 
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 										easing => board_easing));
 					
 					-- clean up for next polygon
@@ -2360,7 +2360,7 @@ package body pcb_rw is
 				procedure append_assy_doc_cutout_bottom is begin
 					pac_doc_cutouts.append (
 						container	=> packge.assembly_documentation.bottom.cutouts, 
-						new_item	=> (shapes.type_polygon_base (polygon) with 
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 										easing => board_easing));
 					
 					-- clean up for next polygon
@@ -2370,7 +2370,7 @@ package body pcb_rw is
 				procedure append_keepout_cutout_top is begin
 					pac_keepout_cutouts.append (
 						container	=> packge.keepout.top.cutouts, 
-						new_item	=> (shapes.type_polygon_base (polygon) with 
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 										easing => board_easing));
 
 					-- clean up for next polygon
@@ -2380,7 +2380,7 @@ package body pcb_rw is
 				procedure append_keepout_cutout_bottom is begin
 					pac_keepout_cutouts.append (
 						container	=> packge.keepout.bottom.cutouts, 
-						new_item	=> (shapes.type_polygon_base (polygon) with 
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 										easing => board_easing));
 
 					-- clean up for next polygon
@@ -2390,7 +2390,7 @@ package body pcb_rw is
 				procedure append_stencil_cutout_top is begin
 					pac_stencil_cutouts.append (
 						container	=> packge.stencil.top.cutouts, 
-						new_item	=> (shapes.type_polygon_base (polygon) with
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										easing => board_easing));
 
 					-- clean up for next polygon
@@ -2400,7 +2400,7 @@ package body pcb_rw is
 				procedure append_stencil_cutout_bottom is begin
 					pac_stencil_cutouts.append (
 						container	=> packge.stencil.top.cutouts, 
-						new_item	=> (shapes.type_polygon_base (polygon) with
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										easing => board_easing));
 
 					-- clean up for next polygon
@@ -2410,7 +2410,7 @@ package body pcb_rw is
 				procedure append_stop_cutout_top is begin
 					pac_stop_cutouts.append (
 						container	=> packge.stop_mask.top.cutouts, 
-						new_item	=> (shapes.type_polygon_base (polygon) with
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										easing => board_easing));
 
 					-- clean up for next polygon
@@ -2420,7 +2420,7 @@ package body pcb_rw is
 				procedure append_stop_cutout_bottom is begin
 					pac_stop_cutouts.append (
 						container	=> packge.stop_mask.bottom.cutouts, 
-						new_item	=> (shapes.type_polygon_base (polygon) with
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										easing => board_easing));
 
 					-- clean up for next polygon
@@ -2430,7 +2430,7 @@ package body pcb_rw is
 				procedure append_copper_cutout_top is begin
 					et_packages.pac_copper_cutouts.append (
 						container	=> packge.copper.top.cutouts, 
-						new_item	=> (shapes.type_polygon_base (polygon) with
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										easing => board_easing));
 										
 					-- clean up for next polygon
@@ -2440,7 +2440,7 @@ package body pcb_rw is
 				procedure append_copper_cutout_bottom is begin
 					et_packages.pac_copper_cutouts.append (
 						container	=> packge.copper.bottom.cutouts, 
-						new_item	=> (shapes.type_polygon_base (polygon) with
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										easing => board_easing));
 										
 					-- clean up for next polygon
@@ -2450,7 +2450,7 @@ package body pcb_rw is
 				procedure append_route_restrict_cutout is begin
 					pac_route_restrict_cutouts.append (
 						container	=> packge.route_restrict.cutouts, 
-						new_item	=> (shapes.type_polygon_base (polygon) with 
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 										easing => board_easing,
 										layers => signal_layers));
 
@@ -2463,7 +2463,7 @@ package body pcb_rw is
 				procedure append_via_restrict_cutout is begin
 					pac_via_restrict_cutouts.append (
 						container	=> packge.via_restrict.cutouts, 
-						new_item	=> (shapes.type_polygon_base (polygon) with 
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 										easing => board_easing,
 										layers => signal_layers));
 
@@ -2492,7 +2492,7 @@ package body pcb_rw is
 								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION => null;
 
 							when SEC_PAD_CONTOURS_THT => 
-								tht_pad_shape.top := (shapes.type_polygon_base (polygon) with null record);
+								tht_pad_shape.top := (pac_shapes.type_polygon_base (polygon) with null record);
 								board_reset_polygon;
 
 							when others => invalid_section;
@@ -2504,7 +2504,7 @@ package body pcb_rw is
 								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION => null;
 
 							when SEC_PAD_CONTOURS_THT =>
-								tht_pad_shape.bottom := (shapes.type_polygon_base (polygon) with null record);
+								tht_pad_shape.bottom := (pac_shapes.type_polygon_base (polygon) with null record);
 								board_reset_polygon;
 								
 							when others => invalid_section;
@@ -2518,7 +2518,7 @@ package body pcb_rw is
 
 										type_copper_lines.append (
 											container	=> packge.copper.top.lines, 
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
@@ -2527,7 +2527,7 @@ package body pcb_rw is
 									when SEC_SILK_SCREEN => 
 										type_silk_lines.append (
 											container	=> packge.silk_screen.top.lines, 
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
@@ -2536,7 +2536,7 @@ package body pcb_rw is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_lines.append (
 											container	=> packge.assembly_documentation.top.lines, 
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
@@ -2545,7 +2545,7 @@ package body pcb_rw is
 									when SEC_STENCIL =>
 										type_stencil_lines.append (
 											container	=> packge.stencil.top.lines, 
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
@@ -2554,7 +2554,7 @@ package body pcb_rw is
 									when SEC_STOP_MASK =>
 										type_stop_lines.append (
 											container	=> packge.stop_mask.top.lines, 
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
@@ -2563,7 +2563,7 @@ package body pcb_rw is
 									when SEC_KEEPOUT =>
 										type_keepout_lines.append (
 											container	=> packge.keepout.top.lines, 
-											new_item	=> (shapes.type_line (board_line) with null record));
+											new_item	=> (pac_shapes.type_line (board_line) with null record));
 
 										-- clean up for next line
 										board_reset_line;
@@ -2579,7 +2579,7 @@ package body pcb_rw is
 
 										type_copper_lines.append (
 											container	=> packge.copper.bottom.lines, 
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
@@ -2588,7 +2588,7 @@ package body pcb_rw is
 									when SEC_SILK_SCREEN => 
 										type_silk_lines.append (
 											container	=> packge.silk_screen.bottom.lines, 
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
@@ -2597,7 +2597,7 @@ package body pcb_rw is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_lines.append (
 											container	=> packge.assembly_documentation.bottom.lines, 
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
@@ -2606,7 +2606,7 @@ package body pcb_rw is
 									when SEC_STENCIL =>
 										type_stencil_lines.append (
 											container	=> packge.stencil.bottom.lines, 
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
@@ -2615,7 +2615,7 @@ package body pcb_rw is
 									when SEC_STOP_MASK =>
 										type_stop_lines.append (
 											container	=> packge.stop_mask.bottom.lines, 
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
@@ -2624,7 +2624,7 @@ package body pcb_rw is
 									when SEC_KEEPOUT =>
 										type_keepout_lines.append (
 											container	=> packge.keepout.bottom.lines, 
-											new_item	=> (shapes.type_line (board_line) with null record));
+											new_item	=> (pac_shapes.type_line (board_line) with null record));
 
 										-- clean up for next line
 										board_reset_line;
@@ -2638,7 +2638,7 @@ package body pcb_rw is
 								
 								et_packages.type_pcb_contour_lines.append (
 									container	=> packge.pcb_contour.lines,
-									new_item	=> (shapes.type_line (board_line) with null record));
+									new_item	=> (pac_shapes.type_line (board_line) with null record));
 
 								-- clean up for next line
 								board_reset_line;
@@ -2647,7 +2647,7 @@ package body pcb_rw is
 								
 								type_route_restrict_lines.append (
 									container	=> packge.route_restrict.lines,
-									new_item	=> (shapes.type_line (board_line) with
+									new_item	=> (pac_shapes.type_line (board_line) with
 													layers	=> signal_layers));
 
 								-- clean up for next line
@@ -2658,7 +2658,7 @@ package body pcb_rw is
 								
 								type_via_restrict_lines.append (
 									container	=> packge.via_restrict.lines,
-									new_item	=> (shapes.type_line (board_line) with
+									new_item	=> (pac_shapes.type_line (board_line) with
 													layers	=> signal_layers));
 
 								-- clean up for next line
@@ -2682,7 +2682,7 @@ package body pcb_rw is
 
 										type_copper_arcs.append (
 											container	=> packge.copper.top.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -2691,7 +2691,7 @@ package body pcb_rw is
 									when SEC_SILK_SCREEN => 
 										type_silk_arcs.append (
 											container	=> packge.silk_screen.top.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -2700,7 +2700,7 @@ package body pcb_rw is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_arcs.append (
 											container	=> packge.assembly_documentation.top.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -2709,7 +2709,7 @@ package body pcb_rw is
 									when SEC_STENCIL =>
 										type_stencil_arcs.append (
 											container	=> packge.stencil.top.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -2718,7 +2718,7 @@ package body pcb_rw is
 									when SEC_STOP_MASK =>
 										type_stop_arcs.append (
 											container	=> packge.stop_mask.top.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -2727,7 +2727,7 @@ package body pcb_rw is
 									when SEC_KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> packge.keepout.top.arcs,
-											new_item	=> (shapes.type_arc (board_arc) with null record));
+											new_item	=> (pac_shapes.type_arc (board_arc) with null record));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -2743,7 +2743,7 @@ package body pcb_rw is
 
 										type_copper_arcs.append (
 											container	=> packge.copper.bottom.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -2752,7 +2752,7 @@ package body pcb_rw is
 									when SEC_SILK_SCREEN => 
 										type_silk_arcs.append (
 											container	=> packge.silk_screen.bottom.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -2761,7 +2761,7 @@ package body pcb_rw is
 									when SEC_ASSEMBLY_DOCUMENTATION =>
 										type_doc_arcs.append (
 											container	=> packge.assembly_documentation.bottom.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -2770,7 +2770,7 @@ package body pcb_rw is
 									when SEC_STENCIL =>
 										type_stencil_arcs.append (
 											container	=> packge.stencil.bottom.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -2779,7 +2779,7 @@ package body pcb_rw is
 									when SEC_STOP_MASK =>
 										type_stop_arcs.append (
 											container	=> packge.stop_mask.bottom.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -2788,7 +2788,7 @@ package body pcb_rw is
 									when SEC_KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> packge.keepout.bottom.arcs, 
-											new_item	=> (shapes.type_arc (board_arc) with null record));
+											new_item	=> (pac_shapes.type_arc (board_arc) with null record));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -2802,7 +2802,7 @@ package body pcb_rw is
 								
 								et_packages.type_pcb_contour_arcs.append (
 									container	=> packge.pcb_contour.arcs,
-									new_item	=> (shapes.type_arc (board_arc) with null record));
+									new_item	=> (pac_shapes.type_arc (board_arc) with null record));
 
 								-- clean up for next arc
 								board_reset_arc;
@@ -2811,7 +2811,7 @@ package body pcb_rw is
 								
 								type_route_restrict_arcs.append (
 									container	=> packge.route_restrict.arcs,
-									new_item	=> (shapes.type_arc (board_arc) with layers => signal_layers));
+									new_item	=> (pac_shapes.type_arc (board_arc) with layers => signal_layers));
 
 								-- clean up for next arc
 								board_reset_arc;
@@ -2821,7 +2821,7 @@ package body pcb_rw is
 								
 								type_via_restrict_arcs.append (
 									container	=> packge.via_restrict.arcs,
-									new_item	=> (shapes.type_arc (board_arc) with layers => signal_layers));
+									new_item	=> (pac_shapes.type_arc (board_arc) with layers => signal_layers));
 
 								-- clean up for next arc
 								board_reset_arc;
@@ -2938,7 +2938,7 @@ package body pcb_rw is
 								
 								et_packages.type_pcb_contour_circles.append (
 									container	=> packge.pcb_contour.circles,
-									new_item	=> (shapes.type_circle (board_circle) with null record));
+									new_item	=> (pac_shapes.type_circle (board_circle) with null record));
 
 								-- clean up for next circle
 								board_reset_circle;
@@ -3224,7 +3224,7 @@ package body pcb_rw is
 					when SEC_PAD_CONTOURS_SMT =>
 						case stack.parent is
 							when SEC_TERMINAL => 
-								smt_pad_shape := (shapes.type_polygon_base (polygon) with null record);
+								smt_pad_shape := (pac_shapes.type_polygon_base (polygon) with null record);
 								board_reset_polygon;
 								
 							when others => invalid_section;
@@ -3239,7 +3239,7 @@ package body pcb_rw is
 					when SEC_MILLINGS =>
 						case stack.parent is
 							when SEC_TERMINAL => 
-								tht_millings := (shapes.type_polygon_base (polygon) with null record);
+								tht_millings := (pac_shapes.type_polygon_base (polygon) with null record);
 								board_reset_polygon;
 								
 							when others => invalid_section;

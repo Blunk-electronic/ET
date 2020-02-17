@@ -58,7 +58,7 @@ with et_string_processing;		use et_string_processing;
 with et_text;					use et_text;
 
 package body et_pcb is
-	use shapes;
+	use pac_shapes;
 
 	-- VIAS
 	function to_micro_vias_allowed (allowed : in string) return type_micro_vias_allowed is begin

@@ -1634,7 +1634,7 @@ package body scripting is
 
 		procedure board_cmd (verb : in type_verb_board; noun : in type_noun_board) is
 			use et_packages;
-			use et_packages.shapes;
+			use et_packages.pac_shapes;
 			use et_pcb;
 			use et_pcb_coordinates;
 			use et_pcb_coordinates.geometry;
@@ -1969,7 +1969,7 @@ package body scripting is
 			end draw_via_restrict;
 
 			procedure draw_stop_mask is
-				use et_packages.shapes;
+				use et_packages.pac_shapes;
 				shape : type_shape := to_shape (f (6));
 			begin
 				case shape is
@@ -2131,7 +2131,7 @@ package body scripting is
 			end draw_stop_mask;
 
 			procedure draw_stencil is
-				use et_packages.shapes;
+				use et_packages.pac_shapes;
 				shape : type_shape := to_shape (f (6));
 			begin
 				case shape is
@@ -2809,7 +2809,7 @@ package body scripting is
 
 						when SILK =>
 							declare
-								use et_packages.shapes;
+								use et_packages.pac_shapes;
 								shape : type_shape := to_shape (f (6));
 							begin
 								case shape is
@@ -2984,7 +2984,7 @@ package body scripting is
 
 						when ASSY =>
 							declare
-								use et_packages.shapes;
+								use et_packages.pac_shapes;
 								shape : type_shape := to_shape (f (6));
 							begin
 								case shape is

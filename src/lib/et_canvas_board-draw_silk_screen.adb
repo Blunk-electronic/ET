@@ -87,7 +87,7 @@ procedure draw_silk_screen (
 	end query_arc;
 
 	procedure query_circle (c : in type_silk_circles.cursor) is 
-		use et_packages.shapes;
+		use et_packages.pac_shapes;
 	begin
 		case element (c).filled is
 			when NO =>

@@ -1036,7 +1036,7 @@ package body et_project is
 				net_name	: in type_net_name.bounded_string;
 				net			: in et_schematic.type_net) is
 				use et_packages;
-				use et_packages.shapes;
+				use et_packages.pac_shapes;
 				use et_pcb;
 				use et_pcb_stack;
 				use et_pcb_coordinates.geometry;
@@ -1124,7 +1124,7 @@ package body et_project is
 					end case;
 
 					contours_begin;
-					write_polygon_segments (shapes.type_polygon_base (element (polygon_solid_cursor)));
+					write_polygon_segments (pac_shapes.type_polygon_base (element (polygon_solid_cursor)));
 					contours_end;
 					
 					fill_zone_end;
@@ -1158,7 +1158,7 @@ package body et_project is
 					end case;
 
 					contours_begin;
-					write_polygon_segments (shapes.type_polygon_base (element (polygon_hatched_cursor)));
+					write_polygon_segments (pac_shapes.type_polygon_base (element (polygon_hatched_cursor)));
 					contours_end;
 					
 					fill_zone_end;
@@ -1172,7 +1172,7 @@ package body et_project is
 					write_easing (element (cutout_zone_cursor).easing);
 
 					contours_begin;
-					write_polygon_segments (shapes.type_polygon_base (element (cutout_zone_cursor)));
+					write_polygon_segments (pac_shapes.type_polygon_base (element (cutout_zone_cursor)));
 					contours_end;
 					
 					cutout_zone_end;
@@ -1646,7 +1646,7 @@ package body et_project is
 
 				write_fill_stlye (element (cursor).fill_style);
 
-				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+				write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 
 				fill_zone_end;
 			end;
@@ -1667,7 +1667,7 @@ package body et_project is
 				write_fill_stlye (element (cursor).fill_style);
 				write_hatching (element (cursor).hatching);
 
-				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+				write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 
 				fill_zone_end;
 			end;
@@ -1678,7 +1678,7 @@ package body et_project is
 				cutout_zone_begin;
 				write_signal_layer (element (cursor).layer);
 				write_easing (element (cursor).easing);
-				write_polygon_segments (shapes.type_polygon_base (element (cursor)));
+				write_polygon_segments (pac_shapes.type_polygon_base (element (cursor)));
 				cutout_zone_end;
 			end;
 
@@ -3044,27 +3044,27 @@ package body et_project is
 									when SILK_SCREEN =>
 										type_silk_lines.append (
 											container	=> module.board.silk_screen.top.lines,
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 									when ASSEMBLY_DOCUMENTATION =>
 										type_doc_lines.append (
 											container	=> module.board.assy_doc.top.lines,
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 									when STENCIL =>
 										type_stencil_lines.append (
 											container	=> module.board.stencil.top.lines,
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 										
 									when STOP_MASK =>
 										type_stop_lines.append (
 											container	=> module.board.stop_mask.top.lines,
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 									when KEEPOUT =>
 										type_keepout_lines.append (
 											container	=> module.board.keepout.top.lines,
-											new_item	=> (shapes.type_line (board_line) with null record));
+											new_item	=> (pac_shapes.type_line (board_line) with null record));
 										
 								end case;
 								
@@ -3073,27 +3073,27 @@ package body et_project is
 									when SILK_SCREEN =>
 										type_silk_lines.append (
 											container	=> module.board.silk_screen.bottom.lines,
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 									when ASSEMBLY_DOCUMENTATION =>
 										type_doc_lines.append (
 											container	=> module.board.assy_doc.bottom.lines,
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 										
 									when STENCIL =>
 										type_stencil_lines.append (
 											container	=> module.board.stencil.bottom.lines,
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 										
 									when STOP_MASK =>
 										type_stop_lines.append (
 											container	=> module.board.stop_mask.bottom.lines,
-											new_item	=> (shapes.type_line (board_line) with board_line_width));
+											new_item	=> (pac_shapes.type_line (board_line) with board_line_width));
 
 									when KEEPOUT =>
 										type_keepout_lines.append (
 											container	=> module.board.keepout.bottom.lines,
-											new_item	=> (shapes.type_line (board_line) with null record));
+											new_item	=> (pac_shapes.type_line (board_line) with null record));
 
 								end case;
 								
@@ -3131,27 +3131,27 @@ package body et_project is
 									when SILK_SCREEN =>
 										type_silk_arcs.append (
 											container	=> module.board.silk_screen.top.arcs,
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 									when ASSEMBLY_DOCUMENTATION =>
 										type_doc_arcs.append (
 											container	=> module.board.assy_doc.top.arcs,
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 									when STENCIL =>
 										type_stencil_arcs.append (
 											container	=> module.board.stencil.top.arcs,
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 										
 									when STOP_MASK =>
 										type_stop_arcs.append (
 											container	=> module.board.stop_mask.top.arcs,
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 									when KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> module.board.keepout.top.arcs,
-											new_item	=> (shapes.type_arc (board_arc) with null record));
+											new_item	=> (pac_shapes.type_arc (board_arc) with null record));
 								end case;
 								
 							when BOTTOM => null;
@@ -3159,27 +3159,27 @@ package body et_project is
 									when SILK_SCREEN =>
 										type_silk_arcs.append (
 											container	=> module.board.silk_screen.bottom.arcs,
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 									when ASSEMBLY_DOCUMENTATION =>
 										type_doc_arcs.append (
 											container	=> module.board.assy_doc.bottom.arcs,
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 										
 									when STENCIL =>
 										type_stencil_arcs.append (
 											container	=> module.board.stencil.bottom.arcs,
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 										
 									when STOP_MASK =>
 										type_stop_arcs.append (
 											container	=> module.board.stop_mask.bottom.arcs,
-											new_item	=> (shapes.type_arc (board_arc) with board_line_width));
+											new_item	=> (pac_shapes.type_arc (board_arc) with board_line_width));
 
 									when KEEPOUT =>
 										type_keepout_arcs.append (
 											container	=> module.board.keepout.bottom.arcs,
-											new_item	=> (shapes.type_arc (board_arc) with null record));
+											new_item	=> (pac_shapes.type_arc (board_arc) with null record));
 								end case;
 								
 						end case;
@@ -3292,21 +3292,21 @@ package body et_project is
 						module		: in out et_schematic.type_module) is
 						use et_pcb_coordinates;
 						use et_packages;
-						use et_packages.shapes;
+						use et_packages.pac_shapes;
 						
 						procedure append_silk_polygon_top is begin
 							case board_fill_style is 
 								when SOLID =>
 									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.top.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with 
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 														fill_style 	=> SOLID,
 														easing		=> board_easing));
 
 								when HATCHED =>
 									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.top.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with 
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 														fill_style	=> HATCHED,
 														easing		=> board_easing,
 														hatching	=> board_hatching));
@@ -3318,14 +3318,14 @@ package body et_project is
 								when SOLID =>
 									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.bottom.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with 
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 														fill_style 	=> SOLID,
 														easing		=> board_easing));
 
 								when HATCHED =>
 									pac_silk_polygons.append (
 										container	=> module.board.silk_screen.bottom.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with 
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 														fill_style	=> HATCHED,
 														easing		=> board_easing,
 														hatching	=> board_hatching));
@@ -3337,14 +3337,14 @@ package body et_project is
 								when SOLID =>
 									pac_doc_polygons.append (
 										container	=> module.board.assy_doc.top.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with 
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 														easing		=> board_easing,
 														fill_style 	=> SOLID));
 
 								when HATCHED =>
 									pac_doc_polygons.append (
 										container	=> module.board.assy_doc.top.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with 
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 														fill_style	=> HATCHED,
 														easing		=> board_easing,
 														hatching	=> board_hatching));
@@ -3356,14 +3356,14 @@ package body et_project is
 								when SOLID =>
 									pac_doc_polygons.append (
 										container	=> module.board.assy_doc.bottom.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with 
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 														easing		=> board_easing,
 														fill_style 	=> SOLID));
 
 								when HATCHED =>
 									pac_doc_polygons.append (
 										container	=> module.board.assy_doc.bottom.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with 
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 														fill_style	=> HATCHED,
 														easing		=> board_easing,
 														hatching	=> board_hatching));
@@ -3373,14 +3373,14 @@ package body et_project is
 						procedure append_keepout_polygon_top is begin
 							type_keepout_polygons.append (
 								container	=> module.board.keepout.top.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 												filled	=> board_filled));
 						end;
 
 						procedure append_keepout_polygon_bottom is begin
 							type_keepout_polygons.append (
 								container	=> module.board.keepout.bottom.polygons, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 												filled	=> board_filled));
 						end;
 
@@ -3389,14 +3389,14 @@ package body et_project is
 								when SOLID =>
 									type_stencil_polygons.append (
 										container	=> module.board.stencil.top.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with
 														fill_style	=> SOLID,
 														easing		=> board_easing));
 
 								when HATCHED =>
 									type_stencil_polygons.append (
 										container	=> module.board.stencil.top.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with
 														fill_style	=> HATCHED,
 														easing		=> board_easing,
 														hatching	=> board_hatching));
@@ -3408,14 +3408,14 @@ package body et_project is
 								when SOLID =>
 									type_stencil_polygons.append (
 										container	=> module.board.stencil.bottom.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with
 														fill_style	=> SOLID,
 														easing		=> board_easing));
 
 								when HATCHED =>
 									type_stencil_polygons.append (
 										container	=> module.board.stencil.bottom.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with
 														fill_style	=> HATCHED,
 														easing		=> board_easing,
 														hatching	=> board_hatching));
@@ -3427,14 +3427,14 @@ package body et_project is
 								when SOLID =>
 									type_stop_polygons.append (
 										container	=> module.board.stop_mask.top.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with
 														fill_style	=> SOLID,
 														easing		=> board_easing));
 
 								when HATCHED =>
 									type_stop_polygons.append (
 										container	=> module.board.stop_mask.top.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with
 														fill_style	=> HATCHED,
 														easing		=> board_easing,
 														hatching	=> board_hatching));
@@ -3446,14 +3446,14 @@ package body et_project is
 								when SOLID =>
 									type_stop_polygons.append (
 										container	=> module.board.stop_mask.bottom.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with
 														fill_style	=> SOLID,
 														easing		=> board_easing));
 
 								when HATCHED =>
 									type_stop_polygons.append (
 										container	=> module.board.stop_mask.bottom.polygons,
-										new_item	=> (shapes.type_polygon_base (polygon) with
+										new_item	=> (pac_shapes.type_polygon_base (polygon) with
 														fill_style	=> HATCHED,
 														easing		=> board_easing,
 														hatching	=> board_hatching));
@@ -3525,75 +3525,75 @@ package body et_project is
 						module		: in out et_schematic.type_module) is
 						use et_pcb_coordinates;
 						use et_packages;
-						use et_packages.shapes;
+						use et_packages.pac_shapes;
 						
 						procedure append_silk_cutout_top is begin
 							pac_silk_cutouts.append (
 								container	=> module.board.silk_screen.top.cutouts,
-								new_item	=> (shapes.type_polygon_base (polygon) with 
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 											easing		=> board_easing));
 						end;
 
 						procedure append_silk_cutout_bottom is begin
 							pac_silk_cutouts.append (
 								container	=> module.board.silk_screen.bottom.cutouts,
-								new_item	=> (shapes.type_polygon_base (polygon) with 
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 											easing		=> board_easing));
 						end;
 						
 						procedure append_assy_doc_cutout_top is begin
 							pac_doc_cutouts.append (
 								container	=> module.board.assy_doc.top.cutouts,
-								new_item	=> (shapes.type_polygon_base (polygon) with 
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 												easing		=> board_easing));
 						end;
 
 						procedure append_assy_doc_cutout_bottom is begin
 							pac_doc_cutouts.append (
 								container	=> module.board.assy_doc.bottom.cutouts,
-								new_item	=> (shapes.type_polygon_base (polygon) with 
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 												easing		=> board_easing));
 						end;
 
 						procedure append_keepout_cutout_top is begin
 							pac_keepout_cutouts.append (
 								container	=> module.board.keepout.top.cutouts, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 												easing		=> board_easing));
 						end;
 
 						procedure append_keepout_cutout_bottom is begin
 							pac_keepout_cutouts.append (
 								container	=> module.board.keepout.bottom.cutouts, 
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 												easing		=> board_easing));
 						end;
 
 						procedure append_stencil_cutout_top is begin
 							pac_stencil_cutouts.append (
 								container	=> module.board.stencil.top.cutouts,
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 												easing		=> board_easing));
 						end;
 
 						procedure append_stencil_cutout_bottom is begin
 							pac_stencil_cutouts.append (
 								container	=> module.board.stencil.bottom.cutouts,
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 												easing		=> board_easing));
 						end;
 
 						procedure append_stop_cutout_top is begin
 							pac_stop_cutouts.append (
 								container	=> module.board.stop_mask.top.cutouts,
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 												easing		=> board_easing));
 						end;
 
 						procedure append_stop_cutout_bottom is begin
 							pac_stop_cutouts.append (
 								container	=> module.board.stop_mask.bottom.cutouts,
-								new_item	=> (shapes.type_polygon_base (polygon) with
+								new_item	=> (pac_shapes.type_polygon_base (polygon) with
 												easing		=> board_easing));
 						end;
 						
@@ -3661,7 +3661,7 @@ package body et_project is
 					begin
 						pac_via_restrict_cutouts.append (
 							container	=> module.board.via_restrict.cutouts,
-							new_item	=> (shapes.type_polygon_base (polygon) with 
+							new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 											easing	=> board_easing,
 											layers	=> signal_layers));
 					end do_it;
@@ -3689,7 +3689,7 @@ package body et_project is
 					begin
 						pac_route_restrict_cutouts.append (
 							container	=> module.board.route_restrict.cutouts,
-							new_item	=> (shapes.type_polygon_base (polygon) with 
+							new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 											easing	=> board_easing,
 											layers	=> signal_layers));
 					end do_it;
@@ -3709,7 +3709,7 @@ package body et_project is
 				procedure insert_cutout_copper is
 				-- This is about cutout zones to trim floating polygons in signal layers. No connection to any net.
 					use et_packages;
-					use et_packages.shapes;
+					use et_packages.pac_shapes;
 					use et_pcb;
 					
 					procedure do_it (
@@ -3903,7 +3903,7 @@ package body et_project is
 					begin
 						type_route_restrict_lines.append (
 							container	=> module.board.route_restrict.lines,
-							new_item	=> (shapes.type_line (board_line) with 
+							new_item	=> (pac_shapes.type_line (board_line) with 
 											layers	=> signal_layers));
 					end do_it;
 										
@@ -3929,7 +3929,7 @@ package body et_project is
 					begin
 						type_route_restrict_arcs.append (
 							container	=> module.board.route_restrict.arcs,
-							new_item	=> (shapes.type_arc (board_arc) with 
+							new_item	=> (pac_shapes.type_arc (board_arc) with 
 											layers	=> signal_layers));
 					end do_it;
 										
@@ -3981,7 +3981,7 @@ package body et_project is
 					begin
 						type_route_restrict_polygons.append (
 							container	=> module.board.route_restrict.polygons,
-							new_item	=> (shapes.type_polygon_base (polygon) with 
+							new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 											filled	=> board_filled,
 											layers	=> signal_layers));
 					end do_it;
@@ -4009,7 +4009,7 @@ package body et_project is
 					begin
 						type_via_restrict_lines.append (
 							container	=> module.board.via_restrict.lines,
-							new_item	=> (shapes.type_line (board_line) with 
+							new_item	=> (pac_shapes.type_line (board_line) with 
 											layers	=> signal_layers));
 					end do_it;
 										
@@ -4036,7 +4036,7 @@ package body et_project is
 					begin
 						type_via_restrict_arcs.append (
 							container	=> module.board.via_restrict.arcs,
-							new_item	=> (shapes.type_arc (board_arc) with 
+							new_item	=> (pac_shapes.type_arc (board_arc) with 
 											layers	=> signal_layers));
 					end do_it;
 										
@@ -4089,7 +4089,7 @@ package body et_project is
 					begin
 						type_via_restrict_polygons.append (
 							container	=> module.board.via_restrict.polygons,
-							new_item	=> (shapes.type_polygon_base (polygon) with 
+							new_item	=> (pac_shapes.type_polygon_base (polygon) with 
 											filled	=> board_filled,
 											layers	=> signal_layers));
 					end do_it;
@@ -4109,7 +4109,7 @@ package body et_project is
 				procedure insert_polygon_copper is
 				-- This is about floating polygons in signal layers. No connection to any net.
 					use et_packages;
-					use et_packages.shapes;
+					use et_packages.pac_shapes;
 					use et_pcb;
 					
 					procedure do_it (
@@ -4163,7 +4163,7 @@ package body et_project is
 					begin
 						pac_copper_lines.append (
 							container	=> module.board.copper.lines,
-							new_item	=> (et_packages.shapes.type_line (board_line) with
+							new_item	=> (et_packages.pac_shapes.type_line (board_line) with
 											width	=> board_line_width,
 											layer	=> signal_layer));
 					end;
@@ -4189,7 +4189,7 @@ package body et_project is
 					begin
 						pac_copper_arcs.append (
 							container	=> module.board.copper.arcs,
-							new_item	=> (et_packages.shapes.type_arc (board_arc) with
+							new_item	=> (et_packages.pac_shapes.type_arc (board_arc) with
 											width	=> board_line_width,
 											layer	=> signal_layer));
 					end;
@@ -4284,7 +4284,7 @@ package body et_project is
 					begin
 						type_pcb_contour_lines.append (
 							container	=> module.board.contours.lines,
-							new_item	=> (et_packages.shapes.type_line (board_line) with board_lock_status));
+							new_item	=> (et_packages.pac_shapes.type_line (board_line) with board_lock_status));
 					end do_it;
 										
 				begin -- insert_line_contour
@@ -4307,7 +4307,7 @@ package body et_project is
 					begin
 						type_pcb_contour_arcs.append (
 							container	=> module.board.contours.arcs,
-							new_item	=> (et_packages.shapes.type_arc (board_arc) with board_lock_status));
+							new_item	=> (et_packages.pac_shapes.type_arc (board_arc) with board_lock_status));
 					end do_it;
 										
 				begin -- insert_arc_contour
@@ -4330,7 +4330,7 @@ package body et_project is
 					begin
 						type_pcb_contour_circles.append (
 							container	=> module.board.contours.circles,
-							new_item	=> (et_packages.shapes.type_circle (board_circle) with board_lock_status));
+							new_item	=> (et_packages.pac_shapes.type_circle (board_circle) with board_lock_status));
 					end do_it;
 										
 				begin -- insert_circle_contour
@@ -4413,7 +4413,7 @@ package body et_project is
 				end insert_assembly_variant;
 
 				procedure build_route_polygon is
-					use et_packages.shapes;
+					use et_packages.pac_shapes;
 
 					procedure solid_polygon is
 						use et_pcb.pac_signal_polygons_solid;
@@ -4529,7 +4529,7 @@ package body et_project is
 				begin
 					et_pcb.pac_copper_cutouts.append (
 						container	=> route.cutouts,
-						new_item	=> (shapes.type_polygon_base (polygon) with
+						new_item	=> (pac_shapes.type_polygon_base (polygon) with
 										easing	=> board_easing,
 										layer	=> signal_layer));
 
@@ -4790,7 +4790,7 @@ package body et_project is
 								-- insert line in route.lines
 								et_pcb.pac_copper_lines.append (
 									container	=> route.lines,
-									new_item	=> (et_packages.shapes.type_line (board_line) with
+									new_item	=> (et_packages.pac_shapes.type_line (board_line) with
 											width	=> board_line_width,
 											layer	=> signal_layer));
 									
@@ -4882,7 +4882,7 @@ package body et_project is
 								-- insert arc in route.arcs
 								et_pcb.pac_copper_arcs.append (
 									container	=> route.arcs,
-									new_item	=> (et_packages.shapes.type_arc (board_arc) with
+									new_item	=> (et_packages.pac_shapes.type_arc (board_arc) with
 											width	=> board_line_width,
 											layer	=> signal_layer));
 									
@@ -6370,7 +6370,7 @@ package body et_project is
 								if not read_board_arc (line) then
 									declare
 										kw : string := f (line, 1);
-										use et_packages.shapes;
+										use et_packages.pac_shapes;
 										use et_pcb_stack;
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
@@ -6441,7 +6441,7 @@ package body et_project is
 								if not read_board_arc (line) then
 									declare
 										kw : string := f (line, 1);
-										use et_packages.shapes;
+										use et_packages.pac_shapes;
 										use et_pcb_stack;
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
@@ -6462,7 +6462,7 @@ package body et_project is
 								if not read_board_arc (line) then
 									declare
 										kw : string := f (line, 1);
-										use et_packages.shapes;
+										use et_packages.pac_shapes;
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
 										if kw = keyword_locked then -- locked no
@@ -6492,7 +6492,7 @@ package body et_project is
 										
 											declare
 												use et_packages;
-												use et_packages.shapes;
+												use et_packages.pac_shapes;
 												kw : string := f (line, 1);
 											begin
 												-- CS: In the following: set a corresponding parameter-found-flag
@@ -6535,7 +6535,7 @@ package body et_project is
 									declare
 										use et_pcb_stack;
 										use et_packages;
-										use et_packages.shapes;
+										use et_packages.pac_shapes;
 										use et_pcb_coordinates.geometry;
 										kw : string := f (line, 1);
 									begin
@@ -6562,7 +6562,7 @@ package body et_project is
 								if not read_board_circle (line) then
 									declare
 										use et_packages;
-										use et_packages.shapes;
+										use et_packages.pac_shapes;
 										use et_pcb_stack;
 										use et_pcb_coordinates.geometry;
 										kw : string := f (line, 1);
@@ -6605,7 +6605,7 @@ package body et_project is
 								if not read_board_circle (line) then
 									declare
 										use et_pcb_coordinates.geometry;
-										use et_packages.shapes;
+										use et_packages.pac_shapes;
 										kw : string := f (line, 1);
 									begin
 										-- CS: In the following: set a corresponding parameter-found-flag
@@ -6655,7 +6655,7 @@ package body et_project is
 										SEC_STENCIL | SEC_STOP_MASK =>
 										declare
 											use et_packages;
-											use et_packages.shapes;
+											use et_packages.pac_shapes;
 											use et_pcb_coordinates.geometry;
 											kw : string := f (line, 1);
 										begin
@@ -6688,7 +6688,7 @@ package body et_project is
 								declare
 									use et_pcb_stack;
 									use et_packages;
-									use et_packages.shapes;
+									use et_packages.pac_shapes;
 									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
@@ -6707,7 +6707,7 @@ package body et_project is
 							when SEC_COPPER => -- non electrical
 								declare
 									use et_packages;
-									use et_packages.shapes;									
+									use et_packages.pac_shapes;									
 									use et_pcb_stack;
 									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
@@ -6811,7 +6811,7 @@ package body et_project is
 										SEC_STENCIL | SEC_STOP_MASK =>
 										declare
 											use et_packages;
-											use et_packages.shapes;
+											use et_packages.pac_shapes;
 											use et_pcb_coordinates.geometry;
 											kw : string := f (line, 1);
 										begin
@@ -6843,7 +6843,7 @@ package body et_project is
 
 									when SEC_KEEPOUT =>
 										declare
-											use et_packages.shapes;
+											use et_packages.pac_shapes;
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
@@ -6863,7 +6863,7 @@ package body et_project is
 								declare
 									use et_pcb_stack;
 									use et_packages;
-									use et_packages.shapes;
+									use et_packages.pac_shapes;
 									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);
 								begin
@@ -6886,7 +6886,7 @@ package body et_project is
 							when SEC_COPPER => -- non electrical
 								declare
 									use et_packages;
-									use et_packages.shapes;									
+									use et_packages.pac_shapes;									
 									use et_pcb_stack;
 									use et_pcb_coordinates.geometry;
 									kw : string := f (line, 1);

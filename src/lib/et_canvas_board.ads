@@ -69,7 +69,7 @@ package et_canvas_board is
 	-- In order to draw objects of a component-package we instantiate this package:
 	package pac_draw_package is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas	=> pac_canvas,
-		pac_shapes	=> et_packages.shapes,
+		pac_shapes	=> et_packages.pac_shapes,
 		pac_text	=> et_packages.pac_text);
 	
 	use pac_canvas;	

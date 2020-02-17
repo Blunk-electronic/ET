@@ -97,13 +97,13 @@ package pcb_rw is
 	
 	procedure write_width (width : in et_packages.type_track_width);	
 
-	procedure write_line (line : in et_packages.shapes.type_line'class);
+	procedure write_line (line : in et_packages.pac_shapes.type_line'class);
 	-- writes start and end point of a line
 
-	procedure write_arc (arc : in et_packages.shapes.type_arc'class);
+	procedure write_arc (arc : in et_packages.pac_shapes.type_arc'class);
 	-- writes center, start and end point of an arc
 
-	procedure write_circle (circle : in et_packages.shapes.type_circle'class);
+	procedure write_circle (circle : in et_packages.pac_shapes.type_circle'class);
 	-- writes center and radius of a circle
 
 	
@@ -116,7 +116,7 @@ package pcb_rw is
 	procedure write_priority (prio : in et_pcb.type_polygon_priority);
 	procedure write_signal_layer (layer : in et_pcb_stack.type_signal_layer);
 	procedure write_fill_stlye (fill_style : in et_packages.type_fill_style);
-	procedure write_fill_status (filled : in et_packages.shapes.type_filled);
+	procedure write_fill_status (filled : in et_packages.pac_shapes.type_filled);
 	procedure write_pad_connection (connection : in et_pcb.type_polygon_pad_connection);
 	procedure write_pad_technology (techno : in et_pcb.type_polygon_pad_technology);	
 	procedure write_signal_layers (layers : in et_pcb_stack.type_signal_layers.set);
@@ -125,7 +125,7 @@ package pcb_rw is
 	procedure write_circle_copper (circle : in et_pcb.type_copper_circle);	
 	
 	
-	procedure write_polygon_segments (polygon : in et_packages.shapes.type_polygon_base);
+	procedure write_polygon_segments (polygon : in et_packages.pac_shapes.type_polygon_base);
 	-- writes the segments of a polygon (lines, arcs and circles)
 
 	
@@ -159,7 +159,7 @@ package pcb_rw is
 
 -- BASIC GEOMETRIC OBJECTS USED IN PACKAGES AND BOARDS
 	
-	type type_board_line is new et_packages.shapes.type_line with null record;
+	type type_board_line is new et_packages.pac_shapes.type_line with null record;
 
 	procedure add_polygon_line (line : in out type_board_line);
 
@@ -168,7 +168,7 @@ package pcb_rw is
 	procedure board_reset_line;
 
 	
-	type type_board_arc is new et_packages.shapes.type_arc with null record;
+	type type_board_arc is new et_packages.pac_shapes.type_arc with null record;
 
 	procedure add_polygon_arc (arc : in out type_board_arc);
 
@@ -177,7 +177,7 @@ package pcb_rw is
 	procedure board_reset_arc;
 
 	
-	type type_board_circle is new et_packages.shapes.type_circle with null record;
+	type type_board_circle is new et_packages.pac_shapes.type_circle with null record;
 
 	procedure add_polygon_circle (circle : in out type_board_circle);
 	
@@ -204,14 +204,14 @@ package pcb_rw is
 	-- Reads start and end point of the board_circle. If the statement is invalid then it returns a false.
 	
 	board_fill_style : et_packages.type_fill_style := et_packages.fill_style_default;
-	board_filled : et_packages.shapes.type_filled := et_packages.shapes.filled_default;
+	board_filled : et_packages.pac_shapes.type_filled := et_packages.pac_shapes.filled_default;
 
 	board_hatching : et_packages.type_hatching;
 	board_hatching_copper : et_packages.type_hatching_copper;
 	board_easing : et_packages.type_easing;
 
 	
-	type type_polygon is new et_packages.shapes.type_polygon_base with null record;
+	type type_polygon is new et_packages.pac_shapes.type_polygon_base with null record;
 	polygon : type_polygon;
 	
 	polygon_isolation : et_packages.type_track_clearance := et_packages.type_track_clearance'first;
@@ -240,8 +240,8 @@ package pcb_rw is
 	-- Composes a fillable circle from the given parameters. 
 	-- Filled and fill_style are discriminants. Depending on them some parameters
 	-- matter or not. See spec for type_fillable_circle.
-		circle				: in et_packages.shapes.type_circle;
-		filled				: in et_packages.shapes.type_filled;
+		circle				: in et_packages.pac_shapes.type_circle;
+		filled				: in et_packages.pac_shapes.type_filled;
 		fill_style			: in et_packages.type_fill_style;
 		circumfence_width	: in et_packages.type_general_line_width;
 		hatching			: in et_packages.type_hatching)

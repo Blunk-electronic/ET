@@ -278,9 +278,10 @@ package et_packages is
 
 
 	-- Instantiation of the generic shapes package et_geometry.shapes_2d:
-	package shapes is new et_geometry.shapes_2d ( -- CS rename to pac_shapes
+	package pac_shapes is new et_geometry.shapes_2d (
 		geometry => et_pcb_coordinates.geometry);
-	use shapes;
+
+	use pac_shapes;
 	
 
 	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE		
@@ -683,7 +684,7 @@ package et_packages is
 	
 	package type_keepout_circles is new doubly_linked_lists (type_fillable_circle_solid);
 
-	package type_keepout_polygons is new doubly_linked_lists (shapes.type_polygon);
+	package type_keepout_polygons is new doubly_linked_lists (pac_shapes.type_polygon);
 	package pac_keepout_cutouts is new doubly_linked_lists (type_cutout_zone);	
 	
 	type type_keepout is record
@@ -724,7 +725,7 @@ package et_packages is
 	
 	package type_route_restrict_circles is new doubly_linked_lists (type_route_restrict_circle);
 
-	type type_route_restrict_polygon is new shapes.type_polygon with record
+	type type_route_restrict_polygon is new pac_shapes.type_polygon with record
 		layers 	: type_signal_layers.set;
 	end record;
 
@@ -773,7 +774,7 @@ package et_packages is
 	package type_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
 
 	
-	type type_via_restrict_polygon is new shapes.type_polygon with record
+	type type_via_restrict_polygon is new pac_shapes.type_polygon with record
 		layers 	: type_signal_layers.set;
 	end record;
 
@@ -824,7 +825,7 @@ package et_packages is
 	
 -- PLATED MILLINGS OF TERMINALS	
 	-- Plated millings as used by terminals. These structures have closed circumfence.
-	type type_plated_millings is new shapes.type_polygon_base with null record;
+	type type_plated_millings is new pac_shapes.type_polygon_base with null record;
 
 	procedure log_plated_millings (
 		millings 		: in type_plated_millings;
@@ -866,7 +867,7 @@ package et_packages is
 
 	
 	-- A pad outline is a polygon:
-	type type_pad_outline is new shapes.type_polygon_base with null record;
+	type type_pad_outline is new pac_shapes.type_polygon_base with null record;
 	
 	type type_pad_outline_tht is record
 		top		: type_pad_outline; -- The pad shape on the top side
