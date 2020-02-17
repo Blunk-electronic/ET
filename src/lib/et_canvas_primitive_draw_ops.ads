@@ -139,6 +139,10 @@ package pac_draw is
 	function to_points (size : in pac_text.type_text_size)
 		return gdouble;
 
+	-- If a text is rigid, it will rotate its position and
+	-- orientation in the same sense as the given rotation.
+-- 	type type_rigid_text is (YES, NO); -- CS no need
+	
 	procedure draw_text (
 		context		: in type_draw_context;
 		text		: in pac_text.type_text;
@@ -146,7 +150,7 @@ package pac_draw is
 		size		: in pac_text.type_text_size;
 		x,y			: in gdouble;
 		rotation	: in type_rotation;
-		fixed		: in boolean;
+-- 		rigid		: in type_rigid_text;
 		alignment	: in type_text_alignment);
 	
 -- 	procedure draw_text (

@@ -66,8 +66,7 @@ package et_text is
 		return type_text_alignment;
 	
 	function to_string (alignment : in type_text_alignment) return string;
-
-
+	
 -- TEXT CONTENT
 	-- A text may have up to 200 characters which seems sufficient for now.
 	keyword_content : constant string := "content";
