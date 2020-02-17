@@ -324,32 +324,8 @@ package et_geometry is
 		
 	end geometry_operations_2d;
 
--- 	package geometry_operations_3d is
--- 		zero : constant type_distance := 0.0;
--- 		
--- 		subtype type_axis_3d is type_axis range X .. Z;
--- 
--- 		type type_point is tagged private;
--- 
--- 		origin : constant type_point;
--- 
--- 		function x (point : in type_point'class) return type_distance; -- CS class attr. not required ?
--- 		function y (point : in type_point'class) return type_distance;
--- 		function z (point : in type_point'class) return type_distance;				
--- 
--- 		function set (x, y, z : in type_distance) return type_point'class;
--- 
--- 		procedure dummy;
--- 		
--- 	private
--- 
--- 		type type_point is tagged record
--- 			x, y, z : type_distance := zero;
--- 		end record;
--- 
--- 		origin : constant type_point := (others => zero);
--- 		
--- 	end geometry_operations_3d;
+
+
 
 	generic
 		with package geometry is new geometry_operations_2d (<>);

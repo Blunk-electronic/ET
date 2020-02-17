@@ -57,40 +57,6 @@ with et_text;
 package body et_symbols is
 	
 	use geometry;
-	
--- 	
--- 	function to_text_size (size : in type_distance) return pac_text.type_text_size is
--- 	-- Converts given distance to type_text_size. Raises error on excessive text size.
--- 		use et_string_processing;
--- 
--- 		function to_string (
--- 			size		: in pac_text.type_text_size;
--- 			preamble	: in boolean := true) return string is
--- 		-- Returns the given text size as string.
--- 		begin
--- 			if preamble then
--- 				return "size " & geometry.to_string (size);
--- 			else
--- 				return geometry.to_string (size);
--- 			end if;
--- 		end to_string;
--- 
--- 	begin
--- 		if size not in pac_text.type_text_size then
--- 			log (ERROR, "text " 
--- 				 & to_string (size => size, preamble => true)  
--- 				 & " out of range !",
--- 				 console => true);
--- 
--- 			log (text => "Allowed range is " & to_string (pac_text.type_text_size'first, preamble => false) & " .. "
--- 				 & to_string (pac_text.type_text_size'last, preamble => false),
--- 				 console => true);
--- 
--- 			raise constraint_error;
--- 		end if;
--- 		return size;
--- 	end to_text_size;
-
 
 	function to_string (style : in type_text_style) return string is begin
 		return to_lower (type_text_style'image (style));

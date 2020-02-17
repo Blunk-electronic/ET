@@ -91,11 +91,8 @@ package et_text is
 	generic
 		with package geometry is new et_geometry.geometry_operations_2d (<>);
 		
--- 		type type_distance is delta <>;
 		size_min, size_max, size_default : geometry.type_distance;
 		line_width_min, line_width_max, line_width_default : geometry.type_distance;
-
--- 		type type_rotation is delta <>;
 		
 	package text is
 		use geometry;
@@ -103,8 +100,6 @@ package et_text is
 		subtype type_text_size is type_distance range size_min .. size_max; -- in millimeters
 		subtype type_text_line_width is type_distance range line_width_min .. line_width_max;
 		
--- 		function to_string (size : in type_distance) return string;
-
 		function to_text_size (size : in type_distance) return type_text_size;
 		-- Converts given distance to type_text_size. Raises error on excessive text size.
 		

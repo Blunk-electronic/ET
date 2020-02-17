@@ -91,9 +91,6 @@ package et_symbols is
 
 	use pac_text; 
 	
--- 	function to_text_size (size : in type_distance) return pac_text.type_text_size;
--- 	-- Converts given distance to type_text_size. Raises error on excessive text size.
-	
 
 	type type_text_style is (NORMAL, ITALIC, BOLD, ITALIC_BOLD);
 	function to_string (style : in type_text_style) return string;

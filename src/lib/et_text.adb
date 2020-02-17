@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2020 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -135,15 +135,6 @@ package body et_text is
 	package body text is
 
 		use et_string_processing;
-
--- 		function to_string (size : in type_distance) return string is begin
--- 			return type_distance'image (size);
--- 		end;
-
--- 		function to_string (rotation : in type_rotation) return string is begin
--- 			return type_rotation'image (rotation);
--- 		end;
-
 	
 		function to_text_size (size : in type_distance) return type_text_size is
 		-- Converts given distance to type_text_size. Raises error on excessive text size.
@@ -210,7 +201,7 @@ package body et_text is
 		function text_properties (text : in type_text) return string is
 		-- Returns the properties of the given text in a long single string.
 		begin
-			return --to_string (text.position) & latin_1.space
+			return
 				"size" 
 				& to_string (text.size)
 				& " line width" & to_string (text.line_width)
@@ -221,12 +212,11 @@ package body et_text is
 
 		procedure warning_rotation_outside_range is
 			use et_string_processing;
-	-- 		use et_coordinates.geometry;
 		begin
 			log (WARNING,
 				"rotation of text outside range " 
-				& type_rotation'image (type_rotation_documentation'first) & " .. " 
-				& type_rotation'image (type_rotation_documentation'last) & " !");
+				& to_string (type_rotation_documentation'first) & " .. " 
+				& to_string (type_rotation_documentation'last) & " !");
 		end;
 
 		

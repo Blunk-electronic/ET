@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2020 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -51,7 +51,7 @@ with et_string_processing;
 with et_general;
 
 package body et_coordinates is
-	pragma assertion_policy (check);
+-- 	pragma assertion_policy (check);
 	
 	function to_angle (angle : in string) return type_rotation is 
 		use et_string_processing;
@@ -63,9 +63,9 @@ package body et_coordinates is
 		exception 
 			when constraint_error => 
 				log (ERROR, "Rotation " & angle & " outside range" & 
-					 geometry.to_string (type_rotation'first) &
+					 to_string (type_rotation'first) &
 					 " .." & 
-					 geometry.to_string (type_rotation'last) &
+					 to_string (type_rotation'last) &
 					 " (must be an integer) !",
 					 console => true
 					);
@@ -74,7 +74,7 @@ package body et_coordinates is
 			-- CS check for multiple of 90 degree
 			when system.assertions.assert_failure =>
 				log (ERROR, "Rotation " & angle & " is not a multiple of" &
-					 geometry.to_string (rotation => type_rotation'small) & " !",
+					 to_string (rotation => type_rotation'small) & " !",
 					 console => true
 					);
 				raise;
@@ -157,9 +157,9 @@ package body et_coordinates is
 	end;
 	
 	function to_position (
-		point 		: in geometry.type_point'class;
+		point 		: in type_point'class;
 		sheet		: in type_sheet;
-		rotation	: in type_rotation := geometry.zero_rotation)
+		rotation	: in type_rotation := zero_rotation)
 		return type_position is
 
 		use geometry;
@@ -172,9 +172,9 @@ package body et_coordinates is
 	end;
 
 	function to_position_relative (
-		point 		: in geometry.type_point'class;
+		point 		: in type_point'class;
 		sheet		: in type_sheet_relative;
-		rotation	: in type_rotation := geometry.zero_rotation)
+		rotation	: in type_rotation := zero_rotation)
 		return type_position_relative is
 		p : type_position_relative;
 		use geometry;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2020 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -48,12 +48,11 @@ with ada.containers.doubly_linked_lists;
 with et_string_processing;
 with et_general;				use et_general;
 with et_geometry;
--- with et_frames;					use et_frames;
 
 -- with system.assertions;
 
 package et_coordinates is
-	pragma assertion_policy (check);
+-- 	pragma assertion_policy (check);
 	
 	
 	-- The total distance between two objects:
@@ -72,7 +71,8 @@ package et_coordinates is
 	package geometry is new et_geometry.geometry_operations_2d (
 		type_distance	=> type_distance,
 		type_rotation	=> type_rotation);
-	--use geometry;
+	
+	use geometry;
 	
 	subtype type_catch_zone is type_distance range 0.0 .. 10.0;
 	catch_zone : type_catch_zone := 2.0; -- CS: should be a system setting in the future
@@ -94,15 +94,8 @@ package et_coordinates is
 	rotation_relative_max : constant type_rotation := 180.0;	
 	subtype type_rotation_relative is type_rotation range rotation_relative_min .. rotation_relative_max;
 
--- 	rotation_text_min : constant := 0.0;
--- 	rotation_text_max : constant := 90.0;
--- 	subtype type_rotation_text is type_rotation range rotation_text_min .. rotation_text_max;
-	-- CS: make use of this type by membership tests when required
-
-
 	-- When handling hierachic structures we use a separator.
 	-- Example: net name "HEATER_CONTROL/DRIVER/CLK"
-	--hierarchy_separator : constant string (1..1) := ".";
 	hierarchy_separator : constant string (1..1) := "/";
 
 	-- Sheets
@@ -131,15 +124,15 @@ package et_coordinates is
 		offset		: in type_position_relative);
 	
 	function to_position (
-		point 		: in geometry.type_point'class;
+		point 		: in type_point'class;
 		sheet		: in type_sheet;
-		rotation	: in type_rotation := geometry.zero_rotation)
+		rotation	: in type_rotation := zero_rotation)
 		return type_position;
 
 	function to_position_relative (
-		point 		: in geometry.type_point'class;
+		point 		: in type_point'class;
 		sheet		: in type_sheet_relative;
-		rotation	: in type_rotation := geometry.zero_rotation)		
+		rotation	: in type_rotation := zero_rotation)		
 		return type_position_relative;
 	
 	zero_position : constant type_position;
@@ -165,7 +158,7 @@ package et_coordinates is
 		end record;
 
 		zero_position : constant type_position := (
-			geometry.origin_zero_rotation with sheet => type_sheet'first);
+			origin_zero_rotation with sheet => type_sheet'first);
 		
 end et_coordinates;
 
