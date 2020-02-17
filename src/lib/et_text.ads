@@ -121,6 +121,8 @@ package et_text is
 		subtype type_rotation_documentation is type_rotation range 0.0 .. 90.0;
 
 		procedure warning_rotation_outside_range;
+
+		function to_rotation_doc (rotation : in type_rotation) return type_rotation_documentation;
 		
 	-- 	private
 

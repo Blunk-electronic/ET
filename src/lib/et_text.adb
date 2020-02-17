@@ -219,6 +219,12 @@ package body et_text is
 				& to_string (type_rotation_documentation'last) & " !");
 		end;
 
+		function to_rotation_doc (rotation : in type_rotation) return type_rotation_documentation is
+			result : type_rotation_documentation;
+		begin
+			return result;
+		end;
+		
 		
 	end text;
 
