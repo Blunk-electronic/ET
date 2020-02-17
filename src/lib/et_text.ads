@@ -36,7 +36,7 @@
 --
 
 with ada.strings.bounded; 		use ada.strings.bounded;
-
+with et_geometry;
 with et_string_processing;
 
 package et_text is
@@ -89,18 +89,24 @@ package et_text is
 
 	
 	generic
-		type type_distance is delta <>;
-		size_min, size_max, size_default : type_distance;
-		line_width_min, line_width_max, line_width_default : type_distance;
+		with package geometry is new et_geometry.geometry_operations_2d (<>);
+		
+-- 		type type_distance is delta <>;
+		size_min, size_max, size_default : geometry.type_distance;
+		line_width_min, line_width_max, line_width_default : geometry.type_distance;
 
-		type type_rotation is delta <>;
+-- 		type type_rotation is delta <>;
 		
 	package text is
+		use geometry;
 
 		subtype type_text_size is type_distance range size_min .. size_max; -- in millimeters
 		subtype type_text_line_width is type_distance range line_width_min .. line_width_max;
 		
-		function to_string (size : in type_distance) return string;
+-- 		function to_string (size : in type_distance) return string;
+
+		function to_text_size (size : in type_distance) return type_text_size;
+		-- Converts given distance to type_text_size. Raises error on excessive text size.
 		
 		procedure validate_text_size (size : in type_distance);
 		-- Checks whether given text size is in range of type_text_size.

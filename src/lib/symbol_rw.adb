@@ -145,8 +145,8 @@ package body symbol_rw is
 		use et_symbols.pac_text;
 		use et_text;
 	begin
-		write (keyword => keyword_size, parameters => pac_text.to_string (t.size));
-		write (keyword => et_text.keyword_line_width, parameters => pac_text.to_string (t.line_width));
+		write (keyword => keyword_size, parameters => to_string (t.size));
+		write (keyword => et_text.keyword_line_width, parameters => to_string (t.line_width));
 		write (keyword => keyword_rotation, parameters => geometry.to_string (t.rotation));
 		write (keyword => keyword_style, parameters => to_string (t.style));
 		write (keyword => keyword_alignment, parameters =>

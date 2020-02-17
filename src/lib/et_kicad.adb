@@ -7264,7 +7264,7 @@ package body et_kicad is
 				end if;
 
 				-- set text size and check for excessive size
-				note.size := to_text_size (mil_to_distance (f (element (line_cursor), 6)));
+				note.size := et_kicad.pac_text.to_text_size (mil_to_distance (f (element (line_cursor), 6)));
 				
 				note.style := to_text_style (style_in => f (element (line_cursor), 7), text => true);
 
@@ -13784,6 +13784,7 @@ package body et_kicad is
 		use et_string_processing;
 		use et_coordinates;
 		use et_text;
+		use geometry;
 	begin
 		log (text => "text note" & to_string (
 			position => note.position, scope => kicad_coordinates.XY), level => log_threshold);
@@ -13794,22 +13795,22 @@ package body et_kicad is
 		if type_text_content.length (note.content) > 0 then
 			log (text => "content '" & to_string (note.content) & "'", level => log_threshold);
 		else
-			log (text => et_string_processing.message_warning & "no content !", level => log_threshold); 
+			log (text => message_warning & "no content !", level => log_threshold); 
 		end if;
 	
 		if log_level >= log_threshold + 1 then
 			
 			-- size
-			log (text => "size" & pac_text.to_string (note.size));
+			log (text => "size" & to_string (note.size));
 
 			-- style
 			log (text => "style " & to_lower (to_string (note.style)));
 
 			-- line width
-			log (text => "line width" & pac_text.to_string (note.line_width));
+			log (text => "line width" & to_string (note.line_width));
 
 			-- rotation
-			log (text => "rotation" & geometry.to_string (note.rotation));
+			log (text => "rotation" & to_string (note.rotation));
 
 			-- visible
 			--log (text => "visible " & to_lower (et_libraries.type_text_visible'image (note.visible)));

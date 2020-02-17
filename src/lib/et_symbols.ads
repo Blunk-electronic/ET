@@ -60,6 +60,13 @@ package et_symbols is
 	use geometry;
 
 
+
+-- Instantiation of the generic shapes package et_geometry.shapes_2d:
+	package pac_shapes is new et_geometry.shapes_2d (geometry => et_coordinates.geometry);
+	use pac_shapes;
+
+	
+	
 -- TEXT
 
 	text_size_min : constant type_distance_positive := 1.0;
@@ -73,19 +80,19 @@ package et_symbols is
 	
 	-- Instantiation of the text package:
 	package pac_text is new et_text.text (
-		type_distance		=> type_distance_positive,
+		geometry			=> et_coordinates.geometry,
 		size_min			=> text_size_min,
 		size_max			=> text_size_max,
 		size_default		=> text_size_default,
 		line_width_min		=> text_line_width_min,
 		line_width_max		=> text_line_width_max,
-		line_width_default	=> text_line_width_default,
-		type_rotation		=> type_rotation
+		line_width_default	=> text_line_width_default
 		);
 
+	use pac_text; 
 	
-	function to_text_size (size : in type_distance) return pac_text.type_text_size;
-	-- Converts given distance to type_text_size. Raises error on excessive text size.
+-- 	function to_text_size (size : in type_distance) return pac_text.type_text_size;
+-- 	-- Converts given distance to type_text_size. Raises error on excessive text size.
 	
 
 	type type_text_style is (NORMAL, ITALIC, BOLD, ITALIC_BOLD);
@@ -247,7 +254,7 @@ package et_symbols is
 	type type_port_base is tagged record
 		position			: type_point; -- this is the point of connection with a net
 		length				: type_port_length := port_length_default; 
-		rotation			: type_rotation := 0.0; -- CS use type_rotation_relative ?
+		rotation			: et_coordinates.type_rotation := 0.0; -- CS use type_rotation_relative ?
 		
 		port_name_visible		: type_port_name_visible := port_name_visible_default;
 		port_name_size			: pac_text.type_text_size := text_size_default;
@@ -377,10 +384,6 @@ package et_symbols is
 	
 
 
-	-- Instantiation of the generic shapes package et_geometry.shapes_2d:
-	package pac_shapes is new et_geometry.shapes_2d (geometry => et_coordinates.geometry);
-	use pac_shapes;
-	
 
 
 	-- lines

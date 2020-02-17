@@ -130,7 +130,7 @@ package body et_packages is
 	end to_string;
 
 
-	procedure validate_general_line_width (width : in type_distance) is
+	procedure validate_general_line_width (width : in et_pcb_coordinates.type_distance) is
 	-- Checks whether given line width is in range of type_general_line_width
 	begin
 		if width not in type_general_line_width then
@@ -143,7 +143,7 @@ package body et_packages is
 	end validate_general_line_width;
 
 
-	procedure validate_drill_size (drill : in type_distance) is
+	procedure validate_drill_size (drill : in et_pcb_coordinates.type_distance) is
 	-- Checks whether given drill size is in range of type_drill_size
 	begin
 		if drill not in type_drill_size then
@@ -155,7 +155,7 @@ package body et_packages is
 		end if;
 	end validate_drill_size;
 
-	procedure validate_pad_size (size : in type_distance) is
+	procedure validate_pad_size (size : in et_pcb_coordinates.type_distance) is
 	-- Checks whether given pad size is in range of type_pad_size
 	begin
 		if size not in type_pad_size then
@@ -173,7 +173,7 @@ package body et_packages is
 		return (to_string (drill.position) & " drill_diameter" & to_string (drill.diameter));
 	end to_string;
 	
-	procedure validate_track_clearance (clearance : in type_distance) is
+	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance) is
 	-- Checks whether the given track clearance is in range of type_track_clearance.
 	begin
 		if clearance not in type_track_clearance then
@@ -185,7 +185,7 @@ package body et_packages is
 		end if;
 	end validate_track_clearance;
 
-	procedure validate_track_width (track_width : in type_distance) is
+	procedure validate_track_width (track_width : in type_distance_positive) is
 	-- Checks whether the given width is in range of type_track_width.
 	begin
 		if track_width not in type_track_width then
@@ -197,7 +197,7 @@ package body et_packages is
 		end if;
 	end validate_track_width;
 
-	procedure validate_restring_width (restring_width : in type_distance) is
+	procedure validate_restring_width (restring_width : in et_pcb_coordinates.type_distance) is
 	-- Checks whether the given restring width is in range of type_restring_width.	
 	begin
 		if restring_width not in type_restring_width then

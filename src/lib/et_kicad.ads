@@ -184,15 +184,16 @@ package et_kicad is
 	
 	-- Instantiation of the text package:
 	package pac_text is new et_text.text (
-		type_distance		=> et_coordinates.geometry.type_distance_positive,
+		geometry			=> et_coordinates.geometry,
 		size_min			=> text_size_min,
 		size_max			=> text_size_max,
 		size_default		=> text_size_default,
 		line_width_min		=> text_line_width_min,
 		line_width_max		=> text_line_width_max,
-		line_width_default	=> text_line_width_default,
-		type_rotation		=> et_coordinates.type_rotation
+		line_width_default	=> text_line_width_default
 		);
+
+	use pac_text;
 
 	-- These are basic properties a text has got:
 	type type_text_basic is new pac_text.type_text with record

@@ -128,21 +128,20 @@ package et_packages is
 	
 	-- Instantiation of the text package:
 	package pac_text is new et_text.text (
-		type_distance		=> type_distance_positive,
+		geometry			=> et_pcb_coordinates.geometry,
 		size_min			=> text_size_min,
 		size_max			=> text_size_max,
 		size_default		=> text_size_default,
 		line_width_min		=> line_width_min,
 		line_width_max		=> line_width_max,
-		line_width_default	=> line_width_default,
-		type_rotation		=> type_rotation
+		line_width_default	=> line_width_default
 		);
 
 	subtype type_general_line_width is type_distance_positive range line_width_min .. line_width_max;
 	
 
 
-	procedure validate_general_line_width (width : in type_distance);
+	procedure validate_general_line_width (width : in et_pcb_coordinates.type_distance);
 	-- Checks whether given line width is in range of type_general_line_width
 
 
@@ -150,9 +149,9 @@ package et_packages is
 	-- We fit the via diameter (incl. microvias) in a reasonable range via a subtype:
 	drill_size_min : constant type_distance_positive := 0.05;
 	drill_size_max : constant type_distance_positive := 10.0;
-	subtype type_drill_size is type_distance range drill_size_min .. drill_size_max;
+	subtype type_drill_size is type_distance_positive range drill_size_min .. drill_size_max;
 
-	procedure validate_drill_size (drill : in type_distance);
+	procedure validate_drill_size (drill : in et_pcb_coordinates.type_distance);
 	-- Checks whether given drill size is in range of type_drill_size
 
 	-- DRILLS
@@ -167,20 +166,20 @@ package et_packages is
 
 
 	-- COPPER STRUCTURES GENERAL
-	copper_structure_size_min : constant type_distance := 0.05;
-	copper_clearance_min : constant type_distance := copper_structure_size_min;
+	copper_structure_size_min : constant et_pcb_coordinates.type_distance := 0.05;
+	copper_clearance_min : constant et_pcb_coordinates.type_distance := copper_structure_size_min;
 	
 
 	-- SIGNALS
-	subtype type_track_clearance is type_distance_positive range copper_clearance_min .. type_distance'last;
+	subtype type_track_clearance is type_distance_positive range copper_clearance_min .. et_pcb_coordinates.type_distance'last;
 
-	procedure validate_track_clearance (clearance : in type_distance);
+	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance);
 	-- Checks whether the given track clearance is in range of type_track_clearance.
 
-	track_width_max : constant type_distance := 100.0;
+	track_width_max : constant type_distance_positive := 100.0;
 	subtype type_track_width is type_distance_positive range copper_structure_size_min .. track_width_max;
 
-	procedure validate_track_width (track_width : in type_distance);
+	procedure validate_track_width (track_width : in type_distance_positive);
 	-- Checks whether the given track width is in range of type_track_width.
 
 	
@@ -189,7 +188,7 @@ package et_packages is
 	pad_size_max : constant type_track_width := 10.0;
 	subtype type_pad_size is type_distance_positive range pad_size_min .. pad_size_max;
 
-	procedure validate_pad_size (size : in type_distance);
+	procedure validate_pad_size (size : in et_pcb_coordinates.type_distance);
 	-- Checks whether given pad size is in range of type_pad_size
 
 
@@ -208,10 +207,10 @@ package et_packages is
 	keyword_restring_outer_layers : constant string := "restring_outer_layers";
 	keyword_restring_inner_layers : constant string := "restring_inner_layers";		
 
-	restring_width_max : constant type_distance := 5.0;
-	subtype type_restring_width is type_distance range copper_structure_size_min .. restring_width_max;
+	restring_width_max : constant type_distance_positive := 5.0;
+	subtype type_restring_width is type_distance_positive range copper_structure_size_min .. restring_width_max;
 
-	procedure validate_restring_width (restring_width : in type_distance);
+	procedure validate_restring_width (restring_width : in et_pcb_coordinates.type_distance);
 	-- Checks whether the given restring width is in range of type_restring_width.
 
 
