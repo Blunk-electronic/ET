@@ -225,6 +225,12 @@ package scripting is
 	keyword_to				: constant string := "to";
 	keyword_direction		: constant string := "direction";
 -- 	keyword_length			: constant string := "length";
+
+	function execute_command (
+		file_name		: in type_script_name.bounded_string;
+		cmd				: in type_fields_of_line;
+		log_threshold	: in type_log_level)
+		return type_exit_code;
 	
 	function execute_script (
 		file_name		: in type_script_name.bounded_string;
