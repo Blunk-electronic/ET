@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2020 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -52,6 +52,7 @@ with et_coordinates;			use et_coordinates;
 with et_string_processing;		use et_string_processing;
 with et_schematic;				use et_schematic;
 with et_project;				use et_project;
+with et_text;
 with submodules;
 with assembly_variants;
 with numbering;
@@ -131,7 +132,7 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- A
-		rotation		: in pac_text.type_rotation_documentation; -- absolute ! -- 90
+		rotation		: in et_text.type_rotation_documentation; -- absolute ! -- 90
 		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose		
 		log_threshold	: in type_log_level);
 
@@ -392,7 +393,7 @@ package schematic_ops is
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		segment_position: in et_coordinates.type_position; -- sheet/x/y
 		label_position	: in type_point; -- x/y
-		rotation		: in et_coordinates.type_rotation; -- 0 / 90 degree
+		rotation		: in et_text.type_rotation_documentation; -- 0 / 90 degree
 		appearance 		: in type_net_label_appearance; -- simple/tag label		
 		direction		: in et_schematic.type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level);

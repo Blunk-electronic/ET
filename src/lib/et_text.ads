@@ -87,6 +87,9 @@ package et_text is
 	keyword_meaning		: constant string := "meaning";	-- for placeholders
 
 
+	type type_rotation_documentation is (HORIZONTAL, VERTICAL);
+
+
 	
 	generic
 		with package geometry is new et_geometry.geometry_operations_2d (<>);
@@ -118,11 +121,26 @@ package et_text is
 		function text_properties (text : in type_text) return string;
 		-- Returns the properties of the given text in a long single string.	
 
-		subtype type_rotation_documentation is type_rotation range 0.0 .. 90.0;
+		-- Converts HORIZONTAL/VERTICAL to 0.0/90.0 degrees:
+		function to_rotation (rotation : in type_rotation_documentation) 
+			return type_rotation;
 
+		-- Converts HORIZONTAL/VERTICAL to 0.0/90.0 degrees as string:
+		function to_string (rotation : in type_rotation_documentation) return string;
+
+		-- Adds HORIZONTAL/VERTICAL (which is 0/90 degrees) to rotation_add:
+		function "+" (
+			rotation_doc	: in type_rotation_documentation;
+			rotation_add	: in type_rotation)
+			return type_rotation;
+
+		
 		procedure warning_rotation_outside_range;
 
-		function to_rotation_doc (rotation : in type_rotation) return type_rotation_documentation;
+		function snap (rotation : in type_rotation) return type_rotation_documentation;
+
+		-- Converts a string like "0.0" or "90.0" to HORIZONTAL or VERTICAL.
+		function to_rotation_doc (rotation : in string) return type_rotation_documentation;		
 		
 	-- 	private
 

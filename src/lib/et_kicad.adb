@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2020 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -926,7 +926,7 @@ package body et_kicad is
 	begin	
 		case type_field_orientation'value (text) is
 			when H => return 0.0;
-			when V => return 90.0;
+			when V => return 90.0; -- CS -90.0 ?
 		end case;
 
 		exception 
@@ -1163,6 +1163,7 @@ package body et_kicad is
 
 		-- convert given angle to et_coordinates.type_rotation.
 		return et_coordinates.type_rotation (a_tmp / 10.0); -- -359.9 .. 359.9
+		-- CS multiply by -1 ? If yes, remove - before all calls of this function.
 
 		-- CS: exception handler
 	end to_degrees;
@@ -1648,8 +1649,8 @@ package body et_kicad is
 
 				arc.radius		:= mil_to_distance (mil => f (line,4));
 
-				arc.start_angle	:= to_degrees (f (line,5));
-				arc.end_angle	:= to_degrees (f (line,6));
+				arc.start_angle	:= to_degrees (f (line,5)); -- CS multiply by -1 ?
+				arc.end_angle	:= to_degrees (f (line,6)); -- CS multiply by -1 ?
 				
 				arc.width		:= type_line_width'value (f (line,9));
 				arc.fill		:= to_fill (f (line,10));
@@ -1747,11 +1748,7 @@ package body et_kicad is
 				use et_coordinates;
 				use geometry;
 			begin -- to_text
-				text.rotation := to_degrees (f (line,2));
--- 				if text.rotation not in type_rotation_text then
-				if text.rotation'valid then -- CS should be "if not text.rotation'valid" ?
-					pac_text.warning_rotation_outside_range;
-				end if;
+				text.rotation := snap (- to_degrees (f (line,2)));
 				
 				--set_x (text.position, mil_to_distance (mil => f (line,3)));
 				set (X, mil_to_distance (mil => f (line,3)), text.position);
@@ -2027,7 +2024,7 @@ package body et_kicad is
 				
 				text.size := mil_to_distance (mil => f (line,5));
 
-				text.rotation := to_field_orientation (f  (line,6));
+				text.rotation := to_field_orientation (f (line,6));
 				
 				--text.visible := to_field_visible (
 				--	vis_in		=> f (line,7),
@@ -2485,7 +2482,7 @@ package body et_kicad is
 							meaning		=> NAME,
 							position	=> field_reference.position,
 							style		=> field_reference.style,
-							rotation	=> field_reference.rotation,
+							rotation	=> snap (field_reference.rotation),
 							size		=> field_reference.size,
 							line_width	=> field_reference.line_width,
 							alignment	=> field_reference.alignment);
@@ -2494,7 +2491,7 @@ package body et_kicad is
 							meaning		=> VALUE,
 							position	=> field_value.position,
 							style		=> field_value.style,
-							rotation	=> field_value.rotation,
+							rotation	=> snap (field_value.rotation),
 							size		=> field_value.size,
 							line_width	=> field_value.line_width,
 							alignment	=> field_value.alignment);
@@ -7938,7 +7935,7 @@ package body et_kicad is
 											meaning		=> NAME,
 											position	=> field_reference.position,
 											style		=> field_reference.style,
-											rotation	=> field_reference.rotation,
+											rotation	=> snap (field_reference.rotation),
 											size		=> field_reference.size,
 											line_width	=> field_reference.line_width,
 											alignment	=> field_reference.alignment),
@@ -7947,7 +7944,7 @@ package body et_kicad is
 											meaning		=> VALUE,
 											position	=> field_value.position,
 											style		=> field_value.style,
-											rotation	=> field_value.rotation,
+											rotation	=> snap (field_value.rotation),
 											size		=> field_value.size,
 											line_width	=> field_value.line_width,
 											alignment	=> field_value.alignment)
@@ -7977,7 +7974,7 @@ package body et_kicad is
 											meaning		=> NAME,
 											position	=> field_reference.position,
 											style		=> field_reference.style,
-											rotation	=> field_reference.rotation,
+											rotation	=> snap (field_reference.rotation),
 											size		=> field_reference.size,
 											line_width	=> field_reference.line_width,
 											alignment	=> field_reference.alignment),
@@ -7986,7 +7983,7 @@ package body et_kicad is
 											meaning		=> VALUE,
 											position	=> field_value.position,
 											style		=> field_value.style,
-											rotation	=> field_value.rotation,
+											rotation	=> snap (field_value.rotation),
 											size		=> field_value.size,
 											line_width	=> field_value.line_width,
 											alignment	=> field_value.alignment)

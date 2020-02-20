@@ -210,21 +210,74 @@ package body et_text is
 				;
 		end text_properties;
 
+		function to_rotation (rotation : in type_rotation_documentation) 
+			return type_rotation is
+		begin
+			case rotation is
+				when HORIZONTAL => return zero_rotation;
+				when VERTICAL => return 90.0;
+			end case;
+		end to_rotation;
+		
+		function to_string (rotation : in type_rotation_documentation) 
+			return string is
+		begin
+			if rotation = HORIZONTAL then
+				return to_string (zero_rotation);
+			else
+				return to_string (rotation => 90.0);
+			end if;
+		end;
+
+		function "+" (
+			rotation_doc	: in type_rotation_documentation;
+			rotation_add	: in type_rotation)
+			return type_rotation is
+		begin
+			return to_rotation (rotation_doc) + rotation_add;
+		end;
+		
 		procedure warning_rotation_outside_range is
 			use et_string_processing;
 		begin
-			log (WARNING,
-				"rotation of text outside range " 
-				& to_string (type_rotation_documentation'first) & " .. " 
-				& to_string (type_rotation_documentation'last) & " !");
+			log (WARNING, "rotation of documentational text invalid. Must be 0 or 90 degrees !");
 		end;
 
-		function to_rotation_doc (rotation : in type_rotation) return type_rotation_documentation is
-			result : type_rotation_documentation;
+		function snap (rotation : in type_rotation) return type_rotation_documentation is
+			result : type_rotation_documentation := HORIZONTAL;
+			
+			d : constant type_rotation := 45.0;
 		begin
+			if rotation > - d and rotation <= d then
+				result := HORIZONTAL;
+				
+			elsif rotation > d and rotation <= 90.0 + d then
+				result := VERTICAL;
+
+			elsif rotation > 90.0 + d and rotation <= 180.0 + d then
+				result := HORIZONTAL;
+
+			elsif rotation > 180.0 + d and rotation <= -d then
+				result := VERTICAL;
+			end if;
+			
 			return result;
 		end;
 		
+		function to_rotation_doc (rotation : in string) return type_rotation_documentation is
+			r : constant type_rotation := to_rotation (rotation);
+		begin
+			if r = zero_rotation then
+				return HORIZONTAL;
+				
+			elsif r = 90.0 then
+				return VERTICAL;
+				
+			else
+				warning_rotation_outside_range;
+				return snap (r);
+			end if;
+		end;
 		
 	end text;
 

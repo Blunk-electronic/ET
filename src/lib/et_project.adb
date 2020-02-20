@@ -909,7 +909,7 @@ package body et_project is
 								section_mark (section_label, HEADER);
 								
 								write (keyword => keyword_position, parameters => position (element (label_cursor).position));
-								write (keyword => keyword_rotation, parameters => to_string (element (label_cursor).rotation));
+								write (keyword => keyword_rotation, parameters => et_schematic.pac_text.to_string (element (label_cursor).rotation));
 								write (keyword => et_text.keyword_size, parameters => to_string (element (label_cursor).size));
 								write (keyword => keyword_style, parameters => to_string (element (label_cursor).style));
 								write (keyword => et_text.keyword_line_width, parameters => to_string (element (label_cursor).width));
@@ -6220,7 +6220,7 @@ package body et_project is
 										
 									elsif kw = keyword_rotation then -- rotation 0.0
 										expect_field_count (line, 2);
-										net_label.rotation := geometry.to_rotation (f (line, 2));
+										net_label.rotation := et_schematic.pac_text.to_rotation_doc (f (line, 2));
 
 									elsif kw = et_text.keyword_size then -- size 1.3
 										expect_field_count (line, 2);
@@ -7109,7 +7109,7 @@ package body et_project is
 
 									elsif kw = keyword_rotation then -- rotation 90
 										expect_field_count (line, 2);
-										note.rotation := to_rotation (f (line, 2));
+										note.rotation := et_symbols.pac_text.to_rotation_doc (f (line, 2));
 
 									elsif kw = keyword_style then -- stlye normal/italic
 										expect_field_count (line, 2);
@@ -7373,7 +7373,7 @@ package body et_project is
 											elsif kw = keyword_rotation then -- rotation 90.0
 												expect_field_count (line, 2);
 
-												unit_placeholder.rotation := to_rotation (f (line, 2));
+												unit_placeholder.rotation := et_symbols.pac_text.to_rotation_doc (f (line, 2));
 
 											elsif kw = keyword_style then -- stlye italic
 												expect_field_count (line, 2);

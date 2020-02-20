@@ -1219,7 +1219,7 @@ package body scripting is
 																	x => to_distance (f (8)),
 																	y => to_distance (f (9)))),
 
-										rotation			=> to_rotation (f (10)), -- 0 / 90
+										rotation			=> et_schematic.pac_text.to_rotation_doc (f (10)), -- 0 / 90
 										appearance 			=> et_schematic.SIMPLE,
 
 										-- A simple label does not indicate the direction
@@ -1245,7 +1245,7 @@ package body scripting is
 																	x => to_distance (f (8)),
 																	y => to_distance (f (9)))),
 
-										rotation			=> to_rotation (f (10)), -- 0 / 90
+										rotation			=> et_schematic.pac_text.to_rotation_doc (f (10)), -- 0 / 90
 										appearance 			=> et_schematic.TAG,
 
 										-- A tag label requires specification of direction
@@ -1442,7 +1442,7 @@ package body scripting is
 								module_name 	=> module,
 								device_name		=> to_name (f (5)), -- IC1
 								unit_name		=> to_name (f (6)), -- A
-								rotation		=> to_rotation (f (7)), -- 90
+								rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
 								meaning			=> et_symbols.NAME,
 								log_threshold	=> log_threshold + 1
 								);
@@ -1453,7 +1453,7 @@ package body scripting is
 								module_name 	=> module,
 								device_name		=> to_name (f (5)), -- IC1
 								unit_name		=> to_name (f (6)), -- A
-								rotation		=> to_rotation (f (7)), -- 90
+								rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
 								meaning			=> et_symbols.VALUE,
 								log_threshold	=> log_threshold + 1
 								);
@@ -1464,7 +1464,7 @@ package body scripting is
 								module_name 	=> module,
 								device_name		=> to_name (f (5)), -- IC1
 								unit_name		=> to_name (f (6)), -- A
-								rotation		=> to_rotation (f (7)), -- 90
+								rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
 								meaning			=> et_symbols.PURPOSE,
 								log_threshold	=> log_threshold + 1
 								);

@@ -86,6 +86,7 @@ procedure draw_units (
 	function moved_by_operator (placeholder : in et_symbols.type_text_placeholder)
 		return boolean is
 		use et_symbols;
+		use et_text;
 		use type et_text.type_text_alignment;
 		result : boolean := false;
 	begin
@@ -381,6 +382,7 @@ procedure draw_units (
 		procedure draw_text (c : in type_texts.cursor) is 
 			position : type_point := element (c).position;
 			use pac_draw_misc;
+			use pac_text;
 		begin
 			-- Rotate the position of the text.
 			-- This adds the unit_rotation to the given rotation.
@@ -395,7 +397,7 @@ procedure draw_units (
 				x			=> transpose_x (x (position)),
 				y			=> transpose_y (y (position)),
 				rotation	=> element (c).rotation + unit_rotation,
--- 				rigid		=> YES,
+				-- 				rigid		=> YES,
 				alignment	=> element (c).alignment
 				);
 		end draw_text;
@@ -405,6 +407,7 @@ procedure draw_units (
 			use et_text;
 			use et_devices;
 			use pac_draw_misc;
+			use pac_text;
 			
 			position : type_point;
 

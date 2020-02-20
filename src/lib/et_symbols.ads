@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2020 Mario Blunk, Blunk electronic                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -116,7 +116,7 @@ package et_symbols is
 	-- These are basic properties a text has got:
 	type type_text_basic is new pac_text.type_text with record
         style		: type_text_style := type_text_style'first;
-        rotation	: pac_text.type_rotation_documentation := pac_text.type_rotation_documentation'first;
+        rotation	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
 	end record;
 	
 	-- This is a placeholder for a text. It does not have content yet, but a meaning:

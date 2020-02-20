@@ -147,7 +147,7 @@ package body symbol_rw is
 	begin
 		write (keyword => keyword_size, parameters => to_string (t.size));
 		write (keyword => et_text.keyword_line_width, parameters => to_string (t.line_width));
-		write (keyword => keyword_rotation, parameters => geometry.to_string (t.rotation));
+		write (keyword => keyword_rotation, parameters => pac_text.to_string (t.rotation));
 		write (keyword => keyword_style, parameters => to_string (t.style));
 		write (keyword => keyword_alignment, parameters =>
 				keyword_horizontal & space & to_string (t.alignment.horizontal) & space &
@@ -943,7 +943,7 @@ package body symbol_rw is
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
-										symbol_text_base.rotation := to_rotation (f (line, 2));
+										symbol_text_base.rotation := pac_text.to_rotation_doc (f (line, 2));
 										
 									elsif kw = keyword_style then -- style italic
 										expect_field_count (line, 2);
@@ -988,7 +988,7 @@ package body symbol_rw is
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
-										symbol_text_base.rotation := to_rotation (f (line, 2));
+										symbol_text_base.rotation := pac_text.to_rotation_doc (f (line, 2));
 										
 									elsif kw = keyword_style then -- style italic
 										expect_field_count (line, 2);
