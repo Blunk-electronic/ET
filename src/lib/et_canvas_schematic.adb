@@ -68,8 +68,8 @@ package body et_canvas_schematic is
 	end;
 
 	
-	-- Returns the name of the active module:
-	function active_module (self : not null access type_view) return string is
+	function active_module (self : not null access type_view) 
+		return string is
 		use et_general.type_module_name;
 		use et_project.type_modules;
 	begin

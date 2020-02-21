@@ -46,6 +46,7 @@ use et_canvas_board.pac_canvas;
 with et_string_processing;		use et_string_processing;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
 
 with scripting;
 
@@ -101,14 +102,16 @@ package body gui_board.callbacks is
 		use et_string_processing;
 		use scripting;
 		
-		line_as_typed_by_operator : string := get_text (self);
+		line_as_typed_by_operator : constant string := 
+			to_lower (to_string (DOM_BOARD)) & latin_1.space &
+			active_module (canvas) & latin_1.space &
+			get_text (self);
 		
 		cmd : et_string_processing.type_fields_of_line;
 
 		exit_code : type_exit_code := SUCCESSFUL; -- to be returned
-
 	begin
-		put_line (line_as_typed_by_operator);
+-- 		put_line (line_as_typed_by_operator);
 		
 		cmd := read_line (
 			line 			=> line_as_typed_by_operator,
@@ -122,7 +125,6 @@ package body gui_board.callbacks is
 		-- CS output error message in gui
 		
 		queue_draw (canvas);
-
 	end;
 
 	function on_key_event (

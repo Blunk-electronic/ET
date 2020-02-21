@@ -46,6 +46,7 @@ use et_canvas_schematic.pac_canvas;
 with et_string_processing;		use et_string_processing;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
 
 with scripting;
 
@@ -100,19 +101,17 @@ package body gui_schematic.callbacks is
 		use gtk.gentry;
 		use et_string_processing;
 		use scripting;
--- 		use et_project;
--- 		use et_project.type_modules;
 		
-		line_as_typed_by_operator : constant string := "schematic " 
--- 			& active_module (canvas)
-			& get_text (self);
+		line_as_typed_by_operator : constant string := 
+			to_lower (to_string (DOM_SCHEMATIC)) & latin_1.space &
+			active_module (canvas) & latin_1.space &
+			get_text (self);
 		
 		cmd : et_string_processing.type_fields_of_line;
 
 		exit_code : type_exit_code := SUCCESSFUL; -- to be returned
-
 	begin
-		put_line (line_as_typed_by_operator);
+-- 		put_line (line_as_typed_by_operator);
 
 		cmd := read_line (
 			line 			=> line_as_typed_by_operator,
@@ -121,7 +120,7 @@ package body gui_schematic.callbacks is
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
 			ifs 			=> latin_1.space); -- fields are separated by space
 
-		exit_code := schematic_cmd (cmd, 1);
+		exit_code := schematic_cmd (cmd, 0);
 
 		-- CS output error message in gui
 		

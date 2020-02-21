@@ -114,7 +114,8 @@ package et_canvas_schematic is
 	end record;
 
 	-- Returns the name of the currently active module:
-	function active_module (self : not null access type_view) return string;
+	overriding function active_module (self : not null access type_view) 
+		return string;
 	
 	-- Returns the bounding box of all items of the current sheet.
 	overriding function bounding_box (self : not null access type_view)

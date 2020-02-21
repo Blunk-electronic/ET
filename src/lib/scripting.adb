@@ -258,6 +258,8 @@ package body scripting is
 		noun : type_noun_schematic := to_noun (f (4));
 		
 	begin -- schematic_cmd
+		log (text => "cmd: " & to_string (cmd), level => log_threshold);
+		
 		case verb is
 			when ADD =>
 				case noun is
@@ -2447,6 +2449,8 @@ package body scripting is
 		end add_layer;
 		
 	begin -- board_cmd
+		log (text => "cmd: " & to_string (cmd), level => log_threshold);
+		
 		case verb is
 			when ADD =>
 				case noun is
