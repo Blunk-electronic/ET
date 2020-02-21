@@ -164,7 +164,7 @@ package body gui_board is
 
 		-- a simple text entry
 		gtk_new (console);
-		set_text (console, "cmd: ");
+		--set_text (console, "cmd: ");
 		pack_start (box_console, console, expand => false);
 
 		-- If the operator hits enter after typing text in the console,

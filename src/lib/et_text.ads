@@ -134,9 +134,10 @@ package et_text is
 			rotation_add	: in type_rotation)
 			return type_rotation;
 
-		
-		procedure warning_rotation_outside_range;
+		-- Issues a warning that the given angle is neither 0 or 90 degrees.
+		procedure warning_rotation_outside_range; -- CS argument for angle ?
 
+		-- Converts an angle to either HORIZONTAL or VERTICAL.
 		function snap (rotation : in type_rotation) return type_rotation_documentation;
 
 		-- Converts a string like "0.0" or "90.0" to HORIZONTAL or VERTICAL.

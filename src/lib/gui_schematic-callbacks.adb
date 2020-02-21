@@ -101,26 +101,27 @@ package body gui_schematic.callbacks is
 		use et_string_processing;
 		use scripting;
 		
-		command : string := get_text (self);
+		line_as_typed_by_operator : string := get_text (self);
 		
-		line : et_string_processing.type_fields_of_line;
+		cmd : et_string_processing.type_fields_of_line;
 
 		exit_code : type_exit_code := SUCCESSFUL; -- to be returned
 
 	begin
-		put_line (command);
+		put_line (line_as_typed_by_operator);
 
-		line := read_line (
-			line 			=> command,
+		cmd := read_line (
+			line 			=> line_as_typed_by_operator,
 			number			=> 1,
 			comment_mark 	=> scripting.comment_mark, -- comments start with "--"
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
 			ifs 			=> latin_1.space); -- fields are separated by space
 
-		-- execute the line as command
-		exit_code := execute_command (to_script_name("script"), line, 1);
+		exit_code := schematic_cmd (cmd, 1);
 
+		-- CS output error message in gui
 		
+		queue_draw (canvas);
 	end;
 
 	function on_key_event (
@@ -135,10 +136,10 @@ package body gui_schematic.callbacks is
 
 	begin
 		--new_line;
-		--put_line ("top level key pressed");
+-- 		put_line ("top level key pressed");
 
 		-- Set the focus to the canvas:
-		set_focus (current_window, canvas);
+-- 		set_focus (current_window, canvas);
 
 		-- Propagate the key-press event to the canvas:
 		result := propagate_key_event (current_window, event);

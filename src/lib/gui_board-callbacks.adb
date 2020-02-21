@@ -108,7 +108,7 @@ package body gui_board.callbacks is
 
 	begin
 		--new_line;
-		--put_line ("top level key pressed");
+-- 		put_line ("top level key pressed");
 
 		-- Set the focus to the canvas:
 -- 		set_focus (current_window, canvas);

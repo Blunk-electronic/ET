@@ -248,6 +248,7 @@ package body et_text is
 			
 			d : constant type_rotation := 45.0;
 		begin
+			-- CS needs improvement. angles greater 360 degree ?
 			if rotation > - d and rotation <= d then
 				result := HORIZONTAL;
 				

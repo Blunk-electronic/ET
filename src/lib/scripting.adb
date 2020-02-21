@@ -199,7 +199,1349 @@ package body scripting is
 		raise constraint_error;
 	end;
 
+	procedure invalid_noun (noun : in string) is begin
+		log (ERROR, "invalid noun " & enclose_in_quotes (noun) & " for this operation !",
+				console => true);
+		raise constraint_error;
+	end;
+
+	procedure command_incomplete (cmd : in type_fields_of_line) is begin
+		log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
+			" not complete !", console => true);
+		raise constraint_error;
+	end;
+
+	procedure command_too_long (
+		cmd		: in type_fields_of_line;
+		from	: in count_type) 
+	is begin
+		log (WARNING, "command " & enclose_in_quotes (to_string (cmd)) & " too long !");
+		log (text => " -> Excessive arguments after no." & count_type'image (from) & " ignored !");
+	end;
+		
+	procedure validate_module_name (module : in type_module_name.bounded_string) is 
+		use et_project;
+	begin
+		if not exists (module) then
+			log (ERROR, "module " & to_string (module) &
+				" not found !", console => true);
+			raise constraint_error;
+		end if;
+	end;
 	
+	function schematic_cmd (
+		cmd				: in type_fields_of_line;
+		log_threshold	: in type_log_level)
+		return type_exit_code is
+
+		use et_project;
+		use schematic_ops;
+		use et_coordinates;
+		use geometry;
+		use et_devices;
+		
+		function f (place : in positive) return string is begin
+			return et_string_processing.field (cmd, place);
+		end;
+
+		function fields return count_type is begin
+			return et_string_processing.field_count (cmd);
+		end;
+
+		-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
+		exit_code : type_exit_code := SUCCESSFUL;
+		
+		domain	: type_domain := to_domain (f (1)); -- DOM_SCHEMATIC
+		module	: type_module_name.bounded_string := to_module_name (f (2)); -- motor_driver (without extension *.mod)
+		
+		verb : type_verb_schematic := to_verb (f (3));
+		noun : type_noun_schematic := to_noun (f (4));
+		
+	begin -- schematic_cmd
+		case verb is
+			when ADD =>
+				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 9 =>
+								-- If a virtual device is added, then no variant is required.
+								schematic_ops.add_device (
+									module_name 	=> module,
+									device_model	=> to_file_name (f (5)),
+									place			=> to_position 
+										(
+										sheet => to_sheet (f (6)),
+										point => type_point (set 
+													(
+													x => to_distance (f (7)),
+													y => to_distance (f (8))
+													)),
+										rotation => to_rotation (f (9))
+										),
+									variant			=> to_name (""),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 =>
+								-- A real device requires specification of a package variant.
+								schematic_ops.add_device (
+									module_name 	=> module,
+									device_model	=> to_file_name (f (5)),
+									place			=> to_position 
+										(
+										sheet => to_sheet (f (6)),
+										point => type_point (set 
+													(
+													x => to_distance (f (7)),
+													y => to_distance (f (8))
+													)),
+										rotation		=> to_rotation (f (9))
+										),
+									variant			=> to_name (f (10)),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 11 .. count_type'last =>
+								command_too_long (cmd, 10);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+
+					when NOUN_NETCHANGER =>
+						case fields is
+							when 8 =>
+								schematic_ops.add_netchanger (
+									module_name 	=> module,
+									place			=> to_position 
+										(
+										sheet => to_sheet (f (5)),
+										point => type_point (set 
+													(
+													x => to_distance (f (6)),
+													y => to_distance (f (7))
+													)),
+										rotation		=> to_rotation (f (8))
+										),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last =>
+								command_too_long (cmd, 8);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+
+					when NOUN_PORT =>
+						case fields is
+							when 9 =>
+								schematic_ops.add_port (
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)),
+									port_name		=> et_general.to_net_name (f (6)),
+									position		=> type_point (set 
+												(
+												x => to_distance (f (7)),
+												y => to_distance (f (8))
+												)),
+									direction		=> submodules.to_port_name (f (9)),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last =>
+								command_too_long (cmd, 9);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+						
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 11 =>
+								schematic_ops.add_submodule (
+									module_name 	=> module, -- parent module (where the submodule is to be inserted)
+									file			=> submodules.to_submodule_path (f (5)),
+									instance		=> et_general.to_instance_name (f (6)), -- submodule instance name
+									position		=> to_position 
+										(
+										sheet => to_sheet (f (7)),
+										point => type_point (set 
+													(
+													x => to_distance (f (8)),
+													y => to_distance (f (9))
+													))
+										),
+									size => (
+										x => to_distance (f (10)),
+										y => to_distance (f (11))
+										),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 12 .. count_type'last =>
+								command_too_long (cmd, 11);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when BUILD =>
+				case noun is
+					when NOUN_SUBMODULES_TREE =>
+						case fields is
+							when 4 =>
+								schematic_ops.build_submodules_tree (
+									module_name 	=> module,
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 5 .. count_type'last =>
+								command_too_long (cmd, 4);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when CHECK =>
+				case noun is
+					when NOUN_INTEGRITY =>
+						schematic_ops.check_integrity (
+							module_name 	=> module,
+							log_threshold	=> log_threshold + 1);
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when COPY =>
+				case noun is
+					when NOUN_DEVICE =>
+						case fields is
+							when 9 =>
+								schematic_ops.copy_device (
+									module_name 	=> module,
+									device_name		=> to_name (f (5)),
+									destination		=> to_position 
+										(
+										sheet => to_sheet (f (6)),
+										point => type_point (set
+													(
+													x => to_distance (f (7)),
+													y => to_distance (f (8))
+													)),
+										rotation		=> to_rotation (f (9))
+										),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last =>
+								command_too_long (cmd, 9);
+								
+							when others =>
+								command_incomplete (cmd);
+
+						end case;
+
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 9 =>
+								schematic_ops.copy_submodule (
+									module_name 	=> module, -- parent module (where the submodule is to be copied)
+									instance_origin	=> et_general.to_instance_name (f (5)), -- submodule instance name
+									instance_new	=> et_general.to_instance_name (f (6)), -- submodule instance name
+									destination		=> to_position 
+										(
+										sheet => to_sheet (f (7)),
+										point => type_point (set
+													(
+													x => to_distance (f (8)),
+													y => to_distance (f (9))
+													))
+										),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last =>
+								command_too_long (cmd, 9);
+								
+							when others =>
+								command_incomplete (cmd);
+
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when CREATE =>
+				case noun is
+					when NOUN_VARIANT => 
+						case fields is
+							when 5 =>
+								schematic_ops.create_assembly_variant
+									(
+									module_name		=> module,
+									variant_name	=> to_variant (f (5)),
+									log_threshold	=> log_threshold + 1);
+								
+							when 6 .. count_type'last =>
+								command_too_long (cmd, 5);
+								
+							when others =>
+								command_incomplete (cmd);
+
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+																	
+			when DELETE =>
+				case noun is
+					when NOUN_DEVICE =>
+						schematic_ops.delete_device (
+							module_name 	=> module,
+							device_name		=> to_name (f (5)),
+							log_threshold	=> log_threshold + 1);
+
+					when NOUN_LABEL =>
+						case fields is
+							when 7 =>
+								schematic_ops.delete_net_label
+									(
+									module_name		=> module,
+
+									position		=> to_position (
+														point => type_point (set (
+															x => to_distance (f (6)),
+															y => to_distance (f (7)))),
+														sheet => to_sheet (f (5))), -- sheet number
+									
+									log_threshold	=> log_threshold + 1);
+								
+							when 8 .. count_type'last =>
+								command_too_long (cmd, 7);
+								
+							when others =>
+								command_incomplete (cmd);
+
+						end case;
+						
+					when NOUN_NET =>
+						case fields is
+
+							-- If the statement has only 6 fields, the net scope is EVERYWHERE.
+							-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
+							-- by the called procedure:
+							when 5 =>
+								schematic_ops.delete_net
+									(
+									module_name			=> module,
+									net_name			=> to_net_name (f (5)), -- RESET
+									scope				=> EVERYWHERE,
+									place				=> to_position (
+															point => origin,
+															sheet => 1),
+									log_threshold		=> log_threshold + 1);
+
+							-- If the statement has 7 fields, the net scope is SHEET.
+							-- Sheet is set by the 7th argument. x and y assume default (0/0)
+							-- and are further-on ignored by the called procedure:
+							when 6 =>
+								schematic_ops.delete_net
+									(
+									module_name			=> module,
+									net_name			=> to_net_name (f (5)), -- RESET
+									scope				=> SHEET,
+									place				=> to_position (
+															point => origin,
+															sheet => to_sheet (f (6))), -- sheet number
+									log_threshold		=> log_threshold + 1);
+
+							-- If the statement has 9 fields, the net scope is STRAND.
+							-- Place is set according to arguments 7..9.
+							when 8 =>
+								schematic_ops.delete_net
+									(
+									module_name			=> module,
+									net_name			=> to_net_name (f (5)), -- RESET
+									scope				=> STRAND,
+									place				=> to_position (
+															point => type_point (set (
+																x => to_distance (f (7)),
+																y => to_distance (f (8)))),
+															sheet => to_sheet (f (6))), -- sheet number
+									log_threshold		=> log_threshold + 1);
+
+								
+							when 9 .. count_type'last =>
+								command_too_long (cmd, 8);
+								
+							when others =>
+								command_incomplete (cmd);
+
+						end case;
+
+					when NOUN_NETCHANGER =>
+						case fields is
+							when 5 =>
+								schematic_ops.delete_netchanger
+									(
+									module_name		=> module,
+									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+									log_threshold		=> log_threshold + 1);
+
+							when 6 .. count_type'last =>
+								command_too_long (cmd, 5);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+
+					when NOUN_PORT =>
+						case fields is
+							when 6 =>
+								schematic_ops.delete_port
+									(
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)),
+									port_name		=> et_general.to_net_name (f (6)),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 7 .. count_type'last =>
+								command_too_long (cmd, 6);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+						
+					when NOUN_SEGMENT =>
+						schematic_ops.delete_segment
+							(
+							module_name			=> module,
+							net_name			=> to_net_name (f (5)), -- RESET
+							place				=> to_position (
+													point => type_point (set (
+														x => to_distance (f (7)),
+														y => to_distance (f (8)))),
+													sheet => to_sheet (f (6))), -- sheet number
+							log_threshold		=> log_threshold + 1);
+
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 5 =>
+								schematic_ops.delete_submodule (
+									module_name 	=> module, -- parent module (where the submodule is to be deleted)
+									instance		=> et_general.to_instance_name (f (5)), -- submodule instance name
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 6 .. count_type'last =>
+								command_too_long (cmd, 5);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+						
+					when NOUN_TEXT =>
+						NULL; -- CS
+						
+					when NOUN_UNIT =>
+						schematic_ops.delete_unit (
+							module_name 	=> module,
+							device_name		=> to_name (f (5)),
+							unit_name		=> to_name (f (6)),
+							log_threshold	=> log_threshold + 1);
+
+					when NOUN_VARIANT => 
+						case fields is
+							when 5 =>
+								schematic_ops.delete_assembly_variant
+									(
+									module_name		=> module,
+									variant_name	=> to_variant (f (5)),
+									log_threshold	=> log_threshold + 1);
+								
+							when 6 .. count_type'last =>
+								command_too_long (cmd, 5);
+								
+							when others =>
+								command_incomplete (cmd);
+
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when DESCRIBE =>
+				case noun is
+					when NOUN_VARIANT => 
+						case fields is
+							when 6 =>
+								schematic_ops.describe_assembly_variant
+									(
+									module_name		=> module,
+									variant_name	=> to_variant (f (5)), -- low_cost
+									description		=> assembly_variants.to_unbounded_string (f (6)), -- "the cheap version"
+									log_threshold	=> log_threshold + 1);
+								
+							when 7 .. count_type'last =>
+								command_too_long (cmd, 6);
+								
+							when others =>
+								command_incomplete (cmd);
+
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when DRAG =>
+				case noun is
+					when NOUN_UNIT =>
+						schematic_ops.drag_unit
+							(
+							module_name 	=> module,
+							device_name		=> to_name (f (5)),
+							unit_name		=> to_name (f (6)),
+							coordinates		=> schematic_ops.to_coordinates (f (7)), -- relative/absolute
+							point			=> type_point (set (
+												x => to_distance (f (8)),
+												y => to_distance (f (9)))),
+							log_threshold	=> log_threshold + 1
+							);
+
+					when NOUN_NETCHANGER =>
+						case fields is
+							when 8 =>
+								schematic_ops.drag_netchanger (
+									module_name 	=> module,
+									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+									coordinates		=> schematic_ops.to_coordinates (f (6)), -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (7)),
+														y => to_distance (f (8)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last =>
+								command_too_long (cmd, 8);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+
+					when NOUN_PORT =>
+						case fields is
+							when 9 =>
+								schematic_ops.drag_port (
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)),
+									port_name		=> et_general.to_net_name (f (6)),
+									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+									point			=> type_point (set (
+												x => to_distance (f (8)),
+												y => to_distance (f (9)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last =>
+								command_too_long (cmd, 9);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+						
+					when NOUN_SEGMENT =>
+						schematic_ops.drag_segment
+							(
+							module_name		=> module,
+							net_name		=> to_net_name (f (5)), -- RESET
+							place			=> to_position (
+												point => type_point (set (
+													x => to_distance (f (7)),
+													y => to_distance (f (8)))),
+												sheet => to_sheet (f (6))), -- sheet number
+							
+							coordinates		=> schematic_ops.to_coordinates (f (9)), -- relative/absolute
+							
+							point			=> type_point (set (
+												x => to_distance (f (10)),
+												y => to_distance (f (11)))),
+							
+							log_threshold	=> log_threshold + 1);
+
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 8 =>
+								schematic_ops.drag_submodule (
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)),
+									coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+									point			=> type_point (set (
+												x => to_distance (f (7)),
+												y => to_distance (f (8)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 9 .. count_type'last =>
+								command_too_long (cmd, 8);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when DRAW =>
+				case noun is
+					when NOUN_NET =>
+						schematic_ops.draw_net
+							(
+							module_name		=> module,
+							net_name		=> to_net_name (f (5)), -- RESET
+							start_point		=> to_position (
+													point => type_point (set (
+														x => to_distance (f (7)),
+														y => to_distance (f (8)))),
+													sheet => to_sheet (f (6))), -- sheet number
+							
+							end_point		=> type_point (set (
+												x => to_distance (f (9)),
+												y => to_distance (f (10)))),
+							
+							log_threshold	=> log_threshold + 1);
+
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when INVOKE =>
+				case noun is
+					when NOUN_UNIT =>
+						case fields is
+							when 10 =>
+								schematic_ops.invoke_unit (
+									module_name		=> module,
+									device_name		=> to_name (f (5)),
+									unit_name		=> to_name (f (6)),
+									place			=> to_position 
+										(
+										sheet => to_sheet (f (7)),
+										point => type_point (set
+													(
+													x => to_distance (f (8)),
+													y => to_distance (f (9))
+													)),
+										rotation		=> to_rotation (f (10))
+										),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 11 .. count_type'last =>
+								command_too_long (cmd, 10);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when MOVE =>
+				case noun is
+					when NOUN_NAME =>
+						schematic_ops.move_unit_placeholder
+							(
+							module_name 	=> module,
+							device_name		=> to_name (f (5)), -- IC1
+							unit_name		=> to_name (f (6)), -- A
+							coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+							point			=> type_point (set (
+												x => to_distance (f (8)),
+												y => to_distance (f (9)))),
+							meaning			=> et_symbols.NAME,
+							log_threshold	=> log_threshold + 1
+							);
+
+					when NOUN_VALUE =>
+						schematic_ops.move_unit_placeholder
+							(
+							module_name 	=> module,
+							device_name		=> to_name (f (5)), -- IC1
+							unit_name		=> to_name (f (6)), -- A
+							coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+							point			=> type_point (set (
+												x => to_distance (f (8)),
+												y => to_distance (f (9)))),
+							meaning			=> et_symbols.VALUE,
+							log_threshold	=> log_threshold + 1
+							);
+
+					when NOUN_PORT =>
+						case fields is
+							when 9 =>
+								schematic_ops.move_port (
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)),
+									port_name		=> et_general.to_net_name (f (6)),
+									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+									point			=> type_point (set (
+												x => to_distance (f (8)),
+												y => to_distance (f (9)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last =>
+								command_too_long (cmd, 9);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+								
+					when NOUN_PURPOSE =>
+						schematic_ops.move_unit_placeholder
+							(
+							module_name 	=> module,
+							device_name		=> to_name (f (5)), -- IC1
+							unit_name		=> to_name (f (6)), -- A
+							coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+							point			=> type_point (set (
+												x => to_distance (f (8)),
+												y => to_distance (f (9)))),
+							meaning			=> et_symbols.PURPOSE,
+							log_threshold	=> log_threshold + 1
+							);
+
+					when NOUN_NETCHANGER =>
+						schematic_ops.move_netchanger
+							(
+							module_name 	=> module,
+							index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
+							coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+							sheet			=> to_sheet_relative (f (7)),
+							point			=> type_point (set (
+												x => to_distance (f (8)),
+												y => to_distance (f (9)))),
+								
+							log_threshold	=> log_threshold + 1
+							);
+
+					when NOUN_TEXT =>
+						NULL; -- CS
+
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 9 =>
+								schematic_ops.move_submodule (
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)),
+									coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+									sheet			=> to_sheet_relative (f (7)),
+									point			=> type_point (set (
+												x => to_distance (f (8)),
+												y => to_distance (f (9)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last =>
+								command_too_long (cmd, 9);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+						
+					when NOUN_UNIT =>
+						schematic_ops.move_unit
+							(
+							module_name 	=> module,
+							device_name		=> to_name (f (5)), -- IC1
+							unit_name		=> to_name (f (6)), -- A
+							coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+							sheet			=> to_sheet_relative (f (8)),
+							point			=> type_point (set (
+												x => to_distance (f (9)),
+												y => to_distance (f (10)))),
+								
+							log_threshold	=> log_threshold + 1
+							);
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when MAKE =>
+				case noun is
+					when NOUN_BOM => 
+						case fields is
+							when 4 =>
+								schematic_ops.make_boms -- a BOM for each variant
+									(
+									module_name 	=> module,
+									log_threshold	=> log_threshold + 1);
+
+							when 5 .. count_type'last =>
+								command_too_long (cmd, 4);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+
+					when NOUN_NETLISTS => 
+						case fields is
+							when 4 =>
+								schematic_ops.make_netlists 
+									(
+									module_name 	=> module,
+									log_threshold	=> log_threshold + 1);
+
+							when 5 .. count_type'last =>
+								command_too_long (cmd, 4);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when MOUNT =>
+				case noun is
+					when NOUN_DEVICE => 
+						declare
+							value : type_value.bounded_string; -- 470R
+							partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+							purpose : type_purpose.bounded_string; -- brightness_control
+						begin
+							-- validate value
+							value := to_value (f (7));
+
+							-- validate partcode
+							partcode := material.to_partcode (f (8));
+							
+							case fields is
+								when 8 =>
+									-- set value and partcode
+									schematic_ops.mount_device
+										(
+										module_name		=> module,
+										variant_name	=> to_variant (f (5)), -- low_cost
+										device			=> to_name (f (6)), -- R1
+										value			=> value, -- 220R
+										partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
+										log_threshold	=> log_threshold + 1);
+
+								when 9 =>
+									-- optionally the purpose can be set also
+									purpose := to_purpose (f (9)); -- brightness_control
+												
+									schematic_ops.mount_device
+										(
+										module_name		=> module,
+										variant_name	=> to_variant (f (5)), -- low_cost
+										device			=> to_name (f (6)), -- R1
+										value			=> value, -- 220R
+										partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
+										purpose			=> purpose, -- brightness_control
+										log_threshold	=> log_threshold + 1);
+									
+								when 10 .. count_type'last =>
+									command_too_long (cmd, 9);
+									
+								when others =>
+									command_incomplete (cmd);
+
+							end case;
+
+						end; -- declare
+
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 7 =>
+								schematic_ops.mount_submodule
+									(
+									module_name		=> module,
+									variant_parent	=> to_variant (f (5)), -- low_cost
+									instance		=> et_general.to_instance_name (f (6)), -- OSC1
+									variant_submod	=> to_variant (f (7)), -- fixed_frequency
+									log_threshold	=> log_threshold + 1);
+
+							when 8 .. count_type'last =>
+								command_too_long (cmd, 7);
+								
+							when others =>
+								command_incomplete (cmd);
+
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when PLACE =>
+				case noun is
+					when NOUN_JUNCTION =>
+						schematic_ops.place_junction 
+							(
+							module_name 	=> module,
+							place			=> to_position 
+												(
+												sheet => to_sheet (f (5)),
+												point => type_point (set (
+															x => to_distance (f (6)),
+															y => to_distance (f (7))
+															))
+												),
+								
+							log_threshold	=> log_threshold + 1
+							);
+
+					when NOUN_LABEL =>
+						case fields is
+							when 10 =>
+								schematic_ops.place_net_label
+									(
+									module_name			=> module,
+
+									segment_position	=> to_position (
+															point => type_point (set (
+																x => to_distance (f (6)),
+																y => to_distance (f (7)))),
+															sheet => to_sheet (f (5))), -- sheet number
+
+									label_position		=> type_point (set (
+																x => to_distance (f (8)),
+																y => to_distance (f (9)))),
+
+									rotation			=> et_schematic.pac_text.to_rotation_doc (f (10)), -- 0 / 90
+									appearance 			=> et_schematic.SIMPLE,
+
+									-- A simple label does not indicate the direction
+									-- of information flow. But this procedure call requires a
+									-- direction. So we just pass direction PASSIVE. It has no 
+									-- further meaning.
+									direction			=> et_schematic.PASSIVE,
+
+									log_threshold		=> log_threshold + 1);
+
+							when 11 =>
+								schematic_ops.place_net_label
+									(
+									module_name			=> module,
+
+									segment_position	=> to_position (
+															point => type_point (set (
+																x => to_distance (f (6)),
+																y => to_distance (f (7)))),
+															sheet => to_sheet (f (5))), -- sheet number
+
+									label_position		=> type_point (set (
+																x => to_distance (f (8)),
+																y => to_distance (f (9)))),
+
+									rotation			=> et_schematic.pac_text.to_rotation_doc (f (10)), -- 0 / 90
+									appearance 			=> et_schematic.TAG,
+
+									-- A tag label requires specification of direction
+									-- which is specified by the 11th argument:
+									direction			=> et_schematic.to_direction (f (11)), -- INPUT, OUTPUT, PASSIVE, ...
+
+									log_threshold		=> log_threshold + 1);
+								
+							when 12 .. count_type'last =>
+								command_too_long (cmd, 11);
+								
+							when others =>
+								command_incomplete (cmd);
+
+						end case;
+
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when REMOVE =>
+				case noun is
+					when NOUN_DEVICE => 
+						case fields is
+							when 6 =>
+								schematic_ops.remove_device -- from assembly variant
+									(
+									module_name		=> module,
+									variant_name	=> to_variant (f (5)), -- low_cost
+									device			=> to_name (f (6)), -- R1
+									log_threshold	=> log_threshold + 1);
+
+							when 7 .. count_type'last =>
+								command_too_long (cmd, 6);
+								
+							when others =>
+								command_incomplete (cmd);
+
+						end case;
+
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 6 =>
+								schematic_ops.remove_submodule
+									(
+									module_name		=> module,
+									variant_parent	=> to_variant (f (5)),
+									instance		=> et_general.to_instance_name (f (6)), -- OSC1
+									log_threshold	=> log_threshold + 1);
+
+							when 7 .. count_type'last =>
+								command_too_long (cmd, 6);
+								
+							when others =>
+								command_incomplete (cmd);
+
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when RENAME =>
+				case noun is
+					when NOUN_DEVICE =>
+						schematic_ops.rename_device
+							(
+							module_name 		=> module,
+							device_name_before	=> to_name (f (5)), -- IC1
+							device_name_after	=> to_name (f (6)), -- IC23
+							log_threshold		=> log_threshold + 1
+							);
+
+					when NOUN_SUBMODULE =>
+						case fields is
+							when 6 =>
+								schematic_ops.rename_submodule
+									(
+									module_name		=> module,
+									instance_old	=> et_general.to_instance_name (f (5)), -- OSC1
+									instance_new	=> et_general.to_instance_name (f (6)), -- OSC2
+									log_threshold	=> log_threshold + 1);
+
+							when 7 .. count_type'last =>
+								command_too_long (cmd, 6);
+								
+							when others =>
+								command_incomplete (cmd);
+
+						end case;
+						
+					when NOUN_NET =>
+						case fields is
+
+							-- If the statement has only 6 fields, the net scope is EVERYWHERE.
+							-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
+							-- by the called procedure:
+							when 6 =>
+								schematic_ops.rename_net
+									(
+									module_name			=> module,
+									net_name_before		=> to_net_name (f (5)), -- RESET
+									net_name_after		=> to_net_name (f (6)), -- RESET_N
+									scope				=> EVERYWHERE,
+									place				=> to_position (
+															point => origin,
+															sheet => 1),
+									log_threshold		=> log_threshold + 1);
+
+							-- If the statement has 7 fields, the net scope is SHEET.
+							-- Sheet is set by the 7th argument. x and y assume default (0/0)
+							-- and are further-on ignored by the called procedure:
+							when 7 =>
+								schematic_ops.rename_net
+									(
+									module_name			=> module,
+									net_name_before		=> to_net_name (f (5)), -- RESET
+									net_name_after		=> to_net_name (f (6)), -- RESET_N
+									scope				=> SHEET,
+									place				=> to_position (
+															point => origin,
+															sheet => to_sheet (f (7))), -- sheet number
+									log_threshold		=> log_threshold + 1);
+
+							-- If the statement has 9 fields, the net scope is STRAND.
+							-- Place is set according to arguments 7..9.
+							when 9 =>
+								schematic_ops.rename_net
+									(
+									module_name			=> module,
+									net_name_before		=> to_net_name (f (5)), -- RESET
+									net_name_after		=> to_net_name (f (6)), -- RESET_N
+									scope				=> STRAND,
+									place				=> to_position (
+															point => type_point (set (
+																x => to_distance (f (8)),
+																y => to_distance (f (9)))),
+															sheet => to_sheet (f (7))), -- sheet number
+									log_threshold		=> log_threshold + 1);
+
+								
+							when 10 .. count_type'last =>
+								command_too_long (cmd, 9);
+								
+							when others =>
+								command_incomplete (cmd);
+
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when RENUMBER =>
+				case noun is
+					when NOUN_DEVICES =>
+						case fields is
+							when 5 =>
+								schematic_ops.renumber_devices
+									(
+									module_name 	=> module,
+									step_width		=> to_index (f (5)), -- 100
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 6 .. count_type'last =>
+								command_too_long (cmd, 5);
+								
+							when others =>
+								command_incomplete (cmd);
+
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when ROTATE =>
+				case noun is
+					when NOUN_TEXT =>
+						NULL; -- CS
+
+					when NOUN_UNIT =>
+						schematic_ops.rotate_unit
+							(
+							module_name 	=> module,
+							device_name		=> to_name (f (5)), -- IC1
+							unit_name		=> to_name (f (6)), -- A
+							coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+							rotation		=> to_rotation (f (8)), -- 90
+							log_threshold	=> log_threshold + 1
+							);
+
+					when NOUN_NAME =>
+						schematic_ops.rotate_unit_placeholder
+							(
+							module_name 	=> module,
+							device_name		=> to_name (f (5)), -- IC1
+							unit_name		=> to_name (f (6)), -- A
+							rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
+							meaning			=> et_symbols.NAME,
+							log_threshold	=> log_threshold + 1
+							);
+
+					when NOUN_VALUE =>
+						schematic_ops.rotate_unit_placeholder
+							(
+							module_name 	=> module,
+							device_name		=> to_name (f (5)), -- IC1
+							unit_name		=> to_name (f (6)), -- A
+							rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
+							meaning			=> et_symbols.VALUE,
+							log_threshold	=> log_threshold + 1
+							);
+
+					when NOUN_PURPOSE =>
+						schematic_ops.rotate_unit_placeholder
+							(
+							module_name 	=> module,
+							device_name		=> to_name (f (5)), -- IC1
+							unit_name		=> to_name (f (6)), -- A
+							rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
+							meaning			=> et_symbols.PURPOSE,
+							log_threshold	=> log_threshold + 1
+							);
+
+					when NOUN_NETCHANGER =>
+						case fields is
+							when 7 =>
+								schematic_ops.rotate_netchanger (
+									module_name 	=> module,
+									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+									coordinates		=> schematic_ops.to_coordinates (f (6)), -- relative/absolute
+									rotation		=> to_rotation (f (7)), -- 90
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 8 .. count_type'last =>
+								command_too_long (cmd, 7);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when SET =>
+				case noun is
+					when NOUN_GRID =>
+						case fields is
+							-- schematic led_driver set grid 5 5
+							when 6 =>
+								schematic_ops.set_grid (
+									module_name 	=> module,
+									grid			=> (
+											x => to_distance (f (5)),
+											y => to_distance (f (6))),
+									log_threshold	=> log_threshold + 1);
+
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+								
+							when others => command_incomplete (cmd);
+						end case;
+				
+					when NOUN_PARTCODE =>
+						declare
+							partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+						begin
+							partcode := material.to_partcode (f (6));
+
+							-- set the purpose
+							schematic_ops.set_partcode
+								(
+								module_name 	=> module,
+								device_name		=> to_name (f (5)), -- R1
+								partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
+								log_threshold	=> log_threshold + 1
+								);
+						end;
+
+					when NOUN_PURPOSE =>
+						declare
+							use et_schematic;
+							purpose : type_purpose.bounded_string; -- brightness_control
+						begin
+							purpose := to_purpose (f (6));
+							
+							-- set the purpose
+							schematic_ops.set_purpose
+								(
+								module_name 	=> module,
+								device_name		=> to_name (f (5)), -- R1
+								purpose			=> purpose, -- brightness_control
+								log_threshold	=> log_threshold + 1
+								);
+						end;
+
+					when NOUN_SCOPE =>
+						case fields is
+							when 6 =>
+								schematic_ops.set_scope (
+									module_name 	=> module,
+									net_name		=> et_general.to_net_name (f (5)),
+									scope			=> netlists.to_net_scope (f (6)),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 7 .. count_type'last =>
+								command_too_long (cmd, 6);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+						
+					when NOUN_SUBMODULE_FILE =>
+						case fields is
+							when 6 =>
+								schematic_ops.set_submodule_file (
+									module_name 	=> module,
+									instance		=> et_general.to_instance_name (f (5)),
+									file			=> submodules.to_submodule_path (f (6)),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 7 .. count_type'last =>
+								command_too_long (cmd, 6);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+						
+					when NOUN_VALUE =>
+						declare
+							value : type_value.bounded_string; -- 470R
+						begin
+							-- validate value
+							value := to_value (f (6));
+
+							-- set the value
+							schematic_ops.set_value
+								(
+								module_name 	=> module,
+								device_name		=> to_name (f (5)), -- R1
+								value			=> value, -- 470R
+								log_threshold	=> log_threshold + 1
+								);
+						end;
+						
+					when NOUN_TEXT_SIZE =>
+						NULL; -- CS
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+			when UNMOUNT =>
+				case noun is
+					when NOUN_DEVICE => 
+						case fields is
+							when 6 =>
+								schematic_ops.unmount_device
+									(
+									module_name		=> module,
+									variant_name	=> to_variant (f (5)), -- low_cost
+									device			=> to_name (f (6)), -- R1
+									log_threshold	=> log_threshold + 1);
+
+							when 7 .. count_type'last =>
+								command_too_long (cmd, 6);
+								
+							when others =>
+								command_incomplete (cmd);
+
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
+			when WRITE =>
+				case noun is
+					when NOUN_TEXT =>
+						NULL; -- CS
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+		end case;
+
+		return exit_code;
+		
+		exception when event: others => 
+		
+			log (ERROR, "command '" &
+				to_string (cmd) & "' invalid !", console => true);
+
+			log (text => ada.exceptions.exception_information (event), console => true);		
+
+		return ERROR;
+
+	end schematic_cmd;
+		
 	function execute_command (
 		file_name		: in type_script_name.bounded_string;
 		cmd				: in type_fields_of_line;
@@ -229,34 +1571,6 @@ package body scripting is
 		verb_board		: type_verb_board;
 		noun_board		: type_noun_board;
 
-		
-
-		procedure validate_module_name is begin
-			if not exists (module) then
-				log (ERROR, "module " & to_string (module) &
-					" not found !", console => true);
-				raise constraint_error;
-			end if;
-		end;
-		
-		procedure invalid_noun (noun : in string) is begin
-			log (ERROR, "invalid noun " & enclose_in_quotes (noun) & " for this operation !",
-				 console => true);
-			raise constraint_error;
-		end;
-
-		procedure command_incomplete is begin
-			log (ERROR, "command " & enclose_in_quotes (to_string (cmd)) &
-				" not complete !", console => true);
-			raise constraint_error;
-		end;
-
-		procedure command_too_long (from : in count_type) is begin
-			log (WARNING, "command " & enclose_in_quotes (to_string (cmd)) &
-				 " too long !");
-			log (text => " -> Excessive arguments after no." & count_type'image (from) & " ignored !");
-		end;
-
 		procedure project_cmd (
 			verb : in type_verb_project;
 			noun : in type_noun_project) 
@@ -279,10 +1593,10 @@ package body scripting is
 										);
 
 								when 5 .. count_type'last =>
-									command_too_long (4);
+									command_too_long (cmd, 4);
 									
 								when others => 
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -299,10 +1613,10 @@ package body scripting is
 										);
 
 								when 5 .. count_type'last =>
-									command_too_long (4);
+									command_too_long (cmd, 4);
 									
 								when others => 
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -319,10 +1633,10 @@ package body scripting is
 										);
 
 								when 5 .. count_type'last =>
-									command_too_long (4);
+									command_too_long (cmd, 4);
 									
 								when others => 
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -339,10 +1653,10 @@ package body scripting is
 										);
 
 								when 5 .. count_type'last =>
-									command_too_long (4);
+									command_too_long (cmd, 4);
 									
 								when others => 
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;							
 						when others => invalid_noun (to_string (noun));
 					end case;
@@ -404,10 +1718,10 @@ package body scripting is
 										);
 
 								when 11 .. count_type'last =>
-									command_too_long (10);
+									command_too_long (cmd, 10);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 
 						when NOUN_NETCHANGER =>
@@ -429,10 +1743,10 @@ package body scripting is
 										);
 
 								when 9 .. count_type'last =>
-									command_too_long (8);
+									command_too_long (cmd, 8);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 
 						when NOUN_PORT =>
@@ -452,10 +1766,10 @@ package body scripting is
 										);
 
 								when 10 .. count_type'last =>
-									command_too_long (9);
+									command_too_long (cmd, 9);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 							
 						when NOUN_SUBMODULE =>
@@ -482,10 +1796,10 @@ package body scripting is
 										);
 
 								when 12 .. count_type'last =>
-									command_too_long (11);
+									command_too_long (cmd, 11);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 							
 						when others => invalid_noun (to_string (noun));
@@ -502,10 +1816,10 @@ package body scripting is
 										);
 
 								when 5 .. count_type'last =>
-									command_too_long (4);
+									command_too_long (cmd, 4);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 
 						when others => invalid_noun (to_string (noun));
@@ -543,10 +1857,10 @@ package body scripting is
 										);
 
 								when 10 .. count_type'last =>
-									command_too_long (9);
+									command_too_long (cmd, 9);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 
 							end case;
 
@@ -570,10 +1884,10 @@ package body scripting is
 										);
 
 								when 10 .. count_type'last =>
-									command_too_long (9);
+									command_too_long (cmd, 9);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 
 							end case;
 							
@@ -592,10 +1906,10 @@ package body scripting is
 										log_threshold	=> log_threshold + 1);
 									
 								when 6 .. count_type'last =>
-									command_too_long (5);
+									command_too_long (cmd, 5);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 
 							end case;
 
@@ -626,10 +1940,10 @@ package body scripting is
 										log_threshold	=> log_threshold + 1);
 									
 								when 8 .. count_type'last =>
-									command_too_long (7);
+									command_too_long (cmd, 7);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 
 							end case;
 							
@@ -681,10 +1995,10 @@ package body scripting is
 
 									
 								when 9 .. count_type'last =>
-									command_too_long (8);
+									command_too_long (cmd, 8);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 
 							end case;
 
@@ -698,10 +2012,10 @@ package body scripting is
 										log_threshold		=> log_threshold + 1);
 
 								when 6 .. count_type'last =>
-									command_too_long (5);
+									command_too_long (cmd, 5);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 
 						when NOUN_PORT =>
@@ -716,10 +2030,10 @@ package body scripting is
 										);
 
 								when 7 .. count_type'last =>
-									command_too_long (6);
+									command_too_long (cmd, 6);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 							
 						when NOUN_SEGMENT =>
@@ -744,10 +2058,10 @@ package body scripting is
 										);
 
 								when 6 .. count_type'last =>
-									command_too_long (5);
+									command_too_long (cmd, 5);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 							
 						when NOUN_TEXT =>
@@ -770,10 +2084,10 @@ package body scripting is
 										log_threshold	=> log_threshold + 1);
 									
 								when 6 .. count_type'last =>
-									command_too_long (5);
+									command_too_long (cmd, 5);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 
 							end case;
 							
@@ -793,10 +2107,10 @@ package body scripting is
 										log_threshold	=> log_threshold + 1);
 									
 								when 7 .. count_type'last =>
-									command_too_long (6);
+									command_too_long (cmd, 6);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 
 							end case;
 							
@@ -832,10 +2146,10 @@ package body scripting is
 										);
 
 								when 9 .. count_type'last =>
-									command_too_long (8);
+									command_too_long (cmd, 8);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 
 						when NOUN_PORT =>
@@ -853,10 +2167,10 @@ package body scripting is
 										);
 
 								when 10 .. count_type'last =>
-									command_too_long (9);
+									command_too_long (cmd, 9);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 							
 						when NOUN_SEGMENT =>
@@ -892,10 +2206,10 @@ package body scripting is
 										);
 
 								when 9 .. count_type'last =>
-									command_too_long (8);
+									command_too_long (cmd, 8);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 							
 						when others => invalid_noun (to_string (noun));
@@ -947,10 +2261,10 @@ package body scripting is
 										);
 
 								when 11 .. count_type'last =>
-									command_too_long (10);
+									command_too_long (cmd, 10);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 
 						when others => invalid_noun (to_string (noun));
@@ -1001,10 +2315,10 @@ package body scripting is
 										);
 
 								when 10 .. count_type'last =>
-									command_too_long (9);
+									command_too_long (cmd, 9);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 									
 						when NOUN_PURPOSE =>
@@ -1053,10 +2367,10 @@ package body scripting is
 										);
 
 								when 10 .. count_type'last =>
-									command_too_long (9);
+									command_too_long (cmd, 9);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 							
 						when NOUN_UNIT =>
@@ -1088,10 +2402,10 @@ package body scripting is
 										log_threshold	=> log_threshold + 1);
 
 								when 5 .. count_type'last =>
-									command_too_long (4);
+									command_too_long (cmd, 4);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 
 						when NOUN_NETLISTS => 
@@ -1103,10 +2417,10 @@ package body scripting is
 										log_threshold	=> log_threshold + 1);
 
 								when 5 .. count_type'last =>
-									command_too_long (4);
+									command_too_long (cmd, 4);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 							
 						when others => invalid_noun (to_string (noun));
@@ -1153,10 +2467,10 @@ package body scripting is
 											log_threshold	=> log_threshold + 1);
 										
 									when 10 .. count_type'last =>
-										command_too_long (9);
+										command_too_long (cmd, 9);
 										
 									when others =>
-										command_incomplete;
+										command_incomplete (cmd);
 
 								end case;
 
@@ -1174,10 +2488,10 @@ package body scripting is
 										log_threshold	=> log_threshold + 1);
 
 								when 8 .. count_type'last =>
-									command_too_long (7);
+									command_too_long (cmd, 7);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 
 							end case;
 							
@@ -1255,10 +2569,10 @@ package body scripting is
 										log_threshold		=> log_threshold + 1);
 									
 								when 12 .. count_type'last =>
-									command_too_long (11);
+									command_too_long (cmd, 11);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 
 							end case;
 
@@ -1279,10 +2593,10 @@ package body scripting is
 										log_threshold	=> log_threshold + 1);
 
 								when 7 .. count_type'last =>
-									command_too_long (6);
+									command_too_long (cmd, 6);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 
 							end case;
 
@@ -1297,10 +2611,10 @@ package body scripting is
 										log_threshold	=> log_threshold + 1);
 
 								when 7 .. count_type'last =>
-									command_too_long (6);
+									command_too_long (cmd, 6);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 
 							end case;
 							
@@ -1329,10 +2643,10 @@ package body scripting is
 										log_threshold	=> log_threshold + 1);
 
 								when 7 .. count_type'last =>
-									command_too_long (6);
+									command_too_long (cmd, 6);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 
 							end case;
 							
@@ -1387,10 +2701,10 @@ package body scripting is
 
 									
 								when 10 .. count_type'last =>
-									command_too_long (9);
+									command_too_long (cmd, 9);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 
 							end case;
 
@@ -1410,10 +2724,10 @@ package body scripting is
 										);
 
 								when 6 .. count_type'last =>
-									command_too_long (5);
+									command_too_long (cmd, 5);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 
 							end case;
 							
@@ -1481,10 +2795,10 @@ package body scripting is
 										);
 
 								when 8 .. count_type'last =>
-									command_too_long (7);
+									command_too_long (cmd, 7);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 							
 						when others => invalid_noun (to_string (noun));
@@ -1503,9 +2817,9 @@ package body scripting is
 												y => to_distance (f (6))),
 										log_threshold	=> log_threshold + 1);
 
-								when 7 .. count_type'last => command_too_long (fields - 1);
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-								when others => command_incomplete;
+								when others => command_incomplete (cmd);
 							end case;
 					
 						when NOUN_PARTCODE =>
@@ -1552,10 +2866,10 @@ package body scripting is
 										);
 
 								when 7 .. count_type'last =>
-									command_too_long (6);
+									command_too_long (cmd, 6);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 							
 						when NOUN_SUBMODULE_FILE =>
@@ -1569,10 +2883,10 @@ package body scripting is
 										);
 
 								when 7 .. count_type'last =>
-									command_too_long (6);
+									command_too_long (cmd, 6);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 							
 						when NOUN_VALUE =>
@@ -1611,10 +2925,10 @@ package body scripting is
 										log_threshold	=> log_threshold + 1);
 
 								when 7 .. count_type'last =>
-									command_too_long (6);
+									command_too_long (cmd, 6);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 
 							end case;
 							
@@ -1661,9 +2975,9 @@ package body scripting is
 
 									log_threshold	=> log_threshold + 1);
 
-							when 11 .. count_type'last => command_too_long (fields - 1);
+							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others => command_incomplete;
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when ARC =>
@@ -1687,9 +3001,9 @@ package body scripting is
 
 									log_threshold	=> log_threshold + 1);
 
-							when 14 .. count_type'last => command_too_long (fields - 1);
+							when 14 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others => command_incomplete;
+							when others => command_incomplete (cmd);
 						end case;
 
 					when CIRCLE =>
@@ -1738,9 +3052,9 @@ package body scripting is
 									expect_keyword_filled (7);
 								end if;
 									
-							when 12 .. count_type'last => command_too_long (fields - 1);
+							when 12 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others => command_incomplete;
+							when others => command_incomplete (cmd);
 						end case;
 
 								
@@ -1770,9 +3084,9 @@ package body scripting is
 
 									log_threshold	=> log_threshold + 1);
 
-							when 11 .. count_type'last => command_too_long (fields - 1);
+							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others => command_incomplete;
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when ARC =>
@@ -1797,9 +3111,9 @@ package body scripting is
 
 									log_threshold	=> log_threshold + 1);
 
-							when 14 .. count_type'last => command_too_long (fields - 1);
+							when 14 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others => command_incomplete;
+							when others => command_incomplete (cmd);
 						end case;
 
 					when CIRCLE =>
@@ -1849,9 +3163,9 @@ package body scripting is
 									expect_keyword_filled (7);
 								end if;
 
-							when 11 .. count_type'last => command_too_long (fields - 1);
+							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-							when others => command_incomplete;
+							when others => command_incomplete (cmd);
 						end case;
 								
 					when others => null;
@@ -1880,9 +3194,9 @@ package body scripting is
 
 									log_threshold	=> log_threshold + 1);
 
-							when 11 .. count_type'last => command_too_long (fields - 1);
+							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others => command_incomplete;
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when ARC =>
@@ -1907,9 +3221,9 @@ package body scripting is
 
 									log_threshold	=> log_threshold + 1);
 
-							when 14 .. count_type'last => command_too_long (fields - 1);
+							when 14 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others => command_incomplete;
+							when others => command_incomplete (cmd);
 						end case;
 
 					when CIRCLE =>
@@ -1959,9 +3273,9 @@ package body scripting is
 									expect_keyword_filled (7);
 								end if;
 
-							when 11 .. count_type'last => command_too_long (fields - 1);
+							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 							
-							when others => command_incomplete;
+							when others => command_incomplete (cmd);
 						end case;
 								
 					when others => null;
@@ -1991,9 +3305,9 @@ package body scripting is
 
 									log_threshold	=> log_threshold + 1);
 
-							when 12 .. count_type'last => command_too_long (fields - 1);
+							when 12 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others => command_incomplete;
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when ARC =>
@@ -2018,9 +3332,9 @@ package body scripting is
 
 									log_threshold	=> log_threshold + 1);
 
-							when 15 .. count_type'last => command_too_long (fields - 1);
+							when 15 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others => command_incomplete;
+							when others => command_incomplete (cmd);
 						end case;
 
 					when CIRCLE =>
@@ -2084,7 +3398,7 @@ package body scripting is
 															),
 												log_threshold	=> log_threshold + 1);
 
-										when HATCHED => command_incomplete;
+										when HATCHED => command_incomplete (cmd);
 
 									end case;
 								end if;
@@ -2120,9 +3434,9 @@ package body scripting is
 									end case;
 								end if;
 
-							when 13 .. count_type'last => command_too_long (fields - 1);
+							when 13 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others => command_incomplete;
+							when others => command_incomplete (cmd);
 						end case;
 
 								
@@ -2153,9 +3467,9 @@ package body scripting is
 
 									log_threshold	=> log_threshold + 1);
 
-							when 12 .. count_type'last => command_too_long (fields - 1);
+							when 12 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others => command_incomplete;
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when ARC =>
@@ -2180,9 +3494,9 @@ package body scripting is
 
 									log_threshold	=> log_threshold + 1);
 
-							when 15 .. count_type'last => command_too_long (fields - 1);
+							when 15 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others => command_incomplete;
+							when others => command_incomplete (cmd);
 						end case;
 
 					when CIRCLE =>
@@ -2246,7 +3560,7 @@ package body scripting is
 															),
 												log_threshold	=> log_threshold + 1);
 
-										when HATCHED => command_incomplete;
+										when HATCHED => command_incomplete (cmd);
 
 									end case;
 								end if;
@@ -2282,9 +3596,9 @@ package body scripting is
 									end case;
 								end if;
 
-							when 13 .. count_type'last => command_too_long (fields - 1);
+							when 13 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others => command_incomplete;
+							when others => command_incomplete (cmd);
 						end case;
 
 								
@@ -2325,10 +3639,10 @@ package body scripting is
 										);
 
 								when 13 .. count_type'last =>
-									command_too_long (fields - 1);
+									command_too_long (cmd, fields - 1);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 							
 						else
@@ -2359,10 +3673,10 @@ package body scripting is
 												);
 											
 										when 14 .. count_type'last =>
-											command_too_long (fields - 1);
+											command_too_long (cmd, fields - 1);
 											
 										when others =>
-											command_incomplete;
+											command_incomplete (cmd);
 									end case;
 											
 								else
@@ -2386,10 +3700,10 @@ package body scripting is
 													);
 												
 											when 14 .. count_type'last =>
-												command_too_long (fields - 1);
+												command_too_long (cmd, fields - 1);
 												
 											when others =>
-												command_incomplete;
+												command_incomplete (cmd);
 										end case;
 										
 									else
@@ -2422,10 +3736,10 @@ package body scripting is
 												);
 
 										when 14 .. count_type'last =>
-											command_too_long (fields - 1);
+											command_too_long (cmd, fields - 1);
 											
 										when others =>
-											command_incomplete;
+											command_incomplete (cmd);
 									end case;
 
 								else
@@ -2450,10 +3764,10 @@ package body scripting is
 													log_threshold	=> log_threshold + 1
 													);
 
-											when 15 .. count_type'last => command_too_long (fields - 1);
+											when 15 .. count_type'last => command_too_long (cmd, fields - 1);
 												
 											when others => 
-												command_incomplete;
+												command_incomplete (cmd);
 										end case;
 										
 									else
@@ -2491,10 +3805,10 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 								
-							when 16 .. count_type'last => command_too_long (fields - 1);
+							when 16 .. count_type'last => command_too_long (cmd, fields - 1);
 								
 							when others =>
-								command_incomplete;
+								command_incomplete (cmd);
 						end case;
 
 				end case;
@@ -2525,9 +3839,9 @@ package body scripting is
 									-- board tree_1 add layer 0.12 0.2
 									add_layer;
 
-								when 7 .. count_type'last => command_too_long (fields - 1);
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-								when others => command_incomplete;
+								when others => command_incomplete (cmd);
 
 							end case;
 
@@ -2546,9 +3860,9 @@ package body scripting is
 										
 										log_threshold	=> log_threshold + 1);
 
-								when 6 .. count_type'last => command_too_long (fields - 1);
+								when 6 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-								when others => command_incomplete;
+								when others => command_incomplete (cmd);
 
 							end case;
 
@@ -2565,9 +3879,9 @@ package body scripting is
 										
 										log_threshold	=> log_threshold + 1);
 
-								when 8 .. count_type'last => command_too_long (fields - 1);
+								when 8 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-								when others => command_incomplete;
+								when others => command_incomplete (cmd);
 							end case;
 
 						when SILK =>
@@ -2587,10 +3901,10 @@ package body scripting is
 										);
 
 								when 9 .. count_type'last =>
-									command_too_long (fields - 1);
+									command_too_long (cmd, fields - 1);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 
 						when ASSY =>
@@ -2609,9 +3923,9 @@ package body scripting is
 										log_threshold	=> log_threshold + 1
 										);
 
-								when 9 .. count_type'last => command_too_long (fields - 1);
+								when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-								when others => command_incomplete;
+								when others => command_incomplete (cmd);
 							end case;
 
 						when KEEPOUT =>
@@ -2630,9 +3944,9 @@ package body scripting is
 										log_threshold	=> log_threshold + 1
 										);
 
-								when 9 .. count_type'last => command_too_long (fields - 1);
+								when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-								when others => command_incomplete;
+								when others => command_incomplete (cmd);
 							end case;
 
 						when STENCIL =>
@@ -2651,9 +3965,9 @@ package body scripting is
 										log_threshold	=> log_threshold + 1
 										);
 
-								when 9 .. count_type'last => command_too_long (fields - 1);
+								when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-								when others => command_incomplete;
+								when others => command_incomplete (cmd);
 							end case;
 							
 						when STOP =>
@@ -2672,9 +3986,9 @@ package body scripting is
 										log_threshold	=> log_threshold + 1
 										);
 
-								when 9 .. count_type'last => command_too_long (fields - 1);
+								when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-								when others => command_incomplete;
+								when others => command_incomplete (cmd);
 							end case;
 
 						when ROUTE_RESTRICT =>
@@ -2692,9 +4006,9 @@ package body scripting is
 										log_threshold	=> log_threshold + 1
 										);
 
-								when 8 .. count_type'last => command_too_long (fields - 1);
+								when 8 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-								when others => command_incomplete;
+								when others => command_incomplete (cmd);
 							end case;
 
 						when VIA_RESTRICT =>
@@ -2712,9 +4026,9 @@ package body scripting is
 										log_threshold	=> log_threshold + 1
 										);
 
-								when 8 .. count_type'last => command_too_long (fields - 1);
+								when 8 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-								when others => command_incomplete;
+								when others => command_incomplete (cmd);
 							end case;
 							
 						when others => invalid_noun (to_string (noun));
@@ -2746,10 +4060,10 @@ package body scripting is
 													);
 
 											when 10 .. count_type'last =>
-												command_too_long (9);
+												command_too_long (cmd, 9);
 												
 											when others =>
-												command_incomplete;
+												command_incomplete (cmd);
 										end case;
 										
 									when ARC =>
@@ -2775,10 +4089,10 @@ package body scripting is
 													);
 
 											when 13 .. count_type'last =>
-												command_too_long (fields - 1);
+												command_too_long (cmd, fields - 1);
 												
 											when others =>
-												command_incomplete;
+												command_incomplete (cmd);
 										end case;
 
 									when CIRCLE =>
@@ -2798,10 +4112,10 @@ package body scripting is
 													);
 
 											when 9 .. count_type'last =>
-												command_too_long (8);
+												command_too_long (cmd, 8);
 												
 											when others =>
-												command_incomplete;
+												command_incomplete (cmd);
 										end case;
 
 								end case;
@@ -2833,10 +4147,10 @@ package body scripting is
 													);
 
 											when 12 .. count_type'last =>
-												command_too_long (fields - 1);
+												command_too_long (cmd, fields - 1);
 												
 											when others =>
-												command_incomplete;
+												command_incomplete (cmd);
 										end case;
 										
 									when ARC =>
@@ -2863,10 +4177,10 @@ package body scripting is
 													);
 
 											when 15 .. count_type'last =>
-												command_too_long (fields - 1);
+												command_too_long (cmd, fields - 1);
 												
 											when others =>
-												command_incomplete;
+												command_incomplete (cmd);
 										end case;
 
 									when CIRCLE =>
@@ -2933,7 +4247,7 @@ package body scripting is
 																);
 
 														when HATCHED =>
-															command_incomplete;
+															command_incomplete (cmd);
 
 													end case;
 												end if;
@@ -2971,10 +4285,10 @@ package body scripting is
 												end if;
 
 											when 13 .. count_type'last =>
-												command_too_long (fields - 1);
+												command_too_long (cmd, fields - 1);
 												
 											when others =>
-												command_incomplete;
+												command_incomplete (cmd);
 										end case;
 
 												
@@ -3008,10 +4322,10 @@ package body scripting is
 													);
 
 											when 12 .. count_type'last =>
-												command_too_long (fields - 1);
+												command_too_long (cmd, fields - 1);
 												
 											when others =>
-												command_incomplete;
+												command_incomplete (cmd);
 										end case;
 										
 									when ARC =>
@@ -3038,10 +4352,10 @@ package body scripting is
 													);
 
 											when 15 .. count_type'last =>
-												command_too_long (fields - 1);
+												command_too_long (cmd, fields - 1);
 												
 											when others =>
-												command_incomplete;
+												command_incomplete (cmd);
 										end case;
 
 									when CIRCLE =>
@@ -3108,7 +4422,7 @@ package body scripting is
 																);
 
 														when HATCHED =>
-															command_incomplete;
+															command_incomplete (cmd);
 
 													end case;
 												end if;
@@ -3147,10 +4461,10 @@ package body scripting is
 												end if;
 
 											when 13 .. count_type'last =>
-												command_too_long (fields - 1);
+												command_too_long (cmd, fields - 1);
 												
 											when others =>
-												command_incomplete;
+												command_incomplete (cmd);
 										end case;
 
 												
@@ -3189,10 +4503,10 @@ package body scripting is
 										);
 
 								when 7 .. count_type'last =>
-									command_too_long (6);
+									command_too_long (cmd, 6);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 
 						when others => invalid_noun (to_string (noun));
@@ -3226,10 +4540,10 @@ package body scripting is
 													);
 
 											when 12 .. count_type'last =>
-												command_too_long (11);
+												command_too_long (cmd, 11);
 												
 											when others =>
-												command_incomplete;
+												command_incomplete (cmd);
 										end case;
 										
 									when ARC =>
@@ -3258,10 +4572,10 @@ package body scripting is
 													);
 												
 											when 15 .. count_type'last =>
-												command_too_long (fields - 1);
+												command_too_long (cmd, fields - 1);
 												
 											when others =>
-												command_incomplete;
+												command_incomplete (cmd);
 										end case;
 
 								end case;
@@ -3292,10 +4606,10 @@ package body scripting is
 										);
 
 								when 9 .. count_type'last =>
-									command_too_long (8);
+									command_too_long (cmd, 8);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 
 						when NET =>
@@ -3315,10 +4629,10 @@ package body scripting is
 										);
 
 								when 10 .. count_type'last =>
-									command_too_long (9);
+									command_too_long (cmd, 9);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 							
 						when others => invalid_noun (to_string (noun));
@@ -3339,10 +4653,10 @@ package body scripting is
 										);
 
 								when 8 .. count_type'last =>
-									command_too_long (7);
+									command_too_long (cmd, 7);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 
 						when others => invalid_noun (to_string (noun));
@@ -3359,10 +4673,10 @@ package body scripting is
 										log_threshold	=> log_threshold + 1);
 
 								when 5 .. count_type'last =>
-									command_too_long (4);
+									command_too_long (cmd, 4);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 
 						when others => invalid_noun (to_string (noun));
@@ -3384,10 +4698,10 @@ package body scripting is
 										);
 
 								when 9 .. count_type'last =>
-									command_too_long (8);
+									command_too_long (cmd, 8);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 
 						when SUBMODULE =>
@@ -3404,10 +4718,10 @@ package body scripting is
 										);
 
 								when 9 .. count_type'last =>
-									command_too_long (8);
+									command_too_long (cmd, 8);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 							
 						when others => invalid_noun (to_string (noun));
@@ -3426,10 +4740,10 @@ package body scripting is
 												y => to_distance (f (6))),
 										log_threshold	=> log_threshold + 1);
 
-								when 7 .. count_type'last => command_too_long (fields - 1);
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 									
 								when others =>
-									command_incomplete;
+									command_incomplete (cmd);
 							end case;
 							
 						when others => invalid_noun (to_string (noun));
@@ -3459,7 +4773,12 @@ package body scripting is
 				noun_schematic := to_noun (f (4));
 
 				-- execute schematic command
-				schematic_cmd (verb_schematic, noun_schematic);
+				--schematic_cmd (verb_schematic, noun_schematic);
+				exit_code := schematic_cmd (cmd, log_threshold + 1);
+				
+				if exit_code = ERROR then
+					raise constraint_error;
+				end if;
 				
 			when DOM_BOARD =>
 				module := to_module_name (f (2));
