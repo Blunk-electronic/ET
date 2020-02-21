@@ -112,7 +112,7 @@ package body gui_schematic.callbacks is
 
 		cmd := read_line (
 			line 			=> line_as_typed_by_operator,
-			number			=> 1,
+			number			=> 1,  -- this is the one and only line
 			comment_mark 	=> scripting.comment_mark, -- comments start with "--"
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
 			ifs 			=> latin_1.space); -- fields are separated by space

@@ -43,6 +43,12 @@ with ada.text_io;				use ada.text_io;
 with et_canvas_board;			use et_canvas_board;
 use et_canvas_board.pac_canvas;
 
+with et_string_processing;		use et_string_processing;
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
+
+with scripting;
+
 package body gui_board.callbacks is
 
 	procedure terminate_main (self : access gtk_widget_record'class) is begin
@@ -92,8 +98,31 @@ package body gui_board.callbacks is
 
 	procedure echo_command_simple (self : access gtk.gentry.gtk_entry_record'class) is 
 		use gtk.gentry;
+		use et_string_processing;
+		use scripting;
+		
+		line_as_typed_by_operator : string := get_text (self);
+		
+		cmd : et_string_processing.type_fields_of_line;
+
+		exit_code : type_exit_code := SUCCESSFUL; -- to be returned
+
 	begin
-		put_line (get_text (self));
+		put_line (line_as_typed_by_operator);
+		
+		cmd := read_line (
+			line 			=> line_as_typed_by_operator,
+			number			=> 1, -- this is the one and only line
+			comment_mark 	=> scripting.comment_mark, -- comments start with "--"
+			delimiter_wrap	=> true, -- strings are enclosed in quotations
+			ifs 			=> latin_1.space); -- fields are separated by space
+
+		exit_code := board_cmd (cmd, 1);
+
+		-- CS output error message in gui
+		
+		queue_draw (canvas);
+
 	end;
 
 	function on_key_event (

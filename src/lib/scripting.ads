@@ -230,6 +230,11 @@ package scripting is
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 		return type_exit_code;
+
+	function board_cmd (
+		cmd				: in type_fields_of_line;
+		log_threshold	: in type_log_level)
+		return type_exit_code;
 	
 	function execute_command (
 		file_name		: in type_script_name.bounded_string;
