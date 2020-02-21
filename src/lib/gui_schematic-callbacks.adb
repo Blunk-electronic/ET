@@ -100,8 +100,12 @@ package body gui_schematic.callbacks is
 		use gtk.gentry;
 		use et_string_processing;
 		use scripting;
+-- 		use et_project;
+-- 		use et_project.type_modules;
 		
-		line_as_typed_by_operator : string := get_text (self);
+		line_as_typed_by_operator : constant string := "schematic " 
+-- 			& active_module (canvas)
+			& get_text (self);
 		
 		cmd : et_string_processing.type_fields_of_line;
 

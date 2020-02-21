@@ -83,7 +83,7 @@ package et_canvas_schematic is
 	
 	-- This is the link to the actual drawing:
 	type type_drawing is record	
-		module	: et_project.type_modules.cursor;
+		module	: et_project.type_modules.cursor; -- the currently active module
 
 		-- These variables are frequently used. Procedure init_drawing
 		-- sets them. Other operations are free to access them.
@@ -101,8 +101,8 @@ package et_canvas_schematic is
 		-- the active sheet
 		sheet	: et_coordinates.type_sheet := type_sheet'first;
 	end record;
-	
 
+	
 -- 	-- Initializes the internal data so that the model can send signals:
 -- 	procedure init (self : not null access type_model'class);
 
@@ -113,6 +113,9 @@ package et_canvas_schematic is
 		drawing	: type_drawing;
 	end record;
 
+	-- Returns the name of the currently active module:
+	function active_module (self : not null access type_view) return string;
+	
 	-- Returns the bounding box of all items of the current sheet.
 	overriding function bounding_box (self : not null access type_view)
 		return type_rectangle;

@@ -241,6 +241,11 @@ package et_string_processing is
 		) return type_fields_of_line;
 	
 	function append (left : in type_fields_of_line; right : in type_fields_of_line) return type_fields_of_line;
+
+	procedure set_field (
+		line		: in out type_fields_of_line;
+		position	: in positive;
+		content		: in string);
 	
 	function field (line : in type_fields_of_line; position : in positive) return string; 
 	-- Returns the field at the given position. Raises constraint error if there is no 

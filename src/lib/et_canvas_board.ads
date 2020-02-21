@@ -80,7 +80,7 @@ package et_canvas_board is
 	
 	-- This is the link to the actual drawing:
 	type type_drawing is record	
-		module	: et_project.type_modules.cursor;
+		module	: et_project.type_modules.cursor;  -- the currently active module
 
 		-- These variables are frequently used. Procedure init_drawing
 		-- sets them. Other operations are free to access them.

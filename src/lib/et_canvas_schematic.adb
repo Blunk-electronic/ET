@@ -67,6 +67,16 @@ package body et_canvas_schematic is
 		return p;
 	end;
 
+	
+	-- Returns the name of the active module:
+	function active_module (self : not null access type_view) return string is
+		use et_general.type_module_name;
+		use et_project.type_modules;
+	begin
+		return to_string (key (self.drawing.module)); -- motor_driver (without extension)
+	end active_module;
+
+	
 	function bounding_box (self : not null access type_view)
 		return type_rectangle is
 	begin

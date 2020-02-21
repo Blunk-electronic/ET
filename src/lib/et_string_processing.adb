@@ -824,7 +824,14 @@ package body et_string_processing is
 		return line;
 	end append;
 
-
+	procedure set_field (
+		line		: in out type_fields_of_line;
+		position	: in positive;
+		content		: in string)
+	is begin
+		null; -- CS
+	end set_field;
+	
 	function field (line : in type_fields_of_line; position : in positive) return string is
 	-- Returns the field at the given position. Raises constraint error if there is no 
 	-- field at given position.		
