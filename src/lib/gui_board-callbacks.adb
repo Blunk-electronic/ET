@@ -42,6 +42,7 @@ with gtk.window;				use gtk.window;
 with ada.text_io;				use ada.text_io;
 with et_canvas_board;			use et_canvas_board;
 use et_canvas_board.pac_canvas;
+with et_canvas_schematic;
 
 with et_string_processing;		use et_string_processing;
 with ada.characters;			use ada.characters;
@@ -123,8 +124,12 @@ package body gui_board.callbacks is
 		exit_code := board_cmd (cmd, 1);
 
 		-- CS output error message in gui
-		
+
+		-- refresh board
 		queue_draw (canvas);
+
+		-- refresh schematic (because some commands also affect the schematic)
+		et_canvas_schematic.pac_canvas.queue_draw (et_canvas_schematic.pac_canvas.canvas);
 	end;
 
 	function on_key_event (
