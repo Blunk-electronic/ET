@@ -1509,12 +1509,31 @@ package body schematic_ops is
 
 					use et_coordinates.geometry;
 					
-					procedure rotate_placeholders (rot : in type_rotation) is begin
+					procedure rotate_placeholders (rot : in type_rotation) is 
+						preamble : constant string := " placeholder now at";
+					begin
 					-- Rotate position of placeholders around the unit origin. 
+						log (text => "A name" & preamble & to_string (unit.name.position), 
+							 level => log_threshold + 2, console => true);
+
+
 						rotate (unit.name.position, rot);
+
+						log (text => "B name" & preamble & to_string (unit.name.position), 
+							 level => log_threshold + 2, console => true);
+
+						
 						rotate (unit.value.position, rot);
+
+						log (text => "value" & preamble & to_string (unit.name.position), 
+							 level => log_threshold + 2);
+
+						
 						rotate (unit.purpose.position, rot);
 
+						log (text => "purpose" & preamble & to_string (unit.name.position), 
+							 level => log_threshold + 2);
+						
 						-- CS set rotation of placeholders ?
 					end rotate_placeholders;
 	
@@ -1524,13 +1543,18 @@ package body schematic_ops is
 							--unit.rotation := rotation;
 							set (unit.position, rotation);
 							--rotate_placeholders (unit.rotation);
-							rotate_placeholders (rot (unit.position));
+							rotate_placeholders (rot (unit.position)); -- CS ?
 							
 						when RELATIVE =>
 							--unit.rotation := add (rotation_before, rotation);
 							set (unit.position, add (rotation_before, rotation));
+							
+							log (text => "rotation now" & to_string (rot (unit.position)),
+								 level => log_threshold + 1);
+							
 							--rotate_placeholders (unit.rotation);
-							rotate_placeholders (rot (unit.position));
+							--rotate_placeholders (rot (unit.position));
+							rotate_placeholders (rotation);
 					end case;
 				end rotate_unit;
 				
@@ -1546,12 +1570,17 @@ package body schematic_ops is
 
 					-- log unit position and current rotation
 					log (text => to_string (position => position_of_unit) &
-						 to_string (rotation_before), level => log_threshold + 1);
+						 " rotation before" & to_string (rotation_before),
+						 level => log_threshold + 1);
 
+					log_indentation_up;
+					
 					type_units.update_element (
 						container	=> device.units,
 						position	=> unit_cursor,
 						process		=> rotate_unit'access);
+
+					log_indentation_down;
 				else
 					unit_not_found (unit_name);
 				end if;
