@@ -115,6 +115,13 @@ package schematic_ops is
 		meaning			: in et_symbols.type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level);
 
+	function default_text_positions (
+	-- Returns the default positions of placeholders and texts of a unit
+	-- as they are defined in the symbol model.
+		device_cursor	: in et_schematic.type_devices.cursor;
+		unit_name		: in type_unit_name.bounded_string)
+		return et_symbols.type_default_text_positions;
+	
 	procedure rotate_unit (
 	-- Rotates the given unit. Disconnects the unit from
 	-- start or end points of net segments.

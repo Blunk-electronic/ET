@@ -1472,6 +1472,151 @@ package body schematic_ops is
 	begin -- rotate_ports
 		iterate (ports, query_port'access);
 	end rotate_ports;
+
+	function default_text_positions (
+	-- Returns the default positions of placeholders and texts of a unit
+	-- as they are defined in the symbol model.
+		device_cursor	: in et_schematic.type_devices.cursor;
+		unit_name		: in type_unit_name.bounded_string)
+		return et_symbols.type_default_text_positions is
+		
+		use et_symbols;
+		use et_schematic.type_devices;
+
+		-- The positions to be returned depend on the appearance of the requested device:
+		result : type_default_text_positions (element (device_cursor).appearance); -- to be returned
+		
+		model : type_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
+		device_cursor_lib : et_devices.type_devices.cursor;
+		
+		use et_symbols.type_texts;
+
+		procedure query_text (c : in et_symbols.type_texts.cursor) is 
+		-- Appends a text position (x/y) the the result.
+			use pac_text_positions;
+		begin
+			append (result.texts, element (c).position);
+		end;
+
+		-- Indicates whether the unit is internal or external:
+		unit_status : type_unit_ext_int := EXT;
+		
+		procedure query_internal_units (
+			model	: in type_device_model_file.bounded_string;
+			device	: in et_devices.type_device) is
+			use pac_units_internal;
+			unit_cursor : pac_units_internal.cursor;
+		begin
+			-- locate the given unit among the internal units
+			unit_cursor := find (device.units_internal, unit_name);
+
+			-- if the unit exists among the internal units:
+			if unit_cursor /= pac_units_internal.no_element then
+				unit_status := INT;
+				
+				-- Collect the positions of texts and store them in result.text
+				-- in the same order as they are listed in symbol.texts:
+				iterate (element (unit_cursor).symbol.texts, query_text'access);
+				-- CS: constraint_error arises here if unit can not be located.
+
+				-- If it is about a real device, take a copy of the default 
+				-- placeholders as they are specified in the symbol model:
+				case result.appearance is
+					when PCB =>
+						result.name 	:= element (unit_cursor).symbol.name;
+						result.value	:= element (unit_cursor).symbol.value;
+						result.purpose	:= element (unit_cursor).symbol.purpose;
+					when others => null;
+				end case;
+
+			else
+				unit_status := EXT;
+			end if;
+		end query_internal_units;
+
+		procedure query_external_units (
+			model	: in type_device_model_file.bounded_string;
+			device	: in et_devices.type_device) is
+			use pac_units_external;
+			unit_cursor : pac_units_external.cursor;
+			sym_model : type_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
+
+			procedure query_symbol (
+				symbol_name	: in type_symbol_model_file.bounded_string;
+				symbol		: in type_symbol ) is
+			begin
+				-- Collect the positions of texts and store them in result.text
+				-- in the same order as they are listed in symbol.texts:
+				iterate (symbol.texts, query_text'access);
+
+				-- If it is about a real device, take a copy of the default 
+				-- placeholders as they are specified in the symbol model:
+				case result.appearance is
+					when PCB =>
+						result.name 	:= symbol.name;
+						result.value	:= symbol.value;
+						result.purpose	:= symbol.purpose;
+					when others => null;
+				end case;
+			end query_symbol;
+			
+		begin -- query_external_units
+			-- locate the given unit among the external units
+			unit_cursor := find (device.units_external, unit_name);
+
+			-- Fetch the symbol model file of the external unit.
+			-- If unit could not be located then it must be internal.
+			if unit_cursor /= pac_units_external.no_element then
+				unit_status := EXT;
+				
+				sym_model := element (unit_cursor).file;
+
+				-- Fetch the ports of the external unit.
+				-- CS: constraint_error arises here if symbol model could not be located.
+				type_symbols.query_element (
+					position	=> type_symbols.find (symbols, sym_model),
+					process		=> query_symbol'access);
+			else
+				unit_status := INT;
+			end if;
+			
+		end query_external_units;
+		
+	begin -- default_text_positions
+
+		-- Fetch the model name of the given device. 
+		model := et_schematic.type_devices.element (device_cursor).model;
+
+		-- Get cursor to device in device library (the model name is the key into the device library).
+		-- CS: constraint_error will arise here if no associated device exists.
+		device_cursor_lib := et_devices.type_devices.find (devices, model);
+
+		-- Query external units of device (in library). It is most likely that
+		-- the unit is among the external units:
+		et_devices.type_devices.query_element (
+			position	=> device_cursor_lib,
+			process		=> query_external_units'access);
+
+		-- If unit could not be found among external units then look up the internal units:
+		if unit_status = INT then
+
+			-- Query internal units of device (in library):
+			et_devices.type_devices.query_element (
+				position	=> device_cursor_lib,
+				process		=> query_internal_units'access);
+		end if;
+		
+		-- CS raise error if unit could not be located at all.
+			
+		return result;
+
+		exception
+			when event: others =>
+				log_indentation_reset;
+				log (text => ada.exceptions.exception_information (event), console => true);
+				raise;
+		
+	end default_text_positions;
 	
 	procedure rotate_unit (
 	-- Rotates the given unit within the schematic. Disconnects the unit from
@@ -1508,34 +1653,86 @@ package body schematic_ops is
 					unit	: in out type_unit) is
 
 					use et_coordinates.geometry;
+
+					preamble : constant string := " placeholder now at";
 					
-					procedure rotate_placeholders (rot : in type_rotation) is 
+					procedure rotate_placeholders_absolute (rot : in type_rotation) is 
+
+						-- Get the default positions of texts and placeholders as
+						-- specified in symbol model:
+						default_positions : et_symbols.type_default_text_positions := 
+												default_text_positions (device_cursor, name);
+						
+						use geometry;
 						preamble : constant string := " placeholder now at";
+
+						function add_rot (p : in type_point) return type_rotation is begin
+							return geometry.rotation (p) + rot;
+						end;
+	
 					begin
-					-- Rotate position of placeholders around the unit origin. 
-						log (text => "A name" & preamble & to_string (unit.name.position), 
+						-- Rotate position of placeholders around the unit origin. 
+						
+-- 						log (text => "A name" & preamble & to_string (unit.name.position) & " rot" & to_string (rot), 
+-- 							 level => log_threshold + 2, console => true);
+-- 
+-- 						log (text => "default" & to_string (default_positions.name.position) &
+-- 							 " rotation" & to_string (geometry.rotation (default_positions.name.position)),
+-- 							 level => log_threshold + 2, console => true);
+-- 
+-- 						log (text => "now    " & to_string (add_rot (default_positions.name.position)),
+-- 							 level => log_threshold + 2, console => true);
+
+						-- NAME
+						rotate_to (unit.name.position, add_rot (default_positions.name.position));
+								   
+						log (text => "name" & preamble & to_string (unit.name.position), 
 							 level => log_threshold + 2, console => true);
 
 
-						rotate (unit.name.position, rot);
+						-- VALUE
+						rotate_to (unit.value.position, add_rot (default_positions.value.position));
 
-						log (text => "B name" & preamble & to_string (unit.name.position), 
-							 level => log_threshold + 2, console => true);
+						log (text => "value" & preamble & to_string (unit.name.position), 
+							 level => log_threshold + 2);
+
+
+						-- PURPOSE
+						rotate (unit.purpose.position, add_rot (default_positions.purpose.position));
+
+						log (text => "purpose" & preamble & to_string (unit.name.position), 
+							 level => log_threshold + 2);
 
 						
+						-- CS set rotation of placeholders ?
+					end rotate_placeholders_absolute;
+					
+					procedure rotate_placeholders_relative (rot : in type_rotation) is begin
+						-- Rotate position of placeholders around the unit origin. 
+					
+						-- NAME
+						rotate (unit.name.position, rot);
+
+						log (text => "name" & preamble & to_string (unit.name.position), 
+							 level => log_threshold + 2, console => true);
+
+
+						-- VALUE
 						rotate (unit.value.position, rot);
 
 						log (text => "value" & preamble & to_string (unit.name.position), 
 							 level => log_threshold + 2);
 
-						
+
+						-- PURPOSE
 						rotate (unit.purpose.position, rot);
 
 						log (text => "purpose" & preamble & to_string (unit.name.position), 
 							 level => log_threshold + 2);
+
 						
 						-- CS set rotation of placeholders ?
-					end rotate_placeholders;
+					end rotate_placeholders_relative;
 	
 				begin -- rotate_unit
 					case coordinates is
@@ -1543,7 +1740,7 @@ package body schematic_ops is
 							--unit.rotation := rotation;
 							set (unit.position, rotation);
 							--rotate_placeholders (unit.rotation);
-							rotate_placeholders (rot (unit.position)); -- CS ?
+							rotate_placeholders_absolute (rotation);
 							
 						when RELATIVE =>
 							--unit.rotation := add (rotation_before, rotation);
@@ -1554,7 +1751,7 @@ package body schematic_ops is
 							
 							--rotate_placeholders (unit.rotation);
 							--rotate_placeholders (rot (unit.position));
-							rotate_placeholders (rotation);
+							rotate_placeholders_relative (rotation);
 					end case;
 				end rotate_unit;
 				
