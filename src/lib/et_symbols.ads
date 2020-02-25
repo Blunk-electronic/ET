@@ -458,7 +458,27 @@ package et_symbols is
 	end record;
 
 
+	-- In the schematic, when a unit is rotated to a certain absolute rotation,
+	-- or if the placeholders are to be restored (kind of un-smash),
+	-- the default positions of texts and placeholders are required. For this
+	-- reason we define here the type type_default_text_positions:
+	package pac_text_positions is new doubly_linked_lists (type_point);
+	
+	type type_default_text_positions (appearance : type_appearance) is record
 
+		-- For texts, we need only their positions (x/y):
+		texts : pac_text_positions.list; -- same order as the texts in type_symbol_base
+
+		-- The placeholders are copies of those in the symbol (see type_symbol):
+		case appearance is
+			when PCB =>
+				name	: type_text_placeholder (meaning => et_symbols.NAME);
+				value	: type_text_placeholder (meaning => et_symbols.VALUE);
+				purpose : type_text_placeholder (meaning => et_symbols.PURPOSE);
+				
+			when VIRTUAL => null;
+		end case;
+	end record;
 
 	
 
