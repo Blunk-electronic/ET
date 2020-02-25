@@ -141,7 +141,10 @@ package et_text is
 		-- Examples: 
 		-- - If rotation is 0 degree, then the return is HORIZONTAL.
 		-- - If rotation is 40 degree, then the return is HORIZONTAL.
+		-- - If rotation is 45 degree, then the return is HORIZONTAL.
+		-- - If rotation is 46 degree, then the return is VERTICAL.
 		-- - If rotation is 50 degree, then the return is VERTICAL.
+		-- - If rotation is 135 degree, then the return is VERTICAL.		
 		-- - If rotation is 170 degree, then the return is HORIZONTAL.		
 		-- - If rotation is 270 degree, then the return is VERTICAL.		
 		function snap (rotation : in type_rotation) return type_rotation_documentation;
