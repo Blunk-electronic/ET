@@ -138,6 +138,12 @@ package et_text is
 		procedure warning_rotation_outside_range; -- CS argument for angle ?
 
 		-- Converts an angle to either HORIZONTAL or VERTICAL.
+		-- Examples: 
+		-- - If rotation is 0 degree, then the return is HORIZONTAL.
+		-- - If rotation is 40 degree, then the return is HORIZONTAL.
+		-- - If rotation is 50 degree, then the return is VERTICAL.
+		-- - If rotation is 170 degree, then the return is HORIZONTAL.		
+		-- - If rotation is 270 degree, then the return is VERTICAL.		
 		function snap (rotation : in type_rotation) return type_rotation_documentation;
 
 		-- Converts a string like "0.0" or "90.0" to HORIZONTAL or VERTICAL.

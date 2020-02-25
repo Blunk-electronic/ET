@@ -244,25 +244,18 @@ package body et_text is
 		end;
 
 		function snap (rotation : in type_rotation) return type_rotation_documentation is
-			result : type_rotation_documentation := HORIZONTAL;
-			
-			d : constant type_rotation := 45.0;
+			offset : constant type_rotation := 45.0 - type_rotation'small;
+			r1 : type_rotation;
+			r2 : float;
+			r3 : integer;
 		begin
-			-- CS needs improvement. angles greater 360 degree ?
-			if rotation > - d and rotation <= d then
-				result := HORIZONTAL;
-				
-			elsif rotation > d and rotation <= 90.0 + d then
-				result := VERTICAL;
+			r1 := (abs (rotation) + offset) / 90.0;
+			r2 := float'floor (float (r1));
+			r3 := integer (r2);
 
-			elsif rotation > 90.0 + d and rotation <= 180.0 + d then
-				result := HORIZONTAL;
-
-			elsif rotation > 180.0 + d and rotation <= -d then
-				result := VERTICAL;
+			if r3 rem 2 = 0 then return HORIZONTAL;
+			else return VERTICAL;
 			end if;
-			
-			return result;
 		end;
 		
 		function to_rotation_doc (rotation : in string) return type_rotation_documentation is
