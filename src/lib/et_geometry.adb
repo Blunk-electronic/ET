@@ -79,7 +79,7 @@ package body et_geometry is
 			package functions is new ada.numerics.generic_elementary_functions (float);
 			use functions;
 		begin
-			return type_rotation (arctan (x, y, float (units_per_cycle)));
+			return type_rotation (arctan (y, x, float (units_per_cycle)));
 		end rotation;
 		
 		function to_string (boundaries : in type_boundaries) return string is begin
