@@ -35,7 +35,7 @@
 --   history of changes:
 --
 
--- with ada.text_io;				use ada.text_io;
+with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
 with ada.strings.fixed;			use ada.strings.fixed;
 with ada.characters;			use ada.characters;
@@ -72,6 +72,16 @@ package body et_geometry is
 			return point.y;
 		end;
 
+		function rotation (point : in type_point) return type_rotation is
+			x : constant float := float (point.x);
+			y : constant float := float (point.y);
+
+			package functions is new ada.numerics.generic_elementary_functions (float);
+			use functions;
+		begin
+			return type_rotation (arctan (x, y, float (units_per_cycle)));
+		end rotation;
+		
 		function to_string (boundaries : in type_boundaries) return string is begin
 			return "boundaries: smallest x" & to_string (boundaries.smallest_x) 
 				& " greatest x" & to_string (boundaries.greatest_x)
@@ -573,11 +583,13 @@ package body et_geometry is
 		end;
 		
 		procedure rotate (
-		-- Rotates the given point by the given angle around the origin.
+		-- Rotates the given point BY the given angle around the origin.
 		-- Changes point.x and point.y only.							 
 			point		: in out type_point'class;
 			rotation	: in type_rotation) is
 
+			-- CS probably way to much stuff here. simplify. instead of type_float_distance use just float ?
+			
 			type type_float_distance is digits 7 range -1000.0 .. 1000.0; -- CS: refine
 			package functions_distance is new ada.numerics.generic_elementary_functions (type_float_distance);
 			use functions_distance;
@@ -638,14 +650,7 @@ package body et_geometry is
 				end if;
 
 				-- Compute new angle by adding current angle and given angle.
-				-- This computation depends on the Y axis style. The in the conventional style (Y going upwards positive)
-				-- we add the given angle to the current angle. In the old fashioned stlyle (Y going downwards positive)
-				-- we subtract the given angle from the current angle.
--- 				if Y_axis_positive = upwards then
-					angle_out := angle_out + type_float_angle (rotation);
--- 				else
--- 					angle_out := angle_out - type_float_angle (rotation);
--- 				end if;
+				angle_out := angle_out + type_float_angle (rotation);
 
 				-- compute new x   -- (cos angle_out) * distance_to_origin
 				scratch := cos (type_float_distance (angle_out), type_float_distance (units_per_cycle));
@@ -658,6 +663,54 @@ package body et_geometry is
 			end if; -- if angle not zero
 			
 		end rotate;
+
+		procedure rotate_to (
+			point		: in out type_point'class;
+			rotation	: in type_rotation) is
+
+			-- CS probably way to much stuff here. simplify. use code of procedure rotate_by (see above).
+			
+			type type_float_distance is digits 7 range -1000.0 .. 1000.0; -- CS: refine
+			package functions_distance is new ada.numerics.generic_elementary_functions (type_float_distance);
+			use functions_distance;
+			
+			type type_float_angle is digits 4 range -719.9 .. 719.9; -- CS: refine			
+			package functions_angle is new ada.numerics.generic_elementary_functions (type_float_angle);
+			use functions_angle;
+
+			angle_out			: type_float_angle;		-- unit is degrees
+			distance_to_origin	: type_float_distance;	-- unit is mm
+			scratch				: type_float_distance;
+
+		begin -- rotate
+
+			-- compute distance of given point to origin
+			if x (point) = zero and y (point) = zero then
+				distance_to_origin := type_float_distance (zero);
+			elsif x (point) = zero then
+				distance_to_origin := type_float_distance (abs (y (point)));
+			elsif y (point) = zero then
+				distance_to_origin := type_float_distance (abs (x (point)));
+			else
+				distance_to_origin := sqrt (
+					type_float_distance (abs (x (point))) ** type_float_distance (2) 
+					+
+					type_float_distance (abs (y (point))) ** type_float_distance (2)
+					);
+			end if;
+
+			-- The new angle is the given rotation:
+			angle_out := type_float_angle (rotation);
+
+			-- compute new x   -- (cos angle_out) * distance_to_origin
+			scratch := cos (type_float_distance (angle_out), type_float_distance (units_per_cycle));
+			set (axis => X, point => point, value => type_distance (scratch * distance_to_origin));
+
+			-- compute new y   -- (sin angle_out) * distance_to_origin
+			scratch := sin (type_float_distance (angle_out), type_float_distance (units_per_cycle));
+			set (axis => Y, point => point, value => type_distance (scratch * distance_to_origin));
+			
+		end rotate_to;
 
 		
 		function to_string (

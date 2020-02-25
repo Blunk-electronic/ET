@@ -85,7 +85,10 @@ package et_geometry is
 		function x (point : in type_point'class) return type_distance; -- CS class attr. not required ?
 		function y (point : in type_point'class) return type_distance;		
 
-
+		-- Returns the rotation of the given point around the origin.
+		-- If for example point is (1/1) then the return is 45 degree.
+		-- if point is (-1/-1) then the return is -135 degree.
+		function rotation (point : in type_point) return type_rotation;
 
 		
 		-- The GUI frequently requires the area (a rectanglular box around an object)
@@ -284,8 +287,14 @@ package et_geometry is
 			position	: in out type_position'class;
 			offset		: in type_rotation);
 		
-		procedure rotate (
-		-- Rotates the given point by the given angle around the origin.
+		procedure rotate ( -- CS rename to rotate_by
+		-- Rotates the given point BY the given angle around the origin.
+		-- Changes point.x and point.y only.
+			point		: in out type_point'class;
+			rotation	: in type_rotation);
+
+		procedure rotate_to (
+		-- Rotates the given point TO the given angle around the origin.
 		-- Changes point.x and point.y only.
 			point		: in out type_point'class;
 			rotation	: in type_rotation);
