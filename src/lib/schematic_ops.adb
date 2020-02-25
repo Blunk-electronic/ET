@@ -1659,13 +1659,15 @@ package body schematic_ops is
 					procedure rotate_placeholders_absolute (rot : in type_rotation) is 
 
 						-- Get the default positions of texts and placeholders as
-						-- specified in symbol model:
+						-- specified in symbol model. The default positiions are
+						-- later rotated by the given rotation rot.
 						default_positions : et_symbols.type_default_text_positions := 
 												default_text_positions (device_cursor, name);
 						
 						use geometry;
 						preamble : constant string := " placeholder now at";
 
+						-- Rotates the positiion by the given rotation rot:
 						function add_rot (p : in type_point) return type_rotation is begin
 							return geometry.rotation (p) + rot;
 						end;
@@ -1673,21 +1675,11 @@ package body schematic_ops is
 					begin
 						-- Rotate position of placeholders around the unit origin. 
 						
--- 						log (text => "A name" & preamble & to_string (unit.name.position) & " rot" & to_string (rot), 
--- 							 level => log_threshold + 2, console => true);
--- 
--- 						log (text => "default" & to_string (default_positions.name.position) &
--- 							 " rotation" & to_string (geometry.rotation (default_positions.name.position)),
--- 							 level => log_threshold + 2, console => true);
--- 
--- 						log (text => "now    " & to_string (add_rot (default_positions.name.position)),
--- 							 level => log_threshold + 2, console => true);
-
 						-- NAME
 						rotate_to (unit.name.position, add_rot (default_positions.name.position));
 								   
 						log (text => "name" & preamble & to_string (unit.name.position), 
-							 level => log_threshold + 2, console => true);
+							 level => log_threshold + 2);
 
 
 						-- VALUE
@@ -1714,7 +1706,7 @@ package body schematic_ops is
 						rotate (unit.name.position, rot);
 
 						log (text => "name" & preamble & to_string (unit.name.position), 
-							 level => log_threshold + 2, console => true);
+							 level => log_threshold + 2);
 
 
 						-- VALUE
@@ -1737,20 +1729,15 @@ package body schematic_ops is
 				begin -- rotate_unit
 					case coordinates is
 						when ABSOLUTE =>
-							--unit.rotation := rotation;
 							set (unit.position, rotation);
-							--rotate_placeholders (unit.rotation);
 							rotate_placeholders_absolute (rotation);
 							
 						when RELATIVE =>
-							--unit.rotation := add (rotation_before, rotation);
 							set (unit.position, add (rotation_before, rotation));
 							
 							log (text => "rotation now" & to_string (rot (unit.position)),
 								 level => log_threshold + 1);
-							
-							--rotate_placeholders (unit.rotation);
-							--rotate_placeholders (rot (unit.position));
+
 							rotate_placeholders_relative (rotation);
 					end case;
 				end rotate_unit;
@@ -1762,7 +1749,6 @@ package body schematic_ops is
 
 					-- load unit position and current rotation
 					position_of_unit := element (unit_cursor).position;
-					--rotation_before := element (unit_cursor).rotation;
 					rotation_before := rot (element (unit_cursor).position);
 
 					-- log unit position and current rotation
