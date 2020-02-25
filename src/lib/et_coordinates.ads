@@ -64,7 +64,8 @@ package et_coordinates is
 	subtype type_distance_xy is type_distance range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter, CS rename to type_distance
 
 
-	type type_rotation is delta 1.0 range -270.0 .. 270.0;
+	--type type_rotation is delta 1.0 range -270.0 .. 270.0;
+	type type_rotation is delta 1.0 range -360.0 .. 360.0;
 	for type_rotation'small use 1.0;
 	
 	-- instantiation of the 2d geometry package:
