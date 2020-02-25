@@ -1665,17 +1665,21 @@ package body schematic_ops is
 												default_text_positions (device_cursor, name);
 						
 						use geometry;
-						preamble : constant string := " placeholder now at";
 
 						-- Rotates the positiion by the given rotation rot:
 						function add_rot (p : in type_point) return type_rotation is begin
 							return geometry.rotation (p) + rot;
 						end;
-	
+
+						use pac_text;
 					begin
 						-- Rotate position of placeholders around the unit origin. 
 						
 						-- NAME
+						-- rotate the placeholder around its own anchor point:
+						unit.name.rotation := snap (default_positions.name.rotation + rot);
+
+						-- rotate the placeholder anchor point around the symbol origin:
 						rotate_to (unit.name.position, add_rot (default_positions.name.position));
 								   
 						log (text => "name" & preamble & to_string (unit.name.position), 
@@ -1683,6 +1687,10 @@ package body schematic_ops is
 
 
 						-- VALUE
+						-- rotate the placeholder around its own anchor point:
+						unit.value.rotation := snap (default_positions.value.rotation + rot);
+
+						-- rotate the placeholder anchor point around the symbol origin:
 						rotate_to (unit.value.position, add_rot (default_positions.value.position));
 
 						log (text => "value" & preamble & to_string (unit.name.position), 
@@ -1690,19 +1698,27 @@ package body schematic_ops is
 
 
 						-- PURPOSE
+						-- rotate the placeholder around its own anchor point:
+						unit.purpose.rotation := snap (default_positions.purpose.rotation + rot);
+
+						-- rotate the placeholder anchor point around the symbol origin:
 						rotate (unit.purpose.position, add_rot (default_positions.purpose.position));
 
 						log (text => "purpose" & preamble & to_string (unit.name.position), 
 							 level => log_threshold + 2);
 
-						
-						-- CS set rotation of placeholders ?
 					end rotate_placeholders_absolute;
 					
-					procedure rotate_placeholders_relative (rot : in type_rotation) is begin
+					procedure rotate_placeholders_relative (rot : in type_rotation) is 
+						use pac_text;
+					begin
 						-- Rotate position of placeholders around the unit origin. 
 					
 						-- NAME
+						-- rotate the placeholder around its own anchor point:
+						unit.name.rotation := snap (unit.name.rotation + rot);
+
+						-- rotate the placeholder anchor point around the symbol origin:
 						rotate (unit.name.position, rot);
 
 						log (text => "name" & preamble & to_string (unit.name.position), 
@@ -1710,6 +1726,10 @@ package body schematic_ops is
 
 
 						-- VALUE
+						-- rotate the placeholder around its own anchor point:
+						unit.value.rotation := snap (unit.value.rotation + rot);
+
+						-- rotate the placeholder anchor point around the symbol origin:
 						rotate (unit.value.position, rot);
 
 						log (text => "value" & preamble & to_string (unit.name.position), 
@@ -1717,13 +1737,15 @@ package body schematic_ops is
 
 
 						-- PURPOSE
+						-- rotate the placeholder around its own anchor point:
+						unit.purpose.rotation := snap (unit.purpose.rotation + rot);
+
+						-- rotate the placeholder anchor point around the symbol origin:
 						rotate (unit.purpose.position, rot);
 
 						log (text => "purpose" & preamble & to_string (unit.name.position), 
 							 level => log_threshold + 2);
 
-						
-						-- CS set rotation of placeholders ?
 					end rotate_placeholders_relative;
 	
 				begin -- rotate_unit
