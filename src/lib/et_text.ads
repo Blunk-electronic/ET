@@ -137,7 +137,9 @@ package et_text is
 		-- Issues a warning that the given angle is neither 0 or 90 degrees.
 		procedure warning_rotation_outside_range; -- CS argument for angle ?
 
-		-- Converts an angle to either HORIZONTAL or VERTICAL.
+		-- Converts an angle to either HORIZONTAL or VERTICAL. 
+		-- This is required for documentational text which
+		-- must be readable from the front or from the left.
 		-- Examples: 
 		-- - If rotation is 0 degree, then the return is HORIZONTAL.
 		-- - If rotation is 40 degree, then the return is HORIZONTAL.
