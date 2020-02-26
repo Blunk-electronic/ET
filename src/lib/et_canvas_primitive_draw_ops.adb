@@ -358,29 +358,14 @@ package body pac_draw is
 
 		cairo.set_font_size (context.cr, (to_points (size)));
 
--- 		if rigid = YES then
-			-- In cairo all angles increase in clockwise direction.
-			-- Since our angles increase in counterclockwise direction (mathematically)
-			-- the angle must change the sign.		
+		-- In cairo all angles increase in clockwise direction.
+		-- Since our angles increase in counterclockwise direction (mathematically)
+		-- the angle must change the sign.		
 
-			cairo.move_to (context.cr, x, y);
-			cairo.rotate (context.cr, gdouble (to_radians (- rotation)));
--- 		else
--- 			-- The text must be placed and rotated relative
--- 			-- to the given x and y:
--- 			translate (context.cr, x, y);
--- 
--- 			-- In cairo all angles increase in clockwise direction.
--- 			-- Since our angles increase in counterclockwise direction (mathematically)
--- 			-- the angle must change the sign.		
--- 			cairo.rotate (context.cr, gdouble (to_radians (- rotation)));
--- 
--- 			-- Place the text without any offset right at given x and y:
--- 			cairo.move_to (context.cr, 0.0, 0.0);
--- 		end if;
+		cairo.move_to (context.cr, x, y);
+		cairo.rotate (context.cr, gdouble (to_radians (- rotation)));
 			
 		cairo.show_text (context.cr, to_string (content));
-
 
 		-- CS alignment. http://zetcode.com/gfx/cairo/cairotext/
 
