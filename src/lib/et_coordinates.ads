@@ -63,6 +63,10 @@ package et_coordinates is
 	-- The x and y position of an object:
 	subtype type_distance_xy is type_distance range -10_000_000.0 .. 10_000_000.0; -- unit is metric millimeter, CS rename to type_distance
 
+	
+	-- Angle or rotation is in mathematical sense, means:
+	-- positive rotation -> counter clock wise
+	-- negative rotation -> clock wise
 
 	--type type_rotation is delta 1.0 range -270.0 .. 270.0;
 	type type_rotation is delta 1.0 range -360.0 .. 360.0;
@@ -80,9 +84,6 @@ package et_coordinates is
 	
 
 	
-	-- Angles/rotations are to be interpreted as: 
-	-- positive rotation -> counter clock wise
-	-- negative rotation -> clock wise
 -- 	rotation_delta : constant := 90;
 -- 	rotation_min : constant := -270;
 -- 	rotation_max : constant :=  270;
