@@ -68,9 +68,8 @@ package et_coordinates is
 	-- positive rotation -> counter clock wise
 	-- negative rotation -> clock wise
 
-	--type type_rotation is delta 1.0 range -270.0 .. 270.0;
-	type type_rotation is delta 1.0 range -360.0 .. 360.0;
-	for type_rotation'small use 1.0;
+	type type_rotation is delta 0.1 range -360.0 .. 360.0;
+	for type_rotation'small use 0.1;
 	
 	-- instantiation of the 2d geometry package:
 	package geometry is new et_geometry.geometry_operations_2d (
