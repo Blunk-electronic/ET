@@ -139,7 +139,7 @@ package et_text is
 
 		-- Converts an angle to either HORIZONTAL or VERTICAL. 
 		-- This is required for documentational text which
-		-- must be readable from the front or from the left.
+		-- must be readable from the front or from the right.
 		-- Examples: 
 		-- - If rotation is 0 degree, then the return is HORIZONTAL.
 		-- - If rotation is 40 degree, then the return is HORIZONTAL.

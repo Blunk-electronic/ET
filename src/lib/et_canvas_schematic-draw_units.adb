@@ -402,7 +402,7 @@ procedure draw_units (
 				-- Text rotation around its anchor point.
 				-- This is documetational text. Its rotation must
 				-- be snapped to either HORIZONAL or VERTICAL so that
-				-- it is readable from the front or the left.
+				-- it is readable from the front or the right.
 				rotation	=> to_rotation (snap (element (c).rotation + unit_rotation)),
 
 				alignment	=> element (c).alignment
@@ -417,39 +417,39 @@ procedure draw_units (
 			use pac_text;
 			
 			position : type_point;
-
-			-- In order to rotate the position of a placeholder we use this function.
-			-- NOTE: It does NOT rotate the text itself. It just rotates the position
-			-- around the center of the symbol:
-			function rotate (p : in type_point) return type_point is
-				result : type_point := p;
-			begin
-				rotate (result, unit_rotation);
-				return result;
-			end;
-				
 		begin -- draw_placeholders
 
-			-- If operator has moved or rotated the placeholder in the schematic,
-			-- then the position and rotation of the placeholder in the schematic
-			-- is used. Otherwise the default position and rotation as given in
-			-- the symbol is used.
-			
 			-- DEVICE NAME:
--- 			if moved_by_operator (symbol.name) then
-
-				position := sch_placeholder_name.position;
--- 				put_line ("A " & to_string (position));
+			position := sch_placeholder_name.position;
 			
--- 				rotate (position, unit_rotation);
+			pac_draw_misc.draw_text (
+				context		=> context,
+				text		=> pac_text.type_text (symbol.name),
+				content		=> to_content (to_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
+				size		=> symbol.name.size,
 
--- 				put_line ("B " & to_string (position));
+				-- text position x/y relative to symbol origin:
+				x			=> transpose_x (x (position)),
+				y			=> transpose_y (y (position)),
+
+				-- Text rotation around its anchor point.
+				-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
+				-- This has been done in schematic_ops.rotate_unit already.
+				rotation	=> to_rotation (sch_placeholder_name.rotation),
+				
+				alignment	=> sch_placeholder_name.alignment);
+			
+			-- VALUE
+			-- The value may be empty. We do not draw it in this case:
+			if not is_empty (device_value) then
+
+				position := sch_placeholder_value.position;
 				
 				pac_draw_misc.draw_text (
 					context		=> context,
-					text		=> pac_text.type_text (symbol.name),
-					content		=> to_content (to_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
-					size		=> symbol.name.size,
+					text		=> pac_text.type_text (symbol.value),
+					content		=> to_content (to_string (device_value)), -- 100R
+					size		=> symbol.value.size,
 
 					-- text position x/y relative to symbol origin:
 					x			=> transpose_x (x (position)),
@@ -458,111 +458,33 @@ procedure draw_units (
 					-- Text rotation around its anchor point.
 					-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
 					-- This has been done in schematic_ops.rotate_unit already.
-					rotation	=> to_rotation (sch_placeholder_name.rotation),
-					
-					alignment	=> sch_placeholder_name.alignment);
+					rotation	=> to_rotation (sch_placeholder_value.rotation),
 
--- 			else -- use defaults from library symbol
--- 				put_line ("default pos");
--- 				
--- 				position := rotate (symbol.name.position);
--- 				
--- 				pac_draw_misc.draw_text (
--- 					context		=> context,
--- 					text		=> pac_text.type_text (symbol.name),
--- 					content		=> to_content (to_full_name (device_name, unit_name, unit_count)),
--- 					size		=> symbol.name.size,
--- 					x			=> transpose_x (x (position)),
--- 					y			=> transpose_y (y (position)),
--- 					rotation	=> symbol.name.rotation + unit_rotation,
--- -- 					rigid		=> NO,
--- 					alignment	=> symbol.name.alignment);
--- 
--- 			end if;
-			
-			-- VALUE
-			-- The value may be empty. We do not draw it in this case:
-			if not is_empty (device_value) then
--- 				if moved_by_operator (symbol.value) then
-
-					position := sch_placeholder_value.position;
-					
-					pac_draw_misc.draw_text (
-						context		=> context,
-						text		=> pac_text.type_text (symbol.value),
-						content		=> to_content (to_string (device_value)), -- 100R
-						size		=> symbol.value.size,
-
-						-- text position x/y relative to symbol origin:
-						x			=> transpose_x (x (position)),
-						y			=> transpose_y (y (position)),
-
-						-- Text rotation around its anchor point.
-						-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
-						-- This has been done in schematic_ops.rotate_unit already.
-						rotation	=> to_rotation (sch_placeholder_value.rotation),
-
-						alignment	=> sch_placeholder_value.alignment);
-					
--- 				else -- use defaults from library symbol
--- 
--- 					position := rotate (symbol.value.position);
--- 					
--- 					pac_draw_misc.draw_text (
--- 						context		=> context,
--- 						text		=> pac_text.type_text (symbol.value),
--- 						content		=> to_content (to_string (device_value)),
--- 						size		=> symbol.value.size,
--- 						x			=> transpose_x (x (position)),
--- 						y			=> transpose_y (y (position)),
--- 						rotation	=> symbol.value.rotation + unit_rotation,
--- -- 						rigid		=> NO,
--- 						alignment	=> symbol.value.alignment);
--- 
--- 				end if;
+					alignment	=> sch_placeholder_value.alignment);
 			end if;
 			
 			-- PURPOSE
 			-- The purpose may be empty. We do not draw it in this case:
 			if not is_empty (device_purpose) then
 
--- 				if moved_by_operator (symbol.purpose) then
-
-					position := sch_placeholder_purpose.position;
+				position := sch_placeholder_purpose.position;
 					
-					pac_draw_misc.draw_text (
-						context		=> context,
-						text		=> pac_text.type_text (symbol.purpose),
-						content		=> to_content (to_string (device_purpose)), -- "brightness control"
-						size		=> symbol.purpose.size,
+				pac_draw_misc.draw_text (
+					context		=> context,
+					text		=> pac_text.type_text (symbol.purpose),
+					content		=> to_content (to_string (device_purpose)), -- "brightness control"
+					size		=> symbol.purpose.size,
 
-						-- text position x/y relative to symbol origin:
-						x			=> transpose_x (x (position)),
-						y			=> transpose_y (y (position)),
+					-- text position x/y relative to symbol origin:
+					x			=> transpose_x (x (position)),
+					y			=> transpose_y (y (position)),
 
-						-- Text rotation around its anchor point.
-						-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
-						-- This has been done in schematic_ops.rotate_unit already.
-						rotation	=> to_rotation (sch_placeholder_purpose.rotation),
+					-- Text rotation around its anchor point.
+					-- NOTE: No snapping to HORIZONAL or VERTICAL required here.
+					-- This has been done in schematic_ops.rotate_unit already.
+					rotation	=> to_rotation (sch_placeholder_purpose.rotation),
 
-						alignment	=> sch_placeholder_purpose.alignment);
-
--- 				else -- use defaults from library symbol
--- 
--- 					position := rotate (symbol.purpose.position);
--- 					
--- 					pac_draw_misc.draw_text (
--- 						context		=> context,
--- 						text		=> pac_text.type_text (symbol.purpose),
--- 						content		=> to_content (to_string (device_purpose)),
--- 						size		=> symbol.purpose.size,
--- 						x			=> transpose_x (x (symbol.purpose.position)),
--- 						y			=> transpose_y (y (symbol.purpose.position)),
--- 						rotation	=> symbol.purpose.rotation + unit_rotation,
--- -- 						rigid		=> NO,
--- 						alignment	=> symbol.purpose.alignment);
--- 
--- 				end if;
+					alignment	=> sch_placeholder_purpose.alignment);
 			end if;
 			
 		end draw_placeholders;

@@ -1673,12 +1673,19 @@ package body schematic_ops is
 
 						use pac_text;
 					begin
-						-- Rotate position of placeholders around the unit origin. 
+						-- The current positiions of the placeholders are overwritten by
+						-- the defaults as specified in the symbol mode.
+						-- Then the position of placeholders around the origin of the unit
+						-- are rotated.
 						
 						-- NAME
-						-- rotate the placeholder around its own anchor point:
+						-- Rotate the placeholder around its own anchor point so that it
+						-- it is readable from the front or from the right.
 						unit.name.rotation := snap (default_positions.name.rotation + rot);
 
+						-- reset the placeholder anchor point to the positiion as specified in the symbol model
+						unit.name.position := default_positions.name.position;
+						
 						-- rotate the placeholder anchor point around the symbol origin:
 						rotate_to (unit.name.position, add_rot (default_positions.name.position));
 								   
@@ -1687,24 +1694,32 @@ package body schematic_ops is
 
 
 						-- VALUE
-						-- rotate the placeholder around its own anchor point:
+						-- Rotate the placeholder around its own anchor point so that it
+						-- it is readable from the front or from the right.
 						unit.value.rotation := snap (default_positions.value.rotation + rot);
-
+						
+						-- reset the placeholder anchor point to the positiion as specified in the symbol model
+						unit.value.position := default_positions.value.position;
+						
 						-- rotate the placeholder anchor point around the symbol origin:
 						rotate_to (unit.value.position, add_rot (default_positions.value.position));
 
-						log (text => "value" & preamble & to_string (unit.name.position), 
+						log (text => "value" & preamble & to_string (unit.value.position), 
 							 level => log_threshold + 2);
 
 
 						-- PURPOSE
-						-- rotate the placeholder around its own anchor point:
+						-- Rotate the placeholder around its own anchor point so that it
+						-- it is readable from the front or from the right.
 						unit.purpose.rotation := snap (default_positions.purpose.rotation + rot);
 
+						-- reset the placeholder anchor point to the positiion as specified in the symbol model
+						unit.purpose.position := default_positions.purpose.position;
+						
 						-- rotate the placeholder anchor point around the symbol origin:
-						rotate (unit.purpose.position, add_rot (default_positions.purpose.position));
+						rotate_to (unit.purpose.position, add_rot (default_positions.purpose.position));
 
-						log (text => "purpose" & preamble & to_string (unit.name.position), 
+						log (text => "purpose" & preamble & to_string (unit.purpose.position), 
 							 level => log_threshold + 2);
 
 					end rotate_placeholders_absolute;
@@ -1715,7 +1730,8 @@ package body schematic_ops is
 						-- Rotate position of placeholders around the unit origin. 
 					
 						-- NAME
-						-- rotate the placeholder around its own anchor point:
+						-- Rotate the placeholder around its own anchor point so that it
+						-- it is readable from the front or from the right.
 						unit.name.rotation := snap (unit.name.rotation + rot);
 
 						-- rotate the placeholder anchor point around the symbol origin:
@@ -1726,24 +1742,26 @@ package body schematic_ops is
 
 
 						-- VALUE
-						-- rotate the placeholder around its own anchor point:
+						-- Rotate the placeholder around its own anchor point so that it
+						-- it is readable from the front or from the right.
 						unit.value.rotation := snap (unit.value.rotation + rot);
 
 						-- rotate the placeholder anchor point around the symbol origin:
 						rotate (unit.value.position, rot);
 
-						log (text => "value" & preamble & to_string (unit.name.position), 
+						log (text => "value" & preamble & to_string (unit.value.position), 
 							 level => log_threshold + 2);
 
 
 						-- PURPOSE
-						-- rotate the placeholder around its own anchor point:
+						-- Rotate the placeholder around its own anchor point so that it
+						-- it is readable from the front or from the right.
 						unit.purpose.rotation := snap (unit.purpose.rotation + rot);
 
 						-- rotate the placeholder anchor point around the symbol origin:
 						rotate (unit.purpose.position, rot);
 
-						log (text => "purpose" & preamble & to_string (unit.name.position), 
+						log (text => "purpose" & preamble & to_string (unit.purpose.position), 
 							 level => log_threshold + 2);
 
 					end rotate_placeholders_relative;

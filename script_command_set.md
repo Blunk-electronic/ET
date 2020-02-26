@@ -123,9 +123,12 @@ schematic led_driver move unit R1 1 absolute 2 210 100 # R1 unit sheet x y
 schematic led_driver move unit R1 1 relative -1 2 4 # IC1 unit B sheet dx dy
 ```
 
+Absolute rotation (restores positions of placeholders as specified in the symbol model):
 ```
 schematic led_driver rotate unit R1 1 absolute -270
 ```
+
+Relative rotation:
 ```
 schematic led_driver rotate unit R1 1 relative 90
 ```
