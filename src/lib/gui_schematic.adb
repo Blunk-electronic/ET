@@ -44,6 +44,7 @@ with gtk.toolbar; 			use gtk.toolbar;
 with gtk.tool_button;		use gtk.tool_button;
 with gtk.enums;				use gtk.enums;
 with gtk.gentry;			use gtk.gentry;
+with gtk.combo_box;			use gtk.combo_box;
 with gtk.combo_box_text;	use gtk.combo_box_text;
 with gtk.frame;				use gtk.frame;
 with gtk.scrolled_window;	use gtk.scrolled_window;
@@ -78,6 +79,7 @@ package body gui_schematic is
 	-- We will have a toolbar, a console, a frame and a scrolled window:
 	toolbar					: gtk_toolbar; -- This is an access/pointer to the actual toolbar.
 	console					: gtk_entry;
+	console2				: gtk_combo_box_text;
 	frame					: gtk_frame;
 	scrolled				: gtk_scrolled_window;
 
@@ -167,7 +169,13 @@ package body gui_schematic is
 		-- a simple text entry
 		gtk_new (console);
 		--set_text (console, "cmd: ");
+
+		gtk_new (console2);
+
+
+		
 		pack_start (box_console, console, expand => false);
+		pack_start (box_console, console2, expand => false);		
 
 		-- If the operator hits enter after typing text in the console,
 		-- call the procedure echo_command_simple in package callbacks_4:
