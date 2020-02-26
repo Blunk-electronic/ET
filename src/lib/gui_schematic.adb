@@ -171,8 +171,8 @@ package body gui_schematic is
 		--set_text (console, "cmd: ");
 
 		gtk_new (console2);
-
-
+		console2.append_text ("test 1");
+		console2.append_text ("test 2");
 		
 		pack_start (box_console, console, expand => false);
 		pack_start (box_console, console2, expand => false);		
