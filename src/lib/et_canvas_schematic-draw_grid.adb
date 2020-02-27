@@ -106,7 +106,7 @@ begin -- draw_grid
 		paint (context.cr);
 	end if;
 
-	if self.grid_size /= 0.0 then
+	if self.grid_size /= 0.0 then -- CS use module.grid
 		
 		new_path (context.cr);
 		cairo.set_line_width (context.cr, dot_line_width);

@@ -99,11 +99,11 @@ schematic led_driver set partcode R1 R_PAC_S_0805_VAL_100R
 ```
 
 ### DELETING
-
+The whole device can be deleted by:
 ```
 schematic led_driver delete device R1
 ```
-
+To delete a certain unit the unit name must also be provided:
 ```
 schematic led_driver delete unit R1 1
 ```
@@ -170,9 +170,9 @@ schematic led_driver drag unit R1 1 relative 10 0 # IC1 unit B x y
 ```
 
 ### MOVING PLACEHOLDERS FOR NAME, VALUE AND PURPOSE
-
+The movement takes place relative to the unit origin.
 ```
-schematic led_driver move name R1 1 absolute 2 210 100 # R1 unit sheet x y
+schematic led_driver move name R1 1 absolute 10 15 # R1 unit x y
 ```
 ```
 schematic led_driver move name R1 1 relative 1 -4 # R1 unit 1 dx dy
@@ -183,6 +183,8 @@ schematic led_driver move value R1 1 relative 1 -4 # R1 unit 1 dx dy
 ```
 schematic led_driver move purpose R1 1 relative 1 -4 # R1 unit 1 dx dy
 ```
+
+Rotating placeholders is always around their anchor point:
 ```
 schematic led_driver rotate name R1 1 0
 ```

@@ -34,8 +34,6 @@
 --
 --   history of changes:
 --
--- CS:
--- - test field count for all commands
 
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
@@ -403,10 +401,17 @@ package body scripting is
 			when CHECK =>
 				case noun is
 					when NOUN_INTEGRITY =>
-						schematic_ops.check_integrity (
-							module_name 	=> module,
-							log_threshold	=> log_threshold + 1);
+						case fields is
+							when 4 =>
+								schematic_ops.check_integrity (
+									module_name 	=> module,
+									log_threshold	=> log_threshold + 1);
 
+							when 5 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+							
 					when others => invalid_noun (to_string (noun));
 				end case;
 
@@ -477,7 +482,6 @@ package body scripting is
 							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
 								
 							when others => command_incomplete (cmd);
-
 						end case;
 
 					when others => invalid_noun (to_string (noun));
@@ -486,11 +490,18 @@ package body scripting is
 			when DELETE =>
 				case noun is
 					when NOUN_DEVICE =>
-						schematic_ops.delete_device (
-							module_name 	=> module,
-							device_name		=> to_name (f (5)),
-							log_threshold	=> log_threshold + 1);
+						case fields is
+							when 5 =>
+								schematic_ops.delete_device (
+									module_name 	=> module,
+									device_name		=> to_name (f (5)),
+									log_threshold	=> log_threshold + 1);
 
+							when 6 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+								
 					when NOUN_LABEL =>
 						case fields is
 							when 7 =>
@@ -595,17 +606,24 @@ package body scripting is
 						end case;
 						
 					when NOUN_SEGMENT =>
-						schematic_ops.delete_segment
-							(
-							module_name			=> module,
-							net_name			=> to_net_name (f (5)), -- RESET
-							place				=> to_position (
-													point => type_point (set (
-														x => to_distance (f (7)),
-														y => to_distance (f (8)))),
-													sheet => to_sheet (f (6))), -- sheet number
-							log_threshold		=> log_threshold + 1);
+						case fields is
+							when 8 =>
+								schematic_ops.delete_segment
+									(
+									module_name		=> module,
+									net_name		=> to_net_name (f (5)), -- RESET
+									place			=> to_position (
+														point => type_point (set (
+															x => to_distance (f (7)),
+															y => to_distance (f (8)))),
+														sheet => to_sheet (f (6))), -- sheet number
+									log_threshold	=> log_threshold + 1);
 
+							when 9 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+								
 					when NOUN_SUBMODULE =>
 						case fields is
 							when 5 =>
@@ -624,12 +642,19 @@ package body scripting is
 						NULL; -- CS
 						
 					when NOUN_UNIT =>
-						schematic_ops.delete_unit (
-							module_name 	=> module,
-							device_name		=> to_name (f (5)),
-							unit_name		=> to_name (f (6)),
-							log_threshold	=> log_threshold + 1);
+						case fields is
+							when 6 =>
+								schematic_ops.delete_unit (
+									module_name 	=> module,
+									device_name		=> to_name (f (5)),
+									unit_name		=> to_name (f (6)),
+									log_threshold	=> log_threshold + 1);
 
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+						
 					when NOUN_VARIANT => 
 						case fields is
 							when 5 =>
@@ -670,18 +695,25 @@ package body scripting is
 			when DRAG =>
 				case noun is
 					when NOUN_UNIT =>
-						schematic_ops.drag_unit
-							(
-							module_name 	=> module,
-							device_name		=> to_name (f (5)),
-							unit_name		=> to_name (f (6)),
-							coordinates		=> schematic_ops.to_coordinates (f (7)), -- relative/absolute
-							point			=> type_point (set (
-												x => to_distance (f (8)),
-												y => to_distance (f (9)))),
-							log_threshold	=> log_threshold + 1
-							);
+						case fields is
+							when 9 =>
+								schematic_ops.drag_unit
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)),
+									unit_name		=> to_name (f (6)),
+									coordinates		=> schematic_ops.to_coordinates (f (7)), -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (8)),
+														y => to_distance (f (9)))),
+									log_threshold	=> log_threshold + 1
+									);
 
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+								
 					when NOUN_NETCHANGER =>
 						case fields is
 							when 8 =>
@@ -720,24 +752,31 @@ package body scripting is
 						end case;
 						
 					when NOUN_SEGMENT =>
-						schematic_ops.drag_segment
-							(
-							module_name		=> module,
-							net_name		=> to_net_name (f (5)), -- RESET
-							place			=> to_position (
-												point => type_point (set (
-													x => to_distance (f (7)),
-													y => to_distance (f (8)))),
-												sheet => to_sheet (f (6))), -- sheet number
-							
-							coordinates		=> schematic_ops.to_coordinates (f (9)), -- relative/absolute
-							
-							point			=> type_point (set (
-												x => to_distance (f (10)),
-												y => to_distance (f (11)))),
-							
-							log_threshold	=> log_threshold + 1);
+						case fields is
+							when 11 =>
+								schematic_ops.drag_segment
+									(
+									module_name		=> module,
+									net_name		=> to_net_name (f (5)), -- RESET
+									place			=> to_position (
+														point => type_point (set (
+															x => to_distance (f (7)),
+															y => to_distance (f (8)))),
+														sheet => to_sheet (f (6))), -- sheet number
+									
+									coordinates		=> schematic_ops.to_coordinates (f (9)), -- relative/absolute
+									
+									point			=> type_point (set (
+														x => to_distance (f (10)),
+														y => to_distance (f (11)))),
+									
+									log_threshold	=> log_threshold + 1);
 
+							when 12 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+						
 					when NOUN_SUBMODULE =>
 						case fields is
 							when 8 =>
@@ -762,23 +801,29 @@ package body scripting is
 			when DRAW =>
 				case noun is
 					when NOUN_NET =>
-						schematic_ops.draw_net
-							(
-							module_name		=> module,
-							net_name		=> to_net_name (f (5)), -- RESET
-							start_point		=> to_position (
-													point => type_point (set (
-														x => to_distance (f (7)),
-														y => to_distance (f (8)))),
-													sheet => to_sheet (f (6))), -- sheet number
-							
-							end_point		=> type_point (set (
-												x => to_distance (f (9)),
-												y => to_distance (f (10)))),
-							
-							log_threshold	=> log_threshold + 1);
+						case fields is
+							when 10 =>
+								schematic_ops.draw_net
+									(
+									module_name		=> module,
+									net_name		=> to_net_name (f (5)), -- RESET
+									start_point		=> to_position (
+															point => type_point (set (
+																x => to_distance (f (7)),
+																y => to_distance (f (8)))),
+															sheet => to_sheet (f (6))), -- sheet number
+									
+									end_point		=> type_point (set (
+														x => to_distance (f (9)),
+														y => to_distance (f (10)))),
+									
+									log_threshold	=> log_threshold + 1);
 
-
+							when 11 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+						
 					when others => invalid_noun (to_string (noun));
 				end case;
 
@@ -815,33 +860,47 @@ package body scripting is
 			when MOVE =>
 				case noun is
 					when NOUN_NAME =>
-						schematic_ops.move_unit_placeholder
-							(
-							module_name 	=> module,
-							device_name		=> to_name (f (5)), -- IC1
-							unit_name		=> to_name (f (6)), -- A
-							coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-							point			=> type_point (set (
-												x => to_distance (f (8)),
-												y => to_distance (f (9)))),
-							meaning			=> et_symbols.NAME,
-							log_threshold	=> log_threshold + 1
-							);
+						case fields is
+							when 9 =>
+								schematic_ops.move_unit_placeholder
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (8)),
+														y => to_distance (f (9)))),
+									meaning			=> et_symbols.NAME,
+									log_threshold	=> log_threshold + 1
+									);
 
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+						
 					when NOUN_VALUE =>
-						schematic_ops.move_unit_placeholder
-							(
-							module_name 	=> module,
-							device_name		=> to_name (f (5)), -- IC1
-							unit_name		=> to_name (f (6)), -- A
-							coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-							point			=> type_point (set (
-												x => to_distance (f (8)),
-												y => to_distance (f (9)))),
-							meaning			=> et_symbols.VALUE,
-							log_threshold	=> log_threshold + 1
-							);
+						case fields is
+							when 9 =>
+								schematic_ops.move_unit_placeholder
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (8)),
+														y => to_distance (f (9)))),
+									meaning			=> et_symbols.VALUE,
+									log_threshold	=> log_threshold + 1
+									);
 
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+						
 					when NOUN_PORT =>
 						case fields is
 							when 9 =>
@@ -862,33 +921,47 @@ package body scripting is
 						end case;
 								
 					when NOUN_PURPOSE =>
-						schematic_ops.move_unit_placeholder
-							(
-							module_name 	=> module,
-							device_name		=> to_name (f (5)), -- IC1
-							unit_name		=> to_name (f (6)), -- A
-							coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-							point			=> type_point (set (
-												x => to_distance (f (8)),
-												y => to_distance (f (9)))),
-							meaning			=> et_symbols.PURPOSE,
-							log_threshold	=> log_threshold + 1
-							);
+						case fields is
+							when 9 =>
+								schematic_ops.move_unit_placeholder
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (8)),
+														y => to_distance (f (9)))),
+									meaning			=> et_symbols.PURPOSE,
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
 
 					when NOUN_NETCHANGER =>
-						schematic_ops.move_netchanger
-							(
-							module_name 	=> module,
-							index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
-							coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
-							sheet			=> to_sheet_relative (f (7)),
-							point			=> type_point (set (
-												x => to_distance (f (8)),
-												y => to_distance (f (9)))),
-								
-							log_threshold	=> log_threshold + 1
-							);
+						case fields is
+							when 9 =>
+								schematic_ops.move_netchanger
+									(
+									module_name 	=> module,
+									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
+									coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+									sheet			=> to_sheet_relative (f (7)),
+									point			=> type_point (set (
+														x => to_distance (f (8)),
+														y => to_distance (f (9)))),
+										
+									log_threshold	=> log_threshold + 1
+									);
 
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+								
 					when NOUN_TEXT =>
 						NULL; -- CS
 
@@ -912,20 +985,27 @@ package body scripting is
 						end case;
 						
 					when NOUN_UNIT =>
-						schematic_ops.move_unit
-							(
-							module_name 	=> module,
-							device_name		=> to_name (f (5)), -- IC1
-							unit_name		=> to_name (f (6)), -- A
-							coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-							sheet			=> to_sheet_relative (f (8)),
-							point			=> type_point (set (
-												x => to_distance (f (9)),
-												y => to_distance (f (10)))),
+						case fields is
+							when 10 =>
+								schematic_ops.move_unit
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+									sheet			=> to_sheet_relative (f (8)),
+									point			=> type_point (set (
+														x => to_distance (f (9)),
+														y => to_distance (f (10)))),
+										
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 11 .. count_type'last => command_too_long (cmd, fields - 1); 
 								
-							log_threshold	=> log_threshold + 1
-							);
-						
+							when others => command_incomplete (cmd);
+						end case;
+								
 					when others => invalid_noun (to_string (noun));
 				end case;
 
@@ -1030,21 +1110,28 @@ package body scripting is
 			when PLACE =>
 				case noun is
 					when NOUN_JUNCTION =>
-						schematic_ops.place_junction 
-							(
-							module_name 	=> module,
-							place			=> to_position 
-												(
-												sheet => to_sheet (f (5)),
-												point => type_point (set (
-															x => to_distance (f (6)),
-															y => to_distance (f (7))
-															))
-												),
-								
-							log_threshold	=> log_threshold + 1
-							);
+						case fields is
+							when 7 =>
+								schematic_ops.place_junction 
+									(
+									module_name 	=> module,
+									place			=> to_position 
+														(
+														sheet => to_sheet (f (5)),
+														point => type_point (set (
+																	x => to_distance (f (6)),
+																	y => to_distance (f (7))
+																	))
+														),
+										
+									log_threshold	=> log_threshold + 1
+									);
 
+							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+								
 					when NOUN_LABEL =>
 						case fields is
 							when 10 =>
@@ -1143,14 +1230,21 @@ package body scripting is
 			when RENAME =>
 				case noun is
 					when NOUN_DEVICE =>
-						schematic_ops.rename_device
-							(
-							module_name 		=> module,
-							device_name_before	=> to_name (f (5)), -- IC1
-							device_name_after	=> to_name (f (6)), -- IC23
-							log_threshold		=> log_threshold + 1
-							);
+						case fields is
+							when 6 =>
+								schematic_ops.rename_device
+									(
+									module_name 		=> module,
+									device_name_before	=> to_name (f (5)), -- IC1
+									device_name_after	=> to_name (f (6)), -- IC23
+									log_threshold		=> log_threshold + 1
+									);
 
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case; 
+								
 					when NOUN_SUBMODULE =>
 						case fields is
 							when 6 =>
@@ -1250,49 +1344,77 @@ package body scripting is
 						NULL; -- CS
 
 					when NOUN_UNIT =>
-						schematic_ops.rotate_unit
-							(
-							module_name 	=> module,
-							device_name		=> to_name (f (5)), -- IC1
-							unit_name		=> to_name (f (6)), -- A
-							coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-							rotation		=> to_rotation (f (8)), -- 90
-							log_threshold	=> log_threshold + 1
-							);
+						case fields is
+							when 8 =>
+								schematic_ops.rotate_unit
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+									rotation		=> to_rotation (f (8)), -- 90
+									log_threshold	=> log_threshold + 1
+									);
 
+							when 9 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+								
 					when NOUN_NAME =>
-						schematic_ops.rotate_unit_placeholder
-							(
-							module_name 	=> module,
-							device_name		=> to_name (f (5)), -- IC1
-							unit_name		=> to_name (f (6)), -- A
-							rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
-							meaning			=> et_symbols.NAME,
-							log_threshold	=> log_threshold + 1
-							);
+						case fields is 
+							when 7 =>
+								schematic_ops.rotate_unit_placeholder
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
+									meaning			=> et_symbols.NAME,
+									log_threshold	=> log_threshold + 1
+									);
 
+							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+								
 					when NOUN_VALUE =>
-						schematic_ops.rotate_unit_placeholder
-							(
-							module_name 	=> module,
-							device_name		=> to_name (f (5)), -- IC1
-							unit_name		=> to_name (f (6)), -- A
-							rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
-							meaning			=> et_symbols.VALUE,
-							log_threshold	=> log_threshold + 1
-							);
+						case fields is
+							when 7 =>
+								schematic_ops.rotate_unit_placeholder
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
+									meaning			=> et_symbols.VALUE,
+									log_threshold	=> log_threshold + 1
+									);
 
+							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+								
 					when NOUN_PURPOSE =>
-						schematic_ops.rotate_unit_placeholder
-							(
-							module_name 	=> module,
-							device_name		=> to_name (f (5)), -- IC1
-							unit_name		=> to_name (f (6)), -- A
-							rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
-							meaning			=> et_symbols.PURPOSE,
-							log_threshold	=> log_threshold + 1
-							);
+						case fields is
+							when 7 =>
+								schematic_ops.rotate_unit_placeholder
+									(
+									module_name 	=> module,
+									device_name		=> to_name (f (5)), -- IC1
+									unit_name		=> to_name (f (6)), -- A
+									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
+									meaning			=> et_symbols.PURPOSE,
+									log_threshold	=> log_threshold + 1
+									);
 
+							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+								
 					when NOUN_NETCHANGER =>
 						case fields is
 							when 7 =>
@@ -1331,38 +1453,52 @@ package body scripting is
 						end case;
 				
 					when NOUN_PARTCODE =>
-						declare
-							partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-						begin
-							partcode := material.to_partcode (f (6));
+						case fields is
+							when 6 =>
+								declare
+									partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+								begin
+									partcode := material.to_partcode (f (6));
 
-							-- set the purpose
-							schematic_ops.set_partcode
-								(
-								module_name 	=> module,
-								device_name		=> to_name (f (5)), -- R1
-								partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
-								log_threshold	=> log_threshold + 1
-								);
-						end;
+									-- set the purpose
+									schematic_ops.set_partcode
+										(
+										module_name 	=> module,
+										device_name		=> to_name (f (5)), -- R1
+										partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
+										log_threshold	=> log_threshold + 1
+										);
+								end;
 
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+								
 					when NOUN_PURPOSE =>
-						declare
-							use et_schematic;
-							purpose : type_purpose.bounded_string; -- brightness_control
-						begin
-							purpose := to_purpose (f (6));
-							
-							-- set the purpose
-							schematic_ops.set_purpose
-								(
-								module_name 	=> module,
-								device_name		=> to_name (f (5)), -- R1
-								purpose			=> purpose, -- brightness_control
-								log_threshold	=> log_threshold + 1
-								);
-						end;
+						case fields is
+							when 6 =>
+								declare
+									use et_schematic;
+									purpose : type_purpose.bounded_string; -- brightness_control
+								begin
+									purpose := to_purpose (f (6));
+									
+									-- set the purpose
+									schematic_ops.set_purpose
+										(
+										module_name 	=> module,
+										device_name		=> to_name (f (5)), -- R1
+										purpose			=> purpose, -- brightness_control
+										log_threshold	=> log_threshold + 1
+										);
+								end;
 
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+						
 					when NOUN_SCOPE =>
 						case fields is
 							when 6 =>
@@ -1394,22 +1530,29 @@ package body scripting is
 						end case;
 						
 					when NOUN_VALUE =>
-						declare
-							value : type_value.bounded_string; -- 470R
-						begin
-							-- validate value
-							value := to_value (f (6));
+						case fields is
+							when 6 =>
+								declare
+									value : type_value.bounded_string; -- 470R
+								begin
+									-- validate value
+									value := to_value (f (6));
 
-							-- set the value
-							schematic_ops.set_value
-								(
-								module_name 	=> module,
-								device_name		=> to_name (f (5)), -- R1
-								value			=> value, -- 470R
-								log_threshold	=> log_threshold + 1
-								);
-						end;
-						
+									-- set the value
+									schematic_ops.set_value
+										(
+										module_name 	=> module,
+										device_name		=> to_name (f (5)), -- R1
+										value			=> value, -- 470R
+										log_threshold	=> log_threshold + 1
+										);
+								end;
+
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+								
+							when others => command_incomplete (cmd);
+						end case;
+								
 					when NOUN_TEXT_SIZE =>
 						NULL; -- CS
 						
