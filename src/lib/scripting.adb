@@ -212,8 +212,10 @@ package body scripting is
 		cmd		: in type_fields_of_line;
 		from	: in count_type) 
 	is begin
-		log (WARNING, "command " & enclose_in_quotes (to_string (cmd)) & " too long !");
-		log (text => " -> Excessive arguments after no." & count_type'image (from) & " ignored !");
+		log (WARNING, "command " & enclose_in_quotes (to_string (cmd)) & " too long !",
+			 console => true);
+		log (text => " -> Excessive arguments after no." & count_type'image (from) & " ignored !",
+			 console => true);
 	end;
 		
 	procedure validate_module_name (module : in type_module_name.bounded_string) is 
