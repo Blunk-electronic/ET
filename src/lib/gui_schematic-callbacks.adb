@@ -112,7 +112,10 @@ package body gui_schematic.callbacks is
 
 		exit_code : type_exit_code := SUCCESSFUL; -- to be returned
 	begin
--- 		put_line (line_as_typed_by_operator);
+		-- 		put_line (line_as_typed_by_operator);
+
+		-- Store the latest command in the command history:
+		console.prepend_text (get_text (self));
 
 		cmd := read_line (
 			line 			=> line_as_typed_by_operator,
@@ -132,6 +135,12 @@ package body gui_schematic.callbacks is
 		et_canvas_board.pac_canvas.queue_draw (et_canvas_board.pac_canvas.canvas);
 	end;
 
+	procedure echo_command (self : access gtk.combo_box.gtk_combo_box_record'class) is
+	begin
+		put_line ("changed");
+		put_line (self.get_active_text);
+	end echo_command;
+	
 	function on_key_event (
 		self	: access gtk_widget_record'class;
 		event	: in gdk_event_key) 

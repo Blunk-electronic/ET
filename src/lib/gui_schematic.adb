@@ -78,8 +78,7 @@ package body gui_schematic is
 
 	-- We will have a toolbar, a console, a frame and a scrolled window:
 	toolbar					: gtk_toolbar; -- This is an access/pointer to the actual toolbar.
-	console					: gtk_entry;
-	console2				: gtk_combo_box_text;
+-- 	console					: gtk_combo_box_text;
 	frame					: gtk_frame;
 	scrolled				: gtk_scrolled_window;
 
@@ -166,20 +165,16 @@ package body gui_schematic is
 		set_spacing (box_console, 10);
 		pack_start (box_right, box_console, expand => false);
 
-		-- a simple text entry
-		gtk_new (console);
-		--set_text (console, "cmd: ");
+		-- the command line
+		gtk_new_with_entry (console);
 
-		gtk_new (console2);
-		console2.append_text ("test 1");
-		console2.append_text ("test 2");
+		-- Connect to the on_activate signal of the entry (which is a child of console):
+		gtk_entry (console.get_child).on_activate (echo_command_simple'access); -- on hitting enter
+		
+		-- console2.on_changed (echo_command'access); -- for every key pressed
 		
 		pack_start (box_console, console, expand => false);
-		pack_start (box_console, console2, expand => false);		
 
-		-- If the operator hits enter after typing text in the console,
-		-- call the procedure echo_command_simple in package callbacks_4:
-		console.on_activate (echo_command_simple'access); -- on hitting enter
 
 
 
