@@ -36,7 +36,6 @@
 --
 -- CS:
 -- - test field count for all commands
--- - replace command_too_long (x) by command_too_long (fields - 1);
 
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
@@ -303,11 +302,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 11 .. count_type'last =>
-								command_too_long (cmd, 10);
+							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 
 					when NOUN_NETCHANGER =>
@@ -328,11 +325,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 9 .. count_type'last =>
-								command_too_long (cmd, 8);
+							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 
 					when NOUN_PORT =>
@@ -351,11 +346,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last =>
-								command_too_long (cmd, 9);
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when NOUN_SUBMODULE =>
@@ -381,11 +374,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 12 .. count_type'last =>
-								command_too_long (cmd, 11);
+							when 12 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when others => invalid_noun (to_string (noun));
@@ -401,11 +392,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 5 .. count_type'last =>
-								command_too_long (cmd, 4);
+							when 5 .. count_type'last => command_too_long (cmd, fields - 1); 
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 
 					when others => invalid_noun (to_string (noun));
@@ -442,12 +431,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last =>
-								command_too_long (cmd, 9);
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
-
+							when others => command_incomplete (cmd);
 						end case;
 
 					when NOUN_SUBMODULE =>
@@ -469,12 +455,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last =>
-								command_too_long (cmd, 9);
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
-
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when others => invalid_noun (to_string (noun));
@@ -491,11 +474,9 @@ package body scripting is
 									variant_name	=> to_variant (f (5)),
 									log_threshold	=> log_threshold + 1);
 								
-							when 6 .. count_type'last =>
-								command_too_long (cmd, 5);
+							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 
 						end case;
 
@@ -525,12 +506,9 @@ package body scripting is
 									
 									log_threshold	=> log_threshold + 1);
 								
-							when 8 .. count_type'last =>
-								command_too_long (cmd, 7);
+							when 8 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
-
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when NOUN_NET =>
@@ -580,11 +558,9 @@ package body scripting is
 									log_threshold		=> log_threshold + 1);
 
 								
-							when 9 .. count_type'last =>
-								command_too_long (cmd, 8);
+							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 
 						end case;
 
@@ -597,11 +573,9 @@ package body scripting is
 									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
 									log_threshold		=> log_threshold + 1);
 
-							when 6 .. count_type'last =>
-								command_too_long (cmd, 5);
+							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 
 					when NOUN_PORT =>
@@ -615,11 +589,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 7 .. count_type'last =>
-								command_too_long (cmd, 6);
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when NOUN_SEGMENT =>
@@ -643,11 +615,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 6 .. count_type'last =>
-								command_too_long (cmd, 5);
+							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when NOUN_TEXT =>
@@ -669,12 +639,9 @@ package body scripting is
 									variant_name	=> to_variant (f (5)),
 									log_threshold	=> log_threshold + 1);
 								
-							when 6 .. count_type'last =>
-								command_too_long (cmd, 5);
+							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
-
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when others => invalid_noun (to_string (noun));
@@ -692,12 +659,9 @@ package body scripting is
 									description		=> assembly_variants.to_unbounded_string (f (6)), -- "the cheap version"
 									log_threshold	=> log_threshold + 1);
 								
-							when 7 .. count_type'last =>
-								command_too_long (cmd, 6);
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
-
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when others => invalid_noun (to_string (noun));
@@ -731,11 +695,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 9 .. count_type'last =>
-								command_too_long (cmd, 8);
+							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 
 					when NOUN_PORT =>
@@ -752,11 +714,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last =>
-								command_too_long (cmd, 9);
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when NOUN_SEGMENT =>
@@ -791,11 +751,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 9 .. count_type'last =>
-								command_too_long (cmd, 8);
+							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when others => invalid_noun (to_string (noun));
@@ -846,11 +804,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 11 .. count_type'last =>
-								command_too_long (cmd, 10);
+							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 
 					when others => invalid_noun (to_string (noun));
@@ -900,11 +856,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last =>
-								command_too_long (cmd, 9);
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 								
 					when NOUN_PURPOSE =>
@@ -952,11 +906,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last =>
-								command_too_long (cmd, 9);
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when NOUN_UNIT =>
@@ -987,11 +939,9 @@ package body scripting is
 									module_name 	=> module,
 									log_threshold	=> log_threshold + 1);
 
-							when 5 .. count_type'last =>
-								command_too_long (cmd, 4);
+							when 5 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 
 					when NOUN_NETLISTS => 
@@ -1002,11 +952,9 @@ package body scripting is
 									module_name 	=> module,
 									log_threshold	=> log_threshold + 1);
 
-							when 5 .. count_type'last =>
-								command_too_long (cmd, 4);
+							when 5 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when others => invalid_noun (to_string (noun));
@@ -1052,12 +1000,9 @@ package body scripting is
 										purpose			=> purpose, -- brightness_control
 										log_threshold	=> log_threshold + 1);
 									
-								when 10 .. count_type'last =>
-									command_too_long (cmd, 9);
+								when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-								when others =>
-									command_incomplete (cmd);
-
+								when others => command_incomplete (cmd);
 							end case;
 
 						end; -- declare
@@ -1073,11 +1018,9 @@ package body scripting is
 									variant_submod	=> to_variant (f (7)), -- fixed_frequency
 									log_threshold	=> log_threshold + 1);
 
-							when 8 .. count_type'last =>
-								command_too_long (cmd, 7);
+							when 8 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 
 						end case;
 						
@@ -1154,14 +1097,10 @@ package body scripting is
 
 									log_threshold		=> log_threshold + 1);
 								
-							when 12 .. count_type'last =>
-								command_too_long (cmd, 11);
+							when 12 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
-
+							when others => command_incomplete (cmd);
 						end case;
-
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
@@ -1178,12 +1117,9 @@ package body scripting is
 									device			=> to_name (f (6)), -- R1
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last =>
-								command_too_long (cmd, 6);
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
-
+							when others => command_incomplete (cmd);
 						end case;
 
 					when NOUN_SUBMODULE =>
@@ -1196,12 +1132,9 @@ package body scripting is
 									instance		=> et_general.to_instance_name (f (6)), -- OSC1
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last =>
-								command_too_long (cmd, 6);
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
-
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when others => invalid_noun (to_string (noun));
@@ -1228,12 +1161,9 @@ package body scripting is
 									instance_new	=> et_general.to_instance_name (f (6)), -- OSC2
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last =>
-								command_too_long (cmd, 6);
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
-
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when NOUN_NET =>
@@ -1286,12 +1216,9 @@ package body scripting is
 									log_threshold		=> log_threshold + 1);
 
 								
-							when 10 .. count_type'last =>
-								command_too_long (cmd, 9);
+							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
-
+							when others => command_incomplete (cmd);
 						end case;
 
 					when others => invalid_noun (to_string (noun));
@@ -1309,12 +1236,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 6 .. count_type'last =>
-								command_too_long (cmd, 5);
+							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
-
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when others => invalid_noun (to_string (noun));
@@ -1380,11 +1304,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 8 .. count_type'last =>
-								command_too_long (cmd, 7);
+							when 8 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when others => invalid_noun (to_string (noun));
@@ -1451,11 +1373,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 7 .. count_type'last =>
-								command_too_long (cmd, 6);
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when NOUN_SUBMODULE_FILE =>
@@ -1468,11 +1388,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 7 .. count_type'last =>
-								command_too_long (cmd, 6);
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when NOUN_VALUE =>
@@ -1510,12 +1428,9 @@ package body scripting is
 									device			=> to_name (f (6)), -- R1
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last =>
-								command_too_long (cmd, 6);
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
-
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when others => invalid_noun (to_string (noun));
@@ -2257,11 +2172,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 13 .. count_type'last =>
-								command_too_long (cmd, fields - 1);
+							when 13 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 						
 					else
@@ -2681,7 +2594,7 @@ package body scripting is
 												);
 
 										when 10 .. count_type'last =>
-											command_too_long (cmd, 9);
+											 command_too_long (cmd, fields - 1);
 											
 										when others =>
 											command_incomplete (cmd);
@@ -2733,7 +2646,7 @@ package body scripting is
 												);
 
 										when 9 .. count_type'last =>
-											command_too_long (cmd, 8);
+											 command_too_long (cmd, fields - 1);
 											
 										when others =>
 											command_incomplete (cmd);
@@ -3123,11 +3036,9 @@ package body scripting is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 7 .. count_type'last =>
-								command_too_long (cmd, 6);
+							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 
 					when others => invalid_noun (to_string (noun));
@@ -3161,7 +3072,7 @@ package body scripting is
 												);
 
 										when 12 .. count_type'last =>
-											command_too_long (cmd, 11);
+											command_too_long (cmd, fields - 1);
 											
 										when others =>
 											command_incomplete (cmd);
@@ -3227,7 +3138,7 @@ package body scripting is
 									);
 
 							when 9 .. count_type'last =>
-								command_too_long (cmd, 8);
+								command_too_long (cmd, fields - 1);
 								
 							when others =>
 								command_incomplete (cmd);
@@ -3250,7 +3161,7 @@ package body scripting is
 									);
 
 							when 10 .. count_type'last =>
-								command_too_long (cmd, 9);
+								command_too_long (cmd, fields - 1);
 								
 							when others =>
 								command_incomplete (cmd);
@@ -3274,7 +3185,7 @@ package body scripting is
 									);
 
 							when 8 .. count_type'last =>
-								command_too_long (cmd, 7);
+								command_too_long (cmd, fields - 1);
 								
 							when others =>
 								command_incomplete (cmd);
@@ -3294,7 +3205,7 @@ package body scripting is
 									log_threshold	=> log_threshold + 1);
 
 							when 5 .. count_type'last =>
-								command_too_long (cmd, 4);
+								command_too_long (cmd, fields - 1);
 								
 							when others =>
 								command_incomplete (cmd);
@@ -3319,7 +3230,7 @@ package body scripting is
 									);
 
 							when 9 .. count_type'last =>
-								command_too_long (cmd, 8);
+								command_too_long (cmd, fields - 1);
 								
 							when others =>
 								command_incomplete (cmd);
@@ -3339,7 +3250,7 @@ package body scripting is
 									);
 
 							when 9 .. count_type'last =>
-								command_too_long (cmd, 8);
+								command_too_long (cmd, fields - 1);
 								
 							when others =>
 								command_incomplete (cmd);
@@ -3363,8 +3274,7 @@ package body scripting is
 
 							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 								
-							when others =>
-								command_incomplete (cmd);
+							when others => command_incomplete (cmd);
 						end case;
 						
 					when others => invalid_noun (to_string (noun));
@@ -3431,7 +3341,7 @@ package body scripting is
 										);
 
 								when 5 .. count_type'last =>
-									command_too_long (cmd, 4);
+									command_too_long (cmd, fields - 1);
 									
 								when others => 
 									command_incomplete (cmd);
@@ -3451,7 +3361,7 @@ package body scripting is
 										);
 
 								when 5 .. count_type'last =>
-									command_too_long (cmd, 4);
+									command_too_long (cmd, fields - 1);
 									
 								when others => 
 									command_incomplete (cmd);
@@ -3471,7 +3381,7 @@ package body scripting is
 										);
 
 								when 5 .. count_type'last =>
-									command_too_long (cmd, 4);
+									command_too_long (cmd, fields - 1);
 									
 								when others => 
 									command_incomplete (cmd);
@@ -3491,7 +3401,7 @@ package body scripting is
 										);
 
 								when 5 .. count_type'last =>
-									command_too_long (cmd, 4);
+									command_too_long (cmd, fields - 1);
 									
 								when others => 
 									command_incomplete (cmd);
