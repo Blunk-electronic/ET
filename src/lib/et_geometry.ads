@@ -67,7 +67,7 @@ package et_geometry is
 
 		grid_max : constant type_distance_positive := type_distance_positive'last/1000;
 		subtype type_distance_grid is type_distance_positive range zero .. grid_max;
-		grid_default : constant type_distance_grid := 1.0;
+		grid_default : constant type_distance_grid := 2.5;
 		
 		type type_grid is record
 			x,y	: type_distance_grid := grid_default;

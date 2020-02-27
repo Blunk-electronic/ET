@@ -60,6 +60,8 @@ is
 	offset_y : type_view_coordinate := type_view_coordinate (self.drawing.frame_bounding_box.y);
 	-- Later, the offset_y will get a fine adjustment according to the frame height.
 
+	grid : geometry.type_grid := et_project.type_modules.element (self.drawing.module).grid;
+
 	function lower_grid_coordinate (coordinate : in type_distance) 
 	-- This function calculates the grid coordinate on the axis that comes
 	-- before the given coordinate.
@@ -67,8 +69,10 @@ is
 	-- Example 2: If coordinate is 166.5 and grid_size is 5, then x becomes 165.
 		return type_view_coordinate is 
 	begin
-		return    type_view_coordinate (gint (coordinate / self.grid_size)) -- 166.5 / 5 = 33.3 -> 33
-				* type_view_coordinate (self.grid_size); -- 33 * 5 = 165
+-- 		return    type_view_coordinate (gint (coordinate / self.grid_size)) -- 166.5 / 5 = 33.3 -> 33
+-- 				* type_view_coordinate (self.grid_size); -- 33 * 5 = 165
+		return    type_view_coordinate (gint (coordinate / grid.x)) -- 166.5 / 5 = 33.3 -> 33
+				* type_view_coordinate (grid.x); -- 33 * 5 = 165
 	end;
 
 	-- This procedure calculates the addional offset in y. This is necessary because
@@ -83,9 +87,12 @@ is
 		-- Calculate the next lower y-grid-coordinate that comes before the frame height.
 		-- Example: If the frame is 207mm high and grid size is 10 then dy becomes 200.
 		dy := type_view_coordinate (
-				gint (self.drawing.frame.size.y / et_frames.type_distance (self.grid_size))) 
-				* type_view_coordinate (self.grid_size);
+-- 				gint (self.drawing.frame.size.y / et_frames.type_distance (self.grid_size))) 
+-- 				* type_view_coordinate (self.grid_size);
+				gint (self.drawing.frame.size.y / et_frames.type_distance (grid.y))) 
+				* type_view_coordinate (grid.y);
 
+									   
 		-- put_line ("y1 " & type_view_coordinate'image (y));
 
 		-- Calculate the distance between the lower frame border and the 
@@ -99,6 +106,7 @@ is
 		-- Add dy to the already existing offset_y so that the grid is moved by dy downwards:
 		offset_y := offset_y + dy;
 	end fine_tune_y_offset;
+
 	
 begin -- draw_grid
 	if style.get_fill /= null_pattern then
@@ -106,7 +114,7 @@ begin -- draw_grid
 		paint (context.cr);
 	end if;
 
-	if self.grid_size /= 0.0 then -- CS use module.grid
+-- 	if self.grid_size /= 0.0 then -- CS use module.grid
 		
 		new_path (context.cr);
 		cairo.set_line_width (context.cr, dot_line_width);
@@ -117,7 +125,8 @@ begin -- draw_grid
 		-- The grid must be shifted to the right so that it is aligned
 		-- with the left frame border:
 		x := lower_grid_coordinate (area.x) -- the next grid point before area.x
-			 - type_view_coordinate (self.grid_size) -- start at one grid point earlier
+			 -- - type_view_coordinate (self.grid_size) -- start at one grid point earlier
+			 - type_view_coordinate (grid.x) -- start at one grid point earlier
 			 + offset_x;
 		
 		while x < type_view_coordinate (area.x + area.width) loop
@@ -125,7 +134,8 @@ begin -- draw_grid
 			-- The grid must be shifted downwards so that it is aligned
 			-- with the lower frame border:
 			y := lower_grid_coordinate (area.y)  -- the next grid point before area.y
-				 - type_view_coordinate (self.grid_size) -- start at one grid point earlier
+				 --- type_view_coordinate (self.grid_size) -- start at one grid point earlier
+				 - type_view_coordinate (grid.y) -- start at one grid point earlier
 				 + offset_y;
 			
 			while y < type_view_coordinate (area.y + area.height) loop
@@ -138,15 +148,17 @@ begin -- draw_grid
 				cairo.line_to (context.cr, x, y + dot_size);
 
 				-- advance to next position on y-axis
-				y := y + type_view_coordinate (self.grid_size);
+				--y := y + type_view_coordinate (self.grid_size);
+				y := y + type_view_coordinate (grid.y);
 			end loop;
 
 			-- advance to next position in x-axis
-			x := x + type_view_coordinate (self.grid_size);
+			--x := x + type_view_coordinate (self.grid_size);
+			x := x + type_view_coordinate (grid.x);
 		end loop;
 
 		style.finish_path (context.cr);
-	end if;
+-- 	end if;
 end draw_grid;
 
 
