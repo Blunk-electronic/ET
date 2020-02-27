@@ -38,12 +38,13 @@
 with gdk;				use gdk;
 with gdk.event;			use gdk.event;
 
-with glib;				use glib;
-with gtk.widget;  		use gtk.widget;
-with gtk.button;     	--use gtk.button;
-with glib.object;		--use glib.object;
+with glib;					use glib;
+with gtk.widget;  			use gtk.widget;
+with gtk.button;    	 	--use gtk.button;
+with glib.object;			--use glib.object;
 with gtk.gentry;
-with gtkada.style;		use gtkada.style;
+with gtk.combo_box_text;	with gtk.combo_box_text;	
+with gtkada.style;			use gtkada.style;
 
 
 package gui_board.callbacks is
@@ -60,7 +61,12 @@ package gui_board.callbacks is
 	procedure zoom_to_fit (self : access glib.object.gobject_record'class);	
 	procedure zoom_in (self : access glib.object.gobject_record'class);
 	procedure zoom_out (self : access glib.object.gobject_record'class);
-	procedure echo_command_simple (self : access gtk.gentry.gtk_entry_record'class);
+
+	
+	console : gtk_combo_box_text;
+
+	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class);
+
 
 	function on_key_event (
 		self	: access gtk_widget_record'class;

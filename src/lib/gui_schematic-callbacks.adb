@@ -98,7 +98,7 @@ package body gui_schematic.callbacks is
 -- 		put_line (to_string (get_scale (canvas)));
 	end;
 
-	procedure echo_command_simple (self : access gtk.gentry.gtk_entry_record'class) is 
+	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class) is 
 		use gtk.gentry;
 		use et_string_processing;
 		use scripting;
@@ -133,13 +133,13 @@ package body gui_schematic.callbacks is
 
 		-- refresh board (because some commands also affect the board)
 		et_canvas_board.pac_canvas.queue_draw (et_canvas_board.pac_canvas.canvas);
-	end;
+	end execute_command;
 
-	procedure echo_command (self : access gtk.combo_box.gtk_combo_box_record'class) is
-	begin
-		put_line ("changed");
-		put_line (self.get_active_text);
-	end echo_command;
+-- 	procedure echo_command (self : access gtk.combo_box.gtk_combo_box_record'class) is
+-- 	begin
+-- 		put_line ("changed");
+-- 		put_line (self.get_active_text);
+-- 	end echo_command;
 	
 	function on_key_event (
 		self	: access gtk_widget_record'class;

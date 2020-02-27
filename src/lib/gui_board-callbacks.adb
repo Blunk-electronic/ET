@@ -98,7 +98,7 @@ package body gui_board.callbacks is
 -- 		put_line (to_string (get_scale (canvas)));
 	end;
 
-	procedure echo_command_simple (self : access gtk.gentry.gtk_entry_record'class) is 
+	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class) is 
 		use gtk.gentry;
 		use et_string_processing;
 		use scripting;
@@ -113,6 +113,9 @@ package body gui_board.callbacks is
 		exit_code : type_exit_code := SUCCESSFUL; -- to be returned
 	begin
 -- 		put_line (line_as_typed_by_operator);
+
+		-- Store the latest command in the command history:
+		console.prepend_text (get_text (self));
 		
 		cmd := read_line (
 			line 			=> line_as_typed_by_operator,
@@ -130,7 +133,7 @@ package body gui_board.callbacks is
 
 		-- refresh schematic (because some commands also affect the schematic)
 		et_canvas_schematic.pac_canvas.queue_draw (et_canvas_schematic.pac_canvas.canvas);
-	end;
+	end execute_command;
 
 	function on_key_event (
 		self	: access gtk_widget_record'class;

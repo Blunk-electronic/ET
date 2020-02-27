@@ -44,7 +44,6 @@ with gtk.toolbar; 			use gtk.toolbar;
 with gtk.tool_button;		use gtk.tool_button;
 with gtk.enums;				use gtk.enums;
 with gtk.gentry;			use gtk.gentry;
-with gtk.combo_box;			use gtk.combo_box;
 with gtk.combo_box_text;	use gtk.combo_box_text;
 with gtk.frame;				use gtk.frame;
 with gtk.scrolled_window;	use gtk.scrolled_window;
@@ -76,11 +75,10 @@ package body gui_schematic is
 	button_zoom_to_fit					: gtk_tool_button; -- This is an access/pointer to the actual button.
 	button_zoom_in, button_zoom_out		: gtk_tool_button;
 
-	-- We will have a toolbar, a console, a frame and a scrolled window:
-	toolbar					: gtk_toolbar; -- This is an access/pointer to the actual toolbar.
--- 	console					: gtk_combo_box_text;
-	frame					: gtk_frame;
-	scrolled				: gtk_scrolled_window;
+	-- We will have a toolbar, a frame and a scrolled window:
+	toolbar		: gtk_toolbar; -- This is an access/pointer to the actual toolbar.
+	frame		: gtk_frame;
+	scrolled	: gtk_scrolled_window;
 
 	procedure init_window (
 		module	: in type_modules.cursor; -- cursor of generic module to be edited
@@ -169,7 +167,7 @@ package body gui_schematic is
 		gtk_new_with_entry (console);
 
 		-- Connect to the on_activate signal of the entry (which is a child of console):
-		gtk_entry (console.get_child).on_activate (echo_command_simple'access); -- on hitting enter
+		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
 		
 		-- console2.on_changed (echo_command'access); -- for every key pressed
 		
