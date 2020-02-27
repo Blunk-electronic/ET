@@ -173,6 +173,8 @@ package body gui_schematic is
 		
 		pack_start (box_console, console, expand => false);
 
+		-- on startup the keyboard must focus on the console:
+		console.grab_focus;
 
 
 
