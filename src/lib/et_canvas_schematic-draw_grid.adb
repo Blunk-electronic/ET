@@ -62,17 +62,20 @@ is
 
 	grid : geometry.type_grid := et_project.type_modules.element (self.drawing.module).grid;
 
-	function lower_grid_coordinate (coordinate : in type_distance) 
+	function lower_grid_coordinate (
+		coordinate	: in type_distance;
+		grid		: in type_distance_grid) 
 	-- This function calculates the grid coordinate on the axis that comes
 	-- before the given coordinate.
-	-- Example 1: If coordinate is 215.6 and grid_size is 10, then x becomes 210.
-	-- Example 2: If coordinate is 166.5 and grid_size is 5, then x becomes 165.
+	-- Example 1: If coordinate is 215.6 and grid size is 10, then x becomes 210.
+	-- Example 2: If coordinate is 166.5 and grid size is 5, then x becomes 165.
 		return type_view_coordinate is 
+		
+		g : float := float (grid);
+		f : float := float'floor (float (coordinate) / g);
+		
 	begin
--- 		return    type_view_coordinate (gint (coordinate / self.grid_size)) -- 166.5 / 5 = 33.3 -> 33
--- 				* type_view_coordinate (self.grid_size); -- 33 * 5 = 165
-		return    type_view_coordinate (gint (coordinate / grid.x)) -- 166.5 / 5 = 33.3 -> 33
-				* type_view_coordinate (grid.x); -- 33 * 5 = 165
+		return type_view_coordinate (f * g);
 	end;
 
 	-- This procedure calculates the addional offset in y. This is necessary because
@@ -82,18 +85,16 @@ is
 		use et_frames;
 		dy : type_view_coordinate;
 	begin
-		-- put_line ("fh " & to_string (model.frame.size.y));
+-- 		put_line ("fh " & to_string (self.drawing.frame.size.y));
+-- 		put_line ("gy " & to_string (grid.y));
 
 		-- Calculate the next lower y-grid-coordinate that comes before the frame height.
 		-- Example: If the frame is 207mm high and grid size is 10 then dy becomes 200.
-		dy := type_view_coordinate (
--- 				gint (self.drawing.frame.size.y / et_frames.type_distance (self.grid_size))) 
--- 				* type_view_coordinate (self.grid_size);
-				gint (self.drawing.frame.size.y / et_frames.type_distance (grid.y))) 
-				* type_view_coordinate (grid.y);
-
-									   
-		-- put_line ("y1 " & type_view_coordinate'image (y));
+		dy := lower_grid_coordinate (
+				coordinate	=> et_coordinates.type_distance (self.drawing.frame.size.y),
+				grid		=> grid.y);
+										
+-- 		put_line ("y1 " & type_view_coordinate'image (dy));
 
 		-- Calculate the distance between the lower frame border and the 
 		-- next lower y-grid-coordinate.
@@ -101,7 +102,7 @@ is
 		-- is 200 then the dy becomes 7.
 		dy := type_view_coordinate (self.drawing.frame.size.y) - dy;
 
-		-- put_line ("y2 " & type_view_coordinate'image (y));
+-- 		put_line ("y2 " & type_view_coordinate'image (dy));
 
 		-- Add dy to the already existing offset_y so that the grid is moved by dy downwards:
 		offset_y := offset_y + dy;
@@ -124,16 +125,24 @@ begin -- draw_grid
 
 		-- The grid must be shifted to the right so that it is aligned
 		-- with the left frame border:
-		x := lower_grid_coordinate (area.x) -- the next grid point before area.x
+		x := lower_grid_coordinate (area.x, grid.x) -- the next grid point before area.x
 			 -- - type_view_coordinate (self.grid_size) -- start at one grid point earlier
-			 - type_view_coordinate (grid.x) -- start at one grid point earlier
+			 - 3.0 * type_view_coordinate (grid.x) -- start at one grid point earlier
 			 + offset_x;
+
+		new_line;
+		put_line ("ax " & to_string (area.x));
+		put_line ("lx " & gdouble'image (lower_grid_coordinate (area.x, grid.x)));		
+		put_line ("gx " & to_string (grid.x));
+		put_line ("ox " & gdouble'image (offset_x));
+		put_line (" x " & gdouble'image (x));
+		put_line ("oy " & gdouble'image (offset_y));
 		
 		while x < type_view_coordinate (area.x + area.width) loop
 			
 			-- The grid must be shifted downwards so that it is aligned
 			-- with the lower frame border:
-			y := lower_grid_coordinate (area.y)  -- the next grid point before area.y
+			y := lower_grid_coordinate (area.y, grid.y)  -- the next grid point before area.y
 				 --- type_view_coordinate (self.grid_size) -- start at one grid point earlier
 				 - type_view_coordinate (grid.y) -- start at one grid point earlier
 				 + offset_y;

@@ -146,7 +146,7 @@ package body et_canvas_schematic is
 		paint (context.cr);
 
 		-- draw white grid dots:
-		set_grid_size (self, pac_canvas.grid_default);
+		--set_grid_size (self, pac_canvas.grid_default); -- CS remove
 		draw_grid (self, style, context, area);
 		
 		draw_frame (self, area, context);
