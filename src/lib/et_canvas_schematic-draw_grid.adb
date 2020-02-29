@@ -46,19 +46,17 @@ procedure draw_grid (
 	self    : not null access type_view;
 	style   : gtkada.style.drawing_style;
 	context : type_draw_context;
-	area    : type_rectangle) 
+	area    : type_rectangle) -- the area of the drawing to be displayed
 is
 	x, y  : type_view_coordinate;
-	dot_size : constant type_view_coordinate := 0.1; -- the size of a dot
-	dot_line_width : constant type_view_coordinate := 0.1; -- the width of the lines that form the dot
+	
+	dot_size : constant type_view_coordinate := type_distance'small; -- the size of a dot
+	dot_line_width : constant type_view_coordinate := type_distance'small; -- the width of the lines that form the dot
 
-	-- The grid must be aligned with the frame. So the initial offset of the grid is
-	-- the position of the drawing frame. That is the position of the frame bounding box.
-	-- NOTE: The frame is drawn directly in cairo, means in y-axis going downwards. 
+	-- The grid must be aligned with the frame.
+	-- NOTE: Frame and grid are drawn directly in cairo, means with y-axis going downwards. 
 	-- See procedure draw_frame.
-	offset_x : type_view_coordinate := type_view_coordinate (self.drawing.frame_bounding_box.x);
-	offset_y : type_view_coordinate := type_view_coordinate (self.drawing.frame_bounding_box.y);
-	-- Later, the offset_y will get a fine adjustment according to the frame height.
+	start_y : type_view_coordinate;
 
 	grid : geometry.type_grid := et_project.type_modules.element (self.drawing.module).grid;
 	
@@ -71,34 +69,25 @@ begin -- draw_grid
 	new_path (context.cr);
 	cairo.set_line_width (context.cr, dot_line_width);
 
-	-- Calculate additional y offset due to the frame height:
-	fine_tune_y_offset (offset_y, self.drawing.frame.size.y, grid.y);
+	-- The start point on the x-axis is aligned with the left frame border:
+	x := type_view_coordinate (self.drawing.frame_bounding_box.x) - lower_grid_coordinate (area.width, grid.x);
+	-- CS: Currently the start point is at -area.width. Means very far on the left outside the given area.
+	-- On drawing the grid this consumes useless computing power.
 
-	-- The grid must be shifted to the right so that it is aligned
-	-- with the left frame border:
-	x := lower_grid_coordinate (area.x, grid.x) -- the next grid point before area.x
-			-- - type_view_coordinate (self.grid_size) -- start at one grid point earlier
-			- 3.0 * type_view_coordinate (grid.x) -- start at one grid point earlier
-			+ offset_x;
+	-- The start point on the y-axis is aligned with the lower frame border (bounding box.y + frame height).
+	start_y := type_view_coordinate (self.drawing.frame_bounding_box.y) 
+			   + type_view_coordinate (self.drawing.frame.size.y)
+			   + lower_grid_coordinate (area.height, grid.y);
+	-- CS: Currently the start point is at -area.height. Means very far below the given area.
+	-- On drawing the grid this consumes useless computing power.
 
-	new_line;
-	put_line ("ax " & to_string (area.x));
-	put_line ("lx " & gdouble'image (lower_grid_coordinate (area.x, grid.x)));		
-	put_line ("gx " & to_string (grid.x));
-	put_line ("ox " & gdouble'image (offset_x));
-	put_line (" x " & gdouble'image (x));
-	put_line ("oy " & gdouble'image (offset_y));
-	
+	-- We draw the grid in x-axis from left to right:
 	while x < type_view_coordinate (area.x + area.width) loop
+
+		-- We draw the grid in y-axis upwards:
+		y := start_y;
 		
-		-- The grid must be shifted downwards so that it is aligned
-		-- with the lower frame border:
-		y := lower_grid_coordinate (area.y, grid.y)  -- the next grid point before area.y
-				--- type_view_coordinate (self.grid_size) -- start at one grid point earlier
-				- type_view_coordinate (grid.y) -- start at one grid point earlier
-				+ offset_y;
-		
-		while y < type_view_coordinate (area.y + area.height) loop
+		while y > type_view_coordinate (area.y) loop
 
 			-- draw a very small cross (so that it seems like a dot):
 			cairo.move_to (context.cr, x - dot_size, y);
@@ -107,13 +96,11 @@ begin -- draw_grid
 			cairo.move_to (context.cr, x, y - dot_size);
 			cairo.line_to (context.cr, x, y + dot_size);
 
-			-- advance to next position on y-axis
-			--y := y + type_view_coordinate (self.grid_size);
-			y := y + type_view_coordinate (grid.y);
+			-- advance to next upper row on y-axis
+			y := y - type_view_coordinate (grid.y);
 		end loop;
 
-		-- advance to next position in x-axis
-		--x := x + type_view_coordinate (self.grid_size);
+		-- advance to next column on the right on x-axis
 		x := x + type_view_coordinate (grid.x);
 	end loop;
 
