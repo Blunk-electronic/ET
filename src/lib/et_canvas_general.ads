@@ -326,10 +326,10 @@ package pac_canvas is
 	-- This procedure calculates the addional offset in y. This is necessary because
 	-- the grid must be aligned with the lower left corner of the frame. The lower left corner
 	-- depends on the heigth of the frame.
-	procedure fine_tune_y_offset (
-		offset_y	: in out type_view_coordinate;
-		frame_height: in et_frames.type_distance;
-		grid		: in type_distance_grid);
+-- 	procedure fine_tune_y_offset (
+-- 		offset_y	: in out type_view_coordinate;
+-- 		frame_height: in et_frames.type_distance;
+-- 		grid		: in type_distance_grid);
 
 private
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);
