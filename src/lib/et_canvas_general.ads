@@ -66,6 +66,7 @@ with pango.layout;			use pango.layout;
 with system.storage_elements;		use system.storage_elements;
 
 with et_geometry;
+with et_frames;
 
 package et_canvas_general is
 
@@ -312,6 +313,23 @@ package pac_canvas is
 		y		: in type_distance) 
 		return type_distance is abstract;
 
+
+	-- This function calculates the grid coordinate on the axis that comes
+	-- before the given coordinate.
+	-- Example 1: If coordinate is 215.6 and grid size is 10, then x becomes 210.
+	-- Example 2: If coordinate is 166.5 and grid size is 5, then x becomes 165.
+	function lower_grid_coordinate (
+		coordinate	: in type_distance;
+		grid		: in type_distance_grid)
+		return type_view_coordinate;
+
+	-- This procedure calculates the addional offset in y. This is necessary because
+	-- the grid must be aligned with the lower left corner of the frame. The lower left corner
+	-- depends on the heigth of the frame.
+	procedure fine_tune_y_offset (
+		offset_y	: in out type_view_coordinate;
+		frame_height: in et_frames.type_distance;
+		grid		: in type_distance_grid);
 
 private
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);

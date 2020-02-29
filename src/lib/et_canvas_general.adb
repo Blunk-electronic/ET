@@ -882,6 +882,48 @@ package body pac_canvas is
 		return type_view_coordinate (x);
 	end;
 
+
+	function lower_grid_coordinate (
+		coordinate	: in type_distance;
+		grid		: in type_distance_grid) 
+	-- This function calculates the grid coordinate on the axis that comes
+	-- before the given coordinate.
+	-- Example 1: If coordinate is 215.6 and grid size is 10, then x becomes 210.
+	-- Example 2: If coordinate is 166.5 and grid size is 5, then x becomes 165.
+		return type_view_coordinate is 
+		
+		g : float := float (grid);
+		f : float := float'floor (float (coordinate) / g);
+		
+	begin
+		return type_view_coordinate (f * g);
+	end;
+
+
+	procedure fine_tune_y_offset (
+		offset_y	: in out type_view_coordinate;
+		frame_height: in et_frames.type_distance;
+		grid		: in type_distance_grid) is
+
+		dy : type_view_coordinate;
+	begin
+		-- Calculate the next lower y-grid-coordinate that comes before the frame height.
+		-- Example: If the frame is 207mm high and grid size is 10 then dy becomes 200.
+		dy := lower_grid_coordinate (
+				coordinate	=> type_distance (frame_height),
+				grid		=> grid);
+
+		-- Calculate the distance between the lower frame border and the 
+		-- next lower y-grid-coordinate.
+		-- Example: If the lower border of the frame is at 207mm and the next lower y-grid-coordinate 
+		-- is 200 then the dy becomes 7.
+		dy := type_view_coordinate (frame_height) - dy;
+
+		-- Add dy to offset_y so that the grid is moved by downwards by dy:
+		offset_y := offset_y + dy;
+		
+	end fine_tune_y_offset;
+	
 end pac_canvas;
 	
 end et_canvas_general;

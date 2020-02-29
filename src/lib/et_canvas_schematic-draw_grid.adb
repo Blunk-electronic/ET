@@ -61,113 +61,64 @@ is
 	-- Later, the offset_y will get a fine adjustment according to the frame height.
 
 	grid : geometry.type_grid := et_project.type_modules.element (self.drawing.module).grid;
-
-	function lower_grid_coordinate (
-		coordinate	: in type_distance;
-		grid		: in type_distance_grid) 
-	-- This function calculates the grid coordinate on the axis that comes
-	-- before the given coordinate.
-	-- Example 1: If coordinate is 215.6 and grid size is 10, then x becomes 210.
-	-- Example 2: If coordinate is 166.5 and grid size is 5, then x becomes 165.
-		return type_view_coordinate is 
-		
-		g : float := float (grid);
-		f : float := float'floor (float (coordinate) / g);
-		
-	begin
-		return type_view_coordinate (f * g);
-	end;
-
-	-- This procedure calculates the addional offset in y. This is necessary because
-	-- the grid must be aligned with the lower left corner of the frame. The lower left corner
-	-- depends on the heigth of the frame.
-	procedure fine_tune_y_offset is
-		use et_frames;
-		dy : type_view_coordinate;
-	begin
--- 		put_line ("fh " & to_string (self.drawing.frame.size.y));
--- 		put_line ("gy " & to_string (grid.y));
-
-		-- Calculate the next lower y-grid-coordinate that comes before the frame height.
-		-- Example: If the frame is 207mm high and grid size is 10 then dy becomes 200.
-		dy := lower_grid_coordinate (
-				coordinate	=> et_coordinates.type_distance (self.drawing.frame.size.y),
-				grid		=> grid.y);
-										
--- 		put_line ("y1 " & type_view_coordinate'image (dy));
-
-		-- Calculate the distance between the lower frame border and the 
-		-- next lower y-grid-coordinate.
-		-- Example: If the lower border of the frame is at 207mm and the next lower y-grid-coordinate 
-		-- is 200 then the dy becomes 7.
-		dy := type_view_coordinate (self.drawing.frame.size.y) - dy;
-
--- 		put_line ("y2 " & type_view_coordinate'image (dy));
-
-		-- Add dy to the already existing offset_y so that the grid is moved by dy downwards:
-		offset_y := offset_y + dy;
-	end fine_tune_y_offset;
-
 	
 begin -- draw_grid
 	if style.get_fill /= null_pattern then
 		set_source (context.cr, style.get_fill);
 		paint (context.cr);
 	end if;
-
--- 	if self.grid_size /= 0.0 then -- CS use module.grid
 		
-		new_path (context.cr);
-		cairo.set_line_width (context.cr, dot_line_width);
+	new_path (context.cr);
+	cairo.set_line_width (context.cr, dot_line_width);
 
-		-- Calculate additional y offset due to the frame height:
-		fine_tune_y_offset;
+	-- Calculate additional y offset due to the frame height:
+	fine_tune_y_offset (offset_y, self.drawing.frame.size.y, grid.y);
 
-		-- The grid must be shifted to the right so that it is aligned
-		-- with the left frame border:
-		x := lower_grid_coordinate (area.x, grid.x) -- the next grid point before area.x
-			 -- - type_view_coordinate (self.grid_size) -- start at one grid point earlier
-			 - 3.0 * type_view_coordinate (grid.x) -- start at one grid point earlier
-			 + offset_x;
+	-- The grid must be shifted to the right so that it is aligned
+	-- with the left frame border:
+	x := lower_grid_coordinate (area.x, grid.x) -- the next grid point before area.x
+			-- - type_view_coordinate (self.grid_size) -- start at one grid point earlier
+			- 3.0 * type_view_coordinate (grid.x) -- start at one grid point earlier
+			+ offset_x;
 
-		new_line;
-		put_line ("ax " & to_string (area.x));
-		put_line ("lx " & gdouble'image (lower_grid_coordinate (area.x, grid.x)));		
-		put_line ("gx " & to_string (grid.x));
-		put_line ("ox " & gdouble'image (offset_x));
-		put_line (" x " & gdouble'image (x));
-		put_line ("oy " & gdouble'image (offset_y));
+	new_line;
+	put_line ("ax " & to_string (area.x));
+	put_line ("lx " & gdouble'image (lower_grid_coordinate (area.x, grid.x)));		
+	put_line ("gx " & to_string (grid.x));
+	put_line ("ox " & gdouble'image (offset_x));
+	put_line (" x " & gdouble'image (x));
+	put_line ("oy " & gdouble'image (offset_y));
+	
+	while x < type_view_coordinate (area.x + area.width) loop
 		
-		while x < type_view_coordinate (area.x + area.width) loop
-			
-			-- The grid must be shifted downwards so that it is aligned
-			-- with the lower frame border:
-			y := lower_grid_coordinate (area.y, grid.y)  -- the next grid point before area.y
-				 --- type_view_coordinate (self.grid_size) -- start at one grid point earlier
-				 - type_view_coordinate (grid.y) -- start at one grid point earlier
-				 + offset_y;
-			
-			while y < type_view_coordinate (area.y + area.height) loop
+		-- The grid must be shifted downwards so that it is aligned
+		-- with the lower frame border:
+		y := lower_grid_coordinate (area.y, grid.y)  -- the next grid point before area.y
+				--- type_view_coordinate (self.grid_size) -- start at one grid point earlier
+				- type_view_coordinate (grid.y) -- start at one grid point earlier
+				+ offset_y;
+		
+		while y < type_view_coordinate (area.y + area.height) loop
 
-				-- draw a very small cross (so that it seems like a dot):
-				cairo.move_to (context.cr, x - dot_size, y);
-				cairo.line_to (context.cr, x + dot_size, y);
+			-- draw a very small cross (so that it seems like a dot):
+			cairo.move_to (context.cr, x - dot_size, y);
+			cairo.line_to (context.cr, x + dot_size, y);
 
-				cairo.move_to (context.cr, x, y - dot_size);
-				cairo.line_to (context.cr, x, y + dot_size);
+			cairo.move_to (context.cr, x, y - dot_size);
+			cairo.line_to (context.cr, x, y + dot_size);
 
-				-- advance to next position on y-axis
-				--y := y + type_view_coordinate (self.grid_size);
-				y := y + type_view_coordinate (grid.y);
-			end loop;
-
-			-- advance to next position in x-axis
-			--x := x + type_view_coordinate (self.grid_size);
-			x := x + type_view_coordinate (grid.x);
+			-- advance to next position on y-axis
+			--y := y + type_view_coordinate (self.grid_size);
+			y := y + type_view_coordinate (grid.y);
 		end loop;
 
-		style.finish_path (context.cr);
--- 	end if;
+		-- advance to next position in x-axis
+		--x := x + type_view_coordinate (self.grid_size);
+		x := x + type_view_coordinate (grid.x);
+	end loop;
+
+	style.finish_path (context.cr);
+
 end draw_grid;
 
 
