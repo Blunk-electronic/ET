@@ -722,7 +722,7 @@ package body et_kicad is
 		datasheet : in type_component_datasheet.bounded_string;
 		characters : in character_set := component_datasheet_characters) is
 	-- Tests if the given URL contains only valid characters as specified
-	-- by given character set. Raises exception if invalid character found.
+	-- by given character set. Issues warning if invalid character found.
 		use et_string_processing;
 		use type_component_datasheet;
 		invalid_character_position : natural := 0;
@@ -733,12 +733,10 @@ package body et_kicad is
 			test => outside);
 
 		if invalid_character_position > 0 then
-			log (ERROR, "URL to datasheet " & to_string (datasheet) 
+			log (WARNING, "URL to datasheet " & to_string (datasheet) 
 				 & " has invalid character at position"
-				 & natural'image (invalid_character_position),
-				 console => true
+				 & natural'image (invalid_character_position)
 				);
-			raise constraint_error;
 		end if;
 	end check_datasheet_characters;
 
