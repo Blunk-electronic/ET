@@ -60,6 +60,9 @@ with glib.object;			use glib.object;
 with glib.values;			use glib.values;
 with glib.properties.creation;	use glib.properties.creation;
 
+with gtkada.style;
+with gdk.rgba;
+
 with cairo;					use cairo;
 
 with pango.layout;			use pango.layout;
@@ -331,6 +334,17 @@ package pac_canvas is
 -- 		frame_height: in et_frames.type_distance;
 -- 		grid		: in type_distance_grid);
 
+
+	-- This procedure draws a grid on the given context for the given
+	-- area of the drawing.
+	procedure draw_grid (
+		context	: in type_draw_context;
+		area	: in type_rectangle;  -- the area of the drawing to be displayed
+		grid	: in geometry.type_grid;		
+		start_x	: in type_view_coordinate;
+		start_y	: in type_view_coordinate);
+
+	
 private
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);
 	-- Called when one of the scrollbars has changed value.

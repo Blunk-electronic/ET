@@ -923,7 +923,63 @@ package body pac_canvas is
 -- 		offset_y := offset_y + dy;
 -- 		
 -- 	end fine_tune_y_offset;
--- 	
+	-- 
+
+	procedure draw_grid (
+		context	: in type_draw_context;
+		area	: in type_rectangle; -- the area of the drawing to be displayed
+		grid	: in geometry.type_grid;
+		start_x	: in type_view_coordinate;
+		start_y	: in type_view_coordinate) is
+
+		use gtkada.style;
+
+		x : type_view_coordinate := start_x;
+		y : type_view_coordinate := start_y;
+		
+		dot_size : constant type_view_coordinate := type_distance'small; -- the size of a dot
+		dot_line_width : constant type_view_coordinate := type_distance'small; -- the width of the lines that form the dot
+		
+		-- prepare draing style so that white grid dots will be drawn.
+		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
+	begin
+		if style.get_fill /= null_pattern then -- CS remove ?
+			set_source (context.cr, style.get_fill);
+			paint (context.cr);
+		end if;
+		
+		new_path (context.cr);
+		cairo.set_line_width (context.cr, dot_line_width);
+
+		-- We draw the grid in x-axis from left to right:
+		while x < type_view_coordinate (area.x + area.width) loop
+
+			-- We draw the grid in y-axis upwards:
+			y := start_y;
+			
+			while y > type_view_coordinate (area.y) loop
+
+				-- draw a very small cross (so that it seems like a dot):
+				cairo.move_to (context.cr, x - dot_size, y);
+				cairo.line_to (context.cr, x + dot_size, y);
+
+				cairo.move_to (context.cr, x, y - dot_size);
+				cairo.line_to (context.cr, x, y + dot_size);
+
+				-- advance to next upper row on y-axis
+				y := y - type_view_coordinate (grid.y);
+			end loop;
+
+			-- advance to next column on the right on x-axis
+			x := x + type_view_coordinate (grid.x);
+		end loop;
+
+		style.finish_path (context.cr);
+		
+	end draw_grid;
+
+
+	
 end pac_canvas;
 	
 end et_canvas_general;

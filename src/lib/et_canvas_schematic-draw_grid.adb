@@ -44,33 +44,19 @@ separate (et_canvas_schematic)
 
 procedure draw_grid (
 	self    : not null access type_view;
-	style   : gtkada.style.drawing_style;
 	context : type_draw_context;
 	area    : type_rectangle) -- the area of the drawing to be displayed
 is
-	x, y  : type_view_coordinate;
-	
-	dot_size : constant type_view_coordinate := type_distance'small; -- the size of a dot
-	dot_line_width : constant type_view_coordinate := type_distance'small; -- the width of the lines that form the dot
-
 	-- The grid must be aligned with the frame.
 	-- NOTE: Frame and grid are drawn directly in cairo, means with y-axis going downwards. 
 	-- See procedure draw_frame.
-	start_y : type_view_coordinate;
+	start_x, start_y : type_view_coordinate;
 
 	grid : geometry.type_grid := et_project.type_modules.element (self.drawing.module).grid;
 	
-begin -- draw_grid
-	if style.get_fill /= null_pattern then
-		set_source (context.cr, style.get_fill);
-		paint (context.cr);
-	end if;
-		
-	new_path (context.cr);
-	cairo.set_line_width (context.cr, dot_line_width);
-
+begin
 	-- The start point on the x-axis is aligned with the left frame border:
-	x := type_view_coordinate (self.drawing.frame_bounding_box.x) - lower_grid_coordinate (area.width, grid.x);
+	start_x := type_view_coordinate (self.drawing.frame_bounding_box.x) - lower_grid_coordinate (area.width, grid.x);
 	-- CS: Currently the start point is at -area.width. Means very far on the left outside the given area.
 	-- On drawing the grid this consumes useless computing power.
 
@@ -81,31 +67,8 @@ begin -- draw_grid
 	-- CS: Currently the start point is at -area.height. Means very far below the given area.
 	-- On drawing the grid this consumes useless computing power.
 
-	-- We draw the grid in x-axis from left to right:
-	while x < type_view_coordinate (area.x + area.width) loop
-
-		-- We draw the grid in y-axis upwards:
-		y := start_y;
-		
-		while y > type_view_coordinate (area.y) loop
-
-			-- draw a very small cross (so that it seems like a dot):
-			cairo.move_to (context.cr, x - dot_size, y);
-			cairo.line_to (context.cr, x + dot_size, y);
-
-			cairo.move_to (context.cr, x, y - dot_size);
-			cairo.line_to (context.cr, x, y + dot_size);
-
-			-- advance to next upper row on y-axis
-			y := y - type_view_coordinate (grid.y);
-		end loop;
-
-		-- advance to next column on the right on x-axis
-		x := x + type_view_coordinate (grid.x);
-	end loop;
-
-	style.finish_path (context.cr);
-
+	pac_canvas.draw_grid (context, area, grid, start_x, start_y);
+	
 end draw_grid;
 
 
