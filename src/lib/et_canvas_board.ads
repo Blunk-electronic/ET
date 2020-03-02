@@ -93,7 +93,7 @@ package et_canvas_board is
 
 		title_block_position	: et_frames.type_position;
 
-		-- CS grid_size 	: type_distance_positive_positive := 20.0;
+		grid : et_pcb_coordinates.geometry.type_grid;
 	end record;
 	
 
@@ -146,6 +146,11 @@ package et_canvas_board is
 		self    : not null access type_view;
 		context : type_draw_context;
 		area    : type_rectangle);
+
+	-- Sets the board drawing grid:
+	procedure set_grid (
+		view	: in type_view_ptr;							 
+		module	: in et_project.type_modules.cursor);
 	
 	-- Init the drawing:
 	procedure init_drawing (

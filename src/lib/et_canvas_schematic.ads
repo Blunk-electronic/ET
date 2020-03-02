@@ -96,7 +96,7 @@ package et_canvas_schematic is
 
 		title_block_position	: et_frames.type_position;
 
-		-- CS grid_size 	: type_distance_positive_positive := 20.0;
+		grid	: et_coordinates.geometry.type_grid;
 		
 		-- the active sheet
 		sheet	: et_coordinates.type_sheet := type_sheet'first;
@@ -153,6 +153,11 @@ package et_canvas_schematic is
 		self    : not null access type_view;
 		context : type_draw_context;
 		area    : type_rectangle);
+
+	-- Sets the schematic drawing grid:
+	procedure set_grid (
+		view	: in type_view_ptr;							 
+		module	: in et_project.type_modules.cursor);
 	
 	-- Init the drawing:
 	procedure init_drawing (

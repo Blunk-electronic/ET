@@ -129,6 +129,7 @@ package body gui_schematic.callbacks is
 		-- CS output error message in gui
 
 		-- refresh schematic
+-- 		set_grid (canvas);
 		queue_draw (canvas);
 
 		-- refresh board (because some commands also affect the board)

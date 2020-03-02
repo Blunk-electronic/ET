@@ -155,7 +155,17 @@ package body et_canvas_schematic is
 			
 	end draw_internal;
 
-
+	-- Sets the schematic drawing grid:
+	procedure set_grid (
+		view	: in type_view_ptr;							 
+		module	: in et_project.type_modules.cursor)
+	is
+		use et_project;
+		type type_local_view_ptr is access all type_view;
+		self : type_local_view_ptr := type_local_view_ptr (view);
+	begin
+		self.drawing.grid := type_modules.element (self.drawing.module).grid;
+	end set_grid;
 
 	procedure init_drawing (
 		view	: in type_view_ptr;							 
@@ -200,8 +210,12 @@ package body et_canvas_schematic is
 		-- Drawing of the title block items is relative to the title block position:
 		self.drawing.title_block_position := self.drawing.frame.title_block_schematic.position;
 
+		
 		-- set active sheet
 		self.drawing.sheet := sheet;
+
+		-- The schematic drawing has a grid:
+		set_grid (view, module);
 		
 	end init_drawing;
 

@@ -50,23 +50,22 @@ is
 	-- NOTE: Frame and grid are drawn directly in cairo, means with y-axis going downwards. 
 	-- See procedure draw_frame.
 	start_x, start_y : type_view_coordinate;
-
-	grid : geometry.type_grid := et_project.type_modules.element (self.drawing.module).grid;
 	
 begin
 	-- The start point on the x-axis is aligned with the left frame border:
-	start_x := type_view_coordinate (self.drawing.frame_bounding_box.x) - lower_grid_coordinate (area.width, grid.x);
+	start_x := type_view_coordinate (self.drawing.frame_bounding_box.x) 
+			   - lower_grid_coordinate (area.width, self.drawing.grid.x);
 	-- CS: Currently the start point is at -area.width. Means very far on the left outside the given area.
 	-- On drawing the grid this consumes useless computing power.
 
 	-- The start point on the y-axis is aligned with the lower frame border (bounding box.y + frame height).
 	start_y := type_view_coordinate (self.drawing.frame_bounding_box.y) 
 			   + type_view_coordinate (self.drawing.frame.size.y)
-			   + lower_grid_coordinate (area.height, grid.y);
+			   + lower_grid_coordinate (area.height, self.drawing.grid.y);
 	-- CS: Currently the start point is at -area.height. Means very far below the given area.
 	-- On drawing the grid this consumes useless computing power.
 
-	pac_canvas.draw_grid (context, area, grid, start_x, start_y);
+	pac_canvas.draw_grid (context, area, self.drawing.grid, start_x, start_y);
 	
 end draw_grid;
 
