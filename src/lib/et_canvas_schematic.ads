@@ -48,7 +48,7 @@
 with glib;					use glib;
 with cairo;					use cairo;
 with cairo.pattern;			use cairo.pattern;
-with gtkada.style;     		use gtkada.style; -- CS remove
+with gtkada.style;
 
 with et_coordinates;		use et_coordinates;
 with et_project;

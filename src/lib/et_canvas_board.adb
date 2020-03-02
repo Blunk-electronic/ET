@@ -38,7 +38,6 @@
 
 with ada.text_io;			use ada.text_io;
 
-with gdk.rgba;
 with et_general;
 with et_project;
 with et_frames;
@@ -95,7 +94,6 @@ package body et_canvas_board is
 
 	procedure draw_grid (
 		self    : not null access type_view;
-		style   : gtkada.style.drawing_style;
 		context : type_draw_context;
 		area    : type_rectangle) is separate;
 
@@ -121,9 +119,6 @@ package body et_canvas_board is
 		context : type_draw_context;
 		area    : type_rectangle) 
 	is
-		-- prepare draing style so that white grid dots will be drawn.
-		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
-
 		-- The given area must be shifted (left and up) by the position
 		-- of the drawing frame. This is required for all objects in the 
 		-- drawing frame.
@@ -142,9 +137,8 @@ package body et_canvas_board is
 		set_source_rgb (context.cr, 0.0, 0.0, 0.0);
 		paint (context.cr);
 
-		-- draw white grid dots:
-		set_grid_size (self, pac_canvas.grid_default);
-		draw_grid (self, style, context, area);
+		-- draw the grid:
+		draw_grid (self, context, area);
 		
 		draw_frame (self, area, context);
 

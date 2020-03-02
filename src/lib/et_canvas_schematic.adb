@@ -37,8 +37,6 @@
 
 with ada.text_io;			use ada.text_io;
 
-with gdk.rgba; -- CS remove
-
 with et_general;
 with et_project;
 with et_frames;

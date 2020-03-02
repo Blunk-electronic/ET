@@ -48,7 +48,7 @@
 with glib;					use glib;
 with cairo;					use cairo;
 with cairo.pattern;			use cairo.pattern;
-with gtkada.style;     		use gtkada.style;
+with gtkada.style;
 
 with et_pcb_coordinates;	use et_pcb_coordinates;
 with et_packages;

@@ -936,9 +936,12 @@ package body pac_canvas is
 
 		x : type_view_coordinate := start_x;
 		y : type_view_coordinate := start_y;
+
+		-- CS Currently very small crosses are drawn.
+		-- Find a way to draw dots !
 		
-		dot_size : constant type_view_coordinate := type_distance'small; -- the size of a dot
-		dot_line_width : constant type_view_coordinate := type_distance'small; -- the width of the lines that form the dot
+		dot_size : constant type_view_coordinate := 0.005; --type_distance'small; -- the size of a dot
+		dot_line_width : constant type_view_coordinate := 0.005; --type_distance'small; -- the width of the lines that form the dot
 		
 		-- prepare draing style so that white grid dots will be drawn.
 		style : drawing_style := gtk_new (stroke => gdk.rgba.white_rgba);
