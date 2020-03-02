@@ -382,7 +382,7 @@ package conventions is
 
 	procedure check_schematic_text_size (
 		category 	: in type_text_schematic;
-		size		: in et_symbols.pac_text.type_text_size);
+		size		: in et_coordinates.geometry.type_distance_positive);
 	-- Checks the given text size by its category.
 
 

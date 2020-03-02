@@ -173,7 +173,7 @@ package et_kicad is
 	function to_meaning (meaning : in string) return type_placeholder_meaning;
 
 
-	text_size_min : constant et_coordinates.geometry.type_distance_positive := 0.1;
+	text_size_min : constant et_coordinates.geometry.type_distance_positive := 0.01;
 	text_size_max : constant et_coordinates.geometry.type_distance_positive := 100.0;
 	text_size_default : constant et_coordinates.geometry.type_distance_positive := 1.3;
 	
