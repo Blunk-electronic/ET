@@ -148,14 +148,15 @@ package et_canvas_board is
 		area    : type_rectangle);
 
 	-- Sets the board drawing grid:
-	procedure set_grid (
-		view	: in type_view_ptr;							 
-		module	: in et_project.type_modules.cursor);
+	procedure set_grid (view : in type_view_ptr);
 	
 	-- Init the drawing:
 	procedure init_drawing (
 		view	: in type_view_ptr;
 		module	: in et_project.type_modules.cursor);
+
+	-- Redraws the board:
+	procedure redraw (view : in type_view_ptr);
 	
 end et_canvas_board;
 

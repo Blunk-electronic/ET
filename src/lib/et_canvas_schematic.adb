@@ -155,11 +155,7 @@ package body et_canvas_schematic is
 			
 	end draw_internal;
 
-	-- Sets the schematic drawing grid:
-	procedure set_grid (
-		view	: in type_view_ptr;							 
-		module	: in et_project.type_modules.cursor)
-	is
+	procedure set_grid (view : in type_view_ptr) is
 		use et_project;
 		type type_local_view_ptr is access all type_view;
 		self : type_local_view_ptr := type_local_view_ptr (view);
@@ -215,10 +211,14 @@ package body et_canvas_schematic is
 		self.drawing.sheet := sheet;
 
 		-- The schematic drawing has a grid:
-		set_grid (view, module);
+		set_grid (view);
 		
 	end init_drawing;
 
+	procedure redraw (view : in type_view_ptr) is begin
+		set_grid (view);
+		queue_draw (view);
+	end;
 
 	function convert_and_shift_y (
 		self	: not null access type_view;

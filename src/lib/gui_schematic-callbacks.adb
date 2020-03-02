@@ -129,11 +129,10 @@ package body gui_schematic.callbacks is
 		-- CS output error message in gui
 
 		-- refresh schematic
--- 		set_grid (canvas);
-		queue_draw (canvas);
+		redraw (canvas);
 
 		-- refresh board (because some commands also affect the board)
-		et_canvas_board.pac_canvas.queue_draw (et_canvas_board.pac_canvas.canvas);
+		et_canvas_board.redraw (et_canvas_board.pac_canvas.canvas);
 	end execute_command;
 
 -- 	procedure echo_command (self : access gtk.combo_box.gtk_combo_box_record'class) is

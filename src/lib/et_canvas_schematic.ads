@@ -155,15 +155,16 @@ package et_canvas_schematic is
 		area    : type_rectangle);
 
 	-- Sets the schematic drawing grid:
-	procedure set_grid (
-		view	: in type_view_ptr;							 
-		module	: in et_project.type_modules.cursor);
+	procedure set_grid (view : in type_view_ptr);
 	
 	-- Init the drawing:
 	procedure init_drawing (
 		view	: in type_view_ptr;
 		module	: in et_project.type_modules.cursor;
 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be opened
+
+	-- Redraws the schematic:
+	procedure redraw (view : in type_view_ptr);
 	
 end et_canvas_schematic;
 
