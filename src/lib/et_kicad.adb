@@ -1912,7 +1912,7 @@ package body et_kicad is
 				mirror (point => port.position, axis => x);
 
 				-- compose length
-				port.length := mil_to_distance (mil => f (line,6));
+				port.length := mil_to_distance (mil => f (line,6)); -- CS port length may assume zero. do something !
 
 				-- compose rotation
 				port.rotation := to_rotation (f (line,7));
