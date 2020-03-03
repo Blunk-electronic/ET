@@ -45,6 +45,7 @@
 --  it must be instantiated with the package that provides the respective
 --  measurement system.
 
+-- with ada.text_io;
 
 with gtk.widget;  			use gtk.widget;
 with gtk.handlers;			use gtk.handlers;
@@ -349,6 +350,29 @@ package pac_canvas is
 		start_x	: in type_view_coordinate;
 		start_y	: in type_view_coordinate);
 
+
+-- COMMAND LINE COMMANDS
+	
+	-- Prefixes before enumeration types prevent clashes with gnat keywords
+	-- and package names:
+	verb_prefix : constant string := ("VERB_");
+	
+	type type_verb is (
+		VERB_DISPLAY,
+		VERB_SHOW,
+		VERB_ZOOM
+		);
+
+	-- Removes the verb_prefix from given verb and returns the remainder as string.
+	-- VERB_DISPLAY becomes DISPLAY:
+	function to_string (verb : in type_verb) return string;
+
+	-- Prepends the verb_prefix to the given string and returns a type_verb.
+	-- DISPLAY becomes VERB_DISPLAY:
+	function to_verb (verb : in string) return type_verb;
+
+	-- Returns true if the given verb (as string) is a verb.
+	function is_canvas_related (verb : in string) return boolean;
 	
 private
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);

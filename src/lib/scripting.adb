@@ -257,7 +257,7 @@ package body scripting is
 		noun : type_noun_schematic := to_noun (f (4));
 		
 	begin -- schematic_cmd
-		log (text => "cmd: " & to_string (cmd), level => log_threshold);
+		log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
 		
 		case verb is
 			when ADD =>
@@ -2507,7 +2507,7 @@ package body scripting is
 		end add_layer;
 		
 	begin -- board_cmd
-		log (text => "cmd: " & to_string (cmd), level => log_threshold);
+		log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
 		
 		case verb is
 			when ADD =>
@@ -3558,7 +3558,7 @@ package body scripting is
 		end project_cmd;
 		
 	begin -- execute_command
-		log (text => "cmd --> " & to_string (cmd), level => log_threshold);
+		log (text => "cmd --> " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
 		log_indentation_up;
 		
 		-- field 1 contains the domain of operation
@@ -3643,7 +3643,8 @@ package body scripting is
 		
 	begin -- execute_script
 		log (text => row_separator_double, level => log_threshold);
-		log (text => "executing script " & to_string (file_name), level => log_threshold);
+		log (text => "executing script " & enclose_in_quotes (to_string (file_name)),
+			 level => log_threshold);
 		log_indentation_up;
 
 		-- build the directory where the script is located:
@@ -3655,7 +3656,9 @@ package body scripting is
 		--log (text => "projects directory " & to_string (projects_directory), level => log_threshold);
 
 		-- change in directory where the script is:
-		log (text => "changing to directory " & to_string (script_directory), level => log_threshold + 1);
+		log (text => "changing to directory " & enclose_in_quotes (to_string (script_directory)),
+			 level => log_threshold + 1);
+		
 		set_directory (to_string (script_directory));
 
 		-- make sure the script file exists:
@@ -3701,7 +3704,8 @@ package body scripting is
 			raise constraint_error;
 		end if;
 															   
-		log (text => "returning to directory " & to_string (projects_directory), level => log_threshold + 1);
+		log (text => "returning to directory " & enclose_in_quotes (to_string (projects_directory)),
+			 level => log_threshold + 1);
 		set_directory (to_string (projects_directory));
 		
 		log_indentation_down;

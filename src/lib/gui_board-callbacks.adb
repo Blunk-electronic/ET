@@ -117,7 +117,8 @@ package body gui_board.callbacks is
 
 		exit_code : type_exit_code := SUCCESSFUL; -- to be returned
 	begin
--- 		put_line (line_as_typed_by_operator);
+		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
+		log_indentation_up;
 
 		-- Store the latest command in the command history:
 		console.prepend_text (get_text (self));
@@ -129,7 +130,18 @@ package body gui_board.callbacks is
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
 			ifs 			=> latin_1.space); -- fields are separated by space
 
-		exit_code := board_cmd (cmd, log_threshold + 1);
+		if is_canvas_related (et_string_processing.field (cmd, 3)) then
+			log (text => "command is canvas related", level => log_threshold + 1);
+
+			-- execute the command
+			-- CS
+		else
+			log (text => "command is board related", level => log_threshold + 1);
+
+			-- execute the board command
+			exit_code := board_cmd (cmd, log_threshold + 1);
+		end if;
+
 
 		-- CS output error message in gui
 

@@ -38,9 +38,9 @@
 --   history of changes:
 --
 
-with ada.text_io;			use ada.text_io;
-
-with interfaces.c.strings;	use interfaces.c.strings;
+with ada.text_io;				use ada.text_io;
+with ada.characters.handling;	use ada.characters.handling;
+with interfaces.c.strings;		use interfaces.c.strings;
 
 with gtk.bin;				use gtk.bin;
 with gtk.scrollable;		use gtk.scrollable;
@@ -981,6 +981,36 @@ package body pac_canvas is
 		
 	end draw_grid;
 
+	
+	function to_string (verb : in type_verb) return string is 
+		s : constant string := type_verb'image (verb);
+	begin
+		return s (verb_prefix'length + 1 .. s'last);
+	end;
+
+	function to_verb (verb : in string) return type_verb is begin
+		return type_verb'value (verb_prefix & verb);
+	
+		exception when event: others => 
+			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
+			raise;
+	end;
+
+	function is_canvas_related (verb : in string) return boolean is
+		verb_full : constant string := to_lower (verb_prefix & verb);
+	begin
+		-- Iterate all verbs of type_verb.
+		for v in type_verb'pos (type_verb'first) .. type_verb'pos (type_verb'last) loop
+
+			-- If any verb matches the given verb, then exit and return true.
+			if to_lower (type_verb'image (type_verb'val (v))) = verb_full then
+				return true;
+			end if;
+		end loop;
+
+		-- No matching verb found.
+		return false;
+	end is_canvas_related;
 
 	
 end pac_canvas;
