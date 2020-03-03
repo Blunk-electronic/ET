@@ -711,3 +711,9 @@ The difference is the 4th keyword 'stencil'. An example to draw a line:
 ```
 board led_driver draw stencil top line 2.5 0 0 160 0 # top, line, width 2.5mm, from 0/0 to 160/0
 ```
+
+## CANVAS
+Zoom to fit:
+```
+schematic led_driver zoom fit
+```

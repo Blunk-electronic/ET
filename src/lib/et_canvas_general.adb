@@ -834,7 +834,7 @@ package body pac_canvas is
 		alloc   : gtk_allocation;
 		wmin, hmin : gdouble;
 	begin
-		put_line ("scale to fit ...");
+-- 		put_line ("scale to fit ...");
 		self.get_allocation (alloc);
 		if alloc.width <= 1 then
 			self.scale_to_fit_requested := max_scale;
@@ -1012,6 +1012,20 @@ package body pac_canvas is
 		return false;
 	end is_canvas_related;
 
+	
+	function to_string (noun : in type_noun) return string is 
+		s : constant string := type_noun'image (noun);
+	begin
+		return s (noun_prefix'length + 1 .. s'last);
+	end;
+
+	function to_noun (noun : in string) return type_noun is begin
+		return type_noun'value (noun_prefix & noun);
+	
+		exception when event: others => 
+			log (ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
+			raise;
+	end;
 	
 end pac_canvas;
 	

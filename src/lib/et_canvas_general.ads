@@ -352,14 +352,8 @@ package pac_canvas is
 
 
 -- COMMAND LINE COMMANDS
--- 	type type_exit_code is (
--- 		SUCCESSFUL,
--- 		WARNINGS,
--- 		ERROR
--- 		);
 	
-	-- Prefixes before enumeration types prevent clashes with gnat keywords
-	-- and package names:
+	-- Prefixes before enumeration types prevent clashes with gnat keywords and package names:
 	verb_prefix : constant string := ("VERB_");
 	
 	type type_verb is (
@@ -378,6 +372,25 @@ package pac_canvas is
 
 	-- Returns true if the given verb (as string) is a verb.
 	function is_canvas_related (verb : in string) return boolean;
+
+
+	-- Prefixes before enumeration types prevent clashes with gnat keywords and package names:
+	noun_prefix : constant string := ("NOUN_");
+	
+	type type_noun is (
+		NOUN_FIT,
+		VERB_CENTER
+		);
+
+	-- Removes the noun_prefix from given noun and returns the remainder as string.
+	-- NOUNT_FIT becomes FIT:
+	function to_string (noun : in type_noun) return string;
+
+	-- Prepends the noun_prefix to the given string and returns a type_noun.
+	-- FIT becomes NOUN_FIT:
+	function to_noun (noun : in string) return type_noun;
+
+
 	
 private
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);

@@ -37,16 +37,86 @@
 
 
 with ada.text_io;				use ada.text_io;
+with ada.containers;			use ada.containers;
+with ada.exceptions;			use ada.exceptions;
+with scripting;					use scripting;
 
 separate (et_canvas_schematic)
 
 procedure execute_command (
 	cmd				: in type_fields_of_line;
-	log_threshold	: in type_log_level)
-is
--- 	exit_code : type_exit_code; -- := SUCCESSFUL;	
+	log_threshold	: in type_log_level) is
+
+	function f (place : in positive) return string is begin
+		return et_string_processing.field (cmd, place);
+	end;
+
+	function fields return count_type is begin
+		return et_string_processing.field_count (cmd);
+	end;
+
+	procedure too_long is begin
+		command_too_long (cmd, fields - 1);
+		-- CS fields - 1 is misleading because the operator does not see the first two fields of the cmmand.
+		-- fields - 3 would be correct, but causes misleading log message if the
+		-- command has been launched from a script.
+	end;
+		
+	exit_code : type_exit_code := SUCCESSFUL;	
+
+	verb : type_verb;
+	noun : type_noun;
+		
 begin
-	null;
+	log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
+
+	-- There must be at least 4 fields in the command:
+	if fields >= 4 then
+		verb := to_verb (f (3));
+		noun := to_noun (f (4));
+
+		-- For evaluating the command we are interested in the fields
+		-- from number 3 onwards:	
+		
+		case verb is
+			when VERB_DISPLAY => null;
+
+				-- refresh schematic
+				redraw (canvas);
+			
+			when VERB_SHOW => null;
+			
+			when VERB_ZOOM =>
+				case noun is
+					when NOUN_FIT => -- schematic led_driver zoom fit
+						case fields is
+							when 4 => 
+								log (text => "scale to fit", level => log_threshold + 1);
+								scale_to_fit (canvas);
+
+							when 5 .. count_type'last => too_long;
+
+							when others => command_incomplete (cmd);
+						end case;
+
+					when others =>
+						null;
+				end case;
+			
+		end case;
+
+	else
+		command_incomplete (cmd);
+	end if;
+
+	
+	exception when event: others => 
+	
+		log (ERROR, "canvas command '" &
+			to_string (cmd) & "' invalid !", console => true);
+
+		log (text => ada.exceptions.exception_information (event), console => true);		
+
 	
 end execute_command;
 

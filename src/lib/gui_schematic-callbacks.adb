@@ -133,15 +133,15 @@ package body gui_schematic.callbacks is
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 
 		if is_canvas_related (et_string_processing.field (cmd, 3)) then
-			log (text => "command is canvas related", level => log_threshold + 1);
+			log (text => "command is canvas related", level => log_threshold);
 
 			-- execute the command
-			et_canvas_schematic.execute_command (cmd, log_threshold + 1);
+			et_canvas_schematic.execute_command (cmd, log_threshold);
 		else
-			log (text => "command is schematic related", level => log_threshold + 1);
+			log (text => "command is schematic related", level => log_threshold);
 
 			-- execute the schematic command
-			exit_code := schematic_cmd (cmd, log_threshold + 1);
+			exit_code := schematic_cmd (cmd, log_threshold);
 
 			-- CS evaluate exit_code
 			

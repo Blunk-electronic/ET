@@ -131,15 +131,15 @@ package body gui_board.callbacks is
 			ifs 			=> latin_1.space); -- fields are separated by space
 
 		if is_canvas_related (et_string_processing.field (cmd, 3)) then
-			log (text => "command is canvas related", level => log_threshold + 1);
+			log (text => "command is canvas related", level => log_threshold);
 
 			-- execute the command
 			-- CS
 		else
-			log (text => "command is board related", level => log_threshold + 1);
+			log (text => "command is board related", level => log_threshold);
 
 			-- execute the board command
-			exit_code := board_cmd (cmd, log_threshold + 1);
+			exit_code := board_cmd (cmd, log_threshold);
 
 			-- CS evaluate exit_code
 			
