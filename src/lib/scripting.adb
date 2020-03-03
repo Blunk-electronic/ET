@@ -250,1347 +250,1359 @@ package body scripting is
 		-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
 		exit_code : type_exit_code := SUCCESSFUL;
 		
-		domain	: type_domain := to_domain (f (1)); -- DOM_SCHEMATIC
-		module	: type_module_name.bounded_string := to_module_name (f (2)); -- motor_driver (without extension *.mod)
+		domain	: type_domain; -- DOM_SCHEMATIC
+		module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		
-		verb : type_verb_schematic := to_verb (f (3));
-		noun : type_noun_schematic := to_noun (f (4));
+		verb : type_verb_schematic;
+		noun : type_noun_schematic;
 		
 	begin -- schematic_cmd
 		log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
+
+		-- There must be at least 4 fields in the command:
+		if fields >= 4 then
+			domain := to_domain (f (1)); -- DOM_SCHEMATIC
+			module := to_module_name (f (2)); -- motor_driver (without extension *.mod)
+
+			verb := to_verb (f (3));
+			noun := to_noun (f (4));
 		
-		case verb is
-			when ADD =>
-				case noun is
-					when NOUN_DEVICE =>
-						case fields is
-							when 9 =>
-								-- If a virtual device is added, then no variant is required.
-								schematic_ops.add_device (
-									module_name 	=> module,
-									device_model	=> to_file_name (f (5)),
-									place			=> to_position 
-										(
-										sheet => to_sheet (f (6)),
-										point => type_point (set 
-													(
-													x => to_distance (f (7)),
-													y => to_distance (f (8))
-													)),
-										rotation => to_rotation (f (9))
-										),
-									variant			=> to_name (""),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 =>
-								-- A real device requires specification of a package variant.
-								schematic_ops.add_device (
-									module_name 	=> module,
-									device_model	=> to_file_name (f (5)),
-									place			=> to_position 
-										(
-										sheet => to_sheet (f (6)),
-										point => type_point (set 
-													(
-													x => to_distance (f (7)),
-													y => to_distance (f (8))
-													)),
-										rotation		=> to_rotation (f (9))
-										),
-									variant			=> to_name (f (10)),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when NOUN_NETCHANGER =>
-						case fields is
-							when 8 =>
-								schematic_ops.add_netchanger (
-									module_name 	=> module,
-									place			=> to_position 
-										(
-										sheet => to_sheet (f (5)),
-										point => type_point (set 
-													(
-													x => to_distance (f (6)),
-													y => to_distance (f (7))
-													)),
-										rotation		=> to_rotation (f (8))
-										),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when NOUN_PORT =>
-						case fields is
-							when 9 =>
-								schematic_ops.add_port (
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)),
-									port_name		=> et_general.to_net_name (f (6)),
-									position		=> type_point (set 
-												(
-												x => to_distance (f (7)),
-												y => to_distance (f (8))
-												)),
-									direction		=> submodules.to_port_name (f (9)),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when NOUN_SUBMODULE =>
-						case fields is
-							when 11 =>
-								schematic_ops.add_submodule (
-									module_name 	=> module, -- parent module (where the submodule is to be inserted)
-									file			=> submodules.to_submodule_path (f (5)),
-									instance		=> et_general.to_instance_name (f (6)), -- submodule instance name
-									position		=> to_position 
-										(
-										sheet => to_sheet (f (7)),
-										point => type_point (set 
-													(
-													x => to_distance (f (8)),
-													y => to_distance (f (9))
-													))
-										),
-									size => (
-										x => to_distance (f (10)),
-										y => to_distance (f (11))
-										),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 12 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
-
-			when BUILD =>
-				case noun is
-					when NOUN_SUBMODULES_TREE =>
-						case fields is
-							when 4 =>
-								schematic_ops.build_submodules_tree (
-									module_name 	=> module,
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 5 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when others => invalid_noun (to_string (noun));
-				end case;
-				
-			when CHECK =>
-				case noun is
-					when NOUN_INTEGRITY =>
-						case fields is
-							when 4 =>
-								schematic_ops.check_integrity (
-									module_name 	=> module,
-									log_threshold	=> log_threshold + 1);
-
-							when 5 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-							
-					when others => invalid_noun (to_string (noun));
-				end case;
-
-			when COPY =>
-				case noun is
-					when NOUN_DEVICE =>
-						case fields is
-							when 9 =>
-								schematic_ops.copy_device (
-									module_name 	=> module,
-									device_name		=> to_name (f (5)),
-									destination		=> to_position 
-										(
-										sheet => to_sheet (f (6)),
-										point => type_point (set
-													(
-													x => to_distance (f (7)),
-													y => to_distance (f (8))
-													)),
-										rotation		=> to_rotation (f (9))
-										),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when NOUN_SUBMODULE =>
-						case fields is
-							when 9 =>
-								schematic_ops.copy_submodule (
-									module_name 	=> module, -- parent module (where the submodule is to be copied)
-									instance_origin	=> et_general.to_instance_name (f (5)), -- submodule instance name
-									instance_new	=> et_general.to_instance_name (f (6)), -- submodule instance name
-									destination		=> to_position 
-										(
-										sheet => to_sheet (f (7)),
-										point => type_point (set
-													(
-													x => to_distance (f (8)),
-													y => to_distance (f (9))
-													))
-										),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
-
-			when CREATE =>
-				case noun is
-					when NOUN_VARIANT => 
-						case fields is
-							when 5 =>
-								schematic_ops.create_assembly_variant
-									(
-									module_name		=> module,
-									variant_name	=> to_variant (f (5)),
-									log_threshold	=> log_threshold + 1);
-								
-							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when others => invalid_noun (to_string (noun));
-				end case;
-																	
-			when DELETE =>
-				case noun is
-					when NOUN_DEVICE =>
-						case fields is
-							when 5 =>
-								schematic_ops.delete_device (
-									module_name 	=> module,
-									device_name		=> to_name (f (5)),
-									log_threshold	=> log_threshold + 1);
-
-							when 6 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-								
-					when NOUN_LABEL =>
-						case fields is
-							when 7 =>
-								schematic_ops.delete_net_label
-									(
-									module_name		=> module,
-
-									position		=> to_position (
-														point => type_point (set (
-															x => to_distance (f (6)),
-															y => to_distance (f (7)))),
-														sheet => to_sheet (f (5))), -- sheet number
-									
-									log_threshold	=> log_threshold + 1);
-								
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when NOUN_NET =>
-						case fields is
-
-							-- If the statement has only 6 fields, the net scope is EVERYWHERE.
-							-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
-							-- by the called procedure:
-							when 5 =>
-								schematic_ops.delete_net
-									(
-									module_name			=> module,
-									net_name			=> to_net_name (f (5)), -- RESET
-									scope				=> EVERYWHERE,
-									place				=> to_position (
-															point => origin,
-															sheet => 1),
-									log_threshold		=> log_threshold + 1);
-
-							-- If the statement has 7 fields, the net scope is SHEET.
-							-- Sheet is set by the 7th argument. x and y assume default (0/0)
-							-- and are further-on ignored by the called procedure:
-							when 6 =>
-								schematic_ops.delete_net
-									(
-									module_name			=> module,
-									net_name			=> to_net_name (f (5)), -- RESET
-									scope				=> SHEET,
-									place				=> to_position (
-															point => origin,
-															sheet => to_sheet (f (6))), -- sheet number
-									log_threshold		=> log_threshold + 1);
-
-							-- If the statement has 9 fields, the net scope is STRAND.
-							-- Place is set according to arguments 7..9.
-							when 8 =>
-								schematic_ops.delete_net
-									(
-									module_name			=> module,
-									net_name			=> to_net_name (f (5)), -- RESET
-									scope				=> STRAND,
-									place				=> to_position (
-															point => type_point (set (
-																x => to_distance (f (7)),
-																y => to_distance (f (8)))),
-															sheet => to_sheet (f (6))), -- sheet number
-									log_threshold		=> log_threshold + 1);
-
-								
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-
-						end case;
-
-					when NOUN_NETCHANGER =>
-						case fields is
-							when 5 =>
-								schematic_ops.delete_netchanger
-									(
-									module_name		=> module,
-									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
-									log_threshold		=> log_threshold + 1);
-
-							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when NOUN_PORT =>
-						case fields is
-							when 6 =>
-								schematic_ops.delete_port
-									(
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)),
-									port_name		=> et_general.to_net_name (f (6)),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when NOUN_SEGMENT =>
-						case fields is
-							when 8 =>
-								schematic_ops.delete_segment
-									(
-									module_name		=> module,
-									net_name		=> to_net_name (f (5)), -- RESET
-									place			=> to_position (
-														point => type_point (set (
-															x => to_distance (f (7)),
-															y => to_distance (f (8)))),
-														sheet => to_sheet (f (6))), -- sheet number
-									log_threshold	=> log_threshold + 1);
-
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-								
-					when NOUN_SUBMODULE =>
-						case fields is
-							when 5 =>
-								schematic_ops.delete_submodule (
-									module_name 	=> module, -- parent module (where the submodule is to be deleted)
-									instance		=> et_general.to_instance_name (f (5)), -- submodule instance name
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when NOUN_TEXT =>
-						NULL; -- CS
-						
-					when NOUN_UNIT =>
-						case fields is
-							when 6 =>
-								schematic_ops.delete_unit (
-									module_name 	=> module,
-									device_name		=> to_name (f (5)),
-									unit_name		=> to_name (f (6)),
-									log_threshold	=> log_threshold + 1);
-
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when NOUN_VARIANT => 
-						case fields is
-							when 5 =>
-								schematic_ops.delete_assembly_variant
-									(
-									module_name		=> module,
-									variant_name	=> to_variant (f (5)),
-									log_threshold	=> log_threshold + 1);
-								
-							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
-
-			when DESCRIBE =>
-				case noun is
-					when NOUN_VARIANT => 
-						case fields is
-							when 6 =>
-								schematic_ops.describe_assembly_variant
-									(
-									module_name		=> module,
-									variant_name	=> to_variant (f (5)), -- low_cost
-									description		=> assembly_variants.to_unbounded_string (f (6)), -- "the cheap version"
-									log_threshold	=> log_threshold + 1);
-								
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
-				
-			when DRAG =>
-				case noun is
-					when NOUN_UNIT =>
-						case fields is
-							when 9 =>
-								schematic_ops.drag_unit
-									(
-									module_name 	=> module,
-									device_name		=> to_name (f (5)),
-									unit_name		=> to_name (f (6)),
-									coordinates		=> schematic_ops.to_coordinates (f (7)), -- relative/absolute
-									point			=> type_point (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-								
-					when NOUN_NETCHANGER =>
-						case fields is
-							when 8 =>
-								schematic_ops.drag_netchanger (
-									module_name 	=> module,
-									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
-									coordinates		=> schematic_ops.to_coordinates (f (6)), -- relative/absolute
-									point			=> type_point (set (
+			case verb is
+				when ADD =>
+					case noun is
+						when NOUN_DEVICE =>
+							case fields is
+								when 9 =>
+									-- If a virtual device is added, then no variant is required.
+									schematic_ops.add_device (
+										module_name 	=> module,
+										device_model	=> to_file_name (f (5)),
+										place			=> to_position 
+											(
+											sheet => to_sheet (f (6)),
+											point => type_point (set 
+														(
 														x => to_distance (f (7)),
-														y => to_distance (f (8)))),
-									log_threshold	=> log_threshold + 1
-									);
+														y => to_distance (f (8))
+														)),
+											rotation => to_rotation (f (9))
+											),
+										variant			=> to_name (""),
+										log_threshold	=> log_threshold + 1
+										);
 
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
+								when 10 =>
+									-- A real device requires specification of a package variant.
+									schematic_ops.add_device (
+										module_name 	=> module,
+										device_model	=> to_file_name (f (5)),
+										place			=> to_position 
+											(
+											sheet => to_sheet (f (6)),
+											point => type_point (set 
+														(
+														x => to_distance (f (7)),
+														y => to_distance (f (8))
+														)),
+											rotation		=> to_rotation (f (9))
+											),
+										variant			=> to_name (f (10)),
+										log_threshold	=> log_threshold + 1
+										);
 
-					when NOUN_PORT =>
-						case fields is
-							when 9 =>
-								schematic_ops.drag_port (
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)),
-									port_name		=> et_general.to_net_name (f (6)),
-									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-									point			=> type_point (set (
-												x => to_distance (f (8)),
-												y => to_distance (f (9)))),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when NOUN_SEGMENT =>
-						case fields is
-							when 11 =>
-								schematic_ops.drag_segment
-									(
-									module_name		=> module,
-									net_name		=> to_net_name (f (5)), -- RESET
-									place			=> to_position (
-														point => type_point (set (
-															x => to_distance (f (7)),
-															y => to_distance (f (8)))),
-														sheet => to_sheet (f (6))), -- sheet number
+								when 11 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-									coordinates		=> schematic_ops.to_coordinates (f (9)), -- relative/absolute
-									
-									point			=> type_point (set (
-														x => to_distance (f (10)),
-														y => to_distance (f (11)))),
-									
-									log_threshold	=> log_threshold + 1);
+								when others => command_incomplete (cmd);
+							end case;
 
-							when 12 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when NOUN_SUBMODULE =>
-						case fields is
-							when 8 =>
-								schematic_ops.drag_submodule (
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)),
-									coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
-									point			=> type_point (set (
-												x => to_distance (f (7)),
-												y => to_distance (f (8)))),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
-				
-			when DRAW =>
-				case noun is
-					when NOUN_NET =>
-						case fields is
-							when 10 =>
-								schematic_ops.draw_net
-									(
-									module_name		=> module,
-									net_name		=> to_net_name (f (5)), -- RESET
-									start_point		=> to_position (
-															point => type_point (set (
-																x => to_distance (f (7)),
-																y => to_distance (f (8)))),
-															sheet => to_sheet (f (6))), -- sheet number
-									
-									end_point		=> type_point (set (
-														x => to_distance (f (9)),
-														y => to_distance (f (10)))),
-									
-									log_threshold	=> log_threshold + 1);
-
-							when 11 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
-
-			when INVOKE =>
-				case noun is
-					when NOUN_UNIT =>
-						case fields is
-							when 10 =>
-								schematic_ops.invoke_unit (
-									module_name		=> module,
-									device_name		=> to_name (f (5)),
-									unit_name		=> to_name (f (6)),
-									place			=> to_position 
-										(
-										sheet => to_sheet (f (7)),
-										point => type_point (set
-													(
-													x => to_distance (f (8)),
-													y => to_distance (f (9))
-													)),
-										rotation		=> to_rotation (f (10))
-										),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 11 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when others => invalid_noun (to_string (noun));
-				end case;
-
-			when MOVE =>
-				case noun is
-					when NOUN_NAME =>
-						case fields is
-							when 9 =>
-								schematic_ops.move_unit_placeholder
-									(
-									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
-									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-									point			=> type_point (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-									meaning			=> et_symbols.NAME,
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when NOUN_VALUE =>
-						case fields is
-							when 9 =>
-								schematic_ops.move_unit_placeholder
-									(
-									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
-									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-									point			=> type_point (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-									meaning			=> et_symbols.VALUE,
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when NOUN_PORT =>
-						case fields is
-							when 9 =>
-								schematic_ops.move_port (
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)),
-									port_name		=> et_general.to_net_name (f (6)),
-									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-									point			=> type_point (set (
-												x => to_distance (f (8)),
-												y => to_distance (f (9)))),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-								
-					when NOUN_PURPOSE =>
-						case fields is
-							when 9 =>
-								schematic_ops.move_unit_placeholder
-									(
-									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
-									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-									point			=> type_point (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-									meaning			=> et_symbols.PURPOSE,
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when NOUN_NETCHANGER =>
-						case fields is
-							when 9 =>
-								schematic_ops.move_netchanger
-									(
-									module_name 	=> module,
-									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
-									coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
-									sheet			=> to_sheet_relative (f (7)),
-									point			=> type_point (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-										
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-								
-					when NOUN_TEXT =>
-						NULL; -- CS
-
-					when NOUN_SUBMODULE =>
-						case fields is
-							when 9 =>
-								schematic_ops.move_submodule (
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)),
-									coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
-									sheet			=> to_sheet_relative (f (7)),
-									point			=> type_point (set (
-												x => to_distance (f (8)),
-												y => to_distance (f (9)))),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when NOUN_UNIT =>
-						case fields is
-							when 10 =>
-								schematic_ops.move_unit
-									(
-									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
-									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-									sheet			=> to_sheet_relative (f (8)),
-									point			=> type_point (set (
-														x => to_distance (f (9)),
-														y => to_distance (f (10)))),
-										
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 11 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-								
-					when others => invalid_noun (to_string (noun));
-				end case;
-
-			when MAKE =>
-				case noun is
-					when NOUN_BOM => 
-						case fields is
-							when 4 =>
-								schematic_ops.make_boms -- a BOM for each variant
-									(
-									module_name 	=> module,
-									log_threshold	=> log_threshold + 1);
-
-							when 5 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when NOUN_NETLISTS => 
-						case fields is
-							when 4 =>
-								schematic_ops.make_netlists 
-									(
-									module_name 	=> module,
-									log_threshold	=> log_threshold + 1);
-
-							when 5 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
-				
-			when MOUNT =>
-				case noun is
-					when NOUN_DEVICE => 
-						declare
-							value : type_value.bounded_string; -- 470R
-							partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-							purpose : type_purpose.bounded_string; -- brightness_control
-						begin
-							-- validate value
-							value := to_value (f (7));
-
-							-- validate partcode
-							partcode := material.to_partcode (f (8));
-							
+						when NOUN_NETCHANGER =>
 							case fields is
 								when 8 =>
-									-- set value and partcode
-									schematic_ops.mount_device
-										(
-										module_name		=> module,
-										variant_name	=> to_variant (f (5)), -- low_cost
-										device			=> to_name (f (6)), -- R1
-										value			=> value, -- 220R
-										partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
+									schematic_ops.add_netchanger (
+										module_name 	=> module,
+										place			=> to_position 
+											(
+											sheet => to_sheet (f (5)),
+											point => type_point (set 
+														(
+														x => to_distance (f (6)),
+														y => to_distance (f (7))
+														)),
+											rotation		=> to_rotation (f (8))
+											),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+
+						when NOUN_PORT =>
+							case fields is
+								when 9 =>
+									schematic_ops.add_port (
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)),
+										port_name		=> et_general.to_net_name (f (6)),
+										position		=> type_point (set 
+													(
+													x => to_distance (f (7)),
+													y => to_distance (f (8))
+													)),
+										direction		=> submodules.to_port_name (f (9)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when NOUN_SUBMODULE =>
+							case fields is
+								when 11 =>
+									schematic_ops.add_submodule (
+										module_name 	=> module, -- parent module (where the submodule is to be inserted)
+										file			=> submodules.to_submodule_path (f (5)),
+										instance		=> et_general.to_instance_name (f (6)), -- submodule instance name
+										position		=> to_position 
+											(
+											sheet => to_sheet (f (7)),
+											point => type_point (set 
+														(
+														x => to_distance (f (8)),
+														y => to_distance (f (9))
+														))
+											),
+										size => (
+											x => to_distance (f (10)),
+											y => to_distance (f (11))
+											),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 12 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when BUILD =>
+					case noun is
+						when NOUN_SUBMODULES_TREE =>
+							case fields is
+								when 4 =>
+									schematic_ops.build_submodules_tree (
+										module_name 	=> module,
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 5 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
+				when CHECK =>
+					case noun is
+						when NOUN_INTEGRITY =>
+							case fields is
+								when 4 =>
+									schematic_ops.check_integrity (
+										module_name 	=> module,
 										log_threshold	=> log_threshold + 1);
 
+								when 5 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+								
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when COPY =>
+					case noun is
+						when NOUN_DEVICE =>
+							case fields is
 								when 9 =>
-									-- optionally the purpose can be set also
-									purpose := to_purpose (f (9)); -- brightness_control
-												
-									schematic_ops.mount_device
+									schematic_ops.copy_device (
+										module_name 	=> module,
+										device_name		=> to_name (f (5)),
+										destination		=> to_position 
+											(
+											sheet => to_sheet (f (6)),
+											point => type_point (set
+														(
+														x => to_distance (f (7)),
+														y => to_distance (f (8))
+														)),
+											rotation		=> to_rotation (f (9))
+											),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+
+						when NOUN_SUBMODULE =>
+							case fields is
+								when 9 =>
+									schematic_ops.copy_submodule (
+										module_name 	=> module, -- parent module (where the submodule is to be copied)
+										instance_origin	=> et_general.to_instance_name (f (5)), -- submodule instance name
+										instance_new	=> et_general.to_instance_name (f (6)), -- submodule instance name
+										destination		=> to_position 
+											(
+											sheet => to_sheet (f (7)),
+											point => type_point (set
+														(
+														x => to_distance (f (8)),
+														y => to_distance (f (9))
+														))
+											),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when CREATE =>
+					case noun is
+						when NOUN_VARIANT => 
+							case fields is
+								when 5 =>
+									schematic_ops.create_assembly_variant
+										(
+										module_name		=> module,
+										variant_name	=> to_variant (f (5)),
+										log_threshold	=> log_threshold + 1);
+									
+								when 6 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+																		
+				when DELETE =>
+					case noun is
+						when NOUN_DEVICE =>
+							case fields is
+								when 5 =>
+									schematic_ops.delete_device (
+										module_name 	=> module,
+										device_name		=> to_name (f (5)),
+										log_threshold	=> log_threshold + 1);
+
+								when 6 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+									
+						when NOUN_LABEL =>
+							case fields is
+								when 7 =>
+									schematic_ops.delete_net_label
+										(
+										module_name		=> module,
+
+										position		=> to_position (
+															point => type_point (set (
+																x => to_distance (f (6)),
+																y => to_distance (f (7)))),
+															sheet => to_sheet (f (5))), -- sheet number
+										
+										log_threshold	=> log_threshold + 1);
+									
+								when 8 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when NOUN_NET =>
+							case fields is
+
+								-- If the statement has only 6 fields, the net scope is EVERYWHERE.
+								-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
+								-- by the called procedure:
+								when 5 =>
+									schematic_ops.delete_net
+										(
+										module_name			=> module,
+										net_name			=> to_net_name (f (5)), -- RESET
+										scope				=> EVERYWHERE,
+										place				=> to_position (
+																point => origin,
+																sheet => 1),
+										log_threshold		=> log_threshold + 1);
+
+								-- If the statement has 7 fields, the net scope is SHEET.
+								-- Sheet is set by the 7th argument. x and y assume default (0/0)
+								-- and are further-on ignored by the called procedure:
+								when 6 =>
+									schematic_ops.delete_net
+										(
+										module_name			=> module,
+										net_name			=> to_net_name (f (5)), -- RESET
+										scope				=> SHEET,
+										place				=> to_position (
+																point => origin,
+																sheet => to_sheet (f (6))), -- sheet number
+										log_threshold		=> log_threshold + 1);
+
+								-- If the statement has 9 fields, the net scope is STRAND.
+								-- Place is set according to arguments 7..9.
+								when 8 =>
+									schematic_ops.delete_net
+										(
+										module_name			=> module,
+										net_name			=> to_net_name (f (5)), -- RESET
+										scope				=> STRAND,
+										place				=> to_position (
+																point => type_point (set (
+																	x => to_distance (f (7)),
+																	y => to_distance (f (8)))),
+																sheet => to_sheet (f (6))), -- sheet number
+										log_threshold		=> log_threshold + 1);
+
+									
+								when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+
+							end case;
+
+						when NOUN_NETCHANGER =>
+							case fields is
+								when 5 =>
+									schematic_ops.delete_netchanger
+										(
+										module_name		=> module,
+										index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+										log_threshold		=> log_threshold + 1);
+
+								when 6 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+
+						when NOUN_PORT =>
+							case fields is
+								when 6 =>
+									schematic_ops.delete_port
+										(
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)),
+										port_name		=> et_general.to_net_name (f (6)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when NOUN_SEGMENT =>
+							case fields is
+								when 8 =>
+									schematic_ops.delete_segment
+										(
+										module_name		=> module,
+										net_name		=> to_net_name (f (5)), -- RESET
+										place			=> to_position (
+															point => type_point (set (
+																x => to_distance (f (7)),
+																y => to_distance (f (8)))),
+															sheet => to_sheet (f (6))), -- sheet number
+										log_threshold	=> log_threshold + 1);
+
+								when 9 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+									
+						when NOUN_SUBMODULE =>
+							case fields is
+								when 5 =>
+									schematic_ops.delete_submodule (
+										module_name 	=> module, -- parent module (where the submodule is to be deleted)
+										instance		=> et_general.to_instance_name (f (5)), -- submodule instance name
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 6 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when NOUN_TEXT =>
+							NULL; -- CS
+							
+						when NOUN_UNIT =>
+							case fields is
+								when 6 =>
+									schematic_ops.delete_unit (
+										module_name 	=> module,
+										device_name		=> to_name (f (5)),
+										unit_name		=> to_name (f (6)),
+										log_threshold	=> log_threshold + 1);
+
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when NOUN_VARIANT => 
+							case fields is
+								when 5 =>
+									schematic_ops.delete_assembly_variant
+										(
+										module_name		=> module,
+										variant_name	=> to_variant (f (5)),
+										log_threshold	=> log_threshold + 1);
+									
+								when 6 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when DESCRIBE =>
+					case noun is
+						when NOUN_VARIANT => 
+							case fields is
+								when 6 =>
+									schematic_ops.describe_assembly_variant
+										(
+										module_name		=> module,
+										variant_name	=> to_variant (f (5)), -- low_cost
+										description		=> assembly_variants.to_unbounded_string (f (6)), -- "the cheap version"
+										log_threshold	=> log_threshold + 1);
+									
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
+				when DRAG =>
+					case noun is
+						when NOUN_UNIT =>
+							case fields is
+								when 9 =>
+									schematic_ops.drag_unit
+										(
+										module_name 	=> module,
+										device_name		=> to_name (f (5)),
+										unit_name		=> to_name (f (6)),
+										coordinates		=> schematic_ops.to_coordinates (f (7)), -- relative/absolute
+										point			=> type_point (set (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+									
+						when NOUN_NETCHANGER =>
+							case fields is
+								when 8 =>
+									schematic_ops.drag_netchanger (
+										module_name 	=> module,
+										index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+										coordinates		=> schematic_ops.to_coordinates (f (6)), -- relative/absolute
+										point			=> type_point (set (
+															x => to_distance (f (7)),
+															y => to_distance (f (8)))),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+
+						when NOUN_PORT =>
+							case fields is
+								when 9 =>
+									schematic_ops.drag_port (
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)),
+										port_name		=> et_general.to_net_name (f (6)),
+										coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+										point			=> type_point (set (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when NOUN_SEGMENT =>
+							case fields is
+								when 11 =>
+									schematic_ops.drag_segment
+										(
+										module_name		=> module,
+										net_name		=> to_net_name (f (5)), -- RESET
+										place			=> to_position (
+															point => type_point (set (
+																x => to_distance (f (7)),
+																y => to_distance (f (8)))),
+															sheet => to_sheet (f (6))), -- sheet number
+										
+										coordinates		=> schematic_ops.to_coordinates (f (9)), -- relative/absolute
+										
+										point			=> type_point (set (
+															x => to_distance (f (10)),
+															y => to_distance (f (11)))),
+										
+										log_threshold	=> log_threshold + 1);
+
+								when 12 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when NOUN_SUBMODULE =>
+							case fields is
+								when 8 =>
+									schematic_ops.drag_submodule (
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)),
+										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+										point			=> type_point (set (
+													x => to_distance (f (7)),
+													y => to_distance (f (8)))),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
+				when DRAW =>
+					case noun is
+						when NOUN_NET =>
+							case fields is
+								when 10 =>
+									schematic_ops.draw_net
+										(
+										module_name		=> module,
+										net_name		=> to_net_name (f (5)), -- RESET
+										start_point		=> to_position (
+																point => type_point (set (
+																	x => to_distance (f (7)),
+																	y => to_distance (f (8)))),
+																sheet => to_sheet (f (6))), -- sheet number
+										
+										end_point		=> type_point (set (
+															x => to_distance (f (9)),
+															y => to_distance (f (10)))),
+										
+										log_threshold	=> log_threshold + 1);
+
+								when 11 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when INVOKE =>
+					case noun is
+						when NOUN_UNIT =>
+							case fields is
+								when 10 =>
+									schematic_ops.invoke_unit (
+										module_name		=> module,
+										device_name		=> to_name (f (5)),
+										unit_name		=> to_name (f (6)),
+										place			=> to_position 
+											(
+											sheet => to_sheet (f (7)),
+											point => type_point (set
+														(
+														x => to_distance (f (8)),
+														y => to_distance (f (9))
+														)),
+											rotation		=> to_rotation (f (10))
+											),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 11 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when MOVE =>
+					case noun is
+						when NOUN_NAME =>
+							case fields is
+								when 9 =>
+									schematic_ops.move_unit_placeholder
+										(
+										module_name 	=> module,
+										device_name		=> to_name (f (5)), -- IC1
+										unit_name		=> to_name (f (6)), -- A
+										coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+										point			=> type_point (set (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+										meaning			=> et_symbols.NAME,
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when NOUN_VALUE =>
+							case fields is
+								when 9 =>
+									schematic_ops.move_unit_placeholder
+										(
+										module_name 	=> module,
+										device_name		=> to_name (f (5)), -- IC1
+										unit_name		=> to_name (f (6)), -- A
+										coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+										point			=> type_point (set (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+										meaning			=> et_symbols.VALUE,
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when NOUN_PORT =>
+							case fields is
+								when 9 =>
+									schematic_ops.move_port (
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)),
+										port_name		=> et_general.to_net_name (f (6)),
+										coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+										point			=> type_point (set (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+									
+						when NOUN_PURPOSE =>
+							case fields is
+								when 9 =>
+									schematic_ops.move_unit_placeholder
+										(
+										module_name 	=> module,
+										device_name		=> to_name (f (5)), -- IC1
+										unit_name		=> to_name (f (6)), -- A
+										coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+										point			=> type_point (set (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+										meaning			=> et_symbols.PURPOSE,
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+
+						when NOUN_NETCHANGER =>
+							case fields is
+								when 9 =>
+									schematic_ops.move_netchanger
+										(
+										module_name 	=> module,
+										index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
+										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+										sheet			=> to_sheet_relative (f (7)),
+										point			=> type_point (set (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+											
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+									
+						when NOUN_TEXT =>
+							NULL; -- CS
+
+						when NOUN_SUBMODULE =>
+							case fields is
+								when 9 =>
+									schematic_ops.move_submodule (
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)),
+										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+										sheet			=> to_sheet_relative (f (7)),
+										point			=> type_point (set (
+													x => to_distance (f (8)),
+													y => to_distance (f (9)))),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when NOUN_UNIT =>
+							case fields is
+								when 10 =>
+									schematic_ops.move_unit
+										(
+										module_name 	=> module,
+										device_name		=> to_name (f (5)), -- IC1
+										unit_name		=> to_name (f (6)), -- A
+										coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+										sheet			=> to_sheet_relative (f (8)),
+										point			=> type_point (set (
+															x => to_distance (f (9)),
+															y => to_distance (f (10)))),
+											
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 11 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+									
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when MAKE =>
+					case noun is
+						when NOUN_BOM => 
+							case fields is
+								when 4 =>
+									schematic_ops.make_boms -- a BOM for each variant
+										(
+										module_name 	=> module,
+										log_threshold	=> log_threshold + 1);
+
+								when 5 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+
+						when NOUN_NETLISTS => 
+							case fields is
+								when 4 =>
+									schematic_ops.make_netlists 
+										(
+										module_name 	=> module,
+										log_threshold	=> log_threshold + 1);
+
+								when 5 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
+				when MOUNT =>
+					case noun is
+						when NOUN_DEVICE => 
+							declare
+								value : type_value.bounded_string; -- 470R
+								partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+								purpose : type_purpose.bounded_string; -- brightness_control
+							begin
+								-- validate value
+								value := to_value (f (7));
+
+								-- validate partcode
+								partcode := material.to_partcode (f (8));
+								
+								case fields is
+									when 8 =>
+										-- set value and partcode
+										schematic_ops.mount_device
+											(
+											module_name		=> module,
+											variant_name	=> to_variant (f (5)), -- low_cost
+											device			=> to_name (f (6)), -- R1
+											value			=> value, -- 220R
+											partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
+											log_threshold	=> log_threshold + 1);
+
+									when 9 =>
+										-- optionally the purpose can be set also
+										purpose := to_purpose (f (9)); -- brightness_control
+													
+										schematic_ops.mount_device
+											(
+											module_name		=> module,
+											variant_name	=> to_variant (f (5)), -- low_cost
+											device			=> to_name (f (6)), -- R1
+											value			=> value, -- 220R
+											partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
+											purpose			=> purpose, -- brightness_control
+											log_threshold	=> log_threshold + 1);
+										
+									when 10 .. count_type'last => command_too_long (cmd, fields - 1);
+										
+									when others => command_incomplete (cmd);
+								end case;
+
+							end; -- declare
+
+						when NOUN_SUBMODULE =>
+							case fields is
+								when 7 =>
+									schematic_ops.mount_submodule
+										(
+										module_name		=> module,
+										variant_parent	=> to_variant (f (5)), -- low_cost
+										instance		=> et_general.to_instance_name (f (6)), -- OSC1
+										variant_submod	=> to_variant (f (7)), -- fixed_frequency
+										log_threshold	=> log_threshold + 1);
+
+								when 8 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
+				when PLACE =>
+					case noun is
+						when NOUN_JUNCTION =>
+							case fields is
+								when 7 =>
+									schematic_ops.place_junction 
+										(
+										module_name 	=> module,
+										place			=> to_position 
+															(
+															sheet => to_sheet (f (5)),
+															point => type_point (set (
+																		x => to_distance (f (6)),
+																		y => to_distance (f (7))
+																		))
+															),
+											
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+									
+						when NOUN_LABEL =>
+							case fields is
+								when 10 =>
+									schematic_ops.place_net_label
+										(
+										module_name			=> module,
+
+										segment_position	=> to_position (
+																point => type_point (set (
+																	x => to_distance (f (6)),
+																	y => to_distance (f (7)))),
+																sheet => to_sheet (f (5))), -- sheet number
+
+										label_position		=> type_point (set (
+																	x => to_distance (f (8)),
+																	y => to_distance (f (9)))),
+
+										rotation			=> et_schematic.pac_text.to_rotation_doc (f (10)), -- 0 / 90
+										appearance 			=> et_schematic.SIMPLE,
+
+										-- A simple label does not indicate the direction
+										-- of information flow. But this procedure call requires a
+										-- direction. So we just pass direction PASSIVE. It has no 
+										-- further meaning.
+										direction			=> et_schematic.PASSIVE,
+
+										log_threshold		=> log_threshold + 1);
+
+								when 11 =>
+									schematic_ops.place_net_label
+										(
+										module_name			=> module,
+
+										segment_position	=> to_position (
+																point => type_point (set (
+																	x => to_distance (f (6)),
+																	y => to_distance (f (7)))),
+																sheet => to_sheet (f (5))), -- sheet number
+
+										label_position		=> type_point (set (
+																	x => to_distance (f (8)),
+																	y => to_distance (f (9)))),
+
+										rotation			=> et_schematic.pac_text.to_rotation_doc (f (10)), -- 0 / 90
+										appearance 			=> et_schematic.TAG,
+
+										-- A tag label requires specification of direction
+										-- which is specified by the 11th argument:
+										direction			=> et_schematic.to_direction (f (11)), -- INPUT, OUTPUT, PASSIVE, ...
+
+										log_threshold		=> log_threshold + 1);
+									
+								when 12 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when REMOVE =>
+					case noun is
+						when NOUN_DEVICE => 
+							case fields is
+								when 6 =>
+									schematic_ops.remove_device -- from assembly variant
 										(
 										module_name		=> module,
 										variant_name	=> to_variant (f (5)), -- low_cost
 										device			=> to_name (f (6)), -- R1
-										value			=> value, -- 220R
-										partcode		=> partcode, -- R_PAC_S_0805_VAL_220R
-										purpose			=> purpose, -- brightness_control
 										log_threshold	=> log_threshold + 1);
+
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+
+						when NOUN_SUBMODULE =>
+							case fields is
+								when 6 =>
+									schematic_ops.remove_submodule
+										(
+										module_name		=> module,
+										variant_parent	=> to_variant (f (5)),
+										instance		=> et_general.to_instance_name (f (6)), -- OSC1
+										log_threshold	=> log_threshold + 1);
+
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
+				when RENAME =>
+					case noun is
+						when NOUN_DEVICE =>
+							case fields is
+								when 6 =>
+									schematic_ops.rename_device
+										(
+										module_name 		=> module,
+										device_name_before	=> to_name (f (5)), -- IC1
+										device_name_after	=> to_name (f (6)), -- IC23
+										log_threshold		=> log_threshold + 1
+										);
+
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case; 
+									
+						when NOUN_SUBMODULE =>
+							case fields is
+								when 6 =>
+									schematic_ops.rename_submodule
+										(
+										module_name		=> module,
+										instance_old	=> et_general.to_instance_name (f (5)), -- OSC1
+										instance_new	=> et_general.to_instance_name (f (6)), -- OSC2
+										log_threshold	=> log_threshold + 1);
+
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when NOUN_NET =>
+							case fields is
+
+								-- If the statement has only 6 fields, the net scope is EVERYWHERE.
+								-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
+								-- by the called procedure:
+								when 6 =>
+									schematic_ops.rename_net
+										(
+										module_name			=> module,
+										net_name_before		=> to_net_name (f (5)), -- RESET
+										net_name_after		=> to_net_name (f (6)), -- RESET_N
+										scope				=> EVERYWHERE,
+										place				=> to_position (
+																point => origin,
+																sheet => 1),
+										log_threshold		=> log_threshold + 1);
+
+								-- If the statement has 7 fields, the net scope is SHEET.
+								-- Sheet is set by the 7th argument. x and y assume default (0/0)
+								-- and are further-on ignored by the called procedure:
+								when 7 =>
+									schematic_ops.rename_net
+										(
+										module_name			=> module,
+										net_name_before		=> to_net_name (f (5)), -- RESET
+										net_name_after		=> to_net_name (f (6)), -- RESET_N
+										scope				=> SHEET,
+										place				=> to_position (
+																point => origin,
+																sheet => to_sheet (f (7))), -- sheet number
+										log_threshold		=> log_threshold + 1);
+
+								-- If the statement has 9 fields, the net scope is STRAND.
+								-- Place is set according to arguments 7..9.
+								when 9 =>
+									schematic_ops.rename_net
+										(
+										module_name			=> module,
+										net_name_before		=> to_net_name (f (5)), -- RESET
+										net_name_after		=> to_net_name (f (6)), -- RESET_N
+										scope				=> STRAND,
+										place				=> to_position (
+																point => type_point (set (
+																	x => to_distance (f (8)),
+																	y => to_distance (f (9)))),
+																sheet => to_sheet (f (7))), -- sheet number
+										log_threshold		=> log_threshold + 1);
+
 									
 								when 10 .. count_type'last => command_too_long (cmd, fields - 1);
 									
 								when others => command_incomplete (cmd);
 							end case;
 
-						end; -- declare
+						when others => invalid_noun (to_string (noun));
+					end case;
 
-					when NOUN_SUBMODULE =>
-						case fields is
-							when 7 =>
-								schematic_ops.mount_submodule
-									(
-									module_name		=> module,
-									variant_parent	=> to_variant (f (5)), -- low_cost
-									instance		=> et_general.to_instance_name (f (6)), -- OSC1
-									variant_submod	=> to_variant (f (7)), -- fixed_frequency
-									log_threshold	=> log_threshold + 1);
-
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
-				
-			when PLACE =>
-				case noun is
-					when NOUN_JUNCTION =>
-						case fields is
-							when 7 =>
-								schematic_ops.place_junction 
-									(
-									module_name 	=> module,
-									place			=> to_position 
-														(
-														sheet => to_sheet (f (5)),
-														point => type_point (set (
-																	x => to_distance (f (6)),
-																	y => to_distance (f (7))
-																	))
-														),
-										
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-								
-					when NOUN_LABEL =>
-						case fields is
-							when 10 =>
-								schematic_ops.place_net_label
-									(
-									module_name			=> module,
-
-									segment_position	=> to_position (
-															point => type_point (set (
-																x => to_distance (f (6)),
-																y => to_distance (f (7)))),
-															sheet => to_sheet (f (5))), -- sheet number
-
-									label_position		=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-
-									rotation			=> et_schematic.pac_text.to_rotation_doc (f (10)), -- 0 / 90
-									appearance 			=> et_schematic.SIMPLE,
-
-									-- A simple label does not indicate the direction
-									-- of information flow. But this procedure call requires a
-									-- direction. So we just pass direction PASSIVE. It has no 
-									-- further meaning.
-									direction			=> et_schematic.PASSIVE,
-
-									log_threshold		=> log_threshold + 1);
-
-							when 11 =>
-								schematic_ops.place_net_label
-									(
-									module_name			=> module,
-
-									segment_position	=> to_position (
-															point => type_point (set (
-																x => to_distance (f (6)),
-																y => to_distance (f (7)))),
-															sheet => to_sheet (f (5))), -- sheet number
-
-									label_position		=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-
-									rotation			=> et_schematic.pac_text.to_rotation_doc (f (10)), -- 0 / 90
-									appearance 			=> et_schematic.TAG,
-
-									-- A tag label requires specification of direction
-									-- which is specified by the 11th argument:
-									direction			=> et_schematic.to_direction (f (11)), -- INPUT, OUTPUT, PASSIVE, ...
-
-									log_threshold		=> log_threshold + 1);
-								
-							when 12 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
-
-			when REMOVE =>
-				case noun is
-					when NOUN_DEVICE => 
-						case fields is
-							when 6 =>
-								schematic_ops.remove_device -- from assembly variant
-									(
-									module_name		=> module,
-									variant_name	=> to_variant (f (5)), -- low_cost
-									device			=> to_name (f (6)), -- R1
-									log_threshold	=> log_threshold + 1);
-
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when NOUN_SUBMODULE =>
-						case fields is
-							when 6 =>
-								schematic_ops.remove_submodule
-									(
-									module_name		=> module,
-									variant_parent	=> to_variant (f (5)),
-									instance		=> et_general.to_instance_name (f (6)), -- OSC1
-									log_threshold	=> log_threshold + 1);
-
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
-				
-			when RENAME =>
-				case noun is
-					when NOUN_DEVICE =>
-						case fields is
-							when 6 =>
-								schematic_ops.rename_device
-									(
-									module_name 		=> module,
-									device_name_before	=> to_name (f (5)), -- IC1
-									device_name_after	=> to_name (f (6)), -- IC23
-									log_threshold		=> log_threshold + 1
-									);
-
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case; 
-								
-					when NOUN_SUBMODULE =>
-						case fields is
-							when 6 =>
-								schematic_ops.rename_submodule
-									(
-									module_name		=> module,
-									instance_old	=> et_general.to_instance_name (f (5)), -- OSC1
-									instance_new	=> et_general.to_instance_name (f (6)), -- OSC2
-									log_threshold	=> log_threshold + 1);
-
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when NOUN_NET =>
-						case fields is
-
-							-- If the statement has only 6 fields, the net scope is EVERYWHERE.
-							-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
-							-- by the called procedure:
-							when 6 =>
-								schematic_ops.rename_net
-									(
-									module_name			=> module,
-									net_name_before		=> to_net_name (f (5)), -- RESET
-									net_name_after		=> to_net_name (f (6)), -- RESET_N
-									scope				=> EVERYWHERE,
-									place				=> to_position (
-															point => origin,
-															sheet => 1),
-									log_threshold		=> log_threshold + 1);
-
-							-- If the statement has 7 fields, the net scope is SHEET.
-							-- Sheet is set by the 7th argument. x and y assume default (0/0)
-							-- and are further-on ignored by the called procedure:
-							when 7 =>
-								schematic_ops.rename_net
-									(
-									module_name			=> module,
-									net_name_before		=> to_net_name (f (5)), -- RESET
-									net_name_after		=> to_net_name (f (6)), -- RESET_N
-									scope				=> SHEET,
-									place				=> to_position (
-															point => origin,
-															sheet => to_sheet (f (7))), -- sheet number
-									log_threshold		=> log_threshold + 1);
-
-							-- If the statement has 9 fields, the net scope is STRAND.
-							-- Place is set according to arguments 7..9.
-							when 9 =>
-								schematic_ops.rename_net
-									(
-									module_name			=> module,
-									net_name_before		=> to_net_name (f (5)), -- RESET
-									net_name_after		=> to_net_name (f (6)), -- RESET_N
-									scope				=> STRAND,
-									place				=> to_position (
-															point => type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-															sheet => to_sheet (f (7))), -- sheet number
-									log_threshold		=> log_threshold + 1);
-
-								
-							when 10 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when others => invalid_noun (to_string (noun));
-				end case;
-
-			when RENUMBER =>
-				case noun is
-					when NOUN_DEVICES =>
-						case fields is
-							when 5 =>
-								schematic_ops.renumber_devices
-									(
-									module_name 	=> module,
-									step_width		=> to_index (f (5)), -- 100
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
-				
-			when ROTATE =>
-				case noun is
-					when NOUN_TEXT =>
-						NULL; -- CS
-
-					when NOUN_UNIT =>
-						case fields is
-							when 8 =>
-								schematic_ops.rotate_unit
-									(
-									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
-									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
-									rotation		=> to_rotation (f (8)), -- 90
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-								
-					when NOUN_NAME =>
-						case fields is 
-							when 7 =>
-								schematic_ops.rotate_unit_placeholder
-									(
-									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
-									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
-									meaning			=> et_symbols.NAME,
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-								
-					when NOUN_VALUE =>
-						case fields is
-							when 7 =>
-								schematic_ops.rotate_unit_placeholder
-									(
-									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
-									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
-									meaning			=> et_symbols.VALUE,
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-								
-					when NOUN_PURPOSE =>
-						case fields is
-							when 7 =>
-								schematic_ops.rotate_unit_placeholder
-									(
-									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
-									unit_name		=> to_name (f (6)), -- A
-									rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
-									meaning			=> et_symbols.PURPOSE,
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-								
-					when NOUN_NETCHANGER =>
-						case fields is
-							when 7 =>
-								schematic_ops.rotate_netchanger (
-									module_name 	=> module,
-									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
-									coordinates		=> schematic_ops.to_coordinates (f (6)), -- relative/absolute
-									rotation		=> to_rotation (f (7)), -- 90
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
-
-			when SET =>
-				case noun is
-					when NOUN_GRID =>
-						case fields is
-							-- schematic led_driver set grid 5 5
-							when 6 =>
-								schematic_ops.set_grid (
-									module_name 	=> module,
-									grid			=> (
-											x => to_distance (f (5)),
-											y => to_distance (f (6))),
-									log_threshold	=> log_threshold + 1);
-
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-				
-					when NOUN_PARTCODE =>
-						case fields is
-							when 6 =>
-								declare
-									partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-								begin
-									partcode := material.to_partcode (f (6));
-
-									-- set the purpose
-									schematic_ops.set_partcode
+				when RENUMBER =>
+					case noun is
+						when NOUN_DEVICES =>
+							case fields is
+								when 5 =>
+									schematic_ops.renumber_devices
 										(
 										module_name 	=> module,
-										device_name		=> to_name (f (5)), -- R1
-										partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
+										step_width		=> to_index (f (5)), -- 100
 										log_threshold	=> log_threshold + 1
 										);
-								end;
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-								
-					when NOUN_PURPOSE =>
-						case fields is
-							when 6 =>
-								declare
-									use et_schematic;
-									purpose : type_purpose.bounded_string; -- brightness_control
-								begin
-									purpose := to_purpose (f (6));
+								when 6 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-									-- set the purpose
-									schematic_ops.set_purpose
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
+				when ROTATE =>
+					case noun is
+						when NOUN_TEXT =>
+							NULL; -- CS
+
+						when NOUN_UNIT =>
+							case fields is
+								when 8 =>
+									schematic_ops.rotate_unit
 										(
 										module_name 	=> module,
-										device_name		=> to_name (f (5)), -- R1
-										purpose			=> purpose, -- brightness_control
+										device_name		=> to_name (f (5)), -- IC1
+										unit_name		=> to_name (f (6)), -- A
+										coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+										rotation		=> to_rotation (f (8)), -- 90
 										log_threshold	=> log_threshold + 1
 										);
-								end;
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when NOUN_SCOPE =>
-						case fields is
-							when 6 =>
-								schematic_ops.set_scope (
-									module_name 	=> module,
-									net_name		=> et_general.to_net_name (f (5)),
-									scope			=> netlists.to_net_scope (f (6)),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when NOUN_SUBMODULE_FILE =>
-						case fields is
-							when 6 =>
-								schematic_ops.set_submodule_file (
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)),
-									file			=> submodules.to_submodule_path (f (6)),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when NOUN_VALUE =>
-						case fields is
-							when 6 =>
-								declare
-									value : type_value.bounded_string; -- 470R
-								begin
-									-- validate value
-									value := to_value (f (6));
-
-									-- set the value
-									schematic_ops.set_value
+								when 9 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+									
+						when NOUN_NAME =>
+							case fields is 
+								when 7 =>
+									schematic_ops.rotate_unit_placeholder
 										(
 										module_name 	=> module,
-										device_name		=> to_name (f (5)), -- R1
-										value			=> value, -- 470R
+										device_name		=> to_name (f (5)), -- IC1
+										unit_name		=> to_name (f (6)), -- A
+										rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
+										meaning			=> et_symbols.NAME,
 										log_threshold	=> log_threshold + 1
 										);
-								end;
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
-								
-							when others => command_incomplete (cmd);
-						end case;
-								
-					when NOUN_TEXT_SIZE =>
-						NULL; -- CS
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
+								when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+									
+						when NOUN_VALUE =>
+							case fields is
+								when 7 =>
+									schematic_ops.rotate_unit_placeholder
+										(
+										module_name 	=> module,
+										device_name		=> to_name (f (5)), -- IC1
+										unit_name		=> to_name (f (6)), -- A
+										rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
+										meaning			=> et_symbols.VALUE,
+										log_threshold	=> log_threshold + 1
+										);
 
-			when UNMOUNT =>
-				case noun is
-					when NOUN_DEVICE => 
-						case fields is
-							when 6 =>
-								schematic_ops.unmount_device
-									(
-									module_name		=> module,
-									variant_name	=> to_variant (f (5)), -- low_cost
-									device			=> to_name (f (6)), -- R1
-									log_threshold	=> log_threshold + 1);
+								when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+									
+						when NOUN_PURPOSE =>
+							case fields is
+								when 7 =>
+									schematic_ops.rotate_unit_placeholder
+										(
+										module_name 	=> module,
+										device_name		=> to_name (f (5)), -- IC1
+										unit_name		=> to_name (f (6)), -- A
+										rotation		=> et_schematic.pac_text.to_rotation_doc (f (7)), -- 90
+										meaning			=> et_symbols.PURPOSE,
+										log_threshold	=> log_threshold + 1
+										);
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
-				
-			when WRITE =>
-				case noun is
-					when NOUN_TEXT =>
-						NULL; -- CS
+								when 8 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+									
+						when NOUN_NETCHANGER =>
+							case fields is
+								when 7 =>
+									schematic_ops.rotate_netchanger (
+										module_name 	=> module,
+										index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+										coordinates		=> schematic_ops.to_coordinates (f (6)), -- relative/absolute
+										rotation		=> to_rotation (f (7)), -- 90
+										log_threshold	=> log_threshold + 1
+										);
 
-					when others => invalid_noun (to_string (noun));
-				end case;
+								when 8 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
 
-		end case;
+				when SET =>
+					case noun is
+						when NOUN_GRID =>
+							case fields is
+								-- schematic led_driver set grid 5 5
+								when 6 =>
+									schematic_ops.set_grid (
+										module_name 	=> module,
+										grid			=> (
+												x => to_distance (f (5)),
+												y => to_distance (f (6))),
+										log_threshold	=> log_threshold + 1);
 
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+					
+						when NOUN_PARTCODE =>
+							case fields is
+								when 6 =>
+									declare
+										partcode : material.type_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
+									begin
+										partcode := material.to_partcode (f (6));
+
+										-- set the purpose
+										schematic_ops.set_partcode
+											(
+											module_name 	=> module,
+											device_name		=> to_name (f (5)), -- R1
+											partcode		=> partcode, -- R_PAC_S_0805_VAL_100R
+											log_threshold	=> log_threshold + 1
+											);
+									end;
+
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+									
+						when NOUN_PURPOSE =>
+							case fields is
+								when 6 =>
+									declare
+										use et_schematic;
+										purpose : type_purpose.bounded_string; -- brightness_control
+									begin
+										purpose := to_purpose (f (6));
+										
+										-- set the purpose
+										schematic_ops.set_purpose
+											(
+											module_name 	=> module,
+											device_name		=> to_name (f (5)), -- R1
+											purpose			=> purpose, -- brightness_control
+											log_threshold	=> log_threshold + 1
+											);
+									end;
+
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when NOUN_SCOPE =>
+							case fields is
+								when 6 =>
+									schematic_ops.set_scope (
+										module_name 	=> module,
+										net_name		=> et_general.to_net_name (f (5)),
+										scope			=> netlists.to_net_scope (f (6)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when NOUN_SUBMODULE_FILE =>
+							case fields is
+								when 6 =>
+									schematic_ops.set_submodule_file (
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)),
+										file			=> submodules.to_submodule_path (f (6)),
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when NOUN_VALUE =>
+							case fields is
+								when 6 =>
+									declare
+										value : type_value.bounded_string; -- 470R
+									begin
+										-- validate value
+										value := to_value (f (6));
+
+										-- set the value
+										schematic_ops.set_value
+											(
+											module_name 	=> module,
+											device_name		=> to_name (f (5)), -- R1
+											value			=> value, -- 470R
+											log_threshold	=> log_threshold + 1
+											);
+									end;
+
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1); 
+									
+								when others => command_incomplete (cmd);
+							end case;
+									
+						when NOUN_TEXT_SIZE =>
+							NULL; -- CS
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when UNMOUNT =>
+					case noun is
+						when NOUN_DEVICE => 
+							case fields is
+								when 6 =>
+									schematic_ops.unmount_device
+										(
+										module_name		=> module,
+										variant_name	=> to_variant (f (5)), -- low_cost
+										device			=> to_name (f (6)), -- R1
+										log_threshold	=> log_threshold + 1);
+
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
+				when WRITE =>
+					case noun is
+						when NOUN_TEXT =>
+							NULL; -- CS
+
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+			end case;
+
+		else
+			command_incomplete (cmd);
+		end if;
+		
 		return exit_code;
 		
 		exception when event: others => 
@@ -1627,8 +1639,8 @@ package body scripting is
 		-- The exit code will be overridden with ERROR or WARNING if something goes wrong:
 		exit_code : type_exit_code := SUCCESSFUL;
 		
-		domain	: type_domain := to_domain (f (1)); -- DOM_BOARD
-		module	: type_module_name.bounded_string := to_module_name (f (2)); -- motor_driver (without extension *.mod)
+		domain	: type_domain; -- DOM_BOARD
+		module	: type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 
 		verb	: type_verb_board := to_verb (f (3));
 		noun	: type_noun_board := to_noun (f (4));
@@ -2508,926 +2520,937 @@ package body scripting is
 		
 	begin -- board_cmd
 		log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
-		
-		case verb is
-			when ADD =>
-				case noun is
-					when LAYER =>
-						case fields is
-							when 6 =>
-								-- board tree_1 add layer 0.12 0.2
-								add_layer;
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
+		-- There must be at least 4 fields in the command:
+		if fields >= 4 then
+			domain := to_domain (f (1)); -- DOM_BOARD
+			module := to_module_name (f (2)); -- motor_driver (without extension *.mod)
+			verb := to_verb (f (3));
+			noun := to_noun (f (4));
 
-						end case;
+			case verb is
+				when ADD =>
+					case noun is
+						when LAYER =>
+							case fields is
+								when 6 =>
+									-- board tree_1 add layer 0.12 0.2
+									add_layer;
 
-					when others => invalid_noun (to_string (noun));
-				end case;
-				
-			when DELETE =>
-				case noun is
-					when LAYER =>
-						case fields is
-							when 5 =>
-								-- board tree_1 delete layer 2
-								board_ops.delete_layer (
-									module_name 	=> module,
-									layer			=> to_signal_layer (f (5)),
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-									log_threshold	=> log_threshold + 1);
+								when others => command_incomplete (cmd);
 
-							when 6 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
+							end case;
 
-						end case;
-
-					when OUTLINE =>
-						case fields is
-							when 7 =>
-								-- delete a segment of board outline
-								board_ops.delete_outline (
-									module_name 	=> module,
-									point			=> type_point (set (
-											x => to_distance (f (5)),
-											y => to_distance (f (6)))),
-									accuracy		=> to_distance (f (7)),
-									
-									log_threshold	=> log_threshold + 1);
-
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when SILK =>
-						-- board led_driver delete silk top 40 50 1
-						case fields is
-							when 8 =>
-								-- delete a segment of silk screen
-								board_ops.delete_silk_screen (
-									module_name 	=> module,
-									face			=> to_face (f (5)),
-									point			=> type_point (set (
-											x => to_distance (f (6)),
-											y => to_distance (f (7)))),
-									accuracy		=> to_distance (f (8)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. count_type'last =>
-								command_too_long (cmd, fields - 1);
-								
-							when others =>
-								command_incomplete (cmd);
-						end case;
-
-					when ASSY =>
-						-- board led_driver delete assy top 40 50 1
-						case fields is
-							when 8 =>
-								-- delete a segment of assembly documentation
-								board_ops.delete_assy_doc (
-									module_name 	=> module,
-									face			=> to_face (f (5)),
-									point			=> type_point (set (
-											x => to_distance (f (6)),
-											y => to_distance (f (7)))),
-									accuracy		=> to_distance (f (8)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when KEEPOUT =>
-						-- board led_driver delete keepout top 40 50 1
-						case fields is
-							when 8 =>
-								-- delete a segment of keepout
-								board_ops.delete_keepout (
-									module_name 	=> module,
-									face			=> to_face (f (5)),
-									point			=> type_point (set (
-											x => to_distance (f (6)),
-											y => to_distance (f (7)))),
-									accuracy		=> to_distance (f (8)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when STENCIL =>
-						-- board led_driver delete stencil top 40 50 1
-						case fields is
-							when 8 =>
-								-- delete a segment of stencil
-								board_ops.delete_stencil (
-									module_name 	=> module,
-									face			=> to_face (f (5)),
-									point			=> type_point (set (
-											x => to_distance (f (6)),
-											y => to_distance (f (7)))),
-									accuracy		=> to_distance (f (8)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when STOP =>
-						-- board led_driver delete stop top 40 50 1
-						case fields is
-							when 8 =>
-								-- delete a segment of stop mask
-								board_ops.delete_stop (
-									module_name 	=> module,
-									face			=> to_face (f (5)),
-									point			=> type_point (set (
-											x => to_distance (f (6)),
-											y => to_distance (f (7)))),
-									accuracy		=> to_distance (f (8)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when ROUTE_RESTRICT =>
-						-- board led_driver delete route_restrict 40 50 1
-						case fields is
-							when 7 =>
-								-- delete a segment of route restrict
-								board_ops.delete_route_restrict (
-									module_name 	=> module,
-									point			=> type_point (set (
-											x => to_distance (f (5)),
-											y => to_distance (f (6)))),
-									accuracy		=> to_distance (f (7)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when VIA_RESTRICT =>
-						-- board led_driver delete via_restrict 40 50 1
-						case fields is
-							when 7 =>
-								-- delete a segment of via restrict
-								board_ops.delete_via_restrict (
-									module_name 	=> module,
-									point			=> type_point (set (
-											x => to_distance (f (5)),
-											y => to_distance (f (6)))),
-									accuracy		=> to_distance (f (7)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 8 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-
-				end case;
+						when others => invalid_noun (to_string (noun));
+					end case;
 					
-			when DRAW =>
-				case noun is
-					when OUTLINE =>
-						declare
-							shape : type_shape := to_shape (f (5));
-						begin
-							case shape is
-								when LINE =>
-									case fields is
-										when 9 =>
-											board_ops.draw_outline_line (
-												module_name 	=> module,
-												line			=> (
-													start_point	=> type_point (set (
-														x => to_distance (f (6)),
-														y => to_distance (f (7)))),
-													end_point	=> type_point (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-													locked		=> lock_status_default
-													),
-												log_threshold	=> log_threshold + 1
-												);
+				when DELETE =>
+					case noun is
+						when LAYER =>
+							case fields is
+								when 5 =>
+									-- board tree_1 delete layer 2
+									board_ops.delete_layer (
+										module_name 	=> module,
+										layer			=> to_signal_layer (f (5)),
+										
+										log_threshold	=> log_threshold + 1);
 
-										when 10 .. count_type'last =>
-											 command_too_long (cmd, fields - 1);
-											
-										when others =>
-											command_incomplete (cmd);
-									end case;
+								when 6 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-								when ARC =>
-									case fields is
-										when 12 =>
-											board_ops.draw_outline_arc (
-												module_name 	=> module,
-												arc				=> (
-													center		=> type_point (set (
-														x => to_distance (f (6)),
-														y => to_distance (f (7)))),
-													start_point	=> type_point (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-													end_point	=> type_point (set (
-														x => to_distance (f (10)),
-														y => to_distance (f (11)))),
-													direction	=> to_direction (f (12)),
-													locked	=> lock_status_default
-													),
-
-												log_threshold	=> log_threshold + 1
-												);
-
-										when 13 .. count_type'last =>
-											command_too_long (cmd, fields - 1);
-											
-										when others =>
-											command_incomplete (cmd);
-									end case;
-
-								when CIRCLE =>
-									case fields is
-										when 8 =>
-											board_ops.draw_outline_circle (
-												module_name 	=> module,
-												circle			=> (
-													center	=> type_point (set (
-														x => to_distance (f (6)),
-														y => to_distance (f (7)))),
-													radius	=> to_distance (f (8)),
-													locked	=> lock_status_default
-													),
-
-												log_threshold	=> log_threshold + 1
-												);
-
-										when 9 .. count_type'last =>
-											 command_too_long (cmd, fields - 1);
-											
-										when others =>
-											command_incomplete (cmd);
-									end case;
+								when others => command_incomplete (cmd);
 
 							end case;
-						end;
 
-					when SILK =>
-						declare
-							use et_packages.pac_shapes;
-							shape : type_shape := to_shape (f (6));
-						begin
-							case shape is
-								when LINE =>
-									case fields is
-										when 11 =>
-											board_ops.draw_silk_screen_line (
-												module_name 	=> module,
-												face			=> to_face (f (5)),
-												line			=> (
-															width		=> to_distance (f (7)),
-															start_point	=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-															end_point	=> type_point (set (
-																x => to_distance (f (10)),
-																y => to_distance (f (11))))
-															),
+						when OUTLINE =>
+							case fields is
+								when 7 =>
+									-- delete a segment of board outline
+									board_ops.delete_outline (
+										module_name 	=> module,
+										point			=> type_point (set (
+												x => to_distance (f (5)),
+												y => to_distance (f (6)))),
+										accuracy		=> to_distance (f (7)),
+										
+										log_threshold	=> log_threshold + 1);
 
-												log_threshold	=> log_threshold + 1
-												);
-
-										when 12 .. count_type'last =>
-											command_too_long (cmd, fields - 1);
-											
-										when others =>
-											command_incomplete (cmd);
-									end case;
+								when 8 .. count_type'last => command_too_long (cmd, fields - 1);
 									
-								when ARC =>
-									case fields is
-										when 14 =>
-											board_ops.draw_silk_screen_arc (
-												module_name 	=> module,
-												face			=> to_face (f (5)),
-												arc				=> (
-															width	=> to_distance (f (7)),
-															center	=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-															start_point	=> type_point (set (
-																x => to_distance (f (10)),
-																y => to_distance (f (11)))),
-															end_point	=> type_point (set (
-																x => to_distance (f (12)),
-																y => to_distance (f (13)))),
-															direction	=> to_direction (f (14))
-															),
+								when others => command_incomplete (cmd);
+							end case;
 
-												log_threshold	=> log_threshold + 1
-												);
+						when SILK =>
+							-- board led_driver delete silk top 40 50 1
+							case fields is
+								when 8 =>
+									-- delete a segment of silk screen
+									board_ops.delete_silk_screen (
+										module_name 	=> module,
+										face			=> to_face (f (5)),
+										point			=> type_point (set (
+												x => to_distance (f (6)),
+												y => to_distance (f (7)))),
+										accuracy		=> to_distance (f (8)),
+										
+										log_threshold	=> log_threshold + 1
+										);
 
-										when 15 .. count_type'last =>
-											command_too_long (cmd, fields - 1);
-											
-										when others =>
-											command_incomplete (cmd);
-									end case;
+								when 9 .. count_type'last =>
+									command_too_long (cmd, fields - 1);
+									
+								when others =>
+									command_incomplete (cmd);
+							end case;
 
-								when CIRCLE =>
-									case fields is
-										when 10 =>
+						when ASSY =>
+							-- board led_driver delete assy top 40 50 1
+							case fields is
+								when 8 =>
+									-- delete a segment of assembly documentation
+									board_ops.delete_assy_doc (
+										module_name 	=> module,
+										face			=> to_face (f (5)),
+										point			=> type_point (set (
+												x => to_distance (f (6)),
+												y => to_distance (f (7)))),
+										accuracy		=> to_distance (f (8)),
+										
+										log_threshold	=> log_threshold + 1
+										);
 
-										-- The 7th field can either be a line width like 2.5 or a 
-										-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
-											if is_number (f (7)) then
+								when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
 
-												-- Circle is not filled and has a circumfence line width
-												-- specified in field 7.
-												board_ops.draw_silk_screen_circle (
+						when KEEPOUT =>
+							-- board led_driver delete keepout top 40 50 1
+							case fields is
+								when 8 =>
+									-- delete a segment of keepout
+									board_ops.delete_keepout (
+										module_name 	=> module,
+										face			=> to_face (f (5)),
+										point			=> type_point (set (
+												x => to_distance (f (6)),
+												y => to_distance (f (7)))),
+										accuracy		=> to_distance (f (8)),
+										
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+
+						when STENCIL =>
+							-- board led_driver delete stencil top 40 50 1
+							case fields is
+								when 8 =>
+									-- delete a segment of stencil
+									board_ops.delete_stencil (
+										module_name 	=> module,
+										face			=> to_face (f (5)),
+										point			=> type_point (set (
+												x => to_distance (f (6)),
+												y => to_distance (f (7)))),
+										accuracy		=> to_distance (f (8)),
+										
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when STOP =>
+							-- board led_driver delete stop top 40 50 1
+							case fields is
+								when 8 =>
+									-- delete a segment of stop mask
+									board_ops.delete_stop (
+										module_name 	=> module,
+										face			=> to_face (f (5)),
+										point			=> type_point (set (
+												x => to_distance (f (6)),
+												y => to_distance (f (7)))),
+										accuracy		=> to_distance (f (8)),
+										
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+
+						when ROUTE_RESTRICT =>
+							-- board led_driver delete route_restrict 40 50 1
+							case fields is
+								when 7 =>
+									-- delete a segment of route restrict
+									board_ops.delete_route_restrict (
+										module_name 	=> module,
+										point			=> type_point (set (
+												x => to_distance (f (5)),
+												y => to_distance (f (6)))),
+										accuracy		=> to_distance (f (7)),
+										
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 8 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+
+						when VIA_RESTRICT =>
+							-- board led_driver delete via_restrict 40 50 1
+							case fields is
+								when 7 =>
+									-- delete a segment of via restrict
+									board_ops.delete_via_restrict (
+										module_name 	=> module,
+										point			=> type_point (set (
+												x => to_distance (f (5)),
+												y => to_distance (f (6)))),
+										accuracy		=> to_distance (f (7)),
+										
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 8 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+
+					end case;
+						
+				when DRAW =>
+					case noun is
+						when OUTLINE =>
+							declare
+								shape : type_shape := to_shape (f (5));
+							begin
+								case shape is
+									when LINE =>
+										case fields is
+											when 9 =>
+												board_ops.draw_outline_line (
 													module_name 	=> module,
-													face			=> to_face (f (5)),
-													circle			=> 
-															(
-															filled			=> NO,
-															fill_style		=> fill_style_default, -- don't care here
-															border_width	=> to_distance (f (7)),
-															center			=> type_point (set (
-																		x => to_distance (f (8)),
-																		y => to_distance (f (9)))),
-															radius			=> to_distance (f (10))
-															),
-													log_threshold	=> log_threshold + 1);
-											else
-												
-												-- Circle is filled with the fill style specified in field 7:
-												case to_fill_style (f (7)) is
--- CS
--- 														when CUTOUT =>
--- 													
--- 															board_ops.draw_silk_screen_circle (
--- 																module_name 	=> module,
--- 																face			=> to_face (f (5)),
--- 																circle			=> 
--- 																			(
--- 																			filled		=> YES,
--- 																			fill_style	=> CUTOUT,
--- 																			center	=> type_point (set (
--- 																						x => to_distance (f (8)),
--- 																						y => to_distance (f (9)))),
--- 																			radius	=> to_distance (f (10))
--- 																			),
--- 																log_threshold	=> log_threshold + 1
--- 																);
-
-													when SOLID =>
-												
-														board_ops.draw_silk_screen_circle (
-															module_name 	=> module,
-															face			=> to_face (f (5)),
-															circle			=> 
-																		(
-																		filled		=> YES,
-																		fill_style	=> SOLID,
-																		center	=> type_point (set (
-																					x => to_distance (f (8)),
-																					y => to_distance (f (9)))),
-																		radius	=> to_distance (f (10))
-																		),
-															log_threshold	=> log_threshold + 1
-															);
-
-													when HATCHED =>
-														command_incomplete (cmd);
-
-												end case;
-											end if;
-												
-										when 12 =>
-											-- This is going to be a hatched circle.
-											-- In this case the 7th field MUST be fill style HATCHED.
-											if is_number (f (7)) then
-												expect_fill_style (HATCHED, 7); -- error
-											else
-												case to_fill_style (f (7)) is
-													when HATCHED =>
-														board_ops.draw_silk_screen_circle (
-															module_name 	=> module,
-															face			=> to_face (f (5)),
-															circle			=> 
-																	(
-																	filled		=> YES,
-																	fill_style	=> HATCHED,
-																	center		=> type_point (set (
-																				x => to_distance (f (8)),
-																				y => to_distance (f (9)))),
-																	radius		=> to_distance (f (10)),
-																	hatching	=> (
-																				line_width	=> to_distance (f (11)),
-																				spacing		=> to_distance (f (12)),
-																				others		=> <>
-																				)
-																	),
-															log_threshold	=> log_threshold + 1);
-
-													when others =>
-														expect_fill_style (HATCHED, 7);
-												end case;
-											end if;
-
-										when 13 .. count_type'last =>
-											command_too_long (cmd, fields - 1);
-											
-										when others =>
-											command_incomplete (cmd);
-									end case;
-
-											
-								when others => null;
-							end case;
-						end;
-
-					when ASSY =>
-						declare
-							use et_packages.pac_shapes;
-							shape : type_shape := to_shape (f (6));
-						begin
-							case shape is
-								when LINE =>
-									case fields is
-										when 11 =>
-											board_ops.draw_assy_doc_line (
-												module_name 	=> module,
-												face			=> to_face (f (5)),
-												line			=> (
-															width		=> to_distance (f (7)),
-															start_point	=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-															end_point	=> type_point (set (
-																x => to_distance (f (10)),
-																y => to_distance (f (11))))
-															),
-
-												log_threshold	=> log_threshold + 1
-												);
-
-										when 12 .. count_type'last =>
-											command_too_long (cmd, fields - 1);
-											
-										when others =>
-											command_incomplete (cmd);
-									end case;
-									
-								when ARC =>
-									case fields is
-										when 14 =>
-											board_ops.draw_assy_doc_arc (
-												module_name 	=> module,
-												face			=> to_face (f (5)),
-												arc				=> (
-															width	=> to_distance (f (7)),
-															center	=> type_point (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-															start_point	=> type_point (set (
-																x => to_distance (f (10)),
-																y => to_distance (f (11)))),
-															end_point	=> type_point (set (
-																x => to_distance (f (12)),
-																y => to_distance (f (13)))),
-															direction	=> to_direction (f (14))
-															),
-
-												log_threshold	=> log_threshold + 1
-												);
-
-										when 15 .. count_type'last =>
-											command_too_long (cmd, fields - 1);
-											
-										when others =>
-											command_incomplete (cmd);
-									end case;
-
-								when CIRCLE =>
-									case fields is
-										when 10 =>
-
-										-- The 7th field can either be a line width like 2.5 or a 
-										-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
-											if is_number (f (7)) then
-
-												-- Circle is not filled and has a circumfence line width
-												-- specified in field 7.
-												board_ops.draw_assy_doc_circle (
-													module_name 	=> module,
-													face			=> to_face (f (5)),
-													circle			=> 
-															(
-															filled			=> NO,
-															fill_style		=> fill_style_default, -- don't care here
-															border_width	=> to_distance (f (7)),
-															center			=> type_point (set (
-																		x => to_distance (f (8)),
-																		y => to_distance (f (9)))),
-															radius			=> to_distance (f (10))
-															),
-													log_threshold	=> log_threshold + 1);
-											else
-												
-												-- Circle is filled with the fill style specified in field 7:
-												case to_fill_style (f (7)) is
--- CS
--- 														when CUTOUT =>
--- 													
--- 															board_ops.draw_assy_doc_circle (
--- 																module_name 	=> module,
--- 																face			=> to_face (f (5)),
--- 																circle			=> 
--- 																			(
--- 																			filled		=> YES,
--- 																			fill_style	=> CUTOUT,
--- 																			center	=> type_point (set (
--- 																						x => to_distance (f (8)),
--- 																						y => to_distance (f (9)))),
--- 																			radius	=> to_distance (f (10))
--- 																			),
--- 																log_threshold	=> log_threshold + 1
--- 																);
-
-													when SOLID =>
-												
-														board_ops.draw_assy_doc_circle (
-															module_name 	=> module,
-															face			=> to_face (f (5)),
-															circle			=> 
-																		(
-																		filled		=> YES,
-																		fill_style	=> SOLID,
-																		center	=> type_point (set (
-																					x => to_distance (f (8)),
-																					y => to_distance (f (9)))),
-																		radius	=> to_distance (f (10))
-																		),
-															log_threshold	=> log_threshold + 1
-															);
-
-													when HATCHED =>
-														command_incomplete (cmd);
-
-												end case;
-											end if;
-												
-										when 12 =>
-											-- This is going to be a hatched circle.
-											-- In this case the 7th field MUST be fill style HATCHED.
-											if is_number (f (7)) then
-												expect_fill_style (HATCHED, 7); -- error
-											else
-												case to_fill_style (f (7)) is
-													when HATCHED =>
-														board_ops.draw_assy_doc_circle (
-															module_name 	=> module,
-															face			=> to_face (f (5)),
-															circle			=> 
-																	(
-																	filled		=> YES,
-																	fill_style	=> HATCHED,
-																	center		=> type_point (set (
-																				x => to_distance (f (8)),
-																				y => to_distance (f (9)))),
-																	radius		=> to_distance (f (10)),
-
-																	hatching	=> (
-																				line_width	=> to_distance (f (11)),
-																				spacing		=> to_distance (f (12)),
-																				others		=> <>
-																				)
-																	),
-															log_threshold	=> log_threshold + 1);
-
-													when others =>
-														expect_fill_style (HATCHED, 7);
-												end case;
-											end if;
-
-										when 13 .. count_type'last =>
-											command_too_long (cmd, fields - 1);
-											
-										when others =>
-											command_incomplete (cmd);
-									end case;
-
-											
-								when others => null;
-							end case;
-						end;
-
-					when KEEPOUT =>
-						draw_keepout;
-						
-					when ROUTE_RESTRICT =>
-						draw_route_restrict;
-
-					when STENCIL =>
-						draw_stencil;
-						
-					when STOP =>
-						draw_stop_mask;
-
-					when VIA_RESTRICT =>
-						draw_via_restrict;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
-
-			when FLIP =>
-				case noun is
-					when DEVICE =>
-						case fields is
-							when 6 =>
-								board_ops.flip_device (
-									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
-									face			=> to_face  (f (6)),  -- top/bottom
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-
-					when others => invalid_noun (to_string (noun));
-				end case;
-
-			when ROUTE =>
-				case noun is
-					when FREETRACK =>
-						declare
-							shape : type_track_shape := to_shape (f (6));
-						begin
-							case shape is
-								when LINE =>
-									case fields is
-										when 11 =>
-											-- draw a freetrack
-											board_ops.draw_track_line (
-												module_name 	=> module,
-												net_name		=> to_net_name (""),
-												line	=> (
-													width		=> to_distance (f (7)),
-													start_point	=> type_point (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-													end_point	=> type_point (set (
-														x => to_distance (f (10)),
-														y => to_distance (f (11)))),
-													layer		=> to_signal_layer (f (5))
-													),
-												log_threshold	=> log_threshold + 1
-												);
-
-										when 12 .. count_type'last =>
-											command_too_long (cmd, fields - 1);
-											
-										when others =>
-											command_incomplete (cmd);
-									end case;
-									
-								when ARC =>
-									case fields is
-										when 14 =>
-											-- draw a freetrack
-											board_ops.draw_track_arc (
-												module_name 	=> module,
-												arc			=> (
-													layer			=> to_signal_layer (f (5)),
-													width			=> to_distance (f (7)),
-													center			=> type_point (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-													start_point		=> type_point (set (
-														x => to_distance (f (10)),
-														y => to_distance (f (11)))),
-													end_point		=> type_point (set (
-														x => to_distance (f (12)),
-														y => to_distance (f (13)))),
-													direction	=> to_direction (f (14))
+													line			=> (
+														start_point	=> type_point (set (
+															x => to_distance (f (6)),
+															y => to_distance (f (7)))),
+														end_point	=> type_point (set (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+														locked		=> lock_status_default
 														),
-												net_name		=> to_net_name (""),
+													log_threshold	=> log_threshold + 1
+													);
 
-												log_threshold	=> log_threshold + 1
-												);
-											
-										when 15 .. count_type'last =>
-											command_too_long (cmd, fields - 1);
-											
-										when others =>
-											command_incomplete (cmd);
-									end case;
+											when 10 .. count_type'last =>
+												command_too_long (cmd, fields - 1);
+												
+											when others =>
+												command_incomplete (cmd);
+										end case;
+										
+									when ARC =>
+										case fields is
+											when 12 =>
+												board_ops.draw_outline_arc (
+													module_name 	=> module,
+													arc				=> (
+														center		=> type_point (set (
+															x => to_distance (f (6)),
+															y => to_distance (f (7)))),
+														start_point	=> type_point (set (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+														end_point	=> type_point (set (
+															x => to_distance (f (10)),
+															y => to_distance (f (11)))),
+														direction	=> to_direction (f (12)),
+														locked	=> lock_status_default
+														),
 
+													log_threshold	=> log_threshold + 1
+													);
+
+											when 13 .. count_type'last =>
+												command_too_long (cmd, fields - 1);
+												
+											when others =>
+												command_incomplete (cmd);
+										end case;
+
+									when CIRCLE =>
+										case fields is
+											when 8 =>
+												board_ops.draw_outline_circle (
+													module_name 	=> module,
+													circle			=> (
+														center	=> type_point (set (
+															x => to_distance (f (6)),
+															y => to_distance (f (7)))),
+														radius	=> to_distance (f (8)),
+														locked	=> lock_status_default
+														),
+
+													log_threshold	=> log_threshold + 1
+													);
+
+											when 9 .. count_type'last =>
+												command_too_long (cmd, fields - 1);
+												
+											when others =>
+												command_incomplete (cmd);
+										end case;
+
+								end case;
+							end;
+
+						when SILK =>
+							declare
+								use et_packages.pac_shapes;
+								shape : type_shape := to_shape (f (6));
+							begin
+								case shape is
+									when LINE =>
+										case fields is
+											when 11 =>
+												board_ops.draw_silk_screen_line (
+													module_name 	=> module,
+													face			=> to_face (f (5)),
+													line			=> (
+																width		=> to_distance (f (7)),
+																start_point	=> type_point (set (
+																	x => to_distance (f (8)),
+																	y => to_distance (f (9)))),
+																end_point	=> type_point (set (
+																	x => to_distance (f (10)),
+																	y => to_distance (f (11))))
+																),
+
+													log_threshold	=> log_threshold + 1
+													);
+
+											when 12 .. count_type'last =>
+												command_too_long (cmd, fields - 1);
+												
+											when others =>
+												command_incomplete (cmd);
+										end case;
+										
+									when ARC =>
+										case fields is
+											when 14 =>
+												board_ops.draw_silk_screen_arc (
+													module_name 	=> module,
+													face			=> to_face (f (5)),
+													arc				=> (
+																width	=> to_distance (f (7)),
+																center	=> type_point (set (
+																	x => to_distance (f (8)),
+																	y => to_distance (f (9)))),
+																start_point	=> type_point (set (
+																	x => to_distance (f (10)),
+																	y => to_distance (f (11)))),
+																end_point	=> type_point (set (
+																	x => to_distance (f (12)),
+																	y => to_distance (f (13)))),
+																direction	=> to_direction (f (14))
+																),
+
+													log_threshold	=> log_threshold + 1
+													);
+
+											when 15 .. count_type'last =>
+												command_too_long (cmd, fields - 1);
+												
+											when others =>
+												command_incomplete (cmd);
+										end case;
+
+									when CIRCLE =>
+										case fields is
+											when 10 =>
+
+											-- The 7th field can either be a line width like 2.5 or a 
+											-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
+												if is_number (f (7)) then
+
+													-- Circle is not filled and has a circumfence line width
+													-- specified in field 7.
+													board_ops.draw_silk_screen_circle (
+														module_name 	=> module,
+														face			=> to_face (f (5)),
+														circle			=> 
+																(
+																filled			=> NO,
+																fill_style		=> fill_style_default, -- don't care here
+																border_width	=> to_distance (f (7)),
+																center			=> type_point (set (
+																			x => to_distance (f (8)),
+																			y => to_distance (f (9)))),
+																radius			=> to_distance (f (10))
+																),
+														log_threshold	=> log_threshold + 1);
+												else
+													
+													-- Circle is filled with the fill style specified in field 7:
+													case to_fill_style (f (7)) is
+	-- CS
+	-- 														when CUTOUT =>
+	-- 													
+	-- 															board_ops.draw_silk_screen_circle (
+	-- 																module_name 	=> module,
+	-- 																face			=> to_face (f (5)),
+	-- 																circle			=> 
+	-- 																			(
+	-- 																			filled		=> YES,
+	-- 																			fill_style	=> CUTOUT,
+	-- 																			center	=> type_point (set (
+	-- 																						x => to_distance (f (8)),
+	-- 																						y => to_distance (f (9)))),
+	-- 																			radius	=> to_distance (f (10))
+	-- 																			),
+	-- 																log_threshold	=> log_threshold + 1
+	-- 																);
+
+														when SOLID =>
+													
+															board_ops.draw_silk_screen_circle (
+																module_name 	=> module,
+																face			=> to_face (f (5)),
+																circle			=> 
+																			(
+																			filled		=> YES,
+																			fill_style	=> SOLID,
+																			center	=> type_point (set (
+																						x => to_distance (f (8)),
+																						y => to_distance (f (9)))),
+																			radius	=> to_distance (f (10))
+																			),
+																log_threshold	=> log_threshold + 1
+																);
+
+														when HATCHED =>
+															command_incomplete (cmd);
+
+													end case;
+												end if;
+													
+											when 12 =>
+												-- This is going to be a hatched circle.
+												-- In this case the 7th field MUST be fill style HATCHED.
+												if is_number (f (7)) then
+													expect_fill_style (HATCHED, 7); -- error
+												else
+													case to_fill_style (f (7)) is
+														when HATCHED =>
+															board_ops.draw_silk_screen_circle (
+																module_name 	=> module,
+																face			=> to_face (f (5)),
+																circle			=> 
+																		(
+																		filled		=> YES,
+																		fill_style	=> HATCHED,
+																		center		=> type_point (set (
+																					x => to_distance (f (8)),
+																					y => to_distance (f (9)))),
+																		radius		=> to_distance (f (10)),
+																		hatching	=> (
+																					line_width	=> to_distance (f (11)),
+																					spacing		=> to_distance (f (12)),
+																					others		=> <>
+																					)
+																		),
+																log_threshold	=> log_threshold + 1);
+
+														when others =>
+															expect_fill_style (HATCHED, 7);
+													end case;
+												end if;
+
+											when 13 .. count_type'last =>
+												command_too_long (cmd, fields - 1);
+												
+											when others =>
+												command_incomplete (cmd);
+										end case;
+
+												
+									when others => null;
+								end case;
+							end;
+
+						when ASSY =>
+							declare
+								use et_packages.pac_shapes;
+								shape : type_shape := to_shape (f (6));
+							begin
+								case shape is
+									when LINE =>
+										case fields is
+											when 11 =>
+												board_ops.draw_assy_doc_line (
+													module_name 	=> module,
+													face			=> to_face (f (5)),
+													line			=> (
+																width		=> to_distance (f (7)),
+																start_point	=> type_point (set (
+																	x => to_distance (f (8)),
+																	y => to_distance (f (9)))),
+																end_point	=> type_point (set (
+																	x => to_distance (f (10)),
+																	y => to_distance (f (11))))
+																),
+
+													log_threshold	=> log_threshold + 1
+													);
+
+											when 12 .. count_type'last =>
+												command_too_long (cmd, fields - 1);
+												
+											when others =>
+												command_incomplete (cmd);
+										end case;
+										
+									when ARC =>
+										case fields is
+											when 14 =>
+												board_ops.draw_assy_doc_arc (
+													module_name 	=> module,
+													face			=> to_face (f (5)),
+													arc				=> (
+																width	=> to_distance (f (7)),
+																center	=> type_point (set (
+																	x => to_distance (f (8)),
+																	y => to_distance (f (9)))),
+																start_point	=> type_point (set (
+																	x => to_distance (f (10)),
+																	y => to_distance (f (11)))),
+																end_point	=> type_point (set (
+																	x => to_distance (f (12)),
+																	y => to_distance (f (13)))),
+																direction	=> to_direction (f (14))
+																),
+
+													log_threshold	=> log_threshold + 1
+													);
+
+											when 15 .. count_type'last =>
+												command_too_long (cmd, fields - 1);
+												
+											when others =>
+												command_incomplete (cmd);
+										end case;
+
+									when CIRCLE =>
+										case fields is
+											when 10 =>
+
+											-- The 7th field can either be a line width like 2.5 or a 
+											-- fill style like CUTOUT or SOLID. HATCHED is not allowed here:
+												if is_number (f (7)) then
+
+													-- Circle is not filled and has a circumfence line width
+													-- specified in field 7.
+													board_ops.draw_assy_doc_circle (
+														module_name 	=> module,
+														face			=> to_face (f (5)),
+														circle			=> 
+																(
+																filled			=> NO,
+																fill_style		=> fill_style_default, -- don't care here
+																border_width	=> to_distance (f (7)),
+																center			=> type_point (set (
+																			x => to_distance (f (8)),
+																			y => to_distance (f (9)))),
+																radius			=> to_distance (f (10))
+																),
+														log_threshold	=> log_threshold + 1);
+												else
+													
+													-- Circle is filled with the fill style specified in field 7:
+													case to_fill_style (f (7)) is
+	-- CS
+	-- 														when CUTOUT =>
+	-- 													
+	-- 															board_ops.draw_assy_doc_circle (
+	-- 																module_name 	=> module,
+	-- 																face			=> to_face (f (5)),
+	-- 																circle			=> 
+	-- 																			(
+	-- 																			filled		=> YES,
+	-- 																			fill_style	=> CUTOUT,
+	-- 																			center	=> type_point (set (
+	-- 																						x => to_distance (f (8)),
+	-- 																						y => to_distance (f (9)))),
+	-- 																			radius	=> to_distance (f (10))
+	-- 																			),
+	-- 																log_threshold	=> log_threshold + 1
+	-- 																);
+
+														when SOLID =>
+													
+															board_ops.draw_assy_doc_circle (
+																module_name 	=> module,
+																face			=> to_face (f (5)),
+																circle			=> 
+																			(
+																			filled		=> YES,
+																			fill_style	=> SOLID,
+																			center	=> type_point (set (
+																						x => to_distance (f (8)),
+																						y => to_distance (f (9)))),
+																			radius	=> to_distance (f (10))
+																			),
+																log_threshold	=> log_threshold + 1
+																);
+
+														when HATCHED =>
+															command_incomplete (cmd);
+
+													end case;
+												end if;
+													
+											when 12 =>
+												-- This is going to be a hatched circle.
+												-- In this case the 7th field MUST be fill style HATCHED.
+												if is_number (f (7)) then
+													expect_fill_style (HATCHED, 7); -- error
+												else
+													case to_fill_style (f (7)) is
+														when HATCHED =>
+															board_ops.draw_assy_doc_circle (
+																module_name 	=> module,
+																face			=> to_face (f (5)),
+																circle			=> 
+																		(
+																		filled		=> YES,
+																		fill_style	=> HATCHED,
+																		center		=> type_point (set (
+																					x => to_distance (f (8)),
+																					y => to_distance (f (9)))),
+																		radius		=> to_distance (f (10)),
+
+																		hatching	=> (
+																					line_width	=> to_distance (f (11)),
+																					spacing		=> to_distance (f (12)),
+																					others		=> <>
+																					)
+																		),
+																log_threshold	=> log_threshold + 1);
+
+														when others =>
+															expect_fill_style (HATCHED, 7);
+													end case;
+												end if;
+
+											when 13 .. count_type'last =>
+												command_too_long (cmd, fields - 1);
+												
+											when others =>
+												command_incomplete (cmd);
+										end case;
+
+												
+									when others => null;
+								end case;
+							end;
+
+						when KEEPOUT =>
+							draw_keepout;
+							
+						when ROUTE_RESTRICT =>
+							draw_route_restrict;
+
+						when STENCIL =>
+							draw_stencil;
+							
+						when STOP =>
+							draw_stop_mask;
+
+						when VIA_RESTRICT =>
+							draw_via_restrict;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when FLIP =>
+					case noun is
+						when DEVICE =>
+							case fields is
+								when 6 =>
+									board_ops.flip_device (
+										module_name 	=> module,
+										device_name		=> to_name (f (5)), -- IC1
+										face			=> to_face  (f (6)),  -- top/bottom
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
 							end case;
-						end;
 
-					when NET =>
-						route_net;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
+						when others => invalid_noun (to_string (noun));
+					end case;
 
-			when RIPUP =>
-				case noun is
-					when FREETRACK =>
-						case fields is
-							when 8 =>
-								-- ripup a segment of a freetrack
-								board_ops.ripup_track_segment (
-									module_name 	=> module,
-									net_name		=> to_net_name (""),
-									layer			=> to_signal_layer (f (5)),
-									point			=> type_point (set (
-											x => to_distance (f (6)),
-											y => to_distance (f (7)))),
-									accuracy		=> to_distance (f (8)),
+				when ROUTE =>
+					case noun is
+						when FREETRACK =>
+							declare
+								shape : type_track_shape := to_shape (f (6));
+							begin
+								case shape is
+									when LINE =>
+										case fields is
+											when 11 =>
+												-- draw a freetrack
+												board_ops.draw_track_line (
+													module_name 	=> module,
+													net_name		=> to_net_name (""),
+													line	=> (
+														width		=> to_distance (f (7)),
+														start_point	=> type_point (set (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+														end_point	=> type_point (set (
+															x => to_distance (f (10)),
+															y => to_distance (f (11)))),
+														layer		=> to_signal_layer (f (5))
+														),
+													log_threshold	=> log_threshold + 1
+													);
+
+											when 12 .. count_type'last =>
+												command_too_long (cmd, fields - 1);
+												
+											when others =>
+												command_incomplete (cmd);
+										end case;
+										
+									when ARC =>
+										case fields is
+											when 14 =>
+												-- draw a freetrack
+												board_ops.draw_track_arc (
+													module_name 	=> module,
+													arc			=> (
+														layer			=> to_signal_layer (f (5)),
+														width			=> to_distance (f (7)),
+														center			=> type_point (set (
+															x => to_distance (f (8)),
+															y => to_distance (f (9)))),
+														start_point		=> type_point (set (
+															x => to_distance (f (10)),
+															y => to_distance (f (11)))),
+														end_point		=> type_point (set (
+															x => to_distance (f (12)),
+															y => to_distance (f (13)))),
+														direction	=> to_direction (f (14))
+															),
+													net_name		=> to_net_name (""),
+
+													log_threshold	=> log_threshold + 1
+													);
+												
+											when 15 .. count_type'last =>
+												command_too_long (cmd, fields - 1);
+												
+											when others =>
+												command_incomplete (cmd);
+										end case;
+
+								end case;
+							end;
+
+						when NET =>
+							route_net;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
+
+				when RIPUP =>
+					case noun is
+						when FREETRACK =>
+							case fields is
+								when 8 =>
+									-- ripup a segment of a freetrack
+									board_ops.ripup_track_segment (
+										module_name 	=> module,
+										net_name		=> to_net_name (""),
+										layer			=> to_signal_layer (f (5)),
+										point			=> type_point (set (
+												x => to_distance (f (6)),
+												y => to_distance (f (7)))),
+										accuracy		=> to_distance (f (8)),
+										
+										log_threshold	=> log_threshold + 1
+										);
+
+								when 9 .. count_type'last =>
+									command_too_long (cmd, fields - 1);
 									
-									log_threshold	=> log_threshold + 1
-									);
+								when others =>
+									command_incomplete (cmd);
+							end case;
 
-							when 9 .. count_type'last =>
-								command_too_long (cmd, fields - 1);
-								
-							when others =>
-								command_incomplete (cmd);
-						end case;
+						when NET =>
+							case fields is
+								when 9 =>
+									-- ripup a segment of a named track
+									board_ops.ripup_track_segment (
+										module_name 	=> module,
+										net_name		=> to_net_name (f (5)),
+										layer			=> to_signal_layer (f (6)),
+										point			=> type_point (set (
+												x => to_distance (f (7)),
+												y => to_distance (f (8)))),
+										accuracy		=> to_distance (f (9)),
+										
+										log_threshold	=> log_threshold + 1
+										);
 
-					when NET =>
-						case fields is
-							when 9 =>
-								-- ripup a segment of a named track
-								board_ops.ripup_track_segment (
-									module_name 	=> module,
-									net_name		=> to_net_name (f (5)),
-									layer			=> to_signal_layer (f (6)),
-									point			=> type_point (set (
-											x => to_distance (f (7)),
-											y => to_distance (f (8)))),
-									accuracy		=> to_distance (f (9)),
+								when 10 .. count_type'last =>
+									command_too_long (cmd, fields - 1);
 									
-									log_threshold	=> log_threshold + 1
-									);
+								when others =>
+									command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
 
-							when 10 .. count_type'last =>
-								command_too_long (cmd, fields - 1);
-								
-							when others =>
-								command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
+					end case;
+					
+				when ROTATE =>
+					case noun is
+						when DEVICE =>
+							case fields is
+								when 7 =>
+									board_ops.rotate_device (
+										module_name 	=> module,
+										device_name		=> to_name (f (5)), -- IC1
+										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+										rotation		=> to_rotation (f (7)),
+										log_threshold	=> log_threshold + 1
+										);
 
-				end case;
-				
-			when ROTATE =>
-				case noun is
-					when DEVICE =>
-						case fields is
-							when 7 =>
-								board_ops.rotate_device (
-									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
-									coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
-									rotation		=> to_rotation (f (7)),
-									log_threshold	=> log_threshold + 1
-									);
+								when 8 .. count_type'last =>
+									command_too_long (cmd, fields - 1);
+									
+								when others =>
+									command_incomplete (cmd);
+							end case;
 
-							when 8 .. count_type'last =>
-								command_too_long (cmd, fields - 1);
-								
-							when others =>
-								command_incomplete (cmd);
-						end case;
+						when others => invalid_noun (to_string (noun));
+					end case;
 
-					when others => invalid_noun (to_string (noun));
-				end case;
+				when MAKE =>
+					case noun is
+						when PNP =>
+							case fields is
+								when 4 =>
+									board_ops.make_pick_and_place 
+										(
+										module_name 	=> module,
+										log_threshold	=> log_threshold + 1);
 
-			when MAKE =>
-				case noun is
-					when PNP =>
-						case fields is
-							when 4 =>
-								board_ops.make_pick_and_place 
-									(
-									module_name 	=> module,
-									log_threshold	=> log_threshold + 1);
+								when 5 .. count_type'last =>
+									command_too_long (cmd, fields - 1);
+									
+								when others =>
+									command_incomplete (cmd);
+							end case;
 
-							when 5 .. count_type'last =>
-								command_too_long (cmd, fields - 1);
-								
-							when others =>
-								command_incomplete (cmd);
-						end case;
+						when others => invalid_noun (to_string (noun));
+					end case;
+					
+				when MOVE =>
+					case noun is
+						when DEVICE =>
+							case fields is
+								when 8 =>
+									board_ops.move_device (
+										module_name 	=> module,
+										device_name		=> to_name (f (5)), -- IC1
+										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+										point			=> type_point (set (
+															x => to_distance (f (7)),
+															y => to_distance (f (8)))),
+										log_threshold	=> log_threshold + 1
+										);
 
-					when others => invalid_noun (to_string (noun));
-				end case;
-				
-			when MOVE =>
-				case noun is
-					when DEVICE =>
-						case fields is
-							when 8 =>
-								board_ops.move_device (
-									module_name 	=> module,
-									device_name		=> to_name (f (5)), -- IC1
-									coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
-									point			=> type_point (set (
-														x => to_distance (f (7)),
-														y => to_distance (f (8)))),
-									log_threshold	=> log_threshold + 1
-									);
+								when 9 .. count_type'last =>
+									command_too_long (cmd, fields - 1);
+									
+								when others =>
+									command_incomplete (cmd);
+							end case;
 
-							when 9 .. count_type'last =>
-								command_too_long (cmd, fields - 1);
-								
-							when others =>
-								command_incomplete (cmd);
-						end case;
+						when SUBMODULE =>
+							case fields is
+								when 8 =>
+									board_ops.move_submodule (
+										module_name 	=> module,
+										instance		=> et_general.to_instance_name (f (5)), -- OSC1
+										coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+										point			=> type_point (set (
+															x => to_distance (f (7)),
+															y => to_distance (f (8)))),
+										log_threshold	=> log_threshold + 1
+										);
 
-					when SUBMODULE =>
-						case fields is
-							when 8 =>
-								board_ops.move_submodule (
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)), -- OSC1
-									coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
-									point			=> type_point (set (
-														x => to_distance (f (7)),
-														y => to_distance (f (8)))),
-									log_threshold	=> log_threshold + 1
-									);
+								when 9 .. count_type'last =>
+									command_too_long (cmd, fields - 1);
+									
+								when others =>
+									command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
+					end case;
 
-							when 9 .. count_type'last =>
-								command_too_long (cmd, fields - 1);
-								
-							when others =>
-								command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
+				when SET =>
+					case noun is
+						when GRID =>
+							case fields is
+								-- board led_driver set grid 0.5 0.5
+								when 6 =>
+									board_ops.set_grid (
+										module_name 	=> module,
+										grid			=> (
+												x => to_distance (f (5)),
+												y => to_distance (f (6))),
+										log_threshold	=> log_threshold + 1);
 
-			when SET =>
-				case noun is
-					when GRID =>
-						case fields is
-							-- board led_driver set grid 0.5 0.5
-							when 6 =>
-								board_ops.set_grid (
-									module_name 	=> module,
-									grid			=> (
-											x => to_distance (f (5)),
-											y => to_distance (f (6))),
-									log_threshold	=> log_threshold + 1);
+								when 7 .. count_type'last => command_too_long (cmd, fields - 1);
+									
+								when others => command_incomplete (cmd);
+							end case;
+							
+						when others => invalid_noun (to_string (noun));
 
-							when 7 .. count_type'last => command_too_long (cmd, fields - 1);
-								
-							when others => command_incomplete (cmd);
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
+					end case;
 
-				end case;
+			end case;
 
-		end case;
-
+		else
+			command_incomplete (cmd);
+		end if;
+		
 		return exit_code;
 
 		exception when event: others => 
