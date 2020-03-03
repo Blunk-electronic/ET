@@ -36,18 +36,6 @@
 --
 
 with gtk.main;
--- with gtk.window; 			use gtk.window;
--- with gtk.widget;  			use gtk.widget;
--- with gtk.box;				use gtk.box;
--- with gtk.button;     		use gtk.button;
--- with gtk.toolbar; 			use gtk.toolbar;
--- with gtk.tool_button;		use gtk.tool_button;
--- with gtk.enums;				use gtk.enums;
--- with gtk.gentry;			use gtk.gentry;
--- with gtk.combo_box_text;	use gtk.combo_box_text;
--- with gtk.frame;				use gtk.frame;
--- with gtk.scrolled_window;	use gtk.scrolled_window;
--- with glib.object;			use glib.object;
 
 with ada.text_io;				use ada.text_io;
 
@@ -72,10 +60,10 @@ package body gui is
 		gtk.main.init; -- initialize the main gtk stuff
 
 		-- set up the schematic window
-		gui_schematic.init_window (module, sheet);
+		gui_schematic.init_window (module, sheet, log_threshold + 1);
 
 		-- set up the board window
-		gui_board.init_window (module);
+		gui_board.init_window (module, log_threshold + 1);
 
 		
 		-- Start the main gtk loop. This is a loop that permanently draws the widgets and

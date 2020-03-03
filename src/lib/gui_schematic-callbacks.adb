@@ -102,7 +102,12 @@ package body gui_schematic.callbacks is
 		use gtk.gentry;
 		use et_string_processing;
 		use scripting;
-		
+
+		-- The operator enters a command like "rename device R1 R2".
+		-- The operator is not required to type domain and schematic name.
+		-- Since we are editing a schematic, the domain and schematic name itelf
+		-- are known. By prepending domain and schematic name here the full 
+		-- command after this declaration will be "schematic led_driver rename device R1 R2".
 		line_as_typed_by_operator : constant string := 
 			to_lower (to_string (DOM_SCHEMATIC)) & latin_1.space &
 			active_module (canvas) & latin_1.space &

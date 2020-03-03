@@ -81,10 +81,10 @@ package body gui_schematic is
 	scrolled	: gtk_scrolled_window;
 
 	procedure init_window (
-		module	: in type_modules.cursor; -- cursor of generic module to be edited
-		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be opened
-	is begin
-
+		module			: in type_modules.cursor; -- cursor of generic module to be edited
+		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
+		log_threshold	: in type_log_level) is
+	begin
 		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
 		window.set_title (system_name & " SCHEMATIC"); -- CS: plus module name
 		window.set_default_size (1024, 768);

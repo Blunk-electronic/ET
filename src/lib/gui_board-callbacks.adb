@@ -102,7 +102,12 @@ package body gui_board.callbacks is
 		use gtk.gentry;
 		use et_string_processing;
 		use scripting;
-		
+
+		-- The operator enters a command like "rename device R1 R2".
+		-- The operator is not required to type domain and board name.
+		-- Since we are editing a board, the domain and board name itelf
+		-- are known. By prepending domain and board name here the full 
+		-- command after this declaration will be "board led_driver rename device R1 R2".		
 		line_as_typed_by_operator : constant string := 
 			to_lower (to_string (DOM_BOARD)) & latin_1.space &
 			active_module (canvas) & latin_1.space &
