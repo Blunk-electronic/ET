@@ -63,13 +63,14 @@ with glib.properties.creation;	use glib.properties.creation;
 with gtkada.style;
 with gdk.rgba;
 
-with cairo;					use cairo;
+with cairo;						use cairo;
 
-with pango.layout;			use pango.layout;
-with system.storage_elements;		use system.storage_elements;
+with pango.layout;				use pango.layout;
+with system.storage_elements;	use system.storage_elements;
 
 with et_geometry;
 with et_frames;
+with et_string_processing;		use et_string_processing;
 
 package et_canvas_general is
 
@@ -82,6 +83,10 @@ generic
 	
 package pac_canvas is
 	use geometry;
+
+	-- This variable serves for logging debug messages an other stuff.
+	-- It is assigned with the log level on initializing a main window.
+	log_threshold : type_log_level := type_log_level'first;
 
 
 	-- This signal is emitted by the drawing whenever items are added, moved, resized, ...

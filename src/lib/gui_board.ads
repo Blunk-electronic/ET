@@ -61,7 +61,7 @@ package gui_board is
 	
 	procedure init_window (
 		module			: in type_modules.cursor; -- cursor of generic module to be edited
-		log_threshold	: in type_log_level);
+		log_threshold_in: in type_log_level);
 
 	
 end gui_board;

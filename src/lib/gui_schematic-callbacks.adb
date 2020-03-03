@@ -129,7 +129,7 @@ package body gui_schematic.callbacks is
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
 			ifs 			=> latin_1.space); -- fields are separated by space
 
-		exit_code := schematic_cmd (cmd, 0);
+		exit_code := schematic_cmd (cmd, log_threshold + 1);
 
 		-- CS output error message in gui
 
@@ -140,12 +140,7 @@ package body gui_schematic.callbacks is
 		et_canvas_board.redraw (et_canvas_board.pac_canvas.canvas);
 	end execute_command;
 
--- 	procedure echo_command (self : access gtk.combo_box.gtk_combo_box_record'class) is
--- 	begin
--- 		put_line ("changed");
--- 		put_line (self.get_active_text);
--- 	end echo_command;
-	
+
 	function on_key_event (
 		self	: access gtk_widget_record'class;
 		event	: in gdk_event_key) 

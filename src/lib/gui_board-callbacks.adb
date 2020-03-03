@@ -129,7 +129,7 @@ package body gui_board.callbacks is
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
 			ifs 			=> latin_1.space); -- fields are separated by space
 
-		exit_code := board_cmd (cmd, 1);
+		exit_code := board_cmd (cmd, log_threshold + 1);
 
 		-- CS output error message in gui
 

@@ -81,8 +81,12 @@ package body gui_board is
 
 	procedure init_window (
 		module			: in type_modules.cursor; -- cursor of generic module to be edited
-		log_threshold	: in type_log_level) is
+		log_threshold_in: in type_log_level) is
 	begin
+		-- Set the log threshold. Everything that happens in the gui may be logged
+		-- using the gui wide variable log_threshold:
+		pac_canvas.log_threshold := log_threshold_in;
+
 		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
 		window.set_title (system_name & " BOARD"); -- CS: plus module name
 		window.set_default_size (1024, 768);

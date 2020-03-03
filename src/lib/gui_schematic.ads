@@ -63,7 +63,7 @@ package gui_schematic is
 	procedure init_window (
 		module			: in type_modules.cursor; -- cursor of generic module to be edited
 		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
-		log_threshold	: in type_log_level);
+		log_threshold_in: in type_log_level);
 
 end gui_schematic;
 
