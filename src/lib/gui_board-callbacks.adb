@@ -115,7 +115,7 @@ package body gui_board.callbacks is
 		
 		cmd : et_string_processing.type_fields_of_line;
 
-		exit_code : type_exit_code := SUCCESSFUL; -- to be returned
+		exit_code : type_exit_code := SUCCESSFUL;
 	begin
 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
 		log_indentation_up;
@@ -140,16 +140,19 @@ package body gui_board.callbacks is
 
 			-- execute the board command
 			exit_code := board_cmd (cmd, log_threshold + 1);
+
+			-- CS evaluate exit_code
+			
+			-- refresh board
+			redraw (canvas);
+
+			-- refresh schematic (because some commands also affect the schematic)
+			et_canvas_schematic.redraw (et_canvas_schematic.pac_canvas.canvas);
 		end if;
 
 
 		-- CS output error message in gui
 
-		-- refresh board
-		redraw (canvas);
-
-		-- refresh schematic (because some commands also affect the schematic)
-		et_canvas_schematic.redraw (et_canvas_schematic.pac_canvas.canvas);
 	end execute_command;
 
 	function on_key_event (

@@ -352,6 +352,11 @@ package pac_canvas is
 
 
 -- COMMAND LINE COMMANDS
+-- 	type type_exit_code is (
+-- 		SUCCESSFUL,
+-- 		WARNINGS,
+-- 		ERROR
+-- 		);
 	
 	-- Prefixes before enumeration types prevent clashes with gnat keywords
 	-- and package names:

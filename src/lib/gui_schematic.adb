@@ -171,7 +171,7 @@ package body gui_schematic is
 		gtk_new_with_entry (console);
 
 		-- Connect to the on_activate signal of the entry (which is a child of console):
-		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
+		gtk_entry (console.get_child).on_activate (gui_schematic.callbacks.execute_command'access); -- on hitting enter
 		
 		-- console2.on_changed (echo_command'access); -- for every key pressed
 		

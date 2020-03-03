@@ -115,7 +115,7 @@ package body gui_schematic.callbacks is
 		
 		cmd : et_string_processing.type_fields_of_line;
 
-		exit_code : type_exit_code := SUCCESSFUL; -- to be returned
+		exit_code : type_exit_code := SUCCESSFUL;
 	begin
 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
 		log_indentation_up;
@@ -136,22 +136,25 @@ package body gui_schematic.callbacks is
 			log (text => "command is canvas related", level => log_threshold + 1);
 
 			-- execute the command
-			-- CS
+			et_canvas_schematic.execute_command (cmd, log_threshold + 1);
 		else
 			log (text => "command is schematic related", level => log_threshold + 1);
 
 			-- execute the schematic command
 			exit_code := schematic_cmd (cmd, log_threshold + 1);
+
+			-- CS evaluate exit_code
+			
+			-- refresh schematic
+			redraw (canvas);
+
+			-- refresh board (because some commands also affect the board)
+			et_canvas_board.redraw (et_canvas_board.pac_canvas.canvas);
 		end if;
 
 		
 		-- CS output error message in gui
 
-		-- refresh schematic
-		redraw (canvas);
-
-		-- refresh board (because some commands also affect the board)
-		et_canvas_board.redraw (et_canvas_board.pac_canvas.canvas);
 
 		log_indentation_down;
 	end execute_command;

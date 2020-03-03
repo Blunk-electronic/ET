@@ -35,7 +35,7 @@
 --   history of changes:
 --
 
-with ada.text_io;			use ada.text_io;
+with ada.text_io;				use ada.text_io;
 
 with et_general;
 with et_project;
@@ -242,6 +242,11 @@ package body et_canvas_schematic is
 			- y
 			);
 	end;
+
+	procedure execute_command (
+		cmd				: in type_fields_of_line;
+		log_threshold	: in type_log_level) is separate;
+
 
 	
 end et_canvas_schematic;
