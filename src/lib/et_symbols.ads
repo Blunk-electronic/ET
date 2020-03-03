@@ -181,6 +181,7 @@ package et_symbols is
 	
 	-- A port is something where a net can be attached to.
 	-- The name of a port represents the function of the port like (A14 or RST_N)
+	-- CS: Port length may assume zero length in kicad. Consider changing minimum length to zero.
 	subtype type_port_length is type_distance_positive range 2.0 .. 20.0; -- unit is millimeters. CS: reasonable limits ?
 	port_length_default : constant type_port_length := 4.0;
 	
