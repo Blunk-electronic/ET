@@ -504,6 +504,7 @@ package body pac_canvas is
 	end view_get_type;
 
 
+
 	-- For demonstrating the difference between view coordinates (pixels) and model coordinates
 	-- this function outputs them at the console.
 	function on_mouse_movement (
@@ -535,7 +536,7 @@ package body pac_canvas is
 		put_line (" model " & to_string (model_point));
 
 		drawing_point := model_to_drawing (self, model_point);
--- 		put_line (" drawing " & round (drawing_point, self.drawing.grid));
+		put_line (" drawing " & to_string (self, drawing_point));
 		
 		return true; -- indicates that event has been handled
 	end on_mouse_movement;

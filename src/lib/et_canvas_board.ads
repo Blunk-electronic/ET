@@ -107,6 +107,12 @@ package et_canvas_board is
 		drawing	: type_drawing;
 	end record;
 
+	-- Returns the given point x/y rounded to the current grid.
+	overriding function to_string (
+		self	: not null access type_view;
+		point	: in type_point)
+		return string;
+	
 	-- Returns the name of the currently active module:
 	overriding function active_module (self : not null access type_view) 
 		return string;
@@ -157,7 +163,7 @@ package et_canvas_board is
 
 	-- Redraws the board:
 	procedure redraw (view : in type_view_ptr);
-	
+
 end et_canvas_board;
 
 -- Soli Deo Gloria

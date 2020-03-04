@@ -122,6 +122,7 @@ package pac_canvas is
 	view_margin : constant type_view_coordinate := 20.0;
 
 
+	
 -- VIEW
 
 	-- scale
@@ -161,8 +162,11 @@ package pac_canvas is
 	canvas	: type_view_ptr;
 
 
-	
-	
+	-- Returns the given point x/y rounded to the current grid.
+	function to_string (
+		self	: not null access type_view;
+		point	: in type_point) 
+		return string is abstract;
 	
 	procedure viewport_changed (self : not null access type_view'class);
 

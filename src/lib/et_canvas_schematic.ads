@@ -114,6 +114,12 @@ package et_canvas_schematic is
 		drawing	: type_drawing;
 	end record;
 
+	-- Returns the given point x/y rounded to the current grid.
+	overriding function to_string (
+		self	: not null access type_view;
+		point	: in type_point)
+		return string;
+	
 	-- Returns the name of the currently active module:
 	overriding function active_module (self : not null access type_view) 
 		return string;
@@ -172,7 +178,6 @@ package et_canvas_schematic is
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level);
 
-	
 end et_canvas_schematic;
 
 -- Soli Deo Gloria

@@ -46,6 +46,14 @@ use et_pcb_coordinates.geometry;
 
 package body et_canvas_board is
 
+	function to_string (
+		self	: not null access type_view;
+		point	: in type_point)
+		return string is
+	begin
+		return round (point, self.drawing.grid);
+	end;
+	
 	function model_to_drawing (
 		self		: not null access type_view;
 		model_point : in type_point)	
@@ -236,7 +244,6 @@ package body et_canvas_board is
 			);
 	end;
 
-	
 end et_canvas_board;
 
 -- Soli Deo Gloria
