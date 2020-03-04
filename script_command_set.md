@@ -21,7 +21,8 @@ The domain tells where the operation is to take place. Domains are:
 - symbol, package, device (CS)
 
 The measurement system is METRIC. All dimensions are in millimeters (mm).
-All angles and rotations are in degrees (1/360).
+All angles and rotations are in degrees (1/360) and in mathematical sense.
+Positive rotation (or angle) is counterclockwise. Negative rotation is clockwise.
 
 The concept is most easily to understand by examples. The module to be designed or edited is named "led_driver":
 
