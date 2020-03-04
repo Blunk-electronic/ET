@@ -3647,9 +3647,9 @@ package body scripting is
 					-- drawing related or canvas related.
 					-- If the command is drawing related, execute schematic command.
 					-- Otherwise skip the command.
-					if is_canvas_related (f (3)) then
+					if is_canvas_related (f (3)) then -- skip command
 						warn_canvas_command (cmd);
-						exit_code := SUCCESSFUL; -- skip command
+						exit_code := WARNINGS;
 					else
 						-- The command must have at least four fields.
 						if field_count (cmd) >= 4 then
@@ -3675,9 +3675,9 @@ package body scripting is
 					-- drawing related or canvas related.
 					-- If the command is drawing related, execute board command.
 					-- Otherwise skip the command.
-					if is_canvas_related (f (3)) then
+					if is_canvas_related (f (3)) then -- skip command
 						warn_canvas_command (cmd);
-						exit_code := SUCCESSFUL; -- skip command
+						exit_code := WARNINGS;
 					else
 						-- The command must have at least four fields.
 						if field_count (cmd) >= 4 then
