@@ -283,7 +283,9 @@ package scripting is
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 		return type_exit_code;
-	
+
+	-- Executes a script command. 
+	-- CS: currently commands related to the canvas are skipped.
 	function execute_command (
 		file_name		: in type_script_name.bounded_string;
 		cmd				: in type_fields_of_line;

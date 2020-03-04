@@ -132,6 +132,8 @@ package body gui_schematic.callbacks is
 
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 
+		-- The 3rd field of the command indicates whether it is
+		-- drawing related or canvas related.
 		if is_canvas_related (et_string_processing.field (cmd, 3)) then
 			log (text => "command is canvas related", level => log_threshold);
 

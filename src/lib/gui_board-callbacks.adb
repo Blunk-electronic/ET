@@ -130,11 +130,13 @@ package body gui_board.callbacks is
 			delimiter_wrap	=> true, -- strings are enclosed in quotations
 			ifs 			=> latin_1.space); -- fields are separated by space
 
+		-- The 3rd field of the command indicates whether it is
+		-- drawing related or canvas related.
 		if is_canvas_related (et_string_processing.field (cmd, 3)) then
 			log (text => "command is canvas related", level => log_threshold);
 
 			-- execute the command
-			-- CS
+			-- CS et_canvas_board.execute_command (cmd, log_threshold);
 		else
 			log (text => "command is board related", level => log_threshold);
 
