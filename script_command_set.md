@@ -12,7 +12,7 @@ is a plain ASCII file. Comments start with #.
 The two letters "CS" indicate a "construction site" where things are not finished yet or intended for the future.
 The script commands have a domain-verb-noun structure.
 Their meaning should be obvious in most cases. Additional explanation is provided in comments
-if required. The domain-verb-noun structure is: DOMAIN MODULE VERB NOUN PARAMETER[S]
+if required. The domain-verb-noun structure is: DOMAIN MODULE VERB NOUN PARAMETERS
 
 The domain tells where the operation is to take place. Domains are:
 - project
@@ -41,6 +41,9 @@ project delete module led_driver
 
 ## DRAWING GRID
 The drawing grid is to be set for each module. It's default is 1mm in both x and y direction:
+<!--```
+CS schematic led_driver set grid 2 # x/y 2/2
+```-->
 ```
 schematic led_driver set grid 2 2 # x/y 2/2
 ```
