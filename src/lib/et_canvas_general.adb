@@ -982,50 +982,50 @@ package body pac_canvas is
 	end draw_grid;
 
 	
-	function to_string (verb : in type_verb) return string is 
-		s : constant string := type_verb'image (verb);
-	begin
-		return s (verb_prefix'length + 1 .. s'last);
-	end;
+-- 	function to_string (verb : in type_verb) return string is 
+-- 		s : constant string := type_verb'image (verb);
+-- 	begin
+-- 		return s (verb_prefix'length + 1 .. s'last);
+-- 	end;
+-- 
+-- 	function to_verb (verb : in string) return type_verb is begin
+-- 		return type_verb'value (verb_prefix & verb);
+-- 	
+-- 		exception when event: others => 
+-- 			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
+-- 			raise;
+-- 	end;
+-- 
+-- 	function is_canvas_related (verb : in string) return boolean is
+-- 		verb_full : constant string := to_lower (verb_prefix & verb);
+-- 	begin
+-- 		-- Iterate all verbs of type_verb.
+-- 		for v in type_verb'pos (type_verb'first) .. type_verb'pos (type_verb'last) loop
+-- 
+-- 			-- If any verb matches the given verb, then exit and return true.
+-- 			if to_lower (type_verb'image (type_verb'val (v))) = verb_full then
+-- 				return true;
+-- 			end if;
+-- 		end loop;
+-- 
+-- 		-- No matching verb found.
+-- 		return false;
+-- 	end is_canvas_related;
 
-	function to_verb (verb : in string) return type_verb is begin
-		return type_verb'value (verb_prefix & verb);
 	
-		exception when event: others => 
-			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
-			raise;
-	end;
-
-	function is_canvas_related (verb : in string) return boolean is
-		verb_full : constant string := to_lower (verb_prefix & verb);
-	begin
-		-- Iterate all verbs of type_verb.
-		for v in type_verb'pos (type_verb'first) .. type_verb'pos (type_verb'last) loop
-
-			-- If any verb matches the given verb, then exit and return true.
-			if to_lower (type_verb'image (type_verb'val (v))) = verb_full then
-				return true;
-			end if;
-		end loop;
-
-		-- No matching verb found.
-		return false;
-	end is_canvas_related;
-
-	
-	function to_string (noun : in type_noun) return string is 
-		s : constant string := type_noun'image (noun);
-	begin
-		return s (noun_prefix'length + 1 .. s'last);
-	end;
-
-	function to_noun (noun : in string) return type_noun is begin
-		return type_noun'value (noun_prefix & noun);
-	
-		exception when event: others => 
-			log (ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
-			raise;
-	end;
+-- 	function to_string (noun : in type_noun) return string is 
+-- 		s : constant string := type_noun'image (noun);
+-- 	begin
+-- 		return s (noun_prefix'length + 1 .. s'last);
+-- 	end;
+-- 
+-- 	function to_noun (noun : in string) return type_noun is begin
+-- 		return type_noun'value (noun_prefix & noun);
+-- 	
+-- 		exception when event: others => 
+-- 			log (ERROR, "noun " & enclose_in_quotes (noun) & " invalid !", console => true);
+-- 			raise;
+-- 	end;
 	
 end pac_canvas;
 	

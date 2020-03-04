@@ -64,8 +64,8 @@ procedure execute_command (
 		
 	exit_code : type_exit_code := SUCCESSFUL;	
 
-	verb : type_verb;
-	noun : type_noun;
+	verb : type_verb_canvas;
+	noun : type_noun_canvas;
 		
 begin
 	log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);

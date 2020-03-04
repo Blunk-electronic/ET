@@ -353,42 +353,42 @@ package pac_canvas is
 
 -- COMMAND LINE COMMANDS
 	
+-- 	-- Prefixes before enumeration types prevent clashes with gnat keywords and package names:
+-- 	verb_prefix : constant string := ("VERB_");
+-- 	
+-- 	type type_verb is (
+-- 		VERB_DISPLAY,
+-- 		VERB_SHOW,
+-- 		VERB_ZOOM
+-- 		);
+
+-- 	-- Removes the verb_prefix from given verb and returns the remainder as string.
+-- 	-- VERB_DISPLAY becomes DISPLAY:
+-- 	function to_string (verb : in type_verb) return string;
+-- 
+-- 	-- Prepends the verb_prefix to the given string and returns a type_verb.
+-- 	-- DISPLAY becomes VERB_DISPLAY:
+-- 	function to_verb (verb : in string) return type_verb;
+-- 
+-- 	-- Returns true if the given verb (as string) is a verb.
+-- 	function is_canvas_related (verb : in string) return boolean;
+-- 
+
 	-- Prefixes before enumeration types prevent clashes with gnat keywords and package names:
-	verb_prefix : constant string := ("VERB_");
+-- 	noun_prefix : constant string := ("NOUN_");
 	
-	type type_verb is (
-		VERB_DISPLAY,
-		VERB_SHOW,
-		VERB_ZOOM
-		);
-
-	-- Removes the verb_prefix from given verb and returns the remainder as string.
-	-- VERB_DISPLAY becomes DISPLAY:
-	function to_string (verb : in type_verb) return string;
-
-	-- Prepends the verb_prefix to the given string and returns a type_verb.
-	-- DISPLAY becomes VERB_DISPLAY:
-	function to_verb (verb : in string) return type_verb;
-
-	-- Returns true if the given verb (as string) is a verb.
-	function is_canvas_related (verb : in string) return boolean;
-
-
-	-- Prefixes before enumeration types prevent clashes with gnat keywords and package names:
-	noun_prefix : constant string := ("NOUN_");
-	
-	type type_noun is (
-		NOUN_FIT,
-		VERB_CENTER
-		);
-
-	-- Removes the noun_prefix from given noun and returns the remainder as string.
-	-- NOUNT_FIT becomes FIT:
-	function to_string (noun : in type_noun) return string;
-
-	-- Prepends the noun_prefix to the given string and returns a type_noun.
-	-- FIT becomes NOUN_FIT:
-	function to_noun (noun : in string) return type_noun;
+-- 	type type_noun is (
+-- 		NOUN_FIT,
+-- 		VERB_CENTER
+-- 		);
+-- 
+-- 	-- Removes the noun_prefix from given noun and returns the remainder as string.
+-- 	-- NOUNT_FIT becomes FIT:
+-- 	function to_string (noun : in type_noun) return string;
+-- 
+-- 	-- Prepends the noun_prefix to the given string and returns a type_noun.
+-- 	-- FIT becomes NOUN_FIT:
+-- 	function to_noun (noun : in string) return type_noun;
 
 
 	

@@ -97,10 +97,11 @@ package scripting is
 		SAVE
 		);
 
+	
+-- PROJECT
+	
 	function to_string (verb : in type_verb_project) return string;
 	function to_verb (verb : in string) return type_verb_project;
-
-
 	
 	type type_noun_project is ( -- CS prepend prefix NOUN_
 		MODULE
@@ -109,7 +110,9 @@ package scripting is
 	function to_string (noun : in type_noun_project) return string;
 	function to_noun (noun : in string) return type_noun_project;
 
+
 	
+-- SCHEMATIC
 	
 	type type_verb_schematic is ( -- CS prepend prefix VERB_
 		ADD,
@@ -175,6 +178,9 @@ package scripting is
 	function to_string (noun : in type_noun_schematic) return string;
 	function to_noun (noun : in string) return type_noun_schematic;
 
+
+	
+-- BOARD
 	
 	type type_verb_board is ( -- CS prepend prefix VERB_
 		ADD,
@@ -227,6 +233,42 @@ package scripting is
 	function to_string (noun : in type_noun_board) return string;
 	function to_noun (noun : in string) return type_noun_board;
 
+
+-- CANVAS
+	
+	type type_verb_canvas is (
+		VERB_DISPLAY,
+		VERB_SHOW,
+		VERB_ZOOM
+		);
+
+	-- Removes the verb_prefix from given verb and returns the remainder as string.
+	-- VERB_DISPLAY becomes DISPLAY:
+	function to_string (verb : in type_verb_canvas) return string;
+
+	-- Prepends the verb_prefix to the given string and returns a type_verb_canvas.
+	-- DISPLAY becomes VERB_DISPLAY:
+	function to_verb (verb : in string) return type_verb_canvas;
+
+	-- Returns true if the given verb (as string) is a verb.
+	function is_canvas_related (verb : in string) return boolean;
+
+	type type_noun_canvas is (
+		NOUN_FIT,
+		VERB_CENTER
+		);
+
+	-- Removes the noun_prefix from given noun and returns the remainder as string.
+	-- NOUNT_FIT becomes FIT:
+	function to_string (noun : in type_noun_canvas) return string;
+
+	-- Prepends the noun_prefix to the given string and returns a type_noun_canvas.
+	-- FIT becomes NOUN_FIT:
+	function to_noun (noun : in string) return type_noun_canvas;
+
+
+
+
 -- 	keyword_from			: constant string := "from";
 	keyword_to				: constant string := "to";
 	keyword_direction		: constant string := "direction";
@@ -253,6 +295,8 @@ package scripting is
 		log_threshold	: in type_log_level)
 		return type_exit_code;
 
+
+	
 end scripting;
 
 -- Soli Deo Gloria
