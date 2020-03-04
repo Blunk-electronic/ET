@@ -137,6 +137,9 @@ package body gui_board.callbacks is
 
 			-- execute the command
 			-- CS et_canvas_board.execute_command (cmd, log_threshold);
+-- 				cmd				=> remove (cmd, 1, 2), -- field 1..2 no longer required
+-- 				log_threshold	=> log_threshold);
+
 		else
 			log (text => "command is board related", level => log_threshold);
 

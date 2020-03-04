@@ -138,7 +138,9 @@ package body gui_schematic.callbacks is
 			log (text => "command is canvas related", level => log_threshold);
 
 			-- execute the command
-			et_canvas_schematic.execute_command (cmd, log_threshold);
+			et_canvas_schematic.execute_command (
+				cmd				=> remove (cmd, 1, 2), -- field 1..2 no longer required
+				log_threshold	=> log_threshold);
 		else
 			log (text => "command is schematic related", level => log_threshold);
 

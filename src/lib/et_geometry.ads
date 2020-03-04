@@ -79,6 +79,8 @@ package et_geometry is
 
 		origin : constant type_point;
 
+		function to_string (point : in type_point) return string;
+		
 		function to_distance (distance : in string) return type_distance;		
 		function to_string (distance : in type_distance) return string;
 		
@@ -298,18 +300,19 @@ package et_geometry is
 		-- Changes point.x and point.y only.
 			point		: in out type_point'class;
 			rotation	: in type_rotation);
-		
-		function to_string (
-			point		: in type_point;
-			resolution	: in type_distance_positive := zero)
+
+		-- Returns x/y of point rounded according to given grid.
+		function round (
+			point	: in type_point;
+			grid	: in type_grid)
 			return string;
 
 		function snap_to_grid (
 			point		: in type_point'class;
 			resolution	: in type_distance_positive)
 			return type_point'class;
-		
-		function to_string (point : in type_position) return string;
+
+		overriding function to_string (point : in type_position) return string;
 
 
 

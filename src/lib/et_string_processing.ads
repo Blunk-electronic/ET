@@ -239,9 +239,20 @@ package et_string_processing is
 		delimiter_wrap	: in boolean := false; 				-- true if text in delimiters is to be wrapped into a single field
 		delimiter		: in character := latin_1.quotation	-- the text delimiter sign (mostly ")
 		) return type_fields_of_line;
-	
-	function append (left : in type_fields_of_line; right : in type_fields_of_line) return type_fields_of_line;
 
+	-- Append right fields to left fields:
+	function append (
+		left	: in type_fields_of_line;
+		right	: in type_fields_of_line) 
+		return type_fields_of_line;
+
+	-- Remove fields from line:
+	function remove (
+		line	: in type_fields_of_line;
+		first	: in positive;
+		last	: in positive)
+		return type_fields_of_line;
+					 
 	procedure set_field (
 		line		: in out type_fields_of_line;
 		position	: in positive;
@@ -306,8 +317,8 @@ package et_string_processing is
 	
 	type type_fields_of_line is record
 		fields		: type_list_of_strings.vector;
-		field_count	: count_type;		-- number of fields in line
-		number		: positive_count; 	-- line numer
+		field_count	: count_type := count_type'first; -- number of fields in line
+		number		: positive_count := positive_count'first; -- line numer
 	end record;
 
 

@@ -57,9 +57,6 @@ procedure execute_command (
 
 	procedure too_long is begin
 		command_too_long (cmd, fields - 1);
-		-- CS fields - 1 is misleading because the operator does not see the first two fields of the cmmand.
-		-- fields - 3 would be correct, but causes misleading log message if the
-		-- command has been launched from a script.
 	end;
 		
 	exit_code : type_exit_code := SUCCESSFUL;	
@@ -70,13 +67,10 @@ procedure execute_command (
 begin
 	log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
 
-	-- There must be at least 4 fields in the command:
-	if fields >= 4 then
-		verb := to_verb (f (3));
-		noun := to_noun (f (4));
-
-		-- For evaluating the command we are interested in the fields
-		-- from number 3 onwards:	
+	-- There must be at least 2 fields in the command:
+	if fields >= 2 then
+		verb := to_verb (f (1));
+		noun := to_noun (f (2));
 		
 		case verb is
 			when VERB_DISPLAY => null;
@@ -90,11 +84,11 @@ begin
 				case noun is
 					when NOUN_FIT => -- schematic led_driver zoom fit
 						case fields is
-							when 4 => 
+							when 2 => 
 								log (text => "scale to fit", level => log_threshold + 1);
 								scale_to_fit (canvas);
 
-							when 5 .. count_type'last => too_long;
+							when 3 .. count_type'last => too_long;
 
 							when others => command_incomplete (cmd);
 						end case;

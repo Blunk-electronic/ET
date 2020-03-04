@@ -809,7 +809,11 @@ package body et_string_processing is
 			number => number);
 	end read_line;
 
-	function append (left : in type_fields_of_line; right : in type_fields_of_line) return type_fields_of_line is
+	function append (
+		left	: in type_fields_of_line;
+		right	: in type_fields_of_line)
+		return type_fields_of_line 
+	is		
 		line : type_fields_of_line;
 		use type_list_of_strings;
 	begin
@@ -824,6 +828,29 @@ package body et_string_processing is
 		return line;
 	end append;
 
+	-- Remove fields from line:
+	function remove (
+		line	: in type_fields_of_line;
+		first	: in positive;
+		last	: in positive) 
+		return type_fields_of_line
+	is
+		use type_list_of_strings;
+		result : type_fields_of_line;
+	begin
+		-- Iterate all fields of given line:
+		for f in first_index (line.fields) .. last_index (line.fields) loop
+
+			-- Skip fields in given range. All other fields are appended to result.fields:
+			if f < first or f > last then
+				append (result.fields, element (line.fields, f));
+				result.field_count := result.field_count + 1;
+			end if;
+		end loop;
+		
+		return result;
+	end remove;
+	
 	procedure set_field (
 		line		: in out type_fields_of_line;
 		position	: in positive;
