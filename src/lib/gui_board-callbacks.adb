@@ -63,8 +63,8 @@ package body gui_board.callbacks is
 		event : gdk.event.gdk_event_configure) 
 		return boolean is
 	begin
-		put_line ("window resized");
-		scale_to_fit (canvas);
+-- 		put_line ("window resized");
+-- 		scale_to_fit (canvas);
 		
 		return true;
 	end;

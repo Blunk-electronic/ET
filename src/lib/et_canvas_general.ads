@@ -343,15 +343,6 @@ package pac_canvas is
 		grid		: in type_distance_grid)
 		return type_view_coordinate;
 
-	-- This procedure calculates the addional offset in y. This is necessary because
-	-- the grid must be aligned with the lower left corner of the frame. The lower left corner
-	-- depends on the heigth of the frame.
--- 	procedure fine_tune_y_offset (
--- 		offset_y	: in out type_view_coordinate;
--- 		frame_height: in et_frames.type_distance;
--- 		grid		: in type_distance_grid);
-
-
 	-- This procedure draws a grid on the given context for the given
 	-- area of the drawing.
 	procedure draw_grid (

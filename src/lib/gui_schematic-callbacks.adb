@@ -63,8 +63,8 @@ package body gui_schematic.callbacks is
 		event : gdk.event.gdk_event_configure) 
 		return boolean is
 	begin
-		put_line ("window resized");
-		scale_to_fit (canvas);
+-- 		put_line ("window resized");
+		--scale_to_fit (canvas);
 		
 		return true;
 	end;
@@ -77,18 +77,14 @@ package body gui_schematic.callbacks is
 	end;
 
 	procedure zoom_in (self : access glib.object.gobject_record'class) is 
--- 		scale : gdouble;
+		scale : gdouble;
 		use geometry;
-		c : type_point;
 	begin
-
-		c := type_point (set (100.0, 100.0));
--- 		put_line ("zooming in ...");
--- 		scale := get_scale (canvas);
--- 		scale := scale + 0.1;
--- 		set_scale (canvas, scale);
+		put_line ("zooming in ...");
+		scale := get_scale (canvas);
+		scale := scale + 0.1;
+		set_scale (canvas, scale);
 		-- 		put_line (to_string (get_scale (canvas)));
-		canvas.center_on (c);
 	end;
 
 	procedure zoom_out (self : access glib.object.gobject_record'class) is 
