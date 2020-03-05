@@ -59,6 +59,8 @@ package scripting is
 	
 	script_name : type_script_name.bounded_string;
 
+	procedure invalid_noun (noun : in string);
+	
 	procedure command_incomplete (cmd : in type_fields_of_line);
 	
 	procedure command_too_long (
@@ -254,6 +256,7 @@ package scripting is
 	function is_canvas_related (verb : in string) return boolean;
 
 	type type_noun_canvas is (
+		NOUN_DEVICE,
 		NOUN_FIT,
 		NOUN_CENTER,
 		NOUN_LEVEL

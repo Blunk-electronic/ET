@@ -142,6 +142,7 @@ package body gui_schematic.callbacks is
 
 			-- execute the command
 			et_canvas_schematic.execute_command (
+-- 				self			=> canvas,
 				cmd				=> remove (cmd, 1, 2), -- field 1..2 no longer required
 				log_threshold	=> log_threshold);
 		else

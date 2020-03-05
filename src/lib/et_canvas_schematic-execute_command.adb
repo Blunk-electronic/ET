@@ -40,10 +40,13 @@ with ada.text_io;				use ada.text_io;
 with ada.containers;			use ada.containers;
 with ada.exceptions;			use ada.exceptions;
 with scripting;					use scripting;
+with et_devices;
+with schematic_ops;
 
 separate (et_canvas_schematic)
 
 procedure execute_command (
+-- 	self			: not null access type_view;
 	cmd				: in type_fields_of_line;
 	log_threshold	: in type_log_level) is
 
@@ -80,6 +83,17 @@ procedure execute_command (
 		log (text => "zoom level", level => log_threshold + 1);
 		set_scale (canvas, s);
 	end set_scale;
+
+	procedure show_device is 
+		use schematic_ops;
+		
+-- 		location : type_unit_query := unit_position (
+-- 					module_cursor	=> canvas.drawing.module,
+-- 					device_name		=> et_devices.to_name (text_in => f (3)), -- IC45
+-- 					unit_name		=> et_devices.to_name (unit_name => f (4))); -- C
+	begin
+		null;
+	end show_device;
 		
 begin
 	log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
@@ -95,8 +109,19 @@ begin
 				-- refresh schematic
 				redraw (canvas);
 			
-			when VERB_SHOW => null;
-			
+			when VERB_SHOW =>
+				case noun is
+					when NOUN_DEVICE =>  -- show device R1 1
+						case fields is
+							when 3 => null;
+							when 4 => null;
+							when 5 .. count_type'last => too_long;
+							when others => command_incomplete (cmd);
+						end case;
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+				
 			when VERB_ZOOM =>
 				case noun is
 					when NOUN_FIT => -- zoom fit
@@ -134,8 +159,7 @@ begin
 							when others => command_incomplete (cmd);
 						end case;
 						
-					when others =>
-						null;
+					when others => invalid_noun (to_string (noun));
 				end case;
 			
 		end case;

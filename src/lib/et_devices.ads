@@ -197,7 +197,7 @@ package et_devices is
 	-- Raises constraint error if prefix contains invalid characters.
 	-- Raises constraint error if id contains non-digit characters.
 	-- Leading zeroes in the index are removed. R002 becomes R2.
-		text_in : in string)
+		text_in : in string) -- CS rename to device_name
 		return type_name;
 
 	function "<" (left, right : in type_name) return boolean;

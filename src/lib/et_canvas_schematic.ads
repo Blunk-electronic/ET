@@ -178,6 +178,7 @@ package et_canvas_schematic is
 
 	-- Executes a canvas related command:
 	procedure execute_command (
+-- 		self    		: not null access type_view;
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level);
 
