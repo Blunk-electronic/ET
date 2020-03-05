@@ -1659,21 +1659,21 @@ package body schematic_ops is
 					procedure rotate_placeholders_absolute (rot : in type_rotation) is 
 
 						-- Get the default positions of texts and placeholders as
-						-- specified in symbol model. The default positiions are
+						-- specified in symbol model. The default positions are
 						-- later rotated by the given rotation rot.
 						default_positions : et_symbols.type_default_text_positions := 
 												default_text_positions (device_cursor, name);
 						
 						use geometry;
 
-						-- Rotates the positiion by the given rotation rot:
+						-- Rotates the position by the given rotation rot:
 						function add_rot (p : in type_point) return type_rotation is begin
 							return geometry.rotation (p) + rot;
 						end;
 
 						use pac_text;
 					begin
-						-- The current positiions of the placeholders are overwritten by
+						-- The current positions of the placeholders are overwritten by
 						-- the defaults as specified in the symbol mode.
 						-- Then the position of placeholders around the origin of the unit
 						-- are rotated.
@@ -1683,7 +1683,7 @@ package body schematic_ops is
 						-- it is readable from the front or from the right.
 						unit.name.rotation := snap (default_positions.name.rotation + rot);
 
-						-- reset the placeholder anchor point to the positiion as specified in the symbol model
+						-- reset the placeholder anchor point to the position as specified in the symbol model
 						unit.name.position := default_positions.name.position;
 						
 						-- rotate the placeholder anchor point around the symbol origin:
@@ -1698,7 +1698,7 @@ package body schematic_ops is
 						-- it is readable from the front or from the right.
 						unit.value.rotation := snap (default_positions.value.rotation + rot);
 						
-						-- reset the placeholder anchor point to the positiion as specified in the symbol model
+						-- reset the placeholder anchor point to the position as specified in the symbol model
 						unit.value.position := default_positions.value.position;
 						
 						-- rotate the placeholder anchor point around the symbol origin:
@@ -1713,7 +1713,7 @@ package body schematic_ops is
 						-- it is readable from the front or from the right.
 						unit.purpose.rotation := snap (default_positions.purpose.rotation + rot);
 
-						-- reset the placeholder anchor point to the positiion as specified in the symbol model
+						-- reset the placeholder anchor point to the position as specified in the symbol model
 						unit.purpose.position := default_positions.purpose.position;
 						
 						-- rotate the placeholder anchor point around the symbol origin:
@@ -13298,7 +13298,81 @@ package body schematic_ops is
 		log_indentation_down;
 	end check_integrity;
 
+	function to_string (
+		device_name		: in type_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- C
+		query_result	: in type_unit_query)
+		return string is 
+	begin
+		if query_result.exists then
+			return "Location of device" & to_string (device_name)
+				& " unit" & to_string (unit_name)
+				& " : " & to_string (query_result.position);
 
+		else
+			return "device" & to_string (device_name)
+				& " unit" & to_string (unit_name)
+				& " does not exist !";
+		end if;
+	end to_string;
+	
+	function unit_position (
+	-- Returns the position of given unit.
+		module_cursor	: in type_modules.cursor; -- motor_driver
+		device_name		: in type_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string) -- C
+-- 		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
+		return type_unit_query is
+
+		exists : boolean := false;
+		pos : et_coordinates.type_position; -- x/y, rotation, sheet
+		
+		procedure query_devices (
+			module_name	: in type_module_name.bounded_string;
+			module		: in type_module) is
+
+			use et_schematic.type_devices;
+			device_cursor : et_schematic.type_devices.cursor;
+
+			procedure query_units (
+				device_name	: in type_name; -- IC45
+				device		: in et_schematic.type_device) is
+
+				use et_schematic.type_units;
+				unit_cursor : et_schematic.type_units.cursor;
+				
+			begin
+				-- locate the unit:
+				unit_cursor := type_units.find (device.units, unit_name);
+
+				if unit_cursor /= type_units.no_element then -- unit exists
+					exists := true;
+					pos := element (unit_cursor).position;
+				else
+					exists := false; -- unit does not exist
+				end if;
+			end query_units;
+			
+		begin -- query_devices
+			-- locate the device:
+			device_cursor := et_schematic.type_devices.find (module.devices, device_name);
+
+			if device_cursor /= et_schematic.type_devices.no_element then -- device exists
+				et_schematic.type_devices.query_element (device_cursor, query_units'access);
+			else
+				exists := false; -- device does not exist
+			end if;
+			
+		end query_devices;
+		
+	begin -- unit_position
+		query_element (module_cursor, query_devices'access);
+
+		if exists then return (exists => true, position => pos);
+		else return (exists => false);
+		end if;
+		
+	end unit_position;
 	
 end schematic_ops;
 	

@@ -657,7 +657,34 @@ package schematic_ops is
 	-- 11. CS: warning (or error ?) if any ports sit on top of each other. This would make the movable_tests obsolete.
 		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
-								  
+
+	-- The result of a unit query is of this type:
+	type type_unit_query (exists : boolean := false) is record
+		case exists is
+			when true => position : et_coordinates.type_position; -- x/y, rotation, sheet
+			when false => null;
+		end case;
+	end record;
+
+	-- Returns the result of a unit query in human readable form.
+	function to_string (
+		device_name		: in type_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string; -- C
+		query_result	: in type_unit_query)
+		return string;
+	
+	function unit_position (
+	-- Returns the position of given unit.
+		module_cursor	: in type_modules.cursor; -- motor_driver
+		device_name		: in type_name; -- IC45
+		unit_name		: in type_unit_name.bounded_string)
+-- 		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
+		return type_unit_query;
+
+	-- CS type_port_query
+
+	-- CS function port_position 
+							   
 end schematic_ops;
 
 -- Soli Deo Gloria
