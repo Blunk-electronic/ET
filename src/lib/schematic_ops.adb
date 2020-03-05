@@ -13305,13 +13305,13 @@ package body schematic_ops is
 		return string is 
 	begin
 		if query_result.exists then
-			return "Location of device" & to_string (device_name)
-				& " unit" & to_string (unit_name)
-				& " : " & to_string (query_result.position);
+			return "Location of device " & to_string (device_name)
+				& " unit " & to_string (unit_name)
+				& " :" & to_string (query_result.position);
 
 		else
-			return "device" & to_string (device_name)
-				& " unit" & to_string (unit_name)
+			return "device " & to_string (device_name)
+				& " unit " & to_string (unit_name)
 				& " does not exist !";
 		end if;
 	end to_string;

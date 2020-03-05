@@ -118,6 +118,11 @@ package body gui_board.callbacks is
 		cmd : et_string_processing.type_fields_of_line;
 
 		exit_code : type_exit_code := SUCCESSFUL;
+
+		-- build an access to the board canvas:
+		type type_local_view_ptr is access all et_canvas_board.type_view;
+		canvas_board : type_local_view_ptr := type_local_view_ptr (canvas);
+		
 	begin
 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
 		log_indentation_up;
@@ -139,6 +144,7 @@ package body gui_board.callbacks is
 
 			-- execute the command
 			-- CS et_canvas_board.execute_command (cmd, log_threshold);
+-- 				self			=> canvas_board,
 -- 				cmd				=> remove (cmd, 1, 2), -- field 1..2 no longer required
 -- 				log_threshold	=> log_threshold);
 

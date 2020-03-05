@@ -265,6 +265,12 @@ package body et_canvas_board is
 			);
 	end;
 
+
+	procedure execute_command (
+		self			: not null access type_view;
+		cmd				: in type_fields_of_line;
+		log_threshold	: in type_log_level) is null; -- CS
+
 end et_canvas_board;
 
 -- Soli Deo Gloria

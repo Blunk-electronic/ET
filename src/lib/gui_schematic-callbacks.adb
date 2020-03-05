@@ -119,6 +119,11 @@ package body gui_schematic.callbacks is
 		cmd : et_string_processing.type_fields_of_line;
 
 		exit_code : type_exit_code := SUCCESSFUL;
+
+		-- build an access to the schematic canvas:
+		type type_local_view_ptr is access all et_canvas_schematic.type_view;
+		canvas_schematic : type_local_view_ptr := type_local_view_ptr (canvas);
+
 	begin
 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
 		log_indentation_up;
@@ -142,7 +147,7 @@ package body gui_schematic.callbacks is
 
 			-- execute the command
 			et_canvas_schematic.execute_command (
--- 				self			=> canvas,
+				self			=> canvas_schematic,
 				cmd				=> remove (cmd, 1, 2), -- field 1..2 no longer required
 				log_threshold	=> log_threshold);
 		else

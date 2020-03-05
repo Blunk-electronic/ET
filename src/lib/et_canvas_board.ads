@@ -57,6 +57,7 @@ with et_frames;				--use et_frames;
 
 with et_canvas_general;
 with et_canvas_primitive_draw_ops;
+with et_string_processing;			use et_string_processing;
 
 package et_canvas_board is
 
@@ -168,6 +169,12 @@ package et_canvas_board is
 	-- Redraws the board:
 	procedure redraw (view : in type_view_ptr);
 
+	-- Executes a canvas related command:
+	overriding procedure execute_command (
+		self    		: not null access type_view;
+		cmd				: in type_fields_of_line;
+		log_threshold	: in type_log_level);
+	
 end et_canvas_board;
 
 -- Soli Deo Gloria

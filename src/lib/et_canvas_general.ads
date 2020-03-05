@@ -357,6 +357,11 @@ package pac_canvas is
 	procedure center_on (
 		self		: not null access type_view'class;
 		center_on	: type_point); -- in drawing
+
+	procedure execute_command (
+		self    		: not null access type_view;
+		cmd				: in type_fields_of_line;
+		log_threshold	: in type_log_level) is null;
 	
 	
 private

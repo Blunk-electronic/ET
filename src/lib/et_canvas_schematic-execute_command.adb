@@ -46,7 +46,7 @@ with schematic_ops;
 separate (et_canvas_schematic)
 
 procedure execute_command (
--- 	self			: not null access type_view;
+	self			: not null access type_view;
 	cmd				: in type_fields_of_line;
 	log_threshold	: in type_log_level) is
 
@@ -86,13 +86,19 @@ procedure execute_command (
 
 	procedure show_device is 
 		use schematic_ops;
+		use et_devices;
+
+		device_name : et_devices.type_name := to_name (f (3)); -- IC45
+		unit_name	: et_devices.type_unit_name.bounded_string := to_name (f (4)); -- C
 		
--- 		location : type_unit_query := unit_position (
--- 					module_cursor	=> canvas.drawing.module,
--- 					device_name		=> et_devices.to_name (text_in => f (3)), -- IC45
--- 					unit_name		=> et_devices.to_name (unit_name => f (4))); -- C
+		-- Locate the requested device and unit.
+		location : type_unit_query := unit_position (
+				module_cursor	=> self.drawing.module,
+				device_name		=> device_name,
+				unit_name		=> unit_name);
 	begin
 		null;
+		log (text => to_string (device_name, unit_name, location), console => true);
 	end show_device;
 		
 begin
@@ -112,9 +118,10 @@ begin
 			when VERB_SHOW =>
 				case noun is
 					when NOUN_DEVICE =>  -- show device R1 1
+						show_device;
 						case fields is
-							when 3 => null;
-							when 4 => null;
+							when 3 => null; -- CS
+							when 4 => show_device;
 							when 5 .. count_type'last => too_long;
 							when others => command_incomplete (cmd);
 						end case;
