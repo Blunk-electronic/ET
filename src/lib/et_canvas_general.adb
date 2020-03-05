@@ -541,23 +541,26 @@ package body pac_canvas is
 		return true; -- indicates that event has been handled
 	end on_mouse_movement;
 
--- 	procedure center_on (
--- 		self         : not null access type_view;
--- 		center_on    : type_model_point;
--- 		x_pos, y_pos : gdouble := 0.5)
--- 	is
--- 		area : constant type_rectangle := self.get_visible_area;
--- 		pos  : constant type_model_point := (
--- 			center_on.x - area.width * x_pos,
--- 			center_on.y - area.height * y_pos);
--- 	begin
--- 		self.scale_to_fit_requested := 0.0;
--- 
--- 		self.topleft := pos;
--- 		self.set_adjustment_values;
--- 		self.queue_draw;
--- 
--- 	end center_on;
+	procedure center_on (
+		self		: not null access type_view'class;
+		center_on	: type_point) -- in drawing
+	is
+		-- Convert the given point to a point in the model:
+		center_on_model : type_point := drawing_to_model (self, center_on);
+
+		-- Get the visible area of the model
+		area : constant type_rectangle := self.get_visible_area; -- model
+
+		-- Calculate the new topleft corner:
+		pos  : constant type_point := type_point (set (
+			center_on_model.x - area.width * 0.5,
+			center_on_model.y - area.height * 0.5));
+	begin
+		self.scale_to_fit_requested := 0.0;
+		self.topleft := pos;
+		self.set_adjustment_values;
+		self.queue_draw;
+	end center_on;
 
 	
 	function on_scroll_event (

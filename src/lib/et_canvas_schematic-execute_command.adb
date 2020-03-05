@@ -63,6 +63,23 @@ procedure execute_command (
 
 	verb : type_verb_canvas;
 	noun : type_noun_canvas;
+
+	procedure zoom_center is
+		-- Build the center point:
+		c : type_point := type_point (set (
+				x => to_distance (f (3)),
+				y => to_distance (f (4))));
+	begin
+		log (text => "center on point", level => log_threshold + 1);
+		center_on (canvas, c);
+	end zoom_center;
+
+	procedure set_scale (scale : in string) is -- CS should be percent of scale_to_fit
+		s : gdouble := gdouble'value (scale);
+	begin
+		log (text => "zoom level", level => log_threshold + 1);
+		set_scale (canvas, s);
+	end set_scale;
 		
 begin
 	log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
@@ -82,10 +99,10 @@ begin
 			
 			when VERB_ZOOM =>
 				case noun is
-					when NOUN_FIT => -- schematic led_driver zoom fit
+					when NOUN_FIT => -- zoom fit
 						case fields is
 							when 2 => 
-								log (text => "scale to fit", level => log_threshold + 1);
+								log (text => "zoom to fit", level => log_threshold + 1);
 								scale_to_fit (canvas);
 
 							when 3 .. count_type'last => too_long;
@@ -93,6 +110,30 @@ begin
 							when others => command_incomplete (cmd);
 						end case;
 
+					when NOUN_LEVEL => -- zoom level 3
+						case fields is
+							when 3 => 
+								set_scale (f (3));
+
+							when 4 .. count_type'last => too_long;
+
+							when others => command_incomplete (cmd);
+						end case;
+						
+					when NOUN_CENTER => -- zoom center 10 10
+						case fields is
+							when 4 =>  -- zoom center 10 10
+								zoom_center;
+
+							when 5 =>  -- zoom center 10 10 0.5
+								zoom_center;
+								set_scale (f (5));
+
+							when 6 .. count_type'last => too_long;
+
+							when others => command_incomplete (cmd);
+						end case;
+						
 					when others =>
 						null;
 				end case;

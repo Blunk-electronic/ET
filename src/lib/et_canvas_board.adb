@@ -74,6 +74,27 @@ package body et_canvas_board is
 		return p;
 	end;
 
+	function drawing_to_model (
+		self			: not null access type_view;
+		drawing_point : in type_point)	
+		return type_point is 
+		use et_general;
+		p : type_point; -- to be returned
+	begin
+		set (point	=> p,
+			 axis	=> X, 
+			 value	=> drawing_point.x + self.drawing.frame_bounding_box.x);
+		
+		set (point	=> p,
+			 axis	=> Y,
+			 value	=> type_distance (self.drawing.frame.frame.size.y) 
+						- drawing_point.y 
+						+ self.drawing.frame_bounding_box.y);
+
+		return p;
+	end;
+
+
 	
 	function active_module (self : not null access type_view) 
 		return string is

@@ -242,6 +242,13 @@ package pac_canvas is
 		model_point : in type_point)
 		return type_point is abstract;
 
+	-- Converts a drawing point to a model point. See comments on function model_to_drawing.
+	function drawing_to_model (
+		self			: not null access type_view;
+		drawing_point : in type_point)	
+		return type_point is abstract;
+
+	
 	-- Returns the name of the currently active module:
 	function active_module (self : not null access type_view) 
 		return string is abstract;
@@ -354,6 +361,12 @@ package pac_canvas is
 		start_x	: in type_view_coordinate;
 		start_y	: in type_view_coordinate);
 
+	-- Moves the view so that the given point is on the center.
+	-- Uses the current scale and leaves it as it is.
+	procedure center_on (
+		self		: not null access type_view'class;
+		center_on	: type_point); -- in drawing
+	
 	
 private
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);

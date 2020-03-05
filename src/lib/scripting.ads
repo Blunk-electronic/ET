@@ -255,7 +255,8 @@ package scripting is
 
 	type type_noun_canvas is (
 		NOUN_FIT,
-		VERB_CENTER
+		NOUN_CENTER,
+		NOUN_LEVEL
 		);
 
 	-- Removes the noun_prefix from given noun and returns the remainder as string.
