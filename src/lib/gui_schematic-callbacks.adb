@@ -62,10 +62,12 @@ package body gui_schematic.callbacks is
 		self  : access gtk_widget_record'class;
 		event : gdk.event.gdk_event_configure) 
 		return boolean is
+		-- Get the current scale:
+		scale : gdouble := get_scale (canvas);
 	begin
--- 		put_line ("window resized");
-		--scale_to_fit (canvas);
-		
+		-- Assign the scale anew:
+		set_scale (canvas, scale);
+				
 		return true;
 	end;
 		
