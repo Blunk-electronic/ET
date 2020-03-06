@@ -62,7 +62,7 @@ procedure execute_command (
 		command_too_long (cmd, fields - 1);
 	end;
 		
-	exit_code : type_exit_code := SUCCESSFUL;	
+	-- exit_code : type_exit_code := SUCCESSFUL; -- CS currently no need
 
 	verb : type_verb_canvas;
 	noun : type_noun_canvas;
@@ -105,7 +105,10 @@ procedure execute_command (
 		-- CS log message ?
 		
 		if location.exists then
-			-- CS open the right sheet
+			-- show the sheet where the unit is:
+			self.set_sheet (sheet (location.position));
+
+			-- center on the unit
 			center_on (canvas, type_point (location.position));
 		end if;
 		
@@ -133,7 +136,10 @@ procedure execute_command (
 		-- CS log message ?
 		
 		if location.exists then
-			-- CS open the right sheet
+			-- show the sheet where the unit is:
+			self.set_sheet (sheet (location.position));
+
+			-- center on the unit
 			center_on (canvas, type_point (location.position));
 		end if;
 
@@ -144,20 +150,36 @@ procedure execute_command (
 		sheet : et_coordinates.type_sheet := to_sheet (f (3));
 	begin
 		log (text => "set sheet" & to_sheet (sheet), level => log_threshold + 1); 
+
+		-- CS test if sheet exists
+		
 		self.set_sheet (sheet);
-		self.queue_draw;
 	end show_sheet;
 
 	procedure show_module is
+	-- Sets the active module and first sheet.
 		use et_general;
 		module : type_module_name.bounded_string := to_module_name (f (3));
 	begin
 		log (text => "set module " & enclose_in_quotes (to_string (module)), level => log_threshold + 1);
 		self.set_module (module);
-		redraw (canvas);
+		self.set_sheet (1);
 	end show_module;
+
+	procedure show_module_and_sheet is
+	-- Sets the active module and sheet.
+		use et_general;
+		module : type_module_name.bounded_string := to_module_name (f (3));
+		sheet : et_coordinates.type_sheet := to_sheet (f (4));
+	begin
+		log (text => "set module " & enclose_in_quotes (to_string (module))
+			 & " sheet " & to_sheet (sheet), level => log_threshold + 1);
+		self.set_module (module);
+		self.set_sheet (sheet);
+	end show_module_and_sheet;
+
 	
-begin
+begin -- execute_command
 	log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
 
 	-- There must be at least 2 fields in the command:
@@ -167,9 +189,6 @@ begin
 		
 		case verb is
 			when VERB_DISPLAY => null;
-
-				-- refresh schematic
-				redraw (canvas);
 			
 			when VERB_SHOW =>
 				case noun is
@@ -184,7 +203,8 @@ begin
 					when NOUN_MODULE =>
 						case fields is
 							when 3 => show_module; -- show module LED-driver
-							when 4 .. count_type'last => too_long;
+							when 4 => show_module_and_sheet; -- show module LED-driver 2
+							when 5 .. count_type'last => too_long;
 							when others => command_incomplete (cmd);
 						end case;
 						

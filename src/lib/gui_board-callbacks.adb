@@ -156,13 +156,16 @@ package body gui_board.callbacks is
 
 			-- CS evaluate exit_code
 			
-			-- refresh board
-			redraw (canvas);
-
-			-- refresh schematic (because some commands also affect the schematic)
-			et_canvas_schematic.redraw (et_canvas_schematic.pac_canvas.canvas);
 		end if;
+		
+		-- The majority of commands requires refreshing the schematic and board drawing.
 
+		-- refresh board
+		redraw (canvas);
+
+		-- refresh schematic (because some commands also affect the schematic)
+		et_canvas_schematic.redraw (et_canvas_schematic.pac_canvas.canvas);
+		
 
 		-- CS output error message in gui
 

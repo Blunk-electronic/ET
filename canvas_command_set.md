@@ -31,6 +31,11 @@ schematic editor only.
 show module LED-driver
 ```
 
+If the number of a sheet is given, then the sheet will be opened right away:
+```
+show module LED-driver 2
+```
+
 
 To open a sheet for editing run this command:
 ```
