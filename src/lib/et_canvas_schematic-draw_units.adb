@@ -686,7 +686,6 @@ procedure draw_units (
 begin
 	-- 	put_line ("draw units ...");
 	
-	--iterate (element (self.drawing.module).devices, query_devices'access);
 	iterate (element (current_active_module).devices, query_devices'access);
 	
 end draw_units;

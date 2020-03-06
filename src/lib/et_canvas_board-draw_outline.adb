@@ -115,7 +115,6 @@ begin -- draw_outline
 -- 	put_line ("draw board outline ...");
 	
 	type_modules.query_element (
-		--position	=> self.drawing.module,
 		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_segments'access);
 	

@@ -78,10 +78,11 @@ package et_canvas_board is
 	
 
 	use et_pcb_coordinates.geometry;
+
+
 	
-	-- This is the link to the actual drawing:
+	-- Frequently used things to draw the board layout.
 	type type_drawing is record	
--- 		module	: et_project.type_modules.cursor;  -- the currently active module
 
 		-- These variables are frequently used. Procedure init_drawing
 		-- sets them. Other operations are free to access them.

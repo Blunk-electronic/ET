@@ -140,7 +140,6 @@ procedure draw_submodules (
 begin
 -- 	put_line ("draw submodules ...");
 
-	--	iterate (element (self.drawing.module).submods, query_submods'access);
 	iterate (element (current_active_module).submods, query_submods'access);
 	
 end draw_submodules;

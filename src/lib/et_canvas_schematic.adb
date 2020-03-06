@@ -98,7 +98,6 @@ package body et_canvas_schematic is
 		use et_general.type_module_name;
 		use et_project.type_modules;
 	begin
-		--return to_string (key (self.drawing.module)); -- motor_driver (without extension)
 		return to_string (key (current_active_module)); -- motor_driver (without extension)
 	end active_module;
 
@@ -209,7 +208,6 @@ package body et_canvas_schematic is
 		cursor : et_project.type_modules.cursor := find (modules, module);
 	begin
 		if cursor /= type_modules.no_element then -- module exists in project
-			--self.drawing.module := cursor;
 			current_active_module := cursor;
 		else
 			log (WARNING, "Generic module " & enclose_in_quotes (to_string (module)) 
@@ -233,7 +231,6 @@ package body et_canvas_schematic is
 		type type_local_view_ptr is access all type_view;
 		self : type_local_view_ptr := type_local_view_ptr (view);
 	begin
-		--self.drawing.module := module;
 		current_active_module := init_drawing.module;
 
 		-- set some variables frequently used regarding frame and paper:

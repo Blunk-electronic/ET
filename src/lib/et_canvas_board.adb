@@ -104,7 +104,6 @@ package body et_canvas_board is
 		use et_project.type_modules;
 		use et_canvas_schematic;
 	begin
-		--return to_string (key (self.drawing.module)); -- motor_driver (without extension)
 		return to_string (key (current_active_module)); -- motor_driver (without extension)
 	end active_module;
 	
@@ -207,8 +206,6 @@ package body et_canvas_board is
 		type type_local_view_ptr is access all type_view;
 		self : type_local_view_ptr := type_local_view_ptr (view);
 	begin
--- 		self.drawing.module := module;
-
 		-- set some variables frequently used regarding frame and paper:
 		self.drawing.frame := type_modules.element (module).board.frame;
 		

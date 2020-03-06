@@ -97,7 +97,6 @@ procedure execute_command (
 		
 		-- Locate the requested device and unit.
 		location : type_unit_query := unit_position (
-				--module_cursor	=> self.drawing.module,
 				module_cursor	=> current_active_module,
 				device_name		=> device_name,
 				unit_name		=> unit_name);
@@ -128,7 +127,6 @@ procedure execute_command (
 		
 		-- Locate the requested device and unit.
 		location : type_unit_query := unit_position (
-				--module_cursor	=> self.drawing.module,
 				module_cursor	=> current_active_module,
 				device_name		=> device_name,
 				unit_name		=> unit_name);
