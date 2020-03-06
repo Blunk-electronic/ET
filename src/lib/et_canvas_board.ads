@@ -127,10 +127,6 @@ package et_canvas_board is
 		point	: in type_point)
 		return string;
 	
-	-- Returns the name of the currently active module:
-	overriding function active_module (self : not null access type_view) 
-		return string;
-	
 	-- Returns the bounding box of all items.
 	overriding function bounding_box (self : not null access type_view)
 		return type_rectangle;

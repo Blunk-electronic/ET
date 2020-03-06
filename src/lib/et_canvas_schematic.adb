@@ -103,14 +103,6 @@ package body et_canvas_schematic is
 		return p;
 	end;
 	
-	function active_module (self : not null access type_view) 
-		return string is
-		use et_general.type_module_name;
-		use et_project.type_modules;
-	begin
-		return to_string (key (current_active_module)); -- motor_driver (without extension)
-	end active_module;
-
 	function active_module return et_general.type_module_name.bounded_string is
 		use et_general.type_module_name;
 		use et_project.type_modules;

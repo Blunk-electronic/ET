@@ -248,9 +248,6 @@ package pac_canvas is
 		return type_point is abstract;
 
 	
-	-- Returns the name of the currently active module:
-	function active_module (self : not null access type_view) 
-		return string is abstract;
 	
 	function bounding_box (self : not null access type_view)
 		return type_rectangle is abstract;

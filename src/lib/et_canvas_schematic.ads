@@ -141,9 +141,6 @@ package et_canvas_schematic is
 		return string;
 	
 	-- Returns the name of the currently active module:
-	overriding function active_module (self : not null access type_view) 
-		return string;
-
 	function active_module return et_general.type_module_name.bounded_string;
 		
 	-- Returns the bounding box of all items of the current sheet.

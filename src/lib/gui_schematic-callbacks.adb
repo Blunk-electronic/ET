@@ -44,6 +44,7 @@ with et_canvas_schematic;		use et_canvas_schematic;
 use et_canvas_schematic.pac_canvas;
 with et_canvas_board;
 
+with et_general;
 with et_string_processing;		use et_string_processing;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
@@ -113,7 +114,7 @@ package body gui_schematic.callbacks is
 		-- command after this declaration will be "schematic led_driver rename device R1 R2".
 		line_as_typed_by_operator : constant string := 
 			to_lower (to_string (DOM_SCHEMATIC)) & latin_1.space &
-			active_module (canvas) & latin_1.space &
+			et_general.to_string (active_module) & latin_1.space &
 			get_text (self);
 		
 		cmd : et_string_processing.type_fields_of_line;

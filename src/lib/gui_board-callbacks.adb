@@ -40,6 +40,7 @@ with gdk.event;					use gdk.event;
 with gtk.main;
 with gtk.window;				use gtk.window;
 with ada.text_io;				use ada.text_io;
+with et_general;
 with et_canvas_board;			use et_canvas_board;
 use et_canvas_board.pac_canvas;
 with et_canvas_schematic;
@@ -112,7 +113,7 @@ package body gui_board.callbacks is
 		-- command after this declaration will be "board led_driver rename device R1 R2".		
 		line_as_typed_by_operator : constant string := 
 			to_lower (to_string (DOM_BOARD)) & latin_1.space &
-			active_module (canvas) & latin_1.space &
+			et_general.to_string (et_canvas_schematic.active_module) & latin_1.space &
 			get_text (self);
 		
 		cmd : et_string_processing.type_fields_of_line;
