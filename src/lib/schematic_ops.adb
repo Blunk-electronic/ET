@@ -13305,10 +13305,14 @@ package body schematic_ops is
 		return string is 
 	begin
 		if query_result.exists then
-			return "Location of device " & to_string (device_name)
-				& " unit " & to_string (unit_name)
-				& " :" & to_string (query_result.position);
-
+			if type_unit_name.length (unit_name) > 0 then
+				return "Location of device " & to_string (device_name)
+					& " unit " & to_string (unit_name)
+					& " :" & to_string (query_result.position);
+			else
+				return "Location of device " & to_string (device_name)
+					& " :" & to_string (query_result.position);
+			end if;
 		else
 			return "device " & to_string (device_name)
 				& " unit " & to_string (unit_name)
@@ -13342,14 +13346,31 @@ package body schematic_ops is
 				unit_cursor : et_schematic.type_units.cursor;
 				
 			begin
-				-- locate the unit:
-				unit_cursor := type_units.find (device.units, unit_name);
+				-- If the given unit_name contains something, locate the unit
+				-- by its name. If unit_name is empty, locate the first unit.
+				if type_unit_name.length (unit_name) > 0 then -- locate by name
+					
+					unit_cursor := type_units.find (device.units, unit_name);
 
-				if unit_cursor /= type_units.no_element then -- unit exists
-					exists := true;
-					pos := element (unit_cursor).position;
-				else
-					exists := false; -- unit does not exist
+					if unit_cursor /= type_units.no_element then -- unit exists
+						exists := true;
+						pos := element (unit_cursor).position;
+					else
+						exists := false; -- unit does not exist
+					end if;
+					
+				else -- locate the first unit:
+					unit_cursor := type_units.first (device.units);
+					-- There should be at least one unit. Otherwise raise constraint_error.
+
+					if unit_cursor /= type_units.no_element then -- unit exists
+						exists := true;
+						pos := element (unit_cursor).position;
+					else
+						exists := false; -- unit does not exist
+						raise constraint_error; -- CS do something
+					end if;
+					
 				end if;
 			end query_units;
 			

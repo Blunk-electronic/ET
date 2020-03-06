@@ -24,11 +24,16 @@ zoom center 10 10 2 # x/y scale
 
 
 ## SHOW
-Show device in schematic requires device name and unit name:
+The show command locates the unit of a device. If the requested unit
+exist, then the drawing pans so that the unit appears at the center.
+
+### In Schematc
+If a device has only one unit:
 ```
-show device R1 1
+show device R1
 ```
 
+If a device has more than one unit:
 ```
 show device IC1 IO-BANK2
 ```

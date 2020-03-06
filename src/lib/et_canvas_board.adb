@@ -176,7 +176,7 @@ package body et_canvas_board is
 		
 		draw_outline (self, area_shifted, context);
 		draw_silk_screen (self, area_shifted, context, TOP);
--- 		draw_units (self, area, context); -- separate unit
+		-- CS draw_packages (self, area, context); -- separate unit
 		-- CS self.model.draw_texts (area, context);
 		-- CS self.model.draw_submodules (area, context);
 			

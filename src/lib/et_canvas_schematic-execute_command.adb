@@ -84,7 +84,11 @@ procedure execute_command (
 		set_scale (canvas, s);
 	end set_scale;
 
-	procedure show_device is 
+	-- CS unify procedures show_unit and show_first_unit. They differ only in 
+	-- the way the unit_name is assigned.
+	
+	procedure show_unit is
+	-- Locates the unit of the given device.
 		use schematic_ops;
 		use et_devices;
 
@@ -97,10 +101,40 @@ procedure execute_command (
 				device_name		=> device_name,
 				unit_name		=> unit_name);
 	begin
-		null;
-		log (text => to_string (device_name, unit_name, location), console => true);
-	end show_device;
+		if location.exists then
+			-- CS open the right sheet
+			center_on (canvas, type_point (location.position));
+		end if;
 		
+		log (text => to_string (device_name, unit_name, location), console => true);
+	end show_unit;
+
+	procedure show_first_unit is
+	-- Locates the one and only unit of the given device.
+	
+		use schematic_ops;
+		use et_devices;
+
+		device_name : et_devices.type_name := to_name (f (3)); -- IC45
+
+		-- The assumption is that the device has only one unit:
+		unit_name	: et_devices.type_unit_name.bounded_string := to_name ("");
+		
+		-- Locate the requested device and unit.
+		location : type_unit_query := unit_position (
+				module_cursor	=> self.drawing.module,
+				device_name		=> device_name,
+				unit_name		=> unit_name);
+	begin
+		if location.exists then
+			-- CS open the right sheet
+			center_on (canvas, type_point (location.position));
+		end if;
+
+		log (text => to_string (device_name, unit_name, location), console => true);
+	end show_first_unit;
+
+	
 begin
 	log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
 
@@ -117,11 +151,10 @@ begin
 			
 			when VERB_SHOW =>
 				case noun is
-					when NOUN_DEVICE =>  -- show device R1 1
-						show_device;
+					when NOUN_DEVICE =>
 						case fields is
-							when 3 => null; -- CS
-							when 4 => show_device;
+							when 3 => show_first_unit; -- show device R1
+							when 4 => show_unit; -- show device IC45 C
 							when 5 .. count_type'last => too_long;
 							when others => command_incomplete (cmd);
 						end case;

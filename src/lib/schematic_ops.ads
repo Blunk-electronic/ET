@@ -667,6 +667,8 @@ package schematic_ops is
 	end record;
 
 	-- Returns the result of a unit query in human readable form.
+	-- If the unit_name is empty (""), then the result does not contain
+	-- any reference to a unit. This is useful when a device has only one unit.
 	function to_string (
 		device_name		: in type_name; -- IC45
 		unit_name		: in type_unit_name.bounded_string; -- C
@@ -674,10 +676,12 @@ package schematic_ops is
 		return string;
 	
 	function unit_position (
-	-- Returns the position of given unit.
+	-- Returns the position of given unit. If the unit_name is emtpty ("")
+	-- then the position of the first unit is returned.
+	-- This is useful when a device has only one unit.
 		module_cursor	: in type_modules.cursor; -- motor_driver
 		device_name		: in type_name; -- IC45
-		unit_name		: in type_unit_name.bounded_string)
+		unit_name		: in type_unit_name.bounded_string) -- C
 -- 		port_name		: in et_symbols.type_port_name.bounded_string) -- CE
 		return type_unit_query;
 
