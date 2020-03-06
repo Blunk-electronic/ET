@@ -134,6 +134,11 @@ procedure execute_command (
 		log (text => to_string (device_name, unit_name, location), console => true);
 	end show_first_unit;
 
+	procedure show_sheet is
+		sheet : et_coordinates.type_sheet := to_sheet (f (3));
+	begin
+		null;
+	end show_sheet;
 	
 begin
 	log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
@@ -156,6 +161,13 @@ begin
 							when 3 => show_first_unit; -- show device R1
 							when 4 => show_unit; -- show device IC45 C
 							when 5 .. count_type'last => too_long;
+							when others => command_incomplete (cmd);
+						end case;
+
+					when NOUN_SHEET =>
+						case fields is
+							when 3 => show_sheet;
+							when 4 .. count_type'last => too_long;
 							when others => command_incomplete (cmd);
 						end case;
 						

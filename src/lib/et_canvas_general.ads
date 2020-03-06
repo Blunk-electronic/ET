@@ -141,7 +141,6 @@ package pac_canvas is
 		topleft  	: type_point := origin;
 		
 		scale     	: type_scale := scale_default;
-		grid_size 	: type_distance_positive := 20.0; -- CS remove
 		
 		layout		: pango.layout.pango_layout; -- CS for displaying text. not used yet
 
@@ -291,11 +290,6 @@ package pac_canvas is
 
 
 	grid_default : constant type_distance_positive := 10.0;
-	
-	procedure set_grid_size ( -- CS becomes obsolete soon
-		self : not null access type_view'class;
-		size : in type_distance_positive := grid_default);
-
 	
 	-- Redraw either the whole view, or a specific part of it only.
 	-- The transformation matrix has already been set on the context.

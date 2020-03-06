@@ -819,14 +819,6 @@ package body pac_canvas is
 -- 		end if;
 -- 	end refresh_layout;
 
-
-	procedure set_grid_size (
-		self : not null access type_view'class;
-		size : in type_distance_positive := grid_default) is
-	begin
-		self.grid_size := size;
-	end set_grid_size;
-
 	procedure scale_to_fit (
 		self      : not null access type_view'class;
 		rect      : in type_rectangle := no_rectangle;

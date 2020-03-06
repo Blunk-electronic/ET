@@ -256,10 +256,11 @@ package scripting is
 	function is_canvas_related (verb : in string) return boolean;
 
 	type type_noun_canvas is (
+		NOUN_CENTER,
 		NOUN_DEVICE,
 		NOUN_FIT,
-		NOUN_CENTER,
-		NOUN_LEVEL
+		NOUN_LEVEL,
+		NOUN_SHEET
 		);
 
 	-- Removes the noun_prefix from given noun and returns the remainder as string.

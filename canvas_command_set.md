@@ -24,6 +24,13 @@ zoom center 10 10 2 # x/y scale
 
 
 ## SHOW
+
+```
+show sheet 2
+```
+
+
+
 The show command locates the unit of a device. If the requested unit
 exist, then the drawing pans so that the unit appears at the center.
 
