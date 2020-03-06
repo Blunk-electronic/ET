@@ -199,7 +199,6 @@ package body et_canvas_schematic is
 	end set_sheet;
 
 	procedure set_module (
-		self    : not null access type_view;
 		module	: in et_general.type_module_name.bounded_string)  -- motor_driver
 	is
 		use et_general;

@@ -163,7 +163,7 @@ procedure execute_command (
 		module : type_module_name.bounded_string := to_module_name (f (3));
 	begin
 		log (text => "set module " & enclose_in_quotes (to_string (module)), level => log_threshold + 1);
-		self.set_module (module);
+		set_module (module);
 		self.set_sheet (1);
 
 		-- Update module name and sheet number in the schematic window title bar:
@@ -184,7 +184,7 @@ procedure execute_command (
 	begin
 		log (text => "set module " & enclose_in_quotes (to_string (module))
 			 & " sheet " & to_sheet (sheet), level => log_threshold + 1);
-		self.set_module (module);
+		set_module (module);
 		self.set_sheet (sheet);
 	end show_module_and_sheet;
 

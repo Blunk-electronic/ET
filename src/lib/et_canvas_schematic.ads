@@ -189,7 +189,6 @@ package et_canvas_schematic is
 
 	-- Sets the active module to be displayed in the canvas:
 	procedure set_module (
-		self    : not null access type_view;
 		module	: in et_general.type_module_name.bounded_string); -- motor_driver
 	
 	-- Init the drawing:
