@@ -198,6 +198,13 @@ package body et_canvas_schematic is
 		self.drawing.sheet := sheet;
 	end set_sheet;
 
+	function get_sheet (
+		self    : not null access type_view)
+		return et_coordinates.type_sheet is
+	begin
+		return self.drawing.sheet;
+	end get_sheet;
+	
 	procedure set_module (
 		module	: in et_general.type_module_name.bounded_string)  -- motor_driver
 	is
