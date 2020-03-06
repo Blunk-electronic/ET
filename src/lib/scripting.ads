@@ -260,6 +260,7 @@ package scripting is
 		NOUN_DEVICE,
 		NOUN_FIT,
 		NOUN_LEVEL,
+		NOUN_MODULE,
 		NOUN_SHEET
 		);
 

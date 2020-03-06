@@ -196,6 +196,26 @@ package body et_canvas_schematic is
 	begin
 		self.drawing.sheet := sheet;
 	end set_sheet;
+
+	procedure set_module (
+		self    : not null access type_view;
+		module	: in et_general.type_module_name.bounded_string)  -- motor_driver
+	is
+		use et_general;
+		use et_project;
+		use type_modules;
+		cursor : et_project.type_modules.cursor := find (modules, module);
+	begin
+		if cursor /= type_modules.no_element then -- module exists in project
+			self.drawing.module := cursor;
+		else
+			log (WARNING, "Generic module " & enclose_in_quotes (to_string (module)) & " does not exist !",
+				 console => true);
+
+			
+			-- CS list available modules
+		end if;
+	end set_module;
 	
 	procedure init_drawing (
 		view	: in type_view_ptr;							 

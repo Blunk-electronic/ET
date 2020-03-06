@@ -145,6 +145,15 @@ procedure execute_command (
 		self.set_sheet (sheet);
 		self.queue_draw;
 	end show_sheet;
+
+	procedure show_module is
+		use et_general;
+		module : type_module_name.bounded_string := to_module_name (f (3));
+	begin
+		null;
+		log (text => "set module " & enclose_in_quotes (to_string (module)), level => log_threshold + 1);
+		self.set_module (module);
+	end show_module;
 	
 begin
 	log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
@@ -170,6 +179,13 @@ begin
 							when others => command_incomplete (cmd);
 						end case;
 
+					when NOUN_MODULE =>
+						case fields is
+							when 3 => show_module; -- show module LED-driver
+							when 4 .. count_type'last => too_long;
+							when others => command_incomplete (cmd);
+						end case;
+						
 					when NOUN_SHEET =>
 						case fields is
 							when 3 => show_sheet;

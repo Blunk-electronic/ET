@@ -50,6 +50,7 @@ with cairo;					use cairo;
 with cairo.pattern;			use cairo.pattern;
 with gtkada.style;
 
+with et_general;
 with et_coordinates;		use et_coordinates;
 with et_project;
 with et_symbols;
@@ -171,7 +172,12 @@ package et_canvas_schematic is
 	procedure set_sheet (
 		self    : not null access type_view;
 		sheet	: in et_coordinates.type_sheet);
-							
+
+	-- Sets the active module to be displayed in the canvas:
+	procedure set_module (
+		self    : not null access type_view;
+		module	: in et_general.type_module_name.bounded_string); -- motor_driver
+	
 	-- Init the drawing:
 	procedure init_drawing (
 		view	: in type_view_ptr;

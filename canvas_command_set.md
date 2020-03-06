@@ -25,6 +25,12 @@ zoom center 10 10 2 # x/y scale
 
 ## SHOW
 
+To open a module for editing run this command:
+```
+show module LED-driver
+```
+
+
 To open a sheet for editing run this command:
 ```
 show sheet 2
