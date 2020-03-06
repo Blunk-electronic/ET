@@ -45,11 +45,14 @@
 --  Further-on the generic package for primitve draw operations (et_canvas_draw.pac_draw)
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
+with gtk.window; 			use gtk.window;
+
 with glib;					use glib;
 with cairo;					use cairo;
 with cairo.pattern;			use cairo.pattern;
 with gtkada.style;
 
+with et_general;
 with et_pcb_coordinates;	use et_pcb_coordinates;
 with et_packages;
 with et_project;			--use et_project;
@@ -61,6 +64,10 @@ with et_string_processing;			use et_string_processing;
 
 package et_canvas_board is
 
+	window : gtk_window; -- This is an access/pointer to the main window.
+
+	title_board : constant string := et_general.system_name & " BOARD ";
+	
 	-- Instantiate the general canvas package:
 	package pac_canvas is new et_canvas_general.pac_canvas (
 		canvas_name		=> "board", -- CS provide domain name like scripting.type_domain

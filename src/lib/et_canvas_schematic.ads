@@ -45,6 +45,8 @@
 --  Further-on the generic package for primitve draw operations (et_canvas_draw.pac_draw)
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
+with gtk.window; 			use gtk.window;
+
 with glib;					use glib;
 with cairo;					use cairo;
 with cairo.pattern;			use cairo.pattern;
@@ -63,6 +65,10 @@ with et_string_processing;			use et_string_processing;
 
 package et_canvas_schematic is
 
+	window : gtk_window; -- This is an access/pointer to the main window.
+
+	title : constant string := et_general.system_name & " SCHEMATIC ";
+	
 	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas_general.pac_canvas (
 		canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain

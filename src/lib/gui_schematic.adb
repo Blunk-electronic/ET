@@ -65,7 +65,6 @@ use et_canvas_schematic.pac_canvas;
 
 package body gui_schematic is
 
-	window					: gtk_window; -- This is an access/pointer to the actual window.
 	box_back				: gtk_box; -- This is an access/pointer to the actual box.
 	box_left, box_right		: gtk_box;
 	box_console				: gtk_box;
@@ -90,7 +89,12 @@ package body gui_schematic is
 		log_threshold := log_threshold_in;
 		
 		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
-		window.set_title (system_name & " SCHEMATIC"); -- CS: plus module name
+
+		-- Show the module name and sheet number in the title bar:
+		window.set_title (title 
+			& to_string (type_modules.key (module))
+			& " sheet " & et_coordinates.to_sheet (sheet));
+						  
 		window.set_default_size (1024, 768);
 
 		-- If the operator wishes to terminate the program (by clicking X)

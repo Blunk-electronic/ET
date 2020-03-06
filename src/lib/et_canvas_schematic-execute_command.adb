@@ -42,6 +42,7 @@ with ada.exceptions;			use ada.exceptions;
 with scripting;					use scripting;
 with et_devices;
 with schematic_ops;
+with et_canvas_board;
 
 separate (et_canvas_schematic)
 
@@ -157,11 +158,22 @@ procedure execute_command (
 	procedure show_module is
 	-- Sets the active module and first sheet.
 		use et_general;
+		use et_project;
+		
 		module : type_module_name.bounded_string := to_module_name (f (3));
 	begin
 		log (text => "set module " & enclose_in_quotes (to_string (module)), level => log_threshold + 1);
 		self.set_module (module);
 		self.set_sheet (1);
+
+		-- Update module name and sheet number in the schematic window title bar:
+		et_canvas_schematic.window.set_title (
+			et_canvas_schematic.title & to_string (module) &
+			" sheet " & to_sheet (1));
+		
+		-- Update the board window title bar:
+		et_canvas_board.window.set_title (
+			et_canvas_board.title_board & to_string (module));
 	end show_module;
 
 	procedure show_module_and_sheet is

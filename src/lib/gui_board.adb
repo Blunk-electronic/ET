@@ -64,7 +64,6 @@ use et_canvas_board.pac_canvas;
 
 package body gui_board is
 
-	window					: gtk_window; -- This is an access/pointer to the actual window.
 	box_back				: gtk_box; -- This is an access/pointer to the actual box.
 	box_left, box_right		: gtk_box;
 	box_console				: gtk_box;
@@ -88,7 +87,9 @@ package body gui_board is
 		pac_canvas.log_threshold := log_threshold_in;
 
 		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
-		window.set_title (system_name & " BOARD"); -- CS: plus module name
+
+		-- Show the module name in the title bar:
+		window.set_title (title_board & to_string (type_modules.key (module)));
 		window.set_default_size (1024, 768);
 
 		-- If the operator wishes to terminate the program (by clicking X)

@@ -61,9 +61,11 @@ package body gui is
 
 		-- set up the schematic window
 		gui_schematic.init_window (module, sheet, log_threshold + 1);
-
+		
 		-- set up the board window
 		gui_board.init_window (module, log_threshold + 1);
+
+
 
 		
 		-- Start the main gtk loop. This is a loop that permanently draws the widgets and
