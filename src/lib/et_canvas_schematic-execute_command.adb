@@ -153,6 +153,9 @@ procedure execute_command (
 		-- CS test if sheet exists
 		
 		self.set_sheet (sheet);
+
+		-- Update module name and sheet number in the schematic window title bar:
+		set_title_bar (active_module, self.get_sheet);
 	end show_sheet;
 
 	procedure show_module is
@@ -167,13 +170,10 @@ procedure execute_command (
 		self.set_sheet (1);
 
 		-- Update module name and sheet number in the schematic window title bar:
-		et_canvas_schematic.window.set_title (
-			et_canvas_schematic.title & to_string (module) &
-			" sheet " & to_sheet (1));
+		set_title_bar (module, self.get_sheet);
 		
 		-- Update the board window title bar:
-		et_canvas_board.window.set_title (
-			et_canvas_board.title_board & to_string (module));
+		et_canvas_board.set_title_bar (module);
 	end show_module;
 
 	procedure show_module_and_sheet is
@@ -186,6 +186,12 @@ procedure execute_command (
 			 & " sheet " & to_sheet (sheet), level => log_threshold + 1);
 		set_module (module);
 		self.set_sheet (sheet);
+
+		-- Update module name and sheet number in the schematic window title bar:
+		set_title_bar (module, self.get_sheet);
+		
+		-- Update the board window title bar:
+		et_canvas_board.set_title_bar (module);
 	end show_module_and_sheet;
 
 	

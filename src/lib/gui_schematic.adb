@@ -91,10 +91,8 @@ package body gui_schematic is
 		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
 
 		-- Show the module name and sheet number in the title bar:
-		window.set_title (title 
-			& to_string (type_modules.key (module))
-			& " sheet " & et_coordinates.to_sheet (sheet));
-						  
+		set_title_bar (type_modules.key (module), sheet);
+		
 		window.set_default_size (1024, 768);
 
 		-- If the operator wishes to terminate the program (by clicking X)

@@ -66,7 +66,12 @@ package et_canvas_board is
 
 	window : gtk_window; -- This is an access/pointer to the main window.
 
-	title_board : constant string := et_general.system_name & " BOARD ";
+	title : constant string := et_general.system_name & " BOARD ";
+
+	procedure set_title_bar (
+		-- CS project name								
+		module		: in et_general.type_module_name.bounded_string);
+
 	
 	-- Instantiate the general canvas package:
 	package pac_canvas is new et_canvas_general.pac_canvas (

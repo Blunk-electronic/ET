@@ -89,7 +89,8 @@ package body gui_board is
 		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
 
 		-- Show the module name in the title bar:
-		window.set_title (title_board & to_string (type_modules.key (module)));
+		set_title_bar (type_modules.key (module));
+		
 		window.set_default_size (1024, 768);
 
 		-- If the operator wishes to terminate the program (by clicking X)

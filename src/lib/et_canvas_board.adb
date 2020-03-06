@@ -48,6 +48,15 @@ with et_canvas_schematic;
 
 package body et_canvas_board is
 
+	procedure set_title_bar (
+		-- CS project name
+		module		: in et_general.type_module_name.bounded_string)
+	is
+		use et_general;
+	begin
+		window.set_title (title & to_string (module));
+	end set_title_bar;
+	
 	function to_string (
 		self	: not null access type_view;
 		point	: in type_point)

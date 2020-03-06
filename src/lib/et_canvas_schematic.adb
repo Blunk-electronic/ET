@@ -45,6 +45,16 @@ use et_coordinates.geometry;
 
 package body et_canvas_schematic is
 
+	procedure set_title_bar (
+		-- CS project name
+		module		: in et_general.type_module_name.bounded_string;
+		sheet		: in type_sheet) is
+		use et_general;
+	begin
+		window.set_title (title & to_string (module) &
+			" sheet " & to_sheet (sheet));
+	end set_title_bar;
+	
 	function to_string (
 		self	: not null access type_view;
 		point	: in type_point)
@@ -99,6 +109,13 @@ package body et_canvas_schematic is
 		use et_project.type_modules;
 	begin
 		return to_string (key (current_active_module)); -- motor_driver (without extension)
+	end active_module;
+
+	function active_module return et_general.type_module_name.bounded_string is
+		use et_general.type_module_name;
+		use et_project.type_modules;
+	begin
+		return key (current_active_module); -- motor_driver (without extension)
 	end active_module;
 
 	
