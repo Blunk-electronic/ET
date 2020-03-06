@@ -190,6 +190,13 @@ package body et_canvas_schematic is
 		self.drawing.grid := type_modules.element (self.drawing.module).grid;
 	end set_grid;
 
+	procedure set_sheet (
+		self    : not null access type_view;
+		sheet	: in et_coordinates.type_sheet) is
+	begin
+		self.drawing.sheet := sheet;
+	end set_sheet;
+	
 	procedure init_drawing (
 		view	: in type_view_ptr;							 
 		module	: in et_project.type_modules.cursor;

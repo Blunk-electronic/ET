@@ -101,6 +101,8 @@ procedure execute_command (
 				device_name		=> device_name,
 				unit_name		=> unit_name);
 	begin
+		-- CS log message ?
+		
 		if location.exists then
 			-- CS open the right sheet
 			center_on (canvas, type_point (location.position));
@@ -126,6 +128,8 @@ procedure execute_command (
 				device_name		=> device_name,
 				unit_name		=> unit_name);
 	begin
+		-- CS log message ?
+		
 		if location.exists then
 			-- CS open the right sheet
 			center_on (canvas, type_point (location.position));
@@ -137,7 +141,9 @@ procedure execute_command (
 	procedure show_sheet is
 		sheet : et_coordinates.type_sheet := to_sheet (f (3));
 	begin
-		null;
+		log (text => "set sheet" & to_sheet (sheet), level => log_threshold + 1); 
+		self.set_sheet (sheet);
+		self.queue_draw;
 	end show_sheet;
 	
 begin

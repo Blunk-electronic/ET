@@ -57,7 +57,7 @@ with et_schematic;
 with et_frames;
 
 with et_canvas_general;
-with et_canvas_primitive_draw_ops;
+with et_canvas_primitive_draw_ops;	
 with et_string_processing;			use et_string_processing;
 
 package et_canvas_schematic is
@@ -164,9 +164,14 @@ package et_canvas_schematic is
 		context : type_draw_context;
 		area    : type_rectangle);
 
-	-- Sets the schematic drawing grid:
+	-- Copies the drawing grid as specified in the module to drawing.grid.
 	procedure set_grid (view : in type_view_ptr);
-	
+
+	-- Sets the active sheet to be displayed in the canvas:
+	procedure set_sheet (
+		self    : not null access type_view;
+		sheet	: in et_coordinates.type_sheet);
+							
 	-- Init the drawing:
 	procedure init_drawing (
 		view	: in type_view_ptr;
