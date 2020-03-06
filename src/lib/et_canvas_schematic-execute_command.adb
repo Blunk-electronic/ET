@@ -97,7 +97,8 @@ procedure execute_command (
 		
 		-- Locate the requested device and unit.
 		location : type_unit_query := unit_position (
-				module_cursor	=> self.drawing.module,
+				--module_cursor	=> self.drawing.module,
+				module_cursor	=> current_active_module,
 				device_name		=> device_name,
 				unit_name		=> unit_name);
 	begin
@@ -124,7 +125,8 @@ procedure execute_command (
 		
 		-- Locate the requested device and unit.
 		location : type_unit_query := unit_position (
-				module_cursor	=> self.drawing.module,
+				--module_cursor	=> self.drawing.module,
+				module_cursor	=> current_active_module,
 				device_name		=> device_name,
 				unit_name		=> unit_name);
 	begin
@@ -150,9 +152,9 @@ procedure execute_command (
 		use et_general;
 		module : type_module_name.bounded_string := to_module_name (f (3));
 	begin
-		null;
 		log (text => "set module " & enclose_in_quotes (to_string (module)), level => log_threshold + 1);
 		self.set_module (module);
+		redraw (canvas);
 	end show_module;
 	
 begin

@@ -82,10 +82,14 @@ package et_canvas_schematic is
 	
 
 	use et_coordinates.geometry; -- CS
+
+	-- The current active module is stored here. Whenever objects of the schematic
+	-- or board are to be drawn, this variable must be read.
+	current_active_module : et_project.type_modules.cursor; -- the currently active module
 	
 	-- This is the link to the actual drawing:
 	type type_drawing is record	
-		module	: et_project.type_modules.cursor; -- the currently active module
+		--module	: et_project.type_modules.cursor; -- the currently active module
 
 		-- These variables are frequently used. Procedure init_drawing
 		-- sets them. Other operations are free to access them.

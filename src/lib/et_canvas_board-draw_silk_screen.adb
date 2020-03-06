@@ -153,7 +153,8 @@ begin -- draw_silk_screen
 -- 	put_line ("draw board silk screen ...");
 	
 	type_modules.query_element (
-		position	=> self.drawing.module,
+-- 		position	=> self.drawing.module,
+		position	=> et_canvas_schematic.current_active_module,
 		process		=> query_itemss'access);
 	
 end draw_silk_screen;

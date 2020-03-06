@@ -139,7 +139,8 @@ begin
 	
 	-- draw the nets
 	type_modules.query_element (
-		position	=> self.drawing.module,
+		--		position	=> self.drawing.module,
+		position	=> current_active_module,
 		process		=> query_nets'access);
 	
 end draw_nets;

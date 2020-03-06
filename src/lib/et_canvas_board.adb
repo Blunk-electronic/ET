@@ -44,6 +44,8 @@ with et_frames;
 with et_pcb_coordinates;	use et_pcb_coordinates;
 use et_pcb_coordinates.geometry;
 
+with et_canvas_schematic;
+
 package body et_canvas_board is
 
 	function to_string (
@@ -100,8 +102,10 @@ package body et_canvas_board is
 		return string is
 		use et_general.type_module_name;
 		use et_project.type_modules;
+		use et_canvas_schematic;
 	begin
-		return to_string (key (self.drawing.module)); -- motor_driver (without extension)
+		--return to_string (key (self.drawing.module)); -- motor_driver (without extension)
+		return to_string (key (current_active_module)); -- motor_driver (without extension)
 	end active_module;
 	
 	function bounding_box (self : not null access type_view)
@@ -184,10 +188,12 @@ package body et_canvas_board is
 
 	procedure set_grid (view : in type_view_ptr) is
 		use et_project;
+		use et_canvas_schematic;
 		type type_local_view_ptr is access all type_view;
 		self : type_local_view_ptr := type_local_view_ptr (view);
 	begin
-		self.drawing.grid := type_modules.element (self.drawing.module).board.grid;
+		--self.drawing.grid := type_modules.element (self.drawing.module).board.grid;
+		self.drawing.grid := type_modules.element (current_active_module).board.grid;
 	end set_grid;
 	
 	procedure init_drawing (
@@ -201,7 +207,7 @@ package body et_canvas_board is
 		type type_local_view_ptr is access all type_view;
 		self : type_local_view_ptr := type_local_view_ptr (view);
 	begin
-		self.drawing.module := module;
+-- 		self.drawing.module := module;
 
 		-- set some variables frequently used regarding frame and paper:
 		self.drawing.frame := type_modules.element (module).board.frame;

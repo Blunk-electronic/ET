@@ -25,7 +25,8 @@ zoom center 10 10 2 # x/y scale
 
 ## SHOW
 
-To open a module for editing run this command:
+To open a module for editing run this command. NOTE: This command is available in the 
+schematic editor only.
 ```
 show module LED-driver
 ```
