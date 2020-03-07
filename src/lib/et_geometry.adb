@@ -355,6 +355,20 @@ package body et_geometry is
 			pi.y := - pi.y;
 			return pi;
 		end invert;
+
+		function invert (
+			point	: in type_point;
+			axis	: in type_axis_2d)
+			return type_point'class is
+			p : type_point := point;
+		begin
+			case axis is
+				when X => p.x := - p.x;
+				when Y => p.y := - p.y;
+			end case;
+
+			return p;
+		end invert;
 		
 		procedure reset (point : in out type_point'class) is begin
 		-- Moves the given point to the origin (0/0).

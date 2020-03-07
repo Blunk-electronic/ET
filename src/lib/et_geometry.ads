@@ -183,6 +183,12 @@ package et_geometry is
 		
 		function invert (point : in type_point'class) return type_point'class;
 		-- Inverts the given point by multiplying x by -1 and y by -1.
+
+		-- Inverts the point on the given axis.
+		function invert (
+			point	: in type_point;
+			axis	: in type_axis_2d)
+			return type_point'class;
 		
 		procedure reset (point : in out type_point'class);
 		-- Moves the given point to the origin (0/0).
