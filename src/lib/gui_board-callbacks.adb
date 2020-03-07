@@ -143,11 +143,11 @@ package body gui_board.callbacks is
 		if is_canvas_related (et_string_processing.field (cmd, 3)) then
 			log (text => "command is canvas related", level => log_threshold);
 
-			-- execute the command
-			-- CS et_canvas_board.execute_command (cmd, log_threshold);
--- 				self			=> canvas_board,
--- 				cmd				=> remove (cmd, 1, 2), -- field 1..2 no longer required
--- 				log_threshold	=> log_threshold);
+			-- execute the canvas board command
+			et_canvas_board.execute_command (
+				self			=> canvas_board,
+				cmd				=> remove (cmd, 1, 2), -- field 1..2 no longer required
+				log_threshold	=> log_threshold);
 
 		else
 			log (text => "command is board related", level => log_threshold);

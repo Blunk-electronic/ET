@@ -97,11 +97,13 @@ package body et_canvas_board is
 		use et_general;
 		p : type_point; -- to be returned
 	begin
+		put_line ("in  " & to_string (drawing_point));
+		
 		set (point	=> p,
 			 axis	=> X, 
 			 value	=> drawing_point.x 
 						+ self.drawing.frame_bounding_box.x
-						+ x (self.drawing.board_origin) -- because board origin is not the same as drawing origin
+-- 						+ x (self.drawing.board_origin) -- because board origin is not the same as drawing origin
 			);
 		
 		set (point	=> p,
@@ -109,9 +111,11 @@ package body et_canvas_board is
 			 value	=> type_distance (self.drawing.frame.frame.size.y) 
 						- drawing_point.y 
 						+ self.drawing.frame_bounding_box.y
-						+ y (self.drawing.board_origin)  -- because board origin is not the same as drawing origin
+-- 						+ y (self.drawing.board_origin)  -- because board origin is not the same as drawing origin
 			);
-		
+
+		move (p, self.drawing.board_origin);
+		put_line ("out " & to_string (p));
 		return p;
 	end;
 
@@ -274,8 +278,8 @@ package body et_canvas_board is
 		-- The schematic drawing has a grid:
 		set_grid (view);
 
-		--self.drawing.board_origin := type_point (set (100.0, 100.0)); -- CS
-		self.drawing.board_origin := type_point (set (20.0, 50.0)); -- CS
+		self.drawing.board_origin := type_point (set (100.0, 100.0)); -- CS
+		--self.drawing.board_origin := type_point (set (20.0, 50.0)); -- CS
 	end init_drawing;
 
 	procedure redraw (view : in type_view_ptr) is begin
@@ -310,7 +314,7 @@ package body et_canvas_board is
 	procedure execute_command (
 		self			: not null access type_view;
 		cmd				: in type_fields_of_line;
-		log_threshold	: in type_log_level) is null; -- CS
+		log_threshold	: in type_log_level) is separate;
 
 end et_canvas_board;
 
