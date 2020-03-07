@@ -115,15 +115,8 @@ procedure draw_silk_screen (
 		module_name	: in type_module_name.bounded_string;
 		module		: in type_module) is
 	begin
-		save (context.cr);
+-- 		save (context.cr);
 		
-		-- Prepare the current transformation matrix (CTM) so that
-		-- all following drawing is relative to the upper left frame corner.
-		translate (
-			context.cr,
-			convert_x (self.drawing.frame_bounding_box.x),
-			convert_y (self.drawing.frame_bounding_box.y));
-
 		-- All outline segments will be drawn with the same color:
 		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 
@@ -146,7 +139,7 @@ procedure draw_silk_screen (
 
 		-- CS query packages
 		
-		restore (context.cr);
+-- 		restore (context.cr);
 	end query_itemss;
 	
 begin -- draw_silk_screen

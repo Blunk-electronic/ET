@@ -171,6 +171,7 @@ package body et_canvas_board is
 						x => - self.drawing.frame_bounding_box.x,
 						y => - self.drawing.frame_bounding_box.y));
 
+		board_origin : constant type_point := type_point (set (-100.0, 100.0));
 	begin
 -- 		put_line ("draw internal ...");
 		
@@ -185,13 +186,24 @@ package body et_canvas_board is
 
 		-- move area_shifted
 		move_by (area_shifted, area_shifted_new_position);
+
+-- 		move_by (area_shifted, board_origin);
+
+		save (context.cr);
+		-- Prepare the current transformation matrix (CTM) so that
+		-- all following drawing is relative to the upper left frame corner.
+		translate (
+			context.cr,
+			convert_x (self.drawing.frame_bounding_box.x), -- + 100.0),
+			convert_y (self.drawing.frame_bounding_box.y)); -- 100.0));
 		
 		draw_outline (self, area_shifted, context);
 		draw_silk_screen (self, area_shifted, context, TOP);
 		-- CS draw_packages (self, area, context); -- separate unit
 		-- CS self.model.draw_texts (area, context);
 		-- CS self.model.draw_submodules (area, context);
-			
+
+		restore (context.cr);
 	end draw_internal;
 
 	procedure set_grid (view : in type_view_ptr) is
