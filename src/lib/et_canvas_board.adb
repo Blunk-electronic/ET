@@ -97,13 +97,11 @@ package body et_canvas_board is
 		use et_general;
 		p : type_point; -- to be returned
 	begin
-		put_line ("in  " & to_string (drawing_point));
-		
 		set (point	=> p,
 			 axis	=> X, 
 			 value	=> drawing_point.x 
 						+ self.drawing.frame_bounding_box.x
--- 						+ x (self.drawing.board_origin) -- because board origin is not the same as drawing origin
+						+ x (self.drawing.board_origin) -- because board origin is not the same as drawing origin
 			);
 		
 		set (point	=> p,
@@ -111,11 +109,9 @@ package body et_canvas_board is
 			 value	=> type_distance (self.drawing.frame.frame.size.y) 
 						- drawing_point.y 
 						+ self.drawing.frame_bounding_box.y
--- 						+ y (self.drawing.board_origin)  -- because board origin is not the same as drawing origin
+						- y (self.drawing.board_origin)  -- because board origin is not the same as drawing origin
 			);
 
-		move (p, self.drawing.board_origin);
-		put_line ("out " & to_string (p));
 		return p;
 	end;
 

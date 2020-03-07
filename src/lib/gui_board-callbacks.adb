@@ -170,6 +170,7 @@ package body gui_board.callbacks is
 
 		-- CS output error message in gui
 
+		log_indentation_down;
 	end execute_command;
 
 	function on_key_event (
