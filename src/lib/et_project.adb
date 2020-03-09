@@ -1463,6 +1463,8 @@ package body et_project is
 			-- schematic frames:
 			section_mark (section_drawing_frames, HEADER);
 			section_mark (section_schematic, HEADER);
+
+			-- write the frame template like "template ../frames/dummy.frs"
 			write (
 				keyword 	=> keyword_template, 
 				parameters	=> et_frames.to_string (element (module_cursor).frames.template));
@@ -1474,11 +1476,17 @@ package body et_project is
 
 			-- board frame:
 			section_mark (section_board, HEADER);
-			
+
+			-- write the frame template like "template ../frames/dummy.frb"
 			write (
 				keyword		=> keyword_template, 
 				parameters	=> et_frames.to_string (element (module_cursor).board.frame.template));
-			
+
+			-- write the board origin like "origin x 40 y 60"
+			write (
+				keyword		=> keyword_origin,
+				parameters	=> position (element (module_cursor).board.origin));
+				
 			section_mark (section_board, FOOTER);			
 			section_mark (section_drawing_frames, FOOTER);
 		end query_frames;
@@ -2372,6 +2380,7 @@ package body et_project is
 		frame_template_schematic	: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
 		-- CS frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
 		frame_template_board		: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
+		frame_board_origin : et_pcb_coordinates.geometry.type_point := et_pcb.origin_default; -- x 40 y 60
 
 		procedure read_frame_template_schematic is
 		-- Reads the name of the schematic frame template.
@@ -2396,6 +2405,10 @@ package body et_project is
 			if kw = keyword_template then -- template $ET_FRAMES/drawing_frame_version_2.frb
 				expect_field_count (line, 2);
 				frame_template_board := to_template_name (f (line, 2));
+
+			elsif kw = keyword_origin then -- origin x 40 y 60
+				expect_field_count (line, 5);
+				frame_board_origin := pcb_rw.to_position (line, 2);
 			else
 				invalid_keyword (kw);
 			end if;
@@ -2729,6 +2742,8 @@ package body et_project is
 						domain			=> PCB,
 						log_threshold	=> log_threshold + 2);
 
+					-- set the board origin
+					module.board.origin := frame_board_origin;
 				end set_frame_board;
 
 				procedure insert_note (

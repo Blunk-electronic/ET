@@ -138,6 +138,19 @@ schematic led_driver rotate unit R1 1 relative 90
 ```
 
 #### in the board
+Inside the drawing frame the board has a position. This anchor point
+is usually the lower left corner of the board. For circular boards it is the center.
+However, this point is the board origin, where all other position refer to.
+The command to move the board requires x/y coordinates relative to the 
+lower left corner of the drawing frame:
+```
+board led_driver move board absolute 20 50
+```
+```
+board led_driver move board relative -5 10
+```
+
+
 ```
 board led_driver move device R1 absolute 140 45.2
 ```

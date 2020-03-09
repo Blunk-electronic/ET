@@ -206,6 +206,7 @@ package scripting is
 
 	type type_noun_board is ( -- CS prepend prefix NOUN_
 		ASSY, -- assembly documentation
+		BOARD,
 		DEVICE,
 		FREETRACK,
 		GRID,

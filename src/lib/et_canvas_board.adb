@@ -274,8 +274,8 @@ package body et_canvas_board is
 		-- The schematic drawing has a grid:
 		set_grid (view);
 
-		self.drawing.board_origin := type_point (set (100.0, 100.0)); -- CS
-		--self.drawing.board_origin := type_point (set (20.0, 50.0)); -- CS
+		-- Get the board position (distance relative to the lower left corner of the drawing frame):
+		self.drawing.board_origin := type_modules.element (module).board.origin;
 	end init_drawing;
 
 	procedure redraw (view : in type_view_ptr) is begin

@@ -312,6 +312,7 @@ package et_project is
 	keyword_netchanger				: constant string := "netchanger";		
 	keyword_height					: constant string := "height";	
 	keyword_template				: constant string := "template";
+	keyword_origin					: constant string := "origin";
 	keyword_model					: constant string := "model";				
 	keyword_variant					: constant string := "variant";
 	keyword_mirrored				: constant string := "mirrored";

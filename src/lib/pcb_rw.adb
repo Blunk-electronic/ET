@@ -435,18 +435,18 @@ package body pcb_rw is
 	begin
 		if point'tag = et_pcb_coordinates.geometry.type_point'tag then
 			return xy;
-			-- position x 162.560 y 98.240
+			-- x 162.560 y 98.240
 			
 		elsif point'tag = et_pcb_coordinates.geometry.type_position'tag then
 			return xy 
 				& space & keyword_rotation & to_string (rot (et_pcb_coordinates.geometry.type_position (point)));
-				-- position x 162.560 y 98.240 rotation 180.00
+				-- x 162.560 y 98.240 rotation 180.00
 			
 		elsif point'tag = type_package_position'tag then
 			return xy
 				& space & keyword_rotation & to_string (rot (et_pcb_coordinates.geometry.type_position (point)))
 				& space & keyword_face & to_string (get_face (type_package_position (point)));
-				-- position x 162.560 y 98.240 rotation 180.00 face top
+				-- x 162.560 y 98.240 rotation 180.00 face top
 		else
 			return xy;
 		end if;

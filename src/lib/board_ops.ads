@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -63,6 +63,14 @@ with et_devices;				use et_devices;
 
 package board_ops is
 
+	procedure move_board (
+	-- Moves the origin of the board to the given point (relative to the lower left 
+	-- corner of the drawing frame):
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		coordinates		: in type_coordinates; -- relative/absolute		
+		point			: in geometry.type_point; -- x/y
+		log_threshold	: in type_log_level);
+	
 	procedure add_layer (
 	-- Adds a signal layer to the board.
 	-- Renumbers the signal layers.							

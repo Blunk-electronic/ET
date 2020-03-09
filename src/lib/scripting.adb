@@ -3428,6 +3428,25 @@ package body scripting is
 				
 			when MOVE =>
 				case noun is
+					when BOARD =>
+						case fields is
+							when 7 => -- board led_driver move board absolute 20 50
+								board_ops.move_board (
+									module_name 	=> module,
+									coordinates		=> schematic_ops.to_coordinates (f (5)),  -- relative/absolute
+									point			=> type_point (set (
+														x => to_distance (f (6)),
+														y => to_distance (f (7)))),
+									log_threshold	=> log_threshold + 1
+									);
+
+							when 8 .. count_type'last =>
+								command_too_long (cmd, fields - 1);
+								
+							when others =>
+								command_incomplete (cmd);
+						end case;
+						
 					when DEVICE =>
 						case fields is
 							when 8 =>

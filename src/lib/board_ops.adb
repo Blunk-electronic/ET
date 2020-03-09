@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2019 Mario Blunk, Blunk electronic                 --
+--         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -101,6 +101,51 @@ package body board_ops is
 		raise constraint_error;
 	end;
 
+	procedure move_board (
+	-- Moves the origin of the board to the given point (relative to the lower left 
+	-- corner of the drawing frame):
+		module_name		: in type_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		coordinates		: in type_coordinates; -- relative/absolute		
+		point			: in geometry.type_point; -- x/y
+		log_threshold	: in type_log_level) is
+
+		use et_project.type_modules;
+		module_cursor : type_modules.cursor; -- points to the module being modified
+
+		procedure set_origin (
+			module_name	: in type_module_name.bounded_string;
+			module		: in out type_module) is
+		begin
+			case coordinates is
+				when ABSOLUTE =>
+					module.board.origin := point;
+
+				when RELATIVE =>
+					move (module.board.origin, point);
+			end case;
+		end set_origin;
+		
+	begin -- move_board
+		case coordinates is
+			when ABSOLUTE =>
+				log (text => "module " & to_string (module_name) &
+					" moving board origin to" & to_string (point), level => log_threshold);
+
+			when RELATIVE =>
+				log (text => "module " & to_string (module_name) &
+					" moving board origin by" & to_string (point), level => log_threshold);
+		end case;
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		update_element (
+			container	=> modules,
+			position	=> module_cursor,
+			process		=> set_origin'access);
+
+	end move_board;
+	
 	procedure add_layer (
 	-- Adds a signal layer to the board.
 	-- Renumbers the signal layers.
