@@ -201,8 +201,9 @@ package body gui_board is
 
 		gtk_new (canvas);
 
-		-- set the module to be opened and optionally the sheet to be displayed:
-		init_drawing (canvas, module);
+		-- draw the board layout
+		redraw (canvas);
+		
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 		
 		scale_to_fit (canvas);

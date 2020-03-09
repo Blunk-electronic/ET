@@ -233,6 +233,14 @@ package body et_canvas_schematic is
 			-- CS list available modules
 		end if;
 	end set_module;
+
+	procedure init_frame is
+		use et_general;
+		use et_frames;
+		use et_project;
+	begin
+		null;
+	end init_frame;
 	
 	procedure init_drawing (
 		view	: in type_view_ptr;							 
@@ -249,7 +257,7 @@ package body et_canvas_schematic is
 		current_active_module := init_drawing.module;
 
 		-- set some variables frequently used regarding frame and paper:
-		self.drawing.frame := type_modules.element (module).frames.frame;
+		self.drawing.frame := type_modules.element (current_active_module).frames.frame;
 		
 		self.drawing.paper_height := type_distance_positive (paper_dimension (
 							paper_size	=> self.drawing.frame.paper,
@@ -287,7 +295,8 @@ package body et_canvas_schematic is
 	end init_drawing;
 
 	procedure redraw (view : in type_view_ptr) is begin
-		set_grid (view);
+				set_grid (view);
+-- 		init_drawing (view);
 		queue_draw (view);
 	end;
 

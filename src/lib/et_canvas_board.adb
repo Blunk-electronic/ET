@@ -232,8 +232,8 @@ package body et_canvas_board is
 	end set_grid;
 	
 	procedure init_drawing (
-		view	: in type_view_ptr;							 
-		module	: in et_project.type_modules.cursor)
+		view	: in type_view_ptr)
+-- 		module	: in et_project.type_modules.cursor)
 	is
 		use et_general;
 		use et_frames;
@@ -241,9 +241,12 @@ package body et_canvas_board is
 
 		type type_local_view_ptr is access all type_view;
 		self : type_local_view_ptr := type_local_view_ptr (view);
+
+		-- set a cursor to the currently active module:
+		am : et_project.type_modules.cursor := et_canvas_schematic.current_active_module;
 	begin
 		-- set some variables frequently used regarding frame and paper:
-		self.drawing.frame := type_modules.element (module).board.frame;
+		self.drawing.frame := type_modules.element (am).board.frame;
 		
 		self.drawing.paper_height := type_distance_positive (paper_dimension (
 							paper_size	=> self.drawing.frame.frame.paper,
@@ -275,11 +278,12 @@ package body et_canvas_board is
 		set_grid (view);
 
 		-- Get the board position (distance relative to the lower left corner of the drawing frame):
-		self.drawing.board_origin := type_modules.element (module).board.origin;
+		self.drawing.board_origin := type_modules.element (am).board.origin;
 	end init_drawing;
 
 	procedure redraw (view : in type_view_ptr) is begin
-		set_grid (view);
+		-- 		set_grid (view);
+		init_drawing (view);
 		queue_draw (view);
 	end;
 	

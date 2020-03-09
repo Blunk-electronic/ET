@@ -61,6 +61,8 @@ package body gui is
 
 		-- set up the schematic window
 		gui_schematic.init_window (module, sheet, log_threshold + 1);
+
+		-- CS test if board available (see et_schematic.type_module)
 		
 		-- set up the board window
 		gui_board.init_window (module, log_threshold + 1);

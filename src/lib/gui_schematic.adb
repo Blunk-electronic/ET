@@ -206,6 +206,7 @@ package body gui_schematic is
 
 		-- set the module to be opened and optionally the sheet to be displayed:
 		init_drawing (canvas, module, sheet);
+		
 		add (scrolled, canvas); -- place the canvas in the scrolled window
 		
 		scale_to_fit (canvas);

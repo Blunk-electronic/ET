@@ -176,8 +176,8 @@ package et_canvas_board is
 	
 	-- Init the drawing:
 	procedure init_drawing (
-		view	: in type_view_ptr;
-		module	: in et_project.type_modules.cursor);
+		view	: in type_view_ptr);
+-- 		module	: in et_project.type_modules.cursor);
 
 	-- Redraws the board:
 	procedure redraw (view : in type_view_ptr);
