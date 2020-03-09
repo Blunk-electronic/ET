@@ -227,13 +227,11 @@ package body et_canvas_board is
 		type type_local_view_ptr is access all type_view;
 		self : type_local_view_ptr := type_local_view_ptr (view);
 	begin
-		--self.drawing.grid := type_modules.element (self.drawing.module).board.grid;
 		self.drawing.grid := type_modules.element (current_active_module).board.grid;
 	end set_grid;
 	
 	procedure init_drawing (
 		view	: in type_view_ptr)
--- 		module	: in et_project.type_modules.cursor)
 	is
 		use et_general;
 		use et_frames;
@@ -282,7 +280,6 @@ package body et_canvas_board is
 	end init_drawing;
 
 	procedure redraw (view : in type_view_ptr) is begin
-		-- 		set_grid (view);
 		init_drawing (view);
 		queue_draw (view);
 	end;

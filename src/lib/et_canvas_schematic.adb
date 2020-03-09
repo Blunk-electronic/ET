@@ -196,7 +196,6 @@ package body et_canvas_schematic is
 		type type_local_view_ptr is access all type_view;
 		self : type_local_view_ptr := type_local_view_ptr (view);
 	begin
-		--self.drawing.grid := type_modules.element (self.drawing.module).grid;
 		self.drawing.grid := type_modules.element (current_active_module).grid;
 	end set_grid;
 
@@ -234,18 +233,8 @@ package body et_canvas_schematic is
 		end if;
 	end set_module;
 
-	procedure init_frame is
-		use et_general;
-		use et_frames;
-		use et_project;
-	begin
-		null;
-	end init_frame;
-	
-	procedure init_drawing (
-		view	: in type_view_ptr;							 
-		module	: in et_project.type_modules.cursor;
-		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be opened
+	procedure init_frame (
+		view	: in type_view_ptr)
 	is
 		use et_general;
 		use et_frames;
@@ -253,9 +242,8 @@ package body et_canvas_schematic is
 
 		type type_local_view_ptr is access all type_view;
 		self : type_local_view_ptr := type_local_view_ptr (view);
-	begin
-		current_active_module := init_drawing.module;
 
+	begin
 		-- set some variables frequently used regarding frame and paper:
 		self.drawing.frame := type_modules.element (current_active_module).frames.frame;
 		
@@ -285,18 +273,27 @@ package body et_canvas_schematic is
 		-- Drawing of the title block items is relative to the title block position:
 		self.drawing.title_block_position := self.drawing.frame.title_block_schematic.position;
 
+	end init_frame;
+	
+	procedure init_drawing (
+		view	: in type_view_ptr;							 
+		module	: in et_project.type_modules.cursor; -- the module to be drawn
+		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be drawn
+	is
+		type type_local_view_ptr is access all type_view;
+		self : type_local_view_ptr := type_local_view_ptr (view);
+	begin
+		-- set the active module:
+		current_active_module := module;
 		
-		-- set active sheet
+		-- set active sheet:
 		self.drawing.sheet := sheet;
-
-		-- The schematic drawing has a grid:
-		set_grid (view);
 		
 	end init_drawing;
 
 	procedure redraw (view : in type_view_ptr) is begin
-				set_grid (view);
--- 		init_drawing (view);
+		init_frame (view); -- set the frame stuff (paper, sheet size, title block, ...)
+		set_grid (view);
 		queue_draw (view);
 	end;
 

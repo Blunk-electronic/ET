@@ -57,3 +57,6 @@ If a device has more than one unit:
 ```
 show device IC1 IO-BANK2
 ```
+
+### In Board
+todo

@@ -203,8 +203,8 @@ package et_canvas_schematic is
 	-- Init the drawing:
 	procedure init_drawing (
 		view	: in type_view_ptr;
-		module	: in et_project.type_modules.cursor;
-		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be opened
+		module	: in et_project.type_modules.cursor; -- the module to be drawn
+		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be drawn
 
 	-- Redraws the schematic:
 	procedure redraw (view : in type_view_ptr);
