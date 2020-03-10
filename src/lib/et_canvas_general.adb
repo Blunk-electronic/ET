@@ -509,7 +509,9 @@ package body pac_canvas is
 	-- this function outputs them at the console.
 	function on_mouse_movement (
 		view  : access gtk_widget_record'class;
-		event : gdk_event_motion) return boolean is
+		event : gdk_event_motion) return boolean 
+	is
+		use et_general;
 		
 		-- the point where the mouse pointer is pointing at
 		view_point : type_view_point;
@@ -537,6 +539,10 @@ package body pac_canvas is
 
 		drawing_point := model_to_drawing (self, model_point);
 		put_line (" drawing " & to_string (self, drawing_point));
+
+		-- update mouse position display:
+		gtk_entry (cursor_x.get_child).set_text (to_string (self, drawing_point, X));
+		gtk_entry (cursor_y.get_child).set_text (to_string (self, drawing_point, Y));
 		
 		return true; -- indicates that event has been handled
 	end on_mouse_movement;

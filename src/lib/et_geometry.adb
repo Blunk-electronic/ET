@@ -733,24 +733,23 @@ package body et_geometry is
 			
 		end rotate_to;
 
-		
+		function round (
+			distance	: in type_distance;
+			grid		: in type_distance_grid)
+			return type_distance is
+		begin
+			return type_distance (integer (distance / grid)) * grid;
+		end round;
+			
 		function round (
 			point 	: in type_point;
 			grid	: in type_grid) 
-			return string 
-		is 
-			function change_resolution (
-				d	: in type_distance;
-				r	: in type_distance_grid)
-				return type_distance is
-			begin
-				return type_distance (integer (d / r)) * r;
-			end;
+			return string is 
 		begin
 			return point_preamble
-				& to_string (change_resolution (point.x, grid.x))
+				& to_string (round (point.x, grid.x))
 				& axis_separator
-				& to_string (change_resolution (point.y, grid.y));
+				& to_string (round (point.y, grid.y));
 		end;
 
 		function snap_to_grid (

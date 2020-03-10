@@ -307,6 +307,12 @@ package et_geometry is
 			point		: in out type_point'class;
 			rotation	: in type_rotation);
 
+		-- Returns a distance rounded according to given grid.		
+		function round (
+			distance	: in type_distance;
+			grid		: in type_distance_grid)
+			return type_distance;
+		
 		-- Returns x/y of point rounded according to given grid.
 		function round (
 			point	: in type_point;

@@ -43,7 +43,7 @@ with gtk.widget;  			use gtk.widget;
 with gtk.button;     		--use gtk.button;
 with glib.object;			--use glib.object;
 with gtk.gentry;
-with gtk.combo_box_text;	with gtk.combo_box_text;	
+with gtk.combo_box_text;	use gtk.combo_box_text;	
 with gtkada.style;			use gtkada.style;
 
 
@@ -59,12 +59,16 @@ package gui_schematic.callbacks is
 		event : gdk.event.gdk_event_configure) 
 		return boolean;
 	
-	procedure zoom_to_fit (self : access glib.object.gobject_record'class);	
-	procedure zoom_in (self : access glib.object.gobject_record'class);
-	procedure zoom_out (self : access glib.object.gobject_record'class);
+-- 	procedure zoom_to_fit (self : access glib.object.gobject_record'class);	
+-- 	procedure zoom_in (self : access glib.object.gobject_record'class);
+-- 	procedure zoom_out (self : access glib.object.gobject_record'class);
 
 	
 	console : gtk_combo_box_text;
+
+
+
+	
 
 	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class);
 

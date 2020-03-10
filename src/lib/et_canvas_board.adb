@@ -56,6 +56,20 @@ package body et_canvas_board is
 	begin
 		window.set_title (title & to_string (module));
 	end set_title_bar;
+
+	function to_string (
+		self	: not null access type_view;
+		point	: in type_point;
+		axis	: in et_general.type_axis_2d)
+		return string 
+	is
+		use et_general;
+	begin
+		case axis is
+			when X => return to_string (round (x (point), self.drawing.grid.x));
+			when Y => return to_string (round (y (point), self.drawing.grid.y));
+		end case;
+	end;
 	
 	function to_string (
 		self	: not null access type_view;

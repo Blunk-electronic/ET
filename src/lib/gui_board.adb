@@ -70,11 +70,11 @@ package body gui_board is
 	box_drawing				: gtk_box;
 
 	-- We will have some buttons:
-	button_zoom_to_fit					: gtk_tool_button; -- This is an access/pointer to the actual button.
-	button_zoom_in, button_zoom_out		: gtk_tool_button;
+-- 	button_zoom_to_fit					: gtk_tool_button; -- This is an access/pointer to the actual button.
+-- 	button_zoom_in, button_zoom_out		: gtk_tool_button;
 
 	-- We will have a toolbar, a frame and a scrolled window:
-	toolbar		: gtk_toolbar; -- This is an access/pointer to the actual toolbar.
+-- 	toolbar		: gtk_toolbar; -- This is an access/pointer to the actual toolbar.
 	frame		: gtk_frame;
 	scrolled	: gtk_scrolled_window;
 
@@ -121,43 +121,56 @@ package body gui_board is
 		set_spacing (box_right, 10);
 		add (box_back, box_right);
 
-		-- toolbar on the left
-		gtk_new (toolbar);
-		set_orientation (toolbar, orientation_vertical);
-		pack_start (box_left, toolbar, expand => false);
+-- 		-- toolbar on the left
+-- 		gtk_new (toolbar);
+-- 		set_orientation (toolbar, orientation_vertical);
+-- 		pack_start (box_left, toolbar, expand => false);
+-- 
 
-
-
+		-- mouse position display:
+		gtk_new_vbox (box_cursor);
+		set_spacing (box_cursor, 10);
+		pack_start (box_left, box_cursor, expand => false);
 		
-		-- Create a button and place it in the toolbar:
-		gtk.tool_button.gtk_new (button_zoom_to_fit, label => "FIT");
-		insert (toolbar, button_zoom_to_fit);
+		gtk_new_with_entry (cursor_x);
+		gtk_new_with_entry (cursor_y);
 
-		-- If the operator clicks the button
-		-- call the procedure zoom_to_fit in package callbacks_4:
-		button_zoom_to_fit.on_clicked (zoom_to_fit'access, toolbar);
-
-
-
+		-- Connect to the on_activate signal of the entry (which is a child of console):
+-- 		gtk_entry (cursor_x.get_child).set_text ("test"); --gui_schematic.callbacks.execute_command'access); -- on hitting enter
 		
-		-- Create a button and place it in the toolbar:
-		gtk.tool_button.gtk_new (button_zoom_in, label => "IN");
-		insert (toolbar, button_zoom_in);
+		pack_start (box_cursor, cursor_x, expand => false);
+		pack_start (box_cursor, cursor_y, expand => false);
 
-		-- If the operator clicks the button
-		-- call the procedure zoom_in in package callbacks_4:
-		button_zoom_in.on_clicked (zoom_in'access, toolbar);
-
-
-
-		
-		-- Create another button and place it in the toolbar:
-		gtk.tool_button.gtk_new (button_zoom_out, label => "OUT");
-		insert (toolbar, button_zoom_out);
-
-		-- If the operator clicks the button
-		-- call the procedure zoom_out in package callbacks_4:
-		button_zoom_out.on_clicked (zoom_out'access, toolbar);
+-- 		
+-- 		-- Create a button and place it in the toolbar:
+-- 		gtk.tool_button.gtk_new (button_zoom_to_fit, label => "FIT");
+-- 		insert (toolbar, button_zoom_to_fit);
+-- 
+-- 		-- If the operator clicks the button
+-- 		-- call the procedure zoom_to_fit in package callbacks_4:
+-- 		button_zoom_to_fit.on_clicked (zoom_to_fit'access, toolbar);
+-- 
+-- 
+-- 
+-- 		
+-- 		-- Create a button and place it in the toolbar:
+-- 		gtk.tool_button.gtk_new (button_zoom_in, label => "IN");
+-- 		insert (toolbar, button_zoom_in);
+-- 
+-- 		-- If the operator clicks the button
+-- 		-- call the procedure zoom_in in package callbacks_4:
+-- 		button_zoom_in.on_clicked (zoom_in'access, toolbar);
+-- 
+-- 
+-- 
+-- 		
+-- 		-- Create another button and place it in the toolbar:
+-- 		gtk.tool_button.gtk_new (button_zoom_out, label => "OUT");
+-- 		insert (toolbar, button_zoom_out);
+-- 
+-- 		-- If the operator clicks the button
+-- 		-- call the procedure zoom_out in package callbacks_4:
+-- 		button_zoom_out.on_clicked (zoom_out'access, toolbar);
 
 
 

@@ -58,13 +58,14 @@ package gui_board.callbacks is
 		event : gdk.event.gdk_event_configure) 
 		return boolean;
 	
-	procedure zoom_to_fit (self : access glib.object.gobject_record'class);	
-	procedure zoom_in (self : access glib.object.gobject_record'class);
-	procedure zoom_out (self : access glib.object.gobject_record'class);
+-- 	procedure zoom_to_fit (self : access glib.object.gobject_record'class);	
+-- 	procedure zoom_in (self : access glib.object.gobject_record'class);
+-- 	procedure zoom_out (self : access glib.object.gobject_record'class);
 
 	
 	console : gtk_combo_box_text;
 
+	
 	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class);
 
 

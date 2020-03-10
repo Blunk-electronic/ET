@@ -46,6 +46,8 @@
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
 with gtk.window; 			use gtk.window;
+-- with gtk.combo_box_text;	use gtk.combo_box_text;
+with gtk.gentry;			use gtk.gentry;
 
 with glib;					use glib;
 with cairo;					use cairo;
@@ -73,6 +75,8 @@ package et_canvas_schematic is
 		-- CS project name								
 		module		: in et_general.type_module_name.bounded_string;
 		sheet		: in type_sheet);
+
+
 	
 	-- Instantiate the canvas package:
 	package pac_canvas is new et_canvas_general.pac_canvas (
@@ -134,6 +138,13 @@ package et_canvas_schematic is
 		drawing	: type_drawing;
 	end record;
 
+	-- Returns the distance on the given axis rounded to the current grid.
+	overriding function to_string (
+		self	: not null access type_view;
+		point	: in type_point;
+		axis	: in et_general.type_axis_2d)
+		return string;
+	
 	-- Returns the given point x/y rounded to the current grid.
 	overriding function to_string (
 		self	: not null access type_view;

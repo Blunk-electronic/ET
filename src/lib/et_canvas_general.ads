@@ -48,9 +48,12 @@
 -- with ada.text_io;
 
 with gtk.widget;  			use gtk.widget;
+with gtk.box;				use gtk.box;
 with gtk.handlers;			use gtk.handlers;
 with gtk.enums;				use gtk.enums;
 with gtk.adjustment;		use gtk.adjustment;
+with gtk.combo_box_text;	use gtk.combo_box_text;
+with gtk.gentry;			use gtk.gentry;
 
 with gdk;
 with gdk.types;
@@ -69,6 +72,7 @@ with cairo;						use cairo;
 with pango.layout;				use pango.layout;
 with system.storage_elements;	use system.storage_elements;
 
+with et_general;
 with et_geometry;
 with et_frames;
 with et_string_processing;		use et_string_processing;
@@ -85,6 +89,12 @@ generic
 package pac_canvas is
 	use geometry;
 
+
+	-- mouse position display:
+	box_cursor	: gtk_box;	
+	cursor_x, cursor_y : gtk_combo_box_text;
+
+	
 	-- This variable serves for logging debug messages an other stuff.
 	-- It is assigned with the log level on initializing a main window.
 	log_threshold : type_log_level := type_log_level'first;
@@ -161,6 +171,13 @@ package pac_canvas is
 	canvas	: type_view_ptr;
 
 
+	-- Returns the distance on the given axis rounded to the current grid.
+	function to_string (
+		self	: not null access type_view;
+		point	: in type_point;
+		axis	: in et_general.type_axis_2d)
+		return string is abstract;
+	
 	-- Returns the given point x/y rounded to the current grid.
 	function to_string (
 		self	: not null access type_view;

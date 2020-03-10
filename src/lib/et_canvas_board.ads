@@ -125,6 +125,13 @@ package et_canvas_board is
 		drawing	: type_drawing;
 	end record;
 
+	-- Returns the distance on the given axis rounded to the current grid.
+	overriding function to_string (
+		self	: not null access type_view;
+		point	: in type_point;
+		axis	: in et_general.type_axis_2d)
+		return string;
+	
 	-- Returns the given point x/y rounded to the current grid.
 	overriding function to_string (
 		self	: not null access type_view;
