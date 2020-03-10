@@ -65,10 +65,10 @@ use et_canvas_schematic.pac_canvas;
 
 package body gui_schematic is
 
-	box_back				: gtk_box; -- This is an access/pointer to the actual box.
-	box_left, box_right		: gtk_box;
-	box_console				: gtk_box;
-	box_drawing				: gtk_box;
+-- 	box_back				: gtk_box; -- This is an access/pointer to the actual box.
+-- 	box_left, box_right		: gtk_box;
+-- 	box_console				: gtk_box;
+-- 	box_drawing				: gtk_box;
 
 	-- We will have some buttons:
 -- 	button_zoom_to_fit					: gtk_tool_button; -- This is an access/pointer to the actual button.
@@ -123,25 +123,12 @@ package body gui_schematic is
 		set_spacing (box_right, 10);
 		add (box_back, box_right);
 
+		build_position_display;
+
 -- 		-- toolbar on the left
 -- 		gtk_new (toolbar);
 -- 		set_orientation (toolbar, orientation_vertical);
 -- 		pack_start (box_left, toolbar, expand => false);
-
-
-		-- cursor
-		gtk_new_vbox (box_cursor);
-		set_spacing (box_cursor, 10);
-		pack_start (box_left, box_cursor, expand => false);
-		
-		gtk_new_with_entry (cursor_x);
-		gtk_new_with_entry (cursor_y);
-
-		-- Connect to the on_activate signal of the entry (which is a child of console):
--- 		gtk_entry (cursor_x.get_child).set_text ("test"); --gui_schematic.callbacks.execute_command'access); -- on hitting enter
-		
-		pack_start (box_cursor, cursor_x, expand => false);
-		pack_start (box_cursor, cursor_y, expand => false);
 
 
 		

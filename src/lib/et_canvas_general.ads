@@ -54,6 +54,7 @@ with gtk.enums;				use gtk.enums;
 with gtk.adjustment;		use gtk.adjustment;
 with gtk.combo_box_text;	use gtk.combo_box_text;
 with gtk.gentry;			use gtk.gentry;
+with gtk.label;				use gtk.label;
 
 with gdk;
 with gdk.types;
@@ -89,11 +90,20 @@ generic
 package pac_canvas is
 	use geometry;
 
-
+	box_back				: gtk_box; -- This is an access/pointer to the actual box.
+	box_left, box_right		: gtk_box;
+	box_console				: gtk_box;
+	box_drawing				: gtk_box;
+	
 	-- mouse position display:
-	box_cursor	: gtk_box;	
+	box_cursor	: gtk_box;
+	label_mouse_position : gtk_label;
+	position_label_x, position_label_y : gtk_label;
 	cursor_x, cursor_y : gtk_combo_box_text;
 
+	-- Builds the boxes and combo boxes that display mouse and cursor position:
+	procedure build_position_display;
+	
 	
 	-- This variable serves for logging debug messages an other stuff.
 	-- It is assigned with the log level on initializing a main window.

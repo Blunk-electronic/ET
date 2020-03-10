@@ -67,6 +67,29 @@ package body et_canvas_general is
 package body pac_canvas is
 	use geometry;
 
+	procedure build_position_display is begin
+		-- mouse position display
+		gtk_new_vbox (box_cursor);
+		set_spacing (box_cursor, 10);
+		gtk_new (label_mouse_position, "mouse pointer");
+		
+		pack_start (box_cursor, label_mouse_position, expand => false);
+		pack_start (box_left, box_cursor, expand => false);
+		
+-- 		gtk_new (position_label_x, "X");
+-- 		pack_start (box_cursor, position_label_x, expand => false);
+		
+		gtk_new_with_entry (cursor_x);
+		gtk_new_with_entry (cursor_y);
+
+		-- Connect to the on_activate signal of the entry (which is a child of console):
+-- 		gtk_entry (cursor_x.get_child).set_text ("test"); --gui_schematic.callbacks.execute_command'access); -- on hitting enter
+		
+		pack_start (box_cursor, cursor_x, expand => false);
+		pack_start (box_cursor, cursor_y, expand => false);
+	end;
+
+	
 	function to_string (d : in gdouble) return string is begin
 		return gdouble'image (d);
 	end;
@@ -956,7 +979,7 @@ package body pac_canvas is
 		style.finish_path (context.cr);
 		
 	end draw_grid;
-
+	
 end pac_canvas;
 	
 end et_canvas_general;

@@ -45,6 +45,7 @@ with gtk.tool_button;		use gtk.tool_button;
 with gtk.enums;				use gtk.enums;
 with gtk.gentry;			use gtk.gentry;
 with gtk.combo_box_text;	use gtk.combo_box_text;
+with gtk.label;				use gtk.label;
 with gtk.frame;				use gtk.frame;
 with gtk.scrolled_window;	use gtk.scrolled_window;
 with glib.object;			use glib.object;
