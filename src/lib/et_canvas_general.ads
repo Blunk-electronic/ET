@@ -90,17 +90,37 @@ generic
 package pac_canvas is
 	use geometry;
 
+	console : gtk_combo_box_text;
+	
+	
 	box_back				: gtk_box; -- This is an access/pointer to the actual box.
 	box_left, box_right		: gtk_box;
 	box_console				: gtk_box;
 	box_drawing				: gtk_box;
 	
-	-- mouse position display:
-	box_cursor	: gtk_box;
-	label_mouse_position : gtk_label;
-	position_label_x, position_label_y : gtk_label;
-	cursor_x, cursor_y : gtk_combo_box_text;
+	-- main position display:
+	box_positions			: gtk_box;		-- the main box around all kinds of position readouts
+	
+	-- mouse position
+	label_mouse_position	: gtk_label;
+	box_mouse_position		: gtk_vbox;
+	box_mouse_position_x	: gtk_hbox;
+	box_mouse_position_y	: gtk_hbox;
+	
+	label_mouse_position_x, label_mouse_position_y : gtk_label;
+	mouse_position_x, mouse_position_y : gtk_combo_box_text;
 
+	-- cursor position
+	label_cursor_position	: gtk_label;
+	box_cursor_position		: gtk_vbox;
+	box_cursor_position_x	: gtk_hbox;
+	box_cursor_position_y	: gtk_hbox;
+	
+	label_cursor_position_x, label_cursor_position_y : gtk_label;
+	cursor_position_x, cursor_position_y : gtk_combo_box_text;
+
+
+	
 	-- Builds the boxes and combo boxes that display mouse and cursor position:
 	procedure build_position_display;
 	

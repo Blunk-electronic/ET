@@ -63,9 +63,6 @@ package gui_board.callbacks is
 -- 	procedure zoom_out (self : access glib.object.gobject_record'class);
 
 	
-	console : gtk_combo_box_text;
-
-	
 	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class);
 
 

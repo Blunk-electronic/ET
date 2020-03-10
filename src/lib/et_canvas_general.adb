@@ -68,26 +68,64 @@ package body pac_canvas is
 	use geometry;
 
 	procedure build_position_display is begin
-		-- mouse position display
-		gtk_new_vbox (box_cursor);
-		set_spacing (box_cursor, 10);
+		-- The main box around all kinds of position readouts:
+		gtk_new_vbox (box_positions);
+		set_spacing (box_positions, 10);
+		set_border_width (box_positions, 10);
+		pack_start (box_left, box_positions, expand => false);
+
+		-- The box for mouse position:
+		gtk_new_vbox (box_mouse_position);
+		pack_start (box_positions, box_mouse_position, expand => false);
 		gtk_new (label_mouse_position, "mouse pointer");
-		
-		pack_start (box_cursor, label_mouse_position, expand => false);
-		pack_start (box_left, box_cursor, expand => false);
-		
--- 		gtk_new (position_label_x, "X");
--- 		pack_start (box_cursor, position_label_x, expand => false);
-		
-		gtk_new_with_entry (cursor_x);
-		gtk_new_with_entry (cursor_y);
+		pack_start (box_mouse_position, label_mouse_position, expand => false);
+
+		-- X
+		gtk_new_hbox (box_mouse_position_x);
+		set_spacing (box_mouse_position_x, 10);
+		pack_start (box_mouse_position, box_mouse_position_x, expand => false);
+		gtk_new (label_mouse_position_x, "X");
+		pack_start (box_mouse_position_x, label_mouse_position_x, expand => false);
+		gtk_new_with_entry (mouse_position_x);
+		pack_start (box_mouse_position_x, mouse_position_x, expand => false);
+
+		-- Y
+		gtk_new_hbox (box_mouse_position_y);
+		set_spacing (box_mouse_position_y, 10);
+		pack_start (box_mouse_position, box_mouse_position_y, expand => false);
+		gtk_new (label_mouse_position_y, "Y");
+		pack_start (box_mouse_position_y, label_mouse_position_y, expand => false);
+		gtk_new_with_entry (mouse_position_y);
+		pack_start (box_mouse_position_y, mouse_position_y, expand => false);
 
 		-- Connect to the on_activate signal of the entry (which is a child of console):
 -- 		gtk_entry (cursor_x.get_child).set_text ("test"); --gui_schematic.callbacks.execute_command'access); -- on hitting enter
+
+		-- The box for cursor position:
+		gtk_new_vbox (box_cursor_position);
+		pack_start (box_positions, box_cursor_position, expand => false);
+		gtk_new (label_cursor_position, "cursor pointer");
+		pack_start (box_cursor_position, label_cursor_position, expand => false);
+
+		-- X
+		gtk_new_hbox (box_cursor_position_x);
+		set_spacing (box_cursor_position_x, 10);
+		pack_start (box_cursor_position, box_cursor_position_x, expand => false);
+		gtk_new (label_cursor_position_x, "X");
+		pack_start (box_cursor_position_x, label_cursor_position_x, expand => false);
+		gtk_new_with_entry (cursor_position_x);
+		pack_start (box_cursor_position_x, cursor_position_x, expand => false);
+
+		-- Y
+		gtk_new_hbox (box_cursor_position_y);
+		set_spacing (box_cursor_position_y, 10);
+		pack_start (box_cursor_position, box_cursor_position_y, expand => false);
+		gtk_new (label_cursor_position_y, "Y");
+		pack_start (box_cursor_position_y, label_cursor_position_y, expand => false);
+		gtk_new_with_entry (cursor_position_y);
+		pack_start (box_cursor_position_y, cursor_position_y, expand => false);
 		
-		pack_start (box_cursor, cursor_x, expand => false);
-		pack_start (box_cursor, cursor_y, expand => false);
-	end;
+	end build_position_display;
 
 	
 	function to_string (d : in gdouble) return string is begin
@@ -564,8 +602,8 @@ package body pac_canvas is
 		put_line (" drawing " & to_string (self, drawing_point));
 
 		-- update mouse position display:
-		gtk_entry (cursor_x.get_child).set_text (to_string (self, drawing_point, X));
-		gtk_entry (cursor_y.get_child).set_text (to_string (self, drawing_point, Y));
+		gtk_entry (mouse_position_x.get_child).set_text (to_string (self, drawing_point, X));
+		gtk_entry (mouse_position_y.get_child).set_text (to_string (self, drawing_point, Y));
 		
 		return true; -- indicates that event has been handled
 	end on_mouse_movement;

@@ -64,8 +64,6 @@ package gui_schematic.callbacks is
 -- 	procedure zoom_out (self : access glib.object.gobject_record'class);
 
 	
-	console : gtk_combo_box_text;
-
 
 
 	
