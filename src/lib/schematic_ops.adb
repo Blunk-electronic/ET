@@ -958,18 +958,18 @@ package body schematic_ops is
 
 	end delete_unit;
 
-	function to_string (coordinates : in type_coordinates) return string is begin
-		return latin_1.space & to_lower (type_coordinates'image (coordinates));
-	end;
-
-	function to_coordinates (coordinates : in string) return type_coordinates is begin
-		return type_coordinates'value (coordinates);
-
-		exception
-			when event: others =>
-				log (text => ada.exceptions.exception_information (event), console => true);
-				raise;
-	end;
+-- 	function to_string (coordinates : in type_coordinates) return string is begin
+-- 		return latin_1.space & to_lower (type_coordinates'image (coordinates));
+-- 	end;
+-- 
+-- 	function to_coordinates (coordinates : in string) return type_coordinates is begin
+-- 		return type_coordinates'value (coordinates);
+-- 
+-- 		exception
+-- 			when event: others =>
+-- 				log (text => ada.exceptions.exception_information (event), console => true);
+-- 				raise;
+-- 	end;
 
 	function between_start_and_end_point (
 	-- Returns true if given point sits between start and end point of given segment.

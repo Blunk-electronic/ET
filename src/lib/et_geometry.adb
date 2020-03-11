@@ -46,8 +46,22 @@ with ada.numerics.generic_elementary_functions;
 
 package body et_geometry is
 
-	package body geometry_operations_2d is
+	function to_string (coordinates : in type_coordinates) return string is begin
+		return latin_1.space & to_lower (type_coordinates'image (coordinates));
+	end;
 
+	function to_coordinates (coordinates : in string) return type_coordinates is begin
+		return type_coordinates'value (coordinates);
+
+-- 			exception
+-- 				when event: others =>
+-- 					log (text => ada.exceptions.exception_information (event), console => true);
+-- 					raise;
+	end;
+
+	
+	package body geometry_operations_2d is
+		
 		function to_string (grid : in type_grid) return string is begin
 			return point_preamble & to_string (grid.x) & axis_separator & to_string (grid.y);
 		end;

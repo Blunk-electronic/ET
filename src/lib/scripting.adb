@@ -766,7 +766,7 @@ package body scripting is
 									module_name 	=> module,
 									device_name		=> to_name (f (5)),
 									unit_name		=> to_name (f (6)),
-									coordinates		=> schematic_ops.to_coordinates (f (7)), -- relative/absolute
+									coordinates		=> to_coordinates (f (7)), -- relative/absolute
 									point			=> type_point (set (
 														x => to_distance (f (8)),
 														y => to_distance (f (9)))),
@@ -784,7 +784,7 @@ package body scripting is
 								schematic_ops.drag_netchanger (
 									module_name 	=> module,
 									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
-									coordinates		=> schematic_ops.to_coordinates (f (6)), -- relative/absolute
+									coordinates		=> to_coordinates (f (6)), -- relative/absolute
 									point			=> type_point (set (
 														x => to_distance (f (7)),
 														y => to_distance (f (8)))),
@@ -803,7 +803,7 @@ package body scripting is
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
 									port_name		=> et_general.to_net_name (f (6)),
-									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									point			=> type_point (set (
 												x => to_distance (f (8)),
 												y => to_distance (f (9)))),
@@ -828,7 +828,7 @@ package body scripting is
 															y => to_distance (f (8)))),
 														sheet => to_sheet (f (6))), -- sheet number
 									
-									coordinates		=> schematic_ops.to_coordinates (f (9)), -- relative/absolute
+									coordinates		=> to_coordinates (f (9)), -- relative/absolute
 									
 									point			=> type_point (set (
 														x => to_distance (f (10)),
@@ -847,7 +847,7 @@ package body scripting is
 								schematic_ops.drag_submodule (
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
-									coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 									point			=> type_point (set (
 												x => to_distance (f (7)),
 												y => to_distance (f (8)))),
@@ -931,7 +931,7 @@ package body scripting is
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
 									unit_name		=> to_name (f (6)), -- A
-									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									point			=> type_point (set (
 														x => to_distance (f (8)),
 														y => to_distance (f (9)))),
@@ -952,7 +952,7 @@ package body scripting is
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
 									unit_name		=> to_name (f (6)), -- A
-									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									point			=> type_point (set (
 														x => to_distance (f (8)),
 														y => to_distance (f (9)))),
@@ -972,7 +972,7 @@ package body scripting is
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
 									port_name		=> et_general.to_net_name (f (6)),
-									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									point			=> type_point (set (
 												x => to_distance (f (8)),
 												y => to_distance (f (9)))),
@@ -992,7 +992,7 @@ package body scripting is
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
 									unit_name		=> to_name (f (6)), -- A
-									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									point			=> type_point (set (
 														x => to_distance (f (8)),
 														y => to_distance (f (9)))),
@@ -1012,7 +1012,7 @@ package body scripting is
 									(
 									module_name 	=> module,
 									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
-									coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 									sheet			=> to_sheet_relative (f (7)),
 									point			=> type_point (set (
 														x => to_distance (f (8)),
@@ -1035,7 +1035,7 @@ package body scripting is
 								schematic_ops.move_submodule (
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
-									coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 									sheet			=> to_sheet_relative (f (7)),
 									point			=> type_point (set (
 												x => to_distance (f (8)),
@@ -1056,7 +1056,7 @@ package body scripting is
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
 									unit_name		=> to_name (f (6)), -- A
-									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									sheet			=> to_sheet_relative (f (8)),
 									point			=> type_point (set (
 														x => to_distance (f (9)),
@@ -1415,7 +1415,7 @@ package body scripting is
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
 									unit_name		=> to_name (f (6)), -- A
-									coordinates		=> schematic_ops.to_coordinates (f (7)),  -- relative/absolute
+									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									rotation		=> to_rotation (f (8)), -- 90
 									log_threshold	=> log_threshold + 1
 									);
@@ -1485,7 +1485,7 @@ package body scripting is
 								schematic_ops.rotate_netchanger (
 									module_name 	=> module,
 									index			=> submodules.to_netchanger_id (f (5)), -- 1,2,3,...
-									coordinates		=> schematic_ops.to_coordinates (f (6)), -- relative/absolute
+									coordinates		=> to_coordinates (f (6)), -- relative/absolute
 									rotation		=> to_rotation (f (7)), -- 90
 									log_threshold	=> log_threshold + 1
 									);
@@ -3391,7 +3391,7 @@ package body scripting is
 								board_ops.rotate_device (
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
-									coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 									rotation		=> to_rotation (f (7)),
 									log_threshold	=> log_threshold + 1
 									);
@@ -3433,7 +3433,7 @@ package body scripting is
 							when 7 => -- board led_driver move board absolute 20 50
 								board_ops.move_board (
 									module_name 	=> module,
-									coordinates		=> schematic_ops.to_coordinates (f (5)),  -- relative/absolute
+									coordinates		=> to_coordinates (f (5)),  -- relative/absolute
 									point			=> type_point (set (
 														x => to_distance (f (6)),
 														y => to_distance (f (7)))),
@@ -3453,7 +3453,7 @@ package body scripting is
 								board_ops.move_device (
 									module_name 	=> module,
 									device_name		=> to_name (f (5)), -- IC1
-									coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 									point			=> type_point (set (
 														x => to_distance (f (7)),
 														y => to_distance (f (8)))),
@@ -3473,7 +3473,7 @@ package body scripting is
 								board_ops.move_submodule (
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)), -- OSC1
-									coordinates		=> schematic_ops.to_coordinates (f (6)),  -- relative/absolute
+									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 									point			=> type_point (set (
 														x => to_distance (f (7)),
 														y => to_distance (f (8)))),

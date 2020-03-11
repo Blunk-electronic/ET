@@ -48,6 +48,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;				use et_general;
+with et_geometry;				use et_geometry;
 with et_coordinates;			use et_coordinates;
 with et_string_processing;		use et_string_processing;
 with et_schematic;				use et_schematic;
@@ -90,10 +91,10 @@ package schematic_ops is
 		unit_name		: in type_unit_name.bounded_string; -- A
 		log_threshold	: in type_log_level);
 
-	type type_coordinates is (RELATIVE, ABSOLUTE);
-
-	function to_string (coordinates : in type_coordinates) return string;
-	function to_coordinates (coordinates : in string) return type_coordinates;
+-- 	type type_coordinates is (RELATIVE, ABSOLUTE);
+-- 
+-- 	function to_string (coordinates : in type_coordinates) return string;
+-- 	function to_coordinates (coordinates : in string) return type_coordinates;
 
 	procedure move_unit (
 	-- Moves the given unit.

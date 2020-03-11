@@ -40,6 +40,7 @@ with ada.text_io;				use ada.text_io;
 with ada.containers;			use ada.containers;
 with ada.exceptions;			use ada.exceptions;
 with scripting;					use scripting;
+with et_geometry;
 with et_devices;
 with schematic_ops;
 with et_canvas_board;
@@ -194,10 +195,24 @@ procedure execute_command (
 		et_canvas_board.set_title_bar (module);
 	end show_module_and_sheet;
 
+	-- Positions the cursor absolute or relative:
 	procedure position_cursor is
-		coordinates : schematic_ops.type_coordinates;
+		use et_geometry;
+		coordinates : type_coordinates := to_coordinates (f (3));
+		position : type_point := type_point (set (
+				x => to_distance (f (4)),
+				y => to_distance (f (5))));
 	begin
-		null;
+		log (text => "place cursor" & to_string (coordinates) 
+			 & to_string (position), level => log_threshold + 1);
+		
+		case coordinates is
+			when ABSOLUTE =>
+				move_cursor_to (cursor_main, position);
+
+			when RELATIVE =>
+				move_cursor_by (cursor_main, position);
+		end case;
 	end position_cursor;		
 	
 	

@@ -53,13 +53,19 @@ package et_geometry is
 	keyword_radius		: constant string := "radius";		
 	keyword_diameter	: constant string := "diameter";
 	keyword_filled 		: constant string := "filled";
-		
+
+	type type_coordinates is (RELATIVE, ABSOLUTE);
+
+	function to_string (coordinates : in type_coordinates) return string;
+	function to_coordinates (coordinates : in string) return type_coordinates;
+
 	
 	generic
 		type type_distance is delta <>;
 		type type_rotation is delta <>;
 		
 	package geometry_operations_2d is
+		
 		zero : constant type_distance := 0.0;
 
 		subtype type_distance_positive is type_distance range zero .. type_distance'last;

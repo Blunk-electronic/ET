@@ -48,6 +48,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;				use et_general;
+with et_geometry;				use et_geometry;
 with et_string_processing;		use et_string_processing;
 with et_project;				use et_project;
 with et_schematic;
