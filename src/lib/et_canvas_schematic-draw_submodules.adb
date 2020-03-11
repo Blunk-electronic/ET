@@ -121,14 +121,14 @@ procedure draw_submodules (
 		-- We want to draw only those submodules which are on the active sheet:
 		if sheet (element (cursor).position) = self.drawing.sheet then
 			
-			save (context.cr);
-			
-			-- Prepare the current transformation matrix (CTM) so that
-			-- all following drawing is relative to the upper left frame corner.
-			translate (
-				context.cr,
-				convert_x (self.drawing.frame_bounding_box.x),
-				convert_y (self.drawing.frame_bounding_box.y));
+-- 			save (context.cr);
+-- 			
+-- 			-- Prepare the current transformation matrix (CTM) so that
+-- 			-- all following drawing is relative to the upper left frame corner.
+-- 			translate (
+-- 				context.cr,
+-- 				convert_x (self.drawing.frame_bounding_box.x),
+-- 				convert_y (self.drawing.frame_bounding_box.y));
 
 
 			draw_box;
@@ -136,7 +136,7 @@ procedure draw_submodules (
 
 			-- CS draw file name, instance name, position in board, view mode
 
-			restore (context.cr);
+-- 			restore (context.cr);
 
 		end if;
 	end query_submods;

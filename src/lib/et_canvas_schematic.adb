@@ -199,10 +199,24 @@ package body et_canvas_schematic is
 
 		-- draw objects inside the drawing frame:
 		draw_units (self, area_shifted, context);
+
+
+		
+		save (context.cr);
+			
+		-- Prepare the current transformation matrix (CTM) so that
+		-- all following drawing is relative to the upper left frame corner.
+		translate (
+			context.cr,
+			convert_x (self.drawing.frame_bounding_box.x),
+			convert_y (self.drawing.frame_bounding_box.y));
+
 		draw_nets (self, area_shifted, context);
 		-- CS self.model.draw_texts (area, context);
 		draw_submodules (self, area_shifted, context);
-			
+
+		restore (context.cr);
+		
 	end draw_internal;
 
 	procedure set_grid (view : in type_view_ptr) is
