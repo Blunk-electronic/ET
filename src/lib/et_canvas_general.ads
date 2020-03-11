@@ -121,9 +121,12 @@ package pac_canvas is
 
 
 	
-	-- Builds the boxes and combo boxes that display mouse and cursor position:
+	-- Builds the boxes and combo boxes that display mouse and cursor position.
+	-- Places them in box_left.
 	procedure build_position_display;
-	
+
+	-- Builds the console and places it in box_right.
+	procedure build_console;
 	
 	-- This variable serves for logging debug messages an other stuff.
 	-- It is assigned with the log level on initializing a main window.

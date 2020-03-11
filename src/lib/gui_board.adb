@@ -162,25 +162,10 @@ package body gui_board is
 
 
 
-		
-		-- box for console on the right top
-		gtk_new_vbox (box_console);
-		set_spacing (box_console, 10);
-		pack_start (box_right, box_console, expand => false);
-
-		-- the command line
-		gtk_new_with_entry (console);
+		build_console;
 
 		-- Connect to the on_activate signal of the entry (which is a child of console):
 		gtk_entry (console.get_child).on_activate (gui_board.callbacks.execute_command'access); -- on hitting enter
-		
-		-- console2.on_changed (echo_command'access); -- for every key pressed
-		
-		pack_start (box_console, console, expand => false);
-
-		-- on startup the keyboard must focus on the console:
-		console.grab_focus;
-
 
 		
 		-- drawing area on the right bottom

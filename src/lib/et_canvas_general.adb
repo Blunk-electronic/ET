@@ -127,6 +127,22 @@ package body pac_canvas is
 		
 	end build_position_display;
 
+	procedure build_console is begin
+		-- box for console on the right top
+		gtk_new_vbox (box_console);
+		set_spacing (box_console, 10);
+		pack_start (box_right, box_console, expand => false);
+
+		-- the command line
+		gtk_new_with_entry (console);
+		
+		-- console2.on_changed (echo_command'access); -- for every key pressed
+		
+		pack_start (box_console, console, expand => false);
+
+		-- on startup the keyboard must focus on the console:
+		console.grab_focus;
+	end build_console;
 	
 	function to_string (d : in gdouble) return string is begin
 		return gdouble'image (d);
