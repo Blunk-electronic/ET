@@ -43,10 +43,10 @@ with gtk.button;     		use gtk.button;
 with gtk.toolbar; 			use gtk.toolbar;
 with gtk.tool_button;		use gtk.tool_button;
 with gtk.enums;				use gtk.enums;
-with gtk.gentry;			use gtk.gentry;
-with gtk.combo_box_text;	use gtk.combo_box_text;
-with gtk.frame;				use gtk.frame;
-with gtk.scrolled_window;	use gtk.scrolled_window;
+-- with gtk.gentry;			use gtk.gentry;
+-- with gtk.combo_box_text;	use gtk.combo_box_text;
+-- with gtk.frame;				use gtk.frame;
+-- with gtk.scrolled_window;	use gtk.scrolled_window;
 with glib.object;			use glib.object;
 
 with ada.text_io;			use ada.text_io;
@@ -63,20 +63,6 @@ use et_canvas_board.pac_canvas;
 
 
 package body gui_board is
-
--- 	box_back				: gtk_box; -- This is an access/pointer to the actual box.
--- 	box_left, box_right		: gtk_box;
--- 	box_console				: gtk_box;
--- 	box_drawing				: gtk_box;
-
-	-- We will have some buttons:
--- 	button_zoom_to_fit					: gtk_tool_button; -- This is an access/pointer to the actual button.
--- 	button_zoom_in, button_zoom_out		: gtk_tool_button;
-
-	-- We will have a toolbar, a frame and a scrolled window:
--- 	toolbar		: gtk_toolbar; -- This is an access/pointer to the actual toolbar.
--- 	frame		: gtk_frame;
--- 	scrolled	: gtk_scrolled_window;
 
 	procedure init_window (
 		module			: in type_modules.cursor; -- cursor of generic module to be edited
@@ -122,6 +108,10 @@ package body gui_board is
 		add (box_back, box_right);
 
 		build_position_display;
+
+		-- Connect to the on_activate signal of the entry (which is a child of console):
+		-- 		gtk_entry (cursor_x.get_child).set_text ("test"); --gui_schematic.callbacks.execute_command'access); -- on hitting enter
+
 		
 -- 		-- toolbar on the left
 -- 		gtk_new (toolbar);

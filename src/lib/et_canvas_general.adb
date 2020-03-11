@@ -98,8 +98,6 @@ package body pac_canvas is
 		gtk_new_with_entry (mouse_position_y);
 		pack_start (box_mouse_position_y, mouse_position_y, expand => false);
 
-		-- Connect to the on_activate signal of the entry (which is a child of console):
--- 		gtk_entry (cursor_x.get_child).set_text ("test"); --gui_schematic.callbacks.execute_command'access); -- on hitting enter
 
 		-- The box for cursor position:
 		gtk_new_vbox (box_cursor_position);
