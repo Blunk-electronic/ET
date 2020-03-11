@@ -42,6 +42,14 @@ To open a sheet for editing run this command:
 show sheet 2
 ```
 
+## CURSOR
+To position the cursor:
+```
+position cursor absolute 25 30 # x/y
+```
+```
+position cursor relative 5 0 # x/y
+```
 
 
 The show command locates the unit of a device. If the requested unit

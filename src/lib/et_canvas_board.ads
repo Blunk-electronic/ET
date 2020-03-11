@@ -190,16 +190,6 @@ package et_canvas_board is
 
 
 
-	overriding procedure move_cursor_to (
-		self		: not null access type_view;
-		cursor		: in out type_cursor;
-		position	: in type_point) is null;
-	
-	overriding procedure move_cursor_by (
-		self		: not null access type_view;
-		cursor		: in out type_cursor;
-		position	: in type_point) is null;
-
 	overriding procedure draw_cursor (
 		self		: not null access type_view;
 		in_area		: in type_rectangle := no_rectangle;

@@ -1066,6 +1066,21 @@ package body pac_canvas is
 		style.finish_path (context.cr);
 		
 	end draw_grid;
+
+	procedure move_cursor_to (
+		cursor		: in out type_cursor;
+		position	: in type_point) is 
+	begin
+		cursor.position := position;
+	end move_cursor_to;
+
+	procedure move_cursor_by (
+		cursor		: in out type_cursor;
+		position	: in type_point) is 
+	begin
+		cursor.position := type_point (cursor.position + position);
+	end move_cursor_by;
+
 	
 end pac_canvas;
 	

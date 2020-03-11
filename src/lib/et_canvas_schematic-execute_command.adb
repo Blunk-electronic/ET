@@ -194,6 +194,12 @@ procedure execute_command (
 		et_canvas_board.set_title_bar (module);
 	end show_module_and_sheet;
 
+	procedure position_cursor is
+		coordinates : schematic_ops.type_coordinates;
+	begin
+		null;
+	end position_cursor;		
+	
 	
 begin -- execute_command
 	log (text => "full command: " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
@@ -205,7 +211,19 @@ begin -- execute_command
 		
 		case verb is
 			when VERB_DISPLAY => null;
-			
+
+			when VERB_POSITION =>
+				case noun is 
+					when NOUN_CURSOR =>
+						case fields is
+							when 5 => position_cursor; -- position cursor absolute/relative 25 30
+							when 6 .. count_type'last => too_long;
+							when others => command_incomplete (cmd);
+						end case;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+						
 			when VERB_SHOW =>
 				case noun is
 					when NOUN_DEVICE =>

@@ -211,6 +211,7 @@ package body et_canvas_schematic is
 			convert_x (self.drawing.frame_bounding_box.x),
 			convert_y (self.drawing.frame_bounding_box.y));
 
+		draw_cursor (self, area_shifted, context, cursor_main);
 		draw_nets (self, area_shifted, context);
 		-- CS self.model.draw_texts (area, context);
 		draw_submodules (self, area_shifted, context);
@@ -354,15 +355,30 @@ package body et_canvas_schematic is
 		log_threshold	: in type_log_level) is separate;
 
 
-	
 	procedure draw_cursor (
 		self		: not null access type_view;
 		in_area		: in type_rectangle := no_rectangle;
 		context 	: in type_draw_context;
 		cursor		: in type_cursor)
 	is
+-- 		use pac_draw_misc;
+-- 		type line is new pac_shapes.type_line with null record;
+-- 		line_horizontal, line_vertical : type_line;
 	begin
-		null;
+		cairo.set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
+		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
+
+-- 		pac_draw_misc.draw_line (
+-- 			area		=> in_area,
+-- 			context		=> context,
+-- 			line		=> element (segment_cursor),
+-- 			height		=> self.drawing.frame_bounding_box.height,
+-- 			extend_boundaries	=> false,
+-- 			boundaries_to_add	=> boundaries_default -- CS
+-- 			);
+
+		
+		cairo.stroke (context.cr);		
 	end draw_cursor;
 
 	

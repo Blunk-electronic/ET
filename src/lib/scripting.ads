@@ -241,8 +241,9 @@ package scripting is
 	
 	type type_verb_canvas is (
 		VERB_DISPLAY,
+		VERB_POSITION,
 		VERB_SHOW,
-		VERB_ZOOM
+		VERB_ZOOM		
 		);
 
 	-- Removes the verb_prefix from given verb and returns the remainder as string.
@@ -253,11 +254,12 @@ package scripting is
 	-- DISPLAY becomes VERB_DISPLAY:
 	function to_verb (verb : in string) return type_verb_canvas;
 
-	-- Returns true if the given verb (as string) is a verb.
+	-- Returns true if the given verb (as string) is a canvas related verb.
 	function is_canvas_related (verb : in string) return boolean;
 
 	type type_noun_canvas is (
 		NOUN_CENTER,
+		NOUN_CURSOR,
 		NOUN_DEVICE,
 		NOUN_FIT,
 		NOUN_LEVEL,
