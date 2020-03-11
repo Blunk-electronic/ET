@@ -67,8 +67,6 @@ with et_string_processing;			use et_string_processing;
 
 package et_canvas_schematic is
 
-	window : gtk_window; -- This is an access/pointer to the main window.
-
 	title : constant string := et_general.system_name & " SCHEMATIC ";
 
 	procedure set_title_bar (
@@ -226,6 +224,26 @@ package et_canvas_schematic is
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level);
 
+
+	overriding procedure move_cursor_to (
+		self		: not null access type_view;
+		cursor		: in out type_cursor;
+		position	: in type_point) is null;
+	
+	overriding procedure move_cursor_by (
+		self		: not null access type_view;
+		cursor		: in out type_cursor;
+		position	: in type_point) is null;
+
+	overriding procedure draw_cursor (
+		self		: not null access type_view;
+		in_area		: in type_rectangle := no_rectangle;
+		context 	: in type_draw_context;
+		cursor		: in type_cursor);
+
+
+
+	
 end et_canvas_schematic;
 
 -- Soli Deo Gloria

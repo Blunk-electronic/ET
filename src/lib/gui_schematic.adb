@@ -92,22 +92,7 @@ package body gui_schematic is
 		-- This is required in order to propagate the key-pressed events to sub-windows.
 		window.on_key_press_event (on_key_event'access);
 		
-
-		
-		-- background box
-		gtk_new_hbox (box_back);
-		set_spacing (box_back, 10);
-		add (window, box_back);
-
-		-- left box
-		gtk_new_hbox (box_left);
-		set_spacing (box_left, 10);
-		pack_start (box_back, box_left, expand => false);
-
-		-- right box
-		gtk_new_vbox (box_right);
-		set_spacing (box_right, 10);
-		add (box_back, box_right);
+		build_background_boxes;
 
 		build_position_display;
 

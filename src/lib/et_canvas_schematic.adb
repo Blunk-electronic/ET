@@ -339,6 +339,18 @@ package body et_canvas_schematic is
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level) is separate;
 
+
+	
+	procedure draw_cursor (
+		self		: not null access type_view;
+		in_area		: in type_rectangle := no_rectangle;
+		context 	: in type_draw_context;
+		cursor		: in type_cursor)
+	is
+	begin
+		null;
+	end draw_cursor;
+
 	
 end et_canvas_schematic;
 

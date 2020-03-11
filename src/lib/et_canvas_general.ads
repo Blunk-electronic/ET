@@ -48,6 +48,7 @@
 -- with ada.text_io;
 
 with gtk.widget;  			use gtk.widget;
+with gtk.window; 			use gtk.window;
 with gtk.box;				use gtk.box;
 with gtk.frame;				use gtk.frame;
 with gtk.scrolled_window;	use gtk.scrolled_window;
@@ -91,11 +92,14 @@ generic
 	
 package pac_canvas is
 	use geometry;
+
+	window : gtk_window; -- This is he main window.	
 	
 	box_back				: gtk_box; -- This is an access/pointer to the actual box.
 	box_left, box_right		: gtk_box;
 
-
+	-- Builds the background boxes box_back, box_left, and box_right:
+	procedure build_background_boxes;
 
 	
 	-- main position display:
@@ -419,6 +423,32 @@ package pac_canvas is
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level) is null;
 	
+
+
+	-- CURSOR
+	type type_cursor is record
+		position	: type_point;
+		-- CS blink, color, ...
+	end record;
+
+	cursor_main : type_cursor;
+
+	procedure move_cursor_to (
+		self		: not null access type_view;
+		cursor		: in out type_cursor;
+		position	: in type_point) is null;
+	
+	procedure move_cursor_by (
+		self		: not null access type_view;
+		cursor		: in out type_cursor;
+		position	: in type_point) is null;
+
+	procedure draw_cursor (
+		self		: not null access type_view;
+		in_area		: in type_rectangle := no_rectangle;
+		context 	: in type_draw_context;
+		cursor		: in type_cursor) is null;
+
 	
 private
 	procedure on_adj_value_changed (view : access glib.object.gobject_record'class);

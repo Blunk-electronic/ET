@@ -67,6 +67,24 @@ package body et_canvas_general is
 package body pac_canvas is
 	use geometry;
 
+
+	procedure build_background_boxes is begin
+		-- background box
+		gtk_new_hbox (box_back);
+		set_spacing (box_back, 10);
+		add (window, box_back);
+
+		-- left box
+		gtk_new_hbox (box_left);
+		set_spacing (box_left, 10);
+		pack_start (box_back, box_left, expand => false);
+
+		-- right box
+		gtk_new_vbox (box_right);
+		set_spacing (box_right, 10);
+		add (box_back, box_right);
+	end build_background_boxes;
+	
 	procedure build_position_display is begin
 		-- The main box around all kinds of position readouts:
 		gtk_new_vbox (box_positions);
