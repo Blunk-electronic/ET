@@ -75,8 +75,8 @@ package body gui_board is
 
 	-- We will have a toolbar, a frame and a scrolled window:
 -- 	toolbar		: gtk_toolbar; -- This is an access/pointer to the actual toolbar.
-	frame		: gtk_frame;
-	scrolled	: gtk_scrolled_window;
+-- 	frame		: gtk_frame;
+-- 	scrolled	: gtk_scrolled_window;
 
 	procedure init_window (
 		module			: in type_modules.cursor; -- cursor of generic module to be edited
@@ -167,24 +167,7 @@ package body gui_board is
 		-- Connect to the on_activate signal of the entry (which is a child of console):
 		gtk_entry (console.get_child).on_activate (gui_board.callbacks.execute_command'access); -- on hitting enter
 
-		
-		-- drawing area on the right bottom
-		gtk_new_hbox (box_drawing);
-		set_spacing (box_drawing, 10);
-		add (box_right, box_drawing);
-
-		-- frame inside the drawing box
-		gtk_new (frame);
-		pack_start (box_drawing, frame);
-
-		-- scrolled window inside the frame
-		gtk_new (scrolled);
-		set_policy (scrolled, policy_automatic, policy_automatic);
-		add (frame, scrolled);
-
-
-
-
+		build_canvas;
 		gtk_new (canvas);
 
 		-- draw the board layout

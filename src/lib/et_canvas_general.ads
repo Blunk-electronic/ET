@@ -49,6 +49,8 @@
 
 with gtk.widget;  			use gtk.widget;
 with gtk.box;				use gtk.box;
+with gtk.frame;				use gtk.frame;
+with gtk.scrolled_window;	use gtk.scrolled_window;
 with gtk.handlers;			use gtk.handlers;
 with gtk.enums;				use gtk.enums;
 with gtk.adjustment;		use gtk.adjustment;
@@ -89,14 +91,12 @@ generic
 	
 package pac_canvas is
 	use geometry;
-
-	console : gtk_combo_box_text;
-	
 	
 	box_back				: gtk_box; -- This is an access/pointer to the actual box.
 	box_left, box_right		: gtk_box;
-	box_console				: gtk_box;
-	box_drawing				: gtk_box;
+
+
+
 	
 	-- main position display:
 	box_positions			: gtk_box;		-- the main box around all kinds of position readouts
@@ -118,15 +118,30 @@ package pac_canvas is
 	
 	label_cursor_position_x, label_cursor_position_y : gtk_label;
 	cursor_position_x, cursor_position_y : gtk_combo_box_text;
-
-
 	
 	-- Builds the boxes and combo boxes that display mouse and cursor position.
 	-- Places them in box_left.
 	procedure build_position_display;
 
+
+	
+	box_console	: gtk_box;
+	console		: gtk_combo_box_text;
+
 	-- Builds the console and places it in box_right.
 	procedure build_console;
+
+
+	
+	box_drawing	: gtk_box;
+	frame		: gtk_frame;
+	scrolled	: gtk_scrolled_window;
+	
+	-- Builds the drawing area and places it in box_right.
+	procedure build_canvas;
+
+
+
 	
 	-- This variable serves for logging debug messages an other stuff.
 	-- It is assigned with the log level on initializing a main window.

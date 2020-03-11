@@ -143,6 +143,23 @@ package body pac_canvas is
 		-- on startup the keyboard must focus on the console:
 		console.grab_focus;
 	end build_console;
+
+	-- Builds the drawing area and places it in box_right.
+	procedure build_canvas is begin
+		-- drawing area on the right bottom
+		gtk_new_hbox (box_drawing);
+		set_spacing (box_drawing, 10);
+		add (box_right, box_drawing);
+
+		-- frame inside the drawing box
+		gtk_new (frame);
+		pack_start (box_drawing, frame);
+
+		-- scrolled window inside the frame
+		gtk_new (scrolled);
+		set_policy (scrolled, policy_automatic, policy_automatic);
+		add (frame, scrolled);
+	end build_canvas;
 	
 	function to_string (d : in gdouble) return string is begin
 		return gdouble'image (d);
