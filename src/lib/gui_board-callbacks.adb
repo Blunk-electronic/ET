@@ -41,6 +41,7 @@ with gtk.main;
 with gtk.window;				use gtk.window;
 with ada.text_io;				use ada.text_io;
 with et_general;
+with et_pcb_coordinates;
 with et_canvas_board;			use et_canvas_board;
 use et_canvas_board.pac_canvas;
 with et_canvas_schematic;
@@ -101,6 +102,20 @@ package body gui_board.callbacks is
 -- -- 		put_line (to_string (get_scale (canvas)));
 -- 	end;
 
+	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class) is 
+		use et_general;
+		use gtk.gentry;
+		use et_pcb_coordinates.geometry;
+		cp : type_point := cursor_main.position;
+	begin
+		put_line (get_text (self));
+		set (point => cp, axis => X, value => to_distance ("44.0")); --get_text (self)));
+		put_line (to_string (cp));
+		move_cursor_to (canvas, cursor_main, cp);
+		
+		redraw (canvas);
+	end set_cursor_position_x;
+		
 	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class) is 
 		use gtk.gentry;
 		use et_string_processing;

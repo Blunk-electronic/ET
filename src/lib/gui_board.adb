@@ -97,7 +97,7 @@ package body gui_board is
 
 		-- Connect to the on_activate signal of the entry (which is a child of console):
 		-- 		gtk_entry (cursor_x.get_child).set_text ("test"); --gui_schematic.callbacks.execute_command'access); -- on hitting enter
-
+		gtk_entry (cursor_position_x.get_child).on_activate (gui_board.callbacks.set_cursor_position_x'access); -- on hitting enter
 		
 -- 		-- toolbar on the left
 -- 		gtk_new (toolbar);
