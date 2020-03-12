@@ -37,7 +37,8 @@
 
 
 with ada.text_io;			use ada.text_io;
-
+with ada.strings;			use ada.strings;
+with ada.strings.fixed;		use ada.strings.fixed;
 with et_general;
 with et_project;
 with et_frames;
@@ -332,16 +333,16 @@ package body et_canvas_board is
 		log_threshold	: in type_log_level) is separate;
 
 	procedure move_cursor_to (
-		self		: not null access type_view;								 
+		self		: not null access type_view;
 		cursor		: in out type_cursor;
 		position	: in type_point) is 
 		use et_general;
 	begin
 		cursor.position := type_point (round (position, self.drawing.grid));
 		
-		-- update position display
-		gtk_entry (cursor_position_x.get_child).set_text (to_string (x (cursor.position)));
-		gtk_entry (cursor_position_y.get_child).set_text (to_string (y (cursor.position)));
+		-- update position display -- CS require procedure to update display
+		gtk_entry (cursor_position_x.get_child).set_text (trim (to_string (x (cursor.position)), left));
+		gtk_entry (cursor_position_y.get_child).set_text (trim (to_string (y (cursor.position)), left));
 	end move_cursor_to;
 
 	procedure move_cursor_by (
@@ -351,7 +352,7 @@ package body et_canvas_board is
 	begin
 		cursor.position := type_point (round (cursor.position + position, self.drawing.grid));
 
-		-- update position display
+		-- update position display -- CS see above
 		gtk_entry (cursor_position_x.get_child).set_text (to_string (x (cursor.position)));
 		gtk_entry (cursor_position_y.get_child).set_text (to_string (y (cursor.position)));
 	end move_cursor_by;
