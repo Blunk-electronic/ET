@@ -800,10 +800,23 @@ package body pac_canvas is
 		event : gdk_event_button)
 		return boolean
 	is
-		self    : constant type_view_ptr := type_view_ptr (view);
+		self : constant type_view_ptr := type_view_ptr (view);
+		
+		mouse_button : constant positive := positive (event.button);
+		view_point : constant type_view_point := (event.x, event.y);
+		model_point : type_point := self.view_to_model (view_point);
+		drawing_point : type_point := self.model_to_drawing (model_point);
 	begin
-		put_line ("mouse button pressed");
+		put_line ("mouse button " & positive'image (mouse_button) & " pressed");
 
+		case mouse_button is
+			when 1 =>
+				move_cursor_to (cursor_main, drawing_point);
+				self.queue_draw;
+
+			when others => null;
+		end case;
+		
 		return true; -- indicates that event has been handled
 	end on_button_event;
 	

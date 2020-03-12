@@ -207,6 +207,17 @@ package body gui_schematic.callbacks is
 		return result;
 	end on_key_event;
 
+-- 	function on_button_event (
+-- 		self  : access gtk_widget_record'class;
+-- 		event : gdk_event_button)
+-- 		return boolean
+-- 	is
+-- -- 		self    : constant type_view_ptr := type_view_ptr (view);
+-- 	begin
+-- 		put_line ("top mouse button pressed");
+-- 
+-- 		return false; -- indicates that event has been handled
+-- 	end on_button_event;
 
 	
 end gui_schematic.callbacks;

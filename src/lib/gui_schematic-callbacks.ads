@@ -78,6 +78,11 @@ package gui_schematic.callbacks is
 		event	: in gdk_event_key) 
 		return boolean;
 
+-- 	function on_button_event (
+-- 		self  : access gtk_widget_record'class;
+-- 		event : gdk_event_button)
+-- 		return boolean;
+
 
 	
 end gui_schematic.callbacks;
