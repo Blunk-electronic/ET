@@ -292,6 +292,8 @@ package body et_canvas_board is
 
 		-- Get the board position (distance relative to the lower left corner of the drawing frame):
 		self.drawing.board_origin := type_modules.element (am).board.origin;
+
+		move_cursor_to (cursor_main, origin);
 	end init_drawing;
 
 	procedure redraw (view : in type_view_ptr) is begin

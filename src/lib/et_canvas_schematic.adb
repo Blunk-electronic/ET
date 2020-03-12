@@ -317,7 +317,9 @@ package body et_canvas_schematic is
 		
 		-- set active sheet:
 		self.drawing.sheet := sheet;
-		
+
+		-- set the main cursor at the origin of the sheet (lower left corner of the frame)
+		move_cursor_to (cursor_main, origin);
 	end init_drawing;
 
 	procedure redraw (view : in type_view_ptr) is begin
