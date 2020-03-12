@@ -77,7 +77,7 @@ package et_canvas_board is
 		geometry		=> et_pcb_coordinates.geometry);
 
 	
-	-- In order to draw objects of a component-package we instantiate this package:
+	-- In order to draw objects of packages and board we instantiate this package:
 	package pac_draw_package is new et_canvas_primitive_draw_ops.pac_draw (
 		pac_canvas	=> pac_canvas,
 		pac_shapes	=> et_packages.pac_shapes,
@@ -188,13 +188,16 @@ package et_canvas_board is
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level);
 
-
+	
+	cursor_line_width : constant type_distance_positive := et_packages.line_width_min;
+	cursor_half_size : constant type_distance_positive := 5.0;
+	type type_cursor_line is new et_packages.pac_shapes.type_line with null record;
 
 	overriding procedure draw_cursor (
 		self		: not null access type_view;
 		in_area		: in type_rectangle := no_rectangle;
 		context 	: in type_draw_context;
-		cursor		: in type_cursor) is null;
+		cursor		: in type_cursor);
 	
 end et_canvas_board;
 

@@ -361,22 +361,42 @@ package body et_canvas_schematic is
 		context 	: in type_draw_context;
 		cursor		: in type_cursor)
 	is
--- 		use pac_draw_misc;
-		type line is new et_schematic.pac_shapes.type_line with null record;
--- 		line_horizontal, line_vertical : type_line;
+		lh : type_cursor_line; -- the horizontal line
+		lv : type_cursor_line; -- the vertical line
 	begin
-		cairo.set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
+		-- set start and end point of horizontal line
+		lh.start_point := type_point (set (
+			x	=> x (cursor.position) - cursor_half_size,
+			y	=> y (cursor.position)));
+
+		lh.end_point := type_point (set (
+			x	=> x (cursor.position) + cursor_half_size,
+			y	=> y (cursor.position)));
+
+		-- set start and end point of vertical line
+		lv.start_point := type_point (set (
+			x	=> x (cursor.position),
+			y	=> y (cursor.position) + cursor_half_size));
+
+		lv.end_point := type_point (set (
+			x	=> x (cursor.position),
+			y	=> y (cursor.position) - cursor_half_size));
+
+		-- draw the cursor
+		cairo.set_line_width (context.cr, type_view_coordinate (cursor_line_width));
 		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
 
--- 		pac_draw_misc.draw_line (
--- 			area		=> in_area,
--- 			context		=> context,
--- 			line		=> element (segment_cursor),
--- 			height		=> self.drawing.frame_bounding_box.height,
--- 			extend_boundaries	=> false,
--- 			boundaries_to_add	=> boundaries_default -- CS
--- 			);
+		pac_draw_misc.draw_line (
+			area		=> in_area,
+			context		=> context,
+			line		=> lh,
+			height		=> self.drawing.frame_bounding_box.height);
 
+		pac_draw_misc.draw_line (
+			area		=> in_area,
+			context		=> context,
+			line		=> lv,
+			height		=> self.drawing.frame_bounding_box.height);
 		
 		cairo.stroke (context.cr);		
 	end draw_cursor;

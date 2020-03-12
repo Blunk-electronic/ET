@@ -225,7 +225,8 @@ package body et_canvas_board is
 			context.cr,
 			convert_x (self.drawing.frame_bounding_box.x + x (self.drawing.board_origin)),
 			convert_y (self.drawing.frame_bounding_box.y - y (self.drawing.board_origin)));
-		
+
+		draw_cursor (self, area_shifted, context, cursor_main);
 		draw_outline (self, area_shifted, context);
 		draw_silk_screen (self, area_shifted, context, TOP);
 		-- CS draw_packages (self, area, context); -- separate unit
@@ -327,6 +328,53 @@ package body et_canvas_board is
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level) is separate;
 
+	procedure draw_cursor (
+		self		: not null access type_view;
+		in_area		: in type_rectangle := no_rectangle;
+		context 	: in type_draw_context;
+		cursor		: in type_cursor)
+	is
+		lh : type_cursor_line; -- the horizontal line
+		lv : type_cursor_line; -- the vertical line
+	begin
+		-- set start and end point of horizontal line
+		lh.start_point := type_point (set (
+			x	=> x (cursor.position) - cursor_half_size,
+			y	=> y (cursor.position)));
+
+		lh.end_point := type_point (set (
+			x	=> x (cursor.position) + cursor_half_size,
+			y	=> y (cursor.position)));
+
+		-- set start and end point of vertical line
+		lv.start_point := type_point (set (
+			x	=> x (cursor.position),
+			y	=> y (cursor.position) + cursor_half_size));
+
+		lv.end_point := type_point (set (
+			x	=> x (cursor.position),
+			y	=> y (cursor.position) - cursor_half_size));
+
+		-- draw the cursor
+		cairo.set_line_width (context.cr, type_view_coordinate (cursor_line_width));
+		cairo.set_source_rgb (context.cr, gdouble (1), gdouble (1), gdouble (1)); -- white
+
+		pac_draw_package.draw_line (
+			area		=> in_area,
+			context		=> context,
+			line		=> lh,
+			height		=> self.drawing.frame_bounding_box.height);
+
+		pac_draw_package.draw_line (
+			area		=> in_area,
+			context		=> context,
+			line		=> lv,
+			height		=> self.drawing.frame_bounding_box.height);
+		
+		cairo.stroke (context.cr);		
+	end draw_cursor;
+
+	
 end et_canvas_board;
 
 -- Soli Deo Gloria

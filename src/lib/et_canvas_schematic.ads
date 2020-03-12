@@ -225,6 +225,10 @@ package et_canvas_schematic is
 		log_threshold	: in type_log_level);
 
 
+	cursor_line_width : constant type_distance_positive := et_schematic.net_line_width;
+	cursor_half_size : constant type_distance_positive := 5.0;
+	type type_cursor_line is new et_schematic.pac_shapes.type_line with null record;
+	
 	overriding procedure draw_cursor (
 		self		: not null access type_view;
 		in_area		: in type_rectangle := no_rectangle;
