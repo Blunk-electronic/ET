@@ -46,6 +46,7 @@
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
 with gtk.window; 			use gtk.window;
+with gtk.gentry;			use gtk.gentry;
 
 with glib;					use glib;
 with cairo;					use cairo;
@@ -193,6 +194,16 @@ package et_canvas_board is
 	cursor_half_size : constant type_distance_positive := 5.0;
 	type type_cursor_line is new et_packages.pac_shapes.type_line with null record;
 
+	overriding procedure move_cursor_to (
+		self    	: not null access type_view;
+		cursor		: in out type_cursor;
+		position	: in type_point);
+	
+	overriding procedure move_cursor_by (
+		self    	: not null access type_view;
+		cursor		: in out type_cursor;
+		position	: in type_point);
+	
 	overriding procedure draw_cursor (
 		self		: not null access type_view;
 		in_area		: in type_rectangle := no_rectangle;

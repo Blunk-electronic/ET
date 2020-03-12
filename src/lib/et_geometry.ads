@@ -320,14 +320,15 @@ package et_geometry is
 			return type_distance;
 		
 		-- Returns x/y of point rounded according to given grid.
-		function round (
+		function round_to_string (
 			point	: in type_point;
 			grid	: in type_grid)
 			return string;
 
-		function snap_to_grid (
-			point		: in type_point'class;
-			resolution	: in type_distance_positive)
+		-- Returns point rounded according to given grid.		
+		function round (
+			point	: in type_point;
+			grid	: in type_grid)
 			return type_point'class;
 
 		overriding function to_string (point : in type_position) return string;

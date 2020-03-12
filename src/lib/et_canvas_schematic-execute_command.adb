@@ -208,10 +208,10 @@ procedure execute_command (
 		
 		case coordinates is
 			when ABSOLUTE =>
-				move_cursor_to (cursor_main, position);
+				self.move_cursor_to (cursor_main, position);
 
 			when RELATIVE =>
-				move_cursor_by (cursor_main, position);
+				self.move_cursor_by (cursor_main, position);
 		end case;
 	end position_cursor;		
 	

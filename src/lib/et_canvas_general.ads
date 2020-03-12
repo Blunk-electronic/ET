@@ -434,12 +434,14 @@ package pac_canvas is
 	cursor_main : type_cursor;
 
 	procedure move_cursor_to (
+		self    	: not null access type_view;
 		cursor		: in out type_cursor;
-		position	: in type_point);
+		position	: in type_point) is null;
 	
 	procedure move_cursor_by (
+		self    	: not null access type_view;
 		cursor		: in out type_cursor;
-		position	: in type_point);
+		position	: in type_point) is null;
 
 	procedure draw_cursor (
 		self		: not null access type_view;

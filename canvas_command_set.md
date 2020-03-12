@@ -23,6 +23,19 @@ zoom center 10 10 2 # x/y scale
 ```
 
 
+## CURSOR
+The drawing cursor can be positioned inside the canvas on left mouse button click.
+To position the cursor via command line:
+```
+position cursor absolute 25 30 # x/y
+```
+```
+position cursor relative 5 0 # x/y
+```
+
+The cursor position always snaps to the nearest grid point.
+
+
 ## SHOW
 
 To open a module for editing run this command. NOTE: This command is available in the 
@@ -36,23 +49,12 @@ If the number of a sheet is given, then the sheet will be opened right away:
 show module LED-driver 2
 ```
 
-
 To open a sheet for editing run this command:
 ```
 show sheet 2
 ```
 
-## CURSOR
-To position the cursor:
-```
-position cursor absolute 25 30 # x/y
-```
-```
-position cursor relative 5 0 # x/y
-```
-
-
-The show command locates the unit of a device. If the requested unit
+The show command also locates the unit of a device. If the requested unit
 exist, then the drawing pans so that the unit appears at the center.
 
 ### In Schematc

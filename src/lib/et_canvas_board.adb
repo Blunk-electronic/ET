@@ -76,7 +76,7 @@ package body et_canvas_board is
 		point	: in type_point)
 		return string is
 	begin
-		return round (point, self.drawing.grid);
+		return round_to_string (point, self.drawing.grid);
 	end;
 	
 	function model_to_drawing (
@@ -293,7 +293,8 @@ package body et_canvas_board is
 		-- Get the board position (distance relative to the lower left corner of the drawing frame):
 		self.drawing.board_origin := type_modules.element (am).board.origin;
 
-		move_cursor_to (cursor_main, origin);
+		-- set the main cursor at the origin of the board
+		self.move_cursor_to (cursor_main, origin);
 	end init_drawing;
 
 	procedure redraw (view : in type_view_ptr) is begin
@@ -330,6 +331,31 @@ package body et_canvas_board is
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level) is separate;
 
+	procedure move_cursor_to (
+		self		: not null access type_view;								 
+		cursor		: in out type_cursor;
+		position	: in type_point) is 
+		use et_general;
+	begin
+		cursor.position := type_point (round (position, self.drawing.grid));
+
+		-- update position display
+		gtk_entry (cursor_position_x.get_child).set_text (to_string (x (cursor.position)));
+		gtk_entry (cursor_position_y.get_child).set_text (to_string (y (cursor.position)));
+	end move_cursor_to;
+
+	procedure move_cursor_by (
+		self		: not null access type_view;								 
+		cursor		: in out type_cursor;
+		position	: in type_point) is 
+	begin
+		cursor.position := type_point (round (cursor.position + position, self.drawing.grid));
+
+		-- update position display
+		gtk_entry (cursor_position_x.get_child).set_text (to_string (x (cursor.position)));
+		gtk_entry (cursor_position_y.get_child).set_text (to_string (y (cursor.position)));
+	end move_cursor_by;
+	
 	procedure draw_cursor (
 		self		: not null access type_view;
 		in_area		: in type_rectangle := no_rectangle;

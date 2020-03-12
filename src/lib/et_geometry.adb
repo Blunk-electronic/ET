@@ -755,7 +755,7 @@ package body et_geometry is
 			return type_distance (integer (distance / grid)) * grid;
 		end round;
 			
-		function round (
+		function round_to_string (
 			point 	: in type_point;
 			grid	: in type_grid) 
 			return string is 
@@ -766,20 +766,17 @@ package body et_geometry is
 				& to_string (round (point.y, grid.y));
 		end;
 
-		function snap_to_grid (
-			point		: in type_point'class;
-			resolution	: in type_distance_positive)
+		function round (
+			point 	: in type_point;
+			grid	: in type_grid) 
 			return type_point'class is
-			result : type_point;
+			
+			p : type_point := (
+				x => (round (point.x, grid.x)),
+				y => (round (point.y, grid.y)));
 		begin
-			result := (
-				x	=> type_distance (integer ((point.x) / resolution) * resolution),
-				y	=> type_distance (integer ((point.y) / resolution) * resolution)
-			);
-			
-			return result;
-			
-		end snap_to_grid;
+			return p;
+		end;
 
 		function to_string (point : in type_position) return string is begin
 			return point_preamble_with_rotation
