@@ -362,7 +362,7 @@ package body et_canvas_schematic is
 		cursor		: in type_cursor)
 	is
 -- 		use pac_draw_misc;
--- 		type line is new pac_shapes.type_line with null record;
+		type line is new et_schematic.pac_shapes.type_line with null record;
 -- 		line_horizontal, line_vertical : type_line;
 	begin
 		cairo.set_line_width (context.cr, type_view_coordinate (et_schematic.net_line_width));
