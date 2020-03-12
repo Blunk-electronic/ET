@@ -64,6 +64,7 @@ package gui_board.callbacks is
 
 
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class);
+	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class);
 	
 	
 	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class);

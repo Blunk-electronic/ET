@@ -54,6 +54,7 @@ with ada.directories;
 
 with et_general;				use et_general;
 with et_project;				use et_project;
+with et_pcb_coordinates;		use et_pcb_coordinates;
 with et_string_processing;		use et_string_processing;
 
 with gui_board.callbacks;		use gui_board.callbacks;
@@ -95,9 +96,13 @@ package body gui_board is
 		
 		build_position_display;
 
-		-- Connect to the on_activate signal of the entry (which is a child of console):
-		-- 		gtk_entry (cursor_x.get_child).set_text ("test"); --gui_schematic.callbacks.execute_command'access); -- on hitting enter
-		gtk_entry (cursor_position_x.get_child).on_activate (gui_board.callbacks.set_cursor_position_x'access); -- on hitting enter
+		-- Init the main cursor so that it sits at the origin of the board:
+-- 		canvas.move_cursor_to (cursor_main, et_pcb_coordinates.geometry.origin);
+
+		
+		-- Connect to the on_activate signal (on hitting enter key) of the entry (which is a child of console):
+		gtk_entry (cursor_position_x.get_child).on_activate (gui_board.callbacks.set_cursor_position_x'access);
+		gtk_entry (cursor_position_y.get_child).on_activate (gui_board.callbacks.set_cursor_position_y'access);
 		
 -- 		-- toolbar on the left
 -- 		gtk_new (toolbar);

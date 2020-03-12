@@ -108,14 +108,24 @@ package body gui_board.callbacks is
 		use et_pcb_coordinates.geometry;
 		cp : type_point := cursor_main.position;
 	begin
-		put_line (get_text (self));
-		set (point => cp, axis => X, value => to_distance ("44.0")); --get_text (self)));
-		put_line (to_string (cp));
+		set (point => cp, axis => X, value => to_distance (get_text (self)));
 		move_cursor_to (canvas, cursor_main, cp);
 		
 		redraw (canvas);
 	end set_cursor_position_x;
+
+	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class) is 
+		use et_general;
+		use gtk.gentry;
+		use et_pcb_coordinates.geometry;
+		cp : type_point := cursor_main.position;
+	begin
+		set (point => cp, axis => Y, value => to_distance (get_text (self)));
+		move_cursor_to (canvas, cursor_main, cp);
 		
+		redraw (canvas);
+	end set_cursor_position_y;
+	
 	procedure execute_command (self : access gtk.gentry.gtk_entry_record'class) is 
 		use gtk.gentry;
 		use et_string_processing;
