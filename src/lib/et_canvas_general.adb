@@ -635,20 +635,20 @@ package body pac_canvas is
 
 		drawing_point : type_point;
 	begin
-		new_line;
-		put_line ("mouse movement ! new positions are:");
+-- 		new_line;
+-- 		put_line ("mouse movement ! new positions are:");
 
 		-- Fetch the position of the mouse pointer and output it on the console:
 		view_point := (x => event.x, y => event.y);
-		put_line (" " & to_string (view_point));
+-- 		put_line (" " & to_string (view_point));
 
 		-- Convert the view point (pixels) to the position (millimeters) in the model
 		-- and output in on the console:
 		model_point := self.view_to_model (view_point);
-		put_line (" model " & to_string (model_point));
+-- 		put_line (" model " & to_string (model_point));
 
 		drawing_point := model_to_drawing (self, model_point);
-		put_line (" drawing " & to_string (self, drawing_point));
+-- 		put_line (" drawing " & to_string (self, drawing_point));
 
 		-- update mouse position display:
 		gtk_entry (mouse_position_x.get_child).set_text (to_string (self, drawing_point, X));
@@ -749,7 +749,7 @@ package body pac_canvas is
 -- 		key_ctrl : gdk_modifier_type := event.state and control_mask;
 		key : gdk_key_type := event.keyval;
 	begin
-		--put_line ("key pressed");
+		put_line ("key pressed");
 		
 		new_line;
 
@@ -804,12 +804,10 @@ package body pac_canvas is
 		
 		mouse_button : constant positive := positive (event.button);
 		view_point : constant type_view_point := (event.x, event.y);
-		model_point : type_point := self.view_to_model (view_point);
-		drawing_point : type_point := self.model_to_drawing (model_point);
+		model_point : constant type_point := self.view_to_model (view_point);
+		drawing_point : constant type_point := self.model_to_drawing (model_point);
 	begin
--- 		drawing_point := round (drawing_point, self.drawing.grid);
-		
-		put_line ("mouse button " & positive'image (mouse_button) & " pressed");
+-- 		put_line ("mouse button " & positive'image (mouse_button) & " pressed");
 
 		case mouse_button is
 			when 1 =>
