@@ -127,7 +127,7 @@ package pac_canvas is
 	-- Places them in box_left.
 	procedure build_position_display;
 
-
+	procedure update_position_display_cursor;
 	
 	box_console	: gtk_box;
 	console		: gtk_combo_box_text;

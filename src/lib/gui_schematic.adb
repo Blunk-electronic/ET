@@ -96,9 +96,9 @@ package body gui_schematic is
 
 		build_position_display;
 
-		-- Connect to the on_activate signal of the entry (which is a child of console):
-		-- 		gtk_entry (cursor_x.get_child).set_text ("test"); --gui_schematic.callbacks.execute_command'access); -- on hitting enter
-
+		-- Connect to the on_activate signal (on hitting enter key) of the entry (which is a child of console):
+		gtk_entry (cursor_position_x.get_child).on_activate (gui_schematic.callbacks.set_cursor_position_x'access);
+		gtk_entry (cursor_position_y.get_child).on_activate (gui_schematic.callbacks.set_cursor_position_y'access);
 
 		
 -- 		-- toolbar on the left

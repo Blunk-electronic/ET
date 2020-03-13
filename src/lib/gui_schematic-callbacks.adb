@@ -71,7 +71,31 @@ package body gui_schematic.callbacks is
 				
 		return true;
 	end;
+
+	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class) is 
+		use et_general;
+		use gtk.gentry;
+		use et_coordinates.geometry;
+		cp : type_point := cursor_main.position;
+	begin
+		set (point => cp, axis => X, value => to_distance (get_text (self)));
+		move_cursor_to (canvas, cursor_main, cp);
 		
+		redraw (canvas);
+	end set_cursor_position_x;
+
+	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class) is 
+		use et_general;
+		use gtk.gentry;
+		use et_coordinates.geometry;
+		cp : type_point := cursor_main.position;
+	begin
+		set (point => cp, axis => Y, value => to_distance (get_text (self)));
+		move_cursor_to (canvas, cursor_main, cp);
+		
+		redraw (canvas);
+	end set_cursor_position_y;
+	
 -- 	procedure zoom_to_fit (self : access glib.object.gobject_record'class) is 
 -- 	begin
 -- 		put_line ("zoom to fit ...");
@@ -190,7 +214,7 @@ package body gui_schematic.callbacks is
 
 	begin
 		--new_line;
-		put_line ("top level key pressed");
+-- 		put_line ("top level key pressed");
 
 		-- Set the focus to the canvas:
 -- 		set_focus (current_window, canvas);

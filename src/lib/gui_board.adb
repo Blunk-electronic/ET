@@ -96,10 +96,6 @@ package body gui_board is
 		
 		build_position_display;
 
-		-- Init the main cursor so that it sits at the origin of the board:
--- 		canvas.move_cursor_to (cursor_main, et_pcb_coordinates.geometry.origin);
-
-		
 		-- Connect to the on_activate signal (on hitting enter key) of the entry (which is a child of console):
 		gtk_entry (cursor_position_x.get_child).on_activate (gui_board.callbacks.set_cursor_position_x'access);
 		gtk_entry (cursor_position_y.get_child).on_activate (gui_board.callbacks.set_cursor_position_y'access);

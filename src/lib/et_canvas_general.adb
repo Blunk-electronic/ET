@@ -40,6 +40,9 @@
 
 with ada.text_io;				use ada.text_io;
 with ada.characters.handling;	use ada.characters.handling;
+with ada.strings;				use ada.strings;
+with ada.strings.fixed;			use ada.strings.fixed;
+
 with interfaces.c.strings;		use interfaces.c.strings;
 
 with gtk.bin;				use gtk.bin;
@@ -140,9 +143,15 @@ package body pac_canvas is
 		pack_start (box_cursor_position_y, label_cursor_position_y, expand => false);
 		gtk_new_with_entry (cursor_position_y);
 		pack_start (box_cursor_position_y, cursor_position_y, expand => false);
-		
+
+		update_position_display_cursor;		
 	end build_position_display;
 
+	procedure update_position_display_cursor is begin
+		gtk_entry (cursor_position_x.get_child).set_text (trim (to_string (x (cursor_main.position)), left));
+		gtk_entry (cursor_position_y.get_child).set_text (trim (to_string (y (cursor_main.position)), left));
+	end;
+	
 	procedure build_console is begin
 		-- box for console on the right top
 		gtk_new_vbox (box_console);
