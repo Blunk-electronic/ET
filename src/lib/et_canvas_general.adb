@@ -789,33 +789,6 @@ package body pac_canvas is
 		
 		return true; -- indicates that event has been handled
 	end on_key_pressed_event;
-
-	function on_key_released_event (
-		view  : access gtk_widget_record'class;
-		event : gdk_event_key) return boolean is
-
-		use gdk.types;
-		use gdk.types.keysyms;
-		
-		self    : constant type_view_ptr := type_view_ptr (view);
-
--- 		key_ctrl : gdk_modifier_type := event.state and control_mask;
-		key : gdk_key_type := event.keyval;
-	begin
-		--put_line ("key pressed");
-		--new_line;
-		--put_line (gdk_key_type'image (key));
-
-		case key is
-			when GDK_Control_L | GDK_Control_R =>
-				put_line ("ctrl released");
-
-			when others => 
-				put_line ("other key released");
-		end case;
-		
-		return true; -- indicates that event has been handled
-	end on_key_released_event;
 	
 	function on_button_event (
 		view  : access gtk_widget_record'class;
@@ -875,12 +848,8 @@ package body pac_canvas is
 
 		-- reaction to keys pressed on the keyboard		
 		self.on_key_press_event (access_on_key_pressed_event);
-
-		-- reaction to keys released on the keyboard		
-		self.on_key_release_event (access_on_key_released_event);
 		
 		self.set_can_focus (true);
-
 	end init;
 
 	

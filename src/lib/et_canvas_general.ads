@@ -552,12 +552,6 @@ private
 
 	access_on_key_pressed_event : constant cb_gtk_widget_gdk_event_key_boolean := on_key_pressed_event'access;
 	------
-
-	function on_key_released_event (
-		view  : access gtk_widget_record'class;
-		event : gdk_event_key) return boolean;
-
-	access_on_key_released_event : constant cb_gtk_widget_gdk_event_key_boolean := on_key_released_event'access;
 	
 end pac_canvas;
 	
