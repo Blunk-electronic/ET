@@ -22,6 +22,7 @@ zoom center 10 10 # x/y
 zoom center 10 10 2 # x/y scale
 ```
 
+To zoom at the current cursor position keep CTRL pressed and press + or -.
 
 ## CURSOR
 The drawing cursor can be positioned inside the canvas on left mouse button click.

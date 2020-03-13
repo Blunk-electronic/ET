@@ -418,6 +418,14 @@ package pac_canvas is
 		self		: not null access type_view'class;
 		center_on	: type_point); -- in drawing
 
+	procedure zoom_in (
+		point	: in type_point; 	-- model point
+		step	: in type_scale);	-- the increment of scale change
+	
+	procedure zoom_out (
+		point	: in type_point; 	-- model point
+		step	: in type_scale);	-- the increment of scale change
+
 	procedure execute_command (
 		self    		: not null access type_view;
 		cmd				: in type_fields_of_line;

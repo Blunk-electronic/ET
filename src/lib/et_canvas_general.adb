@@ -687,6 +687,26 @@ package body pac_canvas is
 		self.queue_draw;
 	end center_on;
 
+	procedure zoom_in (
+		point	: in type_point; -- model point
+		step	: in type_scale) 
+	is
+		scale : type_scale := canvas.get_scale; -- Get the current scale.
+	begin
+		canvas.set_scale (scale + step, point);
+		-- CS limit to max scale
+	end zoom_in;
+
+	procedure zoom_out (
+		point	: in type_point; -- model point
+		step	: in type_scale) 
+	is
+		scale : type_scale := canvas.get_scale; -- Get the current scale.
+	begin
+		canvas.set_scale (scale - step, point);
+		-- CS limit to min scale
+	end zoom_out;
+
 	
 	function on_scroll_event (
 		view	: access gtk_widget_record'class;
@@ -709,13 +729,10 @@ package body pac_canvas is
 		-- its sign only. Negative means zooming in, positive means zooming out.
 		dy : gdouble := event.delta_y;
 		
-		self    : constant type_view_ptr := type_view_ptr (view);
+		self : constant type_view_ptr := type_view_ptr (view);
 
-		-- Get the current scale:
-		scale	: type_scale := get_scale (self);
-
-		-- The point at which the zooming takes place:
-		point	: type_point;
+		-- The model point at which the zooming takes place:
+		point : type_point;
 		
 	begin -- on_scroll_event
 
@@ -730,18 +747,18 @@ package body pac_canvas is
 			if dy > 0.0 then
 				--put_line ("zoom out");
 				--put_line ("zoom out at " & to_string (point));
-				set_scale (self, scale - scale_delta_on_zoom, point);
+				--set_scale (self, scale - scale_delta_on_zoom, point);
+				zoom_out (point, scale_delta_on_zoom);
 				event_handled;
 			else
 				--put_line ("zoom in");
 				--put_line ("zoom in at  " & to_string (point));
-				set_scale (self, scale + scale_delta_on_zoom, point);
+				--set_scale (self, scale + scale_delta_on_zoom, point);
+				zoom_in (point, scale_delta_on_zoom);
 				event_handled;
 			end if;
 					
 		end if;
-
-		-- CS: exception handler if scale range check fails
 
 		return result;
 	end on_scroll_event;
@@ -768,11 +785,16 @@ package body pac_canvas is
 		if key_ctrl = control_mask then 
 			case key is
 				when GDK_KP_Add | GDK_PLUS =>
-					put_line ("zoom in");
--- 					set_scale (self, scale - scale_delta_on_zoom, point);
+-- 					put_line ("zoom in");
+					zoom_in (
+						point	=> drawing_to_model (self, cursor_main.position),
+						step	=> scale_delta_on_zoom);
 					
 				when GDK_KP_Subtract | GDK_minus =>
-					put_line ("zoom out");
+-- 					put_line ("zoom out");
+					zoom_out (
+						point	=> drawing_to_model (self, cursor_main.position),
+						step	=> scale_delta_on_zoom);
 					
 				when others => null;
 			end case;
