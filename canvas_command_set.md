@@ -25,6 +25,7 @@ zoom center 10 10 2 # x/y scale
 
 ## CURSOR
 The drawing cursor can be positioned inside the canvas on left mouse button click.
+After a click in the canvas the cursor can be moved via the cursor keys (right, left, up, down).
 To position the cursor via command line:
 ```
 position cursor absolute 25 30 # x/y

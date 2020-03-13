@@ -758,16 +758,31 @@ package body pac_canvas is
 -- 		key_ctrl : gdk_modifier_type := event.state and control_mask;
 		key : gdk_key_type := event.keyval;
 	begin
-		put_line ("key pressed");
-		
-		new_line;
-
-		put_line (gdk_key_type'image (key));
+-- 		put_line ("key pressed");
+-- 		new_line;
+-- 		put_line (gdk_key_type'image (key));
 
 		case key is
 			when GDK_Control_L | GDK_Control_R =>
 				put_line ("ctrl pressed");
 
+			when GDK_Right =>
+				move_cursor_right (canvas, cursor_main);
+				self.queue_draw; -- without frame and grid initialization
+
+			when GDK_Left =>
+				move_cursor_left (canvas, cursor_main);
+				self.queue_draw; -- without frame and grid initialization
+
+			when GDK_Up =>
+				move_cursor_up (canvas, cursor_main);
+				self.queue_draw; -- without frame and grid initialization
+
+			when GDK_Down =>
+				move_cursor_down (canvas, cursor_main);
+				self.queue_draw; -- without frame and grid initialization
+
+				
 			when others => 
 				put_line ("other key pressed");
 		end case;
@@ -788,10 +803,8 @@ package body pac_canvas is
 		key : gdk_key_type := event.keyval;
 	begin
 		--put_line ("key pressed");
-		
-		new_line;
-
-		put_line (gdk_key_type'image (key));
+		--new_line;
+		--put_line (gdk_key_type'image (key));
 
 		case key is
 			when GDK_Control_L | GDK_Control_R =>
@@ -819,12 +832,15 @@ package body pac_canvas is
 -- 		put_line ("mouse button " & positive'image (mouse_button) & " pressed");
 
 		case mouse_button is
-			when 1 =>
+			when 1 => -- left button
 				self.move_cursor_to (cursor_main, drawing_point);
-				self.queue_draw;
+				self.queue_draw; -- without frame and grid initialization
 
 			when others => null;
 		end case;
+
+		-- After any click somewhere in the canvas, the canvas gets the keyboard focus:
+		self.grab_focus;
 		
 		return true; -- indicates that event has been handled
 	end on_button_event;
