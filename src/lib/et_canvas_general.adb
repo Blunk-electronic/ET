@@ -755,37 +755,55 @@ package body pac_canvas is
 		
 		self    : constant type_view_ptr := type_view_ptr (view);
 
--- 		key_ctrl : gdk_modifier_type := event.state and control_mask;
+		key_ctrl : gdk_modifier_type := event.state and control_mask;
 		key : gdk_key_type := event.keyval;
 	begin
 -- 		put_line ("key pressed");
 -- 		new_line;
 -- 		put_line (gdk_key_type'image (key));
 
-		case key is
-			when GDK_Control_L | GDK_Control_R =>
-				put_line ("ctrl pressed");
+-- 		put_line (gdk_modifier_type'image (key_ctrl));
 
-			when GDK_Right =>
-				move_cursor_right (canvas, cursor_main);
-				self.queue_draw; -- without frame and grid initialization
+		-- Zoom in/out on ctrl and +/- key:
+		if key_ctrl = control_mask then 
+			case key is
+				when GDK_KP_Add | GDK_PLUS =>
+					put_line ("zoom in");
+-- 					set_scale (self, scale - scale_delta_on_zoom, point);
+					
+				when GDK_KP_Subtract | GDK_minus =>
+					put_line ("zoom out");
+					
+				when others => null;
+			end case;
+		else
+		
+			case key is
+-- 				when GDK_Control_L | GDK_Control_R =>
+-- 					put_line ("ctrl pressed");
 
-			when GDK_Left =>
-				move_cursor_left (canvas, cursor_main);
-				self.queue_draw; -- without frame and grid initialization
+				when GDK_Right =>
+					move_cursor_right (canvas, cursor_main);
+					self.queue_draw; -- without frame and grid initialization
 
-			when GDK_Up =>
-				move_cursor_up (canvas, cursor_main);
-				self.queue_draw; -- without frame and grid initialization
+				when GDK_Left =>
+					move_cursor_left (canvas, cursor_main);
+					self.queue_draw; -- without frame and grid initialization
 
-			when GDK_Down =>
-				move_cursor_down (canvas, cursor_main);
-				self.queue_draw; -- without frame and grid initialization
+				when GDK_Up =>
+					move_cursor_up (canvas, cursor_main);
+					self.queue_draw; -- without frame and grid initialization
 
-				
-			when others => 
-				put_line ("other key pressed");
-		end case;
+				when GDK_Down =>
+					move_cursor_down (canvas, cursor_main);
+					self.queue_draw; -- without frame and grid initialization
+
+					
+				when others => null;
+-- 					put_line ("other key pressed");
+			end case;
+
+		end if;
 		
 		return true; -- indicates that event has been handled
 	end on_key_pressed_event;
