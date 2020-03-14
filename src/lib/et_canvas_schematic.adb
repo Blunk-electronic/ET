@@ -381,6 +381,7 @@ package body et_canvas_schematic is
 	begin
 		cursor.position := type_point (move (cursor.position, 0.0, self.drawing.grid.x));
 		update_position_display_cursor;
+		self.shift_area (cursor);
 	end move_cursor_right;
 
 	procedure move_cursor_left (
@@ -389,6 +390,7 @@ package body et_canvas_schematic is
 	begin
 		cursor.position := type_point (move (cursor.position, 180.0, self.drawing.grid.x));
 		update_position_display_cursor;
+		self.shift_area (cursor);
 	end move_cursor_left;
 
 	procedure move_cursor_up (
@@ -397,6 +399,7 @@ package body et_canvas_schematic is
 	begin
 		cursor.position := type_point (move (cursor.position, 90.0, self.drawing.grid.x));
 		update_position_display_cursor;
+		self.shift_area (cursor);		
 	end move_cursor_up;
 
 	procedure move_cursor_down (
@@ -405,13 +408,21 @@ package body et_canvas_schematic is
 	begin
 		cursor.position := type_point (move (cursor.position, -90.0, self.drawing.grid.x));
 		update_position_display_cursor;
+		self.shift_area (cursor);
 	end move_cursor_down;
 
 	procedure shift_area (
 		self		: not null access type_view;
-		area		: in out type_rectangle;
 		cursor		: in type_cursor) is
 
+		area : constant type_rectangle := self.get_visible_area;
+
+		area_center : constant type_point := type_point (set (
+										x => area.x + area.width * 0.5,
+										y => area.y + area.height * 0.5));
+		
+		area_center_drawing : type_point := self.model_to_drawing (area_center);
+		
 		-- Calculate the position of the area in the drawing.
 		-- This is the upper left corner of the area:
 		p : constant type_point := self.model_to_drawing (type_point (set (area.x, area.y)));
@@ -434,14 +445,14 @@ package body et_canvas_schematic is
 		dyb : constant type_distance := border_bottom - y (cursor.position);
 	begin
 		if dxr >= zero then
-			area.x := area.x + dxr;
+			self.center_on (type_point (move (point => area_center_drawing, direction => 0.0, distance => dxr)));
 		elsif dxl >= zero then
-			area.x := area.x - dxl;
+			self.center_on (type_point (move (point => area_center_drawing, direction => 180.0, distance => dxl)));
 			
 		elsif dyt >= zero then
-			area.y := area.y + dyt;
+			self.center_on (type_point (move (point => area_center_drawing, direction => 90.0, distance => dyt)));
 		elsif dyb >= zero then
-			area.y := area.y - dyb;
+			self.center_on (type_point (move (point => area_center_drawing, direction => -90.0, distance => dyb)));
 		end if;
 		
 	end shift_area;

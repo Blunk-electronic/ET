@@ -257,7 +257,7 @@ package et_canvas_schematic is
 
 	overriding procedure shift_area (
 		self		: not null access type_view;
-		area		: in out type_rectangle;
+-- 		area		: in out type_rectangle;
 		cursor		: in type_cursor);
 	
 	overriding procedure draw_cursor (

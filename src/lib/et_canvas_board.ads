@@ -222,7 +222,7 @@ package et_canvas_board is
 
 	overriding procedure shift_area (
 		self		: not null access type_view;
-		area		: in out type_rectangle;
+-- 		area		: in out type_rectangle;
 		cursor		: in type_cursor) is null;
 	
 	overriding procedure draw_cursor (
