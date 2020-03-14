@@ -55,6 +55,7 @@ with cairo.pattern;			use cairo.pattern;
 with gtkada.style;
 
 with et_general;
+with et_geometry;			use et_geometry;
 with et_coordinates;		use et_coordinates;
 with et_project;
 with et_symbols;
@@ -239,6 +240,12 @@ package et_canvas_schematic is
 		cursor		: in out type_cursor;
 		position	: in type_point);
 
+	overriding procedure move_cursor (
+		self		: not null access type_view;
+		coordinates	: in type_coordinates; -- absolute/relative
+		cursor		: in out type_cursor;
+		position	: in type_point);
+	
 	overriding procedure move_cursor (
 		self		: not null access type_view;
 		direction	: in type_cursor_direction;

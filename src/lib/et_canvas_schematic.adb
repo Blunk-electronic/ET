@@ -379,6 +379,25 @@ package body et_canvas_schematic is
 
 	procedure move_cursor (
 		self		: not null access type_view;
+		coordinates	: in type_coordinates;
+		cursor		: in out type_cursor;
+		position	: in type_point) is
+		use et_general;
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+				cursor.position := type_point (round (position, self.drawing.grid));
+				
+			when RELATIVE =>
+				cursor.position := type_point (round (cursor.position + position, self.drawing.grid));
+		end case;
+
+		update_position_display_cursor;
+		self.shift_area (cursor);		
+	end move_cursor;
+	
+	procedure move_cursor (
+		self		: not null access type_view;
 		direction	: in type_cursor_direction;
 		cursor		: in out type_cursor) is
 	begin

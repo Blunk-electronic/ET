@@ -77,7 +77,7 @@ with pango.layout;				use pango.layout;
 with system.storage_elements;	use system.storage_elements;
 
 with et_general;
-with et_geometry;
+with et_geometry;				use et_geometry;
 with et_frames;
 with et_string_processing;		use et_string_processing;
 
@@ -455,7 +455,13 @@ package pac_canvas is
 
 	procedure move_cursor (
 		self		: not null access type_view;
-		direction	: in type_cursor_direction;
+		coordinates	: in type_coordinates;  -- relative/absolute
+		cursor		: in out type_cursor;
+		position	: in type_point) is null;
+	
+	procedure move_cursor (
+		self		: not null access type_view;
+		direction	: in type_cursor_direction; -- right, left, up, down
 		cursor		: in out type_cursor) is null;
 
 	procedure shift_area (
