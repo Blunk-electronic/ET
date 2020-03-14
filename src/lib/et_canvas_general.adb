@@ -893,7 +893,7 @@ package body pac_canvas is
 
 		case mouse_button is
 			when 1 => -- left button
-				self.move_cursor_to (cursor_main, drawing_point);
+				self.move_cursor (ABSOLUTE, cursor_main, drawing_point);
 				self.queue_draw; -- without frame and grid initialization
 
 			when others => null;
@@ -1160,30 +1160,6 @@ package body pac_canvas is
 		style.finish_path (context.cr);
 		
 	end draw_grid;
-
--- 	procedure move_cursor_to (
--- 		cursor		: in out type_cursor;
--- 		position	: in type_point) is 
--- 		use et_general;
--- 	begin
--- 		cursor.position := position;
--- 
--- 		-- update position display
--- 		gtk_entry (cursor_position_x.get_child).set_text (to_string (x (cursor.position)));
--- 		gtk_entry (cursor_position_y.get_child).set_text (to_string (y (cursor.position)));
--- 	end move_cursor_to;
--- 
--- 	procedure move_cursor_by (
--- 		cursor		: in out type_cursor;
--- 		position	: in type_point) is 
--- 	begin
--- 		cursor.position := type_point (cursor.position + position);
--- 
--- 		-- update position display
--- 		gtk_entry (cursor_position_x.get_child).set_text (to_string (x (cursor.position)));
--- 		gtk_entry (cursor_position_y.get_child).set_text (to_string (y (cursor.position)));
--- 	end move_cursor_by;
-
 	
 end pac_canvas;
 	

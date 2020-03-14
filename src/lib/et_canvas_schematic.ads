@@ -230,15 +230,15 @@ package et_canvas_schematic is
 	cursor_half_size : constant type_distance_positive := 5.0;
 	type type_cursor_line is new et_schematic.pac_shapes.type_line with null record;
 
-	overriding procedure move_cursor_to (
-		self    	: not null access type_view;
-		cursor		: in out type_cursor;
-		position	: in type_point);
-	
-	overriding procedure move_cursor_by (
-		self    	: not null access type_view;
-		cursor		: in out type_cursor;
-		position	: in type_point);
+-- 	overriding procedure move_cursor_to (
+-- 		self    	: not null access type_view;
+-- 		cursor		: in out type_cursor;
+-- 		position	: in type_point);
+-- 	
+-- 	overriding procedure move_cursor_by (
+-- 		self    	: not null access type_view;
+-- 		cursor		: in out type_cursor;
+-- 		position	: in type_point);
 
 	overriding procedure move_cursor (
 		self		: not null access type_view;

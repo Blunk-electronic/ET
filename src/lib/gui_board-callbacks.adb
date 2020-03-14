@@ -41,6 +41,7 @@ with gtk.main;
 with gtk.window;				use gtk.window;
 with ada.text_io;				use ada.text_io;
 with et_general;
+with et_geometry;				use et_geometry;
 with et_pcb_coordinates;
 with et_canvas_board;			use et_canvas_board;
 use et_canvas_board.pac_canvas;
@@ -109,7 +110,7 @@ package body gui_board.callbacks is
 		cp : type_point := cursor_main.position;
 	begin
 		set (point => cp, axis => X, value => to_distance (get_text (self)));
-		move_cursor_to (canvas, cursor_main, cp);
+		move_cursor (canvas, ABSOLUTE, cursor_main, cp);
 		
 		redraw (canvas);
 	end set_cursor_position_x;
@@ -121,7 +122,7 @@ package body gui_board.callbacks is
 		cp : type_point := cursor_main.position;
 	begin
 		set (point => cp, axis => Y, value => to_distance (get_text (self)));
-		move_cursor_to (canvas, cursor_main, cp);
+		move_cursor (canvas, ABSOLUTE, cursor_main, cp);
 		
 		redraw (canvas);
 	end set_cursor_position_y;

@@ -206,13 +206,7 @@ procedure execute_command (
 		log (text => "place cursor" & to_string (coordinates) 
 			 & to_string (position), level => log_threshold + 1);
 		
-		case coordinates is
-			when ABSOLUTE =>
-				self.move_cursor_to (cursor_main, position);
-
-			when RELATIVE =>
-				self.move_cursor_by (cursor_main, position);
-		end case;
+		self.move_cursor (coordinates, cursor_main, position);
 	end position_cursor;		
 	
 	
