@@ -184,6 +184,9 @@ package body et_canvas_schematic is
 						y => - self.drawing.frame_bounding_box.y));
 	begin
 -- 		put_line ("draw internal ...");
+-- 		shift_area (self, area_shifted, cursor_main);
+-- 		shift_area (self, area_shifted_new_position, cursor_main);
+
 		
 		-- draw a black background:
 		set_source_rgb (context.cr, 0.0, 0.0, 0.0);
@@ -403,6 +406,45 @@ package body et_canvas_schematic is
 		cursor.position := type_point (move (cursor.position, -90.0, self.drawing.grid.x));
 		update_position_display_cursor;
 	end move_cursor_down;
+
+	procedure shift_area (
+		self		: not null access type_view;
+		area		: in out type_rectangle;
+		cursor		: in type_cursor) is
+
+		-- Calculate the position of the area in the drawing.
+		-- This is the upper left corner of the area:
+		p : constant type_point := self.model_to_drawing (type_point (set (area.x, area.y)));
+
+		-- Build the area of the drawing:
+		a : constant type_rectangle := (
+							x 		=> x (p),
+							y 		=> y (p), 
+							width 	=> area.width,
+							height 	=> area.height);
+
+		border_left		: constant type_distance := a.x;
+		border_right	: constant type_distance := a.x + a.width;
+		border_top		: constant type_distance := a.y;
+		border_bottom	: constant type_distance := a.y - a.height;
+		
+		dxr : constant type_distance := x (cursor.position) - border_right;
+		dxl : constant type_distance := border_left - x (cursor.position);
+		dyt : constant type_distance := y (cursor.position) - border_top;
+		dyb : constant type_distance := border_bottom - y (cursor.position);
+	begin
+		if dxr >= zero then
+			area.x := area.x + dxr;
+		elsif dxl >= zero then
+			area.x := area.x - dxl;
+			
+		elsif dyt >= zero then
+			area.y := area.y + dyt;
+		elsif dyb >= zero then
+			area.y := area.y - dyb;
+		end if;
+		
+	end shift_area;
 	
 	procedure draw_cursor (
 		self		: not null access type_view;

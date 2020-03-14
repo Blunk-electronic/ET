@@ -466,6 +466,11 @@ package pac_canvas is
 	procedure move_cursor_down (
 		self		: not null access type_view;								 
 		cursor		: in out type_cursor) is null;
+
+	procedure shift_area (
+		self		: not null access type_view;
+		area		: in out type_rectangle;
+		cursor		: in type_cursor) is null;
 	
 	procedure draw_cursor (
 		self		: not null access type_view;

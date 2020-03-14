@@ -244,7 +244,7 @@ package body pac_canvas is
 		cairo.scale (cr, self.scale, self.scale);
 
 	end set_transform;
-	
+
 	procedure refresh (
 		self : not null access type_view'class;
 		cr   : cairo.cairo_context;
