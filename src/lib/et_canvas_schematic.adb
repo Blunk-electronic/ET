@@ -377,6 +377,29 @@ package body et_canvas_schematic is
 		self.shift_area (cursor);
 	end move_cursor_by;
 
+	procedure move_cursor (
+		self		: not null access type_view;
+		direction	: in type_cursor_direction;
+		cursor		: in out type_cursor) is
+	begin
+		case direction is
+			when RIGHT =>
+				cursor.position := type_point (move (cursor.position, 0.0, self.drawing.grid.x));
+
+			when LEFT =>
+				cursor.position := type_point (move (cursor.position, 180.0, self.drawing.grid.x));
+
+			when UP =>
+				cursor.position := type_point (move (cursor.position, 90.0, self.drawing.grid.y));
+
+			when DOWN =>
+				cursor.position := type_point (move (cursor.position, -90.0, self.drawing.grid.y));
+		end case;
+		
+		update_position_display_cursor;
+		self.shift_area (cursor);
+	end move_cursor;
+	
 	procedure move_cursor_right (
 		self		: not null access type_view;
 		cursor		: in out type_cursor) is 

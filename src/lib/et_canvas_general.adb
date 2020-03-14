@@ -852,19 +852,19 @@ package body pac_canvas is
 -- 					put_line ("ctrl pressed");
 
 				when GDK_Right =>
-					move_cursor_right (canvas, cursor_main);
+					canvas.move_cursor (RIGHT, cursor_main);
 					self.queue_draw; -- without frame and grid initialization
 
 				when GDK_Left =>
-					move_cursor_left (canvas, cursor_main);
+					canvas.move_cursor (LEFT, cursor_main);
 					self.queue_draw; -- without frame and grid initialization
 
 				when GDK_Up =>
-					move_cursor_up (canvas, cursor_main);
+					canvas.move_cursor (UP, cursor_main);
 					self.queue_draw; -- without frame and grid initialization
 
 				when GDK_Down =>
-					move_cursor_down (canvas, cursor_main);
+					canvas.move_cursor (DOWN, cursor_main);
 					self.queue_draw; -- without frame and grid initialization
 
 					

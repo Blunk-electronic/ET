@@ -239,6 +239,11 @@ package et_canvas_schematic is
 		cursor		: in out type_cursor;
 		position	: in type_point);
 
+	overriding procedure move_cursor (
+		self		: not null access type_view;
+		direction	: in type_cursor_direction;
+		cursor		: in out type_cursor);
+	
 	overriding procedure move_cursor_right (
 		self		: not null access type_view;								 
 		cursor		: in out type_cursor);

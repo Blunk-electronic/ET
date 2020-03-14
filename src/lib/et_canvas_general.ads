@@ -441,6 +441,8 @@ package pac_canvas is
 
 	cursor_main : type_cursor;
 
+	type type_cursor_direction is (RIGHT, LEFT, UP, DOWN);
+	
 	procedure move_cursor_to (
 		self    	: not null access type_view;
 		cursor		: in out type_cursor;
@@ -451,6 +453,11 @@ package pac_canvas is
 		cursor		: in out type_cursor;
 		position	: in type_point) is null;
 
+	procedure move_cursor (
+		self		: not null access type_view;
+		direction	: in type_cursor_direction;
+		cursor		: in out type_cursor) is null;
+							  
 	procedure move_cursor_right (
 		self		: not null access type_view;								 
 		cursor		: in out type_cursor) is null;
