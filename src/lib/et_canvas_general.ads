@@ -442,28 +442,21 @@ package pac_canvas is
 	cursor_main : type_cursor;
 
 	type type_cursor_direction is (RIGHT, LEFT, UP, DOWN);
-	
--- 	procedure move_cursor_to (
--- 		self    	: not null access type_view;
--- 		cursor		: in out type_cursor;
--- 		position	: in type_point) is null;
--- 	
--- 	procedure move_cursor_by (
--- 		self    	: not null access type_view;
--- 		cursor		: in out type_cursor;
--- 		position	: in type_point) is null;
 
+	-- Moves the given cursor relative/absolute by/to the given position.
 	procedure move_cursor (
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;  -- relative/absolute
 		cursor		: in out type_cursor;
 		position	: in type_point) is null;
-	
+
+	-- Moves the given cursor in the given direction by the current grid.
 	procedure move_cursor (
 		self		: not null access type_view;
 		direction	: in type_cursor_direction; -- right, left, up, down
 		cursor		: in out type_cursor) is null;
 
+	-- Shifts the current area of the view so that the given cursor comes into view.
 	procedure shift_area (
 		self		: not null access type_view'class;
 		cursor		: in type_cursor);

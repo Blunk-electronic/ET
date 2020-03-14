@@ -356,27 +356,6 @@ package body et_canvas_schematic is
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level) is separate;
 
--- 	procedure move_cursor_to (
--- 		self		: not null access type_view;								 
--- 		cursor		: in out type_cursor;
--- 		position	: in type_point) is 
--- 		use et_general;
--- 	begin
--- 		cursor.position := type_point (round (position, self.drawing.grid));
--- 		update_position_display_cursor;
--- 		self.shift_area (cursor);
--- 	end move_cursor_to;
--- 
--- 	procedure move_cursor_by (
--- 		self		: not null access type_view;								 
--- 		cursor		: in out type_cursor;
--- 		position	: in type_point) is 
--- 	begin
--- 		cursor.position := type_point (round (cursor.position + position, self.drawing.grid));
--- 		update_position_display_cursor;
--- 		self.shift_area (cursor);
--- 	end move_cursor_by;
-
 	procedure move_cursor (
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;
