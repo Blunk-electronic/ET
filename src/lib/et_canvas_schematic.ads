@@ -254,11 +254,6 @@ package et_canvas_schematic is
 	overriding procedure move_cursor_down (
 		self		: not null access type_view;								 
 		cursor		: in out type_cursor);
-
-	overriding procedure shift_area (
-		self		: not null access type_view;
--- 		area		: in out type_rectangle;
-		cursor		: in type_cursor);
 	
 	overriding procedure draw_cursor (
 		self		: not null access type_view;

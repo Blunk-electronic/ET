@@ -687,6 +687,53 @@ package body pac_canvas is
 		self.queue_draw;
 	end center_on;
 
+	procedure shift_area (
+		self		: not null access type_view'class;
+		cursor		: in type_cursor) is
+
+		area : constant type_rectangle := self.get_visible_area;
+
+		area_center : constant type_point := type_point (set (
+										x => area.x + area.width * 0.5,
+										y => area.y + area.height * 0.5));
+		
+		area_center_drawing : type_point := self.model_to_drawing (area_center);
+		
+		-- Calculate the position of the area in the drawing.
+		-- This is the upper left corner of the area:
+		p : constant type_point := self.model_to_drawing (type_point (set (area.x, area.y)));
+
+		-- Build the area of the drawing:
+		a : constant type_rectangle := (
+							x 		=> x (p),
+							y 		=> y (p), 
+							width 	=> area.width,
+							height 	=> area.height);
+
+		border_left		: constant type_distance := a.x;
+		border_right	: constant type_distance := a.x + a.width;
+		border_top		: constant type_distance := a.y;
+		border_bottom	: constant type_distance := a.y - a.height;
+		
+		dxr : constant type_distance := x (cursor.position) - border_right;
+		dxl : constant type_distance := border_left - x (cursor.position);
+		dyt : constant type_distance := y (cursor.position) - border_top;
+		dyb : constant type_distance := border_bottom - y (cursor.position);
+	begin
+		if dxr >= zero then
+			self.center_on (type_point (move (point => area_center_drawing, direction => 0.0, distance => dxr)));
+		elsif dxl >= zero then
+			self.center_on (type_point (move (point => area_center_drawing, direction => 180.0, distance => dxl)));
+			
+		elsif dyt >= zero then
+			self.center_on (type_point (move (point => area_center_drawing, direction => 90.0, distance => dyt)));
+		elsif dyb >= zero then
+			self.center_on (type_point (move (point => area_center_drawing, direction => -90.0, distance => dyb)));
+		end if;
+		
+	end shift_area;
+
+	
 	procedure zoom_in (
 		point	: in type_point; -- model point
 		step	: in type_scale) 

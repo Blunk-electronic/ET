@@ -336,6 +336,7 @@ package body et_canvas_board is
 	begin
 		cursor.position := type_point (round (position, self.drawing.grid));
 		update_position_display_cursor;
+		self.shift_area (cursor);		
 	end move_cursor_to;
 
 	procedure move_cursor_by (
@@ -345,6 +346,7 @@ package body et_canvas_board is
 	begin
 		cursor.position := type_point (round (cursor.position + position, self.drawing.grid));
 		update_position_display_cursor;
+		self.shift_area (cursor);
 	end move_cursor_by;
 
 	procedure move_cursor_right (
@@ -353,6 +355,7 @@ package body et_canvas_board is
 	begin
 		cursor.position := type_point (move (cursor.position, 0.0, self.drawing.grid.x));
 		update_position_display_cursor;
+		self.shift_area (cursor);
 	end move_cursor_right;
 
 	procedure move_cursor_left (
@@ -361,6 +364,7 @@ package body et_canvas_board is
 	begin
 		cursor.position := type_point (move (cursor.position, 180.0, self.drawing.grid.x));
 		update_position_display_cursor;
+		self.shift_area (cursor);
 	end move_cursor_left;
 
 	procedure move_cursor_up (
@@ -369,6 +373,7 @@ package body et_canvas_board is
 	begin
 		cursor.position := type_point (move (cursor.position, 90.0, self.drawing.grid.x));
 		update_position_display_cursor;
+		self.shift_area (cursor);
 	end move_cursor_up;
 
 	procedure move_cursor_down (
@@ -377,6 +382,7 @@ package body et_canvas_board is
 	begin
 		cursor.position := type_point (move (cursor.position, -90.0, self.drawing.grid.x));
 		update_position_display_cursor;
+		self.shift_area (cursor);
 	end move_cursor_down;
 	
 	procedure draw_cursor (
