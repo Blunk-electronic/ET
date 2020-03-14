@@ -457,22 +457,6 @@ package pac_canvas is
 		self		: not null access type_view;
 		direction	: in type_cursor_direction;
 		cursor		: in out type_cursor) is null;
-							  
-	procedure move_cursor_right (
-		self		: not null access type_view;								 
-		cursor		: in out type_cursor) is null;
-
-	procedure move_cursor_left (
-		self		: not null access type_view;								 
-		cursor		: in out type_cursor) is null;
-
-	procedure move_cursor_up (
-		self		: not null access type_view;								 
-		cursor		: in out type_cursor) is null;
-
-	procedure move_cursor_down (
-		self		: not null access type_view;								 
-		cursor		: in out type_cursor) is null;
 
 	procedure shift_area (
 		self		: not null access type_view'class;

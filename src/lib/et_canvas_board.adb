@@ -372,42 +372,6 @@ package body et_canvas_board is
 		self.shift_area (cursor);
 	end move_cursor;
 	
-	procedure move_cursor_right (
-		self		: not null access type_view;
-		cursor		: in out type_cursor) is 
-	begin
-		cursor.position := type_point (move (cursor.position, 0.0, self.drawing.grid.x));
-		update_position_display_cursor;
-		self.shift_area (cursor);
-	end move_cursor_right;
-
-	procedure move_cursor_left (
-		self		: not null access type_view;
-		cursor		: in out type_cursor) is 
-	begin
-		cursor.position := type_point (move (cursor.position, 180.0, self.drawing.grid.x));
-		update_position_display_cursor;
-		self.shift_area (cursor);
-	end move_cursor_left;
-
-	procedure move_cursor_up (
-		self		: not null access type_view;
-		cursor		: in out type_cursor) is 
-	begin
-		cursor.position := type_point (move (cursor.position, 90.0, self.drawing.grid.x));
-		update_position_display_cursor;
-		self.shift_area (cursor);
-	end move_cursor_up;
-
-	procedure move_cursor_down (
-		self		: not null access type_view;
-		cursor		: in out type_cursor) is 
-	begin
-		cursor.position := type_point (move (cursor.position, -90.0, self.drawing.grid.x));
-		update_position_display_cursor;
-		self.shift_area (cursor);
-	end move_cursor_down;
-	
 	procedure draw_cursor (
 		self		: not null access type_view;
 		in_area		: in type_rectangle := no_rectangle;
