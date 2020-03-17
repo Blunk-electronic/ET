@@ -79,6 +79,35 @@ procedure draw_nets (
 						filled		=> YES,
 						height		=> self.drawing.frame_bounding_box.height);
 				end draw_junction;
+
+				procedure query_label (c : in type_net_labels.cursor) is 
+					use type_net_labels;
+				begin
+					put_line ("label at" & to_string (element (c).position));
+
+-- 					pac_draw_misc.draw_text 
+-- 						(
+-- 						context		=> context,
+-- 						text		=> pac_text.type_text (element (c)),
+-- 						content		=> element (c).content,
+-- 						size		=> element (c).size,
+-- 
+-- 						-- text position x/y relative to symbol origin:
+-- 						x			=> transpose_x (x (position)),
+-- 						y			=> transpose_y (y (position)),
+-- 
+-- 						-- Text rotation around its anchor point.
+-- 						-- This is documetational text. Its rotation must
+-- 						-- be snapped to either HORIZONAL or VERTICAL so that
+-- 						-- it is readable from the front or the right.
+-- 						rotation	=> to_rotation (snap (element (c).rotation + unit_rotation)),
+-- 
+-- 						alignment	=> element (c).alignment
+-- 						);
+
+
+					
+				end query_label; 
 					
 			begin -- query_segments
 				-- draw nets of the active sheet only:
@@ -111,7 +140,8 @@ procedure draw_nets (
 							draw_junction;
 						end if;
 
-						-- CS draw labels
+						-- draw labels
+						type_net_labels.iterate (element (segment_cursor).labels, query_label'access);
 						
 						next (segment_cursor);
 					end loop;
