@@ -98,12 +98,20 @@ procedure draw_silk_screen (
 					area		=> in_area,
 					context		=> context,
 					circle		=> element (c),
+					filled		=> NO,
 					height		=> self.drawing.frame_bounding_box.height);
 				
 			when YES =>
 				-- We draw a filled circle with a certain fill style:
 				case element (c).fill_style is
-					when SOLID 		=> null; -- CS
+					when SOLID =>
+						pac_draw_package.draw_circle (
+							area		=> in_area,
+							context		=> context,
+							circle		=> element (c),
+							filled		=> YES,
+							height		=> self.drawing.frame_bounding_box.height);
+
 					when HATCHED 	=> null; -- CS
 				end case;
 		end case;

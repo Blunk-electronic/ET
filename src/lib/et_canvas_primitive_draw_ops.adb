@@ -195,6 +195,7 @@ package body pac_draw is
 		area	: in type_rectangle;
 		context	: in type_draw_context;
 		circle	: in type_circle'class;
+		filled	: in type_filled;		
 		height	: in pac_shapes.geometry.type_distance) is
 
 		-- compute the boundaries (greatest/smallest x/y) of the given circle:
@@ -227,8 +228,10 @@ package body pac_draw is
 				angle2	=> type_view_coordinate (2 * pi)				
 				);
 
-
-			cairo.fill_preserve (context.cr);
+			case filled is
+				when YES => cairo.fill_preserve (context.cr);
+				when NO => null;
+			end case;
 			
 		end if;
 	end draw_circle;

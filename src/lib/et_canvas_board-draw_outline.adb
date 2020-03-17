@@ -83,6 +83,7 @@ procedure draw_outline (
 			area		=> in_area,
 			context		=> context,
 			circle		=> element (c),
+			filled		=> NO, -- circles in outline are never filled
 			height		=> self.drawing.frame_bounding_box.height);
 	end query_circle;
 	

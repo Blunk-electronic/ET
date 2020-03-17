@@ -70,7 +70,17 @@ procedure draw_nets (
 			procedure query_segments (strand : in type_strand) is
 				segment_cursor : type_net_segments.cursor := strand.segments.first;
 				junction : type_junction_symbol := junction_symbol;
-			begin
+
+				procedure draw_junction is begin
+					pac_draw_misc.draw_circle (
+						area		=> in_area,
+						context		=> context,
+						circle		=> junction,
+						filled		=> YES,
+						height		=> self.drawing.frame_bounding_box.height);
+				end draw_junction;
+					
+			begin -- query_segments
 				-- draw nets of the active sheet only:
 				if strand.position.sheet = self.drawing.sheet then
 					
@@ -91,29 +101,14 @@ procedure draw_nets (
 						
 						-- at start point of segment:
 						if element (segment_cursor).junctions.start_point then
-
 							junction.center := element (segment_cursor).start_point;
-							
-							pac_draw_misc.draw_circle (
-								area		=> in_area,
-								context		=> context,
-								circle		=> junction,
-								height		=> self.drawing.frame_bounding_box.height);
-
+							draw_junction;
 						end if;
 
 						-- at end point of segment:
 						if element (segment_cursor).junctions.end_point then
-
 							junction.center := element (segment_cursor).end_point;
-							
-							pac_draw_misc.draw_circle (
-								area		=> in_area,
-								context		=> context,
-								circle		=> junction,
-								height		=> self.drawing.frame_bounding_box.height);
-
-							
+							draw_junction;
 						end if;
 
 						-- CS draw labels

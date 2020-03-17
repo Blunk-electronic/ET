@@ -54,7 +54,7 @@
 with glib;					use glib;
 with cairo;					use cairo;
 
-with et_geometry;
+with et_geometry;			use et_geometry;
 with et_text;
 with et_canvas_general;
 
@@ -111,6 +111,7 @@ package pac_draw is
 		area	: in type_rectangle;
 		context	: in type_draw_context;
 		circle	: in type_circle'class;
+		filled	: in type_filled;
 		height	: in pac_shapes.geometry.type_distance);
 		-- CS fill style ?
 
