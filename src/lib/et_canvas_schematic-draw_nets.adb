@@ -88,7 +88,6 @@ procedure draw_nets (
 -- 					pac_draw_misc.draw_text 
 -- 						(
 -- 						context		=> context,
--- 						text		=> pac_text.type_text (element (c)),
 -- 						content		=> element (c).content,
 -- 						size		=> element (c).size,
 -- 

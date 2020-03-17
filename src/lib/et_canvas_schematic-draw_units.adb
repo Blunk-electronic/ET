@@ -391,7 +391,6 @@ procedure draw_units (
 			pac_draw_misc.draw_text 
 				(
 				context		=> context,
-				text		=> pac_text.type_text (element (c)),
 				content		=> element (c).content,
 				size		=> element (c).size,
 
@@ -424,7 +423,6 @@ procedure draw_units (
 			
 			pac_draw_misc.draw_text (
 				context		=> context,
-				text		=> pac_text.type_text (symbol.name),
 				content		=> to_content (to_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
 				size		=> symbol.name.size,
 
@@ -447,7 +445,6 @@ procedure draw_units (
 				
 				pac_draw_misc.draw_text (
 					context		=> context,
-					text		=> pac_text.type_text (symbol.value),
 					content		=> to_content (to_string (device_value)), -- 100R
 					size		=> symbol.value.size,
 
@@ -471,7 +468,6 @@ procedure draw_units (
 					
 				pac_draw_misc.draw_text (
 					context		=> context,
-					text		=> pac_text.type_text (symbol.purpose),
 					content		=> to_content (to_string (device_purpose)), -- "brightness control"
 					size		=> symbol.purpose.size,
 

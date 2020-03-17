@@ -343,7 +343,6 @@ package body pac_draw is
 
 	procedure draw_text (
 		context		: in type_draw_context;
-		text		: in pac_text.type_text;
 		content		: in type_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		x,y			: in gdouble;
