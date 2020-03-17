@@ -59,6 +59,16 @@ package body et_geometry is
 -- 					raise;
 	end;
 
+
+	function to_string (filled : in type_filled) return string is begin
+		return to_lower (type_filled'image (filled));
+	end to_string;
+
+	function to_filled (filled : in string) return type_filled is begin
+		return type_filled'value (filled);
+	end to_filled;
+
+
 	
 	package body geometry_operations_2d is
 		
@@ -801,14 +811,6 @@ package body et_geometry is
 -- 		function to_fill_style (fill_style : in string) return type_fill_style is begin
 -- 			return type_fill_style'value (fill_style);
 -- 		end;
-
-		function to_string (filled : in type_filled) return string is begin
-			return to_lower (type_filled'image (filled));
-		end to_string;
-
-		function to_filled (filled : in string) return type_filled is begin
-			return type_filled'value (filled);
-		end to_filled;
 
 		procedure union (
 			boundaries	: in out type_boundaries;

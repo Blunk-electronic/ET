@@ -56,6 +56,7 @@ with ada.exceptions;
 
 with et_general;				use et_general;
 with et_import;
+with et_geometry;				use et_geometry;
 with kicad_coordinates;
 with et_schematic;
 with et_kicad_general;			use et_kicad_general;

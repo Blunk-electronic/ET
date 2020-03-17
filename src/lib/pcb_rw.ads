@@ -41,6 +41,7 @@
 with ada.containers;            use ada.containers;
 
 with et_string_processing;
+with et_geometry;				use et_geometry;
 with et_packages;
 with et_pcb;
 with et_pcb_coordinates;
@@ -116,7 +117,7 @@ package pcb_rw is
 	procedure write_priority (prio : in et_pcb.type_polygon_priority);
 	procedure write_signal_layer (layer : in et_pcb_stack.type_signal_layer);
 	procedure write_fill_stlye (fill_style : in et_packages.type_fill_style);
-	procedure write_fill_status (filled : in et_packages.pac_shapes.type_filled);
+	procedure write_fill_status (filled : in type_filled);
 	procedure write_pad_connection (connection : in et_pcb.type_polygon_pad_connection);
 	procedure write_pad_technology (techno : in et_pcb.type_polygon_pad_technology);	
 	procedure write_signal_layers (layers : in et_pcb_stack.type_signal_layers.set);
@@ -204,7 +205,7 @@ package pcb_rw is
 	-- Reads start and end point of the board_circle. If the statement is invalid then it returns a false.
 	
 	board_fill_style : et_packages.type_fill_style := et_packages.fill_style_default;
-	board_filled : et_packages.pac_shapes.type_filled := et_packages.pac_shapes.filled_default;
+	board_filled : type_filled := filled_default;
 
 	board_hatching : et_packages.type_hatching;
 	board_hatching_copper : et_packages.type_hatching_copper;
@@ -241,7 +242,7 @@ package pcb_rw is
 	-- Filled and fill_style are discriminants. Depending on them some parameters
 	-- matter or not. See spec for type_fillable_circle.
 		circle				: in et_packages.pac_shapes.type_circle;
-		filled				: in et_packages.pac_shapes.type_filled;
+		filled				: in type_filled;
 		fill_style			: in et_packages.type_fill_style;
 		circumfence_width	: in et_packages.type_general_line_width;
 		hatching			: in et_packages.type_hatching)

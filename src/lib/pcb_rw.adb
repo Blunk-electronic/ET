@@ -210,9 +210,7 @@ package body pcb_rw is
 		write (keyword => keyword_fill_style, parameters => to_string (fill_style));
 	end;
 
-	procedure write_fill_status (filled : in et_packages.pac_shapes.type_filled) is
-		use et_packages.pac_shapes;
-	begin
+	procedure write_fill_status (filled : in type_filled) is begin
 		write (keyword => keyword_filled, parameters => to_string (filled));
 	end;
 	
@@ -783,7 +781,7 @@ package body pcb_rw is
 	-- Filled and fill_style are discriminants. Depending on them some parameters
 	-- matter or not. See spec for type_fillable_circle.
 		circle				: in et_packages.pac_shapes.type_circle;
-		filled				: in et_packages.pac_shapes.type_filled;
+		filled				: in type_filled;
 		fill_style			: in et_packages.type_fill_style;
 		circumfence_width	: in et_packages.type_general_line_width;
 		hatching			: in et_packages.type_hatching)

@@ -59,6 +59,11 @@ package et_geometry is
 	function to_string (coordinates : in type_coordinates) return string;
 	function to_coordinates (coordinates : in string) return type_coordinates;
 
+	type type_filled is (NO, YES);
+	function to_string (filled : in type_filled) return string;
+	function to_filled (filled : in string) return type_filled;
+	filled_default : constant type_filled := NO;
+
 	
 	generic
 		type type_distance is delta <>;
@@ -363,12 +368,6 @@ package et_geometry is
 		
 	package shapes_2d is
 		use geometry;
-
-		type type_filled is (NO, YES);
-		function to_string (filled : in type_filled) return string;
-		function to_filled (filled : in string) return type_filled;
-		filled_default : constant type_filled := NO;
-
 
 		-- Unites the point with the boundaries. boundaries is updated.
 		procedure union (

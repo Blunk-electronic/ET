@@ -55,7 +55,7 @@ with ada.containers.ordered_sets;
 with et_general;
 with et_string_processing;
 with et_pcb_coordinates;		use et_pcb_coordinates;
-with et_geometry;
+with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
 with et_text;
 
