@@ -120,8 +120,6 @@ package et_canvas_schematic is
 
 		title_block_position	: et_frames.type_position;
 
--- 		grid	: et_coordinates.geometry.type_grid;
-		
 		-- the active sheet
 		sheet	: et_coordinates.type_sheet := type_sheet'first;
 	end record;
