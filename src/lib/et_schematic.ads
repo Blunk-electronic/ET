@@ -270,6 +270,13 @@ package et_schematic is
 		end_point	: boolean := false;
 	end record;
 
+	-- GUI relevant only: In the schematic editor, the junction is drawn as follows:
+	junction_radius : constant type_distance_positive := 0.5;
+	type type_junction_symbol is new pac_shapes.type_circle with null record;
+	junction_symbol : type_junction_symbol := (
+						radius 	=> junction_radius,
+						others	=> <>);
+	
 	net_line_width : constant et_symbols.type_line_width := et_symbols.port_line_width;	
 	
 	type type_net_segment is new pac_shapes.type_line with record

@@ -209,7 +209,6 @@ package body pac_draw is
 		if (area = no_rectangle
 			or else intersects (area, bounding_box)) 
 		then
-
 	-- CS test size 
 	-- 			if not size_above_threshold (self, context.view) then
 	-- 				return;
@@ -228,6 +227,9 @@ package body pac_draw is
 				angle2	=> type_view_coordinate (2 * pi)				
 				);
 
+
+			cairo.fill_preserve (context.cr);
+			
 		end if;
 	end draw_circle;
 
