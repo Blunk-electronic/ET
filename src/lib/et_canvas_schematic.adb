@@ -55,7 +55,7 @@ package body et_canvas_schematic is
 			" sheet " & to_sheet (sheet));
 	end set_title_bar;
 
-	function to_string (
+	function to_string ( -- CS remove
 		self	: not null access type_view;
 		point	: in type_point;
 		axis	: in et_general.type_axis_2d)
@@ -64,17 +64,17 @@ package body et_canvas_schematic is
 		use et_general;
 	begin
 		case axis is
-			when X => return to_string (round (x (point), self.drawing.grid.x));
-			when Y => return to_string (round (y (point), self.drawing.grid.y));
+			when X => return to_string (round (x (point), self.grid.x));
+			when Y => return to_string (round (y (point), self.grid.y));
 		end case;
 	end;
 	
-	function to_string (
+	function to_string (  -- CS remove
 		self	: not null access type_view;
 		point	: in type_point)
 		return string is
 	begin
-		return round_to_string (point, self.drawing.grid);
+		return round_to_string (point, self.grid);
 	end;
 	
 	function model_to_drawing (
@@ -228,7 +228,7 @@ package body et_canvas_schematic is
 		type type_local_view_ptr is access all type_view;
 		self : type_local_view_ptr := type_local_view_ptr (view);
 	begin
-		self.drawing.grid := type_modules.element (current_active_module).grid;
+		self.grid := type_modules.element (current_active_module).grid;
 	end set_grid;
 
 	procedure set_sheet (
@@ -356,7 +356,7 @@ package body et_canvas_schematic is
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level) is separate;
 
-	procedure move_cursor (
+	procedure move_cursor (  -- CS remove
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;
 		cursor		: in out type_cursor;
@@ -365,33 +365,33 @@ package body et_canvas_schematic is
 	begin
 		case coordinates is
 			when ABSOLUTE =>
-				cursor.position := type_point (round (position, self.drawing.grid));
+				cursor.position := type_point (round (position, self.grid));
 				
 			when RELATIVE =>
-				cursor.position := type_point (round (cursor.position + position, self.drawing.grid));
+				cursor.position := type_point (round (cursor.position + position, self.grid));
 		end case;
 
 		update_position_display_cursor;
 		self.shift_area (cursor);		
 	end move_cursor;
 	
-	procedure move_cursor (
+	procedure move_cursor (  -- CS remove
 		self		: not null access type_view;
 		direction	: in type_cursor_direction;
 		cursor		: in out type_cursor) is
 	begin
 		case direction is
 			when RIGHT =>
-				cursor.position := type_point (move (cursor.position, 0.0, self.drawing.grid.x));
+				cursor.position := type_point (move (cursor.position, 0.0, self.grid.x));
 
 			when LEFT =>
-				cursor.position := type_point (move (cursor.position, 180.0, self.drawing.grid.x));
+				cursor.position := type_point (move (cursor.position, 180.0, self.grid.x));
 
 			when UP =>
-				cursor.position := type_point (move (cursor.position, 90.0, self.drawing.grid.y));
+				cursor.position := type_point (move (cursor.position, 90.0, self.grid.y));
 
 			when DOWN =>
-				cursor.position := type_point (move (cursor.position, -90.0, self.drawing.grid.y));
+				cursor.position := type_point (move (cursor.position, -90.0, self.grid.y));
 		end case;
 		
 		update_position_display_cursor;

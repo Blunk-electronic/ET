@@ -107,7 +107,7 @@ package et_canvas_board is
 
 		title_block_position	: et_frames.type_position;
 
-		grid : et_pcb_coordinates.geometry.type_grid;
+-- 		grid : et_pcb_coordinates.geometry.type_grid;
 
 		-- The position of the board origin relative to the lower left
 		-- corner of the drawing frame:

@@ -215,6 +215,8 @@ package pac_canvas is
 
 		scale_to_fit_requested	: gdouble := 0.0; -- gdouble is a real floating-point type (see glib.ads)
 		scale_to_fit_area		: type_rectangle;
+
+		grid : geometry.type_grid;
 	end record;
 
 	-- The pointer to the canvas/view:
