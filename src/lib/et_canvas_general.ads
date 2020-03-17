@@ -230,13 +230,13 @@ package pac_canvas is
 		self	: not null access type_view;
 		point	: in type_point;
 		axis	: in et_general.type_axis_2d)
-		return string is abstract;
+		return string;
 	
 	-- Returns the given point x/y rounded to the current grid.
 	function to_string (
 		self	: not null access type_view;
 		point	: in type_point) 
-		return string is abstract;
+		return string;
 	
 	procedure viewport_changed (self : not null access type_view'class);
 
@@ -450,14 +450,15 @@ package pac_canvas is
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;  -- relative/absolute
 		cursor		: in out type_cursor;
-		position	: in type_point) is null;
+		position	: in type_point);
 
 	-- Moves the given cursor in the given direction by the current grid.
 	procedure move_cursor (
 		self		: not null access type_view;
 		direction	: in type_cursor_direction; -- right, left, up, down
-		cursor		: in out type_cursor) is null;
+		cursor		: in out type_cursor);
 
+	
 	-- Shifts the current area of the view so that the given cursor comes into view.
 	procedure shift_area (
 		self		: not null access type_view'class;

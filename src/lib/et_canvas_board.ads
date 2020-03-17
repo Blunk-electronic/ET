@@ -125,19 +125,6 @@ package et_canvas_board is
 		drawing	: type_drawing;
 	end record;
 
-	-- Returns the distance on the given axis rounded to the current grid.
-	overriding function to_string (
-		self	: not null access type_view;
-		point	: in type_point;
-		axis	: in et_general.type_axis_2d)
-		return string;
-	
-	-- Returns the given point x/y rounded to the current grid.
-	overriding function to_string (
-		self	: not null access type_view;
-		point	: in type_point)
-		return string;
-	
 	-- Returns the bounding box of all items.
 	overriding function bounding_box (self : not null access type_view)
 		return type_rectangle;
@@ -194,17 +181,6 @@ package et_canvas_board is
 	cursor_line_width : constant type_distance_positive := et_packages.line_width_min;
 	cursor_half_size : constant type_distance_positive := 5.0;
 	type type_cursor_line is new et_packages.pac_shapes.type_line with null record;
-
-	overriding procedure move_cursor (
-		self		: not null access type_view;
-		coordinates	: in type_coordinates; -- absolute/relative
-		cursor		: in out type_cursor;
-		position	: in type_point);
-	
-	overriding procedure move_cursor (
-		self		: not null access type_view;
-		direction	: in type_cursor_direction; -- right/left/up/down
-		cursor		: in out type_cursor);
 	
 	overriding procedure draw_cursor (
 		self		: not null access type_view;

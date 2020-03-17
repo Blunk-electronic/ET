@@ -198,6 +198,29 @@ package body pac_canvas is
 		return ("view x/y [pixels]" & to_string (gint (p.x)) & "/" & to_string (gint (p.y)));
 	end;
 
+	function to_string (
+		self	: not null access type_view;
+		point	: in type_point;
+		axis	: in et_general.type_axis_2d)
+		return string 
+	is
+		use et_general;
+	begin
+		case axis is
+			when X => return to_string (round (x (point), self.grid.x));
+			when Y => return to_string (round (y (point), self.grid.y));
+		end case;
+	end;
+
+	function to_string (
+		self	: not null access type_view;
+		point	: in type_point)
+		return string is
+	begin
+		return round_to_string (point, self.grid);
+	end;
+
+	
 	view_signals : constant gtkada.types.chars_ptr_array := (
 		1 => new_string (string (signal_viewport_changed))
 		);
@@ -1160,6 +1183,49 @@ package body pac_canvas is
 		style.finish_path (context.cr);
 		
 	end draw_grid;
+
+	procedure move_cursor (
+		self		: not null access type_view;
+		coordinates	: in type_coordinates;
+		cursor		: in out type_cursor;
+		position	: in type_point) is
+		use et_general;
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+				cursor.position := type_point (round (position, self.grid));
+				
+			when RELATIVE =>
+				cursor.position := type_point (round (cursor.position + position, self.grid));
+		end case;
+
+		update_position_display_cursor;
+		self.shift_area (cursor);		
+	end move_cursor;
+
+	procedure move_cursor (
+		self		: not null access type_view;
+		direction	: in type_cursor_direction;
+		cursor		: in out type_cursor) is
+	begin
+		case direction is
+			when RIGHT =>
+				cursor.position := type_point (move (cursor.position, 0.0, self.grid.x));
+
+			when LEFT =>
+				cursor.position := type_point (move (cursor.position, 180.0, self.grid.x));
+
+			when UP =>
+				cursor.position := type_point (move (cursor.position, 90.0, self.grid.y));
+
+			when DOWN =>
+				cursor.position := type_point (move (cursor.position, -90.0, self.grid.y));
+		end case;
+		
+		update_position_display_cursor;
+		self.shift_area (cursor);
+	end move_cursor;
+
 	
 end pac_canvas;
 	
