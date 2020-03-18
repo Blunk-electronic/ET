@@ -44,7 +44,9 @@ with et_project;				use et_project;
 with et_coordinates;			use et_coordinates;
 use et_coordinates.geometry;
 
+with et_text;
 with et_schematic;				use et_schematic;
+
 use et_schematic.type_nets;
 use et_schematic.type_strands;
 use et_schematic.type_net_segments;
@@ -82,30 +84,50 @@ procedure draw_nets (
 
 				procedure query_label (c : in type_net_labels.cursor) is 
 					use type_net_labels;
+					use et_text;
+					use pac_text;
 				begin
-					put_line ("label at" & to_string (element (c).position));
+					--put_line ("label at" & to_string (element (c).position));
 
--- 					pac_draw_misc.draw_text 
--- 						(
--- 						context		=> context,
--- 						content		=> element (c).content,
--- 						size		=> element (c).size,
--- 
--- 						-- text position x/y relative to symbol origin:
--- 						x			=> transpose_x (x (position)),
--- 						y			=> transpose_y (y (position)),
--- 
--- 						-- Text rotation around its anchor point.
--- 						-- This is documetational text. Its rotation must
--- 						-- be snapped to either HORIZONAL or VERTICAL so that
--- 						-- it is readable from the front or the right.
--- 						rotation	=> to_rotation (snap (element (c).rotation + unit_rotation)),
--- 
--- 						alignment	=> element (c).alignment
--- 						);
+					case element (c).appearance is
+						when SIMPLE =>
+							pac_draw_misc.draw_text (
+								area		=> in_area,
+								context		=> context,
+								content		=> to_content (to_string (key (net_cursor))),
+								size		=> element (c).size,
+								position	=> element (c).position,
+								origin		=> true, -- CS must be false on export to image
+								
+								-- Text rotation around its anchor point.
+								-- This is documentational text.
+								-- It is readable from the front or the right.
+								rotation	=> to_rotation (element (c).rotation),
+								alignment	=> (others => <>), -- CS
+								height		=> self.drawing.frame_bounding_box.height
+								);
 
+						when TAG =>
+							pac_draw_misc.draw_text (
+								area		=> in_area,
+								context		=> context,
+								content		=> to_content (to_string (key (net_cursor))),
+								-- CS append to content the position of the net on the next sheet
+								
+								size		=> element (c).size,
+								position	=> element (c).position,
+								origin		=> true, -- CS must be false on export to image
+								
+								-- Text rotation around its anchor point.
+								-- This is documentational text.
+								-- It is readable from the front or the right.
+								rotation	=> to_rotation (element (c).rotation),
+								alignment	=> (others => <>), -- CS
+								height		=> self.drawing.frame_bounding_box.height
+								);
 
-					
+							-- CS paint a box around the text depending on element (c).direction
+					end case;
 				end query_label; 
 					
 			begin -- query_segments
@@ -118,12 +140,8 @@ procedure draw_nets (
 							area		=> in_area,
 							context		=> context,
 							line		=> element (segment_cursor),
-							height		=> self.drawing.frame_bounding_box.height,
-							extend_boundaries	=> false,
-							boundaries_to_add	=> boundaries_default -- CS
+							height		=> self.drawing.frame_bounding_box.height
 							);
-
-						-- CS include net labels (if any) in the boundaries
 
 						-- draw junctions:
 						

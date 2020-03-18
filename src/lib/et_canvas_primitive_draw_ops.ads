@@ -152,16 +152,19 @@ package pac_draw is
 		rotation	: in pac_shapes.geometry.type_rotation;
 -- 		rigid		: in type_rigid_text;
 		alignment	: in type_text_alignment);
-	
--- 	procedure draw_text (
--- 		context		: in type_draw_context;
--- 		text		: in pac_text.type_text;
--- 		content		: in type_text_content.bounded_string;
--- 		size		: in pac_text.type_text_size;
--- 		position	: in type_point;
--- 		rotation	: in type_rotation;
--- 		frame_height	: in pac_shapes.geometry.type_distance;
--- 		);
+
+	-- Draw a text.
+	procedure draw_text (
+		area		: in type_rectangle;
+		context		: in type_draw_context;
+		content		: in type_text_content.bounded_string;
+		size		: in pac_text.type_text_size;
+		position	: in type_point; -- the anchor point
+		origin		: in boolean; -- when true, an origin is drawn at the position
+		rotation	: in type_rotation;
+		alignment	: in type_text_alignment;
+		height		: in pac_shapes.geometry.type_distance
+		);
 	
 end pac_draw;
 

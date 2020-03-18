@@ -376,6 +376,109 @@ package body pac_draw is
 		restore (context.cr);
 
 	end draw_text;
+
+	procedure draw_text (
+		area		: in type_rectangle;
+		context		: in type_draw_context;
+		content		: in type_text_content.bounded_string;
+		size		: in pac_text.type_text_size;
+		position	: in type_point;
+		origin		: in boolean;		
+		rotation	: in type_rotation;
+		alignment	: in type_text_alignment;
+		height		: in pac_shapes.geometry.type_distance) is
+
+		-- compute the boundaries (greatest/smallest x/y) of the given text:
+-- 		boundaries : type_boundaries; -- := pac_shapes.boundaries (circle);
+
+		-- compute the bounding box of the given text
+-- 		bounding_box : type_rectangle; -- := make_bounding_box (height, boundaries);
+
+		px : constant gdouble := convert_x (x (position));
+		py : constant gdouble := shift_y (y (position), height);
+
+		procedure draw_origin is begin
+		-- The text origin (or anchor point) is drawn directly on the context,
+		-- means the y-axis increases downwards.
+		-- The origin is never rotated.
+			
+			cairo.set_line_width (context.cr, type_view_coordinate (origin_line_width));
+			
+			-- horizontal line from left to right
+			cairo.move_to (
+				context.cr,
+				px - type_view_coordinate (origin_half_size),
+				py
+				);
+
+			cairo.line_to (
+				context.cr,
+				px + type_view_coordinate (origin_half_size),
+				py
+				);
+
+			-- vertical line downwards
+			-- upper end of line
+			cairo.move_to (
+				context.cr,
+				px,
+				py - type_view_coordinate (origin_half_size) -- y increases downwards.
+				);
+
+			-- lower end of line
+			cairo.line_to (
+				context.cr,
+				px,
+				py + type_view_coordinate (origin_half_size)
+				);
+
+			cairo.stroke (context.cr);
+		end draw_origin;
+		
+		use cairo;
+	begin
+		-- We draw the text if:
+		--  - no area given or
+		--  - if the bounding box of the text intersects the given area
+-- 		if (area = no_rectangle
+-- 			or else intersects (area, bounding_box)) 
+-- 		then
+	-- CS test size 
+	-- 			if not size_above_threshold (self, context.view) then
+	-- 				return;
+	-- 			end if;
+
+			cairo.select_font_face (
+				context.cr, 
+				family	=> "monospace", -- serif",
+				slant	=> CAIRO_FONT_SLANT_NORMAL,
+				weight	=> CAIRO_FONT_WEIGHT_NORMAL);
+
+			save (context.cr);
+
+			if origin then 
+				draw_origin;
+			end if;
+
+			cairo.set_font_size (context.cr, (to_points (size)));
+
+			-- In cairo all angles increase in clockwise direction.
+			-- Since our angles increase in counterclockwise direction (mathematically)
+			-- the angle must change the sign.		
+
+			cairo.move_to (context.cr, px, py);
+			cairo.rotate (context.cr, gdouble (to_radians (- rotation)));
+				
+			cairo.show_text (context.cr, to_string (content));
+
+			
+			-- CS alignment. http://zetcode.com/gfx/cairo/cairotext/
+
+			restore (context.cr);
+
+-- 		end if;
+	end draw_text;
+
 	
 end pac_draw;
 
