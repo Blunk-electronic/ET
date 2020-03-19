@@ -157,6 +157,8 @@ procedure draw_nets (
 							height		=> self.drawing.frame_bounding_box.height
 							);
 
+						cairo.stroke (context.cr);
+						
 						-- draw junctions:
 						
 						-- at start point of segment:
