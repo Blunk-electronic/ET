@@ -382,6 +382,8 @@ package body pac_draw is
 		alignment	: in type_text_alignment;
 		height		: in pac_shapes.geometry.type_distance) is
 
+		text_area : cairo.cairo_text_extents;
+		
 		-- compute the boundaries (greatest/smallest x/y) of the given text:
 -- 		boundaries : type_boundaries; -- := pac_shapes.boundaries (circle);
 
@@ -431,6 +433,8 @@ package body pac_draw is
 		
 		use cairo;
 	begin
+		--text_extents (cr => context.cr, utf8 => utf8, extents => text_area'access);
+		
 		-- We draw the text if:
 		--  - no area given or
 		--  - if the bounding box of the text intersects the given area
